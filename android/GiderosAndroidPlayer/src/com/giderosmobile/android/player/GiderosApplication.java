@@ -602,6 +602,11 @@ public class GiderosApplication
 		}
 	}
 	
+	public void onHandleOpenUrl(String url)
+	{
+		nativeHandleOpenUrl(url);
+	}
+	
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		for ( Class < ? > theClass : sAvailableClasses ) {
@@ -1289,4 +1294,5 @@ public class GiderosApplication
 	static private native void nativeTouchesCancel(int size, int[] id, int[] x, int[] y, float[] pressure);
 	static private native void nativeStop();
 	static private native void nativeStart();
+	static private native void nativeHandleOpenUrl(String url);
 }

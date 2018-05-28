@@ -771,6 +771,8 @@ void LuaApplication::callback(int type, void *event)
         for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
             if (pluginManager.plugins[i].openUrl)
                 pluginManager.plugins[i].openUrl(L, event2->url);
+        OpenUrlEvent eventg(OpenUrlEvent::OPEN_URL,event2->url);
+        application_->broadcastEvent(&eventg);
     }
     else if (type == GAPPLICATION_MEMORY_LOW_EVENT)
     {

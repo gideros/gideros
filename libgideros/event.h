@@ -100,4 +100,18 @@ private:
 	int uniqueid_;
 };
 
+class OpenUrlEvent : public Event
+{
+public:
+	typedef EventType<OpenUrlEvent> Type;
+	OpenUrlEvent(const Type& type,const char *url) : Event(type.type()),	url_(url) {	}
+	virtual ~OpenUrlEvent() {}
+	const char *url() { return url_.c_str(); }
+	virtual void apply(EventVisitor* v);
+	static Type OPEN_URL;
+private:
+	std::string url_;
+};
+
+
 #endif

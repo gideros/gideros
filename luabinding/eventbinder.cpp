@@ -29,6 +29,9 @@ EventBinder::EventBinder(lua_State* L)
 
 	lua_getglobal(L, "Event");	// get metatable
 
+	lua_pushstring(L, OpenUrlEvent::OPEN_URL.type());
+	lua_setfield(L, -2, "OPEN_URL");
+
 	lua_pushstring(L, Event::ENTER_FRAME.type());
 	lua_setfield(L, -2, "ENTER_FRAME");
 

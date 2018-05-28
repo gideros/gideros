@@ -23,3 +23,9 @@ void Event::apply(EventVisitor* v)
 }
 
 int Event::s_uniqueid_ = 0;
+
+OpenUrlEvent::Type OpenUrlEvent::OPEN_URL("openUrl");
+void OpenUrlEvent::apply(EventVisitor* v)
+{
+	v->visit(this);
+}

@@ -231,6 +231,7 @@ public:
 	void resume();
 
 	void lowMemory();
+	void handleOpenUrl(const char *url);
 
 	void background();
 	void foreground();	
@@ -1324,6 +1325,15 @@ void ApplicationManager::lowMemory()
 	}
 }
 
+void ApplicationManager::handleOpenUrl(const char *url)
+{
+	    gapplication_OpenUrlEvent *event = (gapplication_OpenUrlEvent*)gevent_CreateEventStruct1(
+	                                           sizeof(gapplication_OpenUrlEvent),
+	                                        offsetof(gapplication_OpenUrlEvent, url), url);
+
+	    gapplication_enqueueEvent(GAPPLICATION_OPEN_URL_EVENT, event, 1);
+}
+
 void ApplicationManager::background()
 {
     gapplication_enqueueEvent(GAPPLICATION_BACKGROUND_EVENT, NULL, 0);
@@ -1553,6 +1563,13 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeStop(JNIEnv*
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeStart(JNIEnv* env, jclass cls)
 {
 	s_applicationManager->foreground();
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeHandleOpenUrl(JNIEnv* env, jclass cls, jstring url)
+{
+	const char* sBytes = env->GetStringUTFChars(url, NULL);
+	s_applicationManager->handleOpenUrl(sBytes);
+	env->ReleaseStringUTFChars(url, sBytes);
 }
 
 

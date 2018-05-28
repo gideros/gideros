@@ -126,7 +126,11 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
     {
 		//Line below is a marker for plugin insertion scripts. Do not remove or change
 		//GIDEROS-PROCESS-INTENT//
-    	//Wouldn't it be cool to process URL open requests here too ?
+
+    	if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+    	    Uri uri = intent.getData();
+    		GiderosApplication.getInstance().onHandleOpenUrl(uri.toString());
+    	}
     }
     
 	@Override

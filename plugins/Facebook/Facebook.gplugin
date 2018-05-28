@@ -46,7 +46,9 @@ table.insert(urls,"fbapi")
 table.insert(urls,"fb-messenger-share-api")
 table.insert(urls,"fbauth2")
 table.insert(urls,"fbshareextension")
-iOSProject.InfoPlist.CFBundleURLTypes={ { CFBundleURLSchemes={ "fb"..Export.getProperty("plugin.fbAppId") } } }
+iOSProject.InfoPlist.CFBundleURLTypes=iOSProject.InfoPlist.CFBundleURLTypes or {}
+table.insert(iOSProject.InfoPlist.CFBundleURLTypes,{ CFBundleURLSchemes={ "fb"..Export.getProperty("plugin.fbAppId") } })
+
 iOSProject.InfoPlist.FacebookAppID=Export.getProperty("plugin.fbAppId")
 iOSProject.InfoPlist.FacebookDisplayName=Export.getProperty("plugin.fbAppName")
 				

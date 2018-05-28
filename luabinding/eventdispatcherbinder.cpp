@@ -133,6 +133,11 @@ public:
         G_UNUSED(v); type = eEnterFrameEvent;
 	}
 
+	virtual void visit(OpenUrlEvent* v)
+	{
+        G_UNUSED(v); type = eOpenUrlEvent;
+	}
+
 	virtual void visit(MouseEvent* v)
 	{
         G_UNUSED(v); type = eMouseEvent;
@@ -202,6 +207,7 @@ public:
 		eKeyboardEvent,
         eCompleteEvent,
         eLayoutEvent,
+		eOpenUrlEvent,
 		eLuaEvent,
 	};
 
@@ -656,6 +662,30 @@ public:
 
             lua_pushnumber(L, v->height);
             lua_setfield(L, -2, "height");
+        }
+
+        lua_call(L, 1, 0);
+    }
+
+    virtual void visit(OpenUrlEvent* v)
+    {
+        StackChecker checker(L, "visit(OpenUrlEvent* v)", 0);
+
+        // get closure
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
+        lua_pushlightuserdata(L, bridge_);
+        lua_rawget(L, -2);
+        lua_remove(L, -2);		// remove env["eventClosures"]
+
+        bool newTable = pushEventTable(v, "Event");
+
+        if (newTable == true)
+        {
+            lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
+            lua_setfield(L, -2, "type");
+
+            lua_pushstring(L, v->url());
+            lua_setfield(L, -2, "url");
         }
 
         lua_call(L, 1, 0);

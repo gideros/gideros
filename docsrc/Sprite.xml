@@ -602,6 +602,10 @@ Sets the rotation of the sprite in degrees around y axis.<br />
     <parameter name="time" type="number"><![CDATA[time passed from app start]]></parameter>
     <parameter name="frameCount" type="number"><![CDATA[frame count from app start]]></parameter>
   </event>
+  <event name="Event.LAYOUT_RESIZED" page="Event.LAYOUT_RESIZED" value="layout_resized" version="Gideros 2018.5"><![CDATA[Dispatched to a sprite when its size has been set by the layout system.]]>
+    <parameter name="width" type="number"><![CDATA[the computed width of the sprite]]></parameter>
+    <parameter name="height" type="number"><![CDATA[the computed height of the sprite]]></parameter>
+  </event>
   <event name="Event.ADDED_TO_STAGE" page="Event.ADDED_TO_STAGE" value="addedToStage" version="Gideros 2011.6"><![CDATA[This event is dispatched when object is added to the stage hierarchy]]></event>
   <event name="Event.REMOVED_FROM_STAGE" page="Event.REMOVED_FROM_STAGE" value="removedFromStage" version="Gideros 2011.6"><![CDATA[This event is dispatched when object is removed from stage hierarchy]]></event>
   <event name="Event.MOUSE_DOWN" page="Event.MOUSE_DOWN" value="mouseDown" version="Gideros 2011.6"><![CDATA[This event is dispatched on mouse down action. It is possible to generate this event using touch actions, by enabling this option through project settings.

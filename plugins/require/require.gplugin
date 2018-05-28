@@ -20,7 +20,8 @@
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
- <property name="reqCanOpenUrl" type="string" title="This app can open url : (with ',' separator)"/>
+ <property name="reqCanOpenUrl" type="string" title="This app can open these url schemes: (with ',' separator)"/>
+ <property name="reqCanRespondUrl" type="string" title="This app can respond to these url schemes: (with ',' separator)"/>
  <property name="reqEnable64bits" type="boolean" title="Enable 64bits libs (android)"/> 
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
@@ -226,6 +227,25 @@
         	</replacelist>
     	</template>
     </if>                
+	<lua><![CDATA[
+		local urls = Export.getProperty("plugin.reqCanRespondUrl")
+		if urls and string.len(urls)>0 then
+			local t,pattern = {},urls.format("([^%s]+)", ",")
+			urls:gsub(pattern, function(s) t[#t+1] = s end)
+			if #t>0 then
+				local ITF=[[<intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="%s" />
+    </intent-filter>]]
+    			local IFE="<template name=\"AndroidManifest\" path=\"\"><replacelist wildcards=\"AndroidManifest.xml\"><append><orig><![CDATA[<!-- TAG:INTENT-FILTER-EXTRA -->]]></orig><by><![CDATA[%s]]></by></append></replacelist></template>"
+    			local ifs=""
+				for i,v in ipairs(t) do ifs=ifs..IFT:format(v) end
+				if #ifs>0 then Export.callXml(IFE:format(ifs)) end
+			end
+		end
+	]]></lua>
  </target>
  <target name="iOS">
     <if condition="[[[plugin.reqPhoneOnly]]]">
@@ -270,6 +290,18 @@
 				iOSProject.InfoPlist.LSApplicationQueriesSchemes=urls
 				for i,v in ipairs(t) do
 					table.insert(urls,v)
+				end
+			end
+		end
+		local urls = Export.getProperty("plugin.reqCanRespondUrl")
+		if urls and string.len(urls)>0 then
+			local t,pattern = {},urls.format("([^%s]+)", ",")
+			urls:gsub(pattern, function(s) t[#t+1] = s end)
+			if #t>0 then
+				local urls=iOSProject.InfoPlist.CFBundleURLTypes or { }
+				iOSProject.InfoPlist.CFBundleURLTypes=urls
+				for i,v in ipairs(t) do
+					table.insert(urls,{ CFBundleURLSchemes={ v } })
 				end
 			end
 		end
