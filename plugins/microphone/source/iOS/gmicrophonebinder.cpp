@@ -2,6 +2,8 @@
 #include "lua.h"
 #include "lauxlib.h"
 
+#include <gaudio.h>
+#include <ggaudiomanager.h>
 #include "gmicrophone.h"
 #include "gsoundencoder.h"
 
@@ -54,7 +56,7 @@ static char keyWeak = ' ';
 class GMicrophone : public GEventDispatcherProxy
 {
 public:
-    GMicrophone(lua_State *L, const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, gmicrophone_Error *error) 
+    GMicrophone(lua_State *L, const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, gmicrophone_Error *error)
     {
         if (++instanceCount_ == 1)
             gmicrophone_Init();
@@ -71,6 +73,8 @@ public:
         numChannels_ = numChannels;
         sampleRate_ = sampleRate;
         bitsPerSample_ = bitsPerSample;
+    	bytesPerSample_=((bitsPerSample + 7) / 8) * numChannels;
+        encoder=NULL;
 
         started_ = false;
         paused_ = false;
@@ -81,8 +85,8 @@ public:
         if (microphone_)
             gmicrophone_Delete(microphone_);
 
-        if (outputFile_)
-            gsoundencoder_WavClose(outputFile_);
+        if (outputFile_&&encoder)
+            encoder->close(outputFile_);
 
         if (--instanceCount_ == 0)
             gmicrophone_Cleanup();
@@ -95,7 +99,9 @@ public:
 
         if (!fileName_.empty())
         {
-            outputFile_ = gsoundencoder_WavCreate(fileName_.c_str(), numChannels_, sampleRate_, bitsPerSample_);
+        	encoder=gaudio_lookupEncoder(fileName_.c_str());
+        	if (encoder)
+        		outputFile_ = encoder->open(fileName_.c_str(), numChannels_, sampleRate_, bitsPerSample_);
 
             if (outputFile_ == 0)
             {
@@ -119,7 +125,9 @@ public:
 
         if (outputFile_)
         {
-            gsoundencoder_WavClose(outputFile_);
+        	if (encoder)
+        		encoder->close(outputFile_);
+            encoder = NULL;
             outputFile_ = 0;
         }
 
@@ -184,8 +192,8 @@ private:
         if (type == GMICROPHONE_DATA_AVAILABLE_EVENT)
         {
             gmicrophone_DataAvailableEvent* event2 = (gmicrophone_DataAvailableEvent*)event;
-            if (outputFile_)
-                gsoundencoder_WavWrite(outputFile_, event2->sampleCount, event2->data);
+            if (outputFile_&&encoder)
+                encoder->write(outputFile_,event2->sampleCount * bytesPerSample_, event2->data);
 
 
             luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
@@ -217,11 +225,12 @@ private:
 
 private:
     g_id microphone_;
-    int numChannels_, sampleRate_, bitsPerSample_;
+    int numChannels_, sampleRate_, bitsPerSample_, bytesPerSample_;
     g_id outputFile_;
     bool started_;
     bool paused_;
     std::string fileName_;
+    GGAudioEncoder *encoder;
     static int instanceCount_;
 };
 
@@ -247,6 +256,9 @@ static int create(lua_State *L)
     case GMICROPHONE_UNSUPPORTED_FORMAT:
         delete microphone;
         return luaL_error(L, "Unsupported microphone format.");
+    case GMICROPHONE_PROMPTING_PERMISSION:
+        delete microphone;
+        return luaL_error(L, "Permission requested.");
     }
 
     g_pushInstance(L, "Microphone", microphone->object());
@@ -393,6 +405,8 @@ static int loader(lua_State* L)
 
 }
 
+GGAudioEncoder audioWav(gsoundencoder_WavCreate, gsoundencoder_WavClose, gsoundencoder_WavWrite);
+
 static void g_initializePlugin(lua_State *L)
 {
 	::L = L;
@@ -403,6 +417,7 @@ static void g_initializePlugin(lua_State *L)
     lua_setfield(L, -2, "microphone");
 
     lua_pop(L, 2);
+    gaudio_registerEncoderType("wav",audioWav);
 }
 
 static void g_deinitializePlugin(lua_State *L)

@@ -100,7 +100,7 @@ private:
 	int uniqueid_;
 };
 
-class OpenUrlEvent : public Event
+class GIDEROS_API OpenUrlEvent : public Event
 {
 public:
 	typedef EventType<OpenUrlEvent> Type;

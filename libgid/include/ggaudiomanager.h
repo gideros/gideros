@@ -118,6 +118,29 @@ struct GGAudioLoader
     FormatFunc format;
 };
 
+struct GGAudioEncoder
+{
+    typedef g_id (*OpenFunc)(const char *fileName, int numChannels, int sampleRate, int bitsPerSample, float quality);
+    typedef void (*CloseFunc)(g_id id);
+    typedef size_t (*WriteFunc)(g_id id, size_t size, void *data);
+
+    GGAudioEncoder()
+    {
+    }
+
+    GGAudioEncoder(OpenFunc open, CloseFunc close, WriteFunc write) :
+        open(open),
+        close(close),
+        write(write)
+    {
+
+    }
+
+    OpenFunc open;
+    CloseFunc close;
+    WriteFunc write;
+};
+
 
 class GGSoundManager
 {
@@ -156,6 +179,9 @@ public:
 
 	void registerLoader(const char *name, GGAudioLoader &loader);
 	void unregisterLoader(const char *name);
+	void registerEncoder(const char *name, GGAudioEncoder &encoder);
+	void unregisterEncoder(const char *name);
+	GGAudioEncoder *lookupEncoder(const char *filename);
 
 private:
     void interfacesInit();
@@ -165,6 +191,7 @@ private:
     GGSampleInterface *sampleInterface_;
     GGStreamInterface *streamInterface_;
     std::map<std::string, GGAudioLoader> loaders_;
+    std::map<std::string, GGAudioEncoder> encoders_;
 
     struct Channel;
 
@@ -260,6 +287,9 @@ public:
 	void AdvanceStreamBuffers();
 	void RegisterType(const char *name,GGAudioLoader &loader);
 	void UnregisterType(const char *name);
+	void RegisterEncoderType(const char *name,GGAudioEncoder &encoder);
+	void UnregisterEncoderType(const char *name);
+	GGAudioEncoder *LookupEncoder(const char *filename);
 
 private:
     static void tick_s(int type, void *event, void *udata);
@@ -285,6 +315,9 @@ extern "C" {
 
 G_API void gaudio_registerType(const char *name,GGAudioLoader &loader);
 G_API void gaudio_unregisterType(const char *name);
+G_API void gaudio_registerEncoderType(const char *name,GGAudioEncoder &encoder);
+G_API void gaudio_unregisterEncoderType(const char *name);
+G_API GGAudioEncoder *gaudio_lookupEncoder(const char *filename);
 
 #ifdef __cplusplus
 }

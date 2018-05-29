@@ -353,6 +353,33 @@ void GGSoundManager::unregisterLoader(const char *name)
 	loaders_.erase(name);
 }
 
+void GGSoundManager::registerEncoder(const char *name, GGAudioEncoder &encoder)
+{
+	encoders_[name]=encoder;
+}
+
+void GGSoundManager::unregisterEncoder(const char *name)
+{
+	encoders_.erase(name);
+}
+
+GGAudioEncoder *GGSoundManager::lookupEncoder(const char *filename)
+{
+    const char *dot = strrchr(filename, '.');
+
+    if (dot == NULL) return NULL;
+
+    std::string dot2 = dot + 1;
+    std::transform(dot2.begin(), dot2.end(), dot2.begin(), ::tolower);
+
+    std::map<std::string, GGAudioEncoder>::iterator iter = encoders_.find(dot2);
+
+    if (iter == encoders_.end()) return NULL;
+
+    return &(iter->second);
+}
+
+
 void GGSoundManager::preTick()
 {
     sampleInterface_->preTick();
@@ -691,6 +718,21 @@ void GGAudioManager::UnregisterType(const char *name)
 	soundManager_->unregisterLoader(name);
 }
 
+void GGAudioManager::RegisterEncoderType(const char *name,GGAudioEncoder &loader)
+{
+	soundManager_->registerEncoder(name, loader);
+}
+
+void GGAudioManager::UnregisterEncoderType(const char *name)
+{
+	soundManager_->unregisterEncoder(name);
+}
+
+GGAudioEncoder *GGAudioManager::LookupEncoder(const char *filename)
+{
+	return soundManager_->lookupEncoder(filename);
+}
+
 static GGAudioManager *s_manager = NULL;
 
 extern "C" {
@@ -920,5 +962,18 @@ void gaudio_registerType(const char *name,GGAudioLoader &loader) {
 void gaudio_unregisterType(const char *name) {
 	s_manager->UnregisterType(name);
 }
+
+void gaudio_registerEncoderType(const char *name,GGAudioEncoder &encoder) {
+	s_manager->RegisterEncoderType(name,encoder);
+}
+
+void gaudio_unregisterEncoderType(const char *name) {
+	s_manager->UnregisterEncoderType(name);
+}
+
+GGAudioEncoder *gaudio_lookupEncoder(const char *filename) {
+	return s_manager->LookupEncoder(filename);
+}
+
 
 }

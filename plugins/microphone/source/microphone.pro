@@ -3,7 +3,7 @@ QT -= core gui
 TARGET = microphone
 TEMPLATE = lib
 
-INCLUDEPATH += ../../../Sdk/include
+INCLUDEPATH += ../../../Sdk/include ../../../Sdk/include/gideros
 
 SOURCES += \
     gmicrophone-openal.cpp \

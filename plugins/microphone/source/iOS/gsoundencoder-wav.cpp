@@ -152,12 +152,12 @@ void gsoundencoder_WavClose(g_id id)
     delete handle;
 }
 
-void gsoundencoder_WavWrite(g_id id, size_t sampleCount, void *data)
+size_t gsoundencoder_WavWrite(g_id id, size_t size, void *data)
 {
     GWavHandle *handle = (GWavHandle*)id;
-    size_t size = sampleCount * handle->bytesPerSample;
     fwrite(data, size, 1, handle->fos);
     handle->dataSize += size;
+    return size;
 }
 
 }

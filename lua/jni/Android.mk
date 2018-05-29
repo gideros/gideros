@@ -13,7 +13,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := lua
 LOCAL_ARM_MODE := arm
-LOCAL_CFLAGS := -O2
+LOCAL_CFLAGS := -O2 -DLUA_USE_MKSTEMP
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../src $(LOCAL_PATH)/../../libgvfs
 LOCAL_SRC_FILES += ../etc/all_lua.c
 LOCAL_LDLIBS := -ldl

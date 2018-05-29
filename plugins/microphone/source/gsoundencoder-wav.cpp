@@ -67,7 +67,7 @@ static inline uint32_t to_le32(uint32_t num)
 
 extern "C" {
 
-g_id gsoundencoder_WavCreate(const char *fileName, int numChannels, int sampleRate, int bitsPerSample)
+g_id gsoundencoder_WavCreate(const char *fileName, int numChannels, int sampleRate, int bitsPerSample, float quality)
 {
     FILE *fos = fopen(gpath_transform(fileName), "wb");
     if (fos == NULL)
@@ -152,12 +152,12 @@ void gsoundencoder_WavClose(g_id id)
     delete handle;
 }
 
-void gsoundencoder_WavWrite(g_id id, size_t sampleCount, void *data)
+size_t gsoundencoder_WavWrite(g_id id, size_t size, void *data)
 {
     GWavHandle *handle = (GWavHandle*)id;
-    size_t size = sampleCount * handle->bytesPerSample;
     fwrite(data, size, 1, handle->fos);
     handle->dataSize += size;
+    return size;
 }
 
 }

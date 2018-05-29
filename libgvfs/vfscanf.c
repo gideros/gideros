@@ -43,15 +43,6 @@
 #include "floatio.h"
 #endif
 
-#ifdef __ANDROID__
-#if UINTPTR_MAX == 0xffffffff //For 32bit target only
-static long double strtold(const char *s, char **sp)
-{
-    return strtod(s, sp);
-}
-#endif
-#endif
-
 #ifdef WINSTORE
 #define __signed
 #define ssize_t size_t

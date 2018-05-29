@@ -13,6 +13,7 @@ enum gmicrophone_Error
     GMICROPHONE_NO_ERROR,
     GMICROPHONE_CANNOT_OPEN_DEVICE,
     GMICROPHONE_UNSUPPORTED_FORMAT,
+	GMICROPHONE_PROMPTING_PERMISSION
 };
 
 typedef struct gmicrophone_DataAvailableEvent
