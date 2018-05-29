@@ -428,4 +428,8 @@ static void g_deinitializePlugin(lua_State *L)
 	::L = NULL;
 }
 
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+REGISTER_PLUGIN_STATICNAMED_CPP("Microphone", "1.0",Microphone)
+#else
 REGISTER_PLUGIN("Microphone", "1.0")
+#endif

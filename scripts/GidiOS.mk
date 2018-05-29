@@ -53,8 +53,6 @@ atv.libs.install: atv.libs
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
 
 luasocket.%: PLUGINDIR=LuaSocket
-camera.%: PLUGINDIR=camera
-ogg.%: PLUGINDIR=ogg
 
 %.iosplugin: PLUGINDIR?=$*
 %.iosplugin: PLUGINPATH=$(ROOT)/plugins/$(PLUGINDIR)/source

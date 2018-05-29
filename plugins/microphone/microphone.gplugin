@@ -35,13 +35,19 @@
     </template>
  </target>
  <target name="iOS">
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.exportPluginFiles("microphone",
-	"[[[sys.pluginDir]]]/source/iOS",
-	{ "gmicrophone-ios.mm", "gmicrophonebinder.cpp", "gsoundencoder-wav.cpp" },
-	true, false)
+iOSProject.addSources({ "Plugins/libmicrophone.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libmicrophone.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.commit()
 	]]></lua>
+    <template name="Activity" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Microphone) "/>
+        </replacelist>
+    </template>
  </target>
  <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
