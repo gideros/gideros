@@ -76,6 +76,7 @@
 		EB0780CA1F90A3B000320DD5 /* bitrate.h in Headers */ = {isa = PBXBuildFile; fileRef = EB07809E1F90A3AF00320DD5 /* bitrate.h */; };
 		EB0780CB1F90A3B000320DD5 /* masking.h in Headers */ = {isa = PBXBuildFile; fileRef = EB07809F1F90A3AF00320DD5 /* masking.h */; };
 		EB0780CD1F90A52F00320DD5 /* oggbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB0780CC1F90A52E00320DD5 /* oggbinder.cpp */; };
+		EB71C1B720BECF2A00E0403C /* analysis.c in Sources */ = {isa = PBXBuildFile; fileRef = EB71C1B620BECF2A00E0403C /* analysis.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -151,6 +152,7 @@
 		EB07809E1F90A3AF00320DD5 /* bitrate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bitrate.h; path = "libvorbis-1.3.5/lib/bitrate.h"; sourceTree = "<group>"; };
 		EB07809F1F90A3AF00320DD5 /* masking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = masking.h; path = "libvorbis-1.3.5/lib/masking.h"; sourceTree = "<group>"; };
 		EB0780CC1F90A52E00320DD5 /* oggbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oggbinder.cpp; path = Common/oggbinder.cpp; sourceTree = "<group>"; };
+		EB71C1B620BECF2A00E0403C /* analysis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = analysis.c; path = "libvorbis-1.3.5/lib/analysis.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +207,7 @@
 		EB07800F1F90A2C000320DD5 /* vorbis */ = {
 			isa = PBXGroup;
 			children = (
+				EB71C1B620BECF2A00E0403C /* analysis.c */,
 				EB07808B1F90A3A500320DD5 /* backends.h */,
 				EB07807A1F90A3A200320DD5 /* bitrate.c */,
 				EB07809E1F90A3AF00320DD5 /* bitrate.h */,
@@ -377,6 +380,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB0780B01F90A3B000320DD5 /* lsp.c in Sources */,
+				EB71C1B720BECF2A00E0403C /* analysis.c in Sources */,
 				EB07806E1F90A32000320DD5 /* quant.c in Sources */,
 				EB0780B31F90A3B000320DD5 /* vorbisfile.c in Sources */,
 				EB0780B41F90A3B000320DD5 /* vorbisenc.c in Sources */,
