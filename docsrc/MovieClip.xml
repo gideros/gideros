@@ -77,6 +77,7 @@ call [[MovieClip:play]].<br />
   <method name="MovieClip:play" page="play" shortdesc="starts playing the movie clip" version="Gideros 2011.6"><![CDATA[<br />
 Starts playing the movie clip.<br />
 <br />
+    <parameter name="reverse" optional="false" type="boolean"><![CDATA[indicates to play backwards]]></parameter>
 ]]></method>
   <method name="MovieClip:stop" page="stop" shortdesc="stops playing the movie clip" version="Gideros 2011.6"><![CDATA[<br />
 Stops playing the movie clip.<br />
@@ -94,6 +95,7 @@ Goes to the specified frame and starts playing.<br />
 <br />
 ]]>
     <parameter name="frame" optional="false" type="int"><![CDATA[the frame number]]></parameter>
+    <parameter name="reverse" optional="false" type="boolean"><![CDATA[indicates to play backwards]]></parameter>
   </method>
   <method name="MovieClip:gotoAndStop" page="gotoAndStop" shortdesc="goes to the specified frame and stops" version="Gideros 2011.6"><![CDATA[<br />
 Goes to the specified frame and stops.<br />
@@ -114,6 +116,13 @@ This function is usually used to create looping animations.<br />
 Sets a *stop* action to the specified frame. When the movie clip reaches a frame <br />
 with stop action, it stops playing. This function is usually used to divide<br />
 the animation into independent parts.<br />
+<br />
+]]>
+    <parameter name="frame" optional="false" type="int"><![CDATA[the frame number]]></parameter>
+  </method>
+  <method name="MovieClip:setReverseAction" page="setReverseAction" shortdesc="sets a &amp;quot;reverse&amp;quot; action to the specified frame" version="Gideros 2018.3"><![CDATA[<br />
+Sets a *reverse* action to the specified frame. When the movie clip reaches a frame <br />
+with reverse action, it changes playing direction. This function is can be used to create back and forth animations, even endless.
 <br />
 ]]>
     <parameter name="frame" optional="false" type="int"><![CDATA[the frame number]]></parameter>
