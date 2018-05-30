@@ -4,6 +4,8 @@
 #include <glog.h>
 #include <gapplication.h>
 #include <AVFoundation/AVFoundation.h>
+#include <UIKit/UIKit.h>
+
 
 #define BUFFER_COUNT 4
     
@@ -335,7 +337,7 @@ private:
                 
                 event->microphone = gid;
                 event->data = (char*)event + structSize;
-                event->sampleCount = dataSize / format.mBytesPerFrame;
+                event->sampleCount = (int) (dataSize / format.mBytesPerFrame);
                 
                 memcpy(event->data, inBuffer->mAudioData, dataSize);
                 

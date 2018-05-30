@@ -44,12 +44,12 @@ struct GWavHandle
 #ifdef PLATFORM_BIG_ENDIAN
 static inline uint16_t to_le16(uint16_t num)
 {
-    return SWAP_16(num);
+    return (uint16_t) SWAP_16(num);
 }
 
 static inline uint32_t to_le32(uint32_t num)
 {
-    return SWAP_32(num);
+    return (uint32_t) SWAP_32(num);
 }
 #else
 static inline uint16_t to_le16(uint16_t num)
@@ -137,13 +137,13 @@ void gsoundencoder_WavClose(g_id id)
 
     {
         fseek(handle->fos, 4, SEEK_SET);
-        uint32_t chunkSize = to_le32(4 + (8 + sizeof(GFmtChunk)) + (8 + handle->dataSize));
+        uint32_t chunkSize = to_le32((uint32_t)(4 + (8 + sizeof(GFmtChunk)) + (8 + handle->dataSize)));
         fwrite(&chunkSize, sizeof(chunkSize), 1, handle->fos);
     }
 
     {
         fseek(handle->fos, sizeof(GWaveHeader) + sizeof(GFmtChunk) + 12, SEEK_SET);
-        uint32_t chunkSize = to_le32(handle->dataSize);
+        uint32_t chunkSize = to_le32((uint32_t)handle->dataSize);
         fwrite(&chunkSize, sizeof(chunkSize), 1, handle->fos);
     }
 

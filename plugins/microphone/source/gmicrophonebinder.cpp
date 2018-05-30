@@ -240,9 +240,9 @@ int GMicrophone::instanceCount_ = 0;
 
 static int create(lua_State *L)
 {
-    int sampleRate = luaL_checkinteger(L, 2);
-    int numChannels = luaL_checkinteger(L, 3);
-    int bitsPerSample = luaL_optinteger(L, 4,16);
+    int sampleRate = (int)luaL_checkinteger(L, 2);
+    int numChannels = (int)luaL_checkinteger(L, 3);
+    int bitsPerSample = (int)luaL_optinteger(L, 4,16);
     float quality = luaL_optnumber(L, 5,0.5); //Balanced
 
     gmicrophone_Error error;
