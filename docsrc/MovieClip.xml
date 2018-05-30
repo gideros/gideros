@@ -77,8 +77,9 @@ call [[MovieClip:play]].<br />
   <method name="MovieClip:play" page="play" shortdesc="starts playing the movie clip" version="Gideros 2011.6"><![CDATA[<br />
 Starts playing the movie clip.<br />
 <br />
+]]>
     <parameter name="reverse" optional="false" type="boolean"><![CDATA[indicates to play backwards]]></parameter>
-]]></method>
+</method>
   <method name="MovieClip:stop" page="stop" shortdesc="stops playing the movie clip" version="Gideros 2011.6"><![CDATA[<br />
 Stops playing the movie clip.<br />
 <br />

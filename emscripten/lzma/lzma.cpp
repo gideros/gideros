@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     	    if (res == SZ_OK)
     	    {
     	        //Byte header;
-    	    	unsigned propsSize = LZMA_PROPS_SIZE;
+    	    	SizeT propsSize = LZMA_PROPS_SIZE;
     	    	Byte encProps[propsSize+8];
     	    	for (int k=0;k<8;k++)
     	    		encProps[propsSize+k]=0xFF;
