@@ -118,5 +118,11 @@
       <Filter>Theora</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\oggbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\analysis.c">
+      <Filter>Vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\vorbisenc.c">
+      <Filter>Vorbis</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

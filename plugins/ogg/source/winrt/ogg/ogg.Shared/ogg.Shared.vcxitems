@@ -36,6 +36,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\quant.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\state.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\th_info.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\analysis.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\bitrate.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\block.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\codebook.c" />
@@ -53,6 +54,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\sharedbook.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\smallft.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\synthesis.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\vorbisenc.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\vorbisfile.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\window.c" />
   </ItemGroup>

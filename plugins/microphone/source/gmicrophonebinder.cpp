@@ -2,6 +2,7 @@
 #include "lua.h"
 #include "lauxlib.h"
 
+#undef interface
 #include <gaudio.h>
 #include <ggaudiomanager.h>
 #include "gmicrophone.h"
