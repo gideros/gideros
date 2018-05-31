@@ -26,6 +26,7 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.text.InputType;
+import android.net.Uri;
 
 import com.giderosmobile.android.player.*;
 import com.giderosmobile.androidtemplate.R;

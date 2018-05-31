@@ -6,6 +6,9 @@ import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.content.pm.PackageManager;
+import java.lang.ref.WeakReference;
+import android.Manifest;
 
 class GMicrophone {
 	private static GMicrophone sInstance;

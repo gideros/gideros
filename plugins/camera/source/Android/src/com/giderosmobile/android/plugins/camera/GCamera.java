@@ -39,6 +39,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
+import android.Manifest;
 
 public class GCamera {
 	private static WeakReference<Activity> sActivity;
