@@ -233,7 +233,7 @@
 			local t,pattern = {},urls.format("([^%s]+)", ",")
 			urls:gsub(pattern, function(s) t[#t+1] = s end)
 			if #t>0 then
-				local ITF=[[<intent-filter>
+				local IFT=[[<intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
