@@ -239,7 +239,7 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="%s" />
     </intent-filter>]]
-    			local IFE="<template name=\"AndroidManifest\" path=\"\"><replacelist wildcards=\"AndroidManifest.xml\"><append><orig><![CDATA[<!-- TAG:INTENT-FILTER-EXTRA -->]]></orig><by><![CDATA[%s]]></by></append></replacelist></template>"
+    			local IFE="<template name=\"AndroidManifest\" path=\"\"><replacelist wildcards=\"AndroidManifest.xml\"><append><orig><![CDATA[<!-- TAG:INTENT-FILTER-EXTRA -->]".."]></orig><by><![CDATA[%s]".."]></by></append></replacelist></template>"
     			local ifs=""
 				for i,v in ipairs(t) do ifs=ifs..IFT:format(v) end
 				if #ifs>0 then Export.callXml(IFE:format(ifs)) end

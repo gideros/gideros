@@ -68,6 +68,7 @@ if lfs.attributes(tools.."/"..buildVer,"mode")~="directory" or buildVer=="" then
 	Export.setProperty("export.androidTools",buildVer)
 end
 print("Android Build Tools:"..buildVer)
+local ap=require("Tools/export_android")
 	</lua>
 		<set key="project.package" value="[[[export.packageName]]]"/>
 		<set key="local.noSigning" value="//"/>
