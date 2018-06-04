@@ -148,7 +148,13 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp\"").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
         if (ctx->properties.html5_pack) {
-        	replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js']").toUtf8());
+			QString pext;
+#if 0
+			pext="lzma";
+#else
+			pext="png";
+#endif
+        	replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js.%1']").arg(pext).toUtf8());
         }
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
@@ -384,13 +390,14 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 			QDir old = QDir::current();
 			QDir::setCurrent(ctx->outputDir.path());
 			QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.js gideros.js."+pext);
-			QProcess::execute(quote(pack) + " -wrapper -i gideros.asm.js gideros.asm.js."+pext);
+			QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.asm.js gideros.asm.js."+pext);
 			QDir::setCurrent(old.path());
 		    ctx->outputDir.remove("lzma.js");
 	   }
 	   else
 	   {
 		   ctx->outputDir.remove("jzptool.js");
+		    ctx->outputDir.remove("lzma.js");
 	   }
 	   if (ctx->properties.html5_fbinstant) {
 		   ctx->outputDir.remove("../gideros.html.symbols");

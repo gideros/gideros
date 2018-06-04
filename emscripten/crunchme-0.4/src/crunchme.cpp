@@ -491,6 +491,15 @@ int main(int argc, char **argv)
                 }
                 if (failed)
                     cerr << "Error writing to output file." << endl;
+                if (wrapper&&!failed) {
+                	cout << "Writing wrapper" << endl;
+                    ofstream outFile(inName, ios_base::out );
+                    if (outFile.fail())
+                        cerr << "Unable to open file \"" << inName << "\"." << endl;
+                    outFile << "JPZLoad(\"" << outName << "\",eval);" << endl;
+                    failed = outFile.fail();
+                    outFile.close();
+                }
             	return 0;
             }
             unsigned char *strBuf = (unsigned char*) malloc(encSize * 2);
@@ -594,15 +603,6 @@ int main(int argc, char **argv)
                             outFile.write((char*)sfxBuf, encSize);
                             failed = outFile.fail();
                             outFile.close();
-                            if (wrapper&&!failed) {
-                            	cout << "Writing wrapper" << endl;
-                                ofstream outFile(inName, ios_base::out );
-                                if (outFile.fail())
-                                    cerr << "Unable to open file \"" << inName << "\"." << endl;
-                                outFile << "JPZLoad(\"" << outName << "\",eval);" << endl;
-                                failed = outFile.fail();
-                                outFile.close();
-                            }
                         }
                         else
                         {

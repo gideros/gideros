@@ -52,7 +52,7 @@ img.onload = function()
     var bb;
     {
     	var w= ctx.getImageData(0, 0, canv.width, canv.height).data;
-        u=new Uint8Array(3*(w.length/4));
+        var u=new Uint8Array(3*(w.length/4));
         for (k = 0, ki = 0; k < w.length; k ++)
         {
         	u[ki++]=w[k++];
@@ -108,12 +108,12 @@ JPZLoad=function (fl,ev)
 	JPZConvert(fl,function (code)
 	{
 		 setTimeout(function() { 
-			 ev(code)
+			 ev(code);
 			 if (typeof JZPLoaded[fl] =="function") {
 					 JZPLoaded[fl]();
 			 }
-		},1)
-	})
+		},1);
+	});
 }
 
 JPZMALoad=function (fl,ev)
