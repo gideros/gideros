@@ -13,6 +13,29 @@ function player.getSignedPlayerInfoAsync(metadata)
     Module.GiderosJSEvent("FBInstantGSPIA",]]..contextid..[[,0,err.code);
   })]])
 end
+
+-- added by sinistersoft
+function player.canSubscribeBotAsync(cb) 
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval([[FBInstant.player.canSubscribeBotAsync().then(function () {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
+  })]])
+end
+
+-- added by sinistersoft
+function player.subscribeBotAsync(cb) 
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval([[FBInstant.player.subscribeBotAsync().then(function () {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
+  })]])
+end
+
 function player.getName() return JS.eval([[FBInstant.player.getName()]]) end
 function player.getPhoto() return JS.eval([[FBInstant.player.getPhoto()]]) end
 function player.getDataAsync(keys,cb)
@@ -226,6 +249,30 @@ function FBInstant.switchGameAsync(gameid,cb)
     Module.GiderosJSEvent("FBInstantGEA",]]..contextid..[[,0,e.code);
   })]])
 end
+
+-- added by sinistersoft
+function FBInstant.canCreateShortcutAsync(cb) 
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval([[FBInstant.canCreateShortcutAsync().then(function () {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
+  })]])
+end
+
+-- added by sinistersoft
+function FBInstant.createShortcutAsync(cb) 
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval([[FBInstant.createShortcutAsync().then(function () {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
+  })]])
+end
+
+
 function FBInstant.quit() return JS.eval([[FBInstant.quit()]]) end
 function FBInstant.logEvent(name,val,props) return JS.eval("FBInstant.logEvent('"..name.."',"..val..","..json.encode(props)..");") end
 function FBInstant.onPause(f) onPause_=f end
