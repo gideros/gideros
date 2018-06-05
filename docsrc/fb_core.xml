@@ -415,6 +415,28 @@ FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 			end
 		end
 	end)
+	
+-- Most useful of all:
+
+-- Retrieve a set of connected player leaderboard entries, ordered by score ranking in the leaderboard.	
+-- parameter: count number The number of entries to attempt to fetch from the leaderboard. Defaults to 10 if not specified. Up to a maximum of 100 entries may be fetched per query.
+-- parameter: offset number The offset from the top of the leaderboard that entries will be fetched from.
+	result:getConnectedPlayerEntriesAsync(10,0,function(self,result,entries)
+		print(self,result,entries)
+		for loop=1,#entries do
+			local e=entries[loop].entry
+			print("at entry",loop)
+			for key,val in pairs(e) do
+				print(key,val)
+				if key=="player" then
+					for key2,val2 in pairs(val) do
+						print(" ",key2,val2)
+					end
+				end
+			end
+		end
+	end)
+	
 end)
 <br/>]]></example>
 <example name="Example 3 - global leaderboard"><![CDATA[<br />
