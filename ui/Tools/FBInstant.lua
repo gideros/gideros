@@ -18,8 +18,8 @@ end
 function player.canSubscribeBotAsync(cb) 
   contextid=contextid+1
   contexts[contextid]=cb
-  JS.eval([[FBInstant.player.canSubscribeBotAsync().then(function () {
-    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  JS.eval([[FBInstant.player.canSubscribeBotAsync().then(function (can) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,can?1:0,"");
   },function (err) {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
   })]])
@@ -254,8 +254,8 @@ end
 function FBInstant.canCreateShortcutAsync(cb) 
   contextid=contextid+1
   contexts[contextid]=cb
-  JS.eval([[FBInstant.canCreateShortcutAsync().then(function () {
-    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  JS.eval([[FBInstant.canCreateShortcutAsync().then(function (can) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,can?1:0,"");
   },function (err) {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
   })]])
@@ -396,8 +396,8 @@ end
 function FBInstant.checkCanPlayerMatchAsync(cb) 
   contextid=contextid+1
   contexts[contextid]=cb
-  JS.eval([[FBInstant.checkCanPlayerMatchAsync().then(function () {
-    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  JS.eval([[FBInstant.checkCanPlayerMatchAsync().then(function (can) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,can?1:0,"");
   },function (err) {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
   })]])
