@@ -1,6 +1,7 @@
 <plugin
  name="Microphone"
  description="Providing microphone and recording capabilities">
+<property name="microUsageDesc" type="string" title="Microphone usage description (iOS)" default="This app needs to access your microphone"/>
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
@@ -39,6 +40,7 @@
    <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
+iOSProject.InfoPlist.NSMicrophoneUsageDescription=Export.getProperty("plugin.microUsageDesc")
 iOSProject.addSources({ "Plugins/libmicrophone.ios.a"  }, "GroupPlugins", "ios")
 iOSProject.addSources({ "libmicrophone.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()

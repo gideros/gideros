@@ -248,6 +248,9 @@
 	]]></lua>
  </target>
  <target name="iOS">
+	<lua>
+		<![CDATA[local iOSProject=require("Tools/export_ios")]]>
+	</lua>
     <if condition="[[[plugin.reqPhoneOnly]]]">
    	<template name="Project" path="">
         	<replacelist wildcards="project.pbxproj">
