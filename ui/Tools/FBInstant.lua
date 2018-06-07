@@ -388,8 +388,7 @@ function FBInstant.matchPlayerAsync(room,switch,cb)
   contextid=contextid+1
   contexts[contextid]=cb or switch
   if not cb then switch=false end
-  local switchT
-  JS.eval("FBInstant.matchPlayerAsync('"..room..","..tostring(switch)..,[[').then(function () {
+  JS.eval("FBInstant.matchPlayerAsync('"..room.."',"..tostring(switch)..[[).then(function () {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
   },function (err) {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
