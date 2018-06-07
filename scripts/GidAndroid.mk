@@ -1,7 +1,7 @@
 #ANDROID
-ANDROID_ARCHS=armeabi armeabi-v7a x86 mips mips64 x86_64 arm64-v8a
+ANDROID_ARCHS=armeabi-v7a x86 x86_64 arm64-v8a
 
-android.clean: androidlibs.clean androidso.clean
+android.clean: androidlibs.clean androidso.clean androidplugins.clean
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) clean
 
 android: androidlibs androidso androidplugins
@@ -47,6 +47,8 @@ androidso: versioning androidso.prep
 
 androidplugins: $(addsuffix .androidplugin,$(PLUGINS_ANDROID))
 
+androidplugins.clean: $(addsuffix .androidplugin.clean,$(PLUGINS_ANDROID))
+
 androidso.prep:
 
 androidso.clean:
@@ -90,4 +92,7 @@ androidlibs.install: androidlibs
 	cp -r src $(CURDIR)/$(RELEASE)/All\ Plugins/$(notdir $*)/bin/Android/; \
 	fi;
 
+%.androidplugin.clean:
+	@cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi; for l in $(ANDROID_ARCHS); do rm -rf libs/$$l/*.so; done; rm -rf obj
+	@rm -rf $(RELEASE)/All\ Plugins/$(notdir $*)/bin/Android
 		
