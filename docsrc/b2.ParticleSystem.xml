@@ -11,6 +11,7 @@
   <constant name="b2.ParticleSystem.FLAG_COLOR_MIXING" page="FLAG_COLOR_MIXING" value="256" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
   <method name="b2.ParticleSystem:setTexture" page="setTexture" shortdesc="set texture to particles" version="Gideros 2015.06.30"><![CDATA[Sets texture to particles in this system]]>
     <parameter name="texture" optional="false" type="Texture"><![CDATA[texture to use for particles]]></parameter>
+    <parameter name="size" optional="true" type="Number"><![CDATA[Size of particle. Default the same size as physics particle size. Use a larger size to let particles visuals overlap each other.]]></parameter>    
   </method>
   <method name="b2.ParticleSystem:createParticle" page="createParticle" shortdesc="create new particle" version="Gideros 2015.06.30"><![CDATA[Creates new particle.
 Accepts table with possible keys:
