@@ -485,7 +485,7 @@ function FBInstant.Leaderboard:getEntriesAsync(count,offset,cb)
     Module.GiderosJSEvent("FBInstantLdbGEA",]]..contextid..[[,0,err.code);
   })]])
 end
-function FBInstant.Leaderboard:getConnectPlayerEntriesAsync(count,offset,cb)
+function FBInstant.Leaderboard:getConnectedPlayerEntriesAsync(count,offset,cb)
   count=count or 10
   offset=offset or 0
   contextid=contextid+1
