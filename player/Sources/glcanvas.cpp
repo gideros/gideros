@@ -256,6 +256,7 @@ GLCanvas::GLCanvas(QWidget *parent) :
 
     //setUpdateBehavior(QOpenGLWidget::PartialUpdate); // Prevent QT from calling glClear by itself
     isPlayer_ = true;
+    exportedApp_=false;
 
 	/*
 	 startTimer(1);
