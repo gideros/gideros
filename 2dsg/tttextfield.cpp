@@ -142,6 +142,7 @@ void TTTextField::createGraphics()
     miny_ = miny/scaley;
     maxx_ = maxx/scalex;
     maxy_ = maxy/scaley;
+    styleFlags_=l.styleFlags;
 }
 
 void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
@@ -200,6 +201,8 @@ void TTTextField::setTextColor(unsigned int color)
 	int g = (textColor_ >> 8) & 0xff;
 	int b = textColor_ & 0xff;
 	graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, 1);
+    if (styleFlags_&TEXTSTYLEFLAG_COLOR)
+        createGraphics();
 }
 
 unsigned int TTTextField::textColor() const

@@ -271,7 +271,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 
     l = layoutText(text, layout);
 
-    Dib dib(application_, l.w*scalex + 2, l.h*scaley + 2, true);
+    Dib dib(application_, (l.w+2*outlineSize_)*scalex + 2, (l.h+2*outlineSize_)*scaley + 2, true);
 	unsigned char rgba[] = { 255, 255, 255, 0 };
 	dib.fill(rgba);
 
@@ -282,7 +282,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 		wtext.resize(wsize);
 		utf8_to_wchar(c.text.c_str(), c.text.size(), &wtext[0], wsize, 0);
 
-        int x = 1 + c.dx*scalex, y = 1 + c.dy*scaley;
+        int x = 1 + (c.dx+outlineSize_)*scalex, y = 1 + (c.dy+outlineSize_)*scaley;
 		FT_UInt prev = 0;
 		FT_Face prevFace = NULL;
         for (size_t i = 0; i < wsize; ++i) {
@@ -321,7 +321,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 				FT_Bitmap *bitmap=NULL;
 				FT_Glyph glyph=nullptr;
 				if (stroker) {
-					if (FT_Get_Glyph(g.face->glyph, &glyph))
+                    if (FT_Get_Glyph(face->glyph, &glyph))
 						continue;
 					if (FT_Glyph_StrokeBorder(&glyph, stroker, false, true))
 					{
@@ -351,9 +351,9 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 					bitmap=&(bitmapGlyph->bitmap);
 				}
 				else {
-					if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
+                    if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
 						continue;
-					 bitmap = &(g.face->glyph->bitmap);
+                     bitmap = &(face->glyph->bitmap);
 				}
 
 				width = std::min(width, (int) bitmap->width);
@@ -370,7 +370,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 				g.bitmap = (unsigned char *) malloc(g.height * g.pitch);
 				memcpy(g.bitmap, bitmap->buffer, g.height * g.pitch);
                 glyphCache_[wtext[i]] = g;
-    			if (glyph) FT_Done_Glyph(glyph);
+                if (glyph) FT_Done_Glyph(glyph);
 			}
 
 			if (prevFace == g.face)
@@ -416,13 +416,13 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 		dib.premultiplyAlpha();
 
 	if (pminx)
-        *pminx = l.x*scalex;
+        *pminx = (l.x-outlineSize_)*scalex;
 	if (pminy)
-        *pminy = l.y*scaley;
+        *pminy = (l.y-outlineSize_)*scaley;
 	if (pmaxx)
-        *pmaxx = (l.x + l.w)*scalex;
+        *pmaxx = (l.x + l.w + 2*outlineSize_)*scalex;
 	if (pmaxy)
-        *pmaxy = (l.y + l.h)*scaley;
+        *pmaxy = (l.y + l.h + 2*outlineSize_)*scaley;
 
 	return dib;
 }

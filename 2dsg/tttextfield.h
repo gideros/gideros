@@ -44,6 +44,7 @@ private:
 	unsigned int textColor_;
 	float minx_, miny_, maxx_, maxy_;
     int sminx, sminy, smaxx, smaxy;
+    int styleFlags_;
 };
 
 
