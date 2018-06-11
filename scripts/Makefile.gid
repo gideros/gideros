@@ -6,7 +6,7 @@ JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
 #DEFS
-PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit
+PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun
 PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr
 
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera steam
