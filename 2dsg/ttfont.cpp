@@ -129,7 +129,7 @@ void TTFont::constructor(std::vector<FontSpec> filenames, float size,
 	if (outline>0)
 	{
 		FT_Stroker_New(FT_Library_Singleton::instance(), &stroker);
-		FT_Stroker_Set(stroker, (FT_Fixed)(outline * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+		FT_Stroker_Set(stroker, (FT_Fixed)(outline * 64 * (scalex+scaley)/2), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
 	}
 }
 
@@ -143,6 +143,8 @@ void TTFont::checkLogicalScale() {
 
 	if ((scalex != currentLogicalScaleX_)
 			|| (scaley != currentLogicalScaleY_)) {
+	    if (stroker)
+			FT_Stroker_Set(stroker, (FT_Fixed)(outlineSize_ * 64 * (scalex+scaley)/2), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
 		for (std::map<wchar32_t, GlyphData>::iterator it = glyphCache_.begin();
 				it != glyphCache_.end(); it++) {
 			free(it->second.bitmap);

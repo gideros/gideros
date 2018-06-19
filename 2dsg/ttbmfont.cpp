@@ -247,11 +247,6 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	defaultSize_ = size;
 	outlineSize_ = outline;
 	stroker=NULL;
-	if (outline>0)
-	{
-		FT_Stroker_New(FT_Library_Singleton::instance(), &stroker);
-		FT_Stroker_Set(stroker, (FT_Fixed)(outline * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
-	}
 	FT_Error error;
 
 	float scalex = application_->getLogicalScaleX();
@@ -269,6 +264,12 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
         scaley*=scaleRatio;
         scalex*=scaleRatio;
     }
+
+	if (outline>0)
+	{
+		FT_Stroker_New(FT_Library_Singleton::instance(), &stroker);
+		FT_Stroker_Set(stroker, (FT_Fixed)(outline * 64 * (scalex+scaley)/2), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+	}
 
 
 	fontFaces_.resize(filenames.size());
@@ -506,6 +507,8 @@ void TTBMFont::checkLogicalScale() {
 	float RESOLUTION = 72;
 	if ((fabs(scalex-currentLogicalScaleX_)>0.01)
 			|| (fabs(scaley-currentLogicalScaleY_)>0.01)) {
+	    if (stroker)
+			FT_Stroker_Set(stroker, (FT_Fixed)(outlineSize_ * 64 * (scalex+scaley)/2), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
 		sizescalex_ = 1 / scalex;
 		sizescaley_ = 1 / scaley;
 
