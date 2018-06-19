@@ -16,6 +16,7 @@ private:
 	static int dispatchEvent(lua_State* L);
 	static int removeEventListener(lua_State* L);
 	static int hasEventListener(lua_State* L);
+	static int removeAllListeners(lua_State* L);
 };
 
 #endif

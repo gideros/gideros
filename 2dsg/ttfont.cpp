@@ -469,7 +469,7 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 
 	wtext.push_back(0);
 
-	int x = 0;
+	float x = 0;
 	FT_Face prevFace = NULL;
 	FT_UInt prev = 0;
 	for (int i = 0; i < size; ++i) {
@@ -488,7 +488,7 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 
 		x += face->glyph->advance.x >> 6;
 
-		x += (int) (letterSpacing * scalex);
+		x += (letterSpacing * scalex);
 	}
 
     if (prevFace)

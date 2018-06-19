@@ -43,6 +43,10 @@ Checks if the `EventDispatcher` object has a event listener registered for the s
     <parameter name="type" optional="false" type="string"><![CDATA[The type of event.]]></parameter>
     <return type="bool"><![CDATA[A value of `true` if a listener of the specified type is registered; `false` otherwise.]]></return>
   </method>
+  <method name="EventDispatcher:removeAllListeners" page="removeAllListeners" shortdesc="remove all listeners" version="Gideros 2018.6.1"><![CDATA[<br />
+Removes all attached event listeners.<br />
+]]>
+  </method>
   <method name="EventDispatcher.new" page="new" shortdesc="creates a new EventDispatcher object" version="Gideros 2011.6"><![CDATA[Creates a new EventDispatcher object]]></method>
   <event name="Event.APPLICATION_START" page="Event.APPLICATION_START" value="applicationStart" version="Gideros 2011.6"><![CDATA[This event is dispatched when application is started]]></event>
   <event name="Event.APPLICATION_EXIT" page="Event.APPLICATION_EXIT" value="applicationExit" version="Gideros 2011.6"><![CDATA[This event is dispatched when application is closed]]></event>

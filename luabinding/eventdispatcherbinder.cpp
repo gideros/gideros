@@ -29,6 +29,7 @@ EventDispatcherBinder::EventDispatcherBinder(lua_State* L)
 		{"removeEventListener", EventDispatcherBinder::removeEventListener},
 		{"dispatchEvent", EventDispatcherBinder::dispatchEvent},
 		{"hasEventListener", EventDispatcherBinder::hasEventListener},
+		{"removeAllListeners", EventDispatcherBinder::removeAllListeners},
 		{NULL, NULL},
 	};
 
@@ -1309,4 +1310,16 @@ int EventDispatcherBinder::hasEventListener(lua_State* L)
 	}
 
 	return 1;
+}
+
+int EventDispatcherBinder::removeAllListeners(lua_State* L)
+{
+	StackChecker checker(L, "EventDispatcherBinder::removeAllListener", 0);
+
+	Binder binder(L);
+	EventDispatcher* eventDispatcher = static_cast<EventDispatcher*>(binder.getInstance("EventDispatcher"));
+
+	eventDispatcher->removeEventListeners();
+
+	return 0;
 }

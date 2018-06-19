@@ -826,7 +826,7 @@ float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 
 		x += textureGlyph.advancex >> 6;
 
-		x += (int) (letterSpacing / sizescalex_);
+		x += (letterSpacing / sizescalex_);
 	}
 
 	x += kerning(prev, wtext[size]) >> 6;
