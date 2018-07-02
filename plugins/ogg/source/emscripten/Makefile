@@ -1,4 +1,4 @@
-TARGET=ogg
+TARGET=Ogg
 INCS= ../../../Sdk/include
 INCS += ../../../Sdk/include/gideros
 INCS += ../../../2dsg

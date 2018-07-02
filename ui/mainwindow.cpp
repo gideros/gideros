@@ -220,14 +220,14 @@ MainWindow::MainWindow(QWidget *parent)
 		outputWidget_->setMidLineWidth(0);
 		outputWidget_->setFrameShape(QFrame::NoFrame);
 		outputWidget_->setFrameShadow(QFrame::Plain);
-	}
+    }
 
     outputDock_ = new QDockWidget(tr("Output"), this);
     outputDock_->setAllowedAreas(Qt::BottomDockWidgetArea);
     outputDock_->setObjectName("output");
     outputDock_->setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
     outputDock_->setWidget(outputContainer);
-	addDockWidget(Qt::BottomDockWidgetArea,outputDock_);
+    addDockWidget(Qt::BottomDockWidgetArea,outputDock_);
 
 	QDockWidget *dock;
 	previewWidget_ = new PreviewWidget;
@@ -235,7 +235,7 @@ MainWindow::MainWindow(QWidget *parent)
 	dock->setAllowedAreas(Qt::RightDockWidgetArea|Qt::LeftDockWidgetArea);
 	dock->setObjectName("preview");
 	dock->setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
-	dock->setWidget(previewWidget_);
+    dock->setWidget(previewWidget_);
 	addDockWidget(Qt::LeftDockWidgetArea,dock);
 
 	dock = new QDockWidget(tr("Library"), this);
@@ -1639,7 +1639,10 @@ void MainWindow::outputMouseDoubleClick(QMouseEvent* e)
 			TextEdit* textEdit = openFile(fileName);
 
 			if (textEdit)
+            {
 				textEdit->setCursorPosition(lineNumber - 1, 0);
+                textEdit->setFocusToEdit();
+            }
 
 			return;
 		}
@@ -1660,8 +1663,10 @@ void MainWindow::outputMouseDoubleClick(QMouseEvent* e)
 			{
 				TextEdit* textEdit = openFile(text.left(text.size() - 1));
 
-				if (textEdit)
+                if (textEdit) {
 					textEdit->setCursorPosition(line - 1, 0);
+                    textEdit->setFocusToEdit();
+                }
 //				printf("%s%d\n", qPrintable(text), line);
 				break;
 			}

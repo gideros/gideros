@@ -132,6 +132,9 @@ public class GCamera {
 			camera = Camera.open(camId);
 			if (camera!=null)
 			{
+				android.hardware.Camera.CameraInfo info =
+						new android.hardware.Camera.CameraInfo();
+				android.hardware.Camera.getCameraInfo(camId, info);
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					try {
 						GLES20.glGenTextures(1,camtex,0);
@@ -152,7 +155,11 @@ public class GCamera {
 						Camera.Parameters parameters = camera.getParameters();
 
 						if (camera.getParameters().getSupportedPreviewSizes() != null){
-							Camera.Size previewSize = getOptimalPreviewSize2(camera.getParameters().getSupportedPreviewSizes(), width, height);
+							int cw=width;
+							int ch=height;
+							if ((angle%180)!=(info.orientation%180)) { cw=height; ch=width; }
+							
+							Camera.Size previewSize = getOptimalPreviewSize2(camera.getParameters().getSupportedPreviewSizes(), cw, ch);
 							parameters.setPreviewSize(previewSize.width, previewSize.height);
 							dimret[0]=previewSize.width;
 							dimret[1]=previewSize.height;
@@ -177,9 +184,6 @@ public class GCamera {
 						e.printStackTrace();
 					}
 				}
-				android.hardware.Camera.CameraInfo info =
-						new android.hardware.Camera.CameraInfo();
-				android.hardware.Camera.getCameraInfo(camId, info);
 
 				if ((angle%180)!=(info.orientation%180)) { int c=dimret[0]; dimret[0]=dimret[1]; dimret[1]=c; }
 				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
@@ -196,33 +200,39 @@ public class GCamera {
 
 	static private Camera.Size getOptimalPreviewSize2(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
-        double targetRatio=(double)h / w;
+        double targetRatio=(double)w / h;
+        Log.i("CAMSEL","TGT W:"+w+" H:"+h+" A:"+targetRatio);
 
         if (sizes == null) return null;
 
         Camera.Size optimalSize = null;
-        double minDiff = Double.MAX_VALUE;
-
-        int targetHeight = h;
+        double szDiff = Double.MAX_VALUE;
+        double tolDiff = Double.MAX_VALUE;
 
         for (Camera.Size size : sizes) {
             double ratio = (double) size.width / size.height;
-            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-            if (Math.abs(size.height - targetHeight) < minDiff) {
+            Log.i("CAMSEL","CND W:"+size.width+" H:"+size.height+" A:"+ratio);
+            double tdiff=Math.abs(ratio - targetRatio);
+            if (tdiff>tolDiff) continue;
+            double sdiff=size.height*size.width-h*w;
+            if ((sdiff>=0)&&(sdiff<szDiff)) {
                 optimalSize = size;
-                minDiff = Math.abs(size.height - targetHeight);
+                tolDiff=tdiff;
+                szDiff=sdiff;
             }
         }
 
         if (optimalSize == null) {
-            minDiff = Double.MAX_VALUE;
+            szDiff = Double.MAX_VALUE;
             for (Camera.Size size : sizes) {
-                if (Math.abs(size.height - targetHeight) < minDiff) {
+                double sdiff=Math.abs(size.height*size.width-h*w);
+                if (sdiff<szDiff) {
                     optimalSize = size;
-                    minDiff = Math.abs(size.height - targetHeight);
+                    szDiff=sdiff;
                 }
             }
         }
+        Log.i("CAMSEL","OPT W:"+optimalSize.width+" H:"+optimalSize.height);
         return optimalSize;
     }
 	
