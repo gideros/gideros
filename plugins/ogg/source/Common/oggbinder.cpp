@@ -57,6 +57,7 @@ struct GGOggHandle {
 	double playstart;
 	int sampleRate;
 	int sampleSize;
+	int sampleMax;
 
 	//LUA
 	int tref;
@@ -102,6 +103,47 @@ static int _fseek64_wrap(G_FILE *f, ogg_int64_t off, int whence) {
 	if (f == NULL)
 		return (-1);
 	return g_fseek(f, off, whence);
+}
+
+static int sampleTell(GGOggHandle *handle) {
+	G_FILE *file=handle->file;
+	long cpos=g_ftell(file);
+	g_fseek(file,-(1<<17),SEEK_CUR); //More than max ogg page size
+	unsigned char *buff=(unsigned char *)malloc(1<<17);
+	size_t buffs=g_fread(buff,1,1<<17,file);
+	unsigned char *bufe=buff+buffs-27; //At least one ogg header
+	unsigned char *bufr=buff;
+	double gp=-1;
+	while (bufr<=bufe)
+	{
+		if ((bufr[0]!='O')||(bufr[1]!='g')||(bufr[2]!='g')||(bufr[3]!='S')||(bufr[4]!=0))
+		{
+			bufr++;
+			continue;
+		}
+	  ogg_int64_t granulepos=bufr[13]&(0xff);
+	  granulepos= (granulepos<<8)|(bufr[12]&0xff);
+	  granulepos= (granulepos<<8)|(bufr[11]&0xff);
+	  granulepos= (granulepos<<8)|(bufr[10]&0xff);
+	  granulepos= (granulepos<<8)|(bufr[9]&0xff);
+	  granulepos= (granulepos<<8)|(bufr[8]&0xff);
+	  granulepos= (granulepos<<8)|(bufr[7]&0xff);
+	  granulepos= (granulepos<<8)|(bufr[6]&0xff);
+	  int psn=(bufr[14] |
+	         (bufr[15]<<8) |
+	         (bufr[16]<<16) |
+	         (bufr[17]<<24));
+	  double gt=-1;
+	  if (handle->vorbis_p&&(psn==handle->vo.serialno))
+		  gt=vorbis_granule_time(&handle->vd,granulepos);
+	  if (handle->theora_p&&(psn==handle->to.serialno))
+		  gt=th_granule_time(&handle->td,granulepos);
+	  if (gt>gp) gp=gt;
+	  bufr+=27;
+	}
+	free(buff);
+	g_fseek(file,cpos,SEEK_SET);
+	return (gp>0)?(long int) (gp * handle->sampleRate):-1;
 }
 
 void gaudio_OggClose(g_id gid);
@@ -325,8 +367,12 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 
 	if (bitsPerSample)
 		*bitsPerSample = 16;
+	long cpos=g_ftell(file);
+	g_fseek(file,0,SEEK_END);
+	handle->sampleMax=sampleTell(handle);
+	g_fseek(file,cpos,SEEK_SET);
 	if (numSamples)
-		*numSamples = -1;
+		*numSamples=handle->sampleMax;
 	if (error)
 		*error = GAUDIO_NO_ERROR;
 
@@ -344,9 +390,11 @@ int gaudio_OggSeek(g_id gid, long int offset, int whence) {
 	GGOggHandle *handle = (GGOggHandle*) gid;
 	if (whence == SEEK_CUR)
 		offset += gaudio_OggTell(gid);
+	if (whence == SEEK_END)
+		offset+=((handle->sampleMax>0)?handle->sampleMax:0);
 
 	if (offset == 0) //Rewind, only case needed for looping
-			{
+	{
 		handle->audio_time = 0;
 		handle->videobuf_time = 0;
 		handle->video_granulepos = -1;
@@ -354,10 +402,23 @@ int gaudio_OggSeek(g_id gid, long int offset, int whence) {
 		return g_fseek(handle->file, 0, SEEK_SET);
 	}
 
-	double tm = ((double) offset) / handle->sampleRate;
-	//TODO bisect search to find granule pos
+	g_fseek(handle->file,0,SEEK_END);
+	long re=g_ftell(handle->file);
+	long rs=0;
+	int cgp=-1;
+	while (true) {
+		long rm=(rs+re)/2;
+		g_fseek(handle->file,rm,SEEK_SET);
+		int gp=sampleTell(handle);
+		if ((gp==cgp)||(gp==offset)) break;
+		cgp=gp;
+		if (gp>offset)
+			re=rm;
+		else
+			rs=rm;
+	}
 
-	return -1;
+	return cgp;
 }
 
 void gaudio_OggFormat(g_id gid, int *csr, int *chn) {
