@@ -105,45 +105,53 @@ static int _fseek64_wrap(G_FILE *f, ogg_int64_t off, int whence) {
 	return g_fseek(f, off, whence);
 }
 
-static int sampleTell(GGOggHandle *handle) {
-	G_FILE *file=handle->file;
-	long cpos=g_ftell(file);
-	g_fseek(file,-(1<<17),SEEK_CUR); //More than max ogg page size
-	unsigned char *buff=(unsigned char *)malloc(1<<17);
-	size_t buffs=g_fread(buff,1,1<<17,file);
-	unsigned char *bufe=buff+buffs-27; //At least one ogg header
-	unsigned char *bufr=buff;
-	double gp=-1;
-	while (bufr<=bufe)
-	{
-		if ((bufr[0]!='O')||(bufr[1]!='g')||(bufr[2]!='g')||(bufr[3]!='S')||(bufr[4]!=0))
-		{
+static int sampleTell(GGOggHandle *handle,ogg_int64_t *agr,double *atm,ogg_int64_t *vgr,double *vtm) {
+	G_FILE *file = handle->file;
+	long cpos = g_ftell(file);
+	long rewind=1<<17;
+	if (cpos<rewind) rewind=cpos;
+	g_fseek(file, cpos-rewind, SEEK_SET); //More than max ogg page size
+	unsigned char *buff = (unsigned char *) malloc(rewind);
+	size_t buffs = g_fread(buff, 1, rewind, file);
+	unsigned char *bufe = buff + buffs - 27; //At least one ogg header
+	unsigned char *bufr = buff;
+	double gp = -1;
+	while (bufr <= bufe) {
+		if ((bufr[0] != 'O') || (bufr[1] != 'g') || (bufr[2] != 'g')
+				|| (bufr[3] != 'S') || (bufr[4] != 0)) {
 			bufr++;
 			continue;
 		}
-	  ogg_int64_t granulepos=bufr[13]&(0xff);
-	  granulepos= (granulepos<<8)|(bufr[12]&0xff);
-	  granulepos= (granulepos<<8)|(bufr[11]&0xff);
-	  granulepos= (granulepos<<8)|(bufr[10]&0xff);
-	  granulepos= (granulepos<<8)|(bufr[9]&0xff);
-	  granulepos= (granulepos<<8)|(bufr[8]&0xff);
-	  granulepos= (granulepos<<8)|(bufr[7]&0xff);
-	  granulepos= (granulepos<<8)|(bufr[6]&0xff);
-	  int psn=(bufr[14] |
-	         (bufr[15]<<8) |
-	         (bufr[16]<<16) |
-	         (bufr[17]<<24));
-	  double gt=-1;
-	  if (handle->vorbis_p&&(psn==handle->vo.serialno))
-		  gt=vorbis_granule_time(&handle->vd,granulepos);
-	  if (handle->theora_p&&(psn==handle->to.serialno))
-		  gt=th_granule_time(&handle->td,granulepos);
-	  if (gt>gp) gp=gt;
-	  bufr+=27;
+		ogg_int64_t granulepos = bufr[13] & (0xff);
+		granulepos = (granulepos << 8) | (bufr[12] & 0xff);
+		granulepos = (granulepos << 8) | (bufr[11] & 0xff);
+		granulepos = (granulepos << 8) | (bufr[10] & 0xff);
+		granulepos = (granulepos << 8) | (bufr[9] & 0xff);
+		granulepos = (granulepos << 8) | (bufr[8] & 0xff);
+		granulepos = (granulepos << 8) | (bufr[7] & 0xff);
+		granulepos = (granulepos << 8) | (bufr[6] & 0xff);
+		int psn = (bufr[14] | (bufr[15] << 8) | (bufr[16] << 16)
+				| (bufr[17] << 24));
+		double gt = -1;
+		if (handle->vorbis_p && (psn == handle->vo.serialno))
+		{
+			gt = vorbis_granule_time(&handle->vd, granulepos);
+			if (agr) *agr=granulepos;
+			if (atm) *atm=gt;
+		}
+		if (handle->theora_p && (psn == handle->to.serialno))
+		{
+			gt = th_granule_time(&handle->td, granulepos);
+			if (vgr) *vgr=granulepos;
+			if (vtm) *vtm=gt;
+		}
+		if (gt > gp)
+			gp = gt;
+		bufr += 27;
 	}
 	free(buff);
-	g_fseek(file,cpos,SEEK_SET);
-	return (gp>0)?(long int) (gp * handle->sampleRate):-1;
+	g_fseek(file, cpos, SEEK_SET);
+	return (gp > 0) ? (long int) (gp * handle->sampleRate) : -1;
 }
 
 void gaudio_OggClose(g_id gid);
@@ -367,12 +375,12 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 
 	if (bitsPerSample)
 		*bitsPerSample = 16;
-	long cpos=g_ftell(file);
-	g_fseek(file,0,SEEK_END);
-	handle->sampleMax=sampleTell(handle);
-	g_fseek(file,cpos,SEEK_SET);
+	long cpos = g_ftell(file);
+	g_fseek(file, 0, SEEK_END);
+	handle->sampleMax = sampleTell(handle,NULL,NULL,NULL,NULL);
+	g_fseek(file, cpos, SEEK_SET);
 	if (numSamples)
-		*numSamples=handle->sampleMax;
+		*numSamples = handle->sampleMax;
 	if (error)
 		*error = GAUDIO_NO_ERROR;
 
@@ -391,32 +399,43 @@ int gaudio_OggSeek(g_id gid, long int offset, int whence) {
 	if (whence == SEEK_CUR)
 		offset += gaudio_OggTell(gid);
 	if (whence == SEEK_END)
-		offset+=((handle->sampleMax>0)?handle->sampleMax:0);
+		offset += ((handle->sampleMax > 0) ? handle->sampleMax : 0);
 
+	int cgp = -1;
+	handle->audio_time = 0;
+	handle->videobuf_time = 0;
+	handle->video_granulepos = -1;
+	handle->audio_granulepos = 0; /* time position of last sample */
 	if (offset == 0) //Rewind, only case needed for looping
 	{
-		handle->audio_time = 0;
-		handle->videobuf_time = 0;
-		handle->video_granulepos = -1;
-		handle->audio_granulepos = 0; /* time position of last sample */
-		return g_fseek(handle->file, 0, SEEK_SET);
+		cgp = g_fseek(handle->file, 0, SEEK_SET);
+	} else {
+		g_fseek(handle->file, 0, SEEK_END);
+		long re = g_ftell(handle->file);
+		long rs = 0;
+		double stime=0;
+		ogg_int64_t sgrn=-1;
+		while (true) {
+			long rm = (rs + re) / 2;
+			g_fseek(handle->file, rm, SEEK_SET);
+			int gp = sampleTell(handle,&handle->audio_granulepos,&handle->audio_time,&handle->video_granulepos,&handle->videobuf_time);
+			if ((gp == cgp) || (gp == offset))
+				break;
+			cgp = gp;
+			if (gp > offset)
+				re = rm;
+			else
+				rs = rm;
+		}
 	}
 
-	g_fseek(handle->file,0,SEEK_END);
-	long re=g_ftell(handle->file);
-	long rs=0;
-	int cgp=-1;
-	while (true) {
-		long rm=(rs+re)/2;
-		g_fseek(handle->file,rm,SEEK_SET);
-		int gp=sampleTell(handle);
-		if ((gp==cgp)||(gp==offset)) break;
-		cgp=gp;
-		if (gp>offset)
-			re=rm;
-		else
-			rs=rm;
+	if (handle->vorbis_p)
+	{
+		vorbis_synthesis_restart(&handle->vd);
+	    ogg_stream_reset_serialno(&handle->vo,handle->vo.serialno);
 	}
+	if (handle->theora_p)
+	    ogg_stream_reset_serialno(&handle->to,handle->to.serialno);
 
 	return cgp;
 }
@@ -646,7 +665,8 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	handle->bytesPerSample = ((bitsPerSample + 7) / 8) * numChannels;
 
 	vorbis_info_init(&handle->vi);
-	int ret = vorbis_encode_init_vbr(&handle->vi, numChannels, sampleRate, quality);
+	int ret = vorbis_encode_init_vbr(&handle->vi, numChannels, sampleRate,
+			quality);
 
 	/* do not continue if setup failed; this can happen if we ask for a
 	 mode that libVorbis does not support (eg, too low a bitrate, etc,
