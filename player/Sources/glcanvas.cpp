@@ -1291,8 +1291,12 @@ bool GLCanvas::event(QEvent *event){
         return true;
     }
     else if(event->type() == QEvent::KeyPress){
-        keyPressEvent((QKeyEvent*) event);
+        //keyPressEvent((QKeyEvent*) event);
         return true;
+    }
+    else if(event->type() == QEvent::ShortcutOverride){
+        keyPressEvent((QKeyEvent*) event);
+        return false;
     }
     else if(event->type() == QEvent::KeyRelease){
         keyReleaseEvent((QKeyEvent*) event);
