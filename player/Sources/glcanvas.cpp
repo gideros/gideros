@@ -239,9 +239,7 @@ GLCanvas::GLCanvas(QWidget *parent) :
 		QOpenGLWidget(parent) {
 	setAttribute(Qt::WA_AcceptTouchEvents);
     for( int i=1; i<=4; ++i )
-    {
         mouseButtonPressed_[i] = false;
-    }
     setMouseTracking(true);
 	//setFocusPolicy(Qt::WheelFocus);
 
@@ -1335,6 +1333,8 @@ bool GLCanvas::event(QEvent *event){
             application_->broadcastEvent(&event, &status);
             checkLuaError(status);
         }
+        for( int i=1; i<=4; ++i )
+            mouseButtonPressed_[i] = false;
     }
     else if(event->type() == QEvent::WindowBlocked){
         if(running_){
@@ -1344,6 +1344,8 @@ bool GLCanvas::event(QEvent *event){
             application_->broadcastEvent(&event, &status);
             checkLuaError(status);
         }
+        for( int i=1; i<=4; ++i )
+            mouseButtonPressed_[i] = false;
     }
     return QOpenGLWidget::event(event);
 }
