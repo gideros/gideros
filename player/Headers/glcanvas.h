@@ -41,6 +41,7 @@ public:
     //std::set<std::string> accessedResourceFiles;
     std::set<std::string> allResourceFiles;
     static QString appPackage;
+    static bool EnableVSYNC;
 
 private slots:
 	void onTimer();

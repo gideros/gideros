@@ -63,6 +63,7 @@ int main(int argc, char *argv[]){
     QSettings settings(Constants::SETTINGS_FOLDER + "/" + Constants::PLAYER_SETTINGS_FILE, QSettings::IniFormat);
     int fps=settings.value("fps",60).toInt();
     int vsync=settings.value("vsync",0).toInt();
+    GLCanvas::EnableVSYNC=vsync;
     QSurfaceFormat formatGL;
 	formatGL.setSwapInterval(vsync?(60/fps):0);
 	formatGL.setStencilBufferSize(8);

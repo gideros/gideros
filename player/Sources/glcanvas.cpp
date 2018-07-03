@@ -195,6 +195,7 @@ static int __mkdir(const char* path) {
 
 static Server* g_server = NULL;
 QString GLCanvas::appPackage;
+bool GLCanvas::EnableVSYNC=false;
 
 static void printToServer(const char* str, int len, void* data) {
 	unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
@@ -388,6 +389,8 @@ void GLCanvas::initializeGL() {
 		sync_=getSwap();
 
 	}
+	if (!EnableVSYNC) //If VSYNC wasn't requested, use standard timed method
+		sync_=0;
 	application_->initialize();
 	setupApplicationProperties();
 }

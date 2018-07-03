@@ -82,6 +82,7 @@ int main(int argc, char *argv[]){
         QCoreApplication::setApplicationName(Constants::DESK_APPLICATION_NAME);
     }
 
+    GLCanvas::EnableVSYNC=vsync;
     QSurfaceFormat formatGL;
 	formatGL.setSwapInterval(vsync?(60/fps):0);
 	formatGL.setStencilBufferSize(8);
