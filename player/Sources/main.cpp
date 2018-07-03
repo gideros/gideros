@@ -60,7 +60,7 @@ int main(int argc, char *argv[]){
     QCoreApplication::setApplicationName(Constants::PLAYER_APPLICATION_NAME);
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
-    QSettings settings(Constants::SETTINGS_FOLDER + "/" + Constants::PLAYER_SETTINGS_FILE, QSettings::IniFormat);
+    QSettings settings;
     int fps=settings.value("fps",60).toInt();
     int vsync=settings.value("vsync",0).toInt();
     GLCanvas::EnableVSYNC=vsync;

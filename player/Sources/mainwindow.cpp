@@ -209,6 +209,7 @@ void MainWindow::createUiGroups(){
     resolutionGroup_->addAction(ui.action768x1024);
     resolutionGroup_->addAction(ui.action640x960);
     resolutionGroup_->addAction(ui.action1536x2048);
+    resolutionGroup_->addAction(ui.action1125x2436);
     resolutionGroup_->addAction(ui.action320x568);
     resolutionGroup_->addAction(ui.action640x1136);
     resolutionGroup_->addAction(ui.action480x800);
@@ -266,7 +267,7 @@ void MainWindow::loadSettings(){
     updateCanvasColor();
     updateInfoColor();
 
-    QSettings settings(Constants::SETTINGS_FOLDER + "/" + Constants::PLAYER_SETTINGS_FILE, QSettings::IniFormat);
+    QSettings settings;
 
     setWidth(settings.value("width",             320).toInt());
     setHeight(settings.value("height",           480).toInt());
@@ -354,7 +355,7 @@ void MainWindow::saveSettings(){
     settingsNative.setValue("infoGreen", infoColor().green());
     settingsNative.setValue("infoBlue", infoColor().blue());
 
-    QSettings settings(Constants::SETTINGS_FOLDER + "/" + Constants::PLAYER_SETTINGS_FILE, QSettings::IniFormat);
+    QSettings settings;
 
     settings.setValue("orientation", orientation());
     settings.setValue("alwaysOnTop", alwaysOnTop());
