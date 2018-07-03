@@ -33,10 +33,11 @@ struct GGAudioSystemData
     ALCcontext *context;
 };
 
-struct GGAudioSystemData *OpenALData;
+struct GGAudioSystemData *OpenALData=NULL;
 
 void gaudio_android_suspend(bool suspend)
 {
+	if (!OpenALData) return;
 	if (suspend)
 		alcDevicePauseSOFT(OpenALData->device);
 	else
