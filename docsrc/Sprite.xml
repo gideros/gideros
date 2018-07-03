@@ -614,12 +614,21 @@ Mouse button can have values of:
 `KeyCode.MOUSE_NONE`
 `KeyCode.MOUSE_LEFT`
 `KeyCode.MOUSE_RIGHT`
-`KeyCode.MOUSE_MIDDLE`]]>
+`KeyCode.MOUSE_MIDDLE`
+
+Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+]]>
     <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
     <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
     <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
     <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
     <parameter name="button" type="number"><![CDATA[Mouse button pressed]]></parameter>
+    <parameter name="modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
   </event>
   <event name="Event.MOUSE_MOVE" page="Event.MOUSE_MOVE" value="mouseMove" version="Gideros 2011.6"><![CDATA[This event is dispatched when mouse is moved. It is possible to generate this event using touch actions, by enabling this option through project settings.
 
@@ -632,12 +641,21 @@ Mouse button can have values of:
 `KeyCode.MOUSE_NONE`
 `KeyCode.MOUSE_LEFT`
 `KeyCode.MOUSE_RIGHT`
-`KeyCode.MOUSE_MIDDLE`]]>
+`KeyCode.MOUSE_MIDDLE`
+
+Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+]]>
     <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
     <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
     <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
     <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
     <parameter name="button" type="number"><![CDATA[Mouse button pressed]]></parameter>
+    <parameter name="modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
   </event>
   <event name="Event.MOUSE_UP" page="Event.MOUSE_UP" value="mouseUp" version="Gideros 2011.6"><![CDATA[This event is dispatched when mouse button is released. It is possible to generate this event using touch actions, by enabling this option through project settings.
 
@@ -645,14 +663,31 @@ Mouse button can have values of:
 `KeyCode.MOUSE_NONE`
 `KeyCode.MOUSE_LEFT`
 `KeyCode.MOUSE_RIGHT`
-`KeyCode.MOUSE_MIDDLE`]]>
+`KeyCode.MOUSE_MIDDLE`
+
+Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+]]>
     <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
     <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
     <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
     <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
     <parameter name="button" type="number"><![CDATA[Mouse button pressed]]></parameter>
+    <parameter name="modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
   </event>
-  <event name="Event.TOUCHES_BEGIN" page="Event.TOUCHES_BEGIN" value="touchesBegin" version="Gideros 2011.6"><![CDATA[This event is dispatched on touch begin action. It is possible to generate this event using mouse actions, by enabling this option through project settings.]]>
+  <event name="Event.TOUCHES_BEGIN" page="Event.TOUCHES_BEGIN" value="touchesBegin" version="Gideros 2011.6"><![CDATA[This event is dispatched on touch begin action. It is possible to generate this event using mouse actions, by enabling this option through project settings.
+  
+  Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+  ]]>
     <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
     <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
     <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
@@ -660,9 +695,19 @@ Mouse button can have values of:
     <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
     <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
     <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="touch.mouseButton" type="number"><![CDATA[Mouse button which triggered this event, if any]]></parameter>
+    <parameter name="touch.modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
     <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.]]></parameter>
   </event>
-  <event name="Event.TOUCHES_MOVE" page="Event.TOUCHES_MOVE" value="touchesMove" version="Gideros 2011.6"><![CDATA[This event is dispatched on touch move action. It is possible to generate this event using mouse actions, by enabling this option through project settings.]]>
+  <event name="Event.TOUCHES_MOVE" page="Event.TOUCHES_MOVE" value="touchesMove" version="Gideros 2011.6"><![CDATA[This event is dispatched on touch move action. It is possible to generate this event using mouse actions, by enabling this option through project settings.
+  
+  Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+  ]]>
     <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
     <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
     <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
@@ -670,9 +715,19 @@ Mouse button can have values of:
     <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
     <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
     <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="touch.mouseButton" type="number"><![CDATA[Mouse button which triggered this event, if any]]></parameter>
+    <parameter name="touch.modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
     <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.]]></parameter>
   </event>
-  <event name="Event.TOUCHES_END" page="Event.TOUCHES_END" value="touchesEnd" version="Gideros 2011.6"><![CDATA[This event is dispatched then touch is ended. It is possible to generate this event using mouse actions, by enabling this option through project settings.]]>
+  <event name="Event.TOUCHES_END" page="Event.TOUCHES_END" value="touchesEnd" version="Gideros 2011.6"><![CDATA[This event is dispatched then touch is ended. It is possible to generate this event using mouse actions, by enabling this option through project settings.
+  
+  Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+  ]]>
     <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
     <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
     <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
@@ -680,10 +735,20 @@ Mouse button can have values of:
     <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
     <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
     <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="touch.mouseButton" type="number"><![CDATA[Mouse button which triggered this event, if any]]></parameter>
+    <parameter name="touch.modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
     <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.]]></parameter>
   </event>
   <event name="Event.TOUCHES_CANCEL" page="Event.TOUCHES_CANCEL" value="touchesCancel" version="Gideros 2011.6"><![CDATA[This event is dispatched when touch is interrupted, for example, by a phone call, or any sort of modal dialog.
-This event is dispatched only on devices.]]>
+This event is dispatched only on devices.
+
+Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+]]>
     <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
     <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
     <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
@@ -691,6 +756,8 @@ This event is dispatched only on devices.]]>
     <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
     <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
     <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="touch.mouseButton" type="number"><![CDATA[Mouse button which triggered this event, if any]]></parameter>
+    <parameter name="touch.modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
     <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.
 ]]></parameter>
   </event>
@@ -702,22 +769,39 @@ This event is dispatched only on devices.]]>
     <parameter name="keyCode" type="number"><![CDATA[code of the key pressed.]]></parameter>
     <parameter name="realCode" type="number"><![CDATA[real keyCode underneath]]></parameter>
   </event>
-  <event name="Event.MOUSE_WHEEL" page="MOUSE_WHEEL" value="mouseWheel" version="Gideros 2015.04.26"><![CDATA[Event that fires when mouse wheel is used]]>
+  <event name="Event.MOUSE_WHEEL" page="MOUSE_WHEEL" value="mouseWheel" version="Gideros 2015.04.26"><![CDATA[Event that fires when mouse wheel is used.
+  
+  Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
+  ]]>
     <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
     <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
     <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
     <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
     <parameter name="wheel" type="number"><![CDATA[negative value when scrolled down and positive value when scrolled up]]></parameter>
+    <parameter name="modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
   </event>
   <event name="Event.MOUSE_HOVER" page="Event.MOUSE_HOVER" value="mouseHover" version="Gideros 2015.08"><![CDATA[This event is dispatched when mouse is moved and not button is pressed. The event is available only on desktops as Windows, MacOS and WinRT
 
 Difference between `Event.MOUSE_MOVE`
- is that mouse hover does not have any mouse buttons pressed, but mouse move has at least 1 mouse button pressed
+ is that mouse hover does not have any mouse buttons pressed, but mouse move has at least 1 mouse button pressed.
+ 
+Modifiers can have values of:
+`KeyCode.MODIFIER_NONE`
+`KeyCode.MODIFIER_SHIFT`
+`KeyCode.MODIFIER_CTRL`
+`KeyCode.MODIFIER_ALT`
+`KeyCode.MODIFIER_META`
  ]]>
     <parameter name="x" type="number"><![CDATA[x coordinate of mouse cursor]]></parameter>
     <parameter name="y" type="number"><![CDATA[y coordinate of mouse cursor]]></parameter>
     <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the mouse cursor]]></parameter>
     <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the mouse cursor]]></parameter>
     <parameter name="button" type="number"><![CDATA[button pressed - none]]></parameter>
+    <parameter name="modifiers" type="number"><![CDATA[Modifiers present]]></parameter>
   </event>
 </object>

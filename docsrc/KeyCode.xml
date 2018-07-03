@@ -57,6 +57,11 @@ KeyCode table holds the key code constants. These map directly to a physical key
   <constant name="KeyCode.MOUSE_LEFT" page="MOUSE_LEFT" value="1" version="Gideros 2015.08"><![CDATA[Left mouse button is pressed]]></constant>
   <constant name="KeyCode.MOUSE_RIGHT" page="MOUSE_RIGHT" value="2" version="Gideros 2015.08"><![CDATA[Mouse right button is pressed]]></constant>
   <constant name="KeyCode.MOUSE_MIDDLE" page="MOUSE_MIDDLE" value="4" version="Gideros 2015.08"><![CDATA[Mouse middle button or wheel is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_NONE" page="MODIFIER_NONE" value="0" version="Gideros 2017.4"><![CDATA[No modifiers]]></constant>
+  <constant name="KeyCode.MODIFIER_SHIFT" page="MODIFIER_SHIFT" value="1" version="Gideros 2017.4"><![CDATA[Shift key is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_ALT" page="MODIFIER_ALT" value="2" version="Gideros 2017.4"><![CDATA[Alt key is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_CTRL" page="MODIFIER_CTRL" value="4" version="Gideros 2017.4"><![CDATA[Ctrl key is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_META" page="MODIFIER_META" value="8" version="Gideros 2017.4"><![CDATA[Meta key is pressed]]></constant>
   <example name="Listening for back button"><![CDATA[stage:addEventListener(Event.KEY_DOWN, function(event)
     if event.keyCode == KeyCode.BACK then
         application:exit()
