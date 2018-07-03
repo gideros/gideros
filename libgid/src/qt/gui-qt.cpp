@@ -110,7 +110,7 @@ void AlertDialog::clicked(QAbstractButton *button)
     hide();
 }
 
-void AlertDialog::closeEvent(QCloseEvent *closeEvent)
+void AlertDialog::reject()
 {
     QAbstractButton *button = cancelButton_;
 
@@ -124,7 +124,7 @@ void AlertDialog::closeEvent(QCloseEvent *closeEvent)
 
     gevent_EnqueueEvent(gid_, callback_, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
 
-    closeEvent->accept();
+    QDialog::reject();
 }
 
 
@@ -190,7 +190,7 @@ void TextInputDialog::clicked(QAbstractButton *button)
     hide();
 }
 
-void TextInputDialog::closeEvent(QCloseEvent *closeEvent)
+void TextInputDialog::reject()
 {
     QAbstractButton *button = cancelButton_;
 
@@ -207,7 +207,7 @@ void TextInputDialog::closeEvent(QCloseEvent *closeEvent)
 
     gevent_EnqueueEvent(gid_, callback_, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
 
-    closeEvent->accept();
+    QDialog::reject();
 }
 
 void TextInputDialog::setText(const char* text)
