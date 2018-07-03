@@ -193,6 +193,7 @@
     <addaction name="separator"/>
     <addaction name="actionQuarter"/>
     <addaction name="actionHalf"/>
+    <addaction name="actionThreeQuarter"/>
     <addaction name="actionOriginal"/>
     <addaction name="actionDouble"/>
     <addaction name="actionTriple"/>
@@ -624,6 +625,11 @@
    </property>
    <property name="text">
     <string>Use VSYNC</string>
+   </property>
+  </action>
+  <action name="actionThreeQuarter">
+   <property name="text">
+    <string>75%</string>
    </property>
   </action>
   <addaction name="actionExit"/>

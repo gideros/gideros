@@ -47,6 +47,7 @@ void MainWindow::setupUiActions(){
 
     connect(ui.actionQuarter,       SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionHalf,          SIGNAL(triggered()), this, SLOT(actionScale()));
+    connect(ui.actionThreeQuarter,  SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionOriginal,      SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionDouble,        SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionTriple,        SIGNAL(triggered()), this, SLOT(actionScale()));
@@ -186,6 +187,7 @@ void MainWindow::setupUiProperties(){
 
     ui.actionQuarter->setProperty("scale",       25);
     ui.actionHalf->setProperty("scale",          50);
+    ui.actionThreeQuarter->setProperty("scale",  75);
     ui.actionOriginal->setProperty("scale",      100);
     ui.actionDouble->setProperty("scale",        200);
     ui.actionTriple->setProperty("scale",        300);
