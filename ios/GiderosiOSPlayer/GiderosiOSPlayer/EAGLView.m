@@ -45,7 +45,7 @@
                                         kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat,
                                         nil];
 		retinaDisplay = NO;
-        _hasText = NO;
+        _autocorrectionType = UITextAutocorrectionTypeNo;
     }
     
     return self;
@@ -233,9 +233,105 @@
     gdr_keyUp(8,0);
 }
 
+- (BOOL) hasText
+{
+    return TRUE;
+}
+
 - (void) reportLuaError:(NSString *)error
 {
  @throw [[LuaException alloc] initWithName:@"Lua" reason:error userInfo:nil];
+}
+
+/* Methods for manipulating text. */
+- (nullable NSString *)textInRange:(UITextRange *)range
+{
+    return NULL;
+}
+
+- (void)replaceRange:(UITextRange *)range withText:(NSString *)text
+{
+}
+
+- (void)setMarkedText:(nullable NSString *)markedText selectedRange:(NSRange)selectedRange // selectedRange is a range within the markedText
+{
+    
+}
+- (void)unmarkText
+{
+    
+}
+
+/* Methods for creating ranges and positions. */
+- (nullable UITextRange *)textRangeFromPosition:(UITextPosition *)fromPosition toPosition:(UITextPosition *)toPosition
+{
+    return NULL;
+}
+
+- (nullable UITextPosition *)positionFromPosition:(UITextPosition *)position offset:(NSInteger)offset
+{
+    return NULL;
+}
+
+- (nullable UITextPosition *)positionFromPosition:(UITextPosition *)position inDirection:(UITextLayoutDirection)direction offset:(NSInteger)offset
+{
+    return NULL;
+}
+
+/* Simple evaluation of positions */
+- (NSComparisonResult)comparePosition:(UITextPosition *)position toPosition:(UITextPosition *)other {
+    return 0;
+}
+- (NSInteger)offsetFromPosition:(UITextPosition *)from toPosition:(UITextPosition *)toPosition {
+    return 0;
+}
+
+/* Layout questions. */
+- (nullable UITextPosition *)positionWithinRange:(UITextRange *)range farthestInDirection:(UITextLayoutDirection)direction
+{
+    return NULL;
+}
+
+- (nullable UITextRange *)characterRangeByExtendingPosition:(UITextPosition *)position inDirection:(UITextLayoutDirection)direction
+{
+    return NULL;
+}
+
+/* Writing direction */
+- (UITextWritingDirection)baseWritingDirectionForPosition:(UITextPosition *)position inDirection:(UITextStorageDirection)direction {
+    return UITextWritingDirectionLeftToRight;
+}
+- (void)setBaseWritingDirection:(UITextWritingDirection)writingDirection forRange:(UITextRange *)range
+{
+    
+}
+
+/* Geometry used to provide, for example, a correction rect. */
+- (CGRect)firstRectForRange:(UITextRange *)range
+{
+    return CGRectMake(0,0,0,0);
+}
+- (CGRect)caretRectForPosition:(UITextPosition *)position
+{
+    return CGRectMake(0,0,0,0);
+}
+- (NSArray *)selectionRectsForRange:(UITextRange *)range NS_AVAILABLE_IOS(6_0)       // Returns an array of UITextSelectionRects
+{
+    return NULL;
+}
+
+/* Hit testing. */
+- (nullable UITextPosition *)closestPositionToPoint:(CGPoint)point
+{
+    return NULL;
+}
+- (nullable UITextPosition *)closestPositionToPoint:(CGPoint)point withinRange:(UITextRange *)range
+{
+    return NULL;
+}
+- (nullable UITextRange *)characterRangeAtPoint:(CGPoint)point
+{
+    return NULL;
 }
 
 @end
