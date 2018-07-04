@@ -39,6 +39,7 @@ struct Connection
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
 	
 	[request setHTTPMethod:method];
+	[request setTimeoutInterval:240]; //Default is 60, but it is not rare to have long running requests
     
     [request setValue:@"Gideros" forHTTPHeaderField:@"User-Agent"];
 	
