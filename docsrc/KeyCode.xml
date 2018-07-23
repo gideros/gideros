@@ -54,15 +54,29 @@ KeyCode table holds the key code constants. These map directly to a physical key
   <constant name="KeyCode.X" page="KeyCode.X" value="88" version="Gideros 2011.6"/>
   <constant name="KeyCode.Y" page="KeyCode.Y" value="89" version="Gideros 2011.6"/>
   <constant name="KeyCode.Z" page="KeyCode.Z" value="90" version="Gideros 2013.06"/>
-  <constant name="KeyCode.MOUSE_NONE" page="MOUSE_NONE" value="0" version="Gideros 2015.08"><![CDATA[Mouse button is not pressed]]></constant>
-  <constant name="KeyCode.MOUSE_LEFT" page="MOUSE_LEFT" value="1" version="Gideros 2015.08"><![CDATA[Left mouse button is pressed]]></constant>
-  <constant name="KeyCode.MOUSE_RIGHT" page="MOUSE_RIGHT" value="2" version="Gideros 2015.08"><![CDATA[Mouse right button is pressed]]></constant>
-  <constant name="KeyCode.MOUSE_MIDDLE" page="MOUSE_MIDDLE" value="4" version="Gideros 2015.08"><![CDATA[Mouse middle button or wheel is pressed]]></constant>
-  <constant name="KeyCode.MODIFIER_NONE" page="MODIFIER_NONE" value="0" version="Gideros 2017.4"><![CDATA[No modifiers]]></constant>
-  <constant name="KeyCode.MODIFIER_SHIFT" page="MODIFIER_SHIFT" value="1" version="Gideros 2017.4"><![CDATA[Shift key is pressed]]></constant>
-  <constant name="KeyCode.MODIFIER_ALT" page="MODIFIER_ALT" value="2" version="Gideros 2017.4"><![CDATA[Alt key is pressed]]></constant>
-  <constant name="KeyCode.MODIFIER_CTRL" page="MODIFIER_CTRL" value="4" version="Gideros 2017.4"><![CDATA[Ctrl key is pressed]]></constant>
-  <constant name="KeyCode.MODIFIER_META" page="MODIFIER_META" value="8" version="Gideros 2017.4"><![CDATA[Meta key is pressed]]></constant>
+  <constant name="KeyCode.SHIFT" page="KeyCode.SHIFT" value="16" version="Gideros 2013.06"/>
+  <constant name="KeyCode.SPACE" page="KeyCode.SPACE" value="32" version="Gideros 2013.06"/>
+  <constant name="KeyCode.BACKSPACE" page="KeyCode.BACKSPACE" value="8" version="Gideros 2013.06"/>
+  <constant name="KeyCode.CTRL" page="KeyCode.CTRL" value="17" version="Gideros 2013.06"/>
+  <constant name="KeyCode.ALT" page="KeyCode.ALT" value="18" version="Gideros 2013.06"/>
+  <constant name="KeyCode.ESC" page="KeyCode.ESC" value="27" version="Gideros 2013.06"/>
+  <constant name="KeyCode.TAB" page="KeyCode.TAB" value="9" version="Gideros 2013.06"/>
+  <constant name="KeyCode.ENTER" page="KeyCode.ENTER" value="13" version="Gideros 2013.06"/>
+  <constant name="KeyCode.HOME" page="KeyCode.HOME" value="400" version="Gideros 2013.06"/>
+  <constant name="KeyCode.END" page="KeyCode.END" value="401" version="Gideros 2013.06"/>
+  <constant name="KeyCode.INSERT" page="KeyCode.INSERT" value="402" version="Gideros 2013.06"/>
+  <constant name="KeyCode.DELETE" page="KeyCode.DELETE" value="403" version="Gideros 2013.06"/>
+  <constant name="KeyCode.PAGEUP" page="KeyCode.PAGEUP" value="404" version="Gideros 2013.06"/>
+  <constant name="KeyCode.PAGEDOWN" page="KeyCode.PAGEDOWN" value="405" version="Gideros 2013.06"/>
+  <constant name="KeyCode.MOUSE_NONE" page="KeyCode.MOUSE_NONE" value="0" version="Gideros 2015.08"><![CDATA[Mouse button is not pressed]]></constant>
+  <constant name="KeyCode.MOUSE_LEFT" page="KeyCode.MOUSE_LEFT" value="1" version="Gideros 2015.08"><![CDATA[Left mouse button is pressed]]></constant>
+  <constant name="KeyCode.MOUSE_RIGHT" page="KeyCode.MOUSE_RIGHT" value="2" version="Gideros 2015.08"><![CDATA[Mouse right button is pressed]]></constant>
+  <constant name="KeyCode.MOUSE_MIDDLE" page="KeyCode.MOUSE_MIDDLE" value="4" version="Gideros 2015.08"><![CDATA[Mouse middle button or wheel is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_NONE" page="KeyCode.MODIFIER_NONE" value="0" version="Gideros 2017.4"><![CDATA[No modifiers]]></constant>
+  <constant name="KeyCode.MODIFIER_SHIFT" page="KeyCode.MODIFIER_SHIFT" value="1" version="Gideros 2017.4"><![CDATA[Shift key is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_ALT" page="KeyCode.MODIFIER_ALT" value="2" version="Gideros 2017.4"><![CDATA[Alt key is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_CTRL" page="KeyCode.MODIFIER_CTRL" value="4" version="Gideros 2017.4"><![CDATA[Ctrl key is pressed]]></constant>
+  <constant name="KeyCode.MODIFIER_META" page="KeyCode.MODIFIER_META" value="8" version="Gideros 2017.4"><![CDATA[Meta key is pressed]]></constant>
   <example name="Listening for back button"><![CDATA[stage:addEventListener(Event.KEY_DOWN, function(event)
     if event.keyCode == KeyCode.BACK then
         application:exit()
