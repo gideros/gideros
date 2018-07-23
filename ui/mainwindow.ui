@@ -179,7 +179,7 @@ QMainWindow::separator {
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew_Project">
    <property name="text">
-    <string>New Project..</string>
+    <string>New Project...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
