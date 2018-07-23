@@ -174,6 +174,10 @@ static void parse(struct ParseData *d, kvec_uchar_t *commands, kvec_float_t *coo
         case 'a':
             parseHelper(d, commands, coords, 7, 1);
             break;
+        case 'B':
+        case 'b':
+            parseHelper(d, commands, coords, 1, 1);
+            break;
         case 'T':
         case 't':
             parseHelper(d, commands, coords, 2, 1);
