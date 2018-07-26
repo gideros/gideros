@@ -129,7 +129,11 @@ public class GCamera {
 
 		if (camera==null)
 		{
-			camera = Camera.open(camId);
+			try {
+				camera = Camera.open(camId);
+			} catch (Exception e)
+			{
+			}
 			if (camera!=null)
 			{
 				android.hardware.Camera.CameraInfo info =

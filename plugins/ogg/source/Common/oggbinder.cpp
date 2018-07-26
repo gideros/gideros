@@ -463,8 +463,9 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 	int audiofd_fragsize = size;
 	ogg_int16_t *audiobuf = (ogg_int16_t *) data;
 	int i, j;
+    bool queued=true;
 
-	while (true) {
+    while (queued) {
 
 		/* we want a video and audio frame ready to go at all times.  If
 		 we have to buffer incoming, buffer the compressed data (ie, let
@@ -556,14 +557,16 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 				break;
 		}
 
-		if (!handle->videobuf_ready && !audiobuf_ready && g_feof(handle->file))
-			break;
+    /*	if (!handle->videobuf_ready && !audiobuf_ready && g_feof(handle->file))
+            break;*/
 
 		if (!handle->videobuf_ready || !audiobuf_ready) {
+            queued=false;
 			/* no data yet for somebody.  Grab another page */
 			buffer_data(handle->file, &handle->oy);
 			while (ogg_sync_pageout(&handle->oy, &handle->og) > 0) {
 				queue_page(handle, &handle->og);
+                queued=true;
 			}
 		}
 
@@ -614,8 +617,6 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 			}
 #endif
 		}
-		if (g_feof(handle->file))
-			break;
 		if ((audiobuf_ready || (!handle->vorbis_p))
 				&& (handle->videobuf_ready || (!handle->theora_p)))
 			break;

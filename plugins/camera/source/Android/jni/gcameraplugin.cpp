@@ -166,10 +166,20 @@ public:
 		jstring jdev=device?env->NewStringUTF(device):NULL;
 		jintArray ret=(jintArray) env->CallStaticObjectMethod(cls_,
 				env->GetStaticMethodID(cls_, "start", "(IIILjava/lang/String;)[I"),tex->width, tex->height,orientation,jdev);
+		if (!ret) { //Shouldn't happen really, but JNI reports it happened
+			*camwidth=0;
+			*camheight=0;
+			delete rdrTgt;
+			return;
+		}
 		jboolean isCopy;
 		jint *rvals = env->GetIntArrayElements(ret, &isCopy);
 		*camwidth=rvals[0];
 		*camheight=rvals[1];
+		if ((*camwidth==0)&&(*camheight==0)) {
+			delete rdrTgt;
+			return;
+		}
 	    int x0=0;
 	    int x1=1;
 	    if (rvals[3]) { x0=1; x1=0; }

@@ -252,6 +252,8 @@ public:
 
         if (channel2->source == 0)
             return channel2->lastPosition;
+        if (channel2->buffers.empty())
+        	return 0;
 
         ALfloat offset;
         alGetSourcef(channel2->source, AL_SEC_OFFSET, &offset);
