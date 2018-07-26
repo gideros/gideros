@@ -7,52 +7,53 @@ KeyCode table holds the key code constants. These map directly to a physical key
   <platform>mac</platform>
   <platform>pc</platform>
   <constant name="KeyCode.BACK" page="KeyCode.BACK" value="301" version="Gideros 2011.6"/>
-  <constant name="KeyCode.DOWN" page="KeyCode.DOWN" value="40" version="Gideros 2011.6"/>
-  <constant name="KeyCode.RIGHT" page="KeyCode.RIGHT" value="39" version="Gideros 2011.6"/>
-  <constant name="KeyCode.SELECT" page="KeyCode.SELECT" value="305" version="Gideros 2011.6"/>
-  <constant name="KeyCode.UP" page="KeyCode.UP" value="38" version="Gideros 2011.6"/>
-  <constant name="KeyCode.LEFT" page="KeyCode.LEFT" value="37" version="Gideros 2011.6"/>
-  <constant name="KeyCode.Y" page="KeyCode.Y" value="89" version="Gideros 2011.6"/>
-  <constant name="KeyCode.X" page="KeyCode.X" value="88" version="Gideros 2011.6"/>
+  <constant name="KeyCode.SEARCH" page="KeyCode.SEARCH" value="302" version="Gideros 2011.6"/>
   <constant name="KeyCode.MENU" page="KeyCode.MENU" value="303" version="Gideros 2011.6"/>
+  <constant name="KeyCode.CENTER" page="KeyCode.CENTER" value="304" version="Gideros 2011.6"/>
+  <constant name="KeyCode.SELECT" page="KeyCode.SELECT" value="305" version="Gideros 2011.6"/>
+  <constant name="KeyCode.START" page="KeyCode.START" value="306" version="Gideros 2011.6"/>
   <constant name="KeyCode.L1" page="KeyCode.L1" value="307" version="Gideros 2011.6"/>
   <constant name="KeyCode.R1" page="KeyCode.R1" value="308" version="Gideros 2011.6"/>
-  <constant name="KeyCode.START" page="KeyCode.START" value="306" version="Gideros 2011.6"/>
-  <constant name="KeyCode.SEARCH" page="KeyCode.SEARCH" value="302" version="Gideros 2011.6"/>
-  <constant name="KeyCode.CENTER" page="KeyCode.CENTER" value="304" version="Gideros 2011.6"/>
+  <constant name="KeyCode.LEFT" page="KeyCode.LEFT" value="37" version="Gideros 2011.6"/>
+  <constant name="KeyCode.UP" page="KeyCode.UP" value="38" version="Gideros 2011.6"/>
+  <constant name="KeyCode.RIGHT" page="KeyCode.RIGHT" value="39" version="Gideros 2011.6"/>
+  <constant name="KeyCode.DOWN" page="KeyCode.DOWN" value="40" version="Gideros 2011.6"/>
+  <constant name="KeyCode.NUM_0" page="NUM_0" value="48" version="Gideros 2013.06"/>
   <constant name="KeyCode.NUM_1" page="NUM_1" value="49" version="Gideros 2013.06"/>
   <constant name="KeyCode.NUM_2" page="NUM_2" value="50" version="Gideros 2013.06"/>
-  <constant name="KeyCode.NUM_9" page="NUM_9" value="57" version="Gideros 2013.06"/>
-  <constant name="KeyCode.NUM_8" page="NUM_8" value="56" version="Gideros 2013.06"/>
-  <constant name="KeyCode.NUM_5" page="NUM_5" value="53" version="Gideros 2013.06"/>
-  <constant name="KeyCode.NUM_7" page="NUM_7" value="55" version="Gideros 2013.06"/>
-  <constant name="KeyCode.NUM_4" page="NUM_4" value="52" version="Gideros 2013.06"/>
-  <constant name="KeyCode.NUM_6" page="NUM_6" value="54" version="Gideros 2013.06"/>
-  <constant name="KeyCode.Z" page="Z" value="90" version="Gideros 2013.06"/>
-  <constant name="KeyCode.NUM_0" page="NUM_0" value="48" version="Gideros 2013.06"/>
   <constant name="KeyCode.NUM_3" page="NUM_3" value="51" version="Gideros 2013.06"/>
-  <constant name="KeyCode.A" page="A" value="65" version="Gideros 2013.06"/>
-  <constant name="KeyCode.C" page="C" value="67" version="Gideros 2013.06"/>
-  <constant name="KeyCode.B" page="B" value="66" version="Gideros 2013.06"/>
-  <constant name="KeyCode.E" page="E" value="82" version="Gideros 2013.06"/>
-  <constant name="KeyCode.D" page="D" value="68" version="Gideros 2013.06"/>
-  <constant name="KeyCode.G" page="G" value="71" version="Gideros 2013.06"/>
-  <constant name="KeyCode.F" page="F" value="70" version="Gideros 2013.06"/>
-  <constant name="KeyCode.I" page="I" value="73" version="Gideros 2013.06"/>
-  <constant name="KeyCode.H" page="H" value="72" version="Gideros 2013.06"/>
-  <constant name="KeyCode.K" page="K" value="75" version="Gideros 2013.06"/>
-  <constant name="KeyCode.M" page="M" value="77" version="Gideros 2013.06"/>
-  <constant name="KeyCode.L" page="L" value="76" version="Gideros 2013.06"/>
-  <constant name="KeyCode.O" page="O" value="79" version="Gideros 2013.06"/>
-  <constant name="KeyCode.N" page="N" value="78" version="Gideros 2013.06"/>
-  <constant name="KeyCode.Q" page="Q" value="81" version="Gideros 2013.06"/>
-  <constant name="KeyCode.P" page="P" value="80" version="Gideros 2013.06"/>
-  <constant name="KeyCode.S" page="S" value="83" version="Gideros 2013.06"/>
-  <constant name="KeyCode.U" page="U" value="85" version="Gideros 2013.06"/>
-  <constant name="KeyCode.T" page="T" value="84" version="Gideros 2013.06"/>
-  <constant name="KeyCode.W" page="W" value="87" version="Gideros 2013.06"/>
-  <constant name="KeyCode.V" page="V" value="86" version="Gideros 2013.06"/>
-  <constant name="KeyCode.J" page="J" value="74" version="Gideros 2013.06"/>
+  <constant name="KeyCode.NUM_4" page="NUM_4" value="52" version="Gideros 2013.06"/>
+  <constant name="KeyCode.NUM_5" page="NUM_5" value="53" version="Gideros 2013.06"/>
+  <constant name="KeyCode.NUM_6" page="NUM_6" value="54" version="Gideros 2013.06"/>
+  <constant name="KeyCode.NUM_7" page="NUM_7" value="55" version="Gideros 2013.06"/>
+  <constant name="KeyCode.NUM_8" page="NUM_8" value="56" version="Gideros 2013.06"/>
+  <constant name="KeyCode.NUM_9" page="NUM_9" value="57" version="Gideros 2013.06"/>
+  <constant name="KeyCode.A" page="KeyCode.A" value="65" version="Gideros 2013.06"/>
+  <constant name="KeyCode.B" page="KeyCode.B" value="66" version="Gideros 2013.06"/>
+  <constant name="KeyCode.C" page="KeyCode.C" value="67" version="Gideros 2013.06"/>
+  <constant name="KeyCode.D" page="KeyCode.D" value="68" version="Gideros 2013.06"/>
+  <constant name="KeyCode.E" page="KeyCode.E" value="69" version="Gideros 2013.06"/>
+  <constant name="KeyCode.F" page="KeyCode.F" value="70" version="Gideros 2013.06"/>
+  <constant name="KeyCode.G" page="KeyCode.G" value="71" version="Gideros 2013.06"/>
+  <constant name="KeyCode.H" page="KeyCode.H" value="72" version="Gideros 2013.06"/>
+  <constant name="KeyCode.I" page="KeyCode.I" value="73" version="Gideros 2013.06"/>
+  <constant name="KeyCode.J" page="KeyCode.J" value="74" version="Gideros 2013.06"/>
+  <constant name="KeyCode.K" page="KeyCode.K" value="75" version="Gideros 2013.06"/>
+  <constant name="KeyCode.L" page="KeyCode.L" value="76" version="Gideros 2013.06"/>
+  <constant name="KeyCode.M" page="KeyCode.M" value="77" version="Gideros 2013.06"/>
+  <constant name="KeyCode.N" page="KeyCode.N" value="78" version="Gideros 2013.06"/>
+  <constant name="KeyCode.O" page="KeyCode.O" value="79" version="Gideros 2013.06"/>
+  <constant name="KeyCode.P" page="KeyCode.P" value="80" version="Gideros 2013.06"/>
+  <constant name="KeyCode.Q" page="KeyCode.Q" value="81" version="Gideros 2013.06"/>
+  <constant name="KeyCode.R" page="KeyCode.R" value="82" version="Gideros 2013.06"/>
+  <constant name="KeyCode.S" page="KeyCode.S" value="83" version="Gideros 2013.06"/>
+  <constant name="KeyCode.T" page="KeyCode.T" value="84" version="Gideros 2013.06"/>
+  <constant name="KeyCode.U" page="KeyCode.U" value="85" version="Gideros 2013.06"/>
+  <constant name="KeyCode.V" page="KeyCode.V" value="86" version="Gideros 2013.06"/>
+  <constant name="KeyCode.W" page="KeyCode.W" value="87" version="Gideros 2013.06"/>
+  <constant name="KeyCode.X" page="KeyCode.X" value="88" version="Gideros 2011.6"/>
+  <constant name="KeyCode.Y" page="KeyCode.Y" value="89" version="Gideros 2011.6"/>
+  <constant name="KeyCode.Z" page="KeyCode.Z" value="90" version="Gideros 2013.06"/>
   <constant name="KeyCode.MOUSE_NONE" page="MOUSE_NONE" value="0" version="Gideros 2015.08"><![CDATA[Mouse button is not pressed]]></constant>
   <constant name="KeyCode.MOUSE_LEFT" page="MOUSE_LEFT" value="1" version="Gideros 2015.08"><![CDATA[Left mouse button is pressed]]></constant>
   <constant name="KeyCode.MOUSE_RIGHT" page="MOUSE_RIGHT" value="2" version="Gideros 2015.08"><![CDATA[Mouse right button is pressed]]></constant>
