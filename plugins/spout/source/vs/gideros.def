@@ -1,0 +1,5 @@
+EXPORTS
+g_createClass
+g_pushInstance
+g_getInstance
+
