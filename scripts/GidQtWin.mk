@@ -124,11 +124,11 @@ qt5.install:
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
 	
-buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN))
+buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
-qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN))
+qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
-qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
+qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; $(MINGWMAKE) clean
