@@ -23,6 +23,7 @@ ShaderProgram *ShaderProgram::pathShaderFillC=NULL;
 ShaderProgram *ShaderProgram::pathShaderStrokeC = NULL;
 ShaderProgram *ShaderProgram::pathShaderStrokeLC = NULL;
 ShaderEngine *ShaderEngine::Engine=NULL;
+bool ShaderEngine::ready=true;
 
 void ShaderProgram::Retain()
 {

@@ -1387,6 +1387,7 @@ void ApplicationManager::resume()
 
 void ApplicationManager::exitRenderLoop()
 {
+	ShaderEngine::setReady(false);
     gapplication_enqueueEvent(GAPPLICATION_EXIT_EVENT, NULL, 0);
     
 #if THREADED_RENDER_LOOP

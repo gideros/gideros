@@ -218,6 +218,7 @@ protected:
 	std::stack<Scissor> scissorStack;
 	std::stack<DepthStencil> dsStack;
 	DepthStencil dsCurrent;
+	static bool ready;
 public:
 	enum BlendFactor
 	{
@@ -288,6 +289,9 @@ public:
 	//Parameters
 	virtual void setVBOThreshold(int freeze,int unfreeze) { G_UNUSED(freeze); G_UNUSED(unfreeze); };
 	virtual void getProperties(std::map<std::string,std::string> &props) { G_UNUSED(props); };
+	//Ready
+	static void setReady(bool r) { ready=r; };
+	static bool isReady() { return ready; };
 };
 
 #endif

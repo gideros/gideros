@@ -47,6 +47,8 @@ ShaderBuffer *GRenderTarget::prepareForDraw()
 
 void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int h)
 {
+	if (!ShaderEngine::isReady())
+		return;
 	ShaderBuffer *oldfbo=NULL;
 
 	if ((w>=0)&&(h>=0))
@@ -72,6 +74,8 @@ void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int 
 
 void GRenderTarget::draw(const Sprite *sprite, const Matrix transform)
 {
+	if (!ShaderEngine::isReady())
+		return;
 	ShaderBuffer *oldfbo=prepareForDraw();
 
     ((Sprite*)sprite)->draw(transform, 0, 0, data->width, data->height);
@@ -81,6 +85,8 @@ void GRenderTarget::draw(const Sprite *sprite, const Matrix transform)
 
 void GRenderTarget::getPixels(int x,int y,int w,int h,void *buffer)
 {
+	if (!ShaderEngine::isReady())
+		return;
     ShaderBuffer *fbo=gtexture_RenderTargetGetFBO(data->gid);
     fbo->readPixels(x,y,w,h, ShaderTexture::FMT_RGBA, ShaderTexture::PK_UBYTE, buffer);
 }

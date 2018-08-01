@@ -51,6 +51,10 @@ int gimage_parseImage(const char *pathname, int *width, int *height, int *comp)
             return gimage_parsePng(pathname, width, height, comp);
         case GIMAGE_JPG:
             return gimage_parseJpg(pathname, width, height, comp);
+        case GIMAGE_UNKNOWN:
+        	if (gimage_parsePng(pathname, width, height, comp)==GIMAGE_NO_ERROR)
+        		return GIMAGE_NO_ERROR;
+            return gimage_parseJpg(pathname, width, height, comp);
     }
 
     return GIMAGE_UNRECOGNIZED_FORMAT;
@@ -88,6 +92,10 @@ int gimage_loadImage(const char *pathname, void *buf)
             return gimage_loadPng(pathname, buf);
         case GIMAGE_JPG:
             return gimage_loadJpg(pathname, buf);
+        case GIMAGE_UNKNOWN:
+        	if (gimage_loadPng(pathname, buf)==GIMAGE_NO_ERROR)
+        		return GIMAGE_NO_ERROR;
+        	return gimage_loadJpg(pathname, buf);
     }
 
     return GIMAGE_UNRECOGNIZED_FORMAT;
