@@ -43,6 +43,7 @@ Returns the coordinates of the region.<br />
 If transparent areas were trimmed during texture pack export, also reports the amount trimmed.
 <br />
 ]]>
+    <parameter name="baseCoordiniates" optional="true" type="boolean"><![CDATA[Returns values in base (@1) size]]></parameter>
     <return type="number"><![CDATA[x coordinate from texture]]></return>
     <return type="number"><![CDATA[y coordinate from texture]]></return>
     <return type="number"><![CDATA[width of region]]></return>
@@ -51,6 +52,12 @@ If transparent areas were trimmed during texture pack export, also reports the a
     <return type="number"><![CDATA[top trim]]></return>
     <return type="number"><![CDATA[right trim]]></return>
     <return type="number"><![CDATA[bottom trim]]></return>
+  </method>
+  <method name="TextureRegion:getScale" page="getScale" shortdesc="returns the scale ratio of the underlying atlas" version="Gideros 2018.6.3"><![CDATA[<br />
+Returns the scale factor of the underlying atlas
+<br />
+]]>
+    <return type="number"><![CDATA[scale]]></return>
   </method>
   <example name=""><![CDATA[local texture = Texture.new(&quot;atlas.png&quot;)<br />
 <br />

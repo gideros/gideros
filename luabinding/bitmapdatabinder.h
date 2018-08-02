@@ -14,6 +14,7 @@ private:
 
     static int setRegion(lua_State *L);
     static int getRegion(lua_State *L);
+    static int getScale(lua_State *L);
 };
 
 #endif

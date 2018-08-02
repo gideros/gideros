@@ -10,6 +10,7 @@ BitmapDataBinder::BitmapDataBinder(lua_State* L)
 	static const luaL_Reg functionList[] = {
         {"setRegion", setRegion},
         {"getRegion", getRegion},
+        {"getScale", getScale},
         {NULL, NULL},
     };
 
@@ -84,14 +85,41 @@ int BitmapDataBinder::getRegion(lua_State *L)
     int x, y, width, height, dx1, dy1, dx2, dy2;
     bitmapData->getRegion(&x, &y, &width, &height, &dx1, &dy1, &dx2, &dy2);
 
-    lua_pushinteger(L, x);
-    lua_pushinteger(L, y);
-    lua_pushinteger(L, width);
-    lua_pushinteger(L, height);
-    lua_pushinteger(L, dx1);
-    lua_pushinteger(L, dy1);
-    lua_pushinteger(L, dx2);
-    lua_pushinteger(L, dy2);
+    if (lua_toboolean(L,1))
+    {
+        TextureBase *t=bitmapData->texture();
+        float sc=t?(1.0/t->data->scale):1.0;
+    	lua_pushnumber(L, sc*x);
+    	lua_pushnumber(L, sc*y);
+    	lua_pushnumber(L, sc*width);
+    	lua_pushnumber(L, sc*height);
+    	lua_pushnumber(L, sc*dx1);
+    	lua_pushnumber(L, sc*dy1);
+    	lua_pushnumber(L, sc*dx2);
+    	lua_pushnumber(L, sc*dy2);
+    }
+    else {
+    	lua_pushinteger(L, x);
+    	lua_pushinteger(L, y);
+    	lua_pushinteger(L, width);
+    	lua_pushinteger(L, height);
+    	lua_pushinteger(L, dx1);
+    	lua_pushinteger(L, dy1);
+    	lua_pushinteger(L, dx2);
+    	lua_pushinteger(L, dy2);
+    }
 
     return 8;
+}
+
+int BitmapDataBinder::getScale(lua_State *L)
+{
+    Binder binder(L);
+
+    BitmapData* bitmapData = static_cast<BitmapData*>(binder.getInstance("TextureRegion", 1));
+
+    TextureBase *t=bitmapData->texture();
+    lua_pushnumber(L,t?t->data->scale:1);
+
+    return 1;
 }
