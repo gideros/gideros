@@ -168,10 +168,10 @@ bundle:
 	mv $(RELEASE).Tmp/* $(RELEASE)
 	rm -rf $(RELEASE).Tmp
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
-	-cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
+	-cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE).Final/All\ Plugins
 
 bundle.win:
-	-cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
+	-cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
 	
 bundle.installer: bundle
 	cp $(ROOT)/Release/*.nsi $(RELEASE).Final
