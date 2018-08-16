@@ -203,6 +203,7 @@ private slots:
 	void apiDocumentation();
     void giderosDocumentation();
 
+    void toggleFullscreen();
 	void closeMdiTab(int);
 
 private slots:
