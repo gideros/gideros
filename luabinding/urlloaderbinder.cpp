@@ -6,6 +6,7 @@
 #include <ghttp.h>
 #include <string>
 
+static lua_State *L = NULL;
 static inline bool ishex(char c)
 {
     return	('0' <= c && c <= '9') ||
@@ -85,7 +86,7 @@ static Event::Type PROGRESS("progress");
 class GGUrlLoader : public EventDispatcher
 {
 public:
-    GGUrlLoader(lua_State *L) : L(L)
+    GGUrlLoader(lua_State */*L*/)
     {
         id_ = 0;
     }
@@ -162,7 +163,7 @@ private:
     {
         if (type == GHTTP_RESPONSE_EVENT || type == GHTTP_ERROR_EVENT)
         {
-            id_ = 0;
+            close();
         }
 
         luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
@@ -238,12 +239,12 @@ private:
     }
 
 private:
-    lua_State *L;
     int id_;
 };
 
 UrlLoaderBinder::UrlLoaderBinder(lua_State* L)
 {
+	::L=L;
     Binder binder(L);
 
     static const luaL_Reg functionList[] = {
@@ -435,7 +436,7 @@ int UrlLoaderBinder::load(lua_State* L)
     return 0;
 }
 
-int UrlLoaderBinder::ignoreSslErrors(lua_State* L)
+int UrlLoaderBinder::ignoreSslErrors(lua_State* /*L*/)
 {
 	ghttp_IgnoreSSLErrors();
 	return 0;

@@ -52,7 +52,7 @@ int initGL(int &width, int &height)
  height*=pixelRatio;
  printf("CanvasSize: %d,%d (%f)\n",width,height,pixelRatio);
                       
- if (glfwOpenWindow(width, height, 8, 8, 8, 0, 16, 8, GLFW_WINDOW) != GL_TRUE) {
+ if (glfwOpenWindow(width, height, 8, 8, 8, 8, 16, 8, GLFW_WINDOW) != GL_TRUE) {
     printf("glfwOpenWindow() failed\n");
     return GL_FALSE;
  }

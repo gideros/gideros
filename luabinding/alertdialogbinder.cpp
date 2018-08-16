@@ -9,12 +9,12 @@ static char key = ' ';
 #define abs_index(L, i) ((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : lua_gettop(L) + (i) + 1)
 #endif
 
+static lua_State *L = NULL;
 class GGAlertDialog : public EventDispatcher
 {
 public:
-    GGAlertDialog(lua_State *L, const char *title, const char *message, const char *cancelButton, const char *button1, const char *button2)
+    GGAlertDialog(lua_State */*L*/, const char *title, const char *message, const char *cancelButton, const char *button1, const char *button2)
     {
-        this->L = L;
         id_ = gui_createAlertDialog(title, message, cancelButton, button1, button2, callback_s, this);
     }
 
@@ -44,7 +44,7 @@ private:
         static_cast<GGAlertDialog*>(udata)->callback(type, event);
     }
 
-    void callback(int type, void *event)
+    void callback(int /*type*/, void *event)
     {
         luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key); // push AlertDialogs table
         luaL_rawgetptr(L, -1, this);                // push AlertDialog object
@@ -87,11 +87,11 @@ private:
 
 private:
     g_id id_;
-    lua_State *L;
 };
 
 AlertDialogBinder::AlertDialogBinder(lua_State* L)
 {
+    ::L = L;
     Binder binder(L);
 
     static const luaL_Reg functionList[] = {

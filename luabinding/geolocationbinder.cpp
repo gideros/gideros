@@ -15,10 +15,11 @@ static Event::Type LOCATION_UPDATE("locationUpdate");
 static Event::Type HEADING_UPDATE("headingUpdate");
 static Event::Type ERROR("error");
 
+static lua_State *L = NULL;
 class GGGeolocation : public EventDispatcher
 {
 public:
-    GGGeolocation(lua_State *L) : L(L)
+    GGGeolocation(lua_State */*L*/)
     {
         isUpdatingLocation_ = false;
         isUpdatingHeading_ = false;
@@ -167,7 +168,6 @@ private:
         lua_pop(L, 2);
     }
 
-    lua_State *L;
     bool isUpdatingLocation_;
     bool isUpdatingHeading_;
     g_id callbackid_;
@@ -175,6 +175,7 @@ private:
 
 GeolocationBinder::GeolocationBinder(lua_State *L)
 {
+	::L=L;
     Binder binder(L);
 
     static const luaL_Reg functionList[] = {
