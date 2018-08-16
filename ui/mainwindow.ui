@@ -137,6 +137,7 @@ QMainWindow::separator {
     <addaction name="actionUI_and_Editor_Theme"/>
     <addaction name="actionReset_UI_and_Editor_Theme"/>
     <addaction name="separator"/>
+    <addaction name="actionFullscreen"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Edit"/>
@@ -652,6 +653,14 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="text">
     <string>Live syntax checking</string>
+   </property>
+  </action>
+  <action name="actionFullscreen">
+   <property name="text">
+    <string>Fullscreen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
    </property>
   </action>
  </widget>
