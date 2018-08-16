@@ -18,7 +18,7 @@
  _LICENSE     = [[
  MIT LICENSE
 
- Copyright (c) 2014 Enrique García Cota
+ Copyright (c) 2014 Enrique Garcï¿½a Cota
 
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the
@@ -763,6 +763,7 @@ struct World {
 		for (int cy = ct; cy < ct + ch; cy++)
 			for (int cx = cl; cx < cl + cw; cx++)
 				removeItemFromCell(item, cx, cy);
+		rects.erase(item);
 	}
 
 	void update(int item, double x2, double y2, double w2, double h2) {
@@ -1137,7 +1138,8 @@ int worldGetItems(lua_State *L) {
 		lua_rawseti(L, -2, ++n);
 	}
 	lua_remove(L, -2);
-	return 1;
+	lua_pushinteger(L,n);
+	return 2;
 }
 
 int worldGetRect(lua_State *L) {
