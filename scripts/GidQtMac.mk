@@ -170,6 +170,7 @@ bundle:
 	cp -r $(RELEASE).Final/Resources $(RELEASE).Final/Gideros\ Studio.app/Contents
 
 bundle.mac:
+	cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE).Final/All\ Plugins
 	cp -r $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents/
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 
@@ -181,3 +182,4 @@ bundle.installer: bundle
 	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --version $(GIDEROS_VERSION) --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros-App.pkg
 	security -v unlock-keychain -p $(OSX_SIGNING_PASSWORD) "$$HOME/Library/Keychains/login.keychain" && productbuild --distribution Release/GiderosDist.plist --package-path $(ROOT)/Gideros-App.pkg --sign $(OSX_SIGNING_IDENTITY) $(ROOT)/Gideros.pkg
 	rm -rf $(ROOT)/ROOTMAC
+	cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
