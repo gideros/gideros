@@ -327,6 +327,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
+    connect(ui.actionFullscreen, SIGNAL(triggered()), this, SLOT(toggleFullscreen()));
 
 	connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
     connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
@@ -436,6 +437,14 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 	delete client_;
+}
+
+void MainWindow::toggleFullscreen()
+{
+    if (this->isFullScreen())
+        this->showNormal();
+    else
+        this->showFullScreen();
 }
 
 void MainWindow::closeMdiTab(int i)
