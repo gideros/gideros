@@ -441,10 +441,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::toggleFullscreen()
 {
+    QSettings settings;
+    const char* key = "toggleFullscreen_wasMaximized";
+    bool wasMaximized = settings.value(key, false).toBool();
     if (this->isFullScreen())
-        this->showNormal();
-    else
+    {
+        if (wasMaximized)
+            this->showMaximized();
+        else
+            this->showNormal();
+    } else {
+        settings.setValue(key, isMaximized());
         this->showFullScreen();
+    }
 }
 
 void MainWindow::closeMdiTab(int i)
