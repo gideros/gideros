@@ -543,7 +543,8 @@ public class GiderosApplication
 			synchronized (eventQueue_) {
 				eventQueue_.add(PAUSE);
 				try {
-					eventQueue_.wait();
+					//on some devices, onDrawFrame will not called when screen locked,this thread will not wake up
+					eventQueue_.wait(100);
 				} catch (InterruptedException e) {
 				}
 			}
@@ -587,7 +588,8 @@ public class GiderosApplication
 			synchronized (eventQueue_) {
 				eventQueue_.add(RESUME);
 				try {
-					eventQueue_.wait();
+					//on some devices, onDrawFrame will not called when screen locked,this thread will not wake up
+					eventQueue_.wait(100);
 				} catch (InterruptedException e) {
 				}
 			}
