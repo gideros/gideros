@@ -905,7 +905,7 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
     return p;
 }
 
-#ifndef  EMSCRIPTEN //memalloc has issues with emscripten, disable til I know more...
+#if !defined(EMSCRIPTEN) || !defined(NO_TLSF) //memalloc has issues with emscripten, disable til I know more...
 class MemCacheLua : public MemCache
 {
 public:
@@ -957,7 +957,7 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
     (void)ud;
     (void)osize;
     void *ret=NULL;
-#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
+#if defined(EMSCRIPTEN) || defined(NO_TLSF) //TLSF has issues with emscripten, disable til I know more...
     if (nsize == 0)
     {
     	if (ptr)
