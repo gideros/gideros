@@ -1,0 +1,9 @@
+<project>
+ <properties html5_fbinstant="0" iosDevice="0" android_template="0" touchToMouse="1" winrt_package="com.yourdomain.yourapp" tv_icon="" version="1.0" version_code="1" html5_host="" fps="60" vsync="0" osx_domain="giderosmobile.com" osx_bundle="com.yourdomain." splash_v_image="" mouseTouchOrder="0" encryptCode="0" logicalWidth="320" packageName="com.yourdomain.yourapp" splash_h_image="" splashScaleMode="0" windowWidth="0" mouseToTouch="1" build_number="1" winrt_org="GiderosMobile" osx_category="5" exportMode="0" osx_org="GiderosMobile" windowHeight="0" scaleMode="0" disableSplash="0" app_name="" orientation="0" osx_installerId="" app_icon="" html5_fbload="100" html5_mem="256" ios_bundle="com.yourdomain." logicalHeight="480" osx_signingId="" retinaDisplay="0" architecture="0" backgroundColor="#ffffff" autorotation="0" win_org="GiderosMobile" encryptAssets="0" html5_pack="0" win_domain="giderosmobile.com">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="gestureStack.lua"/>
+ <file source="main.lua"/>
+</project>
