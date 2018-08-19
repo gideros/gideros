@@ -43,7 +43,7 @@ qtlibs.install: buildqtlibs
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "vs" ]; then cd vs; $(MINGWMAKE); \
-		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MINGWMAKE) $(QTTGT_DIR); fi 
+		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) $(QMAKE_ARGS) *.pro; $(MINGWMAKE) $(QTTGT_DIR); fi 
 
 %.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "vs" ]; then cd vs; elif [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) clean
@@ -134,19 +134,19 @@ qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $
 	cd $(ROOT)/$*; $(MINGWMAKE) clean
 
 %.qmake.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	cd $(ROOT)/$*; $(QMAKE) $(QMAKE_ARGS) $*.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) release
 
 %.qmake.dbg:
-	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	cd $(ROOT)/$*; $(QMAKE) $(QMAKE_ARGS) $*.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) debug
 
 %.qmake5.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	cd $(ROOT)/$*; $(QMAKE) $(QMAKE_ARGS) $*_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) release
 
 %.qmake5.dbg:
-	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	cd $(ROOT)/$*; $(QMAKE) $(QMAKE_ARGS) $*_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) debug
 
 tools:
