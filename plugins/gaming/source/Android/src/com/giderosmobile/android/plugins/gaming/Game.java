@@ -5,7 +5,7 @@ import java.util.Hashtable;
 
 import android.app.Activity;
 import android.content.Intent;
-
+import android.util.SparseArray;
 /*
  * TODO
  * Match achievement IDs
@@ -17,7 +17,6 @@ import android.content.Intent;
  * Add player info method
  * Add player score for leaderboard
  * Advance achievement progress syncing
- * Multiplayer
  */
 
 
@@ -296,6 +295,83 @@ public class Game {
 			games.get(adp).deleteState(key);
 	}
 	
+	// MP
+    static public void autoMatch(String type, int minPlayers, int maxPlayers) {
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).autoMatch(minPlayers,maxPlayers);
+    }
+    
+    static public void invitePlayers(String type, int minPlayers, int maxPlayers){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).invitePlayers(minPlayers, maxPlayers);
+    }
+    
+    static public void joinRoom(String type, String id){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).joinRoom(id);
+    }
+    
+    static public void showInvitations(String type){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).showInvitations();
+    }
+    
+    static public void showWaitingRoom(String type,int minPlayers){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).showWaitingRoom(minPlayers);
+    }
+    
+    static public void sendTo(String type,String id, byte[] message, int isReliable){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).sendTo(id, message, isReliable);
+    }
+    
+    static public void sendToAll(String type,byte[] message, int isReliable){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).sendToAll(message,isReliable);
+    }
+    
+    static public String getCurrentPlayer(String type){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			return games.get(adp).getCurrentPlayer();
+    	return "";
+    }
+    
+    static public String getCurrentPlayerId(String type){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			return games.get(adp).getCurrentPlayerId();
+    	return "";
+    }
+    
+    static public String getPlayerPicture(String type, String id, int highRes){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			return games.get(adp).getPlayerPicture(id, highRes);
+    	return "";
+    }
+    
+    static public void getPlayerPicture(String type,String leaderboardId, int span, int leaderboardCollection){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).getCurrentPlayerScore(leaderboardId,span,leaderboardCollection);
+    }
+    
+    static public Object getAllPlayers(String type){
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			return games.get(adp).getAllPlayers();
+	   	return new SparseArray<String>();
+    }
+
 	/*
 	 * Events
 	 */
@@ -379,7 +455,80 @@ public class Game {
 		if (sData != 0)
 			onStateDeleted(getCallerName(caller), key, sData);
 	}
-	
+
+	public static void gameStarted(Object caller){
+		if (sData != 0)
+			onGameStarted(getCallerName(caller), sData);
+	}
+	public static void invitationReceived(Object caller,String id){
+		if (sData != 0)
+			onInvitationReceived(getCallerName(caller), id, sData);
+	}
+	public static void joinedRoom(Object caller,String id){
+		if (sData != 0)
+			onJoinedRoom(getCallerName(caller), id, sData);
+	}
+	public static void leftRoom(Object caller,String id){
+		if (sData != 0)
+			onLeftRoom(getCallerName(caller), id, sData);
+	}
+	public static void roomConnected(Object caller,String id){
+		if (sData != 0)
+			onRoomConnected(getCallerName(caller), id, sData);
+	}
+	public static void roomCreated(Object caller,String id){
+		if (sData != 0)
+			onRoomCreated(getCallerName(caller), id,sData);
+	}
+	public static void connectedToRoom(Object caller,String id){
+		if (sData != 0)
+			onConnectedToRoom(getCallerName(caller), id,sData);
+	}
+	public static void disconnectedFromRoom(Object caller,String id){
+		if (sData != 0)
+			onDisconnectedFromRoom(getCallerName(caller), id,sData);
+	}
+	public static void peerDeclined(Object caller){
+		if (sData != 0)
+			onPeerDeclined(getCallerName(caller), sData);
+	}
+	public static void peerInvitedToRoom(Object caller){
+		if (sData != 0)
+			onPeerInvitedToRoom(getCallerName(caller), sData);
+	}
+	public static void peerJoined(Object caller){
+		if (sData != 0)
+			onPeerJoined(getCallerName(caller), sData);
+	}
+	public static void peerLeft(Object caller){
+		if (sData != 0)
+			onPeerLeft(getCallerName(caller), sData);
+	}
+	public static void peersConnected(Object caller){
+		if (sData != 0)
+			onPeersConnected(getCallerName(caller), sData);
+	}
+	public static void peersDisconnected(Object caller){
+		if (sData != 0)
+			onPeersDisconnected(getCallerName(caller), sData);
+	}
+	public static void roomAutoMatching(Object caller,String id){
+		if (sData != 0)
+			onRoomAutoMatching(getCallerName(caller), id,sData);
+	}
+	public static void roomConnecting(Object caller,String id){
+		if (sData != 0)
+			onRoomConnecting(getCallerName(caller), id,sData);
+	}
+	public static void dataReceived(Object caller,byte[] message, String sender){
+		if (sData != 0)
+			onDataReceived(getCallerName(caller), message,sender,sData);
+	}
+	public static void playerScore(Object caller,String rank, String formatscore, long score, int timestamp){
+		if (sData != 0)
+			onPlayerScore(getCallerName(caller), rank, formatscore, score, timestamp, sData);
+	}
+
 	private static native void onLoginComplete(String caller, long data);
 	private static native void onLoginError(String caller, String error, long data);
 	
@@ -403,6 +552,25 @@ public class Game {
 	private static native void onStateConflict(String caller, int key, String ver, byte[] localState, byte[] serverState, long data);
 	private static native void onStateDeleted(String caller, int key, long data);
 	
+	private static native void onGameStarted(String caller,long data);
+	private static native void onInvitationReceived(String caller,String id, long data);
+	private static native void onJoinedRoom(String caller,String id, long data);
+	private static native void onLeftRoom(String caller,String id, long data);
+	private static native void onRoomConnected(String caller,String id, long data);
+	private static native void onRoomCreated(String caller,String id, long data);
+	private static native void onConnectedToRoom(String caller,String id, long data);
+	private static native void onDisconnectedFromRoom(String caller,String id, long data);
+	private static native void onPeerDeclined(String caller,long data);
+	private static native void onPeerInvitedToRoom(String caller,long data);
+	private static native void onPeerJoined(String caller,long data);
+	private static native void onPeerLeft(String caller,long data);
+	private static native void onPeersConnected(String caller,long data);
+	private static native void onPeersDisconnected(String caller,long data);
+	private static native void onRoomAutoMatching(String caller,String id, long data);
+	private static native void onRoomConnecting(String caller,String id, long data);
+	private static native void onDataReceived(String caller,byte[] message, String sender, long data);
+	private static native void onPlayerScore(String caller,String rank, String formatscore, long score, int timestamp, long data);
+
 	private static String modifyName(String type){
 		return type.substring(0,1).toUpperCase() + type.substring(1).toLowerCase();
 	}

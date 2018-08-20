@@ -45,4 +45,19 @@ public interface GameInterface {
 	public void updateState(int key, byte[] state, int immediate);
 	public void resolveState(int key, String version, byte[] state);
 	public void deleteState(int key);
+	
+	//Multiplayer
+    public void autoMatch(int minPlayers, int maxPlayers);
+    public void invitePlayers(int minPlayers, int maxPlayers);
+    public void joinRoom(String id);
+    public void showInvitations();
+    public void showWaitingRoom(int minPlayers);
+    public void sendTo(String id, byte[] message, int isReliable);
+    public void sendToAll(byte[] message, int isReliable);
+    public String getCurrentPlayer();
+    public String getCurrentPlayerId();
+    public String getPlayerPicture(String id, int highRes);
+    public void getCurrentPlayerScore(String leaderboardId, int span, int leaderboardCollection);
+    public Object getAllPlayers();
+
 }

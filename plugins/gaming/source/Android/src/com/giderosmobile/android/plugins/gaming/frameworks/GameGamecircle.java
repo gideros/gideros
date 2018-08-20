@@ -351,4 +351,66 @@ public class GameGamecircle implements GameInterface {
 	    	Game.stateConflict(this, key, "1", developerString.getValue().getBytes(), developerString.getCloudValue().getBytes());
 	    }
 	}
+	
+
+	@Override
+	public void autoMatch(int minPlayers, int maxPlayers) {
+
+	}
+
+	@Override
+	public void invitePlayers(int minPlayers, int maxPlayers) {
+
+	}
+
+	@Override
+	public void joinRoom(String id) {
+
+	}
+
+	@Override
+	public void showInvitations() {
+
+	}
+
+	@Override
+	public void showWaitingRoom(int minPlayers) {
+
+	}
+
+	@Override
+	public void sendTo(String id, byte[] message, int isReliable) {
+
+	}
+
+	@Override
+	public void sendToAll(byte[] message, int isReliable) {
+
+	}
+
+	@Override
+	public String getCurrentPlayer() {
+		return null;
+	}
+
+	@Override
+	public String getCurrentPlayerId() {
+		return null;
+	}
+
+	@Override
+	public String getPlayerPicture(String id, int highRes) {
+		return null;
+	}
+
+	@Override
+	public void getCurrentPlayerScore(String leaderboardId, int span, int leaderboardCollection) {
+
+	}
+
+	@Override
+	public Object getAllPlayers() {
+		return null;
+	}
+
 }

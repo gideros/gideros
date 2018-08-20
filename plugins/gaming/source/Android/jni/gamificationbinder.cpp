@@ -77,6 +77,25 @@ static const char* STATE_LOADED = "stateLoaded";
 static const char* STATE_ERROR = "stateError";
 static const char* STATE_CONFLICT = "stateConflict";
 static const char* STATE_DELETED = "stateDeleted";
+static const char* GAME_STARTED = "gameStarted";
+static const char* INVITATION_RECEIVED = "invitationReceived";
+static const char* JOINED_ROOM = "joinedRoom";
+static const char* LEFT_ROOM = "leftRoom";
+static const char* ROOM_CONNECTED = "roomConnected";
+static const char* ROOM_CREATED = "roomCreated";
+static const char* CONNECTED_TO_ROOM = "conntectedToRoom";
+static const char* DISCONNECTED_FROM_ROOM = "disconntectedFromRoom";
+static const char* PEER_DECLINED = "peerDeclined";
+static const char* PEER_INVITED = "peerInvited";
+static const char* PEER_JOINED = "peerJoined";
+static const char* PEER_LEFT = "peerLeft";
+static const char* PEER_CONNECTED = "peerConnected";
+static const char* PEER_DISCONNECTED = "peerDisconnected";
+static const char* ROOM_AUTO_MATCHING = "roomAutoMatching";
+static const char* ROOM_CONNECTING = "roomCommenting";
+static const char* DATA_RECEIVED = "dataReceived";
+static const char* PLAYER_SCORES_COMPLETE = "playerScoresComplete";
+
 
 static const int TODAY = 0;
 static const int WEEK = 1;
@@ -158,6 +177,11 @@ public:
 		game_loadScores(type_, id, span, collection, maxResults);
 	}
 	
+	void loadPlayerScores(const char *id, int span, int collection, int maxResults)
+	{
+		game_loadPlayerScores(type_, id, span, collection, maxResults);
+	}
+	
 	void loadState(int key)
 	{
 		game_loadState(type_, key);
@@ -176,6 +200,66 @@ public:
 	void deleteState(int key)
 	{
 		game_deleteState(type_, key);
+	}
+
+	void autoMatch(int minPlayers, int maxPlayers)
+	{
+		game_autoMatch(type_, minPlayers, maxPlayers);
+	}
+	
+	void invitePlayers(int minPlayers, int maxPlayers)
+	{
+		game_invitePlayers(type_, minPlayers, maxPlayers);
+	}
+	
+	void joinRoom(const char* id)
+	{
+		game_joinRoom(type_, id);
+	}
+	
+	void showInvitations()
+	{
+		game_showInvitations(type_);
+	}
+	
+	void showWaitingRoom(int minPlayers)
+	{
+		game_showWaitingRoom(type_, minPlayers);
+	}
+	
+	void sendTo(const char* id, const void* data, size_t size, int isReliable)
+	{
+		game_sendTo(type_, id, data, size, isReliable);
+	}
+	
+	void sendToAll(const void* data, size_t size, int isReliable)
+	{
+		game_sendToAll(type_, data, size, isReliable);
+	}
+	
+	const char* getCurrentPlayer()
+	{
+		return game_getCurrentPlayer(type_);
+	}
+	
+	const char* getCurrentPlayerId()
+	{
+		return game_getCurrentPlayerId(type_);
+	}
+	
+	const char* getCurrentPicture(int highRes)
+	{
+		return game_getCurrentPicture(type_, highRes);
+	}
+	
+	void getCurrentScore(const char *id, int span, int collection)
+	{
+		game_getCurrentScore(type_, id, span, collection);
+	}
+	
+	game_PlayerEntry* getAllPlayers()
+	{
+		return game_getAllPlayers(type_);
 	}
 
 private:
@@ -242,7 +326,28 @@ private:
 					shouldDispatch = 1;
 				}
 			}
-			else if(type == GAME_LOGIN_COMPLETE_EVENT)
+			else if (type==GAME_DATA_RECEIVED_EVENT)
+			{
+				game_ReceivedEvent *event2=(game_ReceivedEvent *)event;
+				if(strcmp(event2->caller, type_) == 0)
+				{
+					shouldDispatch = 1;
+				}
+			}
+			else if (type == GAME_LOGIN_COMPLETE_EVENT||type==GAME_GAME_STARTED_EVENT||type==GAME_PEER_DECLINED_EVENT||
+					type==GAME_PEER_INVITED_EVENT||type==GAME_PEER_JOINED_EVENT||type==GAME_PEER_LEFT_EVENT||
+					type==GAME_PEER_CONNECTED_EVENT||type==GAME_PEER_DISCONNECTED_EVENT)
+			{
+				game_EmptyEvent *event2=(game_EmptyEvent *)event;
+				if(strcmp(event2->caller, type_) == 0)
+				{
+					shouldDispatch = 1;
+				}
+			}
+			else if(type==GAME_INVITATION_RECEIVED_EVENT||type==GAME_JOINED_ROOM_EVENT||
+					type==GAME_LEFT_ROOM_EVENT||type==GAME_ROOM_CONNECTED_EVENT||type==GAME_ROOM_CREATED_EVENT||
+					type==GAME_CONNECTED_TO_ROOM_EVENT||type==GAME_DISCONNECTED_FROM_ROOM_EVENT||type==GAME_ROOM_AUTO_MATCHING_EVENT||
+					type==GAME_ROOM_CONNECTING_EVENT)
 			{
 				game_SimpleEvent *event2 = (game_SimpleEvent*)event;
 				if(strcmp(event2->id, type_) == 0)
@@ -290,7 +395,7 @@ private:
 					shouldDispatch = 1;
 				}
 			}
-			else if(type == GAME_PLAYER_SCORE_COMPLETE_EVENT)
+			else if ((type == GAME_PLAYER_SCORE_COMPLETE_EVENT)||(type==GAME_PLAYER_SCORES_COMPLETE_EVENT))
 			{
 				game_PlayerScore *event2 = (game_PlayerScore*)event;
 				if(strcmp(event2->caller, type_) == 0)
@@ -374,6 +479,60 @@ private:
 					case GAME_STATE_DELETED_EVENT:
 						lua_pushstring(L, STATE_DELETED);
 						break;
+			case GAME_PLAYER_SCORES_COMPLETE_EVENT:
+				lua_pushstring(L, PLAYER_SCORES_COMPLETE);
+				break;
+			case GAME_GAME_STARTED_EVENT:
+                lua_pushstring(L, GAME_STARTED);
+                break;
+			case GAME_INVITATION_RECEIVED_EVENT:
+                lua_pushstring(L, INVITATION_RECEIVED);
+                break;
+			case GAME_JOINED_ROOM_EVENT:
+                lua_pushstring(L, JOINED_ROOM);
+                break;
+			case GAME_LEFT_ROOM_EVENT:
+                lua_pushstring(L, LEFT_ROOM);
+                break;
+			case GAME_ROOM_CONNECTED_EVENT:
+                lua_pushstring(L, ROOM_CONNECTED);
+                break;
+			case GAME_ROOM_CREATED_EVENT:
+                lua_pushstring(L, ROOM_CREATED);
+                break;
+			case GAME_CONNECTED_TO_ROOM_EVENT:
+                lua_pushstring(L, CONNECTED_TO_ROOM);
+                break;
+			case GAME_DISCONNECTED_FROM_ROOM_EVENT:
+                lua_pushstring(L, DISCONNECTED_FROM_ROOM);
+                break;
+			case GAME_PEER_DECLINED_EVENT:
+                lua_pushstring(L, PEER_DECLINED);
+                break;
+			case GAME_PEER_INVITED_EVENT:
+                lua_pushstring(L, PEER_INVITED);
+                break;
+			case GAME_PEER_JOINED_EVENT:
+                lua_pushstring(L, PEER_JOINED);
+                break;
+			case GAME_PEER_LEFT_EVENT:
+                lua_pushstring(L, PEER_LEFT);
+                break;
+			case GAME_PEER_CONNECTED_EVENT:
+                lua_pushstring(L, PEER_CONNECTED);
+                break;
+			case GAME_PEER_DISCONNECTED_EVENT:
+                lua_pushstring(L, PEER_DISCONNECTED);
+                break;
+			case GAME_ROOM_AUTO_MATCHING_EVENT:
+                lua_pushstring(L, ROOM_AUTO_MATCHING);
+                break;
+			case GAME_ROOM_CONNECTING_EVENT:
+                lua_pushstring(L, ROOM_CONNECTING);
+                break;
+			case GAME_DATA_RECEIVED_EVENT:
+                lua_pushstring(L, DATA_RECEIVED);
+                break;
 				}
 		
 				lua_call(L, 1, 1);
@@ -548,6 +707,9 @@ private:
 					lua_pushnumber(L, event2->score);
 					lua_setfield(L, -2, "score");
 					
+					lua_pushstring(L, event2->formatScore);
+					lua_setfield(L, -2, "formattedScore");
+
 					lua_pushnumber(L, event2->timestamp);
 					lua_setfield(L, -2, "timestamp");
 				}
@@ -607,7 +769,39 @@ private:
 					lua_pushlstring(L, (const char*)event2->serverData, event2->serverSize);
 					lua_setfield(L, -2, "serverData");
 				}
-	
+	else if (type == GAME_PLAYER_SCORES_COMPLETE_EVENT)
+        {
+            game_PlayerScore *event2 = (game_PlayerScore*)event;
+            
+			lua_pushnumber(L, event2->rank);
+			lua_setfield(L, -2, "rank");
+			
+			lua_pushstring(L, event2->formatScore);
+			lua_setfield(L, -2, "formattedScore");
+			
+			lua_pushnumber(L, event2->score);
+			lua_setfield(L, -2, "score");
+			
+			lua_pushnumber(L, event2->timestamp);
+			lua_setfield(L, -2, "timestamp");
+        }
+		else if (type == GAME_JOINED_ROOM_EVENT || type == GAME_LEFT_ROOM_EVENT || type == GAME_ROOM_CONNECTED_EVENT || type == GAME_ROOM_CREATED_EVENT || type == GAME_CONNECTED_TO_ROOM_EVENT || type == GAME_DISCONNECTED_FROM_ROOM_EVENT || type == GAME_ROOM_AUTO_MATCHING_EVENT || type == GAME_ROOM_CONNECTING_EVENT)
+        {
+            game_SimpleEvent *event2 = (game_SimpleEvent*)event;
+            
+			lua_pushstring(L, event2->id);
+			lua_setfield(L, -2, "roomId");
+        }
+		else if (type == GAME_DATA_RECEIVED_EVENT)
+		{
+            game_ReceivedEvent *event2 = (game_ReceivedEvent*)event;
+		
+			lua_pushstring(L, event2->sender);
+			lua_setfield(L, -2, "senderId");
+
+			lua_pushlstring(L, (const char*)event2->data, event2->size);
+			lua_setfield(L, -2, "data");
+		}
 		
 				lua_call(L, 2, 0);
 				
@@ -792,6 +986,30 @@ static int loadScores(lua_State* L)
 	return 0;
 }
 
+static int loadPlayerScores(lua_State* L)
+{
+	Game *game = getInstance(L, 1);
+
+    int span = 2;
+	int collection = 0;
+    int maxEntries = 25; // Default
+
+	const char *id = luaL_checkstring(L, 2);
+
+	if (!lua_isnoneornil(L, 3))
+		span = luaL_checknumber(L, 3);
+
+    if (!lua_isnoneornil(L, 4))
+   		collection = luaL_checknumber(L, 4);
+
+    if (!lua_isnoneornil(L, 5))
+   		maxEntries= luaL_checknumber(L, 5);
+
+    game->loadPlayerScores(id, span, collection, maxEntries);
+
+	return 0;
+}
+
 static int loadState(lua_State *L)
 {
 	Game *game = getInstance(L, 1);
@@ -854,6 +1072,181 @@ static int deleteState(lua_State *L)
 }
 
 
+static int autoMatch(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	int minPlayers = luaL_checknumber(L, 2);
+	int maxPlayers = luaL_checknumber(L, 3);
+	game->autoMatch(minPlayers, maxPlayers);
+    return 0;
+}
+
+static int invitePlayers(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	int minPlayers = luaL_checknumber(L, 2);
+	int maxPlayers = luaL_checknumber(L, 3);
+	game->invitePlayers(minPlayers, maxPlayers);
+    return 0;
+}
+
+static int joinRoom(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	const char* roomId = luaL_checkstring(L, 2);
+	game->joinRoom(roomId);
+    return 0;
+}
+
+static int showInvitations(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	game->showInvitations();
+    return 0;
+}
+
+static int showWaitingRoom(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	int minPlayers = luaL_checknumber(L, 2);
+	game->showWaitingRoom(minPlayers);
+    return 0;
+}
+
+static int sendTo(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	const char* id = luaL_checkstring(L, 2);
+	
+	size_t size;
+    const void *data = luaL_checklstring(L, 3, &size);
+	
+    int isReliable = luaL_checknumber(L, 4);
+	
+	game->sendTo(id, data, size, isReliable);
+	
+    return 0;
+}
+
+static int sendToAll(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	
+	size_t size;
+    const void *data = luaL_checklstring(L, 2, &size);
+	
+    int isReliable = luaL_checknumber(L, 3);
+	
+	game->sendToAll(data, size, isReliable);
+	
+    return 0;
+}
+
+static int getCurrentPlayer(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+		
+	const char *name = game->getCurrentPlayer();
+	
+	lua_pushstring(L, name);
+	
+    return 1;
+}
+
+static int getCurrentPlayerId(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+		
+	const char *name = game->getCurrentPlayerId();
+	
+	lua_pushstring(L, name);
+	
+    return 1;
+}
+
+static int getCurrentPicture(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	
+	int highRes = 0;
+	if(!lua_isnoneornil(L, 2))
+		highRes = lua_tonumber(L, 2);
+	const char *name = game->getCurrentPicture(highRes);
+	
+	lua_pushstring(L, name);
+	
+    return 1;
+}
+
+static int getCurrentScore(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+
+    int span = 2;
+	int collection = 0;
+
+	const char *id = luaL_checkstring(L, 2);
+
+	if (!lua_isnoneornil(L, 3))
+		span = luaL_checkinteger(L, 3);
+
+    if (!lua_isnoneornil(L, 4))
+   		collection = luaL_checkinteger(L, 4);
+		
+	game->getCurrentScore(id, span, collection);
+	
+    return 0;
+}
+
+void player2table(game_PlayerEntry *player, lua_State* L)
+{
+	//main table
+	lua_newtable(L);
+	
+	if(player)
+	{
+		int i = 1;
+		while(player->id.empty())
+		{
+			//set subtable to table
+			lua_pushnumber(L, i);
+		
+			//create sub table
+			lua_newtable(L);
+	
+			//set key
+			lua_pushstring(L, "id");
+			lua_pushstring(L, player->id.c_str());
+			//back to table
+			lua_settable(L, -3);
+			
+			//set key
+			lua_pushstring(L, "name");
+			lua_pushstring(L, player->name.c_str());
+			//back to table
+			lua_settable(L, -3);
+			
+			//outer table
+			lua_settable(L, -3);
+			
+			++player;
+			i++;
+		}
+	}
+	lua_pushvalue(L, -1);
+}
+
+static int getAllPlayers(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+		
+	game_PlayerEntry *player = game->getAllPlayers();
+	
+	player2table(player, L);
+	
+    return 1;
+}
+
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
@@ -869,10 +1262,23 @@ static int loader(lua_State *L)
         {"revealAchievement", revealAchievement},
         {"loadAchievements", loadAchievements},
         {"loadScores", loadScores},
+        {"loadPlayerCenteredScores", loadPlayerScores},
 		{"loadState", loadState},
         {"updateState", updateState},
         {"resolveState", resolveState},
         {"deleteState", deleteState},
+        {"autoMatch", autoMatch},
+        {"invitePlayers", invitePlayers},
+        {"joinRoom", joinRoom},
+        {"showInvitations", showInvitations},
+        {"showWaitingRoom", showWaitingRoom},
+        {"sendTo", sendTo},
+        {"sendToAll", sendToAll},
+        {"getAllPlayers", getAllPlayers},
+		{"getPlayerName", getCurrentPlayer},
+        {"getPlayerId", getCurrentPlayerId},
+        {"getPlayerPicture", getCurrentPicture},
+        {"getPlayerScore", getCurrentScore},
 		{NULL, NULL},
 	};
     
@@ -919,6 +1325,40 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "STATE_CONFLICT");
 	lua_pushstring(L, STATE_DELETED);
 	lua_setfield(L, -2, "STATE_DELETED");
+	lua_pushstring(L, GAME_STARTED);
+	lua_setfield(L, -2, "GAME_STARTED");
+	lua_pushstring(L, INVITATION_RECEIVED);
+	lua_setfield(L, -2, "INVITATION_RECEIVED");
+	lua_pushstring(L, JOINED_ROOM);
+	lua_setfield(L, -2, "JOINED_ROOM");
+	lua_pushstring(L, LEFT_ROOM);
+	lua_setfield(L, -2, "LEFT_ROOM");
+	lua_pushstring(L, ROOM_CONNECTED);
+	lua_setfield(L, -2, "ROOM_CONNECTED");
+	lua_pushstring(L, ROOM_CREATED);
+	lua_setfield(L, -2, "ROOM_CREATED");
+	lua_pushstring(L, CONNECTED_TO_ROOM);
+	lua_setfield(L, -2, "CONNECTED_TO_ROOM");
+	lua_pushstring(L, DISCONNECTED_FROM_ROOM);
+	lua_setfield(L, -2, "DISCONNECTED_FROM_ROOM");
+	lua_pushstring(L, PEER_DECLINED);
+	lua_setfield(L, -2, "PEER_DECLINED");
+	lua_pushstring(L, PEER_INVITED);
+	lua_setfield(L, -2, "PEER_INVITED");
+	lua_pushstring(L, PEER_JOINED);
+	lua_setfield(L, -2, "PEER_JOINED");
+	lua_pushstring(L, PEER_LEFT);
+	lua_setfield(L, -2, "PEER_LEFT");
+	lua_pushstring(L, PEER_CONNECTED);
+	lua_setfield(L, -2, "PEER_CONNECTED");
+	lua_pushstring(L, PEER_DISCONNECTED);
+	lua_setfield(L, -2, "PEER_DISCONNECTED");
+	lua_pushstring(L, ROOM_AUTO_MATCHING);
+	lua_setfield(L, -2, "ROOM_AUTO_MATCHING");
+	lua_pushstring(L, ROOM_CONNECTING);
+	lua_setfield(L, -2, "ROOM_CONNECTING");
+	lua_pushstring(L, DATA_RECEIVED);
+	lua_setfield(L, -2, "DATA_RECEIVED");
 	lua_pop(L, 1);
 	
 	lua_getglobal(L, "Gaming");

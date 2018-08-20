@@ -188,7 +188,7 @@ local ap=require("Tools/export_android")
 				<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
 				[[[local.gradleCmd]]] assembleRelease
 			</exec>
-			<cp src="app/build/outputs/apk/app-release[[[local.isUnsigned]]].apk" dst="../[[[project.namews]]][[[local.isUnsigned]]].apk"/>
+			<cp src="app/build/outputs/apk/release/app-release[[[local.isUnsigned]]].apk" dst="../[[[project.namews]]][[[local.isUnsigned]]].apk"/>
 			<cd>..</cd>
 			<rmdir>tmp</rmdir>
 			<if condition="[[[export.deployApk]]]">
