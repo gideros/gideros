@@ -697,10 +697,7 @@ private:
 				else if(type == GAME_PLAYER_SCORE_COMPLETE_EVENT)
 				{
 					game_PlayerScore *event2 = (game_PlayerScore*)event;
-				
-					lua_pushstring(L, event2->id);
-					lua_setfield(L, -2, "id");
-					
+
 					lua_pushnumber(L, event2->rank);
 					lua_setfield(L, -2, "rank");
 					
