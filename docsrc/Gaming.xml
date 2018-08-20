@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Gaming" page="Gaming" parent="" type="plugin" version="Gideros 2012.09"><![CDATA[<br />
+The `Gaming` class is defined in the module &quot;gaming&quot;. Therefore, you need to call<br />
+`require(&quot;gaming&quot;)` before using it. Loading the Gaming module <br />
+also creates a global class `Gaming`. <br />
+
+<p><strong>Currently supports:</strong></p>
+<ul>
+<li>Gaming.new("heyzap") -- Android</li>
+<li>Gaming.new("googleplay") -- Android</li>
+<li>Gaming.new("gamecircle") -- Android</li>
+<li>Gaming.new("gamekit") -- iOS</li>
+</ul>
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <constant name="Gaming.TODAY" page="Gaming.TODAY" value="TODAY" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.WEEK" page="Gaming.WEEK" value="WEEK" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.ALL_TIME" page="Gaming.ALL_TIME" value="ALL_TIME" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.FRIENDS" page="Gaming.FRIENDS" value="FRIENDS" version="Gideros 2012.09"><![CDATA[Players scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.ALL_PLAYERS" page="Gaming.ALL_PLAYERS" value="ALL_PLAYERS" version="Gideros 2012.09"><![CDATA[Players scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.UNLOCKED" page="Gaming.UNLOCKED" value="UNLOCKED" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
+  <constant name="Gaming.REVEALED" page="Gaming.REVEALED" value="REVEALED" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
+  <constant name="Gaming.HIDDEN" page="Gaming.HIDDEN" value="HIDDEN" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
+  
+  <method name="Gaming.new" page="init" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:login" page="login" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:logout" page="logout" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:showLeaderboard" page="showLeaderboard" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:reportScore" page="reportScore" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:showAchievements" page="showAchievements" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:getPlayerInfo" page="getPlayerInfo" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:reportAchievement" page="reportAchievement" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:incrementAchievement" page="incrementAchievement" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:revealAchievement" page="revealAchievement" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:loadAchievements" page="loadAchievements" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:loadScores" page="loadScores" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:loadPlayerCenteredScores" page="loadPlayerScores" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:loadState" page="loadState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:updateState" page="updateState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:resolveState" page="resolveState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:deleteState" page="deleteState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:autoMatch" page="autoMatch" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:invitePlayers" page="invitePlayers" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:joinRoom" page="joinRoom" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:showInvitations" page="showInvitations" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:showWaitingRoom" page="showWaitingRoom" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:sendTo" page="sendTo" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:sendToAll" page="sendToAll" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:getAllPlayers" page="getAllPlayers" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:getPlayerName" page="getCurrentPlayer" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:getPlayerId" page="getCurrentPlayerId" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:getPlayerPicture" page="getCurrentPicture" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:getPlayerScore" page="getCurrentScore" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+   <!--      
+    <parameter name="productId" optional="false" type="string"/>
+    <parameter name="productType" optional="false" type="string, optional"/>
+    <parameter name="developerPayload" optional="false" type="string, optional"/>
+    <return type="bool"><![CDATA[`true` if in-app billing service is available, `false` otherwise.]]></return>
+ -->
+  <event name="Event.LOGIN_COMPLETE" page="LOGIN_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Login successful]]></event>
+  <event name="Event.LOGIN_ERROR" page="LOGIN_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while trying to log in]]>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.LOAD_ACHIEVEMENTS_COMPLETE" page="LOAD_ACHIEVEMENTS_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[
+  	Each entry of the `achievements` table contains:<br />
+  	<ul>
+  	<li>id: Achievement id</li>
+  	<li>name: Achievement name</li>
+  	<li>description: Achievement description</li>
+  	<li>status: Achievement status</li>
+  	<li>lastUpdate: The achivement's last update</li>
+  	<li>currentSteps: Currently achieved steps</li>
+  	<li>totalSteps: Total steps</li>
+  	</ul>
+  ]]>
+    <parameter name="achievements" type="table"><![CDATA[Achievements tabled]]></parameter>
+  </event>
+  <event name="Event.LOAD_ACHIEVEMENTS_ERROR" page="LOAD_ACHIEVEMENTS_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while loading achievements]]>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.PLAYER_INFORMATION_COMPLETE" page="PLAYER_INFORMATION_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Received player information]]>
+    <parameter name="id" type="string"><![CDATA[Player id]]></parameter>
+    <parameter name="name" type="string"><![CDATA[Player name]]></parameter>
+    <parameter name="picture" type="string"><![CDATA[Player picture (url)]]></parameter>
+  </event>
+  <event name="Event.PLAYER_INFORMATION_ERROR" page="PLAYER_INFORMATION_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while fetching player information]]>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.PLAYER_SCORE_COMPLETE" page="PLAYER_SCORE_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Received player score]]>
+    <parameter name="rank" type="number"><![CDATA[Player rank]]></parameter>
+    <parameter name="score" type="number"><![CDATA[Player score]]></parameter>
+    <parameter name="formattedScore" type="string"><![CDATA[Player formatted score]]></parameter>
+    <parameter name="timestamp" type="number"><![CDATA[Score timestamp]]></parameter>
+  </event>
+  <event name="Event.PLAYER_SCORE_ERROR" page="PLAYER_SCORE_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while retrieving player score]]>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.REPORT_ACHIEVEMENT_COMPLETE" page="REPORT_ACHIEVEMENT_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Achievement was successfully reported]]></event>
+    <parameter name="id" type="string"><![CDATA[Achievement id]]></parameter>
+  </event>
+  <event name="Event.REPORT_ACHIEVEMENT_ERROR" page="REPORT_ACHIEVEMENT_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while reporting achievement]]>
+    <parameter name="id" type="string"><![CDATA[Achievement id]]></parameter>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.LOAD_SCORES_COMPLETE" page="LOAD_SCORES_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Scores have been loaded from leaderboard.
+  	The `scores` field contains leaderboards entries comprised of the following fields:<br />
+  	<ul>
+  	<li>name: The player's name</li>
+  	<li>score: The player's score</li>
+  	<li>rank: The player's rank</li>
+  	<li>playerId: The player's id</li>
+  	<li>picture: The player's picture (URL) if supported</li>
+  	<li>timestamp: The timestamp of the entry</li>
+  	</ul>
+  	]]>
+    <parameter name="id" type="string"><![CDATA[Leaderboard id]]></parameter>
+    <parameter name="name" type="string"><![CDATA[Leaderboard name]]></parameter>
+    <parameter name="scores" type="table"><![CDATA[Scores tabled]]></parameter>
+  </event>
+  <event name="Event.LOAD_SCORES_ERROR" page="LOAD_SCORES_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while loading scores]]>
+    <parameter name="id" type="string"><![CDATA[Leaderboard id]]></parameter>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.REPORT_SCORE_COMPLETE" page="REPORT_SCORE_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Score successfully reported]]>
+    <parameter name="id" type="string"><![CDATA[Leaderboard id]]></parameter>
+    <parameter name="score" type="number"><![CDATA[Score]]></parameter>
+  </event>
+  <event name="Event.REPORT_SCORE_ERROR" page="REPORT_SCORE_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while reporting score]]>
+    <parameter name="id" type="string"><![CDATA[Leaderboard id]]></parameter>
+    <parameter name="score" type="number"><![CDATA[Score]]></parameter>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.STATE_LOADED" page="STATE_LOADED" value="" version="Gideros 2012.09"><![CDATA[The given state has been loaded]]>
+      <parameter name="key" type="number"><![CDATA[State key]]></parameter>
+      <parameter name="data" type="string"><![CDATA[State data]]></parameter>
+<!--   <parameter name="isFresh" type="boolean"><![CDATA[Freshness]]></parameter> -->
+  </event>
+  <event name="Event.STATE_ERROR" page="STATE_ERROR" value="" version="Gideros 2012.09"><![CDATA[Game state related error]]>
+    <parameter name="key" type="number"><![CDATA[State key]]></parameter>
+    <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
+  </event>
+  <event name="Event.STATE_CONFLICT" page="STATE_CONFLICT" value="" version="Gideros 2012.09"><![CDATA[A conflict was detected between local data and server data. <br/>
+  	Call Gaming:resolveState to fix.<br/>]]>
+    <parameter name="key" type="number"><![CDATA[State key]]></parameter>
+    <parameter name="version" type="string"><![CDATA[Version information]]></parameter>
+    <parameter name="localData" type="string"><![CDATA[Local data]]></parameter>
+    <parameter name="serverData" type="stringr"><![CDATA[Server data]]></parameter>
+  </event>
+  <event name="Event.STATE_DELETED" page="STATE_DELETED" value="" version="Gideros 2012.09"><![CDATA[The specified game state has been deleted]]>
+    <parameter name="key" type="number"><![CDATA[State key]]></parameter>
+  </event>
+  <event name="Event.GAME_STARTED" page="GAME_STARTED" value="" version="Gideros 2012.09"><![CDATA[Game has begun]]></event>
+  <event name="Event.INVITATION_RECEIVED" page="INVITATION_RECEIVED" value="" version="Gideros 2012.09"><![CDATA[Invitation received]]></event>
+  <event name="Event.JOINED_ROOM" page="JOINED_ROOM" value="" version="Gideros 2012.09"><![CDATA[Room has been joined]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+  <event name="Event.LEFT_ROOM" page="LEFT_ROOM" value="" version="Gideros 2012.09"><![CDATA[Room has been left]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+  <event name="Event.ROOM_CONNECTED" page="ROOM_CONNECTED" value="" version="Gideros 2012.09"><![CDATA[Room is connected]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+  <event name="Event.ROOM_CREATED" page="ROOM_CREATED" value="" version="Gideros 2012.09"><![CDATA[Room is created]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+  <event name="Event.CONNECTED_TO_ROOM" page="CONNECTED_TO_ROOM" value="" version="Gideros 2012.09"><![CDATA[]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+  <event name="Event.DISCONNECTED_FROM_ROOM" page="DISCONNECTED_FROM_ROOM" value="" version="Gideros 2012.09"><![CDATA[]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+  <event name="Event.PEER_DECLINED" page="PEER_DECLINED" value="" version="Gideros 2012.09"><![CDATA[]]></event>
+  <event name="Event.PEER_INVITED" page="PEER_INVITED" value="" version="Gideros 2012.09"><![CDATA[]]></event>
+  <event name="Event.PEER_JOINED" page="PEER_JOINED" value="" version="Gideros 2012.09"><![CDATA[]]></event>
+  <event name="Event.PEER_LEFT" page="PEER_LEFT" value="" version="Gideros 2012.09"><![CDATA[]]></event>
+  <event name="Event.PEER_CONNECTED" page="PEER_CONNECTED" value="" version="Gideros 2012.09"><![CDATA[]]></event>
+  <event name="Event.PEER_DISCONNECTED" page="PEER_DISCONNECTED" value="" version="Gideros 2012.09"><![CDATA[]]></event>
+  <event name="Event.ROOM_AUTO_MATCHING" page="ROOM_AUTO_MATCHING" value="" version="Gideros 2012.09"><![CDATA[]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+  <event name="Event.ROOM_CONNECTING" page="ROOM_CONNECTING" value="" version="Gideros 2012.09"><![CDATA[]]>
+    <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
+  </event>
+		else if (type == GAME_JOINED_ROOM_EVENT || type == GAME_LEFT_ROOM_EVENT || type == GAME_ROOM_CONNECTED_EVENT || type == GAME_ROOM_CREATED_EVENT || type == GAME_CONNECTED_TO_ROOM_EVENT || type == GAME_DISCONNECTED_FROM_ROOM_EVENT || type == GAME_ROOM_AUTO_MATCHING_EVENT || type == GAME_ROOM_CONNECTING_EVENT)
+  <event name="Event.DATA_RECEIVED" page="DATA_RECEIVED" value="" version="Gideros 2012.09"><![CDATA[Data has been received from a peer]]>
+    <parameter name="senderId" type="string"><![CDATA[Peer that sent this data]]></parameter>
+    <parameter name="data" type="string"><![CDATA[Payload]]></parameter>
+  </event>
+</object>

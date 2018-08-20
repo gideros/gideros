@@ -92,14 +92,27 @@ public class GameGoogleplay implements GameInterface {
 	public void onPause() {}
 
 	@Override
-	public void onResume() {}
+	public void onResume()
+	{
+	}
 
 	@Override
 	public void login(Object parameters) {
 		if ((mSignInClient!=null)&&(mAccount==null))
 	    {
-			Intent signInIntent = mSignInClient.getSignInIntent();
-			sActivity.get().startActivityForResult(signInIntent, RC_SIGN_IN);
+			mSignInClient.silentSignIn().addOnCompleteListener(sActivity.get(),
+				new OnCompleteListener<GoogleSignInAccount>() {
+				@Override
+				public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+					if (task.isSuccessful()) {
+						mAccount = task.getResult();
+						onSignInSucceeded();
+					} else {
+						Intent signInIntent = mSignInClient.getSignInIntent();
+						sActivity.get().startActivityForResult(signInIntent, RC_SIGN_IN);
+					}
+				}
+			});
 	    }
 	}
 	
