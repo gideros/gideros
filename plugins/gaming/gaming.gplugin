@@ -34,6 +34,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
+		           compile 'com.google.android.gms:play-services-auth:[[[plugin.gmsVersion]]]'
 		           compile 'com.google.android.gms:play-services-games:[[[plugin.gmsVersion]]]'
 		           compile 'com.google.android.gms:play-services-drive:[[[plugin.gmsVersion]]]'
 		           compile 'com.google.android.gms:play-services-plus:[[[plugin.gmsVersion]]]'
