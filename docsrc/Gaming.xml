@@ -96,7 +96,7 @@ also creates a global class `Gaming`. <br />
   <event name="Event.PLAYER_SCORE_ERROR" page="PLAYER_SCORE_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while retrieving player score]]>
     <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
   </event>
-  <event name="Event.REPORT_ACHIEVEMENT_COMPLETE" page="REPORT_ACHIEVEMENT_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Achievement was successfully reported]]></event>
+  <event name="Event.REPORT_ACHIEVEMENT_COMPLETE" page="REPORT_ACHIEVEMENT_COMPLETE" value="" version="Gideros 2012.09"><![CDATA[Achievement was successfully reported]]>
     <parameter name="id" type="string"><![CDATA[Achievement id]]></parameter>
   </event>
   <event name="Event.REPORT_ACHIEVEMENT_ERROR" page="REPORT_ACHIEVEMENT_ERROR" value="" version="Gideros 2012.09"><![CDATA[Error while reporting achievement]]>
@@ -182,7 +182,6 @@ also creates a global class `Gaming`. <br />
   <event name="Event.ROOM_CONNECTING" page="ROOM_CONNECTING" value="" version="Gideros 2012.09"><![CDATA[]]>
     <parameter name="roomId" type="string"><![CDATA[Room identifier]]></parameter>
   </event>
-		else if (type == GAME_JOINED_ROOM_EVENT || type == GAME_LEFT_ROOM_EVENT || type == GAME_ROOM_CONNECTED_EVENT || type == GAME_ROOM_CREATED_EVENT || type == GAME_CONNECTED_TO_ROOM_EVENT || type == GAME_DISCONNECTED_FROM_ROOM_EVENT || type == GAME_ROOM_AUTO_MATCHING_EVENT || type == GAME_ROOM_CONNECTING_EVENT)
   <event name="Event.DATA_RECEIVED" page="DATA_RECEIVED" value="" version="Gideros 2012.09"><![CDATA[Data has been received from a peer]]>
     <parameter name="senderId" type="string"><![CDATA[Peer that sent this data]]></parameter>
     <parameter name="data" type="string"><![CDATA[Payload]]></parameter>
