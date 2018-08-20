@@ -316,6 +316,11 @@
 				path="Graphics/AsyncTextureLoading/AsyncTextureLoading.gproj"
 				image="bar.png"
 				/>
+    <example 	name="Async Tasking"
+				description="Demonstrates how to use async calls for turn-based tasks"
+				path="Graphics/AsyncTasking/AsyncTasking.gproj"
+				image="tasks.png"
+				/>
 </category>
 
 </examples>
