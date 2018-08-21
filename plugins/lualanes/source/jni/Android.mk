@@ -26,18 +26,15 @@ LOCAL_MODULE           := lualanes
 LOCAL_ARM_MODE         := arm
 LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/../../../../Sdk/include
-LOCAL_SRC_FILES        := ../auxiliar.c \
-    					  ../buffer.c \
-    					  ../except.c \
-    					  ../inet.c \
-    					  ../io.c \
-    					  ../luasocket.c \
-    					  ../options.c \
-    					  ../select.c \
-    					  ../tcp.c \
-    					  ../timeout.c \
-    					  ../udp.c \
-						  ../luasocket_stub.cpp
+LOCAL_SRC_FILES        := ../custom_alloc.c \
+    					  ../lanes.c \
+    					  ../compat.c \
+    					  ../threading.c \
+    					  ../tools.c \
+    					  ../deep.c \
+    					  ../keeper.c \
+    					  ../universe.c
+						  ../lualanes_stub.cpp
 LOCAL_LDLIBS           := -ldl -llog
 LOCAL_SHARED_LIBRARIES := lua gideros
 
