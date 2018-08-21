@@ -14,32 +14,91 @@ also creates a global class `Gaming`. <br />
 ]]>
   <platform>android</platform>
   <platform>ios</platform>
-  <constant name="Gaming.TODAY" page="Gaming.TODAY" value="TODAY" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
-  <constant name="Gaming.WEEK" page="Gaming.WEEK" value="WEEK" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
-  <constant name="Gaming.ALL_TIME" page="Gaming.ALL_TIME" value="ALL_TIME" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
-  <constant name="Gaming.FRIENDS" page="Gaming.FRIENDS" value="FRIENDS" version="Gideros 2012.09"><![CDATA[Players scope for leaderboards functions.]]></constant>
-  <constant name="Gaming.ALL_PLAYERS" page="Gaming.ALL_PLAYERS" value="ALL_PLAYERS" version="Gideros 2012.09"><![CDATA[Players scope for leaderboards functions.]]></constant>
-  <constant name="Gaming.UNLOCKED" page="Gaming.UNLOCKED" value="UNLOCKED" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
-  <constant name="Gaming.REVEALED" page="Gaming.REVEALED" value="REVEALED" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
-  <constant name="Gaming.HIDDEN" page="Gaming.HIDDEN" value="HIDDEN" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
+  <constant name="Gaming.TODAY" page="Gaming.TODAY" value="0" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.WEEK" page="Gaming.WEEK" value="1" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.ALL_TIME" page="Gaming.ALL_TIME" value="2" version="Gideros 2012.09"><![CDATA[Time scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.FRIENDS" page="Gaming.FRIENDS" value="0" version="Gideros 2012.09"><![CDATA[Players scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.ALL_PLAYERS" page="Gaming.ALL_PLAYERS" value="1" version="Gideros 2012.09"><![CDATA[Players scope for leaderboards functions.]]></constant>
+  <constant name="Gaming.UNLOCKED" page="Gaming.UNLOCKED" value="0" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
+  <constant name="Gaming.REVEALED" page="Gaming.REVEALED" value="1" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
+  <constant name="Gaming.HIDDEN" page="Gaming.HIDDEN" value="2" version="Gideros 2012.09"><![CDATA[Achievement state.]]></constant>
   
   <method name="Gaming.new" page="init" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
   <method name="Gaming:login" page="login" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:logout" page="logout" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:showLeaderboard" page="showLeaderboard" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:reportScore" page="reportScore" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:showAchievements" page="showAchievements" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:getPlayerInfo" page="getPlayerInfo" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:reportAchievement" page="reportAchievement" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:incrementAchievement" page="incrementAchievement" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:revealAchievement" page="revealAchievement" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:loadAchievements" page="loadAchievements" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:loadScores" page="loadScores" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:loadPlayerCenteredScores" page="loadPlayerScores" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:loadState" page="loadState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:updateState" page="updateState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:resolveState" page="resolveState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
-  <method name="Gaming:deleteState" page="deleteState" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
+  <method name="Gaming:isLoggedIn" page="isLoggedIn" shortdesc="" version="Gideros 2018.9"><![CDATA[
+  	Returns true if we are logged in.
+  ]]>
+    <return type="bool"><![CDATA[`true` if Gaming is logged in, `false` otherwise.]]></return>
+  </method>
+  <method name="Gaming:logout" page="logout" shortdesc="" version="Gideros 2012.09"><![CDATA[Logs out from gaming services]]></method>
+  <method name="Gaming:showLeaderboard" page="showLeaderboard" shortdesc="" version="Gideros 2012.09"><![CDATA[Show the specified leaderboard]]>
+    <parameter name="leaderboardId" optional="true" type="string">Leaderboard to show, or nil for all leaderboards</parameter>
+  </method>
+  <method name="Gaming:reportScore" page="reportScore" shortdesc="" version="Gideros 2012.09"><![CDATA[
+  Upload a score to a leaderboard.
+  ]]>
+    <parameter name="leaderboardId" type="string">Leaderboard Id</parameter>
+    <parameter name="score" type="number">Score</parameter>
+    <parameter name="immediate" type="boolean">Push the update immediately</parameter>
+  </method>
+  <method name="Gaming:showAchievements" page="showAchievements" shortdesc="" version="Gideros 2012.09"><![CDATA[Show achievements.]]></method>
+  <method name="Gaming:getPlayerInfo" page="getPlayerInfo" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Fetch player info. Either `Event.PLAYER_INFORMATION_COMPLETE`or `Event.PLAYER_INFORMATION_ERROR` will be triggered.]]>
+  </method>
+  <method name="Gaming:reportAchievement" page="reportAchievement" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Update achievement progress. Either `Event.REPORT_ACHIEVEMENTS_COMPLETE`or `Event.REPORT_ACHIEVEMENTS_ERROR` will be triggered.]]>
+    <parameter name="achievementId" type="string">Achievement Id</parameter>
+    <parameter name="numSteps" optional="true" type="number">Number of steps</parameter>
+    <parameter name="immediate" type="boolean">Push the update immediately</parameter>
+  </method>
+  <method name="Gaming:incrementAchievement" page="incrementAchievement" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Increment achievement progress Either. `Event.REPORT_ACHIEVEMENTS_COMPLETE`or `Event.REPORT_ACHIEVEMENTS_ERROR` will be triggered.]]>
+    <parameter name="achievementId" type="string">Achievement Id</parameter>
+    <parameter name="numSteps" optional="true" type="number">Number of steps to add</parameter>
+    <parameter name="immediate" type="boolean">Push the update immediately</parameter>
+  </method>
+  <method name="Gaming:revealAchievement" page="revealAchievement" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Reveal a hidden achievement]]>
+    <parameter name="achievementId" type="string">Achievement Id</parameter>
+    <parameter name="immediate" type="boolean">Push the update immediately</parameter>
+  </method>
+  <method name="Gaming:loadAchievements" page="loadAchievements" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Fetch achievements. Either `Event.LOAD_ACHIEVEMENTS_COMPLETE`or `Event.LOAD_ACHIEVEMENTS_ERROR` will be triggered.]]>
+  </method>
+  <method name="Gaming:loadScores" page="loadScores" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Fetch leaderboard entries. Either `Event.LOAD_SCORES_COMPLETE`or `Event.LOAD_SCORES_ERROR` will be triggered.]]>
+    <parameter name="leaderboardId" type="string">Leaderboard Id</parameter>
+    <parameter name="timeSpan" type="number" optional="true">Time range: `Gaming.TODAY`, `Gaming.WEEK` or `Gaming.ALL_TIME`</parameter>
+    <parameter name="collection" type="number" optional="true">Player range: `Gaming.FRIENDS` or `Gaming.ALL_PLAYERS`</parameter>
+    <parameter name="maxEntries" type="number" optional="true">Maximum number of entries to return</parameter>
+  </method>
+  <method name="Gaming:loadPlayerCenteredScores" page="loadPlayerScores" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Fetch player leaderboard entries. Either `Event.PLAYER_SCORE_COMPLETE`or `Event.PLAYER_SCORE_ERROR` will be triggered.]]>
+    <parameter name="leaderboardId" type="string">Leaderboard Id</parameter>
+    <parameter name="timeSpan" type="number" optional="true">Time range: `Gaming.TODAY`, `Gaming.WEEK` or `Gaming.ALL_TIME`</parameter>
+    <parameter name="collection" type="number" optional="true">Player range: `Gaming.FRIENDS` or `Gaming.ALL_PLAYERS`</parameter>
+    <parameter name="maxEntries" type="number" optional="true">Maximum number of entries to return</parameter>
+  </method>
+  <method name="Gaming:loadState" page="loadState" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Load a data element from cloud storage. Either 'Event.STATE_LOADED`, `Event.STATE_ERROR`or `Event.STATE_CONFLICT` will be triggered.]]>
+    <parameter name="key" type="number">Key to load</parameter>
+  </method>
+  <method name="Gaming:updateState" page="updateState" shortdesc="" version="Gideros 2012.09">
+  <![CDATA[Update a data element in cloud storage. Either `Event.STATE_ERROR`or `Event.STATE_CONFLICT` will be triggered.]]>
+    <parameter name="key" type="number">Key to update</parameter>
+    <parameter name="data" type="string">New data</parameter>
+    <parameter name="immediate" type="boolean" optionnal="true">Push the update immediately</parameter>
+  </method>
+  <method name="Gaming:resolveState" page="resolveState" shortdesc="" version="Gideros 2012.09">
+    <![CDATA[Resolve a conflict state in cloud storage. Either `Event.STATE_ERROR`or `Event.STATE_CONFLICT` will be triggered.]]>
+    <parameter name="key" type="number">Key to resolve</parameter>
+    <parameter name="version" type="string">Conflict context</parameter>
+    <parameter name="data" type="string">New data</parameter>
+  </method>
+ <method name="Gaming:deleteState" page="deleteState" shortdesc="" version="Gideros 2012.09">
+   <![CDATA[Delete a data element in cloud storage. Either `Event.STATE_ERROR`or `Event.STATE_DELETED` will be triggered.]]>
+    <parameter name="key" type="number">Key to delete</parameter>
+  </method>
   <method name="Gaming:autoMatch" page="autoMatch" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
   <method name="Gaming:invitePlayers" page="invitePlayers" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
   <method name="Gaming:joinRoom" page="joinRoom" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />]]></method>
@@ -141,7 +200,7 @@ also creates a global class `Gaming`. <br />
     <parameter name="error" type="string"><![CDATA[Error information]]></parameter>
   </event>
   <event name="Event.STATE_CONFLICT" page="STATE_CONFLICT" value="" version="Gideros 2012.09"><![CDATA[A conflict was detected between local data and server data. <br/>
-  	Call Gaming:resolveState to fix.<br/>]]>
+  	Call `Gaming:resolveState` to fix.<br/>]]>
     <parameter name="key" type="number"><![CDATA[State key]]></parameter>
     <parameter name="version" type="string"><![CDATA[Version information]]></parameter>
     <parameter name="localData" type="string"><![CDATA[Local data]]></parameter>

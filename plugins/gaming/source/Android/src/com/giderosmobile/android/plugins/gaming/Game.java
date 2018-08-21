@@ -194,7 +194,18 @@ public class Game {
 		}
 		catch(Exception ex)	{}
 	}
-	
+
+	public static boolean loggedin(String type){
+		final String adp = modifyName(type);
+		try
+		{
+			if(games.containsKey(adp))
+				return games.get(adp).loggedin();
+		}
+		catch(Exception ex)	{}
+		return false;
+	}
+
 	public static void showLeaderboard(String type, final String id)
 	{
 		final String adp = modifyName(type);

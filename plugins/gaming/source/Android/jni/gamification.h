@@ -224,6 +224,7 @@ G_API void game_initialize(const char *game);
 G_API void game_destroy(const char *game);
 G_API void game_login(const char *game, game_Parameter *params);
 G_API void game_logout(const char *game);
+G_API bool game_loggedin(const char *game);
 
 G_API void game_reportScore(const char *game, const char *id, long score, int immediate);
 G_API void game_showAchievements(const char *game);

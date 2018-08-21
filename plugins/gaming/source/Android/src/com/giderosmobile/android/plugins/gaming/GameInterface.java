@@ -23,6 +23,8 @@ public interface GameInterface {
 	
 	public void login(final Object parameters);
 	
+	public boolean loggedin();
+	
 	public void logout();
 	
 	public void showLeaderboard(String id);
