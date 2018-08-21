@@ -114,7 +114,16 @@ public:
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "logout", "(Ljava/lang/String;)V"), jAd);
 		env->DeleteLocalRef(jAd);
 	}
-	
+
+	bool loggedin(const char *ad)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jAd = env->NewStringUTF(ad);
+		bool b=env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "loggedin", "(Ljava/lang/String;)Z"), jAd);
+		env->DeleteLocalRef(jAd);
+		return b;
+	}
+
 	void reportScore(const char *game, const char *id, long score, int immediate)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -1466,6 +1475,15 @@ void game_logout(const char *ad)
 	{
 		s_game->logout(ad);
 	}
+}
+
+bool game_loggedin(const char *ad)
+{
+	if(s_game)
+	{
+		return s_game->loggedin(ad);
+	}
+	return false;
 }
 
 void game_reportScore(const char *game, const char *id, long score, int immediate)

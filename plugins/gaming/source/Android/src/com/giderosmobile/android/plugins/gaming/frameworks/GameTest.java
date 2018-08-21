@@ -55,6 +55,12 @@ public class GameTest implements GameInterface {
 	}
 
 	@Override
+	public boolean loggedin() {
+		Log.d("GameTest", "logged in");
+		return false;
+	}
+
+	@Override
 	public void onActivityResult(int request, int response, Intent data) {
 		Log.d("GameTest", "onActivityResult: " + request + "; " + response);
 	}

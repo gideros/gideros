@@ -137,6 +137,11 @@ public:
 		game_logout(type_);
 	}
 	
+	bool loggedIn()
+	{
+		return game_loggedin(type_);
+	}
+
 	void showAchievements()
 	{
 		game_showAchievements(type_);
@@ -870,6 +875,13 @@ static int logout(lua_State *L)
     return 0;
 }
 
+static int isLoggedIn(lua_State *L)
+{
+    Game *game = getInstance(L, 1);
+	lua_pushboolean(L, game->loggedIn());
+    return 1;
+}
+
 static int showLeaderboard(lua_State *L)
 {
 	Game *game = getInstance(L, 1);
@@ -1248,6 +1260,7 @@ static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
         {"new", init},
+		{"isLoggedIn",isLoggedIn},
         {"login", login},
         {"logout", logout},
 		{"showLeaderboard", showLeaderboard},

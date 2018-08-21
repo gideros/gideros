@@ -57,14 +57,12 @@ public class GameGoogleplay implements GameInterface {
 	protected GoogleSignInAccount mAccount;
 	final static int RC_UNUSED = 9002;
 	final static int RC_SIGN_IN = 9000;
-	boolean signed = false;
 	GameGoogleplay me;
 	
 	@Override
 	public void onCreate(WeakReference<Activity> activity) {
 		sActivity =  activity;
 		me = this;
-		signed = false;
 		if(isAvailable())
 		{
 			GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -115,10 +113,14 @@ public class GameGoogleplay implements GameInterface {
 			});
 	    }
 	}
-	
+
+	@Override
+	public boolean loggedin() {
+		return ((mSignInClient!=null)&&(mAccount!=null));
+	}
+
 	@Override
 	public void logout() {
-		signed = false;
        	if(mSignInClient != null && (mAccount!=null))
        	{
        		mAccount=null;
@@ -579,9 +581,6 @@ public class GameGoogleplay implements GameInterface {
 	public Player currentPlayer;
 	
 	private void onSignInSucceeded() {
-		if(!signed)
-		{
-			signed = true;
 			if(mAccount!=null)
 			{
 				GoogleSignInAccount sa=mAccount;
@@ -616,7 +615,6 @@ public class GameGoogleplay implements GameInterface {
 			}
 			else
 				Game.loginComplete(this);
-		}
 	}
 	
    /*MULTIPLAYER STUFF*/
