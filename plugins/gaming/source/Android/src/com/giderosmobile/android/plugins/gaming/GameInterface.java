@@ -42,6 +42,7 @@ public interface GameInterface {
 	public void loadAchievements();
 	
 	public void loadScores(String id, int span, int collection, int maxResults);
+	public void loadPlayerScores(String id, int span, int collection, int maxResults);
 	
 	public void loadState(int key);
 	public void updateState(int key, byte[] state, int immediate);

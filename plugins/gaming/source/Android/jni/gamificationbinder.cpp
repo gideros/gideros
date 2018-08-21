@@ -92,7 +92,7 @@ static const char* PEER_LEFT = "peerLeft";
 static const char* PEER_CONNECTED = "peerConnected";
 static const char* PEER_DISCONNECTED = "peerDisconnected";
 static const char* ROOM_AUTO_MATCHING = "roomAutoMatching";
-static const char* ROOM_CONNECTING = "roomCommenting";
+static const char* ROOM_CONNECTING = "roomConnecting";
 static const char* DATA_RECEIVED = "dataReceived";
 static const char* PLAYER_SCORES_COMPLETE = "playerScoresComplete";
 

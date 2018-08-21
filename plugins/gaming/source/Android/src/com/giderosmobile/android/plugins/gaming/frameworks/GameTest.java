@@ -142,6 +142,24 @@ public class GameTest implements GameInterface {
 	}
 
 	@Override
+	public void loadPlayerScores(String id, int span, int collection, int maxResults) {
+		Log.d("GameTest", "loadScores: " + id + ", " + span + ", " + collection + ", " + maxResults);
+		String leaderboardName = "Leaderbroad";
+		SparseArray<Bundle> lscores = new SparseArray<Bundle>();
+		int size = 3;
+		for(int i = 0; i < size; i++){
+			Bundle map = new Bundle();
+			map.putString("rank", ""+(i+1));
+			map.putString("score", (100-(i*10))+"");
+			map.putString("name", "Test user " +(i+1));
+			map.putString("playerId", i+"");
+			map.putInt("timestamp", (1000*i));
+			lscores.put(i, map);
+		}
+		Game.loadPlayerScoresComplete(this, id, leaderboardName, lscores);
+	}
+
+	@Override
 	public void loadState(int key) {
 		Log.d("GameTest", "load state: " + key);
 		Game.stateLoaded(this, key, "state1".getBytes(), 1);
