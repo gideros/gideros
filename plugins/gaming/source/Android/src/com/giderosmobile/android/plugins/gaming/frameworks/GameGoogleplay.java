@@ -395,6 +395,7 @@ public class GameGoogleplay implements GameInterface {
 								LeaderboardScore l = scores.get(i);
 								Bundle map = new Bundle();
 								map.putString("rank", l.getDisplayRank());
+		    					map.putString("formatScore", l.getDisplayScore());
 								map.putString("score", l.getDisplayScore());
 								map.putString("name", l.getScoreHolderDisplayName());
 								map.putString("playerId", l.getScoreHolder().getPlayerId());
@@ -419,6 +420,54 @@ public class GameGoogleplay implements GameInterface {
 			Game.loadScoresError(this, id, Game.LIBRARY_NOT_FOUND);
 		}
 	}
+	
+	public void loadPlayerScores(String id, int span, int collection, int maxResults ){
+	    	if(maxResults > 25){
+				maxResults = 25;
+			}
+			if(isAvailable())
+			{
+				if(mAccount != null)
+		    	{
+		    		gLeaderboards.loadPlayerCenteredScores(id, span, collection, maxResults).addOnCompleteListener(sActivity.get(), new OnCompleteListener<AnnotatedData<LeaderboardsClient.LeaderboardScores>>() {
+						@Override
+						public void onComplete(@NonNull Task<AnnotatedData<LeaderboardsClient.LeaderboardScores>> task) {
+							if(task.isSuccessful()){
+								LeaderboardsClient.LeaderboardScores ls=task.getResult().get();
+								String leaderboardId =  ls.getLeaderboard().getLeaderboardId();
+								String leaderboardName = ls.getLeaderboard().getDisplayName();
+								LeaderboardScoreBuffer scores = ls.getScores();
+								SparseArray<Bundle> lscores = new SparseArray<Bundle>();
+								int size = scores.getCount();
+			    				for(int i = 0; i < size; i++){
+			    					LeaderboardScore l = scores.get(i);
+			    					Bundle map = new Bundle();
+			    					map.putString("rank", l.getDisplayRank());
+			    					map.putString("formatScore", l.getDisplayScore());
+			    					map.putLong("score", l.getRawScore());
+			    					map.putString("name", l.getScoreHolderDisplayName());
+			    					map.putString("playerId", l.getScoreHolder().getPlayerId());
+			    					map.putInt("timestamp", (int)(l.getTimestampMillis()/1000));
+			    					lscores.put(i, map);
+			    				}
+								Game.loadScoresComplete(me, leaderboardId, leaderboardName, lscores);
+								ls.release();
+							}
+							else
+							{
+								Game.loadScoresError(this, id, getTaskError(task));
+							}
+						}
+					});
+		    	}
+				else
+		    		Game.loadScoresError(this, id, Game.NOT_LOG_IN);
+			}
+			else
+			{
+				Game.loadScoresError(this, id, Game.LIBRARY_NOT_FOUND);
+			}
+	    }
 
 	Map<Integer,Snapshot> snapShots=new HashMap<Integer,Snapshot>();
 	@Override
