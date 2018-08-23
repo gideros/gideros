@@ -70,6 +70,13 @@ luasocket.plugin.winrt:
 	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.WindowsPhone.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
 	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
 
+lualanes.plugin.winrt:
+	$(call WINRT_BUILD_WIN,plugins/lualanes/source/winrt/lualanes,lualanes)
+	$(call WINRT_BUILD_WP,plugins/lualanes/source/winrt/lualanes,lualanes)
+	mkdir -p $(RELEASE)/All\ Plugins/lualanes/bin/WinRT
+	cp Release/All\ Plugins/lualanes/bin/WinRT/Release/ARM/*.WindowsPhone.lib $(RELEASE)/All\ Plugins/lualanes/bin/WinRT/
+	cp Release/All\ Plugins/lualanes/bin/WinRT/Release/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/lualanes/bin/WinRT/
+
 %.plugin.winrt.clean:
 	$(call WINRT_CLEAN,plugins/$*/source/winrt,$*)
 

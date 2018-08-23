@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{b08ea2bf-55b6-4390-b5a9-abb1602fcc15}</ItemsProjectGuid>
+    <ItemsRootNamespace>lualanes</ItemsRootNamespace>
+    <ItemsProjectName>lualanes.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\lanes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\compat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\threading.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\tools.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\deep.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\keeper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\universe.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\lanes.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\compat.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\threading.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\tools.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\deep.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\keeper.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\universe.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+</Project>
