@@ -11,17 +11,36 @@ win32{
 
     TARGET = GiderosPlayer
 
-
     LIBS += \
         -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\
 #        -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32\
         -lws2_32\
-        -liphlpapi\
-        -L"../libgid/release" -lgid\
-        -L"../libgvfs/release" -lgvfs\
-        -L"../lua/release" -llua\
-        -L"../libgideros/release" -lgideros\
-        -L"../libpystring/release" -lpystring
+        -liphlpapi
+
+     release{
+        _CONFIG_ = release
+            } else {
+        _CONFIG_ = debug
+    }
+
+    debug_with_installed_libs{
+        message("Build Target: Debug with Installed Libs")
+        DESTDIR = ../Build.Win
+        LIBS += \
+            -L"../Build.Win" -lgid\
+            -L"../Build.Win" -lgvfs\
+            -L"../Build.Win" -llua\
+            -L"../Build.Win" -lgideros\
+            -L"../Build.Win" -lpystring
+    } else {
+        message("Build Target: "$$_CONFIG_)
+        LIBS += \
+            -L"../libgid/$$_CONFIG_" -lgid\
+            -L"../libgvfs/$$_CONFIG_" -lgvfs\
+            -L"../lua/$$_CONFIG_" -llua\
+            -L"../libgideros/$$_CONFIG_" -lgideros\
+            -L"../libpystring/$$_CONFIG_" -lpystring
+    }
 }
 
 macx {
