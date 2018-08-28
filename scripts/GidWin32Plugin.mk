@@ -29,4 +29,11 @@ $(BUILD)/%.o: ../%.c
 	@echo "CC $<"
 	@$(CC) $(CINCS) $(CFLGS) -c $< -o $@
 
+$(BUILD)/%.o: %.cpp
+	@echo "C+ $<"
+	@$(CX) $(CINCS) $(CFLGS) -c $< -o $@
+
+$(BUILD)/%.o: %.c
+	@echo "CC $<"
+	@$(CC) $(CINCS) $(CFLGS) -c $< -o $@
 		

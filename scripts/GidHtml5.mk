@@ -22,6 +22,12 @@ html5.main:
 
 html5.libs: versioning 
 	cd emscripten; $(MAKE) -j 4
+
+%.html5plugin:
+	cd emscripten; $(MAKE) $*.plugin
+
+%.html5plugin.clean:
+	cd emscripten; $(MAKE) $*.plugin.clean
 	
 html5.template: html5.libs
 	cp -r emscripten/Build/Html5 $(RELEASE)/Templates

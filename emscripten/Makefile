@@ -150,6 +150,12 @@ plugins:
 plugins.clean:
 	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
 
+%.plugin:
+	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE); cd -
+
+%.plugin.clean:
+	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE) clean; cd -
+
 SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT LXMP
 SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .bc,$(SUBLIBS)))
 

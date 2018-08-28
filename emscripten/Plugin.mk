@@ -21,7 +21,7 @@ path:
 	mkdir -p $(sort $(dir $(OBJS)))
 
 clean:
-	rm -rf $(BUILD)
+	rm -rf $(BUILD) 
 
 $(BUILD)/%.em.o: ../%.cpp
 	@echo "EMCC $<"
@@ -30,3 +30,12 @@ $(BUILD)/%.em.o: ../%.cpp
 $(BUILD)/%.em.o: ../%.c
 	@echo "EMCC $<"
 	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
+
+$(BUILD)/%.em.o: %.cpp
+	@echo "EMCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+
+$(BUILD)/%.em.o: %.c
+	@echo "EMCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
+	

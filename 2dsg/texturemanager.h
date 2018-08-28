@@ -69,11 +69,11 @@ public:
     TextureManager(Application* application);
     ~TextureManager();
 
-    TextureData* createTextureFromFile(const char* filename, const TextureParameters& parameters, bool pow2=true);
-    TextureData* createTextureFromDib(const Dib& dib, const TextureParameters& parameters);
-    TextureData* createRenderTarget(int width, int height, const TextureParameters& parameters, bool selectScale=false);
-    void updateTextureFromDib(TextureData* data, const Dib& dib);
-    void destroyTexture(TextureData* texture);
+    virtual TextureData* createTextureFromFile(const char* filename, const TextureParameters& parameters, bool pow2=true);
+    virtual TextureData* createTextureFromDib(const Dib& dib, const TextureParameters& parameters);
+    virtual TextureData* createRenderTarget(int width, int height, const TextureParameters& parameters, bool selectScale=false);
+    virtual void updateTextureFromDib(TextureData* data, const Dib& dib);
+    virtual void destroyTexture(TextureData* texture);
 
 private:
     Application *application_;
