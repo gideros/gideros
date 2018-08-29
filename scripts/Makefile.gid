@@ -79,6 +79,9 @@ sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
 	@mkdir -p $(RELEASE)/All\ Plugins/$(notdir $*)
 	@for f in $(ROOT)/plugins/$*/*.gplugin; do if [ -f "$$f" ]; then cp $$f $(RELEASE)/All\ Plugins/$(notdir $*); fi; done
 
+prep.repo:
+	if [ ! -d $(ROOT)/plugins/spine/spine-runtimes/spine-c ]; then git submodule add https://github.com/gideros/spine-runtimes.git  plugins/spine/spine-runtimes; fi
+	git submodule update --recursive	
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
 ifeq ($(OS),Windows_NT)

@@ -267,3 +267,7 @@ plugins/LPeg/source/makefile
 /Default/
 temp
 .tmp
+
+#GIT: ignore gitmodules as it may conflict with private repos
+.gitmodules
+
