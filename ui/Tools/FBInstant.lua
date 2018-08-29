@@ -124,7 +124,7 @@ function context.chooseAsync(opts,cb)
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
   })]])
 end
-function context.createhAsync(id,cb) 
+function context.createAsync(id,cb) 
   contextid=contextid+1
   contexts[contextid]=cb
   JS.eval("FBInstant.context.createAsync('"..id..[[').then(function () {
@@ -559,4 +559,3 @@ JS:addEventListener("FBInstantLdbGLA",function (e)
 end)
 
 return FBInstant
-  
