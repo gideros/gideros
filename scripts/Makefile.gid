@@ -80,7 +80,11 @@ sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
 	@for f in $(ROOT)/plugins/$*/*.gplugin; do if [ -f "$$f" ]; then cp $$f $(RELEASE)/All\ Plugins/$(notdir $*); fi; done
 
 prep.repo:
-	if [ ! -d $(ROOT)/plugins/spine/spine-runtimes/spine-c ]; then git submodule add https://github.com/gideros/spine-runtimes.git  plugins/spine/spine-runtimes; fi
+	if [ ! -d $(ROOT)/plugins/spine/spine-runtimes/spine-c ]; then \
+		git submodule add https://github.com/gideros/spine-runtimes.git  plugins/spine/spine-runtimes; \
+		git reset HEAD .gitmodules \
+		git reset HEAD plugins/spine/spine-runtimes \ 
+	fi
 	git submodule update --recursive	
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
