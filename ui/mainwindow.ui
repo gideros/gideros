@@ -139,10 +139,16 @@ QMainWindow::separator {
     <addaction name="separator"/>
     <addaction name="actionFullscreen"/>
    </widget>
+   <widget class="QMenu" name="menuAddons">
+    <property name="title">
+     <string>Addons</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Edit"/>
    <addaction name="menuCompile"/>
    <addaction name="menuPlayer"/>
+   <addaction name="menuAddons"/>
    <addaction name="menuHelp"/>
    <addaction name="menuSettings"/>
   </widget>

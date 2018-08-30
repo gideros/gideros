@@ -36,6 +36,7 @@ class MainWindow : public QMainWindow{
         float scale();
         void setScale(float scale);
         void setFixedSize(bool fixedSize);
+        void setOrientation(Orientation orientation);
         void setLogicalScaleMode(LogicalScaleMode scaleMode);
         QSize windowSize();
         void printToOutput(const char* text);

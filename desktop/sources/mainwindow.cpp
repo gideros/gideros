@@ -152,6 +152,9 @@ void MainWindow::resizeWindow(int width, int height){
     updateResolution(false);
 }
 
+void MainWindow::setOrientation(Orientation orientation){
+}
+
 void MainWindow::fullScreenWindow(bool fullScreen){
     fullScreen_ = fullScreen;
     if(fullScreen){

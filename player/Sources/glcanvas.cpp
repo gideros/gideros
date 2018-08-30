@@ -257,6 +257,9 @@ GLCanvas::GLCanvas(QWidget *parent) :
     isPlayer_ = true;
     exportedApp_=false;
 
+    if (!appPackage.isEmpty())
+    	setExportedApp(true);
+
 	/*
 	 startTimer(1);
 	 setAccessFileCallback(accessFileCallback_s, this);
@@ -469,6 +472,10 @@ void GLCanvas::timerEvent(QTimerEvent *){
         play(QDir(projectDir_));
         projectDir_.clear();
     }
+
+    if (!appPackage.isEmpty()&&(!running_)) {
+    	play(appPackage);
+     }
 
     if(isPlayer_){
         int dataTotal = 0;
@@ -844,10 +851,14 @@ void GLCanvas::play(QString gapp) {
 	QFileInfo gappname(gapp);
 	QFile gpkg(gapp);
 	qint64 pksz = gpkg.size();
-	if (pksz < 16)
-		return; //Invalid file size
-	if (!gpkg.open(QIODevice::ReadOnly))
-		return; //Not openable
+    if (pksz < 16) {
+        glog_d("GAPP-FILE:Invalid size %s,%d", gapp.toUtf8().constData(),pksz);
+        return; //Invalid file size
+    }
+    if (!gpkg.open(QIODevice::ReadOnly)) {
+        glog_d("GAPP-FILE:Can't open %s", gapp.toUtf8().constData());
+        return; //Not openable
+    }
 	struct {
 		quint32 flistOffset;
 		quint32 version;
@@ -1024,6 +1035,19 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 
 	buffer >> windowWidth;
 	buffer >> windowHeight;
+    if (windowWidth == 0 && windowHeight == 0) {
+        windowWidth = logicalWidth;
+        windowHeight = logicalHeight;
+        //setFixedSize(false);
+    }else{
+        //width0_ = windowWidth;
+        //height0_ = windowHeight;
+    }
+    if (!appPackage.isEmpty()) {
+        MainWindow::getInstance()->setOrientation((Orientation) orientation);
+        setHardwareOrientation((Orientation) orientation);
+    	setWindowSize(windowWidth, windowHeight);
+    }
 
 }
 

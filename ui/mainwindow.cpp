@@ -52,6 +52,7 @@
 #include "mdiarea.h"
 #include <QToolBar>
 #include <QKeySequence>
+#include "addons.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -432,11 +433,38 @@ MainWindow::MainWindow(QWidget *parent)
     env.insert("LUA_CPATH", toolsDir.path() + "/?.so");
 #endif
     luaProcess_->setProcessEnvironment(env);
+
+    //Register addons
+    std::vector<Addon> addons=AddonsManager::loadAddons(true);
+    for (std::vector<Addon>::iterator it=addons.begin();it!=addons.end();it++) {
+    	QAction *action=new QAction(QString::fromStdString(it->title),this);
+    	action->setData(QString::fromStdString(it->name));
+    	ui.menuAddons->addAction(action);
+        connect(action, SIGNAL(triggered()), this, SLOT(addonTriggered()));
+    }
 }
 
 MainWindow::~MainWindow()
 {
 	delete client_;
+}
+
+void MainWindow::addonTriggered() {
+	QAction* action = (QAction *) sender();
+	QString name=action->data().toString();
+	launchAddon(name,QString());
+}
+
+void MainWindow::launchAddon(QString name,QString forFile) {
+    QString base = QFileInfo(projectFileName_).baseName();
+	std::string env="{ ";
+	env=env+"projectFile=\""+projectFileName_.toStdString()+"\",";
+	env=env+"projectDir=\""+base.toStdString()+"\",";
+	if (!forFile.isEmpty())
+		env=env+"editFile=\""+forFile.toStdString()+"\",";
+	env+=" }";
+    //saveAll(); XXX required ?
+	AddonsManager::launch(name.toStdString(),env);
 }
 
 void MainWindow::toggleFullscreen()
@@ -1221,8 +1249,13 @@ void MainWindow::onOpenRequest(const QString& itemName, const QString& fileName)
 
 	if (suffix == "txt" || suffix == "lua" || suffix == "glsl" || suffix=="hlsl")
 		openFile(fileName);
-	else
-		QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
+	else {
+		std::string aname=AddonsManager::addonForExtension(suffix.toStdString());
+        if (aname.empty())
+            QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
+        else
+            launchAddon(QString::fromStdString(aname), fileName);
+	}
 }
 
 void MainWindow::autoIndent()

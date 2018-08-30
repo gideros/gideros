@@ -84,6 +84,7 @@ SOURCES += \
     mdiarea.cpp \
     mdisubwindow.cpp \
     dependencygraph.cpp \
+    addons.cpp \
     qtutils.cpp
 
 SOURCES += $$files(../libpvrt/*.cpp)
@@ -125,6 +126,7 @@ HEADERS  += \
     pluginselector.h \
     plugineditor.h \
     dependencygraph.h \
+    addons.h \
     qtutils.h
 
 FORMS    += mainwindow.ui \

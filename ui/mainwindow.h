@@ -371,6 +371,7 @@ private:
 	void loadMD5();
 	void saveMD5();
 	std::vector<std::pair<QString, QString> > updateMD5(bool downsizing = false);
+	void launchAddon(QString name,QString forFile);
 
 private slots:
 	void downsize(const QString& filename);
@@ -383,6 +384,7 @@ private:
     QProcess *makeProcess_;
     QProcess *luaProcess_;
 private slots:
+	void addonTriggered();
     void stdoutToOutput();
     void stderrToOutput();
     void makeStarted();

@@ -197,6 +197,15 @@ void MainWindow::setupUiProperties(){
 
     ui.actionRotate_Left->setProperty("rotate",  eLeft);
     ui.actionRotate_Right->setProperty("rotate", eRight);
+
+    if (!GLCanvas::appPackage.isEmpty()) {
+        ui.menuBar->hide();
+        ui.menuConfigurations->setEnabled(false);
+        ui.menuFile->setEnabled(false);
+        ui.menu_View->setEnabled(false);
+        ui.menuHardware->setEnabled(false);
+        ui.menuZoom2->setEnabled(false);
+    }
 }
 
 void MainWindow::createUiGroups(){
@@ -337,6 +346,7 @@ void MainWindow::checkLoadedSettings(){
 }
 
 void MainWindow::saveSettings(){
+    if (!GLCanvas::appPackage.isEmpty()) return;
     if(fullScreen())
         this->showNormal();
 
