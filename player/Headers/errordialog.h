@@ -13,7 +13,8 @@ public:
 	~ErrorDialog();
 
 	void appendString(const QString& string);
-
+public slots:
+	void hide();
 private:
 	Ui::ErrorDialogClass ui;
 

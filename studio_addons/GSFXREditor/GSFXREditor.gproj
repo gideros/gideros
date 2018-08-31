@@ -1,0 +1,11 @@
+<project>
+ <properties html5_mem="256" autorotation="0" osx_signingId="" mouseTouchOrder="0" win_domain="giderosmobile.com" iosDevice="0" disableSplash="0" app_icon="" exportMode="0" encryptAssets="0" splashScaleMode="0" osx_installerId="" splash_v_image="" vsync="0" app_name="" winrt_org="GiderosMobile" mouseToTouch="1" logicalHeight="768" html5_host="" win_org="GiderosMobile" windowHeight="0" retinaDisplay="0" scaleMode="3" windowWidth="0" android_template="0" logicalWidth="540" architecture="0" winrt_package="com.yourdomain.yourapp" osx_domain="giderosmobile.com" version_code="1" backgroundColor="#ffffff" html5_fbinstant="0" packageName="com.yourdomain.yourapp" osx_category="5" encryptCode="0" version="1.0" splash_h_image="" ios_bundle="com.yourdomain." touchToMouse="1" tv_icon="" osx_bundle="com.yourdomain." build_number="1" html5_fbload="100" osx_org="GiderosMobile" orientation="1" fps="60" html5_pack="0">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="Oswald-Medium.ttf"/>
+ <file source="init.lua"/>
+ <file source="ui.lua"/>
+ <file source="main.lua"/>
+</project>

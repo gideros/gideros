@@ -910,6 +910,8 @@ void GLCanvas::play(QString gapp) {
             else{
                 errorDialog_.appendString(status.errorString());
                 errorDialog_.show();
+                if (!appPackage.isEmpty())
+                	exit(1);
             }
 			return;
 		}

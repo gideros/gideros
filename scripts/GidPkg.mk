@@ -50,7 +50,7 @@ push.mac.pkg:
 	cp -r $(SDK) $(RELEASE);\
 	cd $(RELEASE);\
 	rm -f BuildWin.zip;\
-	zip -r BuildWin.zip Sdk Players Templates "All Plugins" Resources Documentation $(TXTFILES);\
+	zip -r BuildWin.zip Sdk Players Templates "All Plugins" Addons Resources Documentation $(TXTFILES);\
 	scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildWin.zip 
 
 bundle.mac.pkg:
@@ -90,3 +90,11 @@ start.pkg:
 	echo -n "Starting on "; date
 
 full: clean.pkg all.pkg
+
+addons.pkg: $(addsuffix .addons.pkg,$(ADDONS))
+
+%.addons.pkg:
+	mkdir -p $(RELEASE)/Addons/$*
+	$(RELEASE)/Tools/gdrexport -platform gapp $(PWD)/$(ROOT)/studio_addons/$*/*.gproj $(PWD)/$(RELEASE)/Addons/$* | grep -v :
+	cp $(ROOT)/studio_addons/$*/manifest.lua $(RELEASE)/Addons/$*/manifest.lua
+	

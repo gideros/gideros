@@ -1,6 +1,6 @@
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
-qtapp.install: qtlibs.install qtplugins.install qt.install
+qtapp.install: qtlibs.install qtplugins.install qt.install addons.pkg
 
 qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 

@@ -1,6 +1,7 @@
 #include "errordialog.h"
 #include <QFont>
 #include <QFontMetrics>
+#include "glcanvas.h"
 
 ErrorDialog::ErrorDialog(QWidget *parent)
     : QDialog(parent)
@@ -24,7 +25,12 @@ ErrorDialog::ErrorDialog(QWidget *parent)
 
 ErrorDialog::~ErrorDialog()
 {
+}
 
+void ErrorDialog::hide() {
+	QDialog::hide();
+    if (!GLCanvas::appPackage.isEmpty())
+    	exit(1);
 }
 
 void ErrorDialog::appendString(const QString& string)
