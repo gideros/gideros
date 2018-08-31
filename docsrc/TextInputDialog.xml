@@ -6,6 +6,9 @@ If text input dialog is dismissed by any other means (by pressing back button on
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="TextInputDialog.URL" page="TextInputDialog.URL" value="url" version="Gideros 2011.6"/>
   <constant name="TextInputDialog.PHONE" page="TextInputDialog.PHONE" value="phone" version="Gideros 2011.6"/>
   <constant name="TextInputDialog.TEXT" page="TextInputDialog.TEXT" value="text" version="Gideros 2011.6"/>

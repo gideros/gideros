@@ -7,6 +7,9 @@ A gear joint is used to connect two joints together. Either joint can be a revol
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.GearJoint:setRatio" page="setRatio" shortdesc="sets the gear ratio" version="Gideros 2011.6"><![CDATA[<br />
 Sets the gear ratio. <br />
 <br />

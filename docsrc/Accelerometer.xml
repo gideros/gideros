@@ -5,6 +5,7 @@ The `Accelerometer` class is used to access accelerometer data. <br />
 ]]>
   <platform>android</platform>
   <platform>ios</platform>
+  <platform>winrt</platform>
   <method name="Accelerometer.isAvailable" page="isAvailable" shortdesc="Accelerometer - does the accelerometer available?" version="Gideros 2012.8"><![CDATA[<br />
 Returns `true` if accelerometer is available for this platform, `false` otherwise.<br />
 <br />

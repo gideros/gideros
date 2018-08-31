@@ -7,6 +7,9 @@ A distance joint constrains two points on two bodies to remain at a fixed distan
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.DistanceJoint:setLength" page="setLength" shortdesc="sets the natural joint length in meters" version="Gideros 2011.6"><![CDATA[<br />
 Sets the natural length. Manipulating the length can lead to non-physical behavior when the frequency is zero. <br />
 <br />

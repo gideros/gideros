@@ -7,7 +7,10 @@ A prismatic joint. This joint provides one degree of freedom: translation along 
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-  <method name="b2.PrismaticJoint:getJointTranslation" page="getJointTranslation" shortdesc="returns the current joint translation in meters" version="Gideros 2011.6"><![CDATA[<br />
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+   <method name="b2.PrismaticJoint:getJointTranslation" page="getJointTranslation" shortdesc="returns the current joint translation in meters" version="Gideros 2011.6"><![CDATA[<br />
 Returns the current joint translation, usually in meters. <br />
 <br />
 ]]>

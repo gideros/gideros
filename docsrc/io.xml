@@ -4,6 +4,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="io.close" page="close" shortdesc="closes file, or the default output file" version="Gideros 2011.6"><![CDATA[Equivalent to `file:close`. Without a file, closes the default output file.]]>
     <parameter name="file" optional="true" type="file"><![CDATA[file object to close]]></parameter>
   </method>

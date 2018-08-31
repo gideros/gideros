@@ -4,6 +4,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="huge" page="huge" value="1.#INF" version="Gideros 2011.6"><![CDATA[Constant value close to infinity]]></constant>
   <constant name="pi" page="pi" value="3.1415926535898" version="Gideros 2011.6"><![CDATA[Constant value of PI]]></constant>
   <method name="math.abs" page="abs" shortdesc="returns absolute value of v" version="Gideros 2011.6"><![CDATA[Returns the absolute value of v.]]>

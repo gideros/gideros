@@ -7,7 +7,10 @@ The pulley joint is connected to two bodies and two fixed ground points. The pul
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-  <method name="b2.PulleyJoint:getGroundAnchorA" page="getGroundAnchorA" shortdesc="returns the x and y coordinates of the first ground anchor" version="Gideros 2011.6"><![CDATA[<br />
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+   <method name="b2.PulleyJoint:getGroundAnchorA" page="getGroundAnchorA" shortdesc="returns the x and y coordinates of the first ground anchor" version="Gideros 2011.6"><![CDATA[<br />
 Returns the x and y coordinates of the first ground anchor. <br />
 <br />
 ]]>

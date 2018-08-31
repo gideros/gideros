@@ -8,6 +8,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="string.byte" page="byte" shortdesc="returns numerical code, nil if index out of range, default i=1" version="Gideros 2011.6"><![CDATA[Returns the internal numerical codes of the characters s[i], s[i+1], ···, s[j]. The default value for i is 1; the default value for j is i. 
 
 Note that numerical codes are not necessarily portable across platforms.]]>

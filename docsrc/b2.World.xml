@@ -8,7 +8,10 @@ The `b2.World` class manages all physics entities and dynamic simulation. It is 
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-  <method name="b2.World.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+   <method name="b2.World.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `b2.World` object. You can create more then one `b2.World` object to manage independent worlds.<br />
 <br />
 ]]>

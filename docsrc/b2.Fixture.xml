@@ -9,6 +9,9 @@ Fixtures are created via `b2.Body:createFixture`.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.Fixture:getBody" page="getBody" shortdesc="returns the parent body of this fixture" version="Gideros 2011.6"><![CDATA[<br />
 Returns the parent body of this fixture. This is `nil` if the fixture is not attached.<br />
 <br />

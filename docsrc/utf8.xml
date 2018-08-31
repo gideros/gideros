@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="utf8" page="utf8" parent="" type="lua" version="Gideros 2016.06"><![CDATA[utf8 string library]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="utf8.charpattern" page="charpattern" value="[\0-\x7F\xC2-\xF4][\x80-\xBF]*" version="Gideros 2016.06"><![CDATA[The pattern (a string, not a function) "[\0-\x7F\xC2-\xF4][\x80-\xBF]*", which matches exactly one UTF-8 byte sequence, assuming that the subject is a valid UTF-8 string.]]></constant>
   <method name="utf8.byte" page="byte" shortdesc="Returns the internal numerical codes of the characters" version="Gideros 2016.06"><![CDATA[Returns the internal numerical codes of the characters s[i], s[i+1], ..., s[j]. The default value for i is 1; the default value for j is i. These indices are corrected following the same rules of function string.sub.
 Numerical codes are not necessarily portable across platforms.]]>

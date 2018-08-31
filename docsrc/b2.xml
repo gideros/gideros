@@ -8,7 +8,10 @@ classes and functions related to Box2D physics library. <br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-  <constant name="b2.GEAR_JOINT" page="b2.GEAR_JOINT" value="6" version="Gideros 2011.6"/>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+   <constant name="b2.GEAR_JOINT" page="b2.GEAR_JOINT" value="6" version="Gideros 2011.6"/>
   <constant name="b2.FRICTION_JOINT" page="b2.FRICTION_JOINT" value="9" version="Gideros 2011.6"/>
   <constant name="b2.WHEEL_JOINT" page="b2.WHEEL_JOINT" value="7" version="Gideros 2011.6"/>
   <constant name="b2.STATIC_BODY" page="b2.STATIC_BODY" value="0" version="Gideros 2011.6"/>

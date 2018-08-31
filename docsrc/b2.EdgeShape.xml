@@ -7,6 +7,9 @@ A line segment (edge) shape. These can be connected in chains or loops to other 
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.EdgeShape.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `b2.EdgeShape` instance and optionally sets its 2 vertices. <br />
 If this function is called with more than 4 parameters, `b2.EdgeShape` instance<br />

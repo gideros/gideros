@@ -15,6 +15,13 @@ To get and set single bits:
 num[i]
 num[i] = b
 All operators are supported including new bitwise ones as for Lua double numbers.]]>
+    <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="int64.new" page="new" shortdesc="Create 64 bit integer" version="Gideros 2016.08"><![CDATA[Create 64 bit integer]]>
     <parameter name="value" optional="false" type="string or number"><![CDATA[value to use as 64 bit integer]]></parameter>
   </method>

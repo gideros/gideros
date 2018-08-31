@@ -15,6 +15,9 @@ Mesh can be 2D or 3D, the latter expects an additionnal Z coordinate in its vert
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Mesh.new" page="new" shortdesc="" version="Gideros 2015.04.04"><![CDATA[<br />
 Creates a new `Mesh` object.<br />
 <br />

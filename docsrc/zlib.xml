@@ -2,6 +2,13 @@
 <object name="zlib" page="zlib" parent="" type="lua" version="Gideros 2015.04.18"><![CDATA[Zlib lua binding from <a href='https://github.com/LuaDist/lzlib/blob/master/README'>https://github.com/LuaDist/lzlib/blob/master/README</a>
 
 ]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="zlib.adler32" page="adler32" shortdesc="update the adler32 value" version="Gideros 2015.04.18"><![CDATA[Without any parameters, returns the inicial adler32 value.
 Call to update the adler32 value, adler is the current value, buffer is passed to adler32 zlib function and the updated value is returned.]]>
     <parameter name="adler32" optional="true" type="number"><![CDATA[adler value]]></parameter>

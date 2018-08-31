@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Viewport" page="Viewport" parent="Sprite" type="gideros" version="Gideros 2016.04"><![CDATA[A Viewport sprite allows to display another view of a tree hierarchy already on stage. Sprites can't have two parents, but thanks to Viewport you can display the same Sprite twice on the stage. Useful for split screen games, mini maps and so on.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Viewport:setContent" page="setContent" shortdesc="" version="Gideros 2016.04"><![CDATA[Specify which sprite should be displayed by this Viewport]]>
     <parameter name="content" optional="false" type="sprite"><![CDATA[The sprite hierarchy to be displayed by this Viewport]]></parameter>
   </method>

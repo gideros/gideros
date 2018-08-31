@@ -7,6 +7,9 @@ Friction joint. This is used for top-down friction. It provides 2D translational
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.FrictionJoint:setMaxForce" page="setMaxForce" shortdesc="sets the maximum friction force in N" version="Gideros 2011.6"><![CDATA[<br />
 Sets the maximum friction force in N. <br />
 <br />

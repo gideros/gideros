@@ -7,6 +7,9 @@ A mouse joint is used to make a point on a body track a specified world point. T
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.MouseJoint:setTarget" page="setTarget" shortdesc="updates the target point" version="Gideros 2011.6"><![CDATA[<br />
 Updates the target point.<br />
 <br />

@@ -9,7 +9,10 @@ is designed for vehicle suspensions.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-  <method name="b2.WheelJoint:getJointTranslation" page="getJointTranslation" shortdesc="returns the current joint translation in meters." version="Gideros 2011.6"><![CDATA[<br />
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+   <method name="b2.WheelJoint:getJointTranslation" page="getJointTranslation" shortdesc="returns the current joint translation in meters." version="Gideros 2011.6"><![CDATA[<br />
 Returns the current joint translation in meters.<br />
 <br />
 ]]>

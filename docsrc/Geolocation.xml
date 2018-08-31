@@ -5,6 +5,7 @@ The `Geolocation` class is used to configure the parameters and dispatching of l
 ]]>
   <platform>android</platform>
   <platform>ios</platform>
+  <platform>winrt</platform>
   <method name="Geolocation.isAvailable" page="isAvailable" shortdesc="Geolocation - does this device have the capability to determine current location?" version="Gideros 2012.8"><![CDATA[<br />
 Returns `true` if the device has the capability to determine current location and this capability is enabled, `false` otherwise.<br />
 <br />

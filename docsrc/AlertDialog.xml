@@ -12,6 +12,9 @@ If alert dialog is dismissed by any other means (by pressing back button on Andr
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="AlertDialog.new" page="new" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
 Creates a new `AlertDialog` object.<br />
  <br />

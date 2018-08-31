@@ -7,6 +7,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="Application.LANDSCAPE_RIGHT" page="LANDSCAPE_RIGHT" value="landscapeRight" version="Gideros 2011.6"><![CDATA[Representation of landscape right]]></constant>
   <constant name="Application.PORTRAIT_UPSIDE_DOWN" page="PORTRAIT_UPSIDE_DOWN" value="portraitUpsideDown" version="Gideros 2011.6"><![CDATA[Representation of portrait upside down]]></constant>
   <constant name="Application.LANDSCAPE_LEFT" page="LANDSCAPE_LEFT" value="landscapeLeft" version="Gideros 2011.6"><![CDATA[Representation of landscape left]]></constant>

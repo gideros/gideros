@@ -11,6 +11,9 @@ Users can create their own events and dispatch through the event mechanism.<br /
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Event.new" page="new" shortdesc="creates a new Event object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `Event` object to be dispatched from an `EventDispatcher`.<br />
 <br />

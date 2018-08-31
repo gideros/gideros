@@ -7,6 +7,9 @@ The `TextField` class is used to create display objects for text display.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="TextField.new" page="new" shortdesc="creates a new TextField object with the specified font and text" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `TextField` object with the specified font and text. Gideros runtime includes a<br />
 default font. If you specify `nil` for the font parameter while creating the `TextField` object, default font is used.<br />

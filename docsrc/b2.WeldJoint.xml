@@ -7,7 +7,10 @@ A weld joint essentially glues two bodies together. A weld joint may distort som
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-  <method name="b2.WeldJoint:setFrequency" page="setFrequency" shortdesc="sets frequency in Hz" version="Gideros 2011.6"><![CDATA[<br />
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+   <method name="b2.WeldJoint:setFrequency" page="setFrequency" shortdesc="sets frequency in Hz" version="Gideros 2011.6"><![CDATA[<br />
 Sets frequency in Hz.<br />
 <br />
 ]]>

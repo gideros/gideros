@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Object" page="Object" parent="" type="gideros" version="Gideros 2015.08"><![CDATA[Main Object class from which all Gideros classes inherit.<br/>
 There is no other purpose for this classes, rather a neat way to add methods to all Gideros classes]]>
+ <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Object:getClass" page="getClass" shortdesc="returns class name" version="Gideros 2015.08"><![CDATA[Returns the class name of the instance as string]]>
     <return type="string"><![CDATA[class name as string]]></return>
   </method>

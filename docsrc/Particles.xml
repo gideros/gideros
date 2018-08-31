@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Particles" page="Particles" parent="Sprite" type="gideros" version="Gideros 2016.06"><![CDATA[Particles sprite (alpha), which allows to draw several identical dots or bitmaps with varying colour and orientation]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Particles.new" page="new" shortdesc="Create new particles group" version="Gideros 2016.06"><![CDATA[Create new particles group]]></method>
   <method name="Particles:getParticleSpeed" page="getParticleSpeed" shortdesc="Get speed of particle" version="Gideros 2016.06"><![CDATA[Get speed of particle]]>
     <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>

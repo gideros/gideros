@@ -7,6 +7,9 @@ The class manages contact between two shapes. A contact exists for each overlapp
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.Contact:getManifold" page="getManifold" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
 Returns the contact manifold as a table. This table contains `points`, `localNormal`, `localPoint` and `type` fields.<br />
 <br />

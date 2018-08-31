@@ -4,6 +4,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="bit.tobit" page="tobit" shortdesc="Normalizes a number to the numeric range for bit operations" version="Gideros 2013.09"><![CDATA[Normalizes a number to the numeric range for bit operations and returns it. This function is usually not needed since all bit operations already normalize all of their input arguments.]]>
     <parameter name="x" optional="false" type="number"><![CDATA[number which range to normalize]]></parameter>
     <return type="number"><![CDATA[normalized number]]></return>

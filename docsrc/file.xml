@@ -4,6 +4,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="file:close" page="close" shortdesc="closes file" version="Gideros 2011.6"><![CDATA[Closes file. Note that files are automatically closed when their handles are garbage collected, but that takes an unpredictable amount of time to happen.]]></method>
   <method name="file:flush" page="flush" shortdesc="saves any written data to file" version="Gideros 2011.6"><![CDATA[Saves any written data to file.]]></method>
   <method name="file:lines" page="lines" shortdesc="returns iterator function to return lines, nil ends" version="Gideros 2011.6"><![CDATA[Returns an iterator function that, each time it is called, returns a new line from the file. Therefore, the construction 

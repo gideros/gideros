@@ -7,6 +7,9 @@ The `Bitmap` class is used to display texture related objects in the scene tree.
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Bitmap.new" page="new" shortdesc="creates a new Bitmap object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `Bitmap` object.<br />
 <br />

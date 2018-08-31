@@ -7,6 +7,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="FontBase.TLF_BOTTOM" page="FontBase.TLF_BOTTOM" value="TLF_BOTTOM" version="Gideros 2017.10"><![CDATA[Align text to the bottom.]]></constant>
   <constant name="FontBase.TLF_TOP" page="FontBase.TLF_TOP" value="TLF_TOP" version="Gideros 2017.10"><![CDATA[Align text to the top.]]></constant>
   <constant name="FontBase.TLF_CENTER" page="FontBase.TLF_CENTER" value="TLF_CENTER" version="Gideros 2017.10"><![CDATA[Center text horizontally.]]></constant>

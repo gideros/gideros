@@ -3,6 +3,11 @@
 LuaFileSystem offers a portable way to access the underlying directory structure and file attributes.
 
 For more information and detailed documentation, please visit [http://keplerproject.github.io/luafilesystem/manual.html#reference](http://keplerproject.github.io/luafilesystem/manual.html#reference).]]>
+  <platform>android</platform>
+  <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
 </object>

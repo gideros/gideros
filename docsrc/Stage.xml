@@ -9,6 +9,9 @@ there is already a global variable `stage`.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Stage:setClearColorBuffer" page="setClearColorBuffer" shortdesc="Enable/disable draw call for background color" version="Gideros 2011.6"><![CDATA[If you are covering whole background with image, you can disable background color draw call for better performance]]>
     <parameter name="state" optional="false" type="bool"><![CDATA[false to disable draw call, true to enable]]></parameter>
   </method>

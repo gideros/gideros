@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Pixel" page="Pixel" parent="Sprite" type="gideros" version="Gideros 2016.06"><![CDATA[A rectangular Sprite which can be filled with solid colors, gradients or textures.
 Pixel aims at being a simpler and faster alternative to Shape when needing to display a coloured box or box with a gradient. It is also useful as Bitmap replacement since every texture will be fitted into Pixel dimensions automatically.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Pixel:setWidth" page="setWidth" shortdesc="Sets the width of the pixel sprite." version="Gideros 2016.06"><![CDATA[Sets the width of the pixel sprite.]]>
     <parameter name="w" optional="false" type="number"><![CDATA[The new width.]]></parameter>
   </method>

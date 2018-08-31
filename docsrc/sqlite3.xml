@@ -58,4 +58,7 @@ Open Visual Studio and go to `TOOLS > Extensions and Updates`. Select the `Onlin
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
 </object>

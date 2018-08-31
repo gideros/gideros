@@ -19,6 +19,9 @@ UrlLoader supports GET, POST, PUT and DELETE methods. These are defined by these
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="UrlLoader.PUT" page="UrlLoader.PUT" value="put" version="Gideros 2011.6"/>
   <constant name="UrlLoader.GET" page="UrlLoader.GET" value="get" version="Gideros 2011.6"/>
   <constant name="UrlLoader.DELETE" page="UrlLoader.DELETE" value="delete" version="Gideros 2011.6"/>

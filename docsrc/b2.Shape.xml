@@ -8,4 +8,7 @@ You can not create a `b2.Shape` instance directly, but instead you create `b2.Ci
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-</object>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+ </object>

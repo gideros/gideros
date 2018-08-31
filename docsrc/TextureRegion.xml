@@ -8,6 +8,9 @@ within a texture atlas which is a large image, which contains many smaller sub-i
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="TextureRegion.new" page="new" shortdesc="creates a new TextureRegion object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new TextureRegion object.<br />
 <br />

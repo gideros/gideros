@@ -67,6 +67,9 @@ Following examples demonstrates the possible uses of MovieClip class.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="MovieClip.new" page="new" shortdesc="creates a new MovieClip object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `MovieClip` object. After constructing the MovieClip object, it starts playing. You don&#039;t need to<br />
 call [[MovieClip:play]].<br />

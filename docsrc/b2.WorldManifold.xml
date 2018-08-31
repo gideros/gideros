@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="b2.WorldManifold" page="b2WorldManifold" parent="" type="physics" version="Gideros 2012.09.6"><![CDATA[Contains information about contact relative to the world]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="normal" page="normal" value="table" version="Gideros 2012.09.6"><![CDATA[Contains x and y properties with normalized vector values (from -1 to 1).
 For example: { y = -1, x => 0}]]></constant>
   <constant name="points" page="points" value="table" version="Gideros 2012.09.6"><![CDATA[Indexed array of table with x and y properties of all contacts points of manifold]]></constant>

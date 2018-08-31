@@ -16,6 +16,9 @@ Since Gideros 2016.6, Matrix can also hold 3D (4x4) matrices.]]>
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Matrix.new" page="new" shortdesc="creates a new Matrix object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new Matrix object with the specified parameters.<br />
 <br />

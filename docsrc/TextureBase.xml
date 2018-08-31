@@ -12,6 +12,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="TextureBase.REPEAT" page="TextureBase.REPEAT" value="repeat" version="Gideros 2011.6"/>
   <constant name="TextureBase.CLAMP" page="TextureBase.CLAMP" value="clamp" version="Gideros 2011.6"/>
   <constant name="TextureBase.RGBA8888" page="RGBA8888" value="rgba8888" version="Gideros 2013.06"><![CDATA[Texture format that can be provided to Texture and TexturePack options table]]></constant>

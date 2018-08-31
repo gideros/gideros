@@ -5,6 +5,7 @@ The `Gyroscope` class is used to access gyroscope data. <br />
 ]]>
   <platform>android</platform>
   <platform>ios</platform>
+  <platform>winrt</platform>
   <method name="Gyroscope.isAvailable" page="isAvailable" shortdesc="Gyroscope - does the gyroscope available?" version="Gideros 2012.8"><![CDATA[<br />
 Returns `true` if gyroscope is available for this platform, `false` otherwise.<br />
 <br />

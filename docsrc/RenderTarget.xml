@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="RenderTarget" page="RenderTarget" parent="TextureBase" type="gideros" version="Gideros 2013.06"><![CDATA[RenderTarget is a texture on which provided Sprite hierarchy can be rendered.
 It can be used in any case in which Texture can be used.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="RenderTarget.new" page="new" shortdesc="Creates new RenderTarget object" version="Gideros 2013.06"><![CDATA[Creates new RenderTarget object]]>
     <parameter name="width" optional="false" type="number"><![CDATA[width of rendered texture]]></parameter>
     <parameter name="height" optional="false" type="number"><![CDATA[height of rendered texture]]></parameter>

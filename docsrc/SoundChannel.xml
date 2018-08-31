@@ -12,6 +12,9 @@ The `SoundChannel` class is used to control and monitor a playing sound.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="SoundChannel:stop" page="stop" shortdesc="stops the sound playing in the channel" version="Gideros 2011.6"><![CDATA[<br />
 Stops the sound playing in the channel.<br />
 <br />

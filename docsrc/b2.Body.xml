@@ -7,6 +7,9 @@ A rigid body. These are created via `b2.World:createBody`.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="b2.Body:getPosition" page="getPosition" shortdesc="returns the world body origin position" version="Gideros 2011.6"><![CDATA[<br />
 Returns the world body origin position.<br />
 <br />

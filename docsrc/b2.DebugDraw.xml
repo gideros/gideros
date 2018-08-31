@@ -7,6 +7,9 @@ The `b2.DebugDraw` class is used to provide debug drawing of physical entities i
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="b2.DebugDraw.CENTER_OF_MASS_BIT" page="b2.DebugDraw.CENTER_OF_MASS_BIT" value="16" version="Gideros 2011.6"><![CDATA[Draw center of the mass of bodies]]></constant>
   <constant name="b2.DebugDraw.PAIR_BIT" page="b2.DebugDraw.PAIR_BIT" value="8" version="Gideros 2011.6"><![CDATA[Draw pair information]]></constant>
   <constant name="b2.DebugDraw.AABB_BIT" page="b2.DebugDraw.AABB_BIT" value="4" version="Gideros 2011.6"><![CDATA[Draw bounding boxes of bodies]]></constant>

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Path2D" page="Path2D" parent="Sprite" type="gideros" version="Gideros 2016.04"><![CDATA[Draw quick 2D vector paths. This class aims at being a faster alternative to Shape for complex/curvy shapes.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Path2D:setLineColor" page="setLineColor" shortdesc="Sets line color" version="Gideros 2016.04"><![CDATA[Sets line color]]>
     <parameter name="color" optional="false" type="hex"><![CDATA[color to use]]></parameter>
     <parameter name="alpha" optional="true" type="number"><![CDATA[opacity of line from 0 to 1, default 1]]></parameter>

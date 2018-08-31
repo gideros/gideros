@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Core" page="Core" parent="Object" type="gideros" version="Gideros 2012.2"><![CDATA[Gideros Core functions]]>
+  <platform>android</platform>
+  <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Core.class" page="class" shortdesc="Creates and returns new Gideros class" version="Gideros 2012.2"><![CDATA[Creates and returns new Gideros class]]>
     <parameter name="base" optional="true" type="GiderosClass"><![CDATA[Gideros class from which to inherit]]></parameter>
   </method>

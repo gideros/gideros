@@ -7,6 +7,9 @@ The `Shape` class is used create and display vector graphics.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="Shape.NONE" page="Shape.NONE" value="none" version="Gideros 2011.6"/>
   <constant name="Shape.EVEN_ODD" page="Shape.EVEN_ODD" value="evenOdd" version="Gideros 2011.6"/>
   <constant name="Shape.TEXTURE" page="Shape.TEXTURE" value="texture" version="Gideros 2011.6"/>

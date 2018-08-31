@@ -7,6 +7,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="table.concat" page="concat" shortdesc="returns concatenated table elements i to j separated by sep" version="Gideros 2011.6"><![CDATA[Given an array where all elements are strings or numbers, returns table[i]..sep..table[i+1] ··· sep..table[j]. The default value for sep is the empty string, the default for i is 1, and the default for j is the length of the table. If i is greater than j, returns the empty string.]]>
     <parameter name="table" optional="false" type="table"><![CDATA[table of values to concatenate]]></parameter>
     <parameter name="sep" optional="true" type="string"><![CDATA[separator what to insert between table elements]]></parameter>

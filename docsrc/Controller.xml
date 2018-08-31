@@ -4,6 +4,10 @@
 Internally Controller Interface also matches all buttons and controller behavior under the same scheme so you won't have to worry about that anymore.
 
 For more information check out [http://docs.giderosmobile.com/interface/controller](Controller Interface Guide)]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
   <method name="Controller:isAnyAvailable" page="Controller:isAnyAvailable" shortdesc="return true if any controller is connected" version="Gideros 2014.01"><![CDATA[Returns true if any of controller is connected to device]]>
     <return type="bool"><![CDATA[if any controller is connected]]></return>
   </method>

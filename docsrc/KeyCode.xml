@@ -6,6 +6,9 @@ KeyCode table holds the key code constants. These map directly to a physical key
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="KeyCode.BACK" page="KeyCode.BACK" value="301" version="Gideros 2011.6"/>
   <constant name="KeyCode.SEARCH" page="KeyCode.SEARCH" value="302" version="Gideros 2011.6"/>
   <constant name="KeyCode.MENU" page="KeyCode.MENU" value="303" version="Gideros 2011.6"/>

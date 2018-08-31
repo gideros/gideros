@@ -9,6 +9,9 @@ object.<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Sound.new" page="new" shortdesc="creates a new Sound object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `Sound` object.<br />
 <br />

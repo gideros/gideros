@@ -9,6 +9,9 @@ Gideros Font Creator exports two files: A `.txt` file that specifies the positio
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Font.new" page="new" shortdesc="creates a new Font object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `Font` object.<br />
 <br />

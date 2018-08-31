@@ -23,6 +23,9 @@ Use these two files to create texture pack:<br />
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="TexturePack.new" page="new" shortdesc="creates a new TexturePack object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `TexturePack` object. This function creates the texture pack at runtime.<br />
 <br />

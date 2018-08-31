@@ -8,6 +8,9 @@ Check `Desert` and `Sewers` examples provided with Gideros for usage of TileMap 
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="TileMap.FLIP_DIAGONAL" page="TileMap.FLIP_DIAGONAL" value="1" version="Gideros 2011.6"/>
   <constant name="TileMap.FLIP_VERTICAL" page="TileMap.FLIP_VERTICAL" value="2" version="Gideros 2011.6"/>
   <constant name="TileMap.FLIP_HORIZONTAL" page="TileMap.FLIP_HORIZONTAL" value="4" version="Gideros 2011.6"/>

@@ -4,6 +4,9 @@
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="json.encode" page="encode" shortdesc="Returns encoded json string from provided Lua table" version="Gideros 2013.09"><![CDATA[Returns encoded json string from provided Lua table]]>
     <parameter name="data" optional="false" type="table"><![CDATA[Lua table which to serialize to json]]></parameter>
   </method>

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Screen" page="Screen" parent="Sprite" type="gideros" version="Gideros 2017.8">
 <![CDATA[Screen class allows to access secondary displays or windows.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Screen:setContent" page="setContent" shortdesc="" version="Gideros 2017.8"><![CDATA[Specify which sprite should be displayed by this Screen]]>
     <parameter name="content" optional="false" type="sprite"><![CDATA[The sprite hierarchy to be displayed by this Screen]]></parameter>
   </method>

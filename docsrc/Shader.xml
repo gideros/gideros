@@ -9,6 +9,13 @@
 The new shader API allows to replace the default shader used by Gideros with a custom one, on a sprite per sprite basis. As with most of Gideros API’s this one is straight-forward: create a Shader object and assign it to one or several sprites.
 
 That said, since Gideros will use your shader as if it was the standard one, you will have to make sure that your custom shader is compatible with the standard one, which essentially means that it takes the same input parameters.]]>
+    <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <constant name="Shader.CINT" page="CINT" value="0" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CINT data type]]></constant>
   <constant name="Shader.CFLOAT" page="CFLOAT" value="1" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CFLOAT data type]]></constant>
   <constant name="Shader.CFLOAT4" page="CFLOAT4" value="2" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CFLOAT4 data type]]></constant>

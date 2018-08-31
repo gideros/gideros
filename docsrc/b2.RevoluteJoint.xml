@@ -7,7 +7,10 @@ A revolute joint constrains two bodies to share a common point while they are fr
   <platform>ios</platform>
   <platform>mac</platform>
   <platform>pc</platform>
-  <method name="b2.RevoluteJoint:getJointAngle" page="getJointAngle" shortdesc="returns the current joint angle in radians" version="Gideros 2011.6"><![CDATA[<br />
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+   <method name="b2.RevoluteJoint:getJointAngle" page="getJointAngle" shortdesc="returns the current joint angle in radians" version="Gideros 2011.6"><![CDATA[<br />
 Returns the current joint angle in radians.<br />
 <br />
 ]]>

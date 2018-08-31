@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Cryptography" page="Cryptography" parent="" type="gideros" version="Gideros 2016.04"><![CDATA[Cryptographic primitives]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
   <method name="Cryptography.md5" page="md5" shortdesc="Compute the MD5 hash of the input string" version="Gideros 2016.04"><![CDATA[Compute the MD5 hash of the input string]]>
     <parameter name="input" optional="false" type="string"><![CDATA[String whose content is to be hashed]]></parameter>
     <return type="string"><![CDATA[MD5 hash (a 16 byte string)]]></return>
