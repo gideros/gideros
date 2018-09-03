@@ -19,6 +19,100 @@ An unattached sprite can receive `Event.ENTER_FRAME` event but it will only rece
   <constant name="Sprite.MULTIPLY" page="Sprite.MULTIPLY" value="multiply" version="Gideros 2011.6"/>
   <constant name="Sprite.ADD" page="Sprite.ADD" value="add" version="Gideros 2011.6"/>
   <constant name="Sprite.NO_ALPHA" page="Sprite.NO_ALPHA" value="noAlpha" version="Gideros 2011.6"/>
+  <method name="Sprite:setLayoutParameters" page="setLayoutParameters" shortdesc="specify the parent parameters for Gideros's layout system" version="Gideros 2018.9"><![CDATA[<br />
+<br />
+Gideros Layout arranges a sprite's children into cells of a grid. With this method, you tell the parent's sprite how the rows and columns of the layout grid should be sized.
+If there is extra space available after applying minimum widths and heights, it is distributed according to relative weights of each row/column.
+Gideros layout system is heavily based on Java GridBagLayout principle. See here for more explanation:
+https://www.math.uni-hamburg.de/doc/java/tutorial/uiswing/layout/gridbag.html
+
+The following parameters apply:
+* '''columnWidths''': an array of minimum width for each column<br/>
+* '''rowHeights''': an array of minimum height for each row<br/>
+* '''columnWeights''': an array of relative weights for each column<br/>
+* '''rowWeights''': an array of relative weights for each row<br/>
+* '''insetTop''': the top margin<br/>
+* '''insetLeft''': the left margin<br/>
+* '''insetBottom''': the bottom margin<br/>
+* '''insetRight''': the right margin<br/>
+
+Specifying a '''nil''' table will clear layout parameters.
+]]>
+    <parameter name="layout" optional="false" type="table"><![CDATA[Table of layout parameters.]]></parameter>
+  </method>
+  <method name="Sprite:setLayoutConstraints" page="setLayoutConstraints" shortdesc="specify the child placement constraints for Gideros's layout system" version="Gideros 2018.9"><![CDATA[<br />
+<br />
+This function specify the child placement rules within the grid defined on its parent by `Sprite:setLayoutParameters`.<br />
+Gideros layout system is heavily based on Java GridBagLayout principle. See here for more explanation:
+https://www.math.uni-hamburg.de/doc/java/tutorial/uiswing/layout/gridbag.html
+
+The constraint table can contain the following fields:
+* '''gridx''': The 0-based index of the column the child must be placed into<br/>
+* '''gridy''': The 0-based index of the row the child must be placed into<br/>
+* '''gridwidth''': The number of column this child will take<br/>
+* '''gridheight''': The number of row this child will take<br/>
+* '''weightx''': The horizontal weight of the child. Used to distribute extra space among children<br/>
+* '''weighty''': The vertical weight of the child. Used to distribute extra space among children<br/>
+* '''anchor''': Defines where the child should be placed inside its grid space. 
+Can be `Sprite.LAYOUT_ANCHOR_NORTHWEST`, `Sprite.LAYOUT_ANCHOR_NORTH`, `Sprite.LAYOUT_ANCHOR_NORTHEAST`, 
+`Sprite.LAYOUT_ANCHOR_WEST`, `Sprite.LAYOUT_ANCHOR_CENTER`, `Sprite.LAYOUT_ANCHOR_EAST`, 
+`Sprite.LAYOUT_ANCHOR_SOUTHWEST`, `Sprite.LAYOUT_ANCHOR_SOUTH` or `Sprite.LAYOUT_ANCHOR_SOUTHEAST`<br/>
+* '''fill''': In which directions the child should be expanded to fit the grid space. Can be `Sprite.LAYOUT_FILL_NONE`, `Sprite.LAYOUT_FILL_HORIZONTAL`, `Sprite.LAYOUT_FILL_VERTICAL` or `Sprite.LAYOUT_FILL_BOTH`<br/>
+* '''ipadx''': Internal horizontal padding<br/>
+* '''ipady''': Internal vertical padding<br/>
+* '''minWidth''': Minimum width<br/>
+* '''minHeight''': Minimum height<br/>
+* '''prefWidth''': Preferred width<br/>
+* '''prefHeight''': Preferred height<br/>
+* '''insetTop''': the top margin<br/>
+* '''insetLeft''': the left margin<br/>
+* '''insetBottom''': the bottom margin<br/>
+* '''insetRight''': the right margin<br/>
+
+Specifying a '''nil''' table will clear layout constraints.
+When a `Sprite` is resized by the layout system, a `Event.LAYOUT_RESIZDE` is triggered.
+]]>
+    <parameter name="constraints" optional="false" type="table"><![CDATA[Table of layout constraints.]]></parameter>
+  </method>
+  <method name="Sprite:getLayoutParameters" page="getLayoutParameters" shortdesc="get the current layout parameters" version="Gideros 2018.9"><![CDATA[<br />
+<br />See `Sprite:setLayoutParameters` for a description of the fields.<br />
+]]>
+  <return type="table"><![CDATA[Table of layout parameters.]]></return>
+  </method>
+  <method name="Sprite:getLayoutConstraints" page="getLayoutConstraints" shortdesc="get the current layout constraints" version="Gideros 2018.9"><![CDATA[<br />
+<br />See `Sprite:setLayoutConstraints` for a description of the fields.<br />
+]]>
+     <return type="table"><![CDATA[Table of layout constraints.]]></return>
+  </method>
+  <method name="Sprite:getLayoutInfo" page="getLayoutInfo" shortdesc="get information of the current layout" version="Gideros 2018.9"><![CDATA[<br />
+<br />
+Returns computed placement value according to Gideros layout system.
+The returned table can contain the following fields:
+* '''startx''': The 0-based index of the column the child was placed into<br/>
+* '''starty''': The 0-based index of the row the child was placed into<br/>
+* '''width''': The width of the child<br/>
+* '''height''': The height of the child<br/>
+* '''weightx''': The horizontal weight of the child<br/>
+* '''weighty''': The vertical weight of the child<br/>
+* '''minWidth''': Minimum width<br/>
+* '''minHeight''': Minimum height<br/>
+]]>
+  <return type="table"><![CDATA[Table of layout information.]]></return>
+  </method>
+  <constant name="Sprite.LAYOUT_FILL_NONE" page="Sprite.LAYOUT_FILL_NONE" value="0" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_FILL_BOTH" page="Sprite.LAYOUT_FILL_BOTH" value="1" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_FILL_HORIZONTAL" page="Sprite.LAYOUT_FILL_HORIZONTAL" value="2" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_FILL_VERTICAL" page="Sprite.LAYOUT_FILL_VERTICAL" value="3" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_CENTER" page="Sprite.LAYOUT_ANCHOR_CENTER" value="0" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_NORTH" page="Sprite.LAYOUT_ANCHOR_NORTH" value="1" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_NORTHEAST" page="Sprite.LAYOUT_ANCHOR_NORTHEAST" value="2" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_EAST" page="Sprite.LAYOUT_ANCHOR_EAST" value="3" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_SOUTHEAST" page="Sprite.LAYOUT_ANCHOR_SOUTHEAST" value="4" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_SOUTH" page="Sprite.LAYOUT_ANCHOR_SOUTH" value="5" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_SOUTHWEST" page="Sprite.LAYOUT_ANCHOR_SOUTHWEST" value="6" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_WEST" page="Sprite.LAYOUT_ANCHOR_WEST" value="7" version="Gideros 2018.9"/>
+  <constant name="Sprite.LAYOUT_ANCHOR_NORTHWEST" page="Sprite.LAYOUT_ANCHOR_NORTHWEST" value="8" version="Gideros 2018.9"/>
+  
   <method name="Sprite:addChild" page="addChild" shortdesc="adds a sprite as a child" version="Gideros 2011.6"><![CDATA[<br />
 Adds a sprite as a child to this sprite. The child is<br />
 added as a last child of this `Sprite` instance.<br />

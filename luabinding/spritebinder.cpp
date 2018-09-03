@@ -169,6 +169,23 @@ SpriteBinder::SpriteBinder(lua_State* L)
     lua_pushstring(L, "screen");
     lua_setfield(L, -2, "SCREEN");
 
+#define FCONSTANT(name)	lua_pushinteger(L, GridBagConstraints::name); lua_setfield(L, -2, "LAYOUT_FILL_"#name);
+#define ACONSTANT(name)	lua_pushinteger(L, GridBagConstraints::name); lua_setfield(L, -2, "LAYOUT_ANCHOR_"#name);
+    FCONSTANT(NONE);
+    FCONSTANT(BOTH);
+    FCONSTANT(HORIZONTAL);
+    FCONSTANT(VERTICAL);
+    ACONSTANT(NORTHWEST);
+    ACONSTANT(NORTH);
+    ACONSTANT(NORTHEAST);
+    ACONSTANT(WEST);
+    ACONSTANT(CENTER);
+    ACONSTANT(EAST);
+    ACONSTANT(SOUTHWEST);
+    ACONSTANT(SOUTH);
+    ACONSTANT(SOUTHEAST);
+#undef FCONSTANT
+#undef ACONSTANT
     lua_setglobal(L, "Sprite");
 }
 
