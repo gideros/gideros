@@ -363,14 +363,14 @@ public class Game {
     	return "";
     }
     
-    static public String getPlayerPicture(String type, String id, int highRes){
+    static public String getCurrentPlayerPicture(String type, int highRes){
 		String adp = modifyName(type);
 		if(games.containsKey(adp))
-			return games.get(adp).getPlayerPicture(id, highRes);
+			return games.get(adp).getCurrentPlayerPicture(highRes);
     	return "";
     }
-    
-    static public void getPlayerPicture(String type,String leaderboardId, int span, int leaderboardCollection){
+        
+    static public void getCurrentPlayerScore(String type,String leaderboardId, int span, int leaderboardCollection){
 		String adp = modifyName(type);
 		if(games.containsKey(adp))
 			games.get(adp).getCurrentPlayerScore(leaderboardId,span,leaderboardCollection);

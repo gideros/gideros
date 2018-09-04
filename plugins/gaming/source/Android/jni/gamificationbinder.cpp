@@ -355,7 +355,7 @@ private:
 					type==GAME_ROOM_CONNECTING_EVENT)
 			{
 				game_SimpleEvent *event2 = (game_SimpleEvent*)event;
-				if(strcmp(event2->id, type_) == 0)
+				if(strcmp(event2->caller, type_) == 0)
 				{
 					shouldDispatch = 1;
 				}

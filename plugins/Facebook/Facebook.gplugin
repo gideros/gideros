@@ -27,7 +27,7 @@
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
   // Android SDK
-  compile 'com.facebook.android:facebook-android-sdk:3.+'
+  implementation 'com.facebook.android:facebook-android-sdk:3.+'
   					</by>
 				</append>
 	       	</replacelist>	

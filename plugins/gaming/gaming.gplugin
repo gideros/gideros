@@ -31,10 +31,10 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-		           compile 'com.google.android.gms:play-services-auth:[[[plugin.gmsVersion]]]'
-		           compile 'com.google.android.gms:play-services-games:[[[plugin.gmsVersion]]]'
-		           compile 'com.google.android.gms:play-services-drive:[[[plugin.gmsVersion]]]'
-		           compile 'com.google.android.gms:play-services-plus:[[[plugin.gmsVersion]]]'
+		           implementation 'com.google.android.gms:play-services-auth:[[[plugin.gmsVersion]]]'
+		           implementation 'com.google.android.gms:play-services-games:[[[plugin.gmsVersion]]]'
+		           implementation 'com.google.android.gms:play-services-drive:[[[plugin.gmsVersion]]]'
+		           implementation 'com.google.android.gms:play-services-plus:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
 	       	</replacelist>	

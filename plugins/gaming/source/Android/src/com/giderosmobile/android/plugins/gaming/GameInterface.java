@@ -59,7 +59,7 @@ public interface GameInterface {
     public void sendToAll(byte[] message, int isReliable);
     public String getCurrentPlayer();
     public String getCurrentPlayerId();
-    public String getPlayerPicture(String id, int highRes);
+    public String getCurrentPlayerPicture(int highRes);
     public void getCurrentPlayerScore(String leaderboardId, int span, int leaderboardCollection);
     public Object getAllPlayers();
 

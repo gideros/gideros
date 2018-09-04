@@ -156,7 +156,7 @@ public class GameTest implements GameInterface {
 			map.putInt("timestamp", (1000*i));
 			lscores.put(i, map);
 		}
-		Game.loadPlayerScoresComplete(this, id, leaderboardName, lscores);
+		Game.loadScoresComplete(this, id, leaderboardName, lscores);
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class GameTest implements GameInterface {
 	}
 
 	@Override
-	public String getPlayerPicture(String id, int highRes) {
+	public String getCurrentPlayerPicture(int highRes) {
 		return null;
 	}
 

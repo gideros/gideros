@@ -48,6 +48,7 @@ import com.google.android.gms.tasks.Task;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
@@ -421,7 +422,7 @@ public class GameGoogleplay implements GameInterface {
 		}
 	}
 	
-	public void loadPlayerScores(String id, int span, int collection, int maxResults ){
+	public void loadPlayerScores(final String id, int span, int collection, int maxResults ){
 	    	if(maxResults > 25){
 				maxResults = 25;
 			}
@@ -788,7 +789,7 @@ public class GameGoogleplay implements GameInterface {
     }
     
 	@Override
-    public String getPlayerPicture(String id, int highRes){
+    public String getCurrentPlayerPicture(int highRes){
     	if(currentPlayer!=null)
     	{
     		if(highRes == 0 && currentPlayer.hasHiResImage())
@@ -798,7 +799,7 @@ public class GameGoogleplay implements GameInterface {
     	}
     	return "";
     }
-    
+
 	@Override
     public void getCurrentPlayerScore(String leaderboardId, int span, int leaderboardCollection){
     	if(mAccount != null)
@@ -828,6 +829,12 @@ public class GameGoogleplay implements GameInterface {
         		Bundle bundle = new Bundle();
         		bundle.putString("id", p.getParticipantId());
         		bundle.putString("name", p.getDisplayName());
+        		Uri img=p.getHiResImageUri();
+        		if (img!=null)
+            		bundle.putString("picture_hires", img.toString());
+        		img=p.getIconImageUri();
+        		if (img!=null)
+            		bundle.putString("picture", img.toString());
     			arr.put(i, bundle);
     			i++;
     		}

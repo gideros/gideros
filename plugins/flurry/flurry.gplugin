@@ -17,7 +17,7 @@
 			<append>
 				<orig>//TAG-DEPENDENCIES//</orig>								
 				<by>
-				    compile files('libs/[[[local.adsJarVer]]]')
+				    implementation files('libs/[[[local.adsJarVer]]]')
 				</by>
 			</append>
 		</replacelist>

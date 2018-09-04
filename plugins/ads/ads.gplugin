@@ -85,7 +85,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile 'com.unity3d.ads:unity:ads:[[[local.adsAarVer]]]@aar'
+				    implementation 'com.unity3d.ads:unity:ads:[[[local.adsAarVer]]]@aar'
 					</by>
 				</append>
 	       	</replacelist>	
@@ -98,7 +98,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-					compile 'com.github.vungle:vungle-android-sdk:5.1.0'
+					implementation 'com.github.vungle:vungle-android-sdk:5.1.0'
 					</by>
 				</append>
 				<append>
@@ -157,8 +157,8 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-    compile 'com.android.support:support-v4:[[[export.androidSdk]]]+'
-    compile files('libs/KiipSDK.jar')
+    implementation 'com.android.support:support-v4:[[[export.androidSdk]]]+'
+    implementation files('libs/KiipSDK.jar')
 					</by>
 				</append>
             	<append>
@@ -194,8 +194,8 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile files('libs/[[[local.adsJarVer]]]')
-		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
+				    implementation files('libs/[[[local.adsJarVer]]]')
+		            implementation 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
         	</replacelist>
@@ -226,8 +226,8 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile files('libs/[[[local.adsJarVer]]]')
-		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
+				    implementation files('libs/[[[local.adsJarVer]]]')
+		            implementation 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
         	</replacelist>
@@ -252,7 +252,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
+		            implementation 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
             	<prepend>

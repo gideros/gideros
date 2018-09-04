@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    compile files('libs/gideros.jar')
+    implementation files('libs/gideros.jar')
     //TAG-DEPENDENCIES//    
 }
 

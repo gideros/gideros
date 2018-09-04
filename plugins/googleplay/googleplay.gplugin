@@ -16,7 +16,7 @@
 			<append>
 				<orig>//TAG-DEPENDENCIES//</orig>								
 				<by>
-	           compile 'com.google.android.gms:play-services:[[[plugin.gmsVersion]]]'
+	           implementation 'com.google.android.gms:play-services:[[[plugin.gmsVersion]]]'
 				</by>
 			</append>
 			<replace orig="minSdkVersion 8" by="minSdkVersion 9" />
