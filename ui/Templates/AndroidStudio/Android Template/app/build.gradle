@@ -10,6 +10,8 @@ android {
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
+	    versionCode 1
+    	setProperty("archivesBaseName", "AndroidTemplate_" + (new Date().format('yyyyMMdd-hhmmss')) + "_" + versionCode)
     }
     
     signingConfigs {

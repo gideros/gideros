@@ -7,6 +7,7 @@
 	<property name="deployApk" type="boolean" title="Install APK to device" description="Try to deploy APK to connected device" default="0" />	
 	<property name="keyStore" type="file" title="Key store" description="Path to keystore for signing" default="" />
 	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
+	<property name="timestampApk" type="boolean" title="Timestamp" description="Include time and version code in generated APK name" default="0" />
 	<property name="androidPath" type="dir" title="Android SDK Directory (optional)" description="Directory of your Android SDK (optional)" default="" />
 	<property name="javaPath" type="dir" title="JDK Directory (optional)" description="Directory of your JDK installation (optional)" default="" />
 	<property name="androidSdk" type="string" title="Android SDK Version (optional)" description="The android SDK version to be used for compiling (optional)" default="" />
@@ -81,10 +82,14 @@ local ap=require("Tools/export_android")
 				<set key="local.isUnsigned" value=""/>
 			</if>
 		</if>
+		<if condition="[[[not:[[[export.timestampApk]]]]]]">
+			<set key="local.noRename" value="//"/>
+		</if>
 		<if condition="[[[export.buildApk]]]">
 			<rmdir>tmp</rmdir>
 			<mkdir>tmp</mkdir>
 			<cd>tmp</cd>
+			<set key="local.noRename" value="//"/>
 		</if>
 		<if condition="[[[project.autorotation]]]">
 			<set key="local.orientation" value="sensorPortrait"/>
@@ -133,6 +138,8 @@ local ap=require("Tools/export_android")
 				<replace orig="jksgid_KeyPass" by="[[[secret.keyAliasPass]]]"/>
 				<replace orig="//signingConfig" by="[[[local.noSigning]]]signingConfig"/>
 				<replace orig="//storeFile" by="[[[local.noSigning]]]storeFile"/>
+        		<replace orig="versionCode 1" by="versionCode [[[project.version_code]]]"/>
+        		<replace><orig>setProperty("archivesBaseName"</orig><by>[[[local.noRename]]]setProperty("archivesBaseName"</by></replace>
         	</replacelist>		
 		</template>
 		<if condition="[[[eq:[[[sys.exporType]]]:player]]]">
@@ -179,6 +186,13 @@ local ap=require("Tools/export_android")
 		</if>
 		<applyPlugins/>
 		<if condition="[[[export.buildApk]]]">
+			<lua><![CDATA[
+				local apkName=Export.getProperty("project.namews")
+				if tonumber(Export.getProperty("export.timestampApk"))>0 then
+					apkName=apkName.."_"..os.date("%Y%m%d-%H%M%S").."_"..Export.getProperty("project.version_code")
+				end
+				Export.setProperty("local.apkname",apkName)
+			]]></lua> 
 			<set key="local.gradleCmd" value="&quot;cmd.exe&quot; /c gradlew.bat"/>
     	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
         	    <set key="local.gradleCmd" value="bash gradlew"/>
@@ -188,7 +202,7 @@ local ap=require("Tools/export_android")
 				<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
 				[[[local.gradleCmd]]] assembleRelease
 			</exec>
-			<cp src="app/build/outputs/apk/release/app-release[[[local.isUnsigned]]].apk" dst="../[[[project.namews]]][[[local.isUnsigned]]].apk"/>
+			<cp src="app/build/outputs/apk/release/app-release[[[local.isUnsigned]]].apk" dst="../[[[local.apkname]]][[[local.isUnsigned]]].apk"/>
 			<cd>..</cd>
 			<rmdir>tmp</rmdir>
 			<if condition="[[[export.deployApk]]]">
@@ -197,7 +211,7 @@ local ap=require("Tools/export_android")
 					<set key="local.adbCmd" value="[[[export.androidPath]]]/platform-tools/adb"/>
         		</if>
 				<exec>
-					[[[local.adbCmd]]] install -r [[[project.namews]]][[[local.isUnsigned]]].apk
+					[[[local.adbCmd]]] install -r [[[local.apkname]]][[[local.isUnsigned]]].apk
 				</exec>
 			</if>
 		</if>
