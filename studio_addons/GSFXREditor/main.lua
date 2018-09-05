@@ -1,13 +1,7 @@
-print(os.getenv("GIDEROS_STUDIO_DATA"))
-pcall (function ()
-	GIDEROS_STUDIO_DATA=loadstring("return "..os.getenv("GIDEROS_STUDIO_DATA"))()
-	print(GIDEROS_STUDIO_DATA.editFile)
-end)
-
 function ReloadFile()
 	data=nil
 	pcall(function ()
-		local f=io.open(GIDEROS_STUDIO_DATA.editFile,"rb")
+		local f=io.open(Studio.DATA.editFile,"rb")
 		data=f:read("*a")
 		f:close()
 	end)
@@ -26,14 +20,29 @@ function Reload()
 end
 
 function Save()
+	if not Studio.DATA.editFile then
+		local textInputDialog = TextInputDialog.new("Save file", "Enter a file name for this new sound", "sound.sfx", "Cancel", "OK")
+		local function onComplete(event)
+			print(event.text, event.buttonIndex, event.buttonText)
+			if event.buttonIndex then
+				local ext=event.text:sub(-4)
+				if ext~=".sfx" then event.text=event.text+".sfx" end
+				local fl=Studio.addFile(nil,event.text)
+				if fl then Studio.DATA.editFile=fl.source end
+				Save()
+			end
+		end
+		textInputDialog:addEventListener(Event.COMPLETE, onComplete)
+		textInputDialog:show()
+	end
 	FilePrepare()
---	pcall(function ()
-		local f=io.open(GIDEROS_STUDIO_DATA.editFile,"wb")
+	pcall(function ()
+		local f=io.open(Studio.DATA.editFile,"wb")
 		if f then
 			f:write(data)
 			f:close()
 		end
---	end)
+	end)
 end
 
 
