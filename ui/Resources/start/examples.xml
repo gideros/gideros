@@ -323,4 +323,18 @@
 				/>
 </category>
 
+
+<category name="Add-ons">
+	<example 	name="Addon Base"
+				description="Basic support code"
+				path="Misc/Addon/AddonSample.gproj"
+				image="addon.png"
+				/>
+	<example 	name="Addon Sample"
+				description="Example of tilemap viewer addon"
+				path="Misc/TAME/TAME.gproj"
+				image="addon.png"
+				/>
+</category>
+
 </examples>

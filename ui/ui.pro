@@ -187,6 +187,15 @@ SOURCES += \
 	../lua/src/lint64.c \
 	../lua/src/loadlib.c
 
+SOURCES += \
+    ../plugins/json/source/strbuf.c \
+    ../plugins/json/source/fpconv.c \
+    ../plugins/json/source/lua_cjson.c
+
+HEADERS += \
+    ../plugins/json/source/strbuf.h \
+    ../plugins/json/source/fpconv.h
+
 win32 {
 	LIBS += -liphlpapi
 }

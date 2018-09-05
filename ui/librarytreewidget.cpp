@@ -21,6 +21,7 @@
 #include "pluginselector.h"
 #include "plugineditor.h"
 #include "qtutils.h"
+#include "addons.h"
 
 #define NODETYPE_PROJECT	1
 #define NODETYPE_FILE		2
@@ -28,6 +29,143 @@
 #define NODETYPE_PLUGINS	8
 #define NODETYPE_FILES		16
 #define NODETYPE_PLUGIN		32
+
+LibraryTreeWidget *LibraryTreeWidget::lua_instance=NULL;
+
+static QTreeWidgetItem *tw_getFilesRoot(lua_State *L,int index)
+{
+	if (!LibraryTreeWidget::lua_instance)
+		return NULL;
+	QTreeWidgetItem* rootitem = LibraryTreeWidget::lua_instance->invisibleRootItem();
+	if (!rootitem) return NULL;
+	rootitem = rootitem->child(0);
+	if (!rootitem) return NULL;
+	QTreeWidgetItem *filesFolder=rootitem->child(1);
+    if (lua_type(L,index)==LUA_TTABLE) {
+        int tl=lua_objlen(L,index);
+        for (int k=1;k<=tl;k++)
+        {
+            lua_rawgeti(L,index,k);
+            const char *ename=luaL_checkstring(L,-1);
+            lua_pop(L,1);
+            QTreeWidgetItem *sub=NULL;
+            for (int i = 0; i < filesFolder->childCount(); ++i)
+            {
+                QTreeWidgetItem* childItem = filesFolder->child(i);
+                QString name=childItem->text(0);
+                if (name==QString(ename))
+                    sub=childItem;
+            }
+            if (!sub)
+            {
+                lua_pushstring(L,"Couldn't locate path");
+                lua_error(L);
+            }
+            else
+                filesFolder=sub;
+        }
+    }
+	return filesFolder;
+}
+
+static void tw_dumpFiles(lua_State *L,QTreeWidgetItem *item);
+
+static void tw_dumpItem(lua_State *L,QTreeWidgetItem *childItem) {
+    QMap<QString, QVariant> data = childItem->data(0, Qt::UserRole).toMap();
+    QString fileName = data["filename"].toString();
+    QString name=childItem->text(0);
+    lua_newtable(L);
+    lua_pushstring(L,name.toUtf8().constData());
+    lua_setfield(L,-2,"name");
+    if (fileName.isEmpty()) {  //Dir
+        tw_dumpFiles(L,childItem);
+        lua_setfield(L,-2,"folder");
+    }
+    else
+    {
+        QDir dir = QFileInfo(LibraryTreeWidget::lua_instance->projectFileName_).dir();
+        lua_pushstring(L,QDir::cleanPath(dir.absoluteFilePath(fileName)).toUtf8().constData());
+        lua_setfield(L,-2,"source");
+#define BOOL_ATTRIB(n) 	if (data.contains(n)) { lua_pushboolean(L, data[n].toBool()); lua_setfield(L,-2,n); }
+        BOOL_ATTRIB("downsizing");
+        BOOL_ATTRIB("excludeFromExecution");
+        BOOL_ATTRIB("excludeFromEncryption");
+        BOOL_ATTRIB("excludeFromPackage");
+#undef BOOL_ATTRIB
+    }
+}
+
+static void tw_dumpFiles(lua_State *L,QTreeWidgetItem *item) {
+	lua_newtable(L);
+	for (int i = 0; i < item->childCount(); ++i)
+	{
+		QTreeWidgetItem* childItem = item->child(i);
+        tw_dumpItem(L,childItem);
+		lua_rawseti(L,-2,i+1);
+	}
+}
+
+static int ltw_listFiles(lua_State *L) {
+    QTreeWidgetItem *files=tw_getFilesRoot(L,1);
+	if (!files) {
+		lua_pushnil(L);
+		return 1;
+	}
+	tw_dumpFiles(L,files);
+	return 1;
+}
+
+static int ltw_addFile(lua_State *L) {
+    QTreeWidgetItem *files=tw_getFilesRoot(L,1);
+    if (!files) {
+        lua_pushnil(L);
+		return 1;
+	}
+    const char *fname=luaL_checkstring(L,2);
+    QMap<QString, QVariant> data;
+    if (!lua_isnoneornil(L,3))
+    {
+        luaL_checktype(L,3,LUA_TTABLE);
+#define GETFIELD(n) lua_getfield(L,3,n); data[n]=lua_toboolean(L,-1); lua_pop(L,1);
+        GETFIELD("downsizing");
+        GETFIELD("excludeFromExecution");
+        GETFIELD("excludeFromEncryption");
+        GETFIELD("excludeFromPackage");
+#undef GETFIELD
+    }
+
+    QTreeWidgetItem *n=LibraryTreeWidget::lua_instance->newFile(files,QString(fname),data);
+    if (n)
+        tw_dumpItem(L,n);
+    else
+        lua_pushnil(L);
+
+    return 1;
+}
+
+int ltw_removeFile(lua_State *L) {
+    QTreeWidgetItem *files=tw_getFilesRoot(L,1);
+    if (!files) {
+        lua_pushboolean(L,false);
+		return 1;
+	}
+    LibraryTreeWidget::lua_instance->remove(files);
+    lua_pushboolean(L,true);
+	return 1;
+}
+
+int ltw_addFolder(lua_State *L) {
+    QTreeWidgetItem *files=tw_getFilesRoot(L,1);
+    if (!files) {
+        lua_pushboolean(L,false);
+		return 1;
+	}
+    const char *fname=luaL_checkstring(L,2);
+    LibraryTreeWidget::lua_instance->newFolder(files,QString(fname));
+    lua_pushboolean(L,true);
+    return 1;
+}
+
 
 LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 	: QTreeWidget(parent)
@@ -122,11 +260,23 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkModification()));
 	timer->start(500);
+
+	lua_State *L=AddonsManager::getLua();
+    luaL_Reg reg[] = {
+        { "listFiles", ltw_listFiles },
+        { "addFile", ltw_addFile },
+        { "removeFile", ltw_removeFile },
+        { "addFolder", ltw_addFolder },
+        { NULL, NULL }
+    };
+    luaL_register(L,"Studio",reg);
+    lua_pop(L,1);
+    lua_instance=this;
 }
 
 LibraryTreeWidget::~LibraryTreeWidget()
 {
-
+ if (this==lua_instance) lua_instance=NULL;
 }
 
 void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
@@ -433,62 +583,8 @@ void LibraryTreeWidget::remove()
 	for (int i = 0; i < selectedItems.size(); ++i)
 	{
 		QTreeWidgetItem* item = selectedItems[i];
-
-		if (item->parent())
-			item->parent()->removeChild(item);
+        remove(item);
 	}
-
-	std::stack<QTreeWidgetItem*> stack;
-	for (int i = 0; i < selectedItems.size(); ++i)
-		stack.push(selectedItems[i]);
-
-	while (!stack.empty())
-	{
-		QTreeWidgetItem* item = stack.top();
-		stack.pop();
-
-		QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
-		int nodetype = data ["nodetype"].toInt();
-		QString fileName = data["filename"].toString();
-
-		if (nodetype==NODETYPE_PLUGIN) {
-
-			ProjectProperties::Plugin m;
-			bool found=false;
-			for (QSet<ProjectProperties::Plugin>::iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
-			{
-				if ((*it).name==item->text(0))
-				{
-					m=*it;
-					properties_.plugins.erase(it);
-					found=true;
-					break;
-				}
-			}
-			if (found)
-			{
-				m.enabled=false;
-				properties_.plugins.insert(m);
-			}
-		}
-
-		QFileInfo fileInfo(fileName);
-
-		if (fileInfo.suffix().toLower() == "lua")
-			dependencyGraph_.removeCode(fileName);
-
-		for (int i = 0; i < item->childCount(); ++i)
-			stack.push(item->child(i));
-	}
-
-	for (int i = 0; i < selectedItems.size(); ++i)
-	{
-		QTreeWidgetItem* item = selectedItems[i];
-		delete item;
-	}
-
-
-	checkModification();
 }
 
 
@@ -523,6 +619,85 @@ void LibraryTreeWidget::newFolder()
 
 	checkModification();
 }
+
+QTreeWidgetItem *LibraryTreeWidget::newFile(QTreeWidgetItem *parent,QString name, QMap<QString, QVariant> data)
+{
+    QDir dir = QFileInfo(projectFileName_).dir();
+    QString filename = dir.absoluteFilePath(name);
+    QFile file(filename);
+    // check if it is exists or not
+    if (file.exists() == true) return NULL; //File exists
+            // try to create an empty file
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return NULL; // Can't create
+    file.close();
+
+    QTreeWidgetItem *item = createFileItem(dir.relativeFilePath(filename),
+           data["downsizing"].toBool(),data["excludeFromExecution"].toBool(),data["excludeFromEncryption"].toBool(),data["excludeFromPackage"].toBool());
+    parent->addChild(item);
+    checkModification();
+    return item;
+}
+
+void LibraryTreeWidget::newFolder(QTreeWidgetItem *parent,QString name)
+{
+    if (hasItemNamed(parent,name)) return;
+    QTreeWidgetItem *item = createFolderItem(name);
+    parent->insertChild(0, item);
+    checkModification();
+}
+
+void LibraryTreeWidget::remove(QTreeWidgetItem *item)
+{
+    if (item->parent())
+        item->parent()->removeChild(item);
+
+    std::stack<QTreeWidgetItem*> stack;
+    stack.push(item);
+
+    while (!stack.empty())
+    {
+        QTreeWidgetItem* item = stack.top();
+        stack.pop();
+
+        QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+        int nodetype = data ["nodetype"].toInt();
+        QString fileName = data["filename"].toString();
+
+        if (nodetype==NODETYPE_PLUGIN) {
+
+            ProjectProperties::Plugin m;
+            bool found=false;
+            for (QSet<ProjectProperties::Plugin>::iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+            {
+                if ((*it).name==item->text(0))
+                {
+                    m=*it;
+                    properties_.plugins.erase(it);
+                    found=true;
+                    break;
+                }
+            }
+            if (found)
+            {
+                m.enabled=false;
+                properties_.plugins.insert(m);
+            }
+        }
+
+        QFileInfo fileInfo(fileName);
+
+        if (fileInfo.suffix().toLower() == "lua")
+            dependencyGraph_.removeCode(fileName);
+
+        for (int i = 0; i < item->childCount(); ++i)
+            stack.push(item->child(i));
+    }
+
+    delete item;
+
+    checkModification();
+}
+
 
 void LibraryTreeWidget::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 {

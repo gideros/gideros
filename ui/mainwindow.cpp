@@ -54,6 +54,28 @@
 #include <QKeySequence>
 #include "addons.h"
 
+MainWindow *MainWindow::lua_instance=NULL;
+static int ltw_notifyClient(lua_State *L) {
+    if (!MainWindow::lua_instance) return 0;
+    const char *cid=luaL_optstring(L,1,NULL);
+    const char *data=luaL_checkstring(L,2);
+    QString clientId;
+    if (cid) clientId=QString(cid);
+    MainWindow::lua_instance->notifyAddon(clientId,data);
+    return 0;
+}
+
+static int ltw_saveAll(lua_State *L) {
+    if (!MainWindow::lua_instance) return 0;
+    MainWindow::lua_instance->saveAll();
+    return 0;
+}
+
+void MainWindow::notifyAddon(QString clientId,const char *data) {
+    if (addonsServer_)
+        addonsServer_->notify(clientId,data);
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -434,7 +456,18 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
     luaProcess_->setProcessEnvironment(env);
 
+    lua_instance=this;
     //Register addons
+    lua_State *L=AddonsManager::getLua();
+    luaL_Reg reg[] = {
+        { "_notifyClient", ltw_notifyClient },
+        { "saveAll", ltw_saveAll },
+        { NULL, NULL }
+    };
+    luaL_register(L,"Studio",reg);
+    lua_pop(L,1);
+
+    addonsServer_=new AddonsServer(this);
     std::vector<Addon> addons=AddonsManager::loadAddons(true);
     for (std::vector<Addon>::iterator it=addons.begin();it!=addons.end();it++) {
     	QAction *action=new QAction(QString::fromStdString(it->title),this);
@@ -442,10 +475,12 @@ MainWindow::MainWindow(QWidget *parent)
     	ui.menuAddons->addAction(action);
         connect(action, SIGNAL(triggered()), this, SLOT(addonTriggered()));
     }
+
 }
 
 MainWindow::~MainWindow()
 {
+	delete addonsServer_;
 	delete client_;
 }
 
@@ -455,16 +490,19 @@ void MainWindow::addonTriggered() {
 	launchAddon(name,QString());
 }
 
+static QString luaquote(QString q) {
+    return q.replace("\\","\\\\").replace("\"","\\\"");
+}
 void MainWindow::launchAddon(QString name,QString forFile) {
-    QString base = QFileInfo(projectFileName_).baseName();
+    QString base = QFileInfo(projectFileName_).path();
 	std::string env="{ ";
-	env=env+"projectFile=\""+projectFileName_.toStdString()+"\",";
-	env=env+"projectDir=\""+base.toStdString()+"\",";
+	env=env+"serverPort="+QString::number(addonsServer_->port()).toStdString()+",";
+    env=env+"projectFile=\""+luaquote(projectFileName_).toStdString()+"\",";
+    env=env+"projectDir=\""+luaquote(base).toStdString()+"\",";
 	if (!forFile.isEmpty())
-		env=env+"editFile=\""+forFile.toStdString()+"\",";
+        env=env+"editFile=\""+luaquote(forFile).toStdString()+"\",";
 	env+=" }";
-    //saveAll(); XXX required ?
-	AddonsManager::launch(name.toStdString(),env);
+    AddonsManager::launch(name.toStdString(),env);
 }
 
 void MainWindow::toggleFullscreen()

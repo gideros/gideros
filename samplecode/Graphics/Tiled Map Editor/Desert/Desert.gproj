@@ -2,7 +2,7 @@
  <properties>
   <imageScales/>
  </properties>
- <file source="desert.lua" excludeFromExecution="1"/>
- <file source="tmw_desert_spacing.png"/>
+ <file source="desert.map"/>
+ <file source="desert.png"/>
  <file source="main.lua"/>
 </project>

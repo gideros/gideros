@@ -95,6 +95,6 @@ addons.pkg: $(addsuffix .addons.pkg,$(ADDONS))
 
 %.addons.pkg:
 	mkdir -p $(RELEASE)/Addons/$*
-	$(RELEASE)/Tools/gdrexport -platform gapp $(PWD)/$(ROOT)/studio_addons/$*/*.gproj $(PWD)/$(RELEASE)/Addons/$* | grep -v :
+	-$(RELEASE)/Tools/gdrexport -platform gapp $(PWD)/$(ROOT)/studio_addons/$*/*.gproj $(PWD)/$(RELEASE)/Addons/$* | grep -v :
 	cp $(ROOT)/studio_addons/$*/manifest.lua $(RELEASE)/Addons/$*/manifest.lua
 	

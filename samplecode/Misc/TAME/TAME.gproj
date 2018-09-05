@@ -1,0 +1,22 @@
+<project>
+ <properties mouseTouchOrder="0" scaleMode="0" version_code="1" win_domain="giderosmobile.com" splash_h_image="" encryptAssets="0" disableSplash="0" version="1.0" mouseToTouch="1" html5_host="" backgroundColor="#ffffff" packageName="com.yourdomain.yourapp" encryptCode="0" html5_mem="256" ios_bundle="com.yourdomain." app_icon="" logicalHeight="480" exportMode="0" tv_icon="" build_number="1" vsync="0" osx_signingId="" android_template="0" autorotation="0" winrt_org="GiderosMobile" osx_bundle="com.yourdomain." iosDevice="0" touchToMouse="1" win_org="GiderosMobile" osx_category="5" windowHeight="0" osx_installerId="" html5_fbinstant="0" app_name="" retinaDisplay="0" osx_domain="giderosmobile.com" winrt_package="com.yourdomain.yourapp" fps="60" orientation="0" logicalWidth="320" splashScaleMode="0" html5_fbload="100" windowWidth="0" html5_pack="0" splash_v_image="" osx_org="GiderosMobile" architecture="5">
+  <imageScales/>
+  <plugins/>
+  <exports>
+   <export name="APK">
+    <property value="" name="androidPath"/>
+    <property value="" name="androidSdk"/>
+    <property value="26" name="androidTarget"/>
+    <property value="" name="androidTools"/>
+    <property value="1" name="buildApk"/>
+    <property value="0" name="deployApk"/>
+    <property value="" name="javaPath"/>
+    <property value="" name="keyAlias"/>
+    <property value="" name="keyStore"/>
+    <property value="com.yourdomain.yourapp" name="packageName"/>
+   </export>
+  </exports>
+ </properties>
+ <file source="manifest.lua" excludeFromExecution="1"/>
+ <file source="main.lua"/>
+</project>

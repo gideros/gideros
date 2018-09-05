@@ -13,8 +13,10 @@ class LibraryTreeWidget : public QTreeWidget
 	Q_OBJECT
 
 public:
+	static LibraryTreeWidget *lua_instance;
 	LibraryTreeWidget(QWidget *parent);
 	~LibraryTreeWidget();
+    QString projectFileName_;
 
 	QDomDocument toXml() const; 
 	void loadXml(const QString& projectFileName, const QDomDocument& doc);
@@ -41,6 +43,10 @@ public:
 	{
 		return properties_;
 	}
+
+    QTreeWidgetItem *newFile(QTreeWidgetItem *parent,QString name,QMap<QString, QVariant> data);
+    void newFolder(QTreeWidgetItem *parent,QString name);
+    void remove(QTreeWidgetItem *item);
 
 signals:
 	void modificationChanged(bool m);
@@ -105,7 +111,6 @@ private:
 private:
 	QString xmlString_;
 	bool isModifed_;
-	QString projectFileName_;
 
 private:
 	DependencyGraph dependencyGraph_;

@@ -1,0 +1,13 @@
+<project>
+ <properties osx_domain="giderosmobile.com" html5_fbinstant="0" win_org="GiderosMobile" splash_v_image="" win_domain="giderosmobile.com" logicalWidth="320" app_name="" android_template="0" disableSplash="0" retinaDisplay="0" fps="60" scaleMode="0" mouseToTouch="1" ios_bundle="com.yourdomain." build_number="1" encryptCode="0" encryptAssets="0" version="1.0" orientation="0" mouseTouchOrder="0" osx_signingId="" vsync="0" windowHeight="0" osx_installerId="" app_icon="" exportMode="0" osx_org="GiderosMobile" autorotation="0" backgroundColor="#ffffff" touchToMouse="1" packageName="com.yourdomain.yourapp" splashScaleMode="0" osx_bundle="com.yourdomain." version_code="1" html5_host="" html5_pack="0" architecture="0" osx_category="5" winrt_org="GiderosMobile" html5_mem="256" winrt_package="com.yourdomain.yourapp" logicalHeight="480" iosDevice="0" tv_icon="" html5_fbload="100" windowWidth="0" splash_h_image="">
+  <imageScales/>
+  <plugins>
+   <plugin name="JSON" enabled="1"/>
+   <plugin name="Lua Socket" enabled="1"/>
+  </plugins>
+  <exports/>
+ </properties>
+ <file source="studio.lua"/>
+ <file source="manifest.lua" excludeFromExecution="1" excludeFromPackage="1"/>
+ <file source="main.lua"/>
+</project>

@@ -12,6 +12,7 @@
 #include <Qsci/qsciscintilla.h>
 #include <QFontMetrics>
 #include <QListWidget>
+#include "addons.h"
 
 #define NEW_CLIENT
 
@@ -185,7 +186,6 @@ private slots:
 	void exportPack();
 
 	void save();
-	void saveAll();
 	bool maybeSave();
 
 	void compile();
@@ -232,7 +232,7 @@ private:
 	unsigned int sendStopMessage();
 
 	Ui::MainWindowClass ui;
-
+	AddonsServer *addonsServer_;
 	LibraryWidget* libraryWidget_;
 	QTextEditEx* outputWidget_;
 	PreviewWidget* previewWidget_;
@@ -395,6 +395,11 @@ private slots:
     void on_actionReset_UI_and_Editor_Theme_triggered();
     void on_actionFold_Unfold_All_triggered();
     void on_actionFold_Unfold_Top_triggered();
+
+public:
+    static MainWindow *lua_instance;
+    void notifyAddon(QString clientId,const char *data);
+    void saveAll();
 };
 
 #endif // MAINWINDOW_H
