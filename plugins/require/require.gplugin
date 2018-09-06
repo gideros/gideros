@@ -25,6 +25,7 @@
  <property name="reqEnable64bits" type="boolean" title="Enable 64bits libs (android)"/> 
  <property name="reqDisableX86" type="boolean" title="Disable x86 libs (android)"/> 
  <property name="reqDisableArm" type="boolean" title="Disable arm libs (android)"/> 
+ <property name="reqDisable32bits" type="boolean" title="Disable 32bits libs (android)"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -221,19 +222,23 @@
     </if>
     <lua><![CDATA[
     	local archs={ ["armeabi-v7a"]=true, ["x86"]=true }
-		if tonumber(Export.getProperty("plugin.reqEnable64bits"))>0 then
+		if (tonumber(Export.getProperty("plugin.reqEnable64bits")) or 0)>0 then
 			archs["arm64-v8a"]=true
 			archs["x86_64"]=true
 		end
-		if tonumber(Export.getProperty("plugin.reqDisableX86"))>0 then
+		if (tonumber(Export.getProperty("plugin.reqDisableX86")) or 0)>0 then
 			archs["x86_64"]=nil
 			archs["x86"]=nil
 		end
-		if tonumber(Export.getProperty("plugin.reqDisableArm"))>0 then
+		if (tonumber(Export.getProperty("plugin.reqDisableArm")) or 0)>0 then
 			archs["arm64-v8a"]=nil
 			archs["armeabi-v7a"]=nil
 		end		
-		local archStr=""
+ 		if (tonumber(Export.getProperty("plugin.reqDisable32bits")) or 0)>0 then
+            archs["armeabi-v7a"]=nil
+            archs["x86"]=nil
+        end
+        local archStr=""
 		for a,_ in pairs(archs) do archStr=archStr..", \""..a.."\"" end
 		if #archStr>0 then archStr=archStr:sub(2) end
 		print("ARCHS:"..archStr)
@@ -327,7 +332,7 @@
 				end
 			end
 		end
-		if tonumber(Export.getProperty("plugin.reqNoGps"))==0 then
+		if (tonumber(Export.getProperty("plugin.reqNoGps") or 0))==0 then
 			iOSProject.InfoPlist.NSLocationUsageDescription=Export.getProperty("plugin.reqGpsReason")
 			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=Export.getProperty("plugin.reqGpsReason")
 		else
