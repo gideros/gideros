@@ -137,14 +137,15 @@ void AddonsManager::launch(std::string name,std::string envs) {
     for (std::vector<Addon>::iterator it=addons.begin();it!=addons.end();it++) {
     	if (it->name==name){
     	    QProcess *process = new QProcess();
+    	    QStringList args;
 #if defined(Q_OS_MAC)
-    	    process->setProgram("open \"../../Gideros Player.app\"");
+    	    process->setProgram("open");
+    	    args << "../../Gideros Player.app" << "--args";
 #elif defined(Q_OS_WIN)
     	    process->setProgram("GiderosPlayer.exe");
 #else
     	    process->setProgram("GiderosPlayer");
 #endif
-    	    QStringList args;
     	    if (!it->gapp.empty())
     	    	args << QString::fromStdString(it->getGApp());
     	    process->setArguments(args);
