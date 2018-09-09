@@ -17,6 +17,13 @@ public:
                      int (*destructor) (lua_State*),
                      const luaL_reg* functionlist);
 
+    // eg: createClass("Blah", "", nullptr, nullptr, {{ "bling", bling }, { nullptr, nullptr }});
+    // avoids creating a separate luaL_reg array (always end vector with {nullptr, nullptr})
+    void createClass(std::string classname,
+                     std::string basename,
+                     int (*constructor) (lua_State*),
+                     int (*destructor) (lua_State*),
+                     std::vector<luaL_Reg> functionlist);
 
     void pushInstance(const char* classname, void* ptr);
 
