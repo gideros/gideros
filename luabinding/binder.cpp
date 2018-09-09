@@ -22,6 +22,15 @@ void Binder::createClass(const char* classname,
     g_createClass(L, classname, basename, constructor, destructor, functionlist);
 }
 
+void Binder::createClass(std::string classname,
+                         std::string basename,
+                         int (*constructor) (lua_State*),
+                         int (*destructor) (lua_State*),
+                         std::vector<luaL_Reg> functionlist)
+{
+    const char* _class = classname == "" ? nullptr : classname.c_str();
+    const char* _base = basename == "" ? nullptr : basename.c_str();
+    g_createClass(L, _class, _base, constructor, destructor, static_cast<luaL_Reg*>(functionlist.data()));
 }
 
 void Binder::pushInstance(const char* classname, void* ptr)
