@@ -24,7 +24,7 @@ PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine
 PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine
 PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine
 #For reference
-PLUGINS_WINRT=luasocket ogg liquidfun
+PLUGINS_WINRT=luasocket ogg liquidfun threads
 
 ADDONS=GSFXREditor Player TAME
 
