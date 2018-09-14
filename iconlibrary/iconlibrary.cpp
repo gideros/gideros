@@ -51,6 +51,12 @@ IconLibrary::IconLibrary()
 
     iconMap_["export"] = icon(6, 5);
 
+    //Autocompletion list
+    iconMap_["method"] = icon(9,0);
+    iconMap_["constant"] = icon(4,0);
+    iconMap_["event"] = icon(7,0);
+    iconMap_["class"] = icon(11,32);
+
 	danish_["advanced"] = QIcon("Resources/danish/advanced.png");
 	danish_["iPhone"] = QIcon("Resources/danish/iPhone.png");
 	danish_["start"] = QIcon("Resources/danish/play.png");

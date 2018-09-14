@@ -13,6 +13,7 @@
 #include <Qsci/qscicommand.h>
 #include <Qsci/qscicommandset.h>
 #include <QSettings>
+#include "iconlibrary.h"
 
 static void keysForMac(QsciScintilla* qscintilla)
 {
@@ -246,6 +247,11 @@ QSettings lls(theme, QSettings::IniFormat);
 	sciScintilla_->setMarginWidth(2, 14);			// margin 2 is bookmark margin
 	sciScintilla_->markerDefine(QsciScintilla::RightTriangle, 1);
 	sciScintilla_->setMarginMarkerMask(2, 1 << 1);
+
+	sciScintilla_->registerImage(1,IconLibrary::instance().icon(0,"method").pixmap(16));
+	sciScintilla_->registerImage(2,IconLibrary::instance().icon(0,"constant").pixmap(16));
+	sciScintilla_->registerImage(3,IconLibrary::instance().icon(0,"event").pixmap(16));
+	sciScintilla_->registerImage(4,IconLibrary::instance().icon(0,"class").pixmap(16));
 
     sciScintilla_->setMarkerForegroundColor(
                 lls.value("MarkerForegroundColor", 2566178).toInt(), 1);
