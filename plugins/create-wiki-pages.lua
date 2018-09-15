@@ -139,6 +139,7 @@ local function writeEventConstantPage(t, dir, object)
   file:write(boldTitleOneLine("Defined by", makeLink(class)))
   file:write(title(3, translate("Description")) .. "\n")
   file:write(translate(object.desc) .. "<br/>\n")
+  writeExamples(file, object)
   file:close()
 end
 
