@@ -9,6 +9,7 @@ CINCS=$(addprefix -I../,$(INCS)) -I$(ROOT)/Sdk/include
 CFLGS+=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	-O2
+CPPFLGS+=-std=c++11
 LFLGS+=-L$(ROOT)/Sdk/lib/win32 -llua -lgvfs -lgid -lgideros
 
 all: path $(OBJS)
@@ -23,7 +24,7 @@ clean:
 	
 $(BUILD)/%.o: ../%.cpp
 	@echo "C+ $<"
-	@$(CX) $(CINCS) $(CFLGS) -c $< -o $@
+	@$(CX) $(CINCS) $(CPPFLGS) $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: ../%.c
 	@echo "CC $<"
@@ -31,7 +32,7 @@ $(BUILD)/%.o: ../%.c
 
 $(BUILD)/%.o: %.cpp
 	@echo "C+ $<"
-	@$(CX) $(CINCS) $(CFLGS) -c $< -o $@
+	@$(CX) $(CINCS) $(CPPFLGS) $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: %.c
 	@echo "CC $<"
