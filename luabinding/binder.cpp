@@ -28,8 +28,8 @@ void Binder::createClass(std::string classname,
                          int (*destructor) (lua_State*),
                          std::vector<luaL_Reg> functionlist)
 {
-    const char* _class = classname == "" ? nullptr : classname.c_str();
-    const char* _base = basename == "" ? nullptr : basename.c_str();
+    const char* _class = classname == "" ? NULL : classname.c_str();
+    const char* _base = basename == "" ? NULL : basename.c_str();
     g_createClass(L, _class, _base, constructor, destructor, static_cast<luaL_Reg*>(functionlist.data()));
 }
 
