@@ -13,6 +13,7 @@
 #include <QFontMetrics>
 #include <QListWidget>
 #include "addons.h"
+#include "bytebuffer.h"
 
 #define NEW_CLIENT
 
@@ -166,12 +167,18 @@ private:
 
     virtual void keyPressEvent(QKeyEvent * event);
     virtual void keyReleaseEvent(QKeyEvent * event);
+    QVariant deserializeValue(ByteBuffer &buffer);
 
 private slots:
 	void onSingleShot();
 	void onTimer();
 	void start();
-	void stop();
+	void startDebug();
+    void resume();
+    void stepOver();
+    void stepInto();
+    void stepReturn();
+    void stop();
 	void startAllPlayers();
 	void newProject();
 	void closeProject();
@@ -206,6 +213,8 @@ private slots:
     void toggleFullscreen();
 	void closeMdiTab(int);
 
+    void lookupSymbol(QString sym,int x,int y);
+
 private slots:
 	void onOpenRequest(const QString& itemName, const QString& fileName);
 	void onPreviewRequest(const QString& itemName, const QString& fileName);
@@ -214,6 +223,8 @@ private slots:
 
 private:
 	TextEdit* openFile(const QString& fileName, bool suppressErrors = false);
+    void resumeDebug(int mode);
+    void clearDebugHighlights();
 
 private slots:
 	void outputMouseDoubleClick(QMouseEvent* e);
@@ -249,7 +260,8 @@ private:
 
 	void cancelUpload();
 	bool isTransferring_;
-
+	bool isBreaked_;
+	bool isDebug_;
 
 private:
 //	void enableUI();
@@ -271,6 +283,8 @@ private:
 	QString projectDirectory() const;
 	QString projectFileName_;
     QString makeProjectRelativePath(const QString& path) const;
+    QPoint lookupSymbolPoint;
+    TextEdit *lookupSymbolWidget;
 
 #if 0
 private slots:

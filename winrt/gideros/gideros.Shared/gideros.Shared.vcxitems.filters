@@ -238,6 +238,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapdatabinder.cpp">
       <Filter>luabinding</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\debugging.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\dibbinder.cpp">
       <Filter>luabinding</Filter>
     </ClCompile>

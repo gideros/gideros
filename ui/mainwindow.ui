@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1370</width>
     <height>750</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@ QMainWindow::separator {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1370</width>
      <height>21</height>
     </rect>
    </property>
@@ -111,6 +111,7 @@ QMainWindow::separator {
     </property>
     <addaction name="actionStart_Player"/>
     <addaction name="actionStart"/>
+    <addaction name="actionDebug"/>
     <addaction name="actionStop"/>
     <addaction name="actionStartAll"/>
     <addaction name="separator"/>
@@ -180,6 +181,11 @@ QMainWindow::separator {
    <addaction name="separator"/>
    <addaction name="actionStart_Player"/>
    <addaction name="actionStart"/>
+   <addaction name="actionDebug"/>
+   <addaction name="actionResume"/>
+   <addaction name="actionStepOver"/>
+   <addaction name="actionStepInto"/>
+   <addaction name="actionStepReturn"/>
    <addaction name="actionStop"/>
    <addaction name="actionStartAll"/>
   </widget>
@@ -667,6 +673,34 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="shortcut">
     <string>F11</string>
+   </property>
+  </action>
+  <action name="actionDebug">
+   <property name="text">
+    <string>Debug</string>
+   </property>
+   <property name="toolTip">
+    <string>Debug</string>
+   </property>
+  </action>
+  <action name="actionStepOver">
+   <property name="text">
+    <string>Step Over</string>
+   </property>
+  </action>
+  <action name="actionStepInto">
+   <property name="text">
+    <string>Step Into</string>
+   </property>
+  </action>
+  <action name="actionStepReturn">
+   <property name="text">
+    <string>Step Return</string>
+   </property>
+  </action>
+  <action name="actionResume">
+   <property name="text">
+    <string>Resume</string>
    </property>
   </action>
  </widget>

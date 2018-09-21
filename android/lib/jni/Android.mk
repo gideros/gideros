@@ -439,6 +439,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/pixelbinder.cpp \
 	../../../luabinding/screenbinder.cpp \
 	../../../luabinding/particlesbinder.cpp \
+	../../../luabinding/debugging.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
 #XMP

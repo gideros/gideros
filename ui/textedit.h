@@ -14,7 +14,7 @@ public:
 	~TextEdit();
 
 	void newFile();
-	bool loadFile(const QString& fileName, bool suppressErrors = false);
+    bool loadFile(const QString& fileName, const QString &itemName, bool suppressErrors = false);
 	const QString& fileName() const;
 	bool save();
 	virtual void background();
@@ -42,6 +42,7 @@ public:
 					bool wrap);
 
     void setFocusToEdit();
+    void highlightDebugLine(int line);
 
 protected:
 	virtual void closeEvent(QCloseEvent* event);
@@ -62,9 +63,12 @@ signals:
 	void copyAvailable(bool yes);
     void textChanged();
     void marginClicked(int, int, Qt::KeyboardModifiers);
+    void lookupSymbol(QString,int,int);
 
 private slots:
 	void onModificationChanged(bool m);
+    void dwellStart(int pos, int x, int y);
+    void dwellEnd(int pos, int x, int y);
 
 private:
 	bool maybeSave();
@@ -72,7 +76,11 @@ private:
 private:
 	QsciScintilla* sciScintilla_;
 	bool isUntitled_;
-	QString fileName_;
+    QString fileName_;
+    QString itemName_;
+
+public:
+    static QSet<QString> breakpoints;
 };
 
 #endif // MDICHILD_H

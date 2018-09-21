@@ -28,6 +28,7 @@ public:
 
 	qint64 bytesToWrite() const;
 
+    unsigned int sendCommand(const void* data, unsigned int size);
     unsigned int sendFile(const QString& remoteName, const QString& localFileName);
 	unsigned int sendCreateFolder(const QString& folderName);
 	unsigned int sendPlay(const QStringList& luafiles);

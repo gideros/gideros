@@ -7,7 +7,12 @@ IconLibrary::IconLibrary()
 
 	iconMap_["start"] = icon(15, 21);
 	iconMap_["start all"] = icon(11, 3);
-	iconMap_["stop"] = icon(7, 25);
+	iconMap_["debug"] = icon(7, 30);
+    iconMap_["step into"] = icon(12, 3);
+    iconMap_["step over"] = icon(3,4);
+    iconMap_["step return"] = icon(9, 4);
+    iconMap_["resume"] = icon(14, 0);
+    iconMap_["stop"] = icon(7, 25);
 	iconMap_["gamepad"] = icon(13, 8);
 	iconMap_["picture"] = icon(0, 21);
     iconMap_["picture with magnifier"] = icon(0, 21, 0, 1, 3, 3);

@@ -176,7 +176,10 @@ public:
     static int Core_random(lua_State *L);
     static int Core_randomSeed(lua_State *L);
     //Debugger support
-    static bool hasBreakpoints;
+#define DBG_MASKBREAK	(1<<7) //Check breakpoints: Not a lua debug flag
+#define DBG_MASKSUB		(1<<6) //Ignore subcalls: Not a lua debug flag
+#define DBG_MASKLUA		0x1F
+    static int debuggerBreak;
     static std::map<int,bool> breakpoints;
     static void (*debuggerHook)(void *context,lua_State *L,lua_Debug *ar);
     static void *debuggerContext;

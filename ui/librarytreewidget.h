@@ -4,6 +4,7 @@
 #include <QTreeWidget>
 #include <QDragEnterEvent>
 #include <QDomDocument>
+#include <QDir>
 
 #include "codedependenciesdialog.h"
 #include "projectproperties.h"
@@ -33,6 +34,7 @@ public:
 	}
 
 	QString fileName(const QString& itemName) const;
+    QString itemName(QDir dir,const QString& fileName) const;
 
 	const ProjectProperties& getProjectProperties() const
 	{

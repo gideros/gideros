@@ -53,6 +53,7 @@
 #include <QToolBar>
 #include <QKeySequence>
 #include "addons.h"
+#include <QToolTip>
 
 MainWindow *MainWindow::lua_instance=NULL;
 static int ltw_notifyClient(lua_State *L) {
@@ -164,6 +165,26 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionStart->setEnabled(false);
 	ui.actionStart->setShortcuts( QList<QKeySequence>() << tr("Ctrl+R") << tr("F5") );
 	connect(ui.actionStart, SIGNAL(triggered()), this, SLOT(start()));
+
+	ui.actionDebug->setIcon(IconLibrary::instance().icon(0, "debug"));
+	ui.actionDebug->setEnabled(false);
+	connect(ui.actionDebug, SIGNAL(triggered()), this, SLOT(startDebug()));
+
+    ui.actionResume->setIcon(IconLibrary::instance().icon(0, "resume"));
+    ui.actionResume->setEnabled(false);
+    connect(ui.actionResume, SIGNAL(triggered()), this, SLOT(resume()));
+
+    ui.actionStepOver->setIcon(IconLibrary::instance().icon(0, "step over"));
+    ui.actionStepOver->setEnabled(false);
+    connect(ui.actionStepOver, SIGNAL(triggered()), this, SLOT(stepOver()));
+
+    ui.actionStepInto->setIcon(IconLibrary::instance().icon(0, "step into"));
+    ui.actionStepInto->setEnabled(false);
+    connect(ui.actionStepInto, SIGNAL(triggered()), this, SLOT(stepInto()));
+
+    ui.actionStepReturn->setIcon(IconLibrary::instance().icon(0, "step return"));
+    ui.actionStepReturn->setEnabled(false);
+    connect(ui.actionStepReturn, SIGNAL(triggered()), this, SLOT(stepReturn()));
 
 	ui.actionStartAll->setIcon(IconLibrary::instance().icon(0, "start all"));
 	ui.actionStartAll->setEnabled(true);
@@ -476,6 +497,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(action, SIGNAL(triggered()), this, SLOT(addonTriggered()));
     }
 
+        isBreaked_=false;
 }
 
 MainWindow::~MainWindow()
@@ -614,8 +636,49 @@ void MainWindow::playerChanged(const QString & text)
 
 void MainWindow::start()
 {
+    if (isBreaked_) resumeDebug(0x00);
+    isDebug_=false;
 	if (prepareStartOnPlayer())
 		startOnPlayer();
+}
+
+void MainWindow::startDebug()
+{
+    if (isBreaked_) resumeDebug(0x00);
+    isDebug_=true;
+	if (prepareStartOnPlayer())
+		startOnPlayer();
+	else
+		isDebug_=false;
+}
+
+void MainWindow::resume() {
+    resumeDebug(0x84); // Mask LINE + BKPT
+}
+
+void MainWindow::stepOver() {
+    resumeDebug(0x44); //Mask LINE + ignore subs
+}
+
+void MainWindow::stepInto() {
+    resumeDebug(0x04);    //Mask LINE
+}
+
+void MainWindow::stepReturn() {
+    resumeDebug(0x46); //Mask LINE  + ignore subs + RET
+}
+
+void MainWindow::resumeDebug(int mode) {
+    isBreaked_=false;
+    clearDebugHighlights();
+    ui.actionResume->setEnabled(false);
+    ui.actionStepOver->setEnabled(false);
+    ui.actionStepInto->setEnabled(false);
+    ui.actionStepReturn->setEnabled(false);
+    ByteBuffer buffer;
+    buffer << (char) 22;
+    buffer << (char) mode;
+    client_->sendCommand(buffer.data(),buffer.size());
 }
 
 bool MainWindow::prepareStartOnPlayer()
@@ -658,12 +721,14 @@ void MainWindow::startOnPlayer()
 	isTransferring_ = true;
 
 	client_->sendStop();
+	isBreaked_=false;
 	client_->sendProjectName(QFileInfo(projectFileName_).baseName());
 	client_->sendGetFileList();
 }
 
 void MainWindow::startAllPlayers()
 {
+	isDebug_=false;
 	if (!prepareStartOnPlayer())
 		return;
 	int pc=players_->count();
@@ -1002,6 +1067,24 @@ unsigned int MainWindow::sendPlayMessage(const QStringList& luafiles)
 	char play = 2;
 	client_->sendData(&play, sizeof(char));
 #else
+	if (isDebug_)
+	{
+		//Collect breakpoints
+		ByteBuffer buffer;
+		buffer << (char) 21;
+        buffer << (char) 0x84; //Break line
+        int nbreakpoints=TextEdit::breakpoints.size();
+		buffer << nbreakpoints;
+        foreach(QString bp, TextEdit::breakpoints) {
+            int ls=bp.lastIndexOf(':');
+            std::string source=(QString("@")+bp.mid(0,ls)).toStdString();
+            int line=bp.mid(ls+1).toInt()+1;
+            buffer << line;
+            buffer << source;
+        }
+
+		client_->sendCommand(buffer.data(),buffer.size());
+	}
 	unsigned int code=client_->sendPlay(luafiles);
 	playStarted();
 	return code;
@@ -1020,7 +1103,8 @@ unsigned int MainWindow::sendStopMessage()
 
 void MainWindow::stop()
 {
-	fileQueue_.clear();
+    if (isBreaked_) resumeDebug(0x00);
+    fileQueue_.clear();
 	sendStopMessage();
 }
 
@@ -1265,8 +1349,9 @@ TextEdit* MainWindow::createTextEdit()
 {
 	TextEdit* textEdit = new TextEdit;
 	connect(textEdit, SIGNAL(copyAvailable(bool)), this, SLOT(updateUI()));
-	connect(textEdit, SIGNAL(textChanged()), this, SLOT(updateUI()));
-	return textEdit;
+    connect(textEdit, SIGNAL(textChanged()), this, SLOT(updateUI()));
+    connect(textEdit, SIGNAL(lookupSymbol(QString,int,int)), this, SLOT(lookupSymbol(QString,int,int)));
+    return textEdit;
 }
 
 TextEdit* MainWindow::findTextEdit(const QString& fileName) const
@@ -1279,6 +1364,15 @@ TextEdit* MainWindow::findTextEdit(const QString& fileName) const
 	}
 
 	return 0;
+}
+
+void MainWindow::clearDebugHighlights() {
+    foreach (MdiSubWindow* window, mdiArea_->subWindowList())
+    {
+        TextEdit* textEdit = qobject_cast<TextEdit*>(window);
+        if (textEdit)
+            textEdit->highlightDebugLine(-1);
+    }
 }
 
 void MainWindow::onOpenRequest(const QString& itemName, const QString& fileName)
@@ -1767,15 +1861,18 @@ void MainWindow::outputMouseDoubleClick(QMouseEvent* e)
 TextEdit* MainWindow::openFile(const QString& fn, bool suppressErrors/* = false*/)
 {
 	QString fileName;
+    QString itemName;
 
-	if (QFileInfo(fn).isRelative())
+    QDir dir(QFileInfo(projectFileName_).path());
+    if (QFileInfo(fn).isRelative())
 	{
-		QDir dir(QFileInfo(projectFileName_).path());
 		fileName = QDir::cleanPath(dir.absoluteFilePath(libraryWidget_->fileName(fn)));
+        itemName=fn;
 	}
 	else
 	{
 		fileName = fn;
+        itemName = libraryWidget_->itemName(dir,fn);
 	}
 
 	TextEdit* existing = findTextEdit(fileName);
@@ -1787,7 +1884,7 @@ TextEdit* MainWindow::openFile(const QString& fn, bool suppressErrors/* = false*
 	}
 
 	TextEdit* child = createTextEdit();
-	if (child->loadFile(fileName, suppressErrors) == true)
+    if (child->loadFile(fileName, itemName, suppressErrors) == true)
 	{
 		mdiArea_->addSubWindow(child);
 		child->showMaximized();
@@ -1919,6 +2016,7 @@ void MainWindow::playerSettings()
 	if (dialog.exec() == QDialog::Accepted)
 	{
 		ui.actionStart->setEnabled(false);
+		ui.actionDebug->setEnabled(false);
 		ui.actionStop->setEnabled(false);
 		
 		//sentMap_.clear();
@@ -2084,6 +2182,7 @@ void MainWindow::connected()
 	isTransferring_ = false;
 
 	ui.actionStart->setEnabled(true);
+	ui.actionDebug->setEnabled(true);
 	ui.actionStop->setEnabled(true);
 	printf("other side connected\n");
 
@@ -2093,14 +2192,46 @@ void MainWindow::connected()
 
 void MainWindow::disconnected()
 {
+    if (isBreaked_) resumeDebug(0);
 	if (!allPlayersPlayList.empty())
 		return;
 	fileQueue_.clear();
 	isTransferring_ = false;
 
 	ui.actionStart->setEnabled(false);
+	ui.actionDebug->setEnabled(false);
 	ui.actionStop->setEnabled(false);
 	printf("other side closed connection\n");
+}
+
+QVariant MainWindow::deserializeValue(ByteBuffer &buffer) {
+    char type;
+    buffer >> type;
+    std::string value;
+    QMap<QVariant,QVariant> table;
+    char b;
+    switch (type) {
+        case LUA_TNONE: return QVariant();
+        case LUA_TNIL: return QVariant();
+        case LUA_TBOOLEAN:
+            buffer >> b;
+            return QVariant::fromValue((bool)b);
+        case LUA_TTABLE:
+            while (true)  {
+                QVariant key=deserializeValue(buffer);
+                if (key.isNull()) break;
+                QVariant val=deserializeValue(buffer);
+                table[key]=val;
+            }
+            return QVariant::fromValue(table);
+        case LUA_TNUMBER:
+            buffer >> value;
+            return QVariant::fromValue(QString::fromStdString(value).toDouble());
+        default:
+            buffer >> value;
+            return QVariant::fromValue(QString::fromStdString(value));
+    }
+
 }
 
 void MainWindow::dataReceived(const QByteArray& d)
@@ -2224,6 +2355,53 @@ void MainWindow::dataReceived(const QByteArray& d)
 		if (luaFiles.empty() == false)
 			fileQueue_.push_back(qMakePair(luaFiles.join("|"), QString("play")));
 	}
+	if (data[0]==23) //Breaked
+	{
+		ByteBuffer buffer(d.constData(), d.size());
+
+		char chr;
+		int line;
+		std::string source;
+		buffer >> chr;
+		buffer >> line;
+		buffer >> source;
+		isBreaked_=true;
+        ui.actionResume->setEnabled(true);
+        ui.actionStepOver->setEnabled(true);
+        ui.actionStepInto->setEnabled(true);
+        ui.actionStepReturn->setEnabled(true);
+        TextEdit *srcFile=openFile(QString::fromStdString(source.substr(1)),true);
+        clearDebugHighlights();
+        if (srcFile) {
+            srcFile->highlightDebugLine(line-1);
+        }
+    }
+    if (data[0]==24) //Symbol looked up
+    {
+        ByteBuffer buffer(d.constData(), d.size());
+
+        char chr,type;
+        buffer >> chr;
+        QVariant value=deserializeValue(buffer);
+
+        TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+        if (textEdit==lookupSymbolWidget) {
+            QToolTip::showText(textEdit->mapToGlobal(lookupSymbolPoint),value.toString(),textEdit);
+        }
+    }
+}
+
+void MainWindow::lookupSymbol(QString sym,int x,int y)
+{
+    if (isBreaked_) {
+        lookupSymbolWidget=(TextEdit *) QObject::sender();
+        lookupSymbolPoint=QPoint(x,y);
+        ByteBuffer buffer;
+        buffer << (char) 20;
+        buffer << sym.toStdString();
+        client_->sendCommand(buffer.data(),buffer.size());
+    }
 }
 
 void MainWindow::ackReceived(unsigned int id)

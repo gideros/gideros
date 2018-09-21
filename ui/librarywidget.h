@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "ui_librarywidget.h"
 #include <QDomDocument>
+#include <QDir>
 
 class QAction;
 
@@ -29,7 +30,8 @@ public:
 		return ui.treeWidget->topologicalSort();
 	}
 
-	QString fileName(const QString& itemName) const;
+    QString fileName(const QString& itemName) const;
+    QString itemName(QDir dir,const QString& itemName) const;
 
 	const ProjectProperties& getProjectProperties() const
 	{

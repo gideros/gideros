@@ -177,7 +177,7 @@ void GiderosNetworkClient2::readyRead()
 		if (type == 0)
 		{
 			emit dataReceived(part0);
-			sendAck(id);
+            //sendAck(id);
 		}
 		else if (type == 1)
 		{
@@ -248,6 +248,11 @@ void GiderosNetworkClient2::connectToHost(const QString& hostName, quint16 port)
 		status_ = eDisconnected;
 		break;
 	}
+}
+
+unsigned int GiderosNetworkClient2::sendCommand(const void* data, unsigned int size)
+{
+	return sendData(data,size,0);
 }
 
 

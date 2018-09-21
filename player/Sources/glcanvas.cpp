@@ -1,7 +1,7 @@
 #include "glcanvas.h"
 #include "luaapplication.h"
 #include "libnetwork.h"
-
+#include "debugging.h"
 #ifdef _WIN32
 #include <direct.h>
 #else
@@ -201,7 +201,7 @@ static void printToServer(const char* str, int len, void* data) {
 	unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
 	char* buffer = (char*) malloc(size);
 
-	buffer[0] = 4;
+	buffer[0] = gptPrint;
 	memcpy(buffer + 1, str, size - 2);
 	buffer[size - 1] = 0;
 
@@ -316,6 +316,7 @@ GLCanvas::~GLCanvas() {
 	ScreenManager::manager=NULL;
 
 	if (isPlayer_) {
+		LuaDebugging::studioLink(NULL);
 		delete server_;
 		g_server = 0;
 	}
@@ -343,6 +344,7 @@ void GLCanvas::setupProperties() {
     if (isPlayer_) {
         application_->setPrintFunc(printToServer);
 		server_ = new Server(0, ::getDeviceName().c_str()); //Default port
+		LuaDebugging::studioLink(server_);
 
 		// set the global server var to use in print to server function
 		g_server = server_;
@@ -502,16 +504,16 @@ void GLCanvas::timerEvent(QTimerEvent *){
 
             if(isPlayer_ && event.eventCode == eDataReceived){
                 const std::vector<char>& data = event.data;
-
+                LuaDebugging::studioCommand(data);
                 switch(data[0]){
-                    case 0:
+                    case gptMakeDir:
                     {
                         std::string folderName = &data[1];
                         __mkdir(g_pathForFile(folderName.c_str()));
                         break;
                     }
 
-                    case 1:
+                    case gptWriteFile:
                     {
                         std::string fileName = &data[1];
                         FILE* fos = fopen(g_pathForFile(fileName.c_str()), "wb");
@@ -525,7 +527,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
                         break;
                     }
 
-                    case 2:
+                    case gptPlay:
                     {
                         glog_v("play message is received\n");
 
@@ -552,7 +554,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
                         break;
                     }
 
-                    case 3:
+                    case gptStop:
                     {
                         glog_v("stop message is received\n");
 
@@ -587,13 +589,13 @@ void GLCanvas::timerEvent(QTimerEvent *){
                     }
                     */
 
-                    case 7:
+                    case gptGetFileList:
                     {
                         sendFileList();
                         break;
                     }
 
-                    case 8:
+                    case gptSetProjectName:
                     {
                         ByteBuffer buffer(&data[0], data.size());
 
@@ -631,7 +633,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
                         break;
                     }
 
-                    case 9:
+                    case gptDeleteFile:
                     {
                         ByteBuffer buffer(&data[0], data.size());
 
@@ -661,7 +663,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
                         break;
                     }
 
-                    case 11:
+                    case gptSetProperties:
                     {
                         dir_ = QDir::temp();
                         dir_.mkdir("gideros");
@@ -1415,7 +1417,7 @@ void GLCanvas::sendFileList() {
 	// D or F, file (zero ended string), age (int)
 	// ....
 
-	buffer.append((char) 6);
+	buffer.append((char) gptFileList);
 
 	std::vector<std::string> files, directories;
 	getDirectoryListingR(resourceDirectory_.c_str(), &files, &directories);
@@ -1448,7 +1450,7 @@ void GLCanvas::sendFileList() {
 
 void GLCanvas::sendRun() {
 	ByteBuffer buffer;
-	buffer.append((char) 10);
+	buffer.append((char) gptRunning);
 	server_->sendData(buffer.data(), buffer.size());
 }
 

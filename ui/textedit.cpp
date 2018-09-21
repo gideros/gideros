@@ -13,8 +13,10 @@
 #include <Qsci/qscicommand.h>
 #include <Qsci/qscicommandset.h>
 #include <QSettings>
+#include <QToolTip>
 #include "iconlibrary.h"
 
+QSet<QString> TextEdit::breakpoints;
 static void keysForMac(QsciScintilla* qscintilla)
 {
 	QsciCommandSet* commandSet = qscintilla->standardCommands();
@@ -203,14 +205,15 @@ QSettings lls(theme, QSettings::IniFormat);
         lls.value("FontSize", 12).toInt()));
 #endif
 
-	sciScintilla_->setFolding(QsciScintilla::BoxedTreeFoldStyle, 3);
+	sciScintilla_->setFolding(QsciScintilla::BoxedTreeFoldStyle, 4);
 	sciScintilla_->setAutoIndent(true);
 	sciScintilla_->setTabWidth(4);
 	sciScintilla_->setIndentationsUseTabs(true);
 	sciScintilla_->setIndentationGuides(true);
 
-	sciScintilla_->setMarginLineNumbers(1, true);
-	sciScintilla_->setMarginWidth(1, QString("10000"));
+	sciScintilla_->setMarginLineNumbers(2, true);
+	sciScintilla_->setMarginWidth(2, QString("10000"));
+	sciScintilla_->setMarginMarkerMask(2, 0);		// we dont want any markers at line number margin
 
 	sciScintilla_->setBraceMatching(QsciScintilla::SloppyBraceMatch);
 
@@ -234,7 +237,6 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setUnmatchedBraceBackgroundColor(
         lls.value("UnmatchedBraceBackgroundColor", 10085887).toInt());
 
-    sciScintilla_->setMarginSensitivity(2, true);
 
 	connect(sciScintilla_, SIGNAL(modificationChanged(bool)), this, SLOT(onModificationChanged(bool)));
 	connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
@@ -242,11 +244,18 @@ QSettings lls(theme, QSettings::IniFormat);
     connect(sciScintilla_, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)),
             this, SLOT(setBookmark(int, int, Qt::KeyboardModifiers)));
 
-	sciScintilla_->setMarginMarkerMask(1, 0);		// we dont want any markers at line number margin
 
-	sciScintilla_->setMarginWidth(2, 14);			// margin 2 is bookmark margin
-	sciScintilla_->markerDefine(QsciScintilla::RightTriangle, 1);
-	sciScintilla_->setMarginMarkerMask(2, 1 << 1);
+	sciScintilla_->setMarginWidth(1, 14);			// margin 1 is breakpoint
+    sciScintilla_->markerDefine(QsciScintilla::Circle, 2); //Marker 2 is breakpoint
+	sciScintilla_->setMarginMarkerMask(1, 1 << 2);
+    sciScintilla_->setMarginSensitivity(1, true);
+
+	sciScintilla_->setMarginWidth(3, 14);			// margin 3 is bookmark margin
+    sciScintilla_->markerDefine(QsciScintilla::RightTriangle, 1); // Marker 1 is bookmark
+    sciScintilla_->setMarginMarkerMask(3, 1 << 1);
+    sciScintilla_->setMarginSensitivity(3, true);
+
+    sciScintilla_->markerDefine(QsciScintilla::Background, 3); //Marker 3 is current debug line
 
 	sciScintilla_->registerImage(1,IconLibrary::instance().icon(0,"method").pixmap(16));
 	sciScintilla_->registerImage(2,IconLibrary::instance().icon(0,"constant").pixmap(16));
@@ -257,6 +266,12 @@ QSettings lls(theme, QSettings::IniFormat);
                 lls.value("MarkerForegroundColor", 2566178).toInt(), 1);
     sciScintilla_->setMarkerBackgroundColor(
                 lls.value("MarkerBackgroundColor", 5348047).toInt(), 1);
+    sciScintilla_->setMarkerForegroundColor(
+                lls.value("MarkerForegroundColor", 2566178).toInt(), 2);
+    sciScintilla_->setMarkerBackgroundColor(
+                lls.value("MarkerBackgroundColor", 5348047).toInt(), 2);
+    sciScintilla_->setMarkerBackgroundColor(
+                lls.value("DebuggedLineColor", 0x3030FF).toInt(), 3);
 
 	sciScintilla_->setEolMode(QsciScintilla::EolUnix);
 
@@ -276,6 +291,10 @@ QSettings lls(theme, QSettings::IniFormat);
 
     sciScintilla_->setMarginsForegroundColor(lls.value("MarginsForegroundColor", 2566178).toInt());
     sciScintilla_->setMarginsBackgroundColor(lls.value("MarginsBackgroundColor", 15658734).toInt());
+
+    sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETMOUSEDWELLTIME,500);
+    connect(sciScintilla_, SIGNAL(SCN_DWELLSTART(int,int,int)), this, SLOT(dwellStart(int,int,int)));
+    connect(sciScintilla_, SIGNAL(SCN_DWELLEND(int,int,int)), this, SLOT(dwellEnd(int,int,int)));
 }
 
 TextEdit::~TextEdit()
@@ -291,7 +310,7 @@ void TextEdit::newFile()
 	setWindowTitle(fileName_ + "[*]");
 }
 
-bool TextEdit::loadFile(const QString& fileName, bool suppressErrors/* = false*/)
+bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool suppressErrors/* = false*/)
 {
 	QFile file(fileName);
 	if (file.open(QFile::ReadOnly | QFile::Text) == false)
@@ -308,6 +327,7 @@ bool TextEdit::loadFile(const QString& fileName, bool suppressErrors/* = false*/
 
 	isUntitled_ = true;
 	fileName_ = fileName;
+    itemName_ = itemName;
 
 	QFileInfo fileInfo(fileName_);
 
@@ -325,6 +345,14 @@ bool TextEdit::loadFile(const QString& fileName, bool suppressErrors/* = false*/
 
 	sciScintilla_->setModified(false);
 	setWindowModified(false);
+
+    foreach(QString bp, breakpoints) {
+        int ls=bp.lastIndexOf(':');
+        if (bp.mid(0,ls)==itemName_) {
+            int line=bp.mid(ls+1).toInt();
+            sciScintilla_->markerAdd(line, 2);
+        }
+    }
 
 	return true;
 }
@@ -356,7 +384,19 @@ bool TextEdit::isUndoAvailable() const
 
 bool TextEdit::save()
 {
-	if (sciScintilla_->isModified() == false)
+    int line=-1;
+    QStringList bpRemove;
+    foreach(QString bp, breakpoints) {
+        int ls=bp.lastIndexOf(':');
+        if (bp.mid(0,ls)==itemName_)
+            bpRemove << bp;
+    }
+    foreach(QString bp, bpRemove)
+        breakpoints.remove(bp);
+    while ((line = sciScintilla_->markerFindNext(line+1, (1 << 2)))>=0)
+        breakpoints.insert(itemName_+":"+QString::number(line));
+
+    if (sciScintilla_->isModified() == false)
 		return false;
 
 	QFile file(fileName_);
@@ -521,11 +561,17 @@ int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re
 
 void TextEdit::setBookmark(int margin, int line, Qt::KeyboardModifiers state)
 {
-    if (sciScintilla_->markersAtLine(line) & (1 << 1))
-        sciScintilla_->markerDelete(line, 1);
-    else
+    int marker=(margin==3)?1:2;
+    if (sciScintilla_->markersAtLine(line) & (1 << marker))
     {
-        sciScintilla_->markerAdd(line, 1);
+        sciScintilla_->markerDelete(line, marker);
+        if (marker==2)
+            breakpoints.remove(itemName_+":"+QString::number(line));
+    }
+    else {
+        sciScintilla_->markerAdd(line, marker);
+        if (marker==2)
+            breakpoints.insert(itemName_+":"+QString::number(line));
     }
 }
 
@@ -633,4 +679,39 @@ void TextEdit::closeEvent(QCloseEvent* event)
 void TextEdit::setFocusToEdit()
 {
     sciScintilla_->setFocus();
+}
+
+void TextEdit::highlightDebugLine(int line) {
+    sciScintilla_->markerDeleteAll(3);
+    if (line>=0)
+    {
+        sciScintilla_->setCursorPosition(line, 0);
+        sciScintilla_->markerAdd(line, 3);
+        sciScintilla_->setReadOnly(true);
+        sciScintilla_->setCaretLineVisible(false);
+    }
+    else {
+        sciScintilla_->setReadOnly(false);
+        sciScintilla_->setCaretLineVisible(true);
+    }
+}
+
+void TextEdit::dwellStart(int pos,int x,int y)
+{
+    if (pos<0) return;
+    QString text=sciScintilla_->text();
+    while ((pos>0)&&((text.at(pos-1)=='_')||text.at(pos-1).isLetterOrNumber()))
+        pos--;
+    int pend=pos;
+    while ((pend<text.size())&&((text.at(pend)=='_')||text.at(pend).isLetterOrNumber()))
+        pend++;
+    QString id=text.mid(pos,pend-pos);
+    if (id.size()>0) {
+        emit lookupSymbol(id,x,y);
+    }
+}
+
+void TextEdit::dwellEnd(int pos,int x,int y)
+{
+    QToolTip::showText(QPoint(x,y),QString(),this);
 }

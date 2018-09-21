@@ -8,6 +8,30 @@
 
 #define GIDEROS_DEFAULT_PORT	15000
 
+enum GiderosPacketType {
+	gptMakeDir = 0,
+	gptWriteFile = 1,
+	gptPlay = 2,
+	gptStop = 3,
+	gptPrint = 4, //Player->Studio
+	//gptDelete=5, //UNUSED
+	gptFileList=6, //Player->Studio
+	gptGetFileList=7,
+	gptSetProjectName=8,
+	gptDeleteFile=9,
+	gptRunning=10, //Player->Studio
+	gptSetProperties=11,
+
+	//Debugging
+	gptLookupSymbol=20,
+	gptSetBreakpoints=21,
+	gptResume=22,
+	gptBreaked=23, //Player->Studio
+	gptSymbolValue=24, //Player->Studio
+
+	gptLast
+};
+
 #ifdef WINSTORE
 
 #ifndef UNICODE

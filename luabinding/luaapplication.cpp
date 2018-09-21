@@ -66,13 +66,14 @@
 #include <gevent.h>
 #include <ginput.h>
 #include <gapplication.h>
+#include "debugging.h"
 
 #include "tlsf.h"
 #include "CoreRandom.cpp.inc"
 #include "memcache.cpp.inc"
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
-bool LuaApplication::hasBreakpoints=false;
+int LuaApplication::debuggerBreak=0;
 std::map<int,bool> LuaApplication::breakpoints;
 void (*LuaApplication::debuggerHook)(void *context,lua_State *L,lua_Debug *ar)=NULL;
 void *LuaApplication::debuggerContext=NULL;
@@ -1154,8 +1155,15 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 	//glog_i("YieldHook:%f %f\n",iclock(),yieldHookLimit);
 	if (ar->event == LUA_HOOKRET)
 	{
-		if (iclock() >= yieldHookLimit)
-			lua_sethook(L, yieldHook, LUA_MASKCOUNT | (LuaApplication::hasBreakpoints?LUA_MASKLINE:0), 1);
+		if (LuaApplication::debuggerHook&&(LuaApplication::debuggerBreak&LUA_MASKRET))
+		{
+            lua_getinfo(L, "lS", ar);
+			LuaApplication::debuggerHook(LuaApplication::debuggerContext,L,ar);
+		}
+        if (iclock() >= yieldHookLimit) {
+            LuaDebugging::yieldHookMask=LUA_MASKCOUNT;
+			lua_sethook(L, yieldHook, LUA_MASKCOUNT | (LuaApplication::debuggerBreak&DBG_MASKLUA), 1);
+        }
 	}
 	else if (ar->event == LUA_HOOKCOUNT)
 	{
@@ -1163,16 +1171,27 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 		{
 			if (lua_canyield(L))
 				lua_yield(L, 0);
-			else
-				lua_sethook(L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::hasBreakpoints?LUA_MASKLINE:0), 1000);
+            else {
+                LuaDebugging::yieldHookMask=LUA_MASKRET | LUA_MASKCOUNT;
+                lua_sethook(L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);
+            }
 		}
 	}
 	else if (ar->event == LUA_HOOKLINE)
 	{
 		lua_getinfo(L, "l", ar);
-		if (LuaApplication::debuggerHook&&LuaApplication::breakpoints[ar->currentline])
+		if (LuaApplication::debuggerHook&&(LuaApplication::debuggerBreak&LUA_MASKLINE)&&
+				(!(LuaApplication::debuggerBreak&DBG_MASKBREAK)||LuaApplication::breakpoints[ar->currentline]))
 		{
 			lua_getinfo(L, "S", ar); //Possible match, resolve source name and let debuggerHook decide
+			LuaApplication::debuggerHook(LuaApplication::debuggerContext,L,ar);
+		}
+	}
+	else if (ar->event == LUA_HOOKCALL)
+	{
+		if (LuaApplication::debuggerHook&&(LuaApplication::debuggerBreak&LUA_MASKCALL))
+		{
+            lua_getinfo(L, "lS", ar);
 			LuaApplication::debuggerHook(LuaApplication::debuggerContext,L,ar);
 		}
 	}
@@ -1225,9 +1244,11 @@ void LuaApplication::enterFrame(GStatus *status)
 			int res = 0;
 			if (t.autoYield)
 			{
-				lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (hasBreakpoints?LUA_MASKLINE:0), 1000);
+                LuaDebugging::yieldHookMask=LUA_MASKRET| LUA_MASKCOUNT;
+                lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);
 				res = lua_resume(t.L, 0);
-				lua_sethook(t.L, yieldHook, hasBreakpoints?LUA_MASKLINE:0, 1000);
+                LuaDebugging::yieldHookMask=0;
+                lua_sethook(t.L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);
 			}
 			else
 				res = lua_resume(t.L, 0);
@@ -1510,8 +1531,10 @@ void LuaApplication::initialize()
 	lua_call(L, 1, 0);
 
 	Rnd::Initialize(iclock()*0xFFFF);
-
-	lua_sethook(L, yieldHook, LuaApplication::hasBreakpoints?LUA_MASKLINE:0, 1);
+    LuaDebugging::L=L;
+    LuaDebugging::yieldHookMask=0;
+    LuaDebugging::hook=yieldHook;
+    lua_sethook(L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1);
 }
 
 void LuaApplication::setScale(float scale)

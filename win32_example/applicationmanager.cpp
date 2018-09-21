@@ -50,6 +50,7 @@
 #include <gapplication.h>
 #include <gapplication-win32.h>
 #include <applicationmanager.h>
+#include "debugging.h"
 
 extern "C" {
 int g_getFps();
@@ -138,16 +139,17 @@ void NetworkManager::tick()
 		if (event.eventCode == eDataReceived)
 		{
 			const std::vector<char>& data = event.data;
+            LuaDebugging::studioCommand(data);
 
 			switch (data[0])
 			{
-				case 0:
+				case gptMakeDir:
 					createFolder(data);
 					break;
-				case 1:
+				case gptWriteFile:
 					createFile(data);
 					break;
-				case 2:{
+				case gptPlay:{
 					const char* absfilename = g_pathForFile("../luafiles.txt");
 					FILE* fos = fopen(absfilename, "wb");
 					fwrite(&data[0], data.size(), 1, fos);
@@ -155,19 +157,19 @@ void NetworkManager::tick()
 					play(data);
 				}
 					break;
-				case 3:
+				case gptStop:
 					stop();
 					break;
-				case 7:
+				case gptGetFileList:
 					sendFileList();
 					break;
-				case 8:
+				case gptSetProjectName:
 					setProjectName(data);
 					break;
-				case 9:
+				case gptDeleteFile:
 					deleteFile(data);
 					break;
-				case 11:{
+				case gptSetProperties:{
 					const char* absfilename = g_pathForFile("../properties.bin");
 					FILE* fos = fopen(absfilename, "wb");
 					fwrite(&data[0], data.size(), 1, fos);

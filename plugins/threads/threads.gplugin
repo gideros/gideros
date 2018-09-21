@@ -24,18 +24,15 @@
  <target name="iOS">
    <mkdir>[[[project.name]]]/Plugins/threads</mkdir>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/threads" include="*.cpp;*.h;*.hpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
    <mkdir>AppleTV/Plugins/threads</mkdir>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/threads" include="*.cpp;*.h;*.hpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
     <lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("threads","Plugins/threads","GroupThreads_ios","GroupPlugins_ios")
 iOSProject.addGroup("threads","threads","GroupThreads_atv","GroupPlugins_atv")
-iOSProject.addSources({ "threads_entry.cpp"  }, "GroupThreads", "ios")
-iOSProject.addSources({ "threads_entry.cpp"  }, "GroupThreads", "atv")
-iOSProject.addSources({ "Plugins/libthreads.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libthreads.atv.a"  }, "GroupPlugins", "atv")
+local sources={ "threads_entry.cpp", "luathread.cpp", "stackdoc.cpp", "StateToState.cpp"  }
+iOSProject.addSources(sources, "GroupThreads", "ios")
+iOSProject.addSources(sources, "GroupThreads", "atv")
 iOSProject.commit()
     ]]></lua>
  </target>

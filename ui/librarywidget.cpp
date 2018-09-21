@@ -57,7 +57,12 @@ QMap<QString, QString> LibraryWidget::usedPlugins()
 
 QString LibraryWidget::fileName(const QString& itemName) const
 {
-	return ui.treeWidget->fileName(itemName);
+    return ui.treeWidget->fileName(itemName);
+}
+
+QString LibraryWidget::itemName(QDir dir, const QString& fileName) const
+{
+    return ui.treeWidget->itemName(dir, fileName);
 }
 
 void LibraryWidget::onModificationChanged(bool m)

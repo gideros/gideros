@@ -1281,6 +1281,37 @@ QString LibraryTreeWidget::fileName(const QString& itemName) const
 	return item->data(0, Qt::UserRole).toMap()["filename"].toString();
 }
 
+QString LibraryTreeWidget::itemName(QDir dir,const QString& fileName) const
+{
+    std::stack<QTreeWidgetItem*> stack;
+    stack.push(invisibleRootItem());
+
+    while (stack.empty() == false)
+    {
+        QTreeWidgetItem* item = stack.top();
+        stack.pop();
+
+        QString iname=dir.absoluteFilePath(item->data(0, Qt::UserRole).toMap()["filename"].toString());
+        if (QFileInfo(fileName) == QFileInfo(iname))
+        {
+            QString result;
+            while (item->parent()&&item->parent()->parent())
+            {
+                if (result.isEmpty())
+                    result = item->text(0);
+                else
+                    result = item->text(0) + "/" + result;
+                item = item->parent();
+            }
+            return result;
+        }
+
+        for (int i = 0; i < item->childCount(); ++i)
+            stack.push(item->child(i));
+    }
+    return QString();
+}
+
 void LibraryTreeWidget::insertIntoDocument()
 {
 	if (selectedItems().empty() == true)
