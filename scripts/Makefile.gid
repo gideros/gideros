@@ -20,9 +20,9 @@ PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry ga
 				struct camera tts threads
 PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine
 #Precompiled plugins only below
-PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine
-PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine
-PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine
+PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads
+PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine threads
+PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine threads
 #For reference
 PLUGINS_WINRT=luasocket ogg liquidfun threads
 

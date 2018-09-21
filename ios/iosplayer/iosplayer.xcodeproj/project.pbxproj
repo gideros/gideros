@@ -320,6 +320,7 @@
 		EBD9AC7B1B99EEF2006C8316 /* svg-path.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC701B99EEF2006C8316 /* svg-path.h */; };
 		EBD9AC7D1B99EF35006C8316 /* gl2PathShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */; };
 		EBD9AC7F1B99EF5A006C8316 /* path2dbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */; };
+		EBF48E1E21554A06000DC12F /* debugging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF48E1D21554A06000DC12F /* debugging.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -638,6 +639,7 @@
 		EBD9AC701B99EEF2006C8316 /* svg-path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "svg-path.h"; sourceTree = "<group>"; };
 		EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2PathShaders.cpp; sourceTree = "<group>"; };
 		EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = path2dbinder.cpp; path = ../../luabinding/path2dbinder.cpp; sourceTree = "<group>"; };
+		EBF48E1D21554A06000DC12F /* debugging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = debugging.cpp; path = ../../luabinding/debugging.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -989,6 +991,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EBF48E1D21554A06000DC12F /* debugging.cpp */,
 				EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */,
 				EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */,
 				EB27A5FB1CCDFC9B003A5581 /* screenbinder.cpp */,
@@ -1283,6 +1286,7 @@
 				5F0CD84215BB0B3D00479287 /* pngset.c in Sources */,
 				5F0CD84315BB0B3D00479287 /* pngtrans.c in Sources */,
 				5F0CD84415BB0B3D00479287 /* pngwio.c in Sources */,
+				EBF48E1E21554A06000DC12F /* debugging.cpp in Sources */,
 				5F0CD84515BB0B3D00479287 /* pngwrite.c in Sources */,
 				5F0CD84615BB0B3D00479287 /* pngwtran.c in Sources */,
 				5F0CD84715BB0B3D00479287 /* pngwutil.c in Sources */,
