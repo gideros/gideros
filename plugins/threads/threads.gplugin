@@ -1,0 +1,74 @@
+<plugin
+ name="Threads"
+ description="Threading library"
+>
+
+ <target name="AndroidStudio,APK">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;threads&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;threads&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/threads</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/threads" include="*.cpp;*.h;*.hpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
+   <mkdir>AppleTV/Plugins/threads</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/threads" include="*.cpp;*.h;*.hpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
+    <lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("threads","Plugins/threads","GroupThreads_ios","GroupPlugins_ios")
+iOSProject.addGroup("threads","threads","GroupThreads_atv","GroupPlugins_atv")
+iOSProject.addSources({ "threads_entry.cpp"  }, "GroupThreads", "ios")
+iOSProject.addSources({ "threads_entry.cpp"  }, "GroupThreads", "atv")
+iOSProject.addSources({ "Plugins/libthreads.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libthreads.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.commit()
+    ]]></lua>
+ </target>
+
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
+    <template name="binaries" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.cpp;*.h;*.hpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\threads_entry.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\luathread.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\StateToState.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
+    </ClCompile>]]></by>
+        </append>
+        <append>
+            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
+            <by><![CDATA[
+      <AdditionalDependencies>%(AdditionalDependencies);threads.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+        </append> 
+        </replacelist>
+    </template>
+ </target>
+ 
+ <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+ 
+</plugin>

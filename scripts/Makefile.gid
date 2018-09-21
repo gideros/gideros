@@ -12,19 +12,19 @@ CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun
 PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine
 
-PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera steam
+PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera steam threads
 PLUGINS_WINONLY=spout
-PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine
+PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct camera tts
+				struct camera tts threads
 PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine
 #Precompiled plugins only below
 PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine
 PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine
 PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine
 #For reference
-PLUGINS_WINRT=luasocket ogg liquidfun
+PLUGINS_WINRT=luasocket ogg liquidfun threads
 
 ADDONS=GSFXREditor Player TAME
 
