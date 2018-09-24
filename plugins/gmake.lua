@@ -20,7 +20,7 @@ docs.body =
 
       From your root plugin directory (eg gideros/plugins/myplugin) run:
 
-                          lua ../gmake.lua myplugin [options]
+                          lua ../gmake.lua [options]
 
 
   Options:
@@ -41,7 +41,7 @@ docs.help =
 
       3. Again from that directory (eg gideros/plugins/myplugin/) run:
 
-                    lua ../gmake.lua myplugin
+                          lua ../gmake.lua
 
   General:
 
@@ -217,7 +217,7 @@ android.createFiles = function(plugin)
   write(file, android.clear_sep)
   write(file, "INCS:=")
   for k, v in ipairs(plugin.includes) do
-    write(file, "INCS+=" .. v)
+    write(file, "INCS+=../" .. v)
   end
   write(file, "\n")
   local function getSection(str, sep) return getPaddedString(str, 23) .. sep end
@@ -269,7 +269,12 @@ local commonMake = function(make_dir)
   -- get one line list of source files, name only
   local str = ""
   for k, v in ipairs(plugin.sources.cxx) do
+
     local name = v:match("([%w^_%-]+)$")
+    if v:match("^[.\\/]") == nil then
+      name = "common/" .. name
+    end
+
     str = str .. name .. " "
   end
 
@@ -383,6 +388,8 @@ desktop.createFiles = function(plugin)
   write(file, "    DESTDIR = ../../../../Build.Win/Plugins")
   local libs = getSepStringFromTable(plugin.libs, " ", "-l")
   write(file, [[    LIBS += -L"../../../../Build.Win" ]] .. libs)
+  write(file, [[  } else {
+    LIBS += -L"../../../../Sdk/lib/desktop" ]] .. libs)
   write(file, "  }\n} else {")
   write(file, [[  LIBS += -L"../../../../Sdk/lib/desktop" ]] .. libs)
   write(file, "}")
@@ -530,11 +537,11 @@ EndGlobal
   local file_name = plugin.name.lower .. ".sln"
   print("Writing file: " .. file_name)
   local file = io.open(dir .. os.sep .. file_name, "w")
-  writeHeader(file, "XML")
+  writeHeader(file, "#")
   write(file, plugin_sln)
   file:close()
 
-  local source_dir = dir .. os.sep .. "source"
+  local source_dir = dir .. os.sep .. plugin.name.lower -- "source"
   print("Creating directory:", source_dir)
   command = "mkdir " .. source_dir
   print(command)
