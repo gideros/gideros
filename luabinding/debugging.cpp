@@ -44,8 +44,9 @@ void LuaDebugging::serializeValue(ByteBuffer &buffer,lua_State *L,int n)  {
 	       serializeValue(buffer,L,-1);
 	       lua_pop(L, 1);
 	     }
-	    serializeValue(buffer,L,-1); //Add a nil to mark end of table
-        lua_pop(L, 1);
+        lua_pushnil(L);
+        serializeValue(buffer,L,-1); //Add a nil to mark end of table
+        lua_pop(L, 2);
 		break;
 	default:
 	    std::string sval;
@@ -93,8 +94,8 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
 			bool nfound=(!strcmp(name,sym.c_str()));
 			if (found&&nfound)
 				lua_remove(L,-2);
-			found=nfound;
-			if (!found)
+            if (nfound) found=true;
+            if (!nfound)
 				lua_pop(L,1);
 			n++;
 		}

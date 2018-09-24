@@ -50,4 +50,8 @@ static void g_deinitializePlugin(lua_State *L) {
 }
 
 // "threads" is a symbol needed for Emscripten if exporting to HTML
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
+REGISTER_PLUGIN_STATICNAMED_CPP("Threads", "0.1.0", threads)
+#else
 REGISTER_PLUGIN_NAMED("Threads", "0.1.0", threads);
+#endif

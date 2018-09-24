@@ -181,13 +181,14 @@ QMainWindow::separator {
    <addaction name="separator"/>
    <addaction name="actionStart_Player"/>
    <addaction name="actionStart"/>
+   <addaction name="actionStop"/>
+   <addaction name="actionStartAll"/>
+   <addaction name="separator"/>
    <addaction name="actionDebug"/>
    <addaction name="actionResume"/>
    <addaction name="actionStepOver"/>
    <addaction name="actionStepInto"/>
    <addaction name="actionStepReturn"/>
-   <addaction name="actionStop"/>
-   <addaction name="actionStartAll"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew_Project">
