@@ -332,10 +332,10 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
                 float fu1 = (-textureMargin+u1*texture_->data->scale) / (float)texture_->data->exwidth;
                 float fv1 = (-textureMargin+v1*texture_->data->scale) / (float)texture_->data->exheight;
 
-                fu0 *= texture_->uvscalex;
+               /* fu0 *= texture_->uvscalex;
                 fv0 *= texture_->uvscaley;
                 fu1 *= texture_->uvscalex;
-                fv1 *= texture_->uvscaley;
+                fv1 *= texture_->uvscaley;*/
 
                 if (flip_horizontal)
                     std::swap(fu0, fu1);
