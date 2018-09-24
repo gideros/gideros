@@ -29,8 +29,6 @@
     </template>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("spine","Plugins/spine","GroupLiquidfun_ios","GroupPlugins_ios")
-iOSProject.addGroup("spine","spine","GroupLiquidfun_atv","GroupPlugins_atv")
 iOSProject.addSources({ "Plugins/libspine.ios.a"  }, "GroupPlugins", "ios")
 iOSProject.addSources({ "libspine.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()
