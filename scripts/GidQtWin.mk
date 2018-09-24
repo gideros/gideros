@@ -46,7 +46,7 @@ qtlibs.install: buildqtlibs
 		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MINGWMAKE) $(QTTGT_DIR); fi 
 
 %.qtplugin.clean:
-	cd $(ROOT)/plugins/$*/source; if [ -d "vs" ]; then cd vs; elif [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) clean
+	cd $(ROOT)/plugins/$*/source; if [ -d "vs" ]; then cd vs; elif [ -d "Desktop" ]; then cd Desktop; fi; if [ -f Makefile ]; then $(MINGWMAKE) clean; fi
 
 %.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
@@ -131,7 +131,7 @@ qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
 %.qmake.clean:
-	cd $(ROOT)/$*; $(MINGWMAKE) clean
+	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MINGWMAKE) clean; fi
 
 %.qmake.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*.pro
