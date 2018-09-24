@@ -314,4 +314,12 @@ void ghid_removeCallbackWithGid(g_id gid)
 	s_ghid->removeCallbackWithGid(gid);
 }
 
+void ghid_setDeadZone(float dz)
+{
+	JNIEnv *env = g_getJNIEnv();
+	jclass localClass = env->FindClass("com/giderosmobile/android/plugins/controller/GController");
+	env->CallStaticVoidMethod(localClass, env->GetStaticMethodID(localClass, "setDeadZone", "(F)V"), (jfloat)dz);
+	env->DeleteLocalRef(localClass);
+}
+
 }

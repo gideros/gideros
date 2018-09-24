@@ -61,6 +61,8 @@ G_API g_id ghid_addCallback(gevent_Callback callback, void *udata);
 G_API void ghid_removeCallback(gevent_Callback callback, void *udata);
 G_API void ghid_removeCallbackWithGid(g_id gid);
 
+G_API void ghid_setDeadZone(float dz);
+
 #ifdef __cplusplus
 }
 #endif

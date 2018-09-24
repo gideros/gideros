@@ -10,6 +10,10 @@
 
 static float STICK_DEADZONE = 0.25f;
 
+void setDeadZone(float deadzone) {
+	STICK_DEADZONE = deadzone;
+}
+
 @implementation GController
 
 -(id)init:(NSNumber*)nid{

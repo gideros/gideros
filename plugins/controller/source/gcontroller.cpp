@@ -10,7 +10,7 @@
 #include <QtCore/qglobal.h>
 #endif
 
-static const float DEAD_ZONE = 0.25f;
+static float DEAD_ZONE = 0.25f;
 static const double MATH_PI = atan(1)*4;
 //static int BUTTONS_DEFAULT[10] = {BUTTON_A, BUTTON_B, BUTTON_X, BUTTON_Y, BUTTON_L1, BUTTON_R1, BUTTON_BACK, BUTTON_MENU, BUTTON_L3, BUTTON_R3};
 static int BUTTONS_DEFAULT[12] = {BUTTON_X, BUTTON_A, BUTTON_B, BUTTON_Y, BUTTON_L1, BUTTON_R1, BUTTON_L2, BUTTON_R2, BUTTON_BACK, BUTTON_MENU, BUTTON_L3, BUTTON_R3};
@@ -33,6 +33,11 @@ static int AXIS_PS3_MAC[8] = {0, 1, 2, 3, 14, 15, -1, -1};
 #else
     static int OS = 0;
 #endif
+
+void setDeadZone(float deadzone) {
+	DEAD_ZONE = deadzone;
+}
+
 GController::GController(GHID *ghid, unsigned int dID, const char* pname, int btnCount, int vID, int pID)
 {
     buttonCount = btnCount;

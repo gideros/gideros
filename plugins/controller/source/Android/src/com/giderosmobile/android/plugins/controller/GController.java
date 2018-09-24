@@ -17,6 +17,10 @@ public class GController{
 	
 	public static float STICK_DEADZONE = 0.25f;
 	
+	public static void setDeadZone(float deadzone) {
+		STICK_DEADZONE = deadzone;
+	}
+	
 	public GController(int playerId)
 	{
 		GControllerManager.onConnectedEvent(playerId);

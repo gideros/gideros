@@ -651,6 +651,32 @@ static void set_info (lua_State *L) {
 	lua_settable (L, -3);
 }
 
+static int get_drives (lua_State *L) {
+	lua_newtable(L);
+	int n=0;
+#if _WIN32
+	int blen=GetLogicalDriveStrings(0,NULL);
+	wchar_t *paths=malloc(sizeof(wchar_t)*(blen+1));
+	GetLogicalDriveStrings(blen,paths);
+	int len = WideCharToMultiByte(CP_UTF8, 0, paths, blen+1, 0, 0, 0, 0);
+	char *upaths=malloc(sizeof(char)*len);
+	WideCharToMultiByte(CP_UTF8, 0, paths, blen+1, upaths, len,0,0);
+	free(paths);
+	char *p=upaths;
+	while (*p) {
+		int pl=strlen(p);
+		lua_pushlstring(L,p,pl);
+		lua_rawseti(L,-2,++n);
+		p+=(pl+1);
+	}
+	free(upaths);
+#else
+	lua_pushstring(L,"/");
+	lua_rawseti(L,-2,++n);
+#endif
+	return 1;
+}
+
 
 static const struct luaL_Reg fslib[] = {
 	{"attributes", file_info},
@@ -662,6 +688,7 @@ static const struct luaL_Reg fslib[] = {
 	{"symlinkattributes", link_info},
 	{"setmode", lfs_f_setmode},
 	{"touch", file_utime},
+	{"drives", get_drives},
 	{NULL, NULL},
 };
 

@@ -267,6 +267,14 @@ static int getPlayers(lua_State *L)
     return 1;
 }
 
+extern void setDeadZone(float dz);
+static int lSetDeadZone(lua_State *L)
+{
+	lua_Number dz=luaL_checknumber(L,1);
+	setDeadZone(dz);
+    return 0;
+}
+
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
@@ -275,6 +283,7 @@ static int loader(lua_State *L)
 		{"getControllerName", getControllerName},
 		{"getPlayers", getPlayers},
 		{"vibrate", vibrate},
+		{"setDeadZone", lSetDeadZone},
 		{NULL, NULL},
 	};
     
