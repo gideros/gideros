@@ -25,7 +25,7 @@ clean:
 	
 $(BUILD)/%.o: ../%.cpp
 	@echo "C+ $<"
-	@$(CX) $(CINCS) -I $(CXXINCS) $(CXXFLGS) $(CFLGS) -c $< -o $@
+	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS) $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: ../%.c
 	@echo "CC $<"
@@ -33,7 +33,7 @@ $(BUILD)/%.o: ../%.c
 
 $(BUILD)/%.o: %.cpp
 	@echo "C+ $<"
-	@$(CX) $(CINCS) -I $(CXXINCS) $(CXXFLGS) $(CFLGS) -c $< -o $@
+	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS)  $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: %.c
 	@echo "CC $<"
