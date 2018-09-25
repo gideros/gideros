@@ -363,7 +363,7 @@ int LuaThread::getResult(lua_State* L)
         m_thread_status = LuaThread::Status::kComplete;
 
         // check for flag we pushed onto thread stack if there was a pcall error...
-        if (strcmp(lua_tostring(L, 2), k_runtime_error) == 0)
+        if (lua_gettop(L) >= 2 && strcmp(lua_tostring(L, 2), k_runtime_error) == 0)
             lua_error(L); // ... and throw error, exiting with details in error message
     } else {
         lua_pushboolean(L, false);
