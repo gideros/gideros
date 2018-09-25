@@ -699,11 +699,20 @@ void TextEdit::highlightDebugLine(int line) {
 void TextEdit::dwellStart(int pos,int x,int y)
 {
     if (pos<0) return;
+    int ipos=pos;
     QString text=sciScintilla_->text();
-    while ((pos>0)&&((text.at(pos-1)=='_')||text.at(pos-1).isLetterOrNumber()))
+    while ((pos>0)&&(
+    		(text.at(pos-1)=='_')||
+			text.at(pos-1).isLetterOrNumber()||
+			((text.at(pos-1)=='.')&&(pos>1)&&(text.at(pos-2)!='.'))
+			))
         pos--;
     int pend=pos;
-    while ((pend<text.size())&&((text.at(pend)=='_')||text.at(pend).isLetterOrNumber()))
+    while ((pend<text.size())&&(
+    		(text.at(pend)=='_')||
+			text.at(pend).isLetterOrNumber()||
+			((pend<ipos)&&(text.at(pend)=='.')&&(pend<(text.size()-1))&&(text.at(pend+1)!='.'))
+			))
         pend++;
     QString id=text.mid(pos,pend-pos);
     if (id.size()>0) {

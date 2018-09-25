@@ -85,7 +85,7 @@ int BitmapDataBinder::getRegion(lua_State *L)
     int x, y, width, height, dx1, dy1, dx2, dy2;
     bitmapData->getRegion(&x, &y, &width, &height, &dx1, &dy1, &dx2, &dy2);
 
-    if (lua_toboolean(L,1))
+    if (lua_toboolean(L,2))
     {
         TextureBase *t=bitmapData->texture();
         float sc=t?(1.0/t->data->scale):1.0;

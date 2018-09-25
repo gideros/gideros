@@ -2204,12 +2204,14 @@ void MainWindow::disconnected()
 	printf("other side closed connection\n");
 }
 
-QVariant MainWindow::deserializeValue(ByteBuffer &buffer) {
+QVariant MainWindow::deserializeValue(ByteBuffer &buffer, QString &vtype) {
     char type;
     buffer >> type;
     std::string value;
+    QString stype;
     QMap<QVariant,QVariant> table;
     char b;
+    vtype=QString(lua_typename(NULL,type));
     switch (type) {
         case LUA_TNONE: return QVariant();
         case LUA_TNIL: return QVariant();
@@ -2218,9 +2220,9 @@ QVariant MainWindow::deserializeValue(ByteBuffer &buffer) {
             return QVariant::fromValue((bool)b);
         case LUA_TTABLE:
             while (true)  {
-                QVariant key=deserializeValue(buffer);
+                QVariant key=deserializeValue(buffer,stype);
                 if (key.isNull()) break;
-                QVariant val=deserializeValue(buffer);
+                QVariant val=deserializeValue(buffer,stype);
                 table[key]=val;
             }
             return QVariant::fromValue(table);
@@ -2382,12 +2384,13 @@ void MainWindow::dataReceived(const QByteArray& d)
 
         char chr,type;
         buffer >> chr;
-        QVariant value=deserializeValue(buffer);
+        QString vtype;
+        QVariant value=deserializeValue(buffer,vtype);
 
         TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
 
         if (textEdit==lookupSymbolWidget) {
-            QToolTip::showText(textEdit->mapToGlobal(lookupSymbolPoint),value.toString(),textEdit);
+            QToolTip::showText(textEdit->mapToGlobal(lookupSymbolPoint),QString("<i>%1</i> <b>%2</b>").arg(vtype).arg(value.toString().toHtmlEscaped()),textEdit);
         }
     }
 }

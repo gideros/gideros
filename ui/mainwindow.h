@@ -167,7 +167,7 @@ private:
 
     virtual void keyPressEvent(QKeyEvent * event);
     virtual void keyReleaseEvent(QKeyEvent * event);
-    QVariant deserializeValue(ByteBuffer &buffer);
+    QVariant deserializeValue(ByteBuffer &buffer,QString &vtype);
 
 private slots:
 	void onSingleShot();

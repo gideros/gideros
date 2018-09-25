@@ -46,7 +46,7 @@ void LuaDebugging::serializeValue(ByteBuffer &buffer,lua_State *L,int n)  {
 	     }
         lua_pushnil(L);
         serializeValue(buffer,L,-1); //Add a nil to mark end of table
-        lua_pop(L, 2);
+        lua_pop(L, 1);
 		break;
 	default:
 	    std::string sval;
@@ -72,6 +72,40 @@ void LuaDebugging::setupBreakMode(int m) {
     lua_sethook(L, LuaDebugging::hook, LuaDebugging::yieldHookMask | (LuaApplication::debuggerBreak&DBG_MASKLUA), lua_gethookcount(L));
 }
 
+static void lookupVariable(const char *sym,lua_State *L, lua_Debug *ar) {
+	//1. Locals
+	int n=1;
+	bool found=false;
+	const char *name;
+	while ((name=lua_getlocal(L,ar,n))!=NULL)
+	{
+		bool nfound=(!strcmp(name,sym));
+		if (found&&nfound)
+			lua_remove(L,-2);
+        if (nfound) found=true;
+        if (!nfound)
+			lua_pop(L,1);
+		n++;
+	}
+	if (!found) {
+		//2. upvalues
+		n=1;
+		while ((name=lua_getupvalue(L,1,n))!=NULL)
+		{
+			found=(!strcmp(name,sym));
+			if (!found)
+				lua_pop(L,1);
+			else
+				break;
+			n++;
+		}
+	}
+	if (!found) {
+		//3. globals
+		lua_getglobal(L,sym);
+	}
+}
+
 void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State *L, lua_Debug *ar) {
 	switch (data[0]) {
 	case gptSetProperties:
@@ -85,34 +119,22 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
 	case gptLookupSymbol: {
 		std::string sym = &data[1];
 		//Lookup the variable
-		//1. Locals
-		int n=1;
-		bool found=false;
-		const char *name;
-		while ((name=lua_getlocal(L,ar,n))!=NULL)
-		{
-			bool nfound=(!strcmp(name,sym.c_str()));
-			if (found&&nfound)
-				lua_remove(L,-2);
-            if (nfound) found=true;
-            if (!nfound)
-				lua_pop(L,1);
-			n++;
-		}
-		if (!found) {
-			//2. upvalues
-			n=1;
-			while ((name=lua_getupvalue(L,1,n))!=NULL)
+		size_t spos=0;
+		size_t dot=sym.find_first_of('.');
+		lookupVariable(sym.substr(0,dot).c_str(),L,ar);
+		while (dot!=std::string::npos) {
+			sym=sym.substr(dot+1);
+			dot=sym.find_first_of('.');
+			std::string sub=sym.substr(0,dot);
+			if ((sub.size()==0)||!lua_istable(L,-1)) //Empty sub element=bad symbol
 			{
-				found=(!strcmp(name,sym.c_str()));
-				if (!found)
-					lua_pop(L,1);
-				n++;
+				lua_pop(L,1);
+				lua_pushnil(L);
+				break;
 			}
-		}
-		if (!found) {
-			//3. globals
-			lua_getglobal(L,sym.c_str());
+			lua_pushstring(L,sub.c_str());
+			lua_rawget(L,-2);
+			lua_remove(L,-2);
 		}
 		ByteBuffer buffer;
 		buffer << (char) gptSymbolValue;
