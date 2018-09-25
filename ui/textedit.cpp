@@ -701,6 +701,8 @@ void TextEdit::dwellStart(int pos,int x,int y)
     if (pos<0) return;
     int ipos=pos;
     QString text=sciScintilla_->text();
+    QByteArray bu=text.toUtf8();
+    pos=QString::fromUtf8(bu.mid(0,pos)).length();
     while ((pos>0)&&(
     		(text.at(pos-1)=='_')||
 			text.at(pos-1).isLetterOrNumber()||

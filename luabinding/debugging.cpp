@@ -90,7 +90,8 @@ static void lookupVariable(const char *sym,lua_State *L, lua_Debug *ar) {
 	if (!found) {
 		//2. upvalues
 		n=1;
-		while ((name=lua_getupvalue(L,1,n))!=NULL)
+        lua_getinfo(L, "f", ar);
+        while ((name=lua_getupvalue(L,-1,n))!=NULL)
 		{
 			found=(!strcmp(name,sym));
 			if (!found)
@@ -99,6 +100,10 @@ static void lookupVariable(const char *sym,lua_State *L, lua_Debug *ar) {
 				break;
 			n++;
 		}
+        if (found)
+            lua_remove(L,-2);
+        else
+            lua_pop(L,1);
 	}
 	if (!found) {
 		//3. globals
