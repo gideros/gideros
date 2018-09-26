@@ -678,6 +678,16 @@ void MainWindow::resumeDebug(int mode) {
     ByteBuffer buffer;
     buffer << (char) 22;
     buffer << (char) mode;
+    int nbreakpoints=TextEdit::breakpoints.size();
+	buffer << nbreakpoints;
+    foreach(QString bp, TextEdit::breakpoints) {
+        int ls=bp.lastIndexOf(':');
+        std::string source=(QString("@")+bp.mid(0,ls)).toStdString();
+        int line=bp.mid(ls+1).toInt()+1;
+        buffer << line;
+        buffer << source;
+    }
+
     client_->sendCommand(buffer.data(),buffer.size());
 }
 
@@ -2211,7 +2221,7 @@ QVariant MainWindow::deserializeValue(ByteBuffer &buffer, QString &vtype) {
     QString stype;
     QMap<QVariant,QVariant> table;
     char b;
-    vtype=QString(lua_typename(NULL,type));
+    vtype=(type==20)?"ref":QString(lua_typename(NULL,type));
     switch (type) {
         case LUA_TNONE: return QVariant();
         case LUA_TNIL: return QVariant();
@@ -2219,6 +2229,7 @@ QVariant MainWindow::deserializeValue(ByteBuffer &buffer, QString &vtype) {
             buffer >> b;
             return QVariant::fromValue((bool)b);
         case LUA_TTABLE:
+            buffer >> value; //table ref, for future use
             while (true)  {
                 QVariant key=deserializeValue(buffer,stype);
                 if (key.isNull()) break;

@@ -22,7 +22,7 @@ class LuaDebugging {
     static int lastLine;
     static std::string lastFile;
 	static void studioCommandInternal(const std::vector<char> &data,lua_State *L,lua_Debug *ar);
-	static void serializeValue(ByteBuffer &buffer,lua_State *L,int n);
+    static void serializeValue(ByteBuffer &buffer,lua_State *L,int n,int nref);
 	static void setupBreakMode(int m);
 public:
     static lua_State *L;

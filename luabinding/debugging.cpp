@@ -26,33 +26,60 @@ void LuaDebugging::studioLink(Server *server) {
 	studio = server;
 }
 
-void LuaDebugging::serializeValue(ByteBuffer &buffer,lua_State *L,int n)  {
+#define LUA_TREF    20 //Not a lua type, but indicates a ref to an already outputted table
+
+void LuaDebugging::serializeValue(ByteBuffer &buffer,lua_State *L,int n,int nrefs)  {
 	n=abs_index(L,n);
+    nrefs=abs_index(L,nrefs);
 	int type=lua_type(L,n);
-	buffer << (char) type;
+    if (type==LUA_TTABLE) {
+        lua_pushvalue(L,n);
+        lua_rawget(L,nrefs);
+        if (lua_toboolean(L,-1))
+            type=LUA_TREF;
+        lua_pop(L,1);
+    }
+    std::string sval;
+    size_t ssz;
+    const char *val;
+
+    buffer << (char) type;
 	switch (type) {
 	case LUA_TNIL:
 	case LUA_TNONE:
-		break;
+    case LUA_TREF:
+        lua_pushvalue(L,n);
+        lua_rawget(L,nrefs);
+        val=lua_tolstring(L,-1,&ssz);
+        lua_pop(L,1);
+        if (val) sval=std::string(val,ssz);
+        buffer << sval;
+        break;
 	case LUA_TBOOLEAN:
-		buffer << (char) lua_toboolean(L,-1);
+        buffer << (char) lua_toboolean(L,n);
 		break;
 	case LUA_TTABLE:
+         //Mark the table as seen
+         lua_pushvalue(L,n);
+         lua_pushfstring(L,"%p",lua_topointer(L, n));
+         val=lua_tolstring(L,-1,&ssz);
+         lua_rawset(L,nrefs);
+         if (val) sval=std::string(val,ssz);
+         buffer << sval;
+         //Serialize table
 	     lua_pushnil(L);  /* first key */
 	     while (lua_next(L, n) != 0) {
-	       serializeValue(buffer,L,-2);
-	       serializeValue(buffer,L,-1);
+           serializeValue(buffer,L,-2,nrefs);
+           serializeValue(buffer,L,-1,nrefs);
 	       lua_pop(L, 1);
 	     }
         lua_pushnil(L);
-        serializeValue(buffer,L,-1); //Add a nil to mark end of table
+        serializeValue(buffer,L,-1,nrefs); //Add a nil to mark end of table
         lua_pop(L, 1);
 		break;
 	default:
-	    std::string sval;
-	    size_t ssz;
 	    lua_pushvalue(L,n); //tolstring change var type, so make a copy before
-	    const char *val=lua_tolstring(L,-1,&ssz);
+        val=lua_tolstring(L,-1,&ssz);
 	    lua_pop(L,1);
 	    if (val) sval=std::string(val,ssz);
 	    buffer << sval;
@@ -143,13 +170,15 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
 		}
 		ByteBuffer buffer;
 		buffer << (char) gptSymbolValue;
-		serializeValue(buffer,L,-1);
-		lua_pop(L,1);
+        lua_newtable(L);
+        serializeValue(buffer,L,-2,-1);
+        lua_pop(L,2);
 		LuaDebugging::studio->sendData(buffer.data(),buffer.size());
 		break;
 	}
 
-	case gptSetBreakpoints: {
+    case gptResume:
+    case gptSetBreakpoints: {
         ByteBuffer buffer(&data[2], data.size()-2);
         setupBreakMode(data[1]);
 		LuaApplication::debuggerHook=LuaDebugging::debuggerHook;
@@ -166,12 +195,9 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
 			LuaDebugging::breakpoints[line].insert(source);
 			LuaApplication::breakpoints[line]=true;
 		}
+        if (data[0]==gptResume)
+            LuaDebugging::breakedL=NULL;
          break;
-	}
-	case gptResume: {
-        setupBreakMode(data[1]);
-		LuaDebugging::breakedL=NULL;
-		break;
 	}
 	}
 }
