@@ -509,7 +509,7 @@ static int llex (LexState *ls, SemInfo *seminfo) {
         ts = luaX_newstring(ls, luaZ_buffer(ls->buff),
                             luaZ_bufflen(ls->buff));
         while (isspace(ls->current)) {
-          if (ls->current == '\n') ++ls->linenumber;
+          if (currIsNewline(ls)) break;
           next(ls);
         }
         if (ls->current == '@') {
