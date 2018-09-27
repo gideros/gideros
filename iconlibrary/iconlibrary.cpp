@@ -3,17 +3,19 @@
 
 IconLibrary::IconLibrary()
 {
-	image_.load("Resources/images.png");
+	image_=QPixmap("Resources/images.png");
+	//imagex2_.load("Resources/images@x2.png");
 
-	iconMap_["start"] = icon(15, 21);
-	iconMap_["start all"] = icon(11, 3);
-	iconMap_["debug"] = icon(7, 30);
-    iconMap_["step into"] = icon(12, 3);
-    iconMap_["step over"] = icon(3,4);
-    iconMap_["step return"] = icon(9, 4);
-    iconMap_["resume"] = icon(14, 0);
-    iconMap_["stop"] = icon(7, 25);
-	iconMap_["gamepad"] = icon(13, 8);
+	iconMap_["start"] = icon(13, 34);
+	iconMap_["start all"] = icon(15, 34);
+	iconMap_["debug"] = icon(0, 35);
+    iconMap_["step into"] = icon(3, 35);
+    iconMap_["step over"] = icon(2,35);
+    iconMap_["step return"] = icon(4, 35);
+    iconMap_["resume"] = icon(1, 35);
+    iconMap_["stop"] = icon(14, 34);
+    iconMap_["gamepad"] = icon(12, 34);
+
 	iconMap_["picture"] = icon(0, 21);
     iconMap_["picture with magnifier"] = icon(0, 21, 0, 1, 3, 3);
     iconMap_["lua"] = icon(14, 18);
@@ -27,20 +29,20 @@ IconLibrary::IconLibrary()
 
 	iconMap_["new"] = icon(3, 272 / 16);
 	iconMap_["open"] = icon(6, 208 / 16);
-	iconMap_["save"] = icon(8, 160 / 16);
-	iconMap_["save all"] = icon(9, 160 / 16);
+	iconMap_["save"] = icon(0, 34);
+	iconMap_["save all"] = icon(1, 34);
 
-	iconMap_["undo"] = icon(9, 64 / 16);
-	iconMap_["redo"] = icon(1, 64 / 16);
+	iconMap_["undo"] = icon(3, 34);
+	iconMap_["redo"] = icon(4, 34);
 
-	iconMap_["cut"] = icon(14, 144 / 16);
-	iconMap_["copy"] = icon(6, 272 / 16);
-	iconMap_["paste"] = icon(11, 272 / 16);
+	iconMap_["cut"] = icon(5, 34);
+	iconMap_["copy"] = icon(6, 34);
+	iconMap_["paste"] = icon(7, 34);
 
-	iconMap_["toggle bookmark"] = icon(2, 400 / 16);
-	iconMap_["next bookmark"] = icon(2, 400 / 16, 9, 0, 3, 3);
-	iconMap_["previous bookmark"] = icon(2, 400 / 16, 1, 0, -3, 3);
-	iconMap_["clear bookmarks"] = icon(2, 400 / 16, 4, 0, 4, 4);
+	iconMap_["toggle bookmark"] = icon(8, 34);
+	iconMap_["next bookmark"] = icon(9, 34);
+	iconMap_["previous bookmark"] = icon(10, 34);
+	iconMap_["clear bookmarks"] = icon(11, 34);
 
     iconMap_["dot list"] = icon(12, 27);
     iconMap_["num list"] = icon(13, 27);
@@ -54,7 +56,9 @@ IconLibrary::IconLibrary()
 
 	iconMap_["project"] = icon(2, 17);
 
-    iconMap_["export"] = icon(6, 5);
+    iconMap_["export"] = icon(2, 34);
+    iconMap_["sort cat"] = icon(6, 35);
+    iconMap_["sort alpha"] = icon(5, 35);
 
     //Autocompletion list
     iconMap_["method"] = icon(9,0);
@@ -104,7 +108,8 @@ QIcon IconLibrary::icon(int i, int j) const
 	const int width = 16;
 	const int height = 16;
 
-	return QIcon(QPixmap::fromImage(image_.copy(i * width, j * height, width, height)));
+	QIcon icon(image_.copy(i * width, j * height, width, height));
+	return icon;
 }
 
 static QImage blend(const QImage& i0, const QImage& i1, int dx, int dy)
@@ -149,8 +154,9 @@ QIcon IconLibrary::icon(int i0, int j0, int i1, int j1, int dx, int dy) const
 	const int width = 16;
 	const int height = 16;
 
-	QImage image0 = image_.copy(i0 * width, j0 * height, width, height);
-	QImage image1 = image_.copy(i1 * width, j1 * height, width, height);
+	QPixmap image0 = image_.copy(i0 * width, j0 * height, width, height);
+	QPixmap image1 = image_.copy(i1 * width, j1 * height, width, height);
+	QIcon icon(QPixmap::fromImage(blend(image0.toImage(), image1.toImage(), dx, dy)));
 
-	return QIcon(QPixmap::fromImage(blend(image0, image1, dx, dy)));
+	return icon;
 }

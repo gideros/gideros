@@ -14,7 +14,7 @@
 
 
 class LuaDebugging {
-	static Server *studio;
+	static NetworkLink *studio;
 	static lua_State *breakedL;
 	static std::map<int,std::set<std::string>> breakpoints;
 	static int subCount;
@@ -28,7 +28,7 @@ public:
     static lua_State *L;
     static int yieldHookMask;
     static lua_Hook hook;
-    static void studioLink(Server *server);
+    static void studioLink(NetworkLink *server);
 	static void studioCommand(const std::vector<char> &data);
 	static void debuggerHook(void *context,lua_State *L,lua_Debug *ar);
 };

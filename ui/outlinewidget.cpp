@@ -262,9 +262,9 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     QVBoxLayout *layout=new QVBoxLayout();
     layout->setContentsMargins(0,0,0,0);
     QToolBar *toolbar=new QToolBar();
-    actType_=toolbar->addAction(IconLibrary::instance().icon(0,"dot list"),"Group by type",this, &OutlineWidget::sort);
+    actType_=toolbar->addAction(IconLibrary::instance().icon(0,"sort cat"),"Group by type",this, &OutlineWidget::sort);
     actType_->setCheckable(true); actType_->setChecked(true);
-    actSort_=toolbar->addAction(IconLibrary::instance().icon(0,"num list"),"Sort alphabetically",this, &OutlineWidget::sort);
+    actSort_=toolbar->addAction(IconLibrary::instance().icon(0,"sort alpha"),"Sort alphabetically",this, &OutlineWidget::sort);
     actSort_->setCheckable(true); actSort_->setChecked(true);
     actGlb_=toolbar->addAction(IconLibrary::instance().icon(0,"green dot"),"Show globals",this, &OutlineWidget::sort);
     actGlb_->setCheckable(true); actGlb_->setChecked(true);

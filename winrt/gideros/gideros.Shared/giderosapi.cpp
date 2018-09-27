@@ -431,10 +431,12 @@ NetworkManager::NetworkManager(ApplicationManager* application)
 {
 	application_ = application;
 	server_ = new Server(15000, ::getDeviceName().c_str());
+	LuaDebugging::studioLink(server_);
 }
 
 NetworkManager::~NetworkManager()
 {
+	LuaDebugging::studioLink(NULL);
 	delete server_;
 }
 
