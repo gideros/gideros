@@ -205,6 +205,7 @@ private slots:
 	void hideStartPage();
 
 	void openAboutDialog();
+    void openPreferencesDialog();
 	void developerCenter();
 	void helpAndSupport();
 	void apiDocumentation();

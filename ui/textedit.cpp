@@ -15,6 +15,7 @@
 #include <QSettings>
 #include <QToolTip>
 #include "iconlibrary.h"
+#include "settingskeys.h"
 
 QSet<QString> TextEdit::breakpoints;
 static void keysForMac(QsciScintilla* qscintilla)
@@ -123,7 +124,7 @@ static QsciLexer* createLexerByExtension(QString ext)
 	QsciLexer* lexer = 0;
 
     QSettings settings;
-    QString themePath = settings.value("editorTheme").toString();
+    QString themePath = settings.value(Keys::Editor::theme).toString();
 
 	if (ext == "lua")
 	{
@@ -191,7 +192,7 @@ TextEdit::TextEdit(QWidget* parent)
 
 // settings
 QSettings settings;
-QString theme = settings.value("editorTheme").toString();
+QString theme = settings.value(Keys::Editor::theme).toString();
 
 QSettings lls(theme, QSettings::IniFormat);
 
@@ -207,8 +208,10 @@ QSettings lls(theme, QSettings::IniFormat);
 
 	sciScintilla_->setFolding(QsciScintilla::BoxedTreeFoldStyle, 4);
 	sciScintilla_->setAutoIndent(true);
-	sciScintilla_->setTabWidth(4);
-	sciScintilla_->setIndentationsUseTabs(true);
+
+    sciScintilla_->setTabWidth(settings.value(Keys::Prefs::tabSize, 4).toInt());
+    sciScintilla_->setIndentationsUseTabs(!settings.value(Keys::Prefs::tabsVsSpaces, 0).toBool());
+
 	sciScintilla_->setIndentationGuides(true);
 
 	sciScintilla_->setMarginLineNumbers(2, true);
@@ -622,6 +625,18 @@ void TextEdit::previousBookmark()
 void TextEdit::clearBookmarks()
 {
 	sciScintilla_->markerDeleteAll(1);
+}
+
+// preferencesdialog
+void TextEdit::setTabWidth(int size)
+{
+    sciScintilla_->setTabWidth(size);
+}
+
+// preferencesdialog
+void TextEdit::setUseTabs(bool use_tabs)
+{
+    sciScintilla_->setIndentationsUseTabs(use_tabs);
 }
 
 void TextEdit::undo()

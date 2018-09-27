@@ -55,6 +55,10 @@ public slots:
 	void previousBookmark();
 	void clearBookmarks();
 
+    // preferences
+    void setTabWidth(int size);
+    void setUseTabs(bool use_tabs);
+
 	// undo-redo
 	void undo();
 	void redo();

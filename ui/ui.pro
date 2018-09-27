@@ -85,7 +85,8 @@ SOURCES += \
     mdisubwindow.cpp \
     dependencygraph.cpp \
     addons.cpp \
-    qtutils.cpp
+    qtutils.cpp \
+    preferencesdialog.cpp
 
 SOURCES += $$files(../libpvrt/*.cpp)
 
@@ -127,7 +128,9 @@ HEADERS  += \
     plugineditor.h \
     dependencygraph.h \
     addons.h \
-    qtutils.h
+    qtutils.h \
+    preferencesdialog.h \
+    settingskeys.h
 
 FORMS    += mainwindow.ui \
     savechangesdialog.ui \
@@ -149,7 +152,8 @@ FORMS    += mainwindow.ui \
     projectpropertiesdialog.ui \
     pluginselector.ui \
     plugineditor.ui \
-    startpagewidget2.ui
+    startpagewidget2.ui \
+    preferencesdialog.ui
 
 
 DEFINES += DESKTOP_TOOLS 
