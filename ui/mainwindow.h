@@ -414,6 +414,8 @@ private slots:
 public:
     static MainWindow *lua_instance;
     void notifyAddon(QString clientId,const char *data);
+
+public slots:
     void saveAll();
 };
 
