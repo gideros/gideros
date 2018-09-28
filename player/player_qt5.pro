@@ -23,7 +23,7 @@ win32{
         _CONFIG_ = debug
     }
 
-    debug_with_installed_libs{
+    debug_in_place{
         message("Build Target: Debug with Installed Libs")
         DESTDIR = ../Build.Win
         LIBS += \
