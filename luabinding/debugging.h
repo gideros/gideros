@@ -14,21 +14,21 @@
 
 
 class LuaDebugging {
-	static Server *studio;
+	static NetworkLink *studio;
 	static lua_State *breakedL;
 	static std::map<int,std::set<std::string>> breakpoints;
 	static int subCount;
 	static int debuggerMode;
-    static int lastLine;
     static std::string lastFile;
 	static void studioCommandInternal(const std::vector<char> &data,lua_State *L,lua_Debug *ar);
     static void serializeValue(ByteBuffer &buffer,lua_State *L,int n,int nref);
 	static void setupBreakMode(int m);
 public:
+    static int lastLine;
     static lua_State *L;
     static int yieldHookMask;
     static lua_Hook hook;
-    static void studioLink(Server *server);
+    static void studioLink(NetworkLink *server);
 	static void studioCommand(const std::vector<char> &data);
 	static void debuggerHook(void *context,lua_State *L,lua_Debug *ar);
 };

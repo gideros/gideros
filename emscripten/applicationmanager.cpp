@@ -125,14 +125,28 @@ static void _mkdir(const char *dir) {
 	mkdir(tmp, S_IRWXU);
 }
 
+class ServerOutput : public NetworkLink {
+public:
+	int sendData(const void* data, unsigned int size, bool noCheck=false) {
+		serverSendData((const char *) data,size);
+		return size;
+	}
+	void tick(NetworkEvent* event)
+	{
+		serverTick(event);
+	}
+} netOutput;
+
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
 	application_ = application;
 	serverStart();
+	LuaDebugging::studioLink(&netOutput);
 }
 
 NetworkManager::~NetworkManager()
 {
+	LuaDebugging::studioLink(NULL);
 	serverStop();
 }
 

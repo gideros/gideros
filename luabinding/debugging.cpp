@@ -10,7 +10,7 @@
 #define abs_index(L, i)		((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : \
 					lua_gettop(L) + (i) + 1)
 
-Server *LuaDebugging::studio = NULL;
+NetworkLink *LuaDebugging::studio = NULL;
 lua_State *LuaDebugging::L=NULL;
 lua_State *LuaDebugging::breakedL=NULL;
 int LuaDebugging::yieldHookMask=0;
@@ -22,7 +22,7 @@ std::string LuaDebugging::lastFile;
 
 std::map<int,std::set<std::string>> LuaDebugging::breakpoints;
 
-void LuaDebugging::studioLink(Server *server) {
+void LuaDebugging::studioLink(NetworkLink *server) {
 	studio = server;
 }
 

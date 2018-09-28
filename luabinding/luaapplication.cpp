@@ -1186,6 +1186,10 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 			lua_getinfo(L, "S", ar); //Possible match, resolve source name and let debuggerHook decide
 			LuaApplication::debuggerHook(LuaApplication::debuggerContext,L,ar);
 		}
+		else {
+			if (ar->currentline!=LuaDebugging::lastLine)
+				LuaDebugging::lastLine=0;
+		}
 	}
 	else if (ar->event == LUA_HOOKCALL)
 	{

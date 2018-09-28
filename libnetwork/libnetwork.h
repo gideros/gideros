@@ -80,7 +80,15 @@ struct NetworkEvent
 
 class QueueElement;
 
-class NetworkBase
+class NetworkLink
+{
+public:
+	virtual int sendData(const void* data, unsigned int size, bool noCheck=false)=0;
+	virtual void tick(NetworkEvent* event)=0;
+	virtual ~NetworkLink() { };
+};
+
+class NetworkBase : public NetworkLink
 {
 public:
 	int sendData(const void* data, unsigned int size, bool noCheck=false);
