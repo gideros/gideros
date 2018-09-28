@@ -4,7 +4,7 @@
 IconLibrary::IconLibrary()
 {
 	image_=QPixmap("Resources/images.png");
-	//imagex2_.load("Resources/images@x2.png");
+    imagex2_=QPixmap("Resources/images@2x.png");
 
 	iconMap_["start"] = icon(13, 34);
 	iconMap_["start all"] = icon(15, 34);
@@ -105,10 +105,12 @@ const QIcon& IconLibrary::icon(int category, const QString& name) const
 
 QIcon IconLibrary::icon(int i, int j) const
 {
-	const int width = 16;
-	const int height = 16;
+    int width = 16;
+    int height = 16;
 
 	QIcon icon(image_.copy(i * width, j * height, width, height));
+    width *= 2; height *= 2;
+    icon.addPixmap(imagex2_.copy(i * width, j * height, width, height));
 	return icon;
 }
 
@@ -151,12 +153,17 @@ static QImage blend(const QImage& i0, const QImage& i1, int dx, int dy)
 
 QIcon IconLibrary::icon(int i0, int j0, int i1, int j1, int dx, int dy) const
 {
-	const int width = 16;
-	const int height = 16;
+    int width = 16;
+    int height = 16;
 
 	QPixmap image0 = image_.copy(i0 * width, j0 * height, width, height);
 	QPixmap image1 = image_.copy(i1 * width, j1 * height, width, height);
-	QIcon icon(QPixmap::fromImage(blend(image0.toImage(), image1.toImage(), dx, dy)));
+    QIcon icon(QPixmap::fromImage(blend(image0.toImage(), image1.toImage(), dx, dy)));
+
+    width *= 2; height *= 2;
+    image0 = imagex2_.copy(i0 * width, j0 * height, width, height);
+    image1 = imagex2_.copy(i1 * width, j1 * height, width, height);
+    icon.addPixmap(QPixmap::fromImage(blend(image0.toImage(), image1.toImage(), dx, dy)));
 
 	return icon;
 }
