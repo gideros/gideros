@@ -7,17 +7,20 @@
 */
 
 #pragma once
-#define setting static const char*
+#define KEY static const char*
 
 
 namespace Keys {
     namespace Prefs {
-        setting tabsVsSpaces = "prefs:tabsVsSpaces";
-        setting tabSize = "prefs:tabsize";
-        setting autoCompleteChars = "prefs:autoCompleteChars";
-        setting indentGuides = "prefs:indentationGuides";
+        KEY tabsVsSpaces = "prefs:tabsVsSpaces";
+        KEY tabSize = "prefs:tabsize";
+        KEY autoCompleteChars = "prefs:autoCompleteChars";
+        KEY indentGuides = "prefs:indentationGuides";
+        KEY showLineNumbers = "prefs:showLineNumbers";
+        KEY backspaceUnindents = "prefs:backspaceUnindents";
+        KEY whitespaceVisibility = "prefs:whitespacevisibility";
     }
     namespace Editor {
-        setting theme = "editorTheme";
+        KEY theme = "editorTheme";
     }
 }

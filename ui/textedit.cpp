@@ -211,10 +211,13 @@ QSettings lls(theme, QSettings::IniFormat);
 
     sciScintilla_->setTabWidth(settings.value(Keys::Prefs::tabSize, 4).toInt());
     sciScintilla_->setIndentationsUseTabs(!settings.value(Keys::Prefs::tabsVsSpaces, 0).toBool());
-
     sciScintilla_->setIndentationGuides(settings.value(Keys::Prefs::indentGuides, true).toBool());
+    sciScintilla_->setBackspaceUnindents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
 
-	sciScintilla_->setMarginLineNumbers(2, true);
+    sciScintilla_->setWhitespaceVisibility(static_cast<QsciScintilla::WhitespaceVisibility>
+                                           (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
+
+    sciScintilla_->setMarginLineNumbers(2, settings.value(Keys::Prefs::showLineNumbers, true).toBool());
 	sciScintilla_->setMarginWidth(2, QString("10000"));
 	sciScintilla_->setMarginMarkerMask(2, 0);		// we dont want any markers at line number margin
 
@@ -633,11 +636,31 @@ void TextEdit::setTabWidth(int size)
     sciScintilla_->setTabWidth(size);
 }
 
-// preferencesdialog
 void TextEdit::setUseTabs(bool use_tabs)
 {
     sciScintilla_->setIndentationsUseTabs(use_tabs);
 }
+
+void TextEdit::setIndentGuide(bool index)
+{
+    sciScintilla_->setIndentationGuides(index);
+}
+
+void TextEdit::setShowLineNumbers(bool show)
+{
+    sciScintilla_->setMarginLineNumbers(2, show);
+}
+
+void TextEdit::setBackspaceUnindents(bool use)
+{
+    sciScintilla_->setBackspaceUnindents(use);
+}
+
+void TextEdit::setWhitespaceVisibility(int mode)
+{
+    sciScintilla_->setWhitespaceVisibility(static_cast<QsciScintilla::WhitespaceVisibility>(mode));
+}
+
 
 void TextEdit::undo()
 {

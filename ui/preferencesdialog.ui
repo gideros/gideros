@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>794</width>
-    <height>468</height>
+    <width>637</width>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>420</y>
+     <x>270</x>
+     <y>270</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -44,7 +44,7 @@
      <x>20</x>
      <y>20</y>
      <width>141</width>
-     <height>391</height>
+     <height>261</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -66,23 +66,18 @@
      <string>Editor</string>
     </property>
    </item>
-   <item>
-    <property name="text">
-     <string>Keybindings</string>
-    </property>
-   </item>
   </widget>
   <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
      <x>180</x>
      <y>20</y>
-     <width>581</width>
-     <height>391</height>
+     <width>441</width>
+     <height>211</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="Editor">
     <widget class="QGroupBox" name="editorGroupBox">
@@ -90,8 +85,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>581</width>
-       <height>381</height>
+       <width>371</width>
+       <height>241</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -111,8 +106,8 @@
        <rect>
         <x>20</x>
         <y>20</y>
-        <width>181</width>
-        <height>211</height>
+        <width>182</width>
+        <height>111</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout">
@@ -137,7 +132,7 @@
          </item>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QLabel" name="label">
          <property name="toolTip">
           <string/>
@@ -149,11 +144,11 @@
           <string/>
          </property>
          <property name="text">
-          <string>Indentation:</string>
+          <string>Indent size:</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <widget class="QSpinBox" name="tabSizeSpinBox">
          <property name="toolTip">
           <string/>
@@ -165,48 +160,139 @@
           <string/>
          </property>
          <property name="minimum">
-          <number>2</number>
+          <number>1</number>
          </property>
          <property name="maximum">
-          <number>8</number>
+          <number>16</number>
          </property>
          <property name="singleStep">
-          <number>2</number>
+          <number>1</number>
          </property>
          <property name="value">
           <number>2</number>
          </property>
         </widget>
        </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="showIndentGuideLabel">
+         <property name="text">
+          <string>Indent guide lines:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="showIndentGuideComboBox">
+         <item>
+          <property name="text">
+           <string>Hide</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Show</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="backspaceUnindentsLabel">
+         <property name="text">
+          <string>Backspace unindents:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="backspaceUnindentsComboBox">
+         <item>
+          <property name="text">
+           <string>False</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>True</string>
+          </property>
+         </item>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
    </widget>
-   <widget class="QWidget" name="Keybindings">
-    <widget class="QGroupBox" name="keybindingsGroupBox">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>591</width>
-       <height>391</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>Keybindings</string>
-     </property>
-     <widget class="QTableView" name="tableView">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>60</y>
-        <width>256</width>
-        <height>192</height>
-       </rect>
+   <widget class="QWidget" name="Keybindings"/>
+  </widget>
+  <widget class="QWidget" name="formLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>180</y>
+     <width>181</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formLayout_2">
+    <item row="0" column="0">
+     <widget class="QLabel" name="lineNumberingLabel">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Line numbering:</string>
       </property>
      </widget>
-    </widget>
-   </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="lineNumberingComboBox">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;lt;html&amp;gt;&amp;lt;head/&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Takes effect with first file opened after a restart or all files have been closed.&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Hide</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Show</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="whitespaceVisibilityLabel">
+      <property name="text">
+       <string>Whitespace visibility</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="whitespaceVisibilityComboBox">
+      <item>
+       <property name="text">
+        <string>Invisible</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Visible</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Only after</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Only before</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

@@ -13,7 +13,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->setupUi(this);
 
     // match the string we get back from our sections TreeWidget to page numbers
-    // on our StackedLayout, for 'turning' pages on tree click
+    // on our StackedLayout, for 'turning' pages on tree click (only Editor for now)
     sections = { {"Editor", 0}, {"Keybindings", 1} };
     setupEditorPrefs();
 
@@ -58,6 +58,50 @@ void PreferencesDialog::setupEditorPrefs()
                 this->settings.setValue(Keys::Prefs::tabsVsSpaces, index);
                 if (this->current_editor != nullptr)
                     this->current_editor->setUseTabs(index ? false : true);
+            }
+    );
+
+    // 0 - hide, 1 - show
+    ui->showIndentGuideComboBox->setCurrentIndex(settings.value(Keys::Prefs::indentGuides, 1).toInt());
+
+    connect(ui->showIndentGuideComboBox, QOverload<int>::of(&QComboBox::activated), this,
+            [this](int index) {
+                this->settings.setValue(Keys::Prefs::indentGuides, index);
+                if (this->current_editor != nullptr)
+                    this->current_editor->setIndentGuide(index);
+            }
+    );
+
+    // 0 - hide, 1 - show
+    ui->lineNumberingComboBox->setCurrentIndex(settings.value(Keys::Prefs::showLineNumbers, 1).toInt());
+
+    connect(ui->lineNumberingComboBox, QOverload<int>::of(&QComboBox::activated), this,
+            [this](int show) {
+                this->settings.setValue(Keys::Prefs::showLineNumbers, show);
+                if (this->current_editor != nullptr)
+                    this->current_editor->setIndentGuide(show);
+            }
+    );
+
+    // 0 - no, 1 - yes, use
+    ui->backspaceUnindentsComboBox->setCurrentIndex(settings.value(Keys::Prefs::backspaceUnindents, 1).toInt());
+
+    connect(ui->backspaceUnindentsComboBox, QOverload<int>::of(&QComboBox::activated), this,
+            [this](int use) {
+                this->settings.setValue(Keys::Prefs::backspaceUnindents, use);
+                if (this->current_editor != nullptr)
+                    this->current_editor->setBackspaceUnindents(use);
+            }
+    );
+
+    // 0 - 3, follows QsciScintilla::WhitespaceVisibility::
+    ui->whitespaceVisibilityComboBox->setCurrentIndex(settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt());
+
+    connect(ui->whitespaceVisibilityComboBox, QOverload<int>::of(&QComboBox::activated), this,
+            [this](int mode) {
+                this->settings.setValue(Keys::Prefs::whitespaceVisibility, mode);
+                if (this->current_editor != nullptr)
+                    this->current_editor->setWhitespaceVisibility(mode);
             }
     );
 }
