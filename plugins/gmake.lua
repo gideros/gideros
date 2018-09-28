@@ -1173,10 +1173,14 @@ local main = function(args)
         print(docs.help)
         return
 
-      elseif option == "-c" then
-        print("Do you want to create a new skeleton plugin.def.lua file in this directory? (y/n)")
-        local res = io.read()
-        if res:match("^[Yy]$") then
+      elseif option == "-c" or option == "-C" then
+        local proceed = true
+        if option == "-c" then
+          print("Do you want to create a new skeleton plugin.def.lua file in this directory? (y/n)")
+          local res = io.read()
+          proceed=res:match("^[Yy]$")
+        end
+        if proceed then
           local file = io.open("plugin.def.lua", "r")
           if file then
             print("\nplugin.def.lua exists, please check file and delete manually if you really want to overwrite.\n")
