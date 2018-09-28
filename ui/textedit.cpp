@@ -15,6 +15,7 @@
 #include <QSettings>
 #include <QToolTip>
 #include "iconlibrary.h"
+#include "settingskeys.h"
 
 QSet<QString> TextEdit::breakpoints;
 static void keysForMac(QsciScintilla* qscintilla)
@@ -123,7 +124,7 @@ static QsciLexer* createLexerByExtension(QString ext)
 	QsciLexer* lexer = 0;
 
     QSettings settings;
-    QString themePath = settings.value("editorTheme").toString();
+    QString themePath = settings.value(Keys::Editor::theme).toString();
 
 	if (ext == "lua")
 	{
@@ -191,7 +192,7 @@ TextEdit::TextEdit(QWidget* parent)
 
 // settings
 QSettings settings;
-QString theme = settings.value("editorTheme").toString();
+QString theme = settings.value(Keys::Editor::theme).toString();
 
 QSettings lls(theme, QSettings::IniFormat);
 
@@ -207,11 +208,16 @@ QSettings lls(theme, QSettings::IniFormat);
 
 	sciScintilla_->setFolding(QsciScintilla::BoxedTreeFoldStyle, 4);
 	sciScintilla_->setAutoIndent(true);
-	sciScintilla_->setTabWidth(4);
-	sciScintilla_->setIndentationsUseTabs(true);
-	sciScintilla_->setIndentationGuides(true);
 
-	sciScintilla_->setMarginLineNumbers(2, true);
+    sciScintilla_->setTabWidth(settings.value(Keys::Prefs::tabSize, 4).toInt());
+    sciScintilla_->setIndentationsUseTabs(!settings.value(Keys::Prefs::tabsVsSpaces, 0).toBool());
+    sciScintilla_->setIndentationGuides(settings.value(Keys::Prefs::indentGuides, true).toBool());
+    sciScintilla_->setBackspaceUnindents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
+
+    sciScintilla_->setWhitespaceVisibility(static_cast<QsciScintilla::WhitespaceVisibility>
+                                           (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
+
+    sciScintilla_->setMarginLineNumbers(2, settings.value(Keys::Prefs::showLineNumbers, true).toBool());
 	sciScintilla_->setMarginWidth(2, QString("10000"));
 	sciScintilla_->setMarginMarkerMask(2, 0);		// we dont want any markers at line number margin
 
@@ -275,7 +281,7 @@ QSettings lls(theme, QSettings::IniFormat);
 
 	sciScintilla_->setEolMode(QsciScintilla::EolUnix);
 
-	sciScintilla_->setAutoCompletionThreshold(2);
+    sciScintilla_->setAutoCompletionThreshold(settings.value(Keys::Prefs::autoCompleteChars, 2).toInt());
 	sciScintilla_->setAutoCompletionSource(QsciScintilla::AcsAll);
 
     sciScintilla_->setFoldMarginColors(
@@ -623,6 +629,38 @@ void TextEdit::clearBookmarks()
 {
 	sciScintilla_->markerDeleteAll(1);
 }
+
+// preferencesdialog
+void TextEdit::setTabWidth(int size)
+{
+    sciScintilla_->setTabWidth(size);
+}
+
+void TextEdit::setUseTabs(bool use_tabs)
+{
+    sciScintilla_->setIndentationsUseTabs(use_tabs);
+}
+
+void TextEdit::setIndentGuide(bool index)
+{
+    sciScintilla_->setIndentationGuides(index);
+}
+
+void TextEdit::setShowLineNumbers(bool show)
+{
+    sciScintilla_->setMarginLineNumbers(2, show);
+}
+
+void TextEdit::setBackspaceUnindents(bool use)
+{
+    sciScintilla_->setBackspaceUnindents(use);
+}
+
+void TextEdit::setWhitespaceVisibility(int mode)
+{
+    sciScintilla_->setWhitespaceVisibility(static_cast<QsciScintilla::WhitespaceVisibility>(mode));
+}
+
 
 void TextEdit::undo()
 {

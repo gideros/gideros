@@ -54,6 +54,7 @@
 #include <QKeySequence>
 #include "addons.h"
 #include <QToolTip>
+#include "preferencesdialog.h"
 
 MainWindow *MainWindow::lua_instance=NULL;
 static int ltw_notifyClient(lua_State *L) {
@@ -373,10 +374,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui.actionFullscreen, SIGNAL(triggered()), this, SLOT(toggleFullscreen()));
 
-	connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
+    connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
     connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
     connect(ui.actionLive_syntax_checking, SIGNAL(triggered(bool)), this, SLOT(actionLiveSyntaxChecking(bool)));
-	connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
+    connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
+    connect(ui.actionPreferences, SIGNAL(triggered()), this, SLOT(openPreferencesDialog()));
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
 	connect(ui.actionAPI_Documentation, SIGNAL(triggered()), this, SLOT(apiDocumentation()));
@@ -1183,7 +1185,6 @@ void MainWindow::newProject()
 			settings.setValue("location", newProjectDialog->location());
 
 			addToRecentProjects(projectFileName_);
-
 		}
 	}
 }
@@ -3112,6 +3113,14 @@ void MainWindow::openAboutDialog()
 {
 	AboutDialog dialog(this);
 	dialog.exec();
+}
+
+void MainWindow::openPreferencesDialog()
+{
+    PreferencesDialog dialog(this);
+    TextEdit* text_edit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+    dialog.setTextEdit(text_edit);
+    dialog.exec();
 }
 
 void MainWindow::onInsertIntoDocument(const QString& text)

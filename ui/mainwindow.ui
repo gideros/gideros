@@ -139,6 +139,7 @@ QMainWindow::separator {
     <addaction name="actionReset_UI_and_Editor_Theme"/>
     <addaction name="separator"/>
     <addaction name="actionFullscreen"/>
+    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuAddons">
     <property name="title">
@@ -702,6 +703,11 @@ Gideros Player, Play button is enabled.</string>
   <action name="actionResume">
    <property name="text">
     <string>Resume</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>

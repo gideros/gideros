@@ -205,6 +205,7 @@ private slots:
 	void hideStartPage();
 
 	void openAboutDialog();
+    void openPreferencesDialog();
 	void developerCenter();
 	void helpAndSupport();
 	void apiDocumentation();
@@ -413,6 +414,8 @@ private slots:
 public:
     static MainWindow *lua_instance;
     void notifyAddon(QString clientId,const char *data);
+
+public slots:
     void saveAll();
 };
 

@@ -44,6 +44,14 @@ public:
     void setFocusToEdit();
     void highlightDebugLine(int line);
 
+    // preferences
+    void setTabWidth(int size);
+    void setUseTabs(bool use_tabs);
+    void setIndentGuide(bool index);
+    void setShowLineNumbers(bool show);
+    void setBackspaceUnindents(bool use);
+    void setWhitespaceVisibility(int mode);
+
 protected:
 	virtual void closeEvent(QCloseEvent* event);
 
