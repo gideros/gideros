@@ -76,7 +76,7 @@
  	</if>
     <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.java" />
-    	<set key="local.adsAarVer" value="2.2.1" />
+    	<set key="local.adsAarVer" value="2.3.0" />
     	<set key="local.adsJarVer" value="unity-ads-[[[local.adsAarVer]]].aar" />
     	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
     	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
@@ -178,7 +178,7 @@
 	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
-    	<set key="local.adsJarVer" value="applovin-sdk-8.0.1.jar" />
+    	<set key="local.adsJarVer" value="applovin-sdk-8.1.3.jar" />
     	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
     	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
 	    <!-- <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="applovin*.jar" /> -->
