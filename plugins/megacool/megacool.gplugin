@@ -1,0 +1,92 @@
+<plugin
+ name="Megacool"
+ description="Megacool gameplay GIFs">
+ <property name="scheme" type="string" title="Megacool Scheme" description="Your URL Scheme (optional)" default="YOUR_URL_SCHEME" />
+ <property name="identifier" type="string" title="Megacool App identifier" description="The short name for the app" default="" />
+ <property name="config" type="string" title="Megacool App Config" description="A long string that looks like a code!" default="" />
+ 
+ <target name="AndroidStudio,APK">
+ 
+	<template name="Megacool gameplay amend gradle build" path="app" dest="app">
+		<replacelist wildcards="build.gradle">
+			<append>
+				<orig>url "https://maven.google.com"</orig>								
+				<by>
+				url 'https://maven.megacool.co/releases'
+				</by>
+			</append>
+			<append>
+				<orig>//TAG-DEPENDENCIES//</orig>								
+				<by>
+				implementation 'co.megacool:megacool:3.3.2'
+				</by>
+			</append>
+		</replacelist>	
+	</template>
+	
+   	<template name="Megacool gameplay amend strings.xml" path="">
+        <replacelist wildcards="strings.xml">
+			<append>
+				<orig><![CDATA[<resources>]]></orig>
+				<by><![CDATA[
+					<string name="megacool_scheme" translatable="false">[[[plugin.scheme]]]</string>
+					<string name="megacool_app_identifier" translatable="false">/[[[plugin.identifier]]]</string>
+				]]></by>
+			</append>
+	    </replacelist>
+   	</template>
+	
+   	<template name="Megacool gameplay amend manifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+           	<append>
+           		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+           		<by><![CDATA[
+					<activity android:name="com.megacool.MyLinkClickedActivity">
+					  <!-- Normal https:// links -->
+					  <intent-filter android:autoVerify="true">
+						<action android:name="android.intent.action.VIEW"/>
+						<category android:name="android.intent.category.DEFAULT"/>
+						<category android:name="android.intent.category.BROWSABLE"/>
+						<data
+						  android:host="@string/megacool_host"
+						  android:pathPrefix="@string/megacool_app_identifier"
+						  android:scheme="https"/>
+					  </intent-filter>
+					  <!-- Links with custom scheme where https doesn't work -->
+					  <intent-filter>
+						<action android:name="android.intent.action.VIEW"/>
+						<category android:name="android.intent.category.DEFAULT"/>
+						<category android:name="android.intent.category.BROWSABLE"/>
+						<data android:scheme="@string/megacool_scheme"/>
+					  </intent-filter>
+					</activity>
+					<!-- Ensure we receive referrals from the Play Store -->
+					<receiver android:name="co.megacool.megacool.ReferralReceiver">
+						<intent-filter>
+							<action android:name="com.android.vending.INSTALL_REFERRER"/>
+						</intent-filter>
+					</receiver>
+				]]></by> 
+    	    </append>
+	    </replacelist>	
+ 	</template>
+	
+	<template name="Megacool gameplay amend activity" path="">
+		<replacelist wildcards="[[[project.namews]]]Activity.java">
+			<append>
+				<orig>//GIDEROS-ACTIVITY-IMPORT//</orig>
+				<by>
+					import co.megacool.megacool.Megacool;
+				</by>
+			</append>
+		</replacelist>
+	</template>
+	
+	    <lua>
+    	local ap=require("Tools/export_android")
+    	ap.minSdk(18)
+    	</lua>
+	
+ </target>
+ </plugin>
+ 
