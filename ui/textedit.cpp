@@ -212,7 +212,7 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setTabWidth(settings.value(Keys::Prefs::tabSize, 4).toInt());
     sciScintilla_->setIndentationsUseTabs(!settings.value(Keys::Prefs::tabsVsSpaces, 0).toBool());
 
-	sciScintilla_->setIndentationGuides(true);
+    sciScintilla_->setIndentationGuides(settings.value(Keys::Prefs::indentGuides, true).toBool());
 
 	sciScintilla_->setMarginLineNumbers(2, true);
 	sciScintilla_->setMarginWidth(2, QString("10000"));
@@ -278,7 +278,7 @@ QSettings lls(theme, QSettings::IniFormat);
 
 	sciScintilla_->setEolMode(QsciScintilla::EolUnix);
 
-	sciScintilla_->setAutoCompletionThreshold(2);
+    sciScintilla_->setAutoCompletionThreshold(settings.value(Keys::Prefs::autoCompleteChars, 2).toInt());
 	sciScintilla_->setAutoCompletionSource(QsciScintilla::AcsAll);
 
     sciScintilla_->setFoldMarginColors(

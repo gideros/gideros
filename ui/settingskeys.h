@@ -7,14 +7,17 @@
 */
 
 #pragma once
+#define setting static const char*
 
 
 namespace Keys {
     namespace Prefs {
-        static const char* tabsVsSpaces = "prefs:tabsVsSpaces";
-        static const char* tabSize = "prefs:tabsize";
+        setting tabsVsSpaces = "prefs:tabsVsSpaces";
+        setting tabSize = "prefs:tabsize";
+        setting autoCompleteChars = "prefs:autoCompleteChars";
+        setting indentGuides = "prefs:indentationGuides";
     }
     namespace Editor {
-        static const char* theme = "editorTheme";
+        setting theme = "editorTheme";
     }
 }

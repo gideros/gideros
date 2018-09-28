@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>799</width>
-    <height>465</height>
+    <width>794</width>
+    <height>468</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,112 +72,140 @@
     </property>
    </item>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>180</x>
      <y>20</y>
-     <width>601</width>
+     <width>581</width>
      <height>391</height>
     </rect>
    </property>
-   <property name="toolTip">
-    <string/>
+   <property name="currentIndex">
+    <number>1</number>
    </property>
-   <property name="accessibleName">
-    <string/>
-   </property>
-   <property name="accessibleDescription">
-    <string/>
-   </property>
-   <property name="title">
-    <string>Editor</string>
-   </property>
-   <widget class="QSpinBox" name="tabSizeSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>60</y>
-      <width>42</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string/>
-    </property>
-    <property name="accessibleName">
-     <string/>
-    </property>
-    <property name="accessibleDescription">
-     <string/>
-    </property>
-    <property name="minimum">
-     <number>2</number>
-    </property>
-    <property name="maximum">
-     <number>8</number>
-    </property>
-    <property name="singleStep">
-     <number>2</number>
-    </property>
-    <property name="value">
-     <number>2</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>60</y>
-      <width>61</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string/>
-    </property>
-    <property name="accessibleName">
-     <string/>
-    </property>
-    <property name="accessibleDescription">
-     <string/>
-    </property>
-    <property name="text">
-     <string>Indentation:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Tabs or spaces:</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="tabsVsSpacesComboBox">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>30</y>
-      <width>69</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>Tabs</string>
+   <widget class="QWidget" name="Editor">
+    <widget class="QGroupBox" name="editorGroupBox">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>581</width>
+       <height>381</height>
+      </rect>
      </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Spaces</string>
+     <property name="toolTip">
+      <string/>
      </property>
-    </item>
+     <property name="accessibleName">
+      <string/>
+     </property>
+     <property name="accessibleDescription">
+      <string/>
+     </property>
+     <property name="title">
+      <string>Editor</string>
+     </property>
+     <widget class="QWidget" name="formLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>181</width>
+        <height>211</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Tabs or spaces:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="tabsVsSpacesComboBox">
+         <item>
+          <property name="text">
+           <string>Tabs</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Spaces</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="accessibleName">
+          <string/>
+         </property>
+         <property name="accessibleDescription">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Indentation:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="tabSizeSpinBox">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="accessibleName">
+          <string/>
+         </property>
+         <property name="accessibleDescription">
+          <string/>
+         </property>
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>8</number>
+         </property>
+         <property name="singleStep">
+          <number>2</number>
+         </property>
+         <property name="value">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="Keybindings">
+    <widget class="QGroupBox" name="keybindingsGroupBox">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>591</width>
+       <height>391</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Keybindings</string>
+     </property>
+     <widget class="QTableView" name="tableView">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>60</y>
+        <width>256</width>
+        <height>192</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
  </widget>

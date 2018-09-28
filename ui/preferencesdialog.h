@@ -19,11 +19,12 @@ public:
 
     void setTextEdit(TextEdit* text_edit) { current_editor = text_edit; }
 
-public slots:
-    void listSelected(QTreeWidgetItem* w_item, int item);
-
 private:
+    // get init values for controls from settings and setup lambda slot callbacks
+    void setupEditorPrefs();
+
     Ui::PreferencesDialog* ui;
+    std::map<std::string, int> sections;
     QSettings settings;
     TextEdit* current_editor;
 };
