@@ -16,3 +16,7 @@ CONFIG   += silent
 TEMPLATE = app
 
 SOURCES += main.cpp
+
+unix:!macx {
+QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
+}

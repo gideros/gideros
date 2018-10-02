@@ -191,7 +191,7 @@ unsigned int png::compress(const char *in, unsigned int inSize, char *out,
     dst = out;
 
     // Output the file header
-    static const char pngHead[] = {137, 80, 78, 71, 13, 10, 26, 10};
+    static const char pngHead[] = {(char)137, 80, 78, 71, 13, 10, 26, 10};
     for (unsigned int i = 0; i < sizeof(pngHead); ++i)
         *dst++ = pngHead[i];
 

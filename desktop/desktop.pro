@@ -43,6 +43,25 @@ macx {
     QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 }
 
+unix:!macx {
+    TARGET = "LinuxDesktopTemplate"
+
+    DEFINES += STRICT_LINUX
+    LIBS += \
+        -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx\
+        -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW\
+#        -lwsock32\
+#        -liphlpapi\
+        ../libgid/libgid.so \
+        ../libgvfs/libgvfs.so \
+        ../lua/liblua.so \
+        ../libgideros/libgideros.so \
+        ../libpystring/libpystring.so
+    LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
+    QMAKE_CXXFLAGS += -std=gnu++11
+    QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
+}
+
 LIBS += -lpthread
 
 TEMPLATE = app
@@ -71,16 +90,16 @@ INCLUDEPATH += \
     ../external/minizip-1.1/source \
     ../libraries/themes \
     ../libraries/constants \
-    ../player/sources \
-    ../player/headers \
-    ../player/forms
+    ../player/Sources \
+    ../player/Headers \
+    ../player/Forms
 
 SOURCES += \
     sources/main.cpp \
     sources/mainwindow.cpp \
-    ../player/sources/glcanvas.cpp \
-    ../player/sources/errordialog.cpp \
-#    ../player/sources/settingsdialog.cpp \
+    ../player/Sources/glcanvas.cpp \
+    ../player/Sources/errordialog.cpp \
+#    ../player/Sources/settingsdialog.cpp \
     $$files(../luabinding/*.cpp)	../luabinding/tlsf.c \
     $$files(../libnetwork/*.cpp) \
     $$files(../2dsg/*.cpp) \
@@ -102,15 +121,15 @@ SOURCES += \
 
 FORMS += \
     forms/mainwindow.ui \
-    ../player/forms/errordialog.ui \
-    ../player/forms/settingsdialog.ui \
+    ../player/Forms/errordialog.ui \
+    ../player/Forms/settingsdialog.ui \
 
 HEADERS += \
     headers/mainwindow.h \
-    ../player/headers/applicationwrapper.h \
-    ../player/headers/glcanvas.h \
-    ../player/headers/errordialog.h \
-#    ../player/headers/settingsdialog.h \
+    ../player/Headers/applicationwrapper.h \
+    ../player/Headers/glcanvas.h \
+    ../player/Headers/errordialog.h \
+#    ../player/Headers/settingsdialog.h \
     $$files(../libsound/*.h) \
     $$files(../2dsg/*.h) \
     $$files(../luabinding/*.h) \

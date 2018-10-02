@@ -78,3 +78,7 @@ macx {
 	LIBS += -framework CoreFoundation
 	LIBS += -framework IOKit
 }
+
+unix:!macx {
+	QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
+}

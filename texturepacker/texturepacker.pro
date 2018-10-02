@@ -24,6 +24,7 @@ TARGET = "GiderosTexturePacker"
 
 unix:!macx {
 TARGET = "GiderosTexturePacker"
+QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }
 
 win32 {

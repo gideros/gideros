@@ -6,7 +6,8 @@
  */
 
 #include "debugging.h"
-
+#include <string.h>
+#include <stdint.h>
 #define abs_index(L, i)		((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : \
 					lua_gettop(L) + (i) + 1)
 
