@@ -25,6 +25,14 @@ PreferencesDialog::~PreferencesDialog()
     delete ui;
 }
 
+void PreferencesDialog::updateEditors(const std::function<void (TextEdit*)> lambda) {
+    if (mdi_area != nullptr)
+        for (auto window : mdi_area->subWindowList()) {
+            TextEdit* te = qobject_cast<TextEdit*>(window);
+            if (te) lambda(te);
+        }
+}
+
 void PreferencesDialog::setupEditorPrefs()
 {
     QSettings settings;
@@ -32,6 +40,7 @@ void PreferencesDialog::setupEditorPrefs()
     connect(ui->preferencesTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
             this, SLOT(listSelected(QTreeWidgetItem*, int)));
 
+    // use QOverload to specify signature of overloaded method we want to use
     connect(ui->preferencesTreeWidget, QOverload<QTreeWidgetItem*, int>::of(&QTreeWidget::itemClicked), this,
             [this](QTreeWidgetItem* w_item, int item) {
                 (void) item;
@@ -46,18 +55,17 @@ void PreferencesDialog::setupEditorPrefs()
     connect(ui->tabSizeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this,
             [this](int new_value) {
                 this->settings.setValue(Keys::Prefs::tabSize, new_value);
-                if (this->current_editor != nullptr)
-                    this->current_editor->setTabWidth(new_value);
+                this->updateEditors([new_value](TextEdit* te) { te->setTabWidth(new_value);});
             }
     );
+
 
     ui->tabsVsSpacesComboBox->setCurrentIndex(settings.value(Keys::Prefs::tabsVsSpaces, 0).toInt());
 
     connect(ui->tabsVsSpacesComboBox, QOverload<int>::of(&QComboBox::activated), this,
             [this](int index) {
                 this->settings.setValue(Keys::Prefs::tabsVsSpaces, index);
-                if (this->current_editor != nullptr)
-                    this->current_editor->setUseTabs(index ? false : true);
+                this->updateEditors([index](TextEdit* te) { te->setUseTabs(index ? false : true);});
             }
     );
 
@@ -67,8 +75,7 @@ void PreferencesDialog::setupEditorPrefs()
     connect(ui->showIndentGuideComboBox, QOverload<int>::of(&QComboBox::activated), this,
             [this](int index) {
                 this->settings.setValue(Keys::Prefs::indentGuides, index);
-                if (this->current_editor != nullptr)
-                    this->current_editor->setIndentGuide(index);
+                this->updateEditors([index](TextEdit* te) { te->setIndentGuide(index);});
             }
     );
 
@@ -78,8 +85,7 @@ void PreferencesDialog::setupEditorPrefs()
     connect(ui->lineNumberingComboBox, QOverload<int>::of(&QComboBox::activated), this,
             [this](int show) {
                 this->settings.setValue(Keys::Prefs::showLineNumbers, show);
-                if (this->current_editor != nullptr)
-                    this->current_editor->setIndentGuide(show);
+                this->updateEditors([show](TextEdit* te) { te->setShowLineNumbers(show);});
             }
     );
 
@@ -89,8 +95,7 @@ void PreferencesDialog::setupEditorPrefs()
     connect(ui->backspaceUnindentsComboBox, QOverload<int>::of(&QComboBox::activated), this,
             [this](int use) {
                 this->settings.setValue(Keys::Prefs::backspaceUnindents, use);
-                if (this->current_editor != nullptr)
-                    this->current_editor->setBackspaceUnindents(use);
+                this->updateEditors([use](TextEdit* te) { te->setBackspaceUnindents(use);});
             }
     );
 
@@ -100,8 +105,7 @@ void PreferencesDialog::setupEditorPrefs()
     connect(ui->whitespaceVisibilityComboBox, QOverload<int>::of(&QComboBox::activated), this,
             [this](int mode) {
                 this->settings.setValue(Keys::Prefs::whitespaceVisibility, mode);
-                if (this->current_editor != nullptr)
-                    this->current_editor->setWhitespaceVisibility(mode);
+                this->updateEditors([mode](TextEdit* te) { te->setWhitespaceVisibility(mode);});
             }
     );
 }
