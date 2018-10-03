@@ -26,6 +26,10 @@ win32 {
 TARGET = "GiderosStudio"
 }
 
+debug_in_place{
+DESTDIR = ../Build.Win
+}
+
 macx {
 TARGET = "Gideros Studio"
 }
