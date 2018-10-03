@@ -230,10 +230,10 @@
        <item row="0" column="0">
         <widget class="QLabel" name="lineNumberingLabel">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string/>
          </property>
          <property name="whatsThis">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string/>
          </property>
          <property name="text">
           <string>Line numbering:</string>

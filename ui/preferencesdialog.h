@@ -2,6 +2,7 @@
 #include <QDialog>
 #include <QTreeWidgetItem>
 #include <QSettings>
+#include <mdiarea.h>
 #include <textedit.h>
 
 
@@ -17,7 +18,8 @@ public:
     explicit PreferencesDialog(QWidget *parent = nullptr);
     ~PreferencesDialog();
 
-    void setTextEdit(TextEdit* text_edit) { current_editor = text_edit; }
+    void setMdiArea(MdiArea* ma) { mdi_area = ma; }
+    void updateEditors(const std::function< void(TextEdit*) > lambda);
 
 private:
     // get init values for controls from settings and setup lambda slot callbacks
@@ -26,5 +28,5 @@ private:
     Ui::PreferencesDialog* ui;
     std::map<std::string, int> sections;
     QSettings settings;
-    TextEdit* current_editor;
+    MdiArea* mdi_area;
 };

@@ -3119,7 +3119,7 @@ void MainWindow::openPreferencesDialog()
 {
     PreferencesDialog dialog(this);
     TextEdit* text_edit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
-    dialog.setTextEdit(text_edit);
+    dialog.setMdiArea(mdiArea_);
     dialog.exec();
 }
 
