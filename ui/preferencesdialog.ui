@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Settings</string>
+   <string>Preferences</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
@@ -72,8 +72,8 @@
     <rect>
      <x>180</x>
      <y>20</y>
-     <width>441</width>
-     <height>211</height>
+     <width>421</width>
+     <height>241</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -83,10 +83,10 @@
     <widget class="QGroupBox" name="editorGroupBox">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>371</width>
-       <height>241</height>
+       <x>-10</x>
+       <y>-10</y>
+       <width>441</width>
+       <height>251</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -99,14 +99,14 @@
       <string/>
      </property>
      <property name="title">
-      <string>Editor</string>
+      <string/>
      </property>
      <widget class="QWidget" name="formLayoutWidget">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>30</x>
         <y>20</y>
-        <width>182</width>
+        <width>251</width>
         <height>111</height>
        </rect>
       </property>
@@ -217,82 +217,82 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="formLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>170</y>
+        <width>251</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lineNumberingLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Line numbering:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="lineNumberingComboBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;lt;html&amp;gt;&amp;lt;head/&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Takes effect with first file opened after a restart or all files have been closed.&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Hide</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Show</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="whitespaceVisibilityLabel">
+         <property name="text">
+          <string>Whitespace visibility</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="whitespaceVisibilityComboBox">
+         <item>
+          <property name="text">
+           <string>Invisible</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Visible</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Only after</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Only before</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="Keybindings"/>
-  </widget>
-  <widget class="QWidget" name="formLayoutWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>200</x>
-     <y>180</y>
-     <width>181</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout_2">
-    <item row="0" column="0">
-     <widget class="QLabel" name="lineNumberingLabel">
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="whatsThis">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Takes effect with first file opened after a restart or all files have been closed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="text">
-       <string>Line numbering:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QComboBox" name="lineNumberingComboBox">
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;lt;html&amp;gt;&amp;lt;head/&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Takes effect with first file opened after a restart or all files have been closed.&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <item>
-       <property name="text">
-        <string>Hide</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Show</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="whitespaceVisibilityLabel">
-      <property name="text">
-       <string>Whitespace visibility</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QComboBox" name="whitespaceVisibilityComboBox">
-      <item>
-       <property name="text">
-        <string>Invisible</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Visible</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Only after</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Only before</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-   </layout>
   </widget>
  </widget>
  <resources/>
