@@ -34,3 +34,7 @@ QMAKE_POST_LINK += install_name_tool -change libgid.1.dylib "@executable_path/..
 QMAKE_POST_LINK += install_name_tool -change libgideros.1.dylib "@executable_path/../Frameworks/libgideros.1.dylib" $(TARGET);
 QMAKE_POST_LINK += install_name_tool -change libgvfs.1.dylib "@executable_path/../Frameworks/libgvfs.1.dylib" $(TARGET);
 }
+
+unix:!macx {
+DEFINES += OPENAL_SUBDIR_AL
+}

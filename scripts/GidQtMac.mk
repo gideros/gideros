@@ -128,11 +128,11 @@ qt.player:
 	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
 	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
 	
-buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN))
+buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
 
-qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN))
+qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
 
-qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
+qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MAKE) clean; fi

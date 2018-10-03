@@ -1,5 +1,6 @@
 #include "gridbaglayout.h"
 #include "sprite.h"
+#include <climits>
 
 #define EMPIRICMULTIPLIER 	2
 #define MAXGRIDSIZE 		512

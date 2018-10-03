@@ -12,8 +12,9 @@ CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun
 PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine
 
-PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera steam threads
-PLUGINS_WINONLY=spout
+PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera threads
+PLUGINS_WINONLY=spout steam
+PLUGINS_MACONLY=steam
 PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
@@ -44,9 +45,14 @@ all: qtapp.install android.install winrt.install html5.install win32.install
 clean: qtapp.clean android.clean win32.clean html5.clean winrt.clean
 	rm -rf $(RELEASE)
 else
+UNAME_S := $(shell uname -s)
 CC=gcc
 CXX=g++
+ifeq ($(UNAME_S),Linux)
+RELEASE=$(ROOT)/Build.Linux
+else
 RELEASE=$(ROOT)/Build.Mac
+endif
 all: qtapp.install ios.install
 
 clean: qtapp.clean ios.clean
@@ -98,9 +104,13 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidAndroid.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidPkg.mk
 else
+ifeq ($(UNAME_S),Linux)
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtLinux.mk
+else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidiOS.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidMac.mk
+endif
 endif
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidHtml5.mk
 

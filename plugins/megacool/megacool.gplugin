@@ -1,0 +1,113 @@
+<plugin
+ name="Megacool"
+ description="Megacool gameplay GIFs">
+ <property name="scheme" type="string" title="Megacool Scheme" description="Your URL Scheme (optional)" default="YOUR_URL_SCHEME" />
+ <property name="identifier" type="string" title="Megacool App identifier" description="The short name for the app" default="" />
+ <property name="configandroid" type="string" title="Megacool App Config/Key Android" description="A long string that looks like a code!" default="" />
+ <property name="configios" type="string" title="Megacool App Config/Key iOS" description="A long string that looks like a code!" default="" />
+ 
+ <target name="AndroidStudio,APK">
+  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
+ 	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java/">
+		<replacelist wildcards="GMegaCool.java">
+			<replace orig="MEGACOOLKEY" by="[[[plugin.configandroid]]]" />
+		</replacelist>
+ 	</template>
+ 
+	<template name="Megacool gameplay amend gradle build" path="app" dest="app">
+		<replacelist wildcards="build.gradle">
+			<append>
+				<orig>//TAG-GRADLE-APPREPOS//</orig>								
+				<by>
+				maven { url 'https://maven.megacool.co/releases' }
+				</by>
+			</append>
+			<append>
+				<orig>//TAG-DEPENDENCIES//</orig>								
+				<by>
+				implementation 'co.megacool:megacool:3.3.5'
+				</by>
+			</append>
+		</replacelist>	
+	</template>
+	
+   	<template name="Megacool gameplay amend strings.xml" path="">
+        <replacelist wildcards="strings.xml">
+			<append>
+				<orig><![CDATA[<resources>]]></orig>
+				<by><![CDATA[
+					<string name="megacool_scheme" translatable="false">[[[plugin.scheme]]]</string>
+					<string name="megacool_app_identifier" translatable="false">/[[[plugin.identifier]]]</string>
+				]]></by>
+			</append>
+	    </replacelist>
+   	</template>
+	
+   	<template name="Megacool gameplay amend manifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+           	<append>
+           		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+           		<by><![CDATA[
+					<activity android:name="com.megacool.MyLinkClickedActivity">
+					  <!-- Normal https:// links -->
+					  <intent-filter android:autoVerify="true">
+						<action android:name="android.intent.action.VIEW"/>
+						<category android:name="android.intent.category.DEFAULT"/>
+						<category android:name="android.intent.category.BROWSABLE"/>
+						<data
+						  android:host="@string/megacool_host"
+						  android:pathPrefix="@string/megacool_app_identifier"
+						  android:scheme="https"/>
+					  </intent-filter>
+					  <!-- Links with custom scheme where https doesn't work -->
+					  <intent-filter>
+						<action android:name="android.intent.action.VIEW"/>
+						<category android:name="android.intent.category.DEFAULT"/>
+						<category android:name="android.intent.category.BROWSABLE"/>
+						<data android:scheme="@string/megacool_scheme"/>
+					  </intent-filter>
+					</activity>
+					<!-- Ensure we receive referrals from the Play Store -->
+					<receiver android:name="co.megacool.megacool.ReferralReceiver">
+						<intent-filter>
+							<action android:name="com.android.vending.INSTALL_REFERRER"/>
+						</intent-filter>
+					</receiver>
+				]]></by> 
+    	    </append>
+	    </replacelist>	
+ 	</template>
+	
+	<template name="Megacool gameplay amend activity" path="">
+		<replacelist wildcards="[[[project.namews]]]Activity.java">
+				<append orig="//GIDEROS-STATIC-INIT//">
+					<by>
+					System.loadLibrary("gmegacool");
+					</by>
+				</append>				
+				<prepend orig="//GIDEROS-EXTERNAL-CLASS//">
+					<by>"com.giderosmobile.android.plugins.megacool.GMegaCool",</by>
+				</prepend>
+            <append orig="//GIDEROS-ACTIVITY-PREDRAW//" by="com.giderosmobile.android.plugins.megacool.GMegaCool.frameEnter();"/>
+            <append orig="//GIDEROS-ACTIVITY-POSTDRAW//" by="com.giderosmobile.android.plugins.megacool.GMegaCool.frameLeave();"/>
+		</replacelist>
+	</template>
+	
+	    <lua>
+    	local ap=require("Tools/export_android")
+    	ap.minSdk(18)
+    	</lua>
+	
+ </target>
+<target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("MegaCool",
+	"[[[sys.pluginDir]]]/source/iOS/Megacool",
+	{ "gmegacool.mm", "megacoolbinder.cpp" },
+	true,true)
+	]]></lua>
+ </target>
+ 
+ </plugin>
+ 

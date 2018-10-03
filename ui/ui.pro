@@ -231,7 +231,9 @@ macx {
 }
 
 unix:!macx {
-   LIBS += -lqt5scintilla2
+   LIBS += -lqscintilla2_qt5
+   #LIBS += -lqt5scintilla2 #For PI ?
+   QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }
 
 RESOURCES += \

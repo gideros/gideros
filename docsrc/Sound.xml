@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="Sound" page="Sound" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
-The `Sound` class lets you load and play WAV, MP3, MOD, XM, S3M and IT sound files.<br />
+The `Sound` class lets you load and play WAV, MP3, MOD, XM, S3M and IT sound files. You can also use OGG files using the "Ogg" plugin.<br />
 Control of the playing sound is performed through the `SoundChannel`<br />
 object.<br />
 <br />

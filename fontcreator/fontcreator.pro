@@ -23,6 +23,7 @@ TARGET = "Gideros Font Creator"
 
 unix:!macx {
 TARGET = "GiderosFontCreator"
+QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }
 
 win32 {

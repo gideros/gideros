@@ -561,12 +561,10 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
             break;*/
 
 		if (!handle->videobuf_ready || !audiobuf_ready) {
-            queued=false;
 			/* no data yet for somebody.  Grab another page */
-			buffer_data(handle->file, &handle->oy);
+            queued=(buffer_data(handle->file, &handle->oy)>0);
 			while (ogg_sync_pageout(&handle->oy, &handle->og) > 0) {
 				queue_page(handle, &handle->og);
-                queued=true;
 			}
 		}
 

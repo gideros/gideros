@@ -85,6 +85,10 @@ public:
             sources[i]->removeEventListeners(this);
 
         removeEventListeners();
+        for (std::set<EventDispatcher*>::iterator iter = targets_.begin(); iter != targets_.end(); ++iter)
+            (*iter)->removeSource(this);
+
+        targets_.clear();
 
         allEventDispatchers_.erase(this);
 	}
@@ -178,11 +182,6 @@ public:
                     slots[i] = NULL;
                 }
 		}
-
-        for (std::set<EventDispatcher*>::iterator iter = targets_.begin(); iter != targets_.end(); ++iter)
-            (*iter)->removeSource(this);
-
-        targets_.clear();
 
         eventListenersChanged();
 	}

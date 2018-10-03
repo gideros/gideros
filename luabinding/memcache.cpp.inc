@@ -26,12 +26,11 @@ public:
  virtual size_t MasterGetSize(void *Memory)=0;
 };
 
-typedef uint32_t ulong;
 void MemCache::Reset()
 {
  Bucket=(void ***) MasterAllocateMemory(sizeof(void **)*16);
- BucketPtr=(ulong *) MasterAllocateMemory(sizeof(ulong)*16);
- memset(BucketPtr,0,sizeof(ulong)*16);
+ BucketPtr=(uint32_t *) MasterAllocateMemory(sizeof(uint32_t)*16);
+ memset(BucketPtr,0,sizeof(uint32_t)*16);
  int i;
  for (i=0;i<16;i++)
  {
