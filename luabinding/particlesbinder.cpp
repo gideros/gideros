@@ -100,19 +100,12 @@ int ParticlesBinder::setParticleSpeed(lua_State *L)
     if (i < 0 || i >= mesh->getParticleCount())
         return luaL_error(L, "The supplied index is out of bounds.");
 
-    float ivc,ivs;
-    mesh->getDecay(i,NULL,&ivc,&ivs,NULL);
-
     float vx=luaL_optnumber(L,3,0);
     float vy=luaL_optnumber(L,4,0);
     float va=luaL_optnumber(L,5,0);
-    float decay=luaL_optnumber(L,6,1.0);
     float vs=luaL_optnumber(L,6,0.0);
-    float dva=luaL_optnumber(L,6,decay);
-    float dvs=luaL_optnumber(L,6,ivs);
 
     mesh->setSpeed(i, vx,vy,vs,va);
-    mesh->setDecay(i,decay,ivc,dvs,dva);
 
     return 0;
 }
