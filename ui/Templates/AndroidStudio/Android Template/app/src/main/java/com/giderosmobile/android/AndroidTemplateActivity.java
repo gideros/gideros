@@ -27,9 +27,12 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.text.InputType;
 import android.net.Uri;
+import android.app.ActivityManager;
+import android.content.pm.ConfigurationInfo;
 
 import com.giderosmobile.android.player.*;
 import com.giderosmobile.androidtemplate.R;
+import com.giderosmobile.android.GiderosSettings;
 
 //GIDEROS-ACTIVITY-IMPORT//
 
@@ -66,6 +69,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		super.onCreate(savedInstanceState);
 				
         mGLView = new GiderosGLSurfaceView(this);
+        GiderosSettings.mainView=mGLView;
 		setContentView(mGLView);
 		mGLView.setOnTouchListener(this);
         
@@ -337,7 +341,18 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	public GiderosGLSurfaceView(Context context)
 	{
 		super(context);
-		setEGLContextClientVersion(2);
+		
+		int result;
+		ActivityManager activityManager =
+				(ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		ConfigurationInfo configInfo = activityManager.getDeviceConfigurationInfo();
+		if (configInfo.reqGlEsVersion != ConfigurationInfo.GL_ES_VERSION_UNDEFINED) {
+			result= configInfo.reqGlEsVersion;
+		} else {
+			result= 1 << 16; // Lack of property means OpenGL ES version 1
+		}
+		
+		setEGLContextClientVersion(result>=0x30000?3:2);
 		setEGLConfigChooser(new GiderosConfigChooser());
 		mRenderer = new GiderosRenderer();
 		setRenderer(mRenderer);

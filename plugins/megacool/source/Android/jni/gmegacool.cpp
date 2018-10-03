@@ -1,6 +1,8 @@
 #include <jni.h>
 #include <glog.h>
 #include "megacoolbinder.h"
+#define GIDEROS_VERSION_ONLY
+#include "gideros.h"
 
 extern "C" {
 JavaVM *g_getJavaVM();
@@ -8,19 +10,6 @@ JNIEnv *g_getJNIEnv();
 }
 
 static jclass cls_;
-
-int isConsole()
-	{
-	}
-	
-	std::string getStore()
-	{
-		JNIEnv *env = g_getJNIEnv();
-		jstring jstr = (jstring)env->CallStaticObjectMethod(cls_, env->GetStaticMethodID(cls_, "getStore", "()Ljava/lang/String;"));
-		std::string ret = getString(env, jstr);
-		env->DeleteLocalRef(jstr);
-		return ret;
-	}
 
 void gmegacool_Init()
 {
@@ -41,7 +30,7 @@ bool gmegacool_Share(const char *fallback)
 {
 	JNIEnv *env = g_getJNIEnv();
 	jstring jfallback = env->NewStringUTF(fallback);
-	bool ret=env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "share", "(Ljava/lang/String;)Z",jfallback));
+	bool ret=env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "share", "(Ljava/lang/String;)Z"),jfallback);
 	env->DeleteLocalRef(jfallback);
 	return ret;
 }
@@ -57,4 +46,19 @@ void gmegacool_StopRecording()
 	JNIEnv *env = g_getJNIEnv();
 	env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "stopRecording", "()V"));
 }
+
+extern "C" {
+
+void Java_com_giderosmobile_android_plugins_megacool_GMegaCool_onEvent(JNIEnv *env, jclass clz, jint event)
+{
+	gmegacool_Event(event);
+}
+
+jstring Java_com_giderosmobile_android_plugins_megacool_GMegaCool_getGiderosVersion(JNIEnv *env, jclass clz)
+{
+	return env->NewStringUTF(GIDEROS_VERSION); // C style string to Java String
+}
+
+}
+
 

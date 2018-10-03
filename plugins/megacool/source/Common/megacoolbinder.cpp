@@ -33,7 +33,7 @@ static int setCallback(lua_State *L)
 	if (cbRef!=LUA_NOREF)
 		lua_unref(L,cbRef);
 	lua_pushvalue(L,1);
-	cbRef=lua_ref(L,1)
+	cbRef=lua_ref(L,1);
 	lua_pop(L,1);
     return 0;
 }
@@ -85,7 +85,7 @@ static void callback_s(int type, void *event, void *udata)
 	if (cbRef!=LUA_NOREF) {
 		lua_getref(L,cbRef);
 		lua_pushinteger(L,type);
-		lua_call(L,1,0,0);
+		lua_call(L,1,0);
 	}
 }
 

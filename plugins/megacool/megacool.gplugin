@@ -3,22 +3,29 @@
  description="Megacool gameplay GIFs">
  <property name="scheme" type="string" title="Megacool Scheme" description="Your URL Scheme (optional)" default="YOUR_URL_SCHEME" />
  <property name="identifier" type="string" title="Megacool App identifier" description="The short name for the app" default="" />
- <property name="config" type="string" title="Megacool App Config" description="A long string that looks like a code!" default="" />
+ <property name="configandroid" type="string" title="Megacool App Config/Key Android" description="A long string that looks like a code!" default="" />
+ <property name="configios" type="string" title="Megacool App Config/Key iOS" description="A long string that looks like a code!" default="" />
  
  <target name="AndroidStudio,APK">
+  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
+ 	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java/">
+		<replacelist wildcards="GMegaCool.java">
+			<replace orig="MEGACOOLKEY" by="[[[plugin.configandroid]]]" />
+		</replacelist>
+ 	</template>
  
 	<template name="Megacool gameplay amend gradle build" path="app" dest="app">
 		<replacelist wildcards="build.gradle">
 			<append>
-				<orig>url "https://maven.google.com"</orig>								
+				<orig>//TAG-GRADLE-APPREPOS//</orig>								
 				<by>
-				url 'https://maven.megacool.co/releases'
+				maven { url 'https://maven.megacool.co/releases' }
 				</by>
 			</append>
 			<append>
 				<orig>//TAG-DEPENDENCIES//</orig>								
 				<by>
-				implementation 'co.megacool:megacool:3.3.2'
+				implementation 'co.megacool:megacool:3.3.5'
 				</by>
 			</append>
 		</replacelist>	
@@ -73,12 +80,16 @@
 	
 	<template name="Megacool gameplay amend activity" path="">
 		<replacelist wildcards="[[[project.namews]]]Activity.java">
-			<append>
-				<orig>//GIDEROS-ACTIVITY-IMPORT//</orig>
-				<by>
-					import co.megacool.megacool.Megacool;
-				</by>
-			</append>
+				<append orig="//GIDEROS-STATIC-INIT//">
+					<by>
+					System.loadLibrary("gmegacool");
+					</by>
+				</append>				
+				<prepend orig="//GIDEROS-EXTERNAL-CLASS//">
+					<by>"com.giderosmobile.android.plugins.megacool.GMegaCool",</by>
+				</prepend>
+            <append orig="//GIDEROS-ACTIVITY-PREDRAW//" by="com.giderosmobile.android.plugins.megacool.GMegaCool.frameEnter();"/>
+            <append orig="//GIDEROS-ACTIVITY-POSTDRAW//" by="com.giderosmobile.android.plugins.megacool.GMegaCool.frameLeave();"/>
 		</replacelist>
 	</template>
 	
@@ -88,5 +99,15 @@
     	</lua>
 	
  </target>
+<target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("MegaCool",
+	"[[[sys.pluginDir]]]/source/iOS/Megacool",
+	{ "gmegacool.mm", "megacoolbinder.cpp" },
+	true,true)
+	]]></lua>
+ </target>
+ 
  </plugin>
  
