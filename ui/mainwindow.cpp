@@ -17,6 +17,7 @@
 #include <QTextEdit>
 #include "newprojectdialog.h"
 #include <QDir>
+#include <QDirIterator>
 #include <QMessageBox>
 #include <QTextStream>
 #include <QFileDialog>
@@ -2827,14 +2828,17 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
 		QDir pf=path.dir();
 		if (pf.cd("luaplugin"))
 		{
-			QStringList filters;
-			filters << "*.lua";
-			pf.setNameFilters(filters);
-			QFileInfoList files = pf.entryInfoList(
-					QDir::Files | QDir::Hidden);
-			for (int i = 0; i < files.count(); i++)
-				result.push_back(std::make_pair("_LuaPlugins_/"+files[i].fileName(), files[i].filePath()));
-		}
+            QDir luaplugin_dir = pf.path();
+            int root_length = luaplugin_dir.path().length();
+
+            // get all lua files in luaplugin and any subdirectory of luaplugin
+            QDirIterator dir_iter(pf.path(), QStringList() << "*.lua", QDir::Files, QDirIterator::Subdirectories);
+            while (dir_iter.hasNext()) {
+                QDir file = dir_iter.next();
+                QString rel_path = file.path().mid(root_length + 1, file.path().length());
+                result.push_back(std::make_pair("_LuaPlugins_/" + rel_path, file.path()));
+            }
+        }
 	}
 	if (clientIsWeb_)
 	{
