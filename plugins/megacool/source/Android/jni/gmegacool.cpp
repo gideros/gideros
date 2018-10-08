@@ -47,6 +47,15 @@ void gmegacool_StopRecording()
 	env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "stopRecording", "()V"));
 }
 
+bool gmegacool_SetSharingText(const char *sharingText)
+{
+	JNIEnv *env = g_getJNIEnv();
+	jstring jsharingText = env->NewStringUTF(sharingText);
+	bool ret=env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "setSharingText", "(Ljava/lang/String;)Z"),jsharingText);
+	env->DeleteLocalRef(jsharingText);
+	return ret;
+}
+
 extern "C" {
 
 void Java_com_giderosmobile_android_plugins_megacool_GMegaCool_onEvent(JNIEnv *env, jclass clz, jint event)

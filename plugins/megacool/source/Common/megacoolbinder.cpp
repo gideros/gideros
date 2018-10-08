@@ -27,6 +27,13 @@ static int stopRecording(lua_State *L)
     return 0;
 }
 
+static int setSharingText(lua_State *L)
+{
+	const char *sharingText=luaL_optstring(L,1,NULL);
+    lua_pushboolean(L, gmegacool_SetSharingText(sharingText));
+    return 1;
+}
+
 static int cbRef=LUA_NOREF;
 static int setCallback(lua_State *L)
 {
@@ -48,6 +55,8 @@ static int loader(lua_State* L)
     lua_setfield(L, -2, "stopRecording");
     lua_pushcfunction(L, share);
     lua_setfield(L, -2, "share");
+    lua_pushcfunction(L, setSharingText);
+    lua_setfield(L, -2, "setSharingText");
     lua_pushcfunction(L, setCallback);
     lua_setfield(L, -2, "setCallback");
 
@@ -96,5 +105,5 @@ void gmegacool_Event(int type)
 
 
 
-REGISTER_PLUGIN("Megacool", "1.0")
+REGISTER_PLUGIN("Megacool", "1.1")
 
