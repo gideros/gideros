@@ -275,6 +275,11 @@ std::vector<cameraplugin::CameraDesc> cameraplugin::availableDevices()
 	return cams;
 }
 
+bool cameraplugin::isAvailable() {
+    if (!s_gcamera) return false;
+    return s_gcamera->isCameraAvailable();
+}
+
 void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *device) {
 	int o=0;
 	switch (orientation)

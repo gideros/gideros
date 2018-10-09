@@ -75,15 +75,21 @@ static int start(lua_State* L)
 
 static int stop(lua_State* L)
 {
-	G_UNUSED(L);
-	cameraplugin::stop();
+    G_UNUSED(L);
+    cameraplugin::stop();
+    
+    if (cameraplugin::cameraTexture)
+    {
+        cameraplugin::cameraTexture->unref();
+        cameraplugin::cameraTexture=NULL;
+    }
+    return 0;
+}
 
-	if (cameraplugin::cameraTexture)
-	{
-		cameraplugin::cameraTexture->unref();
-		cameraplugin::cameraTexture=NULL;
-	}
-	return 0;
+static int isAvailable(lua_State* L)
+{
+    lua_pushboolean(L,cameraplugin::isAvailable());
+    return 1;
 }
 
 
@@ -92,7 +98,8 @@ static int loader(lua_State* L)
 	const luaL_Reg functionlist[] = {
 		{"start", start},
 		{"stop", stop},
-		{"availableDevices", availableDevices},
+        {"availableDevices", availableDevices},
+        {"isAvailable", isAvailable},
 		{NULL, NULL},
 	};
 

@@ -374,6 +374,11 @@ void cameraplugin::deinit()
     }
 }
 
+bool cameraplugin::isAvailable()
+{
+    return true;
+}
+
 extern "C" void cameraplugin_render()
 {
     if (ctrl)

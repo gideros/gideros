@@ -24,6 +24,7 @@ namespace cameraplugin {
 	void start(Orientation orientation,int *camwidth,int *camheight,const char *device);
 	void stop();
 	void deinit();
+    bool isAvailable();
 }
 
 #endif
