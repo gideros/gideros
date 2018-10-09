@@ -1,4 +1,5 @@
 #include <QDir>
+#include <QDirIterator>
 #include <QSet>
 #include <QString>
 #include <QTextStream>
@@ -19,6 +20,15 @@
 #include "ExportXml.h"
 #include "ExportLua.h"
 #include <QCryptographicHash>
+
+
+static void addEntryToListIfNotInList(std::vector<QString>& list, const QString& entry)
+{
+    bool entry_in_list = std::find(list.begin(), list.end(), entry) != list.end();
+    if ( !entry_in_list ) {
+       list.push_back(entry);
+    }
+}
 
 static bool readProjectFile(const QString& fileName,
                             ProjectProperties &properties,
@@ -70,10 +80,11 @@ static bool readProjectFile(const QString& fileName,
         std::vector<std::pair<QString, QString> > dependencies_;
 
     	//Add lua plugins
+        const char* lua_plugins_path = "_LuaPlugins_/";
     	QMap<QString, QString> plugins;
     	QMap<QString, QString> allPlugins=ProjectProperties::availablePlugins();
-    	bool hasLuaPlugin=false;
-    	for (QSet<ProjectProperties::Plugin>::const_iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+        bool hasLuaPlugin = false;
+        for (QSet<ProjectProperties::Plugin>::const_iterator it=properties_.plugins.begin(); it!=properties_.plugins.end(); it++)
     	{
     		ProjectProperties::Plugin p=*it;
     		if (p.enabled)
@@ -85,30 +96,38 @@ static bool readProjectFile(const QString& fileName,
     	    		QDir pf=path.dir();
     	    		if (pf.cd("luaplugin"))
     	    		{
-    	    			QStringList filters;
-    	    			filters << "*.lua";
-    	    			pf.setNameFilters(filters);
-    	    			QFileInfoList files = pf.entryInfoList(
-    	    					QDir::Files | QDir::Hidden);
-    	    			hasLuaPlugin=true;
-    	    			for (int i = 0; i < files.count(); i++)
-    	    			{
-    	    				fileList_.push_back(std::make_pair("_LuaPlugins_/"+files[i].fileName(), files[i].filePath()));
-    	    				dependencyGraph_.addCode(files[i].filePath(),true);
-    	    			}
-    	    		}
+                        QDir luaplugin_dir = pf.path();
+                        int root_length = luaplugin_dir.path().length();
 
+                        // collect all lua files in luaplugin and any subdirectory of luaplugin
+                        QDirIterator dir_iter(pf.path(), QStringList() << "*.lua", QDir::Files, QDirIterator::Subdirectories);
+                        while (dir_iter.hasNext()) {
+                            hasLuaPlugin = true;
+                            QDir file = dir_iter.next();
+                            QString filename = file.path().mid(file.path().lastIndexOf("/") + 1);
+                            // 'subtract' luaplugin root path from this path
+                            QString rel_path_and_filename = file.path().mid(root_length + 1, file.path().length());
+                            QString just_rel_path = rel_path_and_filename.mid(0, rel_path_and_filename.lastIndexOf("/") + 1);
+
+                            addEntryToListIfNotInList(folderList, lua_plugins_path + just_rel_path);
+                            fileList_.push_back(std::make_pair(lua_plugins_path + rel_path_and_filename, file.path()));
+                            dependencyGraph_.addCode(file.path(), true);
+                        }
+    	    		}
     			}
     		}
     	}
         if ((ctx.deviceFamily == e_Html5)&&properties_.html5_fbinstant) {
 			QFileInfo f=QFileInfo("Tools/FBInstant.lua");
-			hasLuaPlugin=true;
-			fileList_.push_back(std::make_pair("_LuaPlugins_/FBInstant.lua", f.absoluteFilePath()));
+            fileList_.push_back(std::make_pair((lua_plugins_path + static_cast<QString>("FBInstant.lua")),
+                                               f.absoluteFilePath()));
 			dependencyGraph_.addCode(f.absoluteFilePath(),true);
+            hasLuaPlugin = true;
  	    }
-    	if (hasLuaPlugin)
-            folderList.push_back("_LuaPlugins_/");
+
+        if (hasLuaPlugin)
+            addEntryToListIfNotInList(folderList, lua_plugins_path);
+
         std::stack<QDomNode> stack;
         stack.push(doc.documentElement());
 
