@@ -2,7 +2,18 @@
 #include "gideros.h"
 #include <cstdlib>
 #include <chrono>
+#include "lauxlib.h"
 
+
+extern "C" {
+  LUALIB_API int luaopen_lfs(lua_State *L);
+  LUALIB_API int luaopen_socket_core(lua_State *L);
+  LUALIB_API int luaopen_mime_core(lua_State *L);
+  LUALIB_API int luaopen_cjson(lua_State *L);
+  LUALIB_API int luaopen_cjson_safe(lua_State *L);
+}
+
+static void hook(lua_State* L, lua_Debug* ar);
 
 std::string LuaThread::class_name = "Thread";
 
@@ -14,10 +25,12 @@ LuaThread::LuaThread(lua_State* main_lua_state) :
     m_main_state(main_lua_state),
     m_termination_requested(false),
     m_thread_status(LuaThread::Status::kNeedFunction),
-    m_resume(false)
+    m_resume(false),
+    m_thread_timed_lua_hook(hook)
 {
     // initialize our thread's Lua state
     m_thread_state = lua_newstate(LuaThread::alloc, nullptr);
+    m_thread_timed_lua_hook.setLua(m_thread_state);
     luaL_openlibs(m_thread_state);
 
     // copy path and cpath to thread state, for require
@@ -52,13 +65,34 @@ LuaThread::LuaThread(lua_State* main_lua_state) :
     lua_pushcfunction(m_thread_state, LuaThread::lua_thread_yield);
     lua_setfield(m_thread_state, -2, "yield");
     lua_setglobal(m_thread_state, "Thread");
+
+    lua_getglobal(m_thread_state, "package");
+    lua_getfield(m_thread_state, -1, "preload");
+
+    lua_pushcfunction(m_thread_state, luaopen_lfs);
+    lua_setfield(m_thread_state, -2, "lfs");
+
+    lua_pushcfunction(m_thread_state, luaopen_socket_core);
+    lua_setfield(m_thread_state, -2, "socket.core");
+    lua_pushcfunction(m_thread_state, luaopen_mime_core);
+    lua_setfield(m_thread_state, -2, "mime.core");
+
+    lua_pushcfunction(m_thread_state, luaopen_cjson);
+    lua_setfield(m_thread_state, -2, "json");
+
+    lua_pushcfunction(m_thread_state, luaopen_cjson_safe);
+    lua_setfield(m_thread_state, -2, "json.safe");
+
+    lua_pop(m_thread_state, 2);
+
+    register_zlib(m_thread_state);
 }
 
 LuaThread::~LuaThread()
 {
     // m_termination_requested set in lua_destroy - wait enough time for
     // lua_hook to call hook function to check for it and yield if set to
-    // exit thread
+    // gracefully exit thread
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     lua_close(m_transfer_state);
     lua_close(m_thread_state);
@@ -80,7 +114,7 @@ int LuaThread::lua_thread_sleepFor(lua_State* L)
 int LuaThread::lua_thread_shouldTerminate(lua_State* L)
 {
     lua_getglobal(L, k_this);
-    LuaThread* instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
+    auto instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
     lua_pop(L, 1);
     lua_pushboolean(L, instance->m_termination_requested);
     return 1;
@@ -89,7 +123,7 @@ int LuaThread::lua_thread_shouldTerminate(lua_State* L)
 int LuaThread::lua_thread_sendData(lua_State* L)
 {
     lua_getglobal(L, k_this);
-    LuaThread* instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
+    auto instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
     lua_pop(L, 1);
 
     instance->m_mutex.lock();
@@ -101,7 +135,7 @@ int LuaThread::lua_thread_sendData(lua_State* L)
 int LuaThread::lua_thread_yield(lua_State* L)
 {
     lua_getglobal(L, k_this);
-    LuaThread* instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
+    auto instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
     lua_pop(L, 1);
 
     instance->m_thread_status = LuaThread::Status::kSuspended;
@@ -125,7 +159,7 @@ int LuaThread::lua_thread_yield(lua_State* L)
 
 int LuaThread::lua_requestTermination(lua_State* L)
 {
-    LuaThread* instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     instance->m_termination_requested = true;
     return 0;
 }
@@ -139,19 +173,22 @@ static void hook(lua_State* L, lua_Debug* ar)
 {
     (void)ar;
     lua_getglobal(L, k_this);
-    LuaThread* instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
+    auto instance = static_cast<LuaThread*>(lua_touserdata(L, -1));
     lua_pop(L, 1);
-    if (instance->hasTerminationBeenRequested())
+    if (instance->hasTerminationBeenRequested()) {
+        instance->m_thread_timed_lua_hook.stop();
         lua_yield(L, 0);
+    }
 
-    // else continue executing script
+    // always cancel hook, to be set again from ThreadTimesLuaHook instance
+    // set MASK to 0 to disable hook
+    lua_sethook(L, hook, 0, 0);
+
+    // continue executing script / fall out of pcall
 }
 
-void LuaThread::worker(std::shared_ptr<std::promise<int>> promise)
+void LuaThread::worker(const std::shared_ptr<std::promise<int>>& promise)
 {
-    // call hook every X instructions so we can exit automatically if
-    // m_termination_requested is true
-    lua_sethook(m_thread_state, hook, LUA_MASKCOUNT, 500);
     if (lua_pcall(m_thread_state, lua_gettop(m_thread_state) - 1, LUA_MULTRET, 0)) {
         lua_pushstring(m_thread_state, k_runtime_error);
         lua_insert(m_thread_state, -lua_gettop(m_thread_state));
@@ -183,6 +220,8 @@ int LuaThread::execute(lua_State* L)
     auto sh = std::make_shared<std::promise<int>>(std::move(m_promise));
     std::thread m_thread(&LuaThread::worker, this, sh);
     m_thread_status = LuaThread::Status::kRunning;
+    m_thread_timed_lua_hook.start();
+
     m_thread.detach();
 
     lua_pushboolean(L, true);
@@ -193,16 +232,17 @@ int LuaThread::execute(lua_State* L)
 
 int LuaThread::lua_execute(lua_State* L)
 {
-    LuaThread* instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     lua_remove(L, 1);
     return instance->execute(L);
 }
 
 int LuaThread::lua_resume(lua_State* L)
 {
-    LuaThread* instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     lua_remove(L, 1);
     if (instance->m_thread_status != LuaThread::Status::kSuspended) {
+        lua_settop(L, 1); // discard any arguments
         lua_pushboolean(L, false);
         lua_pushstring(L, "Warning: thread not suspended");
         return 2;
@@ -244,7 +284,7 @@ int LuaThread::lua_resume(lua_State* L)
 
 int LuaThread::lua_status(lua_State* L)
 {
-    LuaThread* instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     lua_remove(L, 1);
 
     switch (static_cast<LuaThread::Status>(instance->m_thread_status)) {
@@ -293,7 +333,7 @@ int LuaThread::setFunction(lua_State* L)
 
 int LuaThread::lua_setFunction(lua_State* L)
 {
-    LuaThread* instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     lua_remove(L, 1);
     return instance->setFunction(L);
 }
@@ -326,7 +366,7 @@ int LuaThread::fetchData(lua_State* L)
 
 int LuaThread::lua_fetchData(lua_State* L)
 {
-    LuaThread* instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     lua_remove(L, 1);
     return instance->fetchData(L);
 }
@@ -363,7 +403,7 @@ int LuaThread::getResult(lua_State* L)
         m_thread_status = LuaThread::Status::kComplete;
 
         // check for flag we pushed onto thread stack if there was a pcall error...
-        if (lua_gettop(L) >= 2 && strcmp(lua_tostring(L, 2), k_runtime_error) == 0)
+        if (lua_gettop(L) >= 2 && lua_isstring(L, 2) && strcmp(lua_tostring(L, 2), k_runtime_error) == 0)
             lua_error(L); // ... and throw error, exiting with details in error message
     } else {
         lua_pushboolean(L, false);
@@ -375,22 +415,25 @@ int LuaThread::getResult(lua_State* L)
 
 int LuaThread::lua_getResult(lua_State* L)
 {
-    LuaThread* instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     lua_remove(L, 1);
     return instance->getResult(L);
 }
 
 int LuaThread::lua_create(lua_State *L)
 {
-    LuaThread* instance = new LuaThread(L);
+    auto instance = new LuaThread(L);
     g_pushInstance(L, class_name.c_str(), instance);
     return 1;
 }
 
 int LuaThread::lua_destroy(lua_State *L)
 {
-    LuaThread *instance = *static_cast<LuaThread**>(lua_touserdata(L, 1));
+    auto instance = *static_cast<LuaThread**>(lua_touserdata(L, 1));
     instance->m_termination_requested = true;
+    instance->m_thread_timed_lua_hook.stop();
+    // patience, Rodney... patience
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     delete instance;
     return 0;
 }
@@ -407,9 +450,9 @@ void* LuaThread::alloc(void *ud, void *ptr, size_t osize, size_t nsize)
           free(ptr);
     }
     else if (ptr == nullptr)
-        ret=malloc(nsize);
+        ret = malloc(nsize);
     else
-        ret=realloc(ptr, nsize);
+        ret = realloc(ptr, nsize);
 
     return ret;
 }

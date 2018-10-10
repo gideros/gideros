@@ -14,7 +14,9 @@
 #include <string>
 #include <future>
 #include "StateToState.h"
+#include "threadtimedluahook.h"
 
+void register_zlib(lua_State *L);
 
 class LuaThread
 {
@@ -33,7 +35,7 @@ class LuaThread
     ~LuaThread();
 
     // worker thread that pcalls the supplied function in our Lua thread state
-    void worker(std::shared_ptr<std::promise<int>> promise);
+    void worker(const std::shared_ptr<std::promise<int> > &promise);
 
     /*    (lua_) functions that can be called from main Gideros Lua state    */
 
@@ -95,10 +97,10 @@ class LuaThread
     // for thread yield and resume
     std::condition_variable m_cv;
     bool m_resume;
-
     std::mutex m_mutex;
 
   public:
+    ThreadTimedLuaHook m_thread_timed_lua_hook;
     static void* alloc(void *ud, void *ptr, size_t osize, size_t nsize);
     static int lua_create(lua_State *L);
     static int lua_destroy(lua_State *L);

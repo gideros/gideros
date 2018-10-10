@@ -15,18 +15,41 @@
         $(MSBuildThisFileDirectory);
         $(MSBuildThisFileDirectory)..\..\..\..\..\..\lua\src;
         $(MSBuildThisFileDirectory)..\..\..\..\..\..\Sdk\include;
+        $(MSBuildThisFileDirectory)..\..\..\..\..\..\libgid/external/zlib-1.2.8;
       </AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luathread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\StateToState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/strbuf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/fpconv.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luathread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\StateToState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\threadtimedluahook.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding/binder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding/zlibbinder.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\lfs\source\lfs.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\auxiliar.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\buffer.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\except.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\inet.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\io.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\luasocket.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\options.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\select.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\tcp.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\timeout.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\udp.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\mime.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket/source/wsocket.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/strbuf.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/fpconv.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/lua_cjson.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
