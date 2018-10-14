@@ -18,7 +18,7 @@ LOCAL_SRC_FILES         := ../../../../Sdk/lib/android/$(TARGET_ARCH_ABI)/libgid
 
 include $(PREBUILT_SHARED_LIBRARY)
 
-###
+####
 
 include $(CLEAR_VARS)
 
@@ -103,6 +103,8 @@ LOCAL_SRC_FILES += \
 USE_NEON:=
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 USE_NEON:=y
+# patch to make work until we can figure out what's going wrong including neon instructions. :(
+USE_NEON:=n
 endif
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 USE_NEON:=n
