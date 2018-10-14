@@ -111,7 +111,7 @@ ifeq ($(USE_NEON),y)
 LOCAL_SRC_FILES += \
 	../liquidfun/Box2D/Box2D/Particle/b2ParticleAssembly.cpp \
 	../liquidfun/Box2D/Box2D/Particle/b2ParticleAssembly.neon.s
-LOCAL_CFLAGS   += -DLIQUIDFUN_SIMD_NEON -mfpu=neon
+LOCAL_CFLAGS += -DLIQUIDFUN_SIMD_NEON -mfloat-abi=softfp -mfpu=neon
 endif
 
 include $(BUILD_SHARED_LIBRARY)
