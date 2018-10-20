@@ -444,6 +444,7 @@ struct ItemFilter {
 
 struct World {
 	int cellSize;
+	int itemId=0;
 	std::map<int, Rect> rects;
 	std::map<int, std::map<int, Cell> > rows;
 	std::map<std::string, Response *> responses;
@@ -739,6 +740,13 @@ struct World {
 	}
 
 //--- Main methods
+	int allocateId() {
+		int nid=(++itemId);
+		while (rects.find(nid)!=rects.end())
+			nid++;
+		itemId=nid;
+		return nid;
+	}
 
 	void add(int item, double x, double y, double w, double h) {
 		Rect r;
@@ -1348,7 +1356,7 @@ int worldAdd(lua_State *L) {
 		lua_error(L);
 	}
 	lua_pop(L, 1);
-	int item = wr->rects.size() + 1;
+	int item = wr->allocateId();
 	double x = luaL_checknumber(L, 3);
 	double y = luaL_checknumber(L, 4);
 	double w = luaL_checknumber(L, 5);
