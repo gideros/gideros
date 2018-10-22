@@ -78,7 +78,15 @@ public class GMegaCool
 
 	public static void stopRecording() {
 		Megacool.stopRecording();
-	}	
+	}
+	
+	public static boolean setSharingText(String sharingText){
+		Activity activity=sActivity.get();
+		if (sharingText!=null) {
+			Megacool.setSharingText(sharingText);
+		}
+		return true;
+	}
 
 	static native void onEvent(int event);	
 	static native String getGiderosVersion();

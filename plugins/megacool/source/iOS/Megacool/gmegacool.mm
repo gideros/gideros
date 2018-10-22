@@ -25,3 +25,8 @@ bool gmegacool_StartRecording()
 void gmegacool_StopRecording()
 {
 }
+
+bool gmegacool_SetSharingText(const char *sharingText)
+{
+    return false;
+}

@@ -281,6 +281,10 @@ QSettings lls(theme, QSettings::IniFormat);
 
 	sciScintilla_->setEolMode(QsciScintilla::EolUnix);
 
+    sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETMULTIPLESELECTION, true);
+    // multi-line typing with Alt+drag/Alt_shift+cursor multi-line selections
+    sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETADDITIONALSELECTIONTYPING, true);
+
     sciScintilla_->setAutoCompletionThreshold(settings.value(Keys::Prefs::autoCompleteChars, 2).toInt());
 	sciScintilla_->setAutoCompletionSource(QsciScintilla::AcsAll);
 

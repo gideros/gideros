@@ -22,6 +22,7 @@ void gmegacool_Init();
 void gmegacool_Destroy();
 bool gmegacool_Share(const char *fallbackMedia);
 bool gmegacool_StartRecording();
+bool gmegacool_SetSharingText(const char *shareText);
 void gmegacool_StopRecording();
 void gmegacool_Event(int type);
     

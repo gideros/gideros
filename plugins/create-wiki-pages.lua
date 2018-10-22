@@ -25,7 +25,7 @@ local docs =
         your plugin or API addition and a file for each method described
         in the .wiki.lua file.
 
-        The content of the files should be copy/pastable to pages in the 
+        The content of the files should be copy/pastable to pages in the
         Gideros wiki...
 
             wiki.giderosmobile.com
@@ -33,9 +33,9 @@ local docs =
 
     Unsolicited advice:
 
-        Please feel free to provide examples in the relevant sections to 
-        demonstrate how your interface should be used, so that younglings 
-        and/or padowans - as well as heroic jedis like yourself - can grok 
+        Please feel free to provide examples in the relevant sections to
+        demonstrate how your interface should be used, so that younglings
+        and/or padowans - as well as heroic jedis like yourself - can grok
         it.
 
 ]]
@@ -94,10 +94,10 @@ local function getReturnValuesString(returns_table)
     res[#res + 1] = v.name
     res[#res + 1] = ","
   end
-  if #res > 1 then 
+  if #res > 1 then
     res[#res] = " = " -- replace last comma
     return table.concat(res)
-  else 
+  else
     return ""
   end
 end
@@ -128,15 +128,14 @@ local function writeHeader(file, t)
 end
 
 --
-local function writeEventConstantPage(t, dir, object)
-  local class = t.class
-  local full_name = class .. "." .. object.name
+local function writeEventConstantPage(t, class, dir, object)
+  local full_name = class.name .. "." .. object.name
   local file = io.open(dir .. "/" .. full_name .. ".wiki", "w")
   writeHeader(file, t)
   if object.value then
     file:write(boldTitleOneLine("Value", object.value))
   end
-  file:write(boldTitleOneLine("Defined by", makeLink(class)))
+  file:write(boldTitleOneLine("Defined by", makeLink(class.name)))
   file:write(title(3, translate("Description")) .. "\n")
   file:write(translate(object.desc) .. "<br/>\n")
   writeExamples(file, object)
@@ -144,13 +143,12 @@ local function writeEventConstantPage(t, dir, object)
 end
 
 --
-local function writeMethodPage(t, dir, method)
-  local class = t.class
-  local full_name = class .. method.delimiter .. method.name
+local function writeMethodPage(t, class, dir, method)
+  local full_name = class.name .. method.delimiter .. method.name
   print("Creating page for " .. full_name)
   local file = io.open(dir .. "/" .. method.name .. ".wiki", "w")
   writeHeader(file, t)
-  file:write(boldTitleOneLine("Class", makeLink(class)) .. "\n")
+  file:write(boldTitleOneLine("Class", makeLink(class.name)) .. "\n")
   file:write(title(3, translate("Description")) .. "\n")
   if #method.long > 2 then -- CRLF betweem [==[]==]
     file:write(translate(method.long) .. "<br/>\n")
@@ -218,42 +216,39 @@ local function getTargetString(sp)
 end
 
 --
-local function outputAPI(t)
-  print("Starting....\n")
-  
-  local dir = "wikipages-" .. t.title
-  print("Creating directory..." .. dir)
-  os.execute("mkdir " .. dir)
-  local filename = t.title .. ".wiki"
+local function writeClassPages(dir, class, t)
+  local filename = class.name .. ".wiki"
   local file = io.open(dir .. "/" .. filename, "w")
   file:write("__NOTOC__\n<languages />\n")
-  file:write("<!-- GIDEROSOBJ:".. t.title .." -->\n")
+  file:write("<!-- GIDEROSOBJ:".. class.name .." -->\n")
 
   print("Creating main page... " .. dir .. "/" .. filename)
-  file:write(boldTitleOneLine("Supported platforms", getTargetString(t.supported_platforms)))
+  file:write(boldTitleOneLine("Supported platforms",
+                                getTargetString(t.supported_platforms)))
   file:write(boldTitleOneLine("Available since", t.available_since))
-  if #t.inherits_from > 0 then
-    file:write(boldTitleOneLine("Inherits from", makeLink(t.inherits_from[1])))
+  if #class.inherits_from > 0 then
+    file:write(boldTitleOneLine("Inherits from", makeLink(class.inherits_from[1])))
     file:write("\n")
   end
   file:write(title(3, translate("Description")) .. "\n")
-  file:write(translate(t.description) .. "<br/>\n")
-  
-  writeExamples(file, t)
+  file:write(translate(class.description) .. "<br/>\n")
+
+  writeExamples(file, class)
 
   -- start column section
   file:write([[{|-]] .. "\n" .. [[| style="width: 50%; vertical-align:top;"|]] .."\n")
 
   file:write("\n"..title(3, translate("Methods")) .. "\n")
-  if #t.methods > 0 then
-    for _, v in ipairs(t.methods) do
-      local full_name = t.class .. v.delimiter .. v.name
+  if #class.methods > 0 then
+    for _, v in ipairs(class.methods) do
+      local full_name = class.name .. v.delimiter .. v.name
       file:write(
-      makeLink(full_name) .. "  " .. italics(translate(v.short)) 
-      .."<br/><!-- GIDEROSMTD:" .. full_name .. getParenthesisedParamString(v.parameters) .. " " 
-      .. v.short .. " -->")
+      makeLink(full_name) .. "  " .. italics(translate(v.short))
+              .."<br/><!-- GIDEROSMTD:" .. full_name
+              .. getParenthesisedParamString(v.parameters) .. " "
+              .. v.short .. " -->")
       file:write("\n")
-      writeMethodPage(t, dir, v)
+      writeMethodPage(t, class, dir, v)
     end
   else
     file:write("\n" .. italics("none") .. "<br/>\n\n")
@@ -262,20 +257,20 @@ local function outputAPI(t)
   -- events and constants in second column
   file:write([[| style="width: 50%; vertical-align:top;"|]] .."\n")
   file:write(title(3, translate("Events")) .. "\n")
-  if #t.events > 0 then
-    for _, v in ipairs(t.events) do
+  if #class.events > 0 then
+    for _, v in ipairs(class.events) do
       file:write(makeLink(v.name) .. "<br/>\n")
-      writeEventConstantPage(t, dir, v)
+      writeEventConstantPage(t, class, dir, v)
     end
   else
     file:write("\n" .. italics("none") .. "<br/>\n\n")
   end
 
   file:write(title(3, translate("Constants")) .. "\n")
-  if #t.constants > 0 then
-    for _, v in ipairs(t.constants) do
+  if #class.constants > 0 then
+    for _, v in ipairs(class.constants) do
       file:write(makeLink(v.name) .. "<br/>\n")
-      writeEventConstantPage(t, dir, v)
+      writeEventConstantPage(t, class, dir, v)
     end
   else
     file:write("\n" .. italics("none") .. "<br/>\n\n")
@@ -284,6 +279,45 @@ local function outputAPI(t)
   -- finish column section
   file:write("|}")
   file:close()
+end
+
+--
+local function outputAPI(t)
+  print("Starting....\n")
+
+  local dir = "wikipages-" .. t.title
+  print("Creating directory..." .. dir)
+  os.execute("mkdir " .. dir)
+
+  if #t.classes > 1 or (t.title ~= t.classes[1].name)
+                    and t.title ~= "" and t.title ~= nil then
+    -- create landing page for feature with links to class/es
+    local filename = t.title .. ".wiki"
+    local file = io.open(dir .. "/" .. filename, "w")
+    file:write("__NOTOC__\n<languages />\n")
+    file:write("<!-- GIDEROSOBJ:".. t.title .." -->\n")
+
+    print("Creating feature landing page... " .. dir .. "/" .. filename)
+    file:write(boldTitleOneLine("Supported platforms",
+                                  getTargetString(t.supported_platforms)))
+    file:write(boldTitleOneLine("Available since", t.available_since))
+
+    file:write(title(3, translate("Description")) .. "\n")
+    file:write(translate(t.description) .. "<br/>\n")
+
+    writeExamples(file, t)
+
+    local plural = #t.classes == 1 and "" or "es"
+    file:write(title(3, translate("Class" .. plural)) .. "\n")
+    for _, v in ipairs(t.classes) do
+      file:write(makeLink(v.name) .. "<br/>\n")
+    end
+    file:close()
+  end
+
+  for _, v in ipairs(t.classes) do
+    writeClassPages(dir, v, t)
+  end
 
   return dir
 end
@@ -292,17 +326,17 @@ end
 local function main(args)
   if args[1] == nil then print(docs) return end
   local file = io.open(args[1], "r")
-  if not file then 
-    print("Error opening file: \"" .. args[1] .. "\"") 
-    return 
+  if not file then
+    print("Error opening file: \"" .. args[1] .. "\"")
+    return
   end
   local contents = file:read("*a")
-  if not contents then 
-    print("Error: file, \"" .. args[1] .. "\" is empty.") 
-    return 
+  if not contents then
+    print("Error: file, \"" .. args[1] .. "\" is empty.")
+    return
   end
   local t = assert(loadstring(contents))()
-  
+
   local dir = outputAPI(t)
   file:close()
   print("\n\nFinished. Please check directory... \n\n    " .. dir .. "\n\n...for files.\n")
