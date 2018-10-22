@@ -51,7 +51,7 @@
 @* Interfaces Extension (XSI).
 ** CHANGE it (define it) if your system is XSI compatible.
 */
-#if defined(LUA_USE_POSIX)
+#if defined(LUA_USE_POSIX) || defined(__CYGWIN__)
 #define LUA_USE_MKSTEMP
 #define LUA_USE_ISATTY
 #define LUA_USE_POPEN

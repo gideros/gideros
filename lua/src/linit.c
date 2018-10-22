@@ -25,6 +25,9 @@ static const luaL_Reg lualibs[] = {
   {LUA_DBLIBNAME, luaopen_debug},
   {LUA_UTF8LIBNAME, luaopen_utf8},
   {LUA_INT64LIBNAME, luaopen_int64},
+#ifdef GIDEROS_DESKTOP_EXTRALIBS
+  {"lfs", luaopen_lfs},
+#endif
   {NULL, NULL}
 };
 
