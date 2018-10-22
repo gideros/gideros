@@ -58,7 +58,11 @@
 #include "lualib.h"
 #include "lfs.h"
 
+#ifndef DESKTOP_TOOLS
 #include "gideros.h"
+#else
+static const char *gpath_transform(const char *p) { return p; }
+#endif
 
 /*
  * ** compatibility with Lua 5.2

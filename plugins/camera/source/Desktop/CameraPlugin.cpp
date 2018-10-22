@@ -1,7 +1,7 @@
 /*
  * CameraPlugin.cpp
  *
- *  Created on: 5 août 2017
+ *  Created on: 5 aoï¿½t 2017
  *      Author: Nicolas
  */
 #include <QAbstractVideoSurface>
@@ -321,7 +321,10 @@ void cameraplugin::stop()
 	camera=NULL;
 }
 
-
+bool cameraplugin::isAvailable()
+{
+    return true;
+}
 
 
 
