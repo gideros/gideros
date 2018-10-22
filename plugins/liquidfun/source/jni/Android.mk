@@ -18,7 +18,7 @@ LOCAL_SRC_FILES         := ../../../../Sdk/lib/android/$(TARGET_ARCH_ABI)/libgid
 
 include $(PREBUILT_SHARED_LIBRARY)
 
-###
+####
 
 include $(CLEAR_VARS)
 
@@ -103,6 +103,8 @@ LOCAL_SRC_FILES += \
 USE_NEON:=
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 USE_NEON:=y
+# patch to make work until we can figure out what's going wrong including neon instructions. :(
+USE_NEON:=n
 endif
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 USE_NEON:=n
@@ -111,7 +113,7 @@ ifeq ($(USE_NEON),y)
 LOCAL_SRC_FILES += \
 	../liquidfun/Box2D/Box2D/Particle/b2ParticleAssembly.cpp \
 	../liquidfun/Box2D/Box2D/Particle/b2ParticleAssembly.neon.s
-LOCAL_CFLAGS   += -DLIQUIDFUN_SIMD_NEON -mfpu=neon
+LOCAL_CFLAGS += -DLIQUIDFUN_SIMD_NEON -mfloat-abi=softfp -mfpu=neon
 endif
 
 include $(BUILD_SHARED_LIBRARY)
