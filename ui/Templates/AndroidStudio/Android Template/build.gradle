@@ -6,7 +6,7 @@ buildscript {
         //TAG-TOP-GRADLE-BUILDREPOS//
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.0'
         //TAG-CLASSPATH-DEPENDENCIES//
     }
 }

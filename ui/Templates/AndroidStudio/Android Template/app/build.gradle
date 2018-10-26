@@ -12,6 +12,7 @@ android {
         }
 	    versionCode 1
     	setProperty("archivesBaseName", "AndroidTemplate_" + (new Date().format('yyyyMMdd-hhmmss')) + "_" + versionCode)
+    	multiDexEnabled true
     }
     
     signingConfigs {
