@@ -1,5 +1,5 @@
 <plugin
- name="Google Play Services"
+ name="Google Play Services (deprecated)"
  description="Google Play Services Plugin">
  <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="7.8.0" />
  <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
