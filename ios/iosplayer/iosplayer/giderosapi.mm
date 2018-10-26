@@ -1113,6 +1113,7 @@ void ApplicationManager::loadProperties()
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
 #endif
+	scaleFactor_=contentScaleFactor;
     application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
