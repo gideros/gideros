@@ -676,7 +676,7 @@ private:
             size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data);
         }
 
-        if (size != 0)
+        if (size > 0)
         {
         	ALenum cformat=channel->sound->format;
         	int csr=channel->sound->sampleRate;
@@ -713,7 +713,8 @@ private:
         else
         {
             alDeleteBuffers(1, &buffer);
-            channel->nodata = true;
+            if (size == 0)
+            	channel->nodata = true;
         }
     }
 

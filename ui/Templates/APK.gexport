@@ -72,14 +72,20 @@ print("Android Build Tools:"..buildVer)
 local ap=require("Tools/export_android")
 	</lua>
 		<set key="project.package" value="[[[export.packageName]]]"/>
-		<set key="local.noSigning" value="//"/>
-		<set key="local.isUnsigned" value="-unsigned"/>
+		<set key="local.noSigning" value=""/>
+		<set key="local.isUnsigned" value="-debug"/>
+		<set key="local.keyStore" value="[[[sys.giderosDir]]]/Tools/debug.jks"/>
+		<set key="local.keyAlias" value="debug"/>
+		<set key="secret.keyStorePass" value="gdebug"/>
+		<set key="secret.keyAliasPass" value="gdebug"/>
 		<if condition="[[[neq:[[[export.keyAlias]]]:]]]">
 			<ask key="secret.keyStorePass" uid="[[[export.keyStore]]]" type="string" title="Key store password" question="Enter your key store password:" default="" />
 			<if condition="[[[neq:[[[secret.keyStorePass]]]:]]]">
 				<ask key="secret.keyAliasPass" uid="[[[export.keyAlias]]]@[[[export.keyStore]]]" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[secret.keyStorePass]]]" />
 				<set key="local.noSigning" value=""/>
 				<set key="local.isUnsigned" value=""/>
+				<set key="local.keyStore" value="[[[export.keyStore]]]"/>
+				<set key="local.keyAlias" value="[[[export.keyAlias]]]"/>
 			</if>
 		</if>
 		<if condition="[[[not:[[[export.timestampApk]]]]]]">
@@ -132,8 +138,8 @@ local ap=require("Tools/export_android")
         		<replace orig="compileSdkVersion 23" by="compileSdkVersion [[[export.androidSdk]]]" />
         		<replace orig="buildToolsVersion &quot;23.0.2&quot;" by="buildToolsVersion &quot;[[[export.androidTools]]]&quot;" />
 				<replace orig="targetSdkVersion 19" by="targetSdkVersion [[[export.androidTarget]]]"/>
-				<replace orig="jksgid_StoreFile" by="[[[export.keyStore]]]"/>
-				<replace orig="jksgid_KeyAlias" by="[[[export.keyAlias]]]"/>
+				<replace orig="jksgid_StoreFile" by="[[[local.keyStore]]]"/>
+				<replace orig="jksgid_KeyAlias" by="[[[local.keyAlias]]]"/>
 				<replace orig="jksgid_StorePass" by="[[[secret.keyStorePass]]]"/>
 				<replace orig="jksgid_KeyPass" by="[[[secret.keyAliasPass]]]"/>
 				<replace orig="//signingConfig" by="[[[local.noSigning]]]signingConfig"/>
@@ -202,7 +208,7 @@ local ap=require("Tools/export_android")
 				<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
 				[[[local.gradleCmd]]] assembleRelease
 			</exec>
-			<cp src="app/build/outputs/apk/release/app-release[[[local.isUnsigned]]].apk" dst="../[[[local.apkname]]][[[local.isUnsigned]]].apk"/>
+			<cp src="app/build/outputs/apk/release/app-release.apk" dst="../[[[local.apkname]]][[[local.isUnsigned]]].apk"/>
 			<cd>..</cd>
 			<rmdir>tmp</rmdir>
 			<if condition="[[[export.deployApk]]]">

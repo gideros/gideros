@@ -625,7 +625,7 @@ private:
             size = channel->sound->loader.read(channel->file, BUFFER_SIZE/sampMult, data);
         }
 
-        if (size != 0)
+        if (size > 0)
         {
             //printf("SampRate:%d SampMult:%d SampSize:%d\n",channel->sound->sampleRate,sampMult,sampSize);
         	ALenum cformat=channel->sound->format;
@@ -702,7 +702,8 @@ private:
         }
         else
         {
-            alDeleteBuffers(1, &buffer);
+            if (size == 0)
+            	alDeleteBuffers(1, &buffer);
             channel->nodata = true;
         }
     }

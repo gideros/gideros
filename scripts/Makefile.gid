@@ -2,8 +2,6 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/Makefile.def
 
 QT=$(QTBASEDIR)/$(QTVER)/$(QT_ARCH)
 PATH:=$(QT)/bin:$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin:$(PATH):
-JAR=$(JAVA_HOME)/bin/jar
-ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
 #Used in plugin bundle recipes
 CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)

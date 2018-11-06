@@ -754,7 +754,7 @@ private:
 			size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data);
 		}
 
-        if (size != 0)
+        if (size > 0)
         {
         	int chn=channel->sound->numChannels;
         	int csr=channel->sound->sampleRate;
@@ -792,8 +792,8 @@ private:
 			buffer->Destroy();
 			delete buffer;
 			buffer = NULL;
-         
-			channel->nodata = true;
+            if (size == 0)
+            	channel->nodata = true;
         }
     }
 

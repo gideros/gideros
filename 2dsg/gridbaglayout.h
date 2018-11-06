@@ -121,6 +121,7 @@ public:
     std::vector<double> columnWeights;
     std::vector<double> rowWeights;
     GridInsets pInsets;
+    bool equalizeCells;
     bool dirty;
     GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag);
     void getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,float &h, GridInsets &insets);

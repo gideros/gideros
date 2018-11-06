@@ -660,20 +660,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	r.height = dh;
 
 	/*
-	 * DEBUG
-	 *
-	 * DumpLayoutInfo(info);
-	 * for (compindex = 0 ; compindex < components.length ; compindex++) {
-	 * comp = components[compindex];
-	 * if (!comp.isVisible())
-	 *      continue;
-	 * constraints = lookupConstraints(comp);
-	 * DumpConstraints(constraints);
-	 * }
-	 * System.out.println("minSize " + r.width + " " + r.height);
-	 */
-
-	/*
 	 * If the current dimensions of the window don't match the desired
 	 * dimensions, then adjust the minWidth and minHeight arrays
 	 * according to the weights.
@@ -685,8 +671,16 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		for (i = 0; i < info.width; i++)
 			weight += info.weightX[i];
 		if (weight > 0.0) {
+			double perWeight=pwidth/weight;
 			for (i = 0; i < info.width; i++) {
-                float dx = (float) ((((double) diffw) * info.weightX[i]) / weight);
+                float dx;
+                if (equalizeCells)
+                {
+                    dx= perWeight*info.weightX[i]-info.minWidth[i];
+                    if (dx<0) dx=0;
+                }
+                else
+                    dx= (float) ((((double) diffw) * info.weightX[i]) / weight);
 				info.minWidth[i] += dx;
 				r.width += dx;
 				if (info.minWidth[i] < 0) {
@@ -697,7 +691,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		}
 		diffw = pwidth - r.width;
 	}
-
 	else {
 		diffw = 0;
 	}
@@ -708,8 +701,16 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		for (i = 0; i < info.height; i++)
 			weight += info.weightY[i];
 		if (weight > 0.0) {
+			double perWeight=pheight/weight;
 			for (i = 0; i < info.height; i++) {
-                float dy = (float) ((((double) diffh) * info.weightY[i]) / weight);
+				float dy;
+                if (equalizeCells)
+                {
+                    dy= perWeight*info.weightY[i]-info.minHeight[i];
+                    if (dy<0) dy=0;
+                }
+                else
+                	dy = (float) ((((double) diffh) * info.weightY[i]) / weight);
 				info.minHeight[i] += dy;
 				r.height += dy;
 				if (info.minHeight[i] < 0) {
@@ -720,17 +721,9 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		}
 		diffh = pheight - r.height;
 	}
-
 	else {
 		diffh = 0;
 	}
-
-	/*
-	 * DEBUG
-	 *
-	 * System.out.println("Re-adjusted:");
-	 * DumpLayoutInfo(info);
-	 */
 
 	/*
 	 * Now do the actual layout of the slaves using the layout information
