@@ -2,11 +2,13 @@
 ANDROID_ARCHS=armeabi-v7a x86 x86_64 arm64-v8a
 
 export JAVA_HOME
+
 android.clean: androidlibs.clean androidso.clean androidplugins.clean
-	cd $(ROOT)/android/GiderosAndroidPlayer; ./gradlew clean
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew clean; rm -f local.properties *.aar *.jar
+	
 
 android: androidlibs androidso androidplugins
-	cd $(ROOT)/android/GiderosAndroidPlayer; ./gradlew assembleRelease
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew assembleRelease
 	mv $(ROOT)/android/GiderosAndroidPlayer/app/build/outputs/aar/app-release.aar $(ROOT)/android/GiderosAndroidPlayer/gideros.aar
 
 android.install: android androidlibs.install androidso.install androidplugins.install
