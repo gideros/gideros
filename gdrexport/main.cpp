@@ -111,7 +111,7 @@ static bool readProjectFile(const QString& fileName,
 
                             addEntryToListIfNotInList(folderList, lua_plugins_path + just_rel_path);
                             fileList_.push_back(std::make_pair(lua_plugins_path + rel_path_and_filename, file.path()));
-                            lock[lua_plugins_path + rel_path_and_filename]=true;
+                            locked[lua_plugins_path + rel_path_and_filename]=true;
                             dependencyGraph_.addCode(file.path(), true);
                         }
     	    		}
@@ -122,7 +122,7 @@ static bool readProjectFile(const QString& fileName,
 			QFileInfo f=QFileInfo("Tools/FBInstant.lua");
             fileList_.push_back(std::make_pair((lua_plugins_path + static_cast<QString>("FBInstant.lua")),
                                                f.absoluteFilePath()));
-            lock[lua_plugins_path + static_cast<QString>("FBInstant.lua")]=true;
+            locked[lua_plugins_path + static_cast<QString>("FBInstant.lua")]=true;
 			dependencyGraph_.addCode(f.absoluteFilePath(),true);
             hasLuaPlugin = true;
  	    }
