@@ -633,6 +633,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	float diffw, diffh;
 	double weight;
 	GridBagLayoutInfo info;
+	std::vector<double> distribute;
 
 	/*
 	 * If the parent has no slaves anymore, then don't do anything
@@ -660,20 +661,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	r.height = dh;
 
 	/*
-	 * DEBUG
-	 *
-	 * DumpLayoutInfo(info);
-	 * for (compindex = 0 ; compindex < components.length ; compindex++) {
-	 * comp = components[compindex];
-	 * if (!comp.isVisible())
-	 *      continue;
-	 * constraints = lookupConstraints(comp);
-	 * DumpConstraints(constraints);
-	 * }
-	 * System.out.println("minSize " + r.width + " " + r.height);
-	 */
-
-	/*
 	 * If the current dimensions of the window don't match the desired
 	 * dimensions, then adjust the minWidth and minHeight arrays
 	 * according to the weights.
@@ -685,10 +672,40 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		for (i = 0; i < info.width; i++)
 			weight += info.weightX[i];
 		if (weight > 0.0) {
+			double perWeight=pwidth/weight;
+			distribute.resize(info.width);
 			for (i = 0; i < info.width; i++) {
-                float dx = (float) ((((double) diffw) * info.weightX[i]) / weight);
-				info.minWidth[i] += dx;
-				r.width += dx;
+                float dx;
+                if (equalizeCells)
+                    dx= perWeight*info.weightX[i]-info.minWidth[i];
+                else
+                    dx= (float) ((((double) diffw) * info.weightX[i]) / weight);
+                distribute[i]=dx;
+			}
+			if (equalizeCells)
+			{
+				while (true) {
+					double neg=0;
+					double nweight=0;
+					for (int i=0;i<info.width;i++) {
+						if (distribute[i]<0)
+							neg+=distribute[i];
+						else
+							nweight+=info.weightX[i];
+					}
+					if (neg>=0) break;
+					neg/=nweight;
+					for (int i=0;i<info.width;i++) {
+						if (distribute[i]<0)
+							distribute[i]=0;
+						else
+							distribute[i]+=info.weightX[i]*neg;
+					}
+				}
+			}
+			for (i = 0; i < info.height; i++) {
+				info.minWidth[i] += distribute[i];
+				r.width += distribute[i];
 				if (info.minWidth[i] < 0) {
 					r.width -= info.minWidth[i];
 					info.minWidth[i] = 0;
@@ -697,7 +714,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		}
 		diffw = pwidth - r.width;
 	}
-
 	else {
 		diffw = 0;
 	}
@@ -708,10 +724,40 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		for (i = 0; i < info.height; i++)
 			weight += info.weightY[i];
 		if (weight > 0.0) {
+			double perWeight=pheight/weight;
+			distribute.resize(info.height);
 			for (i = 0; i < info.height; i++) {
-                float dy = (float) ((((double) diffh) * info.weightY[i]) / weight);
-				info.minHeight[i] += dy;
-				r.height += dy;
+				float dy;
+                if (equalizeCells)
+                    dy= perWeight*info.weightY[i]-info.minHeight[i];
+                else
+                	dy = (float) ((((double) diffh) * info.weightY[i]) / weight);
+                distribute[i]=dy;
+			}
+			if (equalizeCells)
+			{
+				while (true) {
+					double neg=0;
+					double nweight=0;
+					for (int i=0;i<info.height;i++) {
+						if (distribute[i]<0)
+							neg+=distribute[i];
+						else
+							nweight+=info.weightY[i];
+					}
+					if (neg>=0) break;
+					neg/=nweight;
+					for (int i=0;i<info.height;i++) {
+						if (distribute[i]<0)
+							distribute[i]=0;
+						else
+							distribute[i]+=info.weightY[i]*neg;
+					}
+				}
+			}
+			for (i = 0; i < info.height; i++) {
+				info.minHeight[i] += distribute[i];
+				r.height += distribute[i];
 				if (info.minHeight[i] < 0) {
 					r.height -= info.minHeight[i];
 					info.minHeight[i] = 0;
@@ -720,17 +766,9 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		}
 		diffh = pheight - r.height;
 	}
-
 	else {
 		diffh = 0;
 	}
-
-	/*
-	 * DEBUG
-	 *
-	 * System.out.println("Re-adjusted:");
-	 * DumpLayoutInfo(info);
-	 */
 
 	/*
 	 * Now do the actual layout of the slaves using the layout information

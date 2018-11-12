@@ -12,6 +12,7 @@ android {
         }
 	    versionCode 1
     	setProperty("archivesBaseName", "AndroidTemplate_" + (new Date().format('yyyyMMdd-hhmmss')) + "_" + versionCode)
+    	multiDexEnabled true
     }
     
     signingConfigs {
@@ -44,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    implementation files('libs/gideros.jar')
+    implementation files('libs/gideros.aar')
     //TAG-DEPENDENCIES//    
 }
 

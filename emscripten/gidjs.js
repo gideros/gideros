@@ -152,25 +152,11 @@ Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, on
 
 Module.checkALMuted=function()
 {
-	/* TODO no longer works in current emscripten, see how this can be ported
- if (window.AL&&window.AL.currentContext&&(!window.AL.currentContext.unmuted))
- {
-  // create empty buffer and play it
-  var buffer = window.AL.currentContext.ctx.createBuffer(1, 1, 22050);
-  var source = window.AL.currentContext.ctx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(window.AL.currentContext.ctx.destination);
-  source.noteOn(0);
-       
-        // by checking the play state after some time, we know if we're really unlocked
-         setTimeout(function() {
-           if((source.playbackState === source.PLAYING_STATE || source.playbackState === source.FINISHED_STATE)) {
-              window.AL.currentContext.unmuted=true;
-                }
-           }, 0);
-                 
+ if (window.AL&&window.AL.currentCtx&&(!Module.GidAudioUnlocked))
+ {    
+         window.AL.currentCtx.audioCtx.resume();
+         Module.GidAudioUnlocked=true;
  }
- */
 }
 
 Module.GiderosJSEvent=function(type,context,value,data)

@@ -25,7 +25,7 @@
 			<append>
 				<orig>//TAG-DEPENDENCIES//</orig>								
 				<by>
-				implementation 'co.megacool:megacool:3.3.5'
+				implementation 'co.megacool:megacool:3.3.6'
 				</by>
 			</append>
 		</replacelist>	

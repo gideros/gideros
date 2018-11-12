@@ -1,17 +1,27 @@
 <project>
- <properties tv_icon="GiderosPlayerIcon.png" logicalWidth="320" android_template="0" windowWidth="0" splash_h_image="GiderosPlayerIcon.png" fps="60" retinaDisplay="0" html5_mem="256" html5_host="" winrt_org="GiderosMobile" osx_category="36" osx_bundle="com.giderosmobile.player" autorotation="0" mouseTouchOrder="0" iosDevice="0" osx_org="GiderosMobile" encryptAssets="0" logicalHeight="480" winrt_package="com.giderosmobile.player" win_org="GiderosMobile" version="1.0" architecture="1" version_code="1" ios_bundle="com.giderosmobile.player" assetsOnly="0" win_domain="giderosmobile.com" scaleMode="0" splash_v_image="GiderosPlayerIcon.png" windowHeight="0" osx_domain="giderosmobile.com" app_icon="GiderosPlayerIcon.png" mouseToTouch="1" orientation="0" packageName="com.giderosmobile.player" encryptCode="0" touchToMouse="1">
+ <properties splash_h_image="GiderosPlayerIcon.png" vsync="0" winrt_org="GiderosMobile" disableSplash="0" windowHeight="0" packageName="com.giderosmobile.player" html5_mem="256" mouseToTouch="1" osx_org="GiderosMobile" osx_signingId="" encryptCode="0" scaleMode="0" tv_icon="GiderosPlayerIcon.png" logicalWidth="320" version_code="1" architecture="0" app_icon="GiderosPlayerIcon.png" osx_domain="giderosmobile.com" build_number="1" version="1.0" html5_pack="0" app_name="Gideros Player" windowWidth="0" touchToMouse="1" android_template="0" exportMode="2" win_org="GiderosMobile" html5_fbinstant="0" winrt_package="com.giderosmobile.player" html5_host="" orientation="0" html5_fbload="100" retinaDisplay="3" osx_category="36" splashScaleMode="0" backgroundColor="#ffffff" win_domain="giderosmobile.com" iosDevice="0" splash_v_image="GiderosPlayerIcon.png" osx_installerId="" ios_bundle="com.giderosmobile.player" encryptAssets="0" autorotation="0" osx_bundle="com.giderosmobile.player" mouseTouchOrder="0" logicalHeight="480" fps="60">
   <imageScales/>
-  <plugins/>
+  <plugins>
+   <plugin enabled="1" name="Bitop"/>
+   <plugin enabled="1" name="JSON"/>
+   <plugin enabled="1" name="LiquidFun"/>
+   <plugin enabled="1" name="Lua Socket"/>
+   <plugin enabled="1" name="LuaFileSystem"/>
+   <plugin enabled="1" name="LuaSqlite3"/>
+  </plugins>
   <exports>
    <export name="APK">
     <property value="" name="androidPath"/>
     <property value="23" name="androidSdk"/>
-    <property value="19" name="androidTarget"/>
+    <property value="26" name="androidTarget"/>
     <property value="23.0.1" name="androidTools"/>
+    <property value="1" name="buildApk"/>
+    <property value="0" name="deployApk"/>
     <property value="" name="javaPath"/>
     <property value="" name="keyAlias"/>
     <property value="" name="keyStore"/>
     <property value="com.giderosmobile.player" name="packageName"/>
+    <property value="0" name="timestampApk"/>
    </export>
   </exports>
  </properties>

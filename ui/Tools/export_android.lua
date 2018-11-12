@@ -45,7 +45,19 @@ local function apply()
         <replace><orig>minSdkVersion 9</orig><by>minSdkVersion %d</by></replace>
         <replace><orig>android:minSdkVersion="9"</orig><by>android:minSdkVersion="%d"</by></replace>
        </replacelist>
-  </template>]]):format(AndroidProject._minSdk,AndroidProject._minSdk))  
+  </template>]]):format(AndroidProject._minSdk,AndroidProject._minSdk))
+  if AndroidProject._minSdk<21 then  
+    Export.callXml([[<template name="Android Template Changes" path="">
+      <replacelist wildcards="build.gradle">
+        <append>
+          <orig>//TAG-DEPENDENCIES//</orig>               
+          <by>
+           implementation 'com.android.support:multidex:1.0.3'
+          </by>
+        </append>
+          </replacelist>
+  </template>]])  
+  end
 end
 
 Export.registerPreFinish(apply)

@@ -2819,6 +2819,7 @@ void MainWindow::exportProject()
 std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downsizing)
 {
 	std::vector<std::pair<QString, QString> > result;
+    QMap<QString,bool> locked;
 
 	//Add lua plugins
 	QMap<QString, QString> plugins=libraryWidget_->usedPlugins();
@@ -2837,6 +2838,7 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
                 QDir file = dir_iter.next();
                 QString rel_path = file.path().mid(root_length + 1, file.path().length());
                 result.push_back(std::make_pair("_LuaPlugins_/" + rel_path, file.path()));
+                locked["_LuaPlugins_/" + rel_path]=true;
             }
         }
 	}
@@ -2844,6 +2846,7 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
 	{
 		QFileInfo f=QFileInfo("Tools/FBInstant.lua");
 		result.push_back(std::make_pair("_LuaPlugins_/FBInstant.lua", f.absoluteFilePath()));
+        locked["_LuaPlugins_/FBInstant.lua"]=true;
 	}
 
 	QDomDocument doc = libraryWidget_->toXml();
@@ -2870,6 +2873,12 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
 		if (type == "file")
 		{
 			QString fileName = e.attribute("source");
+            bool lock=true;
+            if (fileName.isEmpty())
+            {
+                fileName = e.attribute("file");
+                lock=false;
+            }
 			QString name = QFileInfo(fileName).fileName();
 
 			QString n;
@@ -2877,15 +2886,20 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
 				n += dir[i] + "/";
 			n += name;
 
+            if (locked[n])
+                continue;
 			if (downsizing)
 			{
-				if (e.attribute("downsizing", "0").toInt())
+                if (e.attribute("downsizing", "0").toInt()) {
 					result.push_back(std::make_pair(n, fileName));
+                    locked[n]=lock;
+                }
 			}
 			else
 			{
 				result.push_back(std::make_pair(n, fileName));
-			}
+                locked[n]=lock;
+            }
 
 			continue;
 		}

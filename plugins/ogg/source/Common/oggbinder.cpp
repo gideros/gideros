@@ -548,7 +548,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 						handle->videobuf_ready = 1;
 					else {
 						//If we are too slow, reduce the pp level.
-						handle->pp_inc = handle->pp_level > 0 ? -1 : 0;
+						//handle->pp_inc = handle->pp_level > 0 ? -1 : 0;
 						//dropped++;
 					}
 				}
@@ -843,6 +843,7 @@ void Renderer::renderContext(GGOggHandle *handle) {
 					ShaderTexture::WRAP_CLAMP, ShaderTexture::FILT_LINEAR);
 		bool changed = (handle->planeWidth != yuv[0].stride)
 				|| (handle->planeHeight != yuv[0].height);
+		handle->videobuf_ready = 0;
 		handle->planeWidth = yuv[0].stride;
 		handle->planeHeight = yuv[0].height;
 		if (changed && (handle->tref != LUA_NOREF)) {
@@ -853,7 +854,6 @@ void Renderer::renderContext(GGOggHandle *handle) {
 			if (lua_pcall(L, 2, 0, 0) != 0)
 				lua_pop(L, 1); //Pop error message, as we have no way to display it in this context
 		}
-		handle->videobuf_ready = 0;
 	}
 
 }

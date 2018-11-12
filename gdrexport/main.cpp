@@ -70,7 +70,7 @@ static bool readProjectFile(const QString& fileName,
         properties_.loadXml(properties);
     }
 
-
+    QMap<QString,bool> locked;
     // populate file list, folder list and dependency graph
     {
         fileList_.clear();
@@ -111,6 +111,7 @@ static bool readProjectFile(const QString& fileName,
 
                             addEntryToListIfNotInList(folderList, lua_plugins_path + just_rel_path);
                             fileList_.push_back(std::make_pair(lua_plugins_path + rel_path_and_filename, file.path()));
+                            lock[lua_plugins_path + rel_path_and_filename]=true;
                             dependencyGraph_.addCode(file.path(), true);
                         }
     	    		}
@@ -121,6 +122,7 @@ static bool readProjectFile(const QString& fileName,
 			QFileInfo f=QFileInfo("Tools/FBInstant.lua");
             fileList_.push_back(std::make_pair((lua_plugins_path + static_cast<QString>("FBInstant.lua")),
                                                f.absoluteFilePath()));
+            lock[lua_plugins_path + static_cast<QString>("FBInstant.lua")]=true;
 			dependencyGraph_.addCode(f.absoluteFilePath(),true);
             hasLuaPlugin = true;
  	    }
@@ -151,13 +153,17 @@ static bool readProjectFile(const QString& fileName,
             {
                 QString fileName = e.hasAttribute("source") ? e.attribute("source") : e.attribute("file");
                 QString name = QFileInfo(fileName).fileName();
+                bool lock=e.hasAttribute("source");
 
                 QString n;
                 for (std::size_t i = 0; i < dir.size(); ++i)
                     n += dir[i] + "/";
                 n += name;
 
+                if (locked[n])
+                      continue;
                 fileList_.push_back(std::make_pair(n, fileName));
+                locked[n]=lock;
 
                 if (QFileInfo(fileName).suffix().toLower() == "lua")
                 {

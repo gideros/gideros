@@ -2,7 +2,7 @@
  name="Gaming"
  description="Gaming services Plugin">
  <property name="gmsFwGoogle" type="boolean" title="Enable Google Play Services support"/>
- <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="12.0.1" />
+ <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="16.0.0" />
  <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
  <property name="gmsFwGamekit" type="boolean" title="Enable GameKit support (iOS)"/>
  <target name="AndroidStudio,APK">

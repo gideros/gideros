@@ -1,39 +1,23 @@
 #ANDROID
 ANDROID_ARCHS=armeabi-v7a x86 x86_64 arm64-v8a
 
+export JAVA_HOME
+
 android.clean: androidlibs.clean androidso.clean androidplugins.clean
-	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) clean
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew clean; rm -f local.properties *.aar *.jar
+	
 
 android: androidlibs androidso androidplugins
-	rm -rf $(ROOT)/android/GiderosAndroidPlayer/src/com/android
-	rm -rf $(ROOT)/android/GiderosAndroidPlayer/src/com/giderosmobile/android/plugins
-	mkdir -p $(ROOT)/android/GiderosAndroidPlayer/libs
-	cp $(ROOT)/android/GiderosAndroidPlayer/lib/*.jar $(ROOT)/android/GiderosAndroidPlayer/libs/
-	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/BuildConfig.class
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosAndroidPlayerActivity.class
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/GiderosSettings.class
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosGLSurfaceView.class
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosRenderer.class
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/R.class
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/R*.class
-	cd $(ROOT)/android/GiderosAndroidPlayer/bin/classes; $(JAR) cvf gideros.jar com
-	mv $(ROOT)/android/GiderosAndroidPlayer/bin/classes/gideros.jar $(ROOT)/android/GiderosAndroidPlayer/
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew assembleRelease
+	mv $(ROOT)/android/GiderosAndroidPlayer/app/build/outputs/aar/app-release.aar $(ROOT)/android/GiderosAndroidPlayer/gideros.aar
 
 android.install: android androidlibs.install androidso.install androidplugins.install
-	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.jar $(RELEASE)/Templates/Eclipse/Android\ Template
-	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.jar $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs	
-	rm -rf $(ROOT)/android/GiderosAndroidPlayer/libs
-	cp -R $(RELEASE)/Templates/Eclipse/Android\ Template/libs $(ROOT)/android/GiderosAndroidPlayer
-	for p in $(PLUGINS_DEFAULT); do \
-	cd $(ROOT)/plugins/$$p/source; if [ -d "Android" ]; then cd Android; fi;	\
-	cp -R libs $(CURDIR)/android/GiderosAndroidPlayer; \
-	cd $(CURDIR); done
-	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug;
+	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.aar $(RELEASE)/Templates/Eclipse/Android\ Template
+	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.aar $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs	
 	mkdir -p $(RELEASE)/Players
-	mv $(ROOT)/android/GiderosAndroidPlayer/bin/GiderosAndroidPlayer-debug.apk $(RELEASE)/Players/GiderosAndroidPlayer.apk
-	#cp -R $(ROOT)/android/GiderosAndroidPlayer/assets $(RELEASE)/Templates/Eclipse/Android\ Template
-	#cp $(ROOT)/android/GiderosAndroidPlayer/AndroidManifest.xml $(RELEASE)/Templates/Eclipse/Android\ Template
+	cd $(RELEASE); Tools/gdrexport.exe -platform APK Examples/Misc/GiderosPlayer/GiderosPlayer.gproj Players
+	mv $(RELEASE)/Players/GiderosPlayer/GiderosPlayer-debug.apk $(RELEASE)/Players/GiderosAndroidPlayer.apk
+	rm -rf $(RELEASE)/Players/GiderosPlayer
 
 androidlibs: libgvfs.androidlib lua.androidlib
 

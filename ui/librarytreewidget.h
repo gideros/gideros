@@ -49,6 +49,9 @@ public:
     QTreeWidgetItem *newFile(QTreeWidgetItem *parent,QString name,QMap<QString, QVariant> data);
     void newFolder(QTreeWidgetItem *parent,QString name);
     void remove(QTreeWidgetItem *item);
+    void refreshFolder(QTreeWidgetItem *item);
+    void sortFolder(QTreeWidgetItem* root);
+    QString getItemPath(QTreeWidgetItem *item);
 
 signals:
 	void modificationChanged(bool m);
@@ -59,8 +62,9 @@ signals:
 
 private slots:
 	void onCustomContextMenuRequested(const QPoint& pos);
-	void onItemDoubleClicked(QTreeWidgetItem* item, int column);
-	void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void onItemDoubleClicked(QTreeWidgetItem* item, int column);
+    void onItemChanged(QTreeWidgetItem* item, int column);
+    void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 
 private slots:
 	void addNewFile();
@@ -69,8 +73,9 @@ private slots:
 //	void newFont();
 	void newFolder();
 	void remove();
-	void rename();
-	void sort();
+    void rename();
+    void refresh();
+    void sort();
 	void insertIntoDocument();
 	void projectProperties();
     void automaticDownsizing(bool checked);
@@ -84,10 +89,10 @@ private slots:
 	void checkModification();
 
 private:
-    QTreeWidgetItem* createFileItem(const QString& file, bool downsizing = false, bool excludeFromExecution = false, bool excludeFromEncryption = false, bool excludeFromPackage = false);
-	QTreeWidgetItem* createFolderItem(const QString& name);
+    QTreeWidgetItem* createFileItem(const QString& file, bool link, bool downsizing = false, bool excludeFromExecution = false, bool excludeFromEncryption = false, bool excludeFromPackage = false);
+	QTreeWidgetItem* createFolderItem(const QString& name, const QString& fspath);
 	QTreeWidgetItem* createProjectItem(const QString& name);
-	QTreeWidgetItem* createCatFolderItem(const QString& name, const QString& icon, int nodetype, bool drop=false);
+	QTreeWidgetItem* createCatFolderItem(const QString& name, const QString& fspath, const QString& icon, int nodetype, bool drop=false);
     QTreeWidgetItem* createPluginItem(const QString& name);
     bool hasItemNamed(QTreeWidgetItem* root,QString name);
 
@@ -98,8 +103,9 @@ private:
 //	QAction* newFontAction_;
 	QAction* newFolderAction_;
 	QAction* removeAction_;
-	QAction* renameAction_;		// only for folders
-	QAction* codeDependenciesAction_;
+    QAction* renameAction_;		// only for folders
+    QAction* refreshAction_;		// only for folders
+    QAction* codeDependenciesAction_;
 	QAction* sortAction_;
 	QAction* insertIntoDocumentAction_;
 	QAction* projectPropertiesAction_;
@@ -113,7 +119,8 @@ private:
 private:
 	QString xmlString_;
 	bool isModifed_;
-
+protected:
+    virtual void dropEvent(QDropEvent *event) override;
 private:
 	DependencyGraph dependencyGraph_;
 

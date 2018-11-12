@@ -499,6 +499,7 @@ int SpriteBinder::getClip(lua_State* L)
 #define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checkinteger(L,-1); lua_pop(L,1);
 #define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=(t) luaL_checkinteger(L,-1); lua_pop(L,1);
 #define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checknumber(L,-1); lua_pop(L,1);
+#define FILL_BOOL(n,f) lua_getfield(L,2,n); p->f=lua_toboolean(L,-1); lua_pop(L,1);
 #define STOR_NUM_ARRAY(n,f) \
 		lua_newtable(L); \
 		for (size_t k=0;k<p->f.size();k++) { lua_pushinteger(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
@@ -506,6 +507,7 @@ int SpriteBinder::getClip(lua_State* L)
 #define STOR_INT(n,f) lua_pushinteger(L,p->f); lua_setfield(L,-2,n);
 #define STOR_INTT(n,f,t) lua_pushinteger(L,(int)p->f); lua_setfield(L,-2,n);
 #define STOR_NUM(n,f) lua_pushnumber(L,p->f); lua_setfield(L,-2,n);
+#define STOR_BOOL(n,f) lua_pushboolean(L,p->f); lua_setfield(L,-2,n);
 
 int SpriteBinder::setLayoutParameters(lua_State *L)
 {
@@ -524,6 +526,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 		FILL_NUM_ARRAY("rowWeights",rowWeights);
         FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
         FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
+        FILL_BOOL("equalizeCells",equalizeCells);
         p->dirty=true;
 	}
 	return 0;
@@ -570,6 +573,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
 		STOR_NUM_ARRAY("rowWeights",rowWeights);
         STOR_NUM("insetTop",pInsets.top); STOR_NUM("insetLeft",pInsets.left);
         STOR_NUM("insetBottom",pInsets.bottom); STOR_NUM("insetRight",pInsets.right);
+        STOR_BOOL("equalizeCells",equalizeCells);
 	}
 	else
 		lua_pushnil(L);
