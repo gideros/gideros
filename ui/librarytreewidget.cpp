@@ -204,6 +204,10 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 	//renameAction_->setShortcut(Qt::Key_F2);
 	connect(renameAction_, SIGNAL(triggered()), this, SLOT(rename()));
 
+    refreshAction_ = new QAction(tr("Refresh"), this);
+    refreshAction_->setShortcut(Qt::Key_F3);
+    connect(refreshAction_, SIGNAL(triggered()), this, SLOT(refresh()));
+
 	sortAction_ = new QAction(tr("Sort"), this);
 	connect(sortAction_, SIGNAL(triggered()), this, SLOT(sort()));
 
@@ -250,6 +254,9 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 
 	connect(this, SIGNAL(itemDoubleClicked  (QTreeWidgetItem*, int)),
 			this, SLOT  (onItemDoubleClicked(QTreeWidgetItem*, int)));
+
+    connect(this, SIGNAL(itemChanged  (QTreeWidgetItem*, int)),
+            this, SLOT  (onItemChanged(QTreeWidgetItem*, int)));
 
 	connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
 			this, SLOT  (onCurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
@@ -306,12 +313,13 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 		menu.addAction(importToLibraryAction_);
 		menu.addAction(newFolderAction_);
 		menu.addAction(importFolderAction_);
-	}
+        menu.addAction(refreshAction_);
+    }
 
 	if (size > 0 && (nodetype&(NODETYPE_FILE|NODETYPE_FOLDER|NODETYPE_PLUGIN)))
 		menu.addAction(removeAction_);
 	if (size == 1 && (nodetype&NODETYPE_FOLDER))
-		menu.addAction(renameAction_);
+        menu.addAction(renameAction_);
 	if (size == 1 && ((nodetype&NODETYPE_FOLDER) || (nodetype&NODETYPE_FILES)))
 		menu.addAction(sortAction_);
 
@@ -395,7 +403,7 @@ void LibraryTreeWidget::importToLibrary()
 				QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added here because there is already a file named '%2' in this folder.").arg(fileName).arg(name));
 			else
 			{
-				QTreeWidgetItem *item = createFileItem(fileName);
+				QTreeWidgetItem *item = createFileItem(fileName,true);
 				if (root == invisibleRootItem())
 					root->addChild(item);
 				else
@@ -454,7 +462,7 @@ void LibraryTreeWidget::importFolder()
 				}
 				else
 				{
-					QTreeWidgetItem *item = createFileItem(fileName);
+					QTreeWidgetItem *item = createFileItem(fileName,true);
 					if (root == invisibleRootItem())
 						root->addChild(item);
 					else
@@ -464,7 +472,15 @@ void LibraryTreeWidget::importFolder()
 			}
 			else if ((*it).isDir())
 			{
-				QTreeWidgetItem *item = createFolderItem((*it).fileName());
+                QDir dir = QFileInfo(projectFileName_).dir();
+                QString path=getItemPath(root)+"/"+(*it).fileName();
+                if (!dir.cd(path))
+                    if (!dir.mkpath(path))
+                    {
+                        //QMessageBox::critical(this, tr("Gideros"), tr("Directory %1 couldn't be created.").arg(path));
+                    }
+
+                QTreeWidgetItem *item = createFolderItem((*it).fileName(),QString());
 
 				root->setExpanded(true);
 				if (root == invisibleRootItem())
@@ -587,6 +603,14 @@ void LibraryTreeWidget::remove()
 	}
 }
 
+void LibraryTreeWidget::refresh()
+{
+    if (selectedItems().empty() == true)
+        return;
+
+    QTreeWidgetItem* item = selectedItems()[0];
+    refreshFolder(item);
+}
 
 void LibraryTreeWidget::rename()
 {
@@ -607,13 +631,21 @@ void LibraryTreeWidget::newFolder()
 	if (selectedItems().empty() == false)
 		root = selectedItems().front();
 
-	QTreeWidgetItem *item = createFolderItem("New Folder");
+    if (hasItemNamed(root,"New Folder")) return;
+    QDir dir = QFileInfo(projectFileName_).dir();
+    QString path=getItemPath(root)+"/New Folder";
+    if (!dir.cd(path))
+        if (!dir.mkpath(path))
+        {
+            QMessageBox::critical(this, tr("Gideros"), tr("Directory %1 couldn't be created.").arg(path));
+            return;
+        }
+
+    QTreeWidgetItem *item = createFolderItem("New Folder",QString());
 
 	root->setExpanded(true);
-	if (root == invisibleRootItem())
-		root->addChild(item);
-	else
-		root->insertChild(0, item);
+    root->addChild(item);
+    sortFolder(root);
 
 	editItem(item, 0);
 
@@ -624,14 +656,16 @@ QTreeWidgetItem *LibraryTreeWidget::newFile(QTreeWidgetItem *parent,QString name
 {
     QDir dir = QFileInfo(projectFileName_).dir();
     QString filename = dir.absoluteFilePath(name);
-    QFile file(filename);
-    // check if it is exists or not
-    if (file.exists() == true) return NULL; //File exists
-            // try to create an empty file
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return NULL; // Can't create
-    file.close();
+    if (!data["link"].toBool()) {
+        // check if it is exists or not
+        QFile file(filename);
+        if (file.exists() == true) return NULL; //File exists
+                // try to create an empty file
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return NULL; // Can't create
+        file.close();
+    }
 
-    QTreeWidgetItem *item = createFileItem(dir.relativeFilePath(filename),
+    QTreeWidgetItem *item = createFileItem(dir.relativeFilePath(filename),data["link"].toBool(),
            data["downsizing"].toBool(),data["excludeFromExecution"].toBool(),data["excludeFromEncryption"].toBool(),data["excludeFromPackage"].toBool());
     parent->addChild(item);
     checkModification();
@@ -641,13 +675,164 @@ QTreeWidgetItem *LibraryTreeWidget::newFile(QTreeWidgetItem *parent,QString name
 void LibraryTreeWidget::newFolder(QTreeWidgetItem *parent,QString name)
 {
     if (hasItemNamed(parent,name)) return;
-    QTreeWidgetItem *item = createFolderItem(name);
+    QDir dir = QFileInfo(projectFileName_).dir();
+    QString path=getItemPath(parent)+"/"+name;
+    if (!dir.cd(path))
+        if (!dir.mkpath(path))
+        {
+            QMessageBox::critical(this, tr("Gideros"), tr("Directory %1 couldn't be created.").arg(path));
+            return;
+        }
+
+    QTreeWidgetItem *item = createFolderItem(name,QString());
     parent->insertChild(0, item);
     checkModification();
 }
 
-void LibraryTreeWidget::remove(QTreeWidgetItem *item)
+void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
 {
+    std::stack<QTreeWidgetItem*> stack;
+    stack.push(item);
+
+    while (!stack.empty())
+    {
+        QTreeWidgetItem* item = stack.top();
+        stack.pop();
+
+        QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+        int nodetype = data ["nodetype"].toInt();
+        QString fspath = data["fspath"].toString();
+
+        if ((nodetype==NODETYPE_FILES)||(nodetype==NODETYPE_FOLDER)) {
+        	if (fspath.isEmpty()) {
+                //Virtual folder: construct real folder from ancestors
+                fspath=getItemPath(item);
+        	}
+
+        	// Check if path exists
+            QDir dir = QFileInfo(projectFileName_).dir();
+            if (nodetype==NODETYPE_FILES) {
+                //This is root asset folder, ensure it exists!
+                dir.mkdir(fspath);
+            }
+            if ((!fspath.isEmpty())&&dir.cd(fspath)) {
+                // EMPTY LIST and MARK EXISTING
+                QMap<QString,QTreeWidgetItem*> map;
+                for (int i = item->childCount()-1; i >=0 ; i--)
+                {
+                	QTreeWidgetItem* sub = item->child(i);
+                	map[sub->text(0)]=sub;
+                    item->removeChild(sub);
+                }
+                // SYNC
+                QFileInfoList ls=dir.entryInfoList(QStringList(),QDir::Dirs|QDir::Files|QDir::NoDotAndDotDot|QDir::Readable,QDir::DirsFirst|QDir::Name);
+                foreach (QFileInfo fi,ls) {
+                    if (map.contains(fi.fileName())) {
+                        QTreeWidgetItem *sub=map[fi.fileName()];
+                        QMap<QString, QVariant> sdata=sub->data(0, Qt::UserRole).toMap();
+                        int nodetype = sdata ["nodetype"].toInt();
+                        if ((fi.isDir()&&(nodetype==NODETYPE_FOLDER))||((fi.isFile()&&(nodetype==NODETYPE_FILE)))) {
+                            item->addChild(sub);
+                            if (fi.isFile()) {
+                                QMap<QString, QVariant> sdata=sub->data(0, Qt::UserRole).toMap();
+                                if (!sdata["link"].toBool()) {
+                                    QFileInfo fileInfo(sdata["filename"].toString());
+                                    if (fileInfo.suffix().toLower() == "lua")
+                                        dependencyGraph_.removeCode(sdata["filename"].toString());
+                                    sdata["filename"]=fspath+"/"+fi.fileName(); //Update file path
+                                    sub->setData(0, Qt::UserRole, sdata);
+                                    if (fileInfo.suffix().toLower() == "lua")
+                                        dependencyGraph_.addCode(sdata["filename"].toString(),sdata["excludeFromExecution"].toBool());
+                                }
+                            }
+                        }
+                        else {
+                            if (fi.isDir())
+                                sub=createFolderItem(fi.fileName(),QString());
+                            else
+                                sub=createFileItem(fspath+"/"+fi.fileName(),false);
+                            item->addChild(sub);
+                        }
+                        map.remove(fi.fileName());
+                    }
+                    else {
+                        QTreeWidgetItem *sub=NULL;
+                        if (fi.isDir())
+                            sub=createFolderItem(fi.fileName(),QString());
+                        else
+                            sub=createFileItem(fspath+"/"+fi.fileName(),false);
+                        item->addChild(sub);
+                    }
+             	}
+                //ADD BACK REMAINING LINKS
+                foreach (QTreeWidgetItem *sub,map) {
+                    QMap<QString, QVariant> sdata=sub->data(0, Qt::UserRole).toMap();
+                    if (sdata["link"].toBool()||(!sdata["fspath"].toString().isEmpty()))
+                    {
+                        item->addChild(sub);
+                    }
+                    else {
+                        QFileInfo fileInfo(sdata["filename"].toString());
+
+                        if (fileInfo.suffix().toLower() == "lua")
+                            dependencyGraph_.removeCode(sdata["filename"].toString());
+                    }
+                }
+                // SORT
+                sortFolder(item);
+            	// RECURSE
+                for (int i = 0; i < item->childCount(); ++i)
+                {
+                	QTreeWidgetItem* sub = item->child(i);
+                    int stype = (sub->data(0, Qt::UserRole).toMap()) ["nodetype"].toInt();
+                    if (stype==NODETYPE_FOLDER)
+                    	stack.push(sub);
+                }
+            }
+        }
+    }
+    checkModification();
+}
+
+void LibraryTreeWidget::remove(QTreeWidgetItem *item)
+{    
+    QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+    int nodetype = data ["nodetype"].toInt();
+    QString name=item->text(0);
+
+    QMessageBox::StandardButton reply;
+    if (nodetype==NODETYPE_FOLDER)
+    {
+        QString fspath=getItemPath(item);
+        QDir dir = QFileInfo(projectFileName_).dir();
+        if (!fspath.isEmpty()&&dir.cd(fspath))
+        {
+              reply = QMessageBox::question(this, "Delete folder", "Do you really want to delete folder '"+name+"' and all its subfolders ? This cannot be undone.",
+                                            QMessageBox::Yes|QMessageBox::Cancel);
+              if (reply == QMessageBox::No)
+                  return;
+              if (!dir.removeRecursively())
+                return;
+        }
+    }
+    else if (nodetype==NODETYPE_FILE)
+    {
+        if (!data["link"].toBool())
+        {
+            QString fspath=getItemPath(item->parent());
+            QDir dir = QFileInfo(projectFileName_).dir();
+            if (!fspath.isEmpty()&&dir.cd(fspath))
+            {
+                reply = QMessageBox::question(this, "Delete file", "Do you really want to delete file '"+name+"' ? This cannot be undone.",
+                                              QMessageBox::Yes|QMessageBox::Cancel);
+                if (reply == QMessageBox::No)
+                    return;
+                if (!dir.remove(name))
+                    return;
+            }
+        }
+    }
+
     if (item->parent())
         item->parent()->removeChild(item);
 
@@ -698,6 +883,52 @@ void LibraryTreeWidget::remove(QTreeWidgetItem *item)
     checkModification();
 }
 
+void LibraryTreeWidget::onItemChanged(QTreeWidgetItem* item, int column)
+{
+    QString name=item->text(0);
+    QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+    int nodetype = data ["nodetype"].toInt();
+    QString oldName = data["oldName"].toString();
+
+    if (nodetype==NODETYPE_FOLDER)
+    {
+        QString fspath=getItemPath(item->parent());
+        QDir dir = QFileInfo(projectFileName_).dir();
+        if (!fspath.isEmpty()&&(!oldName.isEmpty())&&dir.cd(fspath))
+        {
+            //Rename folder
+            if (!dir.rename(oldName,name))
+                name=oldName;
+        }
+    }
+    else if (nodetype==NODETYPE_FILE)
+    {
+        if (!data["link"].toBool())
+        {
+            QString fspath=getItemPath(item->parent());
+            QDir dir = QFileInfo(projectFileName_).dir();
+            if (!fspath.isEmpty()&&(!oldName.isEmpty())&&dir.cd(fspath))
+            {
+                //Rename file
+                if (!dir.rename(oldName,name))
+                    name=oldName;
+                else {
+                    QFileInfo fileInfo(data["filename"].toString());
+                    if (fileInfo.suffix().toLower() == "lua")
+                        dependencyGraph_.removeCode(data["filename"].toString());
+                    data["filename"]=fspath+"/"+name; //Update file path
+                    item->setData(0, Qt::UserRole, data);
+                    if (fileInfo.suffix().toLower() == "lua")
+                        dependencyGraph_.addCode(data["filename"].toString(),data["excludeFromExecution"].toBool());
+                }
+            }
+        }
+    }
+    data["oldName"]=name;
+    item->setText(0,name);
+    sortFolder(item->parent());
+}
+
 
 void LibraryTreeWidget::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
@@ -727,7 +958,13 @@ void LibraryTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
 		}
 	}
 }
-
+/*
+ * XML file/folder nodes
+ * 	- File Link: <file source="absolute target file" ...attributes...>
+ * 	- File Real: <file file="folder relative file name" ...attributes...>
+ * 	- Folder Link: <folder name="folder name" path="absolute target folder path">
+ * 	- Folder Virtual: <folder name="folder name" path="">
+ */
 QDomDocument LibraryTreeWidget::toXml() const
 {
 	QDomDocument doc;
@@ -768,7 +1005,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 			QDomElement childElement = doc.createElement(fileName.isEmpty() ? "folder" : "file");
 			if (fileName.isEmpty() == false)
 			{
-				childElement.setAttribute("source", fileName);
+				bool isLink=data["link"].toBool();
+				childElement.setAttribute(isLink?"source":"file", fileName);
                 if (data.contains("downsizing") && data["downsizing"].toBool())
                     childElement.setAttribute("downsizing", 1);
                 if (data.contains("excludeFromExecution") && data["excludeFromExecution"].toBool())
@@ -779,7 +1017,10 @@ QDomDocument LibraryTreeWidget::toXml() const
                     childElement.setAttribute("excludeFromPackage", 1);
             }
 			else
+			{
 				childElement.setAttribute("name", childItem->text(0));
+				childElement.setAttribute("path", data["fspath"].toString());
+			}
 
 			element.appendChild(childElement);
 
@@ -851,9 +1092,9 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 
 	QTreeWidgetItem* rootitem = createProjectItem(QFileInfo(projectFileName).completeBaseName());
 	addTopLevelItem(rootitem);
-	QTreeWidgetItem* pluginsFolder = createCatFolderItem("Plugins","folder plugins",NODETYPE_PLUGINS);
+	QTreeWidgetItem* pluginsFolder = createCatFolderItem("Plugins",QString(),"folder plugins",NODETYPE_PLUGINS);
 	rootitem->addChild(pluginsFolder);
-	QTreeWidgetItem* filesFolder = createCatFolderItem("Files","folder files",NODETYPE_FILES,true);
+	QTreeWidgetItem* filesFolder = createCatFolderItem("Files","assets","folder files",NODETYPE_FILES,true);
 	rootitem->addChild(filesFolder);
 
 	//Fill in plugins
@@ -896,12 +1137,12 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
                 bool excludeFromExecution = e.hasAttribute("excludeFromExecution") && e.attribute("excludeFromExecution").toInt();
                 bool excludeFromEncryption = e.hasAttribute("excludeFromEncryption") && e.attribute("excludeFromEncryption").toInt();
                 bool excludeFromPackage = e.hasAttribute("excludeFromPackage") && e.attribute("excludeFromPackage").toInt();
-                item = createFileItem(file, downsizing, excludeFromExecution, excludeFromEncryption,excludeFromPackage);
+                item = createFileItem(file, e.hasAttribute("source"),downsizing, excludeFromExecution, excludeFromEncryption,excludeFromPackage);
 			}
 			else if (type == "folder")
 			{
 				QString name = e.attribute("name");
-				item = createFolderItem(name);
+				item = createFolderItem(name,e.attribute("path"));
 			}
 			else if (type == "dependency")
 			{
@@ -920,13 +1161,11 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 			stack.push_back(std::make_pair(item, childNodes.item(i)));
 	}
 
-	rootitem->setExpanded(true);
-	filesFolder->setExpanded(true);
+    projectFileName_ = projectFileName;
 
 	for (std::size_t i = 0; i < dependencies.size(); ++i)
 		dependencyGraph_.addDependency(dependencies[i].first, dependencies[i].second);
 
-	projectFileName_ = projectFileName;
 
 	xmlString_ = toXml().toString();
 
@@ -935,22 +1174,34 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 
 	if (changed)
 		emit modificationChanged(isModifed_);
+
+    refreshFolder(filesFolder);
+
+    rootitem->setExpanded(true);
+    filesFolder->setExpanded(true);
+
 }
 
-QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool downsizing, bool excludeFromExecution, bool excludeFromEncryption, bool excludeFromPackage)
+QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool link, bool downsizing, bool excludeFromExecution, bool excludeFromEncryption, bool excludeFromPackage)
 {
 	QString name = QFileInfo(file).fileName();
 	QString ext = QFileInfo(file).suffix().toLower();
+    QString baseIcon="file";
+    QStringList tags;
 
-	QIcon icon;
 	if (ext == "png" || ext == "jpg" || ext == "jpeg")
-		icon = IconLibrary::instance().icon(0, "picture");
+        baseIcon="picture";
 	else if (ext == "lua")
-        icon = IconLibrary::instance().icon(0, excludeFromExecution ? "lua with stop" : "lua");
-	else if (ext == "mp3" || ext == "wav")
-		icon = IconLibrary::instance().icon(0, "sound");
-	else
-		icon = IconLibrary::instance().icon(0, "file");
+    {
+        baseIcon="lua";
+        if (excludeFromExecution) tags << "stop";
+    }
+    else if (ext == "mp3" || ext == "wav" || ext == "ogg" || ext == "oga")
+        baseIcon="sound";
+
+    if (link)
+        tags << "link";
+    QIcon icon = IconLibrary::instance().icon(baseIcon,tags);
 
 	QStringList strings;
 	strings << name;
@@ -964,6 +1215,8 @@ QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool dow
 	QMap<QString, QVariant> data;
 
 	data["filename"] = file;
+    data["oldName"] = name;
+	data["link"] = link;
 	data["nodetype"] = NODETYPE_FILE;
 
     if (downsizing)
@@ -1006,12 +1259,14 @@ QTreeWidgetItem* LibraryTreeWidget::createPluginItem(const QString& name)
 	return item;
 }
 
-QTreeWidgetItem* LibraryTreeWidget::createFolderItem(const QString& name)
+QTreeWidgetItem* LibraryTreeWidget::createFolderItem(const QString& name, const QString& fspath)
 {
 	QStringList strings;
 	strings << name;
+    QStringList tags;
+    if (!fspath.isEmpty()) tags<<"link";
 	QTreeWidgetItem *item = new QTreeWidgetItem(strings);
-	item->setIcon(0, IconLibrary::instance().icon(0, "folder"));
+    item->setIcon(0, IconLibrary::instance().icon("folder",tags));
 	item->setFlags(
 		Qt::ItemIsSelectable | 
 		Qt::ItemIsDragEnabled |
@@ -1021,7 +1276,9 @@ QTreeWidgetItem* LibraryTreeWidget::createFolderItem(const QString& name)
 
 	QMap<QString, QVariant> data;
 	data["filename"] = QString();
+	data["fspath"] = fspath;
 	data["nodetype"] = NODETYPE_FOLDER;
+    data["oldName"] = name;
 
 	item->setData(0, Qt::UserRole, data);
 
@@ -1050,7 +1307,7 @@ QTreeWidgetItem* LibraryTreeWidget::createProjectItem(const QString& name)
 	return item;
 }
 
-QTreeWidgetItem* LibraryTreeWidget::createCatFolderItem(const QString& name, const QString& icon, int nodetype, bool drop)
+QTreeWidgetItem* LibraryTreeWidget::createCatFolderItem(const QString& name,const QString& fspath, const QString& icon, int nodetype, bool drop)
 {
 	QStringList strings;
 	strings << name;
@@ -1066,6 +1323,7 @@ QTreeWidgetItem* LibraryTreeWidget::createCatFolderItem(const QString& name, con
 
 	QMap<QString, QVariant> data;
 	data["filename"] = QString();
+	data["fspath"]=fspath;
 	data["nodetype"] = nodetype;
 
 	item->setData(0, Qt::UserRole, data);
@@ -1083,9 +1341,9 @@ void LibraryTreeWidget::newProject(const QString& projectFileName)
 
 	QTreeWidgetItem* rootitem = createProjectItem(QFileInfo(projectFileName).completeBaseName());
 	addTopLevelItem(rootitem);
-	QTreeWidgetItem* pluginsFolder = createCatFolderItem("Plugins","folder plugins", NODETYPE_PLUGINS);
+	QTreeWidgetItem* pluginsFolder = createCatFolderItem("Plugins",QString(),"folder plugins", NODETYPE_PLUGINS);
 	rootitem->addChild(pluginsFolder);
-	QTreeWidgetItem* filesFolder = createCatFolderItem("Files","folder files",NODETYPE_FILES, true);
+	QTreeWidgetItem* filesFolder = createCatFolderItem("Files","assets","folder files",NODETYPE_FILES, true);
 	rootitem->addChild(filesFolder);
 
 	rootitem->setExpanded(true);
@@ -1100,6 +1358,48 @@ void LibraryTreeWidget::newProject(const QString& projectFileName)
 
 	if (changed)
 		emit modificationChanged(isModifed_);
+
+    refreshFolder(filesFolder);
+}
+
+void LibraryTreeWidget::dropEvent(QDropEvent *event)
+{
+    QTreeWidgetItem *item=currentItem();
+    QString srcPath=getItemPath(item);
+    QTreeWidget::dropEvent(event);
+    if (event->isAccepted())
+    {
+        QString dstPath=getItemPath(item);
+        QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+        int nodetype = data ["nodetype"].toInt();
+        if ((!srcPath.isEmpty())&&(!dstPath.isEmpty()))
+        {
+            QDir dir = QFileInfo(projectFileName_).dir();
+            if (nodetype==NODETYPE_FOLDER)
+            {
+                //Move folder
+                dir.rename(srcPath,dstPath);
+                refreshFolder(item);
+            }
+            else if (nodetype==NODETYPE_FILE)
+            {
+                if (!data["link"].toBool())
+                {
+                    //Rename file
+                    if (dir.rename(srcPath,dstPath))
+                    {
+                        QFileInfo fileInfo(data["filename"].toString());
+                        if (fileInfo.suffix().toLower() == "lua")
+                            dependencyGraph_.removeCode(data["filename"].toString());
+                        data["filename"]=dstPath;
+                        item->setData(0, Qt::UserRole, data);
+                        if (fileInfo.suffix().toLower() == "lua")
+                            dependencyGraph_.addCode(data["filename"].toString(),data["excludeFromExecution"].toBool());
+                    }
+                }
+            }
+        }
+    }
 }
 
 void LibraryTreeWidget::setModified(bool m)
@@ -1175,32 +1475,74 @@ void LibraryTreeWidget::sort()
 
 	if (selectedItems().empty() == false)
 		root = selectedItems()[0];
+    sortFolder(root);
+}
 
-	QList<QTreeWidgetItem*> children = root->takeChildren();
+void LibraryTreeWidget::sortFolder(QTreeWidgetItem* root)
+{
+    QList<QTreeWidgetItem*> children = root->takeChildren();
 
-	std::sort(children.begin(), children.end(), LessQTreeWidgetItem());
+    std::sort(children.begin(), children.end(), LessQTreeWidgetItem());
 
-	root->addChildren(children);
+    root->addChildren(children);
+}
+
+QString LibraryTreeWidget::getItemPath(QTreeWidgetItem *item)
+{
+    QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+    QString fspath = data["fspath"].toString();
+    if (!fspath.isEmpty()) return fspath;
+    fspath=item->text(0);
+    QTreeWidgetItem* p=item->parent();
+    while (p)
+    {
+        QMap<QString, QVariant> data=p->data(0, Qt::UserRole).toMap();
+        int type = data ["nodetype"].toInt();
+        if ((type!=NODETYPE_FOLDER)&&(type!=NODETYPE_FILES)) //Trouble: orphaned folder
+        {
+            fspath=QString();
+            break;
+        }
+        QString path = data["fspath"].toString();
+        if (!path.isEmpty())
+        {
+            fspath=path+"/"+fspath;
+            break;
+        }
+        fspath=p->text(0)+"/"+fspath;
+        p=p->parent();
+    }
+    return fspath;
 }
 
 void LibraryTreeWidget::addNewFile()
 {
-	QDir dir = QFileInfo(projectFileName_).dir();
+    QTreeWidgetItem* root = invisibleRootItem();
+
+    if (selectedItems().empty() == false)
+        root = selectedItems().front();
+
+    QDir dir = QFileInfo(projectFileName_).dir();
+    if (!dir.cd(getItemPath(root)))
+    {
+        QMessageBox::critical(this, tr("Gideros"), tr("Directory %1 does not exist.").arg(getItemPath(root)));
+        return;
+    }
 	AddNewFileDialog addNewFile(dir.path(), this);
 
 	while (1)
 	{
 		if (addNewFile.exec() == QDialog::Accepted)
 		{
-			QDir newdir = dir;
+            /*QDir newdir = dir;
 		
 			if (newdir.cd(addNewFile.location()) == false)
 			{
 				QMessageBox::critical(this, tr("Gideros"), tr("Directory %1 does not exist.").arg(addNewFile.location()));
 				continue;
-			}
+            }*/
 
-			QString filename = newdir.absoluteFilePath(addNewFile.fileName());
+            QString filename = dir.absoluteFilePath(addNewFile.fileName());
 
 			QFile file(filename);
 
@@ -1227,13 +1569,7 @@ void LibraryTreeWidget::addNewFile()
 			}
 			file.close();
 
-			// add file to the project
-			QTreeWidgetItem* root = invisibleRootItem();
-
-			if (selectedItems().empty() == false)
-				root = selectedItems().front();
-
-			QTreeWidgetItem *item = createFileItem(dir.relativeFilePath(filename));
+            QTreeWidgetItem *item = createFileItem(dir.relativeFilePath(filename),false);
 			if (root == invisibleRootItem())
 				root->addChild(item);
 			else
