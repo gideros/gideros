@@ -367,10 +367,10 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 		menu.exec(QCursor::pos());
 }
 
-bool LibraryTreeWidget::hasItemNamed(QTreeWidgetItem* root,QString name)
+bool LibraryTreeWidget::hasItemNamed(QTreeWidgetItem* root,QString name, bool link)
 {
 	for (int i = 0; i < root->childCount(); ++i)
-		if (!name.compare(root->child(i)->text(0)))
+        if ((!name.compare(root->child(i)->text(0)))&&(root->data(0, Qt::UserRole).toMap()["link"].toBool()==link))
 			return true;
 	return false;
 }
@@ -399,7 +399,7 @@ void LibraryTreeWidget::importToLibrary()
 		else
 		{
 			QString name=QFileInfo(fileName).fileName();
-			if (hasItemNamed(root,name))
+            if (hasItemNamed(root,name,true))
 				QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added here because there is already a file named '%2' in this folder.").arg(fileName).arg(name));
 			else
 			{
@@ -460,7 +460,7 @@ void LibraryTreeWidget::importFolder()
                     QString fileName = dir.relativeFilePath((*it).absoluteFilePath());
                     QString name=QFileInfo(fileName).fileName();
 
-                    if (isFileAlreadyImported(fileName,true)||hasItemNamed(root,name))
+                    if (isFileAlreadyImported(fileName,true)||hasItemNamed(root,name,true))
                     {
                         //QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added to the library because it is already a member of the library.").arg(fileName));
                     }
@@ -650,7 +650,7 @@ void LibraryTreeWidget::newFolder()
 	if (selectedItems().empty() == false)
 		root = selectedItems().front();
 
-    if (hasItemNamed(root,"New Folder")) return;
+    if (hasItemNamed(root,"New Folder",false)) return;
     QDir dir = QFileInfo(projectFileName_).dir();
     QString path=getItemPath(root)+"/New Folder";
     if (!dir.cd(path))
@@ -693,7 +693,7 @@ QTreeWidgetItem *LibraryTreeWidget::newFile(QTreeWidgetItem *parent,QString name
 
 void LibraryTreeWidget::newFolder(QTreeWidgetItem *parent,QString name)
 {
-    if (hasItemNamed(parent,name)) return;
+    if (hasItemNamed(parent,name,false)) return;
     QDir dir = QFileInfo(projectFileName_).dir();
     QString path=getItemPath(parent)+"/"+name;
     if (!dir.cd(path))
