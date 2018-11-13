@@ -77,6 +77,8 @@ Section "Gideros (required)"
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   ${registerExtension} "$INSTDIR\GiderosStudio.exe" ".gproj" "Gideros project" 
+  ${registerExtension} "$INSTDIR\GiderosTexturePacker.exe" ".tpproj" "Gideros texture packer project" 
+   
   
 SectionEnd
 
@@ -88,7 +90,7 @@ Section "Start Menu Shortcuts"
   CreateShortCut "$SMPROGRAMS\Gideros\Gideros Player.lnk" "$INSTDIR\GiderosPlayer.exe" "" "$INSTDIR\GiderosPlayer.exe" 0
   CreateShortCut "$SMPROGRAMS\Gideros\Gideros Font Creator.lnk" "$INSTDIR\GiderosFontCreator.exe" "" "$INSTDIR\GiderosFontCreator.exe" 0
   CreateShortCut "$SMPROGRAMS\Gideros\Gideros Texture Packer.lnk" "$INSTDIR\GiderosTexturePacker.exe" "" "$INSTDIR\GiderosTexturePacker.exe" 0
-  CreateShortCut "$SMPROGRAMS\Gideros\Gideros License Manager.lnk" "$INSTDIR\GiderosLicenseManager.exe" "" "$INSTDIR\GiderosLicenseManager.exe" 0
+  ;CreateShortCut "$SMPROGRAMS\Gideros\Gideros License Manager.lnk" "$INSTDIR\GiderosLicenseManager.exe" "" "$INSTDIR\GiderosLicenseManager.exe" 0
   CreateShortCut "$SMPROGRAMS\Gideros\Examples.lnk" "$INSTDIR\Examples" "" "$INSTDIR\Examples" 0
   CreateShortCut "$SMPROGRAMS\Gideros\Reference Manual.lnk" "$INSTDIR\Documentation\reference_manual.html" "" "$INSTDIR\Documentation\reference_manual.html" 0
   CreateShortCut "$SMPROGRAMS\Gideros\Getting Started.lnk" "$INSTDIR\Documentation\getting_started.html" "" "$INSTDIR\Documentation\getting_started.html" 0

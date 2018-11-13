@@ -185,10 +185,10 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 	addNewFileAction_ = new QAction(tr("Add New File..."), this);
 	connect(addNewFileAction_, SIGNAL(triggered()), this, SLOT(addNewFile()));
 
-	importToLibraryAction_ = new QAction(tr("Add Existing Files..."), this);
+    importToLibraryAction_ = new QAction(tr("Link Existing Files..."), this);
 	connect(importToLibraryAction_, SIGNAL(triggered()), this, SLOT(importToLibrary()));
 
-	importFolderAction_ = new QAction(tr("Add folder content..."), this);
+    importFolderAction_ = new QAction(tr("Link folder..."), this);
 	connect(importFolderAction_, SIGNAL(triggered()), this, SLOT(importFolder()));
 
 //	newFontAction_ = new QAction(tr("New Font..."), this);
@@ -392,7 +392,7 @@ void LibraryTreeWidget::importToLibrary()
 	{
 		QString fileName = dir.relativeFilePath(*it);
 
-		if (isFileAlreadyImported(fileName))
+        if (isFileAlreadyImported(fileName,true))
 		{
 			QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added to the library because it is already a member of the library.").arg(fileName));
 		}
@@ -431,70 +431,89 @@ void LibraryTreeWidget::importFolder()
 	if(basedir.isEmpty())
 		return;
 
-	struct _Folder {
-		QString basedir;
-		QTreeWidgetItem *root;
-		_Folder(QString d,QTreeWidgetItem *i) : basedir(d), root(i) { };
-	};
+    bool recursiveImport=false;
 
-	std::vector<_Folder> stack;
-	stack.push_back(_Folder(basedir,root));
+    if (recursiveImport)
+    {
+        struct _Folder {
+            QString basedir;
+            QTreeWidgetItem *root;
+            _Folder(QString d,QTreeWidgetItem *i) : basedir(d), root(i) { };
+        };
 
-	while (stack.size()>0)
-	{
-		_Folder f=stack.back();
-		stack.pop_back();
-		basedir=f.basedir;
-		root=f.root;
-		QFileInfoList entryList=QDir(basedir).entryInfoList( QStringList() << "*", QDir::Dirs|QDir::Files|QDir::NoSymLinks|QDir::NoDotAndDotDot|QDir::Readable );
+        std::vector<_Folder> stack;
+        stack.push_back(_Folder(basedir,root));
 
-		QFileInfoList::Iterator it = entryList.begin();
-		while(it != entryList.end())
-		{
-			if ((*it).isFile())
-			{
-				QString fileName = dir.relativeFilePath((*it).absoluteFilePath());
-				QString name=QFileInfo(fileName).fileName();
+        while (stack.size()>0)
+        {
+            _Folder f=stack.back();
+            stack.pop_back();
+            basedir=f.basedir;
+            root=f.root;
+            QFileInfoList entryList=QDir(basedir).entryInfoList( QStringList() << "*", QDir::Dirs|QDir::Files|QDir::NoSymLinks|QDir::NoDotAndDotDot|QDir::Readable );
 
-				if (isFileAlreadyImported(fileName)||hasItemNamed(root,name))
-				{
-					//QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added to the library because it is already a member of the library.").arg(fileName));
-				}
-				else
-				{
-					QTreeWidgetItem *item = createFileItem(fileName,true);
-					if (root == invisibleRootItem())
-						root->addChild(item);
-					else
-						root->insertChild(0, item);
-					root->setExpanded(true);
-				}
-			}
-			else if ((*it).isDir())
-			{
-                QDir dir = QFileInfo(projectFileName_).dir();
-                QString path=getItemPath(root)+"/"+(*it).fileName();
-                if (!dir.cd(path))
-                    if (!dir.mkpath(path))
+            QFileInfoList::Iterator it = entryList.begin();
+            while(it != entryList.end())
+            {
+                if ((*it).isFile())
+                {
+                    QString fileName = dir.relativeFilePath((*it).absoluteFilePath());
+                    QString name=QFileInfo(fileName).fileName();
+
+                    if (isFileAlreadyImported(fileName,true)||hasItemNamed(root,name))
                     {
-                        //QMessageBox::critical(this, tr("Gideros"), tr("Directory %1 couldn't be created.").arg(path));
+                        //QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added to the library because it is already a member of the library.").arg(fileName));
                     }
+                    else
+                    {
+                        QTreeWidgetItem *item = createFileItem(fileName,true);
+                        if (root == invisibleRootItem())
+                            root->addChild(item);
+                        else
+                            root->insertChild(0, item);
+                        root->setExpanded(true);
+                    }
+                }
+                else if ((*it).isDir())
+                {
+                    QDir dir = QFileInfo(projectFileName_).dir();
+                    QString path=getItemPath(root)+"/"+(*it).fileName();
+                    if (!dir.cd(path))
+                        if (!dir.mkpath(path))
+                        {
+                            //QMessageBox::critical(this, tr("Gideros"), tr("Directory %1 couldn't be created.").arg(path));
+                        }
 
-                QTreeWidgetItem *item = createFolderItem((*it).fileName(),QString());
+                    QTreeWidgetItem *item = createFolderItem((*it).fileName(),QString());
 
-				root->setExpanded(true);
-				if (root == invisibleRootItem())
-					root->addChild(item);
-				else
-					root->insertChild(0, item);
+                    root->setExpanded(true);
+                    if (root == invisibleRootItem())
+                        root->addChild(item);
+                    else
+                        root->insertChild(0, item);
 
-				stack.push_back(_Folder((*it).filePath(),item));
-			}
+                    stack.push_back(_Folder((*it).filePath(),item));
+                }
 
-			++it;
-		}
-	}
-	checkModification();
+                ++it;
+            }
+        }
+    }
+    else
+    {
+        //Just link
+        QFileInfo baseInfo(basedir);
+        QTreeWidgetItem *item = createFolderItem(baseInfo.fileName(),basedir);
+
+        root->setExpanded(true);
+        if (root == invisibleRootItem())
+            root->addChild(item);
+        else
+            root->insertChild(0, item);
+
+        refreshFolder(item);
+    }
+    checkModification();
 }
 
 /*
@@ -721,8 +740,12 @@ void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
                 for (int i = item->childCount()-1; i >=0 ; i--)
                 {
                 	QTreeWidgetItem* sub = item->child(i);
-                	map[sub->text(0)]=sub;
-                    item->removeChild(sub);
+                    QMap<QString, QVariant> sdata=sub->data(0, Qt::UserRole).toMap();
+                    if (!(sdata["link"].toBool()||(!sdata["fspath"].toString().isEmpty())))
+                    {
+                        map[sub->text(0)]=sub;
+                        item->removeChild(sub);
+                    }
                 }
                 // SYNC
                 QFileInfoList ls=dir.entryInfoList(QStringList(),QDir::Dirs|QDir::Files|QDir::NoDotAndDotDot|QDir::Readable,QDir::DirsFirst|QDir::Name);
@@ -734,16 +757,13 @@ void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
                         if ((fi.isDir()&&(nodetype==NODETYPE_FOLDER))||((fi.isFile()&&(nodetype==NODETYPE_FILE)))) {
                             item->addChild(sub);
                             if (fi.isFile()) {
-                                QMap<QString, QVariant> sdata=sub->data(0, Qt::UserRole).toMap();
-                                if (!sdata["link"].toBool()) {
-                                    QFileInfo fileInfo(sdata["filename"].toString());
-                                    if (fileInfo.suffix().toLower() == "lua")
-                                        dependencyGraph_.removeCode(sdata["filename"].toString());
-                                    sdata["filename"]=fspath+"/"+fi.fileName(); //Update file path
-                                    sub->setData(0, Qt::UserRole, sdata);
-                                    if (fileInfo.suffix().toLower() == "lua")
-                                        dependencyGraph_.addCode(sdata["filename"].toString(),sdata["excludeFromExecution"].toBool());
-                                }
+                                QFileInfo fileInfo(sdata["filename"].toString());
+                                if (fileInfo.suffix().toLower() == "lua")
+                                    dependencyGraph_.removeCode(sdata["filename"].toString());
+                                sdata["filename"]=fspath+"/"+fi.fileName(); //Update file path
+                                sub->setData(0, Qt::UserRole, sdata);
+                                if (fileInfo.suffix().toLower() == "lua")
+                                    dependencyGraph_.addCode(sdata["filename"].toString(),sdata["excludeFromExecution"].toBool());
                             }
                         }
                         else {
@@ -767,16 +787,10 @@ void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
                 //ADD BACK REMAINING LINKS
                 foreach (QTreeWidgetItem *sub,map) {
                     QMap<QString, QVariant> sdata=sub->data(0, Qt::UserRole).toMap();
-                    if (sdata["link"].toBool()||(!sdata["fspath"].toString().isEmpty()))
-                    {
-                        item->addChild(sub);
-                    }
-                    else {
-                        QFileInfo fileInfo(sdata["filename"].toString());
+                    QFileInfo fileInfo(sdata["filename"].toString());
 
-                        if (fileInfo.suffix().toLower() == "lua")
-                            dependencyGraph_.removeCode(sdata["filename"].toString());
-                    }
+                    if (fileInfo.suffix().toLower() == "lua")
+                        dependencyGraph_.removeCode(sdata["filename"].toString());
                 }
                 // SORT
                 sortFolder(item);
@@ -805,11 +819,11 @@ void LibraryTreeWidget::remove(QTreeWidgetItem *item)
     {
         QString fspath=getItemPath(item);
         QDir dir = QFileInfo(projectFileName_).dir();
-        if (!fspath.isEmpty()&&dir.cd(fspath))
+        if (data["fspath"].toString().isEmpty()&&(!fspath.isEmpty()&&dir.cd(fspath))) //Not a link but has a path: this is a real folder
         {
               reply = QMessageBox::question(this, "Delete folder", "Do you really want to delete folder '"+name+"' and all its subfolders ? This cannot be undone.",
                                             QMessageBox::Yes|QMessageBox::Cancel);
-              if (reply == QMessageBox::No)
+              if (reply == QMessageBox::Cancel)
                   return;
               if (!dir.removeRecursively())
                 return;
@@ -825,7 +839,7 @@ void LibraryTreeWidget::remove(QTreeWidgetItem *item)
             {
                 reply = QMessageBox::question(this, "Delete file", "Do you really want to delete file '"+name+"' ? This cannot be undone.",
                                               QMessageBox::Yes|QMessageBox::Cancel);
-                if (reply == QMessageBox::No)
+                if (reply == QMessageBox::Cancel)
                     return;
                 if (!dir.remove(name))
                     return;
@@ -1429,7 +1443,7 @@ void LibraryTreeWidget::codeDependencies()
 	codeDependencies.exec();
 }
 
-bool LibraryTreeWidget::isFileAlreadyImported(const QString& fileName)
+bool LibraryTreeWidget::isFileAlreadyImported(const QString& fileName, bool link)
 {
 	std::stack<QTreeWidgetItem*> stack;
 	stack.push(invisibleRootItem());
@@ -1439,7 +1453,8 @@ bool LibraryTreeWidget::isFileAlreadyImported(const QString& fileName)
 		QTreeWidgetItem* item = stack.top();
 		stack.pop();
 
-		if (fileName == item->data(0, Qt::UserRole).toMap()["filename"].toString())
+        QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+        if ((fileName == data["filename"].toString())&&(link==data["link"].toBool()))
 			return true;
 
 		for (int i = 0; i < item->childCount(); ++i)

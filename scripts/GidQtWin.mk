@@ -74,6 +74,7 @@ qt.install: buildqt qt5.install qt.player tools html5.tools
 	cp $(ROOT)/texturepacker/$(QTTGT_DIR)/GiderosTexturePacker.exe $(RELEASE)
 	cp $(ROOT)/fontcreator/$(QTTGT_DIR)/GiderosFontCreator.exe $(RELEASE)
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
+	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Resources/gideros_annot.api
 	cd $(ROOT)/ui/;tar cf - --exclude=Tools/lua --exclude Tools/luac --exclude Tools/make Tools | (cd ../$(RELEASE) && tar xvf - )
 	cp $(ROOT)/lua/src/lua.exe $(RELEASE)/Tools
 	cp $(ROOT)/lua/src/luac.exe $(RELEASE)/Tools
