@@ -94,7 +94,7 @@ private:
 	QTreeWidgetItem* createProjectItem(const QString& name);
 	QTreeWidgetItem* createCatFolderItem(const QString& name, const QString& fspath, const QString& icon, int nodetype, bool drop=false);
     QTreeWidgetItem* createPluginItem(const QString& name);
-    bool hasItemNamed(QTreeWidgetItem* root,QString name);
+    bool hasItemNamed(QTreeWidgetItem* root,QString name, bool link);
 
 private:
 	QAction* addNewFileAction_;
