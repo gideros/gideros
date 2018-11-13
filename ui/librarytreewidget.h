@@ -128,7 +128,7 @@ private slots:
 	void codeDependencies();
 
 private:
-	bool isFileAlreadyImported(const QString& fileName);
+    bool isFileAlreadyImported(const QString& fileName, bool link);
 
 private:
 	ProjectProperties properties_;

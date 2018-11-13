@@ -24,7 +24,6 @@ fetchdoc:
 	rm -rf $(RELEASE)/Documentation _docs.zip
 	#mv docs.giderosmobile.com $(RELEASE)/Documentation
 	#-wget -nv "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE)/Resources/gideros_annot.api
-	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Resources/gideros_annot.api
 	cp $(addprefix $(ROOT)/,$(TXTFILES)) $(RELEASE)
 	 
 build.mac.pkg:
