@@ -190,6 +190,8 @@ QMainWindow::separator {
    <addaction name="actionStepOver"/>
    <addaction name="actionStepInto"/>
    <addaction name="actionStepReturn"/>
+   <addaction name="separator"/>
+   <addaction name="actionProfile"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew_Project">
@@ -689,25 +691,45 @@ Gideros Player, Play button is enabled.</string>
    <property name="text">
     <string>Step Over</string>
    </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
   </action>
   <action name="actionStepInto">
    <property name="text">
     <string>Step Into</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
    </property>
   </action>
   <action name="actionStepReturn">
    <property name="text">
     <string>Step Return</string>
    </property>
+   <property name="shortcut">
+    <string>Shift+F8</string>
+   </property>
   </action>
   <action name="actionResume">
    <property name="text">
     <string>Resume</string>
    </property>
+   <property name="shortcut">
+    <string>Shift+F5</string>
+   </property>
   </action>
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionProfile">
+   <property name="text">
+    <string>Profile</string>
+   </property>
+   <property name="toolTip">
+    <string>Profile code</string>
    </property>
   </action>
  </widget>

@@ -52,6 +52,7 @@ public:
     void refreshFolder(QTreeWidgetItem *item);
     void sortFolder(QTreeWidgetItem* root);
     QString getItemPath(QTreeWidgetItem *item);
+    bool folderHasLinks(QTreeWidgetItem *item);
 
 signals:
 	void modificationChanged(bool m);
