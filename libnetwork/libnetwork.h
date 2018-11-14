@@ -29,6 +29,10 @@ enum GiderosPacketType {
 	gptBreaked=23, //Player->Studio
 	gptSymbolValue=24, //Player->Studio
 
+	//Profiling
+	gptProfilingOn=30,
+	gptProfilingResult=31,
+
 	gptLast
 };
 

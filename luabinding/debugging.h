@@ -24,6 +24,7 @@ class LuaDebugging {
     static void serializeValue(ByteBuffer &buffer,lua_State *L,int n,int nref);
 	static void setupBreakMode(int m);
 public:
+    static bool profiling;
     static int lastLine;
     static lua_State *L;
     static int yieldHookMask;

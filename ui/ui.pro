@@ -90,7 +90,8 @@ SOURCES += \
     dependencygraph.cpp \
     addons.cpp \
     qtutils.cpp \
-    preferencesdialog.cpp
+    preferencesdialog.cpp \
+    profilerreport.cpp
 
 SOURCES += $$files(../libpvrt/*.cpp)
 
@@ -134,7 +135,8 @@ HEADERS  += \
     addons.h \
     qtutils.h \
     preferencesdialog.h \
-    settingskeys.h
+    settingskeys.h \
+    profilerreport.h
 
 FORMS    += mainwindow.ui \
     savechangesdialog.ui \

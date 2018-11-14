@@ -71,6 +71,7 @@ IconLibrary::IconLibrary()
 
     tagMap_["stop"]=icontag(4,0,4,4);
     tagMap_["link"]=icontag(15,0,2,-3);
+    tagMap_["magnifier"]=icontag(0,1,3,3);
 
 /*
 	danish_["advanced"] = QIcon("Resources/danish/advanced.png");

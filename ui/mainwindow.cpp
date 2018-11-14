@@ -56,8 +56,11 @@
 #include "addons.h"
 #include <QToolTip>
 #include "preferencesdialog.h"
+#include "profilerreport.h"
 
 MainWindow *MainWindow::lua_instance=NULL;
+QTemporaryDir *MainWindow::tempDir=NULL;
+
 static int ltw_notifyClient(lua_State *L) {
     if (!MainWindow::lua_instance) return 0;
     const char *cid=luaL_optstring(L,1,NULL);
@@ -87,6 +90,8 @@ MainWindow::MainWindow(QWidget *parent)
     tabListWidget_ = NULL;
 
 	ui.setupUi(this);
+
+    tempDir=new QTemporaryDir();
 
 	mdiArea_ = new MdiArea(this);
 
@@ -195,6 +200,10 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionStop->setIcon(IconLibrary::instance().icon(0, "stop"));
 	ui.actionStop->setEnabled(false);
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(stop()));
+
+    ui.actionProfile->setIcon(IconLibrary::instance().icon("start",QStringList() << "magnifier"));
+    ui.actionProfile->setEnabled(false);
+    connect(ui.actionProfile, SIGNAL(triggered()), this, SLOT(startProfile()));
 
     connect(ui.actionCheck_Syntax, SIGNAL(triggered()), this, SLOT(compile()));
     connect(ui.actionCheck_Syntax_All, SIGNAL(triggered()), this, SLOT(compileAll()));
@@ -507,6 +516,7 @@ MainWindow::~MainWindow()
 {
 	delete addonsServer_;
 	delete client_;
+    delete tempDir;
 }
 
 void MainWindow::addonTriggered() {
@@ -641,7 +651,8 @@ void MainWindow::start()
 {
     if (isBreaked_) resumeDebug(0x00);
     isDebug_=false;
-	if (prepareStartOnPlayer())
+    isProfile_=false;
+    if (prepareStartOnPlayer())
 		startOnPlayer();
 }
 
@@ -649,11 +660,24 @@ void MainWindow::startDebug()
 {
     if (isBreaked_) resumeDebug(0x00);
     isDebug_=true;
-	if (prepareStartOnPlayer())
+    isProfile_=false;
+    if (prepareStartOnPlayer())
 		startOnPlayer();
 	else
 		isDebug_=false;
 }
+
+void MainWindow::startProfile()
+{
+    if (isBreaked_) resumeDebug(0x00);
+    isDebug_=false;
+    isProfile_=true;
+    if (prepareStartOnPlayer())
+        startOnPlayer();
+    else
+        isProfile_=false;
+}
+
 
 void MainWindow::resume() {
     resumeDebug(0x84); // Mask LINE + BKPT
@@ -742,6 +766,7 @@ void MainWindow::startOnPlayer()
 void MainWindow::startAllPlayers()
 {
 	isDebug_=false;
+    isProfile_=false;
 	if (!prepareStartOnPlayer())
 		return;
 	int pc=players_->count();
@@ -1098,6 +1123,11 @@ unsigned int MainWindow::sendPlayMessage(const QStringList& luafiles)
 
 		client_->sendCommand(buffer.data(),buffer.size());
 	}
+    else if (isProfile_) {
+        ByteBuffer buffer;
+        buffer << (char) 30;
+        client_->sendCommand(buffer.data(),buffer.size());
+    }
 	unsigned int code=client_->sendPlay(luafiles);
 	playStarted();
 	return code;
@@ -2029,7 +2059,8 @@ void MainWindow::playerSettings()
 	{
 		ui.actionStart->setEnabled(false);
 		ui.actionDebug->setEnabled(false);
-		ui.actionStop->setEnabled(false);
+        ui.actionProfile->setEnabled(false);
+        ui.actionStop->setEnabled(false);
 		
 		//sentMap_.clear();
 		
@@ -2195,7 +2226,8 @@ void MainWindow::connected()
 
 	ui.actionStart->setEnabled(true);
 	ui.actionDebug->setEnabled(true);
-	ui.actionStop->setEnabled(true);
+    ui.actionProfile->setEnabled(true);
+    ui.actionStop->setEnabled(true);
 	printf("other side connected\n");
 
 	if (!allPlayersPlayList.empty())
@@ -2213,7 +2245,8 @@ void MainWindow::disconnected()
 	ui.actionStart->setEnabled(false);
 	ui.actionDebug->setEnabled(false);
 	ui.actionStop->setEnabled(false);
-	printf("other side closed connection\n");
+    ui.actionProfile->setEnabled(false);
+    printf("other side closed connection\n");
 }
 
 QVariant MainWindow::deserializeValue(ByteBuffer &buffer, QString &vtype) {
@@ -2404,6 +2437,17 @@ void MainWindow::dataReceived(const QByteArray& d)
 
         if (textEdit==lookupSymbolWidget) {
             QToolTip::showText(textEdit->mapToGlobal(lookupSymbolPoint),QString("<i>%1</i> <b>%2</b>").arg(vtype).arg(value.toString().toHtmlEscaped()),textEdit);
+        }
+    }
+    if (data[0]==31) { //Profiling report
+        ByteBuffer buffer(d.constData(), d.size());
+
+        char chr,type;
+        buffer >> chr;
+        QString vtype;
+        QVariant value=deserializeValue(buffer,vtype);
+        if (vtype=="table") {
+            ProfilerReport::displayReport(value);
         }
     }
 }

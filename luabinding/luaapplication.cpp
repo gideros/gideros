@@ -1052,6 +1052,8 @@ LuaApplication::~LuaApplication(void)
 
 void LuaApplication::deinitialize()
 {
+	LuaDebugging::profiling=false;
+	Core_profilerStop(L);
 	/*
 		Application icindeki stage'in iki tane sahibi var.
 		1-Application
@@ -1539,6 +1541,10 @@ void LuaApplication::initialize()
     LuaDebugging::yieldHookMask=0;
     LuaDebugging::hook=yieldHook;
     lua_sethook(L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1);
+
+    Core_profilerReset(L);
+    if (LuaDebugging::profiling)
+    	Core_profilerStart(L);
 }
 
 void LuaApplication::setScale(float scale)

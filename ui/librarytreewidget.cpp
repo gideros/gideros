@@ -708,6 +708,26 @@ void LibraryTreeWidget::newFolder(QTreeWidgetItem *parent,QString name)
     checkModification();
 }
 
+bool LibraryTreeWidget::folderHasLinks(QTreeWidgetItem *item)
+{
+    std::stack<QTreeWidgetItem*> stack;
+    stack.push(item);
+
+    while (!stack.empty())
+    {
+        QTreeWidgetItem* item = stack.top();
+        stack.pop();
+
+        QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+        QString fspath = data["fspath"].toString();
+        if (!fspath.isEmpty()) return true;
+        if (data["link"].toBool()) return true;
+        for (int i = 0; i < item->childCount(); ++i)
+                stack.push(item->child(i));
+    }
+    return false;
+}
+
 void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
 {
     std::stack<QTreeWidgetItem*> stack;
@@ -730,8 +750,7 @@ void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
 
         	// Check if path exists
             QDir dir = QFileInfo(projectFileName_).dir();
-            if (nodetype==NODETYPE_FILES) {
-                //This is root asset folder, ensure it exists!
+            if (!(fspath.isEmpty())) {
                 dir.mkdir(fspath);
             }
             if ((!fspath.isEmpty())&&dir.cd(fspath)) {
@@ -784,13 +803,15 @@ void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
                         item->addChild(sub);
                     }
              	}
-                //ADD BACK REMAINING LINKS
+                //ADD BACK REMAINING FOLDER WITH LINKS
                 foreach (QTreeWidgetItem *sub,map) {
                     QMap<QString, QVariant> sdata=sub->data(0, Qt::UserRole).toMap();
                     QFileInfo fileInfo(sdata["filename"].toString());
 
                     if (fileInfo.suffix().toLower() == "lua")
                         dependencyGraph_.removeCode(sdata["filename"].toString());
+                    if (folderHasLinks(sub))
+                        item->addChild(sub);
                 }
                 // SORT
                 sortFolder(item);

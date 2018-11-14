@@ -20,6 +20,7 @@ int LuaDebugging::subCount=0;
 int LuaDebugging::debuggerMode=0;
 int LuaDebugging::lastLine=0;
 std::string LuaDebugging::lastFile;
+bool LuaDebugging::profiling=false;
 
 std::map<int,std::set<std::string>> LuaDebugging::breakpoints;
 
@@ -48,6 +49,7 @@ void LuaDebugging::serializeValue(ByteBuffer &buffer,lua_State *L,int n,int nref
 	switch (type) {
 	case LUA_TNIL:
 	case LUA_TNONE:
+		break;
     case LUA_TREF:
         lua_pushvalue(L,n);
         lua_rawget(L,nrefs);
@@ -147,8 +149,24 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
 		debuggerMode=0;
 		LuaApplication::debuggerHook=NULL;
         lastLine=-1;
+        if (L&&profiling&&(data[0]==gptStop)) {
+        	LuaApplication::Core_profilerReport(L);
+    		ByteBuffer buffer;
+    		buffer << (char) gptProfilingResult;
+            lua_newtable(L);
+            serializeValue(buffer,L,-2,-1);
+            lua_pop(L,2);
+    		LuaDebugging::studio->sendData(buffer.data(),buffer.size());
+        }
 		break;
 	}
+	case gptProfilingOn:
+		LuaDebugging::profiling=true;
+		if (L) {
+			LuaApplication::Core_profilerReset(L);
+			LuaApplication::Core_profilerStart(L);
+		}
+		break;
 	case gptLookupSymbol: {
 		std::string sym = &data[1];
 		//Lookup the variable

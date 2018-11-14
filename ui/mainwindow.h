@@ -14,6 +14,7 @@
 #include <QListWidget>
 #include "addons.h"
 #include "bytebuffer.h"
+#include <QTemporaryDir>
 
 #define NEW_CLIENT
 
@@ -160,6 +161,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
 	~MainWindow();
+    static QTemporaryDir *tempDir;
 
 private:
 	virtual void timerEvent(QTimerEvent*);
@@ -173,7 +175,8 @@ private slots:
 	void onSingleShot();
 	void onTimer();
 	void start();
-	void startDebug();
+    void startDebug();
+    void startProfile();
     void resume();
     void stepOver();
     void stepInto();
@@ -262,7 +265,8 @@ private:
 	void cancelUpload();
 	bool isTransferring_;
 	bool isBreaked_;
-	bool isDebug_;
+    bool isDebug_;
+    bool isProfile_;
 
 private:
 //	void enableUI();

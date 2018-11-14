@@ -14,8 +14,11 @@
 	<property name="androidTools" type="string" title="Android Tools Version (optional)" description="The android tools version to be used for compiling (optional)" default="" />
 	<rules>
 	<lua>
-require "lfs"
+local appName=Export.getProperty("project.app_name")
+appName=string.gsub(appName,"'","\\'")
+Export.setProperty("local.app_name",appName)
 
+require "lfs"
 local java=Export.getProperty("export.javaPath")
 if lfs.attributes(java,"mode")~="directory" then
 	if Export.getProperty("sys.exeExtension")==".exe" then
@@ -124,7 +127,7 @@ local ap=require("Tools/export_android")
 		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/AndroidStudio/Android Template">
 			<replacelist wildcards="*.xml;*.java;*.gradle">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
-		        <replace orig="Android Template App Name" by="[[[project.app_name]]]"/>
+		        <replace orig="Android Template App Name" by="[[[local.app_name]]]"/>
 				<replace orig="Android Template" by="[[[project.name]]]"/>
 				<replace orig="com.giderosmobile.androidtemplate" by="[[[export.packageName]]]"/>
         		<replace orig="android:targetSdkVersion=&quot;19&quot;" by="android:targetSdkVersion=&quot;[[[export.androidTarget]]]&quot;"/>
