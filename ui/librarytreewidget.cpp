@@ -1605,7 +1605,9 @@ void LibraryTreeWidget::addNewFile()
 			}
 			file.close();
 
-            QTreeWidgetItem *item = createFileItem(dir.relativeFilePath(filename),false);
+            QDir pdir = QFileInfo(projectFileName_).dir();
+
+            QTreeWidgetItem *item = createFileItem(pdir.relativeFilePath(filename),false);
 			if (root == invisibleRootItem())
 				root->addChild(item);
 			else

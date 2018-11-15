@@ -16,6 +16,7 @@ IconLibrary::IconLibrary()
     iconRef_["step return"] = iconref(4, 35);
     iconRef_["resume"] = iconref(1, 35);
     iconRef_["stop"] = iconref(14, 34);
+    iconRef_["profiler"] = iconref(10, 35);
     iconRef_["gamepad"] = iconref(12, 34);
 
     iconRef_["picture"] = iconref(0, 21);

@@ -26,16 +26,34 @@ QString ProfilerReport::generateReport(QVariant pinf) {
 
     QString out;
     out+="<html><head><style type=\"text/css\">\n"
-    "table, th, td, tr { border-collapse: collapse; padding: 3px; font-family: \"Lucida Console\", Courier New; font-weight:bold;}\n"
-    "tr:nth-child(odd) {background-color: #f8f8f8;}\n"
-    "tr:nth-child(even) {background-color: #ffffff;}\n"
-    "tr:hover {background-color: #e0e0e0;}\n"
-    "a {color:Crimson; text-decoration: none;}\n"
-    ".caller { color:DodgerBlue; border: 0px; }\n"
-    ".callee { color:Green; }\n"
-    ".current { color:FireBrick;; font-weight: bold; }\n"
-    ".sep { background-color: #fff; }\n";
-    out+="</style></head><body><table><thead><tr class=\"theader\">\n";
+            "p {font-family: \"Lucida Console\", Courier New; font-weight:bold;}\n"
+            "table, th, td, tr { border-collapse: collapse; padding: 3px; font-family: \"Lucida Console\", Courier New; font-weight:bold;}\n"
+            "tr:nth-child(even) {background-color: #f8f8f8;}\n"
+            "tr:nth-child(odd) {background-color: #ffffff;}\n"
+            "tr:hover {background-color: #e0e0e0;}\n"
+            "a {color:Crimson; text-decoration: none;}\n"
+            ".caller, .callerZ { color:DodgerBlue; border: 0px; }\n"
+            ".callee, .calleeZ { color:Green; }\n"
+            ".current, .currentZ { color:FireBrick;; font-weight: bold; }\n"
+            ".sep { background-color: #fff; }\n";
+    out+="</style><script>";
+    out+="function toggle(cls, on) {\n"
+        "var lst = document.getElementsByClassName(cls);\n"
+        "for(var i = 0; i < lst.length; ++i) {\n"
+        "    lst[i].style.display = on ? '' : 'none';\n"
+        "}\n"
+    "}\n"
+    "function toggle3(s)\n"
+    "{\n"
+    "toggle(\"calleeZ\",s);\n"
+    "toggle(\"callerZ\",s);\n"
+    "toggle(\"currentZ\",s);\n"
+    "}\n";
+    out+="</script></head><body>";
+    out+="<p><b>GiderosSDK Profiler:</b></p>"
+    "<p><span class=\"callee\" onClick=\"toggle3(true);\">Show All</span> | <span class=\"current\" onClick=\"toggle3(false);\">Show above 0%</span></p>";
+
+    out+="<table><thead><tr class=\"theader\">\n";
     out+="<th class=\"fnum\">#</th><th class=\"ftime\">Time</th><th class=\"fpct\">Ratio</th>";
     out+="<th class=\"fcount\">Count</th><th class=\"fname\">Function</th><th class=\"floc\">Location</th>";
     out+="</tr></thead><tbody>\n";
@@ -75,8 +93,9 @@ QString ProfilerReport::generateReport(QVariant pinf) {
             QMap<QVariant,QVariant> i=cvit.value().value<QMap<QVariant,QVariant>>();
             double itime=i["time"].toString().toDouble();
             int icount=i["count"].toString().toInt();
-            out += QString::asprintf("<tr class=\"caller\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
-                                     itime*1000,itime*100/ptime,icount,pmap[f],pinfo[f].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),f.toUtf8().constData());
+            double ipct=itime*100/ptime;
+            out += QString::asprintf("<tr class=\"%s\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
+                                     (ipct<1)?"callerZ":"caller",itime*1000,ipct,icount,pmap[f],pinfo[f].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),f.toUtf8().constData());
         }
         double otime=0;
         QStringList pcallees=callees[funcs[i]];
@@ -85,14 +104,16 @@ QString ProfilerReport::generateReport(QVariant pinf) {
             double itime=ii["time"].toString().toDouble();
             otime+=itime;
         }
-        out += QString::asprintf("<tr class=\"current\"><td><a id=\"f%d\">[%d]</a></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td>%s</td><td>%s</td></tr>\n",
-                                 i+1,i+1,ptime*1000,(ptime-otime)*100/ptime,pcount,pinfo[funcs[i]].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),funcs[i].toUtf8().constData());
+        double ipct=(ptime-otime)*100/ptime;
+        out += QString::asprintf("<tr class=\"%s\"><td><a id=\"f%d\">[%d]</a></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td>%s</td><td>%s</td></tr>\n",
+                                 "current",i+1,i+1,ptime*1000,ipct,pcount,pinfo[funcs[i]].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),funcs[i].toUtf8().constData());
         foreach (QString f, pcallees) {
             QMap<QVariant,QVariant> ii=pinfo[f].value<QMap<QVariant,QVariant>>()["callers"].value<QMap<QVariant,QVariant>>()[funcs[i]].value<QMap<QVariant,QVariant>>();
             double itime=ii["time"].toString().toDouble();
             int icount=ii["count"].toString().toInt();
-            out += QString::asprintf("<tr class=\"callee\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
-                                     itime*1000,itime*100/ptime,icount,pmap[f],pinfo[f].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),f.toUtf8().constData());
+            double ipct=itime*100/ptime;
+            out += QString::asprintf("<tr class=\"%s\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
+                                     (ipct<1)?"calleeZ":"callee",itime*1000,ipct,icount,pmap[f],pinfo[f].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),f.toUtf8().constData());
         }
         out += "<tr class=\"sep\"><td colspan=6>&nbsp;</td></tr>\n";
     }

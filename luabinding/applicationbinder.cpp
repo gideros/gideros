@@ -464,7 +464,9 @@ int ApplicationBinder::setBackgroundColor(lua_State* L)
 	int g = (color >> 8) & 0xff;
 	int b = color& 0xff;
 
-	application->getApplication()->setBackgroundColor(r/255.f, g/255.f, b/255.f);
+	float alpha=luaL_optnumber(L,3,1.0);
+
+	application->getApplication()->setBackgroundColor(r/255.f, g/255.f, b/255.f,alpha);
 
 	return 0;
 }
@@ -476,16 +478,17 @@ int ApplicationBinder::getBackgroundColor(lua_State* L)
 
 	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-	float r, g, b;
-	application->getApplication()->getBackgroundColor(&r, &g, &b);
+	float r, g, b,a;
+	application->getApplication()->getBackgroundColor(&r, &g, &b, &a);
 
 	int ir = std::min((int)(r * 256), 255);
 	int ig = std::min((int)(g * 256), 255);
 	int ib = std::min((int)(b * 256), 255);
 
 	lua_pushinteger(L, (ir << 16) | (ig << 8) | ib);
+	lua_pushnumber(L,a);
 
-	return 1;
+	return 2;
 }
 
 int ApplicationBinder::setOrientation(lua_State* L)

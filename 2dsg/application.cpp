@@ -103,6 +103,7 @@ void Application::initView() {
 	backr_ = 1.f;
 	backg_ = 1.f;
 	backb_ = 1.f;
+	backa_ = 1.f;
 
 	stage_ = new Stage(this);
 }
@@ -140,11 +141,11 @@ void Application::enterFrame() {
 
 void Application::clearBuffers() {
 	if (clearColorBuffer_ == true)
-		ShaderEngine::Engine->clearColor(backr_, backg_, backb_, 1.f);
+		ShaderEngine::Engine->clearColor(backr_, backg_, backb_, backa_);
 }
 
 void Application::configureFrustum(float fov, float farplane, float nearplane) {
-	if (fov > 179) //Do not allow 180°, this would cause infinite width
+	if (fov > 179) //Do not allow 180ï¿½, this would cause infinite width
 		fov = 179;
 	if (fov < 0)
 		fov = 0;
@@ -817,19 +818,22 @@ void Application::removeTicker(Ticker* ticker) {
 	tickersIteratorInvalid_ = true;
 }
 
-void Application::setBackgroundColor(float r, float g, float b) {
+void Application::setBackgroundColor(float r, float g, float b, float a) {
 	backr_ = r;
 	backg_ = g;
 	backb_ = b;
+	backa_ = a;
 }
 
-void Application::getBackgroundColor(float* r, float* g, float* b) {
+void Application::getBackgroundColor(float* r, float* g, float* b, float* a) {
 	if (r)
 		*r = backr_;
 	if (g)
 		*g = backg_;
 	if (b)
 		*b = backb_;
+	if (a)
+		*a = backa_;
 }
 
 float Application::getLogicalTranslateX() const {

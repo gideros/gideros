@@ -105,8 +105,8 @@ public:
 	void addTicker(Ticker* ticker);
 	void removeTicker(Ticker* ticker);
 
-	void setBackgroundColor(float r, float g, float b);
-	void getBackgroundColor(float* r, float* g, float* b);
+	void setBackgroundColor(float r, float g, float b, float a=1.f);
+	void getBackgroundColor(float* r, float* g, float* b, float* a=NULL);
 
 	float getLogicalTranslateX() const;
 	float getLogicalTranslateY() const;
@@ -190,7 +190,7 @@ private:
 	std::set<Ticker*> tickers_;
 	bool tickersIteratorInvalid_;
 
-	float backr_, backg_, backb_;
+	float backr_, backg_, backb_, backa_;
 
     TimerContainer timerContainer_;
 
