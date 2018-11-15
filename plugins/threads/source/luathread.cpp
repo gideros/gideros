@@ -25,7 +25,8 @@ LuaThread::LuaThread(lua_State* main_lua_state, bool no_auto_debug_hook_for_term
     m_main_state(main_lua_state),
     m_termination_requested(false),
     m_thread_status(LuaThread::Status::kNeedFunction),
-    m_resume(false)
+    m_resume(false),
+    m_exit_wait_time(150)
 {
     // initialize our thread's Lua state
     m_thread_state = lua_newstate(LuaThread::alloc, nullptr);
@@ -97,7 +98,7 @@ LuaThread::~LuaThread()
     // m_termination_requested set in lua_destroy - wait enough time for
     // lua_hook to call hook function to check for it and yield if set to
     // gracefully exit thread
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(m_exit_wait_time));
     lua_close(m_transfer_state);
     lua_close(m_thread_state);
 }
@@ -422,6 +423,16 @@ int LuaThread::lua_getResult(lua_State* L)
     auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
     lua_remove(L, 1);
     return instance->getResult(L);
+}
+
+int LuaThread::lua_setExitWaitTime(lua_State* L)
+{
+    auto instance = static_cast<LuaThread*>(g_getInstance(L, LuaThread::class_name.c_str(), 1));
+    lua_remove(L, 1);
+    if (lua_isnumber(L, -1)) {
+        instance->m_exit_wait_time = static_cast<int>(lua_tonumber(L, -1));
+    }
+    return 0;
 }
 
 int LuaThread::lua_create(lua_State *L)

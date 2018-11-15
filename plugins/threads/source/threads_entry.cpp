@@ -28,6 +28,7 @@ static int loader(lua_State *L) {
             { "requestTermination",       LuaThread::lua_requestTermination },
             { "getResult",                LuaThread::lua_getResult },
             { "fetchData",                LuaThread::lua_fetchData },
+            { "setExitWaitTime",          LuaThread::lua_setExitWaitTime },
             { nullptr,                    nullptr }
         }
     );
