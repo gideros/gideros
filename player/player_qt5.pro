@@ -10,6 +10,7 @@ win32{
     RC_FILE = other_files/player.rc
 
     TARGET = GiderosPlayer
+    QMAKE_LFLAGS+=-Wl,-Map=LinkerMap.txt
 
     LIBS += \
         -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\

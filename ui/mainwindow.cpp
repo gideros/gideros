@@ -201,7 +201,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionStop->setEnabled(false);
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(stop()));
 
-    ui.actionProfile->setIcon(IconLibrary::instance().icon("start",QStringList() << "magnifier"));
+    ui.actionProfile->setIcon(IconLibrary::instance().icon("profiler",QStringList()));
     ui.actionProfile->setEnabled(false);
     connect(ui.actionProfile, SIGNAL(triggered()), this, SLOT(startProfile()));
 

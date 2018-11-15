@@ -871,7 +871,7 @@ void ApplicationManager::drawFrame()
 		{
 			application_->getApplication()->stage()->removeChild(splashScreen_);
 			splashScreen_ = NULL;
-			application_->getApplication()->setBackgroundColor(1, 1, 1);
+			application_->getApplication()->setBackgroundColor(1, 1, 1, 1);
 
 			loadLuaFiles();
 			skipFirstEnterFrame_ = true;
