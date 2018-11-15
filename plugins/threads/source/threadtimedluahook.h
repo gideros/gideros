@@ -25,7 +25,7 @@ class ThreadTimedLuaHook
   public:
     // for function pointer to the lua hook function
     typedef void (*luahook_t)(lua_State *L, lua_Debug* ar);
-
+    ThreadTimedLuaHook();
     ThreadTimedLuaHook(lua_State* L,
                        luahook_t hook_func);
     ThreadTimedLuaHook(const luahook_t hook_func);

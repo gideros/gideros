@@ -31,7 +31,7 @@ class LuaThread
 
     static std::string class_name; // set in .cpp
 
-    LuaThread(lua_State* L);
+    LuaThread(lua_State* L, bool no_auto_debug_hook_for_termination);
     ~LuaThread();
 
     // worker thread that pcalls the supplied function in our Lua thread state

@@ -1,6 +1,7 @@
 #include "threadtimedluahook.h"
 #include <thread>
 
+ThreadTimedLuaHook::ThreadTimedLuaHook() {}
 
 ThreadTimedLuaHook::ThreadTimedLuaHook(
                      lua_State* L,

@@ -21,16 +21,20 @@ std::string LuaThread::class_name = "Thread";
 static const char* k_this = "__fUID2543blah_";
 static const char* k_runtime_error = "runtime error";
 
-LuaThread::LuaThread(lua_State* main_lua_state) :
+LuaThread::LuaThread(lua_State* main_lua_state, bool no_auto_debug_hook_for_termination) :
     m_main_state(main_lua_state),
     m_termination_requested(false),
     m_thread_status(LuaThread::Status::kNeedFunction),
-    m_resume(false),
-    m_thread_timed_lua_hook(hook)
+    m_resume(false)
 {
     // initialize our thread's Lua state
     m_thread_state = lua_newstate(LuaThread::alloc, nullptr);
-    m_thread_timed_lua_hook.setLua(m_thread_state);
+
+    if (!no_auto_debug_hook_for_termination) {
+        ThreadTimedLuaHook m_thread_timed_lua_hook(hook);
+        m_thread_timed_lua_hook.setLua(m_thread_state);
+    }
+
     luaL_openlibs(m_thread_state);
 
     // copy path and cpath to thread state, for require
@@ -93,7 +97,7 @@ LuaThread::~LuaThread()
     // m_termination_requested set in lua_destroy - wait enough time for
     // lua_hook to call hook function to check for it and yield if set to
     // gracefully exit thread
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     lua_close(m_transfer_state);
     lua_close(m_thread_state);
 }
@@ -422,7 +426,13 @@ int LuaThread::lua_getResult(lua_State* L)
 
 int LuaThread::lua_create(lua_State *L)
 {
-    auto instance = new LuaThread(L);
+    // if LuaThread.new(true) then don't use debug hook
+    bool no_auto_debug_hook_for_termination = false;
+    if (lua_isboolean(L, -1))
+    {
+        no_auto_debug_hook_for_termination = lua_toboolean(L, -1);
+    }
+    auto instance = new LuaThread(L, no_auto_debug_hook_for_termination);
     g_pushInstance(L, class_name.c_str(), instance);
     return 1;
 }

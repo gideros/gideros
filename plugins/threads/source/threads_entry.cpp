@@ -32,7 +32,7 @@ static int loader(lua_State *L) {
         }
     );
 
-    // require return a table with string constants
+    // require returns a table with string constant(ish)s
     lua_newtable(L);
     lua_pushstring(L, "needs function");
     lua_setfield(L, -2, "needsFunction");
