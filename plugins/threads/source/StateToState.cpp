@@ -91,6 +91,9 @@ void StateToState::copyStackEntry(lua_State* source, lua_State* dest, int stack_
         case LUA_TUSERDATA:
             lua_pushlightuserdata(dest, lua_touserdata(source, stack_pos));
             break;
+        case LUA_TNIL:
+            lua_pushnil(dest);
+            break;
         default:
             lua_checkstack(source, 1);
             luaL_error(source, "Transfer Error: Unknown type");

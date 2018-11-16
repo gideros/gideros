@@ -39,33 +39,6 @@ iOSProject.commit()
 	]]></lua>
  </target>
 
- <target name="WinRT">
-    <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
-    <template name="binaries" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.cpp;*.h;*.hpp" exclude="emscripten;win32;jni;iOS;Android"/>
-    <template name="project" path="">
-        <replacelist wildcards="giderosgame.Shared.vcxitems">
-        <append>
-            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
-            <by><![CDATA[
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\threads_entry.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\luathread.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\StateToState.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
-    </ClCompile>]]></by>
-        </append>
-        <append>
-            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
-            <by><![CDATA[
-      <AdditionalDependencies>%(AdditionalDependencies);threads.$(GidProjectType).lib</AdditionalDependencies>]]></by>
-        </append> 
-        </replacelist>
-    </template>
- </target>
- 
  <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
  </target>
