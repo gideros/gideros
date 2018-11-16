@@ -152,9 +152,12 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 #if 0
 			pext="lzma";
 #else
-			pext="png";
+			pext="gidz";
 #endif
-        	replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js.%1']").arg(pext).toUtf8());
+			if (ctx->properties.html5_wasm)
+	        	replaceList1 << qMakePair(QString("wasmXHR.send(null);").toUtf8(),QString("//wasmXHR.send(null);\nJPZLoad('gideros-wasm.wasm.%1',function(c) { Module.wasmBinary=c; JPZLoad('gideros-wasm.js.%1',eval); },\"array\");").arg(pext).arg(pext).toUtf8());
+			else
+				replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js.%1']").arg(pext).toUtf8());
         }
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
@@ -339,6 +342,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         	ctx->outputDir.mkdir("package");
         	ctx->outputDir.cd("package");
     	}
+      //Copy template flavor
+ 	   ExportCommon::copyTemplate(QString("Templates").append("/").append(templatedir).append("/").append(ctx->properties.html5_wasm?"Wasm":"Jasm"),"",ctx, false, QStringList(), QStringList());
     }
 
    // copy template
@@ -380,7 +385,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 			QString pack = toolsDir.filePath("lzma");
 #endif
 #else
-			pext="png";
+			pext="gidz";
 #if defined(Q_OS_WIN)
 			QString pack = toolsDir.filePath("crunchme.exe");
 #else
@@ -389,8 +394,17 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 #endif
 			QDir old = QDir::current();
 			QDir::setCurrent(ctx->outputDir.path());
+			if (ctx->properties.html5_wasm)
+			{
+				QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.js gideros-wasm.js."+pext);
+				QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.wasm gideros-wasm.wasm."+pext);
+			    ctx->outputDir.remove("gideros-wasm.js");
+			    ctx->outputDir.remove("gideros-wasm.wasm");
+			}
+			else {
 			QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.js gideros.js."+pext);
 			QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.asm.js gideros.asm.js."+pext);
+			}
 			QDir::setCurrent(old.path());
 		    ctx->outputDir.remove("lzma.js");
 	   }
@@ -403,6 +417,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 		   ctx->outputDir.remove("../gideros.html.symbols");
 		   ctx->outputDir.rename("gideros.html.symbols","../gideros.html.symbols");
 	   }
+	   if (!ctx->properties.html5_symbols)
+		   ctx->outputDir.remove((ctx->properties.html5_wasm)?"gideros-wasm.html.symbols":"gideros.html.symbols");
    }
 
    //install plugins

@@ -386,12 +386,7 @@ local html5 = {}
 html5.createGpluginSection = function()
   local section = [==[
  <target name="Html5">
-    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
-    <template name="Activity" path="">
-        <replacelist wildcards="index.html">
-            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;##REPLACE##.js&quot;,"/>
-        </replacelist>
-    </template>
+    <lua>require("Tools/export_html5").export("###REPLACE###")</lua>
  </target>
 ]==]
   local lc_name = plugin.name.lower

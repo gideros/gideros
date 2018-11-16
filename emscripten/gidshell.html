@@ -105,7 +105,7 @@ GIDEROS-FBINSTANT-END -->
         postRun: [],
         preInit: [],
         TOTAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
-        dynamicLibraries: [ /*GIDEROS_DYNLIB_PLUGIN*/ null ],
+        GiderosPlugins: [ /*GIDEROS_DYNLIB_PLUGIN*/ null ],
         JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ null ],
         requestFile: function (file) { return 0; },
         print: (function() {
@@ -177,7 +177,7 @@ GIDEROS-FBINSTANT-END -->
           //Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
       };
-      Module.dynamicLibraries.pop();
+      Module.GiderosPlugins.pop();
       Module.JSPlugins.pop();
       Module.XMLHttpRequest= function(flags) {
           var req = new XMLHttpRequest(flags);
@@ -191,13 +191,7 @@ GIDEROS-FBINSTANT-END -->
           }
           return req;
   	  };
-      /*GIDEROS_WEBASSEMBLY_START
-      if (WebAssembly)
-      for (var i = 0; i < Module.dynamicLibraries.length; i++) {
-    	  Module.dynamicLibraries[i]=Module.dynamicLibraries[i].split(".")[0]+".wasm"   	   
-      }
-      GIDEROS_WEBASSEMBLY_END*/
-      Module.setStatus('Preparing...');
+     Module.setStatus('Preparing...');
       window.addEventListener('click',function(){
           window.focus();
       });    

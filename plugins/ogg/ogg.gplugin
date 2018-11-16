@@ -37,12 +37,7 @@ iOSProject.commit()
     </template>
  </target>
  <target name="Html5">
-    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
-    <template name="Activity" path="">
-        <replacelist wildcards="index.html">
-            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;Ogg.js&quot;,"/>
-        </replacelist>
-    </template>
+ 	<lua>require("Tools/export_html5").export("Ogg")</lua>
  </target>
  <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>

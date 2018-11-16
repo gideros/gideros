@@ -422,13 +422,10 @@ iOSProject.commit()
  </target>
  <target name="Html5">
 	<if condition="[[[not:[[[project.html5_fbinstant]]]]]]">
-    	<template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
-    	<template name="Activity" path="">
-        	<replacelist wildcards="index.html">
-            	<append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;Ads.js&quot;,"/>
-            	<append orig="/*GIDEROS_JS_PLUGIN*/" by="&quot;AdsAdSense.js&quot;,"/>
-        	</replacelist>
-    	</template>
+ 		<lua>local h=require("Tools/export_html5")
+ 		h.export("Ads")
+ 		h.exportJS("AdsAdSense")
+ 		</lua>
     </if>
  </target>
  <target name="WinRT">

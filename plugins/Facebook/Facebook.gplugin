@@ -62,12 +62,7 @@ iOSProject.commit()
  </target>
  <target name="Html5">
 	<if condition="[[[not:[[[project.html5_fbinstant]]]]]]">
-    	<template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
-    	<template name="Activity" path="">
-        	<replacelist wildcards="index.html">
-            	<append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;Facebook.js&quot;,"/>
-        	</replacelist>
-    	</template>
+	 	<lua>require("Tools/export_html5").export("Facebook")</lua>
     </if>
  </target>
 </plugin>

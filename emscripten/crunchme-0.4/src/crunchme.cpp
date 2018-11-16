@@ -373,10 +373,10 @@ int main(int argc, char **argv)
         if (fileSize > 0)
         {
             decSize = (lzg_uint32_t) fileSize;
-            decBuf = (unsigned char*) malloc(decSize);
+            decBuf = (unsigned char*) malloc(decSize+4);
             if (decBuf)
             {
-                inFile.read((char*)decBuf, decSize);
+                inFile.read((char*)decBuf+4, decSize);
                 if ((lzg_uint32_t)inFile.gcount() != decSize)
                 {
                     cerr << "Error reading \"" << inName << "\"." << endl;
@@ -410,7 +410,7 @@ int main(int argc, char **argv)
         lzg_uint32_t decSizeOld;
         do {
             decSizeOld = decSize;
-            decSize = StripSource(decBuf, decSize);
+            decSize = StripSource(decBuf+4, decSize);
         } while (decSize != decSizeOld);
 
         if (verbose)
@@ -419,6 +419,13 @@ int main(int argc, char **argv)
                     (100 * decSize) / fileSize << "% of the original)" << endl;
         }
     }
+
+    //Room for header (length)
+	decBuf[0]=decSize&0xFF;
+	decBuf[1]=(decSize>>8)&0xFF;
+	decBuf[2]=(decSize>>16)&0xFF;
+	decBuf[3]=(decSize>>24)&0xFF;
+    decSize+=4;
 
     // Determine maximum size of compressed data
     if (compression == COMP_LZG)

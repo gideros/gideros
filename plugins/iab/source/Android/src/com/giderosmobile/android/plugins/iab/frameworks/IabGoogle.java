@@ -27,6 +27,8 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 	boolean wasChecked = false;
 	int sdkAvailable = -1;
 	
+	public IabHelper getHelper() { return mHelper; }
+	
 	public static Boolean isInstalled(){
 		if(Iab.isPackageInstalled("com.android.vending") || 
 			Iab.isPackageInstalled("com.google.vending") ||
@@ -216,10 +218,22 @@ class IabGooglePurchased implements IabHelper.QueryInventoryFinishedListener{
 			while(e.hasMoreElements())
 			{
 				String prodName = e.nextElement();
-				if(inv.hasPurchase(products.get(prodName)))
+				String sku=products.get(prodName);
+				if(inv.hasPurchase(sku))
 				{
-					Purchase info = inv.getPurchase(products.get(prodName));
-					Iab.purchaseComplete(caller, products.get(prodName), info.getOrderId());
+					Purchase info = inv.getPurchase(sku);
+					if(Iab.isConsumable(sku, caller))
+					{
+						try {
+							caller.getHelper().consumeAsync(info, caller);
+						}
+						catch (Exception e2) {							
+						}
+					}
+					else
+					{
+						Iab.purchaseComplete(caller, sku, info.getOrderId());
+					}
 				}
 			}
 			Iab.restoreComplete(caller);

@@ -556,7 +556,7 @@ int main(int argc, char *argv[])
      QStringList wildcards2;
      wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll"
      		   << "libgid.1.dylib" << "gideros.WindowsPhone.lib"
-     		   << "gideros.Windows.lib" << "gideros.html.mem" << "*.exe";
+     		   << "gideros.Windows.lib" << "gideros.html.mem" << "gideros-wasm.wasm" << "*.exe";
      ctx.wildcards << wildcards2;
 
      QList<QPair<QByteArray, QByteArray> > replaceList2;

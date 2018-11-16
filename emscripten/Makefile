@@ -106,19 +106,14 @@ endif
 OPTS+=-Os --bind $(POPTS)
 LOPTS+= --separate-asm
 
-BUILD_WASM:=
 export POPTS
-export BUILD_WASM
 
 #LINE BELOW FOR WASM
-ifneq ($(BUILD_WASM),)
-EOPTS+= WASM=1 TOTAL_MEMORY=512*1024*1024 'BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
-endif
+EOPTS_WASM+= WASM=1 TOTAL_MEMORY=512*1024*1024 'BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
 EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap"]'
 EOPTS+=MAIN_MODULE=1  
 #EOPTS+=ASSERTIONS=1
-#EOPTS+=FULL_ES2=1 
-EOPTS+=GL_STATE_CACHE=1
+#EOPTS+=GL_STATE_CACHE=1
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
 
@@ -134,7 +129,9 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	-D_REENTRANT -DLIBXMP_CORE_PLAYER \
 	$(OPTS)
-TEMPLATE=$(BUILD)/Html5/Html5
+TEMPLATECOM=$(BUILD)/Html5/Html5
+TEMPLATEJASM=$(BUILD)/Html5/Jasm
+TEMPLATEWASM=$(BUILD)/Html5/Wasm
 
 PLUGINS=$(HTML5_PLUGINS)
 PLUGINS?=bitop luasocket json
@@ -187,30 +184,36 @@ $(BUILD)/lib%.bc:
 	@echo "EMLD" $@
 	@$(EMCC) -o $@ $^
 			
-$(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
-	@echo "EMLINK gideros"
+$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
+	@echo "EMLINK gideros JS"
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(LOPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
-main: path $(BUILD)/gideros.js
-	cp gideros.png $(TEMPLATE)
-	cp gideros.css $(TEMPLATE)
-	cp $(BUILD)/gideros.html $(TEMPLATE)/index.html
-	-cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
-	-cp $(BUILD)/gideros.wasm $(TEMPLATE) 
-	-cp $(BUILD)/gideros.wast $(TEMPLATE) 
-	cp $(BUILD)/gideros.js $(TEMPLATE)
-	cp $(BUILD)/gideros.asm.js $(TEMPLATE)
-	-cp $(BUILD)/gideros.html.symbols $(TEMPLATE)
-	-cp $(BUILD)/gideros.js.map $(TEMPLATE)
-	cp jzptool.js $(TEMPLATE)
-	cp lzma.js $(TEMPLATE)
+$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
+	@echo "EMLINK gideros WASM"
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) $(OPTS) $(LOPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+
+main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html
+	cp gideros.png $(TEMPLATECOM)
+	cp gideros.css $(TEMPLATECOM)
+	cp $(BUILD)/gideros.html $(TEMPLATEJASM)/index.html
+	-cp $(BUILD)/gideros.html.mem $(TEMPLATEJASM) 
+	cp $(BUILD)/gideros.js $(TEMPLATEJASM)
+	cp $(BUILD)/gideros.asm.js $(TEMPLATEJASM)
+	-cp $(BUILD)/gideros.html.symbols $(TEMPLATEJASM)
+	-cp $(BUILD)/gideros.js.map $(TEMPLATEJASM)
+	cp $(BUILD)/gideros-wasm.wasm $(TEMPLATEWASM) 
+	cp $(BUILD)/gideros-wasm.js $(TEMPLATEWASM) 
+	cp $(BUILD)/gideros-wasm.html $(TEMPLATEWASM)/index.html
+	-cp $(BUILD)/gideros-wasm.html.symbols $(TEMPLATEWASM)
+	cp jzptool.js $(TEMPLATECOM)
+	cp lzma.js $(TEMPLATECOM)
 	#$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
 	#$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
 	
 
 path:
 	mkdir -p $(sort $(dir $(SUBLIBS_OBJS)))
-	mkdir -p $(TEMPLATE)
+	mkdir -p $(TEMPLATECOM) $(TEMPLATEJASM) $(TEMPLATEWASM)
 
 clean:
 	rm -rf $(BUILD)
