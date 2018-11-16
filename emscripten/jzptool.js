@@ -19,10 +19,10 @@ function JZPLoadAsync(imageUrl, onprogress) {
 	        var options = {}
 	        var headers = xhr.getAllResponseHeaders();
 	        var m = headers.match(/^Content-Type\:\s*(.*?)$/mi);
-
-	        if (m && m[1]) {
+	        options.type="image/png";
+	        /*if (m && m[1]) {
 	          options.type = m[1];
-	        }
+	        }*/
 	        resolve({ data: this.response, options:options});
 	      }
 	    }
@@ -32,7 +32,7 @@ function JZPLoadAsync(imageUrl, onprogress) {
 	}
 
 
-JPZConvert=function (fl,cb)
+JPZConvert=function (fl,cb,fmt)
 {
 var doc = document, canv = doc.createElement("canvas"), ctx = canv.getContext("2d");
 
@@ -58,6 +58,18 @@ img.onload = function()
         	u[ki++]=w[k++];
         	u[ki++]=w[k++];
         	u[ki++]=w[k++];
+        }
+        var len=u[0];
+        len|=u[1]<<8;
+        len|=u[2]<<16;
+        len|=u[3]<<24;
+        u=u.slice(4,len+4);
+        if (fmt=="array")
+        {
+            canv.width=1;
+            canv.height=1;
+            cb(u);
+            return;
         }
         bb = new Blob([u]);
     }
@@ -103,7 +115,7 @@ JZPLoadAsync(fl, (ctx,ratio) => {
 	});
 }
 
-JPZLoad=function (fl,ev)
+JPZLoad=function (fl,ev,fmt)
 {
 	JPZConvert(fl,function (code)
 	{
@@ -113,7 +125,7 @@ JPZLoad=function (fl,ev)
 					 JZPLoaded[fl]();
 			 }
 		},1);
-	});
+	},fmt);
 }
 
 JPZMALoad=function (fl,ev)

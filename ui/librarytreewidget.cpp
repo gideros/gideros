@@ -1041,7 +1041,7 @@ QDomDocument LibraryTreeWidget::toXml() const
 			if (fileName.isEmpty() == false)
 			{
 				bool isLink=data["link"].toBool();
-				childElement.setAttribute(isLink?"source":"file", fileName);
+                childElement.setAttribute(isLink?"source":"local", fileName);
                 if (data.contains("downsizing") && data["downsizing"].toBool())
                     childElement.setAttribute("downsizing", 1);
                 if (data.contains("excludeFromExecution") && data["excludeFromExecution"].toBool())
@@ -1167,12 +1167,12 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 
 			if (type == "file")
 			{
-				QString file = e.hasAttribute("source") ? e.attribute("source") : e.attribute("file");
+                QString file = e.hasAttribute("name")? e.attribute("name"):(e.hasAttribute("source") ? e.attribute("source") : e.attribute("file"));
                 bool downsizing = e.hasAttribute("downsizing") && e.attribute("downsizing").toInt();
                 bool excludeFromExecution = e.hasAttribute("excludeFromExecution") && e.attribute("excludeFromExecution").toInt();
                 bool excludeFromEncryption = e.hasAttribute("excludeFromEncryption") && e.attribute("excludeFromEncryption").toInt();
                 bool excludeFromPackage = e.hasAttribute("excludeFromPackage") && e.attribute("excludeFromPackage").toInt();
-                item = createFileItem(file, e.hasAttribute("source"),downsizing, excludeFromExecution, excludeFromEncryption,excludeFromPackage);
+                item = createFileItem(file, !e.hasAttribute("name"),downsizing, excludeFromExecution, excludeFromEncryption,excludeFromPackage);
 			}
 			else if (type == "folder")
 			{

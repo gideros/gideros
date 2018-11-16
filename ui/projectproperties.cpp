@@ -124,6 +124,8 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("html5_host", this->html5_host);
     properties.setAttribute("html5_mem", this->html5_mem);
     properties.setAttribute("html5_pack", this->html5_pack ? 1 : 0);
+    properties.setAttribute("html5_wasm", this->html5_wasm ? 1 : 0);
+    properties.setAttribute("html5_symbols", this->html5_symbols ? 1 : 0);
     properties.setAttribute("html5_fbinstant", this->html5_fbinstant ? 1 : 0);
     properties.setAttribute("html5_fbload", this->html5_fbload);
     properties.setAttribute("encryptCode", this->encryptCode);
@@ -270,6 +272,10 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->html5_mem = properties.attribute("html5_mem").toInt();
         if (!properties.attribute("html5_pack").isEmpty())
             this->html5_pack = properties.attribute("html5_pack").toInt() != 0;
+        if (!properties.attribute("html5_wasm").isEmpty())
+            this->html5_wasm = properties.attribute("html5_wasm").toInt() != 0;
+        if (!properties.attribute("html5_symbols").isEmpty())
+            this->html5_symbols = properties.attribute("html5_symbols").toInt() != 0;
         if (!properties.attribute("html5_fbinstant").isEmpty())
             this->html5_fbinstant = properties.attribute("html5_fbinstant").toInt() != 0;
         if (!properties.attribute("html5_fbload").isEmpty())

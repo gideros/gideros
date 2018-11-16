@@ -86,6 +86,8 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->html5_host->setText(properties->html5_host);
     ui->html5_mem->setText(QString::number(properties->html5_mem));
     ui->html5_pack->setChecked(properties_->html5_pack);
+    ui->html5_wasm->setChecked(properties_->html5_wasm);
+    ui->html5_symbols->setChecked(properties_->html5_symbols);
     ui->html5_fbinstant->setChecked(properties_->html5_fbinstant);
     ui->html5_fbload->setValue(properties_->html5_fbload);
     actionHtml5FbInstant(0);
@@ -273,6 +275,8 @@ void ExportProjectDialog::onAccepted()
     properties_->html5_host = ui->html5_host->text();
     properties_->html5_mem = ui->html5_mem->text().toInt();
     properties_->html5_pack = ui->html5_pack->isChecked();
+    properties_->html5_wasm = ui->html5_wasm->isChecked();
+    properties_->html5_symbols = ui->html5_symbols->isChecked();
     properties_->html5_fbinstant = ui->html5_fbinstant->isChecked();
     properties_->html5_fbload = ui->html5_fbload->value();
     //properties_->plugins=plugins;
