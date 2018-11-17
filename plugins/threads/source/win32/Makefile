@@ -11,7 +11,7 @@ CXXINCS += -I../../../../lua/src -I"../../../../libgid/external/zlib-1.2.8"
 
 CFLGS += -DWIN32 -DLUASOCKET_INET_PTON -DLUA_NOCOMPAT_MODULE 
 
-SRCS = threads_entry luathread StateToState binder auxiliar except buffer
+SRCS = threads_entry luathread threadtimedluahook StateToState binder auxiliar except buffer
 SRCS += zlibbinder
 SRCS += inet io luasocket options select tcp timeout udp mime wsocket 
 SRCS += lfs 
