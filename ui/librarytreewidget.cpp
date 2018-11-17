@@ -1041,7 +1041,7 @@ QDomDocument LibraryTreeWidget::toXml() const
 			if (fileName.isEmpty() == false)
 			{
 				bool isLink=data["link"].toBool();
-                childElement.setAttribute(isLink?"source":"local", fileName);
+                childElement.setAttribute(isLink?"source":"name", fileName);
                 if (data.contains("downsizing") && data["downsizing"].toBool())
                     childElement.setAttribute("downsizing", 1);
                 if (data.contains("excludeFromExecution") && data["excludeFromExecution"].toBool())
