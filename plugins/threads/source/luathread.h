@@ -61,6 +61,9 @@ class LuaThread
     int getResult(lua_State* L);
     static int lua_getResult(lua_State* L);
 
+    // set time for main thread to wait for thread to exit
+    static int lua_setExitWaitTime(lua_State* L);
+
     bool hasTerminationBeenRequested();
     // sets atomic variable for thread state to check via lua_thread_shouldTerminate
     static int lua_requestTermination(lua_State* L);
@@ -100,6 +103,7 @@ class LuaThread
     std::mutex m_mutex;
 
   public:
+    int m_exit_wait_time;
     ThreadTimedLuaHook m_thread_timed_lua_hook;
     static void* alloc(void *ud, void *ptr, size_t osize, size_t nsize);
     static int lua_create(lua_State *L);
