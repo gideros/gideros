@@ -1624,6 +1624,10 @@ CompileThread* MainWindow::createCompileAllThread() const
 		if (type == "file")
 		{
 			QString fileName = e.attribute("source");
+			if (fileName.isEmpty())
+			{
+				fileName = e.attribute("file");
+			}
 			if (QFileInfo(fileName).suffix().toLower() == "lua")
 				fileNames << QDir::cleanPath(dir.absoluteFilePath(fileName));
 		}
@@ -1704,6 +1708,10 @@ void MainWindow::compileAll()
             if (e.tagName() == "file")
             {
                 QString fileName = e.attribute("source");
+				if (fileName.isEmpty())
+				{
+					fileName = e.attribute("file");
+				}
                 if (QFileInfo(fileName).suffix().toLower() == "lua")
                     fileNames << fileName;
             }
@@ -2921,8 +2929,12 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
             if (fileName.isEmpty())
             {
                 fileName = e.attribute("file");
-                lock=false;
             }
+			if (fileName.isEmpty())
+			{
+				fileName = e.attribute("name");
+				lock=false;
+			}
 			QString name = QFileInfo(fileName).fileName();
 
 			QString n;
