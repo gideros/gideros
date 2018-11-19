@@ -259,9 +259,8 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
   return true;
 }
 
-
-extern "C" int main_registerPlugin(const char *pname);
-extern "C" void* g_pluginMain_JSNative(lua_State* L, int type);
+extern "C" EMSCRIPTEN_KEEPALIVE int main_registerPlugin(const char *pname);
+extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_JSNative(lua_State* L, int type);
 
 extern const char *codeKey_;
 const char *currentUrl=NULL;
@@ -350,6 +349,7 @@ char *url=(char *) EM_ASM_INT_V({
   }
 }
 
+
 int main_registerPlugin(const char *pname)
 {
  if (!pname)
@@ -367,6 +367,7 @@ int main_registerPlugin(const char *pname)
  else
   fprintf(stderr,"Symbol %s not found\n",pname);
  //dlclose(hndl); //XXX check this
+
   return ret;
 }
 
@@ -382,17 +383,17 @@ void flushDrive(int drive)
  }
 }
 
-extern "C" void JSPlayer_play(const char *project)
+extern "C" EMSCRIPTEN_KEEPALIVE void JSPlayer_play(const char *project)
 {
 	s_applicationManager->openProject(project);
 }
 
-extern "C" void JSPlayer_stop()
+extern "C" EMSCRIPTEN_KEEPALIVE void JSPlayer_stop()
 {
 	s_applicationManager->stop();
 }
 
-extern "C" void JSPlayer_writeFile(const char *project, const char *path,const char *data,int datasize)
+extern "C" EMSCRIPTEN_KEEPALIVE void JSPlayer_writeFile(const char *project, const char *path,const char *data,int datasize)
 {
 	char tmp[PATH_MAX];
 	char *p = NULL;
