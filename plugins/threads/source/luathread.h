@@ -14,7 +14,9 @@
 #include <string>
 #include <future>
 #include "StateToState.h"
+#include "threadtimedluahook.h"
 
+void register_zlib(lua_State *L);
 
 class LuaThread
 {
@@ -29,11 +31,11 @@ class LuaThread
 
     static std::string class_name; // set in .cpp
 
-    LuaThread(lua_State* L);
+    LuaThread(lua_State* L, bool no_auto_debug_hook_for_termination);
     ~LuaThread();
 
     // worker thread that pcalls the supplied function in our Lua thread state
-    void worker(std::shared_ptr<std::promise<int>> promise);
+    void worker(const std::shared_ptr<std::promise<int> > &promise);
 
     /*    (lua_) functions that can be called from main Gideros Lua state    */
 
@@ -58,6 +60,9 @@ class LuaThread
     // accepts optional value in microseconds to wait for thread to finish
     int getResult(lua_State* L);
     static int lua_getResult(lua_State* L);
+
+    // set time for main thread to wait for thread to exit
+    static int lua_setExitWaitTime(lua_State* L);
 
     bool hasTerminationBeenRequested();
     // sets atomic variable for thread state to check via lua_thread_shouldTerminate
@@ -95,10 +100,11 @@ class LuaThread
     // for thread yield and resume
     std::condition_variable m_cv;
     bool m_resume;
-
     std::mutex m_mutex;
 
   public:
+    int m_exit_wait_time;
+    ThreadTimedLuaHook m_thread_timed_lua_hook;
     static void* alloc(void *ud, void *ptr, size_t osize, size_t nsize);
     static int lua_create(lua_State *L);
     static int lua_destroy(lua_State *L);

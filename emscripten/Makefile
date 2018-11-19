@@ -104,14 +104,16 @@ POPTS+=--profiling
 endif
 
 OPTS+=-Os --bind $(POPTS)
-LOPTS+= --separate-asm
+LOPTS=
+LOPTS_WASM=$(LOPTS)
+LOPTS_JS=$(LOPTS) --separate-asm
 
 export POPTS
 
 #LINE BELOW FOR WASM
-EOPTS_WASM+= WASM=1 TOTAL_MEMORY=512*1024*1024 'BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
+EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256*1024*1024 'ALLOW_MEMORY_GROWTH=1 BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
 EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap"]'
-EOPTS+=MAIN_MODULE=1  
+EOPTS+=MAIN_MODULE=1 EXPORT_ALL=1 
 #EOPTS+=ASSERTIONS=1
 #EOPTS+=GL_STATE_CACHE=1
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
@@ -171,11 +173,14 @@ $(foreach src,$($(1)),$(eval $(call SUB_fileopt,$(addprefix $(BUILD)/,$(addsuffi
 endef
 
 $(call SUB_libopt,B2D_SRCS,CFLGS+=-fno-rtti -fno-exceptions)
+$(call SUB_libopt,LGVFS_SRCS,CFLGS+=-DGIDEROS_LIBRARY)
+$(call SUB_libopt,LGID_SRCS,CFLGS+=-DGIDEROS_LIBRARY)
  
 $(foreach sub,$(SUBLIBS),$(eval $(call SUB_template,$(sub))))
 
 SUBLIBS_OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SUBLIBS_SRCS)))
 
+export EMCC_FORCE_STDLIBS=1
 $(BUILD)/lib%.a:
 	@echo "EMAR" $@
 	@$(EMAR) r $@ $^
@@ -186,11 +191,11 @@ $(BUILD)/lib%.bc:
 			
 $(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
 	@echo "EMLINK gideros JS"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(LOPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
 $(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
 	@echo "EMLINK gideros WASM"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) $(OPTS) $(LOPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
 main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html
 	cp gideros.png $(TEMPLATECOM)

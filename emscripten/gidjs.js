@@ -32,8 +32,9 @@ Module.preRun
 						Module['addRunDependency'](p);
 						if (Module['wasmBinary'])
 							JPZLoad(p,function (c) {
-								loadDynamicLibrary(c);							
-								Module['removeRunDependency'](p);
+								loadDynamicLibrary(c,true).then(function () {
+									Module['removeRunDependency'](p);									
+								});							
 							},"array");
 						else
 							JPZLoad(p,function (c) {
@@ -48,12 +49,17 @@ Module.preRun
 								if (xhr.status === 200) {
 									var c=xhr.response;
 									if (!Module['wasmBinary'])
-										c="local:"+c;
-									loadDynamicLibrary(c);
+									{
+										loadDynamicLibrary("local:"+c);
+										Module['removeRunDependency'](p);
+									}
+									else
+										loadDynamicLibrary(c,true).then(function () {
+											Module['removeRunDependency'](p);									
+										});							
 								} else {
 									console.error(xhr.response);
 								}
-								Module['removeRunDependency'](p);
 							}
 						};
 						Module['addRunDependency'](p);

@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luathread.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\StateToState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/strbuf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/fpconv.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
@@ -12,5 +14,23 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luathread.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\StateToState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding/binder.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\lfs\source\lfs.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\auxiliar.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\buffer.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\except.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\inet.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\io.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\luasocket.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\options.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\select.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\tcp.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\timeout.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\udp.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\mime.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket/source/wsocket.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/strbuf.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/fpconv.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/lua_cjson.c" />
   </ItemGroup>
 </Project>

@@ -28,11 +28,25 @@ static int loader(lua_State *L) {
             { "requestTermination",       LuaThread::lua_requestTermination },
             { "getResult",                LuaThread::lua_getResult },
             { "fetchData",                LuaThread::lua_fetchData },
+            { "setExitWaitTime",          LuaThread::lua_setExitWaitTime },
             { nullptr,                    nullptr }
         }
     );
 
-    return 0;
+    // require returns a table with string constant(ish)s
+    lua_newtable(L);
+    lua_pushstring(L, "needs function");
+    lua_setfield(L, -2, "needsFunction");
+    lua_pushstring(L, "running");
+    lua_setfield(L, -2, "running");
+    lua_pushstring(L, "ready");
+    lua_setfield(L, -2, "ready");
+    lua_pushstring(L, "suspended");
+    lua_setfield(L, -2, "suspended");
+    lua_pushstring(L, "complete");
+    lua_setfield(L, -2, "complete");
+
+    return 1;
 }
 
 static void g_initializePlugin(lua_State *L) {
@@ -51,7 +65,7 @@ static void g_deinitializePlugin(lua_State *L) {
 
 // "threads" is a symbol needed for Emscripten if exporting to HTML
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
-REGISTER_PLUGIN_STATICNAMED_CPP("Threads", "0.1.0", threads)
+REGISTER_PLUGIN_STATICNAMED_CPP("Threads", "1.1.0", threads)
 #else
-REGISTER_PLUGIN_NAMED("Threads", "0.1.0", threads);
+REGISTER_PLUGIN_NAMED("Threads", "1.1.0", threads);
 #endif

@@ -11,6 +11,13 @@
 #define GIDEROS_API __declspec(dllimport)
 #endif
 #endif
+#elif __EMSCRIPTEN__
+#ifdef GIDEROS_LIBRARY
+#include <emscripten.h>
+#define GIDEROS_API EMSCRIPTEN_KEEPALIVE
+#else
+#define GIDEROS_API
+#endif
 #else
 #define GIDEROS_API
 #endif

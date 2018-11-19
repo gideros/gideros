@@ -224,7 +224,7 @@ win32 {
 	}
 	else
 	{
-   		LIBS += -lqscintilla2
+   		LIBS += -lqscintilla2_qt5
    	}
 }
 

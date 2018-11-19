@@ -151,7 +151,7 @@ static bool readProjectFile(const QString& fileName,
 
             if (type == "file")
             {
-                QString fileName = e.hasAttribute("source") ? e.attribute("source") : e.attribute("file");
+				QString fileName = e.hasAttribute("name")? e.attribute("name"):(e.hasAttribute("source") ? e.attribute("source") : e.attribute("file"));
                 QString name = QFileInfo(fileName).fileName();
                 bool lock=e.hasAttribute("source");
 
