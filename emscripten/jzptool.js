@@ -128,6 +128,22 @@ JPZLoad=function (fl,ev,fmt)
 	},fmt);
 }
 
+JZPLoadPromise=function (fl,fmt)
+{
+	return new Promise(function (resolve, reject)
+	{
+		JPZConvert(fl,function (code)
+		{
+			setTimeout(function() { 
+				 resolve(code);
+				 if (typeof JZPLoaded[fl] =="function") {
+					 JZPLoaded[fl]();
+				 }
+			},1);
+		},fmt);		
+	});
+}
+
 JPZMALoad=function (fl,ev)
 {
 	JZPLoadAsync(fl, (ctx,ratio) => {
