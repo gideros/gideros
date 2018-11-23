@@ -1,0 +1,13 @@
+<project>
+ <properties ios_bundle="com.yourdomain." iosDevice="0" version_code="1" osx_bundle="com.yourdomain." tv_icon="" orientation="0" html5_fbinstant="0" splashScaleMode="0" exportMode="0" version="1.0" osx_domain="giderosmobile.com" mouseTouchOrder="0" disableSplash="0" winrt_package="com.yourdomain.yourapp" splash_v_image="" backgroundColor="#ffffff" win_domain="giderosmobile.com" osx_installerId="" encryptAssets="0" winrt_org="GiderosMobile" fps="60" logicalHeight="480" windowWidth="0" splash_h_image="" packageName="com.yourdomain.yourapp" html5_fbload="100" encryptCode="0" build_number="1" win_org="GiderosMobile" html5_host="" autorotation="0" scaleMode="3" html5_mem="256" app_icon="" architecture="0" retinaDisplay="0" osx_org="GiderosMobile" osx_category="5" vsync="0" windowHeight="0" touchToMouse="1" html5_pack="0" logicalWidth="320" app_name="" osx_signingId="" android_template="0" mouseToTouch="1">
+  <imageScales/>
+  <plugins>
+   <plugin name="Spine" enabled="1"/>
+  </plugins>
+  <exports/>
+ </properties>
+ <file source="rooster.png"/>
+ <file source="rooster.json"/>
+ <file source="rooster.atlas"/>
+ <file source="main.lua"/>
+</project>

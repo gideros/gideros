@@ -1,0 +1,97 @@
+
+rooster.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+shin_01
+  rotate: false
+  xy: 269, 369
+  size: 71, 70
+  orig: 71, 70
+  offset: 0, 0
+  index: -1
+shin_02
+  rotate: false
+  xy: 266, 297
+  size: 71, 70
+  orig: 71, 70
+  offset: 0, 0
+  index: -1
+thigh_02_02
+  rotate: false
+  xy: 154, 297
+  size: 37, 53
+  orig: 37, 53
+  offset: 0, 0
+  index: -1
+thigh_01_02
+  rotate: false
+  xy: 269, 441
+  size: 34, 52
+  orig: 34, 52
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 1, 383
+  size: 195, 121
+  orig: 195, 121
+  offset: 0, 0
+  index: -1
+tail_02
+  rotate: false
+  xy: 1, 207
+  size: 151, 174
+  orig: 151, 174
+  offset: 0, 0
+  index: -1
+tail_01
+  rotate: false
+  xy: 198, 297
+  size: 66, 125
+  orig: 66, 125
+  offset: 0, 0
+  index: -1
+wing
+  rotate: false
+  xy: 154, 207
+  size: 131, 88
+  orig: 131, 88
+  offset: 0, 0
+  index: -1
+neck_shadow
+  rotate: false
+  xy: 198, 424
+  size: 69, 79
+  orig: 69, 79
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 1, 1
+  size: 174, 204
+  orig: 174, 204
+  offset: 0, 0
+  index: -1
+hood
+  rotate: false
+  xy: 339, 441
+  size: 53, 41
+  orig: 53, 41
+  offset: 0, 0
+  index: -1
+beak
+  rotate: false
+  xy: 154, 352
+  size: 38, 25
+  orig: 44, 32
+  offset: 3, 4
+  index: -1
+beak_lower
+  rotate: false
+  xy: 305, 441
+  size: 23, 8
+  orig: 44, 32
+  offset: 14, 4
+  index: -1
