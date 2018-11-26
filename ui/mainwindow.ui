@@ -111,10 +111,16 @@ QMainWindow::separator {
     </property>
     <addaction name="actionStart_Player"/>
     <addaction name="actionStart"/>
-    <addaction name="actionDebug"/>
-    <addaction name="actionStop"/>
     <addaction name="actionStartAll"/>
+    <addaction name="actionStop"/>
     <addaction name="separator"/>
+    <addaction name="actionDebug"/>
+    <addaction name="actionResume"/>
+    <addaction name="actionStepOver"/>
+    <addaction name="actionStepInto"/>
+    <addaction name="actionStepReturn"/>
+    <addaction name="separator"/>
+    <addaction name="actionProfile"/>
     <addaction name="actionPlayer_Settings"/>
     <addaction name="actionLocalhostToggle"/>
    </widget>
