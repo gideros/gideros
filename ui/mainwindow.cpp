@@ -2021,10 +2021,12 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 		QSettings settings;
 		settings.setValue("geometry", saveGeometry());
-		settings.setValue("windowState", saveState());
+        settings.setValue("windowState", saveState());
 /*		settings.setValue("splitter1", splitter1_->saveState());
 		settings.setValue("splitter2", splitter2_->saveState());
 		settings.setValue("splitter3", splitter3_->saveState());*/
+
+        outlineWidget_->saveSettings();
 
 		event->accept();
 	} 
