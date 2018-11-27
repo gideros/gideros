@@ -16,6 +16,7 @@
 #include <QScrollBar>
 #include <QAction>
 #include <QPainter>
+#include <QSettings>
 
 #include "iconlibrary.h"
 #include "lua.hpp"
@@ -262,16 +263,18 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     QVBoxLayout *layout=new QVBoxLayout();
     layout->setContentsMargins(0,0,0,0);
     QToolBar *toolbar=new QToolBar();
+    QSettings settings;
+    int s=settings.value("outline_state",31).toInt();
     actType_=toolbar->addAction(IconLibrary::instance().icon(0,"sort cat"),"Group by type",this, &OutlineWidget::sort);
-    actType_->setCheckable(true); actType_->setChecked(true);
+    actType_->setCheckable(true); actType_->setChecked(s&1);
     actSort_=toolbar->addAction(IconLibrary::instance().icon(0,"sort alpha"),"Sort alphabetically",this, &OutlineWidget::sort);
-    actSort_->setCheckable(true); actSort_->setChecked(true);
+    actSort_->setCheckable(true); actSort_->setChecked(s&2);
     actGlb_=toolbar->addAction(IconLibrary::instance().icon(0,"green dot"),"Show globals",this, &OutlineWidget::sort);
-    actGlb_->setCheckable(true); actGlb_->setChecked(true);
+    actGlb_->setCheckable(true); actGlb_->setChecked(s&4);
     actLoc_=toolbar->addAction(IconLibrary::instance().icon(0,"red dot"),"Show locals",this, &OutlineWidget::sort);
-    actLoc_->setCheckable(true); actLoc_->setChecked(true);
+    actLoc_->setCheckable(true); actLoc_->setChecked(s&8);
     actTbl_=toolbar->addAction(IconLibrary::instance().icon(0,"purple dot"),"Show table fields",this, &OutlineWidget::sort);
-    actTbl_->setCheckable(true); actTbl_->setChecked(true);
+    actTbl_->setCheckable(true); actTbl_->setChecked(s&16);
     layout->addWidget(toolbar);
     layout->addWidget(list_);
     layout->setStretchFactor(list_,1);
@@ -283,6 +286,18 @@ OutlineWidget::OutlineWidget(QWidget *parent)
 
 OutlineWidget::~OutlineWidget()
 {
+}
+
+void OutlineWidget::saveSettings()
+{
+    QSettings settings;
+    int s=0;
+    if (actType_->isChecked()) s|=1;
+    if (actSort_->isChecked()) s|=2;
+    if (actGlb_->isChecked()) s|=4;
+    if (actLoc_->isChecked()) s|=8;
+    if (actTbl_->isChecked()) s|=16;
+    settings.setValue("outline_state",s);
 }
 
 void OutlineWidget::onItemClicked(const QModelIndex &idx)

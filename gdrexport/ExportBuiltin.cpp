@@ -155,7 +155,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 			pext="gidz";
 #endif
 			if (ctx->properties.html5_wasm)
-	        	replaceList1 << qMakePair(QString("src=\"gideros-wasm.js\">").toUtf8(),QString(">\nJPZLoad('gideros-wasm.wasm.%1',function(c) { Module.wasmBinary=c; JPZLoad('gideros-wasm.js.%1',eval); },\"array\");").arg(pext).arg(pext).toUtf8());
+	        	replaceList1 << qMakePair(QString("src=\"gideros-wasm.js\">").toUtf8(),QString(">\nJPZLoad('gideros-wasm.wasm.%1',function(c) { Module.wasmBinary=c; JPZLoad('gideros-wasm.js.%1',eval); },\"array\");").arg(pext).toUtf8());
 			else {
 				replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js.%1']").arg(pext).toUtf8());
 				replaceList1 << qMakePair(QString("new XMLHttpRequest()").toUtf8(),QString("new Module.XMLHttpRequest()").toUtf8());

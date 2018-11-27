@@ -15,8 +15,11 @@
 #include <stack>
 #include <QFileInfo>
 #include <QDir>
+#include <QDirIterator>
 #include <bytebuffer.h>
 #include <QCoreApplication>
+#include <QMap>
+#include <QString>
 
 #include <sys/stat.h>
 #include <time.h>
@@ -409,7 +412,9 @@ void Application::play(const QString &fileName)
         properties_.clear();
 
         QDomElement properties = root.firstChildElement("properties");
+        properties_.loadXml(properties);
 
+        /*
         // graphics options
         if (!properties.attribute("scaleMode").isEmpty())
             properties_.scaleMode = properties.attribute("scaleMode").toInt();
@@ -444,13 +449,64 @@ void Application::play(const QString &fileName)
             properties_.iosDevice = properties.attribute("iosDevice").toInt();
         if (!properties.attribute("packageName").isEmpty())
             properties_.packageName = properties.attribute("packageName");
+        */
     }
 
+    QMap<QString,bool> locked;
     // populate file list and dependency graph
     {
         fileList_.clear();
         dependencyGraph_.clear();
         std::vector<std::pair<QString, QString> > dependencies_;
+
+    	//Add lua plugins
+        const char* lua_plugins_path = "_LuaPlugins_/";
+    	QMap<QString, QString> plugins;
+    	QMap<QString, QString> allPlugins=ProjectProperties::availablePlugins();
+        bool hasLuaPlugin = false;
+        for (QSet<ProjectProperties::Plugin>::const_iterator it=properties_.plugins.begin(); it!=properties_.plugins.end(); it++)
+    	{
+    		ProjectProperties::Plugin p=*it;
+    		if (p.enabled)
+    		{
+    			QString ppath=allPlugins[p.name];
+    			if (!ppath.isEmpty())
+    			{
+    	    		QFileInfo path(ppath);
+    	    		QDir pf=path.dir();
+    	    		if (pf.cd("luaplugin"))
+    	    		{
+                        QDir luaplugin_dir = pf.path();
+                        int root_length = luaplugin_dir.path().length();
+
+                        // collect all lua files in luaplugin and any subdirectory of luaplugin
+                        QDirIterator dir_iter(pf.path(), QStringList() << "*.lua", QDir::Files, QDirIterator::Subdirectories);
+                        while (dir_iter.hasNext()) {
+                            hasLuaPlugin = true;
+                            QDir file = dir_iter.next();
+                            QString filename = file.path().mid(file.path().lastIndexOf("/") + 1);
+                            // 'subtract' luaplugin root path from this path
+                            QString rel_path_and_filename = file.path().mid(root_length + 1, file.path().length());
+                            QString just_rel_path = rel_path_and_filename.mid(0, rel_path_and_filename.lastIndexOf("/") + 1);
+
+                            fileList_.push_back(std::make_pair(lua_plugins_path + rel_path_and_filename, file.path()));
+                            locked[lua_plugins_path + rel_path_and_filename]=true;
+                            dependencyGraph_.addCode(file.path(), true);
+                        }
+    	    		}
+    			}
+    		}
+    	}
+        /* TODO handle HTML5 player
+        if ((ctx.deviceFamily == e_Html5)&&properties_.html5_fbinstant) {
+			QFileInfo f=QFileInfo("Tools/FBInstant.lua");
+            fileList_.push_back(std::make_pair((lua_plugins_path + static_cast<QString>("FBInstant.lua")),
+                                               f.absoluteFilePath()));
+            locked[lua_plugins_path + static_cast<QString>("FBInstant.lua")]=true;
+			dependencyGraph_.addCode(f.absoluteFilePath(),true);
+            hasLuaPlugin = true;
+ 	    } */
+
 
         std::stack<QDomNode> stack;
         stack.push(doc.documentElement());
@@ -473,15 +529,19 @@ void Application::play(const QString &fileName)
 
             if (type == "file")
             {
-                QString fileName = e.hasAttribute("source") ? e.attribute("source") : e.attribute("file");
+				QString fileName = e.hasAttribute("name")? e.attribute("name"):(e.hasAttribute("source") ? e.attribute("source") : e.attribute("file"));
                 QString name = QFileInfo(fileName).fileName();
+                bool lock=e.hasAttribute("source");
 
                 QString n;
                 for (std::size_t i = 0; i < dir.size(); ++i)
                     n += dir[i] + "/";
                 n += name;
 
+                if (locked[n])
+                      continue;
                 fileList_.push_back(std::make_pair(n, fileName));
+                locked[n]=lock;
 
                 if (QFileInfo(fileName).suffix().toLower() == "lua")
                 {

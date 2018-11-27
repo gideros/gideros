@@ -20,6 +20,7 @@ private:
 	static int setTexture(lua_State* L);
 	static int setLineThickness(lua_State* L);
 	static int setConvex(lua_State* L);
+	static int getPathPoints(lua_State* L);
 };
 
 #endif

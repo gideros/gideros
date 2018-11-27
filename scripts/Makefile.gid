@@ -16,7 +16,7 @@ PLUGINS_MACONLY=steam
 PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct camera tts threads megacool
+				struct camera tts threads megacool map
 PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine
 #Precompiled plugins only below
 PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads

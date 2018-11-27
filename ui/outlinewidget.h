@@ -59,6 +59,7 @@ public:
 	OutlineWidget(QWidget *parent=0);
 	~OutlineWidget();
 	void setDocument(TextEdit *doc,bool checkSyntax);
+    void saveSettings();
 private:
     TextEdit *doc_;
     QTime refresh_;

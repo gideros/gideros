@@ -1,0 +1,19 @@
+<project>
+ <properties osx_org="GiderosMobile" touchToMouse="1" windowWidth="0" winrt_package="com.yourdomain.yourapp" html5_host="" splash_h_image="" encryptCode="0" splash_v_image="" win_domain="giderosmobile.com" autorotation="0" version_code="1" logicalHeight="1280" fps="30" winrt_org="GiderosMobile" encryptAssets="0" osx_bundle="com.yourdomain." osx_category="5" osx_domain="giderosmobile.com" app_icon="" mouseToTouch="1" version="1.0" logicalWidth="800" ios_bundle="com.yourdomain.exp" scaleMode="5" windowHeight="0" iosDevice="0" html5_mem="256" assetsOnly="1" win_org="GiderosMobile" android_template="0" retinaDisplay="0" packageName="com.yourdomain.yourapp" mouseTouchOrder="0" architecture="1" orientation="0" tv_icon="">
+  <imageScales/>
+  <plugins/>
+  <exports>
+   <export name="APK">
+    <property value="" name="androidPath"/>
+    <property value="23" name="androidSdk"/>
+    <property value="19" name="androidTarget"/>
+    <property value="23.0.1" name="androidTools"/>
+    <property value="" name="javaPath"/>
+    <property value="" name="keyAlias"/>
+    <property value="" name="keyStore"/>
+    <property value="com.yourdomain.yourapp" name="packageName"/>
+   </export>
+  </exports>
+ </properties>
+ <file source="main.lua"/>
+</project>

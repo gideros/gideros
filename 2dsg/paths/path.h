@@ -22,6 +22,11 @@ private:
     float linea_,liner_,lineg_,lineb_;
     bool convex_;
 public:
+    struct PathPoint {
+    	float x;
+    	float y;
+    	float angle;
+    };
 	Path2D(Application* application);
 	virtual ~Path2D();
     void setTexture(TextureBase *texturebase, const Matrix4* matrix = NULL);
@@ -31,6 +36,7 @@ public:
 	void setFillColor(unsigned int color, float alpha);
 	void setLineColor(unsigned int color, float alpha);
 	void setLineThickness(float thickness, float feather);
+	void getPathPoints(float offset, float advance,int max, float flatness, int maxsub,std::vector<PathPoint> &points);
 	static int buildPath(PrPath *);
 	static void removePath(int);
 	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL);

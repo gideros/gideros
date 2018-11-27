@@ -122,6 +122,14 @@
 				image="clown.png"
 				/>
 </category>
+	
+<category name="Graphics 5">
+	<example 	name="Spine animation"
+				description="Procedural skeletal animation using SpineC plugin"
+				path="Graphics/SpineC example/SpineC example.gproj"
+				image="spine.png"
+				/>
+</category>
 
 <category name="Graphics 3D">
 	<example 	name="3D Cube"
@@ -234,6 +242,11 @@
 				description="Using GestureStack class"
 				path="Hardware/Detecting Swipe Gestures/Detecting Swipe Gestures.gproj"
 				image = "swipe.png"
+				/>
+	<example 	name="Measure functions perfomance"
+				description="Using Core.Profiler"
+				path="Hardware/Benchmark functions perfomance/benchmarkFunctions.gproj"
+				image = "benchmark.png"
 				/>
 </category>
 

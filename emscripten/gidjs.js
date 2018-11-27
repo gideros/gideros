@@ -20,54 +20,50 @@ Module.preRun
 					xhr.send();
 				});
 
+				var loader=new Promise(function (resolve,reject) { resolve(); });
+				Module['addRunDependency']("gidPlugins");
+				var r=Module['read'];
+				Module['read']=function (l) {
+					if (l.startsWith("local:"))
+						return l.substring(6);
+					else
+						return r(l);
+				}
 				Module.GiderosPlugins.forEach(function(p) {
-					var r=Module['read'];
-					Module['read']=function (l) {
-						if (l.startsWith("local:"))
-							return l.substring(6);
-						else
-							return r(l);
-					}
 					if (p.endsWith(".gidz")) {
-						Module['addRunDependency'](p);
 						if (Module['wasmBinary'])
-							JPZLoad(p,function (c) {
-								loadDynamicLibrary(c,true).then(function () {
-									Module['removeRunDependency'](p);									
-								});							
-							},"array");
+							loader=loader.then(function () { console.log("Loading plugin:"+p); return JZPLoadPromise(p,"array");})
+								.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,true); });
 						else
-							JPZLoad(p,function (c) {
-								loadDynamicLibrary("local:"+c);
-								Module['removeRunDependency'](p);
-							});
+							loader=loader.then(function () {console.log("Loading plugin:"+p); return JZPLoadPromise(p);})
+							.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary("local:"+c); });
 					} else {
-						var xhr = new XMLHttpRequest;
-						xhr.open("GET", p, true);
-						xhr.onload = function(e) {
-							if (xhr.readyState === 4) {
-								if (xhr.status === 200) {
-									var c=xhr.response;
-									if (!Module['wasmBinary'])
-									{
-										loadDynamicLibrary("local:"+c);
-										Module['removeRunDependency'](p);
+						loader=loader.then(function () {
+							return new Promise(function (resolve,reject) {
+								console.log("Loading plugin:"+p); 
+								var xhr = new XMLHttpRequest;
+								xhr.open("GET", p, true);
+								xhr.onload = function(e) {
+									if (xhr.readyState === 4) {
+										if (xhr.status === 200) {
+											resolve(xhr.response);
+										} else {
+											reject(xhr.response);
+										}
 									}
-									else
-										loadDynamicLibrary(c,true).then(function () {
-											Module['removeRunDependency'](p);									
-										});							
-								} else {
-									console.error(xhr.response);
-								}
-							}
-						};
-						Module['addRunDependency'](p);
+								};								
+								if (Module['wasmBinary'])
+									xhr.responseType = 'arraybuffer';
+								xhr.send();
+							});
+						});
 						if (Module['wasmBinary'])
-							xhr.responseType = 'arraybuffer';
-						xhr.send();
+							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,true); });
+						else
+							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary("local:"+c); });
 					}
 				});
+				loader=loader.then(function () { console.log("Plugins loaded"); Module['removeRunDependency']("gidPlugins");});							
 			});
 
 			Module.setStatus("Loading application...");

@@ -5,10 +5,12 @@ inline std::pair<int, QString> _(const QString& str)
 {
     static QString init("init.lua");
     static QString main("main.lua");
+    static QString init2("assets/init.lua");
+    static QString main2("assets/main.lua");
 
-    if (str == init)
+    if ((str == init)||(str==init2))
         return std::make_pair(0, str);
-    if (str == main)
+    if ((str == main)||(str==main2))
         return std::make_pair(2, str);
     return std::make_pair(1, str);
 }

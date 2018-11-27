@@ -152,6 +152,7 @@ VideoFrameSurface::~VideoFrameSurface() {
 }
 
 void VideoFrameSurface::render() {
+    if (!g_frame.isValid()) return;
 	GLCALL_INIT;
 	if(g_frame.map(QAbstractVideoBuffer::ReadOnly))
 	{
@@ -183,16 +184,16 @@ void VideoFrameSurface::render() {
 		indices.modified = false;
 
 		engine->setFramebuffer(oldfbo);
-
+        g_frame.unmap();
 	}
 
-	g_frame.unmap();
 }
 
 void VideoFrameSurface::tick()
 {
 	g_mutex.lock();
-	gtexture_get_screenmanager()->screenDestroyed();
+    ScreenManager *sm=gtexture_get_screenmanager();
+    if (sm) sm->screenDestroyed();
 	render();
 	g_mutex.unlock();
 }
