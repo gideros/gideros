@@ -691,6 +691,9 @@ int loader(lua_State *L) {
 	lua_setfield(L, -2, "ANIMATION_COMPLETE");
 	lua_pop(L, 1);
 
+    luaL_newweaktable(L);
+    luaL_rawsetptr(L, LUA_REGISTRYINDEX, &keyWeak);
+
 	return 1;
 }
 

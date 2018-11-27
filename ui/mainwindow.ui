@@ -128,10 +128,8 @@ QMainWindow::separator {
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionDeveloper_Center"/>
     <addaction name="actionHelp_Support"/>
     <addaction name="actionDocumentation"/>
-    <addaction name="actionAPI_Documentation"/>
     <addaction name="separator"/>
     <addaction name="actionAbout_Gideros_Studio"/>
    </widget>
@@ -157,8 +155,8 @@ QMainWindow::separator {
    <addaction name="menuCompile"/>
    <addaction name="menuPlayer"/>
    <addaction name="menuAddons"/>
-   <addaction name="menuHelp"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
@@ -511,19 +509,9 @@ Gideros Player, Play button is enabled.</string>
     <string>Export Pack...</string>
    </property>
   </action>
-  <action name="actionDeveloper_Center">
-   <property name="text">
-    <string>Developer Center</string>
-   </property>
-  </action>
   <action name="actionHelp_Support">
    <property name="text">
     <string>Help &amp;&amp; Support</string>
-   </property>
-  </action>
-  <action name="actionAPI_Documentation">
-   <property name="text">
-    <string>API Documentation</string>
    </property>
   </action>
   <action name="actionProject6">

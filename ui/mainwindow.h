@@ -209,9 +209,7 @@ private slots:
 
 	void openAboutDialog();
     void openPreferencesDialog();
-	void developerCenter();
 	void helpAndSupport();
-	void apiDocumentation();
     void giderosDocumentation();
 
     void toggleFullscreen();

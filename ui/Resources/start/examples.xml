@@ -126,7 +126,7 @@
 <category name="Graphics 5">
 	<example 	name="Spine animation"
 				description="Procedural skeletal animation using SpineC plugin"
-				path="Graphics/SpineC example/StarField.gproj"
+				path="Graphics/SpineC example/SpineC example.gproj"
 				image="spine.png"
 				/>
 </category>

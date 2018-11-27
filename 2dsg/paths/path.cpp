@@ -349,8 +349,9 @@ typedef kvec_t(struct reduced_path)
 reduced_path_vec;
 
 struct geometry {
-	kvec_t(float)	vertices;
-	kvec_t(unsigned short)	indices;
+	kvec_t(float)
+	vertices;kvec_t(unsigned short)
+	indices;
 
 	VertexBuffer<float> *vertex_buffer;
 	VertexBuffer<unsigned short> *index_buffer;
@@ -649,7 +650,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 	float pepx = 0, pepy = 0;
 	float ncpx = 0, ncpy = 0;
 	float npepx = 0, npepy = 0;
-	float rx,ry,rx1,ry1,rx2,ry2;
+	float rx, ry, rx1, ry1, rx2, ry2;
 #define relative(mx,my) if (bearing) \
     { rx=cpx+cosf(bearing)*mx-sinf(bearing)*my; ry=cpy+cosf(bearing)*my+sinf(bearing)*mx; } \
 	else { rx=cpx+mx; ry=cpy+my; }
@@ -2455,7 +2456,8 @@ static void fill_path(unsigned int path, int fill_mode,
 	VertexBuffer<vector4f> *vb = p->fill_vertex_buffer;
 	VertexBuffer<unsigned short> *ib = p->fill_index_buffer;
 	ShaderProgram::pathShaderFillC->setData(0, ShaderProgram::DFLOAT, 4,
-		vb->size()?&((*vb)[0]):NULL, vb->size(), vb->modified, &vb->bufferCache);
+			vb->size() ? &((*vb)[0]) : NULL, vb->size(), vb->modified,
+			&vb->bufferCache);
 	vb->modified = false;
 	/*
 	 glog_d("Fill path: VB Size:%d",vb->size());
@@ -2467,7 +2469,7 @@ static void fill_path(unsigned int path, int fill_mode,
 	 */
 	if (p->fill_counts[0] > 0) {
 		stencil.sFail = front;
-		if (fill_mode!=PATHFILLMODE_DIRECT)
+		if (fill_mode != PATHFILLMODE_DIRECT)
 			ShaderEngine::Engine->setDepthStencil(stencil);
 		stencil.sClear = false;
 		//glog_d("Fill path: Fill0=%d S=%d",p->fill_counts[0],p->fill_starts[0]);
@@ -2479,7 +2481,7 @@ static void fill_path(unsigned int path, int fill_mode,
 
 	if (p->fill_counts[1] > 0) {
 		stencil.sFail = back;
-		if (fill_mode!=PATHFILLMODE_DIRECT)
+		if (fill_mode != PATHFILLMODE_DIRECT)
 			ShaderEngine::Engine->setDepthStencil(stencil);
 		stencil.sClear = false;
 		//glog_d("Fill path: Fill1=%d S=%d",p->fill_counts[1],p->fill_starts[1]);
@@ -2491,16 +2493,205 @@ static void fill_path(unsigned int path, int fill_mode,
 	stencil.sClear = false;
 }
 
-int Path2D::buildPath(PrPath *ppath)
+static void get_path_points_line(float sx, float sy, float dx, float dy,
+		float &offset, float interval, int &maxpts,
+		std::vector<Path2D::PathPoint> &pts) {
+	if (!maxpts)
+		return;
+	float dist = sqrtf((dx - sx)*(dx - sx) + (dy - sy)*(dy - sy));
+	if (!dist)
+		return;
+	if (offset < dist) {
+        float ey = (dy - sy) / dist;
+        float ex = (dx - sx) / dist;
+        float ea = atan2f(ex, -ey);
+		while (offset < dist) {
+			Path2D::PathPoint p;
+			p.x = sx + offset * ex;
+			p.y = sy + offset * ey;
+			p.angle = ea;
+			pts.push_back(p);
+			if (!--maxpts)
+				break;
+			offset += interval;
+		}
+	}
+	offset -= dist;
+}
+
+static float lengthSq(float x1,float y1,float x2,float y2,float px,float py)
 {
+       // Adjust vectors relative to x1,y1
+       // x2,y2 becomes relative vector from x1,y1 to end of segment
+       x2 -= x1;
+       y2 -= y1;
+       // px,py becomes relative vector from x1,y1 to test point
+       px -= x1;
+       py -= y1;
+       double dotprod = px * x2 + py * y2;
+       double projlenSq;
+       if (dotprod <= 0.0) {
+           // px,py is on the side of x1,y1 away from x2,y2
+           // distance to segment is length of px,py vector
+           // "length of its (clipped) projection" is now 0.0
+           projlenSq = 0.0;
+       } else {
+           // switch to backwards vectors relative to x2,y2
+           // x2,y2 are already the negative of x1,y1=>x2,y2
+           // to get px,py to be the negative of px,py=>x2,y2
+           // the dot product of two negated vectors is the same
+           // as the dot product of the two normal vectors
+           px = x2 - px;
+           py = y2 - py;
+           dotprod = px * x2 + py * y2;
+           if (dotprod <= 0.0) {
+               // px,py is on the side of x2,y2 away from x1,y1
+               // distance to segment is length of (backwards) px,py vector
+               // "length of its (clipped) projection" is now 0.0
+               projlenSq = 0.0;
+           } else {
+               // px,py is between x1,y1 and x2,y2
+               // dotprod is the length of the px,py vector
+               // projected on the x2,y2=>x1,y1 vector times the
+               // length of the x2,y2=>x1,y1 vector
+               projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
+           }
+       }
+       // Distance to line is now the length of the relative point
+       // vector minus the length of its projection onto the line
+       // (which is zero if the projection falls outside the range
+       //  of the line segment).
+       double lenSq = px * px + py * py - projlenSq;
+       if (lenSq < 0) {
+           lenSq = 0;
+       }
+       return lenSq;
+}
+
+static void subdivide_quad(float c[],float r[]) {
+        double x1 = c[0];
+        double y1 = c[1];
+        double ctrlx = c[2];
+        double ctrly = c[3];
+        double x2 = c[4];
+        double y2 = c[5];
+
+        r[4] = x2;
+        r[5] = y2;
+        x1 = (x1 + ctrlx) / 2.0;
+        y1 = (y1 + ctrly) / 2.0;
+        x2 = (x2 + ctrlx) / 2.0;
+        y2 = (y2 + ctrly) / 2.0;
+        ctrlx = (x1 + x2) / 2.0;
+        ctrly = (y1 + y2) / 2.0;
+        c[2] = x1;
+        c[3] = y1;
+        c[4] = ctrlx;
+        c[5] = ctrly;
+        r[0] = ctrlx;
+        r[1] = ctrly;
+        r[2] = x2;
+        r[3] = y2;
+}
+
+
+static void get_path_points_curve(float sx, float sy, float tx, float ty,
+		float dx, float dy, float &offset, float interval, int &maxpts,
+		std::vector<Path2D::PathPoint> &pts, float flatSq,int maxsub) {
+	if (!maxpts)
+		return;
+	if ((maxsub<=0)||(lengthSq(sx,sy,dx,dy,tx,ty)<flatSq)) {
+		get_path_points_line(sx,sy,dx,dy,offset,interval,maxpts,pts);
+		return;
+	}
+	float c[6],d[6];
+	c[0]=sx;
+	c[1]=sy;
+	c[2]=tx;
+	c[3]=ty;
+	c[4]=dx;
+	c[5]=dy;
+	subdivide_quad(c,d);
+	get_path_points_curve(c[0],c[1],c[2],c[3],c[4],c[5],offset,interval,maxpts,pts,flatSq,maxsub-1);
+	get_path_points_curve(d[0],d[1],d[2],d[3],d[4],d[5],offset,interval,maxpts,pts,flatSq,maxsub-1);
+}
+
+
+static void get_path_points(struct path *path, float &offset, float interval,
+		int &maxpts, float flatSq,int maxsub,std::vector<Path2D::PathPoint> &pts) {
+#define c0 coords[icoord]
+#define c1 coords[icoord + 1]
+#define c2 coords[icoord + 2]
+#define c3 coords[icoord + 3]
+
+#define set(x1, y1, x2, y2) ncpx = x1; ncpy = y1; npepx = x2; npepy = y2;
+
+	reduced_path_vec *reduced_paths = &path->reduced_paths;
+
+	size_t i, j;
+
+	for (i = 0; i < kv_size(*reduced_paths); ++i) {
+		struct reduced_path *p = &kv_a(*reduced_paths, i);
+
+		size_t num_commands = kv_size(p->commands);
+		unsigned char *commands = kv_data(p->commands);
+		float *coords = kv_data(p->coords);
+
+		int icoord = 0;
+
+		float spx = 0, spy = 0;
+		float cpx = 0, cpy = 0;
+		float ncpx = 0, ncpy = 0;
+		float npepx = 0, npepy = 0;
+
+		for (j = 0; j < num_commands; ++j) {
+			switch (commands[j]) {
+			case PATHCMD_MOVE_TO:
+				set(c0, c1, c0, c1)
+				;
+				spx = ncpx;
+				spy = ncpy;
+				icoord += 2;
+				break;
+			case PATHCMD_LINE_TO:
+				get_path_points_line(cpx, cpy, c0,c1,offset,interval,maxpts,pts);
+				set(c0, c1, c0, c1);
+				icoord += 2;
+				break;
+				case PATHCMD_QUADRATIC_CURVE_TO:
+				get_path_points_curve(cpx,cpy, c0,c1,c2,c3,offset,interval,maxpts,pts,flatSq,maxsub);
+				set(c2, c3, c0, c1);
+				icoord += 4;
+				break;
+				case PATHCMD_CLOSE_PATH:
+				get_path_points_line(cpx,cpy, spx,spy,offset,interval,maxpts,pts);
+				set(spx, spy, spx, spy);
+				break;
+			}
+
+			cpx = ncpx;
+			cpy = ncpy;
+		}
+
+	}
+
+#undef c0
+#undef c1
+#undef c2
+#undef c3
+
+#undef set
+
+}
+
+int Path2D::buildPath(PrPath *ppath) {
 	int path = gen_paths(1);
 	path_commands(path, ppath->numCommands, ppath->commands, ppath->numCoords,
 			ppath->coords);
 	return path;
 }
 
-void Path2D::removePath(int path)
-{
+void Path2D::removePath(int path) {
 	delete_paths(path, 1);
 }
 
@@ -2533,6 +2724,16 @@ Path2D::~Path2D() {
 	delete_paths(path, 1);
 }
 
+void Path2D::getPathPoints(float offset, float advance,int max, float flatness, int maxsub,std::vector<PathPoint> &points)
+{
+	struct path *p = get_path(path);
+	if (p) {
+		float ro=offset;
+		int rm=max;
+		get_path_points(p,ro,advance,rm,flatness*flatness,maxsub,points);
+	}
+}
+
 void Path2D::setFillColor(unsigned int color, float alpha) {
 	int r = (color >> 16) & 0xff;
 	int g = (color >> 8) & 0xff;
@@ -2543,7 +2744,7 @@ void Path2D::setFillColor(unsigned int color, float alpha) {
 	fillb_ = b / 255.f;
 	filla_ = alpha;
 
-	getPathBounds(path,filla_ > 0,linea_ > 0,&minx_,&miny_,&maxx_,&maxy_);
+	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
 }
 
 void Path2D::setLineColor(unsigned int color, float alpha) {
@@ -2556,7 +2757,7 @@ void Path2D::setLineColor(unsigned int color, float alpha) {
 	lineb_ = b / 255.f;
 	linea_ = alpha;
 
-	getPathBounds(path,filla_ > 0,linea_ > 0,&minx_,&miny_,&maxx_,&maxy_);
+	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
 }
 
 void Path2D::setLineThickness(float thickness, float feather) {
@@ -2565,8 +2766,9 @@ void Path2D::setLineThickness(float thickness, float feather) {
 		p->stroke_width = thickness;
 		if ((feather >= 0) && (feather <= 1.0))
 			p->stroke_feather = feather;
-		p->is_stroke_dirty=1;
-		getPathBounds(path,filla_ > 0,linea_ > 0,&minx_,&miny_,&maxx_,&maxy_);
+		p->is_stroke_dirty = 1;
+		getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_,
+				&maxy_);
 	}
 }
 
@@ -2574,7 +2776,8 @@ void Path2D::setConvex(bool convex) {
 	convex_ = convex;
 }
 
-void Path2D::impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil) {
+void Path2D::impressPath(int path, Matrix4 xform,
+		ShaderEngine::DepthStencil stencil) {
 	struct path *p = get_path(path);
 	if (!p)
 		return; //No PATH
@@ -2583,8 +2786,9 @@ void Path2D::impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stenc
 	fill_path(path, PATHFILLMODE_COUNT_UP, stencil, &xform);
 }
 
-void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp,const Matrix4 *textureMatrix)
-{
+void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
+		TextureData *texture, ShaderEngine::DepthStencil stencil,
+		ShaderProgram *shp, const Matrix4 *textureMatrix) {
 	glPushColor();
 	glMultColor(fill[0], fill[1], fill[2], fill[3]);
 
@@ -2596,46 +2800,50 @@ void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture
 	ShaderEngine::Engine->setDepthStencil(stencil);
 
 	VertexBuffer<unsigned short> *ib = quadIndices;
-	if (texture)
-	{
-		float sx=((float)texture->width)/texture->exwidth;
-		float sy=((float)texture->height)/texture->exheight;
-		float texcoords[8]=	{ 0,0,sx,0,sx,sy,0,sy };
+	if (texture) {
+		float sx = ((float) texture->width) / texture->exwidth;
+		float sy = ((float) texture->height) / texture->exheight;
+		float texcoords[8] = { 0, 0, sx, 0, sx, sy, 0, sy };
 		if (textureMatrix)
-			for (int k=0;k<8;k+=2)
-				textureMatrix->transformPoint(texcoords[k], texcoords[k+1], texcoords+k,texcoords+k+1);
-		if (!shp) shp=ShaderProgram::stdTexture;
-        ShaderEngine::Engine->bindTexture(0,texture->id());
-        shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,texcoords,4,true,NULL);
+			for (int k = 0; k < 8; k += 2)
+				textureMatrix->transformPoint(texcoords[k], texcoords[k + 1],
+						texcoords + k, texcoords + k + 1);
+		if (!shp)
+			shp = ShaderProgram::stdTexture;
+		ShaderEngine::Engine->bindTexture(0, texture->id());
+		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT, 2,
+				texcoords, 4, true, NULL);
+	} else {
+		if (!shp)
+			shp = ShaderProgram::stdBasic;
 	}
-	else
-	{
-		if (!shp) shp=ShaderProgram::stdBasic;
-	}
-	shp->setData(ShaderProgram::DataVertex,
-			ShaderProgram::DFLOAT, 2, &((*vb)[0]), vb->size() / 2,
-			vb->modified, &vb->bufferCache);
-	shp->drawElements(ShaderProgram::TriangleStrip,
-			ib->size(), ShaderProgram::DUSHORT, &((*ib)[0]),
-			ib->modified, &ib->bufferCache);
+	shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,
+			&((*vb)[0]), vb->size() / 2, vb->modified, &vb->bufferCache);
+	shp->drawElements(ShaderProgram::TriangleStrip, ib->size(),
+			ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
+			&ib->bufferCache);
 	vb->modified = false;
 	ib->modified = false;
 
 	glPopColor();
 }
 
-void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix) {
+void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
+		TextureData *texture, bool convex, ShaderProgram *shp,
+		const Matrix4 *textureMatrix) {
 	struct path *p = get_path(path);
 	if (!p)
 		return; //No PATH
 	if (fill[3] > 0) {
 		if (p->is_fill_dirty) {
-				//glog_d("Fill path: Generating");
-				create_fill_geometry(p);
-				p->is_fill_dirty = 0;
+			//glog_d("Fill path: Generating");
+			create_fill_geometry(p);
+			p->is_fill_dirty = 0;
 		}
 
-		if ((texture==NULL)&&(convex||(p->fill_counts[0]==0)||(p->fill_counts[1]==0))) {
+		if ((texture == NULL)
+				&& (convex || (p->fill_counts[0] == 0)
+						|| (p->fill_counts[1] == 0))) {
 			ShaderEngine::DepthStencil stencil;
 			memset(&stencil, 0, sizeof(stencil));
 			glPushColor();
@@ -2645,20 +2853,21 @@ void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,
 		} else {
 			ShaderEngine::DepthStencil stencil =
 					ShaderEngine::Engine->pushDepthStencil();
-			ShaderEngine::Engine->pushClip(p->fill_bounds[0],p->fill_bounds[1],
-					p->fill_bounds[2]-p->fill_bounds[0]+1,
-					p->fill_bounds[3]-p->fill_bounds[1]+1);
+			ShaderEngine::Engine->pushClip(p->fill_bounds[0], p->fill_bounds[1],
+					p->fill_bounds[2] - p->fill_bounds[0] + 1,
+					p->fill_bounds[3] - p->fill_bounds[1] + 1);
 			stencil.sClear = true;
-			impressPath(path,xform,stencil);
+			impressPath(path, xform, stencil);
 			stencil.sClear = false;
-			fillBounds(p->fill_bounds_vbo,fill,texture,stencil,shp,textureMatrix);
+			fillBounds(p->fill_bounds_vbo, fill, texture, stencil, shp,
+					textureMatrix);
 			ShaderEngine::Engine->popClip();
 			ShaderEngine::Engine->popDepthStencil();
 		}
 	}
 }
 
-void Path2D::strokePath(int path,Matrix4 xform,float line[4]) {
+void Path2D::strokePath(int path, Matrix4 xform, float line[4]) {
 	struct path *p = get_path(path);
 	if (!p)
 		return; //No PATH
@@ -2670,45 +2879,44 @@ void Path2D::strokePath(int path,Matrix4 xform,float line[4]) {
 	}
 }
 
-void Path2D::drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix) {
-	fillPath(path,xform,fill,texture,convex,shp,textureMatrix);
-	strokePath(path,xform,line);
+void Path2D::drawPath(int path, Matrix4 xform, float fill[4], float line[4],
+		TextureData *texture, bool convex, ShaderProgram *shp,
+		const Matrix4 *textureMatrix) {
+	fillPath(path, xform, fill, texture, convex, shp, textureMatrix);
+	strokePath(path, xform, line);
 }
 
-void Path2D::getPathBounds(int path,bool fill,bool stroke,float *iminx,float *iminy,float *imaxx,float *imaxy)
-{
-	float minx=0;
-	float miny=0;
-	float maxx=0;
-	float maxy=0;
+void Path2D::getPathBounds(int path, bool fill, bool stroke, float *iminx,
+		float *iminy, float *imaxx, float *imaxy) {
+	float minx = 0;
+	float miny = 0;
+	float maxx = 0;
+	float maxy = 0;
 	struct path *p = get_path(path);
-	if ((stroke||fill)&&p)
-	{
+	if ((stroke || fill) && p) {
 		minx = 1e30f;
 		miny = 1e30f;
 		maxx = -1e30f;
 		maxy = -1e30f;
-		if (stroke)
-		{
+		if (stroke) {
 			if (p->is_stroke_dirty) {
 				create_stroke_geometry(p);
 				p->is_stroke_dirty = 0;
 			}
-			minx=MIN(minx,p->stroke_bounds[0]);
-			miny=MIN(miny,p->stroke_bounds[1]);
-			maxx=MAX(maxx,p->stroke_bounds[2]);
-			maxy=MAX(maxy,p->stroke_bounds[3]);
+			minx = MIN(minx, p->stroke_bounds[0]);
+			miny = MIN(miny, p->stroke_bounds[1]);
+			maxx = MAX(maxx, p->stroke_bounds[2]);
+			maxy = MAX(maxy, p->stroke_bounds[3]);
 		}
-		if (fill)
-		{
+		if (fill) {
 			if (p->is_fill_dirty) {
 				create_fill_geometry(p);
 				p->is_fill_dirty = 0;
 			}
-			minx=MIN(minx,p->fill_bounds[0]);
-			miny=MIN(miny,p->fill_bounds[1]);
-			maxx=MAX(maxx,p->fill_bounds[2]);
-			maxy=MAX(maxy,p->fill_bounds[3]);
+			minx = MIN(minx, p->fill_bounds[0]);
+			miny = MIN(miny, p->fill_bounds[1]);
+			maxx = MAX(maxx, p->fill_bounds[2]);
+			maxy = MAX(maxy, p->fill_bounds[3]);
 		}
 	}
 	if (iminx)
@@ -2723,9 +2931,11 @@ void Path2D::getPathBounds(int path,bool fill,bool stroke,float *iminx,float *im
 
 void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		float ey) {
-	float fill[4]={fillr_,fillg_,fillb_,filla_};
-	float line[4]={liner_,lineg_,lineb_,linea_};
-	drawPath(path,Matrix4(),fill,line,texturebase_?(texturebase_->data):NULL,convex_,shader_,&textureMatrix_);
+	float fill[4] = { fillr_, fillg_, fillb_, filla_ };
+	float line[4] = { liner_, lineg_, lineb_, linea_ };
+	drawPath(path, Matrix4(), fill, line,
+			texturebase_ ? (texturebase_->data) : NULL, convex_, shader_,
+			&textureMatrix_);
 }
 
 void Path2D::extraBounds(float* minx, float* miny, float* maxx,
@@ -2757,13 +2967,13 @@ void Path2D::setTexture(TextureBase *texturebase, const Matrix4* matrix) {
 void Path2D::setPath(int num_commands, const unsigned char *commands,
 		int num_coords, const float *coords) {
 	path_commands(path, num_commands, commands, num_coords, coords);
-	getPathBounds(path,filla_ > 0,linea_ > 0,&minx_,&miny_,&maxx_,&maxy_);
+	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
 }
 
 void Path2D::setPath(const PrPath *ppath) {
 	path_commands(path, ppath->numCommands, ppath->commands, ppath->numCoords,
 			ppath->coords);
-	getPathBounds(path,filla_ > 0,linea_ > 0,&minx_,&miny_,&maxx_,&maxy_);
+	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
 }
 
 extern "C" void prFreePath(struct PrPath *svgPath) {

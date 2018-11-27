@@ -19,6 +19,7 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
 		{"setConvex", setConvex },
+		{"getPathPoints", getPathPoints },
 		{NULL, NULL},
 	};
 
@@ -132,6 +133,28 @@ int Path2DBinder::setLineThickness(lua_State* L)
 	shape->setLineThickness(thickness,feather);
 
 	return 0;
+}
+
+int Path2DBinder::getPathPoints(lua_State* L)
+{
+	Binder binder(L);
+	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+
+	std::vector<Path2D::PathPoint> points;
+
+    shape->getPathPoints(luaL_optnumber(L, 3, 0),luaL_checknumber(L,2),luaL_optinteger(L, 4, 1000),
+			luaL_optnumber(L, 5, 1),luaL_optinteger(L, 6, 10),points);
+
+	lua_createtable(L,points.size(),0);
+    for (size_t i=0;i<points.size();i++) {
+		lua_createtable(L,0,3);
+		lua_pushnumber(L,points[i].x); lua_setfield(L,-2,"x");
+		lua_pushnumber(L,points[i].y); lua_setfield(L,-2,"y");
+        lua_pushnumber(L,(180.0*points[i].angle)/3.141592654); lua_setfield(L,-2,"angle");
+		lua_rawseti(L,-2,i+1);
+	}
+
+	return 1;
 }
 
 int Path2DBinder::setPath(lua_State* L)
