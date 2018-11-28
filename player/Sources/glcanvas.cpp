@@ -382,16 +382,20 @@ void GLCanvas::initializeGL() {
 	qDebug() << "GLFMT:STENCIL:" << f.stencilBufferSize();
 	qDebug() << "GLFMT:DEPTH:" << f.depthBufferSize();
 	qDebug() << "GLFMT:BUFFER:" << f.swapBehavior();
-	QFunctionPointer getSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglGetSwapIntervalEXT");
-	QFunctionPointer setSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglSwapIntervalEXT");
-	qDebug() << "GLFMT:FSWAP:" << ((void *)getSwapInterval) << ((void *)setSwapInterval);
-	if (getSwapInterval&&setSwapInterval)
-	{
-		int (*getSwap)()=(int (*)())getSwapInterval;
-		qDebug() << "GLFMT:NSWAP:" << getSwap();
-		sync_=getSwap();
+	if (QOpenGLContext::currentContext()->hasExtension("WGL_EXT_swap_control")) {
+		QFunctionPointer getSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglGetSwapIntervalEXT");
+		QFunctionPointer setSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglSwapIntervalEXT");
+		qDebug() << "GLFMT:FSWAP:" << ((void *)getSwapInterval) << ((void *)setSwapInterval);
+		if (getSwapInterval&&setSwapInterval)
+		{
+			int (*getSwap)()=(int (*)())getSwapInterval;
+			qDebug() << "GLFMT:NSWAP:" << getSwap();
+			sync_=getSwap();
 
+		}
 	}
+	else
+		qDebug() << "GLFMT:WGL Swap control not available";
 	if (!EnableVSYNC) //If VSYNC wasn't requested, use standard timed method
 		sync_=0;
 	application_->initialize();
