@@ -2,6 +2,7 @@
 #include "lua.h"
 #include "luautil.h"
 #include "lauxlib.h"
+#include "glog.h"
 
 #include <gaudio.h>
 #include <ggaudiomanager.h>
@@ -177,6 +178,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	/* init supporting Theora structures needed in header parsing */
 	th_comment_init(&handle->tc);
 	th_info_init(&handle->ti);
+    handle->ts=NULL;
 
 	g_id gid = (g_id) handle;
 	ctxmap[gid] = handle;
@@ -233,16 +235,22 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 		while (handle->theora_p && (handle->theora_p < 3) && (ret =
 				ogg_stream_packetout(&handle->to, &handle->op))) {
 			if (ret < 0) {
-				fprintf(stderr, "Error parsing Theora stream headers; "
+                glog_w("Error parsing Theora stream headers; "
 						"corrupt stream?\n");
-				exit(1);
-			}
+                gaudio_OggClose(gid);
+                if (error)
+                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
+                return 0;
+            }
 			if (!th_decode_headerin(&handle->ti, &handle->tc, &handle->ts,
 					&handle->op)) {
 				fprintf(stderr, "Error parsing Theora stream headers; "
 						"corrupt stream?\n");
-				exit(1);
-			}
+                gaudio_OggClose(gid);
+                if (error)
+                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
+                return 0;
+            }
 			handle->theora_p++;
 		}
 
@@ -250,16 +258,20 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 		while (handle->vorbis_p && (handle->vorbis_p < 3) && (ret =
 				ogg_stream_packetout(&handle->vo, &handle->op))) {
 			if (ret < 0) {
-				fprintf(stderr,
-						"Error parsing Vorbis stream headers; corrupt stream?\n");
-				exit(1);
-			}
+                glog_w(	"Error parsing Vorbis stream headers; corrupt stream?\n");
+                gaudio_OggClose(gid);
+                if (error)
+                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
+                return 0;
+            }
 			if (vorbis_synthesis_headerin(&handle->vi, &handle->vc,
 					&handle->op)) {
-				fprintf(stderr,
-						"Error parsing Vorbis stream headers; corrupt stream?\n");
-				exit(1);
-			}
+                glog_w(	"Error parsing Vorbis stream headers; corrupt stream?\n");
+                gaudio_OggClose(gid);
+                if (error)
+                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
+                return 0;
+            }
 			handle->vorbis_p++;
 			if (handle->vorbis_p == 3)
 				break;
@@ -273,8 +285,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 		} else {
 			int ret = buffer_data(file, &handle->oy); /* someone needs more data */
 			if (ret == 0) {
-				fprintf(stderr,
-						"End of file while searching for codec headers.\n");
+                glog_w("End of file while searching for codec headers.\n");
 				gaudio_OggClose(gid);
 				if (error)
 					*error = GAUDIO_UNRECOGNIZED_FORMAT;
@@ -286,24 +297,24 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	/* and now we have it all.  initialize decoders */
 	if (handle->theora_p) {
 		handle->td = th_decode_alloc(&handle->ti, handle->ts);
-		printf("Ogg logical stream %lx is Theora %dx%d %.02f fps",
+        glog_i("Ogg logical stream %lx is Theora %dx%d %.02f fps",
 				handle->to.serialno, handle->ti.pic_width,
 				handle->ti.pic_height,
 				(double) handle->ti.fps_numerator / handle->ti.fps_denominator);
 		handle->px_fmt = handle->ti.pixel_fmt;
 		switch (handle->ti.pixel_fmt) {
 		case TH_PF_420:
-			printf(" 4:2:0 video\n");
+            glog_i(" 4:2:0 video\n");
 			break;
 		case TH_PF_422:
-			printf(" 4:2:2 video\n");
+            glog_i(" 4:2:2 video\n");
 			break;
 		case TH_PF_444:
-			printf(" 4:4:4 video\n");
+            glog_i(" 4:4:4 video\n");
 			break;
 		case TH_PF_RSVD:
 		default:
-			printf(" video\n  (UNKNOWN Chroma sampling!)\n");
+            glog_i(" video\n  (UNKNOWN Chroma sampling!)\n");
 			break;
 		}
 		if (handle->ti.pic_width != handle->ti.frame_width
@@ -338,8 +349,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	if (handle->vorbis_p) {
 		vorbis_synthesis_init(&handle->vd, &handle->vi);
 		vorbis_block_init(&handle->vd, &handle->vb);
-		fprintf(stderr,
-				"Ogg logical stream %lx is Vorbis %d channel %ld Hz audio.\n",
+        glog_i(	"Ogg logical stream %lx is Vorbis %d channel %ld Hz audio.\n",
 				handle->vo.serialno, handle->vi.channels, handle->vi.rate);
 	} else {
 		/* tear down the partial vorbis setup */
@@ -565,6 +575,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
             queued=(buffer_data(handle->file, &handle->oy)>0);
 			while (ogg_sync_pageout(&handle->oy, &handle->og) > 0) {
 				queue_page(handle, &handle->og);
+				queued=true;
 			}
 		}
 
@@ -623,6 +634,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 	handle->stateflag = 1;
 	if (!handle->playstart)
 		handle->playstart = g_iclock();
+    //glog_i("Audio fill:%d avl:%d rdy:%d q:%d",audiobuf_fill,handle->vorbis_p,audiobuf_ready,queued);
 	return audiobuf_fill;
 }
 

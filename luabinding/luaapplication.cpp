@@ -1052,7 +1052,6 @@ LuaApplication::~LuaApplication(void)
 
 void LuaApplication::deinitialize()
 {
-	LuaDebugging::profiling=false;
 	Core_profilerStop(L);
 	/*
 		Application icindeki stage'in iki tane sahibi var.

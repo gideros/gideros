@@ -158,6 +158,7 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
             lua_pop(L,2);
     		LuaDebugging::studio->sendData(buffer.data(),buffer.size());
         }
+		LuaDebugging::profiling=false;
 		break;
 	}
 	case gptProfilingOn:
