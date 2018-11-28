@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FAAA015DD87E20039718F /* Foundation.framework */; };
 		EB0781C11FA233ED00320DD5 /* binder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB0781C01FA233EC00320DD5 /* binder.cpp */; };
+		EBBE0A5521AE7F0900133154 /* threadtimedluahook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBBE0A5321AE7F0900133154 /* threadtimedluahook.cpp */; };
+		EBBE0A5621AE7F0900133154 /* threadtimedluahook.h in Headers */ = {isa = PBXBuildFile; fileRef = EBBE0A5421AE7F0900133154 /* threadtimedluahook.h */; };
 		EBF48E2821554A71000DC12F /* StateToState.h in Headers */ = {isa = PBXBuildFile; fileRef = EBF48E1F21554A70000DC12F /* StateToState.h */; };
 		EBF48E2921554A71000DC12F /* stackdoc.h in Headers */ = {isa = PBXBuildFile; fileRef = EBF48E2021554A70000DC12F /* stackdoc.h */; };
 		EBF48E2A21554A71000DC12F /* threads_entry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF48E2121554A70000DC12F /* threads_entry.cpp */; };
@@ -24,6 +26,8 @@
 		5F9FAA9D15DD87E20039718F /* libthreads.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libthreads.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F9FAAA015DD87E20039718F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EB0781C01FA233EC00320DD5 /* binder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = binder.cpp; path = ../../../luabinding/binder.cpp; sourceTree = "<group>"; };
+		EBBE0A5321AE7F0900133154 /* threadtimedluahook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = threadtimedluahook.cpp; sourceTree = "<group>"; };
+		EBBE0A5421AE7F0900133154 /* threadtimedluahook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = threadtimedluahook.h; sourceTree = "<group>"; };
 		EBF48E1F21554A70000DC12F /* StateToState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateToState.h; sourceTree = "<group>"; };
 		EBF48E2021554A70000DC12F /* stackdoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stackdoc.h; sourceTree = "<group>"; };
 		EBF48E2121554A70000DC12F /* threads_entry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = threads_entry.cpp; sourceTree = "<group>"; };
@@ -76,6 +80,8 @@
 		EB172CAA21366F310029BCC5 /* threads */ = {
 			isa = PBXGroup;
 			children = (
+				EBBE0A5321AE7F0900133154 /* threadtimedluahook.cpp */,
+				EBBE0A5421AE7F0900133154 /* threadtimedluahook.h */,
 				EBF48E2621554A70000DC12F /* lua.hpp */,
 				EBF48E2321554A70000DC12F /* luathread.cpp */,
 				EBF48E2221554A70000DC12F /* luathread.h */,
@@ -96,6 +102,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBBE0A5621AE7F0900133154 /* threadtimedluahook.h in Headers */,
 				EBF48E2921554A71000DC12F /* stackdoc.h in Headers */,
 				EBF48E3021554A71000DC12F /* macros.h in Headers */,
 				EBF48E2B21554A71000DC12F /* luathread.h in Headers */,
@@ -158,6 +165,7 @@
 				EBF48E2A21554A71000DC12F /* threads_entry.cpp in Sources */,
 				EBF48E2C21554A71000DC12F /* luathread.cpp in Sources */,
 				EBF48E2E21554A71000DC12F /* stackdoc.cpp in Sources */,
+				EBBE0A5521AE7F0900133154 /* threadtimedluahook.cpp in Sources */,
 				EBF48E2D21554A71000DC12F /* StateToState.cpp in Sources */,
 				EB0781C11FA233ED00320DD5 /* binder.cpp in Sources */,
 			);

@@ -59,9 +59,9 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.ios.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release  OTHER_CFLAGS="-fembed-bitcode"
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release OTHER_CFLAGS="-fembed-bitcode"
-	cd $(PLUGINPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release  OTHER_CFLAGS="-fembed-bitcode"
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release OTHER_CFLAGS="-fembed-bitcode"
+	cd $(PLUGINPATH); $(LIPO) build/Release-iphoneos/lib$(notdir $*).a build/Release-iphonesimulator/lib$(notdir $*).a -create -output lib$(notdir $*).ios.a
 
 
 %.ios.clean.iosplugin:
@@ -70,13 +70,13 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.ios.install.iosplugin:
 	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
-	cp $(PLUGINPATH)/lib$*.ios.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
+	cp $(PLUGINPATH)/lib$(notdir $*).ios.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
 
 %.atv.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
-	@cd $(PLUGINPATH); $(LIPO) build/Release-appletvos/lib$*.a build/Release-appletvsimulator/lib$*.a -create -output lib$*.atv.a
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(PLUGINPATH); $(LIPO) build/Release-appletvos/lib$(notdir $*).a build/Release-appletvsimulator/lib$(notdir $*).a -create -output lib$(notdir $*).atv.a
 
 %.atv.clean.iosplugin:
 	rm -rf $(PLUGINPATH)/build
@@ -84,7 +84,7 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.atv.install.iosplugin:
 	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
-	cp $(PLUGINPATH)/lib$*.atv.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
+	cp $(PLUGINPATH)/lib$(notdir $*).atv.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
 
 ios.install: ios.libs.install atv.libs.install ios.plugins.install ios.app
 
