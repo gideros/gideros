@@ -5,9 +5,12 @@ build:
 	cp $(OUTLIB) .
 	cd qt; qmake spout.pro; make release
 	cp qt/release/spout.dll .
+	mkdir deps
+	mv spoutplugin.dll deps/
 
 clean:
 	$(MSBUILD) spoutplugin/spoutplugin/spoutplugin.vcxproj //t:Clean //p:Configuration=Release //p:Platform=Win32 //v:m;
 	cd qt; make clean
 	rm -f *.dll
+	rm -rf deps
 

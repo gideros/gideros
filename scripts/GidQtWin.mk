@@ -56,6 +56,11 @@ qtlibs.install: buildqtlibs
 		cp *.dll $$R/$(RELEASE)/Plugins; \
 		cp *.dll $$R/$(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins; \
 		cp *.dll $$R/$(RELEASE)/All\ Plugins/$*/bin/Windows;\
+		if [ -d "deps" ]; then cd deps; \
+		cp *.dll $$R/$(RELEASE); \
+		cp *.dll $$R/$(RELEASE)/Templates/Qt/WindowsDesktopTemplate; \
+		cp *.dll $$R/$(RELEASE)/All\ Plugins/$*/bin/Windows;\
+		fi;\
 		else if [ -d "Desktop" ]; then cd Desktop; fi; \
 		cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/Plugins; \
 		cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins; \
