@@ -96,7 +96,7 @@ static int traceback (lua_State *L) {
 static int docall (lua_State *L, int narg, int clear) {
   int status;
   int base = lua_gettop(L) - narg;  /* function index */
-  lua_pushcfunction(L, traceback);  /* push traceback function */
+  lua_pushcnfunction(L, traceback, "traceback");  /* push traceback function */
   lua_insert(L, base);  /* put it under chunk and args */
   signal(SIGINT, laction);
   status = lua_pcall(L, narg, (clear ? 0 : LUA_MULTRET), base);

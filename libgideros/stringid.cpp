@@ -1,78 +1,79 @@
 #include "stringid.h"
 
+#define populate(key,val) idmap_[key]=val; reversemap_[val]=key;
 StringId::StringId()
 {
-	idmap_["enterFrame"] = eStringIdEnterFrame;
+	populate("enterFrame", eStringIdEnterFrame);
 
-	idmap_["complete"] = eStringIdComplete;
-	idmap_["soundComplete"] = eStringIdComplete;
+	populate("complete", eStringIdComplete);
+	populate("soundComplete", eStringIdComplete);
 
-	idmap_["x"] = eStringIdX;
-	idmap_["y"] = eStringIdY;
-	idmap_["z"] = eStringIdZ;
-	idmap_["rotation"] = eStringIdRotation;
-	idmap_["rotationX"] = eStringIdRotationX;
-	idmap_["rotationY"] = eStringIdRotationY;
-	idmap_["scale"] = eStringIdScale;
-	idmap_["scaleX"] = eStringIdScaleX;
-	idmap_["scaleY"] = eStringIdScaleY;
-	idmap_["scaleZ"] = eStringIdScaleZ;
-    idmap_["skewX"] = eStringIdSkewX;
-    idmap_["skewY"] = eStringIdSkewY;
-	idmap_["anchorX"] = eStringIdAnchorX;
-    idmap_["anchorY"] = eStringIdAnchorY;
-    idmap_["anchorZ"] = eStringIdAnchorZ;
-	idmap_["alpha"] = eStringIdAlpha;
-    idmap_["redMultiplier"] = eStringIdRedMultiplier;
-    idmap_["greenMultiplier"] = eStringIdGreenMultiplier;
-    idmap_["blueMultiplier"] = eStringIdBlueMultiplier;
-    idmap_["alphaMultiplier"] = eStringIdAlphaMultiplier;
+	populate("x", eStringIdX);
+	populate("y", eStringIdY);
+	populate("z", eStringIdZ);
+	populate("rotation", eStringIdRotation);
+	populate("rotationX", eStringIdRotationX);
+	populate("rotationY", eStringIdRotationY);
+	populate("scale", eStringIdScale);
+	populate("scaleX", eStringIdScaleX);
+	populate("scaleY", eStringIdScaleY);
+	populate("scaleZ", eStringIdScaleZ);
+    populate("skewX", eStringIdSkewX);
+    populate("skewY", eStringIdSkewY);
+	populate("anchorX", eStringIdAnchorX);
+    populate("anchorY", eStringIdAnchorY);
+    populate("anchorZ", eStringIdAnchorZ);
+	populate("alpha", eStringIdAlpha);
+    populate("redMultiplier", eStringIdRedMultiplier);
+    populate("greenMultiplier", eStringIdGreenMultiplier);
+    populate("blueMultiplier", eStringIdBlueMultiplier);
+    populate("alphaMultiplier", eStringIdAlphaMultiplier);
 
-	idmap_["linear"] =      eStringIdLinear;		//
-	idmap_["inQuadratic"] =	 eStringIdInQuad;		//
-	idmap_["outQuadratic"] = eStringIdOutQuad;		//
-	idmap_["inOutQuadratic"] = eStringIdInOutQuad;	//
-//	idmap_["outInQuadratic"] = eStringIdOutInQuad;	// no
-	idmap_["inCubic"] =		eStringIdInCubic;		//
-	idmap_["outCubic"] =	eStringIdOutCubic;		//
-	idmap_["inOutCubic"] =	eStringIdInOutCubic;	//
-//	idmap_["outInCubic"] =	eStringIdOutInCubic;	// no
-	idmap_["inQuartic"] =	eStringIdInQuart;		//
-	idmap_["outQuartic"] =	eStringIdOutQuart;		//
-	idmap_["inOutQuartic"] = eStringIdInOutQuart;	//
-//	idmap_["outInQuartic"] = eStringIdOutInQuart;	// no
-	idmap_["inQuintic"] = eStringIdInQuint;			//
-	idmap_["outQuintic"] =	eStringIdOutQuint;		//
-	idmap_["inOutQuintic"] = eStringIdInOutQuint;	//
-//	idmap_["outInQuintic"] = eStringIdOutInQuint;	// no
-	idmap_["inSine"] =		eStringIdInSine;		//
-	idmap_["outSine"] =		eStringIdOutSine;		//
-	idmap_["inOutSine"] =	eStringIdInOutSine;		//
-//	idmap_["outInSine"] =	eStringIdOutInSine;		// no
-	idmap_["inExponential"] = eStringIdInExpo;			//
-	idmap_["outExponential"] = eStringIdOutExpo;		//
-	idmap_["inOutExponential"] = eStringIdInOutExpo;	//
-//	idmap_["outInExponential"] = eStringIdOutInExpo;	// no
-	idmap_["inCircular"] =	eStringIdInCirc;			//
-	idmap_["outCircular"] =	eStringIdOutCirc;			//
-	idmap_["inOutCircular"] =eStringIdInOutCirc;		//
-//	idmap_["outInCircular"] =eStringIdOutInCirc;		// no
-	idmap_["inElastic"] =	eStringIdInElastic;			//
-	idmap_["outElastic"] =	eStringIdOutElastic;		//
-	idmap_["inOutElastic"] =eStringIdInOutElastic;		//
-//	idmap_["outInElastic"] =eStringIdOutInElastic;		// no
-	idmap_["inBack"] =		eStringIdInBack;			//
-	idmap_["outBack"] =		eStringIdOutBack;			//
-	idmap_["inOutBack"] =	eStringIdInOutBack;			//
-//	idmap_["outInBack"] =	eStringIdOutInBack;			// no
-	idmap_["inBounce"] =	eStringIdInBounce;			//
-	idmap_["outBounce"] =	eStringIdOutBounce;			//
-	idmap_["inOutBounce"] =	eStringIdInOutBounce;		//
-//	idmap_["outInBounce"] =	eStringIdOutInBounce;		// no
-//	idmap_["inCurve"] =		eStringIdInCurve;			// no
-//	idmap_["outCurve"] =	eStringIdOutCurve;			// no
-//	idmap_["sineCurve"] =	eStringIdSineCurve;			// no
-//	idmap_["cosineCurve"] =	eStringIdCosineCurve;		// no
+	populate("linear",      eStringIdLinear);		//
+	populate("inQuadratic",	 eStringIdInQuad);		//
+	populate("outQuadratic", eStringIdOutQuad);		//
+	populate("inOutQuadratic", eStringIdInOutQuad);	//
+//	populate("outInQuadratic", eStringIdOutInQuad);	// no
+	populate("inCubic",		eStringIdInCubic);		//
+	populate("outCubic",	eStringIdOutCubic);		//
+	populate("inOutCubic",	eStringIdInOutCubic);	//
+//	populate("outInCubic",	eStringIdOutInCubic);	// no
+	populate("inQuartic",	eStringIdInQuart);		//
+	populate("outQuartic",	eStringIdOutQuart);		//
+	populate("inOutQuartic", eStringIdInOutQuart);	//
+//	populate("outInQuartic", eStringIdOutInQuart);	// no
+	populate("inQuintic", eStringIdInQuint);			//
+	populate("outQuintic",	eStringIdOutQuint);		//
+	populate("inOutQuintic", eStringIdInOutQuint);	//
+//	populate("outInQuintic", eStringIdOutInQuint);	// no
+	populate("inSine",		eStringIdInSine);		//
+	populate("outSine",		eStringIdOutSine);		//
+	populate("inOutSine",	eStringIdInOutSine);		//
+//	populate("outInSine",	eStringIdOutInSine);		// no
+	populate("inExponential", eStringIdInExpo);			//
+	populate("outExponential", eStringIdOutExpo);		//
+	populate("inOutExponential", eStringIdInOutExpo);	//
+//	populate("outInExponential", eStringIdOutInExpo);	// no
+	populate("inCircular",	eStringIdInCirc);			//
+	populate("outCircular",	eStringIdOutCirc);			//
+	populate("inOutCircular",eStringIdInOutCirc);		//
+//	populate("outInCircular",eStringIdOutInCirc);		// no
+	populate("inElastic",	eStringIdInElastic);			//
+	populate("outElastic",	eStringIdOutElastic);		//
+	populate("inOutElastic",eStringIdInOutElastic);		//
+//	populate("outInElastic",eStringIdOutInElastic);		// no
+	populate("inBack",		eStringIdInBack);			//
+	populate("outBack",		eStringIdOutBack);			//
+	populate("inOutBack",	eStringIdInOutBack);			//
+//	populate("outInBack",	eStringIdOutInBack);			// no
+	populate("inBounce",	eStringIdInBounce);			//
+	populate("outBounce",	eStringIdOutBounce);			//
+	populate("inOutBounce",	eStringIdInOutBounce);		//
+//	populate("outInBounce",	eStringIdOutInBounce);		// no
+//	populate("inCurve",		eStringIdInCurve);			// no
+//	populate("outCurve",	eStringIdOutCurve);			// no
+//	populate("sineCurve",	eStringIdSineCurve);			// no
+//	populate("cosineCurve",	eStringIdCosineCurve);		// no
 
 
 	nextid_ = eLastStringId;
@@ -104,11 +105,16 @@ int StringId::id(const char* str)
 		deletelist_.push_back(newstr);
 
 		idmap_[newstr] = nextid_;
+		reversemap_[nextid_]=newstr;
 
 		return nextid_;
 	}
 
 	return iter->second;
+}
+
+const char *StringId::str(int id) {
+	return reversemap_[id];
 }
 
 int StringId::id(const std::string& str)

@@ -483,13 +483,14 @@ LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {
 }
 
 
-LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {
+LUA_API void lua_pushcnclosure (lua_State *L, lua_CFunction fn, int n, const char *name) {
   Closure *cl;
   lua_lock(L);
   luaC_checkGC(L);
   api_checknelems(L, n);
   cl = luaF_newCclosure(L, n, getcurrenv(L));
   cl->c.f = fn;
+  cl->c.name = name;
   L->top -= n;
   while (n--)
     setobj2n(L, &cl->c.upvalue[n], L->top+n);
@@ -497,6 +498,10 @@ LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {
   lua_assert(iswhite(obj2gco(cl)));
   api_incr_top(L);
   lua_unlock(L);
+}
+
+LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {
+  lua_pushcnclosure(L,fn,n,NULL);
 }
 
 
@@ -846,6 +851,7 @@ LUA_API int lua_pcall (lua_State *L, int nargs, int nresults, int errfunc) {
 */
 struct CCallS {  /* data to `f_Ccall' */
   lua_CFunction func;
+  const char *name;
   void *ud;
 };
 
@@ -855,6 +861,7 @@ static void f_Ccall (lua_State *L, void *ud) {
   Closure *cl;
   cl = luaF_newCclosure(L, 0, getcurrenv(L));
   cl->c.f = c->func;
+  cl->c.name = c->name;
   setclvalue(L, L->top, cl);  /* push function */
   api_incr_top(L);
   setpvalue(L->top, c->ud);  /* push only argument */
@@ -863,17 +870,21 @@ static void f_Ccall (lua_State *L, void *ud) {
 }
 
 
-LUA_API int lua_cpcall (lua_State *L, lua_CFunction func, void *ud) {
+LUA_API int lua_cnpcall (lua_State *L, lua_CFunction func, void *ud, const char *name) {
   struct CCallS c;
   int status;
   lua_lock(L);
   c.func = func;
+  c.name = name;
   c.ud = ud;
   status = luaD_pcall(L, f_Ccall, &c, savestack(L, L->top), 0);
   lua_unlock(L);
   return status;
 }
 
+LUA_API int lua_cpcall (lua_State *L, lua_CFunction func, void *ud) {
+	return lua_cnpcall(L,func,ud,NULL);
+}
 
 LUA_API int lua_load (lua_State *L, lua_Reader reader, void *data,
                       const char *chunkname) {

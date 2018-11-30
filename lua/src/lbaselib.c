@@ -585,7 +585,7 @@ static int luaB_cocreate (lua_State *L) {
 
 static int luaB_cowrap (lua_State *L) {
   luaB_cocreate(L);
-  lua_pushcclosure(L, luaB_auxwrap, 1);
+  lua_pushcnclosure(L, luaB_auxwrap, 1,"auxwrap");
   return 1;
 }
 
@@ -617,8 +617,8 @@ static const luaL_Reg co_funcs[] = {
 
 static void auxopen (lua_State *L, const char *name,
                      lua_CFunction f, lua_CFunction u) {
-  lua_pushcfunction(L, u);
-  lua_pushcclosure(L, f, 1);
+  lua_pushcnfunction(L, u, name);
+  lua_pushcnclosure(L, f, 1, name);
   lua_setfield(L, -2, name);
 }
 
@@ -640,7 +640,7 @@ static void base_open (lua_State *L) {
   lua_setmetatable(L, -2);
   lua_pushliteral(L, "kv");
   lua_setfield(L, -2, "__mode");  /* metatable(w).__mode = "kv" */
-  lua_pushcclosure(L, luaB_newproxy, 1);
+  lua_pushcnclosure(L, luaB_newproxy, 1, "newproxy");
   lua_setglobal(L, "newproxy");  /* set global `newproxy' */
 }
 

@@ -23,7 +23,7 @@ lua_State *AddonsManager::getLua() {
 	if (L) return L;
 	L = luaL_newstate();
 	luaL_openlibs(L);
-	lua_pushcfunction(L, luaopen_cjson);
+	lua_pushcnfunction(L, luaopen_cjson, "cjson_loader");
     lua_call(L, 0, 1);
     lua_pop(L,1);
 	if (luaL_loadfile(L,"Tools/StudioServer.lua")==0) { //No Error while loading

@@ -166,6 +166,7 @@ LUA_API const char *(lua_pushvfstring) (lua_State *L, const char *fmt,
                                                       va_list argp);
 LUA_API const char *(lua_pushfstring) (lua_State *L, const char *fmt, ...);
 LUA_API void  (lua_pushcclosure) (lua_State *L, lua_CFunction fn, int n);
+LUA_API void  (lua_pushcnclosure) (lua_State *L, lua_CFunction fn, int n, const char *name);
 LUA_API void  (lua_pushboolean) (lua_State *L, int b);
 LUA_API void  (lua_pushlightuserdata) (lua_State *L, void *p);
 LUA_API int   (lua_pushthread) (lua_State *L);
@@ -192,6 +193,7 @@ LUA_API void  (lua_setfield) (lua_State *L, int idx, const char *k);
 LUA_API void  (lua_rawset) (lua_State *L, int idx);
 LUA_API void  (lua_rawseti) (lua_State *L, int idx, int n);
 LUA_API int   (lua_setmetatable) (lua_State *L, int objindex);
+LUA_API int   (lua_settypemt) (lua_State *L, int type);
 LUA_API int   (lua_setfenv) (lua_State *L, int idx);
 
 
@@ -201,6 +203,7 @@ LUA_API int   (lua_setfenv) (lua_State *L, int idx);
 LUA_API void  (lua_call) (lua_State *L, int nargs, int nresults);
 LUA_API int   (lua_pcall) (lua_State *L, int nargs, int nresults, int errfunc);
 LUA_API int   (lua_cpcall) (lua_State *L, lua_CFunction func, void *ud);
+LUA_API int   (lua_cnpcall) (lua_State *L, lua_CFunction func, void *ud, const char* name);
 LUA_API int   (lua_load) (lua_State *L, lua_Reader reader, void *dt,
                                         const char *chunkname);
 
@@ -210,6 +213,7 @@ LUA_API int (lua_dump) (lua_State *L, lua_Writer writer, void *data);
 /*
 ** coroutine functions
 */
+LUA_API int  (lua_canyield) (lua_State *L);
 LUA_API int  (lua_yield) (lua_State *L, int nresults);
 LUA_API int  (lua_resume) (lua_State *L, int narg);
 LUA_API int  (lua_status) (lua_State *L);
@@ -255,8 +259,9 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 #define lua_newtable(L)		lua_createtable(L, 0, 0)
 
-#define lua_register(L,n,f) (lua_pushcfunction(L, (f)), lua_setglobal(L, (n)))
+#define lua_register(L,n,f) (lua_pushcnfunction(L, (f), (n)), lua_setglobal(L, (n)))
 
+#define lua_pushcnfunction(L,f,name)	lua_pushcnclosure(L, (f), 0, name)
 #define lua_pushcfunction(L,f)	lua_pushcclosure(L, (f), 0)
 
 #define lua_strlen(L,i)		lua_objlen(L, (i))

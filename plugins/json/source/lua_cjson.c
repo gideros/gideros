@@ -1303,7 +1303,7 @@ static void luaL_setfuncs (lua_State *l, const luaL_Reg *reg, int nup)
     for (; reg->name != NULL; reg++) {  /* fill the table with given functions */
         for (i = 0; i < nup; i++)  /* copy upvalues to the top */
             lua_pushvalue(l, -nup);
-        lua_pushcclosure(l, reg->func, nup);  /* closure with those upvalues */
+        lua_pushcnclosure(l, reg->func, nup, reg->name);  /* closure with those upvalues */
         lua_setfield(l, -(nup + 2), reg->name);
     }
     lua_pop(l, nup);  /* remove upvalues */
@@ -1392,7 +1392,7 @@ static int lua_cjson_safe_new(lua_State *l)
 
     for (i = 0; func[i]; i++) {
         lua_getfield(l, -1, func[i]);
-        lua_pushcclosure(l, json_protect_conversion, 1);
+        lua_pushcnclosure(l, json_protect_conversion, 1, func[i]);
         lua_setfield(l, -2, func[i]);
     }
 

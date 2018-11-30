@@ -300,7 +300,7 @@ static int ll_loadfunc (lua_State *L, const char *path, const char *sym) {
     lua_CFunction f = ll_sym(L, *reg, sym);
     if (f == NULL)
       return ERRFUNC;  /* unable to find function */
-    lua_pushcfunction(L, f);
+    lua_pushcnfunction(L, f, sym);
     return 0;  /* return function */
   }
 }
@@ -628,7 +628,7 @@ LUALIB_API int luaopen_package (lua_State *L) {
   int i;
   /* create new type _LOADLIB */
   luaL_newmetatable(L, "_LOADLIB");
-  lua_pushcfunction(L, gctm);
+  lua_pushcnfunction(L, gctm, "gctm");
   lua_setfield(L, -2, "__gc");
   /* create `package' table */
   luaL_register(L, LUA_LOADLIBNAME, pk_funcs);
@@ -642,7 +642,7 @@ LUALIB_API int luaopen_package (lua_State *L) {
   lua_createtable(L, 0, sizeof(loaders)/sizeof(loaders[0]) - 1);
   /* fill it with pre-defined loaders */
   for (i=0; loaders[i] != NULL; i++) {
-    lua_pushcfunction(L, loaders[i]);
+    lua_pushcnfunction(L, loaders[i],"lib_loader");
     lua_rawseti(L, -2, i+1);
   }
   lua_setfield(L, -2, "loaders");  /* put it in field `loaders' */

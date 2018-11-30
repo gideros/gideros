@@ -613,7 +613,7 @@ static int lzstream_readline(lua_State *L) {
 static int lzstream_lines(lua_State *L) {
     lzstream_check(L, 1, LZ_INFLATE);
     lua_settop(L, 1);
-    lua_pushcclosure(L, lzstream_readline, 1);
+    lua_pushcnclosure(L, lzstream_readline, 1, "lzstream_readline");
     return 1;
 }
 

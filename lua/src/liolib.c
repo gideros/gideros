@@ -234,7 +234,7 @@ static int io_readline (lua_State *L);
 static void aux_lines (lua_State *L, int idx, int toclose) {
   lua_pushvalue(L, idx);
   lua_pushboolean(L, toclose);  /* close/not close file when finished */
-  lua_pushcclosure(L, io_readline, 2);
+  lua_pushcnclosure(L, io_readline, 2, "io_readline");
 }
 
 
@@ -526,7 +526,7 @@ static void createstdfile (lua_State *L, FILE *f, int k, const char *fname) {
 
 static void newfenv (lua_State *L, lua_CFunction cls) {
   lua_createtable(L, 0, 1);
-  lua_pushcfunction(L, cls);
+  lua_pushcnfunction(L, cls, "__close");
   lua_setfield(L, -2, "__close");
 }
 

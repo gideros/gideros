@@ -64,7 +64,7 @@ void g_createClass(lua_State* L,
 
 	if (destructor)
 	{
-		lua_pushcfunction(L, destructor);
+		lua_pushcnfunction(L, destructor,"destructor");
 		lua_setfield(L, -2, "__gc"); // mt.__gc = destructor
 	}
 
@@ -78,11 +78,11 @@ void g_createClass(lua_State* L,
 
     if (constructor)
     {
-        lua_pushcfunction(L, constructor);
+        lua_pushcnfunction(L, constructor, classname);
         lua_setfield(L, -2, "__new");
 
         lua_pushvalue(L, -1);
-        lua_pushcclosure(L, constructor_postInit, 1);
+        lua_pushcnclosure(L, constructor_postInit, 1, "constructor_postInit");
         lua_setfield(L, -2, "new");
     }
 

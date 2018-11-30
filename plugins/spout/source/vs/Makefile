@@ -5,7 +5,7 @@ build:
 	cp $(OUTLIB) .
 	cd qt; qmake spout.pro; make release
 	cp qt/release/spout.dll .
-	mkdir deps
+	mkdir -p deps
 	mv spoutplugin.dll deps/
 
 clean:

@@ -563,7 +563,7 @@ static int Lutf8_next(lua_State *L) {
 
 static int Lutf8_codes(lua_State *L) {
   luaL_checkstring(L, 1);
-  lua_pushcfunction(L, Lutf8_next);
+  lua_pushcnfunction(L, Lutf8_next, "utf8_next");
   lua_pushvalue(L, 1);
   lua_pushinteger(L, 0);
   return 3;
@@ -1156,7 +1156,7 @@ static int Lutf8_gmatch(lua_State *L) {
   luaL_checkstring(L, 2);
   lua_settop(L, 2);
   lua_pushinteger(L, 0);
-  lua_pushcclosure(L, gmatch_auxUTF8, 3);
+  lua_pushcnclosure(L, gmatch_auxUTF8, 3, "gmatch_auxUTF8");
   return 1;
 }
 

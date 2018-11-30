@@ -1298,13 +1298,13 @@ static int cindex(lua_State *L)
 		if(strcmp(key, "new") == 0)
 		{
 			lua_pushvalue(L, 1);
-			lua_pushcclosure(L, &createInstance, 1);
+			lua_pushcnclosure(L, &createInstance, 1, "createInstance");
 			return 1;
 		}
 		else if(strcmp(key, "newArray") == 0)
 		{
 			lua_pushvalue(L, 1);
-			lua_pushcclosure(L, &createArray, 1);
+			lua_pushcnclosure(L, &createArray, 1, "createArray");
 			return 1;
 		}
 		else
@@ -1314,7 +1314,7 @@ static int cindex(lua_State *L)
 			if(functions != NULL)
 			{
 				lua_pushvalue(L, 1);
-				lua_pushcclosure(L, &callStaticMethod, 1);
+				lua_pushcnclosure(L, &callStaticMethod, 1, "callStaticMethod");
 				return 1;
 			}
 			//trying out the property

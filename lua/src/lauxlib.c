@@ -261,7 +261,7 @@ LUALIB_API void luaI_openlib (lua_State *L, const char *libname,
     int i;
     for (i=0; i<nup; i++)  /* copy upvalues to the top */
       lua_pushvalue(L, -nup);
-    lua_pushcclosure(L, l->func, nup);
+    lua_pushcnclosure(L, l->func, nup,l->name);
     lua_setfield(L, -(nup+2), l->name);
   }
   lua_pop(L, nup);  /* remove upvalues */

@@ -4,7 +4,7 @@ STEAM_REDIST=$(STEAMSDK)/sdk/redistributable_bin
 build:
 	STEAMSDK=$(STEAMSDK) $(MSBUILD) steamplugin/steamplugin.vcxproj //p:Configuration=Release //p:Platform=Win32 //v:m;
 	cp $(OUTLIB) . 
-	mkdir deps
+	mkdir -p deps
 	cp $(STEAM_REDIST)/*.dll ./deps
 
 clean:

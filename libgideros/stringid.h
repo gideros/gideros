@@ -90,6 +90,7 @@ public:
 
 	int id(const char* str);
 	int id(const std::string& str);
+	const char *str(int id);
 
 private:
 	StringId();
@@ -106,6 +107,7 @@ private:
 	typedef std::map<const char*, int, ltstr> map_t;
 	map_t idmap_;
 	int nextid_;
+	std::map<int,const char *> reversemap_;
 
 	std::vector<char*> deletelist_;
 };

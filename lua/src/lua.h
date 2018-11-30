@@ -166,6 +166,7 @@ LUA_API const char *(lua_pushvfstring) (lua_State *L, const char *fmt,
                                                       va_list argp);
 LUA_API const char *(lua_pushfstring) (lua_State *L, const char *fmt, ...);
 LUA_API void  (lua_pushcclosure) (lua_State *L, lua_CFunction fn, int n);
+LUA_API void  (lua_pushcnclosure) (lua_State *L, lua_CFunction fn, int n, const char *name);
 LUA_API void  (lua_pushboolean) (lua_State *L, int b);
 LUA_API void  (lua_pushlightuserdata) (lua_State *L, void *p);
 LUA_API int   (lua_pushthread) (lua_State *L);
@@ -202,6 +203,7 @@ LUA_API int   (lua_setfenv) (lua_State *L, int idx);
 LUA_API void  (lua_call) (lua_State *L, int nargs, int nresults);
 LUA_API int   (lua_pcall) (lua_State *L, int nargs, int nresults, int errfunc);
 LUA_API int   (lua_cpcall) (lua_State *L, lua_CFunction func, void *ud);
+LUA_API int   (lua_cnpcall) (lua_State *L, lua_CFunction func, void *ud, const char* name);
 LUA_API int   (lua_load) (lua_State *L, lua_Reader reader, void *dt,
                                         const char *chunkname);
 
@@ -257,8 +259,9 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 #define lua_newtable(L)		lua_createtable(L, 0, 0)
 
-#define lua_register(L,n,f) (lua_pushcfunction(L, (f)), lua_setglobal(L, (n)))
+#define lua_register(L,n,f) (lua_pushcnfunction(L, (f), (n)), lua_setglobal(L, (n)))
 
+#define lua_pushcnfunction(L,f,name)	lua_pushcnclosure(L, (f), 0, name)
 #define lua_pushcfunction(L,f)	lua_pushcclosure(L, (f), 0)
 
 #define lua_strlen(L,i)		lua_objlen(L, (i))

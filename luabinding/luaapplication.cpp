@@ -589,29 +589,29 @@ static int bindAll(lua_State* L)
 
 	// correct clock function which is wrong in iphone
 	lua_getglobal(L, "os");
-	lua_pushcfunction(L, os_timer);
+	lua_pushcnfunction(L, os_timer, "timer");
 	lua_setfield(L, -2, "timer");
 	lua_pop(L, 1);
 
 	//coroutines helpers
 	lua_getglobal(L, "Core");
-	lua_pushcfunction(L, LuaApplication::Core_asyncCall);
+	lua_pushcnfunction(L, LuaApplication::Core_asyncCall,"Core.asyncCall");
 	lua_setfield(L, -2, "asyncCall");
-	lua_pushcfunction(L, LuaApplication::Core_yield);
+	lua_pushcnfunction(L, LuaApplication::Core_yield,"Core.yield");
 	lua_setfield(L, -2, "yield");
-	lua_pushcfunction(L, LuaApplication::Core_frameStatistics);
+	lua_pushcnfunction(L, LuaApplication::Core_frameStatistics,"Core.frameStatistics");
 	lua_setfield(L, -2, "frameStatistics");
-	lua_pushcfunction(L, LuaApplication::Core_profilerStart);
+	lua_pushcnfunction(L, LuaApplication::Core_profilerStart, "Core.profilerStart");
 	lua_setfield(L, -2, "profilerStart");
-	lua_pushcfunction(L, LuaApplication::Core_profilerStop);
+	lua_pushcnfunction(L, LuaApplication::Core_profilerStop,"Core.profilerStop");
 	lua_setfield(L, -2, "profilerStop");
-	lua_pushcfunction(L, LuaApplication::Core_profilerReset);
+	lua_pushcnfunction(L, LuaApplication::Core_profilerReset, "Core.profilerReset");
 	lua_setfield(L, -2, "profilerReset");
-	lua_pushcfunction(L, LuaApplication::Core_profilerReport);
+	lua_pushcnfunction(L, LuaApplication::Core_profilerReport, "Core.profilerReport");
 	lua_setfield(L, -2, "profilerReport");
-	lua_pushcfunction(L, LuaApplication::Core_random);
+	lua_pushcnfunction(L, LuaApplication::Core_random, "Core.random");
 	lua_setfield(L, -2, "random");
-	lua_pushcfunction(L, LuaApplication::Core_randomSeed);
+	lua_pushcnfunction(L, LuaApplication::Core_randomSeed, "Core.randomSeed");
 	lua_setfield(L, -2, "randomSeed");
 	lua_pop(L, 1);
 
@@ -1012,7 +1012,7 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
 
     void *pool = application_->createAutounrefPool();
 
-    lua_pushcfunction(L, ::callFile);
+    lua_pushcnfunction(L, ::callFile, "callFile");
 
     if (luaL_loadfile(L, filename))
 	{
@@ -1421,7 +1421,7 @@ void LuaApplication::broadcastEvent(Event* event, GStatus *status)
 {
     void *pool = application_->createAutounrefPool();
 
-	lua_pushcfunction(L, ::broadcastEvent);
+	lua_pushcnfunction(L, ::broadcastEvent, "broadcastEvent");
 	lua_pushlightuserdata(L, event);
 
     if (lua_pcall_traceback(L, 1, 0, 0))
@@ -1504,11 +1504,11 @@ void LuaApplication::initialize()
         L = lua_newstate(l_alloc, NULL);
 
     lua_pushlightuserdata(L, &key_tickFunction);
-    lua_pushcfunction(L, ::tick);
+    lua_pushcnfunction(L, ::tick, "gideros_tick");
     lua_rawset(L, LUA_REGISTRYINDEX);
 
     lua_pushlightuserdata(L, &key_enterFrameFunction);
-	lua_pushcfunction(L, ::enterFrame);
+	lua_pushcnfunction(L, ::enterFrame, "gideros_enterFrame");
 	lua_rawset(L, LUA_REGISTRYINDEX);
 
 #if 0
@@ -1531,7 +1531,7 @@ void LuaApplication::initialize()
 
 	//	lua_sethook(L, testHook, LUA_MASKLINE, 0);
 
-	lua_pushcfunction(L, bindAll);
+	lua_pushcnfunction(L, bindAll, "gideros_bindAll");
 	lua_pushlightuserdata(L, application_);
 	lua_call(L, 1, 0);
 
@@ -1677,9 +1677,14 @@ static ProfileInfo *profilerGetInfo(Closure *cl)
 		std::string fid;
 		char fmt[255];
 		if (cl->c.isC)
-			sprintf(fmt,"=[C] %p",cl->c.f);
+		{
+			if (cl->c.name)
+				sprintf(fmt,"=[C] %p(%s)",cl->c.f,cl->c.name);
+			else
+				sprintf(fmt,"=[C] %p",cl->c.f);
+		}
 		else
-			sprintf(fmt,"%s:%d",getstr(cl->l.p->source),cl->l.p->linedefined);
+			sprintf(fmt,"%s:%d:%p",getstr(cl->l.p->source),cl->l.p->linedefined,cl->l.p);
 		fid=fmt;
 		p=proFuncs[fid];
 		if (!p) {
@@ -1711,8 +1716,14 @@ static void profilerHook(lua_State *L,int enter)
 				ar.name=NULL;
 				ar.i_ci = cast_int(L->ci - L->base_ci);
 				lua_getinfo(L,"n",&ar);
-				if (ar.name) p->name=ar.name;
-				else p->name="Unknown";
+				if ((cl->c.isC)&&(cl->c.name))
+					p->name=cl->c.name;
+				else {
+					if (ar.name)
+						p->name=ar.name;
+					else
+						p->name="Unknown";
+				}
 			}
 			if (L->ci>L->base_ci)
 			{

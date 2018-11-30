@@ -185,7 +185,7 @@ LUALIB_API int luaopen_int64(lua_State *L)
  lua_createtable(L, 0, 1);  /* table to be type metatable for numbers */
  lua_pushvalue(L, -1);      /* copy table */
  lua_settypemt(L, LUA_TNUMBER);   /* set table as type metatable for numbers */
- lua_pushcfunction(L, Lnew);
+ lua_pushcnfunction(L, Lnew, "int64_new");
  lua_setfield(L, -2, "__len");  /* metatable.__len = function */
  lua_pop(L, 1);
 

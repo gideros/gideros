@@ -1071,6 +1071,7 @@ int EventDispatcherBinder::addEventListener(lua_State* L)
 
 	const char* event = lua_tostring(L, 2);
 	int eventid = StringId::instance().id(event);
+	const char *cevent=StringId::instance().str(eventid);
 
 	const std::vector<CppLuaBridge*>& bridges = map[eventid]; 
 
@@ -1130,7 +1131,7 @@ int EventDispatcherBinder::addEventListener(lua_State* L)
 		lua_pushvalue(L, 3);	// function
         lua_rawseti(L, -2, 2);
 
-        lua_pushcclosure(L, &eventClosure, 1);
+        lua_pushcnclosure(L, &eventClosure, 1, cevent);
 	}
 	else
 	{
@@ -1147,7 +1148,7 @@ int EventDispatcherBinder::addEventListener(lua_State* L)
         lua_pushvalue(L, 4);	// data
         lua_rawseti(L, -2, 3);
 
-        lua_pushcclosure(L, &eventClosureWithData, 1);
+        lua_pushcnclosure(L, &eventClosureWithData, 1, cevent);
 	}
 	lua_rawset(L, -3);					// envtable["eventClosures"][bridge] = closure
 	lua_pop(L, 1);						// pop envtable["eventClosures"]
@@ -1157,13 +1158,13 @@ int EventDispatcherBinder::addEventListener(lua_State* L)
 	if (hasData == false)
 	{
 		lua_pushvalue(L, 3);	// function
-		lua_pushcclosure(L, &eventCheckClosure, 1);
+		lua_pushcnclosure(L, &eventCheckClosure, 1, cevent);
 	}
 	else
 	{
 		lua_pushvalue(L, 3);	// function
 		lua_pushvalue(L, 4);	// data
-		lua_pushcclosure(L, &eventCheckClosureWithData, 2);
+		lua_pushcnclosure(L, &eventCheckClosureWithData, 2, cevent);
 	}
 	lua_rawset(L, -3);
 	

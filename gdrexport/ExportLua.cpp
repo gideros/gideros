@@ -56,7 +56,7 @@ static int bindAll(lua_State* L)
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
-    lua_pushcfunction(L, luaopen_lfs);
+    lua_pushcnfunction(L, luaopen_lfs,"open_lfs");
     lua_setfield(L, -2, "lfs");
 
     lua_pop(L, 2);
@@ -68,7 +68,7 @@ void ExportLUA_Init(ExportContext *ctx)
 {
  ctx->L = luaL_newstate();
  luaL_openlibs(ctx->L);
- lua_pushcfunction(ctx->L, bindAll);
+ lua_pushcnfunction(ctx->L, bindAll, "bindAll");
  lua_call(ctx->L, 0, 0);
 }
 

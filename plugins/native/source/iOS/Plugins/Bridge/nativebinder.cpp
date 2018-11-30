@@ -335,7 +335,7 @@ static bool getField(lua_State *L, gnative_Class *cls, const char *name)
 	{
 		lua_pushlightuserdata(L, cls);
 		lua_pushstring(L, name);
-		lua_pushcclosure(L, function, 2);
+		lua_pushcnclosure(L, function, 2, name);
 		return true;
 	}
 	
@@ -510,15 +510,15 @@ static int getClass(lua_State *L)
 	lua_pushlightuserdata(L, cls);
 	lua_setfield(L, -2, "__classdata");
 	
-	lua_pushcfunction(L, __index);
+	lua_pushcfunction(L, __index, "__index");
 	lua_setfield(L, -2, "__index");
 	
 	lua_pushvalue(L, -1);
-	lua_pushcclosure(L, __new, 1);
+	lua_pushcnclosure(L, __new, 1, "new");
 	lua_setfield(L, -2, "new");
 
 	lua_pushvalue(L, -1);
-	lua_pushcclosure(L, addFunction, 1);
+	lua_pushcnclosure(L, addFunction, 1, "addFunction");
 	lua_setfield(L, -2, "addFunction");
 	
 	gnative_Class *superclass = gnative_ClassGetSuperclass(cls);
