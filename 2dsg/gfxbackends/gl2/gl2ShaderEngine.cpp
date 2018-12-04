@@ -110,12 +110,13 @@ static const char *stdPVShaderCode = "attribute lowp vec4 vColor;\n"
 		"uniform highp mat4 vMatrix;\n"
 		"uniform highp mat4 vWorldMatrix;\n"
 		"uniform mediump float vPSize;\n"
+		"uniform lowp vec4 fColor;\n"
 		"varying lowp vec4 fInColor; "
 		"\n"
 		"void main() {\n"
 		"  highp vec4 vertex = vec4(vVertex,1.0);\n"
 		"  gl_Position = vMatrix*vertex;\n"
-		"  fInColor=vColor;\n"
+		"  fInColor=vColor*fColor;\n"
 		"  mediump vec4 xpsize=(vWorldMatrix*vec4(vPSize,0.0,0.0,1.0))-(vWorldMatrix*vec4(0.0,0.0,0.0,1.0));\n"
 //		"  mediump vec4 xpsize=vWorldMatrix*vec4(vPSize,0.0,0.0,1.0);\n"
 		"  gl_PointSize=length(xpsize.xyz);\n"
@@ -123,6 +124,7 @@ static const char *stdPVShaderCode = "attribute lowp vec4 vColor;\n"
 
 static const char *stdPSVShaderCode = "attribute mediump vec2 vTexCoord;\n"
 		"attribute lowp vec4 vColor;\n"
+		"uniform lowp vec4 fColor;\n"
 		"uniform highp mat4 vMatrix;\n"
 		"uniform highp mat4 vWorldMatrix;\n"
 		"varying lowp vec4 fInColor;\n"
@@ -137,7 +139,7 @@ static const char *stdPSVShaderCode = "attribute mediump vec2 vTexCoord;\n"
 		"  rad=rad*rot;\n"
 		"  highp vec4 vertex = vec4(vVertex.xy+rad,0.0,1.0);\n"
 		"  gl_Position = vMatrix*vertex;\n"
-		"  fInColor=vColor;\n"
+		"  fInColor=vColor*fColor;\n"
 		"  mediump vec4 xpsize=vWorldMatrix*vec4(vVertex.z,0.0,0.0,0.0);\n"
 		"  highp float xpl=length(xpsize.xyz);\n"
 		"  if (xpl==0.0) xpl=1.0;\n"
@@ -417,7 +419,10 @@ void ogl2SetupShaders(bool isGLES) {
 					"vPSize", ShaderProgram::CFLOAT, 1,
 					ShaderProgram::SysConst_ParticleSize, true, 0, NULL }, {
 					"fTexture", ShaderProgram::CTEXTURE, 1,
-					ShaderProgram::SysConst_None, false, 0, NULL }, {
+					ShaderProgram::SysConst_None, false, 0, NULL },
+					{ "fColor", ShaderProgram::CFLOAT4, 1,
+							ShaderProgram::SysConst_Color, false, 0, NULL },
+					{
 					"fTexInfo", ShaderProgram::CFLOAT4, 1,
 					ShaderProgram::SysConst_TextureInfo, false, 0, NULL }, { "",
 					ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,
@@ -431,6 +436,7 @@ void ogl2SetupShaders(bool isGLES) {
 		{ "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
 		{ "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
 		{ "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
+		{ "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, false, 0, NULL },
 		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
 	};
 	const ShaderProgram::DataDesc stdPSAttributes[] = {

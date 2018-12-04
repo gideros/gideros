@@ -10,6 +10,7 @@ cbuffer cbv : register(b0)
 {
 	float4x4 vMatrix;
 	float4x4 vWorldMatrix;
+	float4 vfColor;
 };
 
 VOut VShader(float4 position : vVertex, float4 color : vColor, float2 texcoord : vTexCoord)
@@ -28,7 +29,7 @@ VOut VShader(float4 position : vVertex, float4 color : vColor, float2 texcoord :
 	float2x2 rot=float2x2(ca,sa,-sa,ca);
 	rad=mul(rad,rot);
 	output.position = mul(vMatrix, position + float4(rad, 0.0, 0.0));
-	output.color = color;
+	output.color = color*vfColor;
 	output.texcoord = texcoord;
 
 	return output;

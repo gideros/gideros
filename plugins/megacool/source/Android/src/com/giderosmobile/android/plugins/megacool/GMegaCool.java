@@ -8,6 +8,7 @@ import android.util.Log;
 import android.os.Build;
 import android.graphics.Point;
 import android.view.Display;
+import android.view.View;
 import com.giderosmobile.android.GiderosSettings;
 import co.megacool.megacool.Event;
 import co.megacool.megacool.EventType;
@@ -46,14 +47,39 @@ public class GMegaCool
                 }
             }
         },"Gideros",getGiderosVersion());
-        //View is not laid out yet, use display as we probably run full screen
-		Display display = activity.getWindowManager().getDefaultDisplay();
-		Point ds=new Point();
-		display.getSize(ds);
+        checkViewSize();
+	}
+	
+	static int mgc_w,mgc_h;
+	static boolean renderInit=false;
+	static private void checkViewSize() {
+		Activity activity=sActivity.get();
+		View view = (View) activity.findViewById(android.R.id.content);
+		int vw=view.getWidth();
+		int vh=view.getHeight();
+		if ((vw==0)||(vh==0)) //View has no size, try display
+		{
+			Display display = activity.getWindowManager().getDefaultDisplay();
+			Point ds=new Point();
+			display.getSize(ds);
+			vw=ds.x;
+			vh=ds.y;
+		}
 		int vd=2;
-		if (Math.max(ds.x,ds.y)>1500) vd=4;
-		Megacool.initCapture(ds.x/vd,ds.y/vd,"OpenGLES3");
-		Megacool.setCaptureMethod(Megacool.CaptureMethod.OPENGL);
+		if (Math.max(vw,vh)>1500) vd=4;
+		vw/=vd;
+		vh/=vd;
+		if (((mgc_w!=vw)||(mgc_h!=vh))&&(vw!=0)&&(vh!=0)) {
+			if (mgc_w!=0) {
+				//Deinitialize
+			}
+			else
+			{
+				//(Re)-initialize
+				Megacool.initCapture(vw,vh,"OpenGLES3");
+				Megacool.setCaptureMethod(Megacool.CaptureMethod.OPENGL);
+			}
+		}
 	}
 	
 	public static boolean share(String fallback){
@@ -91,8 +117,8 @@ public class GMegaCool
 	static native void onEvent(int event);	
 	static native String getGiderosVersion();
 	
-	static boolean renderInit=false;
 	public static void frameEnter() {
+        checkViewSize();
 		if (!renderInit) {
 			Megacool.initRenderThread();
 			renderInit=true;
