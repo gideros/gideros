@@ -409,7 +409,7 @@ struct World;
  -- Responses
  ------------------------------------------*/
 struct Response {
-	virtual void ComputeResponse(World *world, Collision col, double x,
+	virtual void ComputeResponse(World *world, Collision &col, double x,
 			double y, double w, double h, double goalX, double goalY,
 			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols)=0;
 	virtual ~Response() {
@@ -853,13 +853,13 @@ struct World {
 
 		while (projected_cols.size() > 0) {
 			Collision col = projected_cols[0];
-			cols.push_back(col);
 			vf.visited.insert(col.other);
 			Response *response = getResponseByName(col.type);
 
 			projected_cols.clear();
 			response->ComputeResponse(this, col, r.x, r.y, r.w, r.h,
 					goalX, goalY, &vf, goalX, goalY,projected_cols);
+			cols.push_back(col);
 		}
 
 		actualX = goalX;
@@ -868,7 +868,7 @@ struct World {
 };
 
 struct TouchResponse: Response {
-	void ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision &col, double x,
 			double y, double w, double h, double goalX, double goalY,
 			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		UNUSED(world); UNUSED(x); UNUSED(y); UNUSED(w); UNUSED(h);
@@ -879,7 +879,7 @@ struct TouchResponse: Response {
 };
 
 struct CrossResponse: Response {
-	void ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision &col, double x,
 			double y, double w, double h, double goalX, double goalY,
 			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		world->project(col.item, x, y, w, h, goalX,
@@ -890,7 +890,7 @@ struct CrossResponse: Response {
 };
 
 struct SlideResponse: Response {
-	void ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision &col, double x,
 			double y, double w, double h, double goalX, double goalY,
 			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		//goalX = goalX or x TODO
@@ -921,7 +921,7 @@ struct SlideResponse: Response {
 };
 
 struct BounceResponse: Response {
-	void ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision &col, double x,
 			double y, double w, double h, double goalX, double goalY,
 			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		double tx = col.touch.x;
