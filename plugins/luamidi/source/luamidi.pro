@@ -21,5 +21,6 @@ LIBS += -L"../../../Sdk/lib/desktop" -llua
 
 macx {
 DEFINES+=__MACOSX_CORE__
+LIBS+= -framework CoreMIDI -framework CoreFoundation -framework CoreAudio
 QMAKE_POST_LINK += install_name_tool -change liblua.1.dylib "@executable_path/../Frameworks/liblua.1.dylib" $(TARGET);
 }
