@@ -101,7 +101,7 @@ struct Color4u {
 class SpineSprite {
 public:
 	SpineSprite(LuaApplication* application, const char *fileName,
-			const char *atlasName, float scale);
+			const char *atlasName, float scale, lua_State *L);
 	virtual ~SpineSprite();
 	SpriteProxy *proxy_;
 	void doDraw(const CurrentTransform&, float sx, float sy, float ex,
@@ -235,13 +235,17 @@ void trackEntryCallback(spAnimationState* state, spEventType type,
 }
 
 SpineSprite::SpineSprite(LuaApplication* application, const char *fileName,
-		const char *atlasName, float scale) :
+		const char *atlasName, float scale, lua_State *L) :
 		vertexEffect(0), worldVertices(0), clipper(0) {
 	application_ = application;
 	lastTime_ = 0;
 	gid = g_NextId();
 
 	atlas = spAtlas_createFromFile(atlasName, 0);
+	if (!atlas) {
+		lua_pushfstring(L,"Atlas file '%s' not found",atlasName);
+		lua_error(L);
+	}
 	if (strstr(fileName, ".json") != NULL) {
 		spSkeletonJson* json = spSkeletonJson_create(atlas);
 		skeletonData = spSkeletonJson_readSkeletonDataFile(json, fileName);
@@ -250,6 +254,10 @@ SpineSprite::SpineSprite(LuaApplication* application, const char *fileName,
 		spSkeletonBinary* bin = spSkeletonBinary_create(atlas);
 		skeletonData = spSkeletonBinary_readSkeletonDataFile(bin, fileName);
 		spSkeletonBinary_dispose(bin);
+	}
+	if (!skeletonData) {
+		lua_pushfstring(L,"Skeleton file '%s' not found",fileName);
+		lua_error(L);
 	}
 	timeScale = scale;
 	usePremultipliedAlpha = true;
@@ -506,7 +514,7 @@ int createSpineSprite(lua_State *L) {
 	const char *atlas = luaL_checkstring(L, 2);
 	float tscale = luaL_optnumber(L, 3, 1.0);
 
-	SpineSprite *ps = new SpineSprite(application, file, atlas, tscale);
+	SpineSprite *ps = new SpineSprite(application, file, atlas, tscale, L);
 
 	binder.pushInstance("SpineSprite", ps->proxy_);
 
@@ -554,8 +562,8 @@ int setSkin(lua_State *L) {
 	SpriteProxy* psp = static_cast<SpriteProxy*>(binder.getInstance(
 			"SpineSprite", 1));
 	SpineSprite* ps = static_cast<SpineSprite*>(psp->getContext());
-	spSkeleton_setSkinByName(ps->skeleton, luaL_checkstring(L, 2));
-	return 0;
+	lua_pushboolean(L,spSkeleton_setSkinByName(ps->skeleton, luaL_optstring(L, 2,NULL)));
+	return 1;
 }
 
 int setAttachment(lua_State *L) {
@@ -563,9 +571,9 @@ int setAttachment(lua_State *L) {
 	SpriteProxy* psp = static_cast<SpriteProxy*>(binder.getInstance(
 			"SpineSprite", 1));
 	SpineSprite* ps = static_cast<SpineSprite*>(psp->getContext());
-	spSkeleton_setAttachment(ps->skeleton, luaL_checkstring(L, 2),
-			luaL_checkstring(L, 3));
-	return 0;
+	lua_pushboolean(L,spSkeleton_setAttachment(ps->skeleton, luaL_checkstring(L, 2),
+			luaL_optstring(L, 3,NULL)));
+	return 1;
 }
 
 int getBoneLocation(lua_State *L) {
