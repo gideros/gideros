@@ -1,0 +1,4 @@
+<plugin
+ name="Lua midi"
+ description="Midi support for Lua">
+</plugin>
