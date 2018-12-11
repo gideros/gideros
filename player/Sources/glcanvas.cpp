@@ -1022,6 +1022,7 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 
 	int fps;
 	buffer >> fps;
+    //setFps(fp); //XXX: This is windows player, let the fps setting be controlled by menu for ease of use
 
 	int retinaDisplay;
 	buffer >> retinaDisplay;

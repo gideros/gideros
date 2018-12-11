@@ -23,7 +23,7 @@ void GridBagLayout::preInitMaximumArraySizes(Sprite *parent, size_t &a0,
 
 	for (int compId = 0; compId < parent->childCount(); compId++) {
 		Sprite *comp = parent->child(compId);
-		if (!comp->visible()) {
+		if ((!comp->visible())||(!comp->layoutConstraints)) {
 			continue;
 		}
 
@@ -132,7 +132,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 
 	for (compindex = 0; compindex < parent->childCount(); compindex++) {
 		comp = parent->child(compindex);
-		if (!comp->visible())
+		if ((!comp->visible())||(!comp->layoutConstraints))
 			continue;
 		constraints = lookupConstraints(comp);
 
@@ -703,7 +703,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 					}
 				}
 			}
-			for (i = 0; i < info.height; i++) {
+            for (i = 0; i < info.width; i++) {
 				info.minWidth[i] += distribute[i];
 				r.width += distribute[i];
 				if (info.minWidth[i] < 0) {
@@ -781,7 +781,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
     layoutInfo = info;
     for (compindex = 0; compindex < parent->childCount(); compindex++) {
 		comp = parent->child(compindex);
-		if (!comp->visible())
+		if ((!comp->visible())||(!comp->layoutConstraints))
 			continue;
 		constraints = lookupConstraints(comp);
 

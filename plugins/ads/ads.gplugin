@@ -76,7 +76,7 @@
  	</if>
     <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.java" />
-    	<set key="local.adsAarVer" value="2.3.0" />
+    	<set key="local.adsAarVer" value="3.0.0" />
     	<set key="local.adsJarVer" value="unity-ads-[[[local.adsAarVer]]].aar" />
     	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
     	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
@@ -178,10 +178,10 @@
 	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
-    	<set key="local.adsJarVer" value="applovin-sdk-8.1.3.jar" />
+    	<set key="local.adsAarVer" value="9.1.0" />
+    	<set key="local.adsJarVer" value="applovin-sdk-[[[local.adsAarVer]]].aar" />
     	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
     	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
-	    <!-- <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="applovin*.jar" /> -->
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml;build.gradle">
             	<append>
@@ -200,7 +200,12 @@
 				</append>
         	</replacelist>
     	</template>
+	    <lua>
+    	local ap=require("Tools/export_android")
+    	ap.minSdk(16)
+    	</lua>
     <lua>
+	
     local ap=require("Tools/export_android")
     ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
     ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE",18)

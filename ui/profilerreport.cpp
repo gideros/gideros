@@ -94,7 +94,7 @@ QString ProfilerReport::generateReport(QVariant pinf) {
             double itime=i["time"].toString().toDouble();
             int icount=i["count"].toString().toInt();
             double ipct=itime*100/ptime;
-            out += QString::asprintf("<tr class=\"%s\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
+            out += QString::asprintf("<tr class=\"%s\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
                                      (ipct<1)?"callerZ":"caller",itime*1000,ipct,icount,pmap[f],pinfo[f].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),f.toUtf8().constData());
         }
         double otime=0;
@@ -105,14 +105,14 @@ QString ProfilerReport::generateReport(QVariant pinf) {
             otime+=itime;
         }
         double ipct=(ptime-otime)*100/ptime;
-        out += QString::asprintf("<tr class=\"%s\"><td><a id=\"f%d\">[%d]</a></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td>%s</td><td>%s</td></tr>\n",
+        out += QString::asprintf("<tr class=\"%s\"><td><a id=\"f%d\">[%d]</a></td><td>%6.0f</td><td>%3.0f%%</td><td>%d</td><td>%s</td><td>%s</td></tr>\n",
                                  "current",i+1,i+1,ptime*1000,ipct,pcount,pinfo[funcs[i]].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),funcs[i].toUtf8().constData());
         foreach (QString f, pcallees) {
             QMap<QVariant,QVariant> ii=pinfo[f].value<QMap<QVariant,QVariant>>()["callers"].value<QMap<QVariant,QVariant>>()[funcs[i]].value<QMap<QVariant,QVariant>>();
             double itime=ii["time"].toString().toDouble();
             int icount=ii["count"].toString().toInt();
             double ipct=itime*100/ptime;
-            out += QString::asprintf("<tr class=\"%s\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%6d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
+            out += QString::asprintf("<tr class=\"%s\"><td></td><td>%6.0f</td><td>%3.0f%%</td><td>%d</td><td><a href=\"#f%d\">%s</a></td><td>%s</td></tr>\n",
                                      (ipct<1)?"calleeZ":"callee",itime*1000,ipct,icount,pmap[f],pinfo[f].value<QMap<QVariant,QVariant>>()["name"].toString().toUtf8().constData(),f.toUtf8().constData());
         }
         out += "<tr class=\"sep\"><td colspan=6>&nbsp;</td></tr>\n";
