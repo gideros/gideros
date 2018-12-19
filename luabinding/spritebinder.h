@@ -20,6 +20,7 @@ private:
     static int swapChildren(lua_State* L);
 	static int swapChildrenAt(lua_State* L);
 	static int getChildAt(lua_State* L);
+	static int getChildrenAtPoint(lua_State* L);
 	static int getParent(lua_State* L);
 	static int contains(lua_State* L);
 	static int getChildIndex(lua_State* L);

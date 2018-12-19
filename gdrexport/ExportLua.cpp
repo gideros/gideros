@@ -40,6 +40,8 @@ static int callXml(lua_State* L)
 	return 1;
 }
 
+extern "C" int luaopen_windows_hkey(lua_State *L);
+
 static int bindAll(lua_State* L)
 {
     static const luaL_Reg functionList[] = {
@@ -58,6 +60,11 @@ static int bindAll(lua_State* L)
 
     lua_pushcnfunction(L, luaopen_lfs,"open_lfs");
     lua_setfield(L, -2, "lfs");
+
+#ifdef Q_OS_WIN32
+    lua_pushcnfunction(L, luaopen_windows_hkey,"open_windows_hkey");
+    lua_setfield(L, -2, "hkey");
+#endif
 
     lua_pop(L, 2);
 

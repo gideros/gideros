@@ -468,6 +468,35 @@ Sprite* Sprite::getChildAt(int index, GStatus* status) const {
 	return children_[index];
 }
 
+void Sprite::getChildrenAtPoint(float x, float y, bool visible, bool nosubs,std::vector<Sprite *> &children) const {
+	Matrix transform;
+	std::stack<Matrix4> pxform;
+	std::stack<const Sprite *> pstack;
+	const Sprite *curr = this;
+	while (curr) {
+		pstack.push(curr);
+		curr = curr->parent_;
+	}
+	while (!pstack.empty()) {
+		curr=pstack.top();
+		pstack.pop();
+		pxform.push(transform);
+		transform = transform * curr->localTransform_.matrix();
+	}
+
+	float minx, miny, maxx, maxy;
+
+	for (size_t i = 0; i < children_.size(); ++i) {
+		Sprite *c=children_[i];
+		pxform.push(transform);
+		boundsHelper(transform * c->localTransform_.matrix(), &minx, &miny, &maxx, &maxy, pxform, visible, nosubs);
+		if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
+			children.push_back(c);
+		}
+		pxform.pop();
+	}
+}
+
 void Sprite::removeChildAt(int index, GStatus* status) {
 	if (index < 0 || index >= childCount()) {
 		if (status)
@@ -602,7 +631,7 @@ void Sprite::globalToLocal(float x, float y, float z, float* tx, float* ty, floa
 void Sprite::objectBounds(float* minx, float* miny, float* maxx, float* maxy,
 		bool visible) const {
 	std::stack<Matrix4> pxform;
-	boundsHelper(Matrix(), minx, miny, maxx, maxy, pxform, visible);
+	boundsHelper(Matrix(), minx, miny, maxx, maxy, pxform, visible, false);
 }
 
 #if 0
@@ -647,7 +676,7 @@ void Sprite::localBounds(float* minx, float* miny, float* maxx, float* maxy,
 		bool visible) const {
 	std::stack<Matrix4> pxform;
 	boundsHelper(localTransform_.matrix(), minx, miny, maxx, maxy, pxform,
-			visible);
+			visible, false);
 }
 
 #if 0
@@ -802,7 +831,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible) const {
 
 	float minx, miny, maxx, maxy;
 	//objectBounds(&minx, &miny, &maxx, &maxy,visible);
-	boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, visible);
+	boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, visible, false);
 
 	return (tx >= minx && ty >= miny && tx <= maxx && ty <= maxy);
 }
@@ -871,22 +900,24 @@ struct _cliprect {
 
 void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 		float* maxx, float* maxy, std::stack<Matrix> parentXform,
-		bool visible) const {
+		bool visible, bool nosubs) const {
 	if ((!visible) || isVisible_) {
 		this->worldTransform_ = transform;
-		std::stack<Sprite*> stack; // this shouldn't be static because MovieClip calls draw again
-		for (size_t i = 0; i < children_.size(); ++i)
-			stack.push(children_[i]);
+		if (!nosubs) {
+			std::stack<Sprite*> stack; // this shouldn't be static because MovieClip calls draw again
+			for (size_t i = 0; i < children_.size(); ++i)
+				stack.push(children_[i]);
 
-		while (!stack.empty()) {
-			Sprite *sprite = stack.top();
-			stack.pop();
+			while (!stack.empty()) {
+				Sprite *sprite = stack.top();
+				stack.pop();
 
-			sprite->worldTransform_ = sprite->parent_->worldTransform_
-					* sprite->localTransform_.matrix();
+				sprite->worldTransform_ = sprite->parent_->worldTransform_
+						* sprite->localTransform_.matrix();
 
-			for (size_t i = 0; i < sprite->children_.size(); ++i)
-				stack.push(sprite->children_[i]);
+				for (size_t i = 0; i < sprite->children_.size(); ++i)
+					stack.push(sprite->children_[i]);
+			}
 		}
 	}
 
@@ -981,6 +1012,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 				gmaxy = std::max(lgmaxy, gmaxy);
 			}
 
+			if (!nosubs)
 			for (size_t i = 0; i < sprite->children_.size(); ++i)
 			{
 				stack.push(sprite->children_[i]);
@@ -1066,7 +1098,7 @@ void Sprite::getBounds(const Sprite* targetCoordinateSpace, float* minx,
 	}
 
 	std::stack<Matrix4> pxform;
-	boundsHelper(transform, minx, miny, maxx, maxy, pxform, false);
+	boundsHelper(transform, minx, miny, maxx, maxy, pxform, false, false);
 }
 
 #if 0

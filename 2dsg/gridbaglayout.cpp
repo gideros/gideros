@@ -269,8 +269,8 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 
 	for (compindex = 0; compindex < parent->childCount(); compindex++) {
 		comp = parent->child(compindex);
-		if (!comp->visible())
-			continue;
+        if ((!comp->visible())||(!comp->layoutConstraints))
+            continue;
 		constraints = lookupConstraints(comp);
 
 		curX = constraints->gridx;
@@ -397,8 +397,8 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	for (i = 1; i != INT_MAX; i = nextSize, nextSize = INT_MAX) {
 		for (compindex = 0; compindex < parent->childCount(); compindex++) {
 			comp = parent->child(compindex);
-			if (!comp->visible())
-				continue;
+            if ((!comp->visible())||(!comp->layoutConstraints))
+                continue;
 			constraints = lookupConstraints(comp);
 
 			if (constraints->tempWidth == i) {

@@ -72,6 +72,11 @@ INCLUDEPATH += ./luaext
 SOURCES += \
 	./luaext/lfs.c
 
+win32 {
+SOURCES += \
+	./luaext/hkey.cpp
+}
+
 LIBS += -lz
 
 macx {

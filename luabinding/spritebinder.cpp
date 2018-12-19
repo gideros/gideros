@@ -19,6 +19,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"swapChildren", SpriteBinder::swapChildren},
 		{"swapChildrenAt", SpriteBinder::swapChildrenAt},
 		{"getChildAt", SpriteBinder::getChildAt},
+		{"getChildrenAtPoint", SpriteBinder::getChildrenAtPoint},
 		{"getParent", SpriteBinder::getParent},
 		{"contains", SpriteBinder::contains},
 		{"getChildIndex", SpriteBinder::getChildIndex},
@@ -1343,6 +1344,33 @@ int SpriteBinder::hitTestPoint(lua_State* L)
 
 	lua_pushboolean(L, sprite->hitTestPoint(x, y, shapeFlag));
 	
+	return 1;
+}
+
+int SpriteBinder::getChildrenAtPoint(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::getChildrenAtPoint", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	double x = luaL_checknumber(L, 2);
+	double y = luaL_checknumber(L, 3);
+	bool visible = lua_toboolean(L, 4);
+	bool nosubs = lua_toboolean(L, 5);
+
+	std::vector<Sprite *>res;
+	sprite->getChildrenAtPoint(x, y, visible, nosubs, res);
+	int nres=res.size();
+	lua_createtable(L,nres,0);
+	for (int i=0;i<nres;i++) {
+		lua_getfield(L, 1, "__children");	// push sprite.__children
+		lua_pushlightuserdata(L, res[i]);
+		lua_rawget(L, -2);					// push sprite.__children[child]
+		lua_remove(L, -2);					// pop sprite.__children
+		lua_rawseti(L,-2,i+1);
+	}
+
 	return 1;
 }
 

@@ -61,6 +61,7 @@ public:
 	}
 
 	Sprite* getChildAt(int index, GStatus* status = 0) const;
+	void getChildrenAtPoint(float x, float y, bool visible, bool nosubs, std::vector<Sprite *> &children) const;
 
 	Sprite* parent() const
 	{
@@ -440,7 +441,7 @@ protected:
 
 private:
     Stage *getStage() const;
-    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::stack<Matrix> parentXform,bool visible=false) const;
+    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::stack<Matrix> parentXform,bool visible=false, bool nosubs=false) const;
 
 protected:
     Application *application_;

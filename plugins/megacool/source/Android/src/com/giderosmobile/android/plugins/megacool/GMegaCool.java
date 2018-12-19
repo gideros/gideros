@@ -73,12 +73,11 @@ public class GMegaCool
 			if (mgc_w!=0) {
 				//Deinitialize
 			}
-			else
-			{
-				//(Re)-initialize
-				Megacool.initCapture(vw,vh,"OpenGLES3");
-				Megacool.setCaptureMethod(Megacool.CaptureMethod.OPENGL);
-			}
+			//(Re)-initialize
+			Megacool.initCapture(vw,vh,"OpenGLES3");
+			Megacool.setCaptureMethod(Megacool.CaptureMethod.OPENGL);
+			mgc_w=vw;
+			mgc_h=vh;
 		}
 	}
 	
