@@ -2728,7 +2728,7 @@ quint32 _ntohl(quint32 x) {
 
 void MainWindow::exportProject()
 {
-    ExportProjectDialog dialog(&libraryWidget_->getProjectProperties(), true, this);
+    ExportProjectDialog dialog(&libraryWidget_->getProjectProperties(), QFileInfo(projectFileName_).dir(), true, this);
 	if (dialog.exec() == QDialog::Accepted)
 	{
 		QString exportType = dialog.exportType();

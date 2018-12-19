@@ -604,7 +604,7 @@ void LibraryTreeWidget::propPlugin()
 		}
 		if (found)
 		{
-		    PluginEditor dialog(&m, this);
+            PluginEditor dialog(&m,QFileInfo(projectFileName_).dir(), this);
 			dialog.exec();
 			properties_.plugins.insert(m);
 		}
@@ -1024,6 +1024,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 	std::stack<std::pair<QTreeWidgetItem*, QDomElement> > stack;
 	stack.push(std::make_pair(filesFolder, root));
 
+	QDir pdir = QFileInfo(projectFileName_).dir();
+
 	while (stack.empty() == false)
 	{
 		QTreeWidgetItem* item = stack.top().first;
@@ -1041,7 +1043,7 @@ QDomDocument LibraryTreeWidget::toXml() const
 			if (fileName.isEmpty() == false)
 			{
 				bool isLink=data["link"].toBool();
-                childElement.setAttribute(isLink?"source":"name", fileName);
+                childElement.setAttribute(isLink?"source":"name",pdir.relativeFilePath(fileName));
                 if (data.contains("downsizing") && data["downsizing"].toBool())
                     childElement.setAttribute("downsizing", 1);
                 if (data.contains("excludeFromExecution") && data["excludeFromExecution"].toBool())
@@ -1054,7 +1056,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 			else
 			{
 				childElement.setAttribute("name", childItem->text(0));
-				childElement.setAttribute("path", data["fspath"].toString());
+				if (!data["fspath"].toString().isEmpty())
+					childElement.setAttribute("path", pdir.relativeFilePath(data["fspath"].toString()));
 			}
 
 			element.appendChild(childElement);
@@ -1068,8 +1071,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 	{
 		QDomElement childElement = doc.createElement("dependency");
 
-		childElement.setAttribute("from", dependencies[i].first);
-		childElement.setAttribute("to", dependencies[i].second);
+		childElement.setAttribute("from",  pdir.relativeFilePath(dependencies[i].first));
+		childElement.setAttribute("to",  pdir.relativeFilePath(dependencies[i].second));
 
 		root.appendChild(childElement);
 	}

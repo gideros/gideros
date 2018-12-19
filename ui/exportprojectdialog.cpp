@@ -7,7 +7,7 @@
 #include <QDir>
 #include <QFile>
 
-ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent) :
+ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir projectDir, bool licensed, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ExportProjectDialog)
 {
@@ -136,7 +136,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
         		if ((*it).name==exname)
         			props=(*it).properties;
 
-        	PropertyEditingTable *table=new PropertyEditingTable();
+            PropertyEditingTable *table=new PropertyEditingTable(projectDir);
             QString exlabel=exporter.attribute("label");
             if (exlabel.isEmpty())
             	exlabel=exname;

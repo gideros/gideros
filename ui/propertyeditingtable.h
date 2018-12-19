@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QList>
+#include <QDir>
 #include <QTableWidget>
 #include <QDomDocument>
 #include <QSignalMapper>
@@ -13,7 +14,7 @@ class PropertyEditingTable : public QTableWidget
 
 public:
 
-    explicit PropertyEditingTable(QWidget *parent = 0);
+    explicit PropertyEditingTable(QDir projectDir, QWidget *parent = 0);
     ~PropertyEditingTable();
     void fill(QDomElement xml,QMap<QString,QString> values);
     QMap<QString,QString> extract();
@@ -29,6 +30,7 @@ private:
 	};
     QSignalMapper *mapper;
 	QList<PropDesc> props;
+    QDir projectDir_;
 };
 
 #endif // EXPORTPROJECTDIALOG_H

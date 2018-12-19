@@ -7,7 +7,7 @@
 #include <QHeaderView>
 #include <QFileDialog>
 
-PropertyEditingTable::PropertyEditingTable(QWidget *parent) :
+PropertyEditingTable::PropertyEditingTable(QDir projectDir, QWidget *parent) :
 		QTableWidget(parent) {
 	QStringList labels;
 	labels << "Property" << "Value" << "";
@@ -17,6 +17,7 @@ PropertyEditingTable::PropertyEditingTable(QWidget *parent) :
      setSelectionMode(QAbstractItemView::SingleSelection);
 
 	mapper = new QSignalMapper(this);
+    projectDir_=projectDir;
 
 connect(mapper, SIGNAL(mapped(int)),
 		this, SLOT(onBrowse(int)));
@@ -105,13 +106,13 @@ void PropertyEditingTable::onBrowse(int row) {
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
 	 if (!dir.isEmpty())
-		 item(row,1)->setText(dir);
+         item(row,1)->setText(projectDir_.relativeFilePath(dir));
  }
  else if (type=="file")
  {
 	 QString file = QFileDialog::getOpenFileName(this,"",item(row,1)->text(),"");
 	 if (!file.isEmpty())
-		 item(row,1)->setText(file);
+         item(row,1)->setText(projectDir_.relativeFilePath(file));
  }
 }
 

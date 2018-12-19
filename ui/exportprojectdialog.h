@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QMap>
 #include <QSet>
+#include <QDir>
 #include "projectproperties.h"
 
 namespace Ui {
@@ -15,7 +16,7 @@ class ExportProjectDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);
+    explicit ExportProjectDialog(ProjectProperties* properties, QDir projectDir, bool licensed, QWidget *parent = 0);
     ~ExportProjectDialog();
 
 	QString exportType() const;

@@ -16,7 +16,7 @@
 #define ALL_PLUGINS_PATH "All Plugins"
 #endif
 
-PluginEditor::PluginEditor(ProjectProperties::Plugin *selection,
+PluginEditor::PluginEditor(ProjectProperties::Plugin *selection,QDir projectDir,
 		QWidget *parent) :
 		QDialog(parent), ui(new Ui::PluginEditorDialog) {
 
@@ -81,7 +81,7 @@ PluginEditor::PluginEditor(ProjectProperties::Plugin *selection,
 		}
 	}
 
-	propsTable = new PropertyEditingTable();
+    propsTable = new PropertyEditingTable(projectDir);
 	ui->propTable->addWidget(propsTable);
 
 	ui->pluginName->setText(selection->name);

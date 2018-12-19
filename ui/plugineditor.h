@@ -5,6 +5,7 @@
 #include <QSet>
 #include <QString>
 #include <QtXml/QDomNode>
+#include <QDir>
 #include "projectproperties.h"
 #include "propertyeditingtable.h"
 
@@ -17,7 +18,7 @@ class PluginEditor : public QDialog
     Q_OBJECT
 
 public:
-    explicit PluginEditor(ProjectProperties::Plugin *selection, QWidget *parent = 0);
+    explicit PluginEditor(ProjectProperties::Plugin *selection, QDir projectDir, QWidget *parent = 0);
     ~PluginEditor();
 
 private slots:
