@@ -21,6 +21,7 @@ fetchdoc:
 	#-wget -nv --recursive --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
 	#-wget -nv "http://docs.giderosmobile.com/docs.zip" -O _docs.zip
 	#unzip _docs.zip
+	mkdir -p $(RELEASE)
 	rm -rf $(RELEASE)/Documentation _docs.zip
 	#mv docs.giderosmobile.com $(RELEASE)/Documentation
 	#-wget -nv "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE)/Resources/gideros_annot.api

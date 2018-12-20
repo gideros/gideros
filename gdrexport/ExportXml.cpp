@@ -71,6 +71,8 @@ void ExportXml::SetupProperties(ExportContext *ctx)
 	ctx->props["sys.homeDir"] = QDir::homePath();
 	ctx->props["sys.exportDir"] = ctx->exportDir.absolutePath();
     ctx->props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
+    ctx->props["sys.projectDir"]=QFileInfo(ctx->projectFileName_).path();
+    ctx->props["sys.projectFile"]=ctx->projectFileName_;
 	//Fill properties: Project
 	ctx->props["project.name"] = ctx->base;
 	ctx->props["project.namews"] = ctx->basews;

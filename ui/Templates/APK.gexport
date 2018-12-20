@@ -18,11 +18,25 @@ local appName=Export.getProperty("project.app_name")
 appName=string.gsub(appName,"'","\\'")
 Export.setProperty("local.app_name",appName)
 
+
 require "lfs"
 local java=Export.getProperty("export.javaPath")
 if lfs.attributes(java,"mode")~="directory" then
 	if Export.getProperty("sys.exeExtension")==".exe" then
-		java="C:/Program Files/Android/Android Studio/jre"
+		local rPathData,rPathType = nil,nil
+		local function getPathAndroidStudio()
+			require "hkey"
+			local key = windows.hkey.HKEY_LOCAL_MACHINE:open("Software\\Android Studio",windows.hkey.KEY_READ|windows.hkey.KEY_WOW64_64KEY)
+			if key then
+				rPathData,rPathType = key:queryvalue("Path")
+				print("Registry:","AndroidPath:",rPathData)
+			end
+		end
+		if pcall(getPathAndroidStudio) and rPathData then
+			java = rPathData.."/jre"
+		else
+			java="C:/Program Files/Android/Android Studio/jre"
+		end
 	else
 		java="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/jre"
 	end
