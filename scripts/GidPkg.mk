@@ -63,7 +63,7 @@ bundle.mac.pkg:
 
 sync.mac.pkg: fetch.mac.pkg push.mac.pkg
 
-clean.pkg: clean
+clean.mac.pkg:
 	echo "\
 	cd $(MAC_PATH);\
 	git pull;\
@@ -71,10 +71,15 @@ clean.pkg: clean
 	exit;\
 	" |	ssh $(MAC_HOST)
 
+clean.all.thrun : clean.subthr clean.mac.pkg.subthr
+
+clean.all.pkg:	
+	$(MAKE) -j2 -f scripts/Makefile.gid clean.all.thrun
+	
 %.subthr:
 	$(MAKE) -j1 -f scripts/Makefile.gid $*
 	
-build.all.thrun : all.subthr build.mac.pkg.subthr fetchdoc
+build.all.thrun : all.subthr build.mac.pkg.subthr fetchdoc.subthr
 
 build.all.thr:
 	$(MAKE) -j3 -f scripts/Makefile.gid build.all.thrun

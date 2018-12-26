@@ -1,4 +1,5 @@
-TARGET=Ogg
+TARGET=Ogg$(FLAVOUR)
+FLAVOURS=F NT NE NTNE
 INCS= ../../../Sdk/include
 INCS += ../../../Sdk/include/gideros
 INCS += ../../../2dsg
@@ -15,11 +16,16 @@ XIPH_VORBIS=libvorbis-1.3.5
 SOGG_F=bitwise framing
 STHEORADEC_F=apiwrapper bitpack decapiwrapper decinfo decode dequant fragment huffdec idct th_info internal quant state
 SVORBIS_F=mdct block window synthesis info floor1 floor0 res0 mapping0 registry codebook sharedbook envelope psy bitrate lpc lsp smallft vorbisfile
-SVORBIS_F+=analysis vorbisenc
+SVORBIS_E+=analysis vorbisenc
 
 SXIPH+=$(addprefix $(XIPH_OGG)/src/,$(SOGG_F))
+ifeq ($(subst NT,,$(FLAVOUR)),$(FLAVOUR))
 SXIPH+=$(addprefix $(XIPH_THEORA)/lib/,$(STHEORADEC_F))
+endif
 SXIPH+=$(addprefix $(XIPH_VORBIS)/lib/,$(SVORBIS_F))
+ifeq ($(subst NE,,$(FLAVOUR)),$(FLAVOUR))
+SXIPH+=$(addprefix $(XIPH_VORBIS)/lib/,$(SVORBIS_E))
+endif
 
 INCS += $(XIPH_OGG)/include
 INCS += $(XIPH_THEORA)/include

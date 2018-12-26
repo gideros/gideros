@@ -21,7 +21,7 @@ LSUP_SRCS+=$(addprefix external/glu/libtess/,$(notdir $(basename $(wildcard ../e
 LSUP_SRCS+=$(addprefix external/minizip-1.1/source/,ioapi unzip)
 LGID_SRCS=$(addprefix libgid/src/,aes md5 platformutil utf8 drawinfo gtimer \
 	gimage gimage-png gimage-jpg gtexture gevent glog gglobal gaudio \
-	gaudio-loader-wav gaudio-loader-mp3 gaudio-loader-xmp \
+	gaudio-loader-wav \
 	gvfs-native)
 LGID_SRCS+=$(addprefix libgideros/,event eventdispatcher eventvisitor refptr stringid luautil pluginmanager binderutil)
 
@@ -52,7 +52,7 @@ LJPG_SRCS=$(addprefix libgid/external/jpeg-9/,$(JPEGFILES))
 LSUP_SRCS+=$(addprefix libgid/external/snappy-1.1.0/,snappy snappy-c snappy-sinksource snappy-stubs-internal)
 MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 index layer1 layer2 layer3 \
 	libmpg123 ntom optimize parse readers stringbuf synth synth_8bit synth_real synth_s32 tabinit
-LMP3_SRCS=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
+LMP3_SRCS=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES)) libgid/src/gaudio-loader-mp3
 CORE_SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
 	gui-js ggeolocation-js main jsnative netplayer)   
@@ -69,6 +69,7 @@ XMP_LOADERS_HDR=it loader mod s3m xm
 LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/,$(XMP_SRC))
 LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/loaders/,$(XMP_LOADERS))
 LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/lite/src/,format loaders/mod_load)
+LXMP_SRCS+=libgid/src/gaudio-loader-xmp 
 					
 
 
@@ -113,8 +114,10 @@ export POPTS
 #LINE BELOW FOR WASM
 EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256*1024*1024 'ALLOW_MEMORY_GROWTH=1 BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
 EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap"]'
-EOPTS+=MAIN_MODULE=1 EXPORT_ALL=1 
-#EOPTS+=ASSERTIONS=1
+#EOPTS+=EMCC_FORCE_STDLIBS
+#EOPTS+=EXPORT_ALL=1
+EOPTS+=MAIN_MODULE=1  
+EOPTS+=ASSERTIONS=1
 #EOPTS+=GL_STATE_CACHE=1
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
@@ -138,7 +141,12 @@ TEMPLATEWASM=$(BUILD)/Html5/Wasm
 PLUGINS=$(HTML5_PLUGINS)
 PLUGINS?=bitop luasocket json
 
-template: main plugins
+EP_Xmp_SRCS=$(LXMP_SRCS) emscripten/ep_xmp
+EP_Mp3_SRCS=$(LMP3_SRCS) emscripten/ep_mp3
+EP_LIBS=EP_Xmp EP_Mp3
+export HTML5_ROOT=$(PWD)
+
+template: main
 
 template.zip: template
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
@@ -155,7 +163,7 @@ plugins.clean:
 %.plugin.clean:
 	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE) clean; cd -
 
-SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT LXMP
+SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LFRT 
 SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .bc,$(SUBLIBS)))
 
 define SUB_template
@@ -180,7 +188,25 @@ $(foreach sub,$(SUBLIBS),$(eval $(call SUB_template,$(sub))))
 
 SUBLIBS_OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SUBLIBS_SRCS)))
 
-export EMCC_FORCE_STDLIBS=1
+define EP_template
+$$(BUILD)/$(1).js: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
+	@echo "EMLINK JS" $(TARGET)
+	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=0 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
+	
+$$(BUILD)/$(1).wasm: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
+	@echo "EMLINK WASM" $(TARGET)
+	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
+SUBLIBS_SRCS+=$$($(1)_SRCS)
+endef
+
+$(foreach sub,$(EP_LIBS),$(eval $(call EP_template,$(sub))))
+
+EMPTY :=
+SPACE := $(EMPTY) $(EMPTY)
+COMMA :=,
+
+EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(sort $(shell grep -v "invoke_" $(BUILD)/syms.lst)))]
+
 $(BUILD)/lib%.a:
 	@echo "EMAR" $@
 	@$(EMAR) r $@ $^
@@ -188,16 +214,16 @@ $(BUILD)/lib%.a:
 $(BUILD)/lib%.bc:
 	@echo "EMLD" $@
 	@$(EMCC) -o $@ $^
-			
-$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
+				
+$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo "EMLINK gideros JS"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
-$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
+$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo "EMLINK gideros WASM"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
-main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html
+main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS)) $(addsuffix .js,$(EP_LIBS)))
 	cp gideros.png $(TEMPLATECOM)
 	cp gideros.css $(TEMPLATECOM)
 	cp $(BUILD)/gideros.html $(TEMPLATEJASM)/index.html
@@ -210,6 +236,8 @@ main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html
 	cp $(BUILD)/gideros-wasm.js $(TEMPLATEWASM) 
 	cp $(BUILD)/gideros-wasm.html $(TEMPLATEWASM)/index.html
 	-cp $(BUILD)/gideros-wasm.html.symbols $(TEMPLATEWASM)
+	cp $(BUILD)/EP_*.js $(TEMPLATEJASM)
+	cp $(BUILD)/EP_*.wasm $(TEMPLATEWASM)
 	cp jzptool.js $(TEMPLATECOM)
 	cp lzma.js $(TEMPLATECOM)
 	#$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
@@ -219,6 +247,7 @@ main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html
 path:
 	mkdir -p $(sort $(dir $(SUBLIBS_OBJS)))
 	mkdir -p $(TEMPLATECOM) $(TEMPLATEJASM) $(TEMPLATEWASM)
+	rm $(BUILD)/syms.lst; touch $(BUILD)/syms.lst 
 
 clean:
 	rm -rf $(BUILD)

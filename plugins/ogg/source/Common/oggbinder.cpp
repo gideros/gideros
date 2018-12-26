@@ -29,26 +29,31 @@ struct GGOggHandle {
 	ogg_page og;
 	ogg_stream_state vo;
 	ogg_stream_state to;
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	th_info ti;
 	th_comment tc;
 	th_dec_ctx *td;
 	th_setup_info *ts;
+#endif
 	vorbis_info vi;
 	vorbis_dsp_state vd;
 	vorbis_block vb;
 	vorbis_comment vc;
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	th_pixel_fmt px_fmt;
 	int pp_level_max;
 	int pp_level;
 	int pp_inc;
+#endif
 	ogg_int64_t audio_granulepos;
 	ogg_int64_t video_granulepos;
 
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	TextureBase *yplane;
 	TextureBase *uplane;
 	TextureBase *vplane;
 	int planeWidth, planeHeight;
-
+#endif
 	int theora_p;
 	int vorbis_p;
 	int stateflag;
@@ -140,12 +145,14 @@ static int sampleTell(GGOggHandle *handle,ogg_int64_t *agr,double *atm,ogg_int64
 			if (agr) *agr=granulepos;
 			if (atm) *atm=gt;
 		}
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 		if (handle->theora_p && (psn == handle->to.serialno))
 		{
 			gt = th_granule_time(&handle->td, granulepos);
 			if (vgr) *vgr=granulepos;
 			if (vtm) *vtm=gt;
 		}
+#endif
 		if (gt > gp)
 			gp = gt;
 		bufr += 27;
@@ -175,10 +182,12 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	vorbis_info_init(&handle->vi);
 	vorbis_comment_init(&handle->vc);
 
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	/* init supporting Theora structures needed in header parsing */
 	th_comment_init(&handle->tc);
 	th_info_init(&handle->ti);
     handle->ts=NULL;
+#endif
 
 	g_id gid = (g_id) handle;
 	ctxmap[gid] = handle;
@@ -205,6 +214,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 			ogg_stream_pagein(&test, &handle->og);
 			ogg_stream_packetout(&test, &handle->op);
 
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 			/* identify the codec: try theora */
 			if (!handle->theora_p
 					&& th_decode_headerin(&handle->ti, &handle->tc, &handle->ts,
@@ -212,7 +222,9 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 				/* it is theora */
 				memcpy(&handle->to, &test, sizeof(test));
 				handle->theora_p = 1;
-			} else if (!handle->vorbis_p
+			} else
+#endif
+				if (!handle->vorbis_p
 					&& vorbis_synthesis_headerin(&handle->vi, &handle->vc,
 							&handle->op) >= 0) {
 				/* it is vorbis */
@@ -231,6 +243,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 			|| (handle->vorbis_p && handle->vorbis_p < 3)) {
 		int ret;
 
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 		/* look for further theora headers */
 		while (handle->theora_p && (handle->theora_p < 3) && (ret =
 				ogg_stream_packetout(&handle->to, &handle->op))) {
@@ -253,7 +266,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
             }
 			handle->theora_p++;
 		}
-
+#endif
 		/* look for more vorbis header packets */
 		while (handle->vorbis_p && (handle->vorbis_p < 3) && (ret =
 				ogg_stream_packetout(&handle->vo, &handle->op))) {
@@ -295,6 +308,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	}
 
 	/* and now we have it all.  initialize decoders */
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	if (handle->theora_p) {
 		handle->td = th_decode_alloc(&handle->ti, handle->ts);
         glog_i("Ogg logical stream %lx is Theora %dx%d %.02f fps",
@@ -343,8 +357,8 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 		th_comment_clear(&handle->tc);
 		handle->theora_p = 0;
 	}
-
 	th_setup_free(handle->ts);
+#endif
 
 	if (handle->vorbis_p) {
 		vorbis_synthesis_init(&handle->vd, &handle->vi);
@@ -444,9 +458,10 @@ int gaudio_OggSeek(g_id gid, long int offset, int whence) {
 		vorbis_synthesis_restart(&handle->vd);
 	    ogg_stream_reset_serialno(&handle->vo,handle->vo.serialno);
 	}
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	if (handle->theora_p)
 	    ogg_stream_reset_serialno(&handle->to,handle->to.serialno);
-
+#endif
 	return cgp;
 }
 
@@ -520,6 +535,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 			}
 		}
 
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 		while (handle->theora_p && !handle->videobuf_ready) {
 			/* theora is one in, one out... */
 			if (ogg_stream_packetout(&handle->to, &handle->op) > 0) {
@@ -566,7 +582,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 			} else
 				break;
 		}
-
+#endif
     /*	if (!handle->videobuf_ready && !audiobuf_ready && g_feof(handle->file))
             break;*/
 
@@ -654,17 +670,20 @@ void gaudio_OggClose(g_id gid) {
 		vorbis_comment_clear(&handle->vc);
 		vorbis_info_clear(&handle->vi);
 	}
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	if (handle->theora_p) {
 		ogg_stream_clear(&handle->to);
 		th_decode_free(handle->td);
 		th_comment_clear(&handle->tc);
 		th_info_clear(&handle->ti);
 	}
+#endif
 	ogg_sync_clear(&handle->oy);
 	g_fclose(handle->file);
 	delete handle;
 }
 
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NT)
 //Encoder
 g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 		int sampleRate, int bitsPerSample, float quality) {
@@ -821,8 +840,12 @@ void gsoundencoder_OggClose(g_id id) {
 	vorbis_info_clear(&handle->vi);
 	fclose(handle->fos);
 }
-
+GGAudioEncoder audioEncOgg(gsoundencoder_OggCreate, gsoundencoder_OggClose,
+		gsoundencoder_OggWrite);
+#endif
 }
+
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 
 class Renderer: public Ticker {
 	void tick();
@@ -943,6 +966,7 @@ static int setVideoSurface(lua_State* L) {
 	return 0;
 }
 
+
 static int loader(lua_State* L) {
 	const luaL_Reg functionlist[] = { { "getVideoInfo", getVideoInfo }, {
 			"setVideoSurface", setVideoSurface }, { NULL, NULL }, };
@@ -952,15 +976,15 @@ static int loader(lua_State* L) {
 
 	return 1;
 }
+#endif
 
 GGAudioLoader audioOgg(gaudio_OggOpen, gaudio_OggClose, gaudio_OggRead,
 		gaudio_OggSeek, gaudio_OggTell);
-GGAudioEncoder audioEncOgg(gsoundencoder_OggCreate, gsoundencoder_OggClose,
-		gsoundencoder_OggWrite);
 
 static void g_initializePlugin(lua_State *L) {
 	::L = L;
 
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 
@@ -973,20 +997,25 @@ static void g_initializePlugin(lua_State *L) {
 	LuaApplication* application = static_cast<LuaApplication *>(luaL_getdata(L));
 	application->addTicker(&renderer);
 	lua_pop(L, 1);
+#endif
 
 	audioOgg.format = gaudio_OggFormat;
 	gaudio_registerType("ogg", audioOgg);
 	gaudio_registerType("oga", audioOgg);
 	gaudio_registerType("ogv", audioOgg);
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NT)
 	gaudio_registerEncoderType("ogg", audioEncOgg);
 	gaudio_registerEncoderType("oga", audioEncOgg);
+#endif
 }
 
 static void g_deinitializePlugin(lua_State *L) {
+#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	lua_getglobal(L, "application");
 	LuaApplication* application = static_cast<LuaApplication *>(luaL_getdata(L));
 	application->removeTicker(&renderer);
 	lua_pop(L, 1);
+#endif
 
 	gaudio_unregisterType("ogg");
 	gaudio_unregisterType("oga");

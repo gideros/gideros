@@ -147,13 +147,19 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         if (!ctx->player)
         	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp\"").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
+		QString ext;
+		if (ctx->properties.html5_wasm)
+			ext="wasm";
+		else
+			ext="js";
         if (ctx->properties.html5_pack) {
-			QString pext;
+    		QString pext;
 #if 0
 			pext="lzma";
 #else
 			pext="gidz";
 #endif
+			ext=ext+"."+pext;
 			if (ctx->properties.html5_wasm)
 	        	replaceList1 << qMakePair(QString("src=\"gideros-wasm.js\">").toUtf8(),QString(">\nJPZLoad('gideros-wasm.wasm.%1',function(c) { Module.wasmBinary=c; JPZLoad('gideros-wasm.js.%1',eval); },\"array\");").arg(pext).toUtf8());
 			else {
@@ -161,6 +167,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 				replaceList1 << qMakePair(QString("new XMLHttpRequest()").toUtf8(),QString("new Module.XMLHttpRequest()").toUtf8());
 			}
         }
+		replaceList1 << qMakePair(QString("/*GIDEROS_DYNLIB_PLUGIN*/").toUtf8(),QString("\"EP_Mp3.%1\", \"EP_Xmp.%1\", /*GIDEROS_DYNLIB_PLUGIN*/").arg(ext).toUtf8());
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-END").toUtf8(),QString("<!-- GIDEROS-FBINSTANT-END").toUtf8());
@@ -396,16 +403,26 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 #endif
 			QDir old = QDir::current();
 			QDir::setCurrent(ctx->outputDir.path());
+			QStringList EP;
+			EP << "EP_Mp3" << "EP_Xmp";
 			if (ctx->properties.html5_wasm)
 			{
 				QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.js gideros-wasm.js."+pext);
 				QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.wasm gideros-wasm.wasm."+pext);
 			    ctx->outputDir.remove("gideros-wasm.js");
 			    ctx->outputDir.remove("gideros-wasm.wasm");
+			    foreach(const QString &ep,EP) {
+					QProcess::execute(quote(pack) + " -nostrip -i "+ep+".wasm "+ep+".wasm."+pext);
+				    ctx->outputDir.remove(ep+".wasm");
+			    }
 			}
 			else {
-			QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.js gideros.js."+pext);
-			QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.asm.js gideros.asm.js."+pext);
+				QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.js gideros.js."+pext);
+				QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.asm.js gideros.asm.js."+pext);
+			    foreach(const QString &ep,EP) {
+					QProcess::execute(quote(pack) + " -nostrip -i "+ep+".js "+ep+".js."+pext);
+				    ctx->outputDir.remove(ep+".js");
+			    }
 			}
 			QDir::setCurrent(old.path());
 		    ctx->outputDir.remove("lzma.js");

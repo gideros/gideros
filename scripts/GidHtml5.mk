@@ -40,7 +40,7 @@ html5.player: html5.libs
 	cp -r emscripten/Build/Html5/Jasm/* $(RELEASE)/Players/Html5
 	for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/*.js $(RELEASE)/Players/Html5; done
 	-for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/*.wasm $(RELEASE)/Players/Html5; done
-	sed -e 's/\/\*GIDEROS_DYNLIB_PLUGIN\*\//"luasocket.js", "json.js", "bit.js", "lfs.js", "lsqlite3.js", /' emscripten/Build/Html5/Jasm/index.html >$(RELEASE)/Players/Html5/index.html
+	sed -e 's/\/\*GIDEROS_DYNLIB_PLUGIN\*\//"EP_Xmp.js", "EP_mp3.js", "luasocket.js", "json.js", "bit.js", "lfs.js", "lsqlite3.js", /' emscripten/Build/Html5/Jasm/index.html >$(RELEASE)/Players/Html5/index.html
 
 html5.install: html5.template html5.player
 

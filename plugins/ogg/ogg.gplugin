@@ -1,7 +1,9 @@
 <plugin
  name="Ogg"
  description="Add support for Ogg Audio and Theora video">
-  <target name="AndroidStudio,APK">
+<property name="oggNT" type="boolean" title="Disable Theora support"/>
+<property name="oggNE" type="boolean" title="Disable encoding/recording support"/>
+   <target name="AndroidStudio,APK">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
@@ -37,7 +39,17 @@ iOSProject.commit()
     </template>
  </target>
  <target name="Html5">
- 	<lua>require("Tools/export_html5").export("Ogg")</lua>
+ 	<lua>
+ 	local f
+ 	if Export.isSet("plugin.oggNT") then
+ 		f=(f or "").."NT"
+ 	end
+ 	if Export.isSet("plugin.oggNE") then
+ 		f=(f or "").."NE"
+ 	end
+ 	f=f or "F"
+ 	require("Tools/export_html5").export("Ogg",f)
+ 	</lua>
  </target>
  <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>

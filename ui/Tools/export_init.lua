@@ -26,10 +26,27 @@ function Export._finish()
   for _,f in ipairs(Export._finishList) do f() end
 end
 
+-- Utilities
+function Export.isSet(var)
+  return (tonumber(Export.getProperty(var)) or 0)>0
+end
+
 --A few useful XML wrappers
 function Export.mkdir(path)
   Export.callXml("<mkdir>"..path.."</mkdir>")
 end
+function Export.copy(src,dst)
+  Export.callXml(([[<cp src="%s" dst="%s"/>]]):format(src,dst))
+end
+function Export.move(src,dst)
+  Export.callXml(([[<mv src="%s" dst="%s"/>]]):format(src,dst))
+end
+function Export.remove(src)
+  Export.callXml(([[<rm>%s</rm>]]):format(src))
+end
+
+      
+
 
 function Export.recursiveCopy(t_name,source,dest,includes,excludes)
   if dest then dest=" dest=\""..dest.."\"" else dest="" end
