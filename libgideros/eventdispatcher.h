@@ -10,6 +10,8 @@
 #include <algorithm>
 #include "gideros_p.h"
 
+//#define GID_CHECK_TYPES
+
 class EventDispatcher;
 
 class SlotBase
@@ -17,8 +19,10 @@ class SlotBase
 public:
 	virtual ~SlotBase() {}
 	virtual void call(Event* event) = 0;
+#ifdef GID_CHECK_TYPES
 	virtual const std::type_info& t1() const = 0;
 	virtual const std::type_info& t2() const = 0;
+#endif
 	virtual EventDispatcher* object() const = 0;
 };
 
@@ -49,12 +53,16 @@ public:
 
 	bool equals(const SlotBase* base)
 	{
+#ifdef GID_CHECK_TYPES
 		if (t1() == base->t1() && t2() == base->t2())
+#endif
 			return *this == *static_cast<const Slot*>(base);
-
+#ifdef GID_CHECK_TYPES
 		return false;
+#endif
 	}
 
+#ifdef GID_CHECK_TYPES
 	const std::type_info& t1() const
 	{
 		return typeid(T1);
@@ -64,7 +72,7 @@ public:
 	{
 		return typeid(T2);
 	}
-
+#endif
 private:
 	T1* obj_;
 	void (T1::*slot_)(T2*);

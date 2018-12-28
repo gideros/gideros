@@ -13,6 +13,7 @@
 #include <ginput-js.h>
 #include <gplugin.h>
 #include <dlfcn.h>
+#include <math.h>
 static ApplicationManager *s_applicationManager = NULL;
 
 #ifdef EGL
@@ -262,8 +263,21 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 extern "C" EMSCRIPTEN_KEEPALIVE int main_registerPlugin(const char *pname);
 extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_JSNative(lua_State* L, int type);
 
+extern "C" EMSCRIPTEN_KEEPALIVE long _keep();
+
+
 extern const char *codeKey_;
 const char *currentUrl=NULL;
+//Pull in these for plugins
+extern "C" {
+EMSCRIPTEN_KEEPALIVE double llvm_exp2_f64(double);
+EMSCRIPTEN_KEEPALIVE double llvm_round_f64(double);
+EMSCRIPTEN_KEEPALIVE double llvm_rint_f64(double);
+EMSCRIPTEN_KEEPALIVE double llvm_exp2_f32(double);
+EMSCRIPTEN_KEEPALIVE double llvm_round_f32(double);
+EMSCRIPTEN_KEEPALIVE double llvm_rint_f32(double);
+}
+
 int main() {
   EM_ASM(Module.setStatus("Initializing"));
   try {
@@ -295,6 +309,8 @@ char *url=(char *) EM_ASM_INT_V({
  if (!allowed)
  {
   printf("Sorry: location %s not allowed\n",url);
+  printf("%f",llvm_round_f64(llvm_rint_f64(llvm_exp2_f64(12.0))));
+  printf("%f",llvm_round_f32(llvm_rint_f32(llvm_exp2_f32(12.0))));
   return -1;
  }
   url=strstr(url,"://")+2;
@@ -346,6 +362,7 @@ char *url=(char *) EM_ASM_INT_V({
   catch(...)
   {
       errorAbort("Generic error");
+//      _keep();
   }
 }
 
