@@ -302,7 +302,7 @@ char *url=(char *) EM_ASM_INT_V({
   if (lurl) *lurl=0;
   lurl=url+strlen(url)-1;
   if ((*lurl)=='/') *lurl=0;
-  
+
   //PLUGINS Init
   g_registerPlugin(g_pluginMain_JSNative);
   EM_ASM(Module.registerPlugins());

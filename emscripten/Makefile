@@ -117,7 +117,7 @@ EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency"
 #EOPTS+=EMCC_FORCE_STDLIBS
 #EOPTS+=EXPORT_ALL=1
 EOPTS+=MAIN_MODULE=1  
-EOPTS+=ASSERTIONS=1
+#EOPTS+=ASSERTIONS=1
 #EOPTS+=GL_STATE_CACHE=1
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
@@ -194,6 +194,9 @@ $$(BUILD)/$(1).js: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
 	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=0 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
 	
 $$(BUILD)/$(1).wasm: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
+	@echo "SYMGEN" $(TARGET)
+	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -g -o $$@
+	@grep 'import "env"' $(BUILD)/$(1).wast | grep '(func'| cut -d' ' -f4 >$(BUILD)/$(1).syms
 	@echo "EMLINK WASM" $(TARGET)
 	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
 SUBLIBS_SRCS+=$$($(1)_SRCS)
@@ -205,7 +208,7 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
 
-EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(sort $(shell grep -v "invoke_" $(BUILD)/syms.lst)))]
+EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(sort $(shell grep -vh "invoke_" $(BUILD)/*.syms | sed -e 's/g\$$//')))]
 
 $(BUILD)/lib%.a:
 	@echo "EMAR" $@
@@ -247,7 +250,6 @@ main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)
 path:
 	mkdir -p $(sort $(dir $(SUBLIBS_OBJS)))
 	mkdir -p $(TEMPLATECOM) $(TEMPLATEJASM) $(TEMPLATEWASM)
-	rm $(BUILD)/syms.lst; touch $(BUILD)/syms.lst 
 
 clean:
 	rm -rf $(BUILD)
@@ -259,7 +261,7 @@ init:
 	$(EMSDK_PREFIX) emcc
 
 $(BUILD)/%.em.o: ../%.cpp
-	@echo "EMCC $<"
+	@echo "EMC+ $<"
 	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
 
 $(BUILD)/%.em.o: ../%.c

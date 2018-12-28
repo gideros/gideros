@@ -121,7 +121,7 @@ LFStatus::LFStatus(const LFStatus& status)
     if (status.errorString_ == NULL)
         errorString_ = NULL;
 	else
-		errorString_ = new std::string(*status.errorString_);
+		errorString_ = new std::string((*status.errorString_).c_str());
 }
 
 LFStatus::~LFStatus()
