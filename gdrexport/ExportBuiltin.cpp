@@ -461,7 +461,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    if (ctx->deviceFamily == e_Html5)
    {
 	   qint64 initsize=0;
-	   QFileInfoList files=ctx->outputDir.entryInfoList(QStringList() << "*.js" << "*.js.png" << "*.mem" << "*.GApp" << "*.mem.png");
+	   QFileInfoList files=ctx->outputDir.entryInfoList(QStringList() << "*.js" << "*.js.png" << "*.mem" << "*.GApp" << "*.mem.png" << "*.gidz");
 	   for( int i=0; i<files.count(); ++i )
 		   initsize+=files[i].size();
 

@@ -5,9 +5,10 @@
 #include <string>
 #include <gapplication.h>
 #include <emscripten.h>
-#include <emscripten/val.h>
 
-using namespace emscripten;
+#include "cJSON.h"
+extern "C" cJSON *JSCall(const char *mtd, cJSON *args);
+extern "C" void JSCallV(const char *mtd, cJSON *args);
 
 /*
 static const char * const Base64keyStr =
@@ -56,7 +57,6 @@ static int Base64EncodeToBuffer(const void *data, int size, char *buffer, int ma
  return osz;
 }*/                                            
 
-
 static std::string FileToString(const char * file)
 {
  G_FILE *f=g_fopen(file,"rb");
@@ -81,72 +81,78 @@ public:
     GGFacebook()
     {
 		gid_ = g_NextId();
-	    val gfb = val::global("GiderosFB");
-	    gfb.call<void>("Init");
+		JSCallV("GiderosFB.Init",NULL);
         gapplication_addCallback(openUrl_s, this);
     }
     
     ~GGFacebook()
     {
         gapplication_removeCallback(openUrl_s, this);
-	    val gfb = val::global("GiderosFB");
-	    gfb.call<void>("Deinit");
+		JSCallV("GiderosFB.Deinit",NULL);
 		gevent_RemoveEventsWithGid(gid_);
     }
 	
     void login(const char *appId, const char * const *permissions)
     {
-	    val gfb = val::global("GiderosFB");
-	    val perms=val::array();
-	    int n=0;
-	    if (permissions)
-	     while (*permissions)
-	     {
-	      perms.set(n++,val(*permissions));
-	      permissions++;
-	     }
-	    gfb.call<void>("Login",val(appId),perms);
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(appId));
+    	cJSON *perms=cJSON_CreateObject();
+    	cJSON_AddItemToArray(args,perms);
+        if (permissions)
+    	     while (*permissions)
+    	     {
+    	     	cJSON_AddItemToArray(perms,cJSON_CreateString(*permissions));
+    	     	permissions++;
+    	     }
+
+		JSCallV("GiderosFB.Login",args);
     }
     
     void logout()
     {
-	    val gfb = val::global("GiderosFB");
-	    gfb.call<void>("Logout");
+    	JSCallV("GiderosFB.Logout",NULL);
     }
     
     void upload(const char *path, const char *orig)
     {
-	    val gfb = val::global("GiderosFB");
-	    gfb.call<void>("Upload",val(path),val(orig));
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(path));
+    	cJSON_AddItemToArray(args,cJSON_CreateString(orig));
+		JSCallV("GiderosFB.Upload",args);
     }
     
     const char* getAccessToken(){
-	    val gfb = val::global("GiderosFB");
-        return gfb.call<std::string>("GetAccessToken").c_str();
+		cJSON *r=JSCall("GiderosFB.GetAccessToken",NULL);
+		accessToken_=cJSON_IsString(r)?r->string:"";
+		cJSON_Delete(r);
+    	return accessToken_.c_str();
     }
     
     time_t getExpirationDate(){
-	    val gfb = val::global("GiderosFB");
-        return gfb.call<int>("GetExpirationDate");
+    	time_t t;
+		cJSON *r=JSCall("GiderosFB.GetExpirationDate",NULL);
+		t=r->valueint;
+		cJSON_Delete(r);
+    	return t;
     }
     
     void dialog(const char *action, const gfacebook_Parameter *params)
     {
-	    val gfb = val::global("GiderosFB");
-	    val p=val::object();
-	    if (params)
-	     while (*params->key)
-	     {
-	      p.set(val(params->key),val(params->value));
-	      params++;
-	     }
-	    gfb.call<void>("Dialog",val(action),p);
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(action));
+    	cJSON *p=cJSON_CreateObject();
+    	cJSON_AddItemToArray(args,p);
+    	 if (params)
+    		     while (*params->key)
+    		     {
+    		     	cJSON_AddItemToObject(p,params->key,cJSON_CreateString(params->value));
+    		     	params++;
+    		     }
+		JSCallV("GiderosFB.Dialog",args);
     }
 
     void request(const char *graphPath, const gfacebook_Parameter *params, int httpMethod)
     {
-	    val gfb = val::global("GiderosFB");
-	    val p=val::object();
 	    const char *mtd="get";
 	    switch (httpMethod)
 	    {
@@ -154,23 +160,32 @@ public:
 	     case 2: mtd="delete"; break;
 	    }
 	    
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(graphPath));
+    	cJSON_AddItemToArray(args,cJSON_CreateString(mtd));
+    	cJSON *p=cJSON_CreateObject();
+    	cJSON_AddItemToArray(args,p);
+
 	    if (params)
-	     while (*params->key)
-	     {
-	      if (!strcmp(params->key,"path"))
-	      {
-	       val a=val::object();
-	       const char *ext=strchr(params->value,'.');
-	       a.set(val("name"),val("source"));
-	       a.set(val("type"),val(ext));
-	       a.set(val("data"),FileToString(params->value));
-	       p.set(val("source"),a);
+		     while (*params->key)
+		     {
+		      if (!strcmp(params->key,"path"))
+		      {
+		      	cJSON *a=cJSON_CreateObject();
+		       const char *ext=strchr(params->value,'.');
+		       std::string data=FileToString(params->value);
+		     	cJSON_AddStringToObject(a,"name","source");
+ 		     	cJSON_AddStringToObject(a,"type",ext);
+ 		     	cJSON_AddBinaryToObject(a,"data",data.c_str(),data.size());
+
+  		     	cJSON_AddItemToObject(p,"source",a);
               }
-	      else
-	       p.set(val(params->key),val(params->value));
-	      params++;
-	     }
-	    gfb.call<void>("Request",val(graphPath),val(mtd),p);
+		      else
+  		     	cJSON_AddItemToObject(p,params->key,cJSON_CreateString(params->value));
+		      params++;
+		     }
+
+		JSCallV("GiderosFB.Request",args);
     }
 	
     void onLoginComplete()

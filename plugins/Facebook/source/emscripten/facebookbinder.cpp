@@ -3,14 +3,8 @@
 #include <map>
 #include <string>
 #include <vector>
-
-#include <typeinfo> 
-#include <emscripten/bind.h>
-#include <emscripten/emscripten.h>
-using namespace emscripten;
-using namespace emscripten::internal;
-    
-
+#include "gtexture.h"
+#include "sprite.h"
 
 // some Lua helper functions
 #ifndef abs_index
@@ -59,11 +53,13 @@ static char keyWeak = ' ';
 
 static lua_State *L = NULL;
 
-class GFacebook : public GEventDispatcherProxy
+class GFacebook : public GReferenced
 {
 public:
+	GEventDispatcherProxy *edis;
     GFacebook()
     {
+    	edis=gtexture_get_spritefactory()->createEventDispatcher(this);
         gfacebook_init();
         gfacebook_addCallback(callback_s, this);
         
@@ -74,12 +70,13 @@ public:
     {
         gfacebook_removeCallback(callback_s, this);
         gfacebook_cleanup();
+		delete edis;
     }
     
     void login(const char* appId, const char * const *permissions)
     {
         gfacebook_login(appId, permissions);
-		appId_ = strdup(appId);
+		appId_ = appId;
     }
     
     void logout()
@@ -111,7 +108,7 @@ public:
     }
 	
 	const char* getAppId(){
-		return appId_;
+		return appId_.c_str();
 	}
     
 private:
@@ -230,7 +227,7 @@ private:
     
 private:
     bool initialized_;
-	const char* appId_;
+	std::string appId_;
 };
 
 static int destruct(lua_State* L)
@@ -629,7 +626,7 @@ static int loader(lua_State *L)
 	lua_pop(L, 1);
 	
     GFacebook *facebook = new GFacebook;
-	g_pushInstance(L, "Facebook", facebook->object());
+	g_pushInstance(L, "Facebook", facebook->edis->object());
     
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
 	lua_pushvalue(L, -2);
@@ -642,17 +639,10 @@ static int loader(lua_State *L)
     return 1;
 }
 
-static bool _initOnce=true;
 static void g_initializePlugin(lua_State *L)
 {
     ::L = L;
-    
-	if (_initOnce) {
-     _embind_register_std_string(TypeID<std::string>::get(), "std::string");
-     _embind_register_emval(TypeID<val>::get(), "emscripten::val");
-		_initOnce=false;
-	}
-    
+
     lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	

@@ -24,4 +24,14 @@
 
 #define G_API GIDEROS_API
 
+#if __EMSCRIPTEN__
+#ifdef GIDEROS_LIBRARY
+#define G_KEEP EMSCRIPTEN_KEEPALIVE
+#else
+#define G_KEEP
+#endif
+#else
+#define G_KEEP
+#endif
+
 #endif

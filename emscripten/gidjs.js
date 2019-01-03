@@ -33,7 +33,7 @@ Module.preRun
 					if (p.endsWith(".gidz")) {
 						if (Module['wasmBinary'])
 							loader=loader.then(function () { console.log("Loading plugin:"+p); return JZPLoadPromise(p,"array");})
-								.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,true); });
+								.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,{global: true, nodelete: true, loadAsync:true}); });
 						else
 							loader=loader.then(function () {console.log("Loading plugin:"+p); return JZPLoadPromise(p);})
 							.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary("local:"+c); });
@@ -58,7 +58,7 @@ Module.preRun
 							});
 						});
 						if (Module['wasmBinary'])
-							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,true); });
+							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,{global: true, nodelete: true, loadAsync:true}); });
 						else
 							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary("local:"+c); });
 					}
@@ -269,4 +269,8 @@ Module.GiderosPlayer_WriteFile = function(project, path, data) {
 			'number' ], [ project, path, data, len ]);
 	if (etype == 'number')
 		Module._free(dataPtr);
+}
+
+Module.JSCallJS = function(mtd,ja) {
+	return JSON.stringify(eval(mtd).apply(null,JSON.parse(ja)));
 }

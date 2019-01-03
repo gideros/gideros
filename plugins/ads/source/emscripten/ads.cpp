@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <glog.h>
 #include <emscripten.h>
-#include <emscripten/val.h>
 
-using namespace emscripten;
+#include "cJSON.h"
+extern "C" cJSON *JSCall(const char *mtd, cJSON *args);
+extern "C" void JSCallV(const char *mtd, cJSON *args);
 
 class GAds
 {
@@ -13,121 +14,157 @@ public:
 	{
 		gid_ = g_NextId();
 		
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("Init");
+		JSCallV("GiderosAds.Init",NULL);
 	}
 
 	~GAds()
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("Deinit");
+		JSCallV("GiderosAds.Deinit",NULL);
 		
 		gevent_RemoveEventsWithGid(gid_);
 	}
 	
 	void init(const char *ad)
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("Initialize",val(ad));
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+		JSCallV("GiderosAds.Inititialize",args);
 	}
 	
 	void destroy(const char *ad)
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("Destroy",val(ad));
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+		JSCallV("GiderosAds.Destroy",args);
 	}
 	
 	void setKey(const char *ad, gads_Parameter *params)
 	{
-	    val gfb = val::global("GiderosAds");
-	    val p=val::object();
-	    int i=0;
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+    	cJSON *perms=cJSON_CreateObject();
+    	cJSON_AddItemToArray(args,perms);
 	    while (params->value)
-	     {
-	      p.set(i++,val(params->value));
-	      params++;
-	     }
-	    gfb.call<void>("SetKey",val(ad),p);
+	    {
+	     	cJSON_AddItemToArray(perms,cJSON_CreateString(params->value));
+	     	params++;
+	    }
+
+		JSCallV("GiderosAds.SetKey",args);
 	}
 	
 	void loadAd(const char *ad, gads_Parameter *params)
 	{
-	    val gfb = val::global("GiderosAds");
-	    val p=val::object();
-	    int i=0;
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+    	cJSON *perms=cJSON_CreateObject();
+    	cJSON_AddItemToArray(args,perms);
 	    while (params->value)
-	     {
-	      p.set(i++,val(params->value));
-	      params++;
-	     }
-	    gfb.call<void>("LoadAd",val(ad),p);
+	    {
+	     	cJSON_AddItemToArray(perms,cJSON_CreateString(params->value));
+	     	params++;
+	    }
+
+		JSCallV("GiderosAds.LoadAd",args);
 	}
 	
 	void showAd(const char *ad, gads_Parameter *params)
 	{
-	    val gfb = val::global("GiderosAds");
-	    val p=val::object();
-	    int i=0;
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+    	cJSON *perms=cJSON_CreateObject();
+    	cJSON_AddItemToArray(args,perms);
 	    while (params->value)
-	     {
-	      p.set(i++,val(params->value));
-	      params++;
-	     }
-	    gfb.call<void>("ShowAd",val(ad),p);
+	    {
+	     	cJSON_AddItemToArray(perms,cJSON_CreateString(params->value));
+	     	params++;
+	    }
+
+		JSCallV("GiderosAds.ShowAd",args);
 	}
 	
 	void hideAd(const char *ad, const char *type)
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("HideAd",val(ad),val(type));
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+    	cJSON_AddItemToArray(args,cJSON_CreateString(type));
+		JSCallV("GiderosAds.HideAd",args);
 	}
 	
 	void enableTesting(const char *ad)
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("EnableTesting",val(ad));
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+		JSCallV("GiderosAds.Enabletesting",args);
 	}
 	
 	void setAlignment(const char *ad, const char *hor, const char *ver)
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("SetAlignment",val(ad),val(hor),val(ver));
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+    	cJSON_AddItemToArray(args,cJSON_CreateString(hor));
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ver));
+		JSCallV("GiderosAds.SetAlignment",args);
 	}
 	
 	void setX(const char *ad, int x)
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("SetX",val(ad),x);
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+    	cJSON_AddItemToArray(args,cJSON_CreateNumber(x));
+		JSCallV("GiderosAds.SetX",args);
 	}
 	
 	void setY(const char *ad, int y)
 	{
-	    val gfb = val::global("GiderosAds");
-	    gfb.call<void>("SetY",val(ad),y);
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+    	cJSON_AddItemToArray(args,cJSON_CreateNumber(y));
+		JSCallV("GiderosAds.SetY",args);
 	}
 	
 	int getX(const char *ad)
 	{
-	    val gfb = val::global("GiderosAds");
-	    return gfb.call<int>("GetX",val(ad));
+    	int v;
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+		cJSON *r=JSCall("GiderosAds.GetX",args);
+		v=r->valueint;
+		cJSON_Delete(r);
+		return v;
 	}
 	
 	int getY(const char *ad)
 	{
-	    val gfb = val::global("GiderosAds");
-	    return gfb.call<int>("GetY",val(ad));
+    	int v;
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+		cJSON *r=JSCall("GiderosAds.GetY",args);
+		v=r->valueint;
+		cJSON_Delete(r);
+		return v;
 	}
 	
 	int getWidth(const char *ad)
 	{
-	    val gfb = val::global("GiderosAds");
-	    return gfb.call<int>("GetWidth",val(ad));
+    	int v;
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+		cJSON *r=JSCall("GiderosAds.GetWidth",args);
+		v=r->valueint;
+		cJSON_Delete(r);
+		return v;
 	}
 	
 	int getHeight(const char *ad)
 	{
-	    val gfb = val::global("GiderosAds");
-	    return gfb.call<int>("GetHeight",val(ad));
+    	int v;
+    	cJSON *args=cJSON_CreateArray();
+    	cJSON_AddItemToArray(args,cJSON_CreateString(ad));
+		cJSON *r=JSCall("GiderosAds.GetHeight",args);
+		v=r->valueint;
+		cJSON_Delete(r);
+		return v;
 	}
 	
 	void onAdReceived(const char *ad, const char *type)

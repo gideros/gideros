@@ -1422,3 +1422,10 @@ SpriteProxy *SpriteProxyFactory::createProxy(Application* application,void *c,Sp
 	return new SpriteProxy(application,c,df,kf);
 }
 
+GEventDispatcherProxy *SpriteProxyFactory::createEventDispatcher(GReferenced *c)
+{
+	GEventDispatcherProxy *p=new GEventDispatcherProxy();
+	p->object()->setProxy(c);
+	return p;
+}
+

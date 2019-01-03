@@ -11,8 +11,8 @@ CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	$(OPTS) -DFLAVOUR_$(FLAVOUR)
-CFLGS+=-fno-exceptions #WASM side modules doesn't seem to support C++ exceptions
-
+CFLGS+=-fno-exceptions -fno-rtti #WASM side modules doesn't seem to support C++ exceptions, and RTTI doesn't work well with DCE
+CFLGS+=-DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
 	
 ifneq ($(FLAVOURS),)
 allflavours: $(addsuffix .flavour,$(FLAVOURS))
@@ -31,7 +31,7 @@ all: path $(OBJS)
 	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $(BUILD)/$(TARGET).wasm
 
 path:
-	mkdir -p  $(BUILD) $(sort $(dir $(OBJS)))
+	@mkdir -p  $(BUILD) $(sort $(dir $(OBJS)))
 
 clean:
 	rm -rf $(BUILD)* 

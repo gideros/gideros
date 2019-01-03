@@ -79,7 +79,7 @@ sdk.headers.dir:
 
 sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
 	mkdir -p $(SDK)/include/gideros
-	cp 2dsg/*.h luabinding/*.h libgid/include/*.h $(SDK)/include/gideros
+	cp 2dsg/*.h 2dsg/gfxbackends/*.h luabinding/*.h libgid/include/*.h libgideros/*.h emscripten/cJSON.h $(SDK)/include/gideros
 
 %.plugin.install:
 	@mkdir -p $(RELEASE)/All\ Plugins/$(notdir $*)

@@ -14,7 +14,11 @@
 #include <gplugin.h>
 #include <dlfcn.h>
 #include <math.h>
+#include <cJSON.h>
+//
 static ApplicationManager *s_applicationManager = NULL;
+
+extern void linkCode();
 
 #ifdef EGL
 EGLDisplay display;
@@ -268,15 +272,6 @@ extern "C" EMSCRIPTEN_KEEPALIVE long _keep();
 
 extern const char *codeKey_;
 const char *currentUrl=NULL;
-//Pull in these for plugins
-extern "C" {
-EMSCRIPTEN_KEEPALIVE double llvm_exp2_f64(double);
-EMSCRIPTEN_KEEPALIVE double llvm_round_f64(double);
-EMSCRIPTEN_KEEPALIVE double llvm_rint_f64(double);
-EMSCRIPTEN_KEEPALIVE double llvm_exp2_f32(double);
-EMSCRIPTEN_KEEPALIVE double llvm_round_f32(double);
-EMSCRIPTEN_KEEPALIVE double llvm_rint_f32(double);
-}
 
 int main() {
   EM_ASM(Module.setStatus("Initializing"));
@@ -309,8 +304,7 @@ char *url=(char *) EM_ASM_INT_V({
  if (!allowed)
  {
   printf("Sorry: location %s not allowed\n",url);
-  printf("%f",llvm_round_f64(llvm_rint_f64(llvm_exp2_f64(12.0))));
-  printf("%f",llvm_round_f32(llvm_rint_f32(llvm_exp2_f32(12.0))));
+  linkCode();
   return -1;
  }
   url=strstr(url,"://")+2;
@@ -429,4 +423,22 @@ extern "C" EMSCRIPTEN_KEEPALIVE void JSPlayer_writeFile(const char *project, con
 	fwrite(data,datasize, 1, fos);
 	fclose(fos);
 	glog_v("Wrote file '%s' (%d)\n",tmp,datasize);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE cJSON *JSCall(const char *mtd, cJSON *args)
+{
+	char *sArgs=args?cJSON_PrintUnformatted(args):strdup("null");
+	if (args) cJSON_Delete(args);
+	char *ret=(char *) EM_ASM_INT({
+	 return allocate(intArrayFromString(Module.JSCallJS(Pointer_stringify($0),Pointer_stringify($1))||'null'), 'i8', ALLOC_STACK);
+	},mtd,sArgs);
+	free(sArgs);
+
+	return cJSON_Parse(ret);
+}
+
+extern "C" EMSCRIPTEN_KEEPALIVE void JSCallV(const char *mtd, cJSON *args)
+{
+	cJSON *c=JSCall(mtd,args);
+	cJSON_Delete(c);
 }

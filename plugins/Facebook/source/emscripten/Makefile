@@ -1,11 +1,9 @@
 TARGET=Facebook
 SRCS=$(addprefix emscripten/,facebookbinder gfacebook)
-INCS=../../../Sdk/include
+INCS=$(addprefix ../../../Sdk/,include include/gideros)
 
 build: all
-	@mv $(BUILD)/Facebook.js $(BUILD)/Facebook2.js
-	@cat gfacebook.js $(BUILD)/Facebook2.js >$(BUILD)/Facebook.js
-	@rm $(BUILD)/Facebook2.js
+	@cp gfacebook.js $(BUILD)/FacebookBase.js
 
 include ../../../../emscripten/Plugin.mk
 

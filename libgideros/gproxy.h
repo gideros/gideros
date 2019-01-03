@@ -11,7 +11,6 @@ protected:
 	{
 		eBase,
 		eEventDispatcher,
-		eSprite,
 	};
 
 public:
@@ -30,15 +29,9 @@ protected:
 class GIDEROS_API GEventDispatcherProxy : public GProxy
 {
 public:
-	GEventDispatcherProxy(GType type = eEventDispatcher);
-	virtual ~GEventDispatcherProxy();
+	G_KEEP GEventDispatcherProxy(GType type = eEventDispatcher);
+	G_KEEP virtual ~GEventDispatcherProxy();
 };
 
-class GIDEROS_API GSpriteProxy : public GEventDispatcherProxy
-{
-public:
-	GSpriteProxy(GType type = eSprite);
-	virtual ~GSpriteProxy();
-};
 
 #endif

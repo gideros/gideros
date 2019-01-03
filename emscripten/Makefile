@@ -55,7 +55,7 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 LMP3_SRCS=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES)) libgid/src/gaudio-loader-mp3
 CORE_SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
-	gui-js ggeolocation-js main jsnative netplayer)   
+	gui-js ggeolocation-js main jsnative cJSON netplayer plugin_support)   
 
 LOCAL_CFLAGS+=-D_REENTRANT -DLIBXMP_CORE_PLAYER
 XMP_SRC=virtual period player read_event dataio lfo envelope \
@@ -104,12 +104,14 @@ ifneq ($(PROFILING),)
 POPTS+=--profiling
 endif
 
-OPTS+=-Os --bind $(POPTS)
-LOPTS=
+OPTS+=-Os $(POPTS)
+LOPTS=--llvm-opts "['-disable-inlining']"
 LOPTS_WASM=$(LOPTS)
 LOPTS_JS=$(LOPTS) --separate-asm
 
 export POPTS
+
+$(BUILD)/emscripten/plugin_support.em.o: CFLGS+=--llvm-opts "['-disable-inlining']" -fno-rtti -fno-exceptions 
 
 #LINE BELOW FOR WASM
 EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256*1024*1024 'ALLOW_MEMORY_GROWTH=1 BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
@@ -226,7 +228,6 @@ keep:
 	grep -vh "invoke_" emscripten/Build/*.syms | sort | uniq | sed -e 's/g\$$//;s/"//g;s/^/KEEP\(/;s/$$/)/' >>emscripten/_keep.c
 	echo "}" >>emscripten/_keep.c
 					
-#$(BUILD)/emscripten/main.em.o: CFLGS+=--llvm-opts "['-disable-inlining']"
 $(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo "EMLINK gideros JS"
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
@@ -234,6 +235,8 @@ $(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell
 $(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo "EMLINK gideros WASM"
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	#@echo "EMLINK gideros WAST"
+	#@EMCC_DEBUG=2 $(EMCC) $(OBJS) $(LIBS) -g $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
 main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS)) $(addsuffix .js,$(EP_LIBS)))
 	cp gideros.png $(TEMPLATECOM)
@@ -271,7 +274,7 @@ init:
 
 $(BUILD)/%.em.o: ../%.cpp
 	@echo "EMC+ $<"
-	$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
 
 $(BUILD)/%.em.o: ../%.c
 	@echo "EMCC $<"

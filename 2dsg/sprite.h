@@ -13,6 +13,7 @@
 #include <string>
 #include <map>
 #include "gridbaglayout.h"
+#include "gproxy.h"
 
 typedef Matrix4 CurrentTransform;
 typedef Matrix4 Matrix;
@@ -501,6 +502,7 @@ public:
 	SpriteProxyFactory() {};
 	virtual ~SpriteProxyFactory() { };
 	virtual SpriteProxy *createProxy(Application* application,void *c,SpriteProxyDraw df,SpriteProxyDestroy kf);
+	virtual GEventDispatcherProxy *createEventDispatcher(GReferenced *c);
 };
 
 #endif

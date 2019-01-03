@@ -320,17 +320,3 @@ GEventDispatcherProxy::GEventDispatcherProxy(GType type) : GProxy(type)
 GEventDispatcherProxy::~GEventDispatcherProxy()
 {
 }
-
-
-GSpriteProxy::GSpriteProxy(GType type) : GEventDispatcherProxy(type)
-{
-	if (type == eSprite)
-	{
-		// to be done
-	}
-}
-
-GSpriteProxy::~GSpriteProxy()
-{
-}
-

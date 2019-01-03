@@ -62,7 +62,11 @@ iOSProject.commit()
  </target>
  <target name="Html5">
 	<if condition="[[[not:[[[project.html5_fbinstant]]]]]]">
-	 	<lua>require("Tools/export_html5").export("Facebook")</lua>
+	 	<lua>
+	 	local h=require("Tools/export_html5")
+	 	h.export("Facebook")
+ 		h.exportJS("FacebookBase")
+	 	</lua>
     </if>
  </target>
 </plugin>

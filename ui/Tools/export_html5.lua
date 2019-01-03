@@ -43,12 +43,14 @@ end
 function Html5Project.exportJS(m)
   Export.callXml(([=[
    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5" include="%s.js"/>
+  ]=]):format(m))
+  Export.callXml(([=[
     <template name="Activity" path="">
         <replacelist wildcards="index.html">
             <append orig="/*GIDEROS_JS_PLUGIN*/" by="&quot;%s.js&quot;,"/>
         </replacelist>
     </template>
-  ]=]):format(m,m))
+  ]=]):format(m))
 end
 
 return Html5Project

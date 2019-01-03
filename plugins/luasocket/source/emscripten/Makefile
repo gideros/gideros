@@ -4,3 +4,4 @@ SRCS=auxiliar buffer except inet io luasocket \
 INCS=../../../Sdk/include
 
 include ../../../../emscripten/Plugin.mk
+CFLGS+=-DLUASOCKET_INET_ATON -DLUASOCKET_INET_PTON

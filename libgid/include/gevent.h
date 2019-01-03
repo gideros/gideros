@@ -104,14 +104,14 @@ G_API void gevent_RemoveCallbackWithGid(g_id gid);
 class G_API gevent_CallbackList
 {
 public:
-    gevent_CallbackList();
-    ~gevent_CallbackList();
+    G_KEEP gevent_CallbackList();
+    G_KEEP ~gevent_CallbackList();
 
-    g_id addCallback(gevent_Callback callback, void *udata);
-    void removeCallback(gevent_Callback callback, void *udata);
-    void removeCallbackWithGid(g_id gid);
+    G_KEEP g_id addCallback(gevent_Callback callback, void *udata);
+    G_KEEP void removeCallback(gevent_Callback callback, void *udata);
+    G_KEEP void removeCallbackWithGid(g_id gid);
 
-    void dispatchEvent(int type, void *event);
+    G_KEEP void dispatchEvent(int type, void *event);
 
 private:
     struct Callback

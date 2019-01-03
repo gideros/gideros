@@ -68,4 +68,3 @@ SRCS+= \
 	liquidfun/Box2D/Box2D/Rope/b2Rope
 
 include ../../../../emscripten/Plugin.mk
-liquidfun/%.em.o: CFLGS+=-fno-rtti 

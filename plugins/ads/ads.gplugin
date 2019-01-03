@@ -430,6 +430,7 @@ iOSProject.commit()
  		<lua>local h=require("Tools/export_html5")
  		h.export("Ads")
  		h.exportJS("AdsAdSense")
+ 		h.exportJS("AdsBase") --Set this last because it must be loaded first
  		</lua>
     </if>
  </target>
