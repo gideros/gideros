@@ -8,7 +8,6 @@
 class Application;
 class GraphicsBase;
 
-
 class FontBase : public GReferenced
 {
 public:
@@ -25,6 +24,7 @@ public:
 		eFont,
 		eTTFont,
         eTTBMFont,
+		eCompositeFont,
 	};
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) = 0;
@@ -42,8 +42,9 @@ public:
 		float sizeMult;
 	};
 
-#define TEXTSTYLEFLAG_COLOR	1
-	struct ChunkLayout {
+#define TEXTSTYLEFLAG_COLOR         1
+#define TEXTSTYLEFLAG_SKIPLAYOUT	2
+    struct ChunkLayout {
 		std::string text;
 		float x,y;
 		float w,h;
@@ -108,5 +109,37 @@ public:
     virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny, TextLayout &l) = 0;
 };
 
+class CompositeFont : public BMFontBase
+{
+public:
+	struct CompositeFontSpec {
+		BMFontBase *font;
+		float offsetX,offsetY;
+		float colorA,colorR,colorG,colorB;
+	};
+    CompositeFont(Application *application, std::vector<CompositeFontSpec> fonts);
+    virtual ~CompositeFont();
+
+    virtual Type getType() const
+    {
+        return eCompositeFont;
+    }
+
+    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l);
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
+    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1);
+    virtual float getAscender();
+    virtual float getDescender();
+    virtual float getLineHeight();
+protected:
+    std::vector<CompositeFontSpec> fonts_;
+    struct FontInfo
+    {
+        float height;
+        float ascender;
+        float descender;
+    } fontInfo_;
+};
 
 #endif

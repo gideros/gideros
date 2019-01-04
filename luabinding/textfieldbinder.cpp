@@ -79,6 +79,7 @@ int TextFieldBinder::create(lua_State* L)
     {
         case FontBase::eFont:
         case FontBase::eTTBMFont:
+        case FontBase::eCompositeFont:
             textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font), str2, str3, layout);
             break;
         case FontBase::eTTFont:

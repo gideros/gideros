@@ -18,4 +18,15 @@ private:
     static int getCharIndexAtOffset(lua_State *L);
 };
 
+class CompositeFontBinder
+{
+public:
+	CompositeFontBinder(lua_State* L);
+
+private:
+	static int create(lua_State* L);
+	static int destruct(lua_State* L);
+};
+
+
 #endif

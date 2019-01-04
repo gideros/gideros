@@ -331,3 +331,97 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 
 	return tl;
 }
+
+
+CompositeFont::CompositeFont(Application *application, std::vector<CompositeFontSpec> fonts) : BMFontBase(application)
+{
+	fonts_=fonts;
+	fontInfo_.ascender = 0;
+	fontInfo_.descender = 1000000;
+	fontInfo_.height = 0;
+	for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
+			it != fonts_.end(); it++) {
+		it->font->ref();
+		fontInfo_.ascender = std::max(fontInfo_.ascender,it->font->getAscender());
+		fontInfo_.descender = std::min(fontInfo_.descender,it->font->getDescender());
+		fontInfo_.height = std::max(fontInfo_.height,it->font->getLineHeight()-it->font->getAscender());
+	}
+	fontInfo_.height = fontInfo_.ascender + fontInfo_.height;
+}
+
+CompositeFont::~CompositeFont()
+{
+	for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
+			it != fonts_.end(); it++) {
+		it->font->unref();
+	}
+}
+
+void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l)
+{
+    l = layoutText(text, layout);
+    l.styleFlags|=TEXTSTYLEFLAG_SKIPLAYOUT;
+    for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
+			it != fonts_.end(); it++) {
+        it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l);
+	}
+}
+
+void CompositeFont::getBounds(const char *text, float letterSpacing, float *rminx, float *rminy, float *rmaxx, float *rmaxy)
+{
+	float minx = 1e30;
+	float miny = 1e30;
+	float maxx = -1e30;
+	float maxy = -1e30;
+	for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
+			it != fonts_.end(); it++) {
+		float pminx = 1e30;
+		float pminy = 1e30;
+		float pmaxx = -1e30;
+		float pmaxy = -1e30;
+		it->font->getBounds(text, letterSpacing, &pminx, &pminy, &pmaxx, &pmaxy);
+		pminx+=it->offsetX;
+		pmaxx+=it->offsetX;
+		pminy+=it->offsetY;
+		pmaxy+=it->offsetY;
+		minx = std::min(minx, pminx);
+		miny = std::min(miny, pminy);
+		maxx = std::max(maxx, pmaxx);
+		maxy = std::max(maxy, pmaxy);
+	}
+	if (rminx)
+		*rminx = minx;
+	if (rminy)
+		*rminy = miny;
+	if (rmaxx)
+		*rmaxx = maxx;
+	if (rmaxy)
+		*rmaxy = maxy;
+}
+
+float CompositeFont::getAdvanceX(const char *text, float letterSpacing, int size)
+{
+	if (fonts_.empty()) return 0;
+	return fonts_[0].font->getAdvanceX(text, letterSpacing, size);
+}
+
+float CompositeFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size)
+{
+    if (fonts_.empty()) return 0;
+    return fonts_[0].font->getCharIndexAtOffset(text, offset, letterSpacing, size);
+}
+
+float CompositeFont::getAscender()
+{
+	return fontInfo_.ascender;
+}
+
+float CompositeFont::getDescender()
+{
+	return fontInfo_.descender;
+}
+
+float CompositeFont::getLineHeight()
+{
+	return fontInfo_.height;
+}

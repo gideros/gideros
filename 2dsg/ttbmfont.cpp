@@ -569,16 +569,16 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
         TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l) {
 
 	if (strlen(text) == 0) {
-		vGraphicsBase->clear();
 		return;
 	}
 
-    l = layoutText(text, layout);
+    if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
+        l = layoutText(text, layout);
 
 	std::map<int, int> layerMap;
 	std::map<int, int> gfxMap;
 	std::map<int, int> gfxMap2;
-	int gfx = 0;
+    int gfx = vGraphicsBase->size();
 
 	for (size_t pn = 0; pn < l.parts.size(); pn++) {
 		ChunkLayout c = l.parts[pn];

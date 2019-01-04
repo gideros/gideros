@@ -1,5 +1,7 @@
 #include "fontbasebinder.h"
 #include <fontbase.h>
+#include "luaapplication.h"
+#include <luautil.h>
 
 FontBaseBinder::FontBaseBinder(lua_State *L)
 {
@@ -188,5 +190,89 @@ int FontBaseBinder::layoutText(lua_State *L)
     lua_setfield(L,-2,"parts");
 
     return 1;
+}
+
+CompositeFontBinder::CompositeFontBinder(lua_State* L)
+{
+	Binder binder(L);
+
+	static const luaL_Reg functionList[] = {
+		{NULL, NULL},
+	};
+
+	binder.createClass("CompositeFont", "FontBase", create, destruct, functionList);
+}
+
+int CompositeFontBinder::create(lua_State* L)
+{
+    LuaApplication *luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application *application = luaapplication->getApplication();
+
+    Binder binder(L);
+
+    CompositeFont *font;
+
+	std::vector<CompositeFont::CompositeFontSpec> fonts;
+	CompositeFont::CompositeFontSpec fspec;
+
+	luaL_checktype(L,1,LUA_TTABLE);
+	int ll=lua_objlen(L,1);
+	for (int i=1;i<=ll;i++)
+	{
+		lua_rawgeti(L,1,i);
+		luaL_checktype(L,-1,LUA_TTABLE);
+
+		lua_getfield(L,-1,"font");
+		fspec.font = static_cast<BMFontBase*>(binder.getInstance("FontBase", -1));
+		if (fspec.font->getType()==FontBase::eTTFont)
+		{
+			lua_pushstring(L,"TTFont with nil charset specification are unsupported");
+			lua_error(L);
+		}
+		lua_pop(L,1);
+
+		lua_getfield(L,-1,"x");
+		fspec.offsetX=luaL_optnumber(L,-1,0.0);
+		lua_pop(L,1);
+		lua_getfield(L,-1,"y");
+		fspec.offsetY=luaL_optnumber(L,-1,0.0);
+		lua_pop(L,1);
+		lua_getfield(L,-1,"color");
+		int color=luaL_optinteger(L,-1,-1);
+		if (color>=0) {
+			int r = (color >> 16) & 0xff;
+			int g = (color >> 8) & 0xff;
+			int b = color & 0xff;
+			fspec.colorA=255;
+			fspec.colorR=r / 255.f;
+			fspec.colorG=g / 255.f;
+			fspec.colorB=b / 255.f;
+		}
+		else {
+			fspec.colorA=-1;
+			fspec.colorR=-1;
+			fspec.colorG=-1;
+			fspec.colorB=-1;
+		}
+		lua_pop(L,1);
+
+		fonts.push_back(fspec);
+		lua_pop(L,1);
+	}
+
+	font = new CompositeFont(application, fonts);
+
+    binder.pushInstance("CompositeFont", font);
+	return 1;
+}
+
+
+int CompositeFontBinder::destruct(lua_State* L)
+{
+	void* ptr = *(void**)lua_touserdata(L, 1);
+    FontBase *font = static_cast<FontBase*>(ptr);
+    font->unref();
+
+	return 0;
 }
 

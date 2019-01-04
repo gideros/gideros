@@ -144,14 +144,15 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
     size_t size = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 
 	if (size == 0) {
-		vGraphicsBase->clear();
 		return;
 	}
 
-    l = layoutText(text, layout);
+    if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
+        l = layoutText(text, layout);
 
-	vGraphicsBase->resize(1);
-	GraphicsBase *graphicsBase = &((*vGraphicsBase)[0]);
+    int gfx = vGraphicsBase->size();
+    vGraphicsBase->resize(gfx+1);
+    GraphicsBase *graphicsBase = &((*vGraphicsBase)[gfx]);
 
 	graphicsBase->data = data_;
 	if (fontInfo_.isSetTextColorAvailable)

@@ -157,9 +157,8 @@ const char* TextField::sample() const
 void TextField::createGraphics()
 {
 	scaleChanged(); //Mark current scale as graphics scale
-    if (font_ == NULL)
-        graphicsBase_.clear();
-    else
+    graphicsBase_.clear();
+    if (font_ != NULL)
     {
         FontBase::TextLayout l;
         font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, &layout_, !sample_.empty(), sminx, sminy, l);

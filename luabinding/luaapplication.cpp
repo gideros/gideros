@@ -347,6 +347,7 @@ static int bindAll(lua_State* L)
 	StageBinder stageBinder(L, application);
 	FontBaseBinder fontBaseBinder(L);
 	FontBinder fontBinder(L);
+	CompositeFontBinder compositeFontBinder(L);
 	TTFontBinder ttfontBinder(L);
 	TextFieldBinder textFieldBinder(L);
 #if TARGET_OS_TV == 0
