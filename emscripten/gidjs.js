@@ -143,12 +143,15 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	var http = new XMLHttpRequest();
 	http.open(_request, _url, true);
 	http.responseType = 'arraybuffer';
-	for ( var index in rhdr) {
-		if (rhdr.hasOwnProperty(index)) {
-			var attr = rhdr[index];
-			http.setRequestHeader(index, attr);
-		}
-	}
+	
+    while (rhdr) {    	
+    	var rk=Module.getValue(rhdr,'*');
+    	if (!rk) break;
+    	rhdr+=4; //Assuming 32bit
+    	var rv=Module.getValue(rhdr,'*');
+    	rhdr+=4; //Assuming 32bit
+		http.setRequestHeader(Module.UTF8ToString(rk), Module.UTF8ToString(rv));
+    }
 	var handle = Browser.getNextWgetRequestHandle();
 
 	// LOAD

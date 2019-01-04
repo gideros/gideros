@@ -1,7 +1,8 @@
 #include <ghttp.h>
 #include <stdio.h>
-#include <emscripten/val.h>
 #include <map>
+#include <string>
+#include "emscripten.h"
 
 struct GHttpContext
 {
@@ -19,7 +20,6 @@ struct GHttpContext
 };
 
 static std::map<g_id, GHttpContext> map_;
-using namespace emscripten;
 
 extern "C" {
 
@@ -100,7 +100,7 @@ void ghttp_onprogress(int xh,int arg,int pg,int tot)
 		event->bytesLoaded = pg;
 		event->bytesTotal = tot;
             
-                gevent_EnqueueEvent(ctx.id, ctx.callback, GHTTP_PROGRESS_EVENT, event, 1, ctx.udata);
+        gevent_EnqueueEvent(ctx.id, ctx.callback, GHTTP_PROGRESS_EVENT, event, 1, ctx.udata);
 	}	
 }
 
@@ -113,7 +113,7 @@ void ghttp_onerror(int xh,int arg,int sts,const char *text)
 		struct GHttpContext ctx=it->second;
 		ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
         
-                gevent_EnqueueEvent(ctx.id, ctx.callback, GHTTP_ERROR_EVENT, event, 1, ctx.udata);
+        gevent_EnqueueEvent(ctx.id, ctx.callback, GHTTP_ERROR_EVENT, event, 1, ctx.udata);
 		map_.erase(it);
 	}	
 }
@@ -136,15 +136,9 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
     ctx.xhrId=0;
     map_[ctx.id] = ctx;
     
-    val module = val::global("Module");
-    val hdrs=val::object();
-    if (header)
-     while (header->name)
-     {
-      hdrs.set(header->name,val(header->value));
-      header++;
-     }
-    ctx.xhrId=module.call<int>("ghttpjs_urlload",val(url),val("GET"),hdrs,val(""),val(ctx.id),val(true), (int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress);
+    ctx.xhrId=EM_ASM_INT({
+    	return Module.ghttpjs_urlload($0,'GET',$1,null,$2,true,$3,$4,$5);
+    },url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress);
     //printf("GET:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
     return ctx.id;
@@ -159,18 +153,9 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
     ctx.xhrId=0;
     map_[ctx.id] = ctx;
 
-    val module = val::global("Module");
-    val hdrs=val::object();
-    if (header)
-     while (header->name)
-     {
-      hdrs.set(header->name,val(header->value));
-      header++;
-     }
-    //std::string vdata((const char *)data,size);
-    ctx.xhrId=module.call<int>("ghttpjs_urlload",val(url),val("POST"),hdrs,
-     emscripten::memory_view<uint8_t>(size,(const uint8_t *)data),
-     val(ctx.id),val(true), (int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress);
+    ctx.xhrId=EM_ASM_INT({
+    	return Module.ghttpjs_urlload($0,'POST',$1,Module.HEAPU8.subarray($6,$6+$7),$2,true,$3,$4,$5);
+    },url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,data,size);
     //printf("POST:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
     return ctx.id;

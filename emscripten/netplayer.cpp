@@ -1,17 +1,15 @@
 #include "netplayer.h"
 #include <time.h>
-#include <emscripten/val.h>
 #include <stdlib.h>
-
-using namespace emscripten;
 
 static int dataSent=0,dataReceived=0;
 static bool srvOn=false;
 
 static void wsSend(const char *data,int size)
 {
-    val module = val::global("Module");
-	module.call<void>("gnetplayerSend",emscripten::memory_view<uint8_t>(size,(const uint8_t *)data));
+	EM_ASM_({
+		Module['gnetplayerSend'](Module.HEAPU8.subarray($0,$0+$1));
+	},data,size);
 }
 
 extern "C" void serverStop()

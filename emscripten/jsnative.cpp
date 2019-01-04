@@ -7,6 +7,8 @@
 #include <stdlib.h>
 static lua_State* luaState = NULL;
 
+extern "C" EMSCRIPTEN_KEEPALIVE void JSNative_enqueueEvent(const char *type,int context, int value, const char *data, int datasize);
+
 static g_id gid_;
 
 struct JSNative_Event {

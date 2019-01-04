@@ -170,6 +170,5 @@ G_API void *gevent_CreateEventStruct3(size_t structSize,
 }
 #endif
 
-
 #endif
 
