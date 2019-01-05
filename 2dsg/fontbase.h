@@ -57,6 +57,7 @@ public:
 		unsigned int color;
 	};
 	struct TextLayout {
+    	TextLayout() : styleFlags(0) { };
 		float x,y;
         float w,h,bh;
 		int lines;

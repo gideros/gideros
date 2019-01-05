@@ -235,7 +235,7 @@ $(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell
 $(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo "SYMGEN gideros"
 	@$(EMCC) $(OBJS) $(LIBS) -g $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
-	@grep '(export ' $(BUILD)/gideros-wasm.wast | grep '(func'| cut -d' ' -f3 >$(BUILD)/gideros.syms
+	@grep '(export ' $(BUILD)/gideros-wasm.wast | grep '(func'| cut -d' ' -f3 >$(BUILD)/gideros.esyms
 	@echo "EMLINK gideros WASM"
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 	
