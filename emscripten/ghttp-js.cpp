@@ -137,7 +137,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
     map_[ctx.id] = ctx;
     
     ctx.xhrId=EM_ASM_INT({
-    	return Module.ghttpjs_urlload($0,'GET',$1,null,$2,true,$3,$4,$5);
+    	return Module.ghttpjs_urlload(Module.UTF8ToString($0),'GET',$1,null,$2,true,$3,$4,$5);
     },url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress);
     //printf("GET:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
@@ -154,7 +154,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
     map_[ctx.id] = ctx;
 
     ctx.xhrId=EM_ASM_INT({
-    	return Module.ghttpjs_urlload($0,'POST',$1,Module.HEAPU8.subarray($6,$6+$7),$2,true,$3,$4,$5);
+    	return Module.ghttpjs_urlload(Module.UTF8ToString($0),'POST',$1,Module.HEAPU8.subarray($6,$6+$7),$2,true,$3,$4,$5);
     },url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,data,size);
     //printf("POST:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 

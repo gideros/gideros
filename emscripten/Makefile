@@ -115,7 +115,7 @@ $(BUILD)/emscripten/plugin_support.em.o: CFLGS+=--llvm-opts "['-disable-inlining
 
 #LINE BELOW FOR WASM
 EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256*1024*1024 'ALLOW_MEMORY_GROWTH=1 BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
-EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap"]'
+EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap","getValue","UTF8ToString"]'
 #EOPTS+=EMCC_FORCE_STDLIBS
 #EOPTS+=EXPORT_ALL=1
 EOPTS+=MAIN_MODULE=2  
@@ -233,10 +233,12 @@ $(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
 $(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
+	@echo "SYMGEN gideros"
+	@$(EMCC) $(OBJS) $(LIBS) -g $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	@grep '(export ' $(BUILD)/gideros-wasm.wast | grep '(func'| cut -d' ' -f3 >$(BUILD)/gideros.syms
 	@echo "EMLINK gideros WASM"
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
-	#@echo "EMLINK gideros WAST"
-	#@EMCC_DEBUG=2 $(EMCC) $(OBJS) $(LIBS) -g $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	
 
 main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS)) $(addsuffix .js,$(EP_LIBS)))
 	cp gideros.png $(TEMPLATECOM)
