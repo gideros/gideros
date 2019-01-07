@@ -386,7 +386,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 
 			if (l.styleFlags&TEXTSTYLEFLAG_COLOR) {
 				unsigned char rgba[4];
-                unsigned int col=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?c.color:color|0xFF000000;
+                unsigned int col=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?c.color:color;
 				rgba[0]=(col>>16)&0xFF;
 				rgba[1]=(col>>8)&0xFF;
 				rgba[2]=(col>>0)&0xFF;

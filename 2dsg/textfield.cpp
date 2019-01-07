@@ -22,7 +22,7 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
 	if (params)
         layout_=*params;
 
-    setTextColor(0x000000);
+    setTextColor(0xFF000000);
 }
 
 /*
@@ -81,10 +81,12 @@ void TextField::setTextColor(unsigned int color)
 {
 	textColor_ = color;
 
+	int a = (color >> 24) & 0xff;
 	int r = (color >> 16) & 0xff;
 	int g = (color >> 8) & 0xff;
 	int b = color & 0xff;
 
+	a_ = a / 255.f;
 	r_ = r / 255.f;
 	g_ = g / 255.f;
 	b_ = b / 255.f;
@@ -128,7 +130,7 @@ void TextField::setSample(const char* sample)
 
     FontBase::TextLayoutParameters empty;
     FontBase::TextLayout l;
-    font_->drawText(&graphicsBase_, sample, r_, g_, b_, &empty, false, 0, 0, l);
+    font_->drawText(&graphicsBase_, sample, r_, g_, b_, a_, &empty, false, 0, 0, l);
     float minx, miny, maxx, maxy;
     minx = 1e30;    miny = 1e30;    maxx = -1e30;    maxy = -1e30;
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
@@ -161,7 +163,7 @@ void TextField::createGraphics()
     if (font_ != NULL)
     {
         FontBase::TextLayout l;
-        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, &layout_, !sample_.empty(), sminx, sminy, l);
+        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, l);
         textwidth_=l.w;
         textheight_=l.bh;
     }

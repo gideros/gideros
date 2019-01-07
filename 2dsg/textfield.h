@@ -47,7 +47,7 @@ private:
 
     BMFontBase* font_;
 
-	float r_, g_, b_;
+	float a_, r_, g_, b_;
 	unsigned int textColor_;
 
 private:

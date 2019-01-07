@@ -565,7 +565,7 @@ void TTBMFont::checkLogicalScale() {
 }
 
 void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
-		const char* text, float r, float g, float b,
+		const char* text, float r, float g, float b, float a,
         TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l) {
 
 	if (strlen(text) == 0) {
@@ -586,7 +586,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		unsigned char rgba[4];
 		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
 		{
-			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):1.0f;
+			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):a;
 			rgba[0]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>16)&0xFF:r*255));
 			rgba[1]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>8)&0xFF:g*255));
 			rgba[2]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>0)&0xFF:b*255));
@@ -630,7 +630,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			else
 			{
 				graphicsBase->colors.clear();
-				graphicsBase->setColor(r, g, b, 1);
+				graphicsBase->setColor(r, g, b, a);
 			}
 			graphicsBase->vertices.resize(size * 4);
 			graphicsBase->texcoords.resize(size * 4);

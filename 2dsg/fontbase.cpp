@@ -357,7 +357,7 @@ CompositeFont::~CompositeFont()
 	}
 }
 
-void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l)
+void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l)
 {
     l = layoutText(text, layout);
     l.styleFlags|=TEXTSTYLEFLAG_SKIPLAYOUT;
@@ -368,7 +368,7 @@ void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char
     	    l.styleFlags&=~colorFlag;
     	else
     	    l.styleFlags|=colorFlag;
-        it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l);
+        it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB,(it->colorA<0)?a:it->colorA, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l);
 	}
 }
 

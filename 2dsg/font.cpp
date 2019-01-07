@@ -139,7 +139,7 @@ void Font::constructor(const char *glympfile, const char *imagefile,
 }
 
 void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
-		float r, float g, float b, TextLayoutParameters *layout, bool hasSample,
+		float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample,
         float minx, float miny, TextLayout &l) {
     size_t size = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 
@@ -163,7 +163,7 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 			graphicsBase->colors.Update();
 		}
 		else
-			graphicsBase->setColor(r, g, b, 1);
+			graphicsBase->setColor(r, g, b, a);
 	}
 	else
 	{
@@ -183,7 +183,7 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 		unsigned char rgba[4];
 		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
 		{
-			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):1.0f;
+			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):a;
 			rgba[0]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>16)&0xFF:r*255));
 			rgba[1]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>8)&0xFF:g*255));
 			rgba[2]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>0)&0xFF:b*255));

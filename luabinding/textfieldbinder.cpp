@@ -180,9 +180,11 @@ int TextFieldBinder::getTextColor(lua_State* L)
 	Binder binder(L);
 	TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
 
-	lua_pushinteger(L, textField->textColor());
+	float alpha=(textField->textColor()>>24)/255.f;
+	lua_pushinteger(L, textField->textColor()&0xFFFFFF);
+	lua_pushnumber(L, alpha);
 
-	return 1;
+	return 2;
 }
 
 int TextFieldBinder::setTextColor(lua_State* L)
@@ -193,6 +195,8 @@ int TextFieldBinder::setTextColor(lua_State* L)
 	TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
 
 	unsigned int color = luaL_checkinteger(L, 2);
+	float alpha=luaL_optnumber(L, 3,1.0);
+	color=(color&0xFFFFFF)|((((int)(255*alpha))&0xFF)<<24);
 	textField->setTextColor(color);
 
 	return 0;

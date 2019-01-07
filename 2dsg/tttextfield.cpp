@@ -19,7 +19,7 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
 	if (sample)
 		sample_ = sample;
 
-	textColor_ = 0;
+	textColor_ = 0xFF000000;
 
     float scalex = application_->getLogicalScaleX();
     float scaley = application_->getLogicalScaleY();
@@ -132,10 +132,11 @@ void TTTextField::createGraphics()
 
 	if (!isRGB)
 	{
+		int a = (textColor_ >> 24) & 0xff;
 		int r = (textColor_ >> 16) & 0xff;
 		int g = (textColor_ >> 8) & 0xff;
 		int b = textColor_ & 0xff;
-		graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, 1);
+		graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
 	}
 
     minx_ = minx/scalex;
@@ -197,12 +198,14 @@ void TTTextField::setTextColor(unsigned int color)
 {
 	textColor_ = color;
 
+	int a = (textColor_ >> 24) & 0xff;
 	int r = (textColor_ >> 16) & 0xff;
 	int g = (textColor_ >> 8) & 0xff;
 	int b = textColor_ & 0xff;
-	graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, 1);
     if (styleFlags_&TEXTSTYLEFLAG_COLOR)
         createGraphics();
+    else
+    	graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
 }
 
 unsigned int TTTextField::textColor() const

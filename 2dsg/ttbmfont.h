@@ -28,7 +28,7 @@ public:
         return eTTBMFont;
     }
 
-    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l);
+    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l);
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);

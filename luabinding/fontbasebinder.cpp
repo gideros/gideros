@@ -243,17 +243,18 @@ int CompositeFontBinder::create(lua_State* L)
 			int r = (color >> 16) & 0xff;
 			int g = (color >> 8) & 0xff;
 			int b = color & 0xff;
-			fspec.colorA=255;
 			fspec.colorR=r / 255.f;
 			fspec.colorG=g / 255.f;
 			fspec.colorB=b / 255.f;
 		}
 		else {
-			fspec.colorA=-1;
 			fspec.colorR=-1;
 			fspec.colorG=-1;
 			fspec.colorB=-1;
 		}
+		lua_pop(L,1);
+		lua_getfield(L,-1,"alpha");
+		fspec.colorA=luaL_optnumber(L,-1,-1);
 		lua_pop(L,1);
 
 		fonts.push_back(fspec);
