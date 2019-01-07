@@ -95,7 +95,7 @@ all.pkg: start.pkg build.all.thr fetch.mac.pkg push.mac.pkg bundle.all.thr fetch
 start.pkg:
 	echo -n "Starting on "; date
 
-full: clean.pkg all.pkg
+full: clean.all.pkg all.pkg
 
 addons.pkg: $(addsuffix .addons.pkg,$(ADDONS))
 
