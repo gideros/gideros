@@ -6,8 +6,8 @@ Html5Project={
 }
 
 function Html5Project.export(m,flavour)
-  local wasm=tonumber(Export.getProperty("project.html5_wasm"))>0
-  local pack=tonumber(Export.getProperty("project.html5_pack"))>0
+  local wasm=Export.isSet("project.html5_wasm")
+  local pack=Export.isSet("project.html5_pack")
   flavour=flavour or ""
   local ext="js"
   if wasm then

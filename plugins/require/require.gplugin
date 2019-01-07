@@ -357,8 +357,8 @@
  </target> 
  <target name="Html5">
 	<lua><![CDATA[
-  local wasm=tonumber(Export.getProperty("project.html5_wasm"))>0
-  local pack=tonumber(Export.getProperty("project.html5_pack"))>0
+  local wasm=Export.isSet("project.html5_wasm")
+  local pack=Export.isSet("project.html5_pack")
   local ext="js"
   if wasm then
     ext="wasm"
@@ -374,10 +374,10 @@
 	  ]=]):format(pn,ext))
 	 Export.remove(pn.."."..ext)
   end
-  if tonumber(Export.getProperty("plugin.reqNoMP3"))>0 then
+  if Export.isSet("plugin.reqNoMP3") then
   	removeEP("EP_Mp3")
   end
-  if tonumber(Export.getProperty("plugin.reqNoXMP"))>0 then
+  if Export.isSet("plugin.reqNoXMP") then
   	removeEP("EP_Xmp")
   end
 ]]>	</lua>

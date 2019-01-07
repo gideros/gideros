@@ -361,8 +361,13 @@ void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char
 {
     l = layoutText(text, layout);
     l.styleFlags|=TEXTSTYLEFLAG_SKIPLAYOUT;
+    int colorFlag=l.styleFlags&(TEXTSTYLEFLAG_COLOR);
     for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
 			it != fonts_.end(); it++) {
+    	if ((it->colorR>0)||(it->colorG>0)||(it->colorB>0))
+    	    l.styleFlags&=~colorFlag;
+    	else
+    	    l.styleFlags|=colorFlag;
         it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l);
 	}
 }
