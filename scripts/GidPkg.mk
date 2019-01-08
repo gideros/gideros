@@ -93,8 +93,10 @@ bundle.all.thrun : bundle.installer.subthr bundle.mac.pkg.subthr
 bundle.all.thr:
 	$(MAKE) -j2 -f scripts/Makefile.gid bundle.all.thrun
 	
-all.pkg: start.pkg build.all.thr fetch.mac.pkg push.mac.pkg bundle.all.thr fetchbundle.mac.pkg
+all.pkg: start.pkg build.all.thr bundle.all.thr fetchbundle.mac.pkg
 	echo -n "Finished on "; date
+
+bundle.pkg: bundle.all.thr fetchbundle.mac.pkg
 
 start.pkg:
 	echo -n "Starting on "; date
