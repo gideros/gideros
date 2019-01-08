@@ -49,7 +49,7 @@ LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.d
 %.win32.libs: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
 	#BUILDING $*
 	@mkdir -p $(addprefix $(WIN32_BUILDDIR)/,$(dir $(sort $(OBJFILES_$*))))
-	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*)" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" LIBNAME=$* $(MAKE) -f $(firstword $(MAKEFILE_LIST)) win32.libs.build
+	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*)" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" LIBNAME=$* $(MAKE) $(MAKEJOBS) -f $(firstword $(MAKEFILE_LIST)) win32.libs.build
 
 win32.libs.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
@@ -60,8 +60,8 @@ win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 %.win32.app: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
 	#BUILDING $*
 	@mkdir -p $(addprefix $(WIN32_BUILDDIR)/,$(dir $(sort $(OBJFILES_$*))))
-	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mwindows" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$* $(MAKE) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
-	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mconsole" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$*-console $(MAKE) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
+	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mwindows" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$* $(MAKE) $(MAKEJOBS) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
+	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mconsole" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$*-console $(MAKE) $(MAKEJOBS) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
 
 win32.app.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 win32.app.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
@@ -97,7 +97,7 @@ win32.libs.install: win32.libs
 	cp $(WIN32_BUILDDIR)/pystring.dll $(WIN32_RELEASE)
 
 %.win32.plugin:
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "win32" ]; then cd win32; ROOT=$$R/$(ROOT) RELEASE=$$R/$(RELEASE) $(MINGWMAKE); fi
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "win32" ]; then cd win32; ROOT=$$R/$(ROOT) RELEASE=$$R/$(RELEASE) $(MINGWMAKE) $(MAKEJOBS); fi
 
 %.win32.plugin.clean:
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "win32" ]; then cd win32; ROOT=$$R/$(ROOT) RELEASE=$$R/$(RELEASE) $(MINGWMAKE) clean; fi

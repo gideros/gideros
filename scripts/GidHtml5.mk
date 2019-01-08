@@ -18,10 +18,10 @@ html5.clean:
 	cd emscripten; $(MAKE) clean plugins.clean
 
 html5.main:  
-	cd emscripten; $(MAKE) -j 4 main
+	cd emscripten; $(MAKE) $(MAKEJOBS) main
 
 html5.libs: versioning 
-	cd emscripten; $(MAKE) -j 4
+	cd emscripten; $(MAKE) $(MAKEJOBS)
 
 %.html5plugin:
 	cd emscripten; $(MAKE) $*.plugin

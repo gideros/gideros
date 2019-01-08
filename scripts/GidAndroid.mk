@@ -24,7 +24,7 @@ androidlibs: libgvfs.androidlib lua.androidlib
 androidlibs.clean: libgvfs.androidlib.clean lua.androidlib.clean
 
 androidso: versioning androidso.prep
-	cd $(ROOT)/android/lib;$(NDKBUILD)
+	cd $(ROOT)/android/lib;$(NDKBUILD) $(MAKEJOBS)
 	rm -rf $(ROOT)/Sdk/lib/android
 	mkdir -p $(ROOT)/Sdk/lib/android
 	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 
@@ -40,11 +40,11 @@ androidso.clean:
 	rm -rf $(ROOT)/android/lib/obj
 
 %.androidlib:
-	cd $(ROOT)/$*; $(NDKBUILD)
+	cd $(ROOT)/$*; $(NDKBUILD) $(MAKEJOBS)
 
 %.androidplugin:
 	@cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;\
-	$(NDKBUILD);\
+	$(NDKBUILD) $(MAKEJOBS);\
 	for a in $(ANDROID_ARCHS); do \
 	rm -f libs/$$a/libgideros.so libs/$$a/liblua.so libs/$$a/libgvfs.so; done; 
 

@@ -79,10 +79,14 @@ clean.all.pkg:
 %.subthr:
 	$(MAKE) -j1 -f scripts/Makefile.gid $*
 	
-build.all.thrun : all.subthr build.mac.pkg.subthr fetchdoc.subthr
+winpush: all fetchdoc push.mac.pkg
+
+macpull: build.mac.pkg fetch.mac.pkg
+	
+build.all.thrun : winpush.subthr macpull.subthr 
 
 build.all.thr:
-	$(MAKE) -j3 -f scripts/Makefile.gid build.all.thrun
+	$(MAKE) -j2 -f scripts/Makefile.gid build.all.thrun
 
 bundle.all.thrun : bundle.installer.subthr bundle.mac.pkg.subthr 
 

@@ -42,8 +42,8 @@ qtlibs.install: buildqtlibs
 	cp $(ROOT)/libpystring/$(QTTGT_DIR)/pystring.dll $(RELEASE)
 
 %.qtplugin:
-	cd $(ROOT)/plugins/$*/source; if [ -d "vs" ]; then cd vs; $(MINGWMAKE); \
-		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MINGWMAKE) $(QTTGT_DIR); fi 
+	cd $(ROOT)/plugins/$*/source; if [ -d "vs" ]; then cd vs; $(MINGWMAKE) $(MAKEJOBS); \
+		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MINGWMAKE) $(MAKEJOBS) $(QTTGT_DIR); fi 
 
 %.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "vs" ]; then cd vs; elif [ -d "Desktop" ]; then cd Desktop; fi; if [ -f Makefile ]; then $(MINGWMAKE) clean; fi
@@ -141,19 +141,19 @@ qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $
 
 %.qmake.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*.pro
-	cd $(ROOT)/$*; $(MINGWMAKE) release
+	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) release
 
 %.qmake.dbg:
 	cd $(ROOT)/$*; $(QMAKE) $*.pro
-	cd $(ROOT)/$*; $(MINGWMAKE) debug
+	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) debug
 
 %.qmake5.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
-	cd $(ROOT)/$*; $(MINGWMAKE) release
+	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) release
 
 %.qmake5.dbg:
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
-	cd $(ROOT)/$*; $(MINGWMAKE) debug
+	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) debug
 
 tools:
 	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\

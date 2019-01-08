@@ -28,8 +28,8 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
 
 %.qtplugin:
-	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; $(MAKE); \
-		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE); fi 
+	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; $(MAKE) $(MAKEJOBS); \
+		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE) $(MAKEJOBS); fi 
 
 %.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; elif [ -d "Desktop" ]; then cd Desktop; fi; if [ -f Makefile ]; then $(MAKE) clean; fi
@@ -105,11 +105,11 @@ qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
 
 %.qmake.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*.pro
-	cd $(ROOT)/$*; $(MAKE)
+	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS)
 
 %.qmake5.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
-	cd $(ROOT)/$*; $(MAKE) 
+	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS) 
 
 tools:
 	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
