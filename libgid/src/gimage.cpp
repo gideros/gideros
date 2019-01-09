@@ -6,7 +6,7 @@
 #define GIMAGE_PNG 1
 #define GIMAGE_JPG 2
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__QT__)
 #define strcasecmp stricmp
 #endif
 

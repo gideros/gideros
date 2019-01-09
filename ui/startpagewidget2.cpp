@@ -20,7 +20,6 @@ StartPageWidget2::StartPageWidget2(QWidget *parent) :
 	connect(ui->exampleProjects, SIGNAL(openProject(const QString&)), this, SIGNAL(openProject(const QString&)));
 
 	connect(ui->createNewProject, SIGNAL(clicked()), this, SIGNAL(newProject()));
-	connect(ui->gettingStarted, SIGNAL(clicked()), this, SLOT(gettingStarted()));
 	connect(ui->referenceManual, SIGNAL(clicked()), this, SLOT(referenceManual()));
 }
 
@@ -41,20 +40,7 @@ void StartPageWidget2::closeEvent(QCloseEvent * event)
 	} */
 }
 
-void StartPageWidget2::gettingStarted()
-{
-#if defined(Q_OS_MAC)
-    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/index.html")));
-#else
-    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/index.html")));
-#endif
-}
-
 void StartPageWidget2::referenceManual()
 {
-#if defined(Q_OS_MAC)
-    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/reference.html")));
-#else
-    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/reference.html")));
-#endif
+    QDesktopServices::openUrl(QUrl("https://wiki.giderosmobile.com/"));
 }

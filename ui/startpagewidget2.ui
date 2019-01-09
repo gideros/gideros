@@ -59,7 +59,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgb
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>320</y>
+      <y>260</y>
       <width>191</width>
       <height>41</height>
      </rect>
@@ -101,30 +101,6 @@ background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgb
     </property>
     <property name="text">
      <string>Create New Project</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="gettingStarted">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>260</y>
-      <width>191</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Tahoma</family>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>Opens the Getting Started Guide</string>
-    </property>
-    <property name="text">
-     <string>Getting Started</string>
     </property>
    </widget>
    <widget class="RecentProjectsWidget" name="recentProjects" native="true">
