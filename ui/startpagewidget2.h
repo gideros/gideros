@@ -22,7 +22,6 @@ signals:
 	void newProject();
 
 private slots:
-	void gettingStarted();
 	void referenceManual();
 
 private:
