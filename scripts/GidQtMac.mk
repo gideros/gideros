@@ -57,8 +57,8 @@ qt.install: buildqt qt.player tools html5.tools
 	rm -rf $(RELEASE)/Gideros\ Studio.app
 	cp -R $(ROOT)/ui/Gideros\ Studio.app $(RELEASE)
 	$(DEPLOYQT) $(RELEASE)/Gideros\ Studio.app
-	cp $(QT)/lib/libqscintilla2.$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
-	install_name_tool -change libqscintilla2.$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2.$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
+	cp $(QT)/lib/libqscintilla2_qt5.$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	install_name_tool -change libqscintilla2_qt5.$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2_qt5.$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
 	cp -R $(ROOT)/ui/Resources $(RELEASE)/Gideros\ Studio.app/Contents/
 	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Gideros\ Studio.app/Contents/Resources/gideros_annot.api	
 	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/ui/Tools/crunchme

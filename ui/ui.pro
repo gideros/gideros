@@ -229,7 +229,7 @@ win32 {
 }
 
 macx {
-   LIBS += -lqscintilla2
+   LIBS += -lqscintilla2_qt5
 }
 
 unix:!macx {
