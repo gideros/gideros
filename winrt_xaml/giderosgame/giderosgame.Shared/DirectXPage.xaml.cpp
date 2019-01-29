@@ -1,4 +1,4 @@
-﻿//
+//
 // DirectXPage.xaml.cpp
 // Implementation of the DirectXPage class.
 //
@@ -51,10 +51,6 @@ extern "C"
 		return (val << 16) | (val >> 16);
 	}
 #endif
-
-	void ExitProcess(int i)
-	{
-	}
 }
 
 void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)

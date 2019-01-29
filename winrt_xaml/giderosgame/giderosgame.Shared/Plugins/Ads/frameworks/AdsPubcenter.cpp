@@ -90,7 +90,7 @@ public:
 		gads_adFailed("pubcenter", errStr.c_str(), stype.c_str());
 	}
 
-	void onAdClick(Platform::Object^ sender, Windows::UI::Xaml::DependencyPropertyChangedEventArgs^ args){
+	void onAdClick(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ args){
 		gads_adActionBegin("pubcenter", stype.c_str());
 	}
 
@@ -228,7 +228,7 @@ void AdsPubcenter::loadAd(gads_Parameter *params){
 				AdsPubcenterListener^ listener = ref new AdsPubcenterListener(StringFromAscIIChars(size.c_str()), ad);
 				ad->AdRefreshed += ref new Windows::Foundation::EventHandler<Windows::UI::Xaml::RoutedEventArgs^>(listener, &AdsPubcenterListener::onAdRefresh);
 				ad->ErrorOccurred += ref new Windows::Foundation::EventHandler<AdErrorEventArgs ^>(listener, &AdsPubcenterListener::onAdError);
-				ad->IsEnabledChanged += ref new Windows::UI::Xaml::DependencyPropertyChangedEventHandler(listener, &AdsPubcenterListener::onAdClick);
+				ad->IsEngagedChanged += ref new Windows::Foundation::EventHandler<Windows::UI::Xaml::RoutedEventArgs^>(listener, &AdsPubcenterListener::onAdClick);
 				//ad->PublisherMessageEvent += ref new Windows::Foundation::EventHandler<Microsoft::Advertising::Mobile::Common::PublisherMessageEventArgs ^>(listener, &AdsPubcenterListener::onAdAction);
 				adMap->Insert(stype, listener);
 			}

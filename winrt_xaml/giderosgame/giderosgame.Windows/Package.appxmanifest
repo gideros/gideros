@@ -1,28 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" Publisher="CN=Gideros Mobile" Version="2018.3.0.0" />
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" IgnorableNamespaces="uap mp">
+  <Identity Name="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" Publisher="CN=Gideros Mobile" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.17763.0" />
+  </Dependencies>
   <Properties>
     <DisplayName>Gideros Player</DisplayName>
     <PublisherDisplayName>Gideros Mobile</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
-  <Prerequisites>
-    <OSMinVersion>6.3.0</OSMinVersion>
-    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
-  </Prerequisites>
   <Resources>
     <Resource Language="x-generate" />
+    <Resource uap:Scale="180" />
+    <Resource uap:DXFeatureLevel="dx11" />
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="giderosgame_Windows.App">
-      <m2:VisualElements DisplayName="Gideros Player" Description="Gideros Player" BackgroundColor="#464646" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
-        <m2:DefaultTile>
-          <m2:ShowNameOnTiles>
-            <m2:ShowOn Tile="square150x150Logo" />
-          </m2:ShowNameOnTiles>
-        </m2:DefaultTile>
-        <m2:SplashScreen Image="Assets\SplashScreen.png" />
-      </m2:VisualElements>
+      <uap:VisualElements DisplayName="Gideros Player" Description="Gideros Player" BackgroundColor="#FEFEFE" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png">
+        <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\BadgeLogo.png" />
+        <uap:DefaultTile Square310x310Logo="Assets\LargeTile.png" Wide310x150Logo="Assets\WideTile.png" Square71x71Logo="Assets\SmallTile.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#FFFFFF" />
+      </uap:VisualElements>
     </Application>
   </Applications>
   <Capabilities>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -26,49 +26,58 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0f2d797e-beca-4b12-bbf9-3022083840e0}</ProjectGuid>
     <RootNamespace>gideros</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <ConvergedProjectType>CodeSharingStaticLibrary</ConvergedProjectType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="..\gideros.Shared\gideros.Shared.vcxitems" Label="Shared" />
@@ -115,7 +124,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\luabinding;$(ProjectDir)..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.7.1\src;..\..\..\libgid\external\freetype-2.7.1\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;..\..\..\2dsg\gfxbackends;..\..\..\2dsg\paths;..\..\..\2dsg\gfxbackends\dx11;%(AdditionalIncludeDirectories);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER;HAVE_STRUCT_TIMESPEC</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -131,7 +140,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\2dsg\paths;..\..\..\luabinding;..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.7.1\src;..\..\..\libgid\external\freetype-2.7.1\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER;HAVE_STRUCT_TIMESPEC</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
@@ -148,7 +157,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>..\..\..\luabinding;..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.7.1\src;..\..\..\libgid\external\freetype-2.7.1\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\2dsg\gfxbackends;..\..\..\2dsg\paths;..\..\..\2dsg\gfxbackends\dx11;..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER;HAVE_STRUCT_TIMESPEC</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
@@ -162,7 +171,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER;HAVE_STRUCT_TIMESPEC</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\2dsg\paths;..\..\..\libnetwork;..\..\..\luabinding;..\..\..\libgid\external\freetype-2.7.1\src;..\..\..\libgid\external\freetype-2.7.1\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -177,7 +186,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER;HAVE_STRUCT_TIMESPEC</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -192,7 +201,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER;HAVE_STRUCT_TIMESPEC</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -204,5 +213,14 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\pthreads.redist.2.9.1.4\build\native\pthreads.redist.targets" Condition="Exists('..\..\packages\pthreads.redist.2.9.1.4\build\native\pthreads.redist.targets')" />
+    <Import Project="..\..\packages\pthreads.2.9.1.4\build\native\pthreads.targets" Condition="Exists('..\..\packages\pthreads.2.9.1.4\build\native\pthreads.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Ce projet fait référence à des packages NuGet qui sont manquants sur cet ordinateur. Utilisez l'option de restauration des packages NuGet pour les télécharger. Pour plus d'informations, consultez http://go.microsoft.com/fwlink/?LinkID=322105. Le fichier manquant est : {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\pthreads.redist.2.9.1.4\build\native\pthreads.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\pthreads.redist.2.9.1.4\build\native\pthreads.redist.targets'))" />
+    <Error Condition="!Exists('..\..\packages\pthreads.2.9.1.4\build\native\pthreads.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\pthreads.2.9.1.4\build\native\pthreads.targets'))" />
+  </Target>
 </Project>

@@ -147,7 +147,7 @@ local payments={}
 function payments.getCatalogAsync(cb)
   contextid=contextid+1
   contexts[contextid]=cb
-  JS.eval([[FBInstant.payment.getCatalogAsync().then(function (catalog) {
+  JS.eval([[FBInstant.payments.getCatalogAsync().then(function (catalog) {
     Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,1,JSON.stringify(catalog));
   },function (err) {
     Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,0,err.code);
@@ -156,7 +156,7 @@ end
 function payments.purchaseAsync(purchase,cb)
   contextid=contextid+1
   contexts[contextid]=cb
-  JS.eval([[FBInstant.payment.purchaseAsync(]]..json.encode(purchase or { })..[[).then(function (purchase) {
+  JS.eval([[FBInstant.payments.purchaseAsync(]]..json.encode(purchase or { })..[[).then(function (purchase) {
     Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,1,JSON.stringify(purchase));
   },function (err) {
     Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,0,err.code);
@@ -165,7 +165,7 @@ end
 function payments.getPurchasesAsync(cb)
   contextid=contextid+1
   contexts[contextid]=cb
-  JS.eval([[FBInstant.payment.getPurchasesAsync().then(function (purchases) {
+  JS.eval([[FBInstant.payments.getPurchasesAsync().then(function (purchases) {
     Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,1,JSON.stringify(purchases));
   },function (err) {
     Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,0,err.code);
@@ -174,7 +174,7 @@ end
 function payments.consumePurchaseAsync(purchaseId,cb) 
   contextid=contextid+1
   contexts[contextid]=cb
-  JS.eval("FBInstant.payment.consumePurchaseAsync('"..purchaseId..[[').then(function () {
+  JS.eval("FBInstant.payments.consumePurchaseAsync('"..purchaseId..[[').then(function () {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
   },function (err) {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);

@@ -14,17 +14,43 @@ using namespace Windows::Storage;
 using namespace Windows::System::UserProfile;
 using namespace Windows::Globalization;
 
+using namespace Windows::ApplicationModel;
+using namespace Windows::Security::ExchangeActiveSyncProvisioning;
+using namespace Windows::System::Profile;
+
 std::vector<std::string> getDeviceInfo()
 {
 	std::vector<std::string> result;
 
 	result.push_back("WinRT");
 
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	result.push_back("Windows Phone");
-#else
-	result.push_back("Windows");
-#endif
+	std::wstring ws;
+	AnalyticsVersionInfo ^ai = AnalyticsInfo::VersionInfo;
+	ws = ai->DeviceFamily->Data();
+	result.push_back(std::string(ws.begin(), ws.end()));
+
+	// get the system version number
+	ws = ai->DeviceFamilyVersion->Data();
+	long long v= strtoll(std::string(ws.begin(), ws.end()).c_str(), NULL, 10);
+	int v1 = (v & 0xFFFF000000000000L) >> 48;
+	int v2 = (v & 0x0000FFFF00000000L) >> 32;
+	int v3 = (v & 0x00000000FFFF0000L) >> 16;
+	int v4 = (v & 0x000000000000FFFFL);
+	char vs[120];
+	sprintf_s(vs, 120, "%d.%d.%d.%d", v1, v2, v3, v4);
+	result.push_back(std::string(vs));
+
+	// get the device manufacturer and model name
+	EasClientDeviceInformation ^eas = ref new EasClientDeviceInformation();
+	ws = eas->SystemManufacturer->Data();
+	result.push_back(std::string(ws.begin(), ws.end()));
+	ws = eas->SystemProductName->Data();
+	result.push_back(std::string(ws.begin(), ws.end()));
+
+	// get the package architecure
+	Package ^package = Package::Current;
+	ws = package->Id->Architecture.ToString()->Data();
+	result.push_back(std::string(ws.begin(), ws.end()));
 
 	return result;
 }

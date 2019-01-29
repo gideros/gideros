@@ -108,7 +108,12 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
             category = ctx->args["category"];
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany."+ctx->base).toUtf8(), ctx->args["bundle"].toUtf8());
-        replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+QString::number(ctx->properties.build_number)+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
+        replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n"
+        		"	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n"
+				"	<key>CFBundleVersion</key>\n	<string>"+QString::number(ctx->properties.build_number)+"</string>\n"
+				"	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n"
+				"	<key>CFBundleSupportedPlatforms</key>\n	<array><string>MacOSX</string></array>\n"
+				"	<key>NOTE</key>").toUtf8());
     }
     else if(ctx->deviceFamily == e_iOS){
     	ctx->noEncryptionExt.insert("mp3"); //iOS uses backgroundplayer
@@ -135,9 +140,9 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), ctx->args["organization"].toUtf8());
-        replaceList1 << qMakePair(QString("BackgroundColor=\"#464646\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
-        replaceList1 << qMakePair(QString("BackgroundColor=\"transparent\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
-        replaceList1 << qMakePair(QString("Version=\"1.0.0.0\"").toUtf8(), ("Version=\""+winver+"\"").toUtf8());
+        replaceList1 << qMakePair(QString("BackgroundColor=\"#FFFFFF\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
+        replaceList1 << qMakePair(QString("BackgroundColor=\"#FEFEFE\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
+        replaceList1 << qMakePair(QString(" Version=\"1.0.0.0\"").toUtf8(), (" Version=\""+winver+"\"").toUtf8());
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());
@@ -247,19 +252,6 @@ void ExportBuiltin::prepareAssetFolder(ExportContext *ctx)
 
         for (std::size_t i = 0; i < ctx->folderList.size(); ++i){
         	ctx->outputDir.mkdir(ctx->folderList[i]);
-            if (ctx->deviceFamily == e_WinRT){
-            	ctx->outputDir.cdUp();
-            	ctx->outputDir.cdUp();
-            	ctx->outputDir.cd("giderosgame.WindowsPhone");
-            	ctx->outputDir.cd("Assets");
-
-            	ctx->outputDir.mkdir(ctx->folderList[i]);
-
-            	ctx->outputDir.cdUp();
-            	ctx->outputDir.cdUp();
-            	ctx->outputDir.cd("giderosgame.Windows");
-            	ctx->outputDir.cd("Assets");
-            }
         }
 }
 
@@ -365,12 +357,6 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    if (ctx->deviceFamily == e_WinRT)
    {
    	WinRTExport::updateWinRTProject(QString("giderosgame.Windows.vcxproj"),ctx);
-       ctx->outputDir.cdUp();
-       ctx->outputDir.cdUp();
-       ctx->outputDir.cd("giderosgame.WindowsPhone");
-       ctx->outputDir.cd("Assets");
-       ExportBuiltin::exportAllAssetsFiles(ctx);
-       WinRTExport::updateWinRTProject(QString("giderosgame.WindowsPhone.vcxproj"),ctx);
    }
 
    //go back to root
@@ -550,23 +536,45 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        }
    }
    else if(ctx->deviceFamily == e_WinRT){
-        ExportCommon::appIcon(ctx,120,120,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-80.png"));
-        ExportCommon::appIcon(ctx,150,150,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-100.png"));
-        ExportCommon::appIcon(ctx,30,30,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.scale-100.png"));
-        ExportCommon::appIcon(ctx,50,50,QString("giderosgame/giderosgame.Windows/Assets/StoreLogo.scale-100.png"));
+       ExportCommon::appIcon(ctx,24,24,QString("giderosgame/giderosgame.Windows/Assets/BadgeLogo.scale-100.png"));
+       ExportCommon::appIcon(ctx,48,48,QString("giderosgame/giderosgame.Windows/Assets/BadgeLogo.scale-200.png"));
+       ExportCommon::appIcon(ctx,96,96,QString("giderosgame/giderosgame.Windows/Assets/BadgeLogo.scale-400.png"));
 
-        ExportCommon::appIcon(ctx,150,150,QString("giderosgame/giderosgame.WindowsPhone/Assets/Logo.scale-100.png"));
-        ExportCommon::appIcon(ctx,360,360,QString("giderosgame/giderosgame.WindowsPhone/Assets/Logo.scale-240.png"));
-        ExportCommon::appIcon(ctx,44,44,QString("giderosgame/giderosgame.WindowsPhone/Assets/SmallLogo.scale-100.png"));
-        ExportCommon::appIcon(ctx,106,106,QString("giderosgame/giderosgame.WindowsPhone/Assets/SmallLogo.scale-240.png"));
-        ExportCommon::appIcon(ctx,170,170,QString("giderosgame/giderosgame.WindowsPhone/Assets/Square71x71Logo.scale-240.png"));
-        ExportCommon::appIcon(ctx,50,50,QString("giderosgame/giderosgame.WindowsPhone/Assets/StoreLogo.scale-100.png"));
-        ExportCommon::appIcon(ctx,120,120,QString("giderosgame/giderosgame.WindowsPhone/Assets/StoreLogo.scale-240.png"));
+       ExportCommon::appIcon(ctx,310,310,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-100.png"));
+       ExportCommon::appIcon(ctx,620,620,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-200.png"));
+       ExportCommon::appIcon(ctx,1240,1240,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-400.png"));
 
-        ExportCommon::splashHImage(ctx,620,300,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-100.png"));
-        ExportCommon::splashVImage(ctx,480,800,QString("giderosgame/giderosgame.WindowsPhone/Assets/SplashScreen.scale-100.png"));
-        ExportCommon::splashVImage(ctx,1152,1920,QString("giderosgame/giderosgame.WindowsPhone/Assets/SplashScreen.scale-240.png"));
-        ExportCommon::splashHImage(ctx,744,360,QString("giderosgame/giderosgame.WindowsPhone/Assets/WideLogo.scale-240.png"));
+       ExportCommon::appIcon(ctx,150,150,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-100.png"));
+       ExportCommon::appIcon(ctx,300,300,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-200.png"));
+       ExportCommon::appIcon(ctx,600,600,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-400.png"));
+
+       ExportCommon::appIcon(ctx,16,16,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.altform-unplated_targetsize-16.png"));
+       ExportCommon::appIcon(ctx,48,48,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.altform-unplated_targetsize-48.png"));
+       ExportCommon::appIcon(ctx,256,256,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.altform-unplated_targetsize-256.png"));
+
+       ExportCommon::appIcon(ctx,44,44,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.scale-100.png"));
+       ExportCommon::appIcon(ctx,88,88,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.scale-200.png"));
+       ExportCommon::appIcon(ctx,176,176,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.scale-400.png"));
+
+       ExportCommon::appIcon(ctx,16,16,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.targetsize-16.png"));
+       ExportCommon::appIcon(ctx,48,48,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.targetsize-48.png"));
+       ExportCommon::appIcon(ctx,256,256,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.targetsize-256.png"));
+
+       ExportCommon::appIcon(ctx,71,71,QString("giderosgame/giderosgame.Windows/Assets/SmallTile.scale-100.png"));
+       ExportCommon::appIcon(ctx,142,142,QString("giderosgame/giderosgame.Windows/Assets/SmallTile.scale-200.png"));
+       ExportCommon::appIcon(ctx,284,284,QString("giderosgame/giderosgame.Windows/Assets/SmallTile.scale-400.png"));
+
+       ExportCommon::appIcon(ctx,50,50,QString("giderosgame/giderosgame.Windows/Assets/StoreLogo.scale-100.png"));
+       ExportCommon::appIcon(ctx,100,100,QString("giderosgame/giderosgame.Windows/Assets/StoreLogo.scale-200.png"));
+       ExportCommon::appIcon(ctx,200,200,QString("giderosgame/giderosgame.Windows/Assets/StoreLogo.scale-400.png"));
+
+       ExportCommon::appIcon(ctx,310,150,QString("giderosgame/giderosgame.Windows/Assets/WideTile.scale-100.png"));
+       ExportCommon::appIcon(ctx,620,300,QString("giderosgame/giderosgame.Windows/Assets/WideTile.scale-200.png"));
+       ExportCommon::appIcon(ctx,1240,600,QString("giderosgame/giderosgame.Windows/Assets/WideTile.scale-400.png"));
+
+       ExportCommon::splashHImage(ctx,620,300,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-100.png"));
+       ExportCommon::splashHImage(ctx,1240,600,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-200.png"));
+       ExportCommon::splashHImage(ctx,2480,1200,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-400.png"));
    }
    else if(ctx->deviceFamily == e_iOS){
         ExportCommon::appIcon(ctx,29,29,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon29x29.png"));
