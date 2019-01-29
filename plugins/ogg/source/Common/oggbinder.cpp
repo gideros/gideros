@@ -189,7 +189,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
     handle->ts=NULL;
 #endif
 
-	g_id gid = (g_id) handle;
+	g_id gid = g_NextId();
 	ctxmap[gid] = handle;
 
 	/* Ogg file open; parse the headers */
@@ -412,14 +412,14 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 }
 
 long int gaudio_OggTell(g_id gid) {
-	GGOggHandle *handle = (GGOggHandle*) gid;
+	GGOggHandle *handle = ctxmap[gid];
 	double time = handle->vorbis_p ? handle->audio_time : handle->videobuf_time;
 
 	return (long int) (time * handle->sampleRate);
 }
 
 int gaudio_OggSeek(g_id gid, long int offset, int whence) {
-	GGOggHandle *handle = (GGOggHandle*) gid;
+	GGOggHandle *handle = ctxmap[gid];
 	if (whence == SEEK_CUR)
 		offset += gaudio_OggTell(gid);
 	if (whence == SEEK_END)
@@ -466,14 +466,14 @@ int gaudio_OggSeek(g_id gid, long int offset, int whence) {
 }
 
 void gaudio_OggFormat(g_id gid, int *csr, int *chn) {
-	GGOggHandle *handle = (GGOggHandle*) gid;
+	GGOggHandle *handle = ctxmap[gid];
 
 	*csr = handle->vi.rate;
 	*chn = handle->vi.channels;
 }
 
 size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
-	GGOggHandle *handle = (GGOggHandle*) gid;
+	GGOggHandle *handle = ctxmap[gid];
 	/* on to the main decode loop.  We assume in this example that audio
 	 and video start roughly together, and don't begin playback until
 	 we have a start frame for both.  This is not necessarily a valid
@@ -655,9 +655,10 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 }
 
 void gaudio_OggClose(g_id gid) {
-	GGOggHandle *handle = (GGOggHandle*) gid;
+	GGOggHandle *handle = ctxmap[gid];
 
 	ctxmap.erase(gid);
+	if (!handle) return;
 	if (handle->tref != LUA_NOREF) {
 		lua_unref(::L, handle->tref);
 		handle->tref = LUA_NOREF;
@@ -685,6 +686,7 @@ void gaudio_OggClose(g_id gid) {
 
 #if defined(FLAVOUR_F) || defined(FLAVOUR_NT)
 //Encoder
+static std::map<g_id, GGOggEncHandle *> ctxmap2;
 g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 		int sampleRate, int bitsPerSample, float quality) {
 	FILE *fos = fopen(gpath_transform(fileName), "wb");
@@ -753,11 +755,14 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 
 	}
 
+	g_id gid= g_NextId();
+	ctxmap2[gid]=
+
 	return (g_id) handle;
 }
 
 size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
-	GGOggEncHandle *handle = (GGOggEncHandle*) id;
+	GGOggEncHandle *handle = ctxmap2[gid];
 	int eos = 0;
 	long i;
 	if (size == 0) {
@@ -829,7 +834,9 @@ size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
 }
 
 void gsoundencoder_OggClose(g_id id) {
-	GGOggEncHandle *handle = (GGOggEncHandle*) id;
+	GGOggEncHandle *handle = ctxmap2[gid];
+	ctxmap2.erase(gid);
+	if (!handle) return;
 	/* clean up and exit.  vorbis_info_clear() must be called last */
 	gsoundencoder_OggWrite(id, 0, NULL);
 
@@ -839,6 +846,7 @@ void gsoundencoder_OggClose(g_id id) {
 	vorbis_comment_clear(&handle->vc);
 	vorbis_info_clear(&handle->vi);
 	fclose(handle->fos);
+	delete handle;
 }
 GGAudioEncoder audioEncOgg(gsoundencoder_OggCreate, gsoundencoder_OggClose,
 		gsoundencoder_OggWrite);

@@ -57,7 +57,7 @@ target platform to export the application source.</string>
        </item>
        <item>
         <property name="text">
-         <string>WinRT</string>
+         <string>UWP</string>
         </property>
        </item>
        <item>
@@ -100,7 +100,7 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
