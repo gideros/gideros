@@ -112,6 +112,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         		"	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n"
 				"	<key>CFBundleVersion</key>\n	<string>"+QString::number(ctx->properties.build_number)+"</string>\n"
 				"	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n"
+				"	<key>LSMinimumSystemVersion</key>\n	<string>10.12.0</string>\n"
 				"	<key>CFBundleSupportedPlatforms</key>\n	<array><string>MacOSX</string></array>\n"
 				"	<key>NOTE</key>").toUtf8());
     }
