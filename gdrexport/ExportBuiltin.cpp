@@ -137,8 +137,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 
 		replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->appName.toUtf8());
         replaceList1 << qMakePair(QString("giderosgame").toUtf8(), ctx->basews.toUtf8());
-        replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), ctx->args["package"].toUtf8());
-        replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), ctx->args["package"].toUtf8());
+        replaceList1 << qMakePair(QString("com.giderosmobile.player").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), ctx->args["organization"].toUtf8());
         replaceList1 << qMakePair(QString("BackgroundColor=\"#FFFFFF\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
         replaceList1 << qMakePair(QString("BackgroundColor=\"#FEFEFE\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());

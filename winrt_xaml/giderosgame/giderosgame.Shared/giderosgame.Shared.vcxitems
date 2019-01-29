@@ -3,6 +3,9 @@
   <PropertyGroup Condition="'$(Platform)'=='ARM'" Label="Configuration">
     <GidPlatformPath>ARM\</GidPlatformPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='x64'" Label="Configuration">
+    <GidPlatformPath>x64\</GidPlatformPath>
+  </PropertyGroup>
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
