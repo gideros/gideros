@@ -3,7 +3,7 @@
   <Identity Name="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" Publisher="CN=Gideros Mobile" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.17763.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.14393.0" MaxVersionTested="10.0.17763.0" />
   </Dependencies>
   <Properties>
     <DisplayName>Gideros Player</DisplayName>
