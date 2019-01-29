@@ -18,7 +18,6 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="giderosgame_Windows.App">
       <uap:VisualElements DisplayName="Gideros Player" Description="Gideros Player" BackgroundColor="#FEFEFE" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png">
-        <uap:LockScreen Notification="badgeAndTileText" BadgeLogo="Assets\BadgeLogo.png" />
         <uap:DefaultTile Square310x310Logo="Assets\LargeTile.png" Wide310x150Logo="Assets\WideTile.png" Square71x71Logo="Assets\SmallTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />

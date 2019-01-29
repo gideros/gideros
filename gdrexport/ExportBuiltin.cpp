@@ -536,10 +536,6 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        }
    }
    else if(ctx->deviceFamily == e_WinRT){
-       ExportCommon::appIcon(ctx,24,24,QString("giderosgame/giderosgame.Windows/Assets/BadgeLogo.scale-100.png"));
-       ExportCommon::appIcon(ctx,48,48,QString("giderosgame/giderosgame.Windows/Assets/BadgeLogo.scale-200.png"));
-       ExportCommon::appIcon(ctx,96,96,QString("giderosgame/giderosgame.Windows/Assets/BadgeLogo.scale-400.png"));
-
        ExportCommon::appIcon(ctx,310,310,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-100.png"));
        ExportCommon::appIcon(ctx,620,620,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-200.png"));
        ExportCommon::appIcon(ctx,1240,1240,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-400.png"));
