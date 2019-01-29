@@ -7,7 +7,7 @@ build:
 	install_name_tool -change liblua.1.dylib @executable_path/../Frameworks/liblua.1.dylib $(OUTLIB)
 	install_name_tool -change libgid.1.dylib @executable_path/../Frameworks/libgid.1.dylib $(OUTLIB)
 	cp $(OUTLIB) . 
-	cp $(STEAM_REDIST)/*.dylib .
+	lipo $(STEAM_REDIST)/*.dylib -remove i386 -output ./libsteam_api.dylib
 
 clean:
 	cd steamplugin; xcodebuild clean
