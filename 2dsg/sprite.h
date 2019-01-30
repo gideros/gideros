@@ -62,7 +62,7 @@ public:
 	}
 
 	Sprite* getChildAt(int index, GStatus* status = 0) const;
-	void getChildrenAtPoint(float x, float y, bool visible, bool nosubs, std::vector<Sprite *> &children) const;
+    void getChildrenAtPoint(float x, float y, bool visible, bool nosubs, std::vector<std::pair<int,Sprite *>> &children) const;
 
 	Sprite* parent() const
 	{
@@ -425,7 +425,8 @@ public:
     GridBagLayout *layoutState;
 
 protected:
-	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
+    void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform) const;
+    virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
 	{
 		if (minx)
 			*minx =  1e30f;

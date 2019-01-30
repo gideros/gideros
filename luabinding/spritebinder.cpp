@@ -1359,13 +1359,20 @@ int SpriteBinder::getChildrenAtPoint(lua_State* L)
 	bool visible = lua_toboolean(L, 4);
 	bool nosubs = lua_toboolean(L, 5);
 
-	std::vector<Sprite *>res;
+    std::vector<std::pair<int,Sprite *>>res;
 	sprite->getChildrenAtPoint(x, y, visible, nosubs, res);
 	int nres=res.size();
 	lua_createtable(L,nres,0);
 	for (int i=0;i<nres;i++) {
-		lua_getfield(L, 1, "__children");	// push sprite.__children
-		lua_pushlightuserdata(L, res[i]);
+        int pidx=res[i].first;
+        if (pidx==0)
+            lua_getfield(L, 1, "__children");	// push sprite.__children
+        else {
+            lua_rawgeti(L,-1,pidx);
+            lua_getfield(L, -1, "__children");	// push sprite.__children
+            lua_remove(L, -2);					// pop sprite.__children
+        }
+        lua_pushlightuserdata(L, res[i].second);
 		lua_rawget(L, -2);					// push sprite.__children[child]
 		lua_remove(L, -2);					// pop sprite.__children
 		lua_rawseti(L,-2,i+1);

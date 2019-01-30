@@ -468,11 +468,29 @@ Sprite* Sprite::getChildAt(int index, GStatus* status) const {
 	return children_[index];
 }
 
-void Sprite::getChildrenAtPoint(float x, float y, bool visible, bool nosubs,std::vector<Sprite *> &children) const {
+void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform) const {
+    float minx, miny, maxx, maxy;
+    int parentidx=children.size();
+    for (size_t i = 0; i < children_.size(); ++i) {
+        Sprite *c=children_[i];
+        Matrix transform=pxform.top() * c->localTransform_.matrix();
+        c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, visible, nosubs);
+        if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
+            children.push_back(std::pair<int,Sprite *>(parentidx,c));
+            if (!nosubs) {
+                pxform.push(transform);
+                c->checkInside(x,y,visible,nosubs,children,pxform);
+                pxform.pop();
+            }
+        }
+    }
+}
+
+void Sprite::getChildrenAtPoint(float x, float y, bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children) const {
 	Matrix transform;
 	std::stack<Matrix4> pxform;
 	std::stack<const Sprite *> pstack;
-	const Sprite *curr = this;
+    const Sprite *curr = this;
 	while (curr) {
 		pstack.push(curr);
 		curr = curr->parent_;
@@ -484,17 +502,8 @@ void Sprite::getChildrenAtPoint(float x, float y, bool visible, bool nosubs,std:
 		transform = transform * curr->localTransform_.matrix();
 	}
 
-	float minx, miny, maxx, maxy;
-
-	for (size_t i = 0; i < children_.size(); ++i) {
-		Sprite *c=children_[i];
-		pxform.push(transform);
-		boundsHelper(transform * c->localTransform_.matrix(), &minx, &miny, &maxx, &maxy, pxform, visible, nosubs);
-		if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
-			children.push_back(c);
-		}
-		pxform.pop();
-	}
+    pxform.push(transform);
+    checkInside(x,y,visible,nosubs,children,pxform);
 }
 
 void Sprite::removeChildAt(int index, GStatus* status) {
