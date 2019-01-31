@@ -5,6 +5,8 @@
 
 #ifdef WINSTORE
 #include "dx11Shaders.h"
+#elif TARGET_OS_IPHONE
+#include "metalShaders.h"
 #else
 #include "gl2Shaders.h"
 #endif
@@ -15,6 +17,8 @@ void oglInitialize(unsigned int sw, unsigned int sh) {
 		return;
 #ifdef WINSTORE
 	ShaderEngine::Engine = new dx11ShaderEngine(sw, sh);
+#elif TARGET_OS_IPHONE
+	ShaderEngine::Engine = new metalShaderEngine(sw, sh);
 #else
 	ShaderEngine::Engine = new ogl2ShaderEngine(sw, sh);
 #endif
