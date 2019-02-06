@@ -513,7 +513,7 @@ ogl2ShaderEngine::~ogl2ShaderEngine() {
 
 ShaderTexture *ogl2ShaderEngine::createTexture(ShaderTexture::Format format,
 		ShaderTexture::Packing packing, int width, int height, const void *data,
-		ShaderTexture::Wrap wrap, ShaderTexture::Filtering filtering) {
+		ShaderTexture::Wrap wrap, ShaderTexture::Filtering filtering,bool forRT) {
 	return new ogl2ShaderTexture(format, packing, width, height, data, wrap,
 			filtering);
 }
@@ -720,9 +720,11 @@ void ogl2ShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor) {
 void ogl2ShaderEngine::getProperties(std::map<std::string,std::string> &props)
 {
 	GLCALL_INIT;
+#ifdef GL_SHADER_COMPILER
 	GLboolean bv;
 	GLCALL glGetBooleanv(GL_SHADER_COMPILER,&bv);
 	props["shader_compiler"]=bv?"1":"0";
+#endif
 	GLint range[2];
 	GLint precision[2];
 	std::ostringstream s;

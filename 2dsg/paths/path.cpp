@@ -2455,10 +2455,6 @@ static void fill_path(unsigned int path, int fill_mode,
 
 	VertexBuffer<vector4f> *vb = p->fill_vertex_buffer;
 	VertexBuffer<unsigned short> *ib = p->fill_index_buffer;
-	ShaderProgram::pathShaderFillC->setData(0, ShaderProgram::DFLOAT, 4,
-			vb->size() ? &((*vb)[0]) : NULL, vb->size(), vb->modified,
-			&vb->bufferCache);
-	vb->modified = false;
 	/*
 	 glog_d("Fill path: VB Size:%d",vb->size());
 	 for (int k=0;k<vb->size();k++)
@@ -2473,6 +2469,10 @@ static void fill_path(unsigned int path, int fill_mode,
 			ShaderEngine::Engine->setDepthStencil(stencil);
 		stencil.sClear = false;
 		//glog_d("Fill path: Fill0=%d S=%d",p->fill_counts[0],p->fill_starts[0]);
+        ShaderProgram::pathShaderFillC->setData(0, ShaderProgram::DFLOAT, 4,
+                                                vb->size() ? &((*vb)[0]) : NULL, vb->size(), vb->modified,
+                                                &vb->bufferCache);
+        vb->modified = false;
 		ShaderProgram::pathShaderFillC->drawElements(ShaderProgram::Triangles,
 				ib->size(), ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache, p->fill_starts[0], p->fill_counts[0]);
@@ -2485,6 +2485,10 @@ static void fill_path(unsigned int path, int fill_mode,
 			ShaderEngine::Engine->setDepthStencil(stencil);
 		stencil.sClear = false;
 		//glog_d("Fill path: Fill1=%d S=%d",p->fill_counts[1],p->fill_starts[1]);
+        ShaderProgram::pathShaderFillC->setData(0, ShaderProgram::DFLOAT, 4,
+                                                vb->size() ? &((*vb)[0]) : NULL, vb->size(), vb->modified,
+                                                &vb->bufferCache);
+        vb->modified = false;
 		ShaderProgram::pathShaderFillC->drawElements(ShaderProgram::Triangles,
 				ib->size(), ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache, p->fill_starts[1], p->fill_counts[1]);

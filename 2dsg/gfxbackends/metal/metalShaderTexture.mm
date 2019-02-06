@@ -7,7 +7,7 @@
 
 #include "metalShaders.h"
 
-metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
+metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering, bool forRT)
 {
 	this->width=width;
 	this->height=height;
@@ -27,7 +27,7 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
     	    	case FMT_Y: glformat=MTLPixelFormatR8Unorm; bpr=1; break;
     	    	case FMT_YA: glformat=MTLPixelFormatRG8Unorm; bpr=2; break;
     	    }
-    	}
+    	}/* Not available on OSX
     	case PK_USHORT_565: {
     	    switch (format)
     	    {
@@ -46,22 +46,23 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
     	    {
     	    	case FMT_RGBA: glformat=MTLPixelFormatA1BGR5Unorm; bpr=2; break;
     	    }
-    		break;
+    		break;*/
     }
     
 	MTLTextureDescriptor * md=[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:(MTLPixelFormat)glformat 
 	                                                       width:(NSUInteger)width 
 	                                                      height:(NSUInteger)height 
 	                                                   mipmapped:(BOOL)NO];
-
-	mtex=[MTLTexture newTextureWithDescriptor:md];                                                   
+    if (forRT)
+        md.usage=MTLTextureUsageRenderTarget;
+	mtex=[metalDevice newTextureWithDescriptor:md];
+    [mtex retain];
     if (data) {
     	[mtex replaceRegion:MTLRegionMake2D(0,0,width,height) 
          mipmapLevel:0 
            withBytes:data 
          bytesPerRow:bpr*width];
     }
-    [md release];
 }
 
 void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
@@ -84,7 +85,7 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
     	    	case FMT_Y: glformat=MTLPixelFormatR8Unorm; bpr=1; break;
     	    	case FMT_YA: glformat=MTLPixelFormatRG8Unorm; bpr=2; break;
     	    }
-    	}
+    	}/* not handled on OSX
     	case PK_USHORT_565: {
     	    switch (format)
     	    {
@@ -103,7 +104,7 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
     	    {
     	    	case FMT_RGBA: glformat=MTLPixelFormatA1BGR5Unorm; bpr=2; break;
     	    }
-    		break;
+    		break;*/
     }
     if (data) {
     	[mtex replaceRegion:MTLRegionMake2D(0,0,width,height) 
@@ -113,12 +114,19 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
     }
 }
 
+void metalShaderTexture::readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)
+{
+    //TODO check format
+    [mtex getBytes:data bytesPerRow:bpr*this->width fromRegion:MTLRegionMake2D(x, y, width, height) mipmapLevel:0];
+}
+
 void metalShaderTexture::setNative(void *externalTexture)
 {
 }
 
 void *metalShaderTexture::getNative()
 {
+    return mtex;
 }
 
 metalShaderTexture::~metalShaderTexture()

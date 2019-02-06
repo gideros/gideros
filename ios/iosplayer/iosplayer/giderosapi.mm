@@ -959,11 +959,13 @@ void *ApplicationManager::renderLoop()
 
         if (renderLoopActive_)
         {
-            [view_ setFramebuffer];
-            application_->clearBuffers();
-            application_->renderScene(1);
-            drawIPs();
-            [view_ presentFramebuffer];
+            @autoreleasepool {                
+                [view_ setFramebuffer];
+                application_->clearBuffers();
+                application_->renderScene(1);
+                drawIPs();
+                [view_ presentFramebuffer];
+            }
         }
 		
         [autorotationMutex_ unlock];

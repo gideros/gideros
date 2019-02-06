@@ -344,18 +344,18 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 	}
 	if (vertices_.size() == 0) return;
 
-	ShaderProgram *p=colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor;
+    ShaderEngine::StandardProgram stdp=colors_.empty()?ShaderEngine::STDP_BASIC:ShaderEngine::STDP_COLOR;
 	if (texture_[0] && !textureCoordinates_.empty())
     {
         ShaderEngine::Engine->bindTexture(0,texture_[0]->data->id());
-    	p=colors_.empty()?ShaderProgram::stdTexture:ShaderProgram::stdTextureColor;
+        stdp=colors_.empty()?ShaderEngine::STDP_TEXTURE:ShaderEngine::STDP_TEXTURECOLOR;
     }
 	for (int t=1;t<MESH_MAX_TEXTURES;t++)
 		if (texture_[t])
 			ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
 
-	if (shader_)
-		p=shader_;
+    ShaderProgram *p=shader_?shader_:ShaderEngine::Engine->getDefault(stdp,mesh3d_?ShaderEngine::STDPV_3D:0);
+    
     p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),vertices_.modified,&vertices_.bufferCache);
     vertices_.modified=false;
 

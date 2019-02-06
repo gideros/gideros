@@ -3,10 +3,15 @@
 #include <string.h>
 #include "gtexture.h"
 
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+
 #ifdef WINSTORE
 #include "dx11Shaders.h"
 #elif TARGET_OS_IPHONE
-#include "metalShaders.h"
+extern ShaderEngine *createMetalShaderEngine(int sw,int sh);
+#include "gl2Shaders.h"
 #else
 #include "gl2Shaders.h"
 #endif
@@ -18,7 +23,9 @@ void oglInitialize(unsigned int sw, unsigned int sh) {
 #ifdef WINSTORE
 	ShaderEngine::Engine = new dx11ShaderEngine(sw, sh);
 #elif TARGET_OS_IPHONE
-	ShaderEngine::Engine = new metalShaderEngine(sw, sh);
+    ShaderEngine::Engine=createMetalShaderEngine(sw,sh);
+    if (!ShaderEngine::Engine)
+        ShaderEngine::Engine = new ogl2ShaderEngine(sw, sh);
 #else
 	ShaderEngine::Engine = new ogl2ShaderEngine(sw, sh);
 #endif

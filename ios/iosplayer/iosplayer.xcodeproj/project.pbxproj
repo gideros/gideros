@@ -16,7 +16,6 @@
 		5F0104071776F719002E6C6E /* grendertarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F0104051776F719002E6C6E /* grendertarget.h */; };
 		5F01040A1776F857002E6C6E /* rendertargetbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0104091776F857002E6C6E /* rendertargetbinder.cpp */; };
 		5F0B588817A0663000E3668E /* completeevent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0B588717A0663000E3668E /* completeevent.cpp */; };
-		5F0CD76115BAFADE00479287 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0CD76015BAFADE00479287 /* Foundation.framework */; };
 		5F0CD7C115BB020800479287 /* snappy-c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7BD15BB020800479287 /* snappy-c.cpp */; };
 		5F0CD7C215BB020800479287 /* snappy-sinksource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7BE15BB020800479287 /* snappy-sinksource.cpp */; };
 		5F0CD7C315BB020800479287 /* snappy-stubs-internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7BF15BB020800479287 /* snappy-stubs-internal.cpp */; };
@@ -263,6 +262,10 @@
 		EB82BDD31B29606C00281732 /* Shaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC71B29606C00281732 /* Shaders.cpp */; };
 		EB82BDD41B29606C00281732 /* Shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EB82BDC81B29606C00281732 /* Shaders.h */; };
 		EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDD51B305E2F00281732 /* shaderbinder.cpp */; };
+		EBADE8812203064F005EF00C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBADE8802203064F005EF00C /* Foundation.framework */; };
+		EBADE88322030669005EF00C /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBADE88222030669005EF00C /* Metal.framework */; };
+		EBB07718220AD76000611085 /* giderosShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EBB07716220AD75F00611085 /* giderosShaders.metal */; };
+		EBB07719220AD76000611085 /* pathShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EBB07717220AD76000611085 /* pathShaders.metal */; };
 		EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */; };
 		EBD8CA441B903A50002F9D6C /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C95E1B903A4F002F9D6C /* common.h */; };
 		EBD8CA451B903A50002F9D6C /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C95F1B903A4F002F9D6C /* control.c */; };
@@ -320,6 +323,12 @@
 		EBD9AC7B1B99EEF2006C8316 /* svg-path.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC701B99EEF2006C8316 /* svg-path.h */; };
 		EBD9AC7D1B99EF35006C8316 /* gl2PathShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */; };
 		EBD9AC7F1B99EF5A006C8316 /* path2dbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */; };
+		EBE67D5222030D7D00CDC0A0 /* metalShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EBE67D4C22030D7C00CDC0A0 /* metalShaders.h */; };
+		EBE67D5322030D7D00CDC0A0 /* metalPathShaders.mm in Sources */ = {isa = PBXBuildFile; fileRef = EBE67D4D22030D7C00CDC0A0 /* metalPathShaders.mm */; };
+		EBE67D5422030D7D00CDC0A0 /* metalShaderEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = EBE67D4E22030D7C00CDC0A0 /* metalShaderEngine.mm */; };
+		EBE67D5522030D7D00CDC0A0 /* metalShaderProgram.mm in Sources */ = {isa = PBXBuildFile; fileRef = EBE67D4F22030D7C00CDC0A0 /* metalShaderProgram.mm */; };
+		EBE67D5622030D7D00CDC0A0 /* metalShaderTexture.mm in Sources */ = {isa = PBXBuildFile; fileRef = EBE67D5022030D7C00CDC0A0 /* metalShaderTexture.mm */; };
+		EBE67D5722030D7D00CDC0A0 /* metalShaderBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = EBE67D5122030D7C00CDC0A0 /* metalShaderBuffer.mm */; };
 		EBF48E1E21554A06000DC12F /* debugging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF48E1D21554A06000DC12F /* debugging.cpp */; };
 /* End PBXBuildFile section */
 
@@ -334,7 +343,6 @@
 		5F0104091776F857002E6C6E /* rendertargetbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rendertargetbinder.cpp; path = ../../luabinding/rendertargetbinder.cpp; sourceTree = "<group>"; };
 		5F0B588717A0663000E3668E /* completeevent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = completeevent.cpp; path = ../../2dsg/completeevent.cpp; sourceTree = "<group>"; };
 		5F0CD75D15BAFADE00479287 /* libiosplayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiosplayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F0CD76015BAFADE00479287 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5F0CD76415BAFADE00479287 /* iosplayer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iosplayer-Prefix.pch"; sourceTree = "<group>"; };
 		5F0CD7BD15BB020800479287 /* snappy-c.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "snappy-c.cpp"; path = "../../../libgid/external/snappy-1.1.0/snappy-c.cpp"; sourceTree = "<group>"; };
 		5F0CD7BE15BB020800479287 /* snappy-sinksource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "snappy-sinksource.cpp"; path = "../../../libgid/external/snappy-1.1.0/snappy-sinksource.cpp"; sourceTree = "<group>"; };
@@ -582,6 +590,11 @@
 		EB82BDC71B29606C00281732 /* Shaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shaders.cpp; sourceTree = "<group>"; };
 		EB82BDC81B29606C00281732 /* Shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shaders.h; sourceTree = "<group>"; };
 		EB82BDD51B305E2F00281732 /* shaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shaderbinder.cpp; path = ../../luabinding/shaderbinder.cpp; sourceTree = "<group>"; };
+		EBADE87E22030440005EF00C /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = ../../../../../../System/Library/Frameworks/Metal.framework; sourceTree = "<group>"; };
+		EBADE8802203064F005EF00C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		EBADE88222030669005EF00C /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Metal.framework; sourceTree = DEVELOPER_DIR; };
+		EBB07716220AD75F00611085 /* giderosShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = giderosShaders.metal; path = metal/giderosShaders.metal; sourceTree = "<group>"; };
+		EBB07717220AD76000611085 /* pathShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = pathShaders.metal; path = metal/pathShaders.metal; sourceTree = "<group>"; };
 		EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zlibbinder.cpp; path = ../../luabinding/zlibbinder.cpp; sourceTree = "<group>"; };
 		EBD8C95E1B903A4F002F9D6C /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = "../../../libgid/external/libxmp-4.3/src/common.h"; sourceTree = "<group>"; };
 		EBD8C95F1B903A4F002F9D6C /* control.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = control.c; path = "../../../libgid/external/libxmp-4.3/src/control.c"; sourceTree = "<group>"; };
@@ -639,6 +652,13 @@
 		EBD9AC701B99EEF2006C8316 /* svg-path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "svg-path.h"; sourceTree = "<group>"; };
 		EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2PathShaders.cpp; sourceTree = "<group>"; };
 		EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = path2dbinder.cpp; path = ../../luabinding/path2dbinder.cpp; sourceTree = "<group>"; };
+		EBE67D4C22030D7C00CDC0A0 /* metalShaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = metalShaders.h; path = metal/metalShaders.h; sourceTree = "<group>"; };
+		EBE67D4D22030D7C00CDC0A0 /* metalPathShaders.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = metalPathShaders.mm; path = metal/metalPathShaders.mm; sourceTree = "<group>"; };
+		EBE67D4E22030D7C00CDC0A0 /* metalShaderEngine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = metalShaderEngine.mm; path = metal/metalShaderEngine.mm; sourceTree = "<group>"; };
+		EBE67D4F22030D7C00CDC0A0 /* metalShaderProgram.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = metalShaderProgram.mm; path = metal/metalShaderProgram.mm; sourceTree = "<group>"; };
+		EBE67D5022030D7C00CDC0A0 /* metalShaderTexture.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = metalShaderTexture.mm; path = metal/metalShaderTexture.mm; sourceTree = "<group>"; };
+		EBE67D5122030D7C00CDC0A0 /* metalShaderBuffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = metalShaderBuffer.mm; path = metal/metalShaderBuffer.mm; sourceTree = "<group>"; };
+		EBE67D5C220441D000CDC0A0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 		EBF48E1D21554A06000DC12F /* debugging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = debugging.cpp; path = ../../luabinding/debugging.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -647,7 +667,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F0CD76115BAFADE00479287 /* Foundation.framework in Frameworks */,
+				EBADE88322030669005EF00C /* Metal.framework in Frameworks */,
+				EBADE8812203064F005EF00C /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -681,7 +702,10 @@
 		5F0CD75F15BAFADE00479287 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5F0CD76015BAFADE00479287 /* Foundation.framework */,
+				EBE67D5C220441D000CDC0A0 /* QuartzCore.framework */,
+				EBADE88222030669005EF00C /* Metal.framework */,
+				EBADE8802203064F005EF00C /* Foundation.framework */,
+				EBADE87E22030440005EF00C /* Metal.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1064,6 +1088,7 @@
 		EB82BDBA1B29606C00281732 /* gfxbackends */ = {
 			isa = PBXGroup;
 			children = (
+				EBE67D4B22030D6A00CDC0A0 /* metal */,
 				EB82BDC11B29606C00281732 /* gl2 */,
 				EB82BDC71B29606C00281732 /* Shaders.cpp */,
 				EB82BDC81B29606C00281732 /* Shaders.h */,
@@ -1165,6 +1190,21 @@
 			path = ../../2dsg/paths;
 			sourceTree = "<group>";
 		};
+		EBE67D4B22030D6A00CDC0A0 /* metal */ = {
+			isa = PBXGroup;
+			children = (
+				EBB07716220AD75F00611085 /* giderosShaders.metal */,
+				EBB07717220AD76000611085 /* pathShaders.metal */,
+				EBE67D4D22030D7C00CDC0A0 /* metalPathShaders.mm */,
+				EBE67D5122030D7C00CDC0A0 /* metalShaderBuffer.mm */,
+				EBE67D4E22030D7C00CDC0A0 /* metalShaderEngine.mm */,
+				EBE67D4F22030D7C00CDC0A0 /* metalShaderProgram.mm */,
+				EBE67D4C22030D7C00CDC0A0 /* metalShaders.h */,
+				EBE67D5022030D7C00CDC0A0 /* metalShaderTexture.mm */,
+			);
+			name = metal;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1199,6 +1239,7 @@
 				EBD9AC7B1B99EEF2006C8316 /* svg-path.h in Headers */,
 				EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */,
 				5F0104071776F719002E6C6E /* grendertarget.h in Headers */,
+				EBE67D5222030D7D00CDC0A0 /* metalShaders.h in Headers */,
 				EBD9AC761B99EEF2006C8316 /* path.h in Headers */,
 				EBD9AC731B99EEF2006C8316 /* khash.h in Headers */,
 				EBD8CA6E1B903A50002F9D6C /* effects.h in Headers */,
@@ -1259,6 +1300,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F0CD7C115BB020800479287 /* snappy-c.cpp in Sources */,
+				EBE67D5322030D7D00CDC0A0 /* metalPathShaders.mm in Sources */,
 				5F0CD7C215BB020800479287 /* snappy-sinksource.cpp in Sources */,
 				5F0CD7C315BB020800479287 /* snappy-stubs-internal.cpp in Sources */,
 				5F0CD7C415BB020800479287 /* snappy.cpp in Sources */,
@@ -1298,6 +1340,7 @@
 				5F0CD88015BB112300479287 /* jccoefct.c in Sources */,
 				5F0CD88115BB112300479287 /* jccolor.c in Sources */,
 				5F0CD88215BB112300479287 /* jcdctmgr.c in Sources */,
+				EBB07719220AD76000611085 /* pathShaders.metal in Sources */,
 				5F0CD88315BB112300479287 /* jchuff.c in Sources */,
 				5FE658AC18FBF0FB001D8EE3 /* adler32.c in Sources */,
 				5F0CD88415BB112300479287 /* jcinit.c in Sources */,
@@ -1352,8 +1395,10 @@
 				5F0CD91615BB494600479287 /* ftlcdfil.c in Sources */,
 				5F0CD91815BB495000479287 /* ftstroke.c in Sources */,
 				5FE658B318FBF0FB001D8EE3 /* gzwrite.c in Sources */,
+				EBE67D5522030D7D00CDC0A0 /* metalShaderProgram.mm in Sources */,
 				5FE658B818FBF0FB001D8EE3 /* trees.c in Sources */,
 				5F0CD91A15BB495900479287 /* ftxf86.c in Sources */,
+				EBB07718220AD76000611085 /* giderosShaders.metal in Sources */,
 				5F0CD91C15BB496400479287 /* ftbase.c in Sources */,
 				5F0CD91E15BB496D00479287 /* ftsystem.c in Sources */,
 				5F0CD92015BB498100479287 /* ftinit.c in Sources */,
@@ -1376,6 +1421,7 @@
 				5F321E0715BB516F00542289 /* gplugin-ios.mm in Sources */,
 				EBD8CA8E1B903A50002F9D6C /* common.c in Sources */,
 				5F321E0815BB516F00542289 /* refptr.cpp in Sources */,
+				EBE67D5622030D7D00CDC0A0 /* metalShaderTexture.mm in Sources */,
 				5F321E0915BB516F00542289 /* stringid.cpp in Sources */,
 				5FE658B718FBF0FB001D8EE3 /* inftrees.c in Sources */,
 				5F321E4015BBBCFF00542289 /* bytebuffer.cpp in Sources */,
@@ -1427,6 +1473,7 @@
 				5F321F0015BBC3FC00542289 /* texturepack.cpp in Sources */,
 				5F321F0115BBC3FC00542289 /* texturepacker.cpp in Sources */,
 				5F321F0215BBC3FC00542289 /* tilemap.cpp in Sources */,
+				EBE67D5722030D7D00CDC0A0 /* metalShaderBuffer.mm in Sources */,
 				5F321F0315BBC3FC00542289 /* timer.cpp in Sources */,
 				5F321F0415BBC3FC00542289 /* timercontainer.cpp in Sources */,
 				5F321F0515BBC3FC00542289 /* timerevent.cpp in Sources */,
@@ -1488,6 +1535,7 @@
 				5F321F5A15BBEB3200542289 /* movieclipbinder.cpp in Sources */,
 				5F321F5B15BBEB3200542289 /* registermodules.cpp in Sources */,
 				5F321F5C15BBEB3200542289 /* shapebinder.cpp in Sources */,
+				EBE67D5422030D7D00CDC0A0 /* metalShaderEngine.mm in Sources */,
 				EBD8CB091B903A50002F9D6C /* xm_load.c in Sources */,
 				5F321F5F15BBEB3200542289 /* spritebinder.cpp in Sources */,
 				EBD8CB161B903A50002F9D6C /* period.c in Sources */,
@@ -1592,8 +1640,11 @@
 					"../../libgid/external/freetype-2.7.1/src",
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",
+					../../2dsg/gfxbackends/gl2,
+					../../2dsg/gfxbackends/metal,
+					../../2dsg/gfxbackends,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx10.13;
 			};
@@ -1641,8 +1692,11 @@
 					"../../libgid/external/freetype-2.7.1/src",
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",
+					../../2dsg/gfxbackends/gl2,
+					../../2dsg/gfxbackends/metal,
+					../../2dsg/gfxbackends,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx10.13;
 				VALIDATE_PRODUCT = YES;
@@ -1687,8 +1741,10 @@
 					"../../libgid/external/libxmp-4.3/src",
 					"../../libgid/external/libxmp-4.3/lite/src",
 				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -1729,8 +1785,10 @@
 					"../../libgid/external/libxmp-4.3/src",
 					"../../libgid/external/libxmp-4.3/lite/src",
 				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;

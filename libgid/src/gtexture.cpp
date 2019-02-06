@@ -41,6 +41,7 @@ struct CommonElement
     int type;
     int wrap;
     int filter;
+    bool renderTarget;
     ShaderTexture *_texture;
 };
 
@@ -121,6 +122,7 @@ public:
         element->wrap = wrap;
         element->filter = filter;
         element->udata = NULL;
+        element->renderTarget = false;
 
         genAndUploadTexture(element, pixels);
 
@@ -475,6 +477,7 @@ public:
         element->wrap = wrap;
         element->filter = filter;
         element->udata = NULL;
+        element->renderTarget = true;
 
         element->textureSize = width * height * pixelSize(format, type);
 
@@ -657,7 +660,7 @@ private:
         ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
         if (element->filter==GTEXTURE_NEAREST)
         	filtering=ShaderTexture::FILT_NEAREST;
-        element->_texture=engine->createTexture(format,type,element->width, element->height,pixels,wrap,filtering);
+        element->_texture=engine->createTexture(format,type,element->width, element->height,pixels,wrap,filtering,element->renderTarget);
     }
 
 private:

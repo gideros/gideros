@@ -244,7 +244,7 @@ public:
 	virtual void reset(bool reinit=false);
 	virtual const char *getVersion()=0;
 	virtual const char *getShaderLanguage()=0;
-	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
+	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;
 	virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags,
@@ -260,7 +260,11 @@ public:
 		STDP_PARTICLE,
 		STDP_PARTICLES
 	};
-	virtual ShaderProgram *getDefault(StandardProgram id);
+    enum StandardaProgramVariant {
+        STDPV_TEXTURED=1,
+        STDPV_3D
+    };
+	virtual ShaderProgram *getDefault(StandardProgram id,int variant=0);
 	//Matrices
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);

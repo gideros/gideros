@@ -43,6 +43,7 @@ ios.libs.install: ios.libs
 	cp $(ROOT)/lua/liblua.ios.a $(IOS_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.ios.a $(IOS_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.ios.a $(IOS_TEMPLATE)/libgideros.a
+	cp $(ROOT)/ios/iosplayer/build/Release-iphoneos/default.metallib $(IOS_TEMPLATE)
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(IOS_TEMPLATE)
 
 atv.libs.install: atv.libs
@@ -50,6 +51,7 @@ atv.libs.install: atv.libs
 	cp $(ROOT)/lua/liblua.atv.a $(ATV_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.atv.a $(ATV_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
+	cp $(ROOT)/ios/iosplayer/build/Release-appletvos/default.metallib $(ATV_TEMPLATE)
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
 
 luasocket.%: PLUGINDIR=LuaSocket
@@ -122,6 +124,7 @@ player.ios.app:
 	cp $(PLUGINS_IOS_PLAYER) $(IOS_TEMPLATE)/Plugins
 	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.ios.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/Plugins/libluasocket.a
 	cp $(IOS_TEMPLATE)/*.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
+	cp $(IOS_TEMPLATE)/*.metallib $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	cp $(IOS_TEMPLATE)/giderosapi.h $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	mkdir -p $(RELEASE)/Players
 	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -sdk iphoneos$$IOS_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosiOSPlayer.xcodeproj -scheme GiderosiOSPlayer -archivePath GiderosiOSPlayer.xcarchive archive

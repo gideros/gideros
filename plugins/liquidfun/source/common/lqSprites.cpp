@@ -292,7 +292,7 @@ void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float _UNUSED(sx),
 
 		ShaderProgram *p=proxy_->getShader();
 		if (!p)
-			p=gtexture_get_engine()->getDefault(ShaderEngine::STDP_PARTICLE);
+            p=gtexture_get_engine()->getDefault(ShaderEngine::STDP_PARTICLE,texturebase_?ShaderEngine::STDPV_TEXTURED:0);
 		if (p)
 		{
 			int pc=ps_->GetParticleCount();

@@ -272,7 +272,7 @@ void ShaderEngine::getColor(float &r,float &g,float &b,float &a)
     a=constCol[3];
 }
 
-ShaderProgram *ShaderEngine::getDefault(StandardProgram id)
+ShaderProgram *ShaderEngine::getDefault(StandardProgram id,int variant)
 {
 	switch (id) {
 	case STDP_BASIC: return ShaderProgram::stdBasic;
