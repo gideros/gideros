@@ -388,7 +388,7 @@ dx11ShaderEngine::~dx11ShaderEngine()
 	g_backbuffer->Release();
 }
 
-ShaderTexture *dx11ShaderEngine::createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
+ShaderTexture *dx11ShaderEngine::createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT)
 {
 	return new dx11ShaderTexture(format,packing,width,height,data,wrap,filtering);
 }

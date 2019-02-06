@@ -260,7 +260,7 @@ public:
 		STDP_PARTICLE,
 		STDP_PARTICLES
 	};
-    enum StandardaProgramVariant {
+    enum StandardProgramVariant {
         STDPV_TEXTURED=1,
         STDPV_3D
     };
