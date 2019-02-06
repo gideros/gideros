@@ -128,11 +128,9 @@ void metalShaderProgram::resetAllUniforms()
 		  (*it)->resetUniforms();
 }
 
-
-
 bool metalShaderProgram::isValid()
 {
-	return true;
+	return mrpd.vertexFunction&&mrpd.fragmentFunction;
 }
 
 const char *metalShaderProgram::compilationLog()
@@ -265,10 +263,33 @@ metalShaderProgram::metalShaderProgram(const char *vshader, const char *fshader,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
     mrpd=[[MTLRenderPipelineDescriptor alloc] init];
 	bool fromCode=(flags&ShaderProgram::Flag_FromCode);
-	void *vs = fromCode?(void *)vshader:LoadShaderFile(vshader, "metal", NULL);
-	void *fs = fromCode?(void *)fshader:LoadShaderFile(fshader, "metal", NULL);
+	char *vs = fromCode?(char *)vshader:(char *) LoadShaderFile(vshader, "metal", NULL);
+	char *fs = fromCode?(char *)fshader:(char *) LoadShaderFile(fshader, "metal", NULL);
     if (vs&&fs) {
-        //TODO Load and intanciate code
+        NSError *err;
+        id<MTLLibrary> l;
+        l=[metalDevice newLibraryWithSource:[NSString stringWithUTF8String:vs] options:nil error:&err];
+        if (err) {
+            errorLog+="Error compiling vertex shader:\n";
+            errorLog+=[[err description] UTF8String];
+            errorLog+="\n";
+            err=nil;
+        }
+        if (l)
+            mrpd.vertexFunction=[l newFunctionWithName:@"main"];
+        if (!mrpd.vertexFunction)
+            errorLog+="No vertex shader function called 'main'\n";
+        l=[metalDevice newLibraryWithSource:[NSString stringWithUTF8String:fs] options:nil error:&err];
+        if (err) {
+            errorLog+="Error compiling fragment shader:\n";
+            errorLog+=[[err description] UTF8String];
+            errorLog+="\n";
+            err=nil;
+        }
+        if (l)
+            mrpd.fragmentFunction=[l newFunctionWithName:@"main"];
+        if (!mrpd.fragmentFunction)
+            errorLog+="No fragment shader function called 'main'\n";
         setupStructures(uniforms, attributes,0xFFFF,0);
     }
 	else if (vs==NULL)

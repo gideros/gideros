@@ -51,7 +51,7 @@ extern void pathShadersInit();
 extern void pathShadersRelease();
 
 void metalSetupShaders() {
-    glog_i("METAL:%s\n", [[metalDevice description] UTF8String]);
+    glog_i("METAL:%s\n", [[metalDevice name] UTF8String]);
 	//glog_i("GLSL_VERSION:%s\n", GLCALL glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	const ShaderProgram::ConstantDesc stdUniforms[] = { { "vMatrix",
@@ -448,7 +448,6 @@ void metalShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor) {
 void metalShaderEngine::getProperties(std::map<std::string,std::string> &props)
 {
 	props["shader_compiler"]="1";
-    props["version"]=[[metalDevice description] UTF8String];
     props["renderer"]=[[metalDevice name] UTF8String];
 }
 
