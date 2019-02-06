@@ -28,6 +28,7 @@
  <property name="reqDisable32bits" type="boolean" title="Disable 32bits libs (android)"/>
  <property name="reqNoMP3" type="boolean" title="Disable MP3 support (Html5)"/>
  <property name="reqNoXMP" type="boolean" title="Disable XMP/MOD support (Html5)"/>
+ <property name="reqMetal" type="boolean" title="Enable Metal support (iOS)"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -306,6 +307,16 @@
 					<key>ITSAppUsesNonExemptEncryption</key><false/>
 				]]></by>
 	    	</prepend>
+        </replacelist>
+	</template>
+    </if>
+    <if condition="[[[plugin.reqMetal]]]">
+   	<template name="Project" path="">
+       	<replacelist wildcards="EAGLView.m">
+		    <replace>
+				<orig><![CDATA[checkMetal=false]]></orig>
+				<by><![CDATA[checkMetal=true]]></by>
+	    	</replace>
         </replacelist>
 	</template>
     </if>

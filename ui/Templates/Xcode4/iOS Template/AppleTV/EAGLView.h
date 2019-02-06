@@ -6,10 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import <OpenGLES/ES1/gl.h>
-#import <OpenGLES/ES1/glext.h>
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
+#import "Metal/Metal.h"
+extern id<MTLDevice> metalDevice;
+extern MTLRenderPassDescriptor *metalFramebuffer;
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
@@ -29,7 +30,11 @@
 	BOOL framebufferDirty;
 	BOOL retinaDisplay;
 	CAEAGLLayer *eaglLayer;
+    CAMetalLayer *metalLayer;
+    id<CAMetalDrawable> metalDrawable;
     CGRect safeArea;
+    id<MTLTexture> metalDepth;
+    id<MTLTexture> metalStencil;
 }
 
 @property (nonatomic, retain) EAGLContext *context;
@@ -39,5 +44,7 @@
 - (void)setFramebuffer;
 - (BOOL)presentFramebuffer;
 - (void)enableRetinaDisplay:(BOOL)enable;
+- (void) setup;
+- (void) tearDown;
 
 @end
