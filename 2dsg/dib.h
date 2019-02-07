@@ -13,7 +13,7 @@ class Dib
 public:
 	Dib(Application* application,
 		int width, int height,
-		bool pow2 = false);
+		bool pow2 = false, float scale=1.0);
 
 	// can throw GiderosException
 	Dib(Application* application,

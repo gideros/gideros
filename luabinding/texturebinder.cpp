@@ -45,6 +45,7 @@ int TextureBinder::create(lua_State* L)
     Format format = eRGBA8888;
     int paramsIndex=isFromPixels?5:3;
     bool pow2=true;
+    float scale=1.0;
 	if (!lua_isnoneornil(L, paramsIndex))
 	{
 		if (lua_type(L, paramsIndex) != LUA_TTABLE)
@@ -105,6 +106,9 @@ int TextureBinder::create(lua_State* L)
         if (!lua_isnil(L, -1))
           pow2=lua_toboolean(L,-1);
         lua_pop(L, 1);
+        lua_getfield(L, paramsIndex, "scale");
+        scale=luaL_optnumber(L,-1,1.0);
+        lua_pop(L, 1);
     }
 
 	
@@ -114,7 +118,7 @@ int TextureBinder::create(lua_State* L)
 	try
 	{
 		if (isFromPixels)
-	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
+	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2, scale);
 		else
 			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
 	}

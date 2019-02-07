@@ -277,25 +277,20 @@ int LuaApplication::Core_yield(lua_State* L)
 int LuaApplication::Core_asyncCall(lua_State* L)
 {
 	LuaApplication::AsyncLuaTask t;
-	lua_State *T=lua_newthread(L);
-	lua_pushvalue(L,-1);
+    luaL_checktype(L,1,LUA_TFUNCTION);
+    int nargs=lua_gettop(L);
+    lua_State *T=lua_newthread(L);
 	t.taskRef=luaL_ref(L,LUA_REGISTRYINDEX);
 	t.L=T;
 	t.sleepTime=0;
 	t.autoYield=true;
-	int nargs=lua_gettop(L);
-	luaL_loadstring(T,"local function _start_(fn,...) coroutine.yield() fn(...) end return _start_(...)");
-	lua_xmove(L,T,nargs);
-	if (lua_resume(T,nargs)!=LUA_YIELD)
-	{
-		lua_xmove(T,L,1);
-		lua_error(L);
-	}
-	else
-		LuaApplication::tasks_.push_back(t);
+    t.nargs=nargs-1;
+    if (t.nargs) t.autoYield=false;
+    lua_xmove(L,T,nargs);
+    LuaApplication::tasks_.push_back(t);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, t.taskRef);
 	return 1;
 }
-
 
 static int bindAll(lua_State* L)
 {
@@ -1236,9 +1231,7 @@ void LuaApplication::enterFrame(GStatus *status)
 		int loops = 0;
 		while ((!tasks_.empty())&&(!status->error()))
 		{
-			AsyncLuaTask t = tasks_.front();
-			tasks_.pop_front();
-			tasks_.push_back(t);
+            AsyncLuaTask t = tasks_.front();
 			if ((t.sleepTime > iclock()) || (t.skipFrame))
 			{
 				loops++;
@@ -1252,33 +1245,36 @@ void LuaApplication::enterFrame(GStatus *status)
 			{
                 LuaDebugging::yieldHookMask=LUA_MASKRET| LUA_MASKCOUNT;
                 lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);
-				res = lua_resume(t.L, 0);
+                res = lua_resume(t.L,t.nargs);
                 LuaDebugging::yieldHookMask=0;
                 lua_sethook(t.L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);
 			}
 			else
-				res = lua_resume(t.L, 0);
+                res = lua_resume(t.L, t.nargs);
 			if (res == LUA_YIELD)
-			{ /* Yielded: Do nothing */
-			}
+            { /* Yielded: Enqueue for next cycle */
+                t.nargs=0;
+                tasks_.pop_front();
+                tasks_.push_back(t);
+            }
 			else if (res != 0)
 			{
-				tasks_.pop_back(); //Error: Dequeue
 				if (exceptionsEnabled_ == true)
 				{
 					lua_traceback(t.L);
 					if (status)
 						*status = GStatus(1, lua_tostring(t.L, -1));
 				}
-				lua_pop(t.L, 1);
+                tasks_.pop_front();
+                lua_pop(t.L, 1);
 				luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
 				break;
 			}
 			else
 			{
-				tasks_.pop_back(); //Ended: Dequeue
 				//Drop any return args
-				lua_settop(t.L, 0);
+                tasks_.pop_front();
+                lua_settop(t.L, 0);
 				luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
 			}
 			if (iclock() > timeLimit)

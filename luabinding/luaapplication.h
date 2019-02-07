@@ -161,6 +161,7 @@ public:
     	double sleepTime;
     	bool skipFrame;
     	bool autoYield;
+    	int nargs;
     };
     static std::deque<AsyncLuaTask> tasks_;
     static double meanFrameTime_; //Average frame duration

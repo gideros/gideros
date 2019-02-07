@@ -23,7 +23,7 @@ static unsigned int nextpow2(unsigned int v)
 
 Dib::Dib(Application* application,
 		 int width, int height,
-		 bool pow2)
+		 bool pow2, float scale)
 {
 	originalWidth_ = width;
 	originalHeight_ = height;
@@ -38,9 +38,10 @@ Dib::Dib(Application* application,
 		width_ = originalWidth_;
 		height_ = originalHeight_;
 	}
+	scale_=scale;
 
-	baseOriginalWidth_ = originalWidth_;
-	baseOriginalHeight_ = originalHeight_;
+	baseOriginalWidth_ = originalWidth_/scale_;
+	baseOriginalHeight_ = originalHeight_/scale_;
 
 	data_.resize(width_ * height_ * 4, 0);
 }

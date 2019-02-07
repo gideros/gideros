@@ -33,7 +33,7 @@ TextureBase::TextureBase(	Application* application,
 
 TextureBase::TextureBase(	Application* application,
                             const unsigned char* pixels,unsigned int width,unsigned int height, Filter filter, Wrap wrap, Format format,
-							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/, bool pow2) :
+							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/, bool pow2, float scale) :
 	application_(application)
 {
 
@@ -44,7 +44,7 @@ TextureBase::TextureBase(	Application* application,
 	parameters.maketransparent = maketransparent;
 	parameters.transparentcolor = transparentcolor;
 
-	Dib dib(application, width, height, pow2);
+	Dib dib(application, width, height, pow2, scale);
 	if (pixels)
 	for (unsigned int y=0;y<height;y++)
 		memcpy(dib.dataArray()+y*dib.width()*4,pixels+y*width*4,width*4);
