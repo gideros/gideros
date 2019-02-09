@@ -285,7 +285,6 @@ int LuaApplication::Core_asyncCall(lua_State* L)
 	t.sleepTime=0;
 	t.autoYield=true;
     t.nargs=nargs-1;
-    if (t.nargs) t.autoYield=false;
     lua_xmove(L,T,nargs);
     LuaApplication::tasks_.push_back(t);
     lua_rawgeti(L, LUA_REGISTRYINDEX, t.taskRef);
@@ -1251,6 +1250,8 @@ void LuaApplication::enterFrame(GStatus *status)
 			}
 			else
                 res = lua_resume(t.L, t.nargs);
+			//Reload task data, in case it has changed
+            t = tasks_.front();
 			if (res == LUA_YIELD)
             { /* Yielded: Enqueue for next cycle */
                 t.nargs=0;
