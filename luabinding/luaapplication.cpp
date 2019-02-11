@@ -249,27 +249,27 @@ int LuaApplication::Core_frameStatistics(lua_State* L)
 
 int LuaApplication::Core_yield(lua_State* L)
 {
-	for (std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();it!=LuaApplication::tasks_.end();++it)
-		if ((*it).L==L)
-		{
-			if (lua_isboolean(L,1))
-			{
-				if (lua_toboolean(L,1))
-				{
-					(*it).skipFrame=true;
-					(*it).autoYield=false;
-				}
-				else
-				{
-					(*it).autoYield=true;
-				}
-			}
-			else
-			{
-				double sleep=luaL_optnumber(L,1,0);
-				(*it).sleepTime=iclock()+sleep;
-			}
-		}
+	std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+	if ((it==LuaApplication::tasks_.end())||(it->L!=L)) {
+		lua_pushstring(L,"Core.yield must be called from an async Call");
+		lua_error(L);
+		return 0; //Yield only applies to asyncThreads
+	}
+	it->sleepTime=0;
+	it->autoYield=false;
+	it->skipFrame=false;
+	if (lua_isboolean(L,1))
+	{
+		if (lua_toboolean(L,1))
+			it->skipFrame=true;
+		else
+			it->autoYield=true;
+	}
+	else
+	{
+		double sleep=luaL_optnumber(L,1,0);
+		it->sleepTime=iclock()+sleep;
+	}
 	return lua_yield(L,0);
 }
 
@@ -283,6 +283,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
 	t.taskRef=luaL_ref(L,LUA_REGISTRYINDEX);
 	t.L=T;
 	t.sleepTime=0;
+	t.skipFrame=false;
 	t.autoYield=true;
     t.nargs=nargs-1;
     lua_xmove(L,T,nargs);
@@ -1228,6 +1229,7 @@ void LuaApplication::enterFrame(GStatus *status)
 		double timeLimit = taskStart + meanFreeTime_*0.9; //Limit ourselves t 90% of free time
 		yieldHookLimit = timeLimit;
 		int loops = 0;
+		int ntasks=tasks_.size();
 		while ((!tasks_.empty())&&(!status->error()))
 		{
             AsyncLuaTask t = tasks_.front();
@@ -1250,12 +1252,12 @@ void LuaApplication::enterFrame(GStatus *status)
 			}
 			else
                 res = lua_resume(t.L, t.nargs);
-			//Reload task data, in case it has changed
+			//Reload task data after task has yielded/ended
             t = tasks_.front();
+            tasks_.pop_front();
 			if (res == LUA_YIELD)
-            { /* Yielded: Enqueue for next cycle */
+            { /* Yielded: push to the back of the queue */
                 t.nargs=0;
-                tasks_.pop_front();
                 tasks_.push_back(t);
             }
 			else if (res != 0)
@@ -1266,19 +1268,19 @@ void LuaApplication::enterFrame(GStatus *status)
 					if (status)
 						*status = GStatus(1, lua_tostring(t.L, -1));
 				}
-                tasks_.pop_front();
                 lua_pop(t.L, 1);
 				luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
+				//Task had an error, return now to report the error
 				break;
 			}
 			else
 			{
 				//Drop any return args
-                tasks_.pop_front();
                 lua_settop(t.L, 0);
 				luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
 			}
-			if (iclock() > timeLimit)
+			if (ntasks) ntasks--;
+			if ((ntasks==0)&&(iclock() > timeLimit)) //All tasks have been executed once and time has been exceeded
 				break;
 		}
 
