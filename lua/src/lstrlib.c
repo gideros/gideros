@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define lstrlib_c
 #define LUA_LIB
@@ -100,6 +101,111 @@ static int str_rep (lua_State *L) {
     luaL_addlstring(&b, s, l);
   luaL_pushresult(&b);
   return 1;
+}
+
+static int str_encode (lua_State *L) { //Added by Nico@gideros, encode numbers as bytes. ar:(value,type(i,f,d),bigendian)
+ lua_Number val=luaL_checknumber(L,1);
+ const char *type=luaL_checkstring(L,2);
+ int big=lua_toboolean(L,3);
+
+ char vbytes[8];
+ int vs=0;
+
+ switch (*type) {
+ case 'i':
+ {
+	 int32_t m=val;
+	 memcpy(vbytes,&m,4);
+	 vs=4;
+	 break;
+ }
+ case 'f':
+ {
+	 float m=val;
+	 memcpy(vbytes,&m,4);
+	 vs=4;
+	 break;
+ }
+ case 'd':
+ {
+	 double m=val;
+	 memcpy(vbytes,&m,8);
+	 vs=8;
+	 break;
+ }
+ default:
+	 lua_pushfstring(L,"Type '%s' invalid",type);
+	 lua_error(L);
+ }
+ int i=1;
+ int isBE=(!*((char *)&i));
+ if ((isBE&&(!big))||(big&&(!isBE))) {
+	 for (i=0;i<vs/2;i++)
+	 {
+		 char a=vbytes[i];
+		 vbytes[i]=vbytes[vs-1-i];
+		 vbytes[vs-1-i]=a;
+	 }
+ }
+ lua_pushlstring(L,vbytes,vs);
+ return 1;
+}
+
+static int str_decode (lua_State *L) { //Added by Nico@gideros, encode numbers as bytes. ar:(value,type(i,f,d),bigendian)
+ size_t slen;
+ const char *str=luaL_checklstring(L,1,&slen);
+ const char *type=luaL_checkstring(L,2);
+ int big=lua_toboolean(L,3);
+
+ int i=1;
+ int isBE=(!*((char *)&i));
+ char vbytes[8];
+ if ((isBE&&(!big))||(big&&(!isBE))) {
+	 for (i=0;i<slen;i++)
+		 vbytes[i]=str[slen-1-i];
+ }
+ else
+	 memcpy(vbytes,str,(slen>8)?8:slen);
+
+ switch (*type) {
+ case 'i':
+ {
+	 if (slen<4) {
+		 lua_pushfstring(L,"String too short: %d<4",slen);
+		 lua_error(L);
+	 }
+	 int32_t m;
+	 memcpy(&m,vbytes,4);
+	 lua_pushinteger(L,m);
+	 break;
+ }
+ case 'f':
+ {
+	 if (slen<4) {
+		 lua_pushfstring(L,"String too short: %d<4",slen);
+		 lua_error(L);
+	 }
+	 float m;
+	 memcpy(&m,vbytes,4);
+	 lua_pushnumber(L,m);
+	 break;
+ }
+ case 'd':
+ {
+	 if (slen<8) {
+		 lua_pushfstring(L,"String too short: %d<8",slen);
+		 lua_error(L);
+	 }
+	 double m;
+	 memcpy(&m,vbytes,8);
+	 lua_pushnumber(L,m);
+	 break;
+ }
+ default:
+	 lua_pushfstring(L,"Type '%s' invalid",type);
+	 lua_error(L);
+ }
+ return 1;
 }
 
 
@@ -838,6 +944,8 @@ static const luaL_Reg strlib[] = {
   {"reverse", str_reverse},
   {"sub", str_sub},
   {"upper", str_upper},
+  {"encodeValue", str_encode},
+  {"decodeValue", str_decode},
   {NULL, NULL}
 };
 

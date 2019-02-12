@@ -1235,10 +1235,14 @@ void LuaApplication::enterFrame(GStatus *status)
             AsyncLuaTask t = tasks_.front();
 			if ((t.sleepTime > iclock()) || (t.skipFrame))
 			{
-				loops++;
+                //Skip this task: push to it the back of the queue
+                tasks_.pop_front();
+                tasks_.push_back(t);
+                loops++;
 				if (loops > tasks_.size())
 					break;
-				continue;
+                if (ntasks) ntasks--;
+                continue;
 			}
 			loops = 0;
 			int res = 0;
