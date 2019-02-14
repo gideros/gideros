@@ -101,7 +101,7 @@ local ap=require("Tools/export_android")
 				<ask key="secret.keyAliasPass" uid="[[[export.keyAlias]]]@[[[export.keyStore]]]" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[secret.keyStorePass]]]" />
 				<set key="local.noSigning" value=""/>
 				<set key="local.isUnsigned" value=""/>
-				<set key="local.keyStore" value="[[[sys.projectDir]]]/[[[export.keyStore]]]"/>
+				<set key="local.keyStore" value="[[[export.keyStore]]]"/>
 				<set key="local.keyAlias" value="[[[export.keyAlias]]]"/>
 			</if>
 		</if>
