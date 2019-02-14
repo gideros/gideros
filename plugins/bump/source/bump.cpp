@@ -534,7 +534,7 @@ struct World {
 			Cell *cell = (*it);
 			for (std::set<int>::iterator i = cell->items.begin();
 					i != cell->items.end(); i++) {
-				if (visited.find(*i) != visited.end()) {
+                if (visited.find(*i) == visited.end()) {
 					visited.insert(*i);
 					if ((!filter) || filter->Filter(*i)) {
 						Rect r = rects[*i];
