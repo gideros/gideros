@@ -82,8 +82,8 @@ static const int TODAY = 0;
 static const int WEEK = 1;
 static const int ALL_TIME = 2;
 
-static const int FRIENDS = 0;
-static const int ALL_PLAYERS = 1;
+static const int ALL_PLAYERS = 0;
+static const int FRIENDS = 1;
 
 static const int UNLOCKED = 0;
 static const int REVEALED = 1;
