@@ -11,7 +11,7 @@ import com.giderosmobile.android.plugins.gaming.*;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.drive.Drive;
+//import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.AnnotatedData;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
@@ -67,7 +67,7 @@ public class GameGoogleplay implements GameInterface {
 		if(isAvailable())
 		{
 			GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-					.requestScopes(Drive.SCOPE_APPFOLDER)
+//					.requestScopes(Drive.SCOPE_APPFOLDER)
 					.requestScopes(Games.SCOPE_GAMES)
 					.build();
 

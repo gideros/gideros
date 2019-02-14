@@ -33,8 +33,7 @@
 					<by>
 		           implementation 'com.google.android.gms:play-services-auth:[[[plugin.gmsVersion]]]'
 		           implementation 'com.google.android.gms:play-services-games:[[[plugin.gmsVersion]]]'
-		           implementation 'com.google.android.gms:play-services-drive:[[[plugin.gmsVersion]]]'
-		           implementation 'com.google.android.gms:play-services-plus:[[[plugin.gmsVersion]]]'
+		           //implementation 'com.google.android.gms:play-services-drive:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
 	       	</replacelist>	
