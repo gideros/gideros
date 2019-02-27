@@ -1,6 +1,6 @@
 #include <gaudio.h>
 #include <gstdio.h>
-
+#include <map>
 #include <mpg123.h>
 
 static ssize_t mpg123read(void* fd, void* buf, size_t size)
@@ -30,6 +30,8 @@ struct GGMp3Handle
     mpg123_handle *mh;
     int sampleSize;
 };
+
+static std::map<g_id, GGMp3Handle *> ctxmap;
 
 extern "C" {
 
@@ -97,26 +99,29 @@ g_id gaudio_Mp3Open(const char *fileName, int *numChannels, int *sampleRate, int
     handle->mh = mh;
     handle->sampleSize = channels * 2;
 
-    return (g_id)handle;
+    g_id gid = g_NextId();
+    ctxmap[gid]=handle;
+
+    return gid;
 }
 
 int gaudio_Mp3Seek(g_id gid, long int offset, int whence)
 {
-    GGMp3Handle *handle = (GGMp3Handle*)gid;
+    GGMp3Handle *handle = ctxmap[gid];
 
     return mpg123_seek(handle->mh, offset, whence);
 }
 
 long int gaudio_Mp3Tell(g_id gid)
 {
-    GGMp3Handle *handle = (GGMp3Handle*)gid;
+    GGMp3Handle *handle = ctxmap[gid];
 
     return mpg123_tell(handle->mh);
 }
 
 size_t gaudio_Mp3Read(g_id gid, size_t size, void *data)
 {
-    GGMp3Handle *handle = (GGMp3Handle*)gid;
+    GGMp3Handle *handle = ctxmap[gid];
 
     size = (size / handle->sampleSize) * handle->sampleSize;
 
@@ -131,7 +136,8 @@ size_t gaudio_Mp3Read(g_id gid, size_t size, void *data)
 
 void gaudio_Mp3Close(g_id gid)
 {
-    GGMp3Handle *handle = (GGMp3Handle*)gid;
+    GGMp3Handle *handle = ctxmap[gid];
+    ctxmap.erase(gid);
 
     mpg123_close(handle->mh);
     mpg123_delete(handle->mh);

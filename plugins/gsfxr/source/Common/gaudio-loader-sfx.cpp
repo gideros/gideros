@@ -36,6 +36,7 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <algorithm>
+#include <map>
 #include "retrosfxvoice.h"
 
 #ifdef QT_CORE_LIB
@@ -47,6 +48,7 @@ struct GGSFXHandle
 	int nBytesRead;
 	RetroSFXVoice *pSFXVoice;
 };
+static std::map<g_id, GGSFXHandle *> ctxmap;
 
 extern "C" {
 
@@ -62,6 +64,7 @@ g_id gaudio_SFXOpen(const char *fileName, int *numChannels, int *sampleRate, int
 		if (error)
 		{
 			*error = GAUDIO_ERROR_WHILE_READING;
+			delete handle;
 			return 0;
 		}
 	}
@@ -98,13 +101,17 @@ g_id gaudio_SFXOpen(const char *fileName, int *numChannels, int *sampleRate, int
 		LOG2("gaudio_SFXOpen error ", *error);
 	}
 
-    return (g_id)handle;
+    g_id gid = g_NextId();
+    ctxmap[gid]=handle;
+
+    return gid;
 }
 
 void gaudio_SFXClose(g_id id)
 {
 	LOG1("gaudio_SFXClose");
-    GGSFXHandle *handle = (GGSFXHandle*)id;
+    GGSFXHandle *handle = ctxmap[id];
+    ctxmap.erase(id);
 	if (handle)
 	{
 		if (handle->pSFXVoice)
@@ -117,7 +124,7 @@ void gaudio_SFXClose(g_id id)
 
 int gaudio_SFXSeek(g_id id, long int offset, int whence)
 {
-    GGSFXHandle *handle = (GGSFXHandle*)id;
+    GGSFXHandle *handle = ctxmap[id];
 
 	LOG3("SEEK_SET:", offset, whence);
 
@@ -144,14 +151,14 @@ int gaudio_SFXSeek(g_id id, long int offset, int whence)
 
 long int gaudio_SFXTell(g_id id)
 {
-	GGSFXHandle *handle = (GGSFXHandle*)id;
+    GGSFXHandle *handle = ctxmap[id];
 	LOG2("gaudio_SFXTell ", handle->nBytesRead);
 	return handle->nBytesRead;
 }
 
 size_t gaudio_SFXRead(g_id id, size_t size, void *data)
 {
-    GGSFXHandle *handle = (GGSFXHandle*)id;
+    GGSFXHandle *handle = ctxmap[id];
 
 	LOG2("gaudio_SFXRead ", size);
 

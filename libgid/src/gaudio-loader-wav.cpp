@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <algorithm>
+#include <map>
 
 struct GGWaveHeader
 {
@@ -35,6 +36,7 @@ struct GGWavHandle
     unsigned int dataPos;
     unsigned int dataSize;
 };
+static std::map<g_id, GGWavHandle *> ctxmap;
 
 extern "C" {
 
@@ -160,19 +162,23 @@ g_id gaudio_WavOpen(const char *fileName, int *numChannels, int *sampleRate, int
     handle->dataPos = dataPos;
     handle->dataSize = dataSize;
 
-    return (g_id)handle;
+    g_id gid = g_NextId();
+    ctxmap[gid]=handle;
+
+    return gid;
 }
 
 void gaudio_WavClose(g_id id)
 {
-    GGWavHandle *handle = (GGWavHandle*)id;
+    GGWavHandle *handle = ctxmap[id];
+    ctxmap.erase(id);
     g_fclose(handle->fis);
     delete handle;
 }
 
 int gaudio_WavSeek(g_id id, long int offset, int whence)
 {
-    GGWavHandle *handle = (GGWavHandle*)id;
+    GGWavHandle *handle = ctxmap[id];
 
     if (whence == SEEK_SET)
     {
@@ -200,13 +206,13 @@ int gaudio_WavSeek(g_id id, long int offset, int whence)
 
 long int gaudio_WavTell(g_id id)
 {
-    GGWavHandle *handle = (GGWavHandle*)id;
+    GGWavHandle *handle = ctxmap[id];
     return (g_ftell(handle->fis) - handle->dataPos) / handle->sampleSize;
 }
 
 size_t gaudio_WavRead(g_id id, size_t size, void *data)
 {
-    GGWavHandle *handle = (GGWavHandle*)id;
+    GGWavHandle *handle = ctxmap[id];
 
     size_t size2 = size / handle->sampleSize;
     size_t remain = (handle->dataSize / handle->sampleSize) - gaudio_WavTell(id);
