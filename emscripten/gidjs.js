@@ -41,7 +41,7 @@ Module.preRun
 						loader=loader.then(function () {
 							return new Promise(function (resolve,reject) {
 								console.log("Loading plugin:"+p); 
-								var xhr = new XMLHttpRequest;
+								var xhr = new Module.XMLHttpRequest;
 								xhr.open("GET", p, true);
 								xhr.onload = function(e) {
 									if (xhr.readyState === 4) {

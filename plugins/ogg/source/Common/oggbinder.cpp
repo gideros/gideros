@@ -756,13 +756,13 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	}
 
 	g_id gid= g_NextId();
-	ctxmap2[gid]=
+	ctxmap2[gid]=handle;
 
-	return (g_id) handle;
+	return gid;
 }
 
 size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
-	GGOggEncHandle *handle = ctxmap2[gid];
+	GGOggEncHandle *handle = ctxmap2[id];
 	int eos = 0;
 	long i;
 	if (size == 0) {
@@ -834,8 +834,8 @@ size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
 }
 
 void gsoundencoder_OggClose(g_id id) {
-	GGOggEncHandle *handle = ctxmap2[gid];
-	ctxmap2.erase(gid);
+	GGOggEncHandle *handle = ctxmap2[id];
+	ctxmap2.erase(id);
 	if (!handle) return;
 	/* clean up and exit.  vorbis_info_clear() must be called last */
 	gsoundencoder_OggWrite(id, 0, NULL);

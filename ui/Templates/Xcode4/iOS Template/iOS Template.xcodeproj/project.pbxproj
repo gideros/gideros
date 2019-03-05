@@ -60,6 +60,7 @@
 		B2E3F02C1BAC2919005599BD /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDD1BAC119E005599BD /* libgideros.a */; };
 		EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
 		EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A0601D674BCB00766D7E /* plugins.cpp */; };
+		EBB07735222E80E000611085 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = EBB07734222E80E000611085 /* default.metallib */; };
 /* TAG:GIDEROS:ALL_FILES_REFS */
 /* End PBXBuildFile section */
 
@@ -143,6 +144,7 @@
 		B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		EB42A05D1D66ED5000766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plugins.cpp; path = Plugins/plugins.cpp; sourceTree = "<group>"; };
 		EB42A0601D674BCB00766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = plugins.cpp; sourceTree = "<group>"; };
+		EBB07734222E80E000611085 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 /* TAG:GIDEROS:ALL_FILES_REFS */
 /* End PBXFileReference section */
 
@@ -279,6 +281,7 @@
 		5FD896F515CED77F00D34824 /* iOS Template */ = {
 			isa = PBXGroup;
 			children = (
+				EBB07734222E80E000611085 /* default.metallib */,
 				5F4153F615CEF227007B5365 /* EAGLView.h */,
 				5F4153F715CEF227007B5365 /* EAGLView.m */,
 				5F4153F415CEF227007B5365 /* AppDelegate.h */,
@@ -429,6 +432,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBB07735222E80E000611085 /* default.metallib in Resources */,
 				5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */,
 				5F58D85315D9268900137D76 /* assets in Resources */,
 				5F4EA0A617816A9D0043BBCD /* Default-568h@2x.png in Resources */,
