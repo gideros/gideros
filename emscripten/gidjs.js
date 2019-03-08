@@ -2,7 +2,7 @@ Module.preRun
 		.push(function() {
 			__ATPRERUN__.push(function() {
 				Module.JSPlugins.forEach(function(p) {
-					var xhr = new XMLHttpRequest;
+					var xhr = new Module.XMLHttpRequest;
 					var tag = document.createElement("script");
 					xhr.open("GET", p, true);
 					xhr.onload = function(e) {
@@ -69,8 +69,20 @@ Module.preRun
 			Module.setStatus("Loading application...");
 			// Load GAPP if supplied
 			Module.hasGApp = ((typeof (GAPP_URL) != 'undefined') && (GAPP_URL != null));
-			if (Module.hasGApp)
-				FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true, false);
+			if (Module.hasGApp) {
+				if (GAPP_URL.endsWith(".gidz")) {
+					Module['addRunDependency']("gidLoadGApp");
+					var loader=JZPLoadPromise(GAPP_URL,"array")
+					.then(function (c) { 
+						console.log("Copying application");
+						FS.createPreloadedFile("/", "main.gapp", c, true, false);
+						console.log("Application ready");
+						Module['removeRunDependency']("gidLoadGApp");
+					});
+				}
+				else 
+					FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true, false);
+			}
 			// Initial syncfs to get existing saved files.
 			Module['addRunDependency']('syncfs');
 

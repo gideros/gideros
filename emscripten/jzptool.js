@@ -2,7 +2,7 @@ JZPLoaded={}
 
 function JZPLoadAsync(imageUrl, onprogress) {
 	  return new Promise((resolve, reject) => {
-	    var xhr = new Module.XMLHttpRequest();
+	    var xhr = new XMLHttpRequest();
 	    var notifiedNotComputable = false;
 
 	    xhr.open('GET', imageUrl, true);

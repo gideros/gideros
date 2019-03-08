@@ -152,16 +152,14 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<body class=\"fullscreen toplevel\">").toUtf8(), ("<body class=\"fullscreen toplevel\" style=\"background-color:"+ctx->properties.backgroundColor+";\">").toUtf8());
         if(ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("<img src=\"gideros.png\" />").toUtf8(), QString("<img src=\"gideros.png\" style=\"display:none;\"/>").toUtf8());
-        if (!ctx->player)
-        	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp\"").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
 		QString ext;
 		if (ctx->properties.html5_wasm)
 			ext="wasm";
 		else
 			ext="js";
+		QString pext="";
         if (ctx->properties.html5_pack) {
-    		QString pext;
 #if 0
 			pext="lzma";
 #else
@@ -174,7 +172,10 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 				replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js.%1']").arg(pext).toUtf8());
 				replaceList1 << qMakePair(QString("new XMLHttpRequest()").toUtf8(),QString("new Module.XMLHttpRequest()").toUtf8());
 			}
+			pext="."+pext;
         }
+        if (!ctx->player)
+        	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp"+pext+"\"").toUtf8());
 		replaceList1 << qMakePair(QString("/*GIDEROS_DYNLIB_PLUGIN*/").toUtf8(),QString("\"EP_Mp3.%1\", \"EP_Xmp.%1\", /*GIDEROS_DYNLIB_PLUGIN*/").arg(ext).toUtf8());
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
@@ -370,6 +371,29 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 	   if (ctx->properties.html5_fbinstant) {
 		   ctx->outputDir.cd("package");
 	   }
+   }
+
+   //install plugins
+   if (!ExportCommon::applyPlugins(ctx))
+		ctx->exportError=true;
+
+   if (needGApp)
+   {
+       if (ctx->deviceFamily == e_GApp)
+           ctx->outputDir.cdUp();
+       GAppFormat::buildGApp(QDir::cleanPath(ctx->outputDir.absoluteFilePath(ctx->base+".GApp")),ctx);
+       if (ctx->deviceFamily == e_GApp)
+       	ctx->outputDir.cd(ctx->base);
+       else
+       	ctx->outputDir.cd("assets");
+       ctx->outputDir.removeRecursively();
+       ctx->outputDir.cdUp();
+   }
+
+   //exporting icons
+   if (ctx->deviceFamily == e_Html5)
+   {
+	   //Pack HTML
 	   if (ctx->properties.html5_pack)
 	   {
 			QDir toolsDir = QDir(
@@ -413,6 +437,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 				    ctx->outputDir.remove(ep+".js");
 			    }
 			}
+			QProcess::execute(quote(pack) + (" -nostrip -i \"%1.GApp\" \"%1.GApp."+pext+"\"").arg(ctx->base));
+		    ctx->outputDir.remove(ctx->base+".GApp");
 			QDir::setCurrent(old.path());
 		    ctx->outputDir.remove("lzma.js");
 	   }
@@ -424,31 +450,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 	   if (ctx->properties.html5_fbinstant) {
 		   ctx->outputDir.remove("../gideros.html.symbols");
 		   ctx->outputDir.rename("gideros.html.symbols","../gideros.html.symbols");
+		   ctx->outputDir.remove("gideros.png");
 	   }
 	   if (!ctx->properties.html5_symbols)
 		   ctx->outputDir.remove((ctx->properties.html5_wasm)?"gideros-wasm.html.symbols":"gideros.html.symbols");
-   }
 
-   //install plugins
-   if (!ExportCommon::applyPlugins(ctx))
-		ctx->exportError=true;
-
-   if (needGApp)
-   {
-       if (ctx->deviceFamily == e_GApp)
-           ctx->outputDir.cdUp();
-       GAppFormat::buildGApp(QDir::cleanPath(ctx->outputDir.absoluteFilePath(ctx->base+".GApp")),ctx);
-       if (ctx->deviceFamily == e_GApp)
-       	ctx->outputDir.cd(ctx->base);
-       else
-       	ctx->outputDir.cd("assets");
-       ctx->outputDir.removeRecursively();
-       ctx->outputDir.cdUp();
-   }
-
-   //exporting icons
-   if (ctx->deviceFamily == e_Html5)
-   {
 	   qint64 initsize=0;
 	   QFileInfoList files=ctx->outputDir.entryInfoList(QStringList() << "*.js" << "*.js.png" << "*.mem" << "*.GApp" << "*.mem.png" << "*.wasm" << "*.gidz");
 	   for( int i=0; i<files.count(); ++i )
