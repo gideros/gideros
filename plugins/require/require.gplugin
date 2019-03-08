@@ -374,7 +374,8 @@
   if wasm then
     ext="wasm"
   end
-  if pack then ext=ext..".gidz" end
+  local pext=ext
+  if pack then pext=pext..".gidz" end
   local function removeEP(pn)
 	  	Export.callXml(([=[
 	    <template name="Activity" path="">
@@ -382,7 +383,8 @@
 	            <replace orig="&quot;%s.%s&quot;," by="" />
 	        </replacelist>
 	    </template>
-	  ]=]):format(pn,ext))
+	  ]=]):format(pn,pext))
+	  -- Plugins are invoked on unpacked base files
 	 Export.remove(pn.."."..ext)
   end
   if Export.isSet("plugin.reqNoMP3") then

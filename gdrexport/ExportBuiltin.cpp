@@ -425,6 +425,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 			    ctx->outputDir.remove("gideros-wasm.js");
 			    ctx->outputDir.remove("gideros-wasm.wasm");
 			    foreach(const QString &ep,EP) {
+			    	if (!QFileInfo::exists(ctx->outputDir.absoluteFilePath(ep+".wasm"))) continue;
 					QProcess::execute(quote(pack) + " -nostrip -i "+ep+".wasm "+ep+".wasm."+pext);
 				    ctx->outputDir.remove(ep+".wasm");
 			    }
@@ -433,6 +434,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 				QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.js gideros.js."+pext);
 				QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.asm.js gideros.asm.js."+pext);
 			    foreach(const QString &ep,EP) {
+			    	if (!QFileInfo::exists(ctx->outputDir.absoluteFilePath(ep+".js"))) continue;
 					QProcess::execute(quote(pack) + " -nostrip -i "+ep+".js "+ep+".js."+pext);
 				    ctx->outputDir.remove(ep+".js");
 			    }
