@@ -62,6 +62,7 @@ private:
     std::vector<std::string> tag_; //user tag
     VertexBuffer<float> texcoords_; //x,y
     VertexBuffer<unsigned short> indices_;
+    size_t particleCount;
     TextureBase *texture_;
     float sx_, sy_;
 

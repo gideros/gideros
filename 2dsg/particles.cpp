@@ -19,6 +19,7 @@ Particles::Particles(Application *application) :
 	minx_ = miny_ = 1e30;
 	maxx_ = maxy_ = -1e30;
 	lastTickTime_=0;
+	particleCount=0;
 	application->addTicker(this);
 }
 
@@ -29,10 +30,7 @@ Particles::~Particles() {
 }
 
 void Particles::clearParticles() {
-	ttl_.clear();
-	points_.clear();
-	speeds_.clear();
-	colors_.clear();
+	particleCount=0;
 }
 
 int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
@@ -46,16 +44,21 @@ int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 		k += 16;
 	}
 	if (s < 0) {
-		s = ttl_.size();
-		ttl_.resize(s + 1);
-		points_.resize(s * 16 + 16);
-		colors_.resize(s * 16 + 16);
-		texcoords_.resize(s * 8 + 8);
-		speeds_.resize(s * 4 + 4);
-		decay_.resize(s * 4 + 4);
-		originalColors_.resize(s + 1);
-		indices_.resize(s*6 + 6);
-		tag_.resize(s + 1);
+		int tsize=ttl_.size();
+		if (tsize==particleCount) {
+			//Not enough room in vectors: double
+			tsize*=2;
+			ttl_.resize(tsize);
+			points_.resize(tsize * 16);
+			colors_.resize(tsize * 16);
+			texcoords_.resize(tsize * 8);
+			speeds_.resize(tsize * 4);
+			decay_.resize(tsize * 14);
+			originalColors_.resize(tsize);
+			indices_.resize(tsize * 6);
+			tag_.resize(tsize);
+		}
+		s=particleCount++;
 	}
 	for (int sb = 0; sb < 16; sb += 4) {
 		points_[s * 16 + sb + 0] = x;
@@ -107,7 +110,7 @@ void Particles::removeParticle(int i) {
 }
 
 void Particles::setPosition(int i, float x, float y) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	points_[i * 16] = x;
 	points_[i * 16 + 1] = y;
@@ -121,7 +124,7 @@ void Particles::setPosition(int i, float x, float y) {
 }
 
 void Particles::getPosition(int i, float *x, float *y) {
-	if (i >= ttl_.size()) {
+	if (i >= particleCount) {
 		*x = 0;
 		*y = 0;
 	} else {
@@ -131,7 +134,7 @@ void Particles::getPosition(int i, float *x, float *y) {
 }
 
 void Particles::setSize(int i, float size) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	points_[i * 16 + 2] = size;
 	points_[i * 16 + 4 + 2] = size;
@@ -141,14 +144,14 @@ void Particles::setSize(int i, float size) {
 }
 
 float Particles::getSize(int i) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return 0;
 	else
 		return points_[i * 16 + 2];
 }
 
 void Particles::setAngle(int i, float angle) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	points_[i * 16 + 3] = angle;
 	points_[i * 16 + 4 + 3] = angle;
@@ -158,26 +161,26 @@ void Particles::setAngle(int i, float angle) {
 }
 
 float Particles::getAngle(int i) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return 0;
 	else
 		return points_[i * 16 + 3];
 }
 
 void Particles::setTtl(int i, int ttl) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	ttl_[i] = ttl;
 }
 
 int Particles::getTtl(int i) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return 0;
 	return ttl_[i];
 }
 
 void Particles::setColor(int i, unsigned int color, float alpha) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	originalColors_[i].color = color;
 	originalColors_[i].alpha = alpha;
@@ -198,7 +201,7 @@ void Particles::setColor(int i, unsigned int color, float alpha) {
 }
 
 void Particles::setSpeed(int i, float vx, float vy, float vs, float va) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	speeds_[i * 4] = vx;
 	speeds_[i * 4 + 1] = vy;
@@ -208,7 +211,7 @@ void Particles::setSpeed(int i, float vx, float vy, float vs, float va) {
 
 void Particles::getSpeed(int i, float *vx, float *vy, float *vs,
 		float *va) const {
-	if (i >= ttl_.size()) {
+	if (i >= particleCount) {
 		if (vx)
 			*vx = 0;
 		if (vy)
@@ -230,7 +233,7 @@ void Particles::getSpeed(int i, float *vx, float *vy, float *vs,
 }
 
 void Particles::setDecay(int i, float vp, float vc, float vs, float va) {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	decay_[i * 4] = vp;
 	decay_[i * 4 + 1] = vc;
@@ -240,7 +243,7 @@ void Particles::setDecay(int i, float vp, float vc, float vs, float va) {
 
 void Particles::getDecay(int i, float *vp, float *vc, float *vs,
 		float *va) const {
-	if (i >= ttl_.size()) {
+	if (i >= particleCount) {
 		if (vp)
 			*vp = 0;
 		if (vc)
@@ -263,14 +266,14 @@ void Particles::getDecay(int i, float *vp, float *vc, float *vs,
 
 void Particles::setTag(int i, const char *tag)
 {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return;
 	tag_[i]=tag?tag:"";
 }
 
 const char *Particles::getTag(int i) const
 {
-	if (i >= ttl_.size())
+	if (i >= particleCount)
 		return NULL;
 	return tag_[i].c_str();
 }
@@ -293,7 +296,7 @@ void Particles::tick() {
 	}
 	lastTickTime_=iclk;
 	if (paused_) return;
-	for (unsigned int i = 0; i < ttl_.size(); i++) {
+	for (size_t i = 0; i < particleCount; i++) {
 		if (points_[i * 16 + 2] != 0) {
 			bool remove=false;
 			float nx = points_[i * 16] + speeds_[i * 4]*nframes;
@@ -422,7 +425,7 @@ void Particles::extraBounds(float *minx, float *miny, float *maxx,
 		minx_ = miny_ = 1e30;
 		maxx_ = maxy_ = -1e30;
 
-		for (size_t i = 0; i < ttl_.size(); i++) {
+		for (size_t i = 0; i < particleCount; i++) {
 			if (points_[i * 16 + 2] != 0) {
 				float x = points_[i * 16];
 				float y = points_[i * 16 + 1];
