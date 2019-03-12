@@ -473,7 +473,6 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 	   file.resize(file.pos());
 	   file.close(); // close the file handle.
 
-	   ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
        if (ctx->properties.html5_fbinstant) {
            ctx->outputDir.cdUp();
 	   	   ExportCommon::appIcon(ctx,1024,1024,QString("appicon.png"));
@@ -482,6 +481,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 		   ExportCommon::splashHImage(ctx,800,150,QString("cover.png"));
        }
        else {
+    	   ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
 	   	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
        }
    }
