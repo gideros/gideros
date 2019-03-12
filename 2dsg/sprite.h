@@ -410,7 +410,7 @@ public:
     	setDimensions(w,h);
     }
 
-    virtual void setDimensions(float w,float h);
+    virtual bool setDimensions(float w,float h);
     virtual void getDimensions(float &w,float &h);
 
     GridBagLayout *getLayoutState();

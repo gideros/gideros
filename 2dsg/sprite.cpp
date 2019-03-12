@@ -214,6 +214,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
                     sprite->getDimensions(pwidth, pheight);
                     sprite->layoutState->ArrangeGrid(sprite,pwidth,pheight);
                 }
+                if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
+                    sprite->layoutState->dirty=false;
             }
 
             if ((sprite!=this)&&(sprite->parent_))
@@ -1203,9 +1205,10 @@ void Sprite::eventListenersChanged() {
 		allSpritesWithListeners_.erase(this);
 }
 
-void Sprite::setDimensions(float w,float h)
+bool Sprite::setDimensions(float w,float h)
 {
-    bool changed=((reqWidth_!=w)||(reqHeight_!=h));
+//    bool changed=((reqWidth_!=w)||(reqHeight_!=h));
+    bool changed=(fabs(reqWidth_-w)+fabs(reqHeight_-h))>0.01;
     if (changed) {
         reqWidth_=w;
         reqHeight_=h;
@@ -1224,6 +1227,7 @@ void Sprite::setDimensions(float w,float h)
             dispatchEvent(&event);
         }
     }
+    return changed;
 }
 
 void Sprite::set(const char* param, float value, GStatus* status) {

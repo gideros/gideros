@@ -38,7 +38,7 @@ public:
     virtual FontBase::TextLayoutParameters getLayout() { return layout_; }
 
 	bool scaleChanged();
-    virtual void setDimensions(float w,float h);
+    virtual bool setDimensions(float w,float h);
     virtual void getDimensions(float &w,float &h);
 
 protected:

@@ -432,10 +432,16 @@ void ogl2ShaderProgram::recreate() {
     		GLCALL glUseProgram(0);
     		curProg = 0;
     	}
-    	GLCALL glDetachShader(program, vertexShader);
-    	GLCALL glDetachShader(program, fragmentShader);
-    	GLCALL glDeleteShader(vertexShader);
-    	GLCALL glDeleteShader(fragmentShader);
+    	if (GLCALL glIsShader(vertexShader))
+    	{
+        	GLCALL glDetachShader(program, vertexShader);
+        	GLCALL glDeleteShader(vertexShader);
+    	}
+    	if (GLCALL glIsShader(fragmentShader))
+    	{
+    		GLCALL glDetachShader(program, fragmentShader);
+    		GLCALL glDeleteShader(fragmentShader);
+    	}
     	GLCALL glDeleteProgram(program);
     }
 	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshadercode.c_str(),errorLog);

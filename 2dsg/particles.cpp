@@ -46,14 +46,14 @@ int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 	if (s < 0) {
 		int tsize=ttl_.size();
 		if (tsize==particleCount) {
-			//Not enough room in vectors: double
-			tsize*=2;
+			//Not enough room in vectors: double if large enough or kick start
+			tsize+=tsize?tsize:16;
 			ttl_.resize(tsize);
 			points_.resize(tsize * 16);
 			colors_.resize(tsize * 16);
 			texcoords_.resize(tsize * 8);
 			speeds_.resize(tsize * 4);
-			decay_.resize(tsize * 14);
+			decay_.resize(tsize * 4);
 			originalColors_.resize(tsize);
 			indices_.resize(tsize * 6);
 			tag_.resize(tsize);
@@ -415,7 +415,7 @@ void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
 			colors_.size() / 4, colors_.modified, &colors_.bufferCache);
 	colors_.modified = false;
 
-    p->drawElements(ShaderProgram::Triangles, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache);
+    p->drawElements(ShaderProgram::Triangles, particleCount*6, ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache);
     indices_.modified=false;
 }
 

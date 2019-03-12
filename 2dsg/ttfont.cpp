@@ -13,6 +13,7 @@
 #include <utf8.h>
 #include <algorithm>
 #include "path.h"
+#include <glog.h>
 
 static unsigned long read(FT_Stream stream, unsigned long offset,
 		unsigned char* buffer, unsigned long count) {
@@ -60,7 +61,8 @@ void TTFont::constructor(std::vector<FontSpec> filenames, float size,
 	float scaley = application_->getLogicalScaleY();
 
 	float RESOLUTION = 72;
-	if (smoothing_ > 1) {
+    smoothing_ = smoothing;
+    if (smoothing_ > 1) {
 		scalex /= smoothing_;
 		scaley /= smoothing_;
 	}
@@ -95,12 +97,10 @@ void TTFont::constructor(std::vector<FontSpec> filenames, float size,
 		args.flags = FT_OPEN_STREAM;
 		args.stream = &ff.stream;
 
-		smoothing_ = smoothing;
-
 		if (FT_Open_Face(FT_Library_Singleton::instance(), &args, 0, &ff.face))
 			throw GiderosException(GStatus(6012, filename)); // Error #6012: %s: Error while reading font file.
 
-		if (FT_Set_Char_Size(ff.face, 0L,
+         if (FT_Set_Char_Size(ff.face, 0L,
 				(int) floor(size * (*it).sizeMult * 64 + 0.5f),
 				(int) floor(RESOLUTION * scalex + 0.5f),
 				(int) floor(RESOLUTION * scaley + 0.5f))) {

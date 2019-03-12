@@ -44,7 +44,7 @@ public:
 		setDimensions(width_,height);
 	}
 
-	void setDimensions(float width,float height);
+	bool setDimensions(float width,float height);
     void getDimensions(float &width, float &height)
     {
         width = width_;

@@ -182,7 +182,7 @@ void Pixel::updateTexture()
     texcoords.Update();
 }
 
-void Pixel::setDimensions(float width,float height)
+bool Pixel::setDimensions(float width,float height)
 {
 	width_=width;
 	height_=height;
@@ -192,7 +192,7 @@ void Pixel::setDimensions(float width,float height)
     vertices[3] = Point2f(0,height_);
 	vertices.Update();
     if (texture_[0]) updateTexture();
-    Sprite::setDimensions(width, height);
+    return Sprite::setDimensions(width, height);
 }
 
 void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)

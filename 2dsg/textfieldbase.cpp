@@ -13,12 +13,15 @@ bool TextFieldBase::scaleChanged() {
 	return changed;
 }
 
-void TextFieldBase::setDimensions(float w,float h)
+bool TextFieldBase::setDimensions(float w,float h)
 {
-    Sprite::setDimensions(w,h);
-    layout_.w=w;
-    layout_.h=h;
-    setLayout(&layout_);
+    bool changed=Sprite::setDimensions(w,h);
+    if (changed) {
+		layout_.w=w;
+		layout_.h=h;
+		setLayout(&layout_);
+    }
+    return changed;
 }
 
 void TextFieldBase::getDimensions(float &w,float &h)
