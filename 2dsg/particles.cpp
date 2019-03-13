@@ -143,6 +143,18 @@ void Particles::setSize(int i, float size) {
 	points_.Update();
 }
 
+void Particles::scaleParticles(float size,bool absolute) {
+	for (size_t i=0;i<(particleCount*4);i++) {
+		if (points_[i*4+2]!=0) {
+			if (absolute)
+				points_[i*4+2]=size;
+			else
+				points_[i*4+2]*=size;
+		}
+	}
+	points_.Update();
+}
+
 float Particles::getSize(int i) {
 	if (i >= particleCount)
 		return 0;

@@ -28,6 +28,7 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
 		{"getParticleTag",getParticleTag},
 		{"setPaused",setPaused},
 		{"isPaused",isPaused},
+		{"scaleParticles",scaleParticles},
 
 		{"getParticles",getParticles},
         {"setTexture", setTexture},
@@ -164,6 +165,19 @@ int ParticlesBinder::setParticleSize(lua_State *L)
     float size=luaL_optnumber(L,3,0);
 
     mesh->setSize(i, size);
+
+    return 0;
+}
+
+int ParticlesBinder::scaleParticles(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    float size=luaL_checknumber(L,2);
+    bool absolute=lua_toboolean(L,3);
+
+    mesh->scaleParticles(size,absolute);
 
     return 0;
 }

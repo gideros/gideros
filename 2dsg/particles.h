@@ -35,6 +35,7 @@ public:
     void getDecay(int i, float *vp, float *vc, float *vs,float *va) const;
     void setTag(int i, const char *tag);
     const char *getTag(int i) const;
+    void scaleParticles(float size,bool absolute);
 
     void setTexture(TextureBase *texture);
     void clearTexture();
