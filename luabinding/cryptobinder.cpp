@@ -15,16 +15,27 @@ static int crypto_md5(lua_State *L) //String=md5(String)
 
 static int crypto_aes_encrypt(lua_State *L) //String=encrypt(String,String,String,bool)
 {
-    size_t avail_in;
+    size_t avail_in,klen;
     const unsigned char *in = (const unsigned char *) luaL_checklstring(L, 1, &avail_in);
-    const unsigned char *key = (const unsigned char *) luaL_checkstring(L, 2);
+    const unsigned char *key = (const unsigned char *) luaL_checklstring(L, 2, &klen);
     const unsigned char *iv = (const unsigned char *) luaL_optstring(L, 3,NULL);
     bool mode=lua_toboolean(L,4);
-    int out_size=(avail_in+15)&(~15);
-    if (mode&&iv&&((avail_in&15)==0)) //PKCS7: room for extra 16 bytes
-    	out_size+=16;
+
+    if (!((klen==16)||(klen==24)||(klen==32))) {
+		lua_pushfstring(L,"Invalid Key length for AES:%d",klen);
+		lua_error(L);
+    }
+
+    size_t out_size=(avail_in+15)&(~15);
+    if (mode&&iv) { //PKCS7 padding
+    	if ((avail_in&15)==0) //room for extra 16 bytes
+        	out_size+=16;
+    }
     unsigned char *out=(unsigned char *) malloc(out_size);
-    aes_encrypt(in,out,avail_in,key,iv,mode?1:0);
+	size_t rem=out_size-avail_in;
+	memcpy(out,in,avail_in);
+	memset(out+avail_in,(mode&&iv)?rem:0,rem);
+    aes_encrypt(out,out_size,key,klen,iv);
     lua_pushlstring(L, (const char *)out,out_size);
     free(out);
     return 1;
@@ -32,19 +43,26 @@ static int crypto_aes_encrypt(lua_State *L) //String=encrypt(String,String,Strin
 
 static int crypto_aes_decrypt(lua_State *L) //String=encrypt(String,String,String,bool)
 {
-    size_t avail_in;
+    size_t avail_in,klen;
     const unsigned char *in = (const unsigned char *) luaL_checklstring(L, 1, &avail_in);
-    const unsigned char *key = (const unsigned char *) luaL_checkstring(L, 2);
+    const unsigned char *key = (const unsigned char *) luaL_checklstring(L, 2, &klen);
     const unsigned char *iv = (const unsigned char *) luaL_optstring(L, 3,NULL);
     bool mode=lua_toboolean(L,4);
+
+    if (!((klen==16)||(klen==24)||(klen==32))) {
+		lua_pushfstring(L,"Invalid Key length for AES:%d",klen);
+		lua_error(L);
+    }
+
     avail_in&=(~15);
     unsigned char *out=(unsigned char *) malloc(avail_in);
-    aes_decrypt(in,out,avail_in,key,iv,mode?1:0);
+	memcpy(out,in,avail_in);
+    aes_decrypt(out,avail_in,key,klen,iv);
 
     if (mode&&iv&&avail_in) //PKCS7: remove padding
     {
        unsigned char paddingval=out[avail_in-1];
-       if ((paddingval==0)&&(paddingval>0x10)) //Wrong padding byte
+       if ((paddingval==0)||(paddingval>0x10)) //Wrong padding byte
        {
    	    free(out);
 		lua_pushstring(L,"Invalid PKCS#7 padding value");

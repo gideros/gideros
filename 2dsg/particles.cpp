@@ -36,7 +36,8 @@ void Particles::clearParticles() {
 int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 	int s = -1;
 	int k = 2;
-	while (k < points_.size()) {
+	int kmax=particleCount*16;
+	while (k < kmax) {
 		if (points_[k] == 0) {
 			s = k / 16;
 			break;

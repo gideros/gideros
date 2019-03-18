@@ -532,33 +532,39 @@ extern "C"
 #include "aes.h"
 }
 
-void aes_encrypt(const unsigned char *input,unsigned char *output,int size,const unsigned char *key,const unsigned char *iv,int padtype)
+void aes_encrypt(unsigned char *buffer,size_t size,const unsigned char *key,size_t klen,const unsigned char *iv)
 {
-	if (iv)
-		AES128_CBC_encrypt_buffer(output,input,size,key,iv,padtype);
+	struct AES_ctx ctx;
+	if (iv) {
+		AES_init_ctx_iv(&ctx,key,klen,iv);
+		AES_CBC_encrypt_buffer(&ctx,buffer,size);
+	}
 	else
 	{
+		AES_init_ctx(&ctx,key,klen);
 		while (size>=16)
 		{
-			AES128_ECB_encrypt(input,key,output);
-			input+=16;
-			output+=16;
+			AES_ECB_encrypt(&ctx,buffer);
+			buffer+=16;
 			size-=16;
 		}
 	}
 }
 
-void aes_decrypt(const unsigned char *input,unsigned char *output,int size,const unsigned char *key,const unsigned char *iv,int padtype)
+void aes_decrypt(unsigned char *buffer,size_t size,const unsigned char *key,size_t klen,const unsigned char *iv)
 {
-	if (iv)
-		AES128_CBC_decrypt_buffer(output,input,size,key,iv,padtype);
+	struct AES_ctx ctx;
+	if (iv) {
+		AES_init_ctx_iv(&ctx,key,klen,iv);
+		AES_CBC_decrypt_buffer(&ctx,buffer,size);
+	}
 	else
 	{
+		AES_init_ctx(&ctx,key,klen);
 		while (size>=16)
 		{
-			AES128_ECB_decrypt(input,key,output);
-			input+=16;
-			output+=16;
+            AES_ECB_decrypt(&ctx,buffer);
+			buffer+=16;
 			size-=16;
 		}
 	}

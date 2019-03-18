@@ -19,7 +19,7 @@ double iclock();
 
 bool md5_fromfile(const char* filename, unsigned char md5sum[16]);
 void md5_frombuffer(const unsigned char *buffer,unsigned int size, unsigned char md5sum[16]);
-void aes_encrypt(const unsigned char *input,unsigned char *output,int size,const unsigned char *key,const unsigned char *iv,int padtype);
-void aes_decrypt(const unsigned char *input,unsigned char *output,int size,const unsigned char *key,const unsigned char *iv,int padtype);
+void aes_encrypt(unsigned char *buffer,size_t size,const unsigned char *key,size_t klen,const unsigned char *iv);
+void aes_decrypt(unsigned char *buffer,size_t size,const unsigned char *key,size_t klen,const unsigned char *iv);
 
 #endif
