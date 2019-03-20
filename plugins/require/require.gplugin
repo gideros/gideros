@@ -26,6 +26,7 @@
  <property name="reqDisableX86" type="boolean" title="Disable x86 libs (android)"/> 
  <property name="reqDisableArm" type="boolean" title="Disable arm libs (android)"/> 
  <property name="reqDisable32bits" type="boolean" title="Disable 32bits libs (android)"/>
+ <property name="reqPreventBackup" type="boolean" title="Prevent app to be backed up/restored"/>
  <property name="reqNoMP3" type="boolean" title="Disable MP3 support (Html5)"/>
  <property name="reqNoXMP" type="boolean" title="Disable XMP/MOD support (Html5)"/>
  <property name="reqMetal" type="boolean" title="Enable Metal support (iOS)"/>
@@ -73,6 +74,16 @@
             		<orig><![CDATA[<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>]]></orig>
             		<by></by>
         	    </replace>
+    	    </replacelist>
+	    </template>
+ 	</if>
+ 	<if condition="[[[plugin.reqPreventBackup]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig><![CDATA[android:allowBackup='true']]></orig>
+        	    	<by><![CDATA[android:allowBackup='false']]</by>
+    	        </replace>
     	    </replacelist>
 	    </template>
  	</if>
