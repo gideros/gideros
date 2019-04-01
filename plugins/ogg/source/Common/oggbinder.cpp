@@ -839,10 +839,10 @@ size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
 
 void gsoundencoder_OggClose(g_id id) {
 	GGOggEncHandle *handle = ctxmap2[id];
-	ctxmap2.erase(id);
 	if (!handle) return;
 	/* clean up and exit.  vorbis_info_clear() must be called last */
 	gsoundencoder_OggWrite(id, 0, NULL);
+	ctxmap2.erase(id);
 
 	ogg_stream_clear(&handle->os);
 	vorbis_block_clear(&handle->vb);
