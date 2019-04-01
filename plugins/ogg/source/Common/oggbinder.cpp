@@ -20,6 +20,10 @@
 #include "ticker.h"
 #include "luaapplication.h"
 
+#ifndef FLAVOUR
+#define FLAVOUR_F
+#endif
+
 static lua_State *L = NULL;
 struct GGOggHandle {
 	//OGG GENERIC

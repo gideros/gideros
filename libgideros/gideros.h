@@ -23,7 +23,7 @@
 #endif
 
 #ifndef GIDEROS_VERSION
-#define GIDEROS_VERSION "2019.2.1"
+#define GIDEROS_VERSION "2019.4"
 #endif
 
 #endif

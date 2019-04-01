@@ -82,7 +82,7 @@
 	        <replacelist wildcards="AndroidManifest.xml">
 	            <replace>
             		<orig><![CDATA[android:allowBackup='true']]></orig>
-        	    	<by><![CDATA[android:allowBackup='false']]</by>
+        	    	<by><![CDATA[android:allowBackup='false']]></by>
     	        </replace>
     	    </replacelist>
 	    </template>
