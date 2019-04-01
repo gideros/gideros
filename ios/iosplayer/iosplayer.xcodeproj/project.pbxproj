@@ -1741,7 +1741,7 @@
 					"../../libgid/external/libxmp-4.3/src",
 					"../../libgid/external/libxmp-4.3/lite/src",
 				);
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1785,7 +1785,7 @@
 					"../../libgid/external/libxmp-4.3/src",
 					"../../libgid/external/libxmp-4.3/lite/src",
 				);
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
