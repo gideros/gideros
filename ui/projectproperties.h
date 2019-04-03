@@ -76,6 +76,7 @@ struct ProjectProperties
         winrt_org = "GiderosMobile";
         winrt_package = "com.yourdomain.yourapp";
         html5_host = "";
+        html5_crash = "";
         html5_mem = 256;
         html5_pack = false;
         html5_wasm = false;
@@ -143,6 +144,7 @@ struct ProjectProperties
     bool html5_symbols;
     bool html5_fbinstant;
     int html5_fbload;
+    QString html5_crash;
     QString app_icon;
     QString tv_icon;
     QString splash_h_image;

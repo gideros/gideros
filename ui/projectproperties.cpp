@@ -122,6 +122,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("winrt_org", this->winrt_org);
     properties.setAttribute("winrt_package", this->winrt_package);
     properties.setAttribute("html5_host", this->html5_host);
+    properties.setAttribute("html5_crash", this->html5_crash);
     properties.setAttribute("html5_mem", this->html5_mem);
     properties.setAttribute("html5_pack", this->html5_pack ? 1 : 0);
     properties.setAttribute("html5_wasm", this->html5_wasm ? 1 : 0);
@@ -268,6 +269,8 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->winrt_package = properties.attribute("winrt_package");
         if (!properties.attribute("html5_host").isEmpty())
             this->html5_host = properties.attribute("html5_host");
+        if (!properties.attribute("html5_crash").isEmpty())
+            this->html5_crash = properties.attribute("html5_crash");
         if (!properties.attribute("html5_mem").isEmpty())
             this->html5_mem = properties.attribute("html5_mem").toInt();
         if (!properties.attribute("html5_pack").isEmpty())

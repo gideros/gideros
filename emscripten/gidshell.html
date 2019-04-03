@@ -31,6 +31,10 @@
   <h3>An error occured in the code</h3>
   Please inform the app developer about the details below, they will help him fix this in the future.
   </div>
+  <div id="featErr" style="display: none">
+  <h3>Browser not supported</h3>
+  Your browser doesn't support one or more functionalities required for this application. More details below.
+  </div>
   <div id="genErr" style="display: none">
   <h3>An unexpected error occured</h3>
   The details below may be helpful to you or the app developer... hopefully.
@@ -130,11 +134,12 @@ GIDEROS-FBINSTANT-END -->
           if (0) { // XXX disabled for safety typeof dump == 'function') {
             dump(text + '\n'); // fast, straight to the real console
           } else {
-            console.error(text);
+              console.error(text);
+        	  Module.gidAbort(text);
           }
         },
         luaPrint: function (text) { Module.print(text); },
-        luaError: function (text) { Module.print(text); },
+        luaError: function (text) { Module.giderosHadLuaError=text; Module.print(text); },
         canvas: (function() {
           var canvas = document.getElementById('canvas');
 
@@ -146,16 +151,36 @@ GIDEROS-FBINSTANT-END -->
           return canvas;
         })(),
         showError: function(type,detail) {
+    	    if (hasFBInstant) //start game to show canvas
+	        	FBInstant.startGameAsync();
+        	if ((type=="genErr")&&(Module.giderosHadLuaError)) {
+        		type="luaErr";
+        		detail=Module.giderosHadLuaError;
+        	}
         	spinnerElement.hidden = true;
       		infopaneElement.style.display="none";
       		canvas.hidden = true;  
       		oopsElement.style.display="block";
       		errDetailsElement.innerHTML=detail;
       		document.getElementById(type).style.display="block";
+      		var CRASH_URL='';
+      		if (CRASH_URL.startsWith('http')) { //Send error report
+      			var crash={
+      				app: 'Gideros',
+      				type: type,
+      				detail: detail
+	      		};
+      			var http = new XMLHttpRequest();
+      			http.open("POST", CRASH_URL, true);
+      			http.setRequestHeader("Content-Type","application/json");
+      			http.send(JSON.stringify(crash));      			
+      		}
         },
         gidAbort: function (what) {
         	if (what.includes('ALLOW_MEMORY_GROWTH=1'))
         		Module.showError("memoryErr",what);
+        	else if (what.includes('-s WASM=0'))
+        		Module.showError("featErr","Your browser doesn't support WebAssembly technology");
         	else
         		Module.showError("genErr",what);
         },
@@ -201,7 +226,7 @@ GIDEROS-FBINSTANT-END -->
         Module.setStatus = function(text) {
           if (text) Module.printErr('[post-exception status] ' + text);
         };
-        //Module.showError("genErr","");
+        //Module.showError("genErr",Module.giderosErrorLog);
       };
     </script>
     {{{ SCRIPT }}}

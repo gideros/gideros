@@ -149,10 +149,12 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());
+        replaceList1 << qMakePair(QString("app: 'Gideros'").toUtf8(), ("app: '"+ctx->basews+"'").toUtf8());
         replaceList1 << qMakePair(QString("<body class=\"fullscreen toplevel\">").toUtf8(), ("<body class=\"fullscreen toplevel\" style=\"background-color:"+ctx->properties.backgroundColor+";\">").toUtf8());
         if(ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("<img src=\"gideros.png\" />").toUtf8(), QString("<img src=\"gideros.png\" style=\"display:none;\"/>").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
+        replaceList1 << qMakePair(QString("CRASH_URL=''").toUtf8(),QString("CRASH_URL='%1'").arg(ctx->properties.html5_crash).toUtf8());
 		QString ext;
 		if (ctx->properties.html5_wasm)
 			ext="wasm";
