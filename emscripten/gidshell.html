@@ -185,7 +185,9 @@ GIDEROS-FBINSTANT-END -->
         	else if (what.includes('-s DEMANGLE_SUPPORT=1')) {} //Ignore
         	else if (what.includes('EXIT_RUNTIME to 1')) {} //Ignore       
         	else if (what.includes('dependency:')||what.includes('dependencies:')||what.includes('(end of list)')) {} //Ignore       
-        	else
+        	else if (what.includes('Real sample count')) {} //Ignore
+        	else if (what.trim().length < 2) {} //Ignore
+		else
         		
         		Module.showError("genErr",what);
         },
