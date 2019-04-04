@@ -174,6 +174,14 @@ GLuint ogl2LoadShader(GLuint type, const char *code, std::string &log) {
 
 GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader, std::string log) {
 	GLCALL_INIT;
+
+	if (!((GLCALL glIsShader(vertexShader))&&(GLCALL glIsShader(fragmentShader))))
+	{
+		//Invalid shaders
+		log.append("Shader Program: invalid shader(s)\n");
+		return 0;
+	}
+
 	GLuint program = GLCALL glCreateProgram();
 	GLCALL glAttachShader(program, vertexShader);
 	GLCALL glAttachShader(program, fragmentShader);
@@ -433,17 +441,15 @@ void ogl2ShaderProgram::recreate() {
     		curProg = 0;
     	}
     	if (GLCALL glIsShader(vertexShader))
-    	{
         	GLCALL glDetachShader(program, vertexShader);
-        	GLCALL glDeleteShader(vertexShader);
-    	}
     	if (GLCALL glIsShader(fragmentShader))
-    	{
     		GLCALL glDetachShader(program, fragmentShader);
-    		GLCALL glDeleteShader(fragmentShader);
-    	}
     	GLCALL glDeleteProgram(program);
     }
+	if (GLCALL glIsShader(vertexShader))
+    	GLCALL glDeleteShader(vertexShader);
+	if (GLCALL glIsShader(fragmentShader))
+		GLCALL glDeleteShader(fragmentShader);
 	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshadercode.c_str(),errorLog);
 	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshadercode.c_str(),errorLog);
 	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
@@ -451,19 +457,22 @@ void ogl2ShaderProgram::recreate() {
 	glattributes.clear();
 	GLCALL glUseProgram(program);
 	GLint ntex = 0;
-	for (int k=0;k<uniforms.size();k++) {
-		ConstantDesc cd=uniforms[k];
-		this->gluniforms.push_back(GLCALL glGetUniformLocation(program, cd.name.c_str()));
-		switch (cd.type) {
-		case CTEXTURE:
-			GLCALL glUniform1i(gluniforms[gluniforms.size() - 1], ntex++);
-			break;
-		default:
-			break;
+	if (GLCALL glIsProgram(program))
+	{
+		for (int k=0;k<uniforms.size();k++) {
+			ConstantDesc cd=uniforms[k];
+			this->gluniforms.push_back(GLCALL glGetUniformLocation(program, cd.name.c_str()));
+			switch (cd.type) {
+			case CTEXTURE:
+				GLCALL glUniform1i(gluniforms[gluniforms.size() - 1], ntex++);
+				break;
+			default:
+				break;
+			}
 		}
-	}
-	for (int k=0;k<attributes.size();k++) {
-		glattributes.push_back(GLCALL glGetAttribLocation(program, attributes[k].name.c_str()));
+		for (int k=0;k<attributes.size();k++) {
+			glattributes.push_back(GLCALL glGetAttribLocation(program, attributes[k].name.c_str()));
+		}
 	}
 }
 
@@ -485,11 +494,18 @@ ogl2ShaderProgram::~ogl2ShaderProgram() {
 		GLCALL glUseProgram(0);
 		curProg = 0;
 	}
-	GLCALL glDetachShader(program, vertexShader);
-	GLCALL glDetachShader(program, fragmentShader);
-	GLCALL glDeleteShader(vertexShader);
-	GLCALL glDeleteShader(fragmentShader);
-	GLCALL glDeleteProgram(program);
+    if (GLCALL glIsProgram(program))
+    {
+    	if (GLCALL glIsShader(vertexShader))
+        	GLCALL glDetachShader(program, vertexShader);
+    	if (GLCALL glIsShader(fragmentShader))
+    		GLCALL glDetachShader(program, fragmentShader);
+    	GLCALL glDeleteProgram(program);
+    }
+	if (GLCALL glIsShader(vertexShader))
+    	GLCALL glDeleteShader(vertexShader);
+	if (GLCALL glIsShader(fragmentShader))
+		GLCALL glDeleteShader(fragmentShader);
 	glog_i("Deleted program:%d", program);
 	free(cbData);
 	for (int k = 0; k < 17; k++)

@@ -183,8 +183,10 @@ GIDEROS-FBINSTANT-END -->
         		Module.showError("featErr","Your browser doesn't support WebAssembly technology");
         	else if (what.includes('--no-heap-copy')) {} //Ignore
         	else if (what.includes('-s DEMANGLE_SUPPORT=1')) {} //Ignore
-        	else if (what.includes('EXIT_RUNTIME to 1')) {} //Ignore        	
+        	else if (what.includes('EXIT_RUNTIME to 1')) {} //Ignore       
+        	else if (what.includes('dependency:')||what.includes('dependencies:')||what.includes('(end of list)')) {} //Ignore       
         	else
+        		
         		Module.showError("genErr",what);
         },
         setStatus: function(text) {
