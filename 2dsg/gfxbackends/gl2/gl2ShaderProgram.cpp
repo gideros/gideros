@@ -455,10 +455,10 @@ void ogl2ShaderProgram::recreate() {
 	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
 	gluniforms.clear();
 	glattributes.clear();
-	GLCALL glUseProgram(program);
-	GLint ntex = 0;
 	if (GLCALL glIsProgram(program))
 	{
+		useProgram();
+		GLint ntex = 0;
 		for (int k=0;k<uniforms.size();k++) {
 			ConstantDesc cd=uniforms[k];
 			this->gluniforms.push_back(GLCALL glGetUniformLocation(program, cd.name.c_str()));
