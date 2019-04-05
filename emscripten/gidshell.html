@@ -150,6 +150,20 @@ GIDEROS-FBINSTANT-END -->
 
           return canvas;
         })(),
+        uploadCrash: function (type,detail) {
+      		var CRASH_URL='';
+      		if (CRASH_URL.startsWith('http')) { //Send error report
+      			var crash={
+      				app: 'Gideros',
+      				type: type,
+      				detail: detail
+	      		};
+      			var http = new XMLHttpRequest();
+      			http.open("POST", CRASH_URL, true);
+      			http.setRequestHeader("Content-Type","application/json");
+      			http.send(JSON.stringify(crash));      			
+      		}        	
+        },
         showError: function(type,detail) {
     	    if (hasFBInstant) //start game to show canvas
 	        	FBInstant.startGameAsync();
@@ -163,32 +177,24 @@ GIDEROS-FBINSTANT-END -->
       		oopsElement.style.display="block";
       		errDetailsElement.innerHTML=detail;
       		document.getElementById(type).style.display="block";
-      		var CRASH_URL='';
-      		if (CRASH_URL.startsWith('http')) { //Send error report
-      			var crash={
-      				app: 'Gideros',
-      				type: type,
-      				detail: detail
-	      		};
-      			var http = new XMLHttpRequest();
-      			http.open("POST", CRASH_URL, true);
-      			http.setRequestHeader("Content-Type","application/json");
-      			http.send(JSON.stringify(crash));      			
-      		}
+      		Module.uploadCrash(type,detail);
         },
         gidAbort: function (what) {
         	if (what.includes('ALLOW_MEMORY_GROWTH=1'))
         		Module.showError("memoryErr",what);
         	else if (what.includes('-s WASM=0'))
         		Module.showError("featErr","Your browser doesn't support WebAssembly technology");
-        	else if (what.includes('--no-heap-copy')) {} //Ignore
-        	else if (what.includes('-s DEMANGLE_SUPPORT=1')) {} //Ignore
-        	else if (what.includes('EXIT_RUNTIME to 1')) {} //Ignore       
-        	else if (what.includes('dependency:')||what.includes('dependencies:')||what.includes('(end of list)')) {} //Ignore       
-        	else if (what.includes('Real sample count')) {} //Ignore
+        	else if (what.includes('failed to asynchronously prepare wasm'))
+        		Module.showError("featErr","There was an issue with your browser's WebAssembly support:\n"+what);
+        	else if (what.includes('_glGetString'))
+        		Module.showError("featErr","Your browser's WebGL doesn't support this app");
+        	else if (what.includes('--no-heap-copy')) {} //Ignore (mem growth related)
+        	else if (what.includes('-s DEMANGLE_SUPPORT=1')) {} //Ignore (atexit related)
+        	else if (what.includes('EXIT_RUNTIME to 1')) {} //Ignore (gvfs atexit)       
+        	else if (what.includes('dependency:')||what.includes('dependencies:')||what.includes('(end of list)')) {} //Ignore (loading)       
+        	else if (what.includes('Real sample count')) {} //Ignore (MP3)
         	else if (what.trim().length < 2) {} //Ignore
-		else
-        		
+			else        		
         		Module.showError("genErr",what);
         },
         setStatus: function(text) {
