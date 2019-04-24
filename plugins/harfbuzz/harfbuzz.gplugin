@@ -1,0 +1,64 @@
+<plugin
+ name="HarfBuzz"
+ description="Use HarfBuzz to support complex language scripts in Gideros TextFields">
+   <target name="AndroidStudio,APK">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;harfbuzz&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;harfbuzz&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/harfbuzz</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
+   <mkdir>AppleTV/Plugins/harfbuzz</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("harfbuzz","Plugins/harfbuzz","GroupHarfBuzz_ios","GroupPlugins_ios")
+iOSProject.addGroup("harfbuzz","harfbuzz","GroupHarfBuzz_atv","GroupPlugins_atv")
+iOSProject.addSources({ "Plugins/libharfbuzz.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libharfbuzz.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.commit()
+	]]></lua>
+    <template name="Activity" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Harfbuzz) "/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Html5">
+ 	<lua>
+ 	require("Tools/export_html5").export("Harfbuzz",f)
+ 	</lua>
+ </target>
+ <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+  <target name="WinRT">
+   <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
+   <template name="binary" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-WINRT:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Harfbuzz) "/>
+        </replacelist>
+    </template>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
+            <by><![CDATA[
+      <AdditionalDependencies>%(AdditionalDependencies);harfbuzz.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+        </append> 
+        </replacelist>
+    </template>
+ </target>
+</plugin>

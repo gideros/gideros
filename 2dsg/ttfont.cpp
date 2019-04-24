@@ -5,6 +5,7 @@
 #include "gstatus.h"
 #include "application.h"
 #include "ftlibrarysingleton.h"
+#include "gtexture.h"
 
 #include <ft2build.h>
 #include FT_OUTLINE_H
@@ -174,6 +175,9 @@ void TTFont::checkLogicalScale() {
 		}
 		height_ = ascender_ + descender;
 		cacheVersion_++;
+        if (shaper_)
+            delete shaper_;
+        shaper_=NULL;
 	}
 }
 
@@ -265,6 +269,180 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx,
 		*pmaxy = maxy;
 }
 
+bool TTFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
+{
+	if (part.styleFlags&TEXTSTYLEFLAG_SKIPSHAPING)
+		return false;
+    FontshaperBuilder_t builder=(FontshaperBuilder_t) g_getGlobalHook(GID_GLOBALHOOK_FONTSHAPER);
+    if (!builder)
+        return false;
+    if (fontFaces_.size()!=1) //Multi font not supported (yet ?)
+        return false;
+    if (!shaper_) {
+        float scalex = application_->getLogicalScaleX();
+        float scaley = application_->getLogicalScaleY();
+        float RESOLUTION=(int) floor(defaultSize_ * fontFaces_[0].sizeMult + 0.5f);//72; //This a empirical, but seems to work
+        void *data=malloc(fontFaces_[0].stream.size);
+        fontFaces_[0].stream.read(&fontFaces_[0].stream,0,(unsigned char *)data,fontFaces_[0].stream.size);
+        shaper_=builder(data,fontFaces_[0].stream.size,
+                    //(int) floor(defaultSize_ * fontFaces_[0].sizeMult * 64 + 0.5f),
+                    fontFaces_[0].face->units_per_EM,
+                    (int) floor(RESOLUTION * scalex + 0.5f),
+                    (int) floor(RESOLUTION * scaley + 0.5f));
+        free(data);
+    }
+    if (!shaper_)
+        return false;
+    bool shaped=shaper_->shape(part,wtext);
+    if (!shaped) return false;
+    for (int k=0;k<part.shaped.size();k++)
+        part.shaped[k]._private=(void *) fontFaces_[0].face;
+    return true;
+}
+
+void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
+{
+	std::vector<wchar32_t> wtext;
+    size_t len = utf8_to_wchar(part.text.c_str(), part.text.size(), NULL, 0, 0);
+	if (len != 0) {
+		wtext.resize(len);
+        utf8_to_wchar(part.text.c_str(), part.text.size(), &wtext[0], len, 0);
+	}
+	wtext.push_back(0);
+
+	checkLogicalScale();
+    float scalex = currentLogicalScaleX_;
+    float scaley = currentLogicalScaleY_;
+
+	int minx = 0x7fffffff;
+	int miny = 0x7fffffff;
+	int maxx = -0x7fffffff;
+	int maxy = -0x7fffffff;
+
+	int x = 0, y = 0;
+	part.shaped.clear();
+    if (shapeChunk(part,wtext)) {
+        //Shaping has been done externally, iterate over glyphs instead
+        len=part.shaped.size();
+        for (size_t i = 0; i < len; ++i) {
+            GlyphLayout &gl=part.shaped[i];
+            FT_UInt glyphIndex=(FT_UInt) gl.glyph;
+            FT_Face face = (FT_Face) gl._private;
+            if (FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT))
+                continue;
+
+            int top, left, width, height;
+            if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
+                FT_BBox bbox;
+                FT_Outline_Get_CBox(&face->glyph->outline, &bbox);
+
+                bbox.xMin &= ~63;
+                bbox.yMin &= ~63;
+                bbox.xMax = (bbox.xMax + 63) & ~63;
+                bbox.yMax = (bbox.yMax + 63) & ~63;
+
+                width = (bbox.xMax - bbox.xMin) >> 6;
+                height = (bbox.yMax - bbox.yMin) >> 6;
+                top = bbox.yMax >> 6;
+                left = bbox.xMin >> 6;
+            } else if (face->glyph->format == FT_GLYPH_FORMAT_BITMAP) {
+                width = face->glyph->bitmap.width;
+                height = face->glyph->bitmap.rows;
+                top = face->glyph->bitmap_top;
+                left = face->glyph->bitmap_left;
+            } else
+                continue;
+
+            gl.offX+=left;
+            gl.offY-=top;
+
+            int xo = x + gl.offX;
+            int yo = y + gl.offY;
+
+            minx = std::min(minx, xo);
+            miny = std::min(miny, yo);
+            maxx = std::max(maxx, xo + width);
+            maxy = std::max(maxy, yo + height);
+
+            x += gl.advX;
+        }
+    }
+    else {
+        FT_Face prevFace = NULL;
+        FT_UInt prev = 0;
+        struct GlyphLayout shape;
+        for (size_t i = 0; i < len; ++i) {
+            FT_UInt glyphIndex;
+            FT_Face face = getFace(wtext[i], glyphIndex);
+            if (glyphIndex == 0)
+                continue;
+
+            if (FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT))
+                continue;
+
+            int top, left, width, height;
+            if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
+                FT_BBox bbox;
+                FT_Outline_Get_CBox(&face->glyph->outline, &bbox);
+
+                bbox.xMin &= ~63;
+                bbox.yMin &= ~63;
+                bbox.xMax = (bbox.xMax + 63) & ~63;
+                bbox.yMax = (bbox.yMax + 63) & ~63;
+
+                width = (bbox.xMax - bbox.xMin) >> 6;
+                height = (bbox.yMax - bbox.yMin) >> 6;
+                top = bbox.yMax >> 6;
+                left = bbox.xMin >> 6;
+            } else if (face->glyph->format == FT_GLYPH_FORMAT_BITMAP) {
+                width = face->glyph->bitmap.width;
+                height = face->glyph->bitmap.rows;
+                top = face->glyph->bitmap_top;
+                left = face->glyph->bitmap_left;
+            } else
+                continue;
+
+            int kx=0;
+            if (face == prevFace)
+                kx= kerning(face, prev, glyphIndex) >> 6;
+            prev = glyphIndex;
+            prevFace = face;
+
+            int xo = x + left;
+            int yo = y - top;
+
+            minx = std::min(minx, xo);
+            miny = std::min(miny, yo);
+            maxx = std::max(maxx, xo + width);
+            maxy = std::max(maxy, yo + height);
+
+            x += kx+(face->glyph->advance.x >> 6);
+
+            x += (int) (letterSpacing * scalex);
+
+            shape.srcIndex=i;
+            shape.glyph=glyphIndex;
+            shape.advX=(face->glyph->advance.x >> 6)+kx+(letterSpacing * scalex);
+            shape.advY=face->glyph->advance.y >> 6;
+            shape.offX=left;
+            shape.offY=-top;
+            shape._private=face;
+            part.shaped.push_back(shape);
+        }
+        if (prevFace)
+            x += kerning(prevFace, prev, FT_Get_Char_Index(prevFace, wtext[len])) >> 6;
+    }
+
+    if (!x) minx=miny=maxx=maxy=0;
+
+	part.x = minx / scalex;
+    part.y = (miny / scaley) + part.dy;
+    part.w = ((maxx-minx) / scalex)+1;
+    part.h = ((maxy-miny) / scaley)+1;
+	part.advX=x/scalex;
+	part.advY=y/scaley;
+}
+
 Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
         int *pminx, int *pminy, int *pmaxx, int *pmaxy, unsigned int color, bool &isRGB, TextLayout &l) {
 	checkLogicalScale();
@@ -279,23 +457,15 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 
     for (size_t pn = 0; pn < l.parts.size(); pn++) {
 		ChunkLayout c = l.parts[pn];
-		std::basic_string<wchar32_t> wtext;
-		size_t wsize = utf8_to_wchar(c.text.c_str(), c.text.size(), NULL, 0, 0);
-		wtext.resize(wsize);
-		utf8_to_wchar(c.text.c_str(), c.text.size(), &wtext[0], wsize, 0);
+        size_t wsize=c.shaped.size();
 
         int x = 1 + (c.dx+outlineSize_)*scalex, y = 1 + (c.dy+outlineSize_)*scaley;
-		FT_UInt prev = 0;
-		FT_Face prevFace = NULL;
         for (size_t i = 0; i < wsize; ++i) {
-			GlyphData g = glyphCache_[wtext[i]];
+            GlyphLayout &gl=c.shaped[i];
+            GlyphData g = glyphCache_[gl.glyph];
 			if (g.bitmap == NULL) {
-				FT_UInt glyphIndex;
-				FT_Face face = getFace(wtext[i], glyphIndex);
-				if (glyphIndex == 0)
-					continue;
-
-				if (FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT))
+                FT_Face face = (FT_Face)gl._private;
+                if (FT_Load_Glyph(face, gl.glyph, FT_LOAD_DEFAULT))
 					continue;
 
 				int top, left, width, height;
@@ -367,21 +537,16 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 				g.width = width;
 				g.top = top;
 				g.left = left;
-				g.glyph = glyphIndex;
+                g.glyph = gl.glyph;
 				g.advX = face->glyph->advance.x >> 6;
 				g.bitmap = (unsigned char *) malloc(g.height * g.pitch);
 				memcpy(g.bitmap, bitmap->buffer, g.height * g.pitch);
-                glyphCache_[wtext[i]] = g;
+                glyphCache_[gl.glyph] = g;
                 if (glyph) FT_Done_Glyph(glyph);
 			}
 
-			if (prevFace == g.face)
-				x += kerning(g.face, prev, g.glyph) >> 6;
-			prev = g.glyph;
-			prevFace = g.face;
-
-            int xo = x + g.left - l.x*scalex;
-            int yo = y - g.top - l.y*scaley;
+            int xo = x + gl.offX - l.x*scalex;
+            int yo = y + gl.offY - l.y*scaley;
 			int index = 0;
 
 			if (l.styleFlags&TEXTSTYLEFLAG_COLOR) {
@@ -406,9 +571,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 				index = index + g.pitch - g.width;
 			}
 
-			x += g.advX;
-
-			x += (int) (layout->letterSpacing * scalex);
+            x += gl.advX;
 		}
 
 	}

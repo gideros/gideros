@@ -4,6 +4,7 @@
 #include <gglobal.h>
 #include <stdlib.h>
 #include "Shaders.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -83,6 +84,12 @@ G_API void gtexture_RestoreTempTextures();
 //void gtexture_replace(g_id oldId, int format, int width, int height, int type, void *pixels);
 
 G_API ShaderBuffer *gtexture_BindRenderTarget(ShaderBuffer *fbo);
+
+#define GID_GLOBALHOOK_FONTSHAPER		0
+#define GID_GLOBALHOOK_TEXTCLASSIFIER	1
+#define GID_GLOBALHOOK_MAX				2
+G_API void g_setGlobalHook(unsigned int hookn,void *hook);
+G_API void *g_getGlobalHook(unsigned int hookn);
 
 #ifdef __cplusplus
 }

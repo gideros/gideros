@@ -2,6 +2,7 @@
 #include <fontbase.h>
 #include "luaapplication.h"
 #include <luautil.h>
+#include <utf8.h>
 
 FontBaseBinder::FontBaseBinder(lua_State *L)
 {
@@ -26,7 +27,8 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
 	lua_pushinteger(L,FontBase::TLF_RIGHT); lua_setfield(L,-2,"TLF_RIGHT");
 	lua_pushinteger(L,FontBase::TLF_LEFT); lua_setfield(L,-2,"TLF_LEFT");
 	lua_pushinteger(L,FontBase::TLF_JUSTIFIED); lua_setfield(L,-2,"TLF_JUSTIFIED");
-	lua_pushinteger(L,FontBase::TLF_NOWRAP); lua_setfield(L,-2,"TLF_NOWRAP");
+    lua_pushinteger(L,FontBase::TLF_NOWRAP); lua_setfield(L,-2,"TLF_NOWRAP");
+    lua_pushinteger(L,FontBase::TLF_RTL); lua_setfield(L,-2,"TLF_RTL");
     lua_pushinteger(L,FontBase::TLF_REF_BASELINE); lua_setfield(L,-2,"TLF_REF_BASELINE");
     lua_pushinteger(L,FontBase::TLF_REF_TOP); lua_setfield(L,-2,"TLF_REF_TOP");
     lua_pushinteger(L,FontBase::TLF_REF_MIDDLE); lua_setfield(L,-2,"TLF_REF_MIDDLE");
@@ -34,6 +36,9 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
     lua_pushinteger(L,FontBase::TLF_REF_LINETOP); lua_setfield(L,-2,"TLF_REF_LINETOP");
     lua_pushinteger(L,FontBase::TLF_REF_LINEBOTTOM); lua_setfield(L,-2,"TLF_REF_LINEBOTTOM");
 	lua_pushinteger(L,FontBase::TLF_BREAKWORDS); lua_setfield(L,-2,"TLF_BREAKWORDS");
+    lua_pushinteger(L,FontBase::TLF_LTR); lua_setfield(L,-2,"TLF_LTR");
+    lua_pushinteger(L,FontBase::TLF_NOSHAPING); lua_setfield(L,-2,"TLF_NOSHAPING");
+    lua_pushinteger(L,FontBase::TLF_NOBIDI); lua_setfield(L,-2,"TLF_NOBIDI");
     lua_pop(L,1);
 }
 
@@ -178,7 +183,9 @@ int FontBaseBinder::layoutText(lua_State *L)
         lua_setfield(L,-2,"dy");
         lua_pushstring(L,cl.text.c_str());
         lua_setfield(L,-2,"text");
-        lua_pushlstring(L,&cl.sep,1);
+        char seputf[8];
+        int sepsz=wchar_to_utf8(&cl.sep,1,seputf,8,0);
+        lua_pushlstring(L,seputf,sepsz);
         lua_setfield(L,-2,"sep");
         lua_pushnumber(L,cl.sepl);
         lua_setfield(L,-2,"sepl");

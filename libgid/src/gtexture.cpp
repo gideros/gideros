@@ -842,4 +842,15 @@ ShaderBuffer *gtexture_BindRenderTarget(ShaderBuffer *fbo)
 	return engine->setFramebuffer(fbo);
 }
 
+static void *global_hooks[GID_GLOBALHOOK_MAX];
+void g_setGlobalHook(unsigned int hookn,void *hook) {
+	if (hookn>=GID_GLOBALHOOK_MAX) return;
+	global_hooks[hookn]=hook;
+}
+
+void *g_getGlobalHook(unsigned int hookn) {
+	if (hookn>=GID_GLOBALHOOK_MAX) return NULL;
+	return global_hooks[hookn];
+}
+
 }

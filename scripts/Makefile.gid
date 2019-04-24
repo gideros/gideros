@@ -92,6 +92,11 @@ prep.repo:
 		git reset HEAD .gitmodules; \
 		git reset HEAD plugins/spine/spine-runtimes; \
 	fi
+	if [ ! -d $(ROOT)/plugins/harfbuzz/harfbuzz ]; then \
+		git submodule add https://github.com/gideros/harfbuzz.git  plugins/harfbuzz/harfbuzz; \
+		git reset HEAD .gitmodules; \
+		git reset HEAD plugins/harfbuzz/harfbuzz; \
+	fi
 	git submodule update --recursive	
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk

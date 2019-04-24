@@ -1,7 +1,32 @@
-#include "fontbase.h"
 #include <math.h>
 #include <algorithm>
 #include <stdlib.h>
+#include "fontbase.h"
+#include "gtexture.h"
+#include <utf8.h>
+#include <string.h>
+
+FontBase::~FontBase()
+{
+    if (shaper_)
+        delete shaper_;
+}
+
+void FontBase::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
+{
+    getBounds(part.text.c_str(),letterSpacing,&part.x,&part.y,&part.w,&part.h);
+    part.w=part.w-part.x+1;
+    part.h=part.h-part.y+1;
+    part.y+=part.dy;
+    part.advX=getAdvanceX(part.text.c_str(),letterSpacing,-1);
+    part.advY=0;
+}
+
+float FontBase::getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing)
+{
+	return getCharIndexAtOffset(part.text.c_str(),offset,letterSpacing,-1);
+}
+
 
 void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped, int end)
 {
@@ -23,7 +48,8 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 		bool merged=false;
 		for (size_t i=start;i<(cur-1);i++)
 		{
-			if (tl->parts[i].sep==' ')
+			if ((tl->parts[i].sepflags&CHUNKCLASS_FLAG_BREAKABLE)&&
+					(tl->parts[i].styleFlags==tl->parts[i+1].styleFlags))
 			{
 				tl->parts[i].text=tl->parts[i].text+" "+tl->parts[i+1].text;
 				tl->parts[i].sep=tl->parts[i+1].sep;
@@ -35,20 +61,14 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 			}
             if (merged)
 			{
-	            getBounds(tl->parts[i].text.c_str(),letterSpacing,&tl->parts[i].x,&tl->parts[i].y,&tl->parts[i].w,&tl->parts[i].h);
-	            tl->parts[i].w=tl->parts[i].w-tl->parts[i].x+1;
-	            tl->parts[i].h=tl->parts[i].h-tl->parts[i].y+1;
-				tl->parts[i].y+=tl->parts[i].dy;
+            	chunkMetrics(tl->parts[i],letterSpacing);
 				merged=false;
 			}
 		}
 		if (merged)
 		{
 			size_t i=cur-1;
-            getBounds(tl->parts[i].text.c_str(),letterSpacing,&tl->parts[i].x,&tl->parts[i].y,&tl->parts[i].w,&tl->parts[i].h);
-            tl->parts[i].w=tl->parts[i].w-tl->parts[i].x+1;
-            tl->parts[i].h=tl->parts[i].h-tl->parts[i].y+1;
-			tl->parts[i].y+=tl->parts[i].dy;
+        	chunkMetrics(tl->parts[i],letterSpacing);
 		}
 	}
 	for (size_t i=start;i<cur;i++)
@@ -58,7 +78,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
         char sep=tl->parts[i].sep;
         float ns=(sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
         if (sep=='\e') ns=0;
-		ox+=getAdvanceX(tl->parts[i].text.c_str(),letterSpacing,-1)+ns;
+		ox+=tl->parts[i].advX+ns;
 	}
 }
 
@@ -75,11 +95,14 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	int breaksize=0;
 	if (breakwords&&params->breakchar.size())
 		breaksize=getAdvanceX(params->breakchar.c_str(),params->letterSpacing,-1);
-	const char *bt=text;
-	const char *rt=bt;
 	ChunkLayout styles; //To hold styling info
 	styles.styleFlags=0;
-	//Cut text around spaces and control chars (ascii<' ')
+    if (params->flags&TLF_RTL)
+        styles.styleFlags|=TEXTSTYLEFLAG_RTL;
+    if (params->flags&TLF_LTR)
+        styles.styleFlags|=TEXTSTYLEFLAG_LTR;
+    if (params->flags&TLF_NOSHAPING)
+        styles.styleFlags|=TEXTSTYLEFLAG_SKIPSHAPING;
 	float y=0;
 	float cw=0;
 	int st=0;
@@ -89,27 +112,135 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		tabSpace=-params->tabSpace;
 	else
 		tabSpace=params->tabSpace*sw;
-	while (*rt)
+	std::vector<ChunkClass> chunks;
+    TextClassifier_t analyzer=(params->flags&TLF_NOBIDI)?NULL:(TextClassifier_t) g_getGlobalHook(GID_GLOBALHOOK_TEXTCLASSIFIER);
+    if (analyzer) {
+    	if (!analyzer(chunks,std::string(text)))
+    		analyzer=NULL;
+    }
+    if (!analyzer)
 	{
-        while (((*rt)&0xFF)>' ') rt++;
+        //Cut text around spaces and control chars (ascii<' ')
+    	ChunkClass cc;
+        cc.script=0;
+    	const char *bt=text;
+    	const char *rt=bt;
+    	while (*rt)
+    	{
+            while (((*rt)&0xFF)>' ') rt++;
+            cc.sep=(*rt);
+            cc.text=std::string(bt,rt-bt);
+            cc.textFlags=CHUNKCLASS_FLAG_BREAKABLE;
+            switch (*rt) {
+        	case ' ':	cc.sepFlags=CHUNKCLASS_FLAG_BREAKABLE; break;
+        	case '\n':	cc.sepFlags=CHUNKCLASS_FLAG_BREAK; break;
+        	default: cc.sepFlags=0;
+            }
+            if (*rt)
+            	rt++;
+            if (cc.sep=='\e')
+            {
+            	//Extract escape sequence
+            	if (*rt=='[') {
+    				const char *ss=rt+1;
+    				const char *se=ss;
+    				while ((*se)&&((*se)!=']')) se++;
+    				if (*se==']') {
+    		            chunks.push_back(cc);
+    		            rt=se+1;
+    		            cc.text=std::string(ss,se-ss);
+    		            cc.textFlags=CHUNKCLASS_FLAG_STYLE;
+    		            cc.sep=0;
+    		            cc.sepFlags=0;
+    				}
+            	}
+            }
+            bt=rt;
+            chunks.push_back(cc);
+    	}
+	}
+
+    uint8_t lsepflags=CHUNKCLASS_FLAG_BREAKABLE;
+	for (std::vector<ChunkClass>::const_iterator it=chunks.cbegin();it!=chunks.cend();it++)
+	{
+		uint8_t textflags=it->textFlags;
+		if (textflags&CHUNKCLASS_FLAG_STYLE) {
+			const char *ss=it->text.c_str();
+			const char *se=ss+it->text.size();
+			while (true) {
+				const char *sp=ss;
+				const char *sa=NULL;
+				while ((sp<se)&&((*sp)!=','))
+				{
+					if ((*sp)=='=') sa=sp;
+					sp++;
+				}
+				std::string key,val;
+				if (sa)
+				{
+					key=std::string(ss,sa-ss);
+					val=std::string(sa+1,sp-sa-1);
+				}
+				else
+					key=std::string(ss,sp-ss);
+				if (!key.compare("color"))
+				{
+					if ((val.size()==0)||(val.at(0)!='#'))
+						styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
+					else
+					{
+						styles.styleFlags|=TEXTSTYLEFLAG_COLOR;
+						int param=strtol(val.c_str()+1,NULL,16);
+						switch (val.size())
+						{
+							case 4:
+								styles.color=((param&0x0F)<<4)|((param&0x0F)<<0)|
+											 ((param&0xF0)<<8)|((param&0xF0)<<4)|
+											 ((param&0xF00)<<12)|((param&0xF00)<<8)|
+											 0xFF000000;
+								break;
+							case 5:
+								styles.color=((param&0x0F)<<28)|((param&0x0F)<<24)|
+											 ((param&0xF0)<<0)|((param&0xF0)>>4)|
+											 ((param&0xF00)<<4)|((param&0xF00)>>0)|
+											 ((param&0xF000)<<8)|((param&0xF000)<<4);
+								break;
+							case 7:
+								styles.color=param|0xFF000000;
+								break;
+							case 9:
+								styles.color=(param>>8)|(param&0xFF)<<24;
+								break;
+							default:
+								styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
+						}
+					}
+				}
+				if (sp==se) break;
+				ss=sp+1;
+			}
+			continue;
+		}
+
 		ChunkLayout cl;
-		cl.text=std::string(bt,rt-bt);
+		cl.text=it->text;
         cl.x=cl.y=cl.w=cl.h=0;
-        if (cl.text.size())
-        {
-            getBounds(cl.text.c_str(),params->letterSpacing,&cl.x,&cl.y,&cl.w,&cl.h);
-            cl.w=cl.w-cl.x+1;
-            cl.h=cl.h-cl.y+1;
-        }
-		cl.y+=y;
 		cl.dy=y;
-		cl.sep=*rt;
+		cl.sep=it->sep;
+		uint8_t sepflags=it->sepFlags;
+		cl.sepflags=sepflags;
 		cl.line=lines+1;
 		cl.styleFlags=styles.styleFlags;
+		if (textflags&CHUNKCLASS_FLAG_RTL)
+			cl.styleFlags=(cl.styleFlags&(~TEXTSTYLEFLAG_LTR))|TEXTSTYLEFLAG_RTL;
+		if (textflags&CHUNKCLASS_FLAG_LTR)
+			cl.styleFlags=(cl.styleFlags&(~TEXTSTYLEFLAG_RTL))|TEXTSTYLEFLAG_LTR;
 		cl.color=styles.color;
 		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):((cl.sep=='\e')?0:sw);
 		cl.sepl=ns;
-		if (wrap&&cw&&((*rt)!='\e')&&((cw+cl.w+ns)>params->w))
+        if (cl.text.size())
+        	chunkMetrics(cl,params->letterSpacing);
+        if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&((cw+cl.w+ns)>params->w))
 		{
             if (breakwords&&(cl.w>params->w)&&(cw<(params->w/2)))
             {
@@ -131,6 +262,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
             }
 		}
 		tl.parts.push_back(cl);
+        lsepflags=sepflags;
 		if (cw) cw+=ns;
 		cw+=cl.w;
         while (wrap&&breakwords&&(cw>params->w))
@@ -150,7 +282,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			{
 				size_t brk=cur;
                 float bsize=0;
-				int cpos=getCharIndexAtOffset(tl.parts[cur].text.c_str(),wmax,params->letterSpacing,-1);
+				int cpos=getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing);
 				if (cpos>tl.parts[cur].text.size())
 					brk++;
 				else if (cpos>0)
@@ -162,14 +294,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 					tl.parts[cur].text+=params->breakchar;
 					tl.parts[cur].sepl=0;
 					tl.parts[cur].sep=0;
-		            getBounds(tl.parts[cur].text.c_str(),params->letterSpacing,&x,&y,&w,&h);
-		            tl.parts[cur].w=w-x+1;
-		            ccw+=w-x+1;
+		        	chunkMetrics(tl.parts[cur],params->letterSpacing);
+		            ccw+=tl.parts[cur].w;
                     bsize=breaksize;
 		            //Compute second part
 					cl.text=cl.text.substr(cpos);
-		            getBounds(cl.text.c_str(),params->letterSpacing,&x,&y,&w,&h);
-		            cl.w=w-x+1;
+		        	chunkMetrics(cl,params->letterSpacing);
 		            //Insert second part
 					brk++;
 					tl.parts.insert(tl.parts.begin()+brk,cl);
@@ -200,7 +330,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			}
             break;
 		}
-		if ((*rt)=='\n')
+		if (sepflags&CHUNKCLASS_FLAG_BREAK)
 		{
 			//Line break
 			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing);
@@ -209,73 +339,6 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			cw=0;
 			lines++;
 		}
-		if ((*rt)=='\e') {
-			//Parse styles
-			if ((*(++rt))=='[')
-			{
-				const char *ss=rt+1;
-				const char *se=ss;
-				while ((*se)&&((*se)!=']')) se++;
-				if (*se==']')
-				{
-					rt=se+1;
-					while (true) {
-						const char *sp=ss;
-						const char *sa=NULL;
-						while ((sp<se)&&((*sp)!=','))
-						{
-							if ((*sp)=='=') sa=sp;
-							sp++;
-						}
-						std::string key,val;
-						if (sa)
-						{
-							key=std::string(ss,sa-ss);
-							val=std::string(sa+1,sp-sa-1);
-						}
-						else
-							key=std::string(ss,sp-ss);
-						if (!key.compare("color"))
-						{
-							if ((val.size()==0)||(val.at(0)!='#'))
-								styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
-							else
-							{
-								styles.styleFlags|=TEXTSTYLEFLAG_COLOR;
-								int param=strtol(val.c_str()+1,NULL,16);
-								switch (val.size())
-								{
-									case 4:
-										styles.color=((param&0x0F)<<4)|((param&0x0F)<<0)|
-													 ((param&0xF0)<<8)|((param&0xF0)<<4)|
-													 ((param&0xF00)<<12)|((param&0xF00)<<8)|
-													 0xFF000000;
-										break;
-									case 5:
-										styles.color=((param&0x0F)<<28)|((param&0x0F)<<24)|
-													 ((param&0xF0)<<0)|((param&0xF0)>>4)|
-													 ((param&0xF00)<<4)|((param&0xF00)>>0)|
-													 ((param&0xF000)<<8)|((param&0xF000)<<4);
-										break;
-									case 7:
-										styles.color=param|0xFF000000;
-										break;
-									case 9:
-										styles.color=(param>>8)|(param&0xFF)<<24;
-										break;
-									default:
-										styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
-								}
-							}
-						}
-						if (sp==se) break;
-						ss=sp+1;
-					}
-				}
-			}
-		}
-		else if (*rt) rt++;
-		bt=rt;
 	}
 	//Layout final line
 	if (cw)

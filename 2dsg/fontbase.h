@@ -7,17 +7,17 @@
 
 class Application;
 class GraphicsBase;
+class FontShaper;
+typedef FontShaper *(*FontshaperBuilder_t)(void *fontData,size_t fontDataSize,int size,int xres,int yres);
 
 class FontBase : public GReferenced
 {
 public:
-    FontBase(Application *application) : application_(application), cacheVersion_(0)
+    FontBase(Application *application) : application_(application), cacheVersion_(0), shaper_(NULL)
 	{
 	}
 
-    virtual ~FontBase()
-    {
-    }
+    virtual ~FontBase();
 
 	enum Type
 	{
@@ -42,16 +42,29 @@ public:
 		float sizeMult;
 	};
 
+	struct GlyphLayout {
+		int glyph; //Glyph number in font
+		int srcIndex; //Original codepoint index in source text
+		int offX,offY,advX,advY; //Draw offset and pen advance
+        void *_private; //Private info for the font renderer
+	};
+
 #define TEXTSTYLEFLAG_COLOR         1
 #define TEXTSTYLEFLAG_SKIPLAYOUT	2
+#define TEXTSTYLEFLAG_RTL			4
+#define TEXTSTYLEFLAG_LTR			8
+#define TEXTSTYLEFLAG_SKIPSHAPING	16
     struct ChunkLayout {
 		std::string text;
+		std::vector<struct GlyphLayout> shaped;
+		float advX,advY;
 		float x,y;
 		float w,h;
 		float dx,dy;
 		int line;
-		char sep;
+		wchar32_t sep;
 		float sepl;
+		int sepflags;
 		//Styling
 		int styleFlags;
 		unsigned int color;
@@ -64,6 +77,20 @@ public:
 		int styleFlags;
 		std::vector<struct ChunkLayout> parts;
 	};
+	struct ChunkClass {
+		std::string text;
+		wchar32_t sep;
+#define CHUNKCLASS_FLAG_BREAKABLE	1
+#define CHUNKCLASS_FLAG_BREAK		2
+#define CHUNKCLASS_FLAG_LTR			4
+#define CHUNKCLASS_FLAG_RTL			8
+#define CHUNKCLASS_FLAG_STYLE		16
+		uint8_t textFlags;
+		uint8_t sepFlags;
+		uint16_t script;
+	};
+    virtual void chunkMetrics(struct ChunkLayout &part, float letterSpacing);
+    float getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing);
 
 	enum TextLayoutFlags {
 		TLF_LEFT=0,
@@ -81,7 +108,10 @@ public:
         TLF_REF_BOTTOM=512,
 		TLF_BREAKWORDS=1024,
         TLF_REF_LINEBOTTOM=2048,
-        TLF_REF_LINETOP=4096
+        TLF_REF_LINETOP=4096,
+		TLF_LTR=(1<<13),
+		TLF_NOSHAPING=(1<<14),
+		TLF_NOBIDI=(1<<15),
 	};
 
 	struct TextLayoutParameters {
@@ -98,6 +128,13 @@ protected:
 	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped=false, int end=-1);
     Application *application_;
 	int cacheVersion_;
+    FontShaper *shaper_;
+};
+
+class FontShaper {
+public:
+    virtual bool shape(struct FontBase::ChunkLayout &part,std::vector<wchar32_t> &wtext)=0;
+    virtual ~FontShaper() { }
 };
 
 class BMFontBase : public FontBase
@@ -142,5 +179,7 @@ protected:
         float descender;
     } fontInfo_;
 };
+
+typedef bool (*TextClassifier_t)(std::vector<FontBase::ChunkClass> &chunks,std::string text);
 
 #endif
