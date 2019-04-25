@@ -36,21 +36,13 @@ public:
     virtual float getAscender();
     virtual float getDescender();
     virtual float getLineHeight();
-
-private:
-    void constructor(std::vector<FontSpec> filenames, float size, const char *chars, float filtering, float outline);
-    int kerning(wchar32_t left, wchar32_t right) const;
-    bool addGlyph(const wchar32_t chr);
-    void ensureChars(const wchar32_t *text, int size);
-    bool staticCharsetInit();
-    void checkLogicalScale();
+    virtual bool shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext);
+    virtual void chunkMetrics(struct ChunkLayout &part, float letterSpacing);
 
 private:
     struct TextureGlyph
     {
         wchar32_t chr;
-        FT_UInt glyphIndex;
-        FT_Face face;
         int x, y;
         int width, height;
         int left, top;
@@ -58,12 +50,24 @@ private:
         unsigned int texture;
     };
 
+    void constructor(std::vector<FontSpec> filenames, float size, const char *chars, float filtering, float outline);
+    int kerning(wchar32_t left, wchar32_t right) const;
+    bool addGlyph(const wchar32_t chr);
+    bool addFontGlyph(int facenum,FT_UInt glyph,wchar32_t chr);
+    void ensureChars(const wchar32_t *text, int size);
+    void ensureGlyphs(int facenum,const wchar32_t *text, int size);
+    TextureGlyph *getCharGlyph(wchar32_t chr,int &facenum,FT_UInt &glyph);
+    bool staticCharsetInit();
+    void checkLogicalScale();
+
+private:
     struct FontInfo
     {
         int height;
         int ascender;
         int descender;
-        std::map<wchar32_t, TextureGlyph> textureGlyphs;
+        std::map<wchar32_t, FT_UInt> charGlyphs;
+        std::map<wchar32_t, int> charFace;
         std::map<std::pair<wchar32_t, wchar32_t>, int> kernings;
     };
 
@@ -72,6 +76,7 @@ private:
         FT_Face face;
         FT_StreamRec stream;
         float sizeMult;
+        std::map<FT_UInt, TextureGlyph> textureGlyphs;
     };
 
     std::vector<TextureData *> textureData_;
