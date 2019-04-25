@@ -40,11 +40,19 @@ $(BUILD)$(FLAVOUR)/%.em.o: ../%.cpp
 	@echo "EMC+ $<"
 	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
 
+$(BUILD)$(FLAVOUR)/%.em.o: ../%.cc
+	@echo "EMC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+
 $(BUILD)$(FLAVOUR)/%.em.o: ../%.c
 	@echo "EMCC $<"
 	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
 
 $(BUILD)$(FLAVOUR)/%.em.o: %.cpp
+	@echo "EMC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+
+$(BUILD)$(FLAVOUR)/%.em.o: %.cc
 	@echo "EMC+ $<"
 	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
 

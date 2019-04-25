@@ -745,7 +745,7 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
         for (size_t i = 0; i < len; ++i) {
             GlyphLayout &gl=part.shaped[i];
             FT_UInt glyphIndex=(FT_UInt) gl.glyph;
-            int facenum=(int) gl._private;
+            int facenum=(int) (uintptr_t) gl._private;
             std::map<FT_UInt, TextureGlyph>::const_iterator iter =
                     fontFaces_[facenum].textureGlyphs.find(glyphIndex);
 
@@ -824,7 +824,7 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
             shape.advY=0;
             shape.offX=left;
             shape.offY=-top;
-            shape._private=(void *) facenum;
+            shape._private=(void *) (uintptr_t) facenum;
             part.shaped.push_back(shape);
     	}
     }
@@ -871,7 +871,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
 		for (size_t i = 0; i < wsize; ++i) {
             GlyphLayout &gl=c.shaped[i];
-            int facenum = (int)gl._private;
+            int facenum = (int)(uintptr_t)gl._private;
         	std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
 
 			std::map<FT_UInt, TextureGlyph>::const_iterator iter =
@@ -925,7 +925,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
 		for (size_t i = 0; i < wsize; ++i) {
             GlyphLayout &gl=c.shaped[i];
-            int facenum = (int)gl._private;
+            int facenum = (int)(uintptr_t)gl._private;
         	std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
 
 			std::map<FT_UInt, TextureGlyph>::const_iterator iter =

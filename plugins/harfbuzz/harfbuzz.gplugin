@@ -38,7 +38,7 @@ iOSProject.commit()
  </target>
  <target name="Html5">
  	<lua>
- 	require("Tools/export_html5").export("Harfbuzz",f)
+ 	require("Tools/export_html5").export("harfbuzz",f)
  	</lua>
  </target>
  <target name="Win32">
