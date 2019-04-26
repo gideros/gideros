@@ -190,6 +190,10 @@ bool setKeyboardVisibility(bool visible){
 	return false;
 }
 
+int getKeyboardModifiers() {
+	return 0;
+}
+
 static int s_fps = 60;
 
 extern "C" {

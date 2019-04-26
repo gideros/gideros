@@ -32,6 +32,10 @@ bool setKeyboardVisibility(bool visible){
 	return false;
 }
 
+int getKeyboardModifiers() {
+	return 0;
+}
+
 void vibrate(int ms)
 {
 	EM_ASM_({

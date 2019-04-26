@@ -72,6 +72,9 @@ bool setKeyboardVisibility(bool visible)
 	return ret;
 }
 
+int getKeyboardModifiers() {
+	return 0;
+}
 
 std::string getLocale()
 {

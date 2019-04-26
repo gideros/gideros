@@ -50,6 +50,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"getDeviceSafeArea", ApplicationBinder::getDeviceSafeArea},
 		{"setKeepAwake", ApplicationBinder::setKeepAwake},
 		{"setKeyboardVisibility", ApplicationBinder::setKeyboardVisibility},
+		{"getKeyboardModifiers", ApplicationBinder::getKeyboardModifiers},
 		{"getLogicalTranslateX", ApplicationBinder::getLogicalTranslateX},
 		{"getLogicalTranslateY", ApplicationBinder::getLogicalTranslateY},
 		{"getLogicalScaleX", ApplicationBinder::getLogicalScaleX},
@@ -355,6 +356,17 @@ int ApplicationBinder::setKeyboardVisibility(lua_State* L)
 
 	return 1;
 }
+
+int ApplicationBinder::getKeyboardModifiers(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	lua_pushinteger(L,::getKeyboardModifiers());
+
+	return 1;
+}
+
 
 int ApplicationBinder::getLogicalTranslateX(lua_State* L)
 {
