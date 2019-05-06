@@ -1673,6 +1673,10 @@ bool setKeyboardVisibility(bool visible){
     return false;
 }
 
+int getKeyboardModifiers() {
+	return 0;
+}
+
 void eventFlush()
 {
     if (s_manager)

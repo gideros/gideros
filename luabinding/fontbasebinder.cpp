@@ -192,6 +192,22 @@ int FontBaseBinder::layoutText(lua_State *L)
         lua_pushinteger(L,cl.line);
         lua_setfield(L,-2,"line");
 
+        lua_createtable(L,cl.shaped.size(),0);
+        for (size_t l=0;l<cl.shaped.size();l++)
+        {
+        	FontBase::GlyphLayout gl=cl.shaped[l];
+        	lua_pushinteger(L,gl.glyph);
+            lua_setfield(L,-2,"glyph");
+        	lua_pushinteger(L,gl.srcIndex);
+            lua_setfield(L,-2,"srcIndex");
+            lua_pushnumber(L,gl.advX);
+            lua_setfield(L,-2,"advX");
+            lua_pushnumber(L,gl.advY);
+            lua_setfield(L,-2,"advY");
+            lua_rawseti(L,-2,l+1);
+        }
+        lua_setfield(L,-2,"glyphs");
+
         lua_rawseti(L,-2,k+1);
     }
     lua_setfield(L,-2,"parts");

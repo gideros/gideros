@@ -196,27 +196,34 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 		}
 
 		/* Cache the current slave's size. */
-		if (comp->layoutState) {
-			GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
-					sizeflag);
-            comp->layoutState->getMinSize(comp, info, dw, dh,comp->layoutState->pInsets);
-        } else {
-            if (comp->layoutConstraints) {
-                dw = (sizeflag == PREFERREDSIZE) ?
-					comp->layoutConstraints->prefWidth :
-					comp->layoutConstraints->minWidth;
-                dh = (sizeflag == PREFERREDSIZE) ?
-					comp->layoutConstraints->prefHeight :
-					comp->layoutConstraints->minHeight;
-                if ((dw==-1)||(dh==-1)) {
-                    float diw,dih;
-                    comp->getDimensions(diw,dih);
-                    if (dw==-1) dw=diw;
-                    if (dh==-1) dh=dih;
-                }
-            }
-            else
-                comp->getDimensions(dw,dh);
+		if (comp->layoutConstraints) {
+			dw = (sizeflag == PREFERREDSIZE) ?
+				comp->layoutConstraints->prefWidth :
+				comp->layoutConstraints->aminWidth;
+			dh = (sizeflag == PREFERREDSIZE) ?
+				comp->layoutConstraints->prefHeight :
+				comp->layoutConstraints->aminHeight;
+			if ((dw==-1)||(dh==-1)) {
+				float diw,dih;
+				if (comp->layoutState) {
+					GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
+							sizeflag);
+					comp->layoutState->getMinSize(comp, info, diw, dih,comp->layoutState->pInsets);
+				}
+				else
+					comp->getDimensions(diw,dih);
+				if (dw==-1) dw=diw;
+				if (dh==-1) dh=dih;
+			}
+		}
+		else {
+			if (comp->layoutState) {
+				GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
+						sizeflag);
+				comp->layoutState->getMinSize(comp, info, dw, dh,comp->layoutState->pInsets);
+			}
+			else
+				comp->getDimensions(dw,dh);
 		}
 		constraints->minWidth = dw;
 		constraints->minHeight = dh;
