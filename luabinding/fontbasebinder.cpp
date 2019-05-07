@@ -168,7 +168,7 @@ int FontBaseBinder::layoutText(lua_State *L)
     for (size_t k=0;k<tl.parts.size();k++)
     {
     	FontBase::ChunkLayout cl=tl.parts[k];
-    	lua_createtable(L,0,9);
+    	lua_createtable(L,0,11);
         lua_pushnumber(L,cl.x);
         lua_setfield(L,-2,"x");
         lua_pushnumber(L,cl.y);
@@ -196,6 +196,7 @@ int FontBaseBinder::layoutText(lua_State *L)
         for (size_t l=0;l<cl.shaped.size();l++)
         {
         	FontBase::GlyphLayout gl=cl.shaped[l];
+        	lua_createtable(L,0,4);
         	lua_pushinteger(L,gl.glyph);
             lua_setfield(L,-2,"glyph");
         	lua_pushinteger(L,gl.srcIndex);
