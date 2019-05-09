@@ -161,12 +161,7 @@ void TextField::createGraphics()
 	scaleChanged(); //Mark current scale as graphics scale
     graphicsBase_.clear();
     if (font_ != NULL)
-    {
-        FontBase::TextLayout l;
-        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, l);
-        textwidth_=l.w;
-        textheight_=l.bh;
-    }
+        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, textlayout_);
 
     minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)

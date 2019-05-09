@@ -61,6 +61,7 @@ public:
 		float x,y;
 		float w,h;
 		float dx,dy;
+		float shapeScaleX,shapeScaleY;
 		int line;
 		wchar32_t sep;
 		float sepl;

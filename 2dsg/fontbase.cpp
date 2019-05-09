@@ -236,7 +236,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		if (textflags&CHUNKCLASS_FLAG_LTR)
 			cl.styleFlags=(cl.styleFlags&(~TEXTSTYLEFLAG_RTL))|TEXTSTYLEFLAG_LTR;
 		cl.color=styles.color;
-		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):((cl.sep=='\e')?0:sw);
+		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):(((cl.sep=='\e')||(cl.sep==0))?0:sw);
 		cl.sepl=ns;
         if (cl.text.size())
         	chunkMetrics(cl,params->letterSpacing);

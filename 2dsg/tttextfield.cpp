@@ -82,10 +82,7 @@ void TTTextField::createGraphics()
 
     int minx, miny, maxx, maxy;
     bool isRGB;
-    FontBase::TextLayout l;
-    Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB,l);
-    textwidth_=l.w;
-    textheight_=l.bh;
+    Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB,textlayout_);
     parameters.format=isRGB?eRGBA8888:eA8;
 
 
@@ -143,7 +140,7 @@ void TTTextField::createGraphics()
     miny_ = miny/scaley;
     maxx_ = maxx/scalex;
     maxy_ = maxy/scaley;
-    styleFlags_=l.styleFlags;
+    styleFlags_=textlayout_.styleFlags;
 }
 
 void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const

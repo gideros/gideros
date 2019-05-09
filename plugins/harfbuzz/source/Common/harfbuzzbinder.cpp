@@ -250,7 +250,7 @@ static void g_deinitializePlugin(lua_State *) {
 }
 
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
-REGISTER_PLUGIN_STATICNAMED_CPP("Harfbuzz", "1.0",Harfbuzz)
+REGISTER_PLUGIN_STATICNAMED_CPP("Harfbuzz", "1.0",harfbuzz)
 #else
-REGISTER_PLUGIN_NAMED("Harfbuzz", "1.0", Harfbuzz)
+REGISTER_PLUGIN_NAMED("Harfbuzz", "1.0", harfbuzz)
 #endif

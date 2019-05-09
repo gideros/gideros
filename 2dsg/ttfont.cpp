@@ -295,7 +295,7 @@ bool TTFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
         return false;
     bool shaped=shaper_->shape(part,wtext);
     if (!shaped) return false;
-    for (int k=0;k<part.shaped.size();k++)
+    for (size_t k=0;k<part.shaped.size();k++)
         part.shaped[k]._private=(void *) fontFaces_[0].face;
     return true;
 }
@@ -441,6 +441,8 @@ void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     part.h = ((maxy-miny) / scaley)+1;
 	part.advX=x/scalex;
 	part.advY=y/scaley;
+	part.shapeScaleX=1/scalex;
+	part.shapeScaleY=1/scaley;
 }
 
 Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,

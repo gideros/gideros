@@ -30,6 +30,10 @@ private:
 
     static int getLayout(lua_State* L);
     static int setLayout(lua_State* L);
+
+    static int getPointFromTextPosition(lua_State *L);
+    static int getTextPositionFromPoint(lua_State *L);
+
 };
 
 #endif

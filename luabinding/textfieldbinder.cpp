@@ -26,6 +26,8 @@ TextFieldBinder::TextFieldBinder(lua_State* L)
         {"setSample", setSample},
         {"getLayout", getLayout},
         {"setLayout", setLayout},
+		{"getTextPositionFromPoint", getTextPositionFromPoint},
+		{"getPointFromTextPosition", getPointFromTextPosition},
         {NULL, NULL},
 	};
 
@@ -292,3 +294,29 @@ int TextFieldBinder::getLayout(lua_State *L)
 
     return 1;
 }
+
+int TextFieldBinder::getPointFromTextPosition(lua_State *L)
+{
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+    float cx=0,cy=0;
+	textField->getPointFromTextPos((size_t)luaL_checkinteger(L,2),cx,cy);
+	lua_pushnumber(L,cx);
+	lua_pushnumber(L,cy);
+	return 2;
+}
+
+int TextFieldBinder::getTextPositionFromPoint(lua_State *L)
+{
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+	float cx=luaL_checknumber(L,2);
+	float cy=luaL_checknumber(L,3);
+	size_t p=textField->getTextPosFromPoint(cx,cy);
+	lua_pushinteger(L,p);
+	lua_pushnumber(L,cx);
+	lua_pushnumber(L,cy);
+	return 3;
+}
+
+

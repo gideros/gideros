@@ -32,7 +32,7 @@ iOSProject.commit()
 	]]></lua>
     <template name="Activity" path="">
         <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Harfbuzz) "/>
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(harfbuzz) "/>
         </replacelist>
     </template>
  </target>
@@ -48,7 +48,7 @@ iOSProject.commit()
    <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
    <template name="binary" path="">
         <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-WINRT:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Harfbuzz) "/>
+           <append orig="//GIDEROS-TAG-WINRT:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(harfbuzz) "/>
         </replacelist>
     </template>
     <template name="project" path="">

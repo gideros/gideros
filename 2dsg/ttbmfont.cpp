@@ -837,6 +837,8 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     part.h = (maxy-miny)+1;
 	part.advX=x*sizescalex_;
 	part.advY=y*sizescaley_;
+	part.shapeScaleX=sizescalex_;
+	part.shapeScaleY=sizescaley_;
 }
 
 void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
