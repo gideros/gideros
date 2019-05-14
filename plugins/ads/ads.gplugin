@@ -178,7 +178,7 @@
 	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
-    	<set key="local.adsAarVer" value="9.1.0" />
+    	<set key="local.adsAarVer" value="9.6.0" />
     	<set key="local.adsJarVer" value="applovin-sdk-[[[local.adsAarVer]]].aar" />
     	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
     	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
@@ -189,7 +189,7 @@
             		<by><![CDATA[
 <meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />
 <activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
-<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />]]></by>
+<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configchanges="orientation|screenSize" />]]></by>
     	        </append>
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
@@ -313,7 +313,7 @@ iOSProject.commit()
 
 <if condition="[[[plugin.adsFwApplovin]]]">
 	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.*" exclude="*.framework" />
-	<download source="http://apps.giderosmobile.com/ext/ios/AppLovinSDK.framework-4.2.1.zip" dest="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" />
+	<download source="http://apps.giderosmobile.com/ext/ios/AppLovinSDK.framework-6.6.1.zip" dest="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" />
 	<unzip source="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" dest="[[[local.adsfwd]]]" />
    <template name="Project" path="">
         <replacelist wildcards="[[[project.name]]]-Info.plist">
@@ -332,7 +332,7 @@ iOSProject.needObjCLinking()
 iOSProject.addSources({
 "AdsApplovin.m","AdsApplovin.h","AppLovinSDK.framework"
 },"GroupAdsFrameworks","ios")
-local sysFW={ "AdSupport","SystemConfiguration","CoreTelephony" }
+local sysFW={ "AdSupport","SystemConfiguration","CoreTelephony","CoreMedia","SafariServices","WebKit" }
 for _,v in ipairs(sysFW) do
     iOSProject.addFramework(v..".framework","ios","System/Library/Frameworks/"..v..".framework","$SDKROOT")
 end
