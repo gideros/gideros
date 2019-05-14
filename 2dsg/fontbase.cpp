@@ -422,11 +422,21 @@ CompositeFont::~CompositeFont()
 
 void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l)
 {
-    l = layoutText(text, layout);
+    std::vector<CompositeFontSpec>::iterator bit = fonts_.begin();
+    if (bit==fonts_.end()) return;
+    l=bit->font->layoutText(text, layout);
     l.styleFlags|=TEXTSTYLEFLAG_SKIPLAYOUT;
     int colorFlag=l.styleFlags&(TEXTSTYLEFLAG_COLOR);
-    for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
-			it != fonts_.end(); it++) {
+    TextLayout l2=l;
+    for (std::vector<CompositeFontSpec>::iterator it=bit;it != fonts_.end(); it++) {
+        if (it!=bit) {
+            for (size_t pn = 0; pn < l2.parts.size(); pn++) {
+                ChunkLayout &c = l.parts[pn];
+                ChunkLayout &c2 = l2.parts[pn];
+                it->font->chunkMetrics(c2,layout->letterSpacing);
+                c.shaped=c2.shaped;
+            }
+        }
     	if ((it->colorR>=0)||(it->colorG>=0)||(it->colorB>=0))
     	    l.styleFlags&=~colorFlag;
     	else

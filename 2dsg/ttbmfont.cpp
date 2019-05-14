@@ -858,7 +858,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
     int gfx = vGraphicsBase->size();
 
 	for (size_t pn = 0; pn < l.parts.size(); pn++) {
-		ChunkLayout c = l.parts[pn];
+        ChunkLayout &c = l.parts[pn];
         size_t wsize=c.shaped.size();
 
 		unsigned char rgba[4];
