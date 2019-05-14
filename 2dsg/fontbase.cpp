@@ -225,7 +225,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		ChunkLayout cl;
 		cl.text=it->text;
         cl.x=cl.y=cl.w=cl.h=0;
-		cl.dy=y;
+        cl.dy=y; cl.dx=0;
 		cl.sep=it->sep;
 		uint8_t sepflags=it->sepFlags;
 		cl.sepflags=sepflags;
@@ -240,6 +240,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		cl.sepl=ns;
         if (cl.text.size())
         	chunkMetrics(cl,params->letterSpacing);
+        else {
+            cl.advX=0;
+            cl.advY=0;
+            cl.shapeScaleX=0;
+            cl.shapeScaleY=0;
+        }
         if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&((cw+cl.w+ns)>params->w))
 		{
             if (breakwords&&(cl.w>params->w)&&(cw<(params->w/2)))
