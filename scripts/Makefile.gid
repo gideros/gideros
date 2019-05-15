@@ -13,7 +13,7 @@ PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg li
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera threads
 PLUGINS_WINONLY=spout steam luamidi
 PLUGINS_MACONLY=steam luamidi
-PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads luamidi
+PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads luamidi harfbuzz
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts threads megacool map
@@ -23,7 +23,7 @@ PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads harfbu
 PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz
 PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz
 #For reference
-PLUGINS_WINRT=luasocket ogg liquidfun
+PLUGINS_WINRT=luasocket ogg liquidfun harfbuzz
 
 ADDONS=GSFXREditor Player TAME
 
