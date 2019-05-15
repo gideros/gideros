@@ -27,11 +27,19 @@ $(BUILD)/%.o: ../%.cpp
 	@echo "C+ $<"
 	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS) $(CFLGS) -c $< -o $@
 
+$(BUILD)/%.o: ../%.cc
+	@echo "C+ $<"
+	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS) $(CFLGS) -c $< -o $@
+
 $(BUILD)/%.o: ../%.c
 	@echo "CC $<"
 	@$(CC) $(CINCS) $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: %.cpp
+	@echo "C+ $<"
+	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS)  $(CFLGS) -c $< -o $@
+
+$(BUILD)/%.o: %.cc
 	@echo "C+ $<"
 	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS)  $(CFLGS) -c $< -o $@
 

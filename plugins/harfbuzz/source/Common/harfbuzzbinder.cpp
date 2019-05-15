@@ -190,6 +190,7 @@ static bool classifier(std::vector<FontBase::ChunkClass> &chunks,std::string tex
         		cc.sepFlags=CHUNKCLASS_FLAG_BREAKABLE;
         		break;
         	case UCDN_BIDI_CLASS_BN: //Catch ESC
+        		cc.sepFlags=0;
         		break;
         	default: //Letter
         		cc.sep=0;
@@ -210,6 +211,7 @@ static bool classifier(std::vector<FontBase::ChunkClass> &chunks,std::string tex
         				if (*se==']') {
         		            chunks.push_back(cc);
         		            rt=se+1;
+        		            bt=rt;
         		            cc.text=std::string(ss,se-ss);
         		            cc.textFlags=CHUNKCLASS_FLAG_STYLE;
         		            cc.sep=0;

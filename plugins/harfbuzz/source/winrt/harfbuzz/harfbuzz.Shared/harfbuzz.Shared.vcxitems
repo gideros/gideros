@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{afc41056-4b92-4f74-95b1-99a465a57b9e}</ItemsProjectGuid>
+    <ItemsRootNamespace>harfbuzz</ItemsRootNamespace>
+    <ItemsProjectName>harfbuzz.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-fdsc-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-ankr-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-bsln-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-common.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-feat-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-just-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-kerx-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-lcar-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-morx-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout-trak-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-ltag-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-map.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-algs.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-array.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-atomic.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-blob.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-blob.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer-deserialize-json.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer-deserialize-text.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-cache.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-cff-interp-common.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-cff-interp-cs-common.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-cff-interp-dict-common.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-cff1-interp-cs.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-cff2-interp-cs.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-common.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-debug.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-deprecated.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-dispatch.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-face.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-face.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-font.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-font.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-gobject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-iter.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-kern.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-machinery.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-map.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-map.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-meta.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-mutex.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-null.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-object.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-open-file.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-open-type.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-cff-common.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-cff1-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-cff2-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-cmap-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-color-cbdt-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-color-colr-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-color-cpal-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-color-sbix-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-color-svg-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-color.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-deprecated.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-face.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-font.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-gasp-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-glyf-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-hdmx-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-head-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-hhea-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-hmtx-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-kern-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout-base-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout-common.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout-gdef-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout-gpos-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout-gsub-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout-gsubgpos.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout-jstf-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-map.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-math-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-math.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-maxp-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-name-language.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-name-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-name.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-os2-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-os2-unicode-ranges.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-post-macroman.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-post-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-arabic-fallback.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-arabic-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-arabic-win1256.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-arabic.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-indic-machine.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-indic.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-khmer-machine.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-khmer.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-myanmar-machine.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-myanmar.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-use-machine.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-use.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-vowel-constraints.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-fallback.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-normalize.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-stat-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-tag-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-var-avar-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-var-fvar-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-var-hvar-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-var-mvar-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-var.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-vorg-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-pool.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-sanitize.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-serialize.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-set-digest.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-set.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-set.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shape-plan.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shape-plan.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shaper-impl.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shaper-list.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shaper.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-string-array.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-cff-common.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-cff1.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-cff2.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-glyf.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-input.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-plan.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ucdn\ucdn.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ucdn\ucdn_db.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-unicode-emoji-table.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-unicode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-unicode.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-utf.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-vector.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-version.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb.hh" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-layout.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-aat-map.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-blob.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer-serialize.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-common.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-face.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-font.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-map.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-cff1-table.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-cff2-table.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-color.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-face.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-font.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-layout.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-map.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-math.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-name-language.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-name.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-arabic.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-default.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-hangul.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-hebrew.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-indic-table.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-indic.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-khmer.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-myanmar.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-thai.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-use-table.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-use.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-vowel-constraints.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-fallback.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-normalize.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-tag.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-var.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-set.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shape-plan.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shape.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-shaper.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-static.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-cff-common.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-cff1.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-cff2.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-glyf.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-input.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset-plan.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-subset.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ucdn.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ucdn\ucdn.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-unicode.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-warning.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\harfbuzzbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer-deserialize-json.rl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-buffer-deserialize-text.rl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-indic-machine.rl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-khmer-machine.rl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-myanmar-machine.rl" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\harfbuzz\src\hb-ot-shape-complex-use-machine.rl" />
+  </ItemGroup>
+</Project>
