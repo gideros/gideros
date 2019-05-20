@@ -631,6 +631,7 @@ void TTBMFont::checkLogicalScale() {
 		fontInfo_.ascender = 0;
 		fontInfo_.descender = 1000000;
 		fontInfo_.height = 0;
+		fontInfo_.charGlyphs.clear();
 
 		for (std::vector<FontFace>::iterator it = fontFaces_.begin();
 				it != fontFaces_.end(); it++) {
