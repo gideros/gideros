@@ -12,6 +12,7 @@
 #ifdef WINSTORE
 #include <string>
 #include <Windows.h>
+std::wstring utf8_ws(const char *str);
 #endif
 
 #include <stdarg.h>
@@ -34,8 +35,7 @@ static void log(const char *buffer)
     }
     __android_log_print(ANDROID_LOG_DEBUG, "Gideros", "%s", buffer);
 #elif defined(WINSTORE)
-	std::string s(buffer);
-	std::wstring wsTmp(s.begin(), s.end());
+	std::wstring wsTmp=utf8_ws(buffer);;
 	OutputDebugString(wsTmp.c_str());
 #else
     printf("%s\n", buffer);

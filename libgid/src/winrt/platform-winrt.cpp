@@ -18,6 +18,9 @@ using namespace Windows::ApplicationModel;
 using namespace Windows::Security::ExchangeActiveSyncProvisioning;
 using namespace Windows::System::Profile;
 
+std::wstring utf8_ws(const char *str);
+std::string utf8_us(const wchar_t *str);
+
 std::vector<std::string> getDeviceInfo()
 {
 	std::vector<std::string> result;
@@ -27,11 +30,11 @@ std::vector<std::string> getDeviceInfo()
 	std::wstring ws;
 	AnalyticsVersionInfo ^ai = AnalyticsInfo::VersionInfo;
 	ws = ai->DeviceFamily->Data();
-	result.push_back(std::string(ws.begin(), ws.end()));
+	result.push_back(utf8_us(ws.c_str()));
 
 	// get the system version number
 	ws = ai->DeviceFamilyVersion->Data();
-	long long v= strtoll(std::string(ws.begin(), ws.end()).c_str(), NULL, 10);
+	long long v= strtoll(utf8_us(ws.c_str()).c_str(), NULL, 10);
 	int v1 = (v & 0xFFFF000000000000L) >> 48;
 	int v2 = (v & 0x0000FFFF00000000L) >> 32;
 	int v3 = (v & 0x00000000FFFF0000L) >> 16;
@@ -77,13 +80,13 @@ bool canOpenUrl(const char *url)
 
 std::string getLocale(){
 	std::wstring data = GlobalizationPreferences::Languages->GetAt(0)->Data();
-	return std::string(data.begin(), data.end());
+	return utf8_us(data.c_str());
 }
 
 std::string getLanguage()
 {
 	std::wstring data = GlobalizationPreferences::Languages->GetAt(0)->Data();
-	std::string s(data.begin(), data.end());
+	std::string s=utf8_us(data.c_str());
 	return s.substr(0,2);
 }
 
@@ -105,7 +108,7 @@ void setFullScreen(bool fullScreen){
 
 std::string getDeviceName(){
 	std::wstring data = Windows::Security::ExchangeActiveSyncProvisioning::EasClientDeviceInformation().FriendlyName->Data();
-	return std::string(data.begin(), data.end());
+	return utf8_us(data.c_str());
 }
 
 #if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP

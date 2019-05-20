@@ -243,64 +243,76 @@ static int MidiIn_gc(lua_State *L)
 
 static int MidiOut_noteOn(lua_State *L)
 {
-	std::vector<unsigned char> message;
-	message.resize(3);
-	RtMidiOut* midiout = checkMidiOut(L, 1);
-	if(lua_isnumber(L, 4))
-	message[0] = 144;
-	message[1] = luaL_checkint(L, 2);
-	message[2] = 127;
-	if(lua_isnumber(L, 3))
-		message[2] = (unsigned char)lua_tonumber(L, 3);
-	if(lua_isnumber(L, 4))
-	{
-		int channel = luaL_checkint(L, 4);
-		if(!base0)
-			channel--;
-		if(channel < 0)
-			channel = 0;
-		else if(channel > 15)
-			channel = 15;
-		message[0] += channel;
+	try {
+		std::vector<unsigned char> message;
+		message.resize(3);
+		RtMidiOut* midiout = checkMidiOut(L, 1);
+		if(lua_isnumber(L, 4))
+		message[0] = 144;
+		message[1] = luaL_checkint(L, 2);
+		message[2] = 127;
+		if(lua_isnumber(L, 3))
+			message[2] = (unsigned char)lua_tonumber(L, 3);
+		if(lua_isnumber(L, 4))
+		{
+			int channel = luaL_checkint(L, 4);
+			if(!base0)
+				channel--;
+			if(channel < 0)
+				channel = 0;
+			else if(channel > 15)
+				channel = 15;
+			message[0] += channel;
+		}
+		midiout->sendMessage(&message);
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
 	}
-	midiout->sendMessage(&message);
 	return 0;
 }
 
 static int MidiOut_noteOff(lua_State *L)
 {
-	std::vector<unsigned char> message;
-	message.resize(3);
-	RtMidiOut* midiout = checkMidiOut(L, 1);
-	message[0] = 144;
-	message[1] = luaL_checkint(L, 2);
-	message[2] = 0;
-	if(lua_isnumber(L, 3))
-	{
-		int channel = luaL_checkint(L, 3);
-		if(!base0)
-			channel--;
-		if(channel < 0)
-			channel = 0;
-		else if(channel > 15)
-			channel = 15;
-		message[0] += channel;
-	}
+	try {
+		std::vector<unsigned char> message;
+		message.resize(3);
+		RtMidiOut* midiout = checkMidiOut(L, 1);
+		message[0] = 144;
+		message[1] = luaL_checkint(L, 2);
+		message[2] = 0;
+		if(lua_isnumber(L, 3))
+		{
+			int channel = luaL_checkint(L, 3);
+			if(!base0)
+				channel--;
+			if(channel < 0)
+				channel = 0;
+			else if(channel > 15)
+				channel = 15;
+			message[0] += channel;
+		}
 
-	midiout->sendMessage(&message);
+		midiout->sendMessage(&message);
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
+	}
 	return 0;
 }
 
 static int MidiOut_sendMessage(lua_State *L)
 {
-	std::vector<unsigned char> message;
-	message.resize(3);
-	RtMidiOut* midiout = checkMidiOut(L, 1);
-	message[0] = luaL_checkint(L, 2);
-	message[1] = luaL_checkint(L, 3);
-	message[2] = luaL_checkint(L, 4);
+	try {
+		std::vector<unsigned char> message;
+		message.resize(3);
+		RtMidiOut* midiout = checkMidiOut(L, 1);
+		message[0] = luaL_checkint(L, 2);
+		message[1] = luaL_checkint(L, 3);
+		message[2] = luaL_checkint(L, 4);
 
-	midiout->sendMessage(&message);
+		midiout->sendMessage(&message);
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
+	}
 	return 0;
 }
 
@@ -309,15 +321,23 @@ static int MidiOut_sendMessage(lua_State *L)
 
 static int luamidi_openout(lua_State* L)
 {
-	int port = luaL_checkint(L, 1);
-	pushMidiOut(L, OpenOut(L, port));
+	try {
+		int port = luaL_checkint(L, 1);
+		pushMidiOut(L, OpenOut(L, port));
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
+	}
 	return 1;
 }
 
 static int luamidi_openin(lua_State* L)
 {
-	int port = luaL_checkint(L, 1);
-	pushMidiIn(L, OpenIn(L, port));
+	try {
+		int port = luaL_checkint(L, 1);
+		pushMidiIn(L, OpenIn(L, port));
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
+	}
 	return 1;
 }
 
@@ -337,95 +357,111 @@ static int luamidi_base1(lua_State *L)
 
 static int luamidi_noteOn(lua_State *L)
 {
-	std::vector<unsigned char> message;
-	message.resize(3);
-	int port = luaL_checkint(L, 1);
-	RtMidiOut* midiout = OpenOut(L, port);
-	message[0] = 144;
-	message[1] = luaL_checkint(L, 2);
-	message[2] = 127;
-	if(lua_isnumber(L, 3))
-		message[2] = (unsigned char)lua_tonumber(L, 3);
-	if(lua_isnumber(L, 4))
-	{
-		int channel = luaL_checkint(L, 4);
-		if(!base0)
-			channel--;
-		if(channel < 0)
-			channel = 0;
-		else if(channel > 15)
-			channel = 15;
-		message[0] += channel;
-		cout << "channel: " << channel << endl;
+	try {
+		std::vector<unsigned char> message;
+		message.resize(3);
+		int port = luaL_checkint(L, 1);
+		RtMidiOut* midiout = OpenOut(L, port);
+		message[0] = 144;
+		message[1] = luaL_checkint(L, 2);
+		message[2] = 127;
+		if(lua_isnumber(L, 3))
+			message[2] = (unsigned char)lua_tonumber(L, 3);
+		if(lua_isnumber(L, 4))
+		{
+			int channel = luaL_checkint(L, 4);
+			if(!base0)
+				channel--;
+			if(channel < 0)
+				channel = 0;
+			else if(channel > 15)
+				channel = 15;
+			message[0] += channel;
+			cout << "channel: " << channel << endl;
+		}
+		midiout->sendMessage(&message);
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
 	}
-	midiout->sendMessage(&message);
 	return 0;
 }
 
 static int luamidi_noteOff(lua_State *L)
 {
-	std::vector<unsigned char> message;
-	message.resize(3);
-	int port = luaL_checkint(L, 1);
-	RtMidiOut* midiout = OpenOut(L, port);
-	message[0] = 144;
-	message[1] = luaL_checkint(L, 2);
-	message[2] = 0;
-	if(lua_isnumber(L, 3))
-	{
-		int channel = luaL_checkint(L, 3);
-		if(!base0)
-			channel--;
-		if(channel < 0)
-			channel = 0;
-		else if(channel > 15)
-			channel = 15;
-		message[0] += channel;
+	try {
+		std::vector<unsigned char> message;
+		message.resize(3);
+		int port = luaL_checkint(L, 1);
+		RtMidiOut* midiout = OpenOut(L, port);
+		message[0] = 144;
+		message[1] = luaL_checkint(L, 2);
+		message[2] = 0;
+		if(lua_isnumber(L, 3))
+		{
+			int channel = luaL_checkint(L, 3);
+			if(!base0)
+				channel--;
+			if(channel < 0)
+				channel = 0;
+			else if(channel > 15)
+				channel = 15;
+			message[0] += channel;
+		}
+		midiout->sendMessage(&message);
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
 	}
-	midiout->sendMessage(&message);
 	return 0;
 }
 
 static int luamidi_sendMessage(lua_State *L)
 {
-	std::vector<unsigned char> message;
-	message.resize(3);
-	int port = luaL_checkint(L, 1);
-	RtMidiOut* midiout = OpenOut(L, port);
-	message[0] = luaL_checkint(L, 2);
-	message[1] = luaL_checkint(L, 3);
-	message[2] = luaL_checkint(L, 4);
-	
-	if(lua_isnumber(L, 5))
-	{
-		int channel = luaL_checkint(L, 5);
-		if(!base0)
-			channel--;
-		if(channel < 0)
-			channel = 0;
-		else if(channel > 15)
-			channel = 15;
-		message[0] += channel;
-	}
+	try {
+		std::vector<unsigned char> message;
+		message.resize(3);
+		int port = luaL_checkint(L, 1);
+		RtMidiOut* midiout = OpenOut(L, port);
+		message[0] = luaL_checkint(L, 2);
+		message[1] = luaL_checkint(L, 3);
+		message[2] = luaL_checkint(L, 4);
 
-	midiout->sendMessage(&message);
+		if(lua_isnumber(L, 5))
+		{
+			int channel = luaL_checkint(L, 5);
+			if(!base0)
+				channel--;
+			if(channel < 0)
+				channel = 0;
+			else if(channel > 15)
+				channel = 15;
+			message[0] += channel;
+		}
+	
+		midiout->sendMessage(&message);
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
+	}
 	return 0;
 }
 
 static int luamidi_getMessage(lua_State *L)
 {
 //	cout << "getting..." << endl;
-	std::vector<unsigned char> message;
-	int port = luaL_checkint(L, 1);
-	RtMidiIn* midiin = OpenIn(L, port);
-	double delta = midiin->getMessage(&message);
-	if(message.size() == 3)
-	{
-		lua_pushnumber(L, message[0]);
-		lua_pushnumber(L, message[1]);
-		lua_pushnumber(L, message[2]);
-		lua_pushnumber(L, delta);
-		return 4;
+	try {
+		std::vector<unsigned char> message;
+		int port = luaL_checkint(L, 1);
+		RtMidiIn* midiin = OpenIn(L, port);
+		double delta = midiin->getMessage(&message);
+		if(message.size() == 3)
+		{
+			lua_pushnumber(L, message[0]);
+			lua_pushnumber(L, message[1]);
+			lua_pushnumber(L, message[2]);
+			lua_pushnumber(L, delta);
+			return 4;
+		}
+	} catch (RtMidiError &e) {
+		luaL_error(L,e.what());
 	}
 	return 0;
 }

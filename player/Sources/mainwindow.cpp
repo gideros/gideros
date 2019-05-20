@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <QPalette>
 #include <QMessageBox>
+#include <QDateTime>
 #include "libnetwork.h"
 #include "applicationwrapper.h"
 #include "glcanvas.h"
@@ -44,6 +45,7 @@ void MainWindow::setupUiActions(){
     connect(ui.actionFull_Screen,   SIGNAL(triggered(bool)), this, SLOT(actionFull_Screen(bool)));
     connect(ui.actionHide_Menu,     SIGNAL(triggered()), this, SLOT(actionHide_Menu()));
     connect(ui.actionAlways_on_Top, SIGNAL(triggered(bool)), this, SLOT(actionAlwaysOnTop(bool)));
+    connect(ui.actionScreenshot, SIGNAL(triggered()), this, SLOT(actionScreenshot()));
 
     connect(ui.actionQuarter,       SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionHalf,          SIGNAL(triggered()), this, SLOT(actionScale()));
@@ -92,6 +94,8 @@ void MainWindow::setupUiActions(){
     connect(ui.action750x1334,  SIGNAL(triggered()), this, SLOT(actionResolution()));
     connect(ui.action1242x2208, SIGNAL(triggered()), this, SLOT(actionResolution()));
     connect(ui.action900x1200,  SIGNAL(triggered()), this, SLOT(actionResolution()));
+    connect(ui.action1242x2688, SIGNAL(triggered()), this, SLOT(actionResolution()));
+    connect(ui.action2048x2732, SIGNAL(triggered()), this, SLOT(actionResolution()));
 
     connect(ui.action15_fps,    SIGNAL(triggered()), this, SLOT(actionFps()));
     connect(ui.action30_fps,    SIGNAL(triggered()), this, SLOT(actionFps()));
@@ -174,6 +178,12 @@ void MainWindow::setupUiProperties(){
 
     ui.action900x1200->setProperty("width",  900);
     ui.action900x1200->setProperty("height", 1200);
+
+    ui.action1242x2688->setProperty("width",  1242);
+    ui.action1242x2688->setProperty("height",  2688);
+
+    ui.action2048x2732->setProperty("width",  2048);
+    ui.action2048x2732->setProperty("height",  2732);
 
     ui.action15_fps->setProperty("fps",    15);
     ui.action30_fps->setProperty("fps",    30);
@@ -473,6 +483,19 @@ void MainWindow::actionFps(){
     setFps(action->property("fps").toInt());
 
     updateFps();
+}
+
+void MainWindow::actionScreenshot(){
+	QPixmap qPixMap = QPixmap::grabWidget(ui.glCanvas);
+	QString dir=getWorkingDirectory();
+	QString time=QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
+	int w=width();
+	int h=height();
+    if(orientation() == eLandscapeLeft || orientation() == eLandscapeRight) {
+    	int m=h; h=w; w=m;
+    }
+
+	qPixMap.toImage().save(QString("%1/%2_%3x%4.png").arg(dir).arg(time).arg(w).arg(h), "png", 0);
 }
 
 void MainWindow::actionOrientation(){

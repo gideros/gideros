@@ -12,6 +12,10 @@ using namespace Windows::Storage::Streams;
 using namespace Windows::Security::Cryptography::Certificates;
 using namespace Platform;
 
+std::wstring utf8_ws(const char *str);
+std::string utf8_us(const wchar_t *str);
+
+
 static HttpClient^ httpClient;
 static cancellation_token_source cancellationTokenSource;
 static bool sslErrorsIgnore = false;
@@ -137,14 +141,14 @@ void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback
 			{
 				int ds = pair->Key->Length();
 				std::wstring wkey(pair->Key->Begin());
-				std::string strkey(wkey.begin(), wkey.end());
+				std::string strkey=utf8_us(wkey.c_str());
 				memcpy(hdrData, strkey.c_str(), ds);
 				event->headers[hdrn].name = hdrData;
 				hdrData += ds;
 				*(hdrData++) = 0;
 				ds = pair->Value->Length();
 				std::wstring wval(pair->Value->Begin());
-				std::string strval(wval.begin(), wval.end());
+				std::string strval=utf8_us(wval.c_str());
 				memcpy(hdrData, strval.c_str(), ds);
 				event->headers[hdrn].value = hdrData;
 				hdrData += ds;
@@ -155,14 +159,14 @@ void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback
 			{
 				int ds = pair->Key->Length();
 				std::wstring wkey(pair->Key->Begin());
-				std::string strkey(wkey.begin(), wkey.end());
+				std::string strkey=utf8_us(wkey.c_str());
 				memcpy(hdrData, strkey.c_str(), ds);
 				event->headers[hdrn].name = hdrData;
 				hdrData += ds;
 				*(hdrData++) = 0;
 				ds = pair->Value->Length();
 				std::wstring wval(pair->Value->Begin());
-				std::string strval(wval.begin(), wval.end());
+				std::string strval=utf8_us(wval.c_str());
 				memcpy(hdrData, strval.c_str(), ds);
 				event->headers[hdrn].value = hdrData;
 				hdrData += ds;
@@ -194,23 +198,19 @@ void add_headers(const ghttp_Header *header){
 	headers->UserAgent->ParseAdd("Gideros");
 	if (header){
 		for (; header->name; ++header){
-			std::string strkey(header->name);
-			std::wstring wstrkey(strkey.begin(), strkey.end());
-			std::string strval(header->value);
-			std::wstring wstrval(strval.begin(), strval.end());
+			std::wstring wstrkey=utf8_ws(header->name);
+			std::wstring wstrval=utf8_ws(header->value);
 			if (_strnicmp(header->name, "content-", 8))
 				headers->Insert(ref new String(wstrkey.c_str()), ref new String(wstrval.c_str()));
 		}
 	}
 }
 
-void add_post_headers(const ghttp_Header *header, HttpStringContent^content){
+void add_post_headers(const ghttp_Header *header, HttpBufferContent^ content){
 	if (header){
 		for (; header->name; ++header){
-			std::string strkey(header->name);
-			std::wstring wstrkey(strkey.begin(), strkey.end());
-			std::string strval(header->value);
-			std::wstring wstrval(strval.begin(), strval.end());
+			std::wstring wstrkey=utf8_ws(header->name);
+			std::wstring wstrval=utf8_ws(header->value);
 			if (!_stricmp(header->name, "content-type"))
 				content->Headers->ContentType=ref new HttpMediaTypeHeaderValue(ref new String(wstrval.c_str()));
 		}
@@ -233,8 +233,7 @@ void ghttp_Cleanup()
 
 g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
 {
-	std::string strurl(url);
-	std::wstring wstrurl(strurl.begin(), strurl.end());
+	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
 	g_id id = g_NextId();
 	add_headers(header);
@@ -256,20 +255,15 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
 
 g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
 {
-	std::string strurl(url);
-	std::wstring wstrurl(strurl.begin(), strurl.end());
+	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
 
-	String^ postData = "";
-	if (size > 0){
-		std::string strdata((const char*)data);
-		std::wstring wdata(strdata.begin(), strdata.end());
-		postData = ref new String(wdata.c_str());
-	}
+	DataWriter ^writer = ref new DataWriter();
+	writer->WriteBytes(Platform::ArrayReference<BYTE>((BYTE *)data, (unsigned int)size));
+	IBuffer ^postData = writer->DetachBuffer();
+
 	g_id id = g_NextId();
-
-
-	HttpStringContent^ content = ref new HttpStringContent(postData);
+	HttpBufferContent^ content = ref new HttpBufferContent(postData);
 	add_headers(header);
 	add_post_headers(header,content);
 
@@ -291,8 +285,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 
 g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
 {
-	std::string strurl(url);
-	std::wstring wstrurl(strurl.begin(), strurl.end());
+	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
 	g_id id = g_NextId();
 
@@ -313,20 +306,17 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback c
 
 g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
 {
-	std::string strurl(url);
-	std::wstring wstrurl(strurl.begin(), strurl.end());
+	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
-	String^ postData = "";
-	if (size > 0){
-		std::string strdata((const char*)data);
-		std::wstring wdata(strdata.begin(), strdata.end());
-		postData = ref new String(wdata.c_str());
-	}
-	g_id id = g_NextId();
 
-	HttpStringContent^ content = ref new HttpStringContent(postData);
+	DataWriter ^writer = ref new DataWriter();
+	writer->WriteBytes(Platform::ArrayReference<BYTE>((BYTE *)data, (unsigned int)size));
+	IBuffer ^postData = writer->DetachBuffer();
+
+	g_id id = g_NextId();
+	HttpBufferContent^ content = ref new HttpBufferContent(postData);
 	add_headers(header);
-	add_post_headers(header, content);
+	add_post_headers(header,content);
 
 	create_task(httpClient->PutAsync(uri, content), cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{

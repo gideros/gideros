@@ -120,6 +120,7 @@ class MainWindow : public QMainWindow{
         void actionFitWindow();
         void actionRotate();
         void actionSettings();
+        void actionScreenshot();
         void actionUse_VSYNC(bool checked);
         void actionDraw_Infos(bool checked);
         void actionOpen();

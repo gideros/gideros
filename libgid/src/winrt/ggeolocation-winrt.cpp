@@ -17,9 +17,9 @@ static void gps_update(Geolocator^ gl,
 	PositionChangedEventArgs^ pos)
 {
 	ggeolocation_LocationUpdateEvent *event = (ggeolocation_LocationUpdateEvent*)malloc(sizeof(ggeolocation_LocationUpdateEvent));
-	event->latitude = pos->Position->Coordinate->Latitude;
-	event->longitude = pos->Position->Coordinate->Longitude;
-	event->altitude = pos->Position->Coordinate->Altitude->Value;
+	event->latitude = pos->Position->Coordinate->Point->Position.Latitude;
+	event->longitude = pos->Position->Coordinate->Point->Position.Longitude;
+	event->altitude = pos->Position->Coordinate->Point->Position.Altitude;
 	event->speed = pos->Position->Coordinate->Speed->Value;
 	event->course = pos->Position->Coordinate->Heading->Value;
 
@@ -56,7 +56,7 @@ int ggeolocation_isHeadingAvailable()
 
 void ggeolocation_setAccuracy(double accuracy)
 {	
-	gps->DesiredAccuracyInMeters= ref new Platform::Box<unsigned int>(accuracy);
+	gps->DesiredAccuracyInMeters= ref new Platform::Box<unsigned int>((unsigned int)accuracy);
 }
 
 double ggeolocation_getAccuracy()

@@ -58,6 +58,9 @@ static ULONGLONG next_game_tick;
 ComPtr<IDXGIDevice3> dxgiDevice;
 #endif
 
+std::wstring utf8_ws(const char *str);
+std::string utf8_us(const wchar_t *str);
+
 int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
 	const pthread_mutexattr_t * attr)
 {
@@ -130,8 +133,7 @@ IXAudio2SourceVoice* g_source;
 
 static void printFunc(const char *str, int len, void *data)
 {
-	std::string s(str);
-	std::wstring wsTmp(s.begin(), s.end());
+	std::wstring wsTmp=utf8_ws(str);
 	OutputDebugString(wsTmp.c_str());
 }
 
@@ -1254,8 +1256,7 @@ void ApplicationManager::luaError(const char *error)
 	}
 	else
 	{
-		std::string s_str = std::string(error);
-		std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
+		std::wstring wid_str = utf8_ws(error);
 		const wchar_t* w_char = wid_str.c_str();
 		Platform::String^ p_string = ref new Platform::String(w_char);
 		throw Exception::CreateException(0x80004005,p_string);

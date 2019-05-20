@@ -128,15 +128,23 @@
      <property name="title">
       <string>Resolution</string>
      </property>
-     <addaction name="action320x480"/>
-     <addaction name="action640x960"/>
-     <addaction name="action320x568"/>
-     <addaction name="action640x1136"/>
-     <addaction name="action750x1334"/>
-     <addaction name="action1242x2208"/>
-     <addaction name="action1125x2436"/>
-     <addaction name="action768x1024"/>
-     <addaction name="action1536x2048"/>
+     <widget class="QMenu" name="menuiOS">
+      <property name="title">
+       <string>iOS</string>
+      </property>
+      <addaction name="action320x480"/>
+      <addaction name="action640x960"/>
+      <addaction name="action320x568"/>
+      <addaction name="action640x1136"/>
+      <addaction name="action750x1334"/>
+      <addaction name="action1242x2208"/>
+      <addaction name="action1125x2436"/>
+      <addaction name="action1242x2688"/>
+      <addaction name="action768x1024"/>
+      <addaction name="action1536x2048"/>
+      <addaction name="action2048x2732"/>
+     </widget>
+     <addaction name="menuiOS"/>
      <addaction name="separator"/>
      <addaction name="action240x320"/>
      <addaction name="action240x400"/>
@@ -177,6 +185,7 @@
     <addaction name="actionAlways_on_Top"/>
     <addaction name="actionHide_Menu"/>
     <addaction name="actionFull_Screen"/>
+    <addaction name="actionScreenshot"/>
    </widget>
    <widget class="QMenu" name="menuConfigurations">
     <property name="title">
@@ -630,6 +639,24 @@
   <action name="actionThreeQuarter">
    <property name="text">
     <string>75%</string>
+   </property>
+  </action>
+  <action name="actionScreenshot">
+   <property name="text">
+    <string>Screenshot</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
+   </property>
+  </action>
+  <action name="action1242x2688">
+   <property name="text">
+    <string>1242x2688 (iPhone XR)</string>
+   </property>
+  </action>
+  <action name="action2048x2732">
+   <property name="text">
+    <string>2048x2732 (iPad Pro 3)</string>
    </property>
   </action>
   <addaction name="actionExit"/>

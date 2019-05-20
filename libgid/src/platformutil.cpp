@@ -132,6 +132,27 @@ void getDirectoryListingR(const char* dir, std::vector<std::string>* filesout, s
 #if defined(WINSTORE)
 #include <algorithm>
 #include <collection.h>
+
+std::wstring utf8_ws(const char *str)
+{
+    if (!str) return std::wstring();
+    int sl=strlen(str);
+    int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+    std::wstring res(sz, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+    return res;
+}
+
+std::string utf8_us(const wchar_t *str)
+{
+    if (!str) return std::string();
+    int sl=wcslen(str);
+    int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+    std::string res(sz, 0);
+    WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+    return res;
+}
+
 std::vector<std::string> getLocalIPs()
 {
 	struct IPs {
@@ -140,7 +161,7 @@ std::vector<std::string> getLocalIPs()
 			if (hostname->IPInformation != nullptr)
 			{
 				std::wstring ws(hostname->CanonicalName->Data());
-				result.push_back(std::string(ws.begin(), ws.end()));
+				result.push_back(utf8_us(ws.c_str()));
 			}
 		}
 
