@@ -42,7 +42,9 @@ static int sender_create(lua_State *L) {
 }
 
 static int sender_destruct(lua_State *L) {
-	GidDestroySender(g_getInstance(L,"SpoutSender",1));
+    void* ptr = *(void**)lua_touserdata(L, 1);
+    if (ptr)
+    	GidDestroySender(ptr);
 	return 0;
 }
 static int sendTexture(lua_State *L) {
@@ -78,7 +80,9 @@ static int bindRec(lua_State *L) {
 }
 
 static int receiver_destruct(lua_State *L) {
-	GidDestroyReceiver(g_getInstance(L,"SpoutReceiver",1));
+    void* ptr = *(void**)lua_touserdata(L, 1);
+    if (ptr)
+    	GidDestroyReceiver(ptr);
 	return 0;
 }
 

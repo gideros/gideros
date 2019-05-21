@@ -6,6 +6,8 @@
 #include <utf8.h>
 #include <string.h>
 
+#define ESC	27
+
 FontBase::~FontBase()
 {
     if (shaper_)
@@ -77,7 +79,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 		tl->parts[i].dx=ox;
         char sep=tl->parts[i].sep;
         float ns=(sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
-        if (sep=='\e') ns=0;
+        if (sep==ESC) ns=0;
 		ox+=tl->parts[i].advX+ns;
 	}
 }
@@ -138,7 +140,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
             }
             if (*rt)
             	rt++;
-            if (cc.sep=='\e')
+            if (cc.sep==ESC)
             {
             	//Extract escape sequence
             	if (*rt=='[') {
@@ -236,7 +238,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		if (textflags&CHUNKCLASS_FLAG_LTR)
 			cl.styleFlags=(cl.styleFlags&(~TEXTSTYLEFLAG_RTL))|TEXTSTYLEFLAG_LTR;
 		cl.color=styles.color;
-		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):(((cl.sep=='\e')||(cl.sep==0))?0:sw);
+		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):(((cl.sep==ESC)||(cl.sep==0))?0:sw);
 		cl.sepl=ns;
         if (cl.text.size())
         	chunkMetrics(cl,params->letterSpacing);

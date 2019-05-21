@@ -8,6 +8,8 @@
 #include "luautil.h"
 #include "lauxlib.h"
 
+#define ESC	27
+
 static lua_State *L = NULL;
 
 class HarfBuzzFontShaper : public FontShaper {
@@ -177,7 +179,7 @@ static bool classifier(std::vector<FontBase::ChunkClass> &chunks,std::string tex
 				(uc==UCDN_BIDI_CLASS_B)||
 				(uc==UCDN_BIDI_CLASS_S)||
 				(uc==UCDN_BIDI_CLASS_WS)||
-				(c=='\e'))
+				(c==ESC))
         {
         	cc.sep=c;
         	bool nrtl=rtl;
@@ -201,7 +203,7 @@ static bool classifier(std::vector<FontBase::ChunkClass> &chunks,std::string tex
         	{
                 cc.text=std::string(bt,pt-bt);
                 cc.textFlags=CHUNKCLASS_FLAG_BREAKABLE|(rtl?CHUNKCLASS_FLAG_RTL:CHUNKCLASS_FLAG_LTR);
-                if (cc.sep=='\e')
+                if (cc.sep==ESC)
                 {
                 	//Extract escape sequence
                 	if (*rt=='[') {

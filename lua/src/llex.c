@@ -303,7 +303,7 @@ static void read_string (LexState *ls, int del, SemInfo *seminfo) {
       switch (ls->current) {
       case 'a': c = '\a'; break;
       case 'b': c = '\b'; break;
-      case 'e': c = '\e'; break;
+      case 'e': c = 27; break;
       case 'f': c = '\f'; break;
       case 'n': c = '\n'; break;
       case 'r': c = '\r'; break;
