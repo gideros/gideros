@@ -249,6 +249,9 @@
             	<append>
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
+       <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="[[[plugin.adsFwAdmobClient]]]"/>            		
 	   <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
