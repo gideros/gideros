@@ -189,7 +189,7 @@
             		<by><![CDATA[
 <meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />
 <activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
-<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configchanges="orientation|screenSize" />]]></by>
+<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configChanges="orientation|screenSize" />]]></by>
     	        </append>
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								

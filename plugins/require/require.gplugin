@@ -22,7 +22,7 @@
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
  <property name="reqCanOpenUrl" type="string" title="This app can open these url schemes: (with ',' separator)"/>
  <property name="reqCanRespondUrl" type="string" title="This app can respond to these url schemes: (with ',' separator)"/>
- <property name="reqEnable64bits" type="boolean" title="Enable 64bits libs (android)"/> 
+ <property name="reqDisable64bits" type="boolean" title="Enable 64bits libs (android)"/> 
  <property name="reqDisableX86" type="boolean" title="Disable x86 libs (android)"/> 
  <property name="reqDisableArm" type="boolean" title="Disable arm libs (android)"/> 
  <property name="reqDisable32bits" type="boolean" title="Disable 32bits libs (android)"/>
@@ -235,10 +235,10 @@
     </lua>
     </if>
     <lua><![CDATA[
-    	local archs={ ["armeabi-v7a"]=true, ["x86"]=true }
-		if (tonumber(Export.getProperty("plugin.reqEnable64bits")) or 0)>0 then
-			archs["arm64-v8a"]=true
-			archs["x86_64"]=true
+    	local archs={ ["armeabi-v7a"]=true, ["x86"]=true, ["arm64-v8a"]=true, ["x86_64"]=true }
+		if (tonumber(Export.getProperty("plugin.reqDisable64bits")) or 0)>0 then
+			archs["arm64-v8a"]=nil
+			archs["x86_64"]=nil
 		end
 		if (tonumber(Export.getProperty("plugin.reqDisableX86")) or 0)>0 then
 			archs["x86_64"]=nil
@@ -260,7 +260,7 @@
 			<template name="AndroidManifest" path="">
 				<replacelist wildcards="build.gradle">
 					<replace>
-						<orig>abiFilters "armeabi", "armeabi-v7a", "x86", "mips"</orig>
+						<orig>abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"</orig>
 						<by>abiFilters ]]..archStr..[[</by>
 					</replace>
 				</replacelist>
