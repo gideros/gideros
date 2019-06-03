@@ -3,7 +3,8 @@
 	description="Export as an Android APK file">
 	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
 	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="26" />
-	<property name="buildApk" type="boolean" title="Build APK file" description="Build the APK file directly, otherwise outputs the Android Studio project" default="1" />	
+	<property name="buildAab" type="boolean" title="Build Android bundle file" description="Build the android bundle file directly, no APK will be generated nor installed" default="1" />	
+	<property name="buildApk" type="boolean" title="Build APK file" description="Build the APK file directly, otherwise outputs the Android Studio project" default="0" />	
 	<property name="deployApk" type="boolean" title="Install APK to device" description="Try to deploy APK to connected device" default="0" />	
 	<property name="keyStore" type="afile" title="Key store" description="Path to keystore for signing" default="" />
 	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
@@ -108,7 +109,7 @@ local ap=require("Tools/export_android")
 		<if condition="[[[not:[[[export.timestampApk]]]]]]">
 			<set key="local.noRename" value="//"/>
 		</if>
-		<if condition="[[[export.buildApk]]]">
+		<if condition="[[[or:[[[export.buildAab]]]:[[[export.buildApk]]]]]]">
 			<rmdir>tmp</rmdir>
 			<mkdir>tmp</mkdir>
 			<cd>tmp</cd>
@@ -208,13 +209,27 @@ local ap=require("Tools/export_android")
 			<splashHorizontal width="1920" height="1280" dest="app/src/main/res/drawable-xxxhdpi/splash.png"/>
 		</if>
 		<applyPlugins/>
-		<if condition="[[[export.buildApk]]]">
+		<if condition="[[[or:[[[export.buildAab]]]:[[[export.buildApk]]]]]]">		
 			<lua><![CDATA[
 				local apkName=Export.getProperty("project.namews")
 				if tonumber(Export.getProperty("export.timestampApk"))>0 then
 					apkName=apkName.."_"..os.date("%Y%m%d-%H%M%S").."_"..Export.getProperty("project.version_code")
 				end
 				Export.setProperty("local.apkname",apkName)
+				local gradleTarget="assembleRelease"
+				local apkExt="apk"
+				local apkBuilt="apk/release/app-release.apk"
+				local apkInstall=Export.getProperty("export.deployApk")
+				if tonumber(Export.getProperty("export.buildAab"))>0 then
+					gradleTarget="bundleRelease"
+					apkExt="aab"
+					apkBuilt="bundle/release/app.aab"
+					apkInstall=0
+				end				
+				Export.setProperty("local.gradleTarget",gradleTarget)
+				Export.setProperty("local.apkext",apkExt)
+				Export.setProperty("local.apkbuilt",apkBuilt)
+				Export.setProperty("local.install",apkInstall)
 			]]></lua> 
 			<set key="local.gradleCmd" value="&quot;cmd.exe&quot; /c gradlew.bat"/>
     	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
@@ -223,18 +238,18 @@ local ap=require("Tools/export_android")
 			<exec>
 				<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
 				<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
-				[[[local.gradleCmd]]] assembleRelease
-			</exec>
-			<cp src="app/build/outputs/apk/release/app-release.apk" dst="../[[[local.apkname]]][[[local.isUnsigned]]].apk"/>
+				[[[local.gradleCmd]]] [[[local.gradleTarget]]]
+			</exec>			
+			<cp src="app/build/outputs/[[[local.apkbuilt]]]" dst="../[[[local.apkname]]][[[local.isUnsigned]]].[[[local.apkext]]]"/>
 			<cd>..</cd>
 			<rmdir>tmp</rmdir>
-			<if condition="[[[export.deployApk]]]">
+			<if condition="[[[local.install]]]">
 				<set key="local.adbCmd" value="[[[export.androidPath]]]\\platform-tools\\adb.exe"/>
 	    	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
 					<set key="local.adbCmd" value="[[[export.androidPath]]]/platform-tools/adb"/>
         		</if>
 				<exec>
-					[[[local.adbCmd]]] install -r [[[local.apkname]]][[[local.isUnsigned]]].apk
+					[[[local.adbCmd]]] install -r [[[local.apkname]]][[[local.isUnsigned]]].[[[local.apkext]]]
 				</exec>
 			</if>
 		</if>
