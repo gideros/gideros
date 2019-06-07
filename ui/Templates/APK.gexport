@@ -212,7 +212,7 @@ local ap=require("Tools/export_android")
 		<if condition="[[[or:[[[export.buildAab]]]:[[[export.buildApk]]]]]]">		
 			<lua><![CDATA[
 				local apkName=Export.getProperty("project.namews")
-				if tonumber(Export.getProperty("export.timestampApk"))>0 then
+				if Export.isSet("export.timestampApk") then
 					apkName=apkName.."_"..os.date("%Y%m%d-%H%M%S").."_"..Export.getProperty("project.version_code")
 				end
 				Export.setProperty("local.apkname",apkName)
@@ -220,7 +220,7 @@ local ap=require("Tools/export_android")
 				local apkExt="apk"
 				local apkBuilt="apk/release/app-release.apk"
 				local apkInstall=Export.getProperty("export.deployApk")
-				if tonumber(Export.getProperty("export.buildAab"))>0 then
+				if Export.isSet("export.buildAab") then
 					gradleTarget="bundleRelease"
 					apkExt="aab"
 					apkBuilt="bundle/release/app.aab"

@@ -30,6 +30,7 @@
  <property name="reqNoMP3" type="boolean" title="Disable MP3 support (Html5)"/>
  <property name="reqNoXMP" type="boolean" title="Disable XMP/MOD support (Html5)"/>
  <property name="reqMetal" type="boolean" title="Enable Metal support (iOS)"/>
+ <property name="reqAlphaCanvas" type="boolean" title="Enable translucent canvas (Android)"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -181,6 +182,16 @@
 	            <replace>
             		<orig>backgroundLocation=false</orig>
         	    	<by>backgroundLocation=true</by>
+    	        </replace>
+    	    </replacelist>
+	    </template>
+    </if>
+    <if condition="[[[plugin.reqAlphaCanvas]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="GiderosSettings.java">
+	            <replace>
+            		<orig>translucentCanvas=false</orig>
+        	    	<by>translucentCanvas=true</by>
     	        </replace>
     	    </replacelist>
 	    </template>
