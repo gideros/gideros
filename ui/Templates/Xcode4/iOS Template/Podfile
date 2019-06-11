@@ -1,0 +1,8 @@
+source 'https://github.com/CocoaPods/Specs.git'
+target 'iOS Template iOS' do
+#TAG-GIDEROS-POD-IOS
+end
+target 'AppleTV' do
+#TAG-GIDEROS-POD-ATV
+end
+
