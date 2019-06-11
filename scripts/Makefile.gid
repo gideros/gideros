@@ -58,7 +58,7 @@ clean: qtapp.clean ios.clean
 endif
 
 versioning:
-	A=`git rev-parse HEAD`; if grep -Fq $$A $(ROOT)/libgideros/gid*.h; then ; else echo "#define GIDEROS_GIT_HASH \"$$A\"" >$(ROOT)/libgideros/gideros_build.h; fi 
+	A=`git rev-parse HEAD`; if grep -Fq $$A $(ROOT)/libgideros/gid*.h; then echo "VERSION OK"; else echo "#define GIDEROS_GIT_HASH \"$$A\"" >$(ROOT)/libgideros/gideros_build.h; fi 
 
 #SDK includes
 vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/external/openal-soft-1.13/include/AL
