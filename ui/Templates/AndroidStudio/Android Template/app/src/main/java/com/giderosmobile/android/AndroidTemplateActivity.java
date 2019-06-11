@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.opengl.GLSurfaceView;
+import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -341,6 +342,11 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	public GiderosGLSurfaceView(Context context)
 	{
 		super(context);
+		
+		if (GiderosSettings.translucentCanvas) {
+	        getHolder().setFormat(PixelFormat.TRANSLUCENT);
+	        setZOrderOnTop(true);
+		}
 		
 		int result;
 		ActivityManager activityManager =

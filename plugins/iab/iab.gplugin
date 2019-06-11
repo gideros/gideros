@@ -52,6 +52,16 @@
 		<template name="Google" path="[[[local.iabfws]]]/google" dest="[[[local.iabfwd]]]/google" />
 		<mkdir>app/src/main/aidl/com/android</mkdir>
         <template name="AIDL" path="[[[sys.pluginDir]]]/bin/Android/src/com/android" dest="app/src/main/aidl/com/android"/>
+		<template name="AndroidManifest" path="">
+			<replacelist wildcards="build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+        implementation 'com.android.billingclient:billing:2.0.0'
+					</by>
+				</append>
+			</replacelist>			
+		</template>
     <lua>
     local ap=require("Tools/export_android")
     ap.usePermission("com.android.vending.BILLING")

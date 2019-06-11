@@ -44,6 +44,7 @@ package com.giderosmobile.android.player;
             // configurations are considered to be "better" and returned first.
             // You need to explicitly filter the data returned by eglChooseConfig!
             int index = -1;
+            int iq=0,ics,icd,ica;
             for (int i = 0; i < numConfigs; ++i) {
                 int cr = findConfigAttrib(egl, display, configs[i], EGL10.EGL_RED_SIZE, 0);
                 int cg = findConfigAttrib(egl, display, configs[i], EGL10.EGL_GREEN_SIZE, 0);
@@ -52,15 +53,21 @@ package com.giderosmobile.android.player;
                 int cd = findConfigAttrib(egl, display, configs[i], EGL10.EGL_DEPTH_SIZE, 0);
                 int cs = findConfigAttrib(egl, display, configs[i], EGL10.EGL_STENCIL_SIZE, 0);
                 Log.i(kTag, "config " + i+ " R:"+cr+" G:"+cg+" B:"+cb+" A:"+ca+" D:"+cd+" S:"+cs);
+                int q=(cs+cd)*100+ca;
                 
-                if ((cs>0)&&(cd>0)&&(index<0))
+                if (q>iq)
                 {
-                    Log.i(kTag, "Choosing config "+i);
+                    Log.i(kTag, "Choosing config "+i+" Quality:"+q);
                 	index=i;
+                	iq=q;
+                	ics=cs;
+                	icd=cd;
+                	ica=ca;
                 }
             }
             if (index == -1) {
                 Log.w(kTag, "Did not find sane config, using first (possibly 3D and Path2D won't work)");
+                index=0;
             }
 
             EGLConfig config = numConfigs > 0 ? configs[index] : null;

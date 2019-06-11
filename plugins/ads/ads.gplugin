@@ -189,7 +189,7 @@
             		<by><![CDATA[
 <meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />
 <activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
-<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configchanges="orientation|screenSize" />]]></by>
+<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configChanges="orientation|screenSize" />]]></by>
     	        </append>
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
@@ -249,6 +249,9 @@
             	<append>
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
+       <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="[[[plugin.adsFwAdmobClient]]]"/>            		
 	   <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
