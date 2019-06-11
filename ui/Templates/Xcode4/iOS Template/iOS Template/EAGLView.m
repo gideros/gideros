@@ -53,7 +53,7 @@ extern void metalShaderNewFrame();
         if (metalDevice) {
 #ifdef GIDEROS_METAL
             metalLayer= (CAMetalLayer *)self.layer;
-            metalLayer.opaque= TRUE;
+            metalLayer.opaque = TRUE;
             //metalLayer.presentsWithTransaction=YES;
 #endif
         }

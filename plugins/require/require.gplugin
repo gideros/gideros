@@ -30,7 +30,7 @@
  <property name="reqNoMP3" type="boolean" title="Disable MP3 support (Html5)"/>
  <property name="reqNoXMP" type="boolean" title="Disable XMP/MOD support (Html5)"/>
  <property name="reqMetal" type="boolean" title="Enable Metal support (iOS)"/>
- <property name="reqAlphaCanvas" type="boolean" title="Enable translucent canvas (Android)"/>
+ <property name="reqAlphaCanvas" type="boolean" title="Enable translucent canvas (Android,iOSAlpha)"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -341,6 +341,16 @@
 	    	</replace>
         </replacelist>
 	</template>
+    </if>
+    <if condition="[[[plugin.reqAlphaCanvas]]]">
+        <template name="Project" path="">
+            <replacelist wildcards="EAGLView.m">
+                <replace>
+                    <orig>Layer.opaque = TRUE;</orig>
+                    <by>Layer.opaque = FALSE;</by>
+                </replace>
+            </replacelist>
+        </template>
     </if>
 	<lua><![CDATA[
 		local urls = Export.getProperty("plugin.reqCanOpenUrl")
