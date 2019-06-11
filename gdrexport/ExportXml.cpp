@@ -14,12 +14,6 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-#ifdef Q_OS_MACX
-#define ALL_PLUGINS_PATH "../../All Plugins"
-#else
-#define ALL_PLUGINS_PATH "All Plugins"
-#endif
-
 static bool IsSecret(QString key)
 {
 	return key.startsWith("secret.");
@@ -167,7 +161,7 @@ bool ExportXml::exportXml(QString xmlFile, bool plugin, ExportContext *ctx) {
 
 QMap<QString, QString> ExportXml::availableTargets() {
 	QMap < QString, QString > xmlExports;
-	QDir sourceDir("Templates");
+	QDir sourceDir(TEMPLATES_PATH);
 	QStringList filters;
 	filters << "*.gexport";
 	sourceDir.setNameFilters(filters);

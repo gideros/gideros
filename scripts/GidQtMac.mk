@@ -167,7 +167,7 @@ bundle:
 	#Use our local version of that file due to line endings change
 	cp $(ROOT)/ui/Templates/AndroidStudio/Android\ Template/gradlew $(RELEASE).Final/Templates/AndroidStudio/Android\ Template
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
-	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
+	#mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
 	cp -r $(RELEASE).Final/Resources $(RELEASE).Final/Gideros\ Studio.app/Contents
 
 bundle.mac:

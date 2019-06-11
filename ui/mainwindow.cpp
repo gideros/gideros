@@ -2806,7 +2806,7 @@ void MainWindow::exportProject()
 
 
         QDir dir2 = QDir::currentPath();
-        if(!dir2.cd("Templates")){
+        if(!dir2.cd(TEMPLATES_PATH)){
             QMessageBox::information(this, tr("Gideros"), tr("No Templates folder."));
             return;
         }

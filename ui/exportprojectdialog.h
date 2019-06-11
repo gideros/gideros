@@ -7,6 +7,14 @@
 #include <QDir>
 #include "projectproperties.h"
 
+#ifdef Q_OS_MACX
+#define ALL_PLUGINS_PATH "../../All Plugins"
+#define TEMPLATES_PATH "../../Templates"
+#else
+#define ALL_PLUGINS_PATH "All Plugins"
+#define TEMPLATES_PATH "Templates"
+#endif
+
 namespace Ui {
     class ExportProjectDialog;
 }

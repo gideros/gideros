@@ -880,10 +880,17 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 				if (ofile.open(QIODevice::WriteOnly)) {
 					ofile.write(fcont);
 					ofile.close();
-				} else {
-					exportError("Can't open file %s\n",
-							lname.toStdString().c_str());
-					break;
+				} else { //Try to create dir
+                    QFileInfo fi(toPath.absoluteFilePath(lname));
+                    fi.absoluteDir().mkpath(".");
+                    if (ofile.open(QIODevice::WriteOnly)) {
+                        ofile.write(fcont);
+                        ofile.close();
+                    } else { //No joy
+                        exportError("Can't open file %s\n",
+                                lname.toStdString().c_str());
+                        break;
+                    }
 				}
 			}
 			if ((unixattr >= 0) && (unixattr & 1)) {

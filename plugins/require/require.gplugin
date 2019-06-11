@@ -323,10 +323,10 @@
     </if>
     <if condition="[[[plugin.reqMetal]]]">
    	<template name="Project" path="">
-       	<replacelist wildcards="EAGLView.m">
+       	<replacelist wildcards="EAGLView.h">
 		    <replace>
-				<orig><![CDATA[checkMetal=false]]></orig>
-				<by><![CDATA[checkMetal=true]]></by>
+				<orig><![CDATA[//#define GIDEROS_METAL]]></orig>
+				<by><![CDATA[#define GIDEROS_METAL]]></by>
 	    	</replace>
         </replacelist>
 	</template>

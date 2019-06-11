@@ -43,7 +43,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     wildcards1 <<
         "*.pch" <<
         "*.plist" <<
-        "*.pbxproj" <<
+        "*.pbxproj" << "Podfile" <<
         "*.java" <<
         "*.xml" <<
         "*.appxmanifest" <<
@@ -350,12 +350,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         	ctx->outputDir.cd("package");
     	}
       //Copy template flavor
- 	   ExportCommon::copyTemplate(QString("Templates").append("/").append(templatedir).append("/").append(ctx->properties.html5_wasm?"Wasm":"Jasm"),"",ctx, false, QStringList(), QStringList());
+        ExportCommon::copyTemplate(QString(TEMPLATES_PATH).append("/").append(templatedir).append("/").append(ctx->properties.html5_wasm?"Wasm":"Jasm"),"",ctx, false, QStringList(), QStringList());
     }
 
    // copy template
-   if (templatedir.length()>0)
-    ExportCommon::copyTemplate(QString("Templates").append("/").append(templatedir).append("/").append(ctx->templatename),"",ctx, false, QStringList(), QStringList());
+   if (templatedir.length()>0)    ExportCommon::copyTemplate(QString(TEMPLATES_PATH).append("/").append(templatedir).append("/").append(ctx->templatename),"",ctx, false, QStringList(), QStringList());
 
    ExportBuiltin::prepareAssetFolder(ctx);
    ExportBuiltin::exportAllAssetsFiles(ctx);

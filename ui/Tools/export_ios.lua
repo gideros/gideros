@@ -24,6 +24,7 @@ iOSProject.insertPoints={
   FrameworksPaths={ tag="FRAMEWORK_SEARCH_PATHS = (", data={}},
 }
 iOSProject.InfoPlist={}
+iOSProject._pods={ ios={}, atv={} }
 
 iOSProject.XML_TEMPLATE=
 [[<template name="iOS Project file" path=""><replacelist wildcards="project.pbxproj">%s</replacelist></template>]]
@@ -195,6 +196,10 @@ iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV)
 end
 
 iOSProject.needObjCLinking=function () iOSProject.needObjCLinkingFlag=true end
+iOSProject.pod=function(dep,ios,atv)
+    if ios then table.insert(iOSProject._pods.ios,dep) end
+    if atv then table.insert(iOSProject._pods.atv,dep) end
+end
 
 local function apply()
   if iOSProject.needObjCLinkingFlag then
@@ -248,6 +253,27 @@ OTHER_LDFLAGS = "-ObjC";</by>
       </prepend>
     </replacelist>
   </template>]])
+
+    if #iOSProject._pods.ios>0 or #iOSProject._pods.atv>0 then
+        local function podlist(t)
+            local pl=""
+            for _,p in ipairs(t) do
+                pl=pl.."pod '"..p.."'\n"
+            end
+            return pl
+        end
+        Export.callXml([[<template name="Project" path="">
+        <replacelist wildcards="Podfile">
+        <append>
+        <orig>#TAG-GIDEROS-POD-IOS</orig><by>]]..podlist(iOSProject._pods.ios)..[[</by>
+        </append>
+        <append>
+        <orig>#TAG-GIDEROS-POD-ATV</orig><by>]]..podlist(iOSProject._pods.atv)..[[</by>
+        </append>
+        </replacelist>
+        </template>]])
+        Export.callXml([[<exec>pod install</exec>]])
+    end
 end
 
 Export.registerPreFinish(apply)

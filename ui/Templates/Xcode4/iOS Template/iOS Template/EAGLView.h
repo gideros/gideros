@@ -12,6 +12,8 @@
 extern id<MTLDevice> metalDevice;
 extern MTLRenderPassDescriptor *metalFramebuffer;
 
+//#define GIDEROS_METAL
+
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
 // Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
@@ -30,8 +32,10 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 	BOOL framebufferDirty;
 	BOOL retinaDisplay;
 	CAEAGLLayer *eaglLayer;
+#ifdef GIDEROS_METAL
     CAMetalLayer *metalLayer;
     id<CAMetalDrawable> metalDrawable;
+#endif
     CGRect safeArea;
     id<MTLTexture> metalDepth;
     id<MTLTexture> metalStencil;

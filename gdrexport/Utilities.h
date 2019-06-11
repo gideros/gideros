@@ -14,6 +14,14 @@
 #include <QDir>
 #include <QProcess>
 
+#ifdef Q_OS_MACX
+#define ALL_PLUGINS_PATH "../../All Plugins"
+#define TEMPLATES_PATH "../../Templates"
+#else
+#define ALL_PLUGINS_PATH "All Plugins"
+#define TEMPLATES_PATH "Templates"
+#endif
+
 class Utilities {
 public:
 	static QString RemoveSpaces(QString text,bool allowUnderscore);

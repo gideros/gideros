@@ -111,7 +111,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
 
     //XML based templates
     xmlTabCount=0;
-    QDir sourceDir("Templates");
+    QDir sourceDir(TEMPLATES_PATH);
    	QStringList filters;
     filters << "*.gexport";
     sourceDir.setNameFilters(filters);

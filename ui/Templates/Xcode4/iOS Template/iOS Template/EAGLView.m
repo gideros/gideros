@@ -12,7 +12,6 @@
 #include "giderosapi.h"
 //GIDEROS-TAG-IOS:DRAWDEFS//
 
-bool checkMetal=false;
 id<MTLDevice> metalDevice=nil;
 MTLRenderPassDescriptor *metalFramebuffer;
 extern void metalShaderEnginePresent(id<MTLDrawable>);
@@ -36,10 +35,13 @@ extern void metalShaderNewFrame();
 // You must implement this method
 + (Class)layerClass
 {
-    if (checkMetal)
-        metalDevice= MTLCreateSystemDefaultDevice();
+#ifdef GIDEROS_METAL
+    metalDevice= MTLCreateSystemDefaultDevice();
     if (metalDevice)
-        return [CAMetalLayer class];
+    return [CAMetalLayer class];
+#else
+    metalDevice=false;
+#endif
     return [CAEAGLLayer class];
 }
 
@@ -49,9 +51,11 @@ extern void metalShaderNewFrame();
 	if (self)
     {
         if (metalDevice) {
+#ifdef GIDEROS_METAL
             metalLayer= (CAMetalLayer *)self.layer;
             metalLayer.opaque= TRUE;
             //metalLayer.presentsWithTransaction=YES;
+#endif
         }
         else {
         eaglLayer = (CAEAGLLayer *)self.layer;
@@ -148,6 +152,7 @@ static int lfbw=-1,lfbh=-1;
 {
     if (metalDevice)
     {
+#ifdef GIDEROS_METAL
         if (!metalDrawable) {
             if (@available (iOS 11, tvOS 11, macOS 10.13, *))
                 [[MTLCaptureManager sharedCaptureManager].defaultCaptureScope beginScope];
@@ -181,6 +186,7 @@ static int lfbw=-1,lfbh=-1;
             lfbh=framebufferHeight;
             metalShaderNewFrame();
         }
+#endif
     }
     else {
     if (context && !defaultFramebuffer)
@@ -211,8 +217,10 @@ static int lfbw=-1,lfbh=-1;
 {
     if (metalDevice)
     {
+#ifdef GIDEROS_METAL
         [metalDrawable release];
         metalDrawable=nil;
+#endif
         [metalDepth release];
         metalDepth=nil;
         [metalStencil release];
@@ -254,8 +262,10 @@ static int lfbw=-1,lfbh=-1;
         
         if (context&&(!defaultFramebuffer))
             [self createFramebuffer];
+#ifdef GIDEROS_METAL
         if (metalDevice&&(!metalDrawable))
             [self createFramebuffer];
+#endif
         
         if (context)
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
@@ -272,6 +282,7 @@ static int lfbw=-1,lfbh=-1;
     if (metalDevice||context)
     {
         if (metalDevice) {
+#ifdef GIDEROS_METAL
             metalShaderEnginePresent(metalDrawable);
             [metalDrawable release];
             metalDrawable=nil;
@@ -280,6 +291,7 @@ static int lfbw=-1,lfbh=-1;
             
             [self createFramebuffer];
             success= TRUE;
+#endif
         }
         else {
         [EAGLContext setCurrentContext:context];
@@ -310,7 +322,9 @@ static int lfbw=-1,lfbh=-1;
     CGSize drawableSize = self.bounds.size;
     drawableSize.width *= self.contentScaleFactor;
     drawableSize.height *= self.contentScaleFactor;
+#ifdef GIDEROS_METAL
     metalLayer.drawableSize = drawableSize;
+#endif
     framebufferDirty=TRUE;
 }
 
@@ -341,7 +355,9 @@ static int lfbw=-1,lfbh=-1;
     CGSize drawableSize = self.bounds.size;
     drawableSize.width *= self.contentScaleFactor;
     drawableSize.height *= self.contentScaleFactor;
+#ifdef GIDEROS_METAL
     metalLayer.drawableSize = drawableSize;
+#endif
     framebufferDirty=TRUE;
 }
 
