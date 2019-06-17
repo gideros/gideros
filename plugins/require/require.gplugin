@@ -22,7 +22,7 @@
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
  <property name="reqCanOpenUrl" type="string" title="This app can open these url schemes: (with ',' separator)"/>
  <property name="reqCanRespondUrl" type="string" title="This app can respond to these url schemes: (with ',' separator)"/>
- <property name="reqDisable64bits" type="boolean" title="Enable 64bits libs (android)"/> 
+ <property name="reqDisable64bits" type="boolean" title="Disable 64bits libs (android)"/> 
  <property name="reqDisableX86" type="boolean" title="Disable x86 libs (android)"/> 
  <property name="reqDisableArm" type="boolean" title="Disable arm libs (android)"/> 
  <property name="reqDisable32bits" type="boolean" title="Disable 32bits libs (android)"/>
