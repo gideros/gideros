@@ -8,12 +8,13 @@ JavaVM *g_getJavaVM();
 JNIEnv *g_getJNIEnv();
 }
 
-static const char* getString(JNIEnv *env, jstring jstr)
+static std::string strResult;
+static std::string getString(JNIEnv *env, jstring jstr)
 {
 	const char *str = env->GetStringUTFChars(jstr, NULL);
-	std::string result = str;
+	strResult= str;
 	env->ReleaseStringUTFChars(jstr, str);
-	return result.c_str();
+	return strResult.c_str();
 }
 
 class GHID

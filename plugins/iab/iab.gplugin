@@ -25,7 +25,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-					compile fileTree(include: ['in-app-purchasing*.jar'], dir: 'libs')
+					implementation fileTree(include: ['in-app-purchasing*.jar'], dir: 'libs')
 					</by>
 				</append>
 			</replacelist>
@@ -57,7 +57,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-        implementation 'com.android.billingclient:billing:2.0.0'
+        //implementation 'com.android.billingclient:billing:2.0.0' //Complicts with AIDL file
 					</by>
 				</append>
 			</replacelist>			
