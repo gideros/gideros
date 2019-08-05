@@ -192,5 +192,7 @@ void getSafeDisplayArea(int &l,int &t,int &r,int &b);
 bool g_checkStringProperty(bool isSet, const char* what);
 const char* g_getProperty(const char* what, const char* arg);
 void g_setProperty(const char* what, const char* arg);
+bool gapplication_checkPermission(const char *what);
+void gapplication_requestPermissions(std::vector<std::string> perms);
 
 #endif

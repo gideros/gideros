@@ -230,3 +230,35 @@ void g_setProperty(const char* what, const char* arg){
 const char* g_getProperty(const char* what, const char* arg){
 	return "";
 }
+
+bool gapplication_checkPermission(const char *what) {
+	JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jmethodID checkPermID = env->GetStaticMethodID(localRefCls, "checkPermission", "(Ljava/lang/String;)Z");
+	jstring jperm = env->NewStringUTF(what);
+	jboolean result = env->CallStaticBooleanMethod(localRefCls, checkPermID, jperm);
+	env->DeleteLocalRef(jperm);
+	env->DeleteLocalRef(localRefCls);
+	return result;
+}
+
+void gapplication_requestPermissions(std::vector<std::string> perms) {
+	JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jmethodID checkPermID = env->GetStaticMethodID(localRefCls, "requestPermissions", "([Ljava/lang/String;)V");
+
+	  jobjectArray jperms = env->NewObjectArray(perms.size(),env->FindClass("java/lang/String"),0);
+
+	  for(size_t i=0;i<perms.size();i++)
+	  {
+	    jstring str = env->NewStringUTF(perms[i].c_str());
+	    env->SetObjectArrayElement(jperms,i,str);
+		env->DeleteLocalRef(str);
+	  }
+
+	env->CallStaticVoidMethod(localRefCls, checkPermID, jperms);
+	env->DeleteLocalRef(jperms);
+	env->DeleteLocalRef(localRefCls);
+}

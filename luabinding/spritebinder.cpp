@@ -612,9 +612,24 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+	float epw=luaL_optnumber(L,2,-1);
+	float eph=luaL_optnumber(L,3,-1);
 	if (sprite->hasLayoutState())
 	{
 		GridBagLayout *sp=sprite->getLayoutState();
+        int loops=100; //Detect endless loops while forcing immediate layout
+        while(sp->dirty&&(loops--))
+        {
+            sp->dirty=false;
+            float pwidth,pheight;
+            sprite->getDimensions(pwidth, pheight);
+            if (epw>=0) pwidth=epw;
+            if (eph>=0) pheight=eph;
+            sp->ArrangeGrid(sprite,pwidth,pheight);
+        }
+        if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
+            sp->dirty=false;
+
 		GridBagLayoutInfo *p=sp->getCurrentLayoutInfo();
 		lua_newtable(L);
 

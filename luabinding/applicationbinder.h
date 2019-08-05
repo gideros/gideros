@@ -52,6 +52,8 @@ private:
     static int getDeviceName(lua_State *L);
     static int set(lua_State *L);
     static int get(lua_State *L);
+    static int requestPermissions(lua_State *L);
+    static int checkPermission(lua_State *L);
 };
 
 #endif
