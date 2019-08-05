@@ -458,7 +458,8 @@ QTabBar::tab:disabled {
 
 QTabBar::tab:selected {
   color: #d8d8d8;
-  background-color: #2d2d2d;
+  /* background-color: #2d2d2d; */
+  background-color: #D94D1A;
 }
 
 QTabBar::tab:top {
