@@ -143,6 +143,14 @@ void metalShaderProgram::deactivate() {
 }
 
 void metalShaderProgram::activate() {
+    if (current != this) {
+        useProgram();
+        if (current)
+            current->deactivate();
+        current = this;
+        uniformVmodified=true;
+        uniformFmodified=true;
+    }
     //Update uniforms
     if (uniformVmodified)
         [encoder() setVertexBytes:cbData length:cbsData atIndex:0];
@@ -150,13 +158,6 @@ void metalShaderProgram::activate() {
         [encoder() setFragmentBytes:cbData length:cbsData atIndex:0];
     uniformVmodified=false;
     uniformFmodified=false;
-
-	if (current == this)
-		return;
-    useProgram();
-	if (current)
-		current->deactivate();
-	current = this;
 }
 
 void metalShaderProgram::useProgram() {
