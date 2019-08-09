@@ -193,6 +193,7 @@ GIDEROS-FBINSTANT-END -->
         	else if (what.includes('EXIT_RUNTIME to 1')) {} //Ignore (gvfs atexit)       
         	else if (what.includes('dependency:')||what.includes('dependencies:')||what.includes('(end of list)')) {} //Ignore (loading)       
         	else if (what.includes('Real sample count')) {} //Ignore (MP3)
+        	else if (what.includes('iCCP: known incorrect sRGB profile')) {} //Ignore (libpng)
         	else if (what.trim().length < 2) {} //Ignore
 			else        		
         		Module.showError("genErr",what);

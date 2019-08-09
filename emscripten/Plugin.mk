@@ -28,7 +28,7 @@ all: path $(OBJS)
 	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -g -o $(BUILD)/$(TARGET).wasm
 	@grep 'import "env"' $(BUILD)/$(TARGET).wast | grep '(func'| cut -d' ' -f4 >$(HTML5_ROOT)/Build/$(TARGET).syms
 	@echo "EMLINK WASM" $(TARGET)
-	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $(BUILD)/$(TARGET).wasm
+	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 -s 'BINARYEN_TRAP_MODE="clamp"' $(OPTS) -o $(BUILD)/$(TARGET).wasm
 
 path:
 	@mkdir -p  $(BUILD) $(sort $(dir $(OBJS)))
