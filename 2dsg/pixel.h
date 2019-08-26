@@ -9,6 +9,7 @@
 class Pixel : public Sprite
 {
 	static VertexBuffer<unsigned short> quad;
+	static VertexBuffer<unsigned short> ninepatch;
 public:
     Pixel(Application *application);
 
@@ -32,8 +33,6 @@ public:
 
 
     virtual ~Pixel();
-
-    void updateTexture();
 
 	void setWidth(float width)
 	{
@@ -89,10 +88,14 @@ public:
         isStretching_ = isStretching;
     }
 
+    void setNinePatch(float vl,float vr,float vt,float vb,float tl,float tr,float tt,float tb);
+
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
     int getMixedColor(int c1, int c2, float a1, float a2, float a, float &ao);
+    void updateTexture();
+    void updateVertices();
 
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;
@@ -106,7 +109,10 @@ private:
     float sx_, sy_;
 	bool isWhite_;
     bool isStretching_;
-
+    bool isNinePatch_;
+    Matrix4 tmatrix_;
+    float insetv_t_,insetv_b_,insetv_r_,insetv_l_;
+    float insett_t_,insett_b_,insett_r_,insett_l_;
 };
 
 #endif

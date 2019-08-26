@@ -17,6 +17,7 @@ Sprite::Sprite(Application* application) :
 	allSprites_.insert(this);
 
 //	graphicsBases_.push_back(GraphicsBase());
+	stopPropagationMask_=0;
 
 	alpha_ = 1;
 	colorTransform_ = 0;
@@ -1204,6 +1205,12 @@ void Sprite::eventListenersChanged() {
 	else
 		allSpritesWithListeners_.erase(this);
 }
+
+void Sprite::setStopPropagationMask(int mask) {
+	stopPropagationMask_=mask;
+	eventListenersChanged();
+}
+
 
 bool Sprite::setDimensions(float w,float h)
 {

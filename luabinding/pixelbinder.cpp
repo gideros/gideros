@@ -23,6 +23,7 @@ PixelBinder::PixelBinder(lua_State* L)
         {"getTexturePosition", getTexturePosition},
         {"setTextureScale", setTextureScale},
         {"getTextureScale", getTextureScale},
+		{"setNinePatch", setNinePatch},
         {NULL, NULL},
 	};
 
@@ -141,6 +142,41 @@ int PixelBinder::setHeight(lua_State* L)
 	lua_Number h = luaL_checknumber(L, 2);
 
 	bitmap->setHeight(h);
+
+	return 0;
+}
+
+int PixelBinder::setNinePatch(lua_State *L) {
+	Binder binder(L);
+	int argc=lua_gettop(L);
+
+	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+	if (argc==2) {
+		lua_Number i = luaL_checknumber(L, 2);
+		bitmap->setNinePatch(i,i,i,i,i,i,i,i);
+	} else if (argc==3) {
+		lua_Number iv = luaL_checknumber(L, 2);
+		lua_Number it = luaL_checknumber(L, 3);
+		bitmap->setNinePatch(iv,iv,iv,iv,it,it,it,it);
+	}
+	else if (argc<=5) {
+		lua_Number l = luaL_checknumber(L, 2);
+		lua_Number r = luaL_checknumber(L, 3);
+		lua_Number t = luaL_checknumber(L, 4);
+		lua_Number b = luaL_checknumber(L, 5);
+		bitmap->setNinePatch(l,r,t,b,l,r,t,b);
+	}
+	else {
+		lua_Number vl = luaL_checknumber(L, 2);
+		lua_Number vr = luaL_checknumber(L, 3);
+		lua_Number vt = luaL_checknumber(L, 4);
+		lua_Number vb = luaL_checknumber(L, 5);
+		lua_Number tl = luaL_checknumber(L, 6);
+		lua_Number tr = luaL_checknumber(L, 7);
+		lua_Number tt = luaL_checknumber(L, 8);
+		lua_Number tb = luaL_checknumber(L, 9);
+		bitmap->setNinePatch(vl,vr,vt,vb,tl,tr,tt,tb);
+	}
 
 	return 0;
 }

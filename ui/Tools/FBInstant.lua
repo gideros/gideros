@@ -215,6 +215,9 @@ end
 function FBInstant.setSessionData(props) 
   JS.eval("FBInstant.setSessionData("..json.encode(props)..[[)]])
 end
+function FBInstant.postSessionScore(score) 
+  JS.eval("FBInstant.postSessionScore("..score..[[)]])
+end
 function FBInstant.startGameAsync(cb) 
   contextid=contextid+1
   contexts[contextid]=cb
@@ -384,11 +387,12 @@ local function escapeString(s)
  return s:gsub("\"","\\\"")
 end
 
-function FBInstant.matchPlayerAsync(room,switch,cb) 
+function FBInstant.matchPlayerAsync(room,switch,offline,cb) 
   contextid=contextid+1
-  contexts[contextid]=cb or switch
-  if not cb then switch=false end
-  JS.eval("FBInstant.matchPlayerAsync('"..room.."',"..tostring(switch)..[[).then(function () {
+  if not cb then cb=offline offline=false end
+  if not cb then cb=switch switch=false end
+  contexts[contextid]=cb
+  JS.eval("FBInstant.matchPlayerAsync('"..room.."',"..tostring(switch)..","..tostring(offline)..[[).then(function () {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
   },function (err) {
     Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
@@ -414,7 +418,7 @@ function FBInstant.LeaderboardEntry:getTimestamp() return self.entry.timestamp e
 function FBInstant.LeaderboardEntry:getRank() return self.entry.rank end
 function FBInstant.LeaderboardEntry:getExtraData() return self.entry.extraData end
 function FBInstant.LeaderboardEntry:getPlayer()
-  player=self.player
+  player=self.entry.player
   return { 
     getName=function() return player.name end,
     getPhoto=function() return player.photo end,

@@ -21,6 +21,9 @@ typedef Matrix4 Matrix;
 class Application;
 class Stage;
 
+#define SPRITE_EVENTMASK_MOUSE	1
+#define SPRITE_EVENTMASK_TOUCH	2
+#define SPRITE_EVENTMASK_KEY	4
 class Sprite : public EventDispatcher
 {
 public:
@@ -419,7 +422,8 @@ public:
     GridBagConstraints *getLayoutConstraints();
     void clearLayoutConstraints();
     bool hasLayoutConstraints() { return layoutConstraints!=NULL; };
-
+    int getStopPropagationMask() { return stopPropagationMask_; }
+    void setStopPropagationMask(int mask);
 public:
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;
@@ -464,6 +468,7 @@ private:
 	float alpha_;
 	float clipx_,clipy_,clipw_,cliph_;
     float reqWidth_,reqHeight_;
+    int stopPropagationMask_;
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);

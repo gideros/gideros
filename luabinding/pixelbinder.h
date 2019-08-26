@@ -24,6 +24,7 @@ private:
     static int getTexturePosition(lua_State *L);
     static int setTextureScale(lua_State *L);
     static int getTextureScale(lua_State *L);
+    static int setNinePatch(lua_State *L);
 };
 
 #endif

@@ -83,6 +83,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setShader", SpriteBinder::setShader},
 		{"setShaderConstant", SpriteBinder::setShaderConstant},
 		{"setStencilOperation", SpriteBinder::setStencilOperation},
+		{"setStopEventPropagation",setStopEventPropagation},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -187,6 +188,14 @@ SpriteBinder::SpriteBinder(lua_State* L)
     ACONSTANT(SOUTHEAST);
 #undef FCONSTANT
 #undef ACONSTANT
+
+	lua_pushinteger(L, SPRITE_EVENTMASK_MOUSE);
+	lua_setfield(L, -2, "EVENTMASK_MOUSE");
+	lua_pushinteger(L, SPRITE_EVENTMASK_TOUCH);
+	lua_setfield(L, -2, "EVENTMASK_TOUCH");
+	lua_pushinteger(L, SPRITE_EVENTMASK_KEY);
+	lua_setfield(L, -2, "EVENTMASK_KEY");
+
     lua_setglobal(L, "Sprite");
 }
 
@@ -217,6 +226,16 @@ int SpriteBinder::destruct(lua_State* L)
 	Sprite* sprite = static_cast<Sprite*>(ptr);
 	sprite->unref();
 
+	return 0;
+}
+
+int SpriteBinder::setStopEventPropagation(lua_State *L) {
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+	int mask=lua_tointeger(L,2);
+	if (mask==0) //if zero, it may have been something not convertible, check as boolean
+		mask=lua_toboolean(L,2)?-1:0;
+	sprite->setStopPropagationMask(mask);
 	return 0;
 }
 

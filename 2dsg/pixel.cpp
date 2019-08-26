@@ -3,6 +3,7 @@
 #include "color.h"
 
 VertexBuffer<unsigned short> Pixel::quad;
+VertexBuffer<unsigned short> Pixel::ninepatch;
 
 Pixel::Pixel(Application *application) : Sprite(application)
 {
@@ -11,6 +12,13 @@ Pixel::Pixel(Application *application) : Sprite(application)
     sx_ = 1, sy_ = 1;
     x_ = 0, y_ = 0;
     isStretching_ = false;
+    isNinePatch_=false;
+    tmatrix_.identity();
+    insetv_t_=0; insetv_b_=0; insetv_l_=0; insetv_r_=0;
+    insett_t_=0; insett_b_=0; insett_l_=0; insett_r_=0;
+    c1_=c2_=c3_=c4_=0xFFFFFF;
+    a1_=a2_=a3_=a4_=1.0;
+    isWhite_=true;
 	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
 		texture_[t]=NULL;
 	texcoords.resize(4);
@@ -27,6 +35,38 @@ Pixel::Pixel(Application *application) : Sprite(application)
 		quad[2] = 3;
 		quad[3] = 2;
 		quad.Update();
+	}
+	if (ninepatch.empty())
+	{
+		ninepatch.resize(22);
+		ninepatch[0]=0;
+		ninepatch[1]=1;
+
+		ninepatch[2]=4;
+		ninepatch[3]=5;
+		ninepatch[4]=8;
+		ninepatch[5]=9;
+		ninepatch[6]=12;
+		ninepatch[7]=13;
+
+		ninepatch[8]=14;
+
+		ninepatch[9]=9;
+		ninepatch[10]=10;
+		ninepatch[11]=5;
+		ninepatch[12]=6;
+		ninepatch[13]=1;
+		ninepatch[14]=2;
+
+		ninepatch[15]=3;
+
+		ninepatch[16]=6;
+		ninepatch[17]=7;
+		ninepatch[18]=10;
+		ninepatch[19]=11;
+		ninepatch[20]=14;
+		ninepatch[21]=15;
+		ninepatch.Update();
 	}
     vertices.resize(4);
 }
@@ -72,10 +112,18 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
         shp->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,&colors_[0],colors_.size()/4,colors_.modified,&colors_.bufferCache);
         colors_.modified=false;
     }
-    shp->drawElements(ShaderProgram::TriangleStrip, quad.size(), ShaderProgram::DUSHORT, &quad[0], quad.modified, &quad.bufferCache);
+    if (isNinePatch_) {
+        shp->drawElements(ShaderProgram::TriangleStrip, ninepatch.size(), ShaderProgram::DUSHORT, &ninepatch[0], ninepatch.modified, &ninepatch.bufferCache);
+    	ninepatch.modified = false;
+    }
+    else
+    {
+    	shp->drawElements(ShaderProgram::TriangleStrip, quad.size(), ShaderProgram::DUSHORT, &quad[0], quad.modified, &quad.bufferCache);
+    	quad.modified = false;
+    }
     vertices.modified = false;
 	texcoords.modified = false;
-	quad.modified = false;
+
 
 	if (isWhite_ == false)
 	{
@@ -95,6 +143,49 @@ void Pixel::extraBounds(float* minx, float* miny, float* maxx, float* maxy) cons
         *maxy = height_;
 }
 
+void Pixel::updateVertices() {
+	if (isNinePatch_) {
+		float vt=insetv_t_;
+		float vb=insetv_b_;
+		float vr=insetv_r_;
+		float vl=insetv_l_;
+		float dw=width_-vr-vl;
+		float dh=height_-vb-vt;
+		if (dw<0) {
+			float r=width_/(vr+vl); dw=0;
+			vr*=r; vl*=r;
+		}
+		if (dh<0) {
+			float r=height_/(vt+vb); dh=0;
+			vt*=r; vb*=r;
+		}
+		vertices.resize(16);
+		vertices[0] = Point2f(0,0);
+		vertices[1] = Point2f(vl,0);
+		vertices[2] = Point2f(width_-vr,0);
+		vertices[3] = Point2f(width_,0);
+		vertices[4] = Point2f(0,vt);
+		vertices[5] = Point2f(vl,vt);
+		vertices[6] = Point2f(width_-vr,vt);
+		vertices[7] = Point2f(width_,vt);
+		vertices[8] = Point2f(0,height_-vb);
+		vertices[9] = Point2f(vl,height_-vb);
+		vertices[10] = Point2f(width_-vr,height_-vb);
+		vertices[11] = Point2f(width_,height_-vb);
+		vertices[12] = Point2f(0,height_);
+		vertices[13] = Point2f(vl,height_);
+		vertices[14] = Point2f(width_-vr,height_);
+		vertices[15] = Point2f(width_,height_);
+	}
+	else {
+		vertices.resize(4);
+		vertices[0] = Point2f(0,0);
+		vertices[1] = Point2f(width_,0);
+		vertices[2] = Point2f(width_,height_);
+		vertices[3] = Point2f(0,height_);
+	}
+	vertices.Update();
+}
 
 void Pixel::updateTexture()
 {
@@ -106,11 +197,14 @@ void Pixel::updateTexture()
     float etw = texture->data->exwidth;
     float eth = texture->data->exheight;
 
-    if (isStretching_ || texture->data->parameters.wrap == eRepeat) {
+    if (isStretching_ || isNinePatch_ || texture->data->parameters.wrap == eRepeat) {
         float w, h, x, y;
-        if (isStretching_) {
-            w = tw / (etw * sx_);
-            h = th / (eth * sy_);
+        float pfx,pfy;
+        if (isStretching_|| isNinePatch_) {
+        	pfx=1.0 / (etw * sx_);
+        	pfy=1.0 / (eth * sy_);
+            w = tw * pfx;
+            h = th * pfy;
             x = 0.5 * w * (sx_ - 1) - x_ * w;
             y = 0.5 * h * (sy_ - 1) - y_ * h;
         } else {
@@ -122,11 +216,50 @@ void Pixel::updateTexture()
             y = -y_*tsy / eth;
         }
 
-        texcoords[0] = Point2f(x,y);
-        texcoords[1] = Point2f(x+w,y);
-        texcoords[2] = Point2f(x+w,y+h);
-        texcoords[3] = Point2f(x,y+h);
-        texcoords.Update();
+        if (isNinePatch_) {
+    		float vt=insett_t_*pfy;
+    		float vb=insett_b_*pfy;
+    		float vr=insett_r_*pfx;
+    		float vl=insett_l_*pfx;
+    		float dw=w-vr-vl;
+    		float dh=h-vb-vt;
+    		if (dw<0) {
+    			float r=w/(vr+vl); dw=0;
+    			vr*=r; vl*=r;
+    		}
+    		if (dh<0) {
+    			float r=h/(vt+vb); dh=0;
+    			vt*=r; vb*=r;
+    		}
+        	texcoords.resize(16);
+    		texcoords[0] = Point2f(x,y);
+    		texcoords[1] = Point2f(x+vl,y);
+    		texcoords[2] = Point2f(x+w-vr,y);
+    		texcoords[3] = Point2f(x+w,y);
+    		texcoords[4] = Point2f(x,y+vt);
+    		texcoords[5] = Point2f(x+vl,y+vt);
+    		texcoords[6] = Point2f(x+w-vr,y+vt);
+    		texcoords[7] = Point2f(x+w,y+vt);
+    		texcoords[8] = Point2f(x,y+h-vb);
+    		texcoords[9] = Point2f(x+vl,y+h-vb);
+    		texcoords[10] = Point2f(x+w-vr,y+h-vb);
+    		texcoords[11] = Point2f(x+w,y+h-vb);
+    		texcoords[12] = Point2f(x,y+h);
+    		texcoords[13] = Point2f(x+vl,y+h);
+    		texcoords[14] = Point2f(x+w-vr,y+h);
+    		texcoords[15] = Point2f(x+w,y+h);
+        }
+        else {
+        	texcoords.resize(4);
+            texcoords[0] = Point2f(x,y);
+            texcoords[1] = Point2f(x+w,y);
+            texcoords[2] = Point2f(x+w,y+h);
+            texcoords[3] = Point2f(x,y+h);
+        }
+
+        for (size_t tc=0;tc<texcoords.size();tc++)
+			tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
+ 		texcoords.Update();
         return;
     }
 
@@ -179,6 +312,8 @@ void Pixel::updateTexture()
     texcoords[1] = Point2f(tx2,ty1);
     texcoords[2] = Point2f(tx2,ty2);
     texcoords[3] = Point2f(tx1,ty2);
+    for (size_t tc=0;tc<texcoords.size();tc++)
+		tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
     texcoords.Update();
 }
 
@@ -186,12 +321,8 @@ bool Pixel::setDimensions(float width,float height)
 {
 	width_=width;
 	height_=height;
-    vertices[0] = Point2f(0,0);
-    vertices[1] = Point2f(width_,0);
-    vertices[2] = Point2f(width_,height_);
-    vertices[3] = Point2f(0,height_);
-	vertices.Update();
-    if (texture_[0]) updateTexture();
+	updateVertices();
+	if ((!(isStretching_|| isNinePatch_))&&texture_[0]) updateTexture();
     return Sprite::setDimensions(width, height);
 }
 
@@ -202,21 +333,32 @@ void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
     if (texture_[slot])
         texture_[slot]->unref();
     texture_[slot] = texture;
+    if (matrix) tmatrix_=*matrix;
 
     if (slot==0)
     {
         if (texture) updateTexture();
-        if (matrix) for (int tc=0;tc<4;tc++)
-			matrix->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
- 		texcoords.Update();
  	}
+}
+
+void Pixel::setNinePatch(float vl,float vr,float vt,float vb,float tl,float tr,float tt,float tb)
+{
+	insetv_t_=vt;
+	insetv_b_=vb;
+	insetv_r_=vr;
+	insetv_l_=vl;
+	insett_t_=tt;
+	insett_b_=tb;
+	insett_r_=tr;
+	insett_l_=tl;
+	isNinePatch_=(vt||vb||vr||vl);
+	updateVertices();
+    if (texture_[0]) updateTexture();
 }
 
 void Pixel::setTextureMatrix(const Matrix4* matrix)
 {
-    for (int tc=0;tc<4;tc++)
-        matrix->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x, &texcoords[tc].y);
-    texcoords.Update();
+    if (texture_[0]) updateTexture();
 }
 
 void Pixel::setTexturePosition(float x, float y)

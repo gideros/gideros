@@ -31,7 +31,10 @@ local __Object = Object
 
 Core = {}
 
-Core.class = function (b)
+Core.class = function (b,a)
+  if a then
+      assert(type(a)=="function","Second argument to Core.class() should be a function or null")
+  end
 	b = b or __Object
 
 	local c = {}
@@ -42,8 +45,12 @@ Core.class = function (b)
 
 	c.__new = function(...)
 		local b = getmetatable(c)
-
-		local s1 = b.__new(...)
+		local s1
+    if a then
+      s1 = b.__new(a(...))      
+    else
+		  s1 = b.__new(...)
+		end
 
 		setmetatable(s1, c)
 

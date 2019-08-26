@@ -105,6 +105,8 @@ private:
 	static int setShader(lua_State* L);
 	static int setShaderConstant(lua_State* L);
 	static int setStencilOperation(lua_State* L);
+
+	static int setStopEventPropagation(lua_State *L);
 };
 
 #endif
