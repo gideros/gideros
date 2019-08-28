@@ -28,10 +28,10 @@ struct GridBagConstraints {
     GridInsets insets;
     float ipadx;
     float ipady;
-    float tempX;
-    float tempY;
-    float tempWidth;
-    float tempHeight;
+    int tempX;
+    int tempY;
+    int tempWidth;
+    int tempHeight;
     float minWidth;
     float minHeight;
     float aminWidth,aminHeight;
@@ -85,16 +85,17 @@ struct GridBagConstraints {
 
 struct GridBagLayoutInfo {
     int width, height;          /* number of  cells: horizontal and vertical */
-    int startx, starty;         /* starting point for layout */
+    float startx, starty;         /* starting point for layout */
+    float reqWidth, reqHeight;
     std::vector<float> minWidth;             /* largest minWidth in each column */
     std::vector<float> minHeight;            /* largest minHeight in each row */
     std::vector<double> weightX;           /* largest weight in each column */
     std::vector<double> weightY;           /* largest weight in each row */
-    GridBagLayoutInfo(int width, int height) : startx(0), starty(0), minWidth(), minHeight(),weightX(),weightY() {
+    GridBagLayoutInfo(int width, int height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY() {
         this->width = width;
         this->height = height;
     }
-    GridBagLayoutInfo() : width(-1), height(-1), startx(0), starty(0), minWidth(), minHeight(),weightX(),weightY()
+    GridBagLayoutInfo() : width(-1), height(-1), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY()
     {
     }
 };
@@ -123,6 +124,7 @@ public:
     GridInsets pInsets;
     bool equalizeCells;
     bool dirty;
+    bool canGrow;
     GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag);
     void getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);

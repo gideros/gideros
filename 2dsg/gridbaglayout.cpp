@@ -80,7 +80,8 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 
 	int layoutWidth, layoutHeight;
     int compindex, i, k, nextSize;
-    float px,py,pixels_diff;
+    int px,py;
+    float pixels_diff;
 	int curX = 0; // constraints.gridx
 	int curY = 0; // constraints.gridy
 	int curWidth = 1;  // constraints.gridwidth
@@ -666,6 +667,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 
 	r.width = dw;
 	r.height = dh;
+	info.reqWidth = dw;
+	info.reqHeight = dh;
 
 	/*
 	 * If the current dimensions of the window don't match the desired
@@ -674,6 +677,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 */
 
 	diffw = pwidth - r.width;
+	bool needResize=false;
+	if ((diffw<0)&&canGrow) { pwidth=r.width; needResize=true; diffw=0; }
 	if (diffw != 0) {
 		weight = 0.0;
 		for (i = 0; i < info.width; i++)
@@ -726,6 +731,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	}
 
 	diffh = pheight - r.height;
+	if ((diffh<0)&&canGrow) { pheight=r.height; needResize=true; diffh=0; }
 	if (diffh != 0) {
 		weight = 0.0;
 		for (i = 0; i < info.height; i++)
@@ -777,6 +783,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		diffh = 0;
 	}
 
+	if (needResize)
+		parent->setDimensions(pwidth, pheight);
 	/*
 	 * Now do the actual layout of the slaves using the layout information
 	 * that has been collected.
