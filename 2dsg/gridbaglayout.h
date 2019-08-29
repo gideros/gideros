@@ -124,7 +124,7 @@ public:
     GridInsets pInsets;
     bool equalizeCells;
     bool dirty;
-    bool canGrow;
+    bool resizeContainer;
     GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag);
     void getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);

@@ -660,11 +660,29 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	info = getLayoutInfo(parent, PREFERREDSIZE);
     getMinSize(parent, info, dw, dh, insets);
 
-	if (pwidth < dw || pheight < dh) {
-		info = getLayoutInfo(parent, MINSIZE);
-        getMinSize(parent, info, dw, dh, insets);
-	}
-
+    if (resizeContainer) {
+    	GridBagLayoutInfo info2;
+		float dw2,dh2;
+		info2 = getLayoutInfo(parent, MINSIZE);
+		getMinSize(parent, info2, dw2, dh2, insets);
+		if ((dw2<dw)||(dh2<dh)) {
+			info=info2;
+			dw=dw2;
+			dh=dh2;
+		}
+		if ((pwidth!=dw)||(pheight!=dh)) {
+			pwidth=dw;
+			pheight=dh;
+			parent->setDimensions(pwidth, pheight);
+		}
+    }
+    else
+    {
+		if (pwidth < dw || pheight < dh) {
+			info = getLayoutInfo(parent, MINSIZE);
+			getMinSize(parent, info, dw, dh, insets);
+		}
+    }
 	r.width = dw;
 	r.height = dh;
 	info.reqWidth = dw;
@@ -676,9 +694,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 * according to the weights.
 	 */
 
+
 	diffw = pwidth - r.width;
-	bool needResize=false;
-	if ((diffw<0)&&canGrow) { pwidth=r.width; needResize=true; diffw=0; }
 	if (diffw != 0) {
 		weight = 0.0;
 		for (i = 0; i < info.width; i++)
@@ -731,7 +748,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	}
 
 	diffh = pheight - r.height;
-	if ((diffh<0)&&canGrow) { pheight=r.height; needResize=true; diffh=0; }
 	if (diffh != 0) {
 		weight = 0.0;
 		for (i = 0; i < info.height; i++)
@@ -783,8 +799,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		diffh = 0;
 	}
 
-	if (needResize)
-		parent->setDimensions(pwidth, pheight);
 	/*
 	 * Now do the actual layout of the slaves using the layout information
 	 * that has been collected.

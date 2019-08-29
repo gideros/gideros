@@ -556,7 +556,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
         FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
         FILL_BOOL("equalizeCells",equalizeCells);
-        FILL_BOOL("canGrow",canGrow);
+        FILL_BOOL("resizeContainer",resizeContainer);
         p->dirty=true;
 	}
 	return 0;
@@ -604,7 +604,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_NUM("insetTop",pInsets.top); STOR_NUM("insetLeft",pInsets.left);
         STOR_NUM("insetBottom",pInsets.bottom); STOR_NUM("insetRight",pInsets.right);
         STOR_BOOL("equalizeCells",equalizeCells);
-        STOR_BOOL("canGrow",canGrow);
+        STOR_BOOL("resizeContainer",resizeContainer);
 	}
 	else
 		lua_pushnil(L);
