@@ -8,15 +8,15 @@ struct GridInsets {
 	float left;
 	float bottom;
 	float right;
-	GridInsets() : top(0),left(0),bottom(0),right(0) { };
-	GridInsets(float t,float l, float b, float r) : top(t),left(l),bottom(b),right(r) { };
+    GridInsets() : top(0),left(0),bottom(0),right(0) { }
+    GridInsets(float t,float l, float b, float r) : top(t),left(l),bottom(b),right(r) { }
 };
 
 struct GridBagConstraints {
-    int gridx;
-    int gridy;
-    int gridwidth;
-    int gridheight;
+    size_t gridx;
+    size_t gridy;
+    size_t gridwidth;
+    size_t gridheight;
     double weightx;
     double weighty;
     enum _Anchor {
@@ -28,10 +28,10 @@ struct GridBagConstraints {
     GridInsets insets;
     float ipadx;
     float ipady;
-    int tempX;
-    int tempY;
-    int tempWidth;
-    int tempHeight;
+    size_t tempX;
+    size_t tempY;
+    size_t tempWidth;
+    size_t tempHeight;
     float minWidth;
     float minHeight;
     float aminWidth,aminHeight;
@@ -39,8 +39,8 @@ struct GridBagConstraints {
 
 
     GridBagConstraints() {
-        gridx = -1;
-        gridy = -1;
+        gridx = 0;
+        gridy = 0;
         gridwidth = 1;
         gridheight = 1;
 
@@ -57,8 +57,8 @@ struct GridBagConstraints {
         tempHeight=tempWidth=tempX=tempY=0;
     }
 
-    GridBagConstraints(int gridx, int gridy,
-                              int gridwidth, int gridheight,
+    GridBagConstraints(size_t gridx, size_t gridy,
+                              size_t gridwidth, size_t gridheight,
                               double weightx, double weighty,
 							  _Anchor anchor, _FillMode fill,
                               GridInsets insets, float ipadx, float ipady) {
@@ -84,18 +84,18 @@ struct GridBagConstraints {
 };
 
 struct GridBagLayoutInfo {
-    int width, height;          /* number of  cells: horizontal and vertical */
+    size_t width, height;          /* number of  cells: horizontal and vertical */
     float startx, starty;         /* starting point for layout */
     float reqWidth, reqHeight;
     std::vector<float> minWidth;             /* largest minWidth in each column */
     std::vector<float> minHeight;            /* largest minHeight in each row */
     std::vector<double> weightX;           /* largest weight in each column */
     std::vector<double> weightY;           /* largest weight in each row */
-    GridBagLayoutInfo(int width, int height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY() {
+    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY() {
         this->width = width;
         this->height = height;
     }
-    GridBagLayoutInfo() : width(-1), height(-1), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY()
+    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY()
     {
     }
 };
