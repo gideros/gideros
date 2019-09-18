@@ -33,16 +33,6 @@ void GridBagLayout::preInitMaximumArraySizes(Sprite *parent, size_t &a0,
 		curWidth = constraints->gridwidth;
 		curHeight = constraints->gridheight;
 
-		// gridwidth|gridheight may be equal to RELATIVE (-1) or REMAINDER (0)
-		// in any case using 1 instead of 0 or -1 should be sufficient to for
-		// correct maximumArraySizes calculation
-		if (curWidth <= 0) {
-			curWidth = 1;
-		}
-		if (curHeight <= 0) {
-			curHeight = 1;
-		}
-
 		if ((curY + curHeight) > preMaximumArrayXIndex)
 			preMaximumArrayXIndex = curY + curHeight;
 		if ((curX + curWidth) > preMaximumArrayYIndex)
@@ -75,7 +65,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
     size_t curY = 0; // constraints.gridy
     size_t curWidth = 1;  // constraints.gridwidth
     size_t curHeight = 1;  // constraints.gridheight
-	int curRow, curCol;
 	double weight_diff, weight;
     size_t maximumArrayXIndex = 0;
     size_t maximumArrayYIndex = 0;
@@ -90,7 +79,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	 */
 
 	layoutWidth = layoutHeight = 0;
-	curRow = curCol = -1;
 	size_t arraySizes0, arraySizes1;
 	preInitMaximumArraySizes(parent, arraySizes0, arraySizes1);
 
@@ -187,19 +175,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 		}
 		constraints->minWidth = dw;
 		constraints->minHeight = dh;
-
-		/* Zero width and height must mean that this is the last item (or
-		 * else something is wrong). */
-		if (constraints->gridheight == 0 && constraints->gridwidth == 0)
-			curRow = curCol = -1;
-
-		/* Zero width starts a new row */
-		if (constraints->gridheight == 0 && curRow < 0)
-            curCol = (int)(curX + curWidth);
-
-		/* Zero height starts a new column */
-		else if (constraints->gridwidth == 0 && curCol < 0)
-            curRow = (int)(curY + curHeight);
 	} //for (components) loop
 
 	/*
@@ -224,8 +199,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	 * Negative or zero values for gridWidth and gridHeight end the current
 	 *  row or column, respectively.
 	 */
-
-	curRow = curCol = -1;
 
     for (std::vector<size_t>::iterator it = xMaxArray.begin(), end =
 			xMaxArray.end(); it != end; ++it)
@@ -266,14 +239,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 		for (i = curY; i < (curY + curHeight); i++) {
 			xMaxArray[i] = px;
 		}
-
-		/* Make negative sizes start a new row/column */
-		if (constraints->gridheight == 0 && constraints->gridwidth == 0)
-			curRow = curCol = -1;
-		if (constraints->gridheight == 0 && curRow < 0)
-            curCol = (int)(curX + curWidth);
-		else if (constraints->gridwidth == 0 && curCol < 0)
-            curRow = (int)(curY + curHeight);
 
 		/* Assign the new values to the gridbag slave */
 		constraints->tempX = curX;
@@ -447,28 +412,28 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
     //PASS 4: equalize cells if needed
     if (equalizeCells&&(sizeflag==PREFERREDSIZE)) {
         double mw=0;
-        for (size_t i = 0; i < maximumArrayXIndex; i++) {
+        for (size_t i = 0; i < maximumArrayYIndex; i++) {
             if (r.weightX[i]>0) {
                 double mwt=r.minWidth[i]/r.weightX[i];
                 if (mwt>mw) mw=mwt;
             }
         }
         if (mw>0) {
-            for (size_t i = 0; i < maximumArrayXIndex; i++) {
+            for (size_t i = 0; i < maximumArrayYIndex; i++) {
                 if (r.weightX[i]>0) {
                     r.minWidth[i]=r.weightX[i]*mw;
                 }
             }
         }
         mw=0;
-        for (size_t i = 0; i < maximumArrayYIndex; i++) {
+        for (size_t i = 0; i < maximumArrayXIndex; i++) {
             if (r.weightY[i]>0) {
                 double mwt=r.minHeight[i]/r.weightY[i];
                 if (mwt>mw) mw=mwt;
             }
         }
         if (mw>0) {
-            for (size_t i = 0; i < maximumArrayYIndex; i++) {
+            for (size_t i = 0; i < maximumArrayXIndex; i++) {
                 if (r.weightY[i]>0) {
                     r.minHeight[i]=r.weightY[i]*mw;
                 }
