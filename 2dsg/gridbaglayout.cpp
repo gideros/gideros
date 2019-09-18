@@ -171,7 +171,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 					comp->layoutState->getMinSize(comp, info, diw, dih,comp->layoutState->pInsets);
 				}
 				else
-					comp->getDimensions(diw,dih);
+					comp->getMinimumSize(diw,dih,sizeflag==PREFERREDSIZE);
 				if (dw==-1) dw=diw;
 				if (dh==-1) dh=dih;
 			}
@@ -183,7 +183,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 				comp->layoutState->getMinSize(comp, info, dw, dh,comp->layoutState->pInsets);
 			}
 			else
-				comp->getDimensions(dw,dh);
+				comp->getMinimumSize(dw,dh,sizeflag==PREFERREDSIZE);
 		}
 		constraints->minWidth = dw;
 		constraints->minHeight = dh;

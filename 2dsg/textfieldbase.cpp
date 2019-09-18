@@ -30,6 +30,12 @@ void TextFieldBase::getDimensions(float &w,float &h)
     h=textlayout_.bh;
 }
 
+void TextFieldBase::getMinimumSize(float &w,float &h,bool preferred)
+{
+	w=preferred?textlayout_.w:0;
+	h=preferred?textlayout_.bh:0;
+}
+
 static size_t utf8_offset(const char *text,int cp) {
 	size_t o=0;
 	while ((*text)&&cp) {

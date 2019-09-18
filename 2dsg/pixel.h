@@ -49,6 +49,7 @@ public:
         width = width_;
         height = height_;
     }
+    void getMinimumSize(float &w,float &h,bool preferred) { w=preferred?1:0; h=w; }
 
     void setTexturePosition(float x,float y);
     void getTexturePosition(float &x, float &y)

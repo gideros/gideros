@@ -415,6 +415,7 @@ public:
 
     virtual bool setDimensions(float w,float h);
     virtual void getDimensions(float &w,float &h);
+    virtual void getMinimumSize(float &w,float &h,bool preferred) { getDimensions(w,h); }
 
     GridBagLayout *getLayoutState();
     void clearLayoutState();
