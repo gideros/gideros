@@ -73,8 +73,8 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
     float pixels_diff;
     size_t curX = 0; // constraints.gridx
     size_t curY = 0; // constraints.gridy
-    size_t curWidth = 0;  // constraints.gridwidth
-    size_t curHeight = 0;  // constraints.gridheight
+    size_t curWidth = 1;  // constraints.gridwidth
+    size_t curHeight = 1;  // constraints.gridheight
 	int curRow, curCol;
 	double weight_diff, weight;
     size_t maximumArrayXIndex = 0;
