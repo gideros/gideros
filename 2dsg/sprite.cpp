@@ -1212,7 +1212,7 @@ void Sprite::setStopPropagationMask(int mask) {
 }
 
 
-bool Sprite::setDimensions(float w,float h)
+bool Sprite::setDimensions(float w,float h, bool forLayout)
 {
 //    bool changed=((reqWidth_!=w)||(reqHeight_!=h));
     bool changed=(fabs(reqWidth_-w)+fabs(reqHeight_-h))>0.01;

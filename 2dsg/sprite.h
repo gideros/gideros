@@ -407,13 +407,13 @@ public:
     	stencil_=ds;
     }
 
-    void setBounds(float x,float y,float w,float h)
+    void setBounds(float x,float y,float w,float h,bool forLayout=false)
     {
     	setXY(x,y);
-    	setDimensions(w,h);
+    	setDimensions(w,h,forLayout);
     }
 
-    virtual bool setDimensions(float w,float h);
+	virtual bool setDimensions(float w,float h,bool forLayout=false);
     virtual void getDimensions(float &w,float &h);
     virtual void getMinimumSize(float &w,float &h,bool preferred) { getDimensions(w,h); }
 

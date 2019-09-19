@@ -37,7 +37,7 @@ public:
     virtual FontBase::TextLayoutParameters getLayout() { return layout_; }
 
 	bool scaleChanged();
-    virtual bool setDimensions(float w,float h);
+    virtual bool setDimensions(float w,float h,bool forLayout=false);
     virtual void getDimensions(float &w,float &h);
     void getMinimumSize(float &w,float &h,bool preferred);
     void getPointFromTextPos(size_t ri,float &cx,float &cy);

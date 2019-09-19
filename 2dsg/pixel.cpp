@@ -19,6 +19,7 @@ Pixel::Pixel(Application *application) : Sprite(application)
     c1_=c2_=c3_=c4_=0xFFFFFF;
     a1_=a2_=a3_=a4_=1.0;
     isWhite_=true;
+    minw_=minh_=0;
 	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
 		texture_[t]=NULL;
 	texcoords.resize(4);
@@ -317,10 +318,14 @@ void Pixel::updateTexture()
     texcoords.Update();
 }
 
-bool Pixel::setDimensions(float width,float height)
+bool Pixel::setDimensions(float width,float height,bool forLayout)
 {
 	width_=width;
 	height_=height;
+	if (!forLayout) {
+		minw_=width;
+		minh_=height;
+	}
 	updateVertices();
 	if ((!(isStretching_|| isNinePatch_))&&texture_[0]) updateTexture();
     return Sprite::setDimensions(width, height);

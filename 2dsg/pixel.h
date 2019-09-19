@@ -43,13 +43,13 @@ public:
 		setDimensions(width_,height);
 	}
 
-	bool setDimensions(float width,float height);
+	bool setDimensions(float width,float height,bool forLayout=false);
     void getDimensions(float &width, float &height)
     {
         width = width_;
         height = height_;
     }
-    void getMinimumSize(float &w,float &h,bool preferred) { w=preferred?1:0; h=w; }
+    void getMinimumSize(float &w,float &h,bool preferred) { w=minw_; h=minh_; }
 
     void setTexturePosition(float x,float y);
     void getTexturePosition(float &x, float &y)
@@ -114,6 +114,7 @@ private:
     Matrix4 tmatrix_;
     float insetv_t_,insetv_b_,insetv_r_,insetv_l_;
     float insett_t_,insett_b_,insett_r_,insett_l_;
+    float minw_,minh_;
 };
 
 #endif
