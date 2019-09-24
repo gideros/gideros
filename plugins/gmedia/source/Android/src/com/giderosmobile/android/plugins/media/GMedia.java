@@ -124,27 +124,30 @@ public class GMedia {
 		
 		sActivity.get().startActivityForResult(i, SELECT_PICTURE);
 	}
-	
-	public static void savePicture(String path) {
-		//copy to public directory
-		Bitmap source = loadBitmap(path);
-		Environment.getExternalStoragePublicDirectory(
-	            Environment.DIRECTORY_PICTURES).mkdirs();
+
+	// NEW 2019/09/24
+	public static void savePicture(String xpath, String... xname) {
+		// copy to public directory
+		Bitmap source = loadBitmap(xpath);
+		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).mkdirs();
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-		String imageFileName = timeStamp + "_gideros.jpg";
-	    String destination = Environment.getExternalStoragePublicDirectory(
-	            Environment.DIRECTORY_PICTURES).toString() + "/" + imageFileName;
-	    saveBitmap(destination, source);
-		
-	    //let media scanner scan it
-	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-	    File f = new File(destination);
-	    
-	    Uri contentUri = Uri.fromFile(f);
-	    mediaScanIntent.setData(contentUri);
-	    sActivity.get().sendBroadcast(mediaScanIntent);
+		// check if optional folder/file name parameter exists
+		// Example xname = "myfolder/myimage_20190924_073644.png"
+		String imageFileName = xname.length > 0 ? xname[0] : "gideros_" + timeStamp + ".png";
+		String destination = Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_PICTURES).toString() + "/" + imageFileName;
+		//saveBitmap(destination, source);
+		savePngBitmap(destination, source);
+
+		// let media scanner scan it.
+		// NOTE: I don't think that this works with png file format, remove it?
+		Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+		File f = new File(destination);
+		Uri contentUri = Uri.fromFile(f);
+		mediaScanIntent.setData(contentUri);
+		sActivity.get().sendBroadcast(mediaScanIntent);
 	}
-	
+
 	public static void playVideo(final String path, final boolean force){
 		sActivity.get().runOnUiThread(new Runnable() {
 			@Override
@@ -211,14 +214,25 @@ public class GMedia {
 	
 	private static void saveBitmap(String path, Bitmap image){
 		try {
-            FileOutputStream out = new FileOutputStream(path);
-            image.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			FileOutputStream out = new FileOutputStream(path);
+			image.compress(Bitmap.CompressFormat.JPEG, 90, out);
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
+
+	// NEW 2019/09/24
+	private static void savePngBitmap(String path, Bitmap image){
+		try {
+			FileOutputStream out = new FileOutputStream(path);
+			image.compress(Bitmap.CompressFormat.PNG, 100, out); // why not 100?
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private static Bitmap createBitmapFromGLSurface(int x, int y, int w, int h, GL10 gl)
 	        throws OutOfMemoryError {
 	    int bitmapBuffer[] = new int[w * h];
