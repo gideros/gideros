@@ -158,7 +158,8 @@ public:
         gmedia_getPicture();
     }
 
-    void savePicture(const char* path)
+	// I don't know how to pass an optional parameter for the new gmedia commit!
+	void savePicture(const char* path)
     {
         gmedia_savePicture(path);
     }
@@ -633,6 +634,7 @@ static int getPicture(lua_State *L)
     return 0;
 }
 
+// I don't know how to pass an optional parameter for the new gmedia commit!
 static int savePicture(lua_State *L)
 {
     GMediaManager *g = getInstance(L, 1);
@@ -982,7 +984,7 @@ static int loader(lua_State *L)
         {"takeScreenshot", takeScreenshot},
         {"takePicture", takePicture},
         {"getPicture", getPicture},
-        {"postPicture", savePicture},
+        {"postPicture", savePicture}, // I don't know how to pass an optional parameter for the new gmedia commit!
         {"playVideo", playVideo},
         {"deleteFile", deleteFile},
         {NULL, NULL},
