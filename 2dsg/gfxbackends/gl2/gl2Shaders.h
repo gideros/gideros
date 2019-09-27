@@ -158,13 +158,14 @@ class ogl2ShaderBuffer : public ShaderBuffer
 	static int qualcommFix_;
 	g_id tempTexture_;
 	GLuint textureId_;
+	bool forDepth_;
 protected:
 	GLuint _depthRenderBuffer;
 	GLuint glid;
 	int width,height;
 	static GLint bindBuffer(GLint n);
 public:
-	ogl2ShaderBuffer(ShaderTexture *texture);
+	ogl2ShaderBuffer(ShaderTexture *texture,bool forDepth);
 	virtual ~ogl2ShaderBuffer();
 	void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data);
 	void prepareDraw();
@@ -190,7 +191,7 @@ public:
 	const char *getShaderLanguage() { return "glsl"; };
 	void reset(bool reinit=false);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false);
-	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
+	ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);

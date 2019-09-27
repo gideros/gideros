@@ -393,9 +393,9 @@ ShaderTexture *dx11ShaderEngine::createTexture(ShaderTexture::Format format,Shad
 	return new dx11ShaderTexture(format,packing,width,height,data,wrap,filtering);
 }
 
-ShaderBuffer *dx11ShaderEngine::createRenderTarget(ShaderTexture *texture)
+ShaderBuffer *dx11ShaderEngine::createRenderTarget(ShaderTexture *texture,bool forDepth)
 {
-	return new dx11ShaderBuffer(texture);
+	return new dx11ShaderBuffer(texture,forDepth);
 }
 
 ShaderBuffer *dx11ShaderEngine::setFramebuffer(ShaderBuffer *fbo)

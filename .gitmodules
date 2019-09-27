@@ -1,0 +1,6 @@
+[submodule "plugins/reactphysics3d/reactphysics3d"]
+	path = plugins/reactphysics3d/reactphysics3d
+	url = https://github.com/gideros/reactphysics3d.git
+[submodule "plugins/harfbuzz/harfbuzz"]
+	path = plugins/harfbuzz/harfbuzz
+	url = https://github.com/gideros/harfbuzz.git

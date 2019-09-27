@@ -46,6 +46,7 @@ public:
 		SysConst_TextureInfo,
 		SysConst_ParticleSize,
     	SysConst_WorldInverseTransposeMatrix3,
+    	SysConst_ViewMatrix,
 		SysConst_Timer
     };
     enum ShaderFlags {
@@ -112,13 +113,15 @@ public:
 		FMT_RGB,
 		FMT_RGBA,
 		FMT_Y,
-		FMT_YA
+		FMT_YA,
+		FMT_DEPTH
 	};
 	enum Packing {
 		PK_UBYTE,
 		PK_USHORT_565,
 		PK_USHORT_4444,
-		PK_USHORT_5551
+		PK_USHORT_5551,
+		PK_FLOAT
 	};
 	enum Wrap {
 		WRAP_CLAMP,
@@ -179,11 +182,12 @@ public:
 	};
 protected:
 	//CONSTANTS
-	Matrix4 oglProjection;
-	Matrix4 oglVPProjection;
+	Matrix4 oglProjection; //Projection Matrix
+	Matrix4 oglView; //View (camera) Matrix
+	Matrix4 oglVPProjection; //Viewport projection Matrix
 	Matrix4 oglVPProjectionUncorrected;
-	Matrix4 oglModel;
-	Matrix4 oglCombined;
+	Matrix4 oglModel; //Model matrix
+	Matrix4 oglCombined; //MVP Matrix
 	float constCol[4];
 	//Scissor structs
 	struct Scissor
@@ -245,7 +249,7 @@ public:
 	virtual const char *getVersion()=0;
 	virtual const char *getShaderLanguage()=0;
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false)=0;
-	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;
+	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;
 	virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags,
 	                     const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)=0;
@@ -269,10 +273,12 @@ public:
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 	virtual void setProjection(const Matrix4 p) { oglProjection=p; }
+	virtual void setView(const Matrix4 v) { oglView=v; }
 	virtual void setViewportProjection(const Matrix4 vp, float width, float height);
 	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) { G_UNUSED(vp); G_UNUSED(width); G_UNUSED(height);};
 	virtual void setModel(const Matrix4 m);
 	virtual const Matrix4 getModel() { return oglModel; }
+	virtual const Matrix4 getView() { return oglView; }
 	virtual const Matrix4 getProjection() { return oglProjection; }
 	virtual const Matrix4 getViewportProjection() { return oglVPProjectionUncorrected; }
 	//Attributes

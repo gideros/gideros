@@ -57,6 +57,7 @@ struct RenderTargetElement : public CommonElement
 {
     ShaderBuffer *_framebuffer;
     size_t textureSize;
+    bool depth;
     std::vector<char> buffer;
     void *udata;
 };
@@ -408,7 +409,7 @@ public:
             std::vector<char>().swap(element->buffer);
             genAndUploadTexture(element, &uncompressed[0]);
 
-            element->_framebuffer=engine->createRenderTarget(element->_texture);
+            element->_framebuffer=engine->createRenderTarget(element->_texture,element->depth);
         }
 
     }
@@ -457,10 +458,10 @@ public:
 
 
     g_id RenderTargetCreate(int width, int height,
-                            int wrap, int filter)
+                            int wrap, int filter, bool depth)
     {
-        int format = GTEXTURE_RGBA;
-        int type = GTEXTURE_UNSIGNED_BYTE;
+        int format = depth?GTEXTURE_DEPTH:GTEXTURE_RGBA;
+        int type = depth?GTEXTURE_FLOAT:GTEXTURE_UNSIGNED_BYTE;
 
         RenderTargetElement *element = new RenderTargetElement;
 
@@ -478,6 +479,7 @@ public:
         element->filter = filter;
         element->udata = NULL;
         element->renderTarget = true;
+        element->depth=depth;
 
         element->textureSize = width * height * pixelSize(format, type);
 
@@ -490,7 +492,7 @@ public:
         
         glog_v("Creating render target. Total memory is %g KB.", (bufferMemory_ + textureMemory_) / 1024.0);
 
-        element->_framebuffer=engine->createRenderTarget(element->_texture);
+        element->_framebuffer=engine->createRenderTarget(element->_texture,element->depth);
 
         renderTargetElements_[nextid_] = element;
 
@@ -636,6 +638,9 @@ private:
         case GTEXTURE_LUMINANCE_ALPHA:
             format = ShaderTexture::FMT_YA;
             break;
+        case GTEXTURE_DEPTH:
+            format = ShaderTexture::FMT_DEPTH;
+            break;
         }
 
         ShaderTexture::Packing type;
@@ -652,6 +657,9 @@ private:
             break;
         case GTEXTURE_UNSIGNED_SHORT_5_5_5_1:
             type = ShaderTexture::PK_USHORT_5551;
+            break;
+        case GTEXTURE_FLOAT:
+            type = ShaderTexture::PK_FLOAT;
             break;
         }
         ShaderTexture::Wrap wrap=ShaderTexture::WRAP_CLAMP;
@@ -797,9 +805,9 @@ G_API size_t gtexture_getMemoryUsage()
 }
 
 g_id gtexture_RenderTargetCreate(int width, int height,
-                                 int wrap, int filter)
+                                 int wrap, int filter,bool depth)
 {
-    return s_manager->RenderTargetCreate(width, height, wrap, filter);
+    return s_manager->RenderTargetCreate(width, height, wrap, filter, depth);
 }
 
 ShaderBuffer *gtexture_RenderTargetGetFBO(g_id renderTarget)

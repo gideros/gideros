@@ -8,8 +8,10 @@
 #include "dx11Shaders.h"
 #include "string.h"
 
-dx11ShaderBuffer::dx11ShaderBuffer(ShaderTexture *texture)
+dx11ShaderBuffer::dx11ShaderBuffer(ShaderTexture *texture,bool forDepth)
 {
+	forDepth_=forDepth; //TODO: Implement depth target
+	depthStencilTexture=NULL;
 	D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 	ID3D11Resource *res;
 	((dx11ShaderTexture *)texture)->rsv->GetDesc(&desc);

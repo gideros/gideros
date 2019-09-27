@@ -100,6 +100,7 @@ void ShaderEngine::reset(bool reinit)
     oglVPProjection.identity();
     oglVPProjectionUncorrected.identity();
     oglModel.identity();
+    oglView.identity();
     oglCombined.identity();
     dsCurrent.dTest=false;
     dsCurrent.sRef=0;
@@ -152,6 +153,10 @@ void ShaderEngine::prepareDraw(ShaderProgram *program)
 	c=program->getSystemConstant(ShaderProgram::SysConst_WorldMatrix);
 	if (c>=0) {
 		program->setConstant(c,ShaderProgram::CMATRIX,1,oglModel.data());
+	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_ViewMatrix);
+	if (c>=0) {
+		program->setConstant(c,ShaderProgram::CMATRIX,1,oglView.data());
 	}
 	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix);
 	if (c>=0) {
@@ -216,7 +221,7 @@ void ShaderEngine::pushClip(float x,float y,float w,float h)
 	Vector4 v2(x+w,y+h,0,1);
 	Vector4 v3(x+w,y,0,1);
 	Vector4 v4(x,y+h,0,1);
-	Matrix4 xform=oglVPProjection*oglModel;
+	Matrix4 xform=oglVPProjection*oglView*oglModel;
 	v1=xform*v1;
 	v2=xform*v2;
 	v3=xform*v3;
@@ -289,7 +294,7 @@ ShaderProgram *ShaderEngine::getDefault(StandardProgram id,int variant)
 void ShaderEngine::setModel(const Matrix4 m)
 {
     oglModel=m;
-	oglCombined=oglProjection*oglModel;
+	oglCombined=oglProjection*oglView*oglModel;
 }
 
 void ShaderProgram::shaderInitialized()

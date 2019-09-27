@@ -46,14 +46,20 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     			case PK_USHORT_565: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_B5G6R5_UNORM; break;
     		}
     		break;
-    	case FMT_RGBA:
-    		switch (packing)
-    		{
-    			case PK_UBYTE: tbsd.SysMemPitch = width*4; tdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; break;
-       			case PK_USHORT_4444: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_B4G4R4A4_UNORM; break;
-       			case PK_USHORT_5551: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_B5G5R5A1_UNORM; break;
-       		}
-		break;
+		case FMT_RGBA:
+			switch (packing)
+			{
+				case PK_UBYTE: tbsd.SysMemPitch = width*4; tdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; break;
+				case PK_USHORT_4444: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_B4G4R4A4_UNORM; break;
+				case PK_USHORT_5551: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_B5G5R5A1_UNORM; break;
+			}
+			break;
+		case FMT_DEPTH:
+			switch (packing)
+			{
+				case PK_FLOAT: tbsd.SysMemPitch = width*4; tdesc.Format = DXGI_FORMAT_D32_FLOAT; break;
+			}
+			break;
     }
 
     tbsd.SysMemSlicePitch = tbsd.SysMemPitch*height; // not needed

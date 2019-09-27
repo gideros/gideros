@@ -51,6 +51,7 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     	case FMT_RGBA: glformat=GL_RGBA; break;
     	case FMT_Y: glformat=GL_LUMINANCE; break;
     	case FMT_YA: glformat=GL_LUMINANCE_ALPHA; break;
+    	case FMT_DEPTH: glformat=GL_DEPTH_COMPONENT; break;
     }
     GLuint gltype=GL_UNSIGNED_BYTE;
     switch (packing)
@@ -59,6 +60,7 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     	case PK_USHORT_565: gltype=GL_UNSIGNED_SHORT_5_6_5; break;
     	case PK_USHORT_4444: gltype=GL_UNSIGNED_SHORT_4_4_4_4; break;
     	case PK_USHORT_5551: gltype=GL_UNSIGNED_SHORT_5_5_5_1; break;
+    	case PK_FLOAT: gltype=GL_FLOAT; break;
     }
     if (data)
     	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, glformat, gltype, data);
