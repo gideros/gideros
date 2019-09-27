@@ -71,7 +71,7 @@ public:
 
     virtual TextureData* createTextureFromFile(const char* filename, const TextureParameters& parameters, bool pow2=true);
     virtual TextureData* createTextureFromDib(const Dib& dib, const TextureParameters& parameters);
-    virtual TextureData* createRenderTarget(int width, int height, const TextureParameters& parameters, bool selectScale=false);
+    virtual TextureData* createRenderTarget(int width, int height, const TextureParameters& parameters, bool selectScale=false,bool depth=false);
     virtual void updateTextureFromDib(TextureData* data, const Dib& dib);
     virtual void destroyTexture(TextureData* texture);
 

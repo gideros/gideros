@@ -518,8 +518,8 @@ ShaderTexture *ogl2ShaderEngine::createTexture(ShaderTexture::Format format,
 			filtering);
 }
 
-ShaderBuffer *ogl2ShaderEngine::createRenderTarget(ShaderTexture *texture) {
-	return new ogl2ShaderBuffer(texture);
+ShaderBuffer *ogl2ShaderEngine::createRenderTarget(ShaderTexture *texture,bool forDepth) {
+	return new ogl2ShaderBuffer(texture,forDepth);
 }
 
 ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {

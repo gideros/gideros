@@ -15,12 +15,14 @@ extern "C" {
 #define GTEXTURE_RGBA 2
 #define GTEXTURE_LUMINANCE 3
 #define GTEXTURE_LUMINANCE_ALPHA 4
+#define GTEXTURE_DEPTH 5
 
 /* type */
 #define GTEXTURE_UNSIGNED_BYTE 0
 #define GTEXTURE_UNSIGNED_SHORT_5_6_5 1
 #define GTEXTURE_UNSIGNED_SHORT_4_4_4_4 2
 #define GTEXTURE_UNSIGNED_SHORT_5_5_5_1 3
+#define GTEXTURE_FLOAT 4
 
 /* wrap */
 #define GTEXTURE_REPEAT 0
@@ -68,7 +70,7 @@ G_API void gtexture_reloadTextures();
 G_API size_t gtexture_getMemoryUsage();
 
 G_API g_id gtexture_RenderTargetCreate(int width, int height,
-                                       int wrap, int filter);
+                                       int wrap, int filter, bool depth);
 
 G_API ShaderBuffer *gtexture_RenderTargetGetFBO(g_id renderTarget);
 

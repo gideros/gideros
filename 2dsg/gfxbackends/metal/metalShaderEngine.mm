@@ -210,8 +210,8 @@ ShaderTexture *metalShaderEngine::createTexture(ShaderTexture::Format format,
 			filtering, forRT);
 }
 
-ShaderBuffer *metalShaderEngine::createRenderTarget(ShaderTexture *texture) {
-	return new metalShaderBuffer(texture);
+ShaderBuffer *metalShaderEngine::createRenderTarget(ShaderTexture *texture,bool forDepth) {
+	return new metalShaderBuffer(texture,forDepth);
 }
 
 void metalShaderEngine::clear(int f) {

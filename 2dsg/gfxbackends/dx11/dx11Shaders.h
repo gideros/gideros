@@ -112,8 +112,9 @@ protected:
 	ID3D11DepthStencilView *depthStencil;
 	ID3D11Texture2D* depthStencilTexture;
 	int width, height;
+	bool forDepth_;
 public:
-	dx11ShaderBuffer(ShaderTexture *texture);
+	dx11ShaderBuffer(ShaderTexture *texture,bool forDepth=false);
 	virtual ~dx11ShaderBuffer();
 	void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data);
 	void prepareDraw();
@@ -146,7 +147,7 @@ public:
 	const char *getVersion();
 	const char *getShaderLanguage() { return "hlsl"; };
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false);
-	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
+	ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);

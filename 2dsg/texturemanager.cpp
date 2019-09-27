@@ -494,7 +494,7 @@ static unsigned int nextpow2(unsigned int v)
     return v;
 }
 
-TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParameters& parameters, bool selectScale)
+TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParameters& parameters, bool selectScale, bool depth)
 {
     int wrap = 0;
     switch (parameters.wrap)
@@ -533,7 +533,7 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     int exwidth = nextpow2(w);
     int exheight = nextpow2(h);
 
-    g_id gid = gtexture_RenderTargetCreate(exwidth, exheight, wrap, filter);
+    g_id gid = gtexture_RenderTargetCreate(exwidth, exheight, wrap, filter, depth);
 
     TextureData *data = new TextureData;
 

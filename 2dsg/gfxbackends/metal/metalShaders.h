@@ -91,8 +91,9 @@ protected:
     id<MTLTexture> stencil;
 	int width,height;
     int clearReq;
+    bool forDepth_;
 public:
-	metalShaderBuffer(ShaderTexture *texture);
+	metalShaderBuffer(ShaderTexture *texture,bool forDepth=false);
 	virtual ~metalShaderBuffer();
 	void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data);
 	void prepareDraw();
@@ -124,7 +125,7 @@ public:
 	const char *getShaderLanguage() { return "msl"; };
 	void reset(bool reinit=false);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false);
-	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
+	ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);

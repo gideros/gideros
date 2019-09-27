@@ -26,10 +26,11 @@ GLint ogl2ShaderBuffer::bindBuffer(GLint fbo)
         return oldFBO;
 }
 
-ogl2ShaderBuffer::ogl2ShaderBuffer(ShaderTexture *texture)
+ogl2ShaderBuffer::ogl2ShaderBuffer(ShaderTexture *texture,bool forDepth)
 {
 	GLCALL_INIT;
 	_depthRenderBuffer=0;
+	forDepth_=forDepth;
 	width=((ogl2ShaderTexture *)texture)->width;
 	height=((ogl2ShaderTexture *)texture)->height;
 
@@ -57,7 +58,7 @@ ogl2ShaderBuffer::ogl2ShaderBuffer(ShaderTexture *texture)
     	GLCALL glGenFramebuffers(1, &glid);
     	GLCALL glBindFramebuffer(GL_FRAMEBUFFER, glid);
 
-    	GLCALL glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, 0);
+    	GLCALL glFramebufferTexture2D(GL_FRAMEBUFFER, forDepth?GL_DEPTH_ATTACHMENT:GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, 0);
 
     	GLCALL glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
 
@@ -69,7 +70,7 @@ ogl2ShaderBuffer::ogl2ShaderBuffer(ShaderTexture *texture)
 		GLCALL glGenFramebuffersEXT(1, &glid);
 		GLCALL glBindFramebufferEXT(GL_FRAMEBUFFER, glid);
 
-		GLCALL glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, 0);
+		GLCALL glFramebufferTexture2DEXT(GL_FRAMEBUFFER, forDepth?GL_DEPTH_ATTACHMENT:GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, 0);
 
 		GLCALL glBindFramebufferEXT(GL_FRAMEBUFFER, oldFBO);
 	}
@@ -131,7 +132,8 @@ void ogl2ShaderBuffer::needDepthStencil()
 #endif
 		GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #else
-		GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+		if (!forDepth_)
+			GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 		GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
 	}
@@ -144,7 +146,8 @@ void ogl2ShaderBuffer::needDepthStencil()
 			GLCALL glBindRenderbufferEXT(GL_RENDERBUFFER, _depthRenderBuffer);
 			GLCALL glRenderbufferStorageEXT(GL_RENDERBUFFER, depthfmt, width,height);
 			GLCALL glBindRenderbufferEXT(GL_RENDERBUFFER, 0);
-			GLCALL glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+			if (!forDepth_)
+				GLCALL glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 			GLCALL glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 		}
 	}

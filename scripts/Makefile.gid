@@ -97,6 +97,11 @@ prep.repo:
 		git reset HEAD .gitmodules; \
 		git reset HEAD plugins/harfbuzz/harfbuzz; \
 	fi
+	if [ ! -d $(ROOT)/plugins/reactphysics3d/reactphysics3d ]; then \
+		git submodule add https://github.com/gideros/reactphysics3d.git  plugins/reactphysics3d/reactphysics3d; \
+		git reset HEAD .gitmodules; \
+		git reset HEAD plugins/reactphysics3d/reactphysics3d; \
+	fi
 	git submodule update --recursive	
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk

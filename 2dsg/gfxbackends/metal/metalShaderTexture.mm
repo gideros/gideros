@@ -47,6 +47,12 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
     	    	case FMT_RGBA: glformat=MTLPixelFormatA1BGR5Unorm; bpr=2; break;
     	    }
     		break;*/
+    	case PK_FLOAT:
+    	    switch (format)
+    	    {
+    	   		case FMT_DEPTH: glformat=MTLPixelFormatDepth32Float; bpr=4; break;
+    	   	}
+    		break;
     }
     
 	MTLTextureDescriptor * md=[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:(MTLPixelFormat)glformat 
