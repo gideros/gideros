@@ -125,8 +125,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include;../../../Common;../../../libopus-1.3.1/opus;../../../libopus-1.3.1/opus/include;../../../libopus-1.3.1/silk;../../../libopus-1.3.1/silk/float</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,8 +139,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include;../../../Common;../../../libopus-1.3.1/opus;../../../libopus-1.3.1/opus/include;../../../libopus-1.3.1/silk;../../../libopus-1.3.1/silk/float</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,8 +153,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include;../../../Common;../../../libopus-1.3.1/opus;../../../libopus-1.3.1/opus/include;../../../libopus-1.3.1/silk;../../../libopus-1.3.1/silk/float</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,8 +167,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include;../../../Common;../../../libopus-1.3.1/opus;../../../libopus-1.3.1/opus/include;../../../libopus-1.3.1/silk;../../../libopus-1.3.1/silk/float</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -181,8 +181,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include;../../../Common;../../../libopus-1.3.1/opus;../../../libopus-1.3.1/opus/include;../../../libopus-1.3.1/silk;../../../libopus-1.3.1/silk/float</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -195,8 +195,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include;../../../Common;../../../libopus-1.3.1/opus;../../../libopus-1.3.1/opus/include;../../../libopus-1.3.1/silk;../../../libopus-1.3.1/silk/float</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

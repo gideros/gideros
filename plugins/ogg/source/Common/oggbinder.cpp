@@ -10,15 +10,14 @@
 #include <Shaders.h>
 #include <texturebase.h>
 
-#include <vorbis/vorbisfile.h>
-#include <vorbis/vorbisenc.h>
-#include <theora/theora.h>
-#include <theora/theoradec.h>
 #include <math.h>
 #include <platformutil.h>
 #include "screen.h"
 #include "ticker.h"
 #include "luaapplication.h"
+
+#include <OggDec.h>
+#include <OggEnc.h>
 
 #ifndef FLAVOUR
 #define FLAVOUR_F
@@ -31,35 +30,20 @@ struct GGOggHandle {
 	ogg_packet op;
 	ogg_sync_state oy;
 	ogg_page og;
+	ogg_stream_state ao;
 	ogg_stream_state vo;
-	ogg_stream_state to;
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-	th_info ti;
-	th_comment tc;
-	th_dec_ctx *td;
-	th_setup_info *ts;
-#endif
-	vorbis_info vi;
-	vorbis_dsp_state vd;
-	vorbis_block vb;
-	vorbis_comment vc;
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-	th_pixel_fmt px_fmt;
-	int pp_level_max;
-	int pp_level;
-	int pp_inc;
-#endif
+	//COMMON
+	OggDec *video_p;
+	OggDec *audio_p;
+	unsigned int frame_width,frame_height;
+	float frame_rate;
+	int frame_format;
 	ogg_int64_t audio_granulepos;
 	ogg_int64_t video_granulepos;
-
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	TextureBase *yplane;
 	TextureBase *uplane;
 	TextureBase *vplane;
 	int planeWidth, planeHeight;
-#endif
-	int theora_p;
-	int vorbis_p;
 	int stateflag;
 	int videobuf_ready;
 	double videobuf_time;
@@ -82,12 +66,7 @@ struct GGOggEncHandle {
 	ogg_page og; /* one Ogg bitstream page.  Vorbis packets are inside */
 	ogg_packet op; /* one raw packet of data for decode */
 
-	vorbis_info vi; /* struct that stores all the static vorbis bitstream
-	 settings */
-	vorbis_comment vc; /* struct that stores all the user comments */
-
-	vorbis_dsp_state vd; /* central working state for the packet->PCM decoder */
-	vorbis_block vb; /* local working space for packet->PCM decode */
+	OggEnc *audio_p;
 };
 
 static std::map<g_id, GGOggHandle *> ctxmap;
@@ -100,10 +79,10 @@ int buffer_data(G_FILE *in, ogg_sync_state *oy) {
 }
 
 static int queue_page(GGOggHandle *h, ogg_page *page) {
-	if (h->theora_p)
-		ogg_stream_pagein(&h->to, page);
-	if (h->vorbis_p)
+	if (h->video_p)
 		ogg_stream_pagein(&h->vo, page);
+	if (h->audio_p)
+		ogg_stream_pagein(&h->ao, page);
 	return 0;
 }
 
@@ -143,20 +122,18 @@ static int sampleTell(GGOggHandle *handle,ogg_int64_t *agr,double *atm,ogg_int64
 		int psn = (bufr[14] | (bufr[15] << 8) | (bufr[16] << 16)
 				| (bufr[17] << 24));
 		double gt = -1;
-		if (handle->vorbis_p && (psn == handle->vo.serialno))
+		if (handle->audio_p && (psn == handle->ao.serialno))
 		{
-			gt = vorbis_granule_time(&handle->vd, granulepos);
+			gt=handle->audio_p->GranuleTime(granulepos);
 			if (agr) *agr=granulepos;
 			if (atm) *atm=gt;
 		}
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-		if (handle->theora_p && (psn == handle->to.serialno))
+		if (handle->video_p && (psn == handle->vo.serialno))
 		{
-			gt = th_granule_time(&handle->td, granulepos);
+			gt=handle->video_p->GranuleTime(granulepos);
 			if (vgr) *vgr=granulepos;
 			if (vtm) *vtm=gt;
 		}
-#endif
 		if (gt > gp)
 			gp = gt;
 		bufr += 27;
@@ -182,19 +159,10 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	/* start up Ogg stream synchronization layer */
 	ogg_sync_init(&handle->oy);
 
-	/* init supporting Vorbis structures needed in header parsing */
-	vorbis_info_init(&handle->vi);
-	vorbis_comment_init(&handle->vc);
-
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-	/* init supporting Theora structures needed in header parsing */
-	th_comment_init(&handle->tc);
-	th_info_init(&handle->ti);
-    handle->ts=NULL;
-#endif
-
 	g_id gid = g_NextId();
 	ctxmap[gid] = handle;
+	handle->audio_p=NULL;
+	handle->video_p=NULL;
 
 	/* Ogg file open; parse the headers */
 	/* Only interested in Vorbis/Theora streams */
@@ -218,22 +186,16 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 			ogg_stream_pagein(&test, &handle->og);
 			ogg_stream_packetout(&test, &handle->op);
 
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 			/* identify the codec: try theora */
-			if (!handle->theora_p
-					&& th_decode_headerin(&handle->ti, &handle->tc, &handle->ts,
-							&handle->op) >= 0) {
+			if (!handle->video_p
+					&& ((handle->video_p=probe_oggdec(&handle->op,CODEC_TYPE_VIDEO)) !=NULL)) {
 				/* it is theora */
-				memcpy(&handle->to, &test, sizeof(test));
-				handle->theora_p = 1;
-			} else
-#endif
-				if (!handle->vorbis_p
-					&& vorbis_synthesis_headerin(&handle->vi, &handle->vc,
-							&handle->op) >= 0) {
-				/* it is vorbis */
 				memcpy(&handle->vo, &test, sizeof(test));
-				handle->vorbis_p = 1;
+			} else
+				if (!handle->audio_p
+						&& ((handle->audio_p=probe_oggdec(&handle->op,CODEC_TYPE_AUDIO)) !=NULL)) {
+				/* it is vorbis */
+				memcpy(&handle->ao, &test, sizeof(test));
 			} else {
 				/* whatever it is, we don't care about it */
 				ogg_stream_clear(&test);
@@ -243,55 +205,52 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	}
 
 	/* we're expecting more header packets. */
-	while ((handle->theora_p && handle->theora_p < 3)
-			|| (handle->vorbis_p && handle->vorbis_p < 3)) {
+	while ((handle->video_p && (!handle->video_p->GotHeaders()))
+			|| (handle->audio_p && (!handle->audio_p->GotHeaders()))) {
 		int ret;
 
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 		/* look for further theora headers */
-		while (handle->theora_p && (handle->theora_p < 3) && (ret =
-				ogg_stream_packetout(&handle->to, &handle->op))) {
-			if (ret < 0) {
-                glog_w("Error parsing Theora stream headers; "
-						"corrupt stream?\n");
-                gaudio_OggClose(gid);
-                if (error)
-                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
-                return 0;
-            }
-			if (!th_decode_headerin(&handle->ti, &handle->tc, &handle->ts,
-					&handle->op)) {
-				fprintf(stderr, "Error parsing Theora stream headers; "
-						"corrupt stream?\n");
-                gaudio_OggClose(gid);
-                if (error)
-                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
-                return 0;
-            }
-			handle->theora_p++;
-		}
-#endif
-		/* look for more vorbis header packets */
-		while (handle->vorbis_p && (handle->vorbis_p < 3) && (ret =
+		while (handle->video_p && (!handle->video_p->GotHeaders()) && (ret =
 				ogg_stream_packetout(&handle->vo, &handle->op))) {
 			if (ret < 0) {
-                glog_w(	"Error parsing Vorbis stream headers; corrupt stream?\n");
+                glog_w("Error parsing Video stream headers; "
+						"corrupt stream?\n");
+                delete handle;
                 gaudio_OggClose(gid);
                 if (error)
                     *error = GAUDIO_UNRECOGNIZED_FORMAT;
                 return 0;
             }
-			if (vorbis_synthesis_headerin(&handle->vi, &handle->vc,
-					&handle->op)) {
-                glog_w(	"Error parsing Vorbis stream headers; corrupt stream?\n");
+			if (!handle->video_p->PacketIn(&handle->op)) {
+				fprintf(stderr, "Error parsing Theora stream headers; "
+						"corrupt stream?\n");
+                delete handle;
                 gaudio_OggClose(gid);
                 if (error)
                     *error = GAUDIO_UNRECOGNIZED_FORMAT;
                 return 0;
             }
-			handle->vorbis_p++;
-			if (handle->vorbis_p == 3)
-				break;
+		}
+		/* look for more vorbis header packets */
+		while (handle->audio_p && (!handle->audio_p->GotHeaders()) && (ret =
+				ogg_stream_packetout(&handle->ao, &handle->op))) {
+			if (ret < 0) {
+                glog_w(	"Error parsing Audio stream headers; corrupt stream?\n");
+                delete handle;
+                gaudio_OggClose(gid);
+                if (error)
+                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
+                return 0;
+            }
+
+			if (!handle->audio_p->PacketIn(&handle->op)) {
+                glog_w(	"Error parsing Audio stream headers; corrupt stream?\n");
+                delete handle;
+                gaudio_OggClose(gid);
+                if (error)
+                    *error = GAUDIO_UNRECOGNIZED_FORMAT;
+                return 0;
+            }
 		}
 
 		/* The header pages/packets will arrive before anything else we
@@ -303,6 +262,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 			int ret = buffer_data(file, &handle->oy); /* someone needs more data */
 			if (ret == 0) {
                 glog_w("End of file while searching for codec headers.\n");
+                delete handle;
 				gaudio_OggClose(gid);
 				if (error)
 					*error = GAUDIO_UNRECOGNIZED_FORMAT;
@@ -312,73 +272,39 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	}
 
 	/* and now we have it all.  initialize decoders */
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-	if (handle->theora_p) {
-		handle->td = th_decode_alloc(&handle->ti, handle->ts);
-        glog_i("Ogg logical stream %lx is Theora %dx%d %.02f fps",
-				handle->to.serialno, handle->ti.pic_width,
-				handle->ti.pic_height,
-				(double) handle->ti.fps_numerator / handle->ti.fps_denominator);
-		handle->px_fmt = handle->ti.pixel_fmt;
-		switch (handle->ti.pixel_fmt) {
-		case TH_PF_420:
+	if (handle->video_p) {
+		handle->video_p->GetVideoInfo(handle->frame_rate, handle->frame_width, handle->frame_height, handle->frame_format);
+        glog_i("Ogg logical stream %lx is Video %dx%d %.02f fps",
+				handle->vo.serialno, handle->frame_width,
+				handle->frame_height,
+				handle->frame_rate);
+		switch (handle->frame_format) {
+		case 0:
             glog_i(" 4:2:0 video\n");
 			break;
-		case TH_PF_422:
+		case 2:
             glog_i(" 4:2:2 video\n");
 			break;
-		case TH_PF_444:
+		case 3:
             glog_i(" 4:4:4 video\n");
 			break;
-		case TH_PF_RSVD:
 		default:
             glog_i(" video\n  (UNKNOWN Chroma sampling!)\n");
 			break;
 		}
-		if (handle->ti.pic_width != handle->ti.frame_width
-				|| handle->ti.pic_height != handle->ti.frame_height)
-			printf("  Frame content is %dx%d with offset (%d,%d).\n",
-					handle->ti.frame_width, handle->ti.frame_height,
-					handle->ti.pic_x, handle->ti.pic_y);
-		th_decode_ctl(handle->td, TH_DECCTL_GET_PPLEVEL_MAX,
-				&handle->pp_level_max, sizeof(handle->pp_level_max));
-		handle->pp_level = handle->pp_level_max;
-		th_decode_ctl(handle->td, TH_DECCTL_SET_PPLEVEL, &handle->pp_level,
-				sizeof(handle->pp_level));
-		handle->pp_inc = 0;
-
-		/*{
-		 int arg = 0xffff;
-		 th_decode_ctl(td,TH_DECCTL_SET_TELEMETRY_MBMODE,&arg,sizeof(arg));
-		 th_decode_ctl(td,TH_DECCTL_SET_TELEMETRY_MV,&arg,sizeof(arg));
-		 th_decode_ctl(td,TH_DECCTL_SET_TELEMETRY_QI,&arg,sizeof(arg));
-		 arg=10;
-		 th_decode_ctl(td,TH_DECCTL_SET_TELEMETRY_BITS,&arg,sizeof(arg));
-		 }*/
-	} else {
-		/* tear down the partial theora setup */
-		th_info_clear(&handle->ti);
-		th_comment_clear(&handle->tc);
-		handle->theora_p = 0;
 	}
-	th_setup_free(handle->ts);
-#endif
 
-	if (handle->vorbis_p) {
-		vorbis_synthesis_init(&handle->vd, &handle->vi);
-		vorbis_block_init(&handle->vd, &handle->vb);
-        glog_i(	"Ogg logical stream %lx is Vorbis %d channel %ld Hz audio.\n",
-				handle->vo.serialno, handle->vi.channels, handle->vi.rate);
-	} else {
-		/* tear down the partial vorbis setup */
-		vorbis_info_clear(&handle->vi);
-		vorbis_comment_clear(&handle->vc);
-		handle->vorbis_p = 0;
+
+	unsigned int rate=22050,channels=2;
+	if (handle->audio_p) {
+		handle->audio_p->GetAudioInfo(rate, channels);
+        glog_i(	"Ogg logical stream %lx is Audio %d channel %ld Hz audio.\n",
+				handle->ao.serialno, channels, rate);
 	}
 
 	handle->file = file;
 	handle->tref = LUA_NOREF;
-	/*	  if (!handle->vorbis_p)
+	/*	  if (!handle->audio_p)
 	 {
 	 //We need an audio track
 	 gaudio_OggClose(gid);
@@ -392,8 +318,6 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	handle->video_granulepos = -1;
 	handle->audio_granulepos = 0; /* time position of last sample */
 
-	int rate = handle->vorbis_p ? handle->vi.rate : 22050;
-	int channels = handle->vorbis_p ? handle->vi.channels : 2;
 	handle->sampleRate = rate;
 	handle->sampleSize = channels * 2;
 	if (numChannels)
@@ -417,7 +341,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 
 long int gaudio_OggTell(g_id gid) {
 	GGOggHandle *handle = ctxmap[gid];
-	double time = handle->vorbis_p ? handle->audio_time : handle->videobuf_time;
+	double time = handle->audio_p ? handle->audio_time : handle->videobuf_time;
 
 	return (long int) (time * handle->sampleRate);
 }
@@ -457,23 +381,24 @@ int gaudio_OggSeek(g_id gid, long int offset, int whence) {
 		}
 	}
 
-	if (handle->vorbis_p)
+	if (handle->audio_p)
 	{
-		vorbis_synthesis_restart(&handle->vd);
+		handle->audio_p->Restart();
+	    ogg_stream_reset_serialno(&handle->ao,handle->ao.serialno);
+	}
+	if (handle->video_p) {
+		handle->video_p->Restart();
 	    ogg_stream_reset_serialno(&handle->vo,handle->vo.serialno);
 	}
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-	if (handle->theora_p)
-	    ogg_stream_reset_serialno(&handle->to,handle->to.serialno);
-#endif
 	return cgp;
 }
 
 void gaudio_OggFormat(g_id gid, int *csr, int *chn) {
 	GGOggHandle *handle = ctxmap[gid];
-
-	*csr = handle->vi.rate;
-	*chn = handle->vi.channels;
+	unsigned int rate,channels;
+	handle->audio_p->GetAudioInfo(rate, channels);
+	*csr = rate;
+	*chn = channels;
 }
 
 size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
@@ -499,94 +424,60 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 		/* we want a video and audio frame ready to go at all times.  If
 		 we have to buffer incoming, buffer the compressed data (ie, let
 		 ogg do the buffering) */
-		while (handle->vorbis_p && !audiobuf_ready) {
+		while (handle->audio_p && !audiobuf_ready) {
 			int ret;
-			float **pcm;
 
 			/* if there's pending, decoded audio, grab it */
-			if ((ret = vorbis_synthesis_pcmout(&handle->vd, &pcm)) > 0) {
-				int count = audiobuf_fill / 2;
-				int maxsamples = (audiofd_fragsize - audiobuf_fill) / 2
-						/ handle->vi.channels;
-				for (i = 0; i < ret && i < maxsamples; i++)
-					for (j = 0; j < handle->vi.channels; j++) {
-						int val = rint(pcm[j][i] * 32767.f);
-						if (val > 32767)
-							val = 32767;
-						if (val < -32768)
-							val = -32768;
-						audiobuf[count++] = val;
-					}
-				vorbis_synthesis_read(&handle->vd, i);
-				audiobuf_fill += i * handle->vi.channels * 2;
+			int maxsamples = (audiofd_fragsize - audiobuf_fill) / 2;
+			ogg_int64_t gpos=0;
+			if ((ret = handle->audio_p->GetAudio(audiobuf+(audiobuf_fill/2), maxsamples,gpos)) > 0) {
+				audiobuf_fill += ret * 2;
 				if (audiobuf_fill == audiofd_fragsize)
 					audiobuf_ready = 1;
-				if (handle->vd.granulepos >= 0)
-					handle->audio_granulepos = handle->vd.granulepos - ret + i;
+				if (gpos >= 0)
+                    handle->audio_granulepos = gpos;
 				else
 					handle->audio_granulepos += i;
-				handle->audio_time = vorbis_granule_time(&handle->vd,
-						handle->audio_granulepos);
+				handle->audio_time = handle->audio_p->GranuleTime(handle->audio_granulepos);
 			} else {
 
 				/* no pending audio; is there a pending packet to decode? */
-				if (ogg_stream_packetout(&handle->vo, &handle->op) > 0) {
-					if (vorbis_synthesis(&handle->vb, &handle->op) == 0) /* test for success! */
-						vorbis_synthesis_blockin(&handle->vd, &handle->vb);
+				if (ogg_stream_packetout(&handle->ao, &handle->op) > 0) {
+					handle->audio_p->PacketIn(&handle->op);
 				} else
 					/* we need more data; break out to suck in another page */
 					break;
 			}
 		}
 
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-		while (handle->theora_p && !handle->videobuf_ready) {
+		while (handle->video_p && !handle->videobuf_ready) {
 			/* theora is one in, one out... */
-			if (ogg_stream_packetout(&handle->to, &handle->op) > 0) {
+			if (ogg_stream_packetout(&handle->vo, &handle->op) > 0) {
+				if (handle->video_p->PacketIn(&handle->op)) {
+					if (handle->video_p->HasVideoFrame(handle->video_granulepos)) {
+						handle->videobuf_time = handle->video_p->GranuleTime(handle->video_granulepos);
 
-				if (handle->pp_inc) {
-					handle->pp_level += handle->pp_inc;
-					th_decode_ctl(handle->td, TH_DECCTL_SET_PPLEVEL,
-							&handle->pp_level, sizeof(handle->pp_level));
-					handle->pp_inc = 0;
-				}
-				/*HACK: This should be set after a seek or a gap, but we might not have
-				 a granulepos for the first packet (we only have them for the last
-				 packet on a page), so we just set it as often as we get it.
-				 To do this right, we should back-track from the last packet on the
-				 page and compute the correct granulepos for the first packet after
-				 a seek or a gap.*/
-				if (handle->op.granulepos >= 0) {
-					th_decode_ctl(handle->td, TH_DECCTL_SET_GRANPOS,
-							&handle->op.granulepos,
-							sizeof(handle->op.granulepos));
-				}
-				if (th_decode_packetin(handle->td, &handle->op,
-						&handle->video_granulepos) == 0) {
-					handle->videobuf_time = th_granule_time(handle->td,
-							handle->video_granulepos);
+						/* is it already too old to be useful?  This is only actually
+						 useful cosmetically after a SIGSTOP.  Note that we have to
+						 decode the frame even if we don't show it (for now) due to
+						 keyframing.  Soon enough libtheora will be able to deal
+						 with non-keyframe seeks.  */
 
-					/* is it already too old to be useful?  This is only actually
-					 useful cosmetically after a SIGSTOP.  Note that we have to
-					 decode the frame even if we don't show it (for now) due to
-					 keyframing.  Soon enough libtheora will be able to deal
-					 with non-keyframe seeks.  */
-
-					if ((handle->videobuf_time
-							>= (g_iclock() - (handle->playstart)))
-							|| (!handle->playstart))
-						handle->videobuf_ready = 1;
-					else {
-						//If we are too slow, reduce the pp level.
-						//handle->pp_inc = handle->pp_level > 0 ? -1 : 0;
-						//dropped++;
+						if ((handle->videobuf_time
+								>= (g_iclock() - (handle->playstart)))
+								|| (!handle->playstart))
+							handle->videobuf_ready = 1;
+						else {
+							//If we are too slow, reduce the pp level.
+							//handle->pp_inc = handle->pp_level > 0 ? -1 : 0;
+							//dropped++;
+						}
 					}
 				}
-
 			} else
 				break;
 		}
-#endif
+
     /*	if (!handle->videobuf_ready && !audiobuf_ready && g_feof(handle->file))
             break;*/
 
@@ -601,8 +492,8 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 
 		/* are we at or past time for this video frame? */
 
-		if (handle->stateflag && (audiobuf_ready || !handle->vorbis_p)
-				&& (handle->videobuf_ready || !handle->theora_p)) {
+		if (handle->stateflag && (audiobuf_ready || !handle->audio_p)
+				&& (handle->videobuf_ready || !handle->video_p)) {
 			/* we have an audio frame ready (which means the audio buffer is
 			 full), it's not time to play video, so wait until one of the
 			 audio buffer is ready or it's near time to play video */
@@ -621,7 +512,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 				n=audiofd+1;
 			}
 
-			if(theora_p) {
+			if(video_p) {
 				double tdiff;
 				long milliseconds;
 				tdiff=videobuf_time-get_time();
@@ -646,15 +537,15 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 			}
 #endif
 		}
-		if ((audiobuf_ready || (!handle->vorbis_p))
-				&& (handle->videobuf_ready || (!handle->theora_p)))
+		if ((audiobuf_ready || (!handle->audio_p))
+				&& (handle->videobuf_ready || (!handle->video_p)))
 			break;
 	}
 
 	handle->stateflag = 1;
 	if (!handle->playstart)
 		handle->playstart = g_iclock();
-    //glog_i("Audio fill:%d avl:%d rdy:%d q:%d",audiobuf_fill,handle->vorbis_p,audiobuf_ready,queued);
+    //glog_i("Audio fill:%d avl:%d rdy:%d q:%d",audiobuf_fill,handle->audio_p,audiobuf_ready,queued);
 	return audiobuf_fill;
 }
 
@@ -668,27 +559,19 @@ void gaudio_OggClose(g_id gid) {
 		handle->tref = LUA_NOREF;
 	}
 
-	if (handle->vorbis_p) {
+	if (handle->audio_p) {
+		ogg_stream_clear(&handle->ao);
+		delete handle->audio_p;
+	}
+	if (handle->video_p) {
 		ogg_stream_clear(&handle->vo);
-		vorbis_block_clear(&handle->vb);
-		vorbis_dsp_clear(&handle->vd);
-		vorbis_comment_clear(&handle->vc);
-		vorbis_info_clear(&handle->vi);
+		delete handle->video_p;
 	}
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
-	if (handle->theora_p) {
-		ogg_stream_clear(&handle->to);
-		th_decode_free(handle->td);
-		th_comment_clear(&handle->tc);
-		th_info_clear(&handle->ti);
-	}
-#endif
 	ogg_sync_clear(&handle->oy);
 	g_fclose(handle->file);
 	delete handle;
 }
 
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NT)
 //Encoder
 static std::map<g_id, GGOggEncHandle *> ctxmap2;
 g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
@@ -700,26 +583,11 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	handle->fos = fos;
 	handle->bytesPerSample = ((bitsPerSample + 7) / 8) * numChannels;
 
-	vorbis_info_init(&handle->vi);
-	int ret = vorbis_encode_init_vbr(&handle->vi, numChannels, sampleRate,
-			quality);
-
-	/* do not continue if setup failed; this can happen if we ask for a
-	 mode that libVorbis does not support (eg, too low a bitrate, etc,
-	 will return 'OV_EIMPL') */
-
-	if (ret) {
+	handle->audio_p=build_oggenc("vorbis");
+    if (!handle->audio_p) {
 		delete handle;
 		return (g_id) 0;
 	}
-
-	/* add a comment */
-	vorbis_comment_init(&handle->vc);
-	vorbis_comment_add_tag(&handle->vc, "ENCODER", "Gideros");
-
-	/* set up the analysis state and auxiliary encoding storage */
-	vorbis_analysis_init(&handle->vd, &handle->vi);
-	vorbis_block_init(&handle->vd, &handle->vb);
 
 	/* set up our packet->stream encoder */
 	/* pick a random serial number; that way we can more likely build
@@ -727,26 +595,17 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	srand(time(NULL));
 	ogg_stream_init(&handle->os, rand());
 
-	/* Vorbis streams begin with three headers; the initial header (with
-	 most of the codec setup parameters) which is mandated by the Ogg
-	 bitstream spec.  The second header holds any comment fields.  The
-	 third header holds the bitstream codebook.  We merely need to
-	 make the headers, then pass them to libvorbis one at a time;
-	 libvorbis handles the additional Ogg bitstream constraints */
+	if (!(handle->audio_p->InitAudio(numChannels,sampleRate,quality,&handle->os))) {
+		/* do not continue if setup failed; this can happen if we ask for a
+		 mode that libVorbis does not support (eg, too low a bitrate, etc,
+		 will return 'OV_EIMPL') */
+		ogg_stream_clear(&handle->os);
+		delete handle->audio_p;
+		delete handle;
+		return (g_id) 0;
+	}
 
-	{
-		ogg_packet header;
-		ogg_packet header_comm;
-		ogg_packet header_code;
-
-		vorbis_analysis_headerout(&handle->vd, &handle->vc, &header,
-				&header_comm, &header_code);
-		ogg_stream_packetin(&handle->os, &header); /* automatically placed in its own
-		 page */
-		ogg_stream_packetin(&handle->os, &header_comm);
-		ogg_stream_packetin(&handle->os, &header_code);
-
-		/* This ensures the actual
+	/* This ensures the actual
 		 * audio data will start on a new page, as per spec
 		 */
 		while (true) {
@@ -757,8 +616,6 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 			fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
 		}
 
-	}
-
 	g_id gid= g_NextId();
 	ctxmap2[gid]=handle;
 
@@ -767,52 +624,13 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 
 size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
 	GGOggEncHandle *handle = ctxmap2[id];
+	handle->audio_p->WriteAudio(data,size);
 	int eos = 0;
-	long i;
-	if (size == 0) {
-		/* end of file.  this can be done implicitly in the mainline,
-		 but it's easier to see here in non-clever fashion.
-		 Tell the library we're at end of stream so that it can handle
-		 the last frame and mark end of stream in the output properly */
-		vorbis_analysis_wrote(&handle->vd, 0);
-
-	} else {
-		/* data to encode */
-		signed char *readbuffer = (signed char *) data;
-
-		/* expose the buffer to submit data */
-		float **buffer = vorbis_analysis_buffer(&handle->vd,
-				size / handle->bytesPerSample);
-
-		/* uninterleave samples */
-		if (handle->bytesPerSample == 4) {
-			for (i = 0; i < size / 4; i++) {
-				buffer[0][i] = ((readbuffer[i * 4 + 1] << 8)
-						| (0x00ff & (int) readbuffer[i * 4])) / 32768.f;
-				buffer[1][i] = ((readbuffer[i * 4 + 3] << 8)
-						| (0x00ff & (int) readbuffer[i * 4 + 2])) / 32768.f;
-			}
-		} else {
-			for (i = 0; i < size / 2; i++) {
-				buffer[0][i] = ((readbuffer[i * 2 + 1] << 8)
-						| (0x00ff & (int) readbuffer[i * 2])) / 32768.f;
-			}
-		}
-
-		/* tell the library how much we actually submitted */
-		vorbis_analysis_wrote(&handle->vd, i);
-	}
 
 	/* vorbis does some data preanalysis, then divvies up blocks for
 	 more involved (potentially parallel) processing.  Get a single
 	 block for encoding now */
-	while (vorbis_analysis_blockout(&handle->vd, &handle->vb) == 1) {
-
-		/* analysis, assume we want to use bitrate management */
-		vorbis_analysis(&handle->vb, NULL);
-		vorbis_bitrate_addblock(&handle->vb);
-
-		while (vorbis_bitrate_flushpacket(&handle->vd, &handle->op)) {
+	while (handle->audio_p->PacketOut(&handle->op)) {
 
 			/* weld the packet into the bitstream */
 			ogg_stream_packetin(&handle->os, &handle->op);
@@ -832,7 +650,6 @@ size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
 				if (ogg_page_eos(&handle->og))
 					eos = 1;
 			}
-		}
 	}
 	return size;
 }
@@ -845,19 +662,14 @@ void gsoundencoder_OggClose(g_id id) {
 	ctxmap2.erase(id);
 
 	ogg_stream_clear(&handle->os);
-	vorbis_block_clear(&handle->vb);
-	vorbis_dsp_clear(&handle->vd);
-	vorbis_comment_clear(&handle->vc);
-	vorbis_info_clear(&handle->vi);
+	if (handle->audio_p)
+		delete handle->audio_p;
 	fclose(handle->fos);
 	delete handle;
 }
 GGAudioEncoder audioEncOgg(gsoundencoder_OggCreate, gsoundencoder_OggClose,
 		gsoundencoder_OggWrite);
-#endif
 }
-
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 
 class Renderer: public Ticker {
 	void tick();
@@ -867,32 +679,32 @@ class Renderer: public Ticker {
 void Renderer::renderContext(GGOggHandle *handle) {
 	if (handle->stateflag && handle->videobuf_ready
 			&& handle->videobuf_time <= (g_iclock() - handle->playstart)) {
-		th_ycbcr_buffer yuv;
-		th_decode_ycbcr_out(handle->td, yuv);
+		OggDec::VideoFrame vf;
+		handle->video_p->GetVideoFrame(vf);
 		ScreenManager *sm = gtexture_get_screenmanager();
 		if (sm)
 			sm->screenDestroyed();
 		if (handle->yplane) {
 			gtexture_getInternalTexture(handle->yplane->data->gid)->updateData(
 					ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
-					yuv[0].stride, yuv[0].height, yuv[0].data,
+					vf.y.stride, vf.y.height, vf.y.data,
 					ShaderTexture::WRAP_CLAMP, ShaderTexture::FILT_LINEAR);
 		}
 		if (handle->uplane)
 			gtexture_getInternalTexture(handle->uplane->data->gid)->updateData(
 					ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
-					yuv[1].stride, yuv[1].height, yuv[1].data,
+					vf.u.stride, vf.u.height, vf.u.data,
 					ShaderTexture::WRAP_CLAMP, ShaderTexture::FILT_LINEAR);
 		if (handle->vplane)
 			gtexture_getInternalTexture(handle->vplane->data->gid)->updateData(
 					ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
-					yuv[2].stride, yuv[2].height, yuv[2].data,
+					vf.v.stride, vf.v.height, vf.v.data,
 					ShaderTexture::WRAP_CLAMP, ShaderTexture::FILT_LINEAR);
-		bool changed = (handle->planeWidth != yuv[0].stride)
-				|| (handle->planeHeight != yuv[0].height);
+		bool changed = (handle->planeWidth != vf.y.stride)
+				|| (handle->planeHeight != vf.y.height);
 		handle->videobuf_ready = 0;
-		handle->planeWidth = yuv[0].stride;
-		handle->planeHeight = yuv[0].height;
+		handle->planeWidth = vf.y.stride;
+		handle->planeHeight = vf.y.height;
 		if (changed && (handle->tref != LUA_NOREF)) {
 			lua_State *L = ::L;
 			lua_getref(L, handle->tref);
@@ -918,22 +730,21 @@ static Renderer renderer;
 static int getVideoInfo(lua_State* L) {
 	g_id gid = luaL_checkinteger(L, 1);
 	GGOggHandle *hnd = ctxmap[gid];
-	if ((!hnd) || (!hnd->theora_p))
+	if ((!hnd) || (!hnd->video_p))
 		lua_pushnil(L);
 	else {
 		lua_newtable(L);
-		lua_pushinteger(L, hnd->ti.frame_width);
+		lua_pushinteger(L, hnd->frame_width);
 		lua_setfield(L, -2, "width");
-		lua_pushinteger(L, hnd->ti.frame_height);
+		lua_pushinteger(L, hnd->frame_height);
 		lua_setfield(L, -2, "height");
 		lua_pushinteger(L, hnd->planeWidth);
 		lua_setfield(L, -2, "surfaceWidth");
 		lua_pushinteger(L, hnd->planeHeight);
 		lua_setfield(L, -2, "surfaceHeight");
-		lua_pushnumber(L,
-				((double) (hnd->ti.fps_numerator)) / hnd->ti.fps_denominator);
+		lua_pushnumber(L, hnd->frame_rate);
 		lua_setfield(L, -2, "fps");
-		lua_pushinteger(L, hnd->ti.pixel_fmt);
+		lua_pushinteger(L, hnd->frame_format);
 		lua_setfield(L, -2, "format");
 	}
 	return 1;
@@ -942,7 +753,7 @@ static int getVideoInfo(lua_State* L) {
 static int setVideoSurface(lua_State* L) {
 	g_id gid = luaL_checkinteger(L, 1);
 	GGOggHandle *hnd = ctxmap[gid];
-	if ((!hnd) || (!hnd->theora_p)) {
+	if ((!hnd) || (!hnd->video_p)) {
 		lua_pushstring(L, "Video stream Id invalid");
 		lua_error(L);
 	} else {
@@ -988,15 +799,21 @@ static int loader(lua_State* L) {
 
 	return 1;
 }
-#endif
 
 GGAudioLoader audioOgg(gaudio_OggOpen, gaudio_OggClose, gaudio_OggRead,
 		gaudio_OggSeek, gaudio_OggTell);
 
+#ifndef PART_Core
+extern const OggDecType theora_cinfo;
+extern const OggDecType opus_cinfo;
+extern const OggEncType opus_einfo;
+extern const OggDecType vorbis_cinfo;
+extern const OggEncType vorbis_einfo;
+#endif
+
 static void g_initializePlugin(lua_State *L) {
 	::L = L;
 
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 
@@ -1009,29 +826,39 @@ static void g_initializePlugin(lua_State *L) {
 	LuaApplication* application = static_cast<LuaApplication *>(luaL_getdata(L));
 	application->addTicker(&renderer);
 	lua_pop(L, 1);
-#endif
 
 	audioOgg.format = gaudio_OggFormat;
 	gaudio_registerType("ogg", audioOgg);
 	gaudio_registerType("oga", audioOgg);
 	gaudio_registerType("ogv", audioOgg);
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NT)
 	gaudio_registerEncoderType("ogg", audioEncOgg);
 	gaudio_registerEncoderType("oga", audioEncOgg);
+
+#ifndef PART_Core
+    register_oggdec("vorbis",vorbis_cinfo);
+    register_oggdec("opus",opus_cinfo);
+    register_oggdec("theora",theora_cinfo);
+    register_oggenc("vorbis",vorbis_einfo);
+    //register_oggenc("opus",opus_cinfo);
 #endif
 }
 
 static void g_deinitializePlugin(lua_State *L) {
-#if defined(FLAVOUR_F) || defined(FLAVOUR_NE)
 	lua_getglobal(L, "application");
 	LuaApplication* application = static_cast<LuaApplication *>(luaL_getdata(L));
 	application->removeTicker(&renderer);
 	lua_pop(L, 1);
-#endif
 
 	gaudio_unregisterType("ogg");
 	gaudio_unregisterType("oga");
 	gaudio_unregisterType("ogv");
+#ifndef PART_Core
+    unregister_oggdec("vorbis");
+    unregister_oggdec("opus");
+    unregister_oggdec("theora");
+    unregister_oggenc("vorbis");
+    //unregister_oggenc("opus");
+#endif
 }
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)

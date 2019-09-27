@@ -2,7 +2,9 @@
  name="Ogg"
  description="Add support for Ogg Audio and Theora video">
 <property name="oggNT" type="boolean" title="Disable Theora support"/>
-<property name="oggNE" type="boolean" title="Disable encoding/recording support"/>
+<property name="oggNO" type="boolean" title="Disable Opus support"/>
+<property name="oggNV" type="boolean" title="Disable Vorbis support"/>
+<property name="oggNVE" type="boolean" title="Disable Vorbis encoding"/>
    <target name="AndroidStudio,APK">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
     <template name="Activity" path="">
@@ -40,15 +42,22 @@ iOSProject.commit()
  </target>
  <target name="Html5">
  	<lua>
- 	local f
- 	if Export.isSet("plugin.oggNT") then
- 		f=(f or "").."NT"
+ 	local html=require("Tools/export_html5")
+ 	if not Export.isSet("plugin.oggNT") then
+	 	html.export("OggTheora")
  	end
- 	if Export.isSet("plugin.oggNE") then
- 		f=(f or "").."NE"
+ 	if not Export.isSet("plugin.oggNO") then
+	 	html.export("OggOpus")
  	end
- 	f=f or "F"
- 	require("Tools/export_html5").export("Ogg",f)
+ 	if not Export.isSet("plugin.oggNV") then
+ 		local f
+	 	if Export.isSet("plugin.oggNE") then
+	 		f=(f or "").."NE"
+	 	end
+	 	f=f or "F"
+	 	html.export("OggVorbis",f)
+	end
+ 	html.export("OggCore")
  	</lua>
  </target>
  <target name="Win32">

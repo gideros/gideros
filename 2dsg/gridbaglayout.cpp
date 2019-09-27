@@ -642,8 +642,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 						else
 							nweight+=info.weightX[i];
 					}
-					if (neg>=0) break;
-					neg/=nweight;
+                    if ((neg>=0)||(nweight<=0)) break;
+                    neg/=nweight;
                     for (size_t i=0;i<info.width;i++) {
 						if (distribute[i]<0)
 							distribute[i]=0;
@@ -698,7 +698,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 						else
 							nweight+=info.weightY[i];
 					}
-					if (neg>=0) break;
+                    if ((neg>=0)||(nweight<=0)) break;
 					neg/=nweight;
                     for (size_t i=0;i<info.height;i++) {
 						if (distribute[i]<0)

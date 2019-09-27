@@ -8,7 +8,7 @@ endif
 
 OBJS=$(addprefix $(BUILD)$(FLAVOUR)/,$(addsuffix .em.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
-CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
+CFLGS+=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	$(OPTS) -DFLAVOUR_$(FLAVOUR) $(addprefix -DFLAVOUR=,$(FLAVOUR))
 CFLGS+=-fno-exceptions -fno-rtti #WASM side modules doesn't seem to support C++ exceptions, and RTTI doesn't work well with DCE
