@@ -380,6 +380,9 @@ void Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 
 	children_.insert(children_.begin() + index, sprite);
 	sprite->ref();
+    if (layoutState&&sprite->layoutConstraints)
+        layoutState->dirty=true;
+
 
 	sprite->unref();	// unguard
 
