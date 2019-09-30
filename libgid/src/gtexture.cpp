@@ -70,6 +70,8 @@ static int pixelSize(int format, int type)
     case GTEXTURE_UNSIGNED_SHORT_4_4_4_4:
     case GTEXTURE_UNSIGNED_SHORT_5_5_5_1:
         return 2;
+    case GTEXTURE_FLOAT:
+        return 4;
     case GTEXTURE_UNSIGNED_BYTE:
         switch (format)
         {
