@@ -57,7 +57,8 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
 		case FMT_DEPTH:
 			switch (packing)
 			{
-				case PK_FLOAT: tbsd.SysMemPitch = width*4; tdesc.Format = DXGI_FORMAT_D32_FLOAT; break;
+			case PK_FLOAT: tbsd.SysMemPitch = width*4; tdesc.Format = DXGI_FORMAT_D32_FLOAT; break;
+			case PK_USHORT: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_D16_UNORM; break;
 			}
 			break;
     }

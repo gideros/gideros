@@ -69,6 +69,7 @@ static int pixelSize(int format, int type)
     case GTEXTURE_UNSIGNED_SHORT_5_6_5:
     case GTEXTURE_UNSIGNED_SHORT_4_4_4_4:
     case GTEXTURE_UNSIGNED_SHORT_5_5_5_1:
+    case GTEXTURE_UNSIGNED_SHORT:
         return 2;
     case GTEXTURE_FLOAT:
         return 4;
@@ -463,7 +464,7 @@ public:
                             int wrap, int filter, bool depth)
     {
         int format = depth?GTEXTURE_DEPTH:GTEXTURE_RGBA;
-        int type = depth?GTEXTURE_FLOAT:GTEXTURE_UNSIGNED_BYTE;
+        int type = depth?GTEXTURE_UNSIGNED_SHORT:GTEXTURE_UNSIGNED_BYTE;
 
         RenderTargetElement *element = new RenderTargetElement;
 
@@ -662,6 +663,9 @@ private:
             break;
         case GTEXTURE_FLOAT:
             type = ShaderTexture::PK_FLOAT;
+            break;
+        case GTEXTURE_UNSIGNED_SHORT:
+            type = ShaderTexture::PK_USHORT;
             break;
         }
         ShaderTexture::Wrap wrap=ShaderTexture::WRAP_CLAMP;
