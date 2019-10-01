@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reactphysics3d", "reactphysics3d", "{680DA214-BF79-4A3A-BD10-8B149F6DB878}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reactphysics3d.Shared", "reactphysics3d\reactphysics3d.Shared\reactphysics3d.Shared.vcxitems", "{AFC41056-4B92-4F74-95B1-99A465A57B9E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reactphysics3d.Windows", "reactphysics3d\reactphysics3d.Windows\reactphysics3d.Windows.vcxproj", "{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		reactphysics3d\reactphysics3d.Shared\reactphysics3d.Shared.vcxitems*{70fa742b-1a0e-46e6-a9e0-bab86b01fde9}*SharedItemsImports = 4
+		reactphysics3d\reactphysics3d.Shared\reactphysics3d.Shared.vcxitems*{afc41056-4b92-4f74-95b1-99a465a57b9e}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Debug|ARM.ActiveCfg = Debug|ARM
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Debug|ARM.Build.0 = Debug|ARM
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Debug|x64.ActiveCfg = Debug|x64
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Debug|x64.Build.0 = Debug|x64
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Debug|x86.ActiveCfg = Debug|Win32
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Debug|x86.Build.0 = Debug|Win32
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Release|ARM.ActiveCfg = Release|ARM
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Release|ARM.Build.0 = Release|ARM
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Release|x64.ActiveCfg = Release|x64
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Release|x64.Build.0 = Release|x64
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Release|x86.ActiveCfg = Release|Win32
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AFC41056-4B92-4F74-95B1-99A465A57B9E} = {680DA214-BF79-4A3A-BD10-8B149F6DB878}
+		{70FA742B-1A0E-46E6-A9E0-BAB86B01FDE9} = {680DA214-BF79-4A3A-BD10-8B149F6DB878}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8CA3AA8A-A4D3-460D-A68B-80CA2CAEFDC1}
+	EndGlobalSection
+EndGlobal

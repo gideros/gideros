@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{afc41056-4b92-4f74-95b1-99a465a57b9e}</ItemsProjectGuid>
+    <ItemsRootNamespace>reactphysics3d</ItemsRootNamespace>
+    <ItemsProjectName>reactphysics3d.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\Body.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\CollisionBody.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\RigidBody.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\broadphase\BroadPhaseAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\broadphase\DynamicAABBTree.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\CollisionCallback.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\CollisionDetection.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ContactManifold.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ContactManifoldInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ContactManifoldSet.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ContactPointInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\HalfEdgeStructure.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\MiddlePhaseTriangleCallback.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\NarrowPhaseInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\CapsuleVsCapsuleAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\CapsuleVsConvexPolyhedronAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\CollisionDispatch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\ConvexPolyhedronVsConvexPolyhedronAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\DefaultCollisionDispatch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\GJK\GJKAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\GJK\VoronoiSimplex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\NarrowPhaseAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SAT\SATAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SphereVsCapsuleAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SphereVsConvexPolyhedronAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SphereVsSphereAlgorithm.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\OverlapCallback.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\PolygonVertexArray.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\PolyhedronMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ProxyShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\RaycastInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\AABB.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\BoxShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\CapsuleShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\CollisionShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConcaveMeshShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConcaveShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConvexMeshShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConvexPolyhedronShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConvexShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\HeightFieldShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\SphereShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\TriangleShape.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\TriangleMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\TriangleVertexArray.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\configuration.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\BallAndSocketJoint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\ContactPoint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\FixedJoint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\HingeJoint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\Joint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\SliderJoint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\containers\containers_common.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\containers\LinkedList.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\containers\List.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\containers\Map.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\containers\Pair.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\containers\Set.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\containers\Stack.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\decimal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\CollisionWorld.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\ConstraintSolver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\ContactSolver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\DynamicsWorld.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\EventListener.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\Island.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\Material.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\OverlappingPair.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\Timer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\mathematics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\mathematics_functions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Matrix2x2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Matrix3x3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Quaternion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Ray.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Transform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Vector2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Vector3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\DefaultAllocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\DefaultPoolAllocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\DefaultSingleFrameAllocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\MemoryAllocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\MemoryManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\reactphysics3d.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\Logger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\Profiler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding\binder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\Body.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\CollisionBody.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\RigidBody.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\broadphase\BroadPhaseAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\broadphase\DynamicAABBTree.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\CollisionCallback.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\CollisionDetection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ContactManifold.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ContactManifoldInfo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ContactManifoldSet.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\HalfEdgeStructure.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\MiddlePhaseTriangleCallback.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\NarrowPhaseInfo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\CapsuleVsCapsuleAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\CapsuleVsConvexPolyhedronAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\DefaultCollisionDispatch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\GJK\GJKAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\GJK\VoronoiSimplex.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SAT\SATAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SphereVsCapsuleAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SphereVsConvexPolyhedronAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\SphereVsSphereAlgorithm.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\PolygonVertexArray.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\PolyhedronMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ProxyShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\RaycastInfo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\AABB.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\BoxShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\CapsuleShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\CollisionShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConcaveMeshShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConcaveShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConvexMeshShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConvexPolyhedronShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\ConvexShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\HeightFieldShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\SphereShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\shapes\TriangleShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\TriangleMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\TriangleVertexArray.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\BallAndSocketJoint.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\ContactPoint.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\FixedJoint.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\HingeJoint.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\Joint.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\constraint\SliderJoint.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\CollisionWorld.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\ConstraintSolver.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\ContactSolver.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\DynamicsWorld.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\Island.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\Material.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\OverlappingPair.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\engine\Timer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\mathematics_functions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Matrix2x2.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Matrix3x3.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Quaternion.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Transform.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Vector2.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\mathematics\Vector3.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\DefaultPoolAllocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\DefaultSingleFrameAllocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\MemoryManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\Logger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\Profiler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\reactbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,62 @@
+<plugin
+ name="ReactPhysics3D"
+ description="ReactPhysics3D physics library">
+  <target name="AndroidStudio,APK">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;reactphysics3d&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;reactphysics3d&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/reactphysics3d</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a"/>
+   <mkdir>AppleTV/Plugins/reactphysics3d</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
+    <template name="Activity" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(reactphysics3d) "/>
+        </replacelist>
+    </template>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("reactphysics3d","Plugins/reactphysics3d","GroupReactphysics3d_ios","GroupPlugins_ios")
+iOSProject.addGroup("reactphysics3d","reactphysics3d","GroupReactphysics3d_atv","GroupPlugins_atv")
+iOSProject.addSources({ "Plugins/libreactphysics3d.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libreactphysics3d.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
+ <target name="Html5">
+ 	<lua>require("Tools/export_html5").export("reactphysics3d")</lua>
+ </target>
+  <target name="WinRT">
+   <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
+   <template name="binary" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-WINRT:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(reactphysics3d) "/>
+        </replacelist>
+    </template>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
+            <by><![CDATA[
+      <AdditionalDependencies>%(AdditionalDependencies);reactphysics3d.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+        </append> 
+        </replacelist>
+    </template>
+ </target>
+ <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+</plugin>
