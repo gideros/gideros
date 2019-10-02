@@ -249,6 +249,7 @@ public:
 	virtual void reset(bool reinit=false);
 	virtual const char *getVersion()=0;
 	virtual const char *getShaderLanguage()=0;
+	virtual ShaderTexture::Packing getPreferredPackingForTextureFormat(ShaderTexture::Format format);
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;

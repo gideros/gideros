@@ -9,7 +9,7 @@ JNIEnv *g_getJNIEnv();
 }
 
 static std::string strResult;
-static std::string getString(JNIEnv *env, jstring jstr)
+static const char *getString(JNIEnv *env, jstring jstr)
 {
 	const char *str = env->GetStringUTFChars(jstr, NULL);
 	strResult= str;

@@ -125,6 +125,15 @@ void ShaderEngine::setViewportProjection(const Matrix4 vp, float width, float he
 	adjustViewportProjection(oglVPProjection,width,height);
 }
 
+ShaderTexture::Packing ShaderEngine::getPreferredPackingForTextureFormat(ShaderTexture::Format format)
+{
+	switch (format) {
+	case ShaderTexture::FMT_DEPTH: return ShaderTexture::PK_USHORT;
+	default:
+		return ShaderTexture::PK_UBYTE;
+	}
+}
+
 ShaderEngine::DepthStencil ShaderEngine::pushDepthStencil()
 {
 	dsStack.push(dsCurrent);

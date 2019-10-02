@@ -18,6 +18,15 @@ const char *metalShaderEngine::getVersion() {
     return "Metal";
 }
 
+ShaderTexture::Packing metalShaderEngine::getPreferredPackingForTextureFormat(ShaderTexture::Format format)
+{
+	switch (format) {
+	case ShaderTexture::FMT_DEPTH: return ShaderTexture::PK_FLOAT;
+	default:
+		return ShaderEngine::getPreferredPackingForTextureFormat(format);
+	}
+}
+
 void metalShaderEngine::resizeFramebuffer(int width,int height)
 {
 	devWidth = width;
