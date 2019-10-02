@@ -464,6 +464,16 @@ public:
                             int wrap, int filter, bool depth)
     {
         int format = depth?GTEXTURE_DEPTH:GTEXTURE_RGBA;
+        ShaderTexture::Packing pk=engine->getPreferredPackingForTextureFormat(depth?ShaderTexture::FMT_DEPTH:ShaderTexture::FMT_RGBA);
+        int type=GTEXTURE_UNSIGNED_BYTE;
+        switch (pk) {
+        case ShaderTexture::PK_FLOAT: type=GTEXTURE_FLOAT; break;
+        case ShaderTexture::PK_USHORT: type=GTEXTURE_UNSIGNED_SHORT; break;
+        case ShaderTexture::PK_USHORT_4444: type=GTEXTURE_UNSIGNED_SHORT_4_4_4_4; break;
+        case ShaderTexture::PK_USHORT_565: type=GTEXTURE_UNSIGNED_SHORT_5_6_5; break;
+        case ShaderTexture::PK_USHORT_5551: type=GTEXTURE_UNSIGNED_SHORT_5_5_5_1; break;
+        default: type=GTEXTURE_UNSIGNED_BYTE;
+        }
 
         RenderTargetElement *element = new RenderTargetElement;
 
@@ -476,7 +486,7 @@ public:
         element->width = width;
         element->height = height;
         element->format = format;
-        element->type = GTEXTURE_AUTO_TYPE;
+        element->type = type;
         element->wrap = wrap;
         element->filter = filter;
         element->udata = NULL;
@@ -665,9 +675,6 @@ private:
             break;
         case GTEXTURE_UNSIGNED_SHORT:
             type = ShaderTexture::PK_USHORT;
-            break;
-        case GTEXTURE_AUTO_TYPE:
-            type = engine->getPreferredPackingForTextureFormat(format);
             break;
         }
         ShaderTexture::Wrap wrap=ShaderTexture::WRAP_CLAMP;

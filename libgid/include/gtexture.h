@@ -24,7 +24,6 @@ extern "C" {
 #define GTEXTURE_UNSIGNED_SHORT_5_5_5_1 3
 #define GTEXTURE_FLOAT 4
 #define GTEXTURE_UNSIGNED_SHORT 5
-#define GTEXTURE_AUTO_TYPE	10
 
 /* wrap */
 #define GTEXTURE_REPEAT 0
