@@ -105,6 +105,7 @@ void ogl2ShaderBuffer::prepareDraw()
 
 void ogl2ShaderBuffer::needDepthStencil()
 {
+	if (forDepth_) return;
 	GLCALL_INIT;
 	int depthfmt = 0;
 #ifdef __EMSCRIPTEN__
@@ -132,8 +133,7 @@ void ogl2ShaderBuffer::needDepthStencil()
 #endif
 		GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #else
-		if (!forDepth_)
-			GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+		GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 		GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
 	}
