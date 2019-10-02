@@ -317,6 +317,13 @@
 				/>
 </category>
 
+<category name="3D Physics">
+	<example 	name="3D Collisions"
+				description="3D Collisions detection"
+				path="Physics3D/3D Collisions/3D Collisions.gproj"
+				image = "collision detection.png"
+				/>
+</category>
 
 <category name="Scheduling">
 	<example 	name="Timers"

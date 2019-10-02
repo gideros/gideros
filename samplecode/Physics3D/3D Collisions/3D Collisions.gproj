@@ -1,0 +1,11 @@
+<project>
+ <properties html5_mem="256" vsync="0" html5_fbinstant="0" android_template="0" architecture="0" retinaDisplay="3" winrt_package="com.yourdomain.yourapp" app_icon="" osx_category="5" mouseTouchOrder="0" logicalHeight="480" scaleMode="3" windowHeight="0" build_number="1" osx_org="GiderosMobile" html5_crash="" winrt_org="GiderosMobile" splash_v_image="" osx_installerId="" version="1.0" win_domain="giderosmobile.com" encryptAssets="0" windowWidth="0" ios_bundle="com.yourdomain." iosDevice="0" exportMode="0" html5_symbols="0" version_code="1" osx_domain="giderosmobile.com" logicalWidth="320" orientation="0" html5_fbload="100" backgroundColor="#ffffff" splash_h_image="" app_name="" osx_signingId="" touchToMouse="1" autorotation="0" fps="60" win_org="GiderosMobile" html5_pack="0" osx_bundle="com.yourdomain." encryptCode="0" disableSplash="0" packageName="com.yourdomain.yourapp" html5_wasm="0" splashScaleMode="0" html5_host="" tv_icon="" mouseToTouch="1">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file name="assets/box.png"/>
+ <file name="assets/grass.png"/>
+ <file name="assets/lighting.lua"/>
+ <file name="assets/main.lua"/>
+</project>
