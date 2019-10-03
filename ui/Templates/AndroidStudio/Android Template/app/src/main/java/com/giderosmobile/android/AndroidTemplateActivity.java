@@ -58,8 +58,8 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 
 	private boolean mHasFocus = false;
 	private boolean mPlaying = false;
-    
-    private static FrameLayout splashLayout;
+	
+	private static FrameLayout splashLayout;
 	private static ImageView splash;
 	private static FrameLayout layout;
 	private static int hasSplash = -1;
@@ -69,13 +69,13 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	{
 		super.onCreate(savedInstanceState);
 				
-        mGLView = new GiderosGLSurfaceView(this);
-        GiderosSettings.mainView=mGLView;
+		mGLView = new GiderosGLSurfaceView(this);
+		GiderosSettings.mainView=mGLView;
 		setContentView(mGLView);
 		mGLView.setOnTouchListener(this);
-        
-        boolean showSplash = true;
-        
+		
+		boolean showSplash = true;
+		
 		if(showSplash && getResources().getIdentifier("splash", "drawable", getPackageName()) != 0){
 			layout = (FrameLayout)getWindow().getDecorView();
 			hasSplash = 11;
@@ -83,9 +83,9 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			splashLayout = new FrameLayout(this);
 			//parameters for layout
 			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-		                FrameLayout.LayoutParams.MATCH_PARENT ,
-		                FrameLayout.LayoutParams.MATCH_PARENT,
-		                Gravity.CENTER);
+						FrameLayout.LayoutParams.MATCH_PARENT ,
+						FrameLayout.LayoutParams.MATCH_PARENT,
+						Gravity.CENTER);
 			splashLayout.setLayoutParams(params);
 			//set background color
 			splashLayout.setBackgroundColor(Color.parseColor("#ffffff"));
@@ -94,15 +94,15 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			splash = new ImageView(this);
 			//image view parameters
 			FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(
-		                 FrameLayout.LayoutParams.WRAP_CONTENT,
-		                 FrameLayout.LayoutParams.WRAP_CONTENT,
-		                 Gravity.CENTER);
+						 FrameLayout.LayoutParams.WRAP_CONTENT,
+						 FrameLayout.LayoutParams.WRAP_CONTENT,
+						 Gravity.CENTER);
 			splash.setLayoutParams(params2);
 		 
 			//scale your image
 			splash.setScaleType(ImageView.ScaleType.CENTER );
 		 
-			//load image source     
+			//load image source	 
 			splash.setBackgroundResource(R.drawable.splash);
 		
 			//add image view to layout
@@ -114,31 +114,31 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		WeakActivityHolder.set(this);
 
 		GiderosApplication.onCreate(externalClasses,mGLView);
-        processIntent(getIntent());
+		processIntent(getIntent());
 	}
 
 	int[] id = new int[256];
 	int[] x = new int[256];
 	int[] y = new int[256];
-    float[] pressure = new float[256];
+	float[] pressure = new float[256];
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        processIntent(intent);
-    }
-    
-    protected void processIntent(Intent intent)
-    {
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		processIntent(intent);
+	}
+	
+	protected void processIntent(Intent intent)
+	{
 		//Line below is a marker for plugin insertion scripts. Do not remove or change
 		//GIDEROS-PROCESS-INTENT//
 
-    	if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-    	    Uri uri = intent.getData();
-    		GiderosApplication.getInstance().onHandleOpenUrl(uri.toString());
-    	}
-    }
-    
+		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+			Uri uri = intent.getData();
+			GiderosApplication.getInstance().onHandleOpenUrl(uri.toString());
+		}
+	}
+	
 	@Override
 	public void onStart()
 	{
@@ -204,10 +204,15 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	}
 	 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		GiderosApplication.getInstance().onActivityResult(requestCode, resultCode, data);
+	}
+	
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		GiderosApplication.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}
 	
 	@TargetApi(Build.VERSION_CODES.KITKAT)
@@ -217,15 +222,15 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		super.onWindowFocusChanged(hasFocus);
 		
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-	        if (hasFocus) {
-	        	getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-	        			| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-	        			| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-	        			| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-	        			| View.SYSTEM_UI_FLAG_FULLSCREEN
-	        			| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-	        }
-	    }
+			if (hasFocus) {
+				getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+						| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+						| View.SYSTEM_UI_FLAG_FULLSCREEN
+						| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+			}
+		}
 		
 		mHasFocus = hasFocus;
 
@@ -249,7 +254,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			id[i] = event.getPointerId(i);
 			x[i] = (int) event.getX(i);
 			y[i] = (int) event.getY(i);
-            pressure[i] = (float) event.getPressure(i);
+			pressure[i] = (float) event.getPressure(i);
 		}
 
 		int actionMasked = event.getActionMasked();
@@ -274,69 +279,66 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	}
 
 	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        //GIDEROS-ACTIVTIY-ONKEYDOWN//
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		//GIDEROS-ACTIVTIY-ONKEYDOWN//
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null && app.onKeyDown(keyCode, event) == true)
 			return true;
 		
 		return super.onKeyDown(keyCode, event);
-    }
+	}
 
 	
 	@Override
-    public boolean onKeyUp(int keyCode, KeyEvent event)
-    {
-        //GIDEROS-ACTIVTIY-ONKEYUP//
+	public boolean onKeyUp(int keyCode, KeyEvent event)
+	{
+		//GIDEROS-ACTIVTIY-ONKEYUP//
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null && app.onKeyUp(keyCode, event) == true)
 			return true;
 		
 		return super.onKeyUp(keyCode, event);
-    }
+	}
 	
 	
 	@Override
-    public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+	public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null && app.onKeyMultiple(keyCode, repeatCount, event) == true)
 			return true;
 		
 		return super.onKeyMultiple(keyCode, repeatCount, event);
-    }	
+	}	
 
-	public void onRequestPermissionsResult(int requestCode,
-			String permissions[], int[] grantResults) {
+	//GIDEROS-ACTIVTIY-METHODS//
+	
+	static public void dismisSplash(){
+		if(hasSplash == -1){
+			return;
+		}
+		else if(hasSplash == 0){
+			hasSplash = -1;
+			new Handler(Looper.getMainLooper()).post(new Runnable() {
+				@Override
+				public void run() {
+					splashLayout.setVisibility(View.GONE);
+					splash.setBackgroundResource(0);
+					//remove animation view from main layout
+					layout.removeView(splashLayout);
+					splashLayout = null;
+					splash = null;
+					layout = null;
+				}
+			});
+		}
+		else if(hasSplash > 0){
+			hasSplash--;
+		}
 	}
-    
-    //GIDEROS-ACTIVTIY-METHODS//
-    
-    static public void dismisSplash(){
-        if(hasSplash == -1){
-            return;
-        }
-    	else if(hasSplash == 0){
-    		hasSplash = -1;
-    		new Handler(Looper.getMainLooper()).post(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	splashLayout.setVisibility(View.GONE);
-    		    	splash.setBackgroundResource(0);
-    		    	//remove animation view from main layout
-    		    	layout.removeView(splashLayout);
-    		    	splashLayout = null;
-    		    	splash = null;
-    		    	layout = null;
-    		    }
-    		});
-    	}
-    	else if(hasSplash > 0){
-    		hasSplash--;
-    	}
-    }
 }
 
+// GiderosGLSurfaceView Class
 class GiderosGLSurfaceView extends GLSurfaceView
 {
 	public GiderosGLSurfaceView(Context context)
@@ -344,8 +346,8 @@ class GiderosGLSurfaceView extends GLSurfaceView
 		super(context);
 		
 		if (GiderosSettings.translucentCanvas) {
-	        getHolder().setFormat(PixelFormat.TRANSLUCENT);
-	        setZOrderOnTop(true);
+			getHolder().setFormat(PixelFormat.TRANSLUCENT);
+			setZOrderOnTop(true);
 		}
 		
 		int result;
@@ -386,26 +388,27 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	@Override
 	public InputConnection onCreateInputConnection(EditorInfo outAttrs)
 	{
-	    outAttrs.actionLabel = "";
-	    outAttrs.hintText = "";
-	    outAttrs.initialCapsMode = 0;
-	    outAttrs.initialSelEnd = outAttrs.initialSelStart = -1;
-	    outAttrs.label = "";
-	    outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI;        
-	    outAttrs.inputType = InputType.TYPE_NULL;        
+		outAttrs.actionLabel = "";
+		outAttrs.hintText = "";
+		outAttrs.initialCapsMode = 0;
+		outAttrs.initialSelEnd = outAttrs.initialSelStart = -1;
+		outAttrs.label = "";
+		outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI;		
+		outAttrs.inputType = InputType.TYPE_NULL;		
 
-	    return  new BaseInputConnection(this, false);       
-	}     
+		return  new BaseInputConnection(this, false);	   
+	}	 
 
 	@Override
 	public boolean onCheckIsTextEditor ()
 	{
-	    return true;
+		return true;
 	}
 
 	GiderosRenderer mRenderer;
 }
 
+// GiderosRenderer Class
 class GiderosRenderer implements GLSurfaceView.Renderer
 {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config)
