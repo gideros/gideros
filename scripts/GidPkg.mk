@@ -29,6 +29,7 @@ fetchdoc:
 	 
 build.mac.pkg:
 	echo "\
+	source /etc/profile;\
 	cd $(MAC_PATH);\
 	make -f scripts/Makefile.gid;\
 	exit;\
@@ -36,6 +37,7 @@ build.mac.pkg:
 	
 fetch.mac.pkg:
 	echo "\
+	source /etc/profile;\
 	cp -r $(MAC_PATH)/$(SDK) $(MAC_PATH)/Build.Mac;\
 	cd $(MAC_PATH)/Build.Mac;\
 	rm -f BuildMac.zip;\
@@ -56,6 +58,7 @@ push.mac.pkg:
 
 bundle.mac.pkg:
 	echo "\
+	source /etc/profile;\
 	cd $(MAC_PATH);\
 	make -f scripts/Makefile.gid bundle.installer;\
 	exit;\
@@ -65,6 +68,7 @@ sync.mac.pkg: fetch.mac.pkg push.mac.pkg
 
 clean.mac.pkg:
 	echo "\
+	source /etc/profile;\
 	cd $(MAC_PATH);\
 	git pull;\
 	make -f scripts/Makefile.gid clean;\

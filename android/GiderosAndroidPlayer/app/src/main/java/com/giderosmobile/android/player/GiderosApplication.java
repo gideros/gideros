@@ -617,6 +617,16 @@ public class GiderosApplication
 		}	
 	}
 
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+	{
+		for ( Class < ? > theClass : sAvailableClasses )
+		{
+			executeMethod ( theClass, null, "onRequestPermissionsResult", 
+					new Class < ? > [] { Integer.TYPE, String[].class, int[].class }, 
+					new Object [] { new Integer ( requestCode ), permissions, grantResults });
+		}
+	}
+	
 	public void onSurfaceCreated()
 	{
 		synchronized (lock)
