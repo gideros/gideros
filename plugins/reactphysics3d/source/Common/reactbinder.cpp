@@ -6,11 +6,13 @@
 #include "gplugin.h"
 #include "binder.h"
 #include "gglobal.h"
+#include "glog.h"
 
 #include "reactphysics3d.h"
 using namespace reactphysics3d;
 #include <utility>
 #include <set>
+#include <stdexcept>
 
 #define _UNUSED(n)
 
@@ -247,7 +249,11 @@ int r3dWorld_Step(lua_State* L) {
 	GidEventListener *e = events[world];
 	if (e)
 		e->L = L;
-	world->update(luaL_checknumber(L, 2));
+	try {
+		world->update(luaL_checknumber(L, 2));
+	} catch (std::runtime_error &e) {
+		luaL_error(L,"Failed to step world, something is not set up correctly");
+	}
 	if (e)
 		e->endFrame();
 
@@ -529,9 +535,10 @@ class gidMesh {
 protected:
 	float *vertices;
 	int *indices;
-	size_t vc,ic;
+	int *facesn;
+	size_t vc,ic,fc;
 public:
-	gidMesh(lua_State *L, int n) {
+	gidMesh(lua_State *L, int n,bool hasFaces) {
 		luaL_checktype(L, n, LUA_TTABLE);
 		luaL_checktype(L, n + 1, LUA_TTABLE);
 		size_t vn = lua_objlen(L, n);
@@ -544,6 +551,27 @@ public:
 			luaL_error(L,
 					"Index array should contain a multiple of 3 items, %d supplied",
 					in);
+		if (hasFaces) {
+			luaL_checktype(L, n + 2, LUA_TTABLE);
+			fc = lua_objlen(L, n + 2);
+			facesn = new int[fc];
+			int nt=0;
+			for (size_t k = 0; k < fc; k++) {
+				lua_rawgeti(L, n + 2, k + 1);
+				int nk = luaL_optinteger(L, -1, 0);
+				lua_pop(L, 1);
+				nt+=nk;
+				facesn[k] = nk;
+			}
+			if (nt>in) {
+				delete facesn;
+				luaL_error(L,
+						"Faces reference more indices than supplied (%d>%d)",
+						nt,in);
+			}
+		}
+		else
+			facesn=NULL;
 		vc = vn / 3;
 		ic = in / 3;
 		indices = new int[in];
@@ -553,11 +581,12 @@ public:
 			lua_pop(L, 1);
 			if ((ik <= 0) or (ik > vc)) {
 				delete indices;
+				if (facesn) delete facesn;
 				luaL_error(L,
 						"Index array contains an invalid vertice index: %d, max:%d",
 						ik, vc);
 			}
-			indices[k] = ik;
+			indices[k] = ik-1;
 		}
 		vertices = new float[vn];
 		for (size_t k = 0; k < vn; k++) {
@@ -569,6 +598,7 @@ public:
  ~gidMesh() {
 	 delete indices;
 	 delete vertices;
+	 if (facesn) delete facesn;
  }
 };
 
@@ -578,24 +608,33 @@ protected:
 	rp3d::PolygonVertexArray *polygonVertexArray;
 public:
 	rp3d::PolyhedronMesh *polymesh;
-	gidPolyMesh(lua_State *L, int n) : gidMesh(L,n) {
-		// Description of the six faces of the convex mesh
-		faces = new rp3d::PolygonVertexArray::PolygonFace[ic];
+	gidPolyMesh(lua_State *L, int n) : gidMesh(L,n,true) {
+		faces = new rp3d::PolygonVertexArray::PolygonFace[fc];
 		rp3d::PolygonVertexArray::PolygonFace* face = faces;
+		int ib=0;
 		for (int f = 0; f < ic; f++) {
-			face->indexBase = f * 3;
-			face->nbVertices = 3;
+			face->indexBase = ib;
+			face->nbVertices = facesn[f];
+			ib+=facesn[f];
 			face++;
 		}
 
 		// Create the polygon vertex array
 		polygonVertexArray = new rp3d::PolygonVertexArray(vc, vertices,
-				3 * sizeof(float), indices, sizeof(int), ic, faces,
+				3 * sizeof(float), indices, sizeof(int), fc, faces,
 				rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 				rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
 		// Create the polyhedron mesh
-		polymesh = new rp3d::PolyhedronMesh(polygonVertexArray);
+		try {
+			polymesh = new rp3d::PolyhedronMesh(polygonVertexArray);
+		} catch (std::runtime_error &e) {
+			delete polygonVertexArray;
+			delete faces;
+			delete indices;
+			delete vertices;
+			luaL_error(L,"Invalid mesh, probably not convex or ill-formed");
+		}
 	}
  ~gidPolyMesh() {
 	 delete polymesh;
@@ -609,13 +648,12 @@ protected:
 	rp3d::TriangleVertexArray* triangleArray;
 public:
 	rp3d::TriangleMesh *trimesh;
-	gidTriMesh(lua_State *L, int n) : gidMesh(L,n) {
+	gidTriMesh(lua_State *L, int n) : gidMesh(L,n,false) {
 		triangleArray =
 		new rp3d::TriangleVertexArray(vc, vertices, 3 * sizeof(float), ic,
-		indices, 3 * sizeof(int),
-		rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
-		rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
-		// Create the polyhedron mesh
+				indices, 3 * sizeof(int),
+				rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
+				rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 		trimesh=new rp3d::TriangleMesh();
 		trimesh->addSubpart(triangleArray);
 	}
@@ -1031,6 +1069,9 @@ int loader(lua_State *L) {
 	RELOC_CLASS("BoxShape")
 	RELOC_CLASS("SphereShape")
 	RELOC_CLASS("CapsuleShape")
+	RELOC_CLASS("ConvexMeshShape")
+	RELOC_CLASS("ConcaveMeshShape")
+	RELOC_CLASS("HeightFieldShape")
 	RELOC_CLASS("BallAndSocketJoint")
 	RELOC_CLASS("HingeJoint")
 	RELOC_CLASS("SliderJoint")
