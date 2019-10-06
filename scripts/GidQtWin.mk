@@ -99,6 +99,7 @@ qt.install: buildqt qt5.install qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
+	cp -R $(ROOT)/Library $(RELEASE)/
 	cp $(ROOT)/gdrdeamon/release/gdrdeamon.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrbridge/release/gdrbridge.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools

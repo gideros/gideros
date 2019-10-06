@@ -107,6 +107,7 @@ qt.install: buildqt qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
+	cp -R $(ROOT)/Library $(RELEASE)/
 	
 
 QTDLLEXT?=
