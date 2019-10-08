@@ -260,6 +260,81 @@ int r3dWorld_Step(lua_State* L) {
 	return 0;
 }
 
+
+class GidCollisionCallback: public CollisionCallback {
+	lua_State *L;
+	int cbn;
+public:
+	GidCollisionCallback(lua_State *L,int cbn) { this->L=L; this->cbn=cbn; }
+	void notifyContact(const CollisionCallbackInfo& cli) {
+		lua_pushvalue(L, cbn);
+		lua_newtable(L);
+		getb2(L, cli.body1);
+		lua_setfield(L, -2, "body1");
+		getb2(L, cli.body2);
+		lua_setfield(L, -2, "body2");
+		getb2(L, cli.proxyShape1);
+		lua_setfield(L, -2, "fixture1");
+		getb2(L, cli.proxyShape2);
+		lua_setfield(L, -2, "fixture2");
+		lua_call(L, 1, 0);
+	}
+};
+
+int r3dWorld_TestOverlap(lua_State* L) {
+	Binder binder(L);
+	rp3d::DynamicsWorld* world =
+			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
+	rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 2));
+	rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 3));
+	lua_pushboolean(L,world->testOverlap(body1, body2));
+
+	return 1;
+}
+
+int r3dWorld_TestCollision(lua_State* L) {
+	Binder binder(L);
+	rp3d::DynamicsWorld* world =
+			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
+	if (lua_type(L,2)==LUA_TFUNCTION) {
+		GidCollisionCallback gcb(L,2);
+		world->testCollision(&gcb);
+	}
+	else {
+		rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+				"r3dBody", 2));
+		if (lua_type(L,3)==LUA_TFUNCTION) {
+			GidCollisionCallback gcb(L,3);
+			unsigned short cat = luaL_optinteger(L, 4, 0xFFFF);
+			world->testCollision(body1, &gcb, cat);
+		}
+		else {
+			rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+					"r3dBody", 3));
+			luaL_checktype(L,4,LUA_TFUNCTION);
+			GidCollisionCallback gcb(L,4);
+			world->testCollision(body1, body2, &gcb);
+
+		}
+	}
+	return 0;
+}
+
+int r3dWorld_TestAABBOverlap(lua_State* L) {
+	Binder binder(L);
+	rp3d::DynamicsWorld* world =
+			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
+	rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 2));
+	rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 3));
+	lua_pushboolean(L,world->testAABBOverlap(body1, body2));
+
+	return 1;
+}
+
 static void push_Vector(lua_State *L, const rp3d::Vector3 &v) {
 	lua_newtable(L);
 	lua_pushnumber(L, v.x);
@@ -493,6 +568,17 @@ int r3dBody_RayCast(lua_State* L) {
 	return 1;
 }
 
+int r3dBody_TestPointInside(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+	rp3d::Vector3 pt;
+	TO_VECTOR(L, 2, pt);
+	lua_pushboolean(L,body->testPointInside(pt));
+
+	return 1;
+}
+
 int r3dBody_ApplyTorque(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
@@ -612,7 +698,7 @@ public:
 		faces = new rp3d::PolygonVertexArray::PolygonFace[fc];
 		rp3d::PolygonVertexArray::PolygonFace* face = faces;
 		int ib=0;
-		for (int f = 0; f < ic; f++) {
+		for (size_t f = 0; f < ic; f++) {
 			face->indexBase = ib;
 			face->nbVertices = facesn[f];
 			ib+=facesn[f];
@@ -777,6 +863,17 @@ int r3dFixture_RayCast(lua_State* L) {
 		push_RayCastInfo(L, ri);
 	else
 		lua_pushnil(L);
+	return 1;
+}
+
+int r3dFixture_TestPointInside(lua_State* L) {
+	Binder binder(L);
+	rp3d::ProxyShape* shape = static_cast<rp3d::ProxyShape*>(binder.getInstance(
+			"r3dFixture", 1));
+	rp3d::Vector3 pt;
+	TO_VECTOR(L, 2, pt);
+	lua_pushboolean(L,shape->testPointInside(pt));
+
 	return 1;
 }
 
@@ -980,35 +1077,46 @@ int loader(lua_State *L) {
 
 	Binder binder(L);
 
-	const luaL_Reg r3dWorld_functionList[] = { { "createBody",
-			r3dWorld_CreateBody }, { "destroyBody", r3dWorld_DestroyBody }, {
-			"step", r3dWorld_Step }, { "raycast", r3dWorld_RayCast }, {
-			"setEventListener", r3dWorld_SetEventListener }, {
-			"createBallAndSocketJoint", r3dWorld_CreateBallAndSocketJoint }, {
-			"createHingeJoint", r3dWorld_CreateHingeJoint }, {
-			"createSliderJoint", r3dWorld_CreateSliderJoint }, {
-			"createFixedJoint", r3dWorld_CreateFixedJoint }, { "destroyJoint",
-			r3dWorld_DestroyJoint }, { NULL, NULL }, };
+	const luaL_Reg r3dWorld_functionList[] = {
+			{ "createBody",	r3dWorld_CreateBody },
+			{ "destroyBody", r3dWorld_DestroyBody },
+			{ "step", r3dWorld_Step },
+			{ "raycast", r3dWorld_RayCast },
+			{ "testOverlap", r3dWorld_TestOverlap },
+			{ "testCollision", r3dWorld_TestCollision },
+			{ "testAABBOverlap", r3dWorld_TestAABBOverlap },
+			{ "setEventListener", r3dWorld_SetEventListener },
+			{ "createBallAndSocketJoint", r3dWorld_CreateBallAndSocketJoint },
+			{ "createHingeJoint", r3dWorld_CreateHingeJoint },
+			{ "createSliderJoint", r3dWorld_CreateSliderJoint },
+			{ "createFixedJoint", r3dWorld_CreateFixedJoint },
+			{ "destroyJoint", r3dWorld_DestroyJoint },
+			{ NULL, NULL }, };
 	binder.createClass("r3dWorld", NULL/*"EventDispatcher"*/, r3dWorld_create,
 			r3dWorld_destruct, r3dWorld_functionList);
-	const luaL_Reg r3dBody_functionList[] = { { "createFixture",
-			r3dBody_CreateFixture },
-			{ "destroyFixture", r3dBody_DestroyFixture }, { "getTransform",
-					r3dBody_GetTransform }, { "setTransform",
-					r3dBody_SetTransform },
-			{ "getMaterial", r3dBody_GetMaterial }, { "setMaterial",
-					r3dBody_SetMaterial }, { "setType", r3dBody_SetType }, {
-					"enableGravity", r3dBody_EnableGravity }, {
-					"setIsAllowedToSleep", r3dBody_SetIsAllowedToSleep }, {
-					"applyForce", r3dBody_ApplyForce }, { "applyTorque",
-					r3dBody_ApplyTorque }, { "raycast", r3dBody_RayCast }, {
-					NULL, NULL }, };
+	const luaL_Reg r3dBody_functionList[] = {
+			{ "createFixture", r3dBody_CreateFixture },
+			{ "destroyFixture", r3dBody_DestroyFixture },
+			{ "getTransform", r3dBody_GetTransform },
+			{ "setTransform", r3dBody_SetTransform },
+			{ "getMaterial", r3dBody_GetMaterial },
+			{ "setMaterial", r3dBody_SetMaterial },
+			{ "setType", r3dBody_SetType },
+			{ "enableGravity", r3dBody_EnableGravity },
+			{ "setIsAllowedToSleep", r3dBody_SetIsAllowedToSleep },
+			{ "applyForce", r3dBody_ApplyForce },
+			{ "applyTorque", r3dBody_ApplyTorque },
+			{ "raycast", r3dBody_RayCast },
+			{ "testPointInside", r3dBody_TestPointInside },
+			{ NULL, NULL }, };
 	binder.createClass("r3dBody", NULL/*"EventDispatcher"*/, NULL, NULL,
 			r3dBody_functionList);
-	const luaL_Reg r3dFixture_functionList[] = { { "setCollisionCategoryBits",
-			r3dFixture_SetCollisionCategoryBits }, { "setCollideWithMaskBits",
-			r3dFixture_SetCollideWithMaskBits },
-			{ "raycast", r3dFixture_RayCast }, { NULL, NULL }, };
+	const luaL_Reg r3dFixture_functionList[] = {
+			{ "setCollisionCategoryBits", r3dFixture_SetCollisionCategoryBits },
+			{ "setCollideWithMaskBits",	r3dFixture_SetCollideWithMaskBits },
+			{ "raycast", r3dFixture_RayCast },
+			{ "testPointInside", r3dFixture_TestPointInside },
+			{ NULL, NULL }, };
 	binder.createClass("r3dFixture", NULL/*"EventDispatcher"*/, NULL, NULL,
 			r3dFixture_functionList);
 	const luaL_Reg r3dShape_functionList[] = { { NULL, NULL }, };
