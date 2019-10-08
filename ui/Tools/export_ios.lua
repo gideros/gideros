@@ -272,7 +272,7 @@ OTHER_LDFLAGS = "-ObjC";</by>
         </append>
         </replacelist>
         </template>]])
-        Export.callXml([[<exec>pod install</exec>]])
+        Export.callXml([[<exec>sh -c "source /etc/profile;pod install"</exec>]])
     end
 end
 

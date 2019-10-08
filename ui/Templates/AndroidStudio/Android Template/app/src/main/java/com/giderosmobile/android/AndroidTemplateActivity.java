@@ -322,10 +322,13 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			new Handler(Looper.getMainLooper()).post(new Runnable() {
 				@Override
 				public void run() {
-					splashLayout.setVisibility(View.GONE);
-					splash.setBackgroundResource(0);
-					//remove animation view from main layout
-					layout.removeView(splashLayout);
+					if (splashLayout!=null) //Shouldn't happen, but actually hapenned on some devices
+					{
+						splashLayout.setVisibility(View.GONE);
+						splash.setBackgroundResource(0);
+						//remove animation view from main layout
+						layout.removeView(splashLayout);
+					}
 					splashLayout = null;
 					splash = null;
 					layout = null;

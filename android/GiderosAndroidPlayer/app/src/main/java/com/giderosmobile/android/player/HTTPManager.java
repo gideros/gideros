@@ -82,10 +82,10 @@ public class HTTPManager {
 	}
 
 	void Close(long id) {
-		if (!ids_.containsKey(id))
+		HTTPThread thread = ids_.get(id);
+		if (thread==null)
 			return;
 
-		HTTPThread thread = ids_.get(id);
 
 		ids_.remove(id);
 
