@@ -665,7 +665,7 @@ public:
 			lua_rawgeti(L, n + 1, k + 1);
 			int ik = luaL_optinteger(L, -1, 0);
 			lua_pop(L, 1);
-			if ((ik <= 0) or (ik > vc)) {
+			if ((ik <= 0)||(ik > vc)) {
 				delete indices;
 				if (facesn) delete facesn;
 				luaL_error(L,
