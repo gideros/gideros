@@ -416,7 +416,6 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 	int audiobuf_ready = 0;
 	int audiofd_fragsize = size;
 	ogg_int16_t *audiobuf = (ogg_int16_t *) data;
-	int i, j;
     bool queued=true;
 
     while (queued) {
@@ -436,8 +435,11 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 					audiobuf_ready = 1;
 				if (gpos >= 0)
                     handle->audio_granulepos = gpos;
-				else
-					handle->audio_granulepos += i;
+				else {
+					unsigned int rate,channels;
+					handle->audio_p->GetAudioInfo(rate, channels);
+					handle->audio_granulepos += ret/channels;
+				}
 				handle->audio_time = handle->audio_p->GranuleTime(handle->audio_granulepos);
 			} else {
 
@@ -862,6 +864,8 @@ static void g_deinitializePlugin(lua_State *L) {
 }
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
+#elif EMSCRIPTEN
+REGISTER_PLUGIN_NAMED("Ogg", "1.0", OggCore)
 #else
 REGISTER_PLUGIN_NAMED("Ogg", "1.0", Ogg)
 #endif

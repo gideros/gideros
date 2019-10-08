@@ -83,7 +83,7 @@ int OggDecVorbis::GetAudio(ogg_int16_t *buffer,int max,ogg_int64_t &gpos)
 		}
 	vorbis_synthesis_read(&vd, i);
 
-	return i*2;
+	return i*vi.channels;
 }
 
 
