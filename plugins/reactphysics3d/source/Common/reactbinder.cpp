@@ -249,11 +249,15 @@ int r3dWorld_Step(lua_State* L) {
 	GidEventListener *e = events[world];
 	if (e)
 		e->L = L;
+#ifndef _NO_THROW
 	try {
+#endif
 		world->update(luaL_checknumber(L, 2));
+#ifndef _NO_THROW
 	} catch (std::runtime_error &e) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");
 	}
+#endif
 	if (e)
 		e->endFrame();
 
@@ -712,8 +716,11 @@ public:
 				rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
 		// Create the polyhedron mesh
+#ifndef _NO_THROW
 		try {
+#endif
 			polymesh = new rp3d::PolyhedronMesh(polygonVertexArray);
+#ifndef _NO_THROW
 		} catch (std::runtime_error &e) {
 			delete polygonVertexArray;
 			delete faces;
@@ -721,6 +728,7 @@ public:
 			delete vertices;
 			luaL_error(L,"Invalid mesh, probably not convex or ill-formed");
 		}
+#endif
 	}
  ~gidPolyMesh() {
 	 delete polymesh;
