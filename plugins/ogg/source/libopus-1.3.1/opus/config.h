@@ -178,11 +178,15 @@
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
-/* Make use of alloca */
-#define USE_ALLOCA	1
-
+#if defined(_MSC_VER)
 /* Use C99 variable-size arrays */
 //#define VAR_ARRAYS 1
+/* Use this on MSVC due to alloca being not available on ARM. Gideros is single threaded anyway */
+#define NONTHREADSAFE_PSEUDOSTACK 1
+#else
+/* Make use of alloca */
+#define USE_ALLOCA	1
+#endif
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */

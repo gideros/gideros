@@ -102,7 +102,9 @@
 
 #define VARDECL(type, var) type *var
 
-# ifdef WIN32
+# if defined(_MSC_VER)
+#  define ALLOC(var, size, type) var = ((type*)_malloca(sizeof(type)*(size)))
+# elif defined(WIN32)
 #  define ALLOC(var, size, type) var = ((type*)_alloca(sizeof(type)*(size)))
 # else
 #  define ALLOC(var, size, type) var = ((type*)alloca(sizeof(type)*(size)))

@@ -9,6 +9,7 @@
 #define PLUGINS_OGG_SOURCE_COMMON_OGGENC_H_
 #include <ogg/ogg.h>
 #include <stdlib.h>
+#include "gplugin.h"
 
 class OggEnc {
 public:
@@ -24,8 +25,8 @@ struct OggEncType {
 
 
 extern "C" {
-void register_oggenc(const char *name,OggEncType codec);
-void unregister_oggenc(const char *name);
+G_DLLEXPORT void register_oggenc(const char *name,OggEncType codec);
+G_DLLEXPORT void unregister_oggenc(const char *name);
 OggEnc *build_oggenc(const char *name);
 }
 #endif /* PLUGINS_OGG_SOURCE_COMMON_OGGDEC_H_ */

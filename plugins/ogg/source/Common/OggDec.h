@@ -9,6 +9,7 @@
 #define PLUGINS_OGG_SOURCE_COMMON_OGGDEC_H_
 #include <ogg/ogg.h>
 #include <stdlib.h>
+#include "gplugin.h"
 
 class OggDec {
 public:
@@ -42,8 +43,8 @@ struct OggDecType {
 };
 
 extern "C" {
-void register_oggdec(const char *name,OggDecType codec);
-void unregister_oggdec(const char *name);
+G_DLLEXPORT void register_oggdec(const char *name,OggDecType codec);
+G_DLLEXPORT void unregister_oggdec(const char *name);
 OggDec *probe_oggdec(ogg_packet *op,int type);
 }
 #endif /* PLUGINS_OGG_SOURCE_COMMON_OGGDEC_H_ */

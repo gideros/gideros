@@ -43,6 +43,7 @@ SOPUS_F:=$(addprefix opus/src/,$(SOPUS_G)) $(addprefix opus/celt/,$(SOPUS_C)) $(
 
 ifeq ($(PART),Core)
 SXIPH+=$(addprefix $(XIPH_OGG)/src/,$(SOGG_F)) $(addprefix Common/,oggbinder OggDec OggEnc)
+POPTS+=@OggCore.exps
 endif
 ifeq ($(PART),Theora)
 SXIPH+=$(addprefix $(XIPH_THEORA)/lib/,$(STHEORADEC_F)) Common/OggDecTheora
