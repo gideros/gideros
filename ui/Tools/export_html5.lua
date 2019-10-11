@@ -31,7 +31,7 @@ function Html5Project.export(m,flavour)
   if pack then
   Export.callXml(([=[
         <exec>
-          "[[[sys.giderosDir]]]/Tools/crunchme[[[sys.exeExtension]]]" -nostrip -i %s.%s %s.gidz
+          "[[[sys.toolsDir]]]/crunchme[[[sys.exeExtension]]]" -nostrip -i %s.%s %s.gidz
         </exec>
   ]=]):format(m,ext,m))
   Export.callXml(([=[

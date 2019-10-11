@@ -92,7 +92,7 @@ local ap=require("Tools/export_android")
 		<set key="project.package" value="[[[export.packageName]]]"/>
 		<set key="local.noSigning" value=""/>
 		<set key="local.isUnsigned" value="-debug"/>
-		<set key="local.keyStore" value="[[[sys.giderosDir]]]/Tools/debug.jks"/>
+		<set key="local.keyStore" value="[[[sys.toolsDir]]]/debug.jks"/>
 		<set key="local.keyAlias" value="debug"/>
 		<set key="secret.keyStorePass" value="gdebug"/>
 		<set key="secret.keyAliasPass" value="gdebug"/>

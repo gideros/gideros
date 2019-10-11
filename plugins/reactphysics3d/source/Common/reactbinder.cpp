@@ -540,6 +540,14 @@ int r3dBody_SetIsAllowedToSleep(lua_State* L) {
 	return 0;
 }
 
+int r3dBody_SetIsSleeping(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+	body->setIsSleeping(lua_toboolean(L, 2));
+	return 0;
+}
+
 int r3dBody_ApplyForce(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
@@ -1112,6 +1120,7 @@ int loader(lua_State *L) {
 			{ "setType", r3dBody_SetType },
 			{ "enableGravity", r3dBody_EnableGravity },
 			{ "setIsAllowedToSleep", r3dBody_SetIsAllowedToSleep },
+			{ "setIsSleeping", r3dBody_SetIsSleeping },
 			{ "applyForce", r3dBody_ApplyForce },
 			{ "applyTorque", r3dBody_ApplyTorque },
 			{ "raycast", r3dBody_RayCast },

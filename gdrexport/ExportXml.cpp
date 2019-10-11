@@ -61,7 +61,12 @@ void ExportXml::SetupProperties(ExportContext *ctx)
 	ctx->props["sys.exeExtension"] = "";
 #endif
 	ctx->props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+#ifdef Q_OS_MACX
+	ctx->props["sys.giderosDir"] = QDir::currentPath()+"/../..";
+#else
 	ctx->props["sys.giderosDir"] = QDir::currentPath();
+#endif
+	ctx->props["sys.toolsDir"] = QDir::currentPath()+"/Tools";
 	ctx->props["sys.homeDir"] = QDir::homePath();
 	ctx->props["sys.exportDir"] = ctx->exportDir.absolutePath();
     ctx->props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
