@@ -10,7 +10,7 @@ qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 vpath %.so libgideros:libgvfs:libgid:lua
 
 $(SDK)/lib/desktop/%: %
-	cp $^* $(SDK)/lib/desktop
+	cp -P $^* $(SDK)/lib/desktop
 	
 
 SDK_LIBS_QTLIST=libgideros liblua libgid libgvfs
@@ -40,9 +40,9 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Linux
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; \
 		else if [ -d "Desktop" ]; then cd Desktop; fi; fi; \
-	cp *.so* $$R/$(RELEASE)/Plugins; \
-	cp *.so* $$R/$(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins; \
-	cp *.so* $$R/$(RELEASE)/All\ Plugins/$*/bin/Linux	
+	cp -P *.so* $$R/$(RELEASE)/Plugins; \
+	cp -P *.so* $$R/$(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins; \
+	cp -P *.so* $$R/$(RELEASE)/All\ Plugins/$*/bin/Linux	
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
@@ -50,21 +50,37 @@ buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
-QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
+QT5DLLS=icudata icui18n icuuc \
+		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
+		Qt5XcbQpa Qt5DBus \
+		Qt5Multimedia Qt5MultimediaWidgets Qt5WebSockets
+QT5DLLTOOLS=icudata icui18n icuuc \
+		Qt5Core Qt5Network Qt5Xml Qt5WebSockets
+QT5PLATFORM=qminimal qoffscreen qxcb
+QT5PLUGINS= \
+	$(addprefix platforms/,$(QT5PLATFORM)) \
+	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-ogl-integration) \
+	imageformats/qjpeg \
+	#$(addprefix mediaservice/,dsengine qtmedia_audioengine) \
+
+
 qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
 	cp -R $(ROOT)/ui/GiderosStudio $(RELEASE)
-	cp $(QT)/lib/libqscintilla2_qt5.so* $(RELEASE)
+	cp -P $(QT)/lib/libqscintilla2_qt5.so* $(RELEASE)
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	cp -R $(ROOT)/ui/Tools $(RELEASE)/Tools
 	cp $(ROOT)/lua/src/lua $(RELEASE)/Tools
 	cp $(ROOT)/lua/src/luac $(RELEASE)/Tools
 	for t in gdrdeamon gdrbridge gdrexport; do \
 	cp $(ROOT)/$$t/$$t $(RELEASE)/Tools; done 
+	for f in $(QT5DLLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE); done
+	for f in $(QT5DLLTOOLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE)/Tools; done
+	for a in $(QT5PLUGINS); do mkdir -p $(RELEASE)/$$(dirname $$a); cp -P $(QT)/plugins/$$(dirname $$a)/lib$$(basename $$a).so* $(RELEASE)/$$(dirname $$a)/; done
 	#PLAYER
 	cp -R $(ROOT)/player/GiderosPlayer $(RELEASE)
-	cp $(SDK)/lib/desktop/*.so* $(RELEASE)
-	cp libpystring/*.so* $(RELEASE)
+	cp -P $(SDK)/lib/desktop/*.so* $(RELEASE)
+	cp -P libpystring/*.so* $(RELEASE)
 	#TEXTUREPACKER
 	cp -R $(ROOT)/texturepacker/GiderosTexturePacker $(RELEASE)
 	#FONT CREATOR
@@ -92,8 +108,9 @@ QTDLLEXT?=
 qt.player:
 	mkdir -p $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
 	cp -R $(ROOT)/desktop/LinuxDesktopTemplate $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
-	cp $(SDK)/lib/desktop/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/
-	cp libpystring/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
+	cp -P $(SDK)/lib/desktop/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/
+	cp -P libpystring/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
+	for f in $(QT5DLLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate; done
 	
 buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN))
 
