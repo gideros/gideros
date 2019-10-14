@@ -236,6 +236,8 @@ private:
 	event->altitude = newLocation.altitude;
 	event->speed = newLocation.speed;
 	event->course = newLocation.course;
+	event->accuracy = newLocation.horizontalAccuracy;
+	event->type=0;
 
 	manager_->enqueueEvent(GGEOLOCATION_LOCATION_UPDATE_EVENT, event, 1);
 }

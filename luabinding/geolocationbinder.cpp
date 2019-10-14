@@ -146,6 +146,10 @@ private:
             else
             	lua_pushnumber(L, event2->course);
             lua_setfield(L, -2, "course");
+            lua_pushnumber(L, event2->accuracy);
+            lua_setfield(L, -2, "accuracy");
+            lua_pushinteger(L, event2->type);
+            lua_setfield(L, -2, "source");
         }
         else if (type == GGEOLOCATION_HEADING_UPDATE_EVENT)
         {
