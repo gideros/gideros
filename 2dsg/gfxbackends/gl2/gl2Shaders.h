@@ -190,7 +190,7 @@ public:
 	const char *getVersion();
 	const char *getShaderLanguage() { return "glsl"; };
 	void reset(bool reinit=false);
-	ShaderTexture::Packing ogl2ShaderEngine::getPreferredPackingForTextureFormat(ShaderTexture::Format format);
+	ShaderTexture::Packing getPreferredPackingForTextureFormat(ShaderTexture::Format format);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
