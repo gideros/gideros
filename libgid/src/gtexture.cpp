@@ -72,6 +72,7 @@ static int pixelSize(int format, int type)
     case GTEXTURE_UNSIGNED_SHORT:
         return 2;
     case GTEXTURE_FLOAT:
+    case GTEXTURE_UNSIGNED_INT:
         return 4;
     case GTEXTURE_UNSIGNED_BYTE:
         switch (format)
@@ -469,6 +470,7 @@ public:
         switch (pk) {
         case ShaderTexture::PK_FLOAT: type=GTEXTURE_FLOAT; break;
         case ShaderTexture::PK_USHORT: type=GTEXTURE_UNSIGNED_SHORT; break;
+        case ShaderTexture::PK_UINT: type=GTEXTURE_UNSIGNED_INT; break;
         case ShaderTexture::PK_USHORT_4444: type=GTEXTURE_UNSIGNED_SHORT_4_4_4_4; break;
         case ShaderTexture::PK_USHORT_565: type=GTEXTURE_UNSIGNED_SHORT_5_6_5; break;
         case ShaderTexture::PK_USHORT_5551: type=GTEXTURE_UNSIGNED_SHORT_5_5_5_1; break;
@@ -675,6 +677,9 @@ private:
             break;
         case GTEXTURE_UNSIGNED_SHORT:
             type = ShaderTexture::PK_USHORT;
+            break;
+        case GTEXTURE_UNSIGNED_INT:
+            type = ShaderTexture::PK_UINT;
             break;
         }
         ShaderTexture::Wrap wrap=ShaderTexture::WRAP_CLAMP;

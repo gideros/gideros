@@ -122,7 +122,8 @@ public:
 		PK_USHORT_4444,
 		PK_USHORT_5551,
 		PK_FLOAT,
-		PK_USHORT
+		PK_USHORT,
+		PK_UINT
 	};
 	enum Wrap {
 		WRAP_CLAMP,

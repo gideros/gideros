@@ -570,6 +570,15 @@ void ogl2ShaderEngine::adjustViewportProjection(Matrix4 &vp, float width, float 
 	vp.translate(0, height, 0);
 }
 
+ShaderTexture::Packing ogl2ShaderEngine::getPreferredPackingForTextureFormat(ShaderTexture::Format format)
+{
+	switch (format) {
+	case ShaderTexture::FMT_DEPTH:
+		return ShaderTexture::PK_UINT;
+	default:
+		return ShaderTexture::PK_UBYTE;
+	}
+}
 static GLint stencilopToGl(ShaderEngine::StencilOp sf)
 {
 	switch (sf)

@@ -61,6 +61,7 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     	case PK_USHORT_4444: gltype=GL_UNSIGNED_SHORT_4_4_4_4; break;
     	case PK_USHORT_5551: gltype=GL_UNSIGNED_SHORT_5_5_5_1; break;
     	case PK_USHORT: gltype=GL_UNSIGNED_SHORT; break;
+    	case PK_UINT: gltype=GL_UNSIGNED_INT; break;
     	case PK_FLOAT: gltype=GL_FLOAT; break;
     }
     if (data)

@@ -68,7 +68,9 @@ void openUrl(const char* url)
 
 	Platform::String ^string = ref new String(wcstring);
 	auto uri = ref new Windows::Foundation::Uri(string);
-	Launcher::LaunchUriAsync(uri);
+	gdr_dispatchUi([&] {
+		Launcher::LaunchUriAsync(uri);
+	}, true);
 
 	delete[] wcstring;
 }
