@@ -55,6 +55,7 @@ public:
 std::set<gl2ShaderBufferCache *> *gl2ShaderBufferCache::allVBO=NULL;
 int ogl2ShaderProgram::vboFreeze=0;
 int ogl2ShaderProgram::vboUnfreeze=0;
+bool ogl2ShaderProgram::supportInstances=0;
 
 GLuint ogl2ShaderProgram::getGenericVBO(int index) {
 	if (genVBO[index] == 0){
@@ -416,7 +417,7 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		this->uniforms.push_back(cd);
 	}
 	cbData = malloc(cbsData);
-	for (int iu = 0; iu < this->uniforms.size(); iu++)
+	for (size_t iu = 0; iu < this->uniforms.size(); iu++)
 		this->uniforms[iu]._localPtr = ((char *) cbData)
 				+ this->uniforms[iu].offset;
 
@@ -459,7 +460,7 @@ void ogl2ShaderProgram::recreate() {
 	{
 		useProgram();
 		GLint ntex = 0;
-		for (int k=0;k<uniforms.size();k++) {
+		for (size_t k=0;k<uniforms.size();k++) {
 			ConstantDesc cd=uniforms[k];
 			this->gluniforms.push_back(GLCALL glGetUniformLocation(program, cd.name.c_str()));
 			switch (cd.type) {
@@ -470,7 +471,7 @@ void ogl2ShaderProgram::recreate() {
 				break;
 			}
 		}
-		for (int k=0;k<attributes.size();k++) {
+		for (size_t k=0;k<attributes.size();k++) {
 			glattributes.push_back(GLCALL glGetAttribLocation(program, attributes[k].name.c_str()));
 		}
 	}
@@ -514,8 +515,9 @@ ogl2ShaderProgram::~ogl2ShaderProgram() {
 }
 
 void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
-		unsigned int count) {
+		unsigned int count,unsigned int instances) {
 	GLCALL_INIT;
+	GLECALL_INIT;
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	GLenum mode = GL_POINTS;
@@ -539,12 +541,27 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 		mode = GL_TRIANGLE_STRIP;
 		break;
 	}
-	GLCALL glDrawArrays(mode, first, count);
+	if (instances) {
+		if (supportInstances)
+			GLECALL glDrawArraysInstanced(mode, first, count, instances);
+		else
+		{
+			int ciid=getConstantByName("gl_InstanceID");
+			for (size_t i=0;i<instances;i++) {
+				if (ciid>=0)
+					GLCALL glUniform1iv(gluniforms[ciid], 1,((GLint *) &i));
+				GLCALL glDrawArrays(mode, first, count);
+			}
+		}
+	}
+	else
+		GLCALL glDrawArrays(mode, first, count);
 
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances) {
 	GLCALL_INIT;
+	GLECALL_INIT;
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
@@ -604,5 +621,19 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 			GLCALL glBufferData(GL_ELEMENT_ARRAY_BUFFER,elmSize * count,indices,GL_DYNAMIC_DRAW);
 		indices=NULL;
 	}
-	GLCALL glDrawElements(mode, dcount?dcount:count, dtype, ((char *)indices)+elmSize*first);
+	if (instances) {
+		if (supportInstances)
+			GLECALL glDrawElementsInstanced(mode, dcount?dcount:count, dtype, ((char *)indices)+elmSize*first, instances);
+		else
+		{
+			int ciid=getConstantByName("gl_InstanceID");
+			for (size_t i=0;i<instances;i++) {
+				if (ciid>=0)
+					GLCALL glUniform1iv(gluniforms[ciid], 1,((GLint *) &i));
+				GLCALL glDrawElements(mode, dcount?dcount:count, dtype, ((char *)indices)+elmSize*first);
+			}
+		}
+	}
+	else
+		GLCALL glDrawElements(mode, dcount?dcount:count, dtype, ((char *)indices)+elmSize*first);
 }

@@ -22,9 +22,12 @@
 #ifdef QT_CORE_LIB
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
 #define GLCALL_CHECK if (!QOpenGLContext::currentContext()) return;
 #define GLCALL_INIT QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
 #define GLCALL glFuncs->
+#define GLECALL_INIT QOpenGLExtraFunctions *gleFuncs = QOpenGLContext::currentContext()->extraFunctions();
+#define GLECALL gleFuncs->
 #define OPENGL_ES
 #elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 #ifdef GIDEROS_GL1
@@ -71,6 +74,8 @@
 #define GLCALL
 #define GLCALL_INIT
 #define GLCALL_CHECK
+#define GLECALL
+#define GLECALL_INIT
 #endif
 
 #ifdef OPENGL_ES
@@ -112,12 +117,13 @@ class ogl2ShaderProgram : public ShaderProgram
     GLuint getGenericVBO(int index);
 public:
 	static int vboFreeze, vboUnfreeze;
+	static bool supportInstances;
     virtual void activate();
     virtual void deactivate();
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0);
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
-    virtual void drawArrays(ShapeType shape, int first, unsigned int count);
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0);
+    virtual void drawArrays(ShapeType shape, int first, unsigned int count,unsigned int instances=0);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0,unsigned int instances=0);
     virtual bool isValid();
     virtual const char *compilationLog();
 

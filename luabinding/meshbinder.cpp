@@ -47,6 +47,7 @@ MeshBinder::MeshBinder(lua_State *L)
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
         {"setPrimitiveType", setPrimitiveType},
+	    {"setInstanceCount",setInstanceCount},
 
         {NULL, NULL},
     };
@@ -750,6 +751,18 @@ int MeshBinder::setPrimitiveType(lua_State *L)
 
     return 0;
 }
+
+int MeshBinder::setInstanceCount(lua_State *L)
+{
+    Binder binder(L);
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    size_t ic=(size_t) luaL_checkinteger(L,2);
+
+    mesh->setInstanceCount(ic);
+
+    return 0;
+}
+
 
 int MeshBinder::setTexture(lua_State *L)
 {

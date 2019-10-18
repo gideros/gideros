@@ -483,6 +483,11 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
     isGLES=QOpenGLContext::currentContext()->isOpenGLES();
 	GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
 #endif
+	const char *ver=(const char *) GLCALL glGetString(GL_VERSION);
+	double version=strtod(ver,NULL);
+    glog_i("GL Version %f (%s)",version,isGLES?"ES":"Desktop");
+
+    ogl2ShaderProgram::supportInstances=((version>=3.0)||((!isGLES)&&(version>=3.1)));
 
 #ifndef GIDEROS_GL1
     ogl2SetupShaders(isGLES);

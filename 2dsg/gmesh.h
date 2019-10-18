@@ -52,6 +52,7 @@ public:
     void setTexture(TextureBase *texture,int slot=0);
     void clearTexture(int slot=0);
     void setPrimitiveType(ShaderProgram::ShapeType type);
+    void setInstanceCount(size_t instances);
 
 private:
     virtual void doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey);
@@ -88,6 +89,7 @@ private:
     mutable float minx_, miny_, maxx_, maxy_;
     bool boundsDirty_;
     ShaderProgram::ShapeType meshtype_;
+    size_t instanceCount_;
     bool mesh3d_;
 };
 

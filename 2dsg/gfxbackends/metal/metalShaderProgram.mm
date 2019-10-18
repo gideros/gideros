@@ -475,7 +475,7 @@ metalShaderProgram::~metalShaderProgram() {
 }
 
 void metalShaderProgram::drawArrays(ShapeType shape, int first,
-		unsigned int count) {
+		unsigned int count,unsigned int instances=0) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	MTLPrimitiveType mode = MTLPrimitiveTypeTriangle;
@@ -499,10 +499,13 @@ void metalShaderProgram::drawArrays(ShapeType shape, int first,
 		mode = MTLPrimitiveTypeTriangleStrip;
 		break;
 	}
-    [encoder() drawPrimitives:mode vertexStart:first vertexCount:count];
+	if (instances) 
+		[encoder() drawPrimitives:mode vertexStart:first vertexCount:count instanceCount:instances];
+	else
+		[encoder() drawPrimitives:mode vertexStart:first vertexCount:count];
 }
 void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances=0) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
@@ -552,6 +555,10 @@ void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
 #endif
     }
     //XXX bufferoffset should be int32 aligned per Apple's docs, this can break rendering when indices are u16 and first is an odd vindex
-    [encoder() drawIndexedPrimitives:mode
+	if (instances) 
+		[encoder() drawIndexedPrimitives:mode
+            indexCount:dcount indexType:dtype indexBuffer:vbo indexBufferOffset:first*elmSize instanceCount:instances];
+	else
+		[encoder() drawIndexedPrimitives:mode
             indexCount:dcount indexType:dtype indexBuffer:vbo indexBufferOffset:first*elmSize];
 }

@@ -25,6 +25,7 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
     maxx_ = maxy_ = -1e30;
     meshtype_=ShaderProgram::Triangles;
     mesh3d_=is3d;
+    instanceCount_=0;
 }
 
 GMesh::~GMesh()
@@ -295,6 +296,12 @@ void GMesh::setPrimitiveType(ShaderProgram::ShapeType type)
 	meshtype_=type;
 }
 
+void GMesh::setInstanceCount(size_t instances)
+{
+	instanceCount_=instances;
+}
+
+
 void GMesh::setTexture(TextureBase *texture,int slot)
 {
     if (texture)
@@ -417,7 +424,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
             genericArray[k-3].modified=false;
     	}
 
-    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache);
+    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache,0,0,instanceCount_);
     indices_.modified=false;
 }
 

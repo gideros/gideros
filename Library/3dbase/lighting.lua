@@ -21,18 +21,30 @@ varying mediump vec3 normalCoord;
 #ifdef SHADOWS
 varying highp vec4 lightSpace;
 #endif
+#ifdef INSTANCED
+uniform highp sampler2D g_InstanceMap;
+uniform float InstanceMapWidth;
+#endif
 
 void main()
 {
 #ifdef TEXTURED
 	texCoord = TEXCOORD0;
 #endif
-	position = (g_MVMatrix*POSITION0).xyz;
+	highp vec4 pos=POSITION0;
+#ifdef INSTANCED
+	vec2 tc=vec2(((gl_InstanceID*2+1)/InstanceMapWidth)/2.0,0.5);
+	vec4 itex=texture2D(g_InstanceMap, tc);
+	pos.x-=itex.r*512.0;
+	pos.y+=itex.g*512.0;
+	pos.z-=itex.b*512.0;
+#endif
+	position = (g_MVMatrix*pos).xyz;
 	normalCoord = normalize((g_NMatrix*vec4(NORMAL0.xyz,0)).xyz);
 #ifdef SHADOWS
 	lightSpace = g_LMatrix*vec4(position,1.0);
 #endif
-	gl_Position = g_MVPMatrix * POSITION0;
+	gl_Position = g_MVPMatrix * pos;
 }
 ]]
 
@@ -41,6 +53,7 @@ local LightingFShader=[[
 uniform lowp vec4 g_Color;
 uniform highp vec4 lightPos;
 uniform lowp float ambient;
+uniform highp vec4 cameraPos;
 #ifdef TEXTURED
 uniform lowp sampler2D g_Texture;
 #endif
@@ -102,6 +115,8 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
+	if ((projCoords.x<0.0)||(projCoords.y<0.0)||(projCoords.x>=1.0)||(projCoords.y>=1.0))
+		return 0.0;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     float closestDepth = texture2D(g_ShadowMap, projCoords.xy).r; 
     // get depth of current fragment from light's perspective
@@ -110,7 +125,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 	float bias = 0.005;
 	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;  
 	if(projCoords.z > 1.0)
-        shadow = 0.0;
+        shadow = 1.0;
 	return 1.0-shadow;
 }  
 #endif
@@ -126,24 +141,24 @@ void main()
 	highp vec3 normal = normalize(normalCoord);
 	
 	highp vec3 lightDir = normalize(lightPos.xyz - position.xyz);
-	highp vec3 viewDir = normalize(-position.xyz);
+	highp vec3 viewDir = normalize(cameraPos.xyz-position.xyz);
 #ifdef NORMMAP	
 	normal=perturb_normal(normal, viewDir, texCoord);
 #endif	
 	
 	mediump float diff = max(0.0, dot(normal, lightDir));
 	mediump float spec =0.0;
-	if (diff>0.0)
-	{
-		mediump float nh = max(0.0, dot(reflect(-lightDir,normal),viewDir));
-		spec = pow(nh, 32.0);
-	}
-
     // calculate shadow
 	float shadow=1.0;
 #ifdef SHADOWS
     shadow = ShadowCalculation(lightSpace);       
 #endif	
+	if (diff>0.0)
+	{
+		mediump float nh = max(0.0, dot(reflect(-lightDir,normal),viewDir));
+		spec = pow(nh, 32.0)*shadow;
+	}
+
 	diff=max(diff*shadow,ambient);
 	gl_FragColor = vec4(color0 * diff + color1 * spec, 1);
 }
@@ -164,6 +179,7 @@ local LightingShaderConstants={
 {name="g_LMatrix",type=Shader.CMATRIX, vertex=true},
 {name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
 {name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
+{name="cameraPos",type=Shader.CFLOAT4,mult=1,vertex=false},
 {name="ambient",type=Shader.CFLOAT,mult=1,vertex=false}}
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false}
@@ -171,59 +187,72 @@ LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false}
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_ShadowMap",type=Shader.CTEXTURE,mult=1,vertex=false}
+LightingShaderConstants[#LightingShaderConstants+1]=
+	{name="g_InstanceMap",type=Shader.CTEXTURE,mult=1,vertex=true}
+LightingShaderConstants[#LightingShaderConstants+1]=
+	{name="InstanceMapWidth",type=Shader.CFLOAT,mult=1,vertex=true}
 
 -- Shaders defs
-if application:getDeviceInfo()~="WinRT" then
-
-Lighting.normal_shader_b = Shader.new(
-LightingVShader,LightingFShader,
-Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
-
-
-Lighting.normal_shader_bs = Shader.new(
-[[#define SHADOWS
-]]..LightingVShader,
-[[#define SHADOWS
-]]..LightingFShader,
-Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
-
-
-Lighting.normal_shader_t = Shader.new(
-[[#define TEXTURED
-]]..LightingVShader,
-[[#define TEXTURED
-]]..LightingFShader,
-Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
-
-Lighting.normal_shader_ts = Shader.new(
-[[#define SHADOWS
-#define TEXTURED
-]]..LightingVShader,
-[[#define SHADOWS
-#define TEXTURED
-]]..LightingFShader,
-Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
-
-
-Lighting.normal_shader_tn = Shader.new(
-[[#define TEXTURED
-#define NORMMAP
-]]..LightingVShader,
-[[#define TEXTURED
-#define NORMMAP
-]]..LightingFShader,
-Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
-
-Lighting.allShaders={Lighting.normal_shader_t,Lighting.normal_shader_b,Lighting.normal_shader_bs,Lighting.normal_shader_ts,Lighting.normal_shader_tn}
-else
-Lighting.allShaders={}
+Lighting._shaders={}
+Lighting.getShader=function(code)
+	local cmap={
+		{"t","TEXTURED"},
+		{"s","SHADOWS"},
+		{"n","NORMMAP"},
+		{"i","INSTANCED"},
+	}
+	local lcode,ccode="",""
+	for _,k in ipairs(cmap) do
+		if code:find(k[1]) then
+			lcode=lcode..k[1]
+			ccode=ccode.."#define "..k[2].."\n"
+		end
+	end
+	if application:getDeviceInfo()~="WinRT" then
+		if not Lighting._shaders[lcode] then
+		 Lighting._shaders[lcode]=Shader.new(
+			ccode..LightingVShader,
+			ccode..LightingFShader,
+			Shader.FLAG_FROM_CODE,
+			LightingShaderConstants,LightingShaderAttrs)
+		end
+	end
+	return Lighting._shaders[lcode],lcode
 end
 
 function Lighting.setLight(x,y,z,a)
 	Lighting.light={x,y,z,a}
-	for _,v in ipairs(Lighting.allShaders) do
+	for k,v in pairs(Lighting._shaders) do
 	 v:setConstant("lightPos",Shader.CFLOAT4,1,x,y,z,1)
 	 v:setConstant("ambient",Shader.CFLOAT,1,a)
+	end
+end
+
+Lighting.lightTarget={0,0,0,1}
+function Lighting.setLightTarget(x,y,z,d)
+	Lighting.lightTarget={x,y,z,d}
+end
+
+function Lighting.setCamera(x,y,z)
+	Lighting.camera={x,y,z}
+	for k,v in pairs(Lighting._shaders) do
+	 v:setConstant("cameraPos",Shader.CFLOAT4,1,x,y,z,1)
+	end
+end
+Lighting._sprites={}
+function Lighting.setSpriteMode(sprite,mode)
+	local sh,sc=Lighting.getShader(mode)
+	sprite:setShader(sh)
+	local lsc=sprite._lighting_Mode
+	if lsc then
+		Lighting._sprites[lsc]=Lighting._sprites[lsc] or {}
+		Lighting._sprites[lsc][sprite]=nil
+	end
+	sprite._lighting_Mode=sc
+	Lighting._sprites[sc]=Lighting._sprites[sc] or {}
+	Lighting._sprites[sc][sprite]=sprite
+	if sc:find("s") then
+		sprite:setTexture(Lighting.getShadowMap(),2)
 	end
 end
 
@@ -265,15 +294,17 @@ function Lighting.computeShadows(scene)
 	local p=Lighting.lightProj or Matrix.new()
 	Lighting.lightProj=p
 	local lz=30
-	p:orthographicProjection(-lz,lz,-lz,lz,0.1,lz*2)
+	local lz=Lighting.lightTarget[4]
+	p:perspectiveProjection(120,1,lz/16,lz)
 	local srt=Lighting.getShadowMap()
 	local view=Lighting.shadowview
 	view:setContent(scene)
 	view:setProjection(p)
-	view:lookAt(Lighting.light[1],Lighting.light[2],Lighting.light[3],0,0,0,0,1,0)
+	view:lookAt(Lighting.light[1],Lighting.light[2],Lighting.light[3],Lighting.lightTarget[1],Lighting.lightTarget[2],Lighting.lightTarget[3],0,1,0)
 	p:multiply(view:getTransform())
-	Lighting.normal_shader_bs:setConstant("g_LMatrix",Shader.CMATRIX,1,p:getMatrix())
-	Lighting.normal_shader_ts:setConstant("g_LMatrix",Shader.CMATRIX,1,p:getMatrix())
+	for k,v in pairs(Lighting._shaders) do
+		v:setConstant("g_LMatrix",Shader.CMATRIX,1,p:getMatrix())
+	end
 	Lighting.shadowrt:clear(0)
 	Lighting.shadowrt:draw(view)
 	--stage:addChild(Bitmap.new(Lighting.shadowrt))
