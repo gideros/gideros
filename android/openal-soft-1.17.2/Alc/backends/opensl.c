@@ -51,6 +51,7 @@ typedef struct {
     ALuint curBuffer;
 
     ALuint frameSize;
+    ALboolean stopping;
 } osl_data;
 
 
@@ -130,6 +131,9 @@ static void opensl_callback(SLAndroidSimpleBufferQueueItf bq, void *context)
     osl_data *data = Device->ExtraData;
     ALvoid *buf;
     SLresult result;
+
+    if (data->stopping)
+    	return;
 
     buf = (ALbyte*)data->buffer + data->curBuffer*data->bufferSize;
     aluMixData(Device, buf, data->bufferSize/data->frameSize);
@@ -321,6 +325,7 @@ static ALCboolean opensl_start_playback(ALCdevice *Device)
         }
     }
     /* enqueue the first buffer to kick off the callbacks */
+    data->stopping=AL_FALSE;
     for(i = 0;i < Device->NumUpdates;i++)
     {
         if(SL_RESULT_SUCCESS == result)
@@ -384,6 +389,7 @@ static void opensl_stop_playback(ALCdevice *Device)
     }
     if(SL_RESULT_SUCCESS == result)
     {
+        data->stopping=AL_FALSE;
         SLAndroidSimpleBufferQueueState state;
         do {
             althrd_yield();

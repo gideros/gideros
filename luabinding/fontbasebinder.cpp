@@ -35,6 +35,9 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
     lua_pushinteger(L,FontBase::TLF_REF_BOTTOM); lua_setfield(L,-2,"TLF_REF_BOTTOM");
     lua_pushinteger(L,FontBase::TLF_REF_LINETOP); lua_setfield(L,-2,"TLF_REF_LINETOP");
     lua_pushinteger(L,FontBase::TLF_REF_LINEBOTTOM); lua_setfield(L,-2,"TLF_REF_LINEBOTTOM");
+    lua_pushinteger(L,FontBase::TLF_REF_ASCENT); lua_setfield(L,-2,"TLF_REF_ASCENT");
+    lua_pushinteger(L,FontBase::TLF_REF_DESCENT); lua_setfield(L,-2,"TLF_REF_DESCENT");
+    lua_pushinteger(L,FontBase::TLF_REF_MEDIAN); lua_setfield(L,-2,"TLF_REF_MEDIAN");
 	lua_pushinteger(L,FontBase::TLF_BREAKWORDS); lua_setfield(L,-2,"TLF_BREAKWORDS");
     lua_pushinteger(L,FontBase::TLF_LTR); lua_setfield(L,-2,"TLF_LTR");
     lua_pushinteger(L,FontBase::TLF_NOSHAPING); lua_setfield(L,-2,"TLF_NOSHAPING");

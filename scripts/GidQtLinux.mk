@@ -69,6 +69,7 @@ qt.install: buildqt qt.player tools html5.tools
 	cp -R $(ROOT)/ui/GiderosStudio $(RELEASE)
 	cp -P $(QT)/lib/libqscintilla2_qt5.so* $(RELEASE)
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
+	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Resources/gideros_annot.api	
 	cp -R $(ROOT)/ui/Tools $(RELEASE)/Tools
 	cp $(ROOT)/lua/src/lua $(RELEASE)/Tools
 	cp $(ROOT)/lua/src/luac $(RELEASE)/Tools

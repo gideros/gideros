@@ -358,31 +358,13 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		lines++;
 	}
 
-	//Layout lines of text
-	float yo=0;
-	if (params->flags&TLF_BOTTOM)
-		yo=params->h-y;
-	else if (params->flags&TLF_VCENTER)
-		yo=(params->h-y)/2;
-    if (params->flags&TLF_REF_TOP)
-        yo+=as;
-    else if (params->flags&TLF_REF_BOTTOM)
-        yo-=ds;
-    else if (params->flags&TLF_REF_MIDDLE)
-        yo+=(as-ds)/2;
-    else if (params->flags&TLF_REF_LINETOP)
-        yo+=as+bb;
-    else if (params->flags&TLF_REF_LINEBOTTOM)
-        yo-=ds+bb;
-
+	//Compute block size
 	tl.x = 1e30;
 	tl.y = 1e30;
 	float mx=-1e30,my=-1e30;
 	tl.styleFlags=0;
 	for (size_t k=0;k<tl.parts.size();k++)
 	{
-		tl.parts[k].y+=yo;
-		tl.parts[k].dy+=yo;
 		tl.x=std::min(tl.x,tl.parts[k].x);
 		tl.y=std::min(tl.y,tl.parts[k].y);
 		mx=std::max(mx,tl.parts[k].x+tl.parts[k].w-1);
@@ -399,6 +381,32 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
         tl.bh=0;
     }
 	tl.lines=lines;
+
+	//Layout block vertically
+	float yo=0;
+	if (params->flags&TLF_BOTTOM)
+		yo=params->h-y;
+	else if (params->flags&TLF_VCENTER)
+		yo=(params->h-y)/2;
+	int ref=params->flags&TLF_REF_MASK;
+	switch (ref) {
+	case TLF_REF_TOP: yo+=-tl.y; break;
+	case TLF_REF_BOTTOM: yo+=-tl.y+tl.h; break;
+	case TLF_REF_MIDDLE: yo+=(-tl.y-tl.y+tl.h)/2; break;
+	case TLF_REF_LINETOP: yo+=as+bb; break;
+	case TLF_REF_LINEBOTTOM: yo-=ds+bb; break;
+	case TLF_REF_ASCENT: yo+=as; break;
+	case TLF_REF_DESCENT: yo-=ds; break;
+	case TLF_REF_MEDIAN: yo+=(as-ds)/2; break;
+	}
+
+	for (size_t k=0;k<tl.parts.size();k++)
+	{
+		tl.parts[k].y+=yo;
+		tl.parts[k].dy+=yo;
+	}
+    if (tl.parts.size()!=0)
+    	tl.y+=yo;
 
 	return tl;
 }
