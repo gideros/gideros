@@ -210,7 +210,7 @@ void Java_com_giderosmobile_android_player_Geolocation_onLocationChanged(JNIEnv 
 	s_manager->enqueueEvent(GGEOLOCATION_LOCATION_UPDATE_EVENT, event, 1);
 }
 
-void Java_com_giderosmobile_android_player_Geolocation_onHeadingChanged(JNIEnv *env, jclass clz, jdouble magneticHeading, jdouble trueHeading)
+void Java_com_giderosmobile_android_player_Geolocation_onHeadingChanged(JNIEnv *env, jclass clz, jdouble magneticHeading, jdouble trueHeading, jfloat magX, jfloat magY, jfloat magZ)
 {
 	if (!s_acceptEvents)
 		return;
@@ -218,6 +218,9 @@ void Java_com_giderosmobile_android_player_Geolocation_onHeadingChanged(JNIEnv *
 	ggeolocation_HeadingUpdateEvent *event = (ggeolocation_HeadingUpdateEvent*)malloc(sizeof(ggeolocation_HeadingUpdateEvent));
 	event->magneticHeading = magneticHeading;
 	event->trueHeading = trueHeading;
+	event->magneticX = magX;
+	event->magneticY = magY;
+	event->magneticZ = magZ;
 
 	s_manager->enqueueEvent(GGEOLOCATION_HEADING_UPDATE_EVENT, event, 1);
 }

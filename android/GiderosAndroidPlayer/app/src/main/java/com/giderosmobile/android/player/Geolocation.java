@@ -180,7 +180,7 @@ public class Geolocation
 				        
 				        double magneticHeading = (Math.atan2(x, -y) + Math.PI) * (180 / Math.PI);
 				        
-						onHeadingChanged(magneticHeading, magneticHeading);
+						onHeadingChanged(magneticHeading, magneticHeading, x, y, z);
 					}			
 				};
 							

@@ -20,6 +20,9 @@ typedef struct ggeolocation_HeadingUpdateEvent
 {
     double magneticHeading;
     double trueHeading;
+    double magneticX;
+    double magneticY;
+    double magneticZ;
 } ggeolocation_HeadingUpdateEvent;
 
 typedef struct ggeolocation_ErrorEvent

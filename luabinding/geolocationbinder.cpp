@@ -161,6 +161,12 @@ private:
             lua_setfield(L, -2, "magneticHeading");
             lua_pushnumber(L, event2->trueHeading);
             lua_setfield(L, -2, "trueHeading");
+            lua_pushnumber(L, event2->magneticX);
+            lua_setfield(L, -2, "magneticX");
+            lua_pushnumber(L, event2->magneticY);
+            lua_setfield(L, -2, "magneticY");
+            lua_pushnumber(L, event2->magneticZ);
+            lua_setfield(L, -2, "magneticZ");
         }
         else if (type == GGEOLOCATION_ERROR_EVENT)
         {

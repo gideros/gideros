@@ -247,6 +247,9 @@ private:
 	ggeolocation_HeadingUpdateEvent *event = (ggeolocation_HeadingUpdateEvent*)malloc(sizeof(ggeolocation_HeadingUpdateEvent));		
 	event->magneticHeading = newHeading.magneticHeading;
 	event->trueHeading = newHeading.trueHeading;
+	event->magneticX = newHeading.x;
+	event->magneticY = newHeading.y;
+	event->magneticZ = newHeading.z;
 
 	manager_->enqueueEvent(GGEOLOCATION_HEADING_UPDATE_EVENT, event, 1);
 }
