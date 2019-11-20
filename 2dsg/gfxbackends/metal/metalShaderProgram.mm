@@ -475,7 +475,7 @@ metalShaderProgram::~metalShaderProgram() {
 }
 
 void metalShaderProgram::drawArrays(ShapeType shape, int first,
-		unsigned int count,unsigned int instances=0) {
+		unsigned int count,unsigned int instances) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	MTLPrimitiveType mode = MTLPrimitiveTypeTriangle;
@@ -505,7 +505,7 @@ void metalShaderProgram::drawArrays(ShapeType shape, int first,
 		[encoder() drawPrimitives:mode vertexStart:first vertexCount:count];
 }
 void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances=0) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
