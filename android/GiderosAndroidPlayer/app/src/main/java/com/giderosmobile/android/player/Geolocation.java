@@ -281,5 +281,5 @@ public class Geolocation
     }
 
 	private static native void onLocationChanged(double latitude, double longitude, double altitude, double speed, double course, double accuracy, int type);
-	private static native void onHeadingChanged(double magneticHeading, double trueHeading);
+	private static native void onHeadingChanged(double magneticHeading, double trueHeading, float magX, float magY, float magZ);
 }

@@ -460,7 +460,7 @@ LOCAL_SRC_FILES += \
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src \
 					$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src/loaders
 
-LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lOpenSLES -latomic
+LOCAL_LDLIBS := -lGLESv3 -ldl -llog -lOpenSLES -latomic
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
 LOCAL_STATIC_LIBRARIES := openal

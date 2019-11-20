@@ -537,7 +537,7 @@ void dx11ShaderProgram::updateConstants() {
 	}
 }
 void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
-		unsigned int count,unsigned int instances=0) {
+		unsigned int count,unsigned int instances) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();
@@ -620,12 +620,12 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 		exit(1);
 	}
 	if (instances)
-		g_devcon->Draw(count, instances, 0, 0);
+		g_devcon->DrawInstanced(count, instances, 0, 0);
 	else
 		g_devcon->Draw(count, 0);
 }
 void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances=0) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();
