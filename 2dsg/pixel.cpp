@@ -192,11 +192,15 @@ void Pixel::updateTexture()
 {
     TextureBase* texture = texture_[0];
 
-    float tw = texture->data->width;
-    float th = texture->data->height;
+    float tx = tx_;
+    float ty = ty_;
+    float tw = tw_;
+    float th = th_;
 
     float etw = texture->data->exwidth;
     float eth = texture->data->exheight;
+    float u0 = tx / etw;
+    float v0 = ty / eth;
 
     if (isStretching_ || isNinePatch_ || texture->data->parameters.wrap == eRepeat) {
         float w, h, x, y;
@@ -216,6 +220,8 @@ void Pixel::updateTexture()
             x = -x_*tsx / etw;
             y = -y_*tsy / eth;
         }
+        x+= u0;
+        y+= v0;
 
         if (isNinePatch_) {
     		float vt=insett_t_*pfy;
@@ -304,10 +310,10 @@ void Pixel::updateTexture()
     float rx = 0.5 - (0.5 + x_) * rw / w;
     float ry = 0.5 - (0.5 + y_) * rh / h;
 
-    tx1 = u * rx;
-    ty1 = v * ry;
-    tx2 = u * (rw / w + rx);
-    ty2 = v * (rh / h + ry);
+    tx1 = u0 + u * rx;
+    ty1 = v0 + v * ry;
+    tx2 = u0 + u * (rw / w + rx);
+    ty2 = v0 + v * (rh / h + ry);
 
     texcoords[0] = Point2f(tx1,ty1);
     texcoords[1] = Point2f(tx2,ty1);
@@ -331,6 +337,22 @@ bool Pixel::setDimensions(float width,float height,bool forLayout)
     return Sprite::setDimensions(width, height);
 }
 
+void Pixel::setTextureRegion(BitmapData *bitmapdata,int slot)
+{
+	setTexture(bitmapdata->texture(),slot,NULL);
+
+    if (slot==0)
+    {
+    	int x,y,width,height;
+    	bitmapdata->getRegion(&x, &y, &width, &height, NULL,NULL,NULL,NULL);
+        tx_=x;
+        ty_=y;
+        tw_=width;
+        th_=height;
+        updateTexture();
+ 	}
+}
+
 void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
 {
     if (texture)
@@ -342,7 +364,13 @@ void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
 
     if (slot==0)
     {
-        if (texture) updateTexture();
+        if (texture) {
+            tx_=0;
+            ty_=0;
+            tw_=texture->data->width;
+            th_=texture->data->height;
+        	updateTexture();
+        }
  	}
 }
 

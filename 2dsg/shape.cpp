@@ -13,10 +13,13 @@
 #define M_PI 3.141592654
 #endif
 
+#ifndef __EMSCRIPTEN__
+//emscripten has it already
 static bool isnan(float x)
 {
     return x != x;
 }
+#endif
 
 class Tesselator
 {

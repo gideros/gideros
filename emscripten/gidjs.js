@@ -22,8 +22,8 @@ Module.preRun
 
 				var loader=new Promise(function (resolve,reject) { resolve(); });
 				Module['addRunDependency']("gidPlugins");
-				var r=Module['read'];
-				Module['read']=function (l) {
+				var r=read_;
+				read_=function (l) {
 					if (l.startsWith("local:"))
 						return l.substring(6);
 					else

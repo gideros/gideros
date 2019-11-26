@@ -64,8 +64,27 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     	case PK_UINT: gltype=GL_UNSIGNED_INT; break;
     	case PK_FLOAT: gltype=GL_FLOAT; break;
     }
+    GLuint iformat=glformat;
+    const void *idata=data;
+    if (ogl2ShaderEngine::isGLES&&(ogl2ShaderEngine::version>=3)) {
+    	if (glformat==GL_DEPTH_COMPONENT) {
+    		iformat=GL_DEPTH_COMPONENT24;
+    		idata=NULL; //Don't supply data for depth component
+    	}
+    }
     if (data)
-    	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, glformat, gltype, data);
+    	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, iformat, width, height, 0, glformat, gltype, idata);
+
+    if (((!ogl2ShaderEngine::isGLES)||(ogl2ShaderEngine::version>=3))&&(format==FMT_DEPTH)) {
+    	if (filtering==FILT_LINEAR) {
+        	//Filtering enabled with depth: assume shadow sampling
+    		GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE , GL_COMPARE_REF_TO_TEXTURE);
+    		GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC , GL_LEQUAL);
+    	}
+    	else {
+    		GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE , GL_NONE);
+    	}
+    }
 
     GLCALL glBindTexture(GL_TEXTURE_2D, oldTex);
 }
@@ -112,6 +131,7 @@ void ogl2ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     	case FMT_RGBA: glformat=GL_RGBA; break;
     	case FMT_Y: glformat=GL_LUMINANCE; break;
     	case FMT_YA: glformat=GL_LUMINANCE_ALPHA; break;
+    	case FMT_DEPTH: glformat=GL_DEPTH_COMPONENT; break;
     }
     GLuint gltype=GL_UNSIGNED_BYTE;
     switch (packing)
@@ -120,9 +140,20 @@ void ogl2ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     	case PK_USHORT_565: gltype=GL_UNSIGNED_SHORT_5_6_5; break;
     	case PK_USHORT_4444: gltype=GL_UNSIGNED_SHORT_4_4_4_4; break;
     	case PK_USHORT_5551: gltype=GL_UNSIGNED_SHORT_5_5_5_1; break;
+    	case PK_USHORT: gltype=GL_UNSIGNED_SHORT; break;
+    	case PK_UINT: gltype=GL_UNSIGNED_INT; break;
+    	case PK_FLOAT: gltype=GL_FLOAT; break;
+    }
+    GLuint iformat=glformat;
+    const void *idata=data;
+    if (ogl2ShaderEngine::isGLES&&(ogl2ShaderEngine::version>=3)) {
+    	if (glformat==GL_DEPTH_COMPONENT) {
+    		iformat=GL_DEPTH_COMPONENT24;
+    		idata=NULL; //Don't supply data for depth component
+    	}
     }
     if (data)
-    	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, glformat, gltype, data);
+    	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, iformat, width, height, 0, glformat, gltype, idata);
 
     GLCALL glBindTexture(GL_TEXTURE_2D, oldTex);
 }

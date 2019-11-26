@@ -72,7 +72,7 @@ std::string getLanguage()
 void openUrl(const char* url)
 {
 	EM_ASM_({
-		window.open(Pointer_stringify($0));
+		window.open(UTF8ToString($0));
 	},url);
 }
 

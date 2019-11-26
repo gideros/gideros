@@ -74,7 +74,7 @@ static int s_open(const char *pathname, int flags)
     
     int local= 0;
 #ifdef __EMSCRIPTEN__
-    local=EM_ASM_INT({ return Module.requestFile(Pointer_stringify($0)); },pathname);
+    local=EM_ASM_INT({ return Module.requestFile(UTF8ToString($0)); },pathname);
 #endif
 
     if ( drive != 0 || s_zipFile.empty() || local )

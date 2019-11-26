@@ -41,32 +41,26 @@ int PixelBinder::create(lua_State* L)
 
     Pixel* bitmap = new Pixel(application->getApplication());
 
-    if (binder.isInstanceOf("TextureRegion", 1)) {
-        BitmapData *bitmapData = static_cast<BitmapData*>(binder.getInstance("TextureRegion", 1));
-
-        bitmap->setTexture(bitmapData->texture(), 0, NULL);
-        bitmap->setColor(1, 1, 1, 1);
-
-        int x, y, w, h, dx1, dy1, dx2, dy2;
-        bitmapData->getRegion(&x, &y, &w, &h, &dx1, &dy1, &dx2, &dy2);
-        bitmap->setTexturePosition(x, y);
-        bitmap->setDimensions(w, h);
-
-        binder.pushInstance("Pixel", bitmap);
-        return 1;
-    }
-
     if (lua_type(L, 3) == LUA_TTABLE) {
          bitmap->setStretching(true);
+         int tw,th;
 
-        TextureBase *textureBase = NULL;
-        textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 3));
-
-        bitmap->setTexture(textureBase, 0, NULL);
+         if (binder.isInstanceOf("TextureRegion", 3)) {
+            BitmapData *bitmapData = static_cast<BitmapData*>(binder.getInstance("TextureRegion", 3));
+ 			bitmap->setTextureRegion(bitmapData, 0);
+ 	    	bitmapData->getRegion(NULL,NULL,&tw,&th, NULL,NULL,NULL,NULL);
+         }
+         else {
+			TextureBase *textureBase = NULL;
+			textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 3));
+			bitmap->setTexture(textureBase, 0, NULL);
+			tw=textureBase->data->width;
+			th=textureBase->data->height;
+        }
         bitmap->setColor(1, 1, 1, 1);
 
-        lua_Number w = luaL_optnumber(L, 1, textureBase->data->width);
-        lua_Number h = luaL_optnumber(L, 2, textureBase->data->height);
+        lua_Number w = luaL_optnumber(L, 1, tw);
+        lua_Number h = luaL_optnumber(L, 2, th);
         bitmap->setDimensions(w, h);
 
         binder.pushInstance("Pixel", bitmap);
@@ -74,14 +68,24 @@ int PixelBinder::create(lua_State* L)
     }
 
     if (lua_type(L, 1) == LUA_TTABLE) {
-        TextureBase *textureBase = NULL;
-        textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 1));
+        int tw,th;
 
-        bitmap->setTexture(textureBase, 0, NULL);
+        if (binder.isInstanceOf("TextureRegion", 1)) {
+           BitmapData *bitmapData = static_cast<BitmapData*>(binder.getInstance("TextureRegion", 1));
+			bitmap->setTextureRegion(bitmapData, 0);
+	    	bitmapData->getRegion(NULL,NULL,&tw,&th, NULL,NULL,NULL,NULL);
+        }
+        else {
+			TextureBase *textureBase = NULL;
+			textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 1));
+			bitmap->setTexture(textureBase, 0, NULL);
+			tw=textureBase->data->width;
+			th=textureBase->data->height;
+       }
         bitmap->setColor(1, 1, 1, 1);
 
-        lua_Number w = luaL_optnumber(L, 2, textureBase->data->width);
-        lua_Number h = luaL_optnumber(L, 3, textureBase->data->height);
+        lua_Number w = luaL_optnumber(L, 2, tw);
+        lua_Number h = luaL_optnumber(L, 3, th);
         bitmap->setDimensions(w, h);
 
         lua_Number sx = luaL_optnumber(L, 4, 1.0);
@@ -218,13 +222,7 @@ int PixelBinder::setTexture(lua_State *L)
 
     if (binder.isInstanceOf("TextureRegion", 2)) {
         BitmapData *bitmapData = static_cast<BitmapData*>(binder.getInstance("TextureRegion", 2));
-        TextureBase *textureBase = bitmapData->texture();
-        bitmap->setStretching(false);
-        bitmap->setTexture(textureBase, 0, NULL);
-        int x, y, w, h, dx1, dy1, dx2, dy2;
-        bitmapData->getRegion(&x, &y, &w, &h, &dx1, &dy1, &dx2, &dy2);
-        bitmap->setTexturePosition(x, y);
-        bitmap->setDimensions(w, h);
+        bitmap->setTextureRegion(bitmapData, luaL_optinteger(L,3,0));
         return 0;
     }
 

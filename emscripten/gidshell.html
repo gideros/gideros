@@ -135,7 +135,7 @@ GIDEROS-FBINSTANT-END -->
             dump(text + '\n'); // fast, straight to the real console
           } else {
               console.error(text);
-        	  Module.gidAbort(text);
+        	  Module.onAbort(text);
           }
         },
         luaPrint: function (text) { Module.print(text); },
@@ -179,7 +179,7 @@ GIDEROS-FBINSTANT-END -->
       		document.getElementById(type).style.display="block";
       		Module.uploadCrash(type,detail);
         },
-        gidAbort: function (what) {
+        onAbort: function (what) {
         	if (what.includes('ALLOW_MEMORY_GROWTH=1'))
         		Module.showError("memoryErr",what);
         	else if (what.includes('-s WASM=0'))

@@ -133,26 +133,26 @@ G_API void gui_show(g_id gid)
 /*		if (d->Button1.empty())
 		{
 			EM_ASM_({
-				alert(Pointer_stringify($0));
+				alert(UTF8ToString($0));
 				},d->Message.c_str());
 			gui_eventAlert(gid,1,"OK");
 		}
 		else
 		{
 			int res=EM_ASM_INT({
-				return confirm(Pointer_stringify($0));
+				return confirm(UTF8ToString($0));
 				},d->Message.c_str());
 			gui_eventAlert(gid,res?1:0,res?"OK":"Cancel");
 		}*/
 		EM_ASM_({
 			var cb=$7;
 			Module.gui_displayDialog($0,
-			Pointer_stringify($1),
-			Pointer_stringify($2),
+			UTF8ToString($1),
+			UTF8ToString($2),
 			null,
-			Pointer_stringify($3),
-			$4?Pointer_stringify($4):null,
-			$5?Pointer_stringify($5):null,
+			UTF8ToString($3),
+			$4?UTF8ToString($4):null,
+			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
 			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);
@@ -168,7 +168,7 @@ G_API void gui_show(g_id gid)
 	{
 	/*
 		const char *res=(const char *) EM_ASM_INT({
-			var t=prompt(Pointer_stringify($0),Pointer_stringify($1));
+			var t=prompt(UTF8ToString($0),UTF8ToString($1));
 			if (t==null) return 0;
 			return allocate(intArrayFromString(t), 'i8', ALLOC_STACK);
 			},d->Message.c_str(),d->Text.c_str());
@@ -178,12 +178,12 @@ G_API void gui_show(g_id gid)
 		EM_ASM_({
 			var cb=$7;
 			Module.gui_displayDialog($0,
-			Pointer_stringify($1),
-			Pointer_stringify($2),
-			$8?Pointer_stringify($8):null,
-			Pointer_stringify($3),
-			$4?Pointer_stringify($4):null,
-			$5?Pointer_stringify($5):null,
+			UTF8ToString($1),
+			UTF8ToString($2),
+			$8?UTF8ToString($8):null,
+			UTF8ToString($3),
+			$4?UTF8ToString($4):null,
+			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
 			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);

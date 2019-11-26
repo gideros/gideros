@@ -55,11 +55,11 @@
 #define OPENGL_DESKTOP
 #elif EMSCRIPTEN
 #define	OPENGL_ES
-    #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
+    #include <GLES3/gl3.h>
+//    #include <GLES3/gl3ext.h>
 #elif RASPBERRY_PI
-    #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
+    #include <GLES3/gl3.h>
+//    #include <GLES3/gl3ext.h>
 #define OPENGL_ES
 #else
 #include <GL/glew.h>
@@ -189,8 +189,9 @@ class ogl2ShaderEngine : public ShaderEngine
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
 	int devWidth,devHeight;
 	GLint defaultFramebuffer;
-    bool isGLES;
 public:
+    static bool isGLES;
+    static float version;
     ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();
 	const char *getVersion();

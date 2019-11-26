@@ -29,14 +29,14 @@ int lastGLWidth=0,lastGLHeight=0;
 static void errorAbort(const char *detail)
 {
 	const char *type="genErr";
-	EM_ASM_( { Module.showError(Pointer_stringify($0),Pointer_stringify($1)) }, type, detail);
+	EM_ASM_( { Module.showError(UTF8ToString($0),UTF8ToString($1)) }, type, detail);
 	emscripten_force_exit(1);
 }
 
 static void errorLua(const char *detail)
 {
 	const char *type="luaErr";
-	EM_ASM_( { Module.showError(Pointer_stringify($0),Pointer_stringify($1)) }, type, detail);
+	EM_ASM_( { Module.showError(UTF8ToString($0),UTF8ToString($1)) }, type, detail);
 	emscripten_force_exit(1);
 }
 
@@ -430,7 +430,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE cJSON *JSCall(const char *mtd, cJSON *args)
 	char *sArgs=args?cJSON_PrintUnformatted(args):strdup("null");
 	if (args) cJSON_Delete(args);
 	char *ret=(char *) EM_ASM_INT({
-	 return allocate(intArrayFromString(Module.JSCallJS(Pointer_stringify($0),Pointer_stringify($1))||'null'), 'i8', ALLOC_STACK);
+	 return allocate(intArrayFromString(Module.JSCallJS(UTF8ToString($0),UTF8ToString($1))||'null'), 'i8', ALLOC_STACK);
 	},mtd,sArgs);
 	free(sArgs);
 

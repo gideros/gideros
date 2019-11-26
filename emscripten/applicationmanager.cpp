@@ -71,11 +71,11 @@ static void printJS(const char *str, int len, void *data) {
 		memcpy(m, str, len);
 		m[len] = 0;
 		//printf(m);
-		EM_ASM_( { Module.luaPrint(Pointer_stringify($0)) }, m);
+		EM_ASM_( { Module.luaPrint(UTF8ToString($0)) }, m);
 		free(m);
 	} else {
 		//printf(str);
-		EM_ASM_( { Module.luaPrint(Pointer_stringify($0)) }, str);
+		EM_ASM_( { Module.luaPrint(UTF8ToString($0)) }, str);
 	}
 }
 
@@ -558,7 +558,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 	void ApplicationManager::luaError(const char *error) {
 		if (player_ == true)
 		{
-			EM_ASM_( { Module.luaError(Pointer_stringify($0)) }, error);
+			EM_ASM_( { Module.luaError(UTF8ToString($0)) }, error);
 			running_ = false;
 
 			networkManager_->printToServer(error, -1);
@@ -568,7 +568,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 		}
 		else
 		{
-			EM_ASM_( { Module.luaError(Pointer_stringify($0)) }, error);
+			EM_ASM_( { Module.luaError(UTF8ToString($0)) }, error);
 			throw luaException(error);
 		// g_exit();
 		}

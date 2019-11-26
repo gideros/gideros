@@ -114,8 +114,8 @@ export POPTS
 $(BUILD)/emscripten/plugin_support.em.o: CFLGS+=--llvm-opts "['-disable-inlining']" -fno-rtti -fno-exceptions 
 
 #LINE BELOW FOR WASM
-EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256*1024*1024 'ALLOW_MEMORY_GROWTH=1 BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"' --profiling
-EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap","getValue","UTF8ToString"]'
+EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256MB 'ALLOW_MEMORY_GROWTH=1 BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"' --profiling
+EOPTS+=EXTRA_EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccall','cwrap','getValue','UTF8ToString','loadDynamicLibrary']"
 #EOPTS+=EMCC_FORCE_STDLIBS
 #EOPTS+=EXPORT_ALL=1
 EOPTS+=MAIN_MODULE=2  
@@ -123,13 +123,17 @@ EOPTS+=ASSERTIONS=1
 #EOPTS+=GL_STATE_CACHE=1
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
-
+EOPTS+=USE_WEBGL2=1 WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
+#EOPTS+=ERROR_ON_UNDEFINED_SYMBOLS=0
+#EOPTS+=LINKABLE=1
+EOPTS+=FORCE_FILESYSTEM=1
 ifneq ($(DEBUG),)
 OPTS+=-g4
 EOPTS+=ASSERTIONS=2
 else
 OPTS+=--emit-symbol-map
 endif
+OPTS+=-lidbfs.js
 
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
@@ -228,18 +232,18 @@ keep:
 	grep -vh "invoke_" emscripten/Build/*.syms | sort | uniq | sed -e 's/g\$$//;s/"//g;s/^/KEEP\(/;s/$$/)/' >>emscripten/_keep.c
 	echo "}" >>emscripten/_keep.c
 					
-$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
+$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html #plugins
 	@echo "EMLINK gideros JS"
 	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) @$(BUILD)/exports.list -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
-$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
+$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html #plugins
 	@echo "SYMGEN gideros"
 	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
 	@$(EMCC) $(OBJS) $(LIBS) -g $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 	@grep '(export ' $(BUILD)/gideros-wasm.wast | grep '(func'| cut -d' ' -f3 >$(BUILD)/gideros.esyms
 	@echo "EMLINK gideros WASM"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 	
 
 main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS)) $(addsuffix .js,$(EP_LIBS)))

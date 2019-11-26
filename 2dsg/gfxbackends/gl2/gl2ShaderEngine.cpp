@@ -248,8 +248,11 @@ static const char *stdPSFShaderCode =
 				"}\n";
 #endif
 
+float ogl2ShaderEngine::version=0;
+bool ogl2ShaderEngine::isGLES=false;
+
 const char *ogl2ShaderEngine::getVersion() {
-    return isGLES?"GLES2":"GL2";
+    return isGLES?((version>=3)?"GLES3":"GLES2"):"GL2";
 }
 
 void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
@@ -275,11 +278,13 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 #endif
 #ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
+#ifndef __EMSCRIPTEN__
     GLCALL glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
 	GLCALL glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
 	GLCALL glBindRenderbuffer(GL_RENDERBUFFER, 0);
     GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 	GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+#endif
 #endif
 #else
     GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
@@ -484,7 +489,8 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 	GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
 #endif
 	const char *ver=(const char *) GLCALL glGetString(GL_VERSION);
-	double version=strtod(ver,NULL);
+	while ((*ver)&&(((*ver)<'0')||((*ver)>'9'))) ver++;
+	version=strtod(ver,NULL);
     glog_i("GL Version %f (%s)",version,isGLES?"ES":"Desktop");
 
     ogl2ShaderProgram::supportInstances=((version>=3.0)||((!isGLES)&&(version>=3.1)));

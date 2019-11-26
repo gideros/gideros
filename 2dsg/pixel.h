@@ -4,6 +4,7 @@
 #include "sprite.h"
 #include "graphicsbase.h"
 #include "texturebase.h"
+#include "bitmapdata.h"
 
 #define PIXEL_MAX_TEXTURES 8
 class Pixel : public Sprite
@@ -66,7 +67,7 @@ public:
     }
 
 	void setTexture(TextureBase *texture,int slot, const Matrix4* matrix = NULL);
-
+	void setTextureRegion(BitmapData *bitmapdata,int slot);
     void setTextureMatrix(const Matrix4* matrix);
 
     void setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4);
@@ -115,6 +116,7 @@ private:
     float insetv_t_,insetv_b_,insetv_r_,insetv_l_;
     float insett_t_,insett_b_,insett_r_,insett_l_;
     float minw_,minh_;
+	float tx_,ty_,tw_,th_; //Texture coordinates in texels
 };
 
 #endif
