@@ -232,12 +232,12 @@ keep:
 	grep -vh "invoke_" emscripten/Build/*.syms | sort | uniq | sed -e 's/g\$$//;s/"//g;s/^/KEEP\(/;s/$$/)/' >>emscripten/_keep.c
 	echo "}" >>emscripten/_keep.c
 					
-$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html #plugins
+$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo "EMLINK gideros JS"
 	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
 	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) @$(BUILD)/exports.list -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
-$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html #plugins
+$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo "SYMGEN gideros"
 	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
 	@$(EMCC) $(OBJS) $(LIBS) -g $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
