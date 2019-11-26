@@ -502,6 +502,7 @@ void LibraryTreeWidget::importFolder()
     else
     {
         //Just link
+        basedir=dir.relativeFilePath(basedir);
         QFileInfo baseInfo(basedir);
         QTreeWidgetItem *item = createFolderItem(baseInfo.fileName(),basedir);
 
@@ -776,13 +777,16 @@ void LibraryTreeWidget::refreshFolder(QTreeWidgetItem *item)
                         if ((fi.isDir()&&(nodetype==NODETYPE_FOLDER))||((fi.isFile()&&(nodetype==NODETYPE_FILE)))) {
                             item->addChild(sub);
                             if (fi.isFile()) {
-                                QFileInfo fileInfo(sdata["filename"].toString());
-                                if (fileInfo.suffix().toLower() == "lua")
-                                    dependencyGraph_.removeCode(sdata["filename"].toString());
+                                QString oldName=sdata["filename"].toString();
+                                QFileInfo fileInfo(oldName);
                                 sdata["filename"]=fspath+"/"+fi.fileName(); //Update file path
                                 sub->setData(0, Qt::UserRole, sdata);
-                                if (fileInfo.suffix().toLower() == "lua")
-                                    dependencyGraph_.addCode(sdata["filename"].toString(),sdata["excludeFromExecution"].toBool());
+                                if (fileInfo.suffix().toLower() == "lua") {
+                                    if (dependencyGraph_.hasCode(oldName))
+                                        dependencyGraph_.renameCode(oldName,sdata["filename"].toString());
+                                    else
+                                        dependencyGraph_.addCode(sdata["filename"].toString(),sdata["excludeFromExecution"].toBool());
+                                }
                             }
                         }
                         else {

@@ -30,6 +30,8 @@ public:
     void clear();
 
     void addCode(const QString& code, bool excludeFromExecution);
+    bool hasCode(const QString& code);
+    void renameCode(const QString& oldCode,const QString& newCode);
     void removeCode(const QString& code);
     void addDependency(const QString& code0, const QString& code1);
     void removeDependency(const QString& code0, const QString& code1);

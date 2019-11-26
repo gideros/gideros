@@ -33,6 +33,19 @@ void DependencyGraph::addCode(const QString& code, bool excludeFromExecution)
     vertices_[_(code)] = new Vertex(code, excludeFromExecution);
 }
 
+bool DependencyGraph::hasCode(const QString& code)
+{
+    return vertices_.find(_(code))!=vertices_.end();
+}
+
+void DependencyGraph::renameCode(const QString& oldCode,const QString& newCode)
+{
+    if (oldCode==newCode) return;
+    vertices_[_(newCode)]=vertices_[_(oldCode)];
+    vertices_[_(newCode)]->code=newCode;
+    vertices_.erase(_(oldCode));
+}
+
 void DependencyGraph::removeCode(const QString& code)
 {
     Vertex* vertex = vertices_.find(_(code))->second;
