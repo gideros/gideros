@@ -159,6 +159,8 @@ void GHID::onConnected(struct Gamepad_device * device)
     players.insert(std::pair<int, GController*>(playerId,c));
     ghid_DeviceEvent *event = (ghid_DeviceEvent*)malloc(sizeof(ghid_DeviceEvent));
     event->playerId = playerId;
+    event->product_id = device->productID;
+    event->vendor_id = device->vendorID;
 
     gevent_EnqueueEvent(gid_, callback_s, GHID_CONNECTED_EVENT, event, 1, this);
 }
@@ -173,6 +175,8 @@ void GHID::onDisconnected(struct Gamepad_device * device)
     }
     ghid_DeviceEvent *event = (ghid_DeviceEvent*)malloc(sizeof(ghid_DeviceEvent));
     event->playerId = playerId;
+    event->product_id = device->productID;
+    event->vendor_id = device->vendorID;
 
     gevent_EnqueueEvent(gid_, callback_s, GHID_DISCONNECTED_EVENT, event, 1, this);
 }

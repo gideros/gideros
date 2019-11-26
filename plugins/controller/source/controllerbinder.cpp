@@ -208,6 +208,12 @@ private:
 			
 			lua_pushnumber(L, event2->playerId);
             lua_setfield(L, -2, "playerId");
+
+			lua_pushnumber(L, event2->product_id);
+            lua_setfield(L, -2, "productId");
+
+			lua_pushnumber(L, event2->vendor_id);
+            lua_setfield(L, -2, "vendorId");
         }
 
 		lua_call(L, 2, 0);

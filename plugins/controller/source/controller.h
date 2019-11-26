@@ -93,15 +93,9 @@ typedef struct ghid_TriggerEvent
 typedef struct ghid_DeviceEvent
 {
 	int playerId;
-} ghid_DeviceEvent;
-
-typedef struct ghid_Player
-{
-    int playerId;
     unsigned short vendor_id;
     unsigned short product_id;
-    std::string product;
-} ghid_Player;
+} ghid_DeviceEvent;
 
 enum
 {
