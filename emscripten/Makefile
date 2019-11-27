@@ -215,8 +215,8 @@ $(foreach sub,$(EP_LIBS),$(eval $(call EP_template,$(sub))))
 EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
-EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_" $(BUILD)/*.syms | sed -e 's/g\$$//')))
-EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(sort $(shell grep -vh "invoke_" $(BUILD)/*.syms | sed -e 's/g\$$//')))]
+EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//')))
+EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//')))]
 
 $(BUILD)/lib%.a:
 	@echo "EMAR" $@

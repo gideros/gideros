@@ -21,7 +21,8 @@ static int BUTTONS_OUYA_MAC[15] = {BUTTON_A, BUTTON_X, BUTTON_Y, BUTTON_B, BUTTO
 static int BUTTONS_OUYA_WIN[15] = {BUTTON_A, BUTTON_X, BUTTON_Y, BUTTON_B, BUTTON_L1, BUTTON_R1, BUTTON_L3, BUTTON_R3, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, BUTTON_L2, BUTTON_R2, BUTTON_MENU};
 static int BUTTONS_PS3_MAC[17] = {BUTTON_BACK, BUTTON_L3, BUTTON_R3, BUTTON_MENU, DPAD_UP, DPAD_RIGHT, DPAD_DOWN, DPAD_LEFT, BUTTON_L2, BUTTON_R2, BUTTON_L1, BUTTON_R1, BUTTON_Y, BUTTON_B, BUTTON_A, BUTTON_X, BUTTON_MENU};
 
-static int AXIS_DEFAULT[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+//static int AXIS_DEFAULT[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+static int AXIS_DEFAULT[8] = {0, 1, 4, 3, 2, 2, 5, 6};
 static int AXIS_XBOX_WIN[8] = {0, 1, 4, 3, 2, 2, 5, 6};
 static int AXIS_OUYA_WIN[8] = {0, 1, 5, 4, 2, 3, 6, 7};
 static int AXIS_MOGA_MAC[8] = {0, 1, 2, 3, 6, 7, 5, 4};
@@ -91,7 +92,6 @@ GController::GController(GHID *ghid, unsigned int dID, const char* pname, int bt
     }
     ghid_ = ghid;
     deviceID = dID;
-    name = pname;
 
     xDPad = new GControllerDPadAxis(ghid_, deviceID, true);
     yDPad = new GControllerDPadAxis(ghid_, deviceID, false);

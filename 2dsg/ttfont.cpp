@@ -364,7 +364,8 @@ void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
             maxx = std::max(maxx, xo + width);
             maxy = std::max(maxy, yo + height);
 
-            x += gl.advX+letterSpacing;
+    		gl.advX+=(letterSpacing*scalex);
+            x += gl.advX;
         }
     }
     else {

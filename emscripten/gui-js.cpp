@@ -156,7 +156,7 @@ G_API void gui_show(g_id gid)
 			$6,function(gid,bi,bt,t)
 			{
 			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);
-      			 Runtime.dynCall('viii', cb, [gid,bi,btj]);			      
+      			 dynCall('viii', cb, [gid,bi,btj]);
 			});
 		},gid,d->Title.c_str(),d->Message.c_str(),
 		d->ButtonC.c_str(),
@@ -188,7 +188,7 @@ G_API void gui_show(g_id gid)
 			{
 			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);
 			 var tj=allocate(intArrayFromString(t), 'i8', ALLOC_STACK);
-      			 Runtime.dynCall('viiii', cb, [gid,bi,btj,tj]);			      
+      			 dynCall('viiii', cb, [gid,bi,btj,tj]);
 			});
 		},gid,d->Title.c_str(),d->Message.c_str(),
 		d->ButtonC.c_str(),

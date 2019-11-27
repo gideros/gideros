@@ -2792,7 +2792,7 @@ void Path2D::impressPath(int path, Matrix4 xform,
 
 void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 		TextureData *texture, ShaderEngine::DepthStencil stencil,
-		ShaderProgram *shp, const Matrix4 *textureMatrix) {
+		ShaderProgram *shp, const Matrix4 *textureMatrix,VertexBuffer<unsigned char> *cb) {
 	glPushColor();
 	glMultColor(fill[0], fill[1], fill[2], fill[3]);
 
@@ -2818,9 +2818,19 @@ void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT, 2,
 				texcoords, 4, true, NULL);
 	} else {
-		if (!shp)
-			shp = ShaderProgram::stdBasic;
+	    if (cb&&(!cb->empty()))
+	    {
+			if (!shp)
+				shp = ShaderProgram::stdColor;
+	        shp->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,&((*cb)[0]),cb->size()/4,cb->modified,&cb->bufferCache);
+	        cb->modified=false;
+	    }
+	    else {
+			if (!shp)
+				shp = ShaderProgram::stdBasic;
+	    }
 	}
+
 	shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,
 			&((*vb)[0]), vb->size() / 2, vb->modified, &vb->bufferCache);
 	shp->drawElements(ShaderProgram::TriangleStrip, ib->size(),
@@ -2834,7 +2844,7 @@ void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 
 void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 		TextureData *texture, bool convex, ShaderProgram *shp,
-		const Matrix4 *textureMatrix) {
+		const Matrix4 *textureMatrix,VertexBuffer<unsigned char> *cb) {
 	struct path *p = get_path(path);
 	if (!p)
 		return; //No PATH
@@ -2845,7 +2855,7 @@ void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 			p->is_fill_dirty = 0;
 		}
 
-		if ((texture == NULL)
+		if ((texture == NULL) && ((!cb)||(cb->empty()))
 				&& (convex || (p->fill_counts[0] == 0)
 						|| (p->fill_counts[1] == 0))) {
 			ShaderEngine::DepthStencil stencil;
@@ -2864,7 +2874,7 @@ void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 			impressPath(path, xform, stencil);
 			stencil.sClear = false;
 			fillBounds(p->fill_bounds_vbo, fill, texture, stencil, shp,
-					textureMatrix);
+					textureMatrix,cb);
 			ShaderEngine::Engine->popClip();
 			ShaderEngine::Engine->popDepthStencil();
 		}
@@ -2885,8 +2895,8 @@ void Path2D::strokePath(int path, Matrix4 xform, float line[4]) {
 
 void Path2D::drawPath(int path, Matrix4 xform, float fill[4], float line[4],
 		TextureData *texture, bool convex, ShaderProgram *shp,
-		const Matrix4 *textureMatrix) {
-	fillPath(path, xform, fill, texture, convex, shp, textureMatrix);
+		const Matrix4 *textureMatrix,VertexBuffer<unsigned char> *cb) {
+	fillPath(path, xform, fill, texture, convex, shp, textureMatrix,cb);
 	strokePath(path, xform, line);
 }
 
@@ -2939,7 +2949,7 @@ void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 	float line[4] = { liner_, lineg_, lineb_, linea_ };
 	drawPath(path, Matrix4(), fill, line,
 			texturebase_ ? (texturebase_->data) : NULL, convex_, shader_,
-			&textureMatrix_);
+			&textureMatrix_,&colors_);
 }
 
 void Path2D::extraBounds(float* minx, float* miny, float* maxx,
@@ -2978,6 +2988,79 @@ void Path2D::setPath(const PrPath *ppath) {
 	path_commands(path, ppath->numCommands, ppath->commands, ppath->numCoords,
 			ppath->coords);
 	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
+}
+
+void Path2D::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4)
+{
+	c1_ = c1, a1_ = a1, c2_ = c2, a2_ = a2, c3_ = c3, a3_ = a3, c4_ = c4, a4_ = a4;
+    colors_.resize(16);
+    colors_[0] = ((c1 >> 16) & 0xff) * a1;
+    colors_[1] = ((c1 >> 8) & 0xff) * a1;
+    colors_[2] = (c1 & 0xff) * a1;
+    colors_[3] = 255 * a1;
+    colors_[4] = ((c2 >> 16) & 0xff) * a2;
+    colors_[5] = ((c2 >> 8) & 0xff) * a2;
+    colors_[6] = (c2 & 0xff) * a2;
+    colors_[7] = 255 * a2;
+    colors_[8] = ((c3 >> 16) & 0xff) * a3;
+    colors_[9] = ((c3 >> 8) & 0xff) * a3;
+    colors_[10] = (c3 & 0xff) * a3;
+    colors_[11] = 255 * a3;
+    colors_[12] = ((c4 >> 16) & 0xff) * a4;
+    colors_[13] = ((c4 >> 8) & 0xff) * a4;
+    colors_[14] = (c4 & 0xff) * a4;
+    colors_[15] = 255 * a4;
+    colors_.Update();
+}
+
+int Path2D::getMixedColor(int c1, int c2, float a1,float a2,float a,float &am)
+{
+    int b1 = c1 % 256;
+    int g1 = int(c1/256)%256;
+    int r1 = int(c1/65536)%256;
+    int b2 = c2 % 256;
+    int g2 = int(c2/256)%256;
+    int r2 = int(c2/65536)%256;
+    int r = r1*a+r2*(1-a);
+    int g = g1*a+g2*(1-a);
+    int b = b1*a+b2*(1-a);
+    am= a1*a+a2*(1-a);
+    return int(r)*65536+int(g)*256+int(b);
+}
+
+void Path2D::setGradientWithAngle(int co1, float a1, int co2, float a2, float angle)
+{
+    const float PI =3.141592653589793238463;
+
+    float dirx = cos(angle/180*PI)/2;
+    float diry = sin(angle/180*PI)/2;
+
+    float f1 = 0.5-dirx-diry;
+    float f2 = 0.5+dirx-diry;
+    float f3 = 0.5+dirx+diry;
+    float f4 = 0.5-dirx+diry;
+
+    float fmin = f1 < f2 ? f1 : f2;
+    fmin = fmin < f3 ? fmin : f3;
+    fmin = fmin < f4 ? fmin : f4;
+
+    float fmax = f1 > f2 ? f1 : f2;
+    fmax = fmax > f3 ? fmax : f3;
+    fmax = fmax > f4 ? fmax : f4;
+
+    float fscl = 1/(fmax-fmin);
+    f1 = (f1-fmin)*fscl;
+    f2 = (f2-fmin)*fscl;
+    f3 = (f3-fmin)*fscl;
+    f4 = (f4-fmin)*fscl;
+
+    float ao1,ao2,ao3,ao4;
+    float c1 = getMixedColor(co1,co2,a1,a2,f1,ao1);
+    float c2 = getMixedColor(co1,co2,a1,a2,f2,ao2);
+    float c3 = getMixedColor(co1,co2,a1,a2,f3,ao3);
+    float c4 = getMixedColor(co1,co2,a1,a2,f4,ao4);
+
+    setGradient(c1, ao1, c2, ao2, c3, ao3, c4, ao4);
 }
 
 extern "C" void prFreePath(struct PrPath *svgPath) {

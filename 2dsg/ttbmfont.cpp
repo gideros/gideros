@@ -778,7 +778,8 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     		maxy = std::max(maxy, sizescaley_ * y0);
     		maxy = std::max(maxy, sizescaley_ * y1);
 
-            x += gl.advX+letterSpacing;
+    		gl.advX+=(letterSpacing/sizescalex_);
+            x += gl.advX;
         }
     }
     else {

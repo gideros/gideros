@@ -84,9 +84,26 @@ int Path2DBinder::setFillColor(lua_State* L)
 	Binder binder(L);
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
 	
-	unsigned int color = luaL_optinteger(L, 2, 0);
-	lua_Number alpha = luaL_optnumber(L, 3, 1.0);
-	shape->setFillColor(color, alpha);
+    if (lua_gettop(L) == 9) shape->setGradient(
+                luaL_checknumber(L, 2), luaL_checknumber(L, 3),
+                luaL_checknumber(L, 4), luaL_checknumber(L, 5),
+                luaL_checknumber(L, 6), luaL_checknumber(L, 7),
+                luaL_checknumber(L, 8), luaL_checknumber(L, 9));
+    else if (lua_gettop(L) == 5) shape->setGradient(
+                luaL_checknumber(L, 2), luaL_checknumber(L, 3),
+                luaL_checknumber(L, 2), luaL_checknumber(L, 3),
+                luaL_checknumber(L, 4), luaL_checknumber(L, 5),
+                luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+    else if (lua_gettop(L) == 6) shape->setGradientWithAngle(
+                luaL_checknumber(L, 2), luaL_checknumber(L, 3),
+                luaL_checknumber(L, 4), luaL_checknumber(L, 5),
+                luaL_checknumber(L, 6));
+    else {
+		unsigned int color = luaL_optinteger(L, 2, 0);
+		lua_Number alpha = luaL_optnumber(L, 3, 1.0);
+		shape->setFillColor(color, alpha);
+		shape->clearGradient();
+    }
 
 	return 0;
 }

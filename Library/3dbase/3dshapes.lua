@@ -3,6 +3,7 @@ Mesh3D.MODE_TEXTURE=1
 Mesh3D.MODE_LIGHTING=2 --ie normals
 Mesh3D.MODE_BUMP=4
 Mesh3D.MODE_SHADOW=8
+Mesh3D.MODE_ANIMATED=16
 function Mesh3D:init()
 	self.mode=0
 end
@@ -10,39 +11,30 @@ function Mesh3D:updateMode(set,clear)
 	local nm=(self.mode|(set or 0))&~(clear or 0)
 	if nm~=self.mode then
 		self.mode=nm
-		local s=nil
 		if (nm&Mesh3D.MODE_LIGHTING)>0 then
-			local tc
+			local tc=""
 			if (nm&Mesh3D.MODE_TEXTURE)>0 then
-				tc="t"
-			else
-				tc="b"
+				tc=tc.."t"
+			end
+			if (nm&Mesh3D.MODE_SHADOW)>0 then
+				tc=tc.."s"
 			end
 			if (nm&Mesh3D.MODE_BUMP)>0 then
 				tc=tc.."n"
 			end
-			if (nm&Mesh3D.MODE_SHADOW)>0 then
-				tc=tc.."s"
-				self:setTexture(Lighting.getShadowMap(),2)
+			if (nm&Mesh3D.MODE_ANIMATED)>0 then
+				tc=tc.."a"
 			end
-			s=Lighting["normal_shader_"..tc]
+			Lighting.setSpriteMode(self,tc)
 		end
-		self:setShader(s)
 	end
 end
 
 --Unit Cube
 local Box=Core.class(Mesh3D)
-function Box:init()
-	if not Box.va then
-		Box.va={
-			-1,-1,-1, 1,-1,-1, 1,1,-1, -1,1,-1,
-			-1,-1,1, 1,-1,1, 1,1,1, -1,1,1,
-			-1,-1,-1, 1,-1,-1, 1,-1,1, -1,-1,1,
-			-1,1,-1, 1,1,-1, 1,1,1, -1,1,1,
-			-1,-1,-1, -1,1,-1, -1,1,1, -1,-1,1,
-			1,-1,-1, 1,1,-1, 1,1,1, 1,-1,1,
-		}
+function Box:init(w,h,d)
+	w=w or 1 h=h or 1 d=d or 1
+	if not Box.ia then
 		Box.ia={
 			1,2,3,1,3,4,
 			5,6,7,5,7,8,
@@ -59,15 +51,23 @@ function Box:init()
 			1,0,0,1,0,0,1,0,0,1,0,0,
 			}
 	end
+	self._va={
+			-w,-h,-d, w,-h,-d, w,h,-d, -w,h,-d,
+			-w,-h,d, w,-h,d, w,h,d, -w,h,d,
+			-w,-h,-d, w,-h,-d, w,-h,d, -w,-h,d,
+			-w,h,-d, w,h,-d, w,h,d, -w,h,d,
+			-w,-h,-d, -w,h,-d, -w,h,d, -w,-h,d,
+			w,-h,-d, w,h,-d, w,h,d, w,-h,d,
+		}
 	self:setGenericArray(3,Shader.DFLOAT,3,24,Box.na)
-	self:setVertexArray(Box.va)
+	self:setVertexArray(self._va)
 	self:setIndexArray(Box.ia)
 	self._va=Box.va self._ia=Box.ia
 end
-function Box:mapTexture(texture)
+function Box:mapTexture(texture,sw,sh)
 	self:setTexture(texture)
 	if texture then
-		local tw,th=texture:getWidth(),texture:getHeight()
+		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
 		self:setTextureCoordinateArray{
 				0,0,tw,0,tw,th,0,th,
 				0,0,tw,0,tw,th,0,th,
@@ -249,12 +249,11 @@ function Cylinder:getCollisionShape()
 	return self._r3dshape
 end
 
-D3={
-	Mesh=Mesh3D,
-	Cube=Box,
-	Sphere=Sphere,
-	Cylinder=Cylinder
-}
+D3=D3 or {}
+D3.Mesh=Mesh3D
+D3.Cube=Box
+D3.Sphere=Sphere
+D3.Cylinder=Cylinder
 
 D3.checkCCW=function(v,i,f)
 	local fi=1

@@ -386,10 +386,13 @@ void flushDrive(int drive)
 {
  if (drive==1)
  {
-  printf("Sync FS\n");
   EM_ASM({
-   FS.syncfs(function (err) {
-           });
+   if (!FS.gidSyncing) {
+	   FS.gidSyncing=true;
+	   FS.syncfs(function (err) {
+		   FS.gidSyncing=false;
+	           });
+   }
   });
  }
 }

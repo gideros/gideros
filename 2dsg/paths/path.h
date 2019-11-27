@@ -14,6 +14,7 @@ private:
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
+    int getMixedColor(int c1, int c2, float a1, float a2, float a, float &ao);
 
 	TextureBase* texturebase_;
 	Matrix4 textureMatrix_;
@@ -21,6 +22,9 @@ private:
     float filla_,fillr_,fillg_,fillb_;
     float linea_,liner_,lineg_,lineb_;
     bool convex_;
+    int c1_, c2_, c3_, c4_;
+    float a1_, a2_, a3_, a4_;
+    VertexBuffer<unsigned char> colors_;
 public:
     struct PathPoint {
     	float x;
@@ -39,12 +43,26 @@ public:
 	void getPathPoints(float offset, float advance,int max, float flatness, int maxsub,std::vector<PathPoint> &points);
 	static int buildPath(PrPath *);
 	static void removePath(int);
-	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL);
+	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
 	static void strokePath(int path,Matrix4 xform,float line[4]);
-	static void fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL);
+	static void fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
 	static void impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil);
-	static void fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL);
+	static void fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
 	static void getPathBounds(int path,bool fill,bool stroke,float *minx,float *miny,float *maxx,float *maxy);
+    void setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4);
+    bool hasGradient()
+    {
+        return !colors_.empty();
+    }
+    void getGradient(int &c1, float &a1, int &c2, float &a2, int &c3, float &a3, int &c4, float &a4)
+    {
+        c1 = c1_, a1 = a1_, c2 = c2_, a2 = a2_, c3 = c3_, a3 = a3_, c4 = c4_, a4 = a4_;
+    }
+    void setGradientWithAngle(int co1, float a1, int co2, float a2, float angle);
+    void clearGradient()
+    {
+        colors_.clear();
+    }
 };
 
 

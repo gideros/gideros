@@ -86,6 +86,7 @@ Module.preRun
 			// Initial syncfs to get existing saved files.
 			Module['addRunDependency']('syncfs');
 
+			FS.gidSyncing=false;
 			FS.mkdir('/documents');
 			FS.mount(IDBFS, {}, '/documents');
 			FS.documentsOk = true;
@@ -176,13 +177,13 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 		var buffer = _malloc(byteArray.length);
 		HEAPU8.set(byteArray, buffer);
 		if (onload)
-			Runtime.dynCall('viiiiii', onload, [ handle, arg, buffer,
+			dynCall('viiiiii', onload, [ handle, arg, buffer,
 					byteArray.length, http.status, hdrs ]);
 		if (free)
 			_free(buffer);
 		/*
 		 * } else { console.log(url+" ERROR"); if (onerror)
-		 * Runtime.dynCall('viiii', onerror, [handle, arg, http.status,
+		 * dynCall('viiii', onerror, [handle, arg, http.status,
 		 * http.statusText]); }
 		 */
 		delete Browser.wgetRequests[handle];
@@ -191,7 +192,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	// ERROR
 	http.onerror = function http_onerror(e) {
 		if (onerror) {
-			Runtime.dynCall('viiii', onerror, [ handle, arg, http.status,
+			dynCall('viiii', onerror, [ handle, arg, http.status,
 					http.statusText ]);
 		}
 		delete Browser.wgetRequests[handle];
@@ -200,8 +201,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	// PROGRESS
 	http.onprogress = function http_onprogress(e) {
 		if (onprogress)
-			Runtime
-					.dynCall(
+					dynCall(
 							'viiii',
 							onprogress,
 							[
