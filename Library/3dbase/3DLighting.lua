@@ -146,7 +146,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 	if ((projCoords.x<0.0)||(projCoords.y<0.0)||(projCoords.x>=1.0)||(projCoords.y>=1.0))
 		return 1.0;
 	projCoords.z-=0.001; //BIAS
-#ifdef GLES	
+#ifdef GLES2	
 	float shadow=texture2D(g_ShadowMap, projCoords.xyz); 
 #else
 	//float shadow=shadow2D(g_ShadowMap, projCoords.xyz).r; 	

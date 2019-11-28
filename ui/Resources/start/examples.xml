@@ -145,9 +145,15 @@
 				/>
 
 	<example 	name="3D Horse"
-				description="Drawing and rotating 3D horse created"
+				description="Drawing and rotating a 3D horse"
 				path="Graphics3D/3D-Horse/3D-Horse.gproj"
 				image="3dhorse.png"
+				/>
+
+	<example 	name="3D Animation"
+				description="Loading and animating a 3D model"
+				path="Graphics3D/3D-Anim/3D-Anim.gproj"
+				image="3danim.png"
 				/>
 	
 </category>

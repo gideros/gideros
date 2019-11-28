@@ -1,0 +1,46 @@
+<project>
+ <properties touchToMouse="1" html5_symbols="0" encryptAssets="0" app_icon="" tv_icon="" osx_signingId="" win_domain="giderosmobile.com" encryptCode="0" html5_mem="256" fps="60" html5_fbload="100" osx_org="GiderosMobile" logicalWidth="320" osx_bundle="com.yourdomain." osx_installerId="" windowWidth="0" winrt_package="com.yourdomain.yourapp" winrt_org="GiderosMobile" html5_fbinstant="0" mouseTouchOrder="0" version_code="1" html5_host="" build_number="1" win_org="GiderosMobile" osx_domain="giderosmobile.com" iosDevice="0" exportMode="0" splash_v_image="" html5_crash="" windowHeight="0" osx_category="5" vsync="0" app_name="" splashScaleMode="0" html5_wasm="1" logicalHeight="480" disableSplash="0" architecture="7" backgroundColor="#ffffff" html5_pack="1" orientation="0" splash_h_image="" scaleMode="3" android_template="0" autorotation="0" retinaDisplay="3" packageName="com.yourdomain.yourapp" version="1.0" ios_bundle="com.yourdomain." mouseToTouch="1">
+  <imageScales/>
+  <plugins>
+   <plugin name="JSON" enabled="1"/>
+  </plugins>
+  <exports>
+   <export name="APK">
+    <property name="androidPath" value=""/>
+    <property name="androidSdk" value=""/>
+    <property name="androidTarget" value="26"/>
+    <property name="androidTools" value=""/>
+    <property name="buildAab" value="1"/>
+    <property name="buildApk" value="0"/>
+    <property name="deployApk" value="0"/>
+    <property name="javaPath" value=""/>
+    <property name="keyAlias" value=""/>
+    <property name="keyStore" value=""/>
+    <property name="packageName" value="com.yourdomain.yourapp"/>
+    <property name="timestampApk" value="0"/>
+   </export>
+  </exports>
+ </properties>
+ <folder name="3dbase" path="../../../Library/3dbase">
+  <file name="../../../Library/3dbase/3DAnimation.lua"/>
+  <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
+  <file name="../../../Library/3dbase/3DLighting.lua"/>
+  <file name="../../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../../Library/3dbase/3DShapes.lua"/>
+  <file name="../../../Library/3dbase/3DView.lua"/>
+  <file name="../../../Library/3dbase/G3DFormat.lua"/>
+ </folder>
+ <folder name="Animations">
+  <file name="assets/Animations/idle.json"/>
+  <file name="assets/Animations/walk.json"/>
+ </folder>
+ <folder name="Models">
+  <file name="assets/Models/characterLargeFemale.json"/>
+  <file name="assets/Models/characterMedium.json"/>
+ </folder>
+ <folder name="Skins">
+  <file name="assets/Skins/fantasyFemaleB.png"/>
+ </folder>
+ <file name="assets/grass.png"/>
+ <file name="assets/main.lua"/>
+</project>

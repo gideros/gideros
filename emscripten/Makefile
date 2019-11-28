@@ -114,7 +114,7 @@ export POPTS
 $(BUILD)/emscripten/plugin_support.em.o: CFLGS+=--llvm-opts "['-disable-inlining']" -fno-rtti -fno-exceptions 
 
 #LINE BELOW FOR WASM
-EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256MB 'ALLOW_MEMORY_GROWTH=1 BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"' --profiling
+EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256MB ALLOW_MEMORY_GROWTH=1 --profiling #BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"
 EOPTS+=EXTRA_EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccall','cwrap','getValue','UTF8ToString','loadDynamicLibrary']"
 #EOPTS+=EMCC_FORCE_STDLIBS
 #EOPTS+=EXPORT_ALL=1
