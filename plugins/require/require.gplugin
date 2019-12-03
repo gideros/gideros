@@ -400,12 +400,8 @@
  </target> 
  <target name="Html5">
 	<lua><![CDATA[
-  local wasm=Export.isSet("project.html5_wasm")
   local pack=Export.isSet("project.html5_pack")
-  local ext="js"
-  if wasm then
-    ext="wasm"
-  end
+  local ext="wasm"
   local pext=ext
   if pack then pext=pext..".gidz" end
   local function removeEP(pn)

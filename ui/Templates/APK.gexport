@@ -176,6 +176,16 @@ local ap=require("Tools/export_android")
         	</replacelist>
     	</template>
 		</if>
+		<if condition="[[[not:[[[export.buildAab]]]]]]">		
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig><![CDATA[<!-- TAG:RM-SDK]]></orig>
+        	    	<by></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+		</if>
 		<mkdir>app/src/main/assets/assets</mkdir>
 		<cd>app/src/main/assets/assets</cd>
 		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" dontEncryptExts="mp3" />
