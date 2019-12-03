@@ -130,7 +130,9 @@ int ShaderBinder::create(lua_State* L)
         cst.slot=luaL_optinteger(L,-1,0);
         lua_getfield(L,-5,"offset");
         cst.offset=luaL_optinteger(L,-1,0);
-        lua_pop(L,6);
+        lua_getfield(L,-6,"instances");
+        cst.instances=luaL_optinteger(L,-1,0);
+        lua_pop(L,7);
     	datas.push_back(cst);
       }
 

@@ -48,7 +48,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         "*.xml" <<
         "*.appxmanifest" <<
         "*.gradle" <<
-        "*.html" <<
+        "*.html" << "gidloader.js" <<
         "*.project";
     ctx->wildcards << wildcards1;
 
@@ -154,11 +154,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
             replaceList1 << qMakePair(QString("<img src=\"gideros.png\" />").toUtf8(), QString("<img src=\"gideros.png\" style=\"display:none;\"/>").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
         replaceList1 << qMakePair(QString("CRASH_URL=''").toUtf8(),QString("CRASH_URL='%1'").arg(ctx->properties.html5_crash).toUtf8());
-		QString ext;
-		if (ctx->properties.html5_wasm)
-			ext="wasm";
-		else
-			ext="js";
+		QString ext="wasm";
 		QString pext="";
         if (ctx->properties.html5_pack) {
 #if 0
@@ -167,12 +163,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 			pext="gidz";
 #endif
 			ext=ext+"."+pext;
-			if (ctx->properties.html5_wasm)
-	        	replaceList1 << qMakePair(QString("src=\"gideros-wasm.js\">").toUtf8(),QString(">\nJPZLoad('gideros-wasm.wasm.%1',function(c) { Module.wasmBinary=c; JPZLoad('gideros-wasm.js.%1',eval); },\"array\");").arg(pext).toUtf8());
-			else {
-				replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js.%1']").arg(pext).toUtf8());
-				replaceList1 << qMakePair(QString("new XMLHttpRequest()").toUtf8(),QString("new Module.XMLHttpRequest()").toUtf8());
-			}
+        	replaceList1 << qMakePair(QString("src=gideros-wasm.js>").toUtf8(),QString(">\nJPZLoad('gideros-wasm.wasm.%1',function(c) { Module.wasmBinary=c; JPZLoad('gideros-wasm.js.%1',eval); },\"array\");").arg(pext).toUtf8());
 			pext="."+pext;
         }
         if (!ctx->player)
@@ -349,7 +340,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         	ctx->outputDir.cd("package");
     	}
       //Copy template flavor
-        ExportCommon::copyTemplate(QString(TEMPLATES_PATH).append("/").append(templatedir).append("/").append(ctx->properties.html5_wasm?"Wasm":"Jasm"),"",ctx, false, QStringList(), QStringList());
+        ExportCommon::copyTemplate(QString(TEMPLATES_PATH).append("/").append(templatedir).append("/Wasm"),"",ctx, false, QStringList(), QStringList());
     }
 
    // copy template
@@ -418,26 +409,14 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 			QDir::setCurrent(ctx->outputDir.path());
 			QStringList EP;
 			EP << "EP_Mp3" << "EP_Xmp";
-			if (ctx->properties.html5_wasm)
-			{
-				QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.js gideros-wasm.js."+pext);
-				QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.wasm gideros-wasm.wasm."+pext);
-			    ctx->outputDir.remove("gideros-wasm.js");
-			    ctx->outputDir.remove("gideros-wasm.wasm");
-			    foreach(const QString &ep,EP) {
-			    	if (!QFileInfo::exists(ctx->outputDir.absoluteFilePath(ep+".wasm"))) continue;
-					QProcess::execute(quote(pack) + " -nostrip -i "+ep+".wasm "+ep+".wasm."+pext);
-				    ctx->outputDir.remove(ep+".wasm");
-			    }
-			}
-			else {
-				QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.js gideros.js."+pext);
-				QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.asm.js gideros.asm.js."+pext);
-			    foreach(const QString &ep,EP) {
-			    	if (!QFileInfo::exists(ctx->outputDir.absoluteFilePath(ep+".js"))) continue;
-					QProcess::execute(quote(pack) + " -nostrip -i "+ep+".js "+ep+".js."+pext);
-				    ctx->outputDir.remove(ep+".js");
-			    }
+			QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.js gideros-wasm.js."+pext);
+			QProcess::execute(quote(pack) + " -nostrip -i gideros-wasm.wasm gideros-wasm.wasm."+pext);
+			ctx->outputDir.remove("gideros-wasm.js");
+			ctx->outputDir.remove("gideros-wasm.wasm");
+			foreach(const QString &ep,EP) {
+				if (!QFileInfo::exists(ctx->outputDir.absoluteFilePath(ep+".wasm"))) continue;
+				QProcess::execute(quote(pack) + " -nostrip -i "+ep+".wasm "+ep+".wasm."+pext);
+				ctx->outputDir.remove(ep+".wasm");
 			}
 			QProcess::execute(quote(pack) + (" -nostrip -i \"%1.GApp\" \"%1.GApp."+pext+"\"").arg(ctx->base));
 		    ctx->outputDir.remove(ctx->base+".GApp");
@@ -455,15 +434,15 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 		   ctx->outputDir.remove("gideros.png");
 	   }
 	   if (!ctx->properties.html5_symbols)
-		   ctx->outputDir.remove((ctx->properties.html5_wasm)?"gideros-wasm.html.symbols":"gideros.html.symbols");
+		   ctx->outputDir.remove("gideros-wasm.html.symbols");
 
 	   qint64 initsize=0;
-	   QFileInfoList files=ctx->outputDir.entryInfoList(QStringList() << "*.js" << "*.js.png" << "*.mem" << "*.GApp" << "*.mem.png" << "*.wasm" << "*.gidz");
+	   QFileInfoList files=ctx->outputDir.entryInfoList(QStringList() << "*.js" << "*.js.png" << "*.GApp" << "*.wasm" << "*.gidz");
 	   for( int i=0; i<files.count(); ++i )
 		   initsize+=files[i].size();
 
 	   QByteArray fileData;
-	   QFile file(ctx->outputDir.filePath("index.html"));
+	   QFile file(ctx->outputDir.filePath("gidloader.js"));
 	   file.open(QIODevice::ReadWrite); // open for read and write
 	   fileData = file.readAll(); // read all the data into the byte array
 	   QString text(fileData); // add to text string for easy string replace

@@ -199,18 +199,18 @@ void pathShadersInit(bool isGLES)
 			{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
 
 	const ShaderProgram::DataDesc pathAttributesFillC[] = {
-			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0 },
-			{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0,0 },
+			{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	const ShaderProgram::DataDesc pathAttributesStrokeC[] = {
-			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0 },
-			{ "data1", ShaderProgram::DFLOAT, 4, 1, 0 },
-			{ "data2", ShaderProgram::DFLOAT, 4, 2, 0 },
-			{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0,0 },
+			{ "data1", ShaderProgram::DFLOAT, 4, 1, 0,0 },
+			{ "data2", ShaderProgram::DFLOAT, 4, 2, 0,0 },
+			{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	const ShaderProgram::DataDesc pathAttributesStrokeSL[] = {
-			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0 },
-			{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0,0 },
+			{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
     const char *hdrShaderCode=isGLES?hdrShaderCode_ES:hdrShaderCode_DK;
 	ShaderProgram::pathShaderFillC = new ogl2ShaderProgram(hdrShaderCode,

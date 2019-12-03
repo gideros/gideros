@@ -13,7 +13,6 @@
 #include "Matrices.h"
 #include "gtexture.h"
 
-#
 
 #ifdef __APPLE__
    #include <TargetConditionals.h>

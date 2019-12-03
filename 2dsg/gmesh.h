@@ -9,8 +9,8 @@
 
 class Application;
 
-#define MESH_MAX_TEXTURES 8
-#define MESH_MAX_ARRAYS   8
+#define MESH_MAX_TEXTURES 16
+#define MESH_MAX_ARRAYS   16
 class GMesh: public Sprite
 {
 public:

@@ -1,6 +1,8 @@
 #ifndef LUAUTIL_H
 #define LUAUTIL_H
 
+#include "gexport.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -8,8 +10,6 @@ extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
-
-#include "gexport.h"
 
 GIDEROS_API void luaL_newweaktable(lua_State* L);
 GIDEROS_API void luaL_nullifytable(lua_State*L, int index);

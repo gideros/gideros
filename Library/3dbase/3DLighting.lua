@@ -1,10 +1,11 @@
 Lighting={}
 local glversion=Shader.getEngineVersion()
 local isES3Level=(glversion~="GLES2")
---[[
+
 print(glversion)
 print(Shader.getProperties().version)
-]]
+print(json.encode(Shader.getProperties().extensions))
+
 local LightingVShader=
 [[
 attribute vec4 POSITION0;
@@ -33,9 +34,16 @@ varying highp vec4 lightSpace;
 #ifdef ANIMATED
 uniform mat4 bones[16];
 #endif
-#ifdef INSTANCED
+#ifdef INSTANCED_TEST
 uniform highp sampler2D g_InstanceMap;
 uniform float InstanceMapWidth;
+#endif
+#ifdef INSTANCED
+uniform mat4 InstanceMatrix;
+attribute vec4 INSTMAT1;
+attribute vec4 INSTMAT2;
+attribute vec4 INSTMAT3;
+attribute vec4 INSTMAT4;
 #endif
 
 void main()
@@ -45,12 +53,17 @@ void main()
 #endif
 	highp vec4 pos=POSITION0;
 	mediump vec4 norm=vec4(NORMAL0,0.0);
-#ifdef INSTANCED
+#ifdef INSTANCED_TEST
 	vec2 tc=vec2(((gl_InstanceID*2+1)/InstanceMapWidth)/2.0,0.5);
 	vec4 itex=texture2D(g_InstanceMap, tc);
 	pos.x-=itex.r*512.0;
 	pos.y+=itex.g*512.0;
 	pos.z-=itex.b*512.0;
+#endif
+#ifdef INSTANCED
+	highp mat4 imat=mat4(INSTMAT1,INSTMAT2,INSTMAT3,INSTMAT4);
+	pos=imat*InstanceMatrix*pos;
+	norm = imat*InstanceMatrix*vec4(norm.xyz, 0.0);
 #endif
 
 #ifdef ANIMATED
@@ -204,7 +217,11 @@ local LightingShaderAttrs=
 {name="TEXCOORD0",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
 {name="NORMAL0",type=Shader.DFLOAT,mult=3,slot=3,offset=0},
 {name="ANIMIDX",type=Shader.DFLOAT,mult=4,slot=4,offset=0},
-{name="ANIMWEIGHT",type=Shader.DFLOAT,mult=4,slot=5,offset=0}
+{name="ANIMWEIGHT",type=Shader.DFLOAT,mult=4,slot=5,offset=0},
+{name="INSTMAT1",type=Shader.DFLOAT,mult=4,slot=6,offset=0,instances=1},
+{name="INSTMAT2",type=Shader.DFLOAT,mult=4,slot=7,offset=0,instances=1},
+{name="INSTMAT3",type=Shader.DFLOAT,mult=4,slot=8,offset=0,instances=1},
+{name="INSTMAT4",type=Shader.DFLOAT,mult=4,slot=9,offset=0,instances=1},
 }
 
 local LightingShaderConstants={
@@ -222,12 +239,16 @@ LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false}
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_ShadowMap",type=Shader.CTEXTURE,mult=1,vertex=false}
+--[[	
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_InstanceMap",type=Shader.CTEXTURE,mult=1,vertex=true}
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="InstanceMapWidth",type=Shader.CFLOAT,mult=1,vertex=true}
+	]]
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="bones",type=Shader.CMATRIX,mult=16,vertex=true}
+LightingShaderConstants[#LightingShaderConstants+1]=
+	{name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true}
 
 -- Shaders defs
 Lighting._shaders={}

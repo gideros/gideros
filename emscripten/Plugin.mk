@@ -1,12 +1,12 @@
 EMCC=$(EMSDK_PREFIX) emcc
 BUILD=Build
 
-OPTS=$(POPTS) -Os
+OPTS=$(POPTS) -Os 
 ifneq ($(DEBUG),)
-OPTS+=-g4 -s ASSERTIONS=1
+OPTS+=-g4 -s ASSERTIONS=1 --source-map-base http://hieroglyphe.net/gideros/BugTest/
 endif
 
-OBJS=$(addprefix $(BUILD)$(FLAVOUR)/,$(addsuffix .em.o,$(SRCS)))
+WOBJS=$(addprefix $(BUILD)$(FLAVOUR)/,$(addsuffix .emw.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS+=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
@@ -21,42 +21,38 @@ allflavours: $(addsuffix .flavour,$(FLAVOURS))
 	@FLAVOUR=$* $(MAKE) all 
 endif
 
-all: path $(OBJS)
-	@echo "EMLINK JS" $(TARGET)
-	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s WASM=0 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $(BUILD)/$(TARGET).js
-	@echo "SYMGEN" $(TARGET)
-	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -g -o $(BUILD)/$(TARGET).wasm
-	@grep 'import "env"' $(BUILD)/$(TARGET).wast | grep '(func'| cut -d' ' -f4 >$(HTML5_ROOT)/Build/$(TARGET).syms
+all: path $(WOBJS)
 	@echo "EMLINK WASM" $(TARGET)
-	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 -s 'BINARYEN_TRAP_MODE="clamp"' $(OPTS) -o $(BUILD)/$(TARGET).wasm
+	@$(EMCC) -s SIDE_MODULE=2 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $(BUILD)/Html/$(TARGET).wasm $(WOBJS) #-s 'BINARYEN_TRAP_MODE="clamp"'
+	@echo "SYMGEN" $(TARGET)
+	@$(EMSDK_PREFIX) wasm2wat.exe $(BUILD)/Html/$(TARGET).wasm | grep 'import "env"' | grep '(func' | sed 's/^[ \t]*//' | cut -d' ' -f3 >$(HTML5_ROOT)/Build/$(TARGET).syms
 
 path:
-	@mkdir -p  $(BUILD) $(sort $(dir $(OBJS)))
+	@mkdir -p  $(BUILD) $(BUILD)/Html $(sort $(dir $(WOBJS)))
 
 clean:
 	rm -rf $(BUILD)* 
 
-$(BUILD)$(FLAVOUR)/%.em.o: ../%.cpp
-	@echo "EMC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+$(BUILD)$(FLAVOUR)/%.emw.o: ../%.cpp
+	@echo "EMWC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
 
-$(BUILD)$(FLAVOUR)/%.em.o: ../%.cc
-	@echo "EMC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+$(BUILD)$(FLAVOUR)/%.emw.o: ../%.cc
+	@echo "EMWC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
 
-$(BUILD)$(FLAVOUR)/%.em.o: ../%.c
-	@echo "EMCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
+$(BUILD)$(FLAVOUR)/%.emw.o: ../%.c
+	@echo "EMWCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -c $< --default-obj-ext .emw.o -o $@
 
-$(BUILD)$(FLAVOUR)/%.em.o: %.cpp
-	@echo "EMC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+$(BUILD)$(FLAVOUR)/%.emw.o: %.cpp
+	@echo "EMWC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
 
-$(BUILD)$(FLAVOUR)/%.em.o: %.cc
-	@echo "EMC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+$(BUILD)$(FLAVOUR)/%.emw.o: %.cc
+	@echo "EMWC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
 
-$(BUILD)$(FLAVOUR)/%.em.o: %.c
-	@echo "EMCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
-	
+$(BUILD)$(FLAVOUR)/%.emw.o: %.c
+	@echo "EMWCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -c $< --default-obj-ext .emw.o -o $@

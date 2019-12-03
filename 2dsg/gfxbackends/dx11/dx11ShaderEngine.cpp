@@ -55,28 +55,28 @@ void dx11SetupShaders()
 			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
 	const ShaderProgram::DataDesc stdBAttributes[]={
-			{"vVertex",dx11ShaderProgram::DFLOAT,3,0,0},
-			{"vColor",dx11ShaderProgram::DUBYTE,0,1,0},
-			{"vTexCoord",dx11ShaderProgram::DFLOAT,0,2,0},
-			{"",ShaderProgram::DFLOAT,0,0,0}
+			{"vVertex",dx11ShaderProgram::DFLOAT,3,0,0,0},
+			{"vColor",dx11ShaderProgram::DUBYTE,0,1,0,0},
+			{"vTexCoord",dx11ShaderProgram::DFLOAT,0,2,0,0},
+			{"",ShaderProgram::DFLOAT,0,0,0,0}
 	};
 	const ShaderProgram::DataDesc stdCAttributes[] = {
-		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
-		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
-		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 0, 2, 0 },
-		{"",ShaderProgram::DFLOAT,0,0,0}
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0,0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0,0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 0, 2, 0,0 },
+		{"",ShaderProgram::DFLOAT,0,0,0,0}
 	};
 	const ShaderProgram::DataDesc stdTAttributes[] = {
-		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
-		{ "vColor", dx11ShaderProgram::DUBYTE, 0, 1, 0 },
-		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		{"",ShaderProgram::DFLOAT,0,0,0}
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0,0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 0, 1, 0,0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{"",ShaderProgram::DFLOAT,0,0,0,0}
 	};
 	const dx11ShaderProgram::DataDesc stdTCAttributes[] = {
-		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
-		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
-		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		{ "",ShaderProgram::DFLOAT,0,0,0 }
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0,0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0,0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
 	};
 	const ShaderProgram::ConstantDesc stdPSConstants[] = {
 		{ "vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL },
@@ -87,10 +87,10 @@ void dx11SetupShaders()
 		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
 	};
 	const dx11ShaderProgram::DataDesc stdPSAttributes[] = {
-		{ "vVertex", dx11ShaderProgram::DFLOAT, 4, 0, 0 },
-		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
-		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		{ "",ShaderProgram::DFLOAT,0,0,0 }
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 4, 0, 0,0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0,0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
 	};
 
     ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),0,stdConstants,stdBAttributes);
@@ -117,8 +117,8 @@ void dx11SetupShaders()
 		{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
 		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
 	const ShaderProgram::DataDesc pathAttributesFC[] = {
-		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0 },
-		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0,0 },
+		{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	const ShaderProgram::ConstantDesc pathUniformsSC[] = {
 		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
@@ -127,10 +127,10 @@ void dx11SetupShaders()
 		{ "feather", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_None, false, 0, NULL },
 		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
 	const ShaderProgram::DataDesc pathAttributesSC[] = {
-		{ "dataA",ShaderProgram::DFLOAT, 4, 0, 0 },
-		{ "dataB", ShaderProgram::DFLOAT, 4, 1, 0 },
-		{ "dataC", ShaderProgram::DFLOAT, 4, 2, 0 },
-		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+		{ "dataA",ShaderProgram::DFLOAT, 4, 0, 0,0 },
+		{ "dataB", ShaderProgram::DFLOAT, 4, 1, 0,0 },
+		{ "dataC", ShaderProgram::DFLOAT, 4, 2, 0,0 },
+		{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	const ShaderProgram::ConstantDesc pathUniformsSL[] = {
 		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
@@ -139,8 +139,8 @@ void dx11SetupShaders()
 		{ "feather", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_None, false, 0, NULL },
 		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
 	const ShaderProgram::DataDesc pathAttributesSL[] = {
-		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0 },
-		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0,0 },
+		{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	ShaderProgram::pathShaderFillC = new dx11ShaderProgram(vPathFillC_cso, sizeof(vPathFillC_cso), pPathFillC_cso, sizeof(pPathFillC_cso), 0, pathUniformsFC, pathAttributesFC);
 	ShaderProgram::pathShaderStrokeC = new dx11ShaderProgram(vPathStrokeC_cso, sizeof(vPathStrokeC_cso), pPathStrokeC_cso, sizeof(pPathStrokeC_cso), 0, pathUniformsSC, pathAttributesSC);

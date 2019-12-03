@@ -98,7 +98,7 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
-POPTS=
+POPTS=-s WASM_OBJECT_FILES=0
 #POPTS+= -s PRECISE_F32=1
 ifneq ($(PROFILING),)
 POPTS+=--profiling
@@ -107,14 +107,14 @@ endif
 OPTS+=-Os $(POPTS)
 LOPTS=--llvm-opts "['-disable-inlining']"
 LOPTS_WASM=$(LOPTS)
-LOPTS_JS=$(LOPTS) --separate-asm
+LOPTS_JS=$(LOPTS) #--separate-asm
 
 export POPTS
 
 $(BUILD)/emscripten/plugin_support.em.o: CFLGS+=--llvm-opts "['-disable-inlining']" -fno-rtti -fno-exceptions 
 
 #LINE BELOW FOR WASM
-EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256MB ALLOW_MEMORY_GROWTH=1 --profiling BINARYEN_TRAP_MODE="clamp" #BINARYEN_METHOD="native-wasm" 
+EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256MB ALLOW_MEMORY_GROWTH=1 #BINARYEN_TRAP_MODE="clamp" #BINARYEN_METHOD="native-wasm" 
 EOPTS+=EXTRA_EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccall','cwrap','getValue','UTF8ToString','loadDynamicLibrary']"
 #EOPTS+=EMCC_FORCE_STDLIBS
 #EOPTS+=EXPORT_ALL=1
@@ -140,7 +140,7 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	-D_REENTRANT -DLIBXMP_CORE_PLAYER \
 	$(OPTS)
-CFLGS+=	-fno-rtti -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
+CFLGS+=	-fno-rtti -s DISABLE_EXCEPTION_CATCHING=0 -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
 
 TEMPLATECOM=$(BUILD)/Html5/Html5
 TEMPLATEJASM=$(BUILD)/Html5/Jasm
@@ -159,11 +159,9 @@ template: main
 template.zip: template
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
 
-plugins:
-	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE); cd -; done
+plugins: $(addsuffix .plugin,$(PLUGINS))
 
-plugins.clean:
-	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
+plugins.clean: $(addsuffix .plugin.clean,$(PLUGINS))
 
 %.plugin:
 	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE); cd -
@@ -172,11 +170,11 @@ plugins.clean:
 	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE) clean; cd -
 
 SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LFRT 
-SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .bc,$(SUBLIBS)))
+SUBLIBS_ARW=$(addprefix $(BUILD)/lib,$(addsuffix .w.bc,$(SUBLIBS)))
 
 define SUB_template
-$$(BUILD)/lib$(1).a: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
-$$(BUILD)/lib$(1).bc: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
+$$(BUILD)/lib$(1).w.a: $$(addprefix $(BUILD)/,$$(addsuffix .emw.o,$$($(1)_SRCS)))
+$$(BUILD)/lib$(1).w.bc: $$(addprefix $(BUILD)/,$$(addsuffix .emw.o,$$($(1)_SRCS)))
 SUBLIBS_SRCS+=$$($(1)_SRCS)
 endef
 
@@ -194,19 +192,14 @@ $(call SUB_libopt,LGID_SRCS,CFLGS+=-DGIDEROS_LIBRARY)
  
 $(foreach sub,$(SUBLIBS),$(eval $(call SUB_template,$(sub))))
 
-SUBLIBS_OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SUBLIBS_SRCS)))
+SUBLIBS_WOBJS=$(addprefix $(BUILD)/,$(addsuffix .emw.o,$(SUBLIBS_SRCS)))
 
 define EP_template
-$$(BUILD)/$(1).js: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
-	@echo "EMLINK JS" $(TARGET)
-	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=0 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
-	
-$$(BUILD)/$(1).wasm: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
-	@echo "SYMGEN" $(TARGET)
-	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -g -o $$@
-	@grep 'import "env"' $(BUILD)/$(1).wast | grep '(func'| cut -d' ' -f4 >$(BUILD)/$(1).syms
+$$(BUILD)/$(1).wasm: $$(addprefix $(BUILD)/,$$(addsuffix .emwp.o,$$($(1)_SRCS)))
 	@echo "EMLINK WASM" $(TARGET)
-	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS))) -s SIDE_MODULE=1 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
+	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .emwp.o,$$($(1)_SRCS))) -s SIDE_MODULE=2 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
+	@echo "SYMGEN" $(TARGET)
+	$$(EMSDK_PREFIX) wasm2wat.exe $$@ | grep 'import "env"' | grep '(func' | sed 's/^[ \t]*//' | cut -d' ' -f3 >$(BUILD)/$(1).syms
 SUBLIBS_SRCS+=$$($(1)_SRCS)
 endef
 
@@ -215,16 +208,16 @@ $(foreach sub,$(EP_LIBS),$(eval $(call EP_template,$(sub))))
 EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
-EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//')))
-EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//')))]
+EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//;s/fp\$$/')))
+EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$.*//g'))))]
 
-$(BUILD)/lib%.a:
+$(BUILD)/lib%.w.a:
 	@echo "EMAR" $@
 	@$(EMAR) r $@ $^
 
-$(BUILD)/lib%.bc:
+$(BUILD)/lib%.w.bc:
 	@echo "EMLD" $@
-	@$(EMCC) -o $@ $^
+	@$(EMCC) $(OPTS)  -s WASM=1 -o $@ $^
 
 keep: 
 	echo "#define KEEP(v) extern volatile const char *v; *v;" >emscripten/_keep.c
@@ -232,44 +225,31 @@ keep:
 	grep -vh "invoke_" emscripten/Build/*.syms | sort | uniq | sed -e 's/g\$$//;s/"//g;s/^/KEEP\(/;s/$$/)/' >>emscripten/_keep.c
 	echo "}" >>emscripten/_keep.c
 					
-$(BUILD)/gideros.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
-	@echo "EMLINK gideros JS"
+$(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) @$(BUILD)/exports.list -s WASM=0 $(OPTS) $(LOPTS_JS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
-
-$(BUILD)/gideros-wasm.html: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
-	@echo "SYMGEN gideros"
-	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
-	@$(EMCC) $(OBJS) $(LIBS) -g $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
-	@grep '(export ' $(BUILD)/gideros-wasm.wast | grep '(func'| cut -d' ' -f3 >$(BUILD)/gideros.esyms
 	@echo "EMLINK gideros WASM"
-	$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_AR) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) --minify 0  $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_ARW) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	@echo "SYMGEN gideros"
+	@$(EMSDK_PREFIX) wasm2wat.exe $(BUILD)/gideros-wasm.wasm | grep '(export ' | grep '(func'| cut -d' ' -f4 >$(BUILD)/gideros.esyms
 	
 
-main: path $(BUILD)/gideros.html $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS)) $(addsuffix .js,$(EP_LIBS)))
+main: path $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS)))
 	cp gideros.png $(TEMPLATECOM)
 	cp gideros.css $(TEMPLATECOM)
-	cp $(BUILD)/gideros.html $(TEMPLATEJASM)/index.html
-	-cp $(BUILD)/gideros.html.mem $(TEMPLATEJASM) 
-	cp $(BUILD)/gideros.js $(TEMPLATEJASM)
-	cp $(BUILD)/gideros.asm.js $(TEMPLATEJASM)
-	-cp $(BUILD)/gideros.html.symbols $(TEMPLATEJASM)
-	-cp $(BUILD)/gideros.js.map $(TEMPLATEJASM)
 	cp $(BUILD)/gideros-wasm.wasm $(TEMPLATEWASM) 
 	cp $(BUILD)/gideros-wasm.js $(TEMPLATEWASM) 
 	cp $(BUILD)/gideros-wasm.html $(TEMPLATEWASM)/index.html
 	-cp $(BUILD)/gideros-wasm.html.symbols $(TEMPLATEWASM)
-	cp $(BUILD)/EP_*.js $(TEMPLATEJASM)
 	cp $(BUILD)/EP_*.wasm $(TEMPLATEWASM)
-	cp jzptool.js $(TEMPLATECOM)
-	cp lzma.js $(TEMPLATECOM)
+	cp gidloader.js $(TEMPLATEWASM)
+	#cp lzma.js $(TEMPLATECOM)
 	#$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
 	#$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
 	
 
 path:
-	mkdir -p $(sort $(dir $(SUBLIBS_OBJS)))
-	mkdir -p $(TEMPLATECOM) $(TEMPLATEJASM) $(TEMPLATEWASM)
+	mkdir -p $(sort $(dir $(SUBLIBS_WOBJS)))
+	mkdir -p $(TEMPLATECOM) $(TEMPLATEWASM)
 
 clean:
 	rm -rf $(BUILD)
@@ -280,11 +260,18 @@ setup:
 init:
 	$(EMSDK_PREFIX) emcc
 
-$(BUILD)/%.em.o: ../%.cpp
-	@echo "EMC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
+$(BUILD)/%.emw.o: ../%.cpp
+	@echo "EMWC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
 
-$(BUILD)/%.em.o: ../%.c
-	@echo "EMCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
+$(BUILD)/%.emw.o: ../%.c
+	@echo "EMWCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -c $< --default-obj-ext .emw.o -o $@
 
+$(BUILD)/%.emwp.o: ../%.cpp
+	@echo "EMWC+ $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+
+$(BUILD)/%.emwp.o: ../%.c
+	@echo "EMWCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -c $< --default-obj-ext .emw.o -o $@

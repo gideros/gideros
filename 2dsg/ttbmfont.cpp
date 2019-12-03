@@ -14,6 +14,7 @@
 #include <graphicsbase.h>
 #include <utf8.h>
 #include <algorithm>
+#include "glog.h"
 
 // Textures shouldn't exceed 1024x1024 on most platforms, so limit possible font size to allow at least a few chars to be rendered
 #define FONT_SIZE_LIMIT 300.0
@@ -702,8 +703,9 @@ bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext
         return false;
     bool shaped=shaper_->shape(part,wtext);
     if (!shaped) return false;
-    for (size_t k=0;k<part.shaped.size();k++)
+    for (size_t k=0;k<part.shaped.size();k++) {
         part.shaped[k]._private=(void *) 0;
+    }
     return true;
 }
 

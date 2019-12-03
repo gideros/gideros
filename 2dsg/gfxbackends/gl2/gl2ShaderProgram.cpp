@@ -226,17 +226,20 @@ void ogl2ShaderProgram::deactivate() {
 
 void ogl2ShaderProgram::activate() {
 	GLCALL_INIT;
+	GLECALL_INIT;
 	useProgram();
 	if (current == this)
 		return;
 	if (current)
 		current->deactivate();
 	current = this;
-	for (std::vector<GLint>::iterator it = glattributes.begin();
-			it != glattributes.end(); ++it) {
-		GLint att = *it;
-		if (att >= 0)
-			GLCALL glEnableVertexAttribArray(*it);
+	for (int k=0;k<glattributes.size();k++) {
+		GLint att = glattributes[k];
+		if (att >= 0) {
+			GLCALL glEnableVertexAttribArray(att);
+			if (supportInstances)
+				GLECALL glVertexAttribDivisor(att,attributes[k].instances);
+		}
 	}
 
 }
@@ -294,7 +297,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		ptr=NULL;
 	}
 	if ((index<glattributes.size())&&(glattributes[index]>=0))
-	GLCALL glVertexAttribPointer(glattributes[index], mult, gltype, normalize, stride, ((char *)ptr)+offset);
+		GLCALL glVertexAttribPointer(glattributes[index], mult, gltype, normalize, stride, ((char *)ptr)+offset);
 #endif
 
 }

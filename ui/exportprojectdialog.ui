@@ -574,13 +574,6 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="html5_wasm">
-         <property name="text">
-          <string>Use Web Assembly (WASM) - Experimental</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="html5_symbols">
          <property name="text">
           <string>Output symbols (for debugging)</string>

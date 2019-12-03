@@ -392,9 +392,9 @@ void ogl2SetupShaders(bool isGLES) {
 					ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,
 					false, 0, NULL } };
 	const ShaderProgram::DataDesc stdAttributes[] = { { "vVertex",
-			ShaderProgram::DFLOAT, 3, 0, 0 }, { "vColor", ShaderProgram::DUBYTE,
-			4, 1, 0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 }, { "",
-			ShaderProgram::DFLOAT, 0, 0, 0 } };
+			ShaderProgram::DFLOAT, 3, 0, 0,0 }, { "vColor", ShaderProgram::DUBYTE,
+			4, 1, 0,0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 }, { "",
+			ShaderProgram::DFLOAT, 0, 0, 0,0 } };
     const char *hdrVShaderCode=isGLES?hdrVShaderCode_ES:hdrVShaderCode_DK;
     const char *hdrPSVShaderCode=isGLES?hdrPSVShaderCode_ES:hdrPSVShaderCode_DK;
     const char *hdrFShaderCode=isGLES?hdrFShaderCode_ES:hdrFShaderCode_DK;
@@ -445,10 +445,10 @@ void ogl2SetupShaders(bool isGLES) {
 		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
 	};
 	const ShaderProgram::DataDesc stdPSAttributes[] = {
-		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0 },
-		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0 },
-		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 },
-		{ "",ShaderProgram::DFLOAT,0,0,0 }
+		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0,0 },
+		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0,0 },
+		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
 	};
 
 	ShaderProgram::stdParticles = new ogl2ShaderProgram(

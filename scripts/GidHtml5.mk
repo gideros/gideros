@@ -8,6 +8,10 @@ export HTML5_PLUGINS
 export PROFILING
 export DEBUG
 
+EMWAT=wasm2wat.exe
+export $(EMWAT)
+
+
 html5.setup:
 	cd emscripten; $(MAKE) setup
 
@@ -15,7 +19,7 @@ html5.init:
 	cd emscripten; $(MAKE) init
 	
 html5.clean:
-	cd emscripten; $(MAKE) clean plugins.clean
+	cd emscripten; $(MAKE) $(MAKEJOBS) clean plugins.clean
 
 html5.main:  
 	cd emscripten; $(MAKE) $(MAKEJOBS) main
@@ -31,16 +35,14 @@ html5.libs: versioning
 	
 html5.template: html5.libs
 	cp -r emscripten/Build/Html5 $(RELEASE)/Templates
-	for p in $(HTML5_PLUGINS); do mkdir -p $(RELEASE)/All\ Plugins/$$p/bin/Html5; cp plugins/$$p/source/emscripten/Build/*.js $(RELEASE)/All\ Plugins/$$p/bin/Html5; done	
-	-for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/*.wasm $(RELEASE)/All\ Plugins/$$p/bin/Html5; done	
+	for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/Html/* $(RELEASE)/All\ Plugins/$$p/bin/Html5; done	
 
 html5.player: html5.libs
 	mkdir -p $(RELEASE)/Players
 	cp -r emscripten/Build/Html5/Html5 $(RELEASE)/Players
-	cp -r emscripten/Build/Html5/Jasm/* $(RELEASE)/Players/Html5
-	for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/*.js $(RELEASE)/Players/Html5; done
-	-for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/*.wasm $(RELEASE)/Players/Html5; done
-	sed -e 's/\/\*GIDEROS_DYNLIB_PLUGIN\*\//"EP_Xmp.js", "EP_mp3.js", "luasocket.js", "json.js", "bit.js", "lfs.js", "lsqlite3.js", /' emscripten/Build/Html5/Jasm/index.html >$(RELEASE)/Players/Html5/index.html
+	#cp -r emscripten/Build/Html5/Jasm/* $(RELEASE)/Players/Html5
+	for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/Html/* $(RELEASE)/Players/Html5; done
+	#sed -e 's/\/\*GIDEROS_DYNLIB_PLUGIN\*\//"EP_Xmp.js", "EP_mp3.js", "luasocket.js", "json.js", "bit.js", "lfs.js", "lsqlite3.js", /' emscripten/Build/Html5/Jasm/index.html >$(RELEASE)/Players/Html5/index.html
 
 html5.install: html5.template html5.player
 

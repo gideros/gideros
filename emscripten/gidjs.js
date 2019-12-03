@@ -31,7 +31,7 @@ Module.preRun
 				}
 				Module.GiderosPlugins.forEach(function(p) {
 					if (p.endsWith(".gidz")) {
-						if (Module['wasmBinary'])
+						if (wasmBinary)
 							loader=loader.then(function () { console.log("Loading plugin:"+p); return JZPLoadPromise(p,"array");})
 								.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,{global: true, nodelete: true, loadAsync:true}); });
 						else
@@ -52,12 +52,12 @@ Module.preRun
 										}
 									}
 								};								
-								if (Module['wasmBinary'])
+								if (wasmBinary)
 									xhr.responseType = 'arraybuffer';
 								xhr.send();
 							});
 						});
-						if (Module['wasmBinary'])
+						if (wasmBinary)
 							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,{global: true, nodelete: true, loadAsync:true}); });
 						else
 							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary("local:"+c); });

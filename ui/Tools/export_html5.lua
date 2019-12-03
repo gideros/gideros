@@ -6,13 +6,9 @@ Html5Project={
 }
 
 function Html5Project.export(m,flavour)
-  local wasm=Export.isSet("project.html5_wasm")
   local pack=Export.isSet("project.html5_pack")
   flavour=flavour or ""
-  local ext="js"
-  if wasm then
-    ext="wasm"
-  end
+  local ext="wasm"
   local zext=ext
   if pack then zext="gidz" end
   Export.callXml(([=[
@@ -23,7 +19,7 @@ function Html5Project.export(m,flavour)
   end
   Export.callXml(([=[
     <template name="Activity" path="">
-        <replacelist wildcards="index.html">
+        <replacelist wildcards="gidloader.js">
             <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;%s.%s&quot;,"/>
         </replacelist>
     </template>
@@ -46,7 +42,7 @@ function Html5Project.exportJS(m)
   ]=]):format(m))
   Export.callXml(([=[
     <template name="Activity" path="">
-        <replacelist wildcards="index.html">
+        <replacelist wildcards="gidloader.js">
             <append orig="/*GIDEROS_JS_PLUGIN*/" by="&quot;%s.js&quot;,"/>
         </replacelist>
     </template>

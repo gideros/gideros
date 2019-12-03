@@ -73,9 +73,9 @@ void metalSetupShaders() {
 					ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,
 					false, 0, NULL } };
 	const ShaderProgram::DataDesc stdAttributes[] = { { "vVertex",
-			ShaderProgram::DFLOAT, 2, 0, 0 }, { "vColor", ShaderProgram::DUBYTE,
-			4, 1, 0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 }, { "",
-			ShaderProgram::DFLOAT, 0, 0, 0 } };
+			ShaderProgram::DFLOAT, 2, 0, 0,0 }, { "vColor", ShaderProgram::DUBYTE,
+			4, 1, 0,0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 }, { "",
+			ShaderProgram::DFLOAT, 0, 0, 0,0 } };
      ShaderProgram::stdBasic = new metalShaderProgram("gidV","gidF", stdUniforms,
 			stdAttributes,1,0);
 	ShaderProgram::stdColor = new metalShaderProgram("gidCV","gidCF", stdUniforms,
@@ -89,9 +89,9 @@ void metalSetupShaders() {
 	ShaderProgram::stdTextureAlphaColor = new metalShaderProgram("gidCTV","gidCTAF", stdUniforms,
 			stdAttributes,7,0);
     const ShaderProgram::DataDesc stdAttributes3[] = { { "vVertex",
-        ShaderProgram::DFLOAT, 3, 0, 0 }, { "vColor", ShaderProgram::DUBYTE,
-            4, 1, 0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 }, { "",
-                ShaderProgram::DFLOAT, 0, 0, 0 } };
+        ShaderProgram::DFLOAT, 3, 0, 0,0 }, { "vColor", ShaderProgram::DUBYTE,
+            4, 1, 0,0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0}, { "",
+                ShaderProgram::DFLOAT, 0, 0, 0,0 } };
     metalShaderProgram::stdBasic3 = new metalShaderProgram("gidV3","gidF", stdUniforms,
                                                      stdAttributes3,1,0);
     metalShaderProgram::stdColor3 = new metalShaderProgram("gidCV3","gidCF", stdUniforms,
@@ -122,10 +122,10 @@ void metalSetupShaders() {
 		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
 	};
 	const ShaderProgram::DataDesc stdPSAttributes[] = {
-		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0 },
-		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0 },
-		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 },
-		{ "",ShaderProgram::DFLOAT,0,0,0 }
+		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0,0 },
+		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0,0 },
+		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
 	};
 
     ShaderProgram::stdParticles = new metalShaderProgram(

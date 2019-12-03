@@ -3,6 +3,10 @@
 
 static g_id s_nextgid = 1;
 
+#ifdef __EMSCRIPTEN__
+#include "emscripten.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -61,7 +65,6 @@ double g_iclock()
 	return nanoTime() - begin;
 }
 #elif __EMSCRIPTEN__
-#include "emscripten.h"
 double g_iclock()
 {
 	return emscripten_get_now()/1000;

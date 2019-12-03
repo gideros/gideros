@@ -36,6 +36,7 @@ public:
     	unsigned char mult;
     	unsigned char slot;
     	unsigned short offset;
+    	unsigned int instances;
     };
     enum SystemConstant {
     	SysConst_None=0,
