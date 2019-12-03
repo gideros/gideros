@@ -182,7 +182,7 @@ local ap=require("Tools/export_android")
 	            <replace>
             		<orig><![CDATA[<!-- TAG:RM-SDK]]></orig>
         	    	<by></by>
-    	        </append>
+    	        </replace>
         	</replacelist>
     	</template>
 		</if>
