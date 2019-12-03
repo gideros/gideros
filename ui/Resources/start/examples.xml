@@ -156,6 +156,12 @@
 				image="3danim.png"
 				/>
 	
+	<example 	name="3D Instancing"
+				description="Demonstrate instancing capabilities"
+				path="Graphics3D/3D-Instancing/3D-Instancing.gproj"
+				image="3dinstancing.png"
+				/>
+	
 </category>
 
 <category name="Shaders">

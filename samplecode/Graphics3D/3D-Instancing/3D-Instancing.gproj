@@ -1,0 +1,34 @@
+<project>
+ <properties backgroundColor="#ffffff" autorotation="0" android_template="0" encryptAssets="0" osx_domain="giderosmobile.com" html5_crash="" osx_category="5" html5_symbols="0" osx_bundle="com.yourdomain." logicalHeight="480" windowHeight="0" splash_v_image="" touchToMouse="1" packageName="com.yourdomain.yourapp" splashScaleMode="0" logicalWidth="320" windowWidth="0" orientation="0" encryptCode="0" html5_fbinstant="0" build_number="1" osx_org="GiderosMobile" html5_host="" vsync="0" fps="60" tv_icon="" win_domain="giderosmobile.com" disableSplash="0" version_code="1" ios_bundle="com.yourdomain." iosDevice="0" html5_wasm="0" osx_signingId="" html5_pack="1" winrt_org="GiderosMobile" splash_h_image="" osx_installerId="" scaleMode="3" exportMode="0" architecture="7" html5_fbload="100" win_org="GiderosMobile" html5_mem="256" retinaDisplay="0" mouseTouchOrder="0" app_icon="" winrt_package="com.yourdomain.yourapp" app_name="" version="1.0" mouseToTouch="1">
+  <imageScales/>
+  <plugins>
+   <plugin name="JSON" enabled="1"/>
+  </plugins>
+  <exports>
+   <export name="APK">
+    <property name="androidPath" value=""/>
+    <property name="androidSdk" value=""/>
+    <property name="androidTarget" value="26"/>
+    <property name="androidTools" value=""/>
+    <property name="buildAab" value="1"/>
+    <property name="buildApk" value="0"/>
+    <property name="deployApk" value="0"/>
+    <property name="javaPath" value=""/>
+    <property name="keyAlias" value=""/>
+    <property name="keyStore" value=""/>
+    <property name="packageName" value="com.yourdomain.yourapp"/>
+    <property name="timestampApk" value="0"/>
+   </export>
+  </exports>
+ </properties>
+ <folder name="3dbase" path="../../../Library/3dbase">
+  <file name="../../../Library/3dbase/3DAnimation.lua"/>
+  <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
+  <file name="../../../Library/3dbase/3DLighting.lua"/>
+  <file name="../../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../../Library/3dbase/3DShapes.lua"/>
+  <file name="../../../Library/3dbase/3DView.lua"/>
+  <file name="../../../Library/3dbase/G3DFormat.lua"/>
+ </folder>
+ <file name="assets/main.lua"/>
+</project>
