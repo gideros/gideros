@@ -246,6 +246,7 @@ void metalShaderProgram::setConstant(int index, ConstantType type, int mult,
 metalShaderProgram::metalShaderProgram(const char *vprogram,const char *fprogram,
                    const ConstantDesc *uniforms, const DataDesc *attributes,int attmap,int attstride) {
     
+    errorLog="";
     if (defaultLibrary==nil)
         defaultLibrary=[metalDevice newDefaultLibrary];
     [defaultLibrary retain];
@@ -262,6 +263,7 @@ metalShaderProgram::metalShaderProgram(const char *vprogram,const char *fprogram
 
 metalShaderProgram::metalShaderProgram(const char *vshader, const char *fshader,int flags,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
+    errorLog="";
     mrpd=[[MTLRenderPipelineDescriptor alloc] init];
 	bool fromCode=(flags&ShaderProgram::Flag_FromCode);
 	char *vs = fromCode?(char *)vshader:(char *) LoadShaderFile(vshader, "metal", NULL);
@@ -439,7 +441,6 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
         attributes++;
         nattr++;
 	}
-    errorLog="";
     uniformVmodified=true;
     uniformFmodified=true;
 
