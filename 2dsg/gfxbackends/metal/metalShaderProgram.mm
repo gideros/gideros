@@ -279,9 +279,9 @@ metalShaderProgram::metalShaderProgram(const char *vshader, const char *fshader,
             err=nil;
         }
         if (l)
-            mrpd.vertexFunction=[l newFunctionWithName:@"main"];
+            mrpd.vertexFunction=[l newFunctionWithName:@"vmain"];
         if (!mrpd.vertexFunction)
-            errorLog+="No vertex shader function called 'main'\n";
+            errorLog+="No vertex shader function called 'vmain'\n";
         l=[metalDevice newLibraryWithSource:[NSString stringWithUTF8String:fs] options:nil error:&err];
         if (err) {
             errorLog+="Error compiling fragment shader:\n";
@@ -290,9 +290,9 @@ metalShaderProgram::metalShaderProgram(const char *vshader, const char *fshader,
             err=nil;
         }
         if (l)
-            mrpd.fragmentFunction=[l newFunctionWithName:@"main"];
+            mrpd.fragmentFunction=[l newFunctionWithName:@"fmain"];
         if (!mrpd.fragmentFunction)
-            errorLog+="No fragment shader function called 'main'\n";
+            errorLog+="No fragment shader function called 'fmain'\n";
         setupStructures(uniforms, attributes,0xFFFF,0);
     }
 	else if (vs==NULL)

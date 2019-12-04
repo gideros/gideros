@@ -1,8 +1,8 @@
 <project>
- <properties html5_mem="256" osx_bundle="com.yourdomain." exportMode="0" app_icon="" architecture="7" build_number="1" html5_host="" vsync="0" html5_fbinstant="0" version_code="1" win_org="GiderosMobile" osx_signingId="" html5_crash="" version="1.0" winrt_package="com.yourdomain.yourapp" mouseToTouch="1" backgroundColor="#ffffff" mouseTouchOrder="0" osx_org="GiderosMobile" html5_symbols="0" windowHeight="0" osx_category="5" osx_domain="giderosmobile.com" html5_wasm="1" touchToMouse="1" logicalHeight="480" html5_fbload="100" splash_v_image="" encryptAssets="0" splashScaleMode="0" autorotation="0" retinaDisplay="3" encryptCode="0" tv_icon="" osx_installerId="" packageName="com.yourdomain.yourapp" splash_h_image="" disableSplash="0" winrt_org="GiderosMobile" orientation="0" win_domain="giderosmobile.com" android_template="0" ios_bundle="com.yourdomain." iosDevice="0" html5_pack="1" logicalWidth="320" windowWidth="0" fps="60" app_name="" scaleMode="3">
+ <properties touchToMouse="1" ios_bundle="com.yourdomain." iosDevice="0" osx_signingId="" windowWidth="0" exportMode="0" mouseTouchOrder="0" encryptCode="0" logicalHeight="480" osx_category="5" html5_host="" splashScaleMode="0" app_icon="" winrt_package="com.yourdomain.yourapp" version="1.0" android_template="0" osx_bundle="com.yourdomain." autorotation="0" win_org="GiderosMobile" packageName="com.yourdomain.yourapp" windowHeight="0" backgroundColor="#ffffff" build_number="1" html5_wasm="1" vsync="0" html5_crash="" winrt_org="GiderosMobile" tv_icon="" html5_mem="256" osx_org="GiderosMobile" splash_v_image="" osx_installerId="" html5_pack="1" logicalWidth="320" architecture="7" app_name="" version_code="1" encryptAssets="0" scaleMode="3" html5_fbload="100" html5_fbinstant="0" splash_h_image="" mouseToTouch="1" disableSplash="0" orientation="0" osx_domain="giderosmobile.com" win_domain="giderosmobile.com" retinaDisplay="3" fps="60" html5_symbols="0">
   <imageScales/>
   <plugins>
-   <plugin enabled="1" name="JSON"/>
+   <plugin name="JSON" enabled="1"/>
   </plugins>
   <exports>
    <export name="APK">
@@ -21,12 +21,12 @@
    </export>
   </exports>
  </properties>
- <folder name="3dbase" path="../../../Library/3dbase">
-  <file name="../../../Library/3dbase/3DShaders.lua"/>
+ <folder path="../../../Library/3dbase" name="3dbase">
   <file name="../../../Library/3dbase/3DAnimation.lua"/>
   <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
   <file name="../../../Library/3dbase/3DLighting.lua"/>
   <file name="../../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../../Library/3dbase/3DShaders.lua"/>
   <file name="../../../Library/3dbase/3DShapes.lua"/>
   <file name="../../../Library/3dbase/3DView.lua"/>
   <file name="../../../Library/3dbase/G3DFormat.lua"/>
