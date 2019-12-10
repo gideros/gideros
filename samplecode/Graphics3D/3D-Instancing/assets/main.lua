@@ -9,7 +9,7 @@ local cube=D3.Cube.new(0.1,0.1,0.1)
 scene:addChild(cube)
 cube:updateMode(D3.Mesh.MODE_LIGHTING,0)
 
-local gs,ge=3,0.3
+local gs,ge=20,0.3
 local gc=gs*gs*gs
 cube:setInstanceCount(gc)
 local matrix=Matrix.new()

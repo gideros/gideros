@@ -11,7 +11,8 @@
 ID3D11SamplerState *dx11ShaderTexture::samplerRepeat=NULL;
 ID3D11SamplerState *dx11ShaderTexture::samplerClamp=NULL;
 ID3D11SamplerState *dx11ShaderTexture::samplerRepeatFilter=NULL;
-ID3D11SamplerState *dx11ShaderTexture::samplerClampFilter=NULL;
+ID3D11SamplerState *dx11ShaderTexture::samplerClampFilter = NULL;
+ID3D11SamplerState *dx11ShaderTexture::samplerDepthCompare = NULL;
 
 dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
 {
@@ -19,6 +20,7 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
 	this->height=height;
 	this->wrap=wrap;
 	this->filter=filtering;
+	this->format = format;
 
     D3D11_TEXTURE2D_DESC tdesc;
     D3D11_SUBRESOURCE_DATA tbsd;
@@ -30,7 +32,7 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     tdesc.SampleDesc.Count = 1;
     tdesc.SampleDesc.Quality = 0;
     tdesc.Usage = D3D11_USAGE_DEFAULT;
-    tdesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    tdesc.BindFlags = ((format==FMT_DEPTH)? D3D11_BIND_DEPTH_STENCIL:D3D11_BIND_RENDER_TARGET) | D3D11_BIND_SHADER_RESOURCE;
     tdesc.CPUAccessFlags = 0;
     tdesc.MiscFlags = 0;
     tdesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -57,8 +59,8 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
 		case FMT_DEPTH:
 			switch (packing)
 			{
-			case PK_FLOAT: tbsd.SysMemPitch = width*4; tdesc.Format = DXGI_FORMAT_D32_FLOAT; break;
-			case PK_USHORT: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_D16_UNORM; break;
+			case PK_FLOAT: tbsd.SysMemPitch = width*4; tdesc.Format = DXGI_FORMAT_R24G8_TYPELESS; break;
+			//case PK_USHORT: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_R16_UNORM; break;
 			}
 			break;
     }
@@ -71,7 +73,12 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     }
 
     g_dev->CreateTexture2D(&tdesc,&tbsd,&tex);
-    g_dev->CreateShaderResourceView(tex,NULL,&rsv);
+	D3D11_SHADER_RESOURCE_VIEW_DESC sr_desc;
+	sr_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	sr_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	sr_desc.Texture2D.MostDetailedMip = 0;
+	sr_desc.Texture2D.MipLevels = -1;
+    g_dev->CreateShaderResourceView(tex,(format==FMT_DEPTH)?&sr_desc:NULL,&rsv);
 
 //    g_devcon->PSSetShaderResources(0,1,&g_RSV[g_curr_texind]);
 }
@@ -124,7 +131,7 @@ void dx11ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     tbsd.SysMemSlicePitch = tbsd.SysMemPitch*height; // not needed
   	tbsd.pSysMem = data;
 	if (tdesc.Format == DXGI_FORMAT_UNKNOWN){
-  	  glog_w("glTexImage2D: unknown internal format");
+  	  glog_w("dx11Texture: unknown internal format");
   	  exit(1);
     }
 

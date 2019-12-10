@@ -5,7 +5,7 @@ local sw,sh=application:getContentWidth(),application:getContentHeight()
 local view=D3.View.new(sw,sh,45,0.1,1000)
 
 --Add a blue sky background
-local sky=Pixel.new(0xFFFFFF,1,sw*3,sh*3)
+local sky=Pixel.new(0xFFFFFF,1,sw*3,sh*3) 
 sky:setColor(0x00FFFF,1,0x0040FF,1,90) sky:setPosition(-sw,-sh)
 stage:addChild(sky)
 stage:addChild(view)
@@ -70,10 +70,10 @@ stage:addEventListener(Event.ENTER_FRAME,function(e)
 	--Look at it
 	view:lookAt(0,3,5,as,2,ac)
 
-	--Compute shadows
-	Lighting.computeShadows(scene)
 	--Animation engine tick
 	D3Anim.tick()
+	--Compute shadows
+	Lighting.computeShadows(scene)
 end) 
 
 -- Show a note on the top of screen to let the user know how to interact

@@ -1,5 +1,5 @@
 <project>
- <properties backgroundColor="#ffffff" autorotation="0" android_template="0" encryptAssets="0" osx_domain="giderosmobile.com" html5_crash="" osx_category="5" html5_symbols="0" osx_bundle="com.yourdomain." logicalHeight="480" windowHeight="0" splash_v_image="" touchToMouse="1" packageName="com.yourdomain.yourapp" splashScaleMode="0" logicalWidth="320" windowWidth="0" orientation="0" encryptCode="0" html5_fbinstant="0" build_number="1" osx_org="GiderosMobile" html5_host="" vsync="0" fps="60" tv_icon="" win_domain="giderosmobile.com" disableSplash="0" version_code="1" ios_bundle="com.yourdomain." iosDevice="0" html5_wasm="0" osx_signingId="" html5_pack="1" winrt_org="GiderosMobile" splash_h_image="" osx_installerId="" scaleMode="3" exportMode="0" architecture="7" html5_fbload="100" win_org="GiderosMobile" html5_mem="256" retinaDisplay="0" mouseTouchOrder="0" app_icon="" winrt_package="com.yourdomain.yourapp" app_name="" version="1.0" mouseToTouch="1">
+ <properties touchToMouse="1" ios_bundle="com.yourdomain." iosDevice="0" osx_signingId="" windowWidth="0" exportMode="0" mouseTouchOrder="0" encryptCode="0" logicalHeight="480" osx_category="5" html5_host="" splashScaleMode="0" app_icon="" winrt_package="com.yourdomain.yourapp" version="1.0" android_template="0" osx_bundle="com.yourdomain." autorotation="0" win_org="GiderosMobile" packageName="com.yourdomain.yourapp" windowHeight="0" backgroundColor="#ffffff" build_number="1" html5_wasm="0" vsync="0" html5_crash="" winrt_org="GiderosMobile" tv_icon="" html5_mem="256" osx_org="GiderosMobile" splash_v_image="" osx_installerId="" html5_pack="1" logicalWidth="320" architecture="7" app_name="" version_code="1" encryptAssets="0" scaleMode="3" html5_fbload="100" html5_fbinstant="0" splash_h_image="" mouseToTouch="1" disableSplash="0" orientation="0" osx_domain="giderosmobile.com" win_domain="giderosmobile.com" retinaDisplay="0" fps="60" html5_symbols="0">
   <imageScales/>
   <plugins>
    <plugin name="JSON" enabled="1"/>
@@ -21,11 +21,12 @@
    </export>
   </exports>
  </properties>
- <folder name="3dbase" path="../../../Library/3dbase">
+ <folder path="../../../Library/3dbase" name="3dbase">
   <file name="../../../Library/3dbase/3DAnimation.lua"/>
   <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
   <file name="../../../Library/3dbase/3DLighting.lua"/>
   <file name="../../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../../Library/3dbase/3DShaders.lua"/>
   <file name="../../../Library/3dbase/3DShapes.lua"/>
   <file name="../../../Library/3dbase/3DView.lua"/>
   <file name="../../../Library/3dbase/G3DFormat.lua"/>

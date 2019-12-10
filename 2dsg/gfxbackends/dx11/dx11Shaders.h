@@ -93,11 +93,13 @@ protected:
 	static ID3D11SamplerState *samplerClamp;
 	static ID3D11SamplerState *samplerRepeatFilter;
 	static ID3D11SamplerState *samplerClampFilter;
+	static ID3D11SamplerState *samplerDepthCompare;
 	ID3D11Texture2D *tex;
 	ID3D11ShaderResourceView *rsv;
 	int width,height;
 	Wrap wrap;
 	Filtering filter;
+	Format format;
 public:
 	dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	void updateData(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
@@ -146,6 +148,7 @@ public:
 	void reset(bool reinit=false);
 	const char *getVersion();
 	const char *getShaderLanguage() { return "hlsl"; };
+	ShaderTexture::Packing getPreferredPackingForTextureFormat(ShaderTexture::Format format);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);

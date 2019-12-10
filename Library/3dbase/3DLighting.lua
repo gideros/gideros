@@ -8,16 +8,16 @@ print(json.encode(Shader.getProperties().extensions))
 
 local LightingShaderAttrs=
 {
-{name="POSITION0",type=Shader.DFLOAT,mult=3,slot=0,offset=0},
-{name="vColor",type=Shader.DUBYTE,mult=0,slot=1,offset=0},
-{name="TEXCOORD0",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
-{name="NORMAL0",type=Shader.DFLOAT,mult=3,slot=3,offset=0},
-{name="ANIMIDX",type=Shader.DFLOAT,mult=4,slot=4,offset=0},
-{name="ANIMWEIGHT",type=Shader.DFLOAT,mult=4,slot=5,offset=0},
-{name="INSTMAT1",type=Shader.DFLOAT,mult=4,slot=6,offset=0,instances=1},
-{name="INSTMAT2",type=Shader.DFLOAT,mult=4,slot=7,offset=0,instances=1},
-{name="INSTMAT3",type=Shader.DFLOAT,mult=4,slot=8,offset=0,instances=1},
-{name="INSTMAT4",type=Shader.DFLOAT,mult=4,slot=9,offset=0,instances=1},
+{name="POSITION",type=Shader.DFLOAT,amult=3,slot=0,offset=0},
+{name="vColor",type=Shader.DUBYTE,amult=0,slot=1,offset=0}, --Placeholder: mult=0
+{name="TEXCOORD",type=Shader.DFLOAT,amult=2,slot=2,offset=0},
+{name="NORMAL",type=Shader.DFLOAT,amult=3,slot=3,offset=0},
+{name="ANIMIDX",type=Shader.DFLOAT,amult=4,slot=4,offset=0,code="a"},
+{name="ANIMWEIGHT",type=Shader.DFLOAT,amult=4,slot=5,offset=0,code="a"},
+{name="INSTMATA",type=Shader.DFLOAT,amult=4,slot=6,offset=0,instances=1,code="i"},
+{name="INSTMATB",type=Shader.DFLOAT,amult=4,slot=7,offset=0,instances=1,code="i"},
+{name="INSTMATC",type=Shader.DFLOAT,amult=4,slot=8,offset=0,instances=1,code="i"},
+{name="INSTMATD",type=Shader.DFLOAT,amult=4,slot=9,offset=0,instances=1,code="i"}
 }
 
 local LightingShaderConstants={
@@ -68,6 +68,9 @@ Lighting.getShader=function(code)
 	if lcode=="" then return nil,nil end
 	if D3._V_Shader then
 		if not Lighting._shaders[lcode] then
+			for _,a in ipairs(LightingShaderAttrs) do
+				if not a.code or code:find(a.code) then a.mult=a.amult else a.mult=0 end				
+			end
 			v=Shader.new(
 				ccode..D3._V_Shader,
 				ccode..D3._F_Shader,

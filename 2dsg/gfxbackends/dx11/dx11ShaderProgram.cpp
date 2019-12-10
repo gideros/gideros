@@ -184,6 +184,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		break;
 	}
 	DataDesc dd = attributes[index];
+	if (!dd.mult) return;
 	unsigned int bcount = (flags&ShaderProgram::Flag_PointShader) ? count * 4 : count;
 	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,bcount):getGenericVBO(index + 1, elmSize, dd.mult, bcount);
 	if (!vbo) return;
@@ -398,7 +399,7 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 		}
 		if (cd.mult>1)
 		{
-			usz=16*cd.mult;
+			usz*=cd.mult;
 			ual=16;
 		}
 		if (usz)
@@ -489,8 +490,8 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 		}
 		ied[nie].InputSlot = attributes->slot;
 		ied[nie].AlignedByteOffset = attributes->offset;
-		ied[nie].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		ied[nie].InstanceDataStepRate = 0;
+		ied[nie].InputSlotClass = attributes->instances?D3D11_INPUT_PER_INSTANCE_DATA:D3D11_INPUT_PER_VERTEX_DATA;
+		ied[nie].InstanceDataStepRate = attributes->instances;
 		if (ied[nie].Format != DXGI_FORMAT_UNKNOWN)
 			nie++;
 		this->attributes.push_back(*(attributes++));

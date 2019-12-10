@@ -33,6 +33,15 @@ const char *dx11ShaderEngine::getVersion()
 	return "DX11";
 }
 
+ShaderTexture::Packing dx11ShaderEngine::getPreferredPackingForTextureFormat(ShaderTexture::Format format)
+{
+	switch (format) {
+	case ShaderTexture::FMT_DEPTH: return ShaderTexture::PK_FLOAT;
+	default:
+		return ShaderTexture::PK_UBYTE;
+	}
+}
+
 void dx11ShaderEngine::reset(bool reinit)
 {
 	ShaderEngine::reset(reinit);
@@ -47,10 +56,15 @@ void dx11ShaderEngine::reset(bool reinit)
 
 void dx11SetupShaders()
 {
-	const ShaderProgram::ConstantDesc stdConstants[]={
+	const ShaderProgram::ConstantDesc stdConstants[] = {
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
+			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0,NULL},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL},
+			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
+	};
+	const ShaderProgram::ConstantDesc stdCConstants[] = {
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
 			{"vfColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,true,0,NULL},
-			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0,NULL},
 			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL},
 			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
@@ -94,11 +108,11 @@ void dx11SetupShaders()
 	};
 
     ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),0,stdConstants,stdBAttributes);
-    ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),0,stdConstants,stdCAttributes);
+    ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),0,stdCConstants,stdCAttributes);
     ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),0,stdConstants,stdTAttributes);
     ShaderProgram::stdTextureAlpha = new dx11ShaderProgram(vTextureAlpha_cso,sizeof(vTextureAlpha_cso),pTextureAlpha_cso,sizeof(pTextureAlpha_cso),0,stdConstants,stdTAttributes);
-	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdConstants, stdTCAttributes);
-	ShaderProgram::stdTextureAlphaColor = new dx11ShaderProgram(vTextureAlphaColor_cso, sizeof(vTextureAlphaColor_cso), pTextureAlphaColor_cso, sizeof(pTextureAlphaColor_cso), 0, stdConstants, stdTCAttributes);
+	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdCConstants, stdTCAttributes);
+	ShaderProgram::stdTextureAlphaColor = new dx11ShaderProgram(vTextureAlphaColor_cso, sizeof(vTextureAlphaColor_cso), pTextureAlphaColor_cso, sizeof(pTextureAlphaColor_cso), 0, stdCConstants, stdTCAttributes);
 	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), 0, stdPSConstants, stdPSAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
@@ -244,6 +258,9 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerClampFilter);
 
+	sampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerDepthCompare);
 
 	// Set rasterizer state to switch off backface culling
 
@@ -381,6 +398,7 @@ dx11ShaderEngine::~dx11ShaderEngine()
 	dx11ShaderTexture::samplerRepeat->Release();
 	dx11ShaderTexture::samplerClampFilter->Release();
 	dx11ShaderTexture::samplerRepeatFilter->Release();
+	dx11ShaderTexture::samplerDepthCompare->Release();
 	if (g_pCBlendState)
         g_pCBlendState->Release();
 	if (g_pCDSState)
@@ -408,7 +426,7 @@ ShaderBuffer *dx11ShaderEngine::setFramebuffer(ShaderBuffer *fbo)
 	}
 	g_devcon->OMSetRenderTargets(1,
 		fbo?&(((dx11ShaderBuffer *)fbo)->renderTarget):&g_backbuffer, 
-		fbo?NULL:g_depthStencil);
+		fbo?(((dx11ShaderBuffer *)fbo)->depthStencil):g_depthStencil);
     currentBuffer=fbo;
 	if (previous)
 		previous->unbound();
@@ -433,17 +451,20 @@ void dx11ShaderEngine::clearColor(float r,float g,float b,float a)
 {
 	float col[4]={r,g,b,a};
 	ID3D11RenderTargetView *fbo = currentBuffer ? (((dx11ShaderBuffer *)currentBuffer)->renderTarget) : g_backbuffer;
-	g_devcon->ClearRenderTargetView(fbo, col);
+	if (fbo)
+		g_devcon->ClearRenderTargetView(fbo, col);
 }
 
 void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 {
 	dx11ShaderTexture *tex=(dx11ShaderTexture *)texture;
 	g_devcon->PSSetShaderResources(num,1,&tex->rsv);
-	if (tex->wrap==ShaderTexture::WRAP_CLAMP)
-		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerClamp:&dx11ShaderTexture::samplerClampFilter);
+	if ((tex->format==ShaderTexture::FMT_DEPTH)&&(tex->filter == ShaderTexture::FILT_LINEAR))
+		g_devcon->PSSetSamplers(num, 1, &dx11ShaderTexture::samplerDepthCompare);
+	else if (tex->wrap==ShaderTexture::WRAP_CLAMP)
+		g_devcon->PSSetSamplers(num, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerClamp:&dx11ShaderTexture::samplerClampFilter);
 	else
-		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerRepeat:&dx11ShaderTexture::samplerRepeatFilter);
+		g_devcon->PSSetSamplers(num, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerRepeat:&dx11ShaderTexture::samplerRepeatFilter);
 }
 
 
@@ -495,7 +516,7 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 				currentBuffer->needDepthStencil();
 			if ((!s_depthBufferCleared)||(state.dClear))
 			{
-    			g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_DEPTH, 1.0, 0);
+    			g_devcon->ClearDepthStencilView(currentBuffer?((dx11ShaderBuffer *)currentBuffer)->depthStencil:g_depthStencil, D3D11_CLEAR_DEPTH, 1.0, 0);
     			s_depthBufferCleared=true;
     			state.dClear=false;
 			}
@@ -516,7 +537,7 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 	{
 		if (currentBuffer)
 			currentBuffer->needDepthStencil();
-		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_STENCIL, 0, 0);
+		g_devcon->ClearDepthStencilView(currentBuffer ? ((dx11ShaderBuffer *)currentBuffer)->depthStencil : g_depthStencil, D3D11_CLEAR_STENCIL, 0, 0);
 		state.sClear = false;
 	}
 
