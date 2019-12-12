@@ -164,11 +164,12 @@ void metalShaderProgram::useProgram() {
     MTLRenderPassDescriptor *rd=((metalShaderEngine *)ShaderEngine::Engine)->pass();
     int pkey=rd.colorAttachments[0].texture.pixelFormat;
     pkey|=(metalShaderEngine::curSFactor)<<8;
-    pkey|=(metalShaderEngine::curSFactor)<<12;
+    pkey|=(metalShaderEngine::curDFactor)<<12;
+    pkey|=(rd.depthAttachment.texture.pixelFormat<<16);
     if (mrps[pkey]==nil) {
         MTLRenderPipelineColorAttachmentDescriptor *rba=mrpd.colorAttachments[0];
         rba.pixelFormat=rd.colorAttachments[0].texture.pixelFormat;
-        rba.blendingEnabled = YES;
+        rba.blendingEnabled = (rba.pixelFormat!=MTLPixelFormatInvalid);
         rba.rgbBlendOperation = MTLBlendOperationAdd;
         rba.alphaBlendOperation = MTLBlendOperationAdd;
         rba.sourceRGBBlendFactor = blendFactor2metal(metalShaderEngine::curSFactor);
@@ -178,8 +179,12 @@ void metalShaderProgram::useProgram() {
         mrpd.depthAttachmentPixelFormat=rd.depthAttachment.texture.pixelFormat;
         mrpd.stencilAttachmentPixelFormat=rd.stencilAttachment.texture.pixelFormat;
 
-        mrps[pkey]=[metalDevice newRenderPipelineStateWithDescriptor:mrpd error:NULL];
-        [mrps[pkey] retain];
+        NSError *error=NULL;
+        mrps[pkey]=[metalDevice newRenderPipelineStateWithDescriptor:mrpd error:&error];
+        if (mrps[pkey]==nil)
+            NSLog(@"Error creating render pipeline state: %@", error);
+        else
+            [mrps[pkey] retain];
     }
 
     [encoder() setRenderPipelineState:mrps[pkey]];
@@ -217,7 +222,7 @@ void metalShaderProgram::setData(int index, DataType type, int mult,
     if ((vbo==nil)&&(isize>4096))
         vbo=[metalDevice newBufferWithLength:isize options:MTLResourceStorageModeShared];
     if (vbo==nil) {
-        [encoder() setVertexBytes:((char *)ptr)+offset length:isize atIndex:index+1];
+        [encoder() setVertexBytes:((char *)ptr)+offset length:isize atIndex:attributes[index].slot];
     }
     else {
     if (modified||(!cache)) {
@@ -229,7 +234,7 @@ void metalShaderProgram::setData(int index, DataType type, int mult,
 #endif
     }
     
-    [encoder() setVertexBuffer:vbo offset:offset atIndex:index+1];
+    [encoder() setVertexBuffer:vbo offset:offset atIndex:attributes[index].slot];
     }
 }
 
@@ -360,12 +365,14 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
 				+ this->uniforms[iu].offset;
     
     int nattr=0;
+    int bmap=1;
 	while (!attributes->name.empty()) {
         this->attributes.push_back(*attributes);
-        if (attmap&(1<<nattr)) {
+        if ((attmap&(1<<nattr))&&(attributes->mult)) {
             MTLVertexAttributeDescriptor *vad=[[MTLVertexAttributeDescriptor new] autorelease];
             MTLVertexBufferLayoutDescriptor *vbd=[[MTLVertexBufferLayoutDescriptor new] autorelease];
-            vad.bufferIndex=attributes->slot+1;
+            vad.bufferIndex=bmap;
+            this->attributes[nattr].slot=bmap;
             vad.offset=attributes->offset;
             int sstep=4;
             switch (attributes->type) {
@@ -436,7 +443,11 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
             }
             mrpd.vertexDescriptor.attributes[nattr]=vad;
             vbd.stride=attstride?attstride:sstep*attributes->mult;
-            mrpd.vertexDescriptor.layouts[nattr+1]=vbd;
+            if (attributes->instances) {
+                vbd.stepFunction=MTLVertexStepFunctionPerInstance;
+                vbd.stepRate=attributes->instances;
+            }
+            mrpd.vertexDescriptor.layouts[bmap++]=vbd;
         }
         attributes++;
         nattr++;

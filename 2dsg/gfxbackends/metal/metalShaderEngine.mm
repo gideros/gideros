@@ -46,14 +46,15 @@ void metalShaderEngine::reset(bool reinit) {
 	}
 
     setFramebuffer(NULL);
+    setViewport(0,0,0,0);
+    curSFactor=BlendFactor::ONE;
+    curDFactor=BlendFactor::ONE_MINUS_SRC_ALPHA;
 	ShaderEngine::reset(reinit);
 	metalShaderProgram::resetAllUniforms();
 //	s_texture = 0;
 //	s_depthEnable = 0;
 //	s_depthBufferCleared = false;
 
-    curSFactor=BlendFactor::ONE;
-    curDFactor=BlendFactor::ONE_MINUS_SRC_ALPHA;
 }
 
 extern void pathShadersInit();
@@ -158,6 +159,9 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     sd.minFilter=MTLSamplerMinMagFilterLinear;
     sd.magFilter=MTLSamplerMinMagFilterLinear;
     tsFC=[metalDevice newSamplerStateWithDescriptor:sd];
+    sd.compareFunction=MTLCompareFunctionLessEqual;
+    tsDC=[metalDevice newSamplerStateWithDescriptor:sd];
+    sd.compareFunction=MTLCompareFunctionNever;
     sd.sAddressMode=MTLSamplerAddressModeRepeat;
     sd.tAddressMode=MTLSamplerAddressModeRepeat;
     sd.rAddressMode=MTLSamplerAddressModeRepeat;
@@ -165,10 +169,12 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     sd.minFilter=MTLSamplerMinMagFilterNearest;
     sd.magFilter=MTLSamplerMinMagFilterNearest;
     tsNR=[metalDevice newSamplerStateWithDescriptor:sd];
-    [tsNC retain];
+    [sd release];
+ /*   [tsNC retain];
     [tsFC retain];
     [tsNR retain];
     [tsFR retain];
+    [tsDC retain];*/
 
     metalSetupShaders();
     pathShadersInit();
@@ -180,12 +186,7 @@ metalShaderEngine::~metalShaderEngine() {
 	if (currentBuffer)
 		setFramebuffer(NULL);
     
-    if (mrce) {
-        [mrce endEncoding];
-        [mrce release];
-        mrce=nil;
-    }
-
+    closeEncoder();
 
     [mcb commit];
     [mcb waitUntilCompleted];
@@ -196,6 +197,7 @@ metalShaderEngine::~metalShaderEngine() {
     [tsFC release];
     [tsNR release];
     [tsFR release];
+    [tsDC release];
 	delete ShaderProgram::stdBasic;
 	delete ShaderProgram::stdColor;
 	delete ShaderProgram::stdTexture;
@@ -232,11 +234,7 @@ void metalShaderEngine::clear(int f) {
         ((metalShaderBuffer *)currentBuffer)->clearReq|=f;
     else
         clearReq|=f;
-    if (mrce) {
-        [mrce endEncoding];
-        [mrce release];
-        mrce=nil;
-    }
+    closeEncoder();
 }
 
 id<MTLRenderCommandEncoder> metalShaderEngine::encoder()
@@ -258,6 +256,8 @@ id<MTLRenderCommandEncoder> metalShaderEngine::encoder()
         mrce=[mcb renderCommandEncoderWithDescriptor:rp];
         [mrce retain];
         metalShaderProgram::resetAll();
+        [mrce setViewport:vp_];
+        [mrce setScissorRect:sr_];
     }
     return mrce;
 }
@@ -273,31 +273,34 @@ MTLRenderPassDescriptor *metalShaderEngine::pass()
 ShaderBuffer *metalShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
     ShaderBuffer *previous = currentBuffer;
     if (currentBuffer!=fbo) {
-        if (mrce) {
-            [mrce endEncoding];
-            [mrce release];
-            mrce=nil;
+        closeEncoder();
+        if (mcb) {
+            [mcb commit];
+            if (previous) {
+                //[mcb waitUntilCompleted];
+                previous->unbound();
+            }
+            [mcb release];
         }
-        [mcb commit];
-        if (previous) {
-            [mcb waitUntilCompleted];
-            previous->unbound();
-        }
-        [mcb release];
         mcb=[mcq commandBuffer];
         [mcb retain];
         currentBuffer = fbo;
     }
+    setClip(0,0,-1,-1);
 	return previous;
 }
 
-void metalShaderEngine::present(id<MTLDrawable> drawable)
-{
+void metalShaderEngine::closeEncoder() {
     if (mrce!=nil) {
         [mrce endEncoding];
         [mrce release];
         mrce=nil;
     }
+}
+
+void metalShaderEngine::present(id<MTLDrawable> drawable)
+{
+    closeEncoder();
     [mcb presentDrawable:drawable];
     ShaderBuffer *previous = currentBuffer;
     [mcb commit];
@@ -306,6 +309,7 @@ void metalShaderEngine::present(id<MTLDrawable> drawable)
         previous->unbound();
     }
     [mcb release];
+    mcb=nil;
 }
 
 void metalShaderEngine::newFrame() {
@@ -329,15 +333,14 @@ extern "C" void metalShaderNewFrame()
 }
 
 void metalShaderEngine::setViewport(int x, int y, int width, int height) {
-    //Ensure we have a command encoder
-    MTLViewport vp;
-    vp.originX=x;
-    vp.originY=y;
-    vp.width=width;
-    vp.height=height;
-    vp.znear=0.0;
-    vp.zfar=1.0;
-    [encoder() setViewport:vp];
+    vp_.originX=x;
+    vp_.originY=y;
+    vp_.width=width;
+    vp_.height=height;
+    vp_.znear=0.0;
+    vp_.zfar=1.0;
+    if (mrce)
+        [mrce setViewport:vp_];
 }
 
 void metalShaderEngine::setModel(const Matrix4 m) {
@@ -389,10 +392,12 @@ static MTLCompareFunction stencilfuncToMetal(ShaderEngine::StencilFunc sf)
 
 void metalShaderEngine::setDepthStencil(DepthStencil state)
 {
-	dsCurrent=state;
     if (currentBuffer&&(state.dTest||(state.sFunc!=ShaderEngine::STENCIL_DISABLE)))
-    currentBuffer->needDepthStencil();
+        currentBuffer->needDepthStencil();
     clear((state.dClear?2:0)|(state.sClear?4:0));
+    state.dClear=false;
+    state.sClear=false;
+    dsCurrent=state;
     MTLDepthStencilDescriptor *mdsd=[MTLDepthStencilDescriptor new];
     mdsd.depthWriteEnabled=state.dTest;
     mdsd.depthCompareFunction=state.dTest?MTLCompareFunctionLess:MTLCompareFunctionAlways;
@@ -423,24 +428,26 @@ void metalShaderEngine::clearColor(float r, float g, float b, float a) {
 
 void metalShaderEngine::bindTexture(int num, ShaderTexture *texture) {
     id<MTLSamplerState> smp=tsNC;
-    if (((metalShaderTexture *)texture)->filter==ShaderTexture::FILT_LINEAR) {
-        smp=(((metalShaderTexture *)texture)->wrap==ShaderTexture::WRAP_REPEAT)?tsFR:tsFC;
+    metalShaderTexture *mt=((metalShaderTexture *)texture);
+    if ((mt->format==ShaderTexture::FMT_DEPTH)&&(mt->filter==ShaderTexture::FILT_LINEAR))
+        smp=tsDC;
+    else if (mt->filter==ShaderTexture::FILT_LINEAR) {
+        smp=(mt->wrap==ShaderTexture::WRAP_REPEAT)?tsFR:tsFC;
     }
-    else if (((metalShaderTexture *)texture)->wrap==ShaderTexture::WRAP_REPEAT)
+    else if (mt->wrap==ShaderTexture::WRAP_REPEAT)
         smp=tsNR;
-    [encoder() setFragmentTexture:((metalShaderTexture *)texture)->mtex atIndex:num];
+    [encoder() setFragmentTexture:mt->mtex atIndex:num];
     [encoder() setFragmentSamplerState:smp atIndex:num];
 }
 
 void metalShaderEngine::setClip(int x, int y, int w, int h) {
-    MTLScissorRect sr;
-    NSUInteger tw=pass().colorAttachments[0].texture.width;
-    NSUInteger th=pass().colorAttachments[0].texture.height;
+    NSUInteger tw=pass().depthAttachment.texture.width;
+    NSUInteger th=pass().depthAttachment.texture.height;
     if ((w < 0) || (h < 0)) {
-        sr.x=0;
-        sr.y=0;
-        sr.width=tw;
-        sr.height=th;
+        sr_.x=0;
+        sr_.y=0;
+        sr_.width=tw;
+        sr_.height=th;
     }
 	else {
 		//Sanitize
@@ -450,12 +457,13 @@ void metalShaderEngine::setClip(int x, int y, int w, int h) {
 		if (y>tw) y=th;
 		if ((x+w)>tw) w=tw-x;
 		if ((y+h)>th) h=th-y;
-        sr.x=x;
-        sr.y=y;
-        sr.width=w;
-        sr.height=h;
+        sr_.x=x;
+        sr_.y=y;
+        sr_.width=w;
+        sr_.height=h;
 	}
-    [encoder() setScissorRect:sr];
+    if (mrce)
+        [mrce setScissorRect:sr_];
 }
 
 void metalShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor) {
