@@ -13,6 +13,7 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
 	this->height=height;
 	this->wrap=wrap;
 	this->filter=filtering;
+    this->format=format;
 
     MTLPixelFormat glformat=MTLPixelFormatRGBA8Unorm;
     int bpr=4;
@@ -60,7 +61,7 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
 	                                                      height:(NSUInteger)height 
 	                                                   mipmapped:(BOOL)NO];
     if (forRT)
-        md.usage=MTLTextureUsageRenderTarget;
+        md.usage=MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
 	mtex=[metalDevice newTextureWithDescriptor:md];
     [mtex retain];
     if (data) {
@@ -77,8 +78,9 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
 	this->height=height;
 	this->wrap=wrap;
 	this->filter=filtering;
+    this->format=format;
 
-    glformat=MTLPixelFormatRGBA8Unorm;
+    MTLPixelFormat glformat=MTLPixelFormatRGBA8Unorm;
     bpr=4;
     switch (packing)
     {

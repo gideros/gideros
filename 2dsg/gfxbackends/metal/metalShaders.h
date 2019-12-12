@@ -66,7 +66,7 @@ class metalShaderTexture : public ShaderTexture
 	friend class metalShaderBuffer;
 	friend class metalShaderEngine;
 protected:
-	MTLPixelFormat glformat;
+	Format format;
 	int bpr;
 	int width,height;
 	Wrap wrap;
@@ -89,7 +89,6 @@ protected:
     metalShaderTexture *tex;
     id<MTLTexture> depth;
     id<MTLTexture> stencil;
-	int width,height;
     int clearReq;
     bool forDepth_;
 public:
@@ -106,8 +105,10 @@ class metalShaderEngine : public ShaderEngine
 	ShaderBuffer *currentBuffer;
 	int devWidth,devHeight;
     id<MTLCommandQueue> mcq;
+    MTLViewport vp_;
+    MTLScissorRect sr_;
 protected:
-    id<MTLSamplerState> tsNC,tsFC,tsNR,tsFR;
+    id<MTLSamplerState> tsNC,tsFC,tsNR,tsFR,tsDC;
     id<MTLCommandBuffer> mcb;
     id<MTLRenderCommandEncoder> mrce;
     int clearReq;
@@ -117,6 +118,7 @@ public:
     static BlendFactor curDFactor;
     id<MTLRenderCommandEncoder> encoder();
     MTLRenderPassDescriptor *pass();
+    void closeEncoder();
     void present(id<MTLDrawable> drawable);
     void newFrame();
     metalShaderEngine(int sw,int sh);
