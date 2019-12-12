@@ -1,24 +1,16 @@
+#define _USE_MATH_DEFINES
+#define FN_USE_DOUBLES
+
 #include <gglobal.h>
 #include "gideros.h"
 #include "lua.h"
 #include "lauxlib.h"
 #include "FastNoise.h"
 #include <math.h>
+
 #ifndef M_PI
 #define M_PI 3.141592654
 #endif
-
-/*
-#include <string.h>
-#include <iostream>
-#include <sstream>
-#include <string>
-*/
-/*
-    std::stringstream concat;
-    concat<<w<<" "<<h<<" "<<scale<<" "<<zoff;
-    cpp_log(L, concat.str());
-*/
 
 //----------------------------------------------------------------
 //                      Helper functions
@@ -62,16 +54,6 @@ static void my_assert(lua_State* L, bool condition, const char* message)
     }
 }
 
-static void assertNumber(lua_State *L, int narg, const char *name) {
-    lua_Integer d = lua_tointeger(L, narg);
-    if (d == 0 && !lua_isnumber(L, narg)) /* avoid extra test when d is not 0 */
-    {
-        lua_pushfstring(L, "%s must be a number, but was %s (a %s)", name,
-                lua_tostring(L, narg), lua_typename(L, narg));
-        lua_error(L);
-    }
-}
-
 static void assertIsPositiveNumber(lua_State *L, int narg, const char *name) {
     lua_Integer d = lua_tointeger(L, narg);
     if (d <= 0) {
@@ -81,27 +63,95 @@ static void assertIsPositiveNumber(lua_State *L, int narg, const char *name) {
     }
 }
 
-static void lua_log(lua_State* L, const char* message)
+static double map(double v, double minC, double maxC, double minD, double maxD)
 {
-    lua_getglobal(L, "print");
-    lua_pushstring(L, message);
-    lua_call(L, 1, 0);
+    return (v - minC) / (maxC - minC) * (maxD - minD) + minD;
+}
+
+static unsigned char getColor(lua_State* L, int ind)
+{
+    lua_rawgeti(L, -1, ind);
+    double cv = luaL_checknumber(L, -1);
     lua_pop(L, 1);
+    return (unsigned char)cv;
 }
-/*
-static void cpp_log(lua_State* L, std::string str)
+
+static void loadNoiseParams(lua_State* L, int index, double &xoff, double &yoff, double &zoff, double &min, double &max )
 {
-    int n = str.length();
-    // declaring character array
-    char char_array[n + 1];
+    xoff = 0.0;
+    yoff = 0.0;
+    zoff = 0.0;
+    min = -1.0;
+    max = 1.0;
+    if (lua_istable(L, index))
+    {
+        lua_getfield(L, index, "xoff");
+        if (!lua_isnil(L, -1)) xoff = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
 
-    // copying the contents of the
-    // string to char array
-    strcpy(char_array, str.c_str());
+        lua_getfield(L, index, "yoff");
+        if (!lua_isnil(L, -1)) yoff = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
 
-    lua_log(L, char_array);
+        lua_getfield(L, index, "zoff");
+        if (!lua_isnil(L, -1)) zoff = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "min");
+        if (!lua_isnil(L, -1)) min = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "max");
+        if (!lua_isnil(L, -1)) max = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
+    }
 }
-*/
+
+struct Color
+{
+    unsigned char R;
+    unsigned char G;
+    unsigned char B;
+    unsigned char A;
+    Color()
+    {
+        R = 255; G = 255; B = 255;  A = 255;
+    }
+    Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+    {
+        R = r; G = g; B = b; A = a;
+    }
+};
+
+static Color matchColor(lua_State* L, double noiseValue)
+{
+    Color color = Color();
+    bool flag = false;
+    for (unsigned int i = 0; i < lua_objlen(L, -1); i++)
+    {
+        lua_rawgeti(L, -1, i+1);
+        lua_getfield(L, -1, "h");
+        double hh = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
+
+        if (noiseValue <= hh)
+        {
+            flag = true;
+
+            lua_getfield(L, -1, "color");
+            color.R = getColor(L, 1);
+            color.G = getColor(L, 2);
+            color.B = getColor(L, 3);
+            color.A = getColor(L, 4);
+            lua_pop(L, 1);
+        }
+        lua_pop(L, 1);
+        if (flag) break;
+    }
+
+    return color;
+}
+
 //----------------------------------------------------------------
 //                          GProxy
 //----------------------------------------------------------------
@@ -122,13 +172,8 @@ public:
     void setFrequency(FN_DECIMAL frequency) { noise.SetFrequency(frequency); }
     FN_DECIMAL getFrequency() const { return noise.GetFrequency(); }
 
-    FN_DECIMAL _noise(FN_DECIMAL x) { return noise.GetNoise(x); }
-    FN_DECIMAL _noise(FN_DECIMAL x, FN_DECIMAL y) { return noise.GetNoise(x,y); }
-    FN_DECIMAL _noise(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) { return noise.GetNoise(x,y,z); }
-
-    //FN_DECIMAL noise1D(FN_DECIMAL x) { return noise.GetNoise(x); }
-    //FN_DECIMAL noise2D(FN_DECIMAL x, FN_DECIMAL y) { return noise.GetNoise(x, y); }
-    //FN_DECIMAL noise3D(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) { return noise.GetNoise(x, y, z); }
+    FN_DECIMAL getNoise(FN_DECIMAL x, FN_DECIMAL y) { return noise.GetNoise(x,y); }
+    FN_DECIMAL getNoise(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) { return noise.GetNoise(x,y,z); }
 
     void setInterp(int interp){ noise.SetInterp((FastNoise::Interp)interp); }
     int getInterp() { return (int)noise.GetInterp(); }
@@ -155,9 +200,6 @@ public:
     void setGradientPerturbAmp(FN_DECIMAL gamp) { noise.SetGradientPerturbAmp(gamp); }
     FN_DECIMAL getGradientPerturbAmp() { return noise.GetGradientPerturbAmp(); }
 
-    void gradientPerturb(FN_DECIMAL& x) const { noise.GradientPerturb(x); }
-    void gradientPerturbFractal(FN_DECIMAL& x) const { noise.GradientPerturbFractal(x); }
-
     void gradientPerturb(FN_DECIMAL& x, FN_DECIMAL& y) const { noise.GradientPerturb(x,y); }
     void gradientPerturbFractal(FN_DECIMAL& x, FN_DECIMAL& y) const { noise.GradientPerturbFractal(x,y); }
 
@@ -167,7 +209,7 @@ public:
     FN_DECIMAL getSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const { return noise.GetSimplex(x,y,z,w); }
 
     FN_DECIMAL getWhiteNoise(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const { return noise.GetWhiteNoise(x,y,z,w); }
-    FN_DECIMAL getWhiteNoiseInt(int x) const { return noise.GetWhiteNoiseInt(x); }
+
     FN_DECIMAL getWhiteNoiseInt(int x, int y) const { return noise.GetWhiteNoiseInt(x,y); }
     FN_DECIMAL getWhiteNoiseInt(int x, int y, int z) const { return noise.GetWhiteNoiseInt(x,y,z); }
     FN_DECIMAL getWhiteNoiseInt(int x, int y, int z, int w) const { return noise.GetWhiteNoiseInt(x,y,z,w); }
@@ -348,9 +390,12 @@ static int getCellularDistanceFunction(lua_State* L)
 static int setCellularReturnType(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
-    auto lookUp = n->GetFNoise()->GetCellularNoiseLookup();
-    my_assert(L, lookUp != NULL, "Cellular noise lookup object is not set! Use Noise:setCellularNoiseLookup(Noise).");
     int rt = luaL_checkinteger(L, 2);
+    if (rt == (int)FastNoise::NoiseLookup){
+        auto lookUp = n->GetFNoise()->GetCellularNoiseLookup();
+        my_assert(L, lookUp != NULL, "Cellular noise lookup object is not set! Use Noise:setCellularNoiseLookup(Noise).");
+    }
+
     n->setCellularReturnType(rt);
     return 0;
 }
@@ -436,46 +481,33 @@ static int noise(lua_State* L)
     FN_DECIMAL x = lua_tonumber(L, 2);
     FN_DECIMAL y = lua_tonumber(L, 3);
     FN_DECIMAL z = lua_tonumber(L, 4);
-    FN_DECIMAL v = n->_noise(x, y, z);
+    FN_DECIMAL v = n->getNoise(x, y, z);
     lua_pushnumber(L, v);
     return 1;
 }
-static int noise1D(lua_State* L)
-{
-    GNoise *n = getNoiseInstance(L, 1);
-    FN_DECIMAL x = luaL_checknumber(L, 2);
-    FN_DECIMAL v = n->_noise(x);
-    lua_pushnumber(L, v);
-    return 1;
-}
+
 static int noise2D(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
     FN_DECIMAL x = luaL_checknumber(L, 2);
     FN_DECIMAL y = luaL_checknumber(L, 3);
-    FN_DECIMAL v = n->_noise(x, y);
+    FN_DECIMAL v = n->getNoise(x, y);
     lua_pushnumber(L, v);
     return 1;
 }
+
 static int noise3D(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
     FN_DECIMAL x = luaL_checknumber(L, 2);
     FN_DECIMAL y = luaL_checknumber(L, 3);
     FN_DECIMAL z = luaL_checknumber(L, 4);
-    FN_DECIMAL v = n->_noise(x, y, z);
+    FN_DECIMAL v = n->getNoise(x, y, z);
     lua_pushnumber(L, v);
     return 1;
 }
 
-static int gradientPerturb1D(lua_State* L)
-{
-    GNoise *n = getNoiseInstance(L, 1);
-    FN_DECIMAL x = lua_tonumber(L, 2);
-    n->gradientPerturb(x);
-    lua_pushnumber(L, x);
-    return 1;
-}
+
 static int gradientPerturb2D(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
@@ -486,6 +518,7 @@ static int gradientPerturb2D(lua_State* L)
     lua_pushnumber(L, y);
     return 2;
 }
+
 static int gradientPerturb3D(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
@@ -499,14 +532,7 @@ static int gradientPerturb3D(lua_State* L)
     return 3;
 }
 
-static int gradientPerturbFractal1D(lua_State* L)
-{
-    GNoise *n = getNoiseInstance(L, 1);
-    FN_DECIMAL x = lua_tonumber(L, 2);
-    n->gradientPerturbFractal(x);
-    lua_pushnumber(L, x);
-    return 1;
-}
+
 static int gradientPerturbFractal2D(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
@@ -517,6 +543,7 @@ static int gradientPerturbFractal2D(lua_State* L)
     lua_pushnumber(L, y);
     return 2;
 }
+
 static int gradientPerturbFractal3D(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
@@ -541,6 +568,7 @@ static int simplex4D(lua_State* L)
     return 1;
 }
 
+
 static int whiteNoise4D(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
@@ -551,13 +579,7 @@ static int whiteNoise4D(lua_State* L)
     lua_pushnumber(L, n->getWhiteNoise(x,y,z,w));
     return 1;
 }
-static int whiteNoise1DInt(lua_State* L)
-{
-    GNoise *n = getNoiseInstance(L, 1);
-    int x = luaL_checkinteger(L, 2);
-    lua_pushnumber(L, n->getWhiteNoiseInt(x));
-    return 1;
-}
+
 static int whiteNoise2DInt(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
@@ -566,6 +588,7 @@ static int whiteNoise2DInt(lua_State* L)
     lua_pushnumber(L, n->getWhiteNoiseInt(x,y));
     return 1;
 }
+
 static int whiteNoise3DInt(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
@@ -595,21 +618,19 @@ static int generateArray(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
 
-    if (!lua_isnoneornil(L,2))
-        assertIsPositiveNumber(L, 2, "Array size");
+    assertIsPositiveNumber(L, 2, "Array size");
     int size = lua_tointeger(L, 2);
-    double zoff = luaL_optnumber(L, 3, 0);
+    double yoff = luaL_optnumber(L, 3, 0);
 
     lua_createtable(L, 0, size);
     for (int i = 0; i < size; i++)
     {
-        FN_DECIMAL v = n->_noise(i, zoff);
+        FN_DECIMAL v = n->getNoise(i, yoff);
         lua_pushnumber(L, i+1);
         lua_pushnumber(L, v);
         lua_rawset(L, -3);
     }
-    //lua_pop(L, 1);
-    //lua_pushvalue(L, -1);
+
     return 1;
 }
 
@@ -618,17 +639,17 @@ static int generateTexture(lua_State* L)
     GNoise *n = getNoiseInstance(L, 1);
 
     // check if texture size is > 0
-    if (!lua_isnoneornil(L,2))
-        assertIsPositiveNumber(L, 2, "Texture width");
-    if (!lua_isnoneornil(L,3))
-        assertIsPositiveNumber(L, 3, "Texture height");
+    assertIsPositiveNumber(L, 2, "Texture width");
+    assertIsPositiveNumber(L, 3, "Texture height");
     // get texture size
     int w = luaL_checkinteger(L, 2);
     int h = luaL_checkinteger(L, 3);
     // get optional filtering parameter
     bool filtering = lua_toboolean(L, 4);
-    // get optional z offset parameter
-    double zoff = luaL_optnumber(L, 5, 0);
+    // define optional noise parameters
+    double xoff,yoff,zoff,min,max;
+    // get parameters
+    loadNoiseParams(L, 6, xoff, yoff, zoff, min, max);
 
     unsigned char *data=new unsigned char[w*h*4];
     unsigned char *ptr=data;
@@ -636,14 +657,23 @@ static int generateTexture(lua_State* L)
     for (int y=0;y<h;y++)
         for (int x=0;x<w;x++)
         {
-            float noise=n->_noise(x, y, zoff); 
-            //Convert [-1,1] into [0,255] // TODO: special case for distance return type?
-            unsigned char lum=(unsigned char)((noise+1)*255/2);
-            *ptr++=lum; //R
-            *ptr++=lum; //G
-            *ptr++=lum; //B
-            *ptr++=255; //A
+            float noise=map(n->getNoise(x + xoff, y + yoff, zoff), min, max, 0, 1);
+            unsigned char lum=(unsigned char)(noise*255);
+            Color clr = Color(lum,lum,lum,255);
+
+            if (lua_istable(L, 6))
+            {
+                lua_getfield(L, 6, "colors");
+                if (lua_objlen(L, -1) > 0)
+                    clr = matchColor(L, noise);
+                lua_pop(L, 1);
+            }
+            *ptr++=clr.R;
+            *ptr++=clr.G;
+            *ptr++=clr.B;
+            *ptr++=clr.A;
         }
+
     // Use our data array
     lua_getglobal(L, "Texture");
     lua_getfield(L, -1, "new");
@@ -651,8 +681,15 @@ static int generateTexture(lua_State* L)
     lua_pushinteger(L,w);
     lua_pushinteger(L,h);
     lua_pushboolean(L,filtering);
-    // TODO: add "optional" table to texture lua_push
-    lua_call(L,4,1);
+
+    // load options table
+    if (lua_istable(L, 5))
+    {
+        lua_pushvalue(L, 5);
+        lua_call(L,5,1);
+    }
+    else
+        lua_call(L,4,1);
     // Newly created texture is on stack already, just return it
     //Delete our data array
     delete[] data;
@@ -672,6 +709,10 @@ static int generateTileableTexture(lua_State* L)
     int h = luaL_checkinteger(L, 3);
     // get optional filtering parameter
     bool filtering = lua_toboolean(L, 4);
+    // define optional noise parameters
+    double xoff,yoff,zoff,min,max;
+    // get optional noise parameters
+    loadNoiseParams(L, 6, xoff, yoff, zoff, min, max);
 
     unsigned char *data=new unsigned char[w*h*4];
     unsigned char *ptr=data;
@@ -683,17 +724,28 @@ static int generateTileableTexture(lua_State* L)
             double s = (double)x / (double)w;
             double t = (double)y / (double)h;
 
-            double nx=cos(s*pi2)*-100.0/pi2;
-            double ny=cos(t*pi2)*-100.0/pi2;
-            double nz=-1.0+sin(s*pi2)*-100.0/pi2;
-            double nw=-1.0+sin(t*pi2)*-100.0/pi2;
-            double noise = n->getSimplex(nx,ny,nz,nw);
+            double nx=cos(s*pi2)*-w/pi2;
+            double ny=cos(t*pi2)*-h/pi2;
+            double nz=-1.0+sin(s*pi2)*-w/pi2;
+            double nw=-1.0+sin(t*pi2)*-h/pi2;
+            double noise = n->getSimplex(nx + xoff, ny + yoff, nz + zoff,nw);
 
-            unsigned char lum=(unsigned char)((noise+1)*255/2);
-            *ptr++=lum; //R
-            *ptr++=lum; //G
-            *ptr++=lum; //B
-            *ptr++=255; //A
+            noise=map(noise, min, max, 0, 1);
+
+            unsigned char lum=(unsigned char)(noise*255);
+            Color clr = Color(lum,lum,lum,255);
+
+            if (lua_istable(L, 6))
+            {
+                lua_getfield(L, 6, "colors");
+                if (lua_objlen(L, -1) > 0)
+                    clr = matchColor(L, noise);
+                lua_pop(L, 1);
+            }
+            *ptr++=clr.R;
+            *ptr++=clr.G;
+            *ptr++=clr.B;
+            *ptr++=clr.A;
         }
     // Use our data array
     lua_getglobal(L, "Texture");
@@ -702,8 +754,17 @@ static int generateTileableTexture(lua_State* L)
     lua_pushinteger(L,w);
     lua_pushinteger(L,h);
     lua_pushboolean(L,filtering);
-    // TODO: add "optional" table to texture lua_push
-    lua_call(L,4,1);
+
+    // load options table
+
+    // load options table
+    if (lua_istable(L, 5))
+    {
+        lua_pushvalue(L, 5);
+        lua_call(L,5,1);
+    }
+    else
+        lua_call(L,4,1);
     // Newly created texture is on stack already, just return it
     //Delete our data array
     delete[] data;
@@ -729,33 +790,29 @@ static int reset(lua_State* L)
     return 0;
 }
 
-//----------------------------------------------------------------
+//-------------------------------------------------------
 
 static int loader(lua_State* L)
 {
     const luaL_Reg functionlist[] = {
         {"new", initNoise},
         {"reset", reset},
-        
-        {"generateTileableTexture", generateTileableTexture},
+
         {"generateTexture", generateTexture},
+        {"generateTileableTexture", generateTileableTexture},
         {"generateArray", generateArray},
 
         {"noise", noise},
-        {"noise1D", noise1D},
         {"noise2D", noise2D},
         {"noise3D", noise3D},
 
-        {"gradientPerturb1D", gradientPerturb1D},
         {"gradientPerturb2D", gradientPerturb2D},
         {"gradientPerturb3D", gradientPerturb3D},
 
-        {"gradientPerturbFractal1D", gradientPerturbFractal1D},
         {"gradientPerturbFractal2D", gradientPerturbFractal2D},
         {"gradientPerturbFractal3D", gradientPerturbFractal3D},
 
         {"whiteNoise4D", whiteNoise4D},
-        {"whiteNoise1DInt", whiteNoise1DInt},
         {"whiteNoise2DInt", whiteNoise2DInt},
         {"whiteNoise3DInt", whiteNoise3DInt},
         {"whiteNoise4DInt", whiteNoise4DInt},
@@ -784,8 +841,6 @@ static int loader(lua_State* L)
     luaL_newweaktable(L, "v");
     luaL_rawsetptr(L, LUA_REGISTRYINDEX, &keyWeak);
 
-    luaL_newweaktable(L, "v");
-    luaL_rawsetptr(L, LUA_REGISTRYINDEX, &keyWeak);
     lua_getglobal(L, "Noise");
 
     lua_pushnumber(L, FastNoise::FBM);
@@ -885,9 +940,6 @@ static void g_initializePlugin(lua_State* L)
     lua_pop(L, 2);
 }
 
-static void g_deinitializePlugin(lua_State* L)
-{
-
+static void g_deinitializePlugin(lua_State *L) {
 }
-
-REGISTER_PLUGIN("FastNoise", "0.1a");
+REGISTER_PLUGIN_NAMED("FastNoise", "0.1a",FastNoisePlugin);

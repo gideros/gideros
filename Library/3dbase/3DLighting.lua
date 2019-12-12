@@ -10,7 +10,7 @@ local LightingShaderAttrs=
 {
 {name="POSITION",type=Shader.DFLOAT,amult=3,slot=0,offset=0},
 {name="vColor",type=Shader.DUBYTE,amult=0,slot=1,offset=0}, --Placeholder: mult=0
-{name="TEXCOORD",type=Shader.DFLOAT,amult=2,slot=2,offset=0},
+{name="TEXCOORD",type=Shader.DFLOAT,amult=2,slot=2,offset=0,code="t"},
 {name="NORMAL",type=Shader.DFLOAT,amult=3,slot=3,offset=0},
 {name="ANIMIDX",type=Shader.DFLOAT,amult=4,slot=4,offset=0,code="a"},
 {name="ANIMWEIGHT",type=Shader.DFLOAT,amult=4,slot=5,offset=0,code="a"},
@@ -69,7 +69,7 @@ Lighting.getShader=function(code)
 	if D3._V_Shader then
 		if not Lighting._shaders[lcode] then
 			for _,a in ipairs(LightingShaderAttrs) do
-				if not a.code or code:find(a.code) then a.mult=a.amult else a.mult=0 end				
+				if not a.code or code:find(a.code) then a.mult=a.amult else a.mult=0 end	
 			end
 			v=Shader.new(
 				ccode..D3._V_Shader,

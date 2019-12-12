@@ -38,7 +38,7 @@ scene:addChild(m)
 
 --Setup light
 Lighting.setLight(5,10,10,0.3)
-Lighting.setLightTarget(0,2,0,30)
+Lighting.setLightTarget(0,2,0,30,45)
 
 -- Load two animations from g3dj files
 local animWalk=buildGdx("Animations/walk.json",{})
@@ -66,6 +66,7 @@ stage:addEventListener(Event.ENTER_FRAME,function(e)
 	local as,ac=math.sin(an)*r,math.cos(an)*r
 	m:setRotationY(wang+90)
 	m:setPosition(as,0.2,ac)
+	--Lighting.setLightTarget(as,0.2,ac,30,45)
 
 	--Look at it
 	view:lookAt(0,3,5,as,2,ac)

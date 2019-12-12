@@ -258,16 +258,12 @@ struct Uniforms
 	float4 lightPos;
 	float4 cameraPos;
 	float ambient;
-#ifdef ANIMATED
 	float4x4 bones[16];
-#endif
 #ifdef INSTANCED_TEST
 //uniform highp sampler2D g_InstanceMap;
 	float InstanceMapWidth;
 #endif
-#ifdef INSTANCED
 	float4x4 InstanceMatrix;
-#endif
 };
 
 
@@ -345,16 +341,12 @@ struct Uniforms
 	float4 lightPos;
 	float4 cameraPos;
 	float ambient;
-#ifdef ANIMATED
 	float4x4 bones[16];
-#endif
 #ifdef INSTANCED_TEST
 //uniform highp sampler2D g_InstanceMap;
 	float InstanceMapWidth;
 #endif
-#ifdef INSTANCED
 	float4x4 InstanceMatrix;
-#endif
 };
 
 
@@ -396,11 +388,12 @@ float ShadowCalculation(float4 fragPosLightSpace,depth2d<float> stex [[texture(2
     // perform perspective divide
     float3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords.xy = projCoords.xy * 0.5 +0.5;
+	projCoords.y=1-projCoords.y;
 	if ((projCoords.x<0.0)||(projCoords.y<0.0)||(projCoords.x>=1.0)||(projCoords.y>=1.0))
 		return 1.0;
-	projCoords.z-=0.001; //BIAS
-	float shadow=stex.sample_compare(ssmp, projCoords.xy,projCoords.z); 
+	projCoords.z-=0.005; //BIAS
+	float shadow=stex.sample_compare(ssmp, projCoords.xy, projCoords.z);
 	if(projCoords.z >= 0.999)
         shadow = 1.0;
 	return shadow;
