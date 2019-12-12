@@ -1,0 +1,58 @@
+<plugin
+ name="FastNoise"
+ description="FastNoise plugin">
+  <target name="AndroidStudio,APK">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;fastnoise&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;fastnoise&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/fastnoise</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/fastnoise" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>AppleTV/Plugins/fastnoise</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/fastnoise" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("fastnoise","Plugins/fastnoise","GroupFastnoise_ios","GroupPlugins_ios")
+iOSProject.addGroup("fastnoise","Plugins/fastnoise","GroupFastnoise_atv","GroupPlugins_atv")
+local sources={ "fastnoise.cpp"  }
+iOSProject.addSources(sources, "GroupFastnoise", "ios")
+iOSProject.addSources(sources, "GroupFastnoise", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
+ <target name="Html5">
+ 	<lua>require("Tools/export_html5").export("fastnoise")</lua>
+ </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\FastNoise.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	</ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\FastNoiseBinding.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>]]></by>
+           </append>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+</plugin>

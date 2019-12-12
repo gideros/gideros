@@ -7,23 +7,23 @@ PATH:=$(QT)/bin:$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin:$(PATH):
 CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 #DEFS
-PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun reactphysics3d
-PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d
+PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun reactphysics3d fastnoise
+PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise
 
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera threads
 PLUGINS_WINONLY=spout steam luamidi
 PLUGINS_MACONLY=steam luamidi
-PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads luamidi harfbuzz reactphysics3d
+PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads luamidi harfbuzz reactphysics3d fastnoise
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts threads megacool map
-PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d
+PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise
 #Precompiled plugins only below
 PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
 PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
 PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
 #For reference
-PLUGINS_WINRT=luasocket ogg liquidfun harfbuzz reactphysics3d
+PLUGINS_WINRT=luasocket ogg liquidfun harfbuzz reactphysics3d fastnoise
 
 ADDONS=GSFXREditor Player TAME
 
