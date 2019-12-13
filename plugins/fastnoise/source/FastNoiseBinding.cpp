@@ -68,45 +68,6 @@ static double map(double v, double minC, double maxC, double minD, double maxD)
     return (v - minC) / (maxC - minC) * (maxD - minD) + minD;
 }
 
-static unsigned char getColor(lua_State* L, int ind)
-{
-    lua_rawgeti(L, -1, ind);
-    double cv = luaL_checknumber(L, -1);
-    lua_pop(L, 1);
-    return (unsigned char)cv;
-}
-
-static void loadNoiseParams(lua_State* L, int index, double &xoff, double &yoff, double &zoff, double &min, double &max )
-{
-    xoff = 0.0;
-    yoff = 0.0;
-    zoff = 0.0;
-    min = -1.0;
-    max = 1.0;
-    if (lua_istable(L, index))
-    {
-        lua_getfield(L, index, "xoff");
-        if (!lua_isnil(L, -1)) xoff = luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, index, "yoff");
-        if (!lua_isnil(L, -1)) yoff = luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, index, "zoff");
-        if (!lua_isnil(L, -1)) zoff = luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, index, "min");
-        if (!lua_isnil(L, -1)) min = luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-
-        lua_getfield(L, index, "max");
-        if (!lua_isnil(L, -1)) max = luaL_checknumber(L, -1);
-        lua_pop(L, 1);
-    }
-}
-
 struct Color
 {
     unsigned char R;
@@ -121,35 +82,134 @@ struct Color
     {
         R = r; G = g; B = b; A = a;
     }
+    static void lerp(const Color &A, const Color &B, Color &S,double ratio) {
+    	S.A=A.A*(1-ratio)+B.A*ratio;
+    	S.R=A.R*(1-ratio)+B.R*ratio;
+    	S.G=A.G*(1-ratio)+B.G*ratio;
+    	S.B=A.B*(1-ratio)+B.B*ratio;
+    }
 };
 
-static Color matchColor(lua_State* L, double noiseValue)
+class ColorTable {
+	struct ColorEntry {
+		double level;
+		Color color;
+	};
+	ColorEntry* entries;
+	size_t entryCount;
+	static Color alpha;
+public:
+	ColorTable();
+	~ColorTable();
+	void load(lua_State *L,int idx);
+	void get(double level,Color &c);
+};
+Color ColorTable::alpha(0,0,0,0);
+
+static unsigned char getColor(lua_State* L, int ind)
 {
-    Color color = Color();
-    bool flag = false;
-    for (unsigned int i = 0; i < lua_objlen(L, -1); i++)
-    {
-        lua_rawgeti(L, -1, i+1);
+    lua_rawgeti(L, -1, ind);
+    int cv = luaL_checkinteger(L, -1);
+    lua_pop(L, 1);
+    return (unsigned char)cv;
+}
+
+ColorTable::ColorTable() {
+	entries=NULL;
+	entryCount=0;
+}
+
+ColorTable::~ColorTable() {
+	if (entries)
+		delete[] entries;
+}
+
+void ColorTable::load(lua_State *L,int idx) {
+	luaL_checktype(L,idx,LUA_TTABLE);
+	size_t len=lua_objlen(L,idx);
+	if (len==0) return; // Empty table, assume nothing given
+	entries=new ColorEntry[len];
+	entryCount=len;
+	for (size_t k=0;k<len;k++) {
+		lua_rawgeti(L,idx,k+1);
         lua_getfield(L, -1, "h");
-        double hh = luaL_checknumber(L, -1);
+        entries[k].level = luaL_checknumber(L, -1);
         lua_pop(L, 1);
-
-        if (noiseValue <= hh)
-        {
-            flag = true;
-
-            lua_getfield(L, -1, "color");
-            color.R = getColor(L, 1);
-            color.G = getColor(L, 2);
-            color.B = getColor(L, 3);
-            color.A = getColor(L, 4);
-            lua_pop(L, 1);
-        }
-        lua_pop(L, 1);
-        if (flag) break;
+        lua_getfield(L, -1, "color");
+        entries[k].color.R = getColor(L, 1);
+        entries[k].color.G = getColor(L, 2);
+        entries[k].color.B = getColor(L, 3);
+        entries[k].color.A = getColor(L, 4);
+        lua_pop(L, 2);
     }
+}
 
-    return color;
+void ColorTable::get(double level,Color &c) {
+	if ((entries==NULL)||(entryCount==0)) {
+		unsigned char lum=(unsigned char)(level*255);
+		c.R=lum;
+		c.G=lum;
+		c.B=lum;
+		c.A=255;
+		return;
+	}
+	size_t e=0;
+	while ((e<entryCount)&&(entries[e].level<=level)) e++;
+	if (e==0)
+		Color::lerp(alpha,entries[e].color,c,level/entries[e].level);
+	else if (e==entryCount)
+		Color::lerp(entries[entryCount-1].color,alpha,c,(level-entries[entryCount].level)/(1-entries[entryCount].level));
+	else
+		Color::lerp(entries[e-1].color,entries[e].color,c,(level-entries[e-1].level)/(entries[e].level-entries[e-1].level));
+}
+
+static bool loadNoiseParams(lua_State* L, int index, double &xoff, double &yoff, double &zoff, double &woff, double &min, double &max, bool &tileable, ColorTable &ctable)
+{
+    xoff = 0.0;
+    yoff = 0.0;
+    zoff = 0.0;
+    woff = 0.0;
+    min = -1.0;
+    max = 1.0;
+    tileable = false;
+    if (lua_istable(L, index))
+    {
+        lua_getfield(L, index, "xoff");
+        xoff = lua_tonumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "yoff");
+        yoff = lua_tonumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "zoff");
+        zoff = lua_tonumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "woff");
+        woff = lua_tonumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "min");
+        if (!lua_isnil(L, -1)) min = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "max");
+        if (!lua_isnil(L, -1)) max = luaL_checknumber(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "tileable");
+        tileable = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+
+        lua_getfield(L, index, "colors");
+        if (!lua_isnil(L,-1))
+        	ctable.load(L,-1);
+        lua_pop(L, 1);
+
+        return true;
+    }
+    return false;
 }
 
 //----------------------------------------------------------------
@@ -614,18 +674,31 @@ static int whiteNoise4DInt(lua_State* L)
 //                      Additions
 //-------------------------------------------------------
 
+static double getTorusNoise(GNoise *n, int x, int y, int w, int h, double xoff, double yoff, double zoff, double woff)
+{
+    double s = (double)x / (double)w;
+    double t = (double)y / (double)h;
+    double pi2 = M_PI * 2;
+    double nx=cos(s*pi2)*-w/pi2;
+    double ny=cos(t*pi2)*-h/pi2;
+    double nz=-1.0+sin(s*pi2)*-w/pi2;
+    double nw=-1.0+sin(t*pi2)*-h/pi2;
+    return n->getSimplex(nx + xoff, ny + yoff, nz + zoff, nw + woff);
+}
+
 static int generateArray(lua_State* L)
 {
     GNoise *n = getNoiseInstance(L, 1);
 
     assertIsPositiveNumber(L, 2, "Array size");
     int size = lua_tointeger(L, 2);
-    double yoff = luaL_optnumber(L, 3, 0);
+    double xoff = luaL_optnumber(L, 3, 0);
+    double yoff = luaL_optnumber(L, 4, 0);
 
     lua_createtable(L, 0, size);
     for (int i = 0; i < size; i++)
     {
-        FN_DECIMAL v = n->getNoise(i, yoff);
+        FN_DECIMAL v = n->getNoise(i+xoff, yoff);
         lua_pushnumber(L, i+1);
         lua_pushnumber(L, v);
         lua_rawset(L, -3);
@@ -647,27 +720,22 @@ static int generateTexture(lua_State* L)
     // get optional filtering parameter
     bool filtering = lua_toboolean(L, 4);
     // define optional noise parameters
-    double xoff,yoff,zoff,min,max;
+    double xoff,yoff,zoff,woff,min,max;
+    bool tileable;
+    ColorTable ctable;
     // get parameters
-    loadNoiseParams(L, 6, xoff, yoff, zoff, min, max);
+    loadNoiseParams(L, 6, xoff, yoff, zoff, woff, min, max, tileable, ctable);
 
     unsigned char *data=new unsigned char[w*h*4];
     unsigned char *ptr=data;
+    Color clr;
 
     for (int y=0;y<h;y++)
         for (int x=0;x<w;x++)
         {
-            float noise=map(n->getNoise(x + xoff, y + yoff, zoff), min, max, 0, 1);
-            unsigned char lum=(unsigned char)(noise*255);
-            Color clr = Color(lum,lum,lum,255);
-
-            if (lua_istable(L, 6))
-            {
-                lua_getfield(L, 6, "colors");
-                if (lua_objlen(L, -1) > 0)
-                    clr = matchColor(L, noise);
-                lua_pop(L, 1);
-            }
+            double noise= tileable ? getTorusNoise(n, x, y, w, h, xoff, yoff, zoff, woff) : n->getNoise(x + xoff, y + yoff, zoff);
+            noise = map(noise, min, max, 0, 1);
+            ctable.get(noise,clr);
             *ptr++=clr.R;
             *ptr++=clr.G;
             *ptr++=clr.B;
@@ -681,81 +749,6 @@ static int generateTexture(lua_State* L)
     lua_pushinteger(L,w);
     lua_pushinteger(L,h);
     lua_pushboolean(L,filtering);
-
-    // load options table
-    if (lua_istable(L, 5))
-    {
-        lua_pushvalue(L, 5);
-        lua_call(L,5,1);
-    }
-    else
-        lua_call(L,4,1);
-    // Newly created texture is on stack already, just return it
-    //Delete our data array
-    delete[] data;
-    lua_remove(L, -2);
-    return 1;
-}
-
-static int generateTileableTexture(lua_State* L)
-{
-    GNoise *n = getNoiseInstance(L, 1);
-
-    // check if texture size is > 0
-    assertIsPositiveNumber(L, 2, "Texture width");
-    assertIsPositiveNumber(L, 3, "Texture height");
-    // get texture size
-    int w = luaL_checkinteger(L, 2);
-    int h = luaL_checkinteger(L, 3);
-    // get optional filtering parameter
-    bool filtering = lua_toboolean(L, 4);
-    // define optional noise parameters
-    double xoff,yoff,zoff,min,max;
-    // get optional noise parameters
-    loadNoiseParams(L, 6, xoff, yoff, zoff, min, max);
-
-    unsigned char *data=new unsigned char[w*h*4];
-    unsigned char *ptr=data;
-
-    double pi2 = 2*M_PI;
-    for (int y=0;y<h;y++)
-        for (int x=0;x<w;x++)
-        {
-            double s = (double)x / (double)w;
-            double t = (double)y / (double)h;
-
-            double nx=cos(s*pi2)*-w/pi2;
-            double ny=cos(t*pi2)*-h/pi2;
-            double nz=-1.0+sin(s*pi2)*-w/pi2;
-            double nw=-1.0+sin(t*pi2)*-h/pi2;
-            double noise = n->getSimplex(nx + xoff, ny + yoff, nz + zoff,nw);
-
-            noise=map(noise, min, max, 0, 1);
-
-            unsigned char lum=(unsigned char)(noise*255);
-            Color clr = Color(lum,lum,lum,255);
-
-            if (lua_istable(L, 6))
-            {
-                lua_getfield(L, 6, "colors");
-                if (lua_objlen(L, -1) > 0)
-                    clr = matchColor(L, noise);
-                lua_pop(L, 1);
-            }
-            *ptr++=clr.R;
-            *ptr++=clr.G;
-            *ptr++=clr.B;
-            *ptr++=clr.A;
-        }
-    // Use our data array
-    lua_getglobal(L, "Texture");
-    lua_getfield(L, -1, "new");
-    lua_pushlstring(L,(char *)data,4*w*h);
-    lua_pushinteger(L,w);
-    lua_pushinteger(L,h);
-    lua_pushboolean(L,filtering);
-
-    // load options table
 
     // load options table
     if (lua_istable(L, 5))
@@ -799,7 +792,6 @@ static int loader(lua_State* L)
         {"reset", reset},
 
         {"generateTexture", generateTexture},
-        {"generateTileableTexture", generateTileableTexture},
         {"generateArray", generateArray},
 
         {"noise", noise},
@@ -940,6 +932,9 @@ static void g_initializePlugin(lua_State* L)
     lua_pop(L, 2);
 }
 
-static void g_deinitializePlugin(lua_State *L) {
+static void g_deinitializePlugin(lua_State* L)
+{
+
 }
+
 REGISTER_PLUGIN_NAMED("FastNoise", "0.1a",FastNoisePlugin);
