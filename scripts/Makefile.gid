@@ -22,8 +22,7 @@ PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun 
 PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
 PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
 PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
-#For reference
-PLUGINS_WINRT=luasocket ogg liquidfun harfbuzz reactphysics3d fastnoise
+PLUGINS_WINRT=luasocket ogg liquidfun harfbuzz reactphysics3d
 
 ADDONS=GSFXREditor Player TAME
 

@@ -24,7 +24,10 @@ android {
         }
     }    
     
-
+    aaptOptions {
+        ignoreAssetsPattern '!._'
+    }   
+    
     buildTypes {
         release {
             minifyEnabled false

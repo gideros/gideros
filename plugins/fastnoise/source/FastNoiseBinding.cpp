@@ -937,4 +937,4 @@ static void g_deinitializePlugin(lua_State* L)
 
 }
 
-REGISTER_PLUGIN_NAMED("FastNoise", "0.1a",FastNoisePlugin);
+REGISTER_PLUGIN_NAMED("FastNoise", "0.1a",fastnoise);
