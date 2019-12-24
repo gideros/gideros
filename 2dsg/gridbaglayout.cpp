@@ -599,6 +599,11 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 			getMinSize(parent, info, dw, dh, insets);
 		}
     }
+
+    //Don't try to layout with a too small area
+    if (pwidth<dw) pwidth=dw;
+    if (pheight<dh) pheight=dh;
+
 	r.width = dw;
 	r.height = dh;
 	info.reqWidth = dw;

@@ -91,7 +91,7 @@ void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
 		return;
 	}
 	cx=0;
-	cy=0;
+	cy=getFont()->getAscender();
 }
 
 size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)

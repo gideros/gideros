@@ -348,8 +348,30 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			lines++;
 		}
 	}
+
+	size_t nparts=tl.parts.size();
+	if ((nparts>0)&&(tl.parts[nparts-1].sep)) {
+		//Insert an empty chunk to cope with trailing separators in initial text
+		ChunkLayout cl;
+		cl.text="";
+        cl.x=cl.y=cl.w=cl.h=0;
+        cl.dy=y; cl.dx=0;
+        cl.y=y;
+		cl.sep=0;
+		cl.sepflags=0;
+		cl.line=lines+1;
+		cl.styleFlags=styles.styleFlags;
+		cl.color=styles.color;
+		cl.sepl=0;
+        cl.advX=0;
+        cl.advY=0;
+        cl.shapeScaleX=0;
+        cl.shapeScaleY=0;
+        tl.parts.push_back(cl);
+	}
+
 	//Layout final line
-	if (cw)
+	if (tl.parts.size()>st)
 	{
 		layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing);
 		st=tl.parts.size();
