@@ -458,6 +458,13 @@ CompositeFont::~CompositeFont()
 	}
 }
 
+void CompositeFont::preDraw() {
+    std::vector<CompositeFontSpec>::iterator bit = fonts_.begin();
+    for (std::vector<CompositeFontSpec>::iterator it=bit;it != fonts_.end(); it++) {
+        it->font->preDraw();
+	}
+}
+
 void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l)
 {
     std::vector<CompositeFontSpec>::iterator bit = fonts_.begin();

@@ -182,6 +182,8 @@ void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, fl
     G_UNUSED(ex);
     G_UNUSED(ey);
     if (scaleChanged()) createGraphics();
+    if (font_ != NULL)
+        font_->preDraw();
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
 		(*it).draw(shader_);
 }

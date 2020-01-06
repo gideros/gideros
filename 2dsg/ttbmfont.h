@@ -38,6 +38,7 @@ public:
     virtual float getLineHeight();
     virtual bool shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext);
     virtual void chunkMetrics(struct ChunkLayout &part, float letterSpacing);
+    virtual void preDraw();
 
 private:
     struct TextureGlyph
@@ -82,6 +83,7 @@ private:
     std::vector<TextureData *> textureData_;
     TexturePacker *currentPacker_;
     Dib *currentDib_;
+    bool dibDirty_;
     float filtering_;
     std::vector<FontFace> fontFaces_;
     std::string charset_;

@@ -48,7 +48,8 @@ struct CommonElement
 struct TextureElement : public CommonElement
 {
     size_t textureSize;
-    std::vector<char> buffer;
+    char *buffer;
+    size_t bufferSize;
     std::vector<char> signature;
     void *udata;
 };
@@ -58,7 +59,8 @@ struct RenderTargetElement : public CommonElement
     ShaderBuffer *_framebuffer;
     size_t textureSize;
     bool depth;
-    std::vector<char> buffer;
+    char *buffer;
+    size_t bufferSize;
     void *udata;
 };
 
@@ -128,6 +130,8 @@ public:
         element->filter = filter;
         element->udata = NULL;
         element->renderTarget = false;
+        element->buffer=NULL;
+        element->bufferSize=0;
 
         genAndUploadTexture(element, pixels);
 
@@ -138,10 +142,13 @@ public:
         if (caching_)
         {
             size_t output_length = snappy_max_compressed_length(element->textureSize);
-            element->buffer.resize(output_length);
-            snappy_compress((const char*)pixels, element->textureSize, &element->buffer[0], &output_length);
-            element->buffer.resize(output_length);
-            bufferMemory_ += element->buffer.size();
+            char *temp=new char[output_length];
+            snappy_compress((const char*)pixels, element->textureSize, temp, &output_length);
+            element->buffer=new char[output_length];
+            memcpy(element->buffer,temp,output_length);
+            delete[] temp;
+            element->bufferSize=output_length;
+            bufferMemory_ += element->bufferSize;
         }
 
         if (siglength > 0)
@@ -236,12 +243,16 @@ public:
 
     	     if (caching_)
     	     {
-    	    	 bufferMemory_-=element->buffer.size();
+    	    	 bufferMemory_-=element->bufferSize;
     	    	 size_t output_length = snappy_max_compressed_length(element->textureSize);
-    	    	 element->buffer.resize(output_length);
-    	    	 snappy_compress((const char*)pixels, element->textureSize, &element->buffer[0], &output_length);
-    	    	 element->buffer.resize(output_length);
-    	    	 bufferMemory_ += element->buffer.size();
+    	         char *temp=new char[output_length];
+    	         snappy_compress((const char*)pixels, element->textureSize, temp, &output_length);
+    	         if (element->buffer) delete[] element->buffer;
+    	         element->buffer=new char[output_length];
+    	         memcpy(element->buffer,temp,output_length);
+   	             delete[] temp;
+   	             element->bufferSize=output_length;
+    	    	 bufferMemory_ += element->bufferSize;
     	     }
     	}
     }
@@ -259,7 +270,8 @@ public:
                 {
                     textureMemory_ -= element->textureSize;
 
-                    bufferMemory_ -= element->buffer.size();
+                    bufferMemory_ -= element->bufferSize;
+                    if (element->buffer) delete[] element->buffer;
 
                     delete element->_texture;
 
@@ -294,6 +306,8 @@ public:
                 textureMemory_ -= element->textureSize;
 
                 glog_v("Deleting render target. Total memory is %g KB.", (bufferMemory_ + textureMemory_) / 1024.0);
+
+                if (element->buffer) delete[] element->buffer;
 
                 delete element->_framebuffer;
 
@@ -388,9 +402,9 @@ public:
             TextureElement *element = *iter;
 
             size_t output_length;
-            snappy_uncompressed_length(&element->buffer[0], element->buffer.size(), &output_length);
+            snappy_uncompressed_length(element->buffer, element->bufferSize, &output_length);
             char* output = (char*)malloc(output_length);
-            snappy_uncompress(&element->buffer[0], element->buffer.size(), output, &output_length);
+            snappy_uncompress(element->buffer, element->bufferSize, output, &output_length);
             genAndUploadTexture(element, output);
             free(output);
         }
@@ -407,11 +421,13 @@ public:
             RenderTargetElement *element = iter->second;
 
             size_t output_length;
-            snappy_uncompressed_length(&element->buffer[0], element->buffer.size(), &output_length);
-            std::vector<char> uncompressed(output_length);
-            snappy_uncompress(&element->buffer[0], element->buffer.size(), &uncompressed[0], &output_length);
-            std::vector<char>().swap(element->buffer);
-            genAndUploadTexture(element, &uncompressed[0]);
+            snappy_uncompressed_length(element->buffer, element->bufferSize, &output_length);
+            char* output = (char*)malloc(output_length);
+            snappy_uncompress(element->buffer, element->bufferSize, output, &output_length);
+            delete[] element->buffer;
+            element->buffer=NULL;
+            genAndUploadTexture(element, output);
+            free(output);
 
             element->_framebuffer=engine->createRenderTarget(element->_texture,element->depth);
         }
@@ -494,6 +510,8 @@ public:
         element->udata = NULL;
         element->renderTarget = true;
         element->depth=depth;
+        element->buffer=NULL;
+        element->bufferSize=0;
 
         element->textureSize = width * height * pixelSize(format, type);
 
@@ -533,13 +551,15 @@ public:
         for (iter = renderTargetElements_.begin(); iter != e; ++iter)
         {
             RenderTargetElement *element = iter->second;
-            element->buffer.resize(element->width * element->height * 4);
-            element->_framebuffer->readPixels(0, 0, element->width, element->height, ShaderTexture::FMT_RGBA, ShaderTexture::PK_UBYTE, &element->buffer[0]);
-            size_t output_length = snappy_max_compressed_length(element->buffer.size());
-            std::vector<char> compressed(output_length);
-            snappy_compress(&element->buffer[0], element->buffer.size(), &compressed[0], &output_length);
-            compressed.resize(output_length);
-            element->buffer = compressed;
+            char *pixels=(char *)malloc(element->width * element->height * 4);
+            element->_framebuffer->readPixels(0, 0, element->width, element->height, ShaderTexture::FMT_RGBA, ShaderTexture::PK_UBYTE, pixels);
+            size_t output_length = snappy_max_compressed_length(element->width * element->height * 4);
+            char *temp=(char *)malloc(output_length);
+            snappy_compress(pixels,element->width * element->height * 4, temp, &output_length);
+            free(pixels);
+            element->buffer = new char[output_length];
+            memcpy(element->buffer,temp,output_length);
+            free(temp);
         }
 
     }

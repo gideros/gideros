@@ -256,6 +256,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 
     currentDib_ = NULL;
     currentPacker_ = NULL;
+    dibDirty_=false;
 
 	fontInfo_.ascender = 0;
 	fontInfo_.descender = 1000000;
@@ -487,7 +488,7 @@ void TTBMFont::ensureGlyphs(int facenum,const wchar32_t *text, int size) {
 	checkLogicalScale();
 	if (!currentPacker_)
 		return;
-	bool updateTexture = false;
+	bool updateTexture = dibDirty_;
 	FT_Face face=fontFaces_[facenum].face;
 	std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
 	for (const wchar32_t *t = text; size; size--, t++) {
@@ -572,10 +573,14 @@ void TTBMFont::ensureGlyphs(int facenum,const wchar32_t *text, int size) {
 			updateTexture = true;
 		}
 	}
-	if (updateTexture) {
+	dibDirty_=updateTexture;
+}
+
+void TTBMFont::preDraw() {
+	if (dibDirty_&&currentDib_) {
 		application_->getTextureManager()->updateTextureFromDib(
 				textureData_[textureData_.size() - 1], *currentDib_);
-		updateTexture = false;
+		dibDirty_ = false;
 	}
 }
 

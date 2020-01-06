@@ -7,6 +7,7 @@
 #include "giderosexception.h"
 #include <gimage.h>
 #include <gstdio.h>
+#include <string.h>
 
 static unsigned int nextpow2(unsigned int v)
 {
@@ -19,6 +20,20 @@ static unsigned int nextpow2(unsigned int v)
 	v++;
 
 	return v;
+}
+
+Dib::Dib(const Dib &dib)
+{
+	originalWidth_ = dib.originalWidth_;
+	originalHeight_ =dib.originalHeight_;
+	width_ = dib.width_;
+	height_ = dib.height_;
+	scale_=dib.scale_;
+	baseOriginalWidth_ = dib.baseOriginalWidth_;
+	baseOriginalHeight_ = dib.originalHeight_;
+
+	data_ = new unsigned char[width_ * height_ * 4];
+	memcpy(data_,dib.data_,width_ * height_ * 4);
 }
 
 Dib::Dib(Application* application,
@@ -43,25 +58,29 @@ Dib::Dib(Application* application,
 	baseOriginalWidth_ = originalWidth_/scale_;
 	baseOriginalHeight_ = originalHeight_/scale_;
 
-	data_.resize(width_ * height_ * 4, 0);
+	data_ = new unsigned char[width_ * height_ * 4];
 }
 
-static void check(int result, const char* file)
+static void check(int result, const char* file, unsigned char *buf)
 {
     switch (result)
     {
     case GIMAGE_NO_ERROR:
         break;
     case GIMAGE_CANNOT_OPEN_FILE:
+    	if (buf!=NULL) delete[] buf;
         throw GiderosException(GStatus(6000, file));
         break;
     case GIMAGE_UNRECOGNIZED_FORMAT:
+    	if (buf!=NULL) delete[] buf;
         throw GiderosException(GStatus(6005, file));
         break;
     case GIMAGE_ERROR_WHILE_READING:
+    	if (buf!=NULL) delete[] buf;
         throw GiderosException(GStatus(6013, file));
         break;
     case GIMAGE_UNSUPPORTED_COLOR_SPACE:
+    	if (buf!=NULL) delete[] buf;
         throw GiderosException(GStatus(6014, file));
         break;
     }
@@ -92,13 +111,13 @@ Dib::Dib(Application* application,
 
         filename = std::string(file, ext - file) + (suffix ? suffix : "") + ext;
 
-        check(gimage_parseImage(filename.c_str(), &width2, &height2, &comp), filename.c_str());
+        check(gimage_parseImage(filename.c_str(), &width2, &height2, &comp), filename.c_str(),NULL);
 
         G_FILE *fis = g_fopen(file, "rb");
         if (fis)
         {
             g_fclose(fis);
-            check(gimage_parseImage(file, &width1, &height1, NULL), file);
+            check(gimage_parseImage(file, &width1, &height1, NULL), file,NULL);
         }
         else
         {
@@ -108,7 +127,7 @@ Dib::Dib(Application* application,
     }
     else
     {
-        check(gimage_parseImage(file, &width1, &height1, &comp), file);
+        check(gimage_parseImage(file, &width1, &height1, &comp), file,NULL);
         filename = file;
         width2 = width1;
         height2 = height1;
@@ -131,11 +150,11 @@ Dib::Dib(Application* application,
         height_ = originalHeight_;
     }
 
-    std::vector<unsigned char> buf(originalWidth_ * originalHeight_ * comp);
+    unsigned char *buf=new unsigned char[originalWidth_ * originalHeight_ * comp];
 
-    check(gimage_loadImage(filename.c_str(), &buf[0]), filename.c_str());
+    check(gimage_loadImage(filename.c_str(), buf), filename.c_str(),buf);
 
-    data_.resize(width_ * height_ * 4);
+	data_ = new unsigned char[width_ * height_ * 4];
 
     if (comp == 4)
     {// optimization for 4 components case.
@@ -143,7 +162,7 @@ Dib::Dib(Application* application,
         {
             int srcindex = (y * originalWidth_) * 4;
             int dstindex = (y * width_) * 4;
-            std::copy((const unsigned int*)&buf[srcindex], (const unsigned int*)(buf.data() + srcindex + originalWidth_ * 4),
+            std::copy((const unsigned int*)&buf[srcindex], (const unsigned int*)(buf + srcindex + originalWidth_ * 4),
                     (unsigned int*)&data_[dstindex]);
         }
     }
@@ -262,20 +281,20 @@ void Dib::intelligentFill()
 
 void Dib::premultiplyAlpha()
 {
-    gimage_premultiplyAlpha(width_, height_, &data_[0]);
+    gimage_premultiplyAlpha(width_, height_, data_);
 }
 
 void Dib::convertGrayscale()
 {
-    unsigned int* iptr = (unsigned int*)&data_[0];
+    unsigned int* iptr = (unsigned int*)data_;
 
     for (int i = 0; i < width_ * height_; ++i)
         iptr[i] = ((iptr[i] ^ 0x00ff0000) << 8) | 0x00ffffff;
 }
 
-std::vector<unsigned short> Dib::to565() const
+unsigned short *Dib::to565() const
 {
-    std::vector<unsigned short> result(width_ * height_);
+    unsigned short *result=new unsigned short[width_ * height_];
 
     for (int y = 0; y < height_; ++y)
         for (int x = 0; x < width_; ++x)
@@ -292,9 +311,9 @@ std::vector<unsigned short> Dib::to565() const
     return result;
 }
 
-std::vector<unsigned char> Dib::to888() const
+unsigned char *Dib::to888() const
 {
-    std::vector<unsigned char> result(width_ * height_ * 3);
+    unsigned char *result=new unsigned char[width_ * height_ * 3];
 
     for (int y = 0; y < height_; ++y)
         for (int x = 0; x < width_; ++x)
@@ -308,9 +327,9 @@ std::vector<unsigned char> Dib::to888() const
     return result;
 }
 
-std::vector<unsigned char> Dib::toY8() const
+unsigned char *Dib::toY8() const
 {
-    std::vector<unsigned char> result(width_ * height_);
+    unsigned char *result=new unsigned char[width_ * height_];
 
     for (int y = 0; y < height_; ++y)
         for (int x = 0; x < width_; ++x)
@@ -322,9 +341,9 @@ std::vector<unsigned char> Dib::toY8() const
     return result;
 }
 
-std::vector<unsigned char> Dib::toA8() const
+unsigned char *Dib::toA8() const
 {
-    std::vector<unsigned char> result(width_ * height_);
+    unsigned char *result=new unsigned char[width_ * height_];
 
     for (int y = 0; y < height_; ++y)
         for (int x = 0; x < width_; ++x)
@@ -336,9 +355,9 @@ std::vector<unsigned char> Dib::toA8() const
     return result;
 }
 
-std::vector<unsigned char> Dib::toYA8() const
+unsigned char *Dib::toYA8() const
 {
-    std::vector<unsigned char> result(width_ * height_ * 2);
+    unsigned char *result=new unsigned char[width_ * height_ * 2];
 
     for (int y = 0; y < height_; ++y)
         for (int x = 0; x < width_; ++x)
@@ -352,9 +371,9 @@ std::vector<unsigned char> Dib::toYA8() const
 }
 
 
-std::vector<unsigned short> Dib::to4444() const
+unsigned short *Dib::to4444() const
 {
-    std::vector<unsigned short> result(width_ * height_);
+    unsigned short *result=new unsigned short[width_ * height_];
 
     for (int y = 0; y < height_; ++y)
         for (int x = 0; x < width_; ++x)
@@ -374,9 +393,9 @@ std::vector<unsigned short> Dib::to4444() const
 }
 
 
-std::vector<unsigned short> Dib::to5551() const
+unsigned short *Dib::to5551() const
 {
-    std::vector<unsigned short> result(width_ * height_);
+    unsigned short *result=new unsigned short[width_ * height_];
 
     for (int y = 0; y < height_; ++y)
         for (int x = 0; x < width_; ++x)

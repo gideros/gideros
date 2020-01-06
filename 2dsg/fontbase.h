@@ -150,6 +150,7 @@ public:
     }
 
     virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny, TextLayout &l) = 0;
+    virtual void preDraw() {}; //Called when some text is about to be actually rendered, to flush data to the GPU
 };
 
 class CompositeFont : public BMFontBase
@@ -175,6 +176,7 @@ public:
     virtual float getAscender();
     virtual float getDescender();
     virtual float getLineHeight();
+    virtual void preDraw();
 protected:
     std::vector<CompositeFontSpec> fonts_;
     struct FontInfo

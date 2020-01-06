@@ -1,8 +1,6 @@
 #ifndef DIB_H
 #define DIB_H
 
-#include <vector>
-#include <algorithm>
 #include "refptr.h"
 
 class Application;
@@ -22,6 +20,10 @@ public:
         bool pow2,
         bool maketransparent,
         unsigned int transparentcolor);
+
+	Dib(const Dib &dib);
+
+	~Dib() { delete[] data_; };
 
 	void fill(unsigned char rgba[4])
 	{
@@ -50,7 +52,7 @@ public:
 
 	unsigned char *dataArray()
 	{
-		return &data_[0];
+		return data_;
 	}
 
 	int originalWidth() const
@@ -80,12 +82,12 @@ public:
 
 	const unsigned char* data() const
 	{
-		return &data_[0];
+		return data_;
 	}
 
 	unsigned char* data()
 	{
-		return &data_[0];
+		return data_;
 	}
 
 	void getPixel(int x, int y, unsigned char rgba[4])
@@ -132,16 +134,16 @@ public:
 
     void convertGrayscale();
 
-    std::vector<unsigned char> to888() const;
-    std::vector<unsigned short> to565() const;
-    std::vector<unsigned short> to4444() const;
-    std::vector<unsigned short> to5551() const;
-    std::vector<unsigned char> toY8() const;
-    std::vector<unsigned char> toA8() const;
-    std::vector<unsigned char> toYA8() const;
+    unsigned char *to888() const;
+    unsigned short *to565() const;
+    unsigned short *to4444() const;
+    unsigned short *to5551() const;
+    unsigned char *toY8() const;
+    unsigned char *toA8() const;
+    unsigned char *toYA8() const;
 
 private:
-	std::vector<unsigned char> data_;
+	unsigned char *data_;
 
 	int width_;
 	int height_;

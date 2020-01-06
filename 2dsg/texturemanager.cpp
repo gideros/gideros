@@ -153,44 +153,51 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
         break;
     case eRGB888:
     {
-        std::vector<unsigned char> data = dib.to888();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], &sig[0], sig.size());
+        unsigned char *data = dib.to888();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
+        delete[] data;
         break;
     }
     case eRGB565:
     {
-        std::vector<unsigned short> data = dib.to565();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], &sig[0], sig.size());
+        unsigned short *data = dib.to565();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
+        delete[] data;
         break;
     }
     case eRGBA4444:
     {
-        std::vector<unsigned short> data = dib.to4444();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], &sig[0], sig.size());
+        unsigned short *data = dib.to4444();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
+        delete[] data;
         break;
     }
     case eRGBA5551:
     {
-        std::vector<unsigned short> data = dib.to5551();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], &sig[0], sig.size());
+        unsigned short *data = dib.to5551();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
+        delete[] data;
         break;
     }
     case eY8:
     {
-        std::vector<unsigned char> data = dib.toY8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned char *data = dib.toY8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eA8:
     {
-        std::vector<unsigned char> data = dib.toA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned char *data = dib.toA8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eYA8:
     {
-        std::vector<unsigned char> data = dib.toYA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned char *data = dib.toYA8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     }
@@ -294,44 +301,51 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         break;
     case eRGB888:
     {
-        std::vector<unsigned char> data = dib2.to888();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned char *data = dib2.to888();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eRGB565:
     {
-        std::vector<unsigned short> data = dib2.to565();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned short *data = dib2.to565();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eRGBA4444:
     {
-        std::vector<unsigned short> data = dib2.to4444();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned short *data = dib2.to4444();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eRGBA5551:
     {
-        std::vector<unsigned short> data = dib2.to5551();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned short *data = dib2.to5551();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eY8:
     {
-        std::vector<unsigned char> data = dib2.toY8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned char *data = dib2.toY8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eA8:
     {
-        std::vector<unsigned char> data = dib2.toA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned char *data = dib2.toA8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     case eYA8:
     {
-        std::vector<unsigned char> data = dib2.toYA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        unsigned char *data = dib2.toYA8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        delete[] data;
         break;
     }
     }
@@ -431,44 +445,51 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
         break;
     case eRGB888:
     {
-        std::vector<unsigned char> datap = dib2.to888();
-        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, &datap[0]);
+        unsigned char *datap = dib2.to888();
+        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, datap);
+        delete[] datap;
         break;
     }
     case eRGB565:
     {
-        std::vector<unsigned short> datap = dib2.to565();
-        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, &datap[0]);
+        unsigned short *datap = dib2.to565();
+        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, datap);
+        delete[] datap;
         break;
     }
     case eRGBA4444:
     {
-        std::vector<unsigned short> datap = dib2.to4444();
-        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, &datap[0]);
+        unsigned short *datap = dib2.to4444();
+        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, datap);
+        delete[] datap;
         break;
     }
     case eRGBA5551:
     {
-        std::vector<unsigned short> datap = dib2.to5551();
-        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, &datap[0]);
+        unsigned short *datap = dib2.to5551();
+        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, datap);
+        delete[] datap;
         break;
     }
     case eY8:
     {
-        std::vector<unsigned char> datap = dib2.toY8();
-        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, &datap[0]);
+        unsigned char *datap = dib2.toY8();
+        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, datap);
+        delete[] datap;
         break;
     }
     case eA8:
     {
-        std::vector<unsigned char> datap = dib2.toA8();
-        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, &datap[0]);
+        unsigned char *datap = dib2.toA8();
+        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, datap);
+        delete[] datap;
         break;
     }
     case eYA8:
     {
-        std::vector<unsigned char> datap = dib2.toYA8();
-        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, &datap[0]);
+        unsigned char *datap = dib2.toYA8();
+        gtexture_update(data->gid,dib.width(), dib.height(), format, type, wrap, filter, datap);
+        delete[] datap;
         break;
     }
     }
