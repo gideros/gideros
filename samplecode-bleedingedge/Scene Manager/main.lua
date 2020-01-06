@@ -73,9 +73,9 @@ local fadeButton = Button.new(Bitmap.new(Texture.new("gfx/fade-up.png")), Bitmap
 fadeButton:setPosition(20, 90)
 stage:addChild(fadeButton)
 
-local crossfadeButton = Button.new(Bitmap.new(Texture.new("gfx/crossfade-up.png")), Bitmap.new(Texture.new("gfx/crossfade-down.png")))
-crossfadeButton:setPosition(160, 90)
-stage:addChild(crossfadeButton)
+local crossFadeButton = Button.new(Bitmap.new(Texture.new("gfx/crossfade-up.png")), Bitmap.new(Texture.new("gfx/crossfade-down.png")))
+crossFadeButton:setPosition(160, 90)
+stage:addChild(crossFadeButton)
 
 local flipButton = Button.new(Bitmap.new(Texture.new("gfx/flip-up.png")), Bitmap.new(Texture.new("gfx/flip-down.png")))
 flipButton:setPosition(20, 130)
@@ -118,9 +118,9 @@ fadeButton:addEventListener("click",
 		sceneManager:changeScene(nextScene(), 1, SceneManager.fade, easing.linear) 
 	end)
 
-crossfadeButton:addEventListener("click", 
+crossFadeButton:addEventListener("click", 
 	function()	
-		sceneManager:changeScene(nextScene(), 1, SceneManager.crossfade, easing.linear) 
+		sceneManager:changeScene(nextScene(), 1, SceneManager.crossFade, easing.linear) 
 	end)
 
 flipButton:addEventListener("click", 

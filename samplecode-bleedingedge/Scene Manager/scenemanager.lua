@@ -169,7 +169,7 @@ function SceneManager.fade(scene1, scene2, t)
 	end
 end
 
-function SceneManager.crossfade(scene1, scene2, t)
+function SceneManager.crossFade(scene1, scene2, t)
 	scene1:setAlpha(1 - t)
 	scene2:setAlpha(t)
 end
