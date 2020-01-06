@@ -1060,8 +1060,10 @@ int SpriteBinder::setAnchorPoint(lua_State* L)
 
     float x1, y1, x2, y2;
     sprite->objectBounds(&x1, &y1, &x2, &y2);
+    float width = x1 < x2 ? x2 - x1 : 0;
+    float height = y1 < y2 ? y2 - y1 : 0;
 
-    sprite->setRefXY(x * (x2 - x1), y * (y2 - y1));
+    sprite->setRefXY(x * width, y * height);
 
     return 0;
 }
@@ -1076,8 +1078,8 @@ int SpriteBinder::getAnchorPoint(lua_State* L)
     float x1, y1, x2, y2;
     sprite->objectBounds(&x1, &y1, &x2, &y2);
 
-    float width = x1 != x2 ? x2 - x1 : 1;
-    float height = y1 != y2 ? y2 - y1 : 1;
+    float width = x1 < x2 ? x2 - x1 : 1;
+    float height = y1 < y2 ? y2 - y1 : 1;
 
     lua_pushnumber(L, sprite->refX() / width);
     lua_pushnumber(L, sprite->refY() / height);
