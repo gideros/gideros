@@ -1,6 +1,7 @@
 #ifndef DIB_H
 #define DIB_H
 
+#include <algorithm>
 #include "refptr.h"
 
 class Application;
