@@ -94,17 +94,18 @@ struct Connection
 
     Connection& connection2 = map_[connection];
     
+    ghttp_ProgressEvent *event;
     if (connection2.streaming) {
-    	ghttp_ProgressEvent *event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent)+data.length);
-    	event.chunkSize=data.length;
-    	event.chunk=(void *)(event+1);
-    	memcpy(event.chunk,data.bytes,event.chunkSize);
+    	event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent)+data.length);
+    	event->chunkSize=data.length;
+    	event->chunk=(void *)(event+1);
+    	memcpy(event->chunk,data.bytes,event->chunkSize);
     }
     else {
 	    [connection2.data appendData:data];
-	    ghttp_ProgressEvent *event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
-    	event.chunk=NULL;
-    	event.chunkSize=0;
+	    event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
+    	event->chunk=NULL;
+    	event->chunkSize=0;
     }
     event->bytesLoaded = connection2.data.length;
     event->bytesTotal = connection2.expectedContentLength;
@@ -112,7 +113,7 @@ struct Connection
     gevent_EnqueueEvent(connection2.id, connection2.callback, GHTTP_PROGRESS_EVENT, event, 1, connection2.udata);
 }
 
-- (void)sendResponse:(NSURLConnection *)connection: (bool) header
+- (void)sendResponse:(NSURLConnection *)connection : (bool) header
 {
     Connection& connection2 = map_[connection];
     

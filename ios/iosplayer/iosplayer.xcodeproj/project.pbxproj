@@ -252,6 +252,7 @@
 		EB35B49C1C1190C200227849 /* svg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4991C1190C200227849 /* svg-path.c */; };
 		EB5067B720372B3F00D7F26E /* layoutevent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB5067B520372B3E00D7F26E /* layoutevent.cpp */; };
 		EB5067B820372B3F00D7F26E /* gridbaglayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB5067B620372B3E00D7F26E /* gridbaglayout.cpp */; };
+		EB66822223D1C339001A43F5 /* bufferbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB66822123D1C339001A43F5 /* bufferbinder.cpp */; };
 		EB7A5EA51C9BE7D70068EFCA /* viewportbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */; };
 		EB7A5EA71C9BE8080068EFCA /* viewport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA61C9BE8080068EFCA /* viewport.cpp */; };
 		EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */; };
@@ -580,6 +581,7 @@
 		EB35B4991C1190C200227849 /* svg-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "svg-path.c"; sourceTree = "<group>"; };
 		EB5067B520372B3E00D7F26E /* layoutevent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = layoutevent.cpp; path = ../../2dsg/layoutevent.cpp; sourceTree = "<group>"; };
 		EB5067B620372B3E00D7F26E /* gridbaglayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gridbaglayout.cpp; path = ../../2dsg/gridbaglayout.cpp; sourceTree = "<group>"; };
+		EB66822123D1C339001A43F5 /* bufferbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bufferbinder.cpp; path = ../../luabinding/bufferbinder.cpp; sourceTree = "<group>"; };
 		EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewportbinder.cpp; path = ../../luabinding/viewportbinder.cpp; sourceTree = "<group>"; };
 		EB7A5EA61C9BE8080068EFCA /* viewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewport.cpp; path = ../../2dsg/viewport.cpp; sourceTree = "<group>"; };
 		EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderBuffer.cpp; sourceTree = "<group>"; };
@@ -1015,6 +1017,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EB66822123D1C339001A43F5 /* bufferbinder.cpp */,
 				EBF48E1D21554A06000DC12F /* debugging.cpp */,
 				EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */,
 				EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */,
@@ -1556,6 +1559,7 @@
 				5F321F7615BBF2E100542289 /* giderosapi.mm in Sources */,
 				5FAC8AC615D59C56003E5781 /* ggeolocation-ios.mm in Sources */,
 				5FE658B018FBF0FB001D8EE3 /* gzclose.c in Sources */,
+				EB66822223D1C339001A43F5 /* bufferbinder.cpp in Sources */,
 				5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */,
 				EBD8CA7A1B903A50002F9D6C /* hio.c in Sources */,
 				5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */,
