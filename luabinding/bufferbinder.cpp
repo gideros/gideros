@@ -7,6 +7,24 @@
 #include <errno.h>
 #include "glog.h"
 
+#include <pthread.h>
+
+class GGLock
+{
+public:
+    GGLock()
+    {
+        pthread_mutex_lock(&mutex);
+    }
+    ~GGLock()
+    {
+        pthread_mutex_unlock(&mutex);
+    }
+
+    static pthread_mutex_t mutex;
+};
+pthread_mutex_t GGLock::mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+
 class Buffer : public GReferenced
 {
 public:
@@ -115,6 +133,8 @@ static size_t s_write(int fd, const void* buf, size_t count) {
 		errno = EBADF;
 		return -1;
 	}
+
+	GGLock lock;
 	b->set((const char *)buf,b->pos,count);
 	b->pos+=count;
 	return count;
@@ -127,6 +147,7 @@ static size_t s_read(int fd, void* buf, size_t count) {
 		errno = EBADF;
 		return -1;
 	}
+	GGLock lock;
 	const char *data=b->get(b->pos,count);
 	b->pos+=count;
 	memcpy(buf,data,count);
@@ -144,6 +165,7 @@ static off_t s_lseek(int fd, off_t offset, int whence) {
 		errno = ESPIPE;
 		return -1;
 	}
+	GGLock lock;
 	switch (whence) {
 		case SEEK_SET: break;
 		case SEEK_CUR: offset+=b->pos; break;
@@ -213,6 +235,7 @@ int BufferBinder::append(lua_State *L)
     Binder binder(L);
 
     Buffer* buffer = static_cast<Buffer*>(binder.getInstance("Buffer", 1));
+	GGLock lock;
     lua_pushinteger(L,buffer->append(luaL_checkstring(L,2),lua_objlen(L,2)));
 
     return 1;
@@ -223,6 +246,7 @@ int BufferBinder::prepend(lua_State *L)
     Binder binder(L);
 
     Buffer* buffer = static_cast<Buffer*>(binder.getInstance("Buffer", 1));
+	GGLock lock;
     lua_pushinteger(L,buffer->prepend(luaL_checkstring(L,2),lua_objlen(L,2)));
 
     return 1;
@@ -232,6 +256,7 @@ int BufferBinder::trim(lua_State *L)
 {
     Binder binder(L);
 
+	GGLock lock;
     Buffer* buffer = static_cast<Buffer*>(binder.getInstance("Buffer", 1));
     lua_pushinteger(L,buffer->trim(luaL_checkinteger(L,2)));
 
@@ -243,6 +268,7 @@ int BufferBinder::get(lua_State *L)
     Binder binder(L);
 
     Buffer* buffer = static_cast<Buffer*>(binder.getInstance("Buffer", 1));
+	GGLock lock;
     size_t l=luaL_optinteger(L,3,buffer->size());
     const char *data=buffer->get(luaL_optinteger(L,2,0),l);
     lua_pushlstring(L,data,l);
@@ -255,6 +281,7 @@ int BufferBinder::set(lua_State *L)
     Binder binder(L);
 
     Buffer* buffer = static_cast<Buffer*>(binder.getInstance("Buffer", 1));
+	GGLock lock;
     lua_pushinteger(L,buffer->set(luaL_checkstring(L,2),luaL_optinteger(L,3,0),lua_objlen(L,2)));
 
     return 1;
@@ -275,6 +302,7 @@ int BufferBinder::seek(lua_State *L)
     Binder binder(L);
 
     Buffer* buffer = static_cast<Buffer*>(binder.getInstance("Buffer", 1));
+	GGLock lock;
     int seek=luaL_optinteger(L,2,0);
     size_t sz=buffer->size();
     if (seek<0) seek=0;
