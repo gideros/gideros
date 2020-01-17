@@ -1,5 +1,6 @@
 #include <gaudio.h>
 #include "../ggaudiomanager.h"
+#include <mpg123.h>
 
 #if defined(OPENAL_SUBDIR_OPENAL)
 #include <OpenAL/al.h>
@@ -101,6 +102,7 @@ void GGAudioManager::systemInit()
     systemData_->context = alcCreateContext(systemData_->device, NULL);
 
     alcMakeContextCurrent(systemData_->context);
+    mpg123_init();
 }
 
 void GGAudioManager::systemCleanup()
@@ -115,6 +117,7 @@ void GGAudioManager::systemCleanup()
     [[NSNotificationCenter defaultCenter] removeObserver:systemData_->delegate];
     [[AVAudioSession sharedInstance] setActive:NO error:nil];
 #endif
+    mpg123_exit();
 
     [systemData_->delegate release];
 
@@ -155,6 +158,7 @@ void GGAudioManager::endInterruption()
 void GGSoundManager::interfacesInit()
 {
     loaders_["wav"] = GGAudioLoader(gaudio_WavOpen, gaudio_WavClose, gaudio_WavRead, gaudio_WavSeek, gaudio_WavTell);
+    loaders_["mp3"] = GGAudioLoader(gaudio_Mp3Open, gaudio_Mp3Close, gaudio_Mp3Read, gaudio_Mp3Seek, gaudio_Mp3Tell);
     loaders_["mod"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
     loaders_["xm"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
     loaders_["it"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
