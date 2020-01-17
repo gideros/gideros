@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" IgnorableNamespaces="uap mp">
-  <Identity Name="com.giderosmobile.player" Publisher="CN=Gideros Mobile" Version="2019.2.1.0" />
+  <Identity Name="com.giderosmobile.player" Publisher="CN=Gideros Mobile" Version="2019.12.1.0" />
   <mp:PhoneIdentity PhoneProductId="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.14393.0" MaxVersionTested="10.0.17763.0" />

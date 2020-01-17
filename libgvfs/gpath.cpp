@@ -10,11 +10,12 @@
 
 struct Drive
 {
-    Drive() : flags(0) {}
+    Drive() : flags(0) { vfs=NULL; }
 
     std::set<std::string> prefixes;
     int flags;
     std::string path;
+    const g_Vfs *vfs;
 };
 
 static std::map<int, Drive> s_drives;
@@ -71,6 +72,11 @@ void gpath_addDrivePrefix(int id, const char *prefix)
     s_drives[id].prefixes.insert(prefix);
 }
 
+void gpath_setDriveVfs(int id, const g_Vfs *vfs)
+{
+    s_drives[id].vfs = vfs;
+}
+
 void gpath_setDefaultDrive(int id)
 {
     s_defaultDrive = id;
@@ -102,6 +108,16 @@ int gpath_getDriveFlags(int id)
         return 0;
 
     return iter->second.flags;
+}
+
+const g_Vfs *gpath_getDriveVfs(int id)
+{
+    std::map<int, Drive>::iterator iter = s_drives.find(id);
+
+    if (iter == s_drives.end())
+        return NULL;
+
+    return iter->second.vfs;
 }
 
 void gpath_setAbsolutePathFlags(int flags)

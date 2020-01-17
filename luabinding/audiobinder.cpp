@@ -64,7 +64,7 @@ public:
         }
         else
         {
-            if ((dot2=="mp3") && gaudio_BackgroundMusicIsAvailable())
+            if ((dot2=="mp3") && (false&&gaudio_BackgroundMusicIsAvailable())) //Enable BGM through a flag maybe ?
             {
                 gid = gaudio_BackgroundMusicCreateFromFile(fileName, error);
                 setBackgroundMusicInterface();

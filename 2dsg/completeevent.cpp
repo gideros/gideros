@@ -7,3 +7,10 @@ void CompleteEvent::apply(EventVisitor* v)
 {
     v->visit(this);
 }
+
+HeaderEvent::Type HeaderEvent::HEADER("header");
+
+void HeaderEvent::apply(EventVisitor* v)
+{
+    v->visit(this);
+}

@@ -953,6 +953,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\layoutevent.cpp">
       <Filter>2dsg</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bufferbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1600,6 +1603,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\layoutevent.h">
       <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bufferbinder.h">
+      <Filter>luabinding</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

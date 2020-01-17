@@ -13,25 +13,25 @@ void ghttp_Cleanup()
 //    s_manager = NULL;
 }
 
-g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
 //    return s_manager->Get(url, header, callback, udata);
 	return 0;
 }
 
-g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
 //    return s_manager->Post(url, header, data, size, callback, udata);
 	return 0;
 }
 
-g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
 //    return s_manager->Delete(url, header, callback, udata);
 	return 0;
 }
 
-g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
 //    return s_manager->Put(url, header, data, size, callback, udata);
 	return 0;

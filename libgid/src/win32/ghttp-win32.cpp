@@ -18,11 +18,13 @@ struct NetworkReply
   void *data;
   size_t size;
   std::vector<std::string> header;
+  bool streaming;
 };
 
 struct MemoryStruct {
   char *memory;
   size_t size;
+  struct NetworkReply *reply;
 };
 
 static pthread_mutex_t mutexget, mutexput, mutexpost;
@@ -38,6 +40,8 @@ int progress_callback(void *clientp,   double dltotal,   double dlnow,   double 
   ghttp_ProgressEvent* event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
   event->bytesLoaded = dlnow > ulnow ? dlnow : ulnow;
   event->bytesTotal = dltotal > ultotal ? dltotal : ultotal;
+  event->chunk=NULL;
+  event->chunkSize=0;
   
   gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_PROGRESS_EVENT, event, 1, reply2->udata);
   
@@ -51,18 +55,29 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
   size_t realsize = size * nmemb;
   MemoryStruct *mem = (MemoryStruct *)userp;
- 
-  mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
-  if(mem->memory == NULL) {
-    /* out of memory! */ 
-    printf("not enough memory (realloc returned NULL)\n");
-    return 0;
+  NetworkReply *reply2 = mem->reply;
+
+  if (reply2->streaming) {
+  ghttp_ProgressEvent* event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent)+realsize);
+  event->bytesLoaded = 0;
+  event->bytesTotal = 0;
+  event->chunk=event+1;
+  event->chunkSize=realsize;
+  memcpy(event->chunk,contents,realsize);
+
+  gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_PROGRESS_EVENT, event, 1, reply2->udata);
+  } else {
+	mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
+	if(mem->memory == NULL) {
+	/* out of memory! */
+	printf("not enough memory (realloc returned NULL)\n");
+	return 0;
+	}
+
+	memcpy(&(mem->memory[mem->size]), contents, realsize);
+	mem->size += realsize;
+	mem->memory[mem->size] = 0;
   }
- 
-  memcpy(&(mem->memory[mem->size]), contents, realsize);
-  mem->size += realsize;
-  mem->memory[mem->size] = 0;
- 
   return realsize;
 }
 
@@ -104,6 +119,7 @@ static void *post_one(void *ptr)        // thread
   chunk.memory = (char*)malloc(1);
   chunk.memory[0]='\0';
   chunk.size = 0;
+  chunk.reply=reply2;
 
   curl = curl_easy_init();
 
@@ -145,10 +161,15 @@ static void *post_one(void *ptr)        // thread
 
     ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + chunk.size);
 
-    event->data = (char*)event + sizeof(ghttp_ResponseEvent);
-    memcpy(event->data, chunk.memory, chunk.size);
-
-    event->size = chunk.size;
+    if (reply2->streaming) {
+    	event->data=NULL;
+    	event->size=0;
+    }
+    else {
+		event->data = (char*)event + sizeof(ghttp_ResponseEvent);
+		memcpy(event->data, chunk.memory, chunk.size);
+		event->size = chunk.size;
+    }
     event->httpStatusCode = res;
     event->headers[0].name=NULL;    // no idea what this is for!
     event->headers[0].value=NULL;
@@ -194,6 +215,7 @@ static void *put_one_url(void *ptr)     // thread
   chunkRet.memory = (char*)malloc(1);
   chunkRet.memory[0]='\0';
   chunkRet.size = 0;
+  chunkRet.reply=reply2;
 
   printf("put_one_url: %s\n",reply2->url.c_str());
 
@@ -225,10 +247,16 @@ static void *put_one_url(void *ptr)     // thread
 
     ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + chunkRet.size);
 
-    event->data = (char*)event + sizeof(ghttp_ResponseEvent);
-    memcpy(event->data, chunkRet.memory, chunkRet.size);
+    if (reply2->streaming) {
+    	event->data=NULL;
+    	event->size=0;
+    }
+    else {
+		event->data = (char*)event + sizeof(ghttp_ResponseEvent);
+		memcpy(event->data, chunkRet.memory, chunkRet.size);
+		event->size = chunkRet.size;
+    }
 
-    event->size = chunkRet.size;
     event->httpStatusCode = res;
     event->headers[0].name=NULL;    // no idea what this is for!
     event->headers[0].value=NULL;
@@ -269,6 +297,7 @@ static void *get_one_url(void *ptr)          // thread
   chunk.memory = (char*)malloc(1);
   chunk.memory[0]='\0';
   chunk.size = 0;
+  chunk.reply=reply2;
   
   printf("Processing: %s\n",reply2->url.c_str());
 
@@ -280,8 +309,8 @@ static void *get_one_url(void *ptr)          // thread
   curl_easy_setopt(curl, CURLOPT_URL, reply2->url.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
-
-  curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_callback);
+  if (!reply2->streaming)
+	  curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_callback);
   curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, ptr);
 
   if (sslErrorsIgnore)
@@ -296,13 +325,18 @@ static void *get_one_url(void *ptr)          // thread
     fprintf(stderr, "curl_easy_perform() failed in get_one: %s\n",curl_easy_strerror(res));
   }
   else {
- 
+
     ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + chunk.size);
     
-    event->data = (char*)event + sizeof(ghttp_ResponseEvent);
-    memcpy(event->data, chunk.memory, chunk.size);
-    
-    event->size = chunk.size;
+    if (reply2->streaming) {
+    	event->data=NULL;
+    	event->size=0;
+    }
+    else {
+		event->data = (char*)event + sizeof(ghttp_ResponseEvent);
+		memcpy(event->data, chunk.memory, chunk.size);
+		event->size = chunk.size;
+    }
     event->httpStatusCode = res;
     event->headers[0].name=NULL;    // no idea what this is for!
     event->headers[0].value=NULL;
@@ -340,7 +374,7 @@ void ghttp_Cleanup()
   pthread_mutex_destroy(&mutexpost);
 }
 
-g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
   pthread_t tid;
   int error;
@@ -355,6 +389,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
   reply2.url = url;
   reply2.data = NULL;
   reply2.size = 0;
+  reply2.streaming=streaming;
 
   if (header)
     for (; header->name; ++header){
@@ -379,7 +414,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
   return gid;
 }
 
-g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
 
   pthread_t tid;
@@ -395,6 +430,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
   reply2.url = url;
   reply2.data = malloc(size);
   reply2.size = size;
+  reply2.streaming=streaming;
 
   memcpy(reply2.data,data,size);
 
@@ -420,7 +456,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
   return gid;
 }
 
-g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
 
   CURL *curl = curl_easy_init();
@@ -446,7 +482,7 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback c
   return 0;
 }
 
-g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
   pthread_t tid;
   int error;
@@ -463,6 +499,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
   reply2.url = url;
   reply2.data = malloc(size);
   reply2.size = size;
+  reply2.streaming=streaming;
 
   memcpy(reply2.data,data,size);
 

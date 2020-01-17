@@ -423,6 +423,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\binder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapdatabinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bufferbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\cryptobinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\debugging.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\dibbinder.cpp" />
@@ -648,6 +649,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapdatabinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\box2dbinder2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bufferbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\dibbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventdispatcherbinder.h" />

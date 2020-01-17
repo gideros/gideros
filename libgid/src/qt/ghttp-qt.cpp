@@ -38,7 +38,7 @@ void HTTPManager::CloseAll()
         Close(map_.begin()->second.id);
 }
 
-g_id HTTPManager::Get(const char *url, const ghttp_Header *header, gevent_Callback callback, void *udata)
+g_id HTTPManager::Get(const char *url, const ghttp_Header *header, bool streaming, gevent_Callback callback, void *udata)
 {
     QNetworkRequest request(QUrl::fromEncoded(url));
 
@@ -59,13 +59,15 @@ g_id HTTPManager::Get(const char *url, const ghttp_Header *header, gevent_Callba
     reply2.id = g_NextId();
     reply2.callback = callback;
     reply2.udata = udata;
+    reply2.streaming=streaming;
+    reply2.started=false;
     map_[reply] = reply2;
 
     return reply2.id;
 }
 
 
-g_id HTTPManager::Post(const char *url, const ghttp_Header *header, const void *data, size_t size, gevent_Callback callback, void *udata)
+g_id HTTPManager::Post(const char *url, const ghttp_Header *header, const void *data, size_t size, bool streaming, gevent_Callback callback, void *udata)
 {
     QNetworkRequest request(QUrl::fromEncoded(url));
 
@@ -86,12 +88,14 @@ g_id HTTPManager::Post(const char *url, const ghttp_Header *header, const void *
     reply2.id = g_NextId();
     reply2.callback = callback;
     reply2.udata = udata;
+    reply2.streaming=streaming;
+    reply2.started=false;
     map_[reply] = reply2;
 
     return reply2.id;
 }
 
-g_id HTTPManager::Delete(const char *url, const ghttp_Header *header, gevent_Callback callback, void *udata)
+g_id HTTPManager::Delete(const char *url, const ghttp_Header *header, bool streaming, gevent_Callback callback, void *udata)
 {
     QNetworkRequest request(QUrl::fromEncoded(url));
 
@@ -112,12 +116,14 @@ g_id HTTPManager::Delete(const char *url, const ghttp_Header *header, gevent_Cal
     reply2.id = g_NextId();
     reply2.callback = callback;
     reply2.udata = udata;
+    reply2.streaming=streaming;
+    reply2.started=false;
     map_[reply] = reply2;
 
     return reply2.id;
 }
 
-g_id HTTPManager::Put(const char *url, const ghttp_Header *header, const void *data, size_t size, gevent_Callback callback, void *udata)
+g_id HTTPManager::Put(const char *url, const ghttp_Header *header, const void *data, size_t size, bool streaming, gevent_Callback callback, void *udata)
 {
     QNetworkRequest request(QUrl::fromEncoded(url));
 
@@ -138,6 +144,8 @@ g_id HTTPManager::Put(const char *url, const ghttp_Header *header, const void *d
     reply2.id = g_NextId();
     reply2.callback = callback;
     reply2.udata = udata;
+    reply2.streaming=streaming;
+    reply2.started=false;
     map_[reply] = reply2;
 
     return reply2.id;
@@ -225,7 +233,64 @@ void HTTPManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 
     NetworkReply reply2 = map_[reply];
 
-    ghttp_ProgressEvent* event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
+    ghttp_ProgressEvent* event;
+    if (reply2.streaming) {
+    	if (!reply2.started) {
+			reply2.started=true;
+			map_[reply]=reply2;
+		    QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+			int status = statusCode.toInt();
+
+			QList<QNetworkReply::RawHeaderPair> headers=reply->rawHeaderPairs();
+			int hdrCount=headers.count();
+			int hdrSize=0;
+			QList<QNetworkReply::RawHeaderPair>::iterator h;
+			for (h = headers.begin(); h != headers.end(); ++h)
+			{
+				hdrSize+=h.i->t().first.size();
+				hdrSize+=h.i->t().second.size();
+				hdrSize+=2;
+			}
+
+			ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent)  + sizeof(ghttp_Header)*hdrCount + hdrSize);
+
+			event->data = NULL;
+			event->size = 0;
+
+			event->httpStatusCode = status;
+
+			int hdrn=0;
+			char *hdrData=(char *)(event+1);
+			for (h = headers.begin(); h != headers.end(); ++h)
+			{
+				int ds=h.i->t().first.size();
+				memcpy(hdrData,h.i->t().first.data(),ds);
+				event->headers[hdrn].name=hdrData;
+				hdrData+=ds;
+				*(hdrData++)=0;
+				ds=h.i->t().second.size();
+				memcpy(hdrData,h.i->t().second.data(),ds);
+				event->headers[hdrn].value=hdrData;
+				hdrData+=ds;
+				*(hdrData++)=0;
+				hdrn++;
+			}
+			event->headers[hdrn].name=NULL;
+			event->headers[hdrn].value=NULL;
+
+			gevent_EnqueueEvent(reply2.id, reply2.callback, GHTTP_HEADER_EVENT, event, 1, reply2.udata);
+		}
+		QByteArray bytes = reply->readAll();
+        event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent)+ bytes.size());
+		event->chunk = (char*)event + sizeof(ghttp_ProgressEvent);
+		memcpy(event->chunk, bytes.constData(), bytes.size());
+		event->chunkSize = bytes.size();
+    }
+    else {
+        event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
+    	event->chunk=NULL;
+    	event->chunkSize=0;
+    }
     event->bytesLoaded = bytesReceived;
     event->bytesTotal = bytesTotal;
 
@@ -241,7 +306,7 @@ void ghttp_IgnoreSSLErrors()
 	sslErrorsIgnore=true;
 }
 
-void ghttp_SetProxy(const char *host, int port, const char *user, const char *pass)
+void ghttp_SetProxy(const char */* host */, int /* port */, const char */* user */, const char */* pass */)
 {
 }
 
@@ -256,24 +321,24 @@ void ghttp_Cleanup()
     s_manager = NULL;
 }
 
-g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
-    return s_manager->Get(url, header, callback, udata);
+    return s_manager->Get(url, header, streaming, callback, udata);
 }
 
-g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
-    return s_manager->Post(url, header, data, size, callback, udata);
+    return s_manager->Post(url, header, data, size, streaming, callback, udata);
 }
 
-g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
-    return s_manager->Delete(url, header, callback, udata);
+    return s_manager->Delete(url, header, streaming, callback, udata);
 }
 
-g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
-    return s_manager->Put(url, header, data, size, callback, udata);
+    return s_manager->Put(url, header, data, size, streaming, callback, udata);
 }
 
 void ghttp_Close(g_id id)

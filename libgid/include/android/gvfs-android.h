@@ -11,6 +11,7 @@ extern "C" {
 G_API void gvfs_init();
 G_API void gvfs_cleanup();
 
+G_API void gvfs_setZipFile(const char *archiveFile);
 G_API void gvfs_setPlayerModeEnabled(int playerMode);
 G_API int gvfs_isPlayerModeEnabled();
 G_API void gvfs_setZipFiles(const char *apkFile, const char *mainFile, const char *patchFile);

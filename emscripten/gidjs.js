@@ -177,8 +177,8 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 		var buffer = _malloc(byteArray.length);
 		HEAPU8.set(byteArray, buffer);
 		if (onload)
-			dynCall('viiiiii', onload, [ handle, arg, buffer,
-					byteArray.length, http.status, hdrs ]);
+			dynCall('viiiiiii', onload, [ handle, arg, buffer,
+					byteArray.length, http.status, hdrs,0 ]);
 		if (free)
 			_free(buffer);
 		/*
@@ -202,7 +202,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	http.onprogress = function http_onprogress(e) {
 		if (onprogress)
 					dynCall(
-							'viiii',
+							'viiiiii',
 							onprogress,
 							[
 									handle,
@@ -210,7 +210,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 									e.loaded,
 									e.lengthComputable
 											|| e.lengthComputable === undefined ? e.total
-											: 0 ]);
+											: 0,0,0 ]);
 	};
 
 	// ABORT
@@ -232,6 +232,89 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	}
 
 	Browser.wgetRequests[handle] = http;
+
+	return handle;
+}
+
+Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload,
+		onerror, onprogress) {
+	var _url = url;
+	var _request = request;
+	var _param = param;
+	var handle=0;
+
+	var gHeaders = new Headers();
+	gHeaders.append('Content-Type', 'image/jpeg');
+
+    while (rhdr) {    	
+    	var rk=Module.getValue(rhdr,'*');
+    	if (!rk) break;
+    	rhdr+=4; //Assuming 32bit
+    	var rv=Module.getValue(rhdr,'*');
+    	rhdr+=4; //Assuming 32bit
+		gHeaders.append(Module.UTF8ToString(rk), Module.UTF8ToString(rv));
+    }
+
+	var gInit = { method: _request,
+            headers: gHeaders,
+            mode: 'cors',
+            cache: 'no-cache',
+            body: _param};
+
+	var http = new Request(_url, gInit);
+
+	fetch(http).then(function(res) {
+		  if (res) {
+			  	var ahdr="";
+			  	res.headers.forEach(function(value,key) {
+			  	  ahdr=ahdr+key+": "+value+"\r\n";
+			  	});
+				var hdrs = allocate(intArrayFromString(ahdr),
+						'i8', ALLOC_STACK);
+				if (onload)
+					dynCall('viiiiiii', onload, [ handle, arg, 0,
+							0, res.status, hdrs,1 ]);
+			  var reader = res.body.getReader();
+			  let charsReceived = 0;
+			  
+			  reader.read().then(function processText({ done, value }) {
+				    // Result objects contain two properties:
+				    // done  - true if the stream has already given you all its data.
+				    // value - some data. Always undefined when done is true.
+				    if (done) {
+						if (onload)
+							dynCall('viiiiiii', onload, [ handle, arg, 0,
+									0, res.status, hdrs,0 ]);
+				      return;
+				    }
+
+
+					// value for fetch streams is a Uint8Array
+				    charsReceived += value.length;
+					var buffer = _malloc(value.length);
+					HEAPU8.set(value, buffer);
+					if (onprogress)
+						dynCall(
+								'viiiiii',
+								onprogress,
+								[
+										handle,
+										arg,
+										charsReceived,
+										0,buffer,value.length ]);
+					_free(buffer);
+
+				    // Read some more, and call this function again
+				    return reader.read().then(processText);
+				  });
+		  }
+		  else {
+				if (onerror) {
+					dynCall('viiii', onerror, [ handle, arg, res.status,
+							res.statusText ]);
+				}			  
+		  }
+	});
 
 	return handle;
 }

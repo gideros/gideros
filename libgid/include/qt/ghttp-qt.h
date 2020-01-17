@@ -19,10 +19,10 @@ public:
     HTTPManager();
     ~HTTPManager();
 
-    g_id Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata);
-    g_id Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata);
-    g_id Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata);
-    g_id Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata);
+    g_id Get(const char* url, const ghttp_Header *header, bool streaming, gevent_Callback callback, void* udata);
+    g_id Post(const char* url, const ghttp_Header *header, const void* data, size_t size, bool streaming, gevent_Callback callback, void* udata);
+    g_id Delete(const char* url, const ghttp_Header *header, bool streaming, gevent_Callback callback, void* udata);
+    g_id Put(const char* url, const ghttp_Header *header, const void* data, size_t size, bool streaming, gevent_Callback callback, void* udata);
     void Close(g_id id);
     void CloseAll();
 
@@ -38,6 +38,8 @@ private:
         g_id id;
         gevent_Callback callback;
         void *udata;
+        bool streaming;
+        bool started;
     };
     std::map<QNetworkReply*, NetworkReply> map_;
 };

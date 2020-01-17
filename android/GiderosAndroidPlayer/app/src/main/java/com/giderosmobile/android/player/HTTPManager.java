@@ -45,8 +45,8 @@ public class HTTPManager {
 	static String proxyName,proxyUser,proxyPass;
 	static int proxyPort=0;
 
-	void Get(String url, String[] headers, long udata, long id) {
-		HTTPThread thread = new HTTPThread(url, headers, null, 0, udata, id,
+	void Get(String url, String[] headers, boolean streaming, long udata, long id) {
+		HTTPThread thread = new HTTPThread(url, headers, null, 0, streaming, udata, id,
 				this);
 
 		ids_.put(id, thread);
@@ -54,8 +54,8 @@ public class HTTPManager {
 		thread.start();
 	}
 
-	void Post(String url, String[] headers, byte[] data, long udata, long id) {
-		HTTPThread thread = new HTTPThread(url, headers, data, 1, udata, id,
+	void Post(String url, String[] headers, byte[] data, boolean streaming, long udata, long id) {
+		HTTPThread thread = new HTTPThread(url, headers, data, 1, streaming, udata, id,
 				this);
 
 		ids_.put(id, thread);
@@ -63,8 +63,8 @@ public class HTTPManager {
 		thread.start();
 	}
 
-	void Put(String url, String[] headers, byte[] data, long udata, long id) {
-		HTTPThread thread = new HTTPThread(url, headers, data, 2, udata, id,
+	void Put(String url, String[] headers, byte[] data, boolean streaming, long udata, long id) {
+		HTTPThread thread = new HTTPThread(url, headers, data, 2, streaming, udata, id,
 				this);
 
 		ids_.put(id, thread);
@@ -72,8 +72,8 @@ public class HTTPManager {
 		thread.start();
 	}
 
-	void Delete(String url, String[] headers, long udata, long id) {
-		HTTPThread thread = new HTTPThread(url, headers, null, 3, udata, id,
+	void Delete(String url, String[] headers, boolean streaming, long udata, long id) {
+		HTTPThread thread = new HTTPThread(url, headers, null, 3, streaming, udata, id,
 				this);
 
 		ids_.put(id, thread);
@@ -102,23 +102,24 @@ public class HTTPManager {
 	}
 
 	public static native void nativeghttpResponseCallback(long id, byte[] data,
-			int size, int statusCode, int hdrCount, int hdrSize, long udata);
+			int size, int statusCode, int hdrCount, int hdrSize, boolean header,long udata);
 
 	public static native void nativeghttpErrorCallback(long id, long udata);
 
 	public static native void nativeghttpProgressCallback(long id,
-			int bytesLoaded, int bytesTotal, long udata);
+			int bytesLoaded, int bytesTotal, byte[] data, int size,long udata);
 
 	ConcurrentHashMap<Long, HTTPThread> ids_ = new ConcurrentHashMap<Long, HTTPThread>();
 
 	public void responseCallback(long id, long udata, byte[] data,
-			int statusCode, int hdrCount, int dataSize) {
+			int statusCode, int hdrCount, int dataSize, boolean header) {
 		if (!ids_.containsKey(id))
 			return;
 
-		nativeghttpResponseCallback(id, data, dataSize, statusCode, hdrCount, data.length-dataSize, udata);
+		nativeghttpResponseCallback(id, data, dataSize, statusCode, hdrCount, data.length-dataSize, header, udata);
 
-		ids_.remove(id);
+		if (!header)
+			ids_.remove(id);
 	}
 
 	public void errorCallback(long id, long udata) {
@@ -131,11 +132,11 @@ public class HTTPManager {
 	}
 
 	public void progressCallback(long id, long udata, int bytesLoaded,
-			int bytesTotal) {
+			int bytesTotal, byte[] data, int size) {
 		if (!ids_.containsKey(id))
 			return;
 
-		nativeghttpProgressCallback(id, bytesLoaded, bytesTotal, udata);
+		nativeghttpProgressCallback(id, bytesLoaded, bytesTotal, data, size, udata);
 	}
 
 	static private HTTPManager httpManager = null;
@@ -160,24 +161,24 @@ public class HTTPManager {
 		HTTPManager.proxyPass=pass;
 	}
 
-	static public void ghttp_Get(String url, String[] headers, long udata,
+	static public void ghttp_Get(String url, String[] headers, boolean streaming, long udata,
 			long id) {
-		httpManager.Get(url, headers, udata, id);
+		httpManager.Get(url, headers, streaming, udata, id);
 	}
 
-	static public void ghttp_Post(String url, String[] headers, byte[] data,
+	static public void ghttp_Post(String url, String[] headers, byte[] data, boolean streaming,
 			long udata, long id) {
-		httpManager.Post(url, headers, data, udata, id);
+		httpManager.Post(url, headers, data, streaming, udata, id);
 	}
 
-	static public void ghttp_Put(String url, String[] headers, byte[] data,
+	static public void ghttp_Put(String url, String[] headers, byte[] data, boolean streaming,
 			long udata, long id) {
-		httpManager.Put(url, headers, data, udata, id);
+		httpManager.Put(url, headers, data, streaming, udata, id);
 	}
 
-	static public void ghttp_Delete(String url, String[] headers, long udata,
+	static public void ghttp_Delete(String url, String[] headers, boolean streaming, long udata,
 			long id) {
-		httpManager.Delete(url, headers, udata, id);
+		httpManager.Delete(url, headers, streaming, udata, id);
 	}
 
 	static public void ghttp_Close(long id) {
@@ -270,10 +271,11 @@ class HTTPThread extends Thread {
 	byte[] data_;
 	HTTPManager manager_;
 	int method_;
+	boolean streaming_;
 
 	volatile boolean close;
 
-	public HTTPThread(String url, String[] headers, byte[] data, int method,
+	public HTTPThread(String url, String[] headers, byte[] data, int method, boolean streaming,
 			long udata, long id, HTTPManager manager) {
 		url_ = url;
 		headers_ = headers;
@@ -282,6 +284,7 @@ class HTTPThread extends Thread {
 		udata_ = udata;
 		id_ = id;
 		manager_ = manager;
+		streaming_ = streaming;
 
 		close = false;
 	}
@@ -350,7 +353,23 @@ class HTTPThread extends Thread {
 			int contentLength = (int) response.getEntity().getContentLength();
 			InputStream input = response.getEntity().getContent();
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			Header[] hdr=response.getAllHeaders();
 
+			if (streaming_) {
+				int hdrCount=0;
+				
+				for (Header h:hdr)
+				{
+					output.write(h.getName().getBytes());
+					output.write(0);
+					output.write(h.getValue().getBytes());
+					output.write(0);
+					hdrCount++;
+				}
+				manager_.responseCallback(id_, udata_, output.toByteArray(),
+						statusCode,hdrCount,0, true);
+				output.reset();
+			}
 			int readBytes = 0;
 			byte[] sBuffer = new byte[1024];
 			while ((readBytes = input.read(sBuffer)) != -1) {
@@ -358,14 +377,14 @@ class HTTPThread extends Thread {
 					httpClient.getConnectionManager().shutdown();
 					return;
 				}
-				output.write(sBuffer, 0, readBytes);
+				if (!streaming_)
+					output.write(sBuffer, 0, readBytes);
 				manager_.progressCallback(id_, udata_, output.size(),
-						contentLength);
+						contentLength, streaming_?sBuffer:null,readBytes);
 			}
 			int hdrCount=0;
 			int dataSize=output.size();
 			
-			Header[] hdr=response.getAllHeaders();
 			for (Header h:hdr)
 			{
 				output.write(h.getName().getBytes());
@@ -378,7 +397,7 @@ class HTTPThread extends Thread {
 			httpClient.getConnectionManager().shutdown();
 
 			manager_.responseCallback(id_, udata_, output.toByteArray(),
-					statusCode,hdrCount,dataSize);
+					statusCode,hdrCount,dataSize, false);
 		} catch (Exception e) {
 			Log.e("Gideros", "HTTP exception", e);
 			manager_.errorCallback(id_, udata_);

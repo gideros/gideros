@@ -21,7 +21,7 @@ static cancellation_token_source cancellationTokenSource;
 static bool sslErrorsIgnore = false;
 static std::map<g_id, std::vector<unsigned char> > map;
 //static std::vector<unsigned char> dataRead;
-task<IBuffer^> readData(IInputStream^ stream, g_id id)
+task<IBuffer^> readData(IInputStream^ stream, g_id id, bool streaming, gevent_Callback callback, void* udata)
 {
 	// Do an asynchronous read. We need to use use_current() with the continuations since the tasks are completed on
 	// background threads and we need to run on the UI thread to update the UI.
@@ -36,12 +36,25 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id)
 		DataReader::FromBuffer(buffer)->ReadBytes(arr);
 		unsigned char* first = arr->Data;
 		unsigned char* end = first + arr->Length;
-		map[id].insert(map[id].end(), first, end);
+
+		if (streaming)
+		{
+			ghttp_ProgressEvent* event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent)+arr->Length);
+			event->bytesLoaded = 0; //We could count them if really needed
+			event->bytesTotal = 0;
+			event->chunk = event+1;
+			event->chunkSize = arr->Length;
+			memcpy(event->chunk, first, arr->Length);
+
+			gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, event, 1, udata);
+		}
+		else
+			map[id].insert(map[id].end(), first, end);
 
 		// Continue reading until the response is complete.  When done, return previousTask that is complete.
 		bool more = buffer->Length;
 		delete buffer;
-		return more ? readData(stream, id) : readTask;
+		return more ? readData(stream, id, streaming, callback, udata) : readTask;
 	});
 }
 
@@ -56,7 +69,8 @@ void handleException(Exception^ ex, g_id id, gevent_Callback callback, void* uda
 	map.erase(id);
 }
 
-void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation, g_id id, gevent_Callback callback, void* udata){
+void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation, g_id id, gevent_Callback callback, void* udata, bool streaming){
+	if (streaming) return;
 	operation->Progress = ref new AsyncOperationProgressHandler<HttpResponseMessage^, HttpProgress>([=](
 		IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ asyncInfo,
 		HttpProgress progress)
@@ -74,6 +88,8 @@ void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgres
 				ghttp_ProgressEvent* event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
 				event->bytesLoaded = requestProgress;
 				event->bytesTotal = totalBytesToReceive;
+				event->chunk = NULL;
+				event->chunkSize = 0;
 
 				gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, event, 1, udata);
 			}
@@ -85,12 +101,94 @@ void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgres
 	});
 }
 
-void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback, void* udata){
+void responseEvent(HttpResponseMessage^ response, g_id id, gevent_Callback callback, void* udata, bool header) {
+	IIterable<IKeyValuePair<String^, String^>^>^ headers = response->Headers;
+	int hdrCount = response->Headers->Size;
+	int hdrSize = 0;
+	for each(IKeyValuePair<String^, String^>^ pair in headers)
+	{
+		hdrSize += pair->Key->Length();
+		hdrSize += pair->Value->Length();
+		hdrSize += 2;
+	}
+
+	IIterable<IKeyValuePair<String^, String^>^>^ headers2 = response->Content->Headers;
+	hdrCount += response->Content->Headers->Size;
+	for each(IKeyValuePair<String^, String^>^ pair in headers2)
+	{
+		hdrSize += pair->Key->Length();
+		hdrSize += pair->Value->Length();
+		hdrSize += 2;
+	}
+	ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount + (header?0:map[id].size()) + hdrSize);
+
+	event->data = (char*)event + sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount;
+	if (header)
+		event->size = 0;
+	else {
+		memcpy(event->data, map[id].data(), map[id].size());
+		event->size = map[id].size();
+	}
+
+	if (response->IsSuccessStatusCode)
+		event->httpStatusCode = (int)response->StatusCode;
+	else
+		event->httpStatusCode = -1;
+
+	int hdrn = 0;
+	char *hdrData = (char *)(event->data) + map[id].size();
+	for each(IKeyValuePair<String^, String^>^ pair in headers)
+	{
+		int ds = pair->Key->Length();
+		std::wstring wkey(pair->Key->Begin());
+		std::string strkey = utf8_us(wkey.c_str());
+		memcpy(hdrData, strkey.c_str(), ds);
+		event->headers[hdrn].name = hdrData;
+		hdrData += ds;
+		*(hdrData++) = 0;
+		ds = pair->Value->Length();
+		std::wstring wval(pair->Value->Begin());
+		std::string strval = utf8_us(wval.c_str());
+		memcpy(hdrData, strval.c_str(), ds);
+		event->headers[hdrn].value = hdrData;
+		hdrData += ds;
+		*(hdrData++) = 0;
+		hdrn++;
+	}
+	for each(IKeyValuePair<String^, String^>^ pair in headers2)
+	{
+		int ds = pair->Key->Length();
+		std::wstring wkey(pair->Key->Begin());
+		std::string strkey = utf8_us(wkey.c_str());
+		memcpy(hdrData, strkey.c_str(), ds);
+		event->headers[hdrn].name = hdrData;
+		hdrData += ds;
+		*(hdrData++) = 0;
+		ds = pair->Value->Length();
+		std::wstring wval(pair->Value->Begin());
+		std::string strval = utf8_us(wval.c_str());
+		memcpy(hdrData, strval.c_str(), ds);
+		event->headers[hdrn].value = hdrData;
+		hdrData += ds;
+		*(hdrData++) = 0;
+		hdrn++;
+	}
+	event->headers[hdrn].name = NULL;
+	event->headers[hdrn].value = NULL;
+
+	gevent_EnqueueEvent(id, callback, header?GHTTP_HEADER_EVENT:GHTTP_RESPONSE_EVENT, event, 1, udata);
+}
+
+void handleTask(HttpResponseMessage^ response, g_id id, boolean streaming, gevent_Callback callback, void* udata){
 	map[id] = std::vector<unsigned char>();
 	create_task(response->Content->ReadAsInputStreamAsync(), cancellationTokenSource.get_token()).then([=](task<IInputStream^> previousTask)
 	{
+		if (streaming) {
+			responseEvent(response, id, callback, udata, true);
+		}
+
 		IInputStream^ stream = previousTask.get();
-		return readData(stream, id);
+		return readData(stream, id, streaming, callback, udata);
 	}).then([=](task<IBuffer^> previousTask)
 	{
 		try
@@ -98,6 +196,7 @@ void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback
 			// Check if any previous task threw an exception.
 			previousTask.get();
 
+			responseEvent(response, id, callback, udata, false);
 
 			//progress finished
 			ghttp_ProgressEvent* eventp = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
@@ -106,77 +205,6 @@ void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback
 
 			gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, eventp, 1, udata);
 			
-			IIterable<IKeyValuePair<String^, String^>^>^ headers = response->Headers;
-			int hdrCount = response->Headers->Size;
-			int hdrSize = 0;
-			for each(IKeyValuePair<String^, String^>^ pair in headers)
-			{
-				hdrSize += pair->Key->Length();
-				hdrSize += pair->Value->Length();
-				hdrSize += 2;
-			}
-
-			IIterable<IKeyValuePair<String^, String^>^>^ headers2 = response->Content->Headers;
-			hdrCount += response->Content->Headers->Size;
-			for each(IKeyValuePair<String^, String^>^ pair in headers2)
-			{
-				hdrSize += pair->Key->Length();
-				hdrSize += pair->Value->Length();
-				hdrSize += 2;
-			}
-			ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount + map[id].size() + hdrSize);
-
-			event->data = (char*)event + sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount;
-			memcpy(event->data, map[id].data(), map[id].size());
-			event->size = map[id].size();
-
-			if (response->IsSuccessStatusCode)
-				event->httpStatusCode = (int)response->StatusCode;
-			else
-				event->httpStatusCode = -1;
-
-			int hdrn = 0;
-			char *hdrData = (char *)(event->data) + map[id].size();
-			for each(IKeyValuePair<String^, String^>^ pair in headers)
-			{
-				int ds = pair->Key->Length();
-				std::wstring wkey(pair->Key->Begin());
-				std::string strkey=utf8_us(wkey.c_str());
-				memcpy(hdrData, strkey.c_str(), ds);
-				event->headers[hdrn].name = hdrData;
-				hdrData += ds;
-				*(hdrData++) = 0;
-				ds = pair->Value->Length();
-				std::wstring wval(pair->Value->Begin());
-				std::string strval=utf8_us(wval.c_str());
-				memcpy(hdrData, strval.c_str(), ds);
-				event->headers[hdrn].value = hdrData;
-				hdrData += ds;
-				*(hdrData++) = 0;
-				hdrn++;
-			}
-			for each(IKeyValuePair<String^, String^>^ pair in headers2)
-			{
-				int ds = pair->Key->Length();
-				std::wstring wkey(pair->Key->Begin());
-				std::string strkey=utf8_us(wkey.c_str());
-				memcpy(hdrData, strkey.c_str(), ds);
-				event->headers[hdrn].name = hdrData;
-				hdrData += ds;
-				*(hdrData++) = 0;
-				ds = pair->Value->Length();
-				std::wstring wval(pair->Value->Begin());
-				std::string strval=utf8_us(wval.c_str());
-				memcpy(hdrData, strval.c_str(), ds);
-				event->headers[hdrn].value = hdrData;
-				hdrData += ds;
-				*(hdrData++) = 0;
-				hdrn++;
-			}
-			event->headers[hdrn].name = NULL;
-			event->headers[hdrn].value = NULL;
-
-			gevent_EnqueueEvent(id, callback, GHTTP_RESPONSE_EVENT, event, 1, udata);
 			map.erase(id);
 
 		}
@@ -231,7 +259,7 @@ void ghttp_Cleanup()
 	
 }
 
-g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
 	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
@@ -239,11 +267,11 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
 	add_headers(header);
 
 	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->GetAsync(uri, HttpCompletionOption::ResponseHeadersRead);
-	handleProcess(operation, id, callback, udata);
+	handleProcess(operation, id, callback, udata, streaming);
 	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
 		try {
-			handleTask(response.get(), id, callback, udata);
+			handleTask(response.get(), id, streaming, callback, udata);
 		}
 		catch (Exception^ ex)
 		{
@@ -253,7 +281,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
 	return id;
 }
 
-g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
 	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
@@ -268,12 +296,12 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 	add_post_headers(header,content);
 
 	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->PostAsync(uri, content);
-	handleProcess(operation, id, callback, udata);
+	handleProcess(operation, id, callback, udata, streaming);
 
 	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
 		try {
-			handleTask(response.get(), id, callback, udata);
+			handleTask(response.get(), id, streaming, callback, udata);
 		}
 		catch (Exception^ ex)
 		{
@@ -283,7 +311,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 	return id;
 }
 
-g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
+g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
 	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
@@ -294,7 +322,7 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback c
 	create_task(httpClient->DeleteAsync(uri), cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
 		try {
-			handleTask(response.get(), id, callback, udata);
+			handleTask(response.get(), id, streaming, callback, udata);
 		}
 		catch (Exception^ ex)
 		{
@@ -304,7 +332,7 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback c
 	return id;
 }
 
-g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
+g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
 	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
@@ -321,7 +349,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 	create_task(httpClient->PutAsync(uri, content), cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
 		try {
-			handleTask(response.get(), id, callback, udata);
+			handleTask(response.get(), id, streaming, callback, udata);
 		}
 		catch (Exception^ ex)
 		{

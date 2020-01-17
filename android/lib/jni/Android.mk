@@ -92,6 +92,73 @@ LOCAL_SRC_FILES  += \
 	../../openal-soft-$(LOCAL_OPENAL_VERSION)/common/threads.c        \
 	../../openal-soft-$(LOCAL_OPENAL_VERSION)/common/uintmap.c        
 
+
+include $(BUILD_STATIC_LIBRARY)
+
+#### MP3
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE            := mpg123
+LOCAL_SRC_FILES += \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/compat.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/dct64.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/dither.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/equalizer.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/feature.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/format.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/frame.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/icy.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/icy2utf8.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/id3.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/index.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/layer1.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/layer2.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/layer3.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/libmpg123.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/ntom.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/optimize.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/parse.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/readers.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/stringbuf.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/synth.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/synth_8bit.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/synth_real.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/synth_s32.c \
+	../../../libgid/external/mpg123-1.15.3/src/libmpg123/tabinit.c
+
+LOCAL_C_INCLUDES += \
+	$(LOCAL_PATH)/../../../libgid/external/mpg123-1.15.3/src \
+	$(LOCAL_PATH)/../../../libgid/external/mpg123-1.15.3/src/libmpg123 \
+	$(LOCAL_PATH)/../../../libgvfs
+
+LOCAL_CFLAGS+=-DOPT_GENERIC -DREAL_IS_FLOAT
+
+include $(BUILD_STATIC_LIBRARY)
+
+##### XMP
+include $(CLEAR_VARS)
+
+LOCAL_MODULE            := libxmp
+LOCAL_CFLAGS+=-D_REENTRANT -DLIBXMP_CORE_PLAYER
+XMP_SRC=virtual period player read_event dataio lfo envelope \
+		scan control filter effects mixer mix_all load_helpers load \
+		hio smix memio
+XMP_HDR=common effects envelope format lfo list mixer period player \
+		virtual precomp_lut hio memio mdataio tempfile 
+XMP_LOADERS=xm_load s3m_load it_load \
+			common itsex sample
+XMP_LOADERS_HDR=it loader mod s3m xm
+LOCAL_SRC_FILES += $(addprefix ../../../libgid/external/libxmp-4.3/src/,$(addsuffix .c,$(XMP_SRC)))
+LOCAL_SRC_FILES += $(addprefix ../../../libgid/external/libxmp-4.3/src/loaders/,$(addsuffix .c,$(XMP_LOADERS)))
+LOCAL_SRC_FILES += \
+	../../../libgid/external/libxmp-4.3/lite/src/format.c \
+	../../../libgid/external/libxmp-4.3/lite/src/loaders/mod_load.c
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src \
+					$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src/loaders \
+					$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/include \
+					$(LOCAL_PATH)/../../../libgvfs
+
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -127,6 +194,8 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc \
 	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends \
 	$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/include \
+	$(LOCAL_PATH)/../../../libgid/external/mpg123-1.15.3/src \
+	$(LOCAL_PATH)/../../../libgid/external/mpg123-1.15.3/src/libmpg123 \
 	$(LOCAL_PATH)/../../../libgid/external/jpeg-9
 
 LOCAL_SRC_FILES += gideros.cpp
@@ -143,10 +212,11 @@ LOCAL_SRC_FILES += \
 	../../../libgid/src/gaudio.cpp \
 	../../../libgid/src/gaudio-loader-wav.cpp \
 	../../../libgid/src/gaudio-loader-xmp.cpp \
+	../../../libgid/src/gaudio-loader-mp3.cpp \
 	../../../libgid/src/gaudio-sample-openal.cpp \
 	../../../libgid/src/gaudio-stream-openal.cpp \
     ../../../libgid/src/android/ginput-android.cpp \
-    ../../../libgid/src/android/gvfs-android.cpp \
+    ../../../libgid/src/gvfs-native.cpp \
 	../../../libgid/src/android/ggeolocation-android.cpp \
     ../../../libgid/src/android/gui-android.cpp \
     ../../../libgid/src/android/gapplication-android.cpp \
@@ -440,30 +510,13 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/screenbinder.cpp \
 	../../../luabinding/particlesbinder.cpp \
 	../../../luabinding/debugging.cpp \
+	../../../luabinding/bufferbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
-
-#XMP
-LOCAL_CFLAGS+=-D_REENTRANT -DLIBXMP_CORE_PLAYER
-XMP_SRC=virtual period player read_event dataio lfo envelope \
-		scan control filter effects mixer mix_all load_helpers load \
-		hio smix memio
-XMP_HDR=common effects envelope format lfo list mixer period player \
-		virtual precomp_lut hio memio mdataio tempfile 
-XMP_LOADERS=xm_load s3m_load it_load \
-			common itsex sample
-XMP_LOADERS_HDR=it loader mod s3m xm
-LOCAL_SRC_FILES += $(addprefix ../../../libgid/external/libxmp-4.3/src/,$(addsuffix .c,$(XMP_SRC)))
-LOCAL_SRC_FILES += $(addprefix ../../../libgid/external/libxmp-4.3/src/loaders/,$(addsuffix .c,$(XMP_LOADERS)))
-LOCAL_SRC_FILES += \
-	../../../libgid/external/libxmp-4.3/lite/src/format.c \
-	../../../libgid/external/libxmp-4.3/lite/src/loaders/mod_load.c
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src \
-					$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src/loaders
 
 LOCAL_LDLIBS := -lGLESv3 -ldl -llog -lOpenSLES -latomic
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
-LOCAL_STATIC_LIBRARIES := openal
+LOCAL_STATIC_LIBRARIES := openal mpg123 libxmp
 
 include $(BUILD_SHARED_LIBRARY)
 

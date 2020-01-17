@@ -15,6 +15,7 @@ struct Connection
     int httpStatusCode;
 	NSData *postData;
 	NSDictionary *headers;
+	bool streaming;
 };
 
 @interface HTTPManager : NSObject
@@ -34,7 +35,7 @@ struct Connection
     return self;
 }
 
-- (int)request:(const char*)url :(NSString*)method :(const ghttp_Header *)header :(const void*)data :(size_t)size :(gevent_Callback)callback :(void*)udata
+- (int)request:(const char*)url :(NSString*)method :(const ghttp_Header *)header :(const void*)data :(size_t)size :(bool)streaming :(gevent_Callback)callback :(void*)udata
 {
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
 	
@@ -62,6 +63,7 @@ struct Connection
     connection2.data = [[NSMutableData alloc] init];
     connection2.httpStatusCode = -1;
 	connection2.postData = postData;
+	connection2.streaming = streaming;
 	
     map_[connection] = connection2;
     
@@ -80,6 +82,9 @@ struct Connection
 	connection2.expectedContentLength = response.expectedContentLength;
     connection2.httpStatusCode = [(NSHTTPURLResponse*)response statusCode];
     connection2.headers=[[(NSHTTPURLResponse*)response allHeaderFields] copy];
+    
+    if (connection2.streaming)
+    	[self sendResponse:connection:true];    
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
@@ -89,20 +94,26 @@ struct Connection
 
     Connection& connection2 = map_[connection];
     
-    [connection2.data appendData:data];
-	
-    ghttp_ProgressEvent *event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
+    if (connection2.streaming) {
+    	ghttp_ProgressEvent *event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent)+data.length);
+    	event.chunkSize=data.length;
+    	event.chunk=(void *)(event+1);
+    	memcpy(event.chunk,data.bytes,event.chunkSize);
+    }
+    else {
+	    [connection2.data appendData:data];
+	    ghttp_ProgressEvent *event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
+    	event.chunk=NULL;
+    	event.chunkSize=0;
+    }
     event->bytesLoaded = connection2.data.length;
     event->bytesTotal = connection2.expectedContentLength;
     
     gevent_EnqueueEvent(connection2.id, connection2.callback, GHTTP_PROGRESS_EVENT, event, 1, connection2.udata);
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+- (void)sendResponse:(NSURLConnection *)connection: (bool) header
 {
-    if (map_.find(connection) == map_.end())
-        return;
-	
     Connection& connection2 = map_[connection];
     
     NSInteger hdrCount=[connection2.headers count];
@@ -141,9 +152,18 @@ struct Connection
 	event->headers[hdrCount].value=NULL;
     [hdrs release];
 	
-    gevent_EnqueueEvent(connection2.id, connection2.callback, GHTTP_RESPONSE_EVENT, event, 1, connection2.udata);
+    gevent_EnqueueEvent(connection2.id, connection2.callback, header?GHTTP_HEADER_EVENT:GHTTP_RESPONSE_EVENT, event, 1, connection2.udata);
+}
 
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    if (map_.find(connection) == map_.end())
+        return;
 	
+	[self sendResponse:connection:false];
+	
+    Connection& connection2 = map_[connection];
+
 	[connection2.headers release];
 	[connection2.data release];
 	if (connection2.postData)
@@ -155,7 +175,6 @@ struct Connection
 {
     if (map_.find(connection) == map_.end())
         return;
-	
     Connection& connection2 = map_[connection];
 		
     ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
@@ -230,24 +249,24 @@ void ghttp_Cleanup()
     s_manager = nil;
 }
 
-g_id ghttp_Get(const char *url, const ghttp_Header *header, gevent_Callback callback, void *udata)
+g_id ghttp_Get(const char *url, const ghttp_Header *header, int streaming, gevent_Callback callback, void *udata)
 {
-    return [s_manager request:url:@"GET":header:NULL:0:callback:udata];
+    return [s_manager request:url:@"GET":header:NULL:0:streaming:callback:udata];
 }
 
-g_id ghttp_Post(const char *url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void *udata)
+g_id ghttp_Post(const char *url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void *udata)
 {
-	return [s_manager request:url:@"POST":header:data:size:callback:udata];
+	return [s_manager request:url:@"POST":header:data:size:streaming:callback:udata];
 }
 
-g_id ghttp_Put(const char *url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void *udata)
+g_id ghttp_Put(const char *url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void *udata)
 {
-	return [s_manager request:url:@"PUT":header:data:size:callback:udata];
+	return [s_manager request:url:@"PUT":header:data:size:streaming:callback:udata];
 }
 
-g_id ghttp_Delete(const char *url, const ghttp_Header *header, gevent_Callback callback, void *udata)
+g_id ghttp_Delete(const char *url, const ghttp_Header *header, int streaming, gevent_Callback callback, void *udata)
 {
-    return [s_manager request:url:@"DELETE":header:NULL:0:callback:udata];
+    return [s_manager request:url:@"DELETE":header:NULL:0:streaming:callback:udata];
 }
 
 void ghttp_Close(g_id id)

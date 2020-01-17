@@ -13,6 +13,7 @@ enum
     GHTTP_RESPONSE_EVENT,
     GHTTP_ERROR_EVENT,
     GHTTP_PROGRESS_EVENT,
+    GHTTP_HEADER_EVENT,
 };
 
 typedef struct ghttp_Header {
@@ -37,6 +38,8 @@ typedef struct ghttp_ProgressEvent
 {
     size_t bytesLoaded;
     size_t bytesTotal;
+    size_t chunkSize;
+    void *chunk;
 } ghttp_ProgressEvent;
 
 G_API void ghttp_Init();
@@ -44,10 +47,10 @@ G_API void ghttp_Cleanup();
 
 G_API void ghttp_IgnoreSSLErrors();
 G_API void ghttp_SetProxy(const char *host, int port, const char *user, const char *pass);
-G_API g_id ghttp_Get(const char *url, const ghttp_Header *headers, gevent_Callback callback, void *udata);
-G_API g_id ghttp_Post(const char *url, const ghttp_Header *headers, const void *data, size_t size, gevent_Callback callback, void *udata);
-G_API g_id ghttp_Delete(const char *url, const ghttp_Header *headers, gevent_Callback callback, void *udata);
-G_API g_id ghttp_Put(const char *url, const ghttp_Header *headers, const void *data, size_t size, gevent_Callback callback, void *udata);
+G_API g_id ghttp_Get(const char *url, const ghttp_Header *headers, int streaming, gevent_Callback callback, void *udata);
+G_API g_id ghttp_Post(const char *url, const ghttp_Header *headers, const void *data, size_t size, int streaming, gevent_Callback callback, void *udata);
+G_API g_id ghttp_Delete(const char *url, const ghttp_Header *headers, int streaming, gevent_Callback callback, void *udata);
+G_API g_id ghttp_Put(const char *url, const ghttp_Header *headers, const void *data, size_t size, int streaming, gevent_Callback callback, void *udata);
 G_API void ghttp_Close(g_id id);
 G_API void ghttp_CloseAll();
 

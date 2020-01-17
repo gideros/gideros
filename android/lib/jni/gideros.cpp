@@ -23,7 +23,7 @@
 #include <stage.h>
 
 #include <gpath.h>
-#include <gvfs-android.h>
+#include <gvfs-native.h>
 
 #include <pystring.h>
 

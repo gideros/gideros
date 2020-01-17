@@ -124,6 +124,9 @@ EventBinder::EventBinder(lua_State* L)
 	lua_pushstring(L, ProgressEvent::PROGRESS.type());
 	lua_setfield(L, -2, "PROGRESS");
 
+	lua_pushstring(L, HeaderEvent::HEADER.type());
+	lua_setfield(L, -2, "HEADER");
+
     lua_pushstring(L, LayoutEvent::RESIZED.type());
     lua_setfield(L, -2, "LAYOUT_RESIZED");
 

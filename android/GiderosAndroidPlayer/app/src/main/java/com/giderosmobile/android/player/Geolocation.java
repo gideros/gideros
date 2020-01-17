@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.GeomagneticField;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,10 +23,15 @@ public class Geolocation
 
 	private SensorManager sensorManager;
 	private Sensor magneticSensor;
+	private Sensor mAccelerometer;
 	private SensorEventListener magneticListener_ = null;
 	boolean gps_enabled = false;
 	boolean network_enabled = false;
 	private double locThreshold = 0;
+
+    private float[] mMatrixR;
+    private float[] mMatrixI;
+    private float[] mMatrixValues;
 
 	Geolocation()
 	{
@@ -35,6 +41,11 @@ public class Geolocation
 
 		sensorManager = (SensorManager)activity.getSystemService(Context.SENSOR_SERVICE);
         magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+		mAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		
+	      mMatrixR = new float[9];
+	      mMatrixI = new float[9];
+	      mMatrixValues = new float[3];
 	}
 
 	public boolean isAvailable()
@@ -168,6 +179,9 @@ public class Geolocation
 					return;
 				
 				magneticListener_ = new SensorEventListener() {
+					float[] mAcc=new float[3];
+					boolean hasAcc;
+					
 					@Override
 					public void onAccuracyChanged(Sensor sensor, int accuracy) { }
 		
@@ -178,13 +192,40 @@ public class Geolocation
 				        float y = event.values[1];
 				        float z = event.values[2];
 				        
-				        double magneticHeading = (Math.atan2(x, -y) + Math.PI) * (180 / Math.PI);
+				        if (event.sensor.getType()==Sensor.TYPE_ACCELEROMETER) {
+				        	hasAcc=true;
+				        	mAcc[0]=x;
+				        	mAcc[1]=y;
+				        	mAcc[2]=z;
+				        }
+				        else {
+				        	double magneticHeading = (Math.atan2(x, -y) + Math.PI) * (180 / Math.PI);
+				        	
+				            double trueHeading=magneticHeading;
+				            if (hasAcc&&SensorManager.getRotationMatrix(mMatrixR, mMatrixI,
+				                    mAcc,event.values)) {
+				                SensorManager.getOrientation(mMatrixR, mMatrixValues);
+				                //Smoothing ?
+				                trueHeading = mMatrixValues[0] * (180 / Math.PI);
+				                magneticHeading = trueHeading;
+				                if (currentBestLocation!=null) {
+				                	GeomagneticField geomagneticField = new GeomagneticField(
+				                            (float)currentBestLocation.getLatitude(),
+				                            (float)currentBestLocation.getLongitude(),
+				                            (float)currentBestLocation.getAltitude(),
+				                            System.currentTimeMillis());
+				                	trueHeading+=geomagneticField.getDeclination();
+				                }
+				            }
 				        
-						onHeadingChanged(magneticHeading, magneticHeading, x, y, z);
+				        	onHeadingChanged(magneticHeading, trueHeading, x, y, z);
+				        }
 					}			
 				};
 							
 				sensorManager.registerListener(magneticListener_, magneticSensor, SensorManager.SENSOR_DELAY_NORMAL);
+				if (mAccelerometer!=null)
+					sensorManager.registerListener(magneticListener_, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 			}
 		});		
 	}
@@ -203,6 +244,8 @@ public class Geolocation
 					return;
 		
 				sensorManager.unregisterListener(magneticListener_, magneticSensor);
+				if (mAccelerometer!=null)
+					sensorManager.unregisterListener(magneticListener_, mAccelerometer);
 				magneticListener_=null; 
 			}
 		});		
