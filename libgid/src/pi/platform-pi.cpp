@@ -64,14 +64,7 @@ bool setKeyboardVisibility(bool visible){
 }
 
 int getKeyboardModifiers() {
-   Qt::KeyboardModifiers qmod=QGuiApplication::queryKeyboardModifiers();
-   int m=0;
-   if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
-   if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
-   if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
-   if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
-
-   return m;
+   return 0;
 }
 
 static int s_fps = 60;

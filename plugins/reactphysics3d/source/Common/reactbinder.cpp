@@ -899,7 +899,7 @@ static int r3dWorld_DestroyJoint(lua_State* L) {
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::Joint* joint = static_cast<rp3d::Joint*>(binder.getInstance(
 			"r3dJoint", 2));
-	lua_getfield(L, 1, "joints_");
+	lua_getfield(L, 1, "__joints");
 	lua_pushvalue(L, 2);
 	lua_rawget(L, -2);
 	if (!lua_isnil(L,-1)) {
@@ -914,17 +914,17 @@ static int r3dWorld_DestroyJoint(lua_State* L) {
 }
 
 static void world_createJoint(lua_State* L) {
-	lua_getfield(L, 1, "joints_");
+	lua_getfield(L, 1, "__joints");
 	lua_pushvalue(L, -2);
 	lua_pushvalue(L, -1);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
-	lua_getfield(L, 2, "joints_");
+	lua_getfield(L, 2, "__joints");
 	lua_pushvalue(L, -2);
 	lua_pushvalue(L, -1);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
-	lua_getfield(L, 3, "joints_");
+	lua_getfield(L, 3, "__joints");
 	lua_pushvalue(L, -2);
 	lua_pushvalue(L, -1);
 	lua_rawset(L, -3);

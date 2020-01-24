@@ -181,7 +181,7 @@ private:
 
         bool operator < (const ImageScale &other) const
         {
-            return midscale > other.midscale;
+            return scale > other.scale;
         }
     };
 
