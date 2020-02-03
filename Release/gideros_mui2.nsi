@@ -3,6 +3,11 @@
 
   !include "MUI2.nsh"
   !include "FileAssociation.nsh"
+  
+!macro CreateInternetShortcut FILEPATH URL
+WriteINIStr "${FILEPATH}" "InternetShortcut" "URL" "${URL}"
+!macroend
+  
 ;--------------------------------
 ;General
 
@@ -92,8 +97,9 @@ Section "Start Menu Shortcuts"
   CreateShortCut "$SMPROGRAMS\Gideros\Gideros Texture Packer.lnk" "$INSTDIR\GiderosTexturePacker.exe" "" "$INSTDIR\GiderosTexturePacker.exe" 0
   ;CreateShortCut "$SMPROGRAMS\Gideros\Gideros License Manager.lnk" "$INSTDIR\GiderosLicenseManager.exe" "" "$INSTDIR\GiderosLicenseManager.exe" 0
   CreateShortCut "$SMPROGRAMS\Gideros\Examples.lnk" "$INSTDIR\Examples" "" "$INSTDIR\Examples" 0
-  CreateShortCut "$SMPROGRAMS\Gideros\Reference Manual.lnk" "$INSTDIR\Documentation\reference_manual.html" "" "$INSTDIR\Documentation\reference_manual.html" 0
-  CreateShortCut "$SMPROGRAMS\Gideros\Getting Started.lnk" "$INSTDIR\Documentation\getting_started.html" "" "$INSTDIR\Documentation\getting_started.html" 0
+  !insertmacro CreateInternetShortcut "$SMPROGRAMS\Gideros\Documentation.url" "https://wiki.giderosmobile.com"
+  ;CreateShortCut  "$INSTDIR\Documentation\reference_manual.html" "" "$INSTDIR\Documentation\reference_manual.html" 0
+  ;CreateShortCut "$SMPROGRAMS\Gideros\Getting Started.lnk" "$INSTDIR\Documentation\getting_started.html" "" "$INSTDIR\Documentation\getting_started.html" 0
   CreateShortCut "$SMPROGRAMS\Gideros\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   
 SectionEnd
@@ -130,5 +136,6 @@ Section "Uninstall"
   DeleteRegKey HKCU "Software\Gideros"
   
   ${unregisterExtension} ".gproj" "Gideros project"
+  ${unregisterExtension} ".tpproj" "Gideros texture packer project" 
 
 SectionEnd

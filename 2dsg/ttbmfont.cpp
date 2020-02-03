@@ -351,6 +351,8 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 
 	if (!staticCharsetInit()) {
 		currentDib_ = new Dib(application_, 1024, 1024, true); //use 102x1024 textures for packing
+		unsigned char rgba[] = { 255, 255, 255, 0 };
+		currentDib_->fill(rgba);
 		currentPacker_ = createProgressiveTexturePacker(currentDib_->width(),
 				currentDib_->height());
 		TextureParameters parameters;
@@ -664,6 +666,8 @@ void TTBMFont::checkLogicalScale() {
 			if (currentPacker_)
 				releaseTexturePacker(currentPacker_);
 			currentDib_ = new Dib(application_, 1024, 1024, true); //use 102x1024 textures for packing
+			unsigned char rgba[] = { 255, 255, 255, 0 };
+			currentDib_->fill(rgba);
 			currentPacker_ = createProgressiveTexturePacker(
 					currentDib_->width(), currentDib_->height());
 			TextureParameters parameters;

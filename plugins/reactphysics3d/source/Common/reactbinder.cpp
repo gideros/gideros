@@ -532,6 +532,46 @@ int r3dBody_EnableGravity(lua_State* L) {
 	return 0;
 }
 
+#define BODY_SETGETNUM(fct) \
+int r3dBody_Set##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
+	body->set##fct(luaL_checknumber(L, 2));\
+	return 0;\
+}\
+int r3dBody_Get##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
+	lua_pushnumber(L,body->get##fct());\
+	return 1;\
+}
+
+#define BODY_SETGETVEC3(fct) \
+int r3dBody_Set##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
+	rp3d::Vector3 v;\
+	TO_VECTOR(L, 2, v);\
+	body->set##fct(v);\
+	return 0;\
+}\
+int r3dBody_Get##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
+	rp3d::Vector3 v=body->get##fct();\
+	lua_pushnumber(L,v.x);\
+	lua_pushnumber(L,v.y);\
+	lua_pushnumber(L,v.z);\
+	return 3;\
+}
+
+
+BODY_SETGETNUM(LinearDamping)
+BODY_SETGETNUM(AngularDamping)
+BODY_SETGETNUM(Mass)
+BODY_SETGETVEC3(LinearVelocity)
+BODY_SETGETVEC3(AngularVelocity)
+
 int r3dBody_SetIsAllowedToSleep(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
@@ -1117,6 +1157,16 @@ int loader(lua_State *L) {
 			{ "setTransform", r3dBody_SetTransform },
 			{ "getMaterial", r3dBody_GetMaterial },
 			{ "setMaterial", r3dBody_SetMaterial },
+			{ "getLinearVelocity", r3dBody_GetLinearVelocity },
+			{ "setLinearVelocity", r3dBody_SetLinearVelocity },
+			{ "getAngularVelocity", r3dBody_GetAngularVelocity },
+			{ "setAngularVelocity", r3dBody_SetAngularVelocity },
+			{ "getLinearDamping", r3dBody_GetLinearDamping },
+			{ "setLinearDamping", r3dBody_SetLinearDamping },
+			{ "getAngularDamping", r3dBody_GetAngularDamping },
+			{ "setAngularDamping", r3dBody_SetAngularDamping },
+			{ "getMass", r3dBody_GetMass },
+			{ "setMass", r3dBody_SetMass },
 			{ "setType", r3dBody_SetType },
 			{ "enableGravity", r3dBody_EnableGravity },
 			{ "setIsAllowedToSleep", r3dBody_SetIsAllowedToSleep },

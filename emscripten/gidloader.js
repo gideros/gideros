@@ -311,7 +311,9 @@ function getParameterByName(name, url) {
     	else if (what.includes('iCCP: known incorrect sRGB profile')) {} //Ignore (libpng)
     	else if (what.trim().length < 2) {} //Ignore
     	else if (what.includes('stub instead of')) {} //Stubs warnings
-    	else if (what.includes('DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1')) {} //Event changing warnings        	
+    	else if (what.includes('DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1')) {} //Event changing warnings   
+    	else if (what.includes('wasm streaming compile failed')||
+    			what.includes('falling back')) {} //Ignore (server not supplying right WASM MIME) 
 		else        		
     		Module.showError("genErr",what);
     },

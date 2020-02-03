@@ -140,6 +140,11 @@ ftlibrarysingleton.o \
 viewport.o viewportbinder.o \
 pixel.o pixelbinder.o \
 particles.o particlesbinder.o \
+layoutevent.o gridbaglayout.o \
+screen.o screenbinder.o \
+debugging.o \
+bufferbinder.o \
+
 esUtil.o \
 ftbbox.o ftbitmap.o ftglyph.o ftlcdfil.o ftstroke.o ftxf86.o ftbase.o ftsystem.o ftinit.o ftgasp.o \
 raster.o sfnt.o smooth.o autofit.o truetype.o cff.o psnames.o pshinter.o \
