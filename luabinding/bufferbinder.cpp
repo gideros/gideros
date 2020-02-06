@@ -6,7 +6,7 @@
 #include <string>
 #include <errno.h>
 #include "glog.h"
-
+#include <string.h>
 #include <pthread.h>
 
 class GGLock
