@@ -658,7 +658,7 @@ static void set_info (lua_State *L) {
 static int get_drives (lua_State *L) {
 	lua_newtable(L);
 	int n=0;
-#if _WIN32
+#if defined(_WIN32) && ! defined(WINSTORE)
 	int blen=GetLogicalDriveStrings(0,NULL);
 	wchar_t *paths=malloc(sizeof(wchar_t)*(blen+1));
 	GetLogicalDriveStrings(blen,paths);
