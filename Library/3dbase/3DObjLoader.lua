@@ -34,7 +34,7 @@ local function Split(str, delim, maxNb)
     return result
 end
 
-local function parsemtl(mtls,path,file,pfx)
+local function parsemtl(mtls,path,file,prefix,textureFolder,textureMap)
  if not io.open(path.."/"..file) then 
 	print("Material file not found:"..path.."/"..file)
 	return 
@@ -51,14 +51,17 @@ local function parsemtl(mtls,path,file,pfx)
   if fld[1]=="newmtl" then
     --print("DM",fld[2])
     mtl={}
-	mtls[pfx..fld[2]]=mtl
+	mtls[prefix..fld[2]]=mtl
   elseif fld[1]=="Kd" then
    mtl.kd={fld[2],fld[3],fld[4],1.0}
   elseif fld[1]=="map_Kd" then
    table.remove(fld,1)
    local f=table.concat(fld," ")
    --print("Texture:.. ["..path.."/"..f.."]")
-   mtl.textureFile=path.."/"..f
+   if textureMap then
+   	f=textureMap[f] or f
+   end
+   mtl.textureFile=(textureFolder or path).."/"..f
   elseif fld[1]=="map_Bump" then
    table.remove(fld,1)
    if fld[1]=="-bm" then
@@ -67,7 +70,10 @@ local function parsemtl(mtls,path,file,pfx)
    end
    local f=table.concat(fld," ")
    --print("Texture:.. ["..path.."/"..f.."]")
-   mtl.normalMapFile=path.."/"..f
+   if textureMap then
+   	f=textureMap[f] or f
+   end
+   mtl.normalMapFile=(textureFolder or path).."/"..f
   end
  end
 end
@@ -80,7 +86,7 @@ function string.ends(String,End)
    return End=='' or string.sub(String,-string.len(End))==End
 end
 
-function importObj(path,file,imtls,matpfx)
+function importObj(path,file,imtls,matpfx,textureFolder,textureMap)
  local root={}
  v = {}
  imap = nil
@@ -90,6 +96,7 @@ function importObj(path,file,imtls,matpfx)
  mtl=nil
  root.type="group"
  root.parts={}
+ matpfx=matpfx or ""
  oname=nil
  local function buildObject()  
 	local m=nil
@@ -144,7 +151,7 @@ function importObj(path,file,imtls,matpfx)
   oname=fld[2]
   elseif fld[1]=="mtllib" then
    table.remove(fld,1)
-   parsemtl(mtls,path,table.concat(fld," "),matpfx)
+   parsemtl(mtls,path,table.concat(fld," "),matpfx,textureFolder,textureMap)
   elseif fld[1]=="usemtl" then
    buildObject()
    mtl=matpfx..fld[2]
@@ -156,7 +163,7 @@ function importObj(path,file,imtls,matpfx)
  return root,mtls
 end
 
-function loadObj(path,file,imtls)
- local root,mtls=importObj(path,file,imtls)
+function loadObj(path,file,imtls,prefix,textureFolder,textureMap)
+ local root,mtls=importObj(path,file,imtls,prefix,textureFolder,textureMap)
  return G3DFormat.buildG3D(root,mtls)
 end

@@ -211,6 +211,11 @@
 				path="Audio/Procedural Sound Effects/ProceduralSoundEffects.gproj"
 				image="music_player.png" 
 				/>
+	<example 	name="Shoutcast Player"
+				description="Demonstrate Buffer and HTTP streaming capabilities"
+				path="Audio/Shoutcast Player/Shoutcast Player.gproj"
+				image="shoutcast_player.png" 
+				/>
 </category>
 
 <category name="Hardware">
