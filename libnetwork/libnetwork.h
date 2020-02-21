@@ -21,6 +21,7 @@ enum GiderosPacketType {
 	gptDeleteFile=9,
 	gptRunning=10, //Player->Studio
 	gptSetProperties=11,
+	gptEnablePlugins=12,
 
 	//Debugging
 	gptLookupSymbol=20,

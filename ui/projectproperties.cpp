@@ -94,6 +94,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("version", this->version);
     properties.setAttribute("version_code", this->version_code);
     properties.setAttribute("build_number", this->build_number);
+	properties.setAttribute("mainluaOnly", this->mainluaOnly);
 
 	// iOS options
     properties.setAttribute("retinaDisplay", this->retinaDisplay);
@@ -211,6 +212,8 @@ void ProjectProperties::loadXml(QDomElement properties)
 			this->fps = properties.attribute("fps").toInt();
 		if (!properties.attribute("vsync").isEmpty())
 			this->vsync = properties.attribute("vsync").toInt();
+		if (!properties.attribute("mainluaOnly").isEmpty())
+			this->mainluaOnly = properties.attribute("mainluaOnly").toInt();
 
 		// iOS options
 		if (!properties.attribute("retinaDisplay").isEmpty())

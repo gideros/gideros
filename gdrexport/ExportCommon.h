@@ -18,6 +18,8 @@ public:
 	static void exportPropertiesBin(ExportContext *ctx);
 	static void exportLuafilesTxt(ExportContext *ctx);
 	static void exportAllfilesTxt(ExportContext *ctx);
+	static bool initPlugins(ExportContext *ctx);
+	static void requestPlugin(ExportContext *ctx,QString name);
 	static bool applyPlugins(ExportContext *ctx);
     static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1,bool withAlpha=true,QColor fill=QColor("transparent"), int mode = 0);
 	static bool appIcon(ExportContext *ctx,int width,int height,QString output,bool withAlpha=true);

@@ -313,11 +313,23 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		bool copied = false;
 
 		if (QFileInfo(src).suffix().toLower() == "lua") {
-			if (std::find(ctx->topologicalSort.begin(),
+			//These files are marked as exclude from execution because they come from plugins
+			//But we want these specific files to be ran before other code files, even before init.lua
+			bool preload=s1.startsWith("_LuaPlugins_/")&&s1.endsWith("/_preload.lua");
+			bool allowExec=(!ctx->properties.mainluaOnly)||(s1=="main.lua");
+
+			if (((std::find(ctx->topologicalSort.begin(),
 					ctx->topologicalSort.end(), std::make_pair(s2, true))
-					== ctx->topologicalSort.end()) {
-				ctx->luafiles.push_back(s1);
-				ctx->luafiles_abs.push_back(dst);
+					== ctx->topologicalSort.end())&&allowExec)||preload)
+			{
+				if (preload) {
+					ctx->luafiles.push_front(s1);
+					ctx->luafiles_abs.push_front(dst);
+				}
+				else {
+					ctx->luafiles.push_back(s1);
+					ctx->luafiles_abs.push_back(dst);
+				}
 				luafiles_src.push_back(src);
 				if (!compileLua) {
 					ctx->allfiles.push_back(s1);
@@ -557,14 +569,8 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 			QDir::cleanPath(ctx->outputDir.absoluteFilePath(filename)));
 }
 
-bool ExportCommon::applyPlugins(ExportContext *ctx) {
-	if (ctx->assetsOnly) //Don't export plugins on asset only
-	{
-		ExportLUA_DonePlugins(ctx);
-		return true;
-	}
-	exportInfo("Applying plugins\n");
-	bool jsonDone=false;
+bool ExportCommon::initPlugins(ExportContext *ctx) {
+	exportInfo("Querying plugins\n");
 	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it =
 			ctx->properties.plugins.begin();
@@ -573,20 +579,49 @@ bool ExportCommon::applyPlugins(ExportContext *ctx) {
 		bool en=((*it).enabled);
 		if ((!xml.isEmpty()) && en)
 		{
-			if ((*it).name=="JSON") jsonDone=true;
-			if (!ExportXml::exportXml(xml, true, ctx))
+			if (!ExportXml::runinitXml(xml, true, ctx))
 				return false;
 		}
 	}
 	//Add JSON automatically if not already done for FBInstant
-    if ((!jsonDone)&&(ctx->deviceFamily == e_Html5)&&ctx->properties.html5_fbinstant) {
-		QString xml = allplugins["JSON"];
-		if (!xml.isEmpty())
+    if ((ctx->deviceFamily == e_Html5)&&ctx->properties.html5_fbinstant) {
+    	requestPlugin(ctx,"JSON");
+    }
+	return true;
+}
+
+void ExportCommon::requestPlugin(ExportContext *ctx,QString name) {
+	ProjectProperties::Plugin p;
+	p.name=name;
+	p.enabled=true;
+	for (QSet<ProjectProperties::Plugin>::iterator it =
+			ctx->properties.plugins.begin();
+			it != ctx->properties.plugins.end(); it++) {
+		if (it->name==name) { p.properties=it->properties; it=ctx->properties.plugins.erase(it); };
+	}
+
+	ctx->properties.plugins.insert(p);
+}
+
+bool ExportCommon::applyPlugins(ExportContext *ctx) {
+	if (ctx->assetsOnly) //Don't export plugins on asset only
+	{
+		ExportLUA_DonePlugins(ctx);
+		return true;
+	}
+	exportInfo("Applying plugins\n");
+	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
+	for (QSet<ProjectProperties::Plugin>::const_iterator it =
+			ctx->properties.plugins.begin();
+			it != ctx->properties.plugins.end(); it++) {
+		QString xml = allplugins[(*it).name];
+		bool en=((*it).enabled);
+		if ((!xml.isEmpty()) && en)
 		{
 			if (!ExportXml::exportXml(xml, true, ctx))
 				return false;
 		}
-    }
+	}
 	ExportLUA_DonePlugins(ctx);
 	return true;
 }

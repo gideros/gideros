@@ -9,6 +9,7 @@ extern "C" {
 #include "lfs.h"
 
 static ExportXml *currentXml=NULL;
+static ExportContext *currentContext=NULL;
 static bool inited=false;
 
 static int getProperty(lua_State* L)
@@ -112,6 +113,7 @@ bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
         return false;
 	}
 	currentXml=xml;
+	currentContext=ctx;
     if (lua_pcall(ctx->L, 0, 0, 0) != 0)
     {
     	currentXml=NULL;
@@ -122,6 +124,7 @@ bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
         return false;
     }
 	currentXml=NULL;
+	currentContext=NULL;
     return true;
 }
 

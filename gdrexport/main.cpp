@@ -99,8 +99,8 @@ static bool readProjectFile(const QString& fileName,
                         QDir luaplugin_dir = pf.path();
                         int root_length = luaplugin_dir.path().length();
 
-                        // collect all lua files in luaplugin and any subdirectory of luaplugin
-                        QDirIterator dir_iter(pf.path(), QStringList() << "*.lua", QDir::Files, QDirIterator::Subdirectories);
+                        // collect all files in luaplugin and any subdirectory of luaplugin
+                        QDirIterator dir_iter(pf.path(), QStringList() << "*", QDir::Files, QDirIterator::Subdirectories);
                         while (dir_iter.hasNext()) {
                             hasLuaPlugin = true;
                             QDir file = dir_iter.next();
@@ -112,7 +112,8 @@ static bool readProjectFile(const QString& fileName,
                             addEntryToListIfNotInList(folderList, lua_plugins_path + just_rel_path);
                             fileList_.push_back(std::make_pair(lua_plugins_path + rel_path_and_filename, file.path()));
                             locked[lua_plugins_path + rel_path_and_filename]=true;
-                            dependencyGraph_.addCode(file.path(), true);
+                            if (filename.endsWith(".lua"))
+                            	dependencyGraph_.addCode(file.path(), true);
                         }
     	    		}
     			}

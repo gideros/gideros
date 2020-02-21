@@ -2368,6 +2368,7 @@ void MainWindow::dataReceived(const QByteArray& d)
 		}
 
 		// upload files
+		QStringList luaFiles;
 		QDir path(QFileInfo(projectFileName_).path());
 		for (std::map<QString, QString>::iterator iter = localFileMap.begin(); iter != localFileMap.end(); ++iter)
 		{
@@ -2399,13 +2400,16 @@ void MainWindow::dataReceived(const QByteArray& d)
 				fileQueue_.push_back(qMakePair(iter->first, localfile));
 			else
 				printf("don't upload: %s\n", qPrintable(iter->first));
+
+			if (iter->first.startsWith("_LuaPlugins_/")&&iter->first.endsWith("/_preload.lua"))
+				luaFiles << iter->first;
 		}
 
         std::vector<std::pair<QString, bool> > topologicalSort = libraryWidget_->topologicalSort();
+        bool mainluaOnly=libraryWidget_->getProjectProperties().mainluaOnly;
 
-		QStringList luaFiles;
 		for (std::size_t i = 0; i < topologicalSort.size(); ++i)
-            if (topologicalSort[i].second == false)
+            if ((topologicalSort[i].second == false)&&((!mainluaOnly)||(localFileMapReverse[topologicalSort[i].first]=="main.lua")))
                 luaFiles << localFileMapReverse[topologicalSort[i].first];
 
 		if (luaFiles.empty() == false)
@@ -2884,8 +2888,8 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
             QDir luaplugin_dir = pf.path();
             int root_length = luaplugin_dir.path().length();
 
-            // get all lua files in luaplugin and any subdirectory of luaplugin
-            QDirIterator dir_iter(pf.path(), QStringList() << "*.lua", QDir::Files, QDirIterator::Subdirectories);
+            // get all files in luaplugin and any subdirectory of luaplugin
+            QDirIterator dir_iter(pf.path(), QStringList() << "*", QDir::Files, QDirIterator::Subdirectories);
             while (dir_iter.hasNext()) {
                 QDir file = dir_iter.next();
                 QString rel_path = file.path().mid(root_length + 1, file.path().length());

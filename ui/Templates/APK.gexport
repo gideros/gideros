@@ -192,6 +192,7 @@ local ap=require("Tools/export_android")
 		</if>
 		<mkdir>app/src/main/assets/assets</mkdir>
 		<cd>app/src/main/assets/assets</cd>
+		<initPlugins/>
 		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" dontEncryptExts="mp3" />
 		<exportAllfilesTxt/>
 		<exportLuafilesTxt/>

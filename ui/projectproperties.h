@@ -92,6 +92,7 @@ struct ProjectProperties
         disableSplash = false;
         backgroundColor = "#ffffff";
         splashScaleMode = 0;
+        mainluaOnly = false;
         plugins.clear();
         exports.clear();
     }
@@ -155,6 +156,7 @@ struct ProjectProperties
     QSet<Export> exports;
     bool encryptCode;
     bool encryptAssets;
+    bool mainluaOnly; //Assume all files are 'exclude from execution' except main.lua
     int splashScaleMode;
 };
 

@@ -98,12 +98,9 @@ void ExportXml::SetupProperties(ExportContext *ctx)
         for (i = ctx->args.begin(); i != ctx->args.end(); ++i)
         	ctx->props["args."+i.key()] = i.value();
 	}
-}
 
-bool ExportXml::Process(ExportContext *ctx) {
-	SetupProperties(ctx);
+	//Type specific props
 	QString exname = exporter.attribute("name");
-	QDomElement rules;
 	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {
 		lprops["sys.pluginDir"] = xmlDir.path();
@@ -117,19 +114,9 @@ bool ExportXml::Process(ExportContext *ctx) {
                         mit++)
                     lprops[QString("plugin.").append(mit.key())] = mit.value();
             }
-		//Lookup target
-		QDomNodeList targets = exporter.elementsByTagName("target");
-		QStringList targetList;
-		for (int k = 0; k < targets.count(); k++) {
-			QString tname=targets.at(k).toElement().attribute("name");
-			QStringList tlist=tname.split(',', QString::SkipEmptyParts);
-			if (tlist.contains(ctx->platform))
-				rules = targets.at(k).toElement();
-		}
 	} else {
 //Fill properties: Export
 		ctx->props["sys.exporterDir"] = xmlDir.path();
-		rules = exporter.firstChildElement("rules");
         for (QSet<ProjectProperties::Export>::const_iterator it =
                 ctx->properties.exports.begin();
                 it != ctx->properties.exports.end(); it++)
@@ -140,8 +127,41 @@ bool ExportXml::Process(ExportContext *ctx) {
                     ctx->props[QString("export.").append(mit.key())] = mit.value();
             }
     }
+
+}
+
+bool ExportXml::Process(ExportContext *ctx) {
+	SetupProperties(ctx);
+	QDomElement rules;
+	if (isPlugin) {
+		//Lookup target
+		QDomNodeList targets = exporter.elementsByTagName("target");
+		QStringList targetList;
+		for (int k = 0; k < targets.count(); k++) {
+			QString tname=targets.at(k).toElement().attribute("name");
+			QStringList tlist=tname.split(',', QString::SkipEmptyParts);
+			if (tlist.contains(ctx->platform))
+				rules = targets.at(k).toElement();
+		}
+	} else {
+		rules = exporter.firstChildElement("rules");
+    }
 //Run rules
 	return ProcessRules(rules);
+}
+
+bool ExportXml::RunInit(ExportContext *ctx) {
+	SetupProperties(ctx);
+	QDomElement rules;
+	if (isPlugin) {
+		//Lookup target
+		QDomNode rule = exporter.firstChildElement("initscript");
+		if (!rule.isNull())
+			return RuleLua(ReplaceAttributes(rule.toElement().attribute("file")).trimmed(),
+	        		rule.toElement().text().trimmed());
+	} else {
+    }
+	return true;
 }
 
 bool ExportXml::ProcessRules(QDomElement rules) {
@@ -160,6 +180,13 @@ bool ExportXml::ProcessRules(QDomElement rules) {
 bool ExportXml::exportXml(QString xmlFile, bool plugin, ExportContext *ctx) {
 	ExportXml *ex = new ExportXml(xmlFile, plugin);
 	bool ret = ex->Process(ctx);
+	delete ex;
+	return ret;
+}
+
+bool ExportXml::runinitXml(QString xmlFile, bool plugin, ExportContext *ctx) {
+	ExportXml *ex = new ExportXml(xmlFile, plugin);
+	bool ret = ex->RunInit(ctx);
 	delete ex;
 	return ret;
 }
@@ -257,6 +284,12 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		return true;
 	} else if (ruleName == "applyPlugins") {
 		ExportCommon::applyPlugins(ctx);
+		return true;
+	} else if (ruleName == "initPlugins") {
+		ExportCommon::initPlugins(ctx);
+		return true;
+	} else if (ruleName == "requestPlugin") {
+		ExportCommon::requestPlugin(ctx,rule.attribute("name"));
 		return true;
     } else if (ruleName == "appIcon"){
         return RuleImage(rule.attribute("width").toInt(),

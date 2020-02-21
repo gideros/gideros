@@ -347,6 +347,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    if (templatedir.length()>0)    ExportCommon::copyTemplate(QString(TEMPLATES_PATH).append("/").append(templatedir).append("/").append(ctx->templatename),"",ctx, false, QStringList(), QStringList());
 
    ExportBuiltin::prepareAssetFolder(ctx);
+   if (!ExportCommon::initPlugins(ctx))
+		ctx->exportError=true;
    ExportBuiltin::exportAllAssetsFiles(ctx);
 
    if (ctx->deviceFamily == e_WinRT)
