@@ -1,10 +1,10 @@
 --[[
-SceneManager v1.0.4
+SceneManager v1.0.5
 
 changelog:
 ----------
 
-v1.05 - 21.12.2019
+v1.0.5 - 21.12.2019
 Slight change to use new gideros operators
 
 v1.0.4 - 08.04.2012
@@ -25,13 +25,11 @@ Add collectgarbage() to the end of transition
 v1.0 - 06.11.2011
 Initial release
 
-
 This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.php
 (C) 2010 - 2011 Gideros Mobile 
 ]]
 
 --transitions = {
-
 --	SceneManager.fade,
 --	SceneManager.crossFade,
 --	SceneManager.flip,
@@ -360,4 +358,3 @@ function SceneManager:onEnterFrame(event)
 	end
 
 end
-
