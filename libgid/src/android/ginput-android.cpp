@@ -375,6 +375,14 @@ public:
     }	
 
 public:
+    void mouseWheel(int x, int y, int buttons,int delta, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons);
+        mouseEvent->wheel=delta;
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_WHEEL_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
 	void touchBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex)
 	{
 		ginput_TouchEvent *touchEvent = newTouchEvent(size);
@@ -859,6 +867,12 @@ void ginput_stopGyroscope()
 void ginput_getGyroscopeRotationRate(double *x, double *y, double *z)
 {
     s_manager->getGyroscopeRotationRate(x, y, z);
+}
+
+void ginputp_mouseWheel(int x, int y, int buttons, int delta, int mod)
+{
+    if (s_manager)
+        s_manager->mouseWheel(x, y, buttons,delta, mod);
 }
 
 void ginputp_touchBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex)

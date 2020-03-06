@@ -218,6 +218,7 @@ public:
 	void setProjectProperties(const ProjectProperties &properties);
 	bool isRunning();
 	
+	void mouseWheel(int x,int y,int button,float amount);
 	void touchesBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex);
 	void touchesMove(int size, int *id, int *x, int *y, float *pressure);
 	void touchesEnd(int size, int *id, int *x, int *y, float *pressure, int actionIndex);
@@ -226,7 +227,8 @@ public:
 	bool keyDown(int keyCode, int repeatCount);
 	bool keyUp(int keyCode, int repeatCount);
 	void keyChar(const char *keyChar);
-	
+	void textInput(const char *text,int ss,int se);
+
 	void pause();
 	void resume();
 
@@ -1226,6 +1228,11 @@ void ApplicationManager::setProjectProperties(const ProjectProperties &propertie
 	properties_ = properties;
 }
 
+void ApplicationManager::mouseWheel(int x,int y,int button,float amount)
+{
+	ginputp_mouseWheel(x,y,button,amount,0);
+}
+
 void ApplicationManager::touchesBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex)
 {
 	ginputp_touchBegin(size, id, x, y, pressure, actionIndex);
@@ -1273,6 +1280,18 @@ bool ApplicationManager::keyUp(int keyCode, int repeatCount)
 void ApplicationManager::keyChar(const char *str)
 {
 	ginputp_keyChar(str);
+}
+
+void ApplicationManager::textInput(const char *text,int ss,int se)
+{
+    gapplication_TextInputEvent *event = (gapplication_TextInputEvent*)gevent_CreateEventStruct1(
+                                           sizeof(gapplication_TextInputEvent),
+                                        offsetof(gapplication_TextInputEvent, text), text);
+    event->selStart=ss;
+    event->selEnd=se;
+
+    gapplication_enqueueEvent(GAPPLICATION_TEXT_INPUT_EVENT, event, 1);
+
 }
 
 extern void gaudio_android_suspend(bool suspend);
@@ -1460,6 +1479,11 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeOpenProject(
 	s_applicationManager->setOpenProject(project.c_str());
 }
 
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeMouseWheel(JNIEnv* env, jobject thiz, jint x,jint y,jint button,jfloat amount)
+{
+	s_applicationManager->mouseWheel(x,y,button,amount);
+}
+
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesBegin(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jfloatArray jpressure, jint actionIndex)
 {
 	jint* id = (jint*)env->GetPrimitiveArrayCritical(jid, 0);
@@ -1535,6 +1559,34 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyChar(JNIE
 	const char* sBytes = env->GetStringUTFChars(keyChar, NULL);
 	s_applicationManager->keyChar(sBytes);
 	env->ReleaseStringUTFChars(keyChar, sBytes);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTextInput(JNIEnv* env, jclass cls, jstring text,jint ss,jint se)
+{
+	const char* sBytes = env->GetStringUTFChars(text, NULL);
+	if (ss>0) {
+		const char *r=sBytes;
+		while (ss&&(*r)) {
+			if (((*r)<128)||((*r)>=192))
+				ss--;
+			r++;
+		}
+		while (((*r)&0xC0)==0x80) r++;
+		ss=r-sBytes;
+	}
+	if (se>0) {
+		const char *r=sBytes;
+		while (se&&(*r)) {
+			if (((*r)<128)||((*r)>=192))
+				se--;
+			r++;
+		}
+		while (((*r)&0xC0)==0x80) r++;
+		se=r-sBytes;
+	}
+
+	s_applicationManager->textInput(sBytes,ss,se);
+	env->ReleaseStringUTFChars(text, sBytes);
 }
 
 jboolean Java_com_giderosmobile_android_player_GiderosApplication_isRunning(JNIEnv* env, jclass cls)

@@ -72,6 +72,48 @@ bool setKeyboardVisibility(bool visible)
 	return ret;
 }
 
+
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText)
+{
+	JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jstring jbuf = env->NewStringUTF(buffer);
+	jstring jlabel = env->NewStringUTF(label);
+	jstring jaction = env->NewStringUTF(actionLabel);
+	jstring jhint = env->NewStringUTF(hintText);
+
+	if (selstart>0) {
+		int n=0;
+		for (int k=0;(k<selstart)&&(buffer[k]);k++)
+			if ((buffer[k]&0xC0)!=0x80) n++;
+		selstart=n;
+	}
+	if (selend>0) {
+		int n=0;
+		for (int k=0;(k<selend)&&(buffer[k]);k++)
+			if ((buffer[k]&0xC0)!=0x80) n++;
+		selend=n;
+	}
+
+	jmethodID setKeepAwakeID = env->GetStaticMethodID(localRefCls, "setTextInput", "(ILjava/lang/String;IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+	jboolean ret=env->CallStaticBooleanMethod(localRefCls, setKeepAwakeID, (jint)type,jbuf,(jint)selstart,(jint)selend,jlabel,jaction,jhint);
+	env->DeleteLocalRef(jbuf);
+	env->DeleteLocalRef(jlabel);
+	env->DeleteLocalRef(jaction);
+	env->DeleteLocalRef(jhint);
+	env->DeleteLocalRef(localRefCls);
+	return ret;
+}
+
+bool setClipboard(std::string data,std::string mimeType) {
+	return false;
+}
+
+bool getClipboard(std::string &data,std::string &mimeType) {
+	return false;
+}
+
 int getKeyboardModifiers() {
 	return 0;
 }
@@ -227,8 +269,24 @@ void g_setProperty(const char* what, const char* arg){
 
 }
 
+static std::string g_propResult;
 const char* g_getProperty(const char* what, const char* arg){
-	return "";
+    JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jmethodID getMethodID = env->GetStaticMethodID(localRefCls, "getProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+	jstring jwhat = env->NewStringUTF(what?what:"");
+	jstring jarg = env->NewStringUTF(arg?arg:"");
+	jstring jresult = (jstring)env->CallStaticObjectMethod(localRefCls, getMethodID,jwhat,jarg);
+	const char *result = env->GetStringUTFChars(jresult, NULL);
+	g_propResult = result;
+	env->ReleaseStringUTFChars(jresult, result);
+	env->DeleteLocalRef(jresult);
+	env->DeleteLocalRef(jwhat);
+	env->DeleteLocalRef(jarg);
+	env->DeleteLocalRef(localRefCls);
+
+	return g_propResult.c_str();
 }
 
 bool gapplication_checkPermission(const char *what) {

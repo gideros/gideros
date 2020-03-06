@@ -773,6 +773,12 @@ void LuaApplication::callback(int type, void *event)
         OpenUrlEvent eventg(OpenUrlEvent::OPEN_URL,event2->url);
         application_->broadcastEvent(&eventg);
     }
+    else if (type == GAPPLICATION_TEXT_INPUT_EVENT)
+    {
+        gapplication_TextInputEvent *event2 = (gapplication_TextInputEvent*)event;
+        TextInputEvent eventg(TextInputEvent::TEXT_INPUT,event2->text,event2->selStart,event2->selEnd);
+        application_->broadcastEvent(&eventg);
+    }
     else if (type == GAPPLICATION_MEMORY_LOW_EVENT)
     {
         Event event(Event::MEMORY_WARNING);

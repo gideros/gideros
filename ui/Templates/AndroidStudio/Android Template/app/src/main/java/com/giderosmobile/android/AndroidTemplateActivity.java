@@ -17,16 +17,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.InputDevice;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Gravity;
 import android.graphics.Color;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-import android.text.InputType;
 import android.net.Uri;
 import android.app.ActivityManager;
 import android.content.pm.ConfigurationInfo;
@@ -277,7 +276,22 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 
 		return true;
 	}
-
+	
+	@Override
+	public boolean onGenericMotionEvent(MotionEvent event) {
+	  if (0 != (event.getSource() & InputDevice.SOURCE_CLASS_POINTER)) {
+	    switch (event.getAction()) {
+	      case MotionEvent.ACTION_SCROLL:
+	  		GiderosApplication app = GiderosApplication.getInstance();
+			if (app != null) {
+				app.onMouseWheel(event.getX(),event.getY(),event.getButtonState(),event.getAxisValue(MotionEvent.AXIS_VSCROLL));
+	        	return true;
+			}
+	    }
+	  }
+	  return super.onGenericMotionEvent(event);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
@@ -391,21 +405,15 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	@Override
 	public InputConnection onCreateInputConnection(EditorInfo outAttrs)
 	{
-		outAttrs.actionLabel = "";
-		outAttrs.hintText = "";
-		outAttrs.initialCapsMode = 0;
-		outAttrs.initialSelEnd = outAttrs.initialSelStart = -1;
-		outAttrs.label = "";
-		outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI;		
-		outAttrs.inputType = InputType.TYPE_NULL;		
-
-		return  new BaseInputConnection(this, false);	   
-	}	 
+		GiderosApplication app = GiderosApplication.getInstance();
+		return app.onCreateInputConnection(outAttrs);
+	}
 
 	@Override
 	public boolean onCheckIsTextEditor ()
 	{
-		return true;
+		GiderosApplication app = GiderosApplication.getInstance();
+		return app.onCheckIsTextEditor();
 	}
 
 	GiderosRenderer mRenderer;

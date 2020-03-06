@@ -82,6 +82,9 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"get", ApplicationBinder::get},
         {"requestPermissions", ApplicationBinder::requestPermissions},
         {"checkPermission", ApplicationBinder::checkPermission},
+		{"setTextInput", ApplicationBinder::setTextInput},
+		{"setClipboard", ApplicationBinder::setClipboard},
+		{"getClipboard", ApplicationBinder::getClipboard},
         {NULL, NULL},
 	};
 
@@ -109,6 +112,26 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 	CONSTANT(NO_SCALE,"NO_SCALE");
 	CONSTANT(PIXEL_PERFECT,"PIXEL_PERFECT");
 	CONSTANT(STRETCH,"STRETCH");
+#undef CONSTANT
+#define CONSTANT(value,name)	lua_pushinteger(L, value); lua_setfield(L, -2, name);
+	CONSTANT(0,"TEXTINPUT_CLASS_NONE");
+	CONSTANT(1,"TEXTINPUT_CLASS_TEXT");
+	CONSTANT(2,"TEXTINPUT_CLASS_NUMBER");
+	CONSTANT(3,"TEXTINPUT_CLASS_PHONE");
+	CONSTANT(4,"TEXTINPUT_CLASS_DATE");
+	CONSTANT(0x10,"TEXTINPUT_TVARIANT_URI");
+	CONSTANT(0x20,"TEXTINPUT_TVARIANT_EMAIL");
+	CONSTANT(0x80,"TEXTINPUT_TVARIANT_PASSWORD");
+	CONSTANT(0x10,"TEXTINPUT_DVARIANT_DATE");
+	CONSTANT(0x20,"TEXTINPUT_DVARIANT_TIME");
+	CONSTANT(0x10,"TEXTINPUT_NVARIANT_PASSWORD");
+	CONSTANT(0x1000,"TEXTINPUT_TFLAG_CAPCHARACTERS");
+	CONSTANT(0x2000,"TEXTINPUT_TFLAG_CAPWORDS");
+	CONSTANT(0x4000,"TEXTINPUT_TFLAG_CAPSENTENCES");
+	CONSTANT(0x8000,"TEXTINPUT_TFLAG_AUTOCORRECT");
+	CONSTANT(0x20000,"TEXTINPUT_TFLAG_MULTILINE");
+	CONSTANT(0x1000,"TEXTINPUT_NFLAG_SIGNED");
+	CONSTANT(0x2000,"TEXTINPUT_NFLAG_DECIMAL");
 #undef CONSTANT
 	lua_pop(L, 1);
 
@@ -349,12 +372,61 @@ int ApplicationBinder::setKeepAwake(lua_State* L)
 	return 0;
 }
 
+int ApplicationBinder::setClipboard(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	const char *cdata=luaL_optstring(L,2,NULL);
+	std::string data=cdata?cdata:"";
+	std::string type=luaL_optstring(L,3,cdata?"text/plain":"");
+	lua_pushboolean(L,::setClipboard(data,type));
+
+	return 1;
+}
+
+int ApplicationBinder::getClipboard(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	std::string data;
+	std::string type=luaL_optstring(L,2,"text/plain");
+	if (::getClipboard(data,type))
+	{
+		lua_pushstring(L,data.c_str());
+		lua_pushstring(L,type.c_str());
+		return 2;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 int ApplicationBinder::setKeyboardVisibility(lua_State* L)
 {
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
 	lua_pushboolean(L,::setKeyboardVisibility(lua_toboolean(L, 2) != 0));
+
+	return 1;
+}
+
+int ApplicationBinder::setTextInput(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	lua_pushboolean(L,::setTextInput(luaL_checkinteger(L,2),
+			luaL_optstring(L,3,""),
+			luaL_optinteger(L,4,0),
+			luaL_optinteger(L,5,luaL_optinteger(L,4,0)),
+			luaL_optstring(L,6,""),
+			luaL_optstring(L,7,""),
+			luaL_optstring(L,8,"")
+			));
 
 	return 1;
 }

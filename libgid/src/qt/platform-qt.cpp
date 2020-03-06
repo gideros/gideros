@@ -13,6 +13,8 @@
 #include <QClipboard>
 #include <QFileDialog>
 #include <QCoreApplication>
+#include <QClipboard>
+#include <QMimeData>
 #include <ginput.h>
 
 #if defined(Q_OS_WIN)
@@ -72,6 +74,39 @@ void setKeepAwake(bool awake)
 
 bool setKeyboardVisibility(bool visible){
 	return false;
+}
+
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText)
+{
+	return false;
+}
+
+bool setClipboard(std::string data,std::string mimeType) {
+	if (mimeType.size()==0)
+		QApplication::clipboard()->clear();
+	else {
+		QMimeData *mime=new QMimeData;;
+		mime->setData(QString(mimeType.c_str()),QByteArray(data.c_str(),data.size()));
+		QApplication::clipboard()->setMimeData(mime);
+	}
+	return true;
+}
+
+bool getClipboard(std::string &data,std::string &mimeType) {
+	const QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    if (mimeData==NULL) return false;
+    if (mimeType.size()>0)
+    {
+    	if (!mimeData->hasFormat(QString(mimeType.c_str())))
+    		return false;
+    	QByteArray d=mimeData->data(QString(mimeType.c_str()));
+    	data=std::string(d.data(),d.size());
+    	return true;
+    }
+    mimeType=mimeData->formats().join(" ").toStdString();
+
+	return true;
 }
 
 int getKeyboardModifiers() {

@@ -25,6 +25,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
@@ -36,6 +37,9 @@ import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.os.Vibrator;
+import android.os.BatteryManager;
+import android.text.Editable;
+import android.text.Selection;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -43,7 +47,13 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputMethodManager;
+import android.view.inputmethod.InputConnection;
+import android.text.InputType;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -695,6 +705,11 @@ public class GiderosApplication
 		}
 	}
 
+	public void onMouseWheel(int x,int y,int button,float amount)
+	{
+		GiderosApplication.nativeMouseWheel(x,y,button,amount);
+	}
+
 	public void onTouchesBegin(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex)
 	{
 		if(!isRunning()){
@@ -740,6 +755,135 @@ public class GiderosApplication
 		return nativeKeyUp(keyCode, event.getRepeatCount());
 	}
 	
+	public boolean onCheckIsTextEditor ()
+	{
+		return true;
+	}
+	static String tisLabel="";
+	static String tisHint="";
+	static String tisActionLabel="";
+	static int tisType=InputType.TYPE_NULL;
+	static Editable tisEditable=null;
+	static int tisSelStart=-1;
+	static int tisSelEnd=-1;
+	static int tisInitCapsMode=0;
+	static String tisBuffer="";
+	
+	public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+		outAttrs.actionLabel = tisActionLabel;
+		outAttrs.hintText = tisHint;
+		outAttrs.initialCapsMode = tisInitCapsMode;
+		outAttrs.initialSelEnd = tisSelEnd;
+		outAttrs.initialSelStart = tisSelStart;
+		outAttrs.label = tisLabel;
+		outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE;		
+		outAttrs.inputType = tisType;
+		
+		Log.v("EBE","OCI:"+tisType+" SS:"+tisSelStart+" SE:"+tisSelEnd);
+		BaseInputConnection b=new BaseInputConnection(mGLView_, tisType!=0) {
+			public boolean endBatchEdit() {
+				Editable e=getEditable();
+				if (tisEditable==e) {
+					tisSelStart=Selection.getSelectionStart(e);
+					tisSelEnd=Selection.getSelectionEnd(e);
+					tisBuffer=e.toString();
+					//Log.v("EBE","TE:"+tisEditable+" SS:"+tisSelStart+" SE:"+tisSelEnd+" BB:"+e.toString());
+					GiderosApplication app = GiderosApplication.getInstance();
+					nativeTextInput(tisBuffer,tisSelStart,tisSelEnd);
+				}
+				return super.endBatchEdit();
+			}
+			public boolean deleteSurroundingText(int beforeLength, int afterLength)  {
+				//Log.v("EBE","DST "+beforeLength+","+afterLength);
+				if (tisType==0) {
+					   if (beforeLength == 1 && afterLength == 0) {
+					        // backspace
+					        return super.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+					            && super.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
+					    }
+				}
+				return super.deleteSurroundingText(beforeLength,afterLength);
+			}
+			public boolean sendKeyEvent(KeyEvent event) {
+				//Log.v("EBE","SKE "+event);
+				if (tisType!=0) {
+					if ((event.getKeyCode()==KeyEvent.KEYCODE_DEL)&&(event.getAction()==KeyEvent.ACTION_DOWN)) {
+						return super.deleteSurroundingText(1,0);
+					}
+				}
+				return super.sendKeyEvent(event);
+			}
+			public ExtractedText getExtractedText(ExtractedTextRequest request, int flags) {
+				//Log.v("EBE","GET "+request);
+				ExtractedText et=new ExtractedText();
+				et.text=getEditable();
+				et.startOffset=0; 
+				et.selectionStart=(tisSelStart>=0)?tisSelStart-et.startOffset:-1;
+				et.selectionEnd=(tisSelEnd>=0)?tisSelEnd-et.startOffset:-1;
+				et.flags=0;
+				//et.hint=Hint TODO ?
+				return et;
+			}
+		};
+		tisEditable=null;
+		Editable e=b.getEditable();
+		e.clear();
+		b.commitText(tisBuffer,tisBuffer.length());
+		b.setSelection(tisSelStart,tisSelEnd);
+		tisEditable=e;
+		return b;
+	}	 
+	
+	static public boolean setTextInput(final int type,final String buffer,final int selStart,final int selEnd,final String label,final String actionLabel,final String hintText)
+	{
+		final Activity activity = WeakActivityHolder.get();
+		activity.runOnUiThread(new Runnable() {
+		    public void run() {		    	
+				tisType=type;
+				tisBuffer=buffer;
+				tisSelStart=selStart;
+				tisSelEnd=selEnd;
+				tisLabel=label;
+				tisActionLabel=actionLabel;
+				tisHint=hintText;
+				tisInitCapsMode=((type&0x0F)==1)?(type&0x7000):0;
+				int bl=tisBuffer.length();
+				Log.v("EBE","STI:"+tisType+" SS:"+tisSelStart+" SE:"+tisSelEnd+" BL:"+bl+" BB:"+buffer+" TE:"+tisEditable);
+				if (tisSelStart>bl) tisSelStart=bl;
+				if (tisSelEnd>bl) tisSelEnd=bl;
+				
+				if (tisEditable!=null) {
+					tisEditable.replace(0,tisEditable.length(),tisBuffer);
+					if ((tisSelStart>=0)&&(tisSelEnd>=0))
+						Selection.setSelection(tisEditable,tisSelStart,tisSelEnd);
+					else
+						Selection.removeSelection(tisEditable);
+			    	InputMethodManager imm = (InputMethodManager)
+			    			activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+						Log.v("EBE","RSI");
+				    	imm.restartInput(mGLView_);
+				}
+		    }
+		});
+		return true;
+	}
+	
+	static public String getProperty(String what,String arg) {
+		if (what.equals("batteryLevel")) {
+			IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+			final Activity activity = WeakActivityHolder.get();
+			Intent batteryStatus = activity.registerReceiver(null, ifilter);
+			if (batteryStatus!=null) {
+				int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+				int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+				float batteryPct = (float)level * 100 / (float)scale;
+				return ""+batteryPct;
+			}			
+		}
+
+		return "";
+	}
+
 	public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
 		if (keyCode==KeyEvent.KEYCODE_UNKNOWN)
 			nativeKeyChar(event.getCharacters());
@@ -1034,7 +1178,7 @@ public class GiderosApplication
 		});
 		return true;
 	}
-	
+
 	static public void vibrate(int ms)	
 	{
 		try
@@ -1296,6 +1440,7 @@ public class GiderosApplication
 	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
 	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
 	static private native void nativeKeyChar(String keyChar);
+	static private native void nativeTextInput(String buffer,int selStart,int selEnd);
 	static private native void nativeOpenALSetup(int sampleRate);
 	static private native void nativeCreate(boolean player);
 	static private native void nativeSetDirectories(String externalDir, String internalDir, String cacheDir);
@@ -1306,6 +1451,7 @@ public class GiderosApplication
 	static private native void nativeSurfaceCreated();
 	static private native void nativeSurfaceChanged(int w, int h, int rotation);
 	static private native void nativeDrawFrame();
+	static private native void nativeMouseWheel(int x,int y,int button,float amount);
 	static private native void nativeTouchesBegin(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex);
 	static private native void nativeTouchesMove(int size, int[] id, int[] x, int[] y, float[] pressure);
 	static private native void nativeTouchesEnd(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex);

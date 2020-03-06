@@ -9,6 +9,13 @@ typedef struct gapplication_OpenUrlEvent
     const char *url;
 } gapplication_OpenUrlEvent;
 
+typedef struct gapplication_TextInputEvent
+{
+    const char *text;
+    int selStart;
+    int selEnd;
+} gapplication_TextInputEvent;
+
 typedef enum gapplication_Orientation
 {
     GAPPLICATION_PORTRAIT,

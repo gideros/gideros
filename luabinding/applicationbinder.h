@@ -22,6 +22,7 @@ private:
 	static int getDeviceSafeArea(lua_State* L);
 	static int setKeepAwake(lua_State* L);
 	static int setKeyboardVisibility(lua_State* L);
+	static int setTextInput(lua_State* L);
 	static int getKeyboardModifiers(lua_State* L);
 	static int getLogicalTranslateX(lua_State* L);
 	static int getLogicalTranslateY(lua_State* L);
@@ -54,6 +55,8 @@ private:
     static int get(lua_State *L);
     static int requestPermissions(lua_State *L);
     static int checkPermission(lua_State *L);
+    static int setClipboard(lua_State *L);
+    static int getClipboard(lua_State *L);
 };
 
 #endif

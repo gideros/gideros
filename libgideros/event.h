@@ -113,5 +113,22 @@ private:
 	std::string url_;
 };
 
+class GIDEROS_API TextInputEvent : public Event
+{
+public:
+	typedef EventType<TextInputEvent> Type;
+	TextInputEvent(const Type& type,const char *text,int selStart,int selEnd) : Event(type.type()),	text_(text),selStart_(selStart),selEnd_(selEnd) {	}
+	virtual ~TextInputEvent() {}
+	const char *text() { return text_.c_str(); }
+	int selStart() { return selStart_; }
+	int selEnd() { return selEnd_; }
+	virtual void apply(EventVisitor* v);
+	static Type TEXT_INPUT;
+private:
+	std::string text_;
+	int selStart_;
+	int selEnd_;
+};
+
 
 #endif

@@ -29,3 +29,9 @@ void OpenUrlEvent::apply(EventVisitor* v)
 {
 	v->visit(this);
 }
+
+TextInputEvent::Type TextInputEvent::TEXT_INPUT("textInput");
+void TextInputEvent::apply(EventVisitor* v)
+{
+	v->visit(this);
+}

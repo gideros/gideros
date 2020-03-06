@@ -32,6 +32,9 @@ EventBinder::EventBinder(lua_State* L)
 	lua_pushstring(L, OpenUrlEvent::OPEN_URL.type());
 	lua_setfield(L, -2, "OPEN_URL");
 
+	lua_pushstring(L, TextInputEvent::TEXT_INPUT.type());
+	lua_setfield(L, -2, "TEXT_INPUT");
+
 	lua_pushstring(L, Event::ENTER_FRAME.type());
 	lua_setfield(L, -2, "ENTER_FRAME");
 

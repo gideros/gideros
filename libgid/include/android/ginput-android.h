@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+G_API void ginputp_mouseWheel(int x, int y, int button, int delta, int mod);
 G_API void ginputp_touchBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex);
 G_API void ginputp_touchesMove(int size, int *id, int *x, int *y, float *pressure);
 G_API void ginputp_touchEnd(int size, int *id, int *x, int *y, float *pressure, int actionIndex);
