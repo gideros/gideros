@@ -284,7 +284,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	      case MotionEvent.ACTION_SCROLL:
 	  		GiderosApplication app = GiderosApplication.getInstance();
 			if (app != null) {
-				app.onMouseWheel(event.getX(),event.getY(),event.getButtonState(),event.getAxisValue(MotionEvent.AXIS_VSCROLL));
+				app.onMouseWheel((int)event.getX(),(int)event.getY(),event.getButtonState(),event.getAxisValue(MotionEvent.AXIS_VSCROLL));
 	        	return true;
 			}
 	    }
