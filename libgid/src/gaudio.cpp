@@ -124,7 +124,7 @@ unsigned int GGSoundManager::SoundGetLength(g_id sound)
     return sound2->interface->SoundGetLength(sound);
 }
 
-g_id GGSoundManager::SoundPlay(g_id sound, bool paused)
+g_id GGSoundManager::SoundPlay(g_id sound, bool paused, bool streaming)
 {
     std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
     if (iter == sounds_.end())
@@ -132,7 +132,7 @@ g_id GGSoundManager::SoundPlay(g_id sound, bool paused)
 
     Sound *sound2 = iter->second;
 
-    g_id channel = sound2->interface->SoundPlay(sound, paused);
+    g_id channel = sound2->interface->SoundPlay(sound, paused, streaming);
 
     Channel *channel2 = new Channel(channel, sound2, sound2->interface);
 
@@ -453,9 +453,9 @@ void GGAudioManager::SoundListener(float x,float y,float z,float vx,float vy,flo
 	soundManager_->SoundListener(x,y,z,vx,vy,vz,dx,dy,dz,ux,uy,uz);
 }
 
-g_id GGAudioManager::SoundPlay(g_id sound, bool paused)
+g_id GGAudioManager::SoundPlay(g_id sound, bool paused, bool streaming)
 {
-    return soundManager_->SoundPlay(sound, paused);
+    return soundManager_->SoundPlay(sound, paused, streaming);
 }
 
 void GGAudioManager::ChannelStop(g_id channel)
@@ -765,9 +765,9 @@ unsigned int gaudio_SoundGetLength(g_id sound)
 }
 
 
-g_id gaudio_SoundPlay(g_id sound, g_bool paused)
+g_id gaudio_SoundPlay(g_id sound, g_bool paused, g_bool streaming)
 {
-    return s_manager->SoundPlay(sound, paused);
+    return s_manager->SoundPlay(sound, paused, streaming);
 }
 
 void gaudio_SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz)
@@ -880,7 +880,7 @@ unsigned int gaudio_BackgroundMusicGetLength(g_id backgroundMusic)
     return s_manager->BackgroundMusicGetLength(backgroundMusic);
 }
 
-g_id gaudio_BackgroundMusicPlay(g_id backgroundMusic, g_bool paused)
+g_id gaudio_BackgroundMusicPlay(g_id backgroundMusic, g_bool paused, g_bool streaming)
 {
     return s_manager->BackgroundMusicPlay(backgroundMusic, paused);
 }

@@ -147,7 +147,7 @@ public:
         return sound2->length;
     }
 
-    g_id SoundPlay(g_id sound, bool paused)
+    g_id SoundPlay(g_id sound, bool paused, bool streaming)
     {
         GGLock lock(mutex_);
 
@@ -170,7 +170,7 @@ public:
 
         g_id gid = file;
 
-        Channel *channel = new Channel(gid, file, sound2, source);
+        Channel *channel = new Channel(gid, file, sound2, source, streaming);
 
         sound2->channels.insert(channel);
 
@@ -575,7 +575,7 @@ private:
 
     struct Channel
     {
-        Channel(g_id gid, g_id file, Sound *sound, ALuint source) :
+        Channel(g_id gid, g_id file, Sound *sound, ALuint source, bool streaming) :
             gid(gid),
             file(file),
             sound(sound),
@@ -586,7 +586,8 @@ private:
             looping(false),
             nodata(false),
             lastPosition(0),
-            toClose(false)
+            toClose(false),
+			streaming(streaming)
         {
         }
 
@@ -600,6 +601,7 @@ private:
         bool looping;
         bool nodata;
         bool toClose;
+        bool streaming;
         unsigned int lastPosition;
 
         std::deque<std::pair<ALuint, unsigned int> > buffers;
@@ -713,7 +715,7 @@ private:
         else
         {
             alDeleteBuffers(1, &buffer);
-            if (size == 0)
+            if ((size == 0)&&(!channel->streaming))
             	channel->nodata = true;
         }
     }

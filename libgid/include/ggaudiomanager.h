@@ -42,7 +42,7 @@ public:
     virtual void SoundDelete(g_id sound) = 0;
     virtual unsigned int SoundGetLength(g_id sound) = 0;
     virtual void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz) { };
-    virtual g_id SoundPlay(g_id sound, bool paused) = 0;
+    virtual g_id SoundPlay(g_id sound, bool paused, bool streaming) = 0;
 
     virtual void ChannelStop(g_id channel) = 0;
     virtual void ChannelSetPosition(g_id channel, unsigned int position) = 0;
@@ -152,7 +152,7 @@ public:
     void SoundDelete(g_id sound);
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
-    g_id SoundPlay(g_id sound, bool paused);
+    g_id SoundPlay(g_id sound, bool paused, bool streaming);
 
     void ChannelStop(g_id channel);
     void ChannelSetPosition(g_id channel, unsigned int position);
@@ -240,7 +240,7 @@ public:
     void SoundDelete(g_id sound);
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
-    g_id SoundPlay(g_id sound, bool paused);
+    g_id SoundPlay(g_id sound, bool paused, bool streaming);
 
     void ChannelStop(g_id channel);
     void ChannelSetPosition(g_id channel, unsigned int position);

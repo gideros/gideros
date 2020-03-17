@@ -19,7 +19,7 @@ struct GGSoundInterface
     void (*SoundDelete)(g_id sound);
     unsigned int (*SoundGetLength)(g_id sound);
 
-    g_id (*SoundPlay)(g_id sound, g_bool paused);
+    g_id (*SoundPlay)(g_id sound, g_bool paused, g_bool streaming);
     void (*ChannelStop)(g_id channel);
     void (*ChannelSetPosition)(g_id channel, unsigned int position);
     unsigned int (*ChannelGetPosition)(g_id channel);
@@ -178,7 +178,7 @@ private:
 class GGSoundChannel : public EventDispatcher
 {
 public:
-    GGSoundChannel(lua_State *L, GGSound *sound, unsigned int startTime, bool looping, bool paused) :
+    GGSoundChannel(lua_State *L, GGSound *sound, unsigned int startTime, bool looping, bool paused, bool streaming) :
         L(L), sound_(sound)
     {
         /* TODO: create a better way to get main thread */
@@ -191,7 +191,7 @@ public:
 
         sound_->ref();
 
-        gid = interface.SoundPlay(sound->gid, g_true);
+        gid = interface.SoundPlay(sound->gid, g_true, streaming);
 
         if (gid == 0)
             return;
@@ -570,8 +570,9 @@ int AudioBinder::Sound_play(lua_State *L)
     }
 
     bool paused = lua_toboolean(L, 4);
+    bool streaming = lua_toboolean(L, 5);
 
-    GGSoundChannel *soundChannel = new GGSoundChannel(L, sound, startTime, looping, paused);
+    GGSoundChannel *soundChannel = new GGSoundChannel(L, sound, startTime, looping, paused, streaming);
 
     if (soundChannel->gid == 0)
     {

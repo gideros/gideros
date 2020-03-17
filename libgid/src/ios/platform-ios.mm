@@ -182,6 +182,15 @@ void g_setProperty(const char* what, const char* arg){
 
 }
 
+static std::string g_propResult;
 const char* g_getProperty(const char* what, const char* arg){
-	return "";
+	g_propResult="";
+	if (what&&(!strcmp(what,"batteryLevel"))) {
+		UIDevice *myDevice = [UIDevice currentDevice];    
+		[myDevice setBatteryMonitoringEnabled:YES];
+		double batLeft = (float)[myDevice batteryLevel] * 100;
+		NSString * levelLabel = [NSString stringWithFormat:@"%.f%", batLeft];
+		g_propResult=[levelLabel UTF8String];
+	}
+	return g_propResult.c_str();
 }

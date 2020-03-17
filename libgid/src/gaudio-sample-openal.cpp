@@ -116,7 +116,7 @@ public:
     	   alListenerfv( AL_ORIENTATION, orient );
     }
 
-    g_id SoundPlay(g_id sound, bool paused)
+    g_id SoundPlay(g_id sound, bool paused, bool streaming)
     {
         std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
         if (iter == sounds_.end())

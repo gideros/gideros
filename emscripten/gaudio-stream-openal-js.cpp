@@ -123,7 +123,7 @@ public:
         return sound2->length;
     }
 
-    g_id SoundPlay(g_id sound, bool paused)
+    g_id SoundPlay(g_id sound, bool paused, bool streaming)
     {
 
         std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
@@ -148,7 +148,7 @@ public:
             
         g_id gid = g_NextId();
 
-        Channel *channel = new Channel(gid, file, sound2, source);
+        Channel *channel = new Channel(gid, file, sound2, source, streaming);
 
         sound2->channels.insert(channel);
 
@@ -517,7 +517,7 @@ private:
 
     struct Channel
     {
-        Channel(g_id gid, g_id file, Sound *sound, ALuint source) :
+        Channel(g_id gid, g_id file, Sound *sound, ALuint source, bool streaming) :
             gid(gid),
             file(file),
             sound(sound),
@@ -528,6 +528,7 @@ private:
             looping(false),
             nodata(false),
             toClose(false),
+			streaming(streaming),
             lastPosition(0)
         {
         }
@@ -542,6 +543,7 @@ private:
         bool looping;
         bool nodata;
         bool toClose;
+        bool streaming;
         unsigned int lastPosition;
 
         std::deque<std::pair<ALuint, unsigned int> > buffers;
@@ -702,7 +704,7 @@ private:
         }
         else
         {
-            if (size == 0)
+            if ((size == 0)&&(!channel->streaming))
             	alDeleteBuffers(1, &buffer);
             channel->nodata = true;
         }

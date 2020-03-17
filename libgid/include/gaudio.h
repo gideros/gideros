@@ -58,7 +58,7 @@ G_API long int gaudio_XmpTell(g_id id);
 G_API g_id gaudio_SoundCreateFromFile(const char *fileName, g_bool stream, gaudio_Error *error);
 G_API void gaudio_SoundDelete(g_id sound);
 G_API unsigned int gaudio_SoundGetLength(g_id sound);
-G_API g_id gaudio_SoundPlay(g_id sound, g_bool paused);
+G_API g_id gaudio_SoundPlay(g_id sound, g_bool paused, g_bool streaming);
 G_API void gaudio_SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
 
 G_API void gaudio_ChannelStop(g_id channel);
@@ -89,7 +89,7 @@ G_API g_id gaudio_BackgroundMusicCreateFromFile(const char *fileName, gaudio_Err
 G_API void gaudio_BackgroundMusicDelete(g_id backgroundMusic);
 G_API unsigned int gaudio_BackgroundMusicGetLength(g_id backgroundMusic);
 
-G_API g_id gaudio_BackgroundMusicPlay(g_id backgroundMusic, g_bool paused);
+G_API g_id gaudio_BackgroundMusicPlay(g_id backgroundMusic, g_bool paused, g_bool streaming);
 G_API void gaudio_BackgroundChannelStop(g_id backgroundChannel);
 G_API void gaudio_BackgroundChannelSetPosition(g_id backgroundChannel, unsigned int position);
 G_API unsigned int gaudio_BackgroundChannelGetPosition(g_id backgroundChannel);

@@ -147,7 +147,7 @@ public:
         return sound2->length;
     }
 
-    g_id SoundPlay(g_id sound, bool paused)
+    g_id SoundPlay(g_id sound, bool paused, bool streaming)
     {
         GGLock lock(mutex_);
 
@@ -183,7 +183,7 @@ public:
 
         g_id gid = g_NextId();
 
-        Channel *channel = new Channel(gid, file, sound2, source);
+        Channel *channel = new Channel(gid, file, sound2, source, streaming);
 
         sound2->channels.insert(channel);
 
@@ -627,7 +627,7 @@ private:
 
     struct Channel
     {
-        Channel(g_id gid, g_id file, Sound *sound, IXAudio2SourceVoice *source) :
+        Channel(g_id gid, g_id file, Sound *sound, IXAudio2SourceVoice *source, bool streaming) :
             gid(gid),
             file(file),
             sound(sound),
@@ -638,6 +638,7 @@ private:
             looping(false),
             nodata(false),
             toClose(false),
+			streaming(streaming),
             lastPosition(0)
         {
         }
@@ -652,6 +653,7 @@ private:
         bool looping;
         bool nodata;
         bool toClose;
+        bool streaming;
         unsigned int lastPosition;
 
         std::deque<std::pair<Wave *, unsigned int> > buffers;
@@ -792,7 +794,7 @@ private:
 			buffer->Destroy();
 			delete buffer;
 			buffer = NULL;
-            if (size == 0)
+            if ((size == 0)&&(!channel->streaming))
             	channel->nodata = true;
         }
     }
