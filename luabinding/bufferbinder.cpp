@@ -178,7 +178,14 @@ static off_t s_lseek(int fd, off_t offset, int whence) {
 	return b->pos;
 }
 
-static g_Vfs buffer_vfs={ s_open, s_close, s_read, s_write, s_lseek, };
+static int s_flags(int fd) {
+	fd&=0x0FFF;	Buffer *b=(fd>0)&&(fd<=fdMap.size())?fdMap[fd-1]:NULL;
+	if (b==NULL) /* sanity check */
+		return 0;
+	return (b->stream)?GVFS_FLAG_STREAM:0;
+}
+
+static g_Vfs buffer_vfs={ s_open, s_close, s_read, s_write, s_lseek, s_flags, };
 
 BufferBinder::BufferBinder(lua_State* L)
 {

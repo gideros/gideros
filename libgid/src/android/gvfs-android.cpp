@@ -365,6 +365,7 @@ void gvfs_init()
 		s_read,
 		s_write,
 		s_lseek,
+		s_lflags,
 	};
 
 	g_setVfs(vfs);

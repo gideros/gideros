@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-static g_Vfs s_vfs = {NULL, NULL, NULL, NULL, NULL};
+static g_Vfs s_vfs = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 void g_setVfs(g_Vfs vfs)
 {
@@ -39,4 +39,8 @@ size_t g_p_write(int fd, const void* buf, size_t count)
 off_t g_p_lseek(int fd, off_t offset, int whence)
 {
     return s_vfs.lseek(fd, offset, whence);
+}
+
+int g_p_flags(int fd) {
+	return s_vfs.lflags(fd);
 }

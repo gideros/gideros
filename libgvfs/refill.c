@@ -116,8 +116,10 @@ __srefill(FILE *fp)
 	fp->_r = (*fp->_read)(fp->_cookie, (char *)fp->_p, fp->_bf._size);
 	fp->_flags &= ~__SMOD;	/* buffer contents are again pristine */
 	if (fp->_r <= 0) {
-		if (fp->_r == 0)
-			fp->_flags |= __SEOF;
+		if (fp->_r == 0) {
+			if (!(g_p_flags(fp->_file)&GVFS_FLAG_STREAM))
+				fp->_flags |= __SEOF;
+		}
 		else {
 			fp->_r = 0;
 			fp->_flags |= __SERR;

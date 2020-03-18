@@ -333,6 +333,22 @@ static size_t s_read(int fd, void* buf, size_t count) {
 	return size;
 }
 
+static int s_lflags(int fd) {
+	std::map<int, FileInfo>::iterator iter;
+	iter = s_fileInfos.find(fd);
+
+	if (iter == s_fileInfos.end()) /* sanity check */
+	{
+		errno = EBADF;
+		return 0;
+	}
+
+	const g_Vfs *vfs = gpath_getDriveVfs(iter->second.drive);
+	if (vfs && vfs->open)
+		return vfs->lflags(fd);
+	return 0;
+}
+
 static const char *codeKey_ = "312e68c04c6fd22922b5b232ea6fb3e1"
 		"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 		"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
@@ -355,7 +371,7 @@ static const char *assetsKey_ = "312e68c04c6fd22922b5b232ea6fb3e2"
 extern "C" {
 
 void gvfs_init() {
-	g_Vfs vfs = { s_open, s_close, s_read, s_write, s_lseek, };
+	g_Vfs vfs = { s_open, s_close, s_read, s_write, s_lseek, s_lflags,};
 
 	g_setVfs(vfs);
 
@@ -374,7 +390,7 @@ void gvfs_cleanup() {
 	s_fileInfos.clear();
 	s_playerModeEnabled = false;
 
-	static g_Vfs nullvfs = { NULL, NULL, NULL, NULL, NULL, };
+	static g_Vfs nullvfs = { NULL, NULL, NULL, NULL, NULL, NULL, };
 
 	g_setVfs(nullvfs);
 }
