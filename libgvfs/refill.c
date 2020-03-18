@@ -36,6 +36,8 @@
 #include <stdlib.h>
 #include "local.h"
 
+extern int g_p_flags(int);
+
 static int
 lflush(FILE *fp)
 {

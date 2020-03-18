@@ -97,6 +97,7 @@ static int _fseek64_wrap(G_FILE *f, ogg_int64_t off, int whence) {
 static int sampleTell(GGOggHandle *handle,ogg_int64_t *agr,double *atm,ogg_int64_t *vgr,double *vtm) {
 	G_FILE *file = handle->file;
 	long cpos = g_ftell(file);
+    if (cpos<0) return -1;
 	long rewind=1<<17;
 	if (cpos<rewind) rewind=cpos;
 	g_fseek(file, cpos-rewind, SEEK_SET); //More than max ogg page size
