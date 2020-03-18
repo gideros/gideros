@@ -10,6 +10,7 @@
 
 #define HAVE_STRERROR
 #define HAVE_STRDUP
+#define HAVE_UNISTD_H
 
 #if defined(_MSC_VER)
 #include <BaseTsd.h>
