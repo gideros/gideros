@@ -217,7 +217,7 @@ public:
 		return env->CallStaticBooleanMethod(cls_, BackgroundChannelIsPausedID_, (jlong)backgroundChannel);
 	}
 
-    virtual bool BackgroundChannelIsPlaying(g_id backgroundChannel)
+    virtual bool BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds)
 	{
 		JNIEnv *env = g_getJNIEnv();
 

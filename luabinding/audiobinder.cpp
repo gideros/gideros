@@ -25,7 +25,7 @@ struct GGSoundInterface
     unsigned int (*ChannelGetPosition)(g_id channel);
     void (*ChannelSetPaused)(g_id channel, g_bool paused);
     g_bool (*ChannelIsPaused)(g_id channel);
-    g_bool (*ChannelIsPlaying)(g_id channel);
+    g_bool (*ChannelIsPlaying)(g_id channel, int *bufferSize, float *bufferSeconds);
     void (*ChannelSetVolume)(g_id channel, float volume);
     float (*ChannelGetVolume)(g_id channel);
     void (*ChannelSetPitch)(g_id channel, float pitch);
@@ -281,12 +281,12 @@ public:
         return interface.ChannelSetPitch != NULL;
     }
 
-    bool isPlaying()
+    bool isPlaying(int *bufferSize, float *bufferSeconds)
     {
         if (gid == 0)
             return false;
 
-        return interface.ChannelIsPlaying(gid);
+        return interface.ChannelIsPlaying(gid, bufferSize, bufferSeconds);
     }
 
     void setPaused(bool paused)
@@ -709,9 +709,13 @@ int AudioBinder::SoundChannel_isPlaying(lua_State *L)
 
     GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(binder.getInstance("SoundChannel", 1));
 
-    lua_pushboolean(L, soundChannel->isPlaying());
+    int bufferSize=0;
+    float bufferSeconds=0;
+    lua_pushboolean(L, soundChannel->isPlaying(&bufferSize, &bufferSeconds));
+    lua_pushinteger(L,bufferSize);
+    lua_pushnumber(L,bufferSeconds);
 
-    return 1;
+    return 3;
 }
 
 int AudioBinder::SoundChannel_setPaused(lua_State *L)

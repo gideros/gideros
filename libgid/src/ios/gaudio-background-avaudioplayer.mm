@@ -194,7 +194,7 @@ public:
         return channel2->paused;
     }
 
-    virtual bool BackgroundChannelIsPlaying(g_id backgroundChannel)
+    virtual bool BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds)
     {
         std::map<g_id, Channel*>::iterator iter = channels_.find(backgroundChannel);
         if (iter == channels_.end())

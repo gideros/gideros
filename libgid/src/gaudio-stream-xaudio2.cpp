@@ -333,7 +333,7 @@ public:
         return channel2->paused;
     }
 
-    bool ChannelIsPlaying(g_id channel)
+    bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds)
     {
         GGLock lock(mutex_);
 
@@ -355,6 +355,10 @@ public:
 
 		XAUDIO2_VOICE_STATE state;
 		channel2->source->GetState(&state);
+
+        *bufferSize=channel2->bufferedSize;
+        int sampSize=channel2->sound->bitsPerSample*channel2->sound->numChannels/8;
+        *bufferSeconds=((float)channel2->bufferedSize)/(channel2->sound->sampleRate*sampSize);
 
 		if (state.BuffersQueued > 0 && !channel2->paused)
 			return true;
@@ -639,6 +643,7 @@ private:
             nodata(false),
             toClose(false),
 			streaming(streaming),
+			bufferedSize(0),
             lastPosition(0)
         {
         }
@@ -654,6 +659,7 @@ private:
         bool nodata;
         bool toClose;
         bool streaming;
+        unsigned int bufferedSize;
         unsigned int lastPosition;
 
         std::deque<std::pair<Wave *, unsigned int> > buffers;
@@ -738,6 +744,7 @@ private:
 //				OutputDebugStringA("buffer has unqueued\n");
 				buffer = channel->buffers[0].first;
 				channel->buffers.pop_front();
+	            channel->bufferedSize-=buffer->xaBuffer()->AudioBytes;
 			}
 
         }
@@ -775,6 +782,7 @@ private:
 
         //     alSourceQueueBuffers(channel->source, 1, &buffer);
 			channel->source->SubmitSourceBuffer(buffer->xaBuffer());
+			channel->bufferedSize+=size;
 
             channel->buffers.push_back(std::make_pair(buffer, pos));
  
@@ -807,6 +815,7 @@ private:
 		channel->source->DestroyVoice();
 		channel->source = NULL;
 
+		channel->bufferedSize=0;
 		// alSourceStop(channel->source);
         // alDeleteSources(1, &channel->source);
         // channel->source = 0;

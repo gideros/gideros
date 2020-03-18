@@ -211,7 +211,7 @@ bool GGSoundManager::ChannelIsPaused(g_id channel)
     return channel2->interface->ChannelIsPaused(channel);
 }
 
-bool GGSoundManager::ChannelIsPlaying(g_id channel)
+bool GGSoundManager::ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds)
 {
     std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
     if (iter == channels_.end())
@@ -219,7 +219,7 @@ bool GGSoundManager::ChannelIsPlaying(g_id channel)
 
     Channel *channel2 = iter->second;
 
-    return channel2->interface->ChannelIsPlaying(channel);
+    return channel2->interface->ChannelIsPlaying(channel, bufferSize, bufferSeconds);
 }
 
 void GGSoundManager::ChannelSetVolume(g_id channel, float volume)
@@ -483,9 +483,9 @@ bool GGAudioManager::ChannelIsPaused(g_id channel)
     return soundManager_->ChannelIsPaused(channel);
 }
 
-bool GGAudioManager::ChannelIsPlaying(g_id channel)
+bool GGAudioManager::ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds)
 {
-    return soundManager_->ChannelIsPlaying(channel);
+    return soundManager_->ChannelIsPlaying(channel, bufferSize, bufferSeconds);
 }
 
 void GGAudioManager::ChannelSetVolume(g_id channel, float volume)
@@ -620,12 +620,12 @@ bool GGAudioManager::BackgroundChannelIsPaused(g_id backgroundChannel)
     return backgroundMusicInterface_->BackgroundChannelIsPaused(backgroundChannel);
 }
 
-bool GGAudioManager::BackgroundChannelIsPlaying(g_id backgroundChannel)
+bool GGAudioManager::BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds)
 {
     if (backgroundMusicInterface_ == NULL)
         return false;
 
-    return backgroundMusicInterface_->BackgroundChannelIsPlaying(backgroundChannel);
+    return backgroundMusicInterface_->BackgroundChannelIsPlaying(backgroundChannel, bufferSize, bufferSeconds);
 }
 
 void GGAudioManager::BackgroundChannelSetVolume(g_id backgroundChannel, float volume)
@@ -800,9 +800,9 @@ g_bool gaudio_ChannelIsPaused(g_id channel)
     return s_manager->ChannelIsPaused(channel);
 }
 
-g_bool gaudio_ChannelIsPlaying(g_id channel)
+g_bool gaudio_ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds)
 {
-    return s_manager->ChannelIsPlaying(channel);
+    return s_manager->ChannelIsPlaying(channel, bufferSize, bufferSeconds);
 }
 
 void gaudio_ChannelSetVolume(g_id channel, float volume)
@@ -910,9 +910,9 @@ g_bool gaudio_BackgroundChannelIsPaused(g_id backgroundChannel)
     return s_manager->BackgroundChannelIsPaused(backgroundChannel);
 }
 
-g_bool gaudio_BackgroundChannelIsPlaying(g_id backgroundChannel)
+g_bool gaudio_BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds)
 {
-    return s_manager->BackgroundChannelIsPlaying(backgroundChannel);
+    return s_manager->BackgroundChannelIsPlaying(backgroundChannel, bufferSize, bufferSeconds);
 }
 
 void gaudio_BackgroundChannelSetVolume(g_id backgroundChannel, float volume)

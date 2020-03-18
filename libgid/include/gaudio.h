@@ -67,7 +67,7 @@ G_API unsigned int gaudio_ChannelGetPosition(g_id channel);
 G_API g_id gaudio_ChannelGetStreamId(g_id channel);
 G_API void gaudio_ChannelSetPaused(g_id channel, g_bool paused);
 G_API g_bool gaudio_ChannelIsPaused(g_id channel);
-G_API g_bool gaudio_ChannelIsPlaying(g_id channel);
+G_API g_bool gaudio_ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds);
 G_API void gaudio_ChannelSetVolume(g_id channel, float volume);
 G_API float gaudio_ChannelGetVolume(g_id channel);
 G_API void gaudio_ChannelSetPitch(g_id channel, float pitch);
@@ -95,7 +95,7 @@ G_API void gaudio_BackgroundChannelSetPosition(g_id backgroundChannel, unsigned 
 G_API unsigned int gaudio_BackgroundChannelGetPosition(g_id backgroundChannel);
 G_API void gaudio_BackgroundChannelSetPaused(g_id backgroundChannel, g_bool paused);
 G_API g_bool gaudio_BackgroundChannelIsPaused(g_id backgroundChannel);
-G_API g_bool gaudio_BackgroundChannelIsPlaying(g_id backgroundChannel);
+G_API g_bool gaudio_BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds);
 G_API void gaudio_BackgroundChannelSetVolume(g_id backgroundChannel, float volume);
 G_API float gaudio_BackgroundChannelGetVolume(g_id backgroundChannel);
 G_API void gaudio_BackgroundChannelSetLooping(g_id backgroundChannel, g_bool looping);

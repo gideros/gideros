@@ -270,7 +270,7 @@ public:
         return channel2->paused;
     }
 
-    bool ChannelIsPlaying(g_id channel)
+    bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds)
     {
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())

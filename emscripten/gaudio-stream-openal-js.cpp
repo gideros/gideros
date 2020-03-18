@@ -270,7 +270,7 @@ public:
         return channel2->paused;
     }
 
-    bool ChannelIsPlaying(g_id channel)
+    bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds)
     {
 
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
@@ -286,6 +286,10 @@ public:
 
         ALint state;
         alGetSourcei(channel2->source, AL_SOURCE_STATE, &state);
+
+        *bufferSize=channel2->bufferedSize;
+        int sampSize=channel2->sound->bitsPerSample*channel2->sound->numChannels/8;
+        *bufferSeconds=((float)channel2->bufferedSize)/(channel2->sound->sampleRate*sampSize);
 
         return state == AL_PLAYING;
     }
@@ -529,6 +533,7 @@ private:
             nodata(false),
             toClose(false),
 			streaming(streaming),
+			bufferedSize(0),
             lastPosition(0)
         {
         }
@@ -545,6 +550,7 @@ private:
         bool toClose;
         bool streaming;
         unsigned int lastPosition;
+        unsigned int bufferedSize;
 
         std::deque<std::pair<ALuint, unsigned int> > buffers;
 
@@ -599,6 +605,7 @@ private:
         else
         {
             ALint processed;
+            ALint sizeInBytes;
             alGetSourcei(channel->source, AL_BUFFERS_PROCESSED, &processed);
 
             if (processed == 0)
@@ -607,7 +614,9 @@ private:
             }
 
             alSourceUnqueueBuffers(channel->source, 1, &buffer);
+            alGetBufferi(buffer, AL_SIZE, &sizeInBytes);
             channel->buffers.pop_front();
+            channel->bufferedSize-=sizeInBytes;
         }
 
         int sampSize=channel->sound->bitsPerSample*channel->sound->numChannels/8;
@@ -693,6 +702,7 @@ private:
             }
             alBufferData(buffer, cformat, data, size*sampMult, csr*sampMult);
             alSourceQueueBuffers(channel->source, 1, &buffer);
+            channel->bufferedSize+=size;
             channel->buffers.push_back(std::make_pair(buffer, pos));
             if (!channel->paused)
             {
@@ -704,9 +714,9 @@ private:
         }
         else
         {
+           	alDeleteBuffers(1, &buffer);
             if ((size == 0)&&(!channel->streaming))
-            	alDeleteBuffers(1, &buffer);
-            channel->nodata = true;
+	            channel->nodata = true;
         }
     }
 
@@ -718,6 +728,7 @@ private:
         for (size_t i = 0; i < channel->buffers.size(); ++i)
             alDeleteBuffers(1, &channel->buffers[i].first);
         channel->buffers.clear();
+        channel->bufferedSize=0;
     }
 
     static void callback_s(int type, void *event, void *udata)

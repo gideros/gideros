@@ -21,7 +21,7 @@ public:
     virtual unsigned int BackgroundChannelGetPosition(g_id backgroundChannel) = 0;
     virtual void BackgroundChannelSetPaused(g_id backgroundChannel, bool paused) = 0;
     virtual bool BackgroundChannelIsPaused(g_id backgroundChannel) = 0;
-    virtual bool BackgroundChannelIsPlaying(g_id backgroundChannel) = 0;
+    virtual bool BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds) = 0;
     virtual void BackgroundChannelSetVolume(g_id backgroundChannel, float volume) = 0;
     virtual float BackgroundChannelGetVolume(g_id backgroundChannel) = 0;
     virtual void BackgroundChannelSetLooping(g_id backgroundChannel, bool looping) = 0;
@@ -49,7 +49,7 @@ public:
     virtual unsigned int ChannelGetPosition(g_id channel) = 0;
     virtual void ChannelSetPaused(g_id channel, bool paused) = 0;
     virtual bool ChannelIsPaused(g_id channel) = 0;
-    virtual bool ChannelIsPlaying(g_id channel) = 0;
+    virtual bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds) = 0;
     virtual void ChannelSetVolume(g_id channel, float volume) = 0;
     virtual float ChannelGetVolume(g_id channel) = 0;
     virtual g_id ChannelGetStreamId(g_id channel) { return 0;};
@@ -159,7 +159,7 @@ public:
     unsigned int ChannelGetPosition(g_id channel);
     void ChannelSetPaused(g_id channel, bool paused);
     bool ChannelIsPaused(g_id channel);
-    bool ChannelIsPlaying(g_id channel);
+    bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds);
     void ChannelSetVolume(g_id channel, float volume);
     float ChannelGetVolume(g_id channel);
     g_id ChannelGetStreamId(g_id channel);
@@ -247,7 +247,7 @@ public:
     unsigned int ChannelGetPosition(g_id channel);
     void ChannelSetPaused(g_id channel, bool paused);
     bool ChannelIsPaused(g_id channel);
-    bool ChannelIsPlaying(g_id channel);
+    bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds);
     void ChannelSetVolume(g_id channel, float volume);
     float ChannelGetVolume(g_id channel);
     g_id ChannelGetStreamId(g_id channel);
@@ -272,7 +272,7 @@ public:
     unsigned int BackgroundChannelGetPosition(g_id backgroundChannel);
     void BackgroundChannelSetPaused(g_id backgroundChannel, bool paused);
     bool BackgroundChannelIsPaused(g_id backgroundChannel);
-    bool BackgroundChannelIsPlaying(g_id backgroundChannel);
+    bool BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds);
     void BackgroundChannelSetVolume(g_id backgroundChannel, float volume);
     float BackgroundChannelGetVolume(g_id backgroundChannel);
     void BackgroundChannelSetLooping(g_id backgroundChannel, bool looping);

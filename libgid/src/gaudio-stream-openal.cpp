@@ -298,7 +298,7 @@ public:
         return channel2->paused;
     }
 
-    bool ChannelIsPlaying(g_id channel)
+    bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds)
     {
         GGLock lock(mutex_);
 
@@ -315,6 +315,10 @@ public:
 
         ALint state;
         alGetSourcei(channel2->source, AL_SOURCE_STATE, &state);
+
+        *bufferSize=channel2->bufferedSize;
+        int sampSize=channel2->sound->bitsPerSample*channel2->sound->numChannels/8;
+        *bufferSeconds=((float)channel2->bufferedSize)/(channel2->sound->sampleRate*sampSize);
 
         return state == AL_PLAYING;
     }
@@ -587,6 +591,7 @@ private:
             nodata(false),
             lastPosition(0),
             toClose(false),
+			bufferedSize(0),
 			streaming(streaming)
         {
         }
@@ -603,6 +608,7 @@ private:
         bool toClose;
         bool streaming;
         unsigned int lastPosition;
+        unsigned int bufferedSize;
 
         std::deque<std::pair<ALuint, unsigned int> > buffers;
 
@@ -657,6 +663,7 @@ private:
         else
         {
             ALint processed;
+            ALint sizeInBytes;
             alGetSourcei(channel->source, AL_BUFFERS_PROCESSED, &processed);
 
             if (processed == 0)
@@ -665,7 +672,9 @@ private:
             }
 
             alSourceUnqueueBuffers(channel->source, 1, &buffer);
+            alGetBufferi(buffer, AL_SIZE, &sizeInBytes);
             channel->buffers.pop_front();
+            channel->bufferedSize-=sizeInBytes;
         }
 
         unsigned int pos = (channel->sound->loader.tell(channel->file) * 1000LL) / channel->sound->sampleRate;
@@ -703,6 +712,7 @@ private:
         	}
             alBufferData(buffer, cformat, data, size, csr);
             alSourceQueueBuffers(channel->source, 1, &buffer);
+            channel->bufferedSize+=size;
             channel->buffers.push_back(std::make_pair(buffer, pos));
             if (!channel->paused)
             {
@@ -728,6 +738,7 @@ private:
         for (size_t i = 0; i < channel->buffers.size(); ++i)
             alDeleteBuffers(1, &channel->buffers[i].first);
         channel->buffers.clear();
+        channel->bufferedSize=0;
     }
 
     static void callback_s(int type, void *event, void *udata)
