@@ -164,6 +164,8 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	ctxmap[gid] = handle;
 	handle->audio_p=NULL;
 	handle->video_p=NULL;
+	handle->file = file;
+	handle->tref = LUA_NOREF;
 
 	/* Ogg file open; parse the headers */
 	/* Only interested in Vorbis/Theora streams */
@@ -216,16 +218,14 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 			if (ret < 0) {
                 glog_w("Error parsing Video stream headers; "
 						"corrupt stream?\n");
-                delete handle;
                 gaudio_OggClose(gid);
                 if (error)
                     *error = GAUDIO_UNRECOGNIZED_FORMAT;
                 return 0;
             }
 			if (!handle->video_p->PacketIn(&handle->op)) {
-				fprintf(stderr, "Error parsing Theora stream headers; "
+				glog_w("Error parsing Theora stream headers; "
 						"corrupt stream?\n");
-                delete handle;
                 gaudio_OggClose(gid);
                 if (error)
                     *error = GAUDIO_UNRECOGNIZED_FORMAT;
@@ -237,7 +237,6 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 				ogg_stream_packetout(&handle->ao, &handle->op))) {
 			if (ret < 0) {
                 glog_w(	"Error parsing Audio stream headers; corrupt stream?\n");
-                delete handle;
                 gaudio_OggClose(gid);
                 if (error)
                     *error = GAUDIO_UNRECOGNIZED_FORMAT;
@@ -246,7 +245,6 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 
 			if (!handle->audio_p->PacketIn(&handle->op)) {
                 glog_w(	"Error parsing Audio stream headers; corrupt stream?\n");
-                delete handle;
                 gaudio_OggClose(gid);
                 if (error)
                     *error = GAUDIO_UNRECOGNIZED_FORMAT;
@@ -263,7 +261,6 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 			int ret = buffer_data(file, &handle->oy); /* someone needs more data */
 			if (ret == 0) {
                 glog_w("End of file while searching for codec headers.\n");
-                delete handle;
 				gaudio_OggClose(gid);
 				if (error)
 					*error = GAUDIO_UNRECOGNIZED_FORMAT;
@@ -303,8 +300,6 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 				handle->ao.serialno, channels, rate);
 	}
 
-	handle->file = file;
-	handle->tref = LUA_NOREF;
 	/*	  if (!handle->audio_p)
 	 {
 	 //We need an audio track
