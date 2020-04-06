@@ -191,6 +191,7 @@ void ogl2ShaderBuffer::readPixels(int x,int y,int width,int height,ShaderTexture
     	case ShaderTexture::FMT_RGBA: glformat=GL_RGBA; break;
     	case ShaderTexture::FMT_Y: glformat=GL_LUMINANCE; break;
     	case ShaderTexture::FMT_YA: glformat=GL_LUMINANCE_ALPHA; break;
+    	case ShaderTexture::FMT_DEPTH: glformat=GL_DEPTH_COMPONENT; break;
     }
     GLuint gltype=GL_UNSIGNED_BYTE;
     switch (packing)
@@ -199,6 +200,9 @@ void ogl2ShaderBuffer::readPixels(int x,int y,int width,int height,ShaderTexture
     	case ShaderTexture::PK_USHORT_565: gltype=GL_UNSIGNED_SHORT_5_6_5; break;
     	case ShaderTexture::PK_USHORT_4444: gltype=GL_UNSIGNED_SHORT_4_4_4_4; break;
     	case ShaderTexture::PK_USHORT_5551: gltype=GL_UNSIGNED_SHORT_5_5_5_1; break;
+    	case ShaderTexture::PK_USHORT: gltype=GL_UNSIGNED_SHORT; break;
+    	case ShaderTexture::PK_UINT: gltype=GL_UNSIGNED_INT; break;
+    	case ShaderTexture::PK_FLOAT: gltype=GL_FLOAT; break;
     }
     GLCALL glReadPixels(x,y,width,height,glformat,gltype,data);
     GLCALL glPixelStorei(GL_PACK_ALIGNMENT, 4);

@@ -252,7 +252,9 @@ int r3dWorld_Step(lua_State* L) {
 #ifndef _NO_THROW
 	try {
 #endif
-		world->update(luaL_checknumber(L, 2));
+		float step=luaL_checknumber(L, 2);
+		if (step==0) step=0.001; //Step cannot be 0, use a dummy tiny step instead
+		world->update(step);
 #ifndef _NO_THROW
 	} catch (std::runtime_error &e) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");

@@ -300,6 +300,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 		s_depthBufferCleared = false;
 
 		currentBuffer = NULL;
+		setFramebuffer(currentBuffer);
 		ogl2ShaderProgram::current = NULL;
 		ogl2ShaderProgram::curProg=0;
 
@@ -551,6 +552,10 @@ ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
 	if (previous)
 		previous->unbound();
 	currentBuffer = fbo;
+/*	if (!fbo)
+		GLCALL glEnable(GL_FRAMEBUFFER_SRGB);
+	else
+		GLCALL glDisable(GL_FRAMEBUFFER_SRGB);*/
 	return previous;
 
 }
