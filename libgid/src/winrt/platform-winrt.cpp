@@ -93,7 +93,8 @@ std::string getLanguage()
 }
 
 std::string getAppId(){
-	return "";
+	std::wstring data = Windows::ApplicationModel::Package::Current->Id->FamilyName->Data();
+	return utf8_us(data.c_str());
 }
 
 void getSafeDisplayArea(int &x,int &y,int &w,int &h)
@@ -101,11 +102,24 @@ void getSafeDisplayArea(int &x,int &y,int &w,int &h)
 }
 
 void setWindowSize(int width, int height){
-
+#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
+	gdr_dispatchUi([&] {
+		Windows::UI::ViewManagement::ApplicationView^ view = Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
+		view->TryResizeView(Windows::Foundation::Size(width, height));
+		}, true);
+#endif
 }
 
 void setFullScreen(bool fullScreen){
-
+#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
+	gdr_dispatchUi([&] {
+		Windows::UI::ViewManagement::ApplicationView^ view = Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
+		if (fullScreen)
+			view->TryEnterFullScreenMode();
+		else
+			view->ExitFullScreenMode();
+	}, true);
+#endif
 }
 
 std::string getDeviceName(){
