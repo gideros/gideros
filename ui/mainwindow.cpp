@@ -153,6 +153,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui.actionExport_Project->setIcon(IconLibrary::instance().icon(0, "export"));
 
+    connect(ui.actionClone_Project, SIGNAL(triggered()), this, SLOT(cloneProject()));
+    connect(ui.actionConsolidate_Project, SIGNAL(triggered()), this, SLOT(consolidateProject()));
+
 	ui.actionUndo->setIcon(IconLibrary::instance().icon(0, "undo"));
 	ui.actionRedo->setIcon(IconLibrary::instance().icon(0, "redo"));
 
@@ -1247,17 +1250,110 @@ void MainWindow::closeProject()
 
 void MainWindow::saveProject()
 {
-	QFile file(projectFileName_);
+    QFile file(projectFileName_);
 
-	if (file.open(QIODevice::WriteOnly | QIODevice::Text) == false)
-	{
-		QMessageBox::information(this, "Information", "Could not save the project file: " + projectFileName_);
-		return;
-	}
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text) == false)
+    {
+        QMessageBox::information(this, "Information", "Could not save the project file: " + projectFileName_);
+        return;
+    }
 
-	QTextStream(&file) << libraryWidget_->toXml().toString();
-	file.close();
-	libraryWidget_->setModified(false);
+    QTextStream(&file) << libraryWidget_->toXml().toString();
+    file.close();
+    libraryWidget_->setModified(false);
+}
+
+void MainWindow::cloneProject()
+{
+    if (maybeSave())
+    {
+        NewProjectDialog* newProjectDialog = new NewProjectDialog(this);
+        if (newProjectDialog->exec() == QDialog::Accepted)
+        {
+            // try to create directory
+            QString dir = newProjectDialog->fullDirectory();
+            if (QDir().mkpath(dir) == false)
+            {
+                QMessageBox::information(this, "Information", "Could not create the directory: " + dir);
+                return;
+            }
+
+            // try to create project
+            QString fileName = newProjectDialog->fullName();
+            QFile file(fileName);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text) == false)
+            {
+                QMessageBox::information(this, "Information", "Could not create the project: " + fileName);
+                return;
+            }
+
+            storeOpenFiles();
+
+            outputWidget_->clear();
+            previewWidget_->setFileName("", "");
+
+            foreach (MdiSubWindow* window, mdiArea_->subWindowList())
+            {
+                if (window != mdiArea_->activeSubWindow())
+                    mdiArea_->setActiveSubWindow(window);
+
+                mdiArea_->closeActiveSubWindow();
+            }
+
+            libraryWidget_->cloneProject(fileName);
+
+            QTextStream(&file) << libraryWidget_->toXml().toString();
+
+            file.close();
+
+            hideStartPage();
+
+            projectFileName_ = fileName;
+            md5_.clear();
+
+            updateUI();
+
+            setWindowTitle(projectName() + "[*] - " + tr("Gideros"));
+
+            QSettings settings;
+            settings.setValue("location", newProjectDialog->location());
+
+            addToRecentProjects(projectFileName_);
+
+            //shouldn't be needed, but due to a crash in library widget when trying to change project name, just close and reopen as a workaround
+            closeProject();
+            openProject(fileName);
+
+        }
+    }
+}
+
+void MainWindow::consolidateProject()
+{
+    int reply = QMessageBox::question(this, "Consolidate Project", "This operation will remove all links and copy all files into the project directory. Are you sure you want to do this ? This cannot be undone.",
+                                  QMessageBox::Yes|QMessageBox::Cancel);
+    if (reply == QMessageBox::Cancel)
+        return;
+
+    if (maybeSave())
+    {
+        storeOpenFiles();
+
+        outputWidget_->clear();
+        previewWidget_->setFileName("", "");
+
+        foreach (MdiSubWindow* window, mdiArea_->subWindowList())
+        {
+            if (window != mdiArea_->activeSubWindow())
+                mdiArea_->setActiveSubWindow(window);
+
+            mdiArea_->closeActiveSubWindow();
+        }
+
+        libraryWidget_->consolidateProject();
+
+        saveProject();
+    }
 }
 
 void MainWindow::openProject()
@@ -1940,7 +2036,7 @@ TextEdit* MainWindow::openFile(const QString& fn, bool suppressErrors/* = false*
 	else
 	{
 		child->close();
-		child = 0;
+        child = nullptr;
 	}
 
 	return child;
@@ -3408,7 +3504,7 @@ void MainWindow::restoreOpenFiles()
 			QList<QVariant> cursorPositions = properties["cursorPositions"].toList();
 			QString activeSubWindow = properties["activeSubWindow"].toString();
 
-			TextEdit* active = NULL;
+            TextEdit* active = nullptr;
 			for (int i = 0; i < fileNames.size(); ++i)
 			{
 				TextEdit* textEdit = openFile(fileNames[i], true);

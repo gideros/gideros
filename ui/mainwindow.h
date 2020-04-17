@@ -194,6 +194,8 @@ private slots:
 	void fileAssociations();
 	void exportProject();
 	void exportPack();
+    void cloneProject();
+    void consolidateProject();
 
 	void save();
 	bool maybeSave();

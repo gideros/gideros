@@ -23,6 +23,8 @@ public:
 	void loadXml(const QString& projectFileName, const QDomDocument& doc);
 	void clear();
 	void newProject(const QString& projectFileName);
+    void cloneProject(const QString& projectFileName);
+    void consolidateProject();
 
 	void setModified(bool m);
 	bool isModified() const;
@@ -51,7 +53,7 @@ public:
     void remove(QTreeWidgetItem *item);
     void refreshFolder(QTreeWidgetItem *item);
     void sortFolder(QTreeWidgetItem* root);
-    QString getItemPath(QTreeWidgetItem *item);
+    QString getItemPath(QTreeWidgetItem *item,bool *linkFolder=nullptr,bool internal=false);
     bool folderHasLinks(QTreeWidgetItem *item);
 
 signals:
@@ -95,6 +97,7 @@ private:
 	QTreeWidgetItem* createProjectItem(const QString& name);
 	QTreeWidgetItem* createCatFolderItem(const QString& name, const QString& fspath, const QString& icon, int nodetype, bool drop=false);
     QTreeWidgetItem* createPluginItem(const QString& name);
+    QTreeWidgetItem* filesRootFolder();
     bool hasItemNamed(QTreeWidgetItem* root,QString name, bool link);
 
 private:

@@ -19,7 +19,9 @@ public:
 	QDomDocument toXml() const;
 	void loadXml(const QString& projectFileName, const QDomDocument& doc);
 	void clear();
-	void newProject(const QString& projectFileName);
+    void newProject(const QString& projectFileName);
+    void cloneProject(const QString& projectFileName);
+    void consolidateProject();
 
 	void setModified(bool m);
 	bool isModified() const;

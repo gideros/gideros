@@ -41,6 +41,16 @@ void LibraryWidget::newProject(const QString& projectFileName)
 	ui.treeWidget->newProject(projectFileName);
 }
 
+void LibraryWidget::cloneProject(const QString& projectFileName)
+{
+    ui.treeWidget->cloneProject(projectFileName);
+}
+
+void LibraryWidget::consolidateProject()
+{
+    ui.treeWidget->consolidateProject();
+}
+
 void LibraryWidget::setModified(bool m)
 {
 	ui.treeWidget->setModified(m);

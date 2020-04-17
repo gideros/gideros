@@ -71,6 +71,9 @@ QMainWindow::separator {
     <addaction name="separator"/>
     <addaction name="actionExport_Project"/>
     <addaction name="separator"/>
+    <addaction name="actionClone_Project"/>
+    <addaction name="actionConsolidate_Project"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -724,6 +727,16 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="toolTip">
     <string>Profile code</string>
+   </property>
+  </action>
+  <action name="actionClone_Project">
+   <property name="text">
+    <string>Clone Project (BETA)</string>
+   </property>
+  </action>
+  <action name="actionConsolidate_Project">
+   <property name="text">
+    <string>Consolidate Project (BETA)</string>
    </property>
   </action>
  </widget>

@@ -220,7 +220,7 @@ macx {
 
 win32 {
         CONFIG(debug, debug|release) {
-	  LIBS += -lqscintilla2_qt5d
+          LIBS += -lqscintilla2_qt5d
 	}
 	else
 	{
