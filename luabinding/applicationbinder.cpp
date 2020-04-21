@@ -346,7 +346,7 @@ int ApplicationBinder::getLogicalBounds(lua_State* L)
 	int dsh=application->getHardwareHeight();
 	Orientation lor = application->orientation();
 
-	if ((lor == eLandscapeLeft || lor == eLandscapeRight))
+	if ((application->hardwareOrientation()!=eFixed)&&(lor == eLandscapeLeft || lor == eLandscapeRight))
 		std::swap(dsw,dsh);
 
 	float lsx=application->getLogicalScaleX();
