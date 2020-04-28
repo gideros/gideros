@@ -14,13 +14,11 @@
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;,"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYDOWN//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyDown(keyCode, event)) return true;"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYUP//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyUp(keyCode, event)) return true;"/>
-            <append orig="//GIDEROS-ACTIVTIY-METHODS//" by="        
-    public boolean onGenericMotionEvent(MotionEvent event){
+            <prepend orig="return super.onGenericMotionEvent(event);" by="        
         if(com.giderosmobile.android.plugins.controller.GControllerDefault.onGenericMotionEvent(event)){
             return true;
         }
-        return super.onGenericMotionEvent(event);
-    }"/>
+    "/>
         </replacelist>
 		<replacelist wildcards="build.gradle">
 			<append>
