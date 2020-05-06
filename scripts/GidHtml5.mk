@@ -40,9 +40,9 @@ html5.template: html5.libs
 html5.player: html5.libs
 	mkdir -p $(RELEASE)/Players
 	cp -r emscripten/Build/Html5/Html5 $(RELEASE)/Players
-	#cp -r emscripten/Build/Html5/Jasm/* $(RELEASE)/Players/Html5
+	cp -r emscripten/Build/Html5/Wasm/* $(RELEASE)/Players/Html5
 	for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/Html/* $(RELEASE)/Players/Html5; done
-	#sed -e 's/\/\*GIDEROS_DYNLIB_PLUGIN\*\//"EP_Xmp.js", "EP_mp3.js", "luasocket.js", "json.js", "bit.js", "lfs.js", "lsqlite3.js", /' emscripten/Build/Html5/Jasm/index.html >$(RELEASE)/Players/Html5/index.html
+	sed -e 's/\/\*GIDEROS_DYNLIB_PLUGIN\*\//"EP_Xmp.wasm", "EP_mp3.wasm", "bump.wasm", "fastnoise.wasm", "luasocket.wasm", "json.wasm", "bit.wasm", "lfs.wasm", "lsqlite3.wasm", "liquidfun.wasm", "reactphysics3d.wasm", /' emscripten/Build/Html5/Wasm/gidloader.js >$(RELEASE)/Players/Html5/gidloader.js
 
 html5.install: html5.template html5.player
 
