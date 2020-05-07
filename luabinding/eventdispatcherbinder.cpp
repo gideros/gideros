@@ -58,8 +58,9 @@ class LuaEvent : public Event
 {
 public:
 	typedef EventType<LuaEvent> Type;
+    lua_State *L;
 
-	LuaEvent(const Type& type) : Event(type.type())
+    LuaEvent(const Type& type,lua_State *L) : Event(type.type()),L(L)
 	{
 	}
 
@@ -923,14 +924,14 @@ private:
 
 void CppLuaBridge::luaEvent(LuaEvent* event)
 {
-	StackChecker checker(L, "CppLuaBridge::luaEvent", 0);
-
 	EventTypeVisitor v;
 	event->apply(&v);
 
 	if (v.type == EventTypeVisitor::eLuaEvent)
 	{
-		// get closure
+        lua_State *L=event->L;
+        StackChecker checker(L, "CppLuaBridge::luaEvent", 0);
+        // get closure
 		luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
 		lua_pushlightuserdata(L, this);
 		lua_rawget(L, -2);
@@ -942,6 +943,7 @@ void CppLuaBridge::luaEvent(LuaEvent* event)
 	}
 	else
 	{
+        StackChecker checker(L, "CppLuaBridge::luaEvent", 0);
 #if 1
 		PushEventVisitor v(L, this);
 		event->apply(&v);
@@ -1229,18 +1231,19 @@ int EventDispatcherBinder::dispatchEvent(lua_State* L)
 	lua_call(L, 1, 1);
 	std::string event = luaL_checkstring(L, -1);
 	lua_pop(L, 1);
-	LuaEvent e = LuaEvent(LuaEvent::Type(event.c_str()));
+    LuaEvent e = LuaEvent(LuaEvent::Type(event.c_str()),L);
 
-    LuaApplication *application = (LuaApplication*)luaL_getdata(L);
-    lua_State *mainL = application->getLuaState();
+    //LuaApplication *application = (LuaApplication*)luaL_getdata(L);
+    //lua_State *mainL = application->getLuaState();
 
     lua_pushvalue(L, 2);    // push event to main thread
-    if (mainL != L)
-        lua_xmove(L, mainL, 1);
+    /*if (mainL != L)
+        lua_xmove(L, mainL, 1);*/
 
     eventDispatcher->dispatchEvent(&e);
 
-    lua_pop(mainL, 1);      // pop event from main thread
+    //lua_pop(mainL, 1);      // pop event from main thread
+    lua_pop(L,1);
 
 	return 0;
 }
