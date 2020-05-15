@@ -219,6 +219,7 @@ macx {
 }
 
 win32 {
+    LIBS += -L$$[QT_INSTALL_LIBS]
         CONFIG(debug, debug|release) {
           LIBS += -lqscintilla2_qt5d
 	}
