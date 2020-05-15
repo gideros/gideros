@@ -1,8 +1,8 @@
 OUTLIB=steamplugin/build/Release/libsteamplugin.dylib
-STEAM_REDIST=$(STEAMSDK)/sdk/redistributable_bin/osx32
+STEAM_REDIST=$(STEAMSDK)/sdk/redistributable_bin/osx
 
 build:
-	cd steamplugin; STEAMSDK=$(STEAMSDK) xcodebuild
+	cd steamplugin; STEAMSDK=$(STEAMSDK) xcodebuild STEAMSDK=$(STEAMSDK)
 	install_name_tool -change libgideros.1.dylib @executable_path/../Frameworks/libgideros.1.dylib $(OUTLIB) 
 	install_name_tool -change liblua.1.dylib @executable_path/../Frameworks/liblua.1.dylib $(OUTLIB)
 	install_name_tool -change libgid.1.dylib @executable_path/../Frameworks/libgid.1.dylib $(OUTLIB)

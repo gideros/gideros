@@ -17,7 +17,7 @@
 /* Begin PBXFileReference section */
 		EB50679E2032E37400D7F26E /* libsteamplugin.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libsteamplugin.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB5067AC2032E7C900D7F26E /* steamplugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = steamplugin.cpp; path = ../../../common/steamplugin.cpp; sourceTree = "<group>"; };
-		EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsteam_api.dylib; path = "$(STEAMSDK)/sdk/redistributable_bin/osx32/libsteam_api.dylib"; sourceTree = "<group>"; };
+		EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsteam_api.dylib; path = "$(STEAMSDK)/sdk/redistributable_bin/osx/libsteam_api.dylib"; sourceTree = "<group>"; };
 		EB5067B12032EC6B00D7F26E /* liblua.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua.1.dylib; path = ../../../../../Sdk/lib/desktop/liblua.1.dylib; sourceTree = "<group>"; };
 		EB5067B32032EC8300D7F26E /* libgideros.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgideros.1.dylib; path = ../../../../../Sdk/lib/desktop/libgideros.1.dylib; sourceTree = "<group>"; };
 		EB5067B9203B241600D7F26E /* libgid.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgid.1.dylib; path = ../../../../../Sdk/lib/desktop/libgid.1.dylib; sourceTree = "<group>"; };
@@ -202,7 +202,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../../../Sdk/lib/desktop,
-					"$(STEAMSDK)/sdk/redistributable_bin/osx32",
+					"$(STEAMSDK)/sdk/redistributable_bin/osx",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -259,7 +259,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../../../Sdk/lib/desktop,
-					"$(STEAMSDK)/sdk/redistributable_bin/osx32",
+					"$(STEAMSDK)/sdk/redistributable_bin/osx",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -278,6 +278,7 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -293,6 +294,7 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
