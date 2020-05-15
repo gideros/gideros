@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include <map>
+#include <stdexcept>
 
 using namespace Windows::UI::Popups;
 using namespace Windows::UI::Xaml;
