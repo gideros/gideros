@@ -7,7 +7,9 @@
 #ifdef WIN32_NOQT
 #define Q_OS_WIN 1
 #else
+#ifndef WINSTORE
 #include <QtCore/qglobal.h>
+#endif
 #endif
 
 static float DEAD_ZONE = 0.25f;
