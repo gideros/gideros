@@ -160,7 +160,9 @@ static void handleAxisChange(struct Gamepad_device * device, int axisIndex, floa
     if (axisIndex < 0 || axisIndex >= (int) device->numAxes) {
         return;
     }
-
+    if (axisIndex<4) { //Assume these are left and right sticks: TODO embed a controller database into the plugin to figure out
+    	value=(value-0.5)*2; //UWP report axis as 0->1 values
+    }
     lastValue = device->axisStates[axisIndex];
     device->axisStates[axisIndex] = value;
     if ((Gamepad_axisMoveCallback != NULL)&&(lastValue!=value)) {

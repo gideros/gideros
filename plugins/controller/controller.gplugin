@@ -66,7 +66,12 @@ iOSProject.exportPluginFiles("controller",
   <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
  </target>
- 
+  <target name="Html5">
+	<lua>local h=require("Tools/export_html5")
+	h.export("controller")
+	h.exportJS("GiderosController")
+	</lua>
+ </target>
   <target name="WinRT">
     <mkdir>giderosgame/giderosgame.Shared/Plugins/controller</mkdir>
     <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins/controller/" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>

@@ -16,7 +16,7 @@ PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct c
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts threads megacool map
-PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise
+PLUGINS_HTML5=bitop controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise
 #Precompiled plugins only below
 PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
 PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d

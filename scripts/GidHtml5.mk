@@ -35,7 +35,7 @@ html5.libs: versioning
 	
 html5.template: html5.libs
 	cp -r emscripten/Build/Html5 $(RELEASE)/Templates
-	for p in $(HTML5_PLUGINS); do rm -f $(RELEASE)/All\ Plugins/$$p/bin/Html5; mkdir -p $(RELEASE)/All\ Plugins/$$p/bin/Html5; cp plugins/$$p/source/emscripten/Build/Html/* $(RELEASE)/All\ Plugins/$$p/bin/Html5; done	
+	for p in $(HTML5_PLUGINS); do rm -rf $(RELEASE)/All\ Plugins/$$p/bin/Html5; mkdir -p $(RELEASE)/All\ Plugins/$$p/bin/Html5; cp plugins/$$p/source/emscripten/Build/Html/* $(RELEASE)/All\ Plugins/$$p/bin/Html5; done	
 
 html5.player: html5.libs
 	mkdir -p $(RELEASE)/Players

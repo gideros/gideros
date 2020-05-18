@@ -403,4 +403,4 @@ static void g_deinitializePlugin(lua_State *L)
     ::L = NULL;
 }
 
-REGISTER_PLUGIN("Controller", "1.0")
+REGISTER_PLUGIN_NAMED("Controller", "1.0",controller)
