@@ -59,6 +59,7 @@ GController::GController(GHID *ghid, unsigned int dID, const char* pname, int bt
         if(vendorID == 0 && productID == 0) { //HTML standard
             buttons = &BUTTONS_HTML[0];
             axis = &AXIS_HTML[0];
+            dispatchTrigger = false; //dispatched by HTML driver
         }
         else if(vendorID == 1118 && productID == 673) //xbox
         {
@@ -228,8 +229,9 @@ GControllerTrigger::GControllerTrigger(GHID *ghid, unsigned int dID, bool dispat
 }
 
 void GControllerTrigger::handleBoth(float value, float lastValue){
-    if(lastValue != value && fabs(value) >= DEAD_ZONE)
+    if(lastValue != value)
     {
+        if(fabs(value) < DEAD_ZONE) value=0;
         if(value <= 0)
         {
             ghid_->onRightTrigger(fabs(value), deviceID);
@@ -247,7 +249,7 @@ void GControllerTrigger::handleBoth(float value, float lastValue){
                 }
            }
         }
-        else if(value >= 0)
+        if(value >= 0)
         {
             ghid_->onLeftTrigger(fabs(value), deviceID);
             if(shouldDispatch)
@@ -271,23 +273,21 @@ void GControllerTrigger::handleLeft(float value, float lastValue){
     if(lastValue != value)
     {
         value = (value + 1)/2;
-        if(fabs(value) >= DEAD_ZONE)
-        {
-            ghid_->onLeftTrigger(fabs(value), deviceID);
-            if(shouldDispatch)
-            {
-                if(!leftDown && value > 0.5)
-                {
-                    leftDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_L2, -1, deviceID);
-                }
-                else if(leftDown && value <= 0.5)
-                {
-                    leftDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_L2, -1, deviceID);
-                }
-            }
-        }
+        if(fabs(value) < DEAD_ZONE) value=0;
+		ghid_->onLeftTrigger(fabs(value), deviceID);
+		if(shouldDispatch)
+		{
+			if(!leftDown && value > 0.5)
+			{
+				leftDown = true;
+				ghid_->onKeyDownEvent(BUTTON_L2, -1, deviceID);
+			}
+			else if(leftDown && value <= 0.5)
+			{
+				leftDown = false;
+				ghid_->onKeyUpEvent(BUTTON_L2, -1, deviceID);
+			}
+		}
     }
 }
 
@@ -295,23 +295,21 @@ void GControllerTrigger::handleRight(float value, float lastValue){
     if(lastValue != value)
     {
         value = (value + 1)/2;
-        if(fabs(value) >= DEAD_ZONE)
-        {
-            ghid_->onRightTrigger(fabs(value), deviceID);
-            if(shouldDispatch)
-            {
-                if(!rightDown && value > 0.5)
-                {
-                    rightDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_R2, -1, deviceID);
-                }
-                else if(rightDown && value <= 0.5)
-                {
-                    rightDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_R2, -1, deviceID);
-                }
-            }
-        }
+        if(fabs(value) < DEAD_ZONE) value=0;
+		ghid_->onRightTrigger(fabs(value), deviceID);
+		if(shouldDispatch)
+		{
+			if(!rightDown && value > 0.5)
+			{
+				rightDown = true;
+				ghid_->onKeyDownEvent(BUTTON_R2, -1, deviceID);
+			}
+			else if(rightDown && value <= 0.5)
+			{
+				rightDown = false;
+				ghid_->onKeyUpEvent(BUTTON_R2, -1, deviceID);
+			}
+		}
     }
 }
 

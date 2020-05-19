@@ -12,6 +12,7 @@ extern "C" void JSCallV(const char *mtd, cJSON *args);
 
 struct Gamepad_devicePrivate {
     int joystickID;
+    bool connected;
     std::string name;
 };
 
@@ -130,19 +131,22 @@ void Gamepad_processEvents() {
 				cJSON *axesp=cJSON_GetObjectItem(item,"axes");
 				cJSON *buttonsp=cJSON_GetObjectItem(item,"buttons");
 				cJSON *idp=cJSON_GetObjectItem(item,"id");
+				cJSON *connectedp=cJSON_GetObjectItem(item,"connected");
 				cJSON *timestampp=cJSON_GetObjectItem(item,"timestamp");
 				if ((!axesp)||(!buttonsp)||(!timestampp)) continue;
+				bool connected=connectedp?connectedp->valueint:0;
 				if (duplicate==-1) {
 					deviceRecordPrivate = (struct Gamepad_devicePrivate *)malloc(sizeof(struct Gamepad_devicePrivate));
 					deviceRecordPrivate->joystickID = index;
 					deviceRecordPrivate->name = idp?cJSON_GetStringValue(idp):"Unknown";
+					deviceRecordPrivate->connected=false;
 
 					deviceRecord = (struct Gamepad_device *)malloc(sizeof(struct Gamepad_device));
 					deviceRecord->deviceID = nextDeviceID++;
 					deviceRecord->description = deviceRecordPrivate->name.c_str();
 					deviceRecord->vendorID = 0;
 					deviceRecord->productID = 0;
-					deviceRecord->numAxes = cJSON_GetArraySize(axesp);
+					deviceRecord->numAxes = cJSON_GetArraySize(axesp)+2; //Include Trigger
 					deviceRecord->numButtons = cJSON_GetArraySize(buttonsp);
 					deviceRecord->axisStates = (float *)calloc(sizeof(float), deviceRecord->numAxes);
 					deviceRecord->buttonStates = (bool *) calloc(sizeof(bool), deviceRecord->numButtons);
@@ -151,13 +155,18 @@ void Gamepad_processEvents() {
 
 
 					deviceRecord->privateData = deviceRecordPrivate;
-
-					if (Gamepad_deviceAttachCallback != NULL) {
-						Gamepad_deviceAttachCallback(deviceRecord, Gamepad_deviceAttachContext);
-					}
 				}
-				else
+				else {
 					deviceRecord=devices[duplicate];
+					deviceRecordPrivate = (struct Gamepad_devicePrivate *)deviceRecord->privateData;
+				}
+
+
+				if ((Gamepad_deviceAttachCallback != NULL)&&connected&&(!deviceRecordPrivate->connected)) {
+					deviceRecordPrivate->connected=true;
+					Gamepad_deviceAttachCallback(deviceRecord, Gamepad_deviceAttachContext);
+				}
+
 				double time=timestampp->valuedouble;
 				//Process axes
 		        for (unsigned int i = 0; i < cJSON_GetArraySize(axesp); i++) {
@@ -168,10 +177,21 @@ void Gamepad_processEvents() {
 				//Process buttons
 		        for (unsigned int i = 0; i < cJSON_GetArraySize(buttonsp); i++) {
 					cJSON *val=cJSON_GetArrayItem(buttonsp,i);
-					val=val?cJSON_GetObjectItem(val,"pressed"):NULL;
-					if (val)
-						handleButtonChange(deviceRecord, i, val->valueint,time);
+					cJSON *val2=val?cJSON_GetObjectItem(val,"pressed"):NULL;
+					if (val2)
+						handleButtonChange(deviceRecord, i, val2->valueint,time);
+					if ((i==6)||(i==7)) { //Triggers
+						cJSON *val2=val?cJSON_GetObjectItem(val,"value"):NULL;
+						if (val2)
+							handleAxisChange(deviceRecord, i-2, val2->valuedouble*2-1,time);
+					}
 		        }
+
+				if ((Gamepad_deviceRemoveCallback != NULL)&&(!connected)&&(deviceRecordPrivate->connected)) {
+					deviceRecordPrivate->connected=false;
+					Gamepad_deviceRemoveCallback(deviceRecord, Gamepad_deviceRemoveContext);
+				}
+
 			}
 		}
 		cJSON_Delete(res);

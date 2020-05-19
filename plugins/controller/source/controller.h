@@ -126,6 +126,9 @@ static const int BUTTON_R2 = 105;
 static const int BUTTON_R3 = 107;
 static const int BUTTON_X = 99;
 static const int BUTTON_Y = 100;
+static const int BUTTON_CENTER = 304;
+static const int BUTTON_SELECT = 305;
+static const int BUTTON_START = 306;
 
 static const int LEFT_STICK_X = 0;
 static const int LEFT_STICK_Y = 1;

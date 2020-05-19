@@ -362,6 +362,8 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "BUTTON_MENU");
 	lua_pushnumber(L, BUTTON_BACK);
 	lua_setfield(L, -2, "BUTTON_BACK");
+	lua_pushnumber(L, BUTTON_CENTER);
+	lua_setfield(L, -2, "BUTTON_CENTER");
 	lua_pushnumber(L, BUTTON_A);
 	lua_setfield(L, -2, "BUTTON_A");
 	lua_pushnumber(L, BUTTON_X);
