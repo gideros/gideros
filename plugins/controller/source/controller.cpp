@@ -56,7 +56,7 @@ const char* GHID::getControllerName(int playerId)
 {
     std::map<int, GController*>::iterator it = players.find(playerId);
     if (it != players.end()) {
-        it->second->getName();
+        return it->second->getName();
     }
     return "";
 }

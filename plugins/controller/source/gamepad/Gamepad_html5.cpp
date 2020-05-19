@@ -14,6 +14,7 @@ struct Gamepad_devicePrivate {
     int joystickID;
     bool connected;
     std::string name;
+    Gamepad_devicePrivate() : name("Unknown"),joystickID(0),connected(false) { };
 };
 
 static struct Gamepad_device ** devices = NULL;
@@ -30,7 +31,7 @@ void Gamepad_init() {
 }
 
 static void disposeDevice(struct Gamepad_device * deviceRecord) {
-    free(deviceRecord->privateData);
+    delete (struct Gamepad_device *)(deviceRecord->privateData);
     free(deviceRecord->axisStates);
     free(deviceRecord->buttonStates);
 
@@ -136,9 +137,11 @@ void Gamepad_processEvents() {
 				if ((!axesp)||(!buttonsp)||(!timestampp)) continue;
 				bool connected=connectedp?connectedp->valueint:0;
 				if (duplicate==-1) {
-					deviceRecordPrivate = (struct Gamepad_devicePrivate *)malloc(sizeof(struct Gamepad_devicePrivate));
+					deviceRecordPrivate = new Gamepad_devicePrivate();
 					deviceRecordPrivate->joystickID = index;
-					deviceRecordPrivate->name = idp?cJSON_GetStringValue(idp):"Unknown";
+					const char *name=idp?cJSON_GetStringValue(idp):NULL;
+					if (name)
+						deviceRecordPrivate->name = std::string(name);
 					deviceRecordPrivate->connected=false;
 
 					deviceRecord = (struct Gamepad_device *)malloc(sizeof(struct Gamepad_device));
