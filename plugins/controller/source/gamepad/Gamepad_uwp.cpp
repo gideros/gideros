@@ -15,6 +15,7 @@
 
 #include <cvt/wstring>
 #include <codecvt>
+#include <glog.h>
 
 using namespace Concurrency;
 using namespace Platform;
@@ -25,11 +26,12 @@ using namespace Windows::Gaming::Input;
 
 struct Gamepad_devicePrivate {
     RawGameController^ rgc;
+    Gamepad^ rgamepad;
     Platform::Array<GameControllerSwitchPosition>^ lastSwitchReading;
     Platform::Array<bool>^ lastButtonReading;
     Platform::Array<double>^ lastAxisReading;
-    int povAxisIndex;
-    Gamepad_devicePrivate() : rgc(nullptr), lastSwitchReading(nullptr), lastButtonReading(nullptr), lastAxisReading(nullptr) {};
+    bool seen;
+    Gamepad_devicePrivate() : rgc(nullptr), rgamepad(nullptr), lastSwitchReading(nullptr), lastButtonReading(nullptr), lastAxisReading(nullptr) {};
 };
 
 static struct Gamepad_device ** devices = NULL;
@@ -89,56 +91,117 @@ static char * getDeviceDescription(RawGameController ^rgc) {
 void Gamepad_detectDevices() {
     unsigned int deviceIndex, deviceIndex2;
     bool duplicate;
-    struct Gamepad_device * deviceRecord;
-    struct Gamepad_devicePrivate * deviceRecordPrivate;
-    UINT joystickID;
-    int axisIndex;
+    struct Gamepad_device* deviceRecord;
+    struct Gamepad_devicePrivate* deviceRecordPrivate;
 
     if (!inited) {
         return;
     }
 
+    for (deviceIndex2 = 0; deviceIndex2 < numDevices; deviceIndex2++)
+        ((struct Gamepad_devicePrivate*) devices[deviceIndex2]->privateData)->seen = false;
+
+    for (Gamepad^ rgamepad : Gamepad::Gamepads)
+    {
+        RawGameController^ gamepad = RawGameController::FromGameController(rgamepad);
+        duplicate = false;
+        for (deviceIndex2 = 0; deviceIndex2 < numDevices; deviceIndex2++) {
+            if (((struct Gamepad_devicePrivate*) devices[deviceIndex2]->privateData)->rgc == gamepad) {
+                duplicate = true;
+                ((struct Gamepad_devicePrivate*) devices[deviceIndex2]->privateData)->seen = true;
+                break;
+            }
+        }
+        if (duplicate) {
+            continue;
+        }
+
+        deviceRecord = (struct Gamepad_device*) malloc(sizeof(struct Gamepad_device));
+        deviceRecord->deviceID = nextDeviceID++;
+        deviceRecord->description = getDeviceDescription(gamepad);
+        deviceRecord->vendorID = 0;
+        deviceRecord->productID = 0;
+        deviceRecord->numAxes = 6;
+        deviceRecord->numButtons = 17;
+        deviceRecord->axisStates = (float*)calloc(sizeof(float), deviceRecord->numAxes);
+        deviceRecord->buttonStates = (bool*)calloc(sizeof(bool), deviceRecord->numButtons);
+        devices = (struct Gamepad_device**) realloc(devices, sizeof(struct Gamepad_device*) * (numDevices + 1));
+        devices[numDevices++] = deviceRecord;
+
+        deviceRecordPrivate = new Gamepad_devicePrivate();
+        deviceRecordPrivate->rgamepad = rgamepad;
+        deviceRecordPrivate->rgc = gamepad;
+        deviceRecordPrivate->lastSwitchReading =
+            ref new Platform::Array<GameControllerSwitchPosition>(gamepad->SwitchCount);
+        deviceRecordPrivate->lastButtonReading =
+            ref new Platform::Array<bool>(deviceRecord->numButtons);
+        deviceRecordPrivate->lastAxisReading = ref new Platform::Array<double>(deviceRecord->numAxes);
+        deviceRecordPrivate->seen = true;
+
+        deviceRecord->privateData = deviceRecordPrivate;
+
+        if (Gamepad_deviceAttachCallback != NULL) {
+            Gamepad_deviceAttachCallback(deviceRecord, Gamepad_deviceAttachContext);
+        }
+    }
+
     for (RawGameController^ gamepad : RawGameController::RawGameControllers)
     {
-            duplicate = false;
-            for (deviceIndex2 = 0; deviceIndex2 < numDevices; deviceIndex2++) {
-                if (((struct Gamepad_devicePrivate *) devices[deviceIndex2]->privateData)->rgc == gamepad) {
-                    duplicate = true;
-                    break;
-                }
+        duplicate = false;
+        for (deviceIndex2 = 0; deviceIndex2 < numDevices; deviceIndex2++) {
+            if (((struct Gamepad_devicePrivate*) devices[deviceIndex2]->privateData)->rgc == gamepad) {
+                duplicate = true;
+                ((struct Gamepad_devicePrivate*) devices[deviceIndex2]->privateData)->seen = true;
+                break;
             }
-            if (duplicate) {
-                continue;
-            }
+        }
+        if (duplicate) {
+            continue;
+        }
 
-            deviceRecord = (struct Gamepad_device *) malloc(sizeof(struct Gamepad_device));
-            deviceRecord->deviceID = nextDeviceID++;
-            deviceRecord->description = getDeviceDescription(gamepad);
-            deviceRecord->vendorID = gamepad->HardwareVendorId;
-            deviceRecord->productID = gamepad->HardwareProductId;
-            deviceRecord->numAxes = gamepad->AxisCount;
-            deviceRecord->numButtons = gamepad->ButtonCount;
-            deviceRecord->axisStates = (float *) calloc(sizeof(float), deviceRecord->numAxes);
-            deviceRecord->buttonStates = (bool *) calloc(sizeof(bool), deviceRecord->numButtons);
-            devices = (struct Gamepad_device **) realloc(devices, sizeof(struct Gamepad_device *) * (numDevices + 1));
-            devices[numDevices++] = deviceRecord;
+        deviceRecord = (struct Gamepad_device*) malloc(sizeof(struct Gamepad_device));
+        deviceRecord->deviceID = nextDeviceID++;
+        deviceRecord->description = getDeviceDescription(gamepad);
+        deviceRecord->vendorID = gamepad->HardwareVendorId;
+        deviceRecord->productID = gamepad->HardwareProductId;
+        deviceRecord->numAxes = gamepad->AxisCount;
+        deviceRecord->numButtons = gamepad->ButtonCount;
+        deviceRecord->axisStates = (float*)calloc(sizeof(float), deviceRecord->numAxes);
+        deviceRecord->buttonStates = (bool*)calloc(sizeof(bool), deviceRecord->numButtons);
+        devices = (struct Gamepad_device**) realloc(devices, sizeof(struct Gamepad_device*) * (numDevices + 1));
+        devices[numDevices++] = deviceRecord;
 
-            deviceRecordPrivate = new Gamepad_devicePrivate();
-            deviceRecordPrivate->rgc = gamepad;
-            deviceRecordPrivate->lastSwitchReading=
-                ref new Platform::Array<GameControllerSwitchPosition>(gamepad->SwitchCount);
-            deviceRecordPrivate->lastButtonReading =
-                ref new Platform::Array<bool>(deviceRecord->numButtons);
-            deviceRecordPrivate->lastAxisReading = ref new Platform::Array<double>(deviceRecord->numAxes);
+        deviceRecordPrivate = new Gamepad_devicePrivate();
+        deviceRecordPrivate->rgc = gamepad;
+        deviceRecordPrivate->lastSwitchReading =
+            ref new Platform::Array<GameControllerSwitchPosition>(gamepad->SwitchCount);
+        deviceRecordPrivate->lastButtonReading =
+            ref new Platform::Array<bool>(deviceRecord->numButtons);
+        deviceRecordPrivate->lastAxisReading = ref new Platform::Array<double>(deviceRecord->numAxes);
 
-            deviceRecordPrivate->povAxisIndex = -1;
+        deviceRecordPrivate->seen = true;
 
-            deviceRecord->privateData = deviceRecordPrivate;
+        deviceRecord->privateData = deviceRecordPrivate;
 
-            if (Gamepad_deviceAttachCallback != NULL) {
-                Gamepad_deviceAttachCallback(deviceRecord, Gamepad_deviceAttachContext);
-            }
+        if (Gamepad_deviceAttachCallback != NULL) {
+            Gamepad_deviceAttachCallback(deviceRecord, Gamepad_deviceAttachContext);
+        }
     }
+    for (deviceIndex2 = 0; deviceIndex2 < numDevices;)
+        if (!((struct Gamepad_devicePrivate*) devices[deviceIndex2]->privateData)->seen) {
+            if (Gamepad_deviceRemoveCallback != NULL) {
+                Gamepad_deviceRemoveCallback(devices[deviceIndex2], Gamepad_deviceRemoveContext);
+            }
+
+            disposeDevice(devices[deviceIndex2]);
+            deviceIndex = deviceIndex2;
+            numDevices--;
+            for (; deviceIndex < numDevices; deviceIndex++)
+                devices[deviceIndex] = devices[deviceIndex + 1];
+            devices[deviceIndex] = NULL;
+        }
+        else
+            deviceIndex2++;
 }
 
 static double currentTime() {
@@ -160,9 +223,6 @@ static void handleAxisChange(struct Gamepad_device * device, int axisIndex, floa
     if (axisIndex < 0 || axisIndex >= (int) device->numAxes) {
         return;
     }
-    if (axisIndex<4) { //Assume these are left and right sticks: TODO embed a controller database into the plugin to figure out
-    	value=(value-0.5)*2; //UWP report axis as 0->1 values
-    }
     lastValue = device->axisStates[axisIndex];
     device->axisStates[axisIndex] = value;
     if ((Gamepad_axisMoveCallback != NULL)&&(lastValue!=value)) {
@@ -182,61 +242,6 @@ static void handleButtonChange(struct Gamepad_device * device, unsigned int butt
     }
 }
 
-/*
-static void povToXY(DWORD pov, int * outX, int * outY) {
-    if (pov == JOY_POVCENTERED) {
-        *outX = *outY = 0;
-
-    } else {
-        if (pov > JOY_POVFORWARD && pov < JOY_POVBACKWARD) {
-            *outX = 1;
-
-        } else if (pov > JOY_POVBACKWARD) {
-            *outX = -1;
-
-        } else {
-            *outX = 0;
-        }
-
-        if (pov > JOY_POVLEFT || pov < JOY_POVRIGHT) {
-            *outY = -1;
-
-        } else if (pov > JOY_POVRIGHT && pov < JOY_POVLEFT) {
-            *outY = 1;
-
-        } else {
-            *outY = 0;
-        }
-    }
-}
-
-static void handlePOVChange(struct Gamepad_device * device, DWORD lastValue, DWORD value) {
-    struct Gamepad_devicePrivate * devicePrivate;
-    int lastX, lastY, newX, newY;
-
-    devicePrivate = (struct Gamepad_devicePrivate *) device->privateData;
-
-    if (devicePrivate->povXAxisIndex == -1 || devicePrivate->povYAxisIndex == -1) {
-        return;
-    }
-
-    povToXY(lastValue, &lastX, &lastY);
-    povToXY(value, &newX, &newY);
-
-    if (newX != lastX) {
-        device->axisStates[devicePrivate->povXAxisIndex] = newX;
-        if (Gamepad_axisMoveCallback != NULL) {
-            Gamepad_axisMoveCallback(device, devicePrivate->povXAxisIndex, newX, lastX, currentTime(), Gamepad_axisMoveContext);
-        }
-    }
-    if (newY != lastY) {
-        device->axisStates[devicePrivate->povYAxisIndex] = newY;
-        if (Gamepad_axisMoveCallback != NULL) {
-            Gamepad_axisMoveCallback(device, devicePrivate->povYAxisIndex, newY, lastY, currentTime(), Gamepad_axisMoveContext);
-        }
-    }
-}
-*/
 void Gamepad_processEvents() {
     unsigned int deviceIndex;
     static bool inProcessEvents;
@@ -252,26 +257,53 @@ void Gamepad_processEvents() {
         device = devices[deviceIndex];
         devicePrivate = (Gamepad_devicePrivate*)device->privateData;
 
-        unsigned long long ts=devicePrivate->rgc->GetCurrentReading(
-            devicePrivate->lastButtonReading,
-            devicePrivate->lastSwitchReading,
-            devicePrivate->lastAxisReading);
-        /*        if (result == JOYERR_UNPLUGGED) {
-                    if (Gamepad_deviceRemoveCallback != NULL) {
-                        Gamepad_deviceRemoveCallback(device, Gamepad_deviceRemoveContext);
-                    }
+        if (devicePrivate->rgamepad != nullptr) {
+            GamepadReading reading = devicePrivate->rgamepad->GetCurrentReading();
+            handleAxisChange(device, 0, reading.LeftThumbstickX);
+            handleAxisChange(device, 1, -reading.LeftThumbstickY);
+            handleAxisChange(device, 2, reading.RightThumbstickX);
+            handleAxisChange(device, 3, -reading.RightThumbstickY);
+            handleAxisChange(device, 4, reading.LeftTrigger*2-1);
+            handleAxisChange(device, 5, reading.RightTrigger*2-1);
 
-                    disposeDevice(device);
-                    numDevices--;
-                    for (; deviceIndex < numDevices; deviceIndex++) {
-                        devices[deviceIndex] = devices[deviceIndex + 1];
-                    }
+            GamepadButtons b = reading.Buttons;
+            handleButtonChange(device, 0, (b&GamepadButtons::A)!= GamepadButtons::None);
+            handleButtonChange(device, 1, (b & GamepadButtons::B) != GamepadButtons::None);
+            handleButtonChange(device, 2, (b & GamepadButtons::X) != GamepadButtons::None);
+            handleButtonChange(device, 3, (b & GamepadButtons::Y) != GamepadButtons::None);
+            handleButtonChange(device, 4, (b & GamepadButtons::LeftShoulder) != GamepadButtons::None);
+            handleButtonChange(device, 5, (b & GamepadButtons::RightShoulder) != GamepadButtons::None);
+            handleButtonChange(device, 6, reading.LeftTrigger>0);
+            handleButtonChange(device, 7, reading.RightTrigger>0);
+            handleButtonChange(device, 8, (b & GamepadButtons::View) != GamepadButtons::None);
+            handleButtonChange(device, 9, (b & GamepadButtons::Menu) != GamepadButtons::None);
+            handleButtonChange(device, 10, (b & GamepadButtons::LeftThumbstick) != GamepadButtons::None);
+            handleButtonChange(device, 11, (b & GamepadButtons::RightThumbstick) != GamepadButtons::None);
+            handleButtonChange(device, 12, (b & GamepadButtons::DPadUp) != GamepadButtons::None);
+            handleButtonChange(device, 13, (b & GamepadButtons::DPadDown) != GamepadButtons::None);
+            handleButtonChange(device, 14, (b & GamepadButtons::DPadLeft) != GamepadButtons::None);
+            handleButtonChange(device, 15, (b & GamepadButtons::DPadRight) != GamepadButtons::None);
+            handleButtonChange(device, 16, false);
 
-                } */
-        for (unsigned int i = 0; i < device->numAxes; i++)
-            handleAxisChange(device, i, devicePrivate->lastAxisReading[i]);
-        for (unsigned int i = 0; i < device->numButtons; i++)
+        }
+        else
+        {
+            unsigned long long ts = devicePrivate->rgc->GetCurrentReading(
+                devicePrivate->lastButtonReading,
+                devicePrivate->lastSwitchReading,
+                devicePrivate->lastAxisReading);
+            for (unsigned int i = 0; i < device->numAxes; i++) {
+                float value = devicePrivate->lastAxisReading[i];
+                if (i < 4) { //Assume these are left and right sticks: TODO embed a controller database into the plugin to figure out
+                    value = (value - 0.5) * 2; //UWP report axis as 0->1 values
+                }
+
+                handleAxisChange(device, i, value);
+            }
+       for (unsigned int i = 0; i < device->numButtons; i++)
             handleButtonChange(device, i, devicePrivate->lastButtonReading[i]);
+
+        }
     }
     inProcessEvents = false;
 }

@@ -4,13 +4,12 @@
 #include <cmath>
 #include <cstdio>
 
-#ifdef WIN32_NOQT
+#if defined(WIN32_NOQT) || defined(WINSTORE)
 #define Q_OS_WIN 1
 #else
-#ifndef WINSTORE
 #include <QtCore/qglobal.h>
 #endif
-#endif
+
 
 static float DEAD_ZONE = 0.25f;
 static const double MATH_PI = atan(1)*4;

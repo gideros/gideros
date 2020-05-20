@@ -163,6 +163,10 @@ DirectXPage::DirectXPage():
 	window->CharacterReceived += ref new TypedEventHandler<CoreWindow^, CharacterReceivedEventArgs^>(this, &DirectXPage::OnKeyChar);
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &DirectXPage::OnBackButtonPressed);
+#else
+	Windows::UI::Core::SystemNavigationManager^ navigation = Windows::UI::Core::SystemNavigationManager::GetForCurrentView();
+	navigation->BackRequested +=
+		ref new EventHandler<BackRequestedEventArgs^>(this, &DirectXPage::OnBackButtonPressed);
 #endif
 
 	std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
@@ -402,12 +406,14 @@ void DirectXPage::OnWheelChanged(Object^ sender, PointerEventArgs^ Args)
 
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 void DirectXPage::OnBackButtonPressed(Object^ sender, BackPressedEventArgs^ args)
+#else
+void DirectXPage::OnBackButtonPressed(Object^ sender, BackRequestedEventArgs^ args)
+#endif
 {
 	gdr_keyDown(301);
 	gdr_keyUp(301);
 	args->Handled = true;
 }
-#endif
 
 using namespace Microsoft::WRL; 
 #ifdef WINSTORE
