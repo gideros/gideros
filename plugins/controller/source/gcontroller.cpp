@@ -131,6 +131,11 @@ const char* GController::getName(){
     return name.c_str();
 }
 
+void GController::getInfo(int *vid,int *pid) {
+	*vid=vendorID;
+	*pid=productID;
+}
+
 void GController::handleButtonDown(unsigned int buttonID) {
     int keyCode = buttonID;
     if(keyCode-buttonOffset < buttonCount)

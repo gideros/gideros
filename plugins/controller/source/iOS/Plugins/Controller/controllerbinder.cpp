@@ -239,6 +239,12 @@ static int getControllerName(lua_State *L)
     return 1;
 }
 
+static int getControllerInfo(lua_State *L)
+{
+	lua_newtable(L);
+    return 1;
+}
+
 static int vibrate(lua_State *L)
 {
     Controller *c = getInstance(L, 1);
@@ -281,6 +287,7 @@ static int loader(lua_State *L)
 		{"isAnyAvailable", isAnyAvailable},
 		{"getPlayerCount", getPlayerCount},
 		{"getControllerName", getControllerName},
+		{"getControllerInfo", getControllerInfo},
 		{"getPlayers", getPlayers},
 		{"vibrate", vibrate},
 		{"setDeadZone", lSetDeadZone},

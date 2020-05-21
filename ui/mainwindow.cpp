@@ -2501,7 +2501,7 @@ void MainWindow::dataReceived(const QByteArray& d)
 				luaFiles << iter->first;
 		}
 
-        std::vector<std::pair<QString, bool> > topologicalSort = libraryWidget_->topologicalSort();
+        std::vector<std::pair<QString, bool> > topologicalSort = libraryWidget_->topologicalSort(localFileMapReverse);
         bool mainluaOnly=libraryWidget_->getProjectProperties().mainluaOnly;
 
 		for (std::size_t i = 0; i < topologicalSort.size(); ++i)
@@ -2970,114 +2970,7 @@ void MainWindow::exportProject()
 
 std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downsizing)
 {
-	std::vector<std::pair<QString, QString> > result;
-    QMap<QString,bool> locked;
-
-	//Add lua plugins
-	QMap<QString, QString> plugins=libraryWidget_->usedPlugins();
-	for (QMap<QString,QString>::const_iterator it=plugins.begin();it!=plugins.end(); it++)
-	{
-		QFileInfo path(it.value());
-		QDir pf=path.dir();
-		if (pf.cd("luaplugin"))
-		{
-            QDir luaplugin_dir = pf.path();
-            int root_length = luaplugin_dir.path().length();
-
-            // get all files in luaplugin and any subdirectory of luaplugin
-            QDirIterator dir_iter(pf.path(), QStringList() << "*", QDir::Files, QDirIterator::Subdirectories);
-            while (dir_iter.hasNext()) {
-                QDir file = dir_iter.next();
-                QString rel_path = file.path().mid(root_length + 1, file.path().length());
-                result.push_back(std::make_pair("_LuaPlugins_/" + rel_path, file.path()));
-                locked["_LuaPlugins_/" + rel_path]=true;
-            }
-        }
-	}
-	if (clientIsWeb_)
-	{
-		QFileInfo f=QFileInfo("Tools/FBInstant.lua");
-		result.push_back(std::make_pair("_LuaPlugins_/FBInstant.lua", f.absoluteFilePath()));
-        locked["_LuaPlugins_/FBInstant.lua"]=true;
-	}
-
-	QDomDocument doc = libraryWidget_->toXml();
-
-	std::stack<QDomNode> stack;
-	stack.push(doc.documentElement());
-
-	std::vector<QString> dir;
-
-	while (stack.empty() == false)
-	{
-		QDomNode n = stack.top();
-		QDomElement e = n.toElement();
-		stack.pop();
-
-		if (n.isNull() == true)
-		{
-			dir.pop_back();
-			continue;
-		}
-
-		QString type = e.tagName();
-
-		if (type == "file")
-		{
-			QString fileName = e.attribute("source");
-            bool lock=true;
-            if (fileName.isEmpty())
-            {
-                fileName = e.attribute("file");
-            }
-			if (fileName.isEmpty())
-			{
-				fileName = e.attribute("name");
-				lock=false;
-			}
-			QString name = QFileInfo(fileName).fileName();
-
-			QString n;
-			for (std::size_t i = 0; i < dir.size(); ++i)
-				n += dir[i] + "/";
-			n += name;
-
-            if (locked[n])
-                continue;
-			if (downsizing)
-			{
-                if (e.attribute("downsizing", "0").toInt()) {
-					result.push_back(std::make_pair(n, fileName));
-                    locked[n]=lock;
-                }
-			}
-			else
-			{
-				result.push_back(std::make_pair(n, fileName));
-                locked[n]=lock;
-            }
-
-			continue;
-		}
-
-		if (type == "folder")
-		{
-			QString name = e.attribute("name");
-			dir.push_back(name);
-
-			QString n;
-			for (std::size_t i = 0; i < dir.size(); ++i)
-				n += dir[i] + "/";
-
-			stack.push(QDomNode());
-		}
-
-		QDomNodeList childNodes = n.childNodes();
-		for (int i = 0; i < childNodes.size(); ++i)
-			stack.push(childNodes.item(i));
-	}
-
-	return result;
+    return libraryWidget_->fileList(downsizing,clientIsWeb_);
 }
 
 void MainWindow::replace_findNext()

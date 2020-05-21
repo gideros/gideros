@@ -74,7 +74,12 @@ public:
 	{
 		return ghid_getControllerName(player);
 	}
-	
+
+	void getControllerInfo(int player,int *vid,int *pid)
+	{
+		return ghid_getControllerInfo(player,vid,pid);
+	}
+
 	void vibrate(int player, long ms)
 	{
 		ghid_vibrate(player, ms);
@@ -265,6 +270,17 @@ static int getControllerName(lua_State *L)
     return 1;
 }
 
+static int getControllerInfo(lua_State *L)
+{
+    Controller *c = getInstance(L, 1);
+    int vid,pid;
+	c->getControllerInfo(lua_tonumber(L, 2),&vid,&pid);
+	lua_newtable(L);
+	lua_pushnumber(L,vid); lua_setfield(L,-2,"vendorId");
+	lua_pushnumber(L,pid); lua_setfield(L,-2,"productId");
+    return 1;
+}
+
 static int vibrate(lua_State *L)
 {
     Controller *c = getInstance(L, 1);
@@ -308,6 +324,7 @@ static int loader(lua_State *L)
 		{"isAnyAvailable", isAnyAvailable},
 		{"getPlayerCount", getPlayerCount},
 		{"getControllerName", getControllerName},
+		{"getControllerInfo", getControllerInfo},
 		{"getPlayers", getPlayers},
 		{"vibrate", vibrate},
 		{"setDeadZone", lSetDeadZone},

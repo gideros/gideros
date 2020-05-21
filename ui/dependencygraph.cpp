@@ -1,5 +1,38 @@
 #include "dependencygraph.h"
 #include <stack>
+#include <QFile>
+#include <QTextStream>
+
+void DependencyGraph::Vertex::parseTags(QDir projectDir,const DependencyGraph *graph,std::map<QString, QString> fileMap) {
+	excludeFromExecutionTag=false;
+	dependenciesTag.clear();
+    QFile inputFile(projectDir.filePath(code));
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&inputFile);
+       while (!in.atEnd())
+       {
+          QString line = in.readLine().trimmed();
+          if (line.startsWith("--!NEEDS:")) {
+                line=line.mid(9);
+                if (!line.startsWith("/")) {//Relative path
+                    QString thisFile=fileMap[code];
+                    int lc=thisFile.lastIndexOf('/');
+                    if (lc>=0)
+                        line=thisFile.mid(0,lc+1)+line;
+                }
+                Vertex *match=nullptr;
+                for (std::map<QString,QString>::iterator it=fileMap.begin();it!=fileMap.end();it++)
+                    if (it->second==line) { match=graph->getVertex(it->first); break; }
+                if (match)
+                    dependenciesTag.insert(match);
+          }
+          else if (line=="--!NOEXEC")
+              excludeFromExecutionTag=true;
+       }
+       inputFile.close();
+    }
+}
 
 inline std::pair<int, QString> _(const QString& str)
 {
@@ -18,6 +51,13 @@ inline std::pair<int, QString> _(const QString& str)
 DependencyGraph::~DependencyGraph()
 {
     clear();
+}
+
+DependencyGraph::Vertex *DependencyGraph::getVertex(const QString& code) const
+{
+    const_iterator it;
+    if ((it=vertices_.find(_(code)))==vertices_.end()) return NULL;
+    return it->second;
 }
 
 void DependencyGraph::clear()
@@ -52,6 +92,8 @@ void DependencyGraph::removeCode(const QString& code)
 
     for (iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter)
         iter->second->dependencies.erase(vertex);
+    for (iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter)
+        iter->second->dependenciesTag.erase(vertex);
 
     vertices_.erase(_(code));
 
@@ -125,12 +167,14 @@ void DependencyGraph::setExcludeFromExecution(const QString& code, bool excludeF
     vertices_[_(code)]->excludeFromExecution = excludeFromExecution;
 }
 
-std::vector<std::pair<QString, bool> > DependencyGraph::topologicalSort() const
+std::vector<std::pair<QString, bool> > DependencyGraph::topologicalSort(QDir projectDir,std::map<QString, QString> fileMap) const
 {
     std::vector<std::pair<QString, bool> > result;
 
-    for (const_iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter)
+    for (const_iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter) {
+        iter->second->parseTags(projectDir,this,fileMap);
         iter->second->visited = false;
+    }
 
     for (const_iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter)
         topologicalSortHelper(iter->second, result);
@@ -148,7 +192,10 @@ void DependencyGraph::topologicalSortHelper(Vertex* vertex, std::vector<std::pai
     for (std::set<Vertex*>::iterator iter = vertex->dependencies.begin(); iter != vertex->dependencies.end(); ++iter)
         topologicalSortHelper(*iter, result);
 
-    result.push_back(std::make_pair(vertex->code, vertex->excludeFromExecution));
+    for (std::set<Vertex*>::iterator iter = vertex->dependenciesTag.begin(); iter != vertex->dependenciesTag.end(); ++iter)
+        topologicalSortHelper(*iter, result);
+
+    result.push_back(std::make_pair(vertex->code, vertex->excludeFromExecution||vertex->excludeFromExecutionTag));
 }
 
 std::vector<QString> DependencyGraph::codes() const

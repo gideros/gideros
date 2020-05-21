@@ -21,6 +21,8 @@ public:
 
     const char* getControllerName(int playerId);
 
+    void getControllerInfo(int playerId,int *vid,int *pid);
+
     void vibrate(int player, long ms);
 
     int* getPlayers(int* size);
@@ -149,6 +151,7 @@ void ghid_cleanup();
 int ghid_isAnyAvailable();
 int ghid_getPlayerCount();
 const char* ghid_getControllerName(int player);
+void ghid_getControllerInfo(int player,int *vid,int *pid);
 void ghid_vibrate(int player, long ms);
 int* ghid_getPlayers(int* size);
 

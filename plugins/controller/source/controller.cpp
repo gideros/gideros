@@ -61,6 +61,14 @@ const char* GHID::getControllerName(int playerId)
     return "";
 }
 
+void GHID::getControllerInfo(int playerId,int *vid,int *pid)
+{
+    std::map<int, GController*>::iterator it = players.find(playerId);
+    if (it != players.end()) {
+        return it->second->getInfo(vid,pid);
+    }
+}
+
 void GHID::vibrate(int player, long ms)
 {
 
@@ -271,6 +279,11 @@ int ghid_getPlayerCount()
 const char* ghid_getControllerName(int player)
 {
 	return s_ghid->getControllerName(player);
+}
+
+void ghid_getControllerInfo(int player,int *vid,int *pid)
+{
+	return s_ghid->getControllerInfo(player,vid,pid);
 }
 
 void ghid_vibrate(int player, long ms)

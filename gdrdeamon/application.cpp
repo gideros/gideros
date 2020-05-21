@@ -189,7 +189,7 @@ void Application::dataReceived(const QByteArray& d)
                 }
             }
 
-            std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph_.topologicalSort();
+            std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph_.topologicalSort(QFileInfo(projectFileName_).dir(),localFileMapReverse);
 
             QStringList luaFiles;
             for (std::size_t i = 0; i < topologicalSort.size(); ++i)
