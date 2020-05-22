@@ -31,6 +31,7 @@ public:
 	virtual ~Sprite();
 
     void draw(const CurrentTransform&, float sx, float sy, float ex, float ey);
+    void computeLayout();
 
 	void addChild(Sprite* sprite, GStatus* status = 0);
 	void removeChild(Sprite* child, GStatus* status = 0);
@@ -428,6 +429,7 @@ public:
 public:
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;
+    int spriteWithLayoutCount;
 
 protected:
     void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform) const;

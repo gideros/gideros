@@ -104,6 +104,8 @@ void Stage::enterFrame(int deltaFrameCount, double lastFrameRenderTime)
 	}
 
     application_->deleteAutounrefPool(pool);
+
+    computeLayout();
 }
 
 void Stage::touchesBegin(ginput_TouchEvent *event, float sx, float sy, float tx, float ty)
