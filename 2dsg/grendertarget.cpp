@@ -31,15 +31,7 @@ ShaderBuffer *GRenderTarget::prepareForDraw()
 	fbo->prepareDraw();
 	ShaderEngine::Engine->setViewport(0, 0, data->width, data->height);
 
-	// The WINSTORE glOrtho (for Direct3D) is what you would expect. The OpenGL call needs to be inverted in y-direction
-    Matrix4 projection;
-
-#ifdef WINSTORE
-	projection = ShaderEngine::Engine->setOrthoFrustum(0, data->baseWidth, data->baseHeight, 0, -1, 1);
-#else
-    projection = ShaderEngine::Engine->setOrthoFrustum(0, data->baseWidth, 0, data->baseHeight, -1, 1);
-#endif
-
+    Matrix4 projection = ShaderEngine::Engine->setOrthoFrustum(0, data->baseWidth, data->baseHeight, 0, -1, 1,true);
 	ShaderEngine::Engine->setProjection(projection);
 
 	return oldfbo;

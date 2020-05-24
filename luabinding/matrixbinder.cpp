@@ -329,7 +329,7 @@ int MatrixBinder::orthographicProjection(lua_State* L)
 	lua_Number t=luaL_checknumber(L,5);
 	lua_Number n=luaL_checknumber(L,6);
 	lua_Number f=luaL_checknumber(L,7);
-	matrix->setMatrix(ShaderEngine::Engine->setOrthoFrustum(l,r,b,t,n,f).data());
+	matrix->setMatrix(ShaderEngine::Engine->setOrthoFrustum(l,r,b,t,n,f,false).data());
 
 	return 0;
 }

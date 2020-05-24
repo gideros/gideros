@@ -581,6 +581,11 @@ void ogl2ShaderEngine::setProjection(const Matrix4 p) {
 #endif
 }
 
+Matrix4 ogl2ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRT)
+{
+	return ShaderEngine::setOrthoFrustum(l, r, forRT?t:b, forRT?b:t, n, f, true);
+}
+
 void ogl2ShaderEngine::adjustViewportProjection(Matrix4 &vp, float width, float height) {
 	vp.scale(1, -1, 1);
 	vp.translate(0, height, 0);

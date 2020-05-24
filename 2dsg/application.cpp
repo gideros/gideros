@@ -285,7 +285,7 @@ void Application::renderScene(int deltaFrameCount) {
 			} else {
 				float fp = (farplane_ > 0) ? farplane_ : 1; //Conservative default
 				frustum = gfx->setOrthoFrustum(0, width_ / scale_,
-						height_ / scale_, 0, -fp, fp);
+						height_ / scale_, 0, -fp, fp,false);
 			}
 			break;
 		case eLandscapeLeft:
@@ -303,7 +303,7 @@ void Application::renderScene(int deltaFrameCount) {
 			} else {
 				float fp = (farplane_ > 0) ? farplane_ : 1; //Conservative default
 				frustum = gfx->setOrthoFrustum(0, height_ / scale_,
-						width_ / scale_, 0, -fp, fp);
+						width_ / scale_, 0, -fp, fp,false);
 			}
 			break;
 		}
