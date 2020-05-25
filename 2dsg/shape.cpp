@@ -14,11 +14,13 @@
 #endif
 
 #ifndef __EMSCRIPTEN__
-//emscripten has it already
+#ifndef __APPLE__
+//emscripten and Xcode have it already
 static bool isnan(float x)
 {
     return x != x;
 }
+#endif
 #endif
 
 class Tesselator

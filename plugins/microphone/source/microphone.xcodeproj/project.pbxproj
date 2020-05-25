@@ -15,7 +15,6 @@
 		EB46E1EF20BD79A000A1E878 /* gmicrophone-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = EB46E1EE20BD79A000A1E878 /* gmicrophone-ios.mm */; };
 		EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AD81D64A96600162D26 /* UIKit.framework */; };
 		EB4A6ADC1D64ABF400162D26 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */; };
-		EB4A6ADE1D64AC2C00162D26 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */; };
 		EB4A6AE01D64AC3100162D26 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */; };
 		EB4A6AE21D64AC3600162D26 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE11D64AC3600162D26 /* ImageIO.framework */; };
 		EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */; };
@@ -34,7 +33,6 @@
 		EB46E1EE20BD79A000A1E878 /* gmicrophone-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "gmicrophone-ios.mm"; path = "iOS/gmicrophone-ios.mm"; sourceTree = "<group>"; };
 		EB4A6AD81D64A96600162D26 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		EB4A6AE11D64AC3600162D26 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -54,7 +52,6 @@
 				EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */,
 				EB4A6AE21D64AC3600162D26 /* ImageIO.framework in Frameworks */,
 				EB4A6AE01D64AC3100162D26 /* CoreMedia.framework in Frameworks */,
-				EB4A6ADE1D64AC2C00162D26 /* AssetsLibrary.framework in Frameworks */,
 				EB4A6ADC1D64ABF400162D26 /* AVFoundation.framework in Frameworks */,
 				EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */,
 				5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */,
@@ -90,7 +87,6 @@
 				EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */,
 				EB4A6AE11D64AC3600162D26 /* ImageIO.framework */,
 				EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */,
-				EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */,
 				EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */,
 				EB4A6AD81D64A96600162D26 /* UIKit.framework */,
 				5F9FAAA015DD87E20039718F /* Foundation.framework */,
@@ -156,6 +152,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 5F9FAA9215DD87E10039718F;

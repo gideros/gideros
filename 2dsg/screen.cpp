@@ -43,9 +43,7 @@ void Screen::draw(const Matrix transform)
 	getSize(sw,sh);
     ShaderEngine::Engine->reset();
 	ShaderEngine::Engine->setViewport(0, 0, sw,sh);
-	// The WINSTORE glOrtho (for Direct3D) is what you would expect. The OpenGL call needs to be inverted in y-direction
-    Matrix4 projection;
-	projection = ShaderEngine::Engine->setOrthoFrustum(0, sw,sh, 0, -1, 1);
+    Matrix4 projection = ShaderEngine::Engine->setOrthoFrustum(0, sw,sh, 0, -1, 1,false);
 	ShaderEngine::Engine->setProjection(projection);
 	if (clearA_!=0)
 		ShaderEngine::Engine->clearColor(clearR_ * clearA_, clearG_ * clearA_, clearB_ * clearA_, clearA_);

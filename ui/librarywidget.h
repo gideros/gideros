@@ -26,10 +26,11 @@ public:
 	void setModified(bool m);
 	bool isModified() const;
 	QMap<QString, QString> usedPlugins();
+    std::vector<std::pair<QString, QString> > fileList(bool downsizing,bool webClient);
 
-    std::vector<std::pair<QString, bool> > topologicalSort() const
+    std::vector<std::pair<QString, bool> > topologicalSort(std::map<QString, QString> fileMap) const
 	{
-		return ui.treeWidget->topologicalSort();
+        return ui.treeWidget->topologicalSort(fileMap);
 	}
 
     QString fileName(const QString& itemName) const;

@@ -1,35 +1,73 @@
+#include <wrl.h>
+#include <collection.h>
+#include <concrt.h>
+#include <algorithm>
+#include <windows.gaming.input.h>
+#include <windows.foundation.collections.h>
+
 #include <controller.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <gamepad/Gamepad.h>
-#include "gcontroller.h"
 
-extern "C" {
-void ghid_onConnected(struct Gamepad_device * device, void * context);
-void ghid_onDisconnected(struct Gamepad_device * device, void * context);
-void ghid_onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context);
-void ghid_onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context);
-void ghid_onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue, double timestamp, void * context);
+#include <cvt/wstring>
+#include <codecvt>
+
+using namespace Concurrency;
+using namespace Platform;
+using namespace Platform::Collections;
+using namespace Windows::Foundation;
+using namespace Windows::Foundation::Collections;
+using namespace Windows::Gaming::Input;
+
+struct GController {
+    Gamepad^ gamepad;
+    std::string name;
+    int index;
+    GController(Gamepad^ gp,int idx) {
+        index = idx;
+        gamepad = gp;
+        stdext::cvt::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+        RawGameController^ rgc = RawGameController::FromGameController(gp);
+        name = convert.to_bytes(rgc->DisplayName->Data());
+    }
+    ~GController() {
+        gamepad = nullptr;
+    }
+};
+
+void setDeadZone(float dz) {
+
 }
 
 GHID::GHID()
 {
     gid_ = g_NextId();
     players.clear();
-    Gamepad_deviceAttachFunc(ghid_onConnected, (void *) 0x1);
-    Gamepad_deviceRemoveFunc(ghid_onDisconnected, (void *) 0x2);
-    Gamepad_buttonDownFunc(ghid_onButtonDown, (void *) 0x3);
-    Gamepad_buttonUpFunc(ghid_onButtonUp, (void *) 0x4);
-    Gamepad_axisMoveFunc(ghid_onAxisMoved, (void *) 0x5);
-    Gamepad_init();
+    critical_section myLock{};
+    critical_section::scoped_lock lock{ myLock };
+    int pl = 0;// ABI::Windows::Gaming::Input::Gamepad::Gamepads();
+
+    for (Gamepad^ gamepad : Gamepad::Gamepads)
+    {
+        // Check if the gamepad is already in myGamepads; if it isn't, add it.
+        bool found = false;
+        for (std::pair<int,GController *> gce : players) {
+            if (gce.second->gamepad == gamepad) found = true;
+        }
+        if (!found)
+        {
+            // This code assumes that you're interested in all gamepads.
+            GController* gc = new GController(gamepad,++pl);
+            players[pl] = gc;
+        }
+    }
     gevent_AddCallback(onEnterFrame, this);
 }
 
 GHID::~GHID()
 {
     gevent_RemoveCallback(onEnterFrame, this);
-    Gamepad_shutdown();
     std::map<int, GController*>::iterator iter, e = players.end();
     for (iter = players.begin(); iter != e; ++iter)
     {
@@ -56,17 +94,9 @@ const char* GHID::getControllerName(int playerId)
 {
     std::map<int, GController*>::iterator it = players.find(playerId);
     if (it != players.end()) {
-        return it->second->getName();
+        return it->second->name.c_str();
     }
     return "";
-}
-
-void GHID::getControllerInfo(int playerId,int *vid,int *pid)
-{
-    std::map<int, GController*>::iterator it = players.find(playerId);
-    if (it != players.end()) {
-        return it->second->getInfo(vid,pid);
-    }
 }
 
 void GHID::vibrate(int player, long ms)
@@ -160,6 +190,7 @@ void GHID::onAxisJoystick(double strength, int axisID, int playerId)
     gevent_EnqueueEvent(gid_, callback_s, GHID_AXIS_JOYSTICK_EVENT, event, 1, this);
 }
 
+/*
 void GHID::onConnected(struct Gamepad_device * device)
 {
     int playerId = device->deviceID+1;
@@ -218,6 +249,7 @@ void GHID::onAxisMoved(struct Gamepad_device * device, unsigned int axisID, floa
         it->second->handleAxisMove(axisID, value, lastValue);
     }
 }
+*/
 
 g_id GHID::addCallback(gevent_Callback callback, void *udata)
 {
@@ -236,8 +268,6 @@ void GHID::onEnterFrame(int type, void *event, void *udata)
 {
     if(type == GEVENT_PRE_TICK_EVENT)
     {
-        Gamepad_detectDevices();
-        Gamepad_processEvents();
     }
 }
 
@@ -281,39 +311,9 @@ const char* ghid_getControllerName(int player)
 	return s_ghid->getControllerName(player);
 }
 
-void ghid_getControllerInfo(int player,int *vid,int *pid)
-{
-	return s_ghid->getControllerInfo(player,vid,pid);
-}
-
 void ghid_vibrate(int player, long ms)
 {
 	s_ghid->vibrate(player, ms);
-}
-
-void ghid_onConnected(struct Gamepad_device * device, void * context)
-{
-    s_ghid->onConnected(device);
-}
-
-void ghid_onDisconnected(struct Gamepad_device * device, void * context)
-{
-    s_ghid->onDisconnected(device);
-}
-
-void ghid_onButtonDown(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context) {
-    //s_ghid->onKeyDownEvent(buttonID, 1);
-    s_ghid->onButtonDown(device, buttonID);
-}
-
-void ghid_onButtonUp(struct Gamepad_device * device, unsigned int buttonID, double timestamp, void * context) {
-    //s_ghid->onKeyUpEvent(buttonID, 1);
-    s_ghid->onButtonUp(device, buttonID);
-}
-
-void ghid_onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue, double timestamp, void * context) {
-    //s_ghid->onLeftJoystick(axisID, value, lastValue, 0, 1);
-    s_ghid->onAxisMoved(device, axisID, value, lastValue);
 }
 
 int* ghid_getPlayers(int* size)

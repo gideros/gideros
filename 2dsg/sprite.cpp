@@ -13,7 +13,7 @@ std::set<Sprite*> Sprite::allSprites_;
 std::set<Sprite*> Sprite::allSpritesWithListeners_;
 
 Sprite::Sprite(Application* application) :
-		application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0) {
+		application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0), spriteWithLayoutCount(0) {
 	allSprites_.insert(this);
 
 //	graphicsBases_.push_back(GraphicsBase());
@@ -72,14 +72,26 @@ void Sprite::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 
 GridBagLayout *Sprite::getLayoutState()
 {
-	if (!layoutState)
+	if (!layoutState) {
 		layoutState=new GridBagLayout();
+		Sprite *p=this;
+		while (p) {
+			p->spriteWithLayoutCount++;
+			p=p->parent();
+		}
+	}
 	return layoutState;
 }
 
 void Sprite::clearLayoutState() {
-	if (layoutState)
+	if (layoutState) {
 		delete layoutState;
+		Sprite *p=this;
+		while (p) {
+			p->spriteWithLayoutCount--;
+			p=parent();
+		}
+	}
 	layoutState=NULL;
 }
 
@@ -205,20 +217,6 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				continue;
 			}
 
-            if (sprite->layoutState&&sprite->layoutState->dirty)
-            {
-                int loops=100; //Detect endless loops
-                while(sprite->layoutState->dirty&&(loops--))
-                {
-                    sprite->layoutState->dirty=false;
-                    float pwidth,pheight;
-                    sprite->getDimensions(pwidth, pheight);
-                    sprite->layoutState->ArrangeGrid(sprite,pwidth,pheight);
-                }
-                if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
-                    sprite->layoutState->dirty=false;
-            }
-
             if ((sprite!=this)&&(sprite->parent_))
 			sprite->worldTransform_ = sprite->parent_->worldTransform_
 					* sprite->localTransform_.matrix();
@@ -315,6 +313,42 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 	stackPool.destroy(&stack);
 }
 
+void Sprite::computeLayout() {
+	if (!spriteWithLayoutCount) return;
+	static GGPool<std::stack<Sprite*> > stackPool;
+	std::stack<Sprite*> &stack = *stackPool.create();
+
+	stack.push(this);
+
+	while (!stack.empty()) {
+		Sprite *sprite = stack.top();
+		stack.pop();
+
+		if ((sprite->isVisible_ == false)||(!(sprite->spriteWithLayoutCount))) {
+			continue;
+		}
+
+		if (sprite->layoutState&&sprite->layoutState->dirty)
+		{
+			int loops=100; //Detect endless loops
+			while(sprite->layoutState->dirty&&(loops--))
+			{
+				sprite->layoutState->dirty=false;
+				float pwidth,pheight;
+				sprite->getDimensions(pwidth, pheight);
+				sprite->layoutState->ArrangeGrid(sprite,pwidth,pheight);
+			}
+			if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
+				sprite->layoutState->dirty=false;
+		}
+
+		for (size_t i = 0; i < sprite->children_.size(); ++i)
+			stack.push(sprite->children_[i]);
+	}
+
+	stackPool.destroy(&stack);
+}
+
 bool Sprite::canChildBeAdded(Sprite* sprite, GStatus* status) {
 	if (sprite == this) {
 		if (status != 0)
@@ -390,6 +424,13 @@ void Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 
 	if (stage2)
 		stage2->setSpritesWithListenersDirty();
+
+	Sprite *p=this;
+	while (p) {
+		p->spriteWithLayoutCount+=sprite->spriteWithLayoutCount;
+		p=p->parent();
+	}
+
 
 	bool connected2 = stage2 != NULL;
 
@@ -532,6 +573,13 @@ void Sprite::removeChildAt(int index, GStatus* status) {
 
 	child->parent_ = 0;
 	children_.erase(children_.begin() + index);
+	if (child->spriteWithLayoutCount) {
+		Sprite *p=this;
+		while (p) {
+			p->spriteWithLayoutCount-=child->spriteWithLayoutCount;
+			p=p->parent();
+		}
+	}
 
 	application_->autounref(child);
 

@@ -204,6 +204,7 @@ public:
 	void setViewport(int x,int y,int width,int height);
 	void adjustViewportProjection(Matrix4 &vp, float width, float height);
 	void resizeFramebuffer(int width,int height);
+	Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRenderTarget);
 	void setProjection(const Matrix4 p);
 	void setModel(const Matrix4 m);
 	void clearColor(float r,float g,float b,float a);

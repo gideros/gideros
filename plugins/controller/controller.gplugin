@@ -14,13 +14,11 @@
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;,"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYDOWN//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyDown(keyCode, event)) return true;"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYUP//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyUp(keyCode, event)) return true;"/>
-            <append orig="//GIDEROS-ACTIVTIY-METHODS//" by="        
-    public boolean onGenericMotionEvent(MotionEvent event){
+            <prepend orig="return super.onGenericMotionEvent(event);" by="        
         if(com.giderosmobile.android.plugins.controller.GControllerDefault.onGenericMotionEvent(event)){
             return true;
         }
-        return super.onGenericMotionEvent(event);
-    }"/>
+    "/>
         </replacelist>
 		<replacelist wildcards="build.gradle">
 			<append>
@@ -67,6 +65,57 @@ iOSProject.exportPluginFiles("controller",
  </target>
   <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+  <target name="Html5">
+	<lua>local h=require("Tools/export_html5")
+	h.export("controller")
+	h.exportJS("GiderosController")
+	</lua>
+ </target>
+  <target name="WinRT">
+    <mkdir>giderosgame/giderosgame.Shared/Plugins/controller</mkdir>
+    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins/controller/" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-COMPILE-SHARED-->]]></orig>
+            <by><![CDATA[
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)Plugins\controller</AdditionalIncludeDirectories>
+     ]]></by>
+           </append>
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\controller\controller.cpp">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NO_GETCWD;NO_CHDIR</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\controller\gcontroller.cpp">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NO_GETCWD;NO_CHDIR</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\controller\controllerbinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\controller\controller.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\controller\gcontroller.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\controller\gamepad\Gamepad.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\controller\gamepad\Gamepad_private.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\controller\gamepad\Gamepad_private.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\controller\gamepad\Gamepad_uwp.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+     ]]></by>
+           </append>
+        </replacelist>
+    </template>
  </target>
  
 </plugin>

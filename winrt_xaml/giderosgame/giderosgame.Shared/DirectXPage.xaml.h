@@ -54,6 +54,8 @@ namespace giderosgame
 		void OnKeyChar(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::CharacterReceivedEventArgs ^ Args);
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		void OnBackButtonPressed(Platform::Object^ sender, Windows::Phone::UI::Input::BackPressedEventArgs^ args);
+#else
+		void OnBackButtonPressed(Platform::Object^ sender, Windows::UI::Core::BackRequestedEventArgs^ args);
 #endif
 
 		bool m_windowVisible;

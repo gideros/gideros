@@ -483,7 +483,10 @@ int main(int argc, char *argv[])
         // error is displayed at readProjectFile function
         return 1;
     }
-    std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort();
+    std::map<QString,QString> fileMap;
+    for (std::size_t j = 0; j < ctx.fileQueue.size(); ++j)
+        fileMap[ctx.fileQueue[j].second]=ctx.fileQueue[j].first;
+    std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort(QFileInfo(projectFileName_).dir(),fileMap);
      for (std::size_t i = 0; i < topologicalSort.size(); ++i)
      {
          int index = -1;

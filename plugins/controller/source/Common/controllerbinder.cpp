@@ -1,5 +1,5 @@
-#include "controller.h"
 #include "gideros.h"
+#include "controller.h"
 
 // some Lua helper functions
 #ifndef abs_index
@@ -36,6 +36,7 @@ static const char* RIGHT_JOYSTICK = "rightJoystick";
 static const char* LEFT_JOYSTICK = "leftJoystick";
 static const char* RIGHT_TRIGGER = "rightTrigger";
 static const char* LEFT_TRIGGER = "leftTrigger";
+static const char* AXIS_JOYSTICK = "axisJoystick";
 static const char* KEY_DOWN = "keyDown";
 static const char* KEY_UP = "keyUp";
 static const char* CONNECTED = "connected";
@@ -133,6 +134,9 @@ private:
 			case GHID_LEFT_TRIGGER_EVENT:
                 lua_pushstring(L, LEFT_TRIGGER);
                 break;
+            case GHID_AXIS_JOYSTICK_EVENT:
+                lua_pushstring(L, AXIS_JOYSTICK);
+                break;
 			case GHID_CONNECTED_EVENT:
                 lua_pushstring(L, CONNECTED);
                 break;
@@ -149,7 +153,10 @@ private:
             
 			lua_pushnumber(L, event2->keyCode);
 			lua_setfield(L, -2, "keyCode");
-			
+
+            lua_pushnumber(L, event2->realCode);
+            lua_setfield(L, -2, "realCode");
+
 			lua_pushnumber(L, event2->playerId);
 			lua_setfield(L, -2, "playerId");
         }
@@ -182,12 +189,31 @@ private:
 			lua_pushnumber(L, event2->playerId);
 			lua_setfield(L, -2, "playerId");
         }
+        else if (type == GHID_AXIS_JOYSTICK_EVENT)
+        {
+            ghid_JoystickEvent *event2 = (ghid_JoystickEvent*)event;
+
+            lua_pushnumber(L, event2->playerId);
+            lua_setfield(L, -2, "playerId");
+
+            lua_pushnumber(L, event2->strength);
+            lua_setfield(L, -2, "strength");
+
+            lua_pushnumber(L, event2->angle);
+            lua_setfield(L, -2, "axis");
+        }
 		else if (type == GHID_CONNECTED_EVENT || type == GHID_DISCONNECTED_EVENT)
         {
             ghid_DeviceEvent *event2 = (ghid_DeviceEvent*)event;
 			
 			lua_pushnumber(L, event2->playerId);
-			lua_setfield(L, -2, "playerId");
+            lua_setfield(L, -2, "playerId");
+
+			lua_pushnumber(L, event2->product_id);
+            lua_setfield(L, -2, "productId");
+
+			lua_pushnumber(L, event2->vendor_id);
+            lua_setfield(L, -2, "vendorId");
         }
 
 		lua_call(L, 2, 0);
@@ -239,16 +265,18 @@ static int getControllerName(lua_State *L)
     return 1;
 }
 
-static int getControllerInfo(lua_State *L)
-{
-	lua_newtable(L);
-    return 1;
-}
-
 static int vibrate(lua_State *L)
 {
     Controller *c = getInstance(L, 1);
 	c->vibrate(lua_tonumber(L, 2), lua_tonumber(L, 3));
+    return 0;
+}
+
+extern void setDeadZone(float dz);
+static int lSetDeadZone(lua_State *L)
+{
+	lua_Number dz=luaL_checknumber(L,1);
+	setDeadZone(dz);
     return 0;
 }
 
@@ -270,15 +298,8 @@ static int getPlayers(lua_State *L)
 		}
 	}
 	lua_pushvalue(L, -1);
+    delete players;
     return 1;
-}
-
-extern void setDeadZone(float dz);
-static int lSetDeadZone(lua_State *L)
-{
-	lua_Number dz=luaL_checknumber(L,1);
-	setDeadZone(dz);
-    return 0;
 }
 
 static int loader(lua_State *L)
@@ -287,7 +308,6 @@ static int loader(lua_State *L)
 		{"isAnyAvailable", isAnyAvailable},
 		{"getPlayerCount", getPlayerCount},
 		{"getControllerName", getControllerName},
-		{"getControllerInfo", getControllerInfo},
 		{"getPlayers", getPlayers},
 		{"vibrate", vibrate},
 		{"setDeadZone", lSetDeadZone},
@@ -309,6 +329,8 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "RIGHT_TRIGGER");
 	lua_pushstring(L, LEFT_TRIGGER);
 	lua_setfield(L, -2, "LEFT_TRIGGER");
+    lua_pushstring(L, AXIS_JOYSTICK);
+    lua_setfield(L, -2, "AXIS_JOYSTICK");
 	lua_pushstring(L, CONNECTED);
 	lua_setfield(L, -2, "CONNECTED");
 	lua_pushstring(L, DISCONNECTED);

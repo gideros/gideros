@@ -40,8 +40,8 @@
 #include <gstdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include "defines.h"
 #include <wchar.h> 
+#include "defines.h"
 #include "wcio.h"
 #include "fileext.h"
 

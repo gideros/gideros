@@ -4,11 +4,12 @@
 #include <cmath>
 #include <cstdio>
 
-#ifdef WIN32_NOQT
+#if defined(WIN32_NOQT) || defined(WINSTORE)
 #define Q_OS_WIN 1
 #else
 #include <QtCore/qglobal.h>
 #endif
+
 
 static float DEAD_ZONE = 0.25f;
 static const double MATH_PI = atan(1)*4;
@@ -20,6 +21,7 @@ static int BUTTONS_XBOX_MAC[15] = {DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, BU
 static int BUTTONS_OUYA_MAC[15] = {BUTTON_A, BUTTON_X, BUTTON_Y, BUTTON_B, BUTTON_L1, BUTTON_R1, BUTTON_L3, BUTTON_R3, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, -1, -1, BUTTON_MENU};
 static int BUTTONS_OUYA_WIN[15] = {BUTTON_A, BUTTON_X, BUTTON_Y, BUTTON_B, BUTTON_L1, BUTTON_R1, BUTTON_L3, BUTTON_R3, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, BUTTON_L2, BUTTON_R2, BUTTON_MENU};
 static int BUTTONS_PS3_MAC[17] = {BUTTON_BACK, BUTTON_L3, BUTTON_R3, BUTTON_MENU, DPAD_UP, DPAD_RIGHT, DPAD_DOWN, DPAD_LEFT, BUTTON_L2, BUTTON_R2, BUTTON_L1, BUTTON_R1, BUTTON_Y, BUTTON_B, BUTTON_A, BUTTON_X, BUTTON_MENU};
+static int BUTTONS_HTML[17] = {BUTTON_A, BUTTON_B, BUTTON_X, BUTTON_Y, BUTTON_L1, BUTTON_R1, BUTTON_L2, BUTTON_R2, BUTTON_BACK, BUTTON_MENU, BUTTON_L3, BUTTON_R3, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, BUTTON_CENTER };
 
 //static int AXIS_DEFAULT[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 static int AXIS_DEFAULT[8] = {0, 1, 4, 3, 2, 2, 5, 6};
@@ -27,6 +29,7 @@ static int AXIS_XBOX_WIN[8] = {0, 1, 4, 3, 2, 2, 5, 6};
 static int AXIS_OUYA_WIN[8] = {0, 1, 5, 4, 2, 3, 6, 7};
 static int AXIS_MOGA_MAC[8] = {0, 1, 2, 3, 6, 7, 5, 4};
 static int AXIS_PS3_MAC[8] = {0, 1, 2, 3, 14, 15, -1, -1};
+static int AXIS_HTML[8] = {0, 1, 2, 3, 4, 5, -1, -1};
 
 #ifdef Q_OS_WIN
     static int OS = 1;
@@ -52,7 +55,12 @@ GController::GController(GHID *ghid, unsigned int dID, const char* pname, int bt
     axis =&AXIS_DEFAULT[0];
     if(OS == 1)
     {
-        if(vendorID == 1118 && productID == 673) //xbox
+        if(vendorID == 0 && productID == 0) { //HTML standard
+            buttons = &BUTTONS_HTML[0];
+            axis = &AXIS_HTML[0];
+            dispatchTrigger = false; //dispatched by HTML driver
+        }
+        else if(vendorID == 1118 && productID == 673) //xbox
         {
             axis = &AXIS_XBOX_WIN[0];
         }
@@ -121,6 +129,11 @@ unsigned int GController::getId(){
 
 const char* GController::getName(){
     return name.c_str();
+}
+
+void GController::getInfo(int *vid,int *pid) {
+	*vid=vendorID;
+	*pid=productID;
 }
 
 void GController::handleButtonDown(unsigned int buttonID) {
@@ -220,8 +233,9 @@ GControllerTrigger::GControllerTrigger(GHID *ghid, unsigned int dID, bool dispat
 }
 
 void GControllerTrigger::handleBoth(float value, float lastValue){
-    if(lastValue != value && fabs(value) >= DEAD_ZONE)
+    if(lastValue != value)
     {
+        if(fabs(value) < DEAD_ZONE) value=0;
         if(value <= 0)
         {
             ghid_->onRightTrigger(fabs(value), deviceID);
@@ -239,7 +253,7 @@ void GControllerTrigger::handleBoth(float value, float lastValue){
                 }
            }
         }
-        else if(value >= 0)
+        if(value >= 0)
         {
             ghid_->onLeftTrigger(fabs(value), deviceID);
             if(shouldDispatch)
@@ -263,23 +277,21 @@ void GControllerTrigger::handleLeft(float value, float lastValue){
     if(lastValue != value)
     {
         value = (value + 1)/2;
-        if(fabs(value) >= DEAD_ZONE)
-        {
-            ghid_->onLeftTrigger(fabs(value), deviceID);
-            if(shouldDispatch)
-            {
-                if(!leftDown && value > 0.5)
-                {
-                    leftDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_L2, -1, deviceID);
-                }
-                else if(leftDown && value <= 0.5)
-                {
-                    leftDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_L2, -1, deviceID);
-                }
-            }
-        }
+        if(fabs(value) < DEAD_ZONE) value=0;
+		ghid_->onLeftTrigger(fabs(value), deviceID);
+		if(shouldDispatch)
+		{
+			if(!leftDown && value > 0.5)
+			{
+				leftDown = true;
+				ghid_->onKeyDownEvent(BUTTON_L2, -1, deviceID);
+			}
+			else if(leftDown && value <= 0.5)
+			{
+				leftDown = false;
+				ghid_->onKeyUpEvent(BUTTON_L2, -1, deviceID);
+			}
+		}
     }
 }
 
@@ -287,23 +299,21 @@ void GControllerTrigger::handleRight(float value, float lastValue){
     if(lastValue != value)
     {
         value = (value + 1)/2;
-        if(fabs(value) >= DEAD_ZONE)
-        {
-            ghid_->onRightTrigger(fabs(value), deviceID);
-            if(shouldDispatch)
-            {
-                if(!rightDown && value > 0.5)
-                {
-                    rightDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_R2, -1, deviceID);
-                }
-                else if(rightDown && value <= 0.5)
-                {
-                    rightDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_R2, -1, deviceID);
-                }
-            }
-        }
+        if(fabs(value) < DEAD_ZONE) value=0;
+		ghid_->onRightTrigger(fabs(value), deviceID);
+		if(shouldDispatch)
+		{
+			if(!rightDown && value > 0.5)
+			{
+				rightDown = true;
+				ghid_->onKeyDownEvent(BUTTON_R2, -1, deviceID);
+			}
+			else if(rightDown && value <= 0.5)
+			{
+				rightDown = false;
+				ghid_->onKeyUpEvent(BUTTON_R2, -1, deviceID);
+			}
+		}
     }
 }
 

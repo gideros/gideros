@@ -46,6 +46,10 @@ void LibraryWidget::cloneProject(const QString& projectFileName)
     ui.treeWidget->cloneProject(projectFileName);
 }
 
+std::vector<std::pair<QString, QString> > LibraryWidget::fileList(bool downsizing,bool webClient) {
+    return ui.treeWidget->fileList(downsizing,webClient);
+}
+
 void LibraryWidget::consolidateProject()
 {
     ui.treeWidget->consolidateProject();

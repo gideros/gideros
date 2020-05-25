@@ -261,7 +261,7 @@
             ShaderBuffer *oldfbo = ShaderEngine::Engine->setFramebuffer(rdrTgt);
             ShaderEngine::Engine->setViewport(0, 0, tex->width, tex->height);
             Matrix4 projection = ShaderEngine::Engine->setOrthoFrustum(0,
-                                                                       tex->baseWidth, 0, tex->baseHeight, -1, 1);
+                                                                       tex->baseWidth, tex->baseHeight,0, -1, 1,true);
             ShaderEngine::Engine->setProjection(projection);
             Matrix4 model;
             ShaderEngine::Engine->setModel(model);

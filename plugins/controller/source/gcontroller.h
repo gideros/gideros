@@ -64,6 +64,8 @@ public:
 
     const char* getName();
 
+    void getInfo(int *vid,int *pid);
+
     void handleButtonDown(unsigned int buttonID);
 
     void handleButtonUp(unsigned int buttonID);

@@ -2,14 +2,13 @@
 #include <algorithm>
 #include <stack>
 
-
-
-
-CodeDependenciesDialog::CodeDependenciesDialog(DependencyGraph* graph, const QString& selected, QWidget* parent) :
+CodeDependenciesDialog::CodeDependenciesDialog(QDir projectDir,DependencyGraph* graph, std::map<QString,QString> fileMap, const QString& selected, QWidget* parent) :
 	QDialog(parent)
 {
 	ui.setupUi(this);
 	this->graph = graph;
+    this->fileMap=fileMap;
+    this->projectDir=projectDir;
 
 	std::vector<QString> codes = graph->codes();
 
@@ -103,7 +102,7 @@ void CodeDependenciesDialog::currentIndexChanged(const QString& text)
 
 void CodeDependenciesDialog::updateCallOrder()
 {
-    std::vector<std::pair<QString, bool> > codes = graph->topologicalSort();
+    std::vector<std::pair<QString, bool> > codes = graph->topologicalSort(projectDir,fileMap);
 	ui.callOrder->clear();
 	for (std::size_t i = 0; i < codes.size(); ++i)
     {

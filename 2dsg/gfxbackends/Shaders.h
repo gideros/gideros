@@ -275,7 +275,7 @@ public:
 	virtual ShaderProgram *getDefault(StandardProgram id,int variant=0);
 	//Matrices
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
-	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
+	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRenderTarget);
 	virtual void setProjection(const Matrix4 p) { oglProjection=p; }
 	virtual void setView(const Matrix4 v) { oglView=v; }
 	virtual void setViewportProjection(const Matrix4 vp, float width, float height);

@@ -32,5 +32,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/strbuf.c" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/fpconv.c" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\json/source/lua_cjson.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\threadtimedluahook.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding/zlibbinder.cpp" />
   </ItemGroup>
 </Project>

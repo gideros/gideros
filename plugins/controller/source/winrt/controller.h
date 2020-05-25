@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-class GController;
+struct GController;
 
 class GHID
 {
@@ -20,8 +20,6 @@ public:
     int getPlayerCount();
 
     const char* getControllerName(int playerId);
-
-    void getControllerInfo(int playerId,int *vid,int *pid);
 
     void vibrate(int player, long ms);
 
@@ -40,16 +38,6 @@ public:
     void onLeftTrigger(double strength, int playerId);
 
     void onAxisJoystick(double strength, int axisID, int playerId);
-
-    void onConnected(struct Gamepad_device * device);
-
-    void onDisconnected(struct Gamepad_device * device);
-
-    void onButtonDown(struct Gamepad_device * device, unsigned int buttonID);
-
-    void onButtonUp(struct Gamepad_device * device, unsigned int buttonID);
-
-    void onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue);
 
     g_id addCallback(gevent_Callback callback, void *udata);
     void removeCallback(gevent_Callback callback, void *udata);
@@ -128,9 +116,6 @@ static const int BUTTON_R2 = 105;
 static const int BUTTON_R3 = 107;
 static const int BUTTON_X = 99;
 static const int BUTTON_Y = 100;
-static const int BUTTON_CENTER = 304;
-static const int BUTTON_SELECT = 305;
-static const int BUTTON_START = 306;
 
 static const int LEFT_STICK_X = 0;
 static const int LEFT_STICK_Y = 1;
@@ -151,7 +136,6 @@ void ghid_cleanup();
 int ghid_isAnyAvailable();
 int ghid_getPlayerCount();
 const char* ghid_getControllerName(int player);
-void ghid_getControllerInfo(int player,int *vid,int *pid);
 void ghid_vibrate(int player, long ms);
 int* ghid_getPlayers(int* size);
 

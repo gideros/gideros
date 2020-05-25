@@ -165,7 +165,7 @@ void VideoFrameSurface::render() {
 		ShaderBuffer *oldfbo = engine->setFramebuffer(rdrTgt);
 		engine->setViewport(0, 0, gtex->width, gtex->height);
 		Matrix4 projection = engine->setOrthoFrustum(0,
-				gtex->baseWidth, 0, gtex->baseHeight, -1, 1);
+				gtex->baseWidth, gtex->baseHeight, 0, -1, 1,true);
 		engine->setProjection(projection);
 		Matrix4 model;
 		engine->setModel(model);

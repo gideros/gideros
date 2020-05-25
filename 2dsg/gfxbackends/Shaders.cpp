@@ -209,7 +209,7 @@ Matrix4 ShaderEngine::setFrustum(float l, float r, float b, float t, float n, fl
 	return mat;
 }
 
-Matrix4 ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float n, float f)
+Matrix4 ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRT)
 {
 	Matrix4 mat;
 	mat[0] = 2 / (r - l);

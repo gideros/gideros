@@ -242,6 +242,8 @@ loader:addEventListener(Event.COMPLETE, onComplete)
 <li><i class="icon-arrow-right"></i> <strong>init.lua</strong> will always be executed first</li>
 <li><i class="icon-arrow-right"></i> <strong>main.lua</strong> will always be executed last</li>
 </ul>
+	
+<p>In Gideros the rules about main.lua and init.lua only apply to top level files. If they are in sub directories, they lose their specificities.</p>
 
 <p><strong>So the best practice is:</strong></p>
 <ul>
