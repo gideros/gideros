@@ -260,6 +260,11 @@
 				path="Hardware/Benchmark functions perfomance/benchmarkFunctions.gproj"
 				image = "benchmark.png"
 				/>
+	<example 	name="Controller Plugin Demo"
+				description="Demonstration of the controller plugin"
+				path="Hardware/ControllerDemo/controllers.gproj"
+				image = "joypad.png"
+				/>
 </category>
 
 <category name="Network">

@@ -1,0 +1,33 @@
+<project>
+ <properties html5_symbols="0" backgroundColor="#ffffff" html5_fbinstant="0" html5_pack="1" iosDevice="0" html5_crash="" osx_signingId="" orientation="0" encryptCode="0" splash_h_image="" osx_org="GiderosMobile" encryptAssets="0" html5_mem="256" html5_wasm="0" packageName="com.yourdomain.yourapp" win_domain="giderosmobile.com" windowWidth="0" mouseToTouch="1" mainluaOnly="0" app_icon="" splash_v_image="" mouseTouchOrder="0" tv_icon="" winrt_org="GiderosMobile" disableSplash="0" retinaDisplay="0" android_template="0" win_org="GiderosMobile" touchToMouse="1" app_name="" splashScaleMode="0" autorotation="0" exportMode="0" winrt_package="com.gideros.controller" version_code="1" osx_category="5" logicalHeight="960" windowHeight="0" architecture="4" html5_host="" fps="60" osx_bundle="com.yourdomain." logicalWidth="640" osx_installerId="" ios_bundle="com.yourdomain." scaleMode="3" vsync="0" build_number="1" version="1.0" osx_domain="giderosmobile.com" html5_fbload="100">
+  <imageScales/>
+  <plugins>
+   <plugin name="Controller" enabled="1"/>
+  </plugins>
+  <exports>
+   <export name="APK">
+    <property name="androidPath" value=""/>
+    <property name="androidSdk" value=""/>
+    <property name="androidTarget" value="26"/>
+    <property name="androidTools" value=""/>
+    <property name="buildAab" value="1"/>
+    <property name="buildApk" value="0"/>
+    <property name="deployApk" value="0"/>
+    <property name="javaPath" value=""/>
+    <property name="keyAlias" value=""/>
+    <property name="keyStore" value=""/>
+    <property name="packageName" value="com.yourdomain.yourapp"/>
+    <property name="timestampApk" value="0"/>
+   </export>
+  </exports>
+ </properties>
+ <folder name="images">
+  <file name="assets/images/button.png"/>
+  <file name="assets/images/dpad.png"/>
+  <file name="assets/images/shell.png"/>
+  <file name="assets/images/shoulder.png"/>
+  <file name="assets/images/thumb.png"/>
+  <file name="assets/images/trigger.png"/>
+ </folder>
+ <file name="assets/main.lua"/>
+</project>
