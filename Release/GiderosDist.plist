@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <pkg-ref id="com.giderosmobile.gideros"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.giderosmobile.gideros"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.giderosmobile.gideros" visible="false">
+        <pkg-ref id="com.giderosmobile.gideros"/>
+    </choice>
+    <pkg-ref id="com.giderosmobile.gideros" version="0" onConclusion="none">Gideros-App.pkg</pkg-ref>
+</installer-gui-script>
