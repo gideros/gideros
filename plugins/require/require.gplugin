@@ -381,8 +381,8 @@
 			iOSProject.InfoPlist.NSLocationUsageDescription=Export.getProperty("plugin.reqGpsReason")
 			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=Export.getProperty("plugin.reqGpsReason")
 		else
-			iOSProject.InfoPlist.NSLocationUsageDescription=nil
-			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=nil
+			iOSProject.InfoPlist.NSLocationUsageDescription="This app doesn't use GPS. You shouldn't see this message. If you do, close the app immediately."
+			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription="This app doesn't use GPS. You shouldn't see this message. If you do, close the app immediately."
 		end
 	]]></lua>
 	   <if condition="[[[plugin.reqGpsBackground]]]">
