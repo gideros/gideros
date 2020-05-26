@@ -135,7 +135,7 @@ public:
 	void adjustViewportProjection(Matrix4 &vp, float width, float height);
 	void resizeFramebuffer(int width,int height);
 	void setProjection(const Matrix4 p);
-	void setModel(const Matrix4 m);
+    void setModel(const Matrix4 m);
 	void clearColor(float r,float g,float b,float a);
 	void bindTexture(int num,ShaderTexture *texture);
 	void setClip(int x,int y,int w,int h);

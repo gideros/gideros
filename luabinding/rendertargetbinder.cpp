@@ -140,7 +140,7 @@ int RenderTargetBinder::getPixel(lua_State *L)
     if ((x>=0)&&(y>=0))
     	renderTarget->getPixels(x,y,1,1,pixel);
 
-    lua_pushnumber(L,(pixel[0]<<16)|(pixel[1]<<8)|(pixel[2]<<0));
+    lua_pushinteger(L,(pixel[0]<<16)|(pixel[1]<<8)|(pixel[2]<<0));
     lua_pushnumber(L,((float)pixel[3])/255.0);
 
     return 2;

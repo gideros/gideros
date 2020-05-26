@@ -272,7 +272,7 @@ fragment half4 gidPTF(PVertexP vert [[stage_in]],
                      texture2d<half> tex [[texture(0)]],
                      sampler smp [[sampler(0)]])
 {
-    return vert.color*tex.sample(smp,pc+uniforms.fTexInfo.xy);
+    return vert.color*tex.sample(smp,pc*uniforms.fTexInfo.xy);
 }
 
 //Mesh particle shader (Gideros particles)

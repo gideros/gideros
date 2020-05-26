@@ -20,7 +20,6 @@
 		EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */; };
 		EB4A6AE61D64ACF900162D26 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */; };
 		EB4A6AE81D64AD0000162D26 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */; };
-		EB4A6AEA1D64AD0900162D26 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,7 +37,6 @@
 		EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +44,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB4A6AEA1D64AD0900162D26 /* OpenGLES.framework in Frameworks */,
 				EB4A6AE81D64AD0000162D26 /* CoreGraphics.framework in Frameworks */,
 				EB4A6AE61D64ACF900162D26 /* QuartzCore.framework in Frameworks */,
 				EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */,
@@ -81,7 +78,6 @@
 		5F9FAA9F15DD87E20039718F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */,
 				EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */,
 				EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */,
 				EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */,
@@ -207,7 +203,7 @@
 					../../../Sdk/include,
 					../../../Sdk/include/gideros,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 			};
@@ -234,7 +230,7 @@
 					../../../Sdk/include,
 					../../../Sdk/include/gideros,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

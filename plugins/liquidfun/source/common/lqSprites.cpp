@@ -97,11 +97,9 @@ void b2DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2
 		theta += k_increment;
 	}
 
-
 	uint16_t *indices=new uint16_t[vertexCount];
 	for (int i=0;i<vertexCount;i++)
 		indices[i]=((i%2)==0)?(i/2):(vertexCount-1-i/2);
-	delete[] indices;
 
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,0.5f);

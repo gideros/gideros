@@ -277,7 +277,7 @@ ShaderBuffer *metalShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
         if (mcb) {
             [mcb commit];
             if (previous) {
-                //[mcb waitUntilCompleted];
+                [mcb waitUntilCompleted];
                 previous->unbound();
             }
             [mcb release];
