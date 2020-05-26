@@ -389,7 +389,6 @@ float ShadowCalculation(float4 fragPosLightSpace,depth2d<float> stex [[texture(2
     float3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
     projCoords.xy = projCoords.xy * 0.5 +0.5;
-	projCoords.y=1-projCoords.y;
 	if ((projCoords.x<0.0)||(projCoords.y<0.0)||(projCoords.x>=1.0)||(projCoords.y>=1.0))
 		return 1.0;
 	projCoords.z-=0.005; //BIAS
@@ -598,7 +597,6 @@ float ShadowCalculation(float4 fragPosLightSpace)
     // perform perspective divide
     float3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     // transform to [0,1] range
-	//projCoords.y*=-1;
     projCoords.xy = projCoords.xy * 0.5 + 0.5;
 	float shadow=1.0;
 	if (!((projCoords.x<0.0)||(projCoords.y<0.0)||(projCoords.x>=1.0)||(projCoords.y>=1.0))) {
