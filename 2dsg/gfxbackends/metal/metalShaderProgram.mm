@@ -504,9 +504,6 @@ void metalShaderProgram::drawArrays(ShapeType shape, int first,
 	case Triangles:
 		mode = MTLPrimitiveTypeTriangle;
 		break;
-	case TriangleFan:
-		mode = MTLPrimitiveTypeTriangleStrip; //Unsupported
-		break;
 	case TriangleStrip:
 		mode = MTLPrimitiveTypeTriangleStrip;
 		break;
@@ -534,9 +531,6 @@ void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
             break;
         case Triangles:
             mode = MTLPrimitiveTypeTriangle;
-            break;
-        case TriangleFan:
-            mode = MTLPrimitiveTypeTriangleStrip; //Unsupported
             break;
         case TriangleStrip:
             mode = MTLPrimitiveTypeTriangleStrip;

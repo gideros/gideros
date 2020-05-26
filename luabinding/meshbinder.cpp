@@ -64,8 +64,6 @@ MeshBinder::MeshBinder(lua_State *L)
     lua_setfield(L, -2, "PRIMITIVE_LINELOOP");
     lua_pushinteger(L, ShaderProgram::Triangles);
     lua_setfield(L, -2, "PRIMITIVE_TRIANGLES");
-    lua_pushinteger(L, ShaderProgram::TriangleFan);
-    lua_setfield(L, -2, "PRIMITIVE_TRIANGLEFAN");
     lua_pushinteger(L, ShaderProgram::TriangleStrip);
     lua_setfield(L, -2, "PRIMITIVE_TRIANGLESTRIP");
 

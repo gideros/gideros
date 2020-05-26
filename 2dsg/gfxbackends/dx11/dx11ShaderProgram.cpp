@@ -581,24 +581,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 	else if (shape == TriangleStrip)
 		g_devcon->IASetPrimitiveTopology(
 				D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	else if (shape == TriangleFan) {
-		D3D11_MAPPED_SUBRESOURCE ms;
-		int ntris = count - 2;
-		ID3D11Buffer *vbo = getGenericVBO(0, 2, 1, 3 * ntris);
-		g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
-		unsigned short *i = (unsigned short *) ms.pData;
-		for (int t = 0; t < ntris; t++) {
-			*(i++) = first;
-			*(i++) = first + t + 1;
-			*(i++) = first + t + 2;
-		}
-		g_devcon->Unmap(vbo, NULL);                          // unmap the buffer
-		g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, 0);
-		curIndicesVBO = vbo;
-		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		g_devcon->DrawIndexed(ntris * 3, 0, 0);
-		return;
-	} else if (shape == Triangles)
+	else if (shape == Triangles)
 		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	else if (shape == LineLoop) {
 		D3D11_MAPPED_SUBRESOURCE ms;

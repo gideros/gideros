@@ -537,9 +537,6 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 	case Triangles:
 		mode = GL_TRIANGLES;
 		break;
-	case TriangleFan:
-		mode = GL_TRIANGLE_FAN;
-		break;
 	case TriangleStrip:
 		mode = GL_TRIANGLE_STRIP;
 		break;
@@ -581,9 +578,6 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		break;
 	case Triangles:
 		mode = GL_TRIANGLES;
-		break;
-	case TriangleFan:
-		mode = GL_TRIANGLE_FAN;
 		break;
 	case TriangleStrip:
 		mode = GL_TRIANGLE_STRIP;

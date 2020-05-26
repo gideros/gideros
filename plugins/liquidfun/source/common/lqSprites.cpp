@@ -43,10 +43,14 @@ void b2DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, co
 {
 	gtexture_get_engine()->getDefault(ShaderEngine::STDP_BASIC)->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, vertices, vertexCount, true, NULL);
 
+	uint16_t *indices=new uint16_t[vertexCount];
+	for (int i=0;i<vertexCount;i++)
+		indices[i]=((i%2)==0)?(i/2):(vertexCount-1-i/2);
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,0.5f);
-	gtexture_get_engine()->getDefault(ShaderEngine::STDP_BASIC)->drawArrays(ShaderProgram::TriangleFan, 0, vertexCount);
+	gtexture_get_engine()->getDefault(ShaderEngine::STDP_BASIC)->drawElements(ShaderProgram::TriangleStrip, vertexCount,ShaderProgram::DUSHORT, indices,true,NULL);
 	glPopColor();
+	delete[] indices;
 
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,1);
@@ -93,15 +97,23 @@ void b2DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2
 		theta += k_increment;
 	}
 
+
+	uint16_t *indices=new uint16_t[vertexCount];
+	for (int i=0;i<vertexCount;i++)
+		indices[i]=((i%2)==0)?(i/2):(vertexCount-1-i/2);
+	delete[] indices;
+
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,0.5f);
 	gtexture_get_engine()->getDefault(ShaderEngine::STDP_BASIC)->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2, glVertices, vertexCount, true, NULL);
-	gtexture_get_engine()->getDefault(ShaderEngine::STDP_BASIC)->drawArrays(ShaderProgram::TriangleFan, 0, vertexCount);
+	gtexture_get_engine()->getDefault(ShaderEngine::STDP_BASIC)->drawElements(ShaderProgram::TriangleStrip, vertexCount,ShaderProgram::DUSHORT, indices,true,NULL);
 	glPopColor();
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,1);
 	gtexture_get_engine()->getDefault(ShaderEngine::STDP_BASIC)->drawArrays(ShaderProgram::LineLoop, 0, vertexCount);
 	glPopColor();
+
+	delete[] indices;
 
 	// Draw the axis line
 	DrawSegment(center,center+radius*axis,color);

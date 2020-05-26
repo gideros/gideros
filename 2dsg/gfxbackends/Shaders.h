@@ -27,7 +27,7 @@ public:
 		Lines,
 		LineLoop,
 		Triangles,
-		TriangleFan,
+		RSV_EX_TriangleFan,
 		TriangleStrip
 	};
     struct DataDesc {
