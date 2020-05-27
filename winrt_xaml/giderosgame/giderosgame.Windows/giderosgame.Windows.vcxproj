@@ -247,9 +247,6 @@
     <Image Include="Assets\WideTile.scale-400.png" />
     <!--GIDEROS_INSERT_ASSETS_HERE-->
   </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ImageContentTask.targets" />

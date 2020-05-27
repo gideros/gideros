@@ -15,20 +15,19 @@
     <SharedGUID>9fd4af0a-93d0-4455-84eb-dcc2c7c76e36</SharedGUID>
     <GidLibsPath>..\..\..\winrt\$(GidPlatformPath)$(Configuration)\gideros.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\libgvfswinrt.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\luawinrt.$(GidProjectType)</GidLibsPath>
   </PropertyGroup>
-  
   <ItemDefinitionGroup>
     <ClCompile>
-   	  <!--GIDEROS-COMPILE-SHARED-->
+      <!--GIDEROS-COMPILE-SHARED-->
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(GidLibsPath)</AdditionalLibraryDirectories>
-   	  <!--GIDEROS-LINK-SHARED-->
-   <!--PLUGINS-START-->
+      <!--GIDEROS-LINK-SHARED-->
+      <!--PLUGINS-START-->
       <AdditionalDependencies>luasocket.$(GidProjectType).lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
-   <!--PLUGINS-END-->
+      <!--PLUGINS-END-->
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -41,10 +40,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\plugins.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-   <!--GIDEROS-PLUGIN-FILES-->
-   <!--PLUGINS-START-->
+    <!--GIDEROS-PLUGIN-FILES-->
+    <!--PLUGINS-START-->
     <ClCompile Include="$(ProjectDir)\..\..\..\Plugins\luasocket\source\luasocket_stub.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -92,19 +91,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);SQLITE_OMIT_LOAD_EXTENSION=1;SQLITE_OS_WINRT;SQLITE_MAX_MMAP_SIZE=0;SQLITE_OMIT_WAL</PreprocessorDefinitions>
       <DisableSpecificWarnings>4703</DisableSpecificWarnings>
-     </ClCompile>
+    </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\sqlite3.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h" />
-   <!--PLUGINS-END-->
+    <!--PLUGINS-END-->
     <ClInclude Include="$(MSBuildThisFileDirectory)gapplication.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gevent.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gexport.h" />

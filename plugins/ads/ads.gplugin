@@ -437,6 +437,7 @@ iOSProject.commit()
  		</lua>
     </if>
  </target>
+ <!-- Microsoft Ads are no longer available
  <target name="WinRT">
     <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins"/>
     <template name="project" path="">
@@ -458,14 +459,9 @@ iOSProject.commit()
         <append>
             <orig><![CDATA[<!--SDK-REFERENCE-WIN-->]]></orig>
             <by><![CDATA[
-    <SDKReference Include="Microsoft.AdMediatorWindows81, Version=1.0" />]]></by>
-         </append>
-        <append>
-            <orig><![CDATA[<!--SDK-REFERENCE-WINPHONE-->]]></orig>
-            <by><![CDATA[
-        <SDKReference Include="Microsoft.AdMediator81, Version=1.0" />]]></by>
+    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0" />
          </append>
         </replacelist>
     </template>
- </target>
+ </target> -->
 </plugin>

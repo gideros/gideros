@@ -3,15 +3,6 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
-      <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
-      <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp">
-      <Filter>Plugins</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit.c">
       <Filter>Plugins</Filter>
     </ClCompile>
@@ -67,15 +58,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)luaconf.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)lualib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h">
-      <Filter>Plugins</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h">
-      <Filter>Plugins</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h">
-      <Filter>Plugins</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\lfs.h">
       <Filter>Plugins</Filter>
     </ClInclude>
