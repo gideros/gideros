@@ -672,7 +672,7 @@ void MainWindow::updateAlwaysOnTop(){
         setWindowFlags((windowFlags() & ~Qt::WindowStaysOnBottomHint) | Qt::WindowStaysOnTopHint);
 
     else
-        setWindowFlags((windowFlags() & ~Qt::WindowStaysOnTopHint) | Qt::WindowStaysOnBottomHint);
+        setWindowFlags(windowFlags() & ~(Qt::WindowStaysOnTopHint | Qt::WindowStaysOnBottomHint));
 
     show();
 }
