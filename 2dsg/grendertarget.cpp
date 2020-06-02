@@ -54,7 +54,7 @@ void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int 
 		glPushColor();
 		glMultColor(r * a, g * a, b * a, a);
 	    ShaderProgram *shp=ShaderProgram::stdBasic;
-	    float vertices[8]={x,y,x+w-1,y,x,y+h-1,x+w-1,y+h-1};
+	    float vertices[8]={(float)x,(float)y,(float)(x+w-1),(float)y,(float)x,(float)(y+h-1),(float)(x+w-1),(float)(y+h-1)};
 	    shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,vertices,4,true,NULL);
 		shp->drawArrays(ShaderProgram::TriangleStrip, 0,4);
 		glPopColor();
