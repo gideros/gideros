@@ -2,6 +2,7 @@
 #include "application.h"
 #include "sprite.h"
 #include "ogl.h"
+#include "color.h"
 #include <gimage.h>
 
 GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap, bool selectScale, bool depth) :
@@ -43,23 +44,28 @@ void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int 
 		return;
 	ShaderBuffer *oldfbo=NULL;
 
+    float r = ((color >> 16) & 0xff) / 255.f;
+    float g = ((color >> 8) & 0xff) / 255.f;
+    float b = (color & 0xff) / 255.f;
 	if ((w>=0)&&(h>=0))
 	{
 		oldfbo=prepareForDraw();
 		ShaderEngine::Engine->pushClip(x,y,w,h);
+		glPushColor();
+		glMultColor(r * a, g * a, b * a, a);
+	    ShaderProgram *shp=ShaderProgram::stdBasic;
+	    float vertices[8]={x,y,x+w-1,y,x,y+h-1,x+w-1,y+h-1};
+	    shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,vertices,4,true,NULL);
+		shp->drawArrays(ShaderProgram::TriangleStrip, 0,4);
+		glPopColor();
+		ShaderEngine::Engine->popClip();
 	}
 	else
 	{
 		oldfbo=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
 		ShaderEngine::Engine->setViewport(0, 0, data->width, data->height);
+		ShaderEngine::Engine->clearColor(r * a, g * a, b * a, a);
 	}
-
-    float r = ((color >> 16) & 0xff) / 255.f;
-    float g = ((color >> 8) & 0xff) / 255.f;
-    float b = (color & 0xff) / 255.f;
-	ShaderEngine::Engine->clearColor(r * a, g * a, b * a, a);
-	if ((w>=0)&&(h>=0))
-		ShaderEngine::Engine->popClip();
 
     gtexture_BindRenderTarget(oldfbo);
 }
