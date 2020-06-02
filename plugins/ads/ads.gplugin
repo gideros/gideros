@@ -458,9 +458,9 @@ iOSProject.commit()
         <append>
             <orig><![CDATA[<!--SDK-REFERENCE-WIN-->]]></orig>
             <by><![CDATA[
-    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0" />]]>
+    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0" />]]></by>
          </append>
         </replacelist>
     </template>
- </target>
+ </target_deprecated>
 </plugin>
