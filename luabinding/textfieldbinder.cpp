@@ -38,6 +38,8 @@ static void populateLayout(lua_State* L,int index,FontBase::TextLayoutParameters
 {
     lua_getfield(L,index,"w"); tp->w=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"h"); tp->h=luaL_optnumber(L,-1,0); lua_pop(L,1);
+    lua_getfield(L,index,"alignX"); tp->alignx=luaL_optnumber(L,-1,0); lua_pop(L,1);
+    lua_getfield(L,index,"alignY"); tp->aligny=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"flags"); tp->flags=luaL_optinteger(L,-1,(int)FontBase::TLF_NOWRAP); lua_pop(L,1);
     lua_getfield(L,index,"letterSpacing");  tp->letterSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"lineSpacing"); tp->lineSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);

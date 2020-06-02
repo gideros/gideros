@@ -30,7 +30,7 @@ float FontBase::getCharIndexAtOffset(struct ChunkLayout &part, float offset, flo
 }
 
 
-void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped, int end)
+void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, float align, bool wrapped, int end)
 {
 	size_t cur=(end>=0)?end+1:tl->parts.size();
 	size_t cnt=cur-start;
@@ -41,10 +41,8 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
         sw+=(cnt>1)?((w-cw)/(cnt-1)):0;
         justified=true;
 	}
-	else if (flags&FontBase::TLF_RIGHT)
-		ox=w-cw;
-	else if (flags&FontBase::TLF_CENTER)
-		ox=(w-cw)/2;
+	else
+		ox=(w-cw)*align;
 	if (!justified) //Not justified, try to merge space separated chunks together
 	{
 		bool merged=false;
@@ -94,6 +92,10 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
     float bb=(getLineHeight()-as-ds)/2;
 	bool wrap=!(params->flags&TLF_NOWRAP);
 	bool breakwords=(params->flags&TLF_BREAKWORDS);
+	if (params->flags&TLF_RIGHT) params->alignx=1;
+	else if (params->flags&TLF_CENTER) params->alignx=0.5;
+	if (params->flags&TLF_BOTTOM) params->aligny=1;
+	else if (params->flags&TLF_VCENTER) params->aligny=0.5;
 	int breaksize=0;
 	if (breakwords&&params->breakchar.size())
 		breaksize=getAdvanceX(params->breakchar.c_str(),params->letterSpacing,-1);
@@ -259,7 +261,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
             else
             {
                 //The current line will exceed max width (and is not empty): wrap
-                layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,true);
+                layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx,true);
                 st=tl.parts.size();
                 y+=lh;
                 cl.y+=lh;
@@ -316,7 +318,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 				if ((brk<pmax)&&(brk>st)) {
                     if (brk>st) {
                         int ln=pmax-brk;
-						layoutHorizontal(&tl,st, params->w, ccw, sw, tabSpace, params->flags,params->letterSpacing,true,brk-1);
+						layoutHorizontal(&tl,st, params->w, ccw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx,true,brk-1);
                         pmax=tl.parts.size();
                         brk=pmax-ln;
                     }
@@ -341,7 +343,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		if (sepflags&CHUNKCLASS_FLAG_BREAK)
 		{
 			//Line break
-			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing);
+			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx);
 			st=tl.parts.size();
 			y+=lh;
 			cw=0;
@@ -373,7 +375,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	//Layout final line
 	if (tl.parts.size()>st)
 	{
-		layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing);
+		layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx);
 		st=tl.parts.size();
 		y+=lh;
 		cw=0;
@@ -405,11 +407,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	tl.lines=lines;
 
 	//Layout block vertically
-	float yo=0;
-	if (params->flags&TLF_BOTTOM)
-		yo=params->h-y;
-	else if (params->flags&TLF_VCENTER)
-		yo=(params->h-y)/2;
+	float yo=(params->h-y)*params->aligny;
 	int ref=params->flags&TLF_REF_MASK;
 	switch (ref) {
 	case TLF_REF_TOP: yo+=-tl.y; break;

@@ -120,17 +120,18 @@ public:
 	};
 
 	struct TextLayoutParameters {
-        TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar("") {};
+        TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar(""),alignx(0),aligny(0) {};
 		float w,h;
 		int flags;
 		float letterSpacing;
 		float lineSpacing;
 		float tabSpace;
 		std::string breakchar;
+		float alignx,aligny;
 	};
 	virtual TextLayout layoutText(const char *text, TextLayoutParameters *params);
 protected:
-	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped=false, int end=-1);
+	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, float align, bool wrapped=false, int end=-1);
     Application *application_;
 	int cacheVersion_;
     FontShaper *shaper_;

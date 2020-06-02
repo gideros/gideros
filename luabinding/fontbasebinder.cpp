@@ -153,6 +153,8 @@ int FontBaseBinder::layoutText(lua_State *L)
     tp.lineSpacing=luaL_optnumber(L,7,0);
     tp.tabSpace=luaL_optnumber(L,8,4);
     tp.breakchar=luaL_optstring(L,9,"");
+    tp.alignx=luaL_optnumber(L,10,0);
+    tp.aligny=luaL_optnumber(L,11,0);
 
     FontBase::TextLayout tl=font->layoutText(luaL_checkstring(L,2),&tp);
     lua_createtable(L,0,6);
