@@ -31,6 +31,8 @@ g_id gaudio_XmpOpen(const char *fileName, int *numChannels, int *sampleRate, int
 			*numSamples=(int)(44.1*fmi.total_time);
 	    g_id gid = g_NextId();
 	    ctxmap[gid]=xc;
+		if (error)
+			*error = GAUDIO_NO_ERROR;
 		return gid;
 	}
 	xmp_free_context(xc);

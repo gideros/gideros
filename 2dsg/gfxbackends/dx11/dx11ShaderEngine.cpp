@@ -290,8 +290,8 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // previously D3D11_BLEND_SRC_ALPHA
 	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
@@ -631,6 +631,33 @@ D3D11_BLEND dx11ShaderEngine::blendFactor2D3D11(BlendFactor blendFactor)
 	return D3D11_BLEND_ZERO;
 }
 
+D3D11_BLEND dx11ShaderEngine::blendAlpha2D3D11(BlendFactor blendFactor)
+{
+	switch (blendFactor)
+	{
+	case ZERO:
+		return D3D11_BLEND_ZERO;
+	case ONE:
+		return D3D11_BLEND_ONE;
+	case SRC_COLOR:
+	case SRC_ALPHA:
+		return D3D11_BLEND_SRC_ALPHA;
+	case SRC_ALPHA_SATURATE:
+		return D3D11_BLEND_SRC_ALPHA_SAT;
+	case ONE_MINUS_SRC_COLOR:
+	case ONE_MINUS_SRC_ALPHA:
+		return D3D11_BLEND_INV_SRC_ALPHA;
+	case ONE_MINUS_DST_COLOR:
+	case ONE_MINUS_DST_ALPHA:
+		return D3D11_BLEND_INV_DEST_ALPHA;
+	case DST_ALPHA:
+	case DST_COLOR:
+		return D3D11_BLEND_DEST_ALPHA;
+	}
+
+	return D3D11_BLEND_ZERO;
+}
+
 void dx11ShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor)
 {
 	if ((sfactor == curSrcFactor) && (dfactor == curDstFactor)) return;
@@ -657,8 +684,8 @@ void dx11ShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor)
 	blendStateDesc.RenderTarget[0].SrcBlend = blendFactor2D3D11(sfactor);
 	blendStateDesc.RenderTarget[0].DestBlend = blendFactor2D3D11(dfactor);
 	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = blendAlpha2D3D11(sfactor);// D3D11_BLEND_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = blendAlpha2D3D11(dfactor);// D3D11_BLEND_DEST_ALPHA;
 	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 

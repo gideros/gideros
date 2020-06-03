@@ -140,6 +140,7 @@ class dx11ShaderEngine : public ShaderEngine
 	int s_depthEnable;
 	bool s_depthBufferCleared;
 	D3D11_BLEND blendFactor2D3D11(BlendFactor blendFactor);
+	D3D11_BLEND blendAlpha2D3D11(BlendFactor blendFactor);
 	BlendFactor curSrcFactor, curDstFactor;
 	BlendFactor curCSrcFactor, curCDstFactor;
 public:

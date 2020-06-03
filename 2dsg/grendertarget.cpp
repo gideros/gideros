@@ -3,6 +3,7 @@
 #include "sprite.h"
 #include "ogl.h"
 #include "color.h"
+#include "blendfunc.h"
 #include <gimage.h>
 
 GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap, bool selectScale, bool depth) :
@@ -50,7 +51,10 @@ void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int 
 	if ((w>=0)&&(h>=0))
 	{
 		oldfbo=prepareForDraw();
-		ShaderEngine::Engine->pushClip(x,y,w,h);
+        Matrix modelMat;
+        ShaderEngine::Engine->setModel(modelMat);
+		glPushBlendFunc();
+        glSetBlendFunc(ShaderEngine::ONE,ShaderEngine::ZERO);
 		glPushColor();
 		glMultColor(r * a, g * a, b * a, a);
 	    ShaderProgram *shp=ShaderProgram::stdBasic;
@@ -58,7 +62,7 @@ void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int 
 	    shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,vertices,4,true,NULL);
 		shp->drawArrays(ShaderProgram::TriangleStrip, 0,4);
 		glPopColor();
-		ShaderEngine::Engine->popClip();
+		glPopBlendFunc();
 	}
 	else
 	{

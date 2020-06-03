@@ -174,20 +174,13 @@ DirectXPage::DirectXPage():
 	std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
 
 	uiDispatcher = CoreWindow::GetForCurrentThread()->Dispatcher;
-	StorageFile^ file = nullptr;
-	try {
-		String^ fileName = ref new String(L"Assets\\properties.bin");
-		IAsyncOperation<StorageFile^> ^gfa = Windows::ApplicationModel::Package::Current->InstalledLocation->GetFileAsync(fileName);
-		while (gfa->Status == AsyncStatus::Started)
-			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-		file = gfa->GetResults();
-	}
-	catch (Exception^ e)
-	{
-		file = nullptr;
-	}
-
-	bool isPlayer = (file == nullptr);
+	boolean isPlayer = true;
+	String^ fileName = ref new String(L"Assets\\properties.bin");
+	IAsyncOperation<IStorageItem^> ^gfa = Windows::ApplicationModel::Package::Current->InstalledLocation->TryGetItemAsync(fileName);
+	while (gfa->Status == AsyncStatus::Started)
+		CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+	if (gfa->GetResults()!=nullptr)
+		isPlayer = false;
 
 	int sw = swapChainPanel->ActualWidth;
 	int sh = swapChainPanel->ActualHeight;
