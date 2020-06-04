@@ -32,6 +32,5 @@ cbuffer cbp : register(b1)
 float4 PShader(float4 position : SV_POSITION, float4 color : COLOR) : SV_TARGET
 {
 	float4 frag = color;
-	if (frag.a == 0.0) discard;
 	return frag;
 }
