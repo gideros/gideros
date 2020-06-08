@@ -109,8 +109,9 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
         styles.styleFlags|=TEXTSTYLEFLAG_SKIPSHAPING;
 	float y=0;
 	float cw=0;
-	int st=0;
-	int lines=0;
+    float lastNs=0;
+    size_t st=0;
+    size_t lines=0;
 	float tabSpace;
 	if (params->tabSpace<0)
 		tabSpace=-params->tabSpace;
@@ -273,8 +274,9 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		}
 		tl.parts.push_back(cl);
         lsepflags=sepflags;
-		if (cw) cw+=ns;
+        if (cw) cw+=lastNs;
 		cw+=cl.w;
+        lastNs=ns;
         while (wrap&&breakwords&&(cw>params->w))
 		{
 			//Last line is too long but can't be cut at a space boundary: cut in as appropriate and add breakchar
@@ -292,13 +294,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			{
 				size_t brk=cur;
                 float bsize=0;
-				int cpos=getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing);
-				if (cpos>tl.parts[cur].text.size())
+                int cpos=getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing);
+                if (cpos>(int)(tl.parts[cur].text.size()))
 					brk++;
 				else if (cpos>0)
 				{
-					float x,y,w,h;
-					cl=tl.parts[cur];
+                    cl=tl.parts[cur];
 					//Cut first part
 					tl.parts[cur].text=cl.text.substr(0,cpos);
 					tl.parts[cur].text+=params->breakchar;
