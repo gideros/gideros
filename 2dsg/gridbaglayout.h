@@ -36,6 +36,7 @@ struct GridBagConstraints {
     float minHeight;
     float aminWidth,aminHeight;
     float prefWidth,prefHeight;
+    float anchorX,anchorY;
 
 
     GridBagConstraints() {
@@ -47,6 +48,8 @@ struct GridBagConstraints {
         weightx = 0;
         weighty = 0;
         anchor = CENTER;
+        anchorX=0.5;
+        anchorY=0.5;
         fill = NONE;
 
         insets = GridInsets(0, 0, 0, 0);
@@ -61,7 +64,8 @@ struct GridBagConstraints {
                               size_t gridwidth, size_t gridheight,
                               double weightx, double weighty,
 							  _Anchor anchor, _FillMode fill,
-                              GridInsets insets, float ipadx, float ipady) {
+                              GridInsets insets, float ipadx, float ipady,
+                              float anchorX,float anchorY) {
         this->gridx = gridx;
         this->gridy = gridy;
         this->gridwidth = gridwidth;
@@ -71,6 +75,8 @@ struct GridBagConstraints {
         this->ipady = ipady;
         this->insets = insets;
         this->anchor  = anchor;
+        this->anchorX  = anchorX;
+        this->anchorY  = anchorY;
         this->weightx = weightx;
         this->weighty = weighty;
 

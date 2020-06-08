@@ -578,7 +578,8 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		FILL_INT("gridwidth",gridwidth); FILL_INT("gridheight",gridheight);
 		FILL_NUM("weightx",weightx); FILL_NUM("weighty",weighty);
 		FILL_INTT("anchor",anchor,GridBagConstraints::_Anchor); FILL_INTT("fill",fill,GridBagConstraints::_FillMode);
-		FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
+        FILL_NUM("anchorx",anchorX); FILL_NUM("anchory",anchorY);
+        FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
 		FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
 		FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
@@ -625,7 +626,8 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 		STOR_INT("gridwidth",gridwidth); STOR_INT("gridheight",gridheight);
 		STOR_NUM("weightx",weightx); STOR_NUM("weighty",weighty);
 		STOR_INTT("anchor",anchor,GridBagConstraints::_Anchor); STOR_INTT("fill",fill,GridBagConstraints::_FillMode);
-		STOR_NUM("ipadx",ipadx); STOR_NUM("ipady",ipady);
+        STOR_NUM("anchorx",anchorX); STOR_NUM("anchory",anchorY);
+        STOR_NUM("ipadx",ipadx); STOR_NUM("ipady",ipady);
 		STOR_NUM("minWidth",aminWidth); STOR_NUM("minHeight",aminHeight);
 		STOR_NUM("prefWidth",prefWidth); STOR_NUM("prefHeight",prefHeight);
 		STOR_NUM("insetTop",insets.top); STOR_NUM("insetLeft",insets.left);

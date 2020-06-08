@@ -70,7 +70,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	double weight_diff, weight;
     size_t maximumArrayXIndex = 0;
     size_t maximumArrayYIndex = 0;
-	int anchor;
 	float dw = 0, dh = 0;
 
 	/*
@@ -247,8 +246,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 		constraints->tempY = curY;
 		constraints->tempWidth = curWidth;
 		constraints->tempHeight = curHeight;
-
-		anchor = constraints->anchor;
 	}
 
 	r.weightX.clear();
@@ -485,8 +482,8 @@ void GridBagLayout::AdjustForGravity(GridBagConstraints *constraints,
 
 	switch (constraints->anchor) {
 	case GridBagConstraints::CENTER:
-		r.x += diffx / 2;
-		r.y += diffy / 2;
+        r.x += diffx*constraints->anchorX;
+        r.y += diffy*constraints->anchorY;
 		break;
 	case GridBagConstraints::NORTH:
 		r.x += diffx / 2;
