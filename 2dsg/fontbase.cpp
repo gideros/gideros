@@ -35,6 +35,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 	size_t cur=(end>=0)?end+1:tl->parts.size();
 	size_t cnt=cur-start;
 	float ox=0;
+    float rx=0;
 	bool justified=false;
 	if ((flags&FontBase::TLF_JUSTIFIED)&&wrapped)
 	{
@@ -49,11 +50,13 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 		for (size_t i=start;i<(cur-1);i++)
 		{
 			if ((tl->parts[i].sepflags&CHUNKCLASS_FLAG_BREAKABLE)&&
-					(tl->parts[i].styleFlags==tl->parts[i+1].styleFlags))
+                    (tl->parts[i].sep!='\t')&& //Don't merge on tab separator
+                    (tl->parts[i].styleFlags==tl->parts[i+1].styleFlags)) //Don't merge if styles differs
 			{
 				tl->parts[i].text=tl->parts[i].text+" "+tl->parts[i+1].text;
-				tl->parts[i].sep=tl->parts[i+1].sep;
-				tl->parts.erase(tl->parts.begin()+i+1);
+                tl->parts[i].sep=tl->parts[i+1].sep;
+                tl->parts[i].sepflags=tl->parts[i+1].sepflags;
+                tl->parts.erase(tl->parts.begin()+i+1);
 				cur--;
 				merged=true;
                 i--;
@@ -73,13 +76,14 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 	}
 	for (size_t i=start;i<cur;i++)
 	{
-		tl->parts[i].x+=ox;
-		tl->parts[i].dx=ox;
+        tl->parts[i].x+=ox+rx;
+        tl->parts[i].dx=ox+rx;
         char sep=tl->parts[i].sep;
-        float ns=(sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
+        rx+=tl->parts[i].advX;
+        float ns=(sep=='\t')?(tabSpace*(1+floor(rx/tabSpace))-rx):sw;
         if (sep==ESC) ns=0;
-		ox+=tl->parts[i].advX+ns;
-	}
+        rx+=ns;
+    }
 }
 
 FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *params)
