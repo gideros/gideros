@@ -171,14 +171,35 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 
 g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
 {
-//    return s_manager->Delete(url, header, callback, udata);
-	return 0;
+	struct GHttpContext ctx;
+    ctx.id = g_NextId();
+    ctx.callback = callback;
+    ctx.udata = udata;
+    ctx.xhrId=0;
+    map_[ctx.id] = ctx;
+
+   ctx.xhrId=EM_ASM_INT({
+        	return ($6?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'DELETE',$1,null,$2,true,$3,$4,$5);
+        },url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,streaming);
+    //printf("GET:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
+
+    return ctx.id;
 }
 
 g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, int streaming, gevent_Callback callback, void* udata)
 {
-//    return s_manager->Put(url, header, data, size, callback, udata);
-	return 0;
+	struct GHttpContext ctx;
+    ctx.id = g_NextId();
+    ctx.callback = callback;
+    ctx.udata = udata;
+    ctx.xhrId=0;
+    map_[ctx.id] = ctx;
+
+	ctx.xhrId=EM_ASM_INT({
+			return ($8?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'PUT',$1,Module.HEAPU8.subarray($6,$6+$7),$2,true,$3,$4,$5);
+		},url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,data,size,streaming);
+
+    return ctx.id;
 }
 
 void ghttp_Close(g_id id)

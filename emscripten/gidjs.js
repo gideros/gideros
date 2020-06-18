@@ -226,7 +226,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	} catch (ex) { /* whatever */
 	}
 
-	if (_request == "POST") {
+	if ((_request == "POST")||(_request == "PUT")) {
 		http.send(_param);
 	} else {
 		http.send(null);
