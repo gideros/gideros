@@ -33,10 +33,11 @@ Core = {}
 
 local function callDestructors(s)
   k=getmetatable(s)
-  while k and k.__gc do
-    local gt=type(k.__gc)
-    if gt=="function" then k.__gc(s)
-    elseif gt=="string" then k[k.__gc](s)
+  while k and k.__gid_destructor do
+	local g=k.__gid_destructor
+    local gt=type(g)
+    if gt=="function" then g(s)
+    elseif gt=="string" then k[g](s)
     end
     k=getmetatable(k)
   end
@@ -52,8 +53,8 @@ Core.class = function (b,a,d)
 
 	local c = {}
 	c.__index = c
-	c.__gc = d
-	if not d and b.__gc then c.__gc=function() end end 
+	c.__gid_destructor = d
+	if not d and b.__gid_destructor then c.__gid_destructor=function() end end 
 	setmetatable(c, b)
 
 	c.super = b
@@ -80,10 +81,10 @@ Core.class = function (b,a,d)
 	c.new = function(...)
 		local s1 = c.__new(...)
 
-    if c.__gc then
+    if c.__gid_destructor then
       local prox = newproxy(true)
       getmetatable(prox).__gc = function() callDestructors(s1) end
-      s1.__gc = prox
+      s1.__gid_destructor = prox
     end
 
 		local postInit = s1.postInit
