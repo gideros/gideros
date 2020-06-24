@@ -227,7 +227,7 @@ int PixelBinder::setTexture(lua_State *L)
     }
 
     TextureBase *textureBase = NULL;
-    if (!lua_isnone(L, 2))
+    if (!lua_isnoneornil(L, 2))
     	textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 2));
     int slot=luaL_optinteger(L,3,0);
 	Transform* matrix = NULL;

@@ -149,7 +149,7 @@ typedef struct dir_data {
   #define lfs_setmode(file, m)   (_setmode(_fileno(file), m))
   #define STAT_STRUCT struct _stati64
  #endif
-#define STAT_FUNC _stati64
+#define STAT_FUNC _wstati64
 #define LSTAT_FUNC STAT_FUNC
 #else
 #define _O_TEXT               0
@@ -905,16 +905,27 @@ struct _stat_members members[] = {
 /*
 ** Get file or symbolic link information
 */
-static int _file_info_ (lua_State *L, int (*st)(const char*, STAT_STRUCT*)) {
+static int _file_info_ (lua_State *L, int (*st)(const CHARTYPE*, STAT_STRUCT*)) {
         STAT_STRUCT info;
         const char *file = luaL_checkstring (L, 1);
         int i;
-
-	if (st(gpath_transform(file), &info)) {
+#ifdef _WIN32
+        std::wstring wfile=ws(gpath_transform(file));
+    	if (st(wfile.c_str(), &info))
+#else
+	if (st(gpath_transform(file), &info))
+#endif
+	{
                 lua_pushnil(L);
                 lua_pushfstring(L, "cannot obtain information from file '%s': %s", file, strerror(errno));
                 return 2;
         }
+#ifdef _WIN32
+    DWORD winAttrs=GetFileAttributes(wfile.c_str());
+    if (winAttrs&FILE_ATTRIBUTE_ARCHIVE) info.st_mode|=02000;
+    if (winAttrs&FILE_ATTRIBUTE_HIDDEN) info.st_mode|=04000;
+    if (winAttrs&FILE_ATTRIBUTE_SYSTEM) info.st_mode|=010000;
+#endif
         if (lua_isstring (L, 2)) {
                 const char *member = lua_tostring (L, 2);
                 for (i = 0; members[i].name; i++) {

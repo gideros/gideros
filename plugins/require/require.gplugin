@@ -17,7 +17,7 @@
  <property name="reqNoSensor" type="boolean" title="Screen doesn't rotate (tilt game) unknown initial orientation"/>
  <property name="reqMaxAspect" type="boolean" title="Support aspect ratios of 2.1 or higher"/>
  <property name="reqScreenShape" type="boolean" title="Support non rectangular screen shapes (iOS, notch ready)"/>
- <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
+ <property name="reqWriteExternalStorage" type="boolean" title="App needs to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
  <property name="reqCanOpenUrl" type="string" title="This app can open these url schemes: (with ',' separator)"/>
