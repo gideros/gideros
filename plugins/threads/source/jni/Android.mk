@@ -41,7 +41,7 @@ LOCAL_SRC_FILES        := ../threads_entry.cpp \
                           ../luathread.cpp \
                           ../StateToState.cpp \
                           ../threadtimedluahook.cpp \
-                          ../../../lfs/source/lfs.c \
+                          ../../../lfs/source/lfs.cpp \
                           ../../../../luabinding/binder.cpp \
                           ../../../../luabinding/zlibbinder.cpp \
                           ../../../luasocket/source/auxiliar.c \

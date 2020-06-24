@@ -70,7 +70,7 @@ SOURCES += \
 
 INCLUDEPATH += ./luaext
 SOURCES += \
-	./luaext/lfs.c
+	./luaext/lfs.cpp
 
 win32 {
 SOURCES += \

@@ -107,7 +107,7 @@
 		5FEA848A178166D400DC0157 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		5FEA848B178166D400DC0157 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		5FFCA6F915DD31AD00741085 /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lfs_stub.cpp; path = Plugins/lfs_stub.cpp; sourceTree = "<group>"; };
-		5FFCA6FA15DD31AD00741085 /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lfs.c; path = Plugins/lfs.c; sourceTree = "<group>"; };
+		5FFCA6FA15DD31AD00741085 /* lfs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lfs.c; path = Plugins/lfs.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

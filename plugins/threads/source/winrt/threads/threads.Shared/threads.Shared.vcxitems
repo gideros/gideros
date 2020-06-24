@@ -33,7 +33,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\threadtimedluahook.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding/binder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding/zlibbinder.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\lfs\source\lfs.c" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\lfs\source\lfs.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\auxiliar.c" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\buffer.c" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\..\luasocket\source\except.c" />

@@ -6,7 +6,7 @@ TEMPLATE = lib
 INCLUDEPATH += ../../../Sdk/include
 
 SOURCES += \
-    lfs.c \
+    lfs.cpp \
 	lfs_stub.cpp
 
 HEADERS +=

@@ -101,7 +101,7 @@ PLUGINS_IOS_DEFFILES=$(ROOT)/Sdk/include/*.h
 PLUGINS_IOS_PLAYER=$(addprefix plugins/, \
 		LuaSocket/source/luasocket_stub.cpp \
 		$(addprefix lsqlite3/source/,lsqlite3.c lsqlite3_stub.cpp) \
-		$(addprefix lfs/source/,lfs.h lfs.c lfs_stub.cpp) \
+		$(addprefix lfs/source/,lfs.h lfs.cpp lfs_stub.cpp) \
 		$(addprefix BitOp/source/,bit.c bit_stub.cpp) \
 		$(addprefix JSON/source/,fpconv.c fpconv.h strbuf.c strbuf.h lua_cjson.c lua_cjson_stub.cpp) \
 		gamekit/source/iOS/gamekit.mm \

@@ -35,7 +35,7 @@ LOCAL_MODULE           := lfs
 LOCAL_ARM_MODE         := arm
 LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/../../../../Sdk/include
-LOCAL_SRC_FILES        := ../lfs.c ../lfs_stub.cpp
+LOCAL_SRC_FILES        := ../lfs.cpp ../lfs_stub.cpp
 LOCAL_LDLIBS           := -ldl -llog
 LOCAL_SHARED_LIBRARIES := gvfs lua gideros
 

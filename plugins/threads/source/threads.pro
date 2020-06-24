@@ -11,7 +11,7 @@ SOURCES += \
     threads_entry.cpp \
     luathread.cpp \
     StateToState.cpp \
-    ../../lfs/source/lfs.c \
+    ../../lfs/source/lfs.cpp \
     ../../../luabinding/binder.cpp \
     ../../../luabinding/zlibbinder.cpp \
     threadtimedluahook.cpp
