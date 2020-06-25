@@ -61,9 +61,24 @@ public:
         keyMap_[Qt::Key_Y] = GINPUT_KEY_Y;
         keyMap_[Qt::Key_Z] = GINPUT_KEY_Z;
 
+        keyMap_[Qt::Key_F1] = GINPUT_KEY_F1;
+        keyMap_[Qt::Key_F2] = GINPUT_KEY_F2;
+        keyMap_[Qt::Key_F3] = GINPUT_KEY_F3;
+        keyMap_[Qt::Key_F4] = GINPUT_KEY_F4;
+        keyMap_[Qt::Key_F5] = GINPUT_KEY_F5;
+        keyMap_[Qt::Key_F6] = GINPUT_KEY_F6;
+        keyMap_[Qt::Key_F7] = GINPUT_KEY_F7;
+        keyMap_[Qt::Key_F8] = GINPUT_KEY_F8;
+        keyMap_[Qt::Key_F9] = GINPUT_KEY_F9;
+        keyMap_[Qt::Key_F10] = GINPUT_KEY_F10;
+        keyMap_[Qt::Key_F11] = GINPUT_KEY_F11;
+        keyMap_[Qt::Key_F12] = GINPUT_KEY_F12;
+
+
         keyMap_[Qt::Key_Shift] = GINPUT_KEY_SHIFT;
         keyMap_[Qt::Key_Space] = GINPUT_KEY_SPACE;
         keyMap_[Qt::Key_Backspace] = GINPUT_KEY_BACKSPACE;
+        keyMap_[Qt::Key_Backtab] = GINPUT_KEY_BACKSPACE;
 
         keyMap_[Qt::Key_Control] = GINPUT_KEY_CTRL;
         keyMap_[Qt::Key_Alt] = GINPUT_KEY_ALT;

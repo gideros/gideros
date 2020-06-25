@@ -533,6 +533,31 @@ static int bindAll(lua_State* L)
     lua_pushinteger(L, GINPUT_KEY_9);
     lua_setfield(L, -2, "NUM_9");
 
+    lua_pushinteger(L, GINPUT_KEY_F1);
+    lua_setfield(L, -2, "F1");
+    lua_pushinteger(L, GINPUT_KEY_F2);
+    lua_setfield(L, -2, "F2");
+    lua_pushinteger(L, GINPUT_KEY_F3);
+    lua_setfield(L, -2, "F3");
+    lua_pushinteger(L, GINPUT_KEY_F4);
+    lua_setfield(L, -2, "F4");
+    lua_pushinteger(L, GINPUT_KEY_F5);
+    lua_setfield(L, -2, "F5");
+    lua_pushinteger(L, GINPUT_KEY_F6);
+    lua_setfield(L, -2, "F6");
+    lua_pushinteger(L, GINPUT_KEY_F7);
+    lua_setfield(L, -2, "F7");
+    lua_pushinteger(L, GINPUT_KEY_F8);
+    lua_setfield(L, -2, "F8");
+    lua_pushinteger(L, GINPUT_KEY_F9);
+    lua_setfield(L, -2, "F9");
+    lua_pushinteger(L, GINPUT_KEY_F10);
+    lua_setfield(L, -2, "F10");
+    lua_pushinteger(L, GINPUT_KEY_F11);
+    lua_setfield(L, -2, "F11");
+    lua_pushinteger(L, GINPUT_KEY_F12);
+    lua_setfield(L, -2, "F12");
+
 	lua_pushinteger(L, GINPUT_KEY_SHIFT);
 	lua_setfield(L, -2, "SHIFT");
 	lua_pushinteger(L, GINPUT_KEY_SPACE);

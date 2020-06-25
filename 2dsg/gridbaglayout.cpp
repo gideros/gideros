@@ -456,10 +456,8 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 void GridBagLayout::AdjustForGravity(GridBagConstraints *constraints,
 		Rectangle &r) {
     float diffx, diffy;
-    float cellY = r.y;
-    float cellHeight = r.height;
 
-	r.x += constraints->insets.left;
+    r.x += constraints->insets.left;
 	r.width -= (constraints->insets.left + constraints->insets.right);
 	r.y += constraints->insets.top;
 	r.height -= (constraints->insets.top + constraints->insets.bottom);
@@ -783,15 +781,11 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		 * it's mapped.
 		 */
 
-		if ((r.width <= 0) || (r.height <= 0))
-			comp->setBounds(0, 0, 0, 0);
-        else {
-			comp->setBounds(r.x, r.y, r.width, r.height,true);
-            if (comp->layoutState&&comp->layoutState->dirty)
-            {
-                comp->layoutState->dirty=false;
-                comp->layoutState->ArrangeGrid(comp,r.width,r.height);
-            }
+        comp->setBounds(r.x, r.y, r.width, r.height,true);
+        if (comp->layoutState&&comp->layoutState->dirty)
+        {
+            comp->layoutState->dirty=false;
+            comp->layoutState->ArrangeGrid(comp,r.width,r.height);
         }
 	}
 }

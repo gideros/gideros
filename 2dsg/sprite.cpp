@@ -865,8 +865,8 @@ void Sprite::getDimensions(float& w,float &h)
 {
 	float minx,miny,maxx,maxy;
     extraBounds(&minx, &miny, &maxx, &maxy);
-    w=(maxx>=minx)?1+maxx-minx:0;
-    h=(maxy>=miny)?1+maxy-miny:0;
+    w=(maxx>=minx)?maxx-minx:0;
+    h=(maxy>=miny)?maxy-miny:0;
     if (w<reqWidth_) w=reqWidth_;
     if (h<reqHeight_) h=reqHeight_;
 }

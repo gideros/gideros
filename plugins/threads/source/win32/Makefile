@@ -2,14 +2,14 @@ TARGET=threads
 
 vpath %.cpp ../../../../luabinding
 vpath %.c ../../../luasocket/source
-vpath %.c ../../../lfs/source
+vpath %.cpp ../../../lfs/source
 vpath %.c ../../../json/source
 
 INCS += ../../../luabinding ../../../libgid/external/zlib-1.2.8
 
 CXXINCS += -I../../../../lua/src -I"../../../../libgid/external/zlib-1.2.8"
 
-CFLGS += -DWIN32 -DLUASOCKET_INET_PTON -DLUA_NOCOMPAT_MODULE 
+CFLGS += -DWIN32 -DLUASOCKET_INET_PTON -DLUA_NOCOMPAT_MODULE -DUNICODE -D_UNICODE
 
 SRCS = threads_entry luathread threadtimedluahook StateToState binder auxiliar except buffer
 SRCS += zlibbinder
