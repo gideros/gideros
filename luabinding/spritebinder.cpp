@@ -553,10 +553,17 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 		FILL_NUM_ARRAY("rowHeights",rowHeights);
 		FILL_NUM_ARRAY("columnWeights",columnWeights);
 		FILL_NUM_ARRAY("rowWeights",rowWeights);
+
+		lua_getfield(L,2,"insets");
+		if (!lua_isnoneornil(L,-1))
+			p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
+		lua_pop(L,1);
         FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
         FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
+
         FILL_BOOL("equalizeCells",equalizeCells);
         FILL_BOOL("resizeContainer",resizeContainer);
+        FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
         p->dirty=true;
 	}
 	return 0;
@@ -582,6 +589,11 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
 		FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
+
+		lua_getfield(L,2,"insets");
+		if (!lua_isnoneornil(L,-1))
+			p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
+		lua_pop(L,1);
 		FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
 		FILL_NUM("insetBottom",insets.bottom); FILL_NUM("insetRight",insets.right);
 	}
@@ -606,6 +618,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_NUM("insetBottom",pInsets.bottom); STOR_NUM("insetRight",pInsets.right);
         STOR_BOOL("equalizeCells",equalizeCells);
         STOR_BOOL("resizeContainer",resizeContainer);
+        STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
 	}
 	else
 		lua_pushnil(L);

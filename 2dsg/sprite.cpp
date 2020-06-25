@@ -538,10 +538,13 @@ void Sprite::getChildrenAtPoint(float x, float y, bool visible, bool nosubs,std:
 	std::stack<Matrix4> pxform;
 	std::stack<const Sprite *> pstack;
     const Sprite *curr = this;
+    const Sprite *last = NULL;
 	while (curr) {
 		pstack.push(curr);
+		last = curr;
 		curr = curr->parent_;
 	}
+	if (visible&&(!last->isStage())) return;
 	while (!pstack.empty()) {
 		curr=pstack.top();
 		pstack.pop();
@@ -876,10 +879,14 @@ bool Sprite::hitTestPoint(float x, float y, bool visible) const {
 	std::stack<Matrix4> pxform;
 	std::stack<const Sprite *> pstack;
 	const Sprite *curr = this;
+	const Sprite *last=NULL;
 	while (curr) {
 		pstack.push(curr);
+		last=curr;
 		curr = curr->parent_;
 	}
+	if (visible&&(!last->isStage())) return false;
+
 	while (!pstack.empty()) {
 		curr=pstack.top();
 		pstack.pop();

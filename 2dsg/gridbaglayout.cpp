@@ -535,12 +535,12 @@ void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,
 	t = 0;
 	for (i = 0; i < info.width; i++)
 		t += info.minWidth[i];
-	w = t + insets.left + insets.right;
+    w = t + insets.left + insets.right + ((info.width>1)?((info.width-1)*cellSpacingX):0);
 
 	t = 0;
 	for (i = 0; i < info.height; i++)
 		t += info.minHeight[i];
-	h = t + insets.top + insets.bottom;
+    h = t + insets.top + insets.bottom + ((info.height>1)?((info.height-1)*cellSpacingY):0);
 }
 
 void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
@@ -742,23 +742,25 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 
 		r.x = info.startx;
 		for (i = 0; i < constraints->tempX; i++)
-			r.x += info.minWidth[i];
+			r.x += info.minWidth[i] + cellSpacingX;
 
 		r.y = info.starty;
 		for (i = 0; i < constraints->tempY; i++)
-			r.y += info.minHeight[i];
+			r.y += info.minHeight[i] + cellSpacingY;
 
 		r.width = 0;
 		for (i = constraints->tempX;
 				i < (constraints->tempX + constraints->tempWidth); i++) {
-			r.width += info.minWidth[i];
+			r.width += info.minWidth[i] + cellSpacingX;
 		}
+		if (constraints->tempWidth>0) r.width-=cellSpacingX;
 
 		r.height = 0;
 		for (i = constraints->tempY;
 				i < (constraints->tempY + constraints->tempHeight); i++) {
-			r.height += info.minHeight[i];
+			r.height += info.minHeight[i] + cellSpacingY;
 		}
+		if (constraints->tempHeight>0) r.height-=cellSpacingY;
 
 		componentAdjusting = comp;
 		AdjustForGravity(constraints, r);
