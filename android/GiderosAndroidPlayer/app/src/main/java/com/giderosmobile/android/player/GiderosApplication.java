@@ -829,7 +829,9 @@ public class GiderosApplication
 		Editable e=b.getEditable();
 		e.clear();
 		b.commitText(tisBuffer,tisBuffer.length());
+		try {
 		b.setSelection(tisSelStart,tisSelEnd);
+		} catch (Exception exc) {}
 		tisEditable=e;
 		return b;
 	}	 

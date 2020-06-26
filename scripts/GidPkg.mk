@@ -113,4 +113,26 @@ addons.pkg: $(addsuffix .addons.pkg,$(ADDONS))
 	mkdir -p $(RELEASE)/Addons/$*
 	-$(RELEASE)/Tools/gdrexport -platform gapp $(PWD)/$(ROOT)/studio_addons/$*/*.gproj $(PWD)/$(RELEASE)/Addons/$* | grep -v :
 	cp $(ROOT)/studio_addons/$*/manifest.lua $(RELEASE)/Addons/$*/manifest.lua
+
+%.macmake.pkg:
+	echo "\
+	source /etc/profile;\
+	cd $(MAC_PATH);\
+	make -f scripts/Makefile.gid $*;\
+	exit;\
+	" |	ssh $(MAC_HOST)
+	
+%.fetchplugin.mac.pkg:
+	echo "\
+	source /etc/profile;\
+	cp -r $(MAC_PATH)/$(SDK) $(MAC_PATH)/Build.Mac;\
+	cd $(MAC_PATH)/Build.Mac;\
+	rm -f _MacPlugin.zip;\
+	zip -r _MacPlugin.zip All\\ Plugins/$(notdir $*);\
+	exit;\
+	" |	ssh $(MAC_HOST)
+	scp -B $(MAC_HOST):$(MAC_PATH)/Build.Mac/_MacPlugin.zip $(RELEASE)/_MacPlugin.zip
+	cd $(RELEASE); unzip -o _MacPlugin.zip
+	rm -f $(RELEASE)/_MacPlugin.zip	
+	
 	

@@ -73,7 +73,7 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.ios.install.iosplugin:
 	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
-	cp $(PLUGINPATH)/lib$(notdir $*).ios.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
+	cp $(PLUGINPATH)/lib$(notdir $*).ios.a $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/
 
 %.atv.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
@@ -87,7 +87,7 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.atv.install.iosplugin:
 	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
-	cp $(PLUGINPATH)/lib$(notdir $*).atv.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
+	cp $(PLUGINPATH)/lib$(notdir $*).atv.a $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/
 
 ios.install: ios.libs.install atv.libs.install ios.plugins.install ios.app
 

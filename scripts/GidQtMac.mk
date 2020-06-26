@@ -37,13 +37,13 @@ qtlibs.install: buildqtlibs
 %.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins
-	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/MacOSX
+	mkdir -p $(RELEASE)/All\ Plugins/$(notdir $*)/bin/MacOSX
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; \
 		else if [ -d "Desktop" ]; then cd Desktop; fi; \
 		for fl in *.1.0.0.dylib; do fl2=`echo $$fl | sed -e 's/\\..*//'`; echo $$fl $$fl2; cp  -L $$fl ../$$fl2.dylib; rm *.dylib; mv ../*.dylib .; done; fi; \
 	cp *.dylib $$R/$(RELEASE)/Plugins; \
 	cp *.dylib $$R/$(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins; \
-	cp *.dylib $$R/$(RELEASE)/All\ Plugins/$*/bin/MacOSX	
+	cp *.dylib $$R/$(RELEASE)/All\ Plugins/$(notdir $*)/bin/MacOSX	
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
