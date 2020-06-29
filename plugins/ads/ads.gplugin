@@ -148,7 +148,7 @@
     	<rmdir>_tmpKiip</rmdir>
    		<template name="Activity" path="">
          <replacelist wildcards="[[[project.namews]]]Activity.java">
-            <append orig="//GIDEROS-ACTIVITY-IMPORT//" by="&#10;import android.support.v4.app.FragmentActivity;"/>
+            <append orig="//GIDEROS-ACTIVITY-IMPORT//" by="&#10;import androidx.fragment.app.FragmentActivity;"/>
             <replace orig="[[[project.namews]]]Activity extends Activity" by="[[[project.namews]]]Activity extends FragmentActivity"/>
          </replacelist>
     	</template>
@@ -157,7 +157,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-    implementation 'com.android.support:support-v4:[[[export.androidSdk]]]+'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation files('libs/KiipSDK.jar')
 					</by>
 				</append>

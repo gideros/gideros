@@ -2,7 +2,7 @@ package com.giderosmobile.android.plugins.ads.frameworks;
 
 import java.lang.ref.WeakReference;
 import android.app.Activity;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 

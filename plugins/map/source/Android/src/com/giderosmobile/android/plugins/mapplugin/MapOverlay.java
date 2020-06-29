@@ -5,7 +5,7 @@ Android native map overlay class
 function Map:init(latitude, longitude, zoom, witdth, height, positionX, positionY)
 Status: Tested. Constructor for the Map class, calls set
 
-function Map:setPosition(positionX, positionY) – position the Map on the screen, relative to its parent, whether or not Map uses Sprite as a base class
+function Map:setPosition(positionX, positionY) ï¿½ position the Map on the screen, relative to its parent, whether or not Map uses Sprite as a base class
 Status: Tested. Implemented in Map.setPosition() 
 
 function Map:setType(mapType) -- support "normal", "satellite", "terrain", "hybrid" (satellite with roads overlaid)
@@ -17,13 +17,13 @@ Status: Tested. Implemented in map.setCenterCoordinates()
 function Map:setZoom(zoomLevel) -- control the zoom level of the map, units TBD
 Status: Tested. Implemented in Map.setZoom() - Uses zoom level directly. iOS version will need to map to comparable altitudes
 
-function Map:setLocationEnabled(locationEnabled) -- at least for Android, enable the default “go to my location” button overlaid on the map
+function Map:setLocationEnabled(locationEnabled) -- at least for Android, enable the default ï¿½go to my locationï¿½ button overlaid on the map
 Status: Tested. Implemented in Map.setMyLocationEnabled()
 
 function Map:onMapClickListener( event handler...)-- handle touches on the map, i.e. for selecting a location
 Status: Interface change - Call mapClicked() to see if a click occurred since last call, call getMapClickLatitude(), getMapClickLongitude() to get coordinates
 
-function Map:addMarker(marker) -- add a default style marker to the map – see below
+function Map:addMarker(marker) -- add a default style marker to the map ï¿½ see below
 Status: Tested. Interface change- Takes latitude, longitude, title, teturns int index of new marker
 
 function Map:clear() -- remove all markers
@@ -38,7 +38,7 @@ Status: Tested. Implemented via getCenterLatitude(), getCenterLongitude.  A Lua 
 function MapMarker:init(latitude, longitude, title) -- Sets the coordinates and name of a marker
 Status: Not needed - use Map.addMarker
 
-function MapMarker:setAlpha(alpha) – 0 to 100, sets opacity of marker from 0 (transparent) to 100 (opaque)
+function MapMarker:setAlpha(alpha) ï¿½ 0 to 100, sets opacity of marker from 0 (transparent) to 100 (opaque)
 Status: Tested. Implemented via Map.setMarkerAlpha()
 
 function MapMarker:setHue(hue) -- 0 to 360, angle to position on color wheel, from 0 (red) through orange and yellow to green (180) through blue and purple back to red (360.) Some other set of hue values could be used and mapped to platform specific values in the native code.
@@ -71,9 +71,9 @@ package com.giderosmobile.android.plugins.mapplugin;
 import java.util.ArrayList;
 
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;

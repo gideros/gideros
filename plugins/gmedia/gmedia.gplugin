@@ -20,7 +20,7 @@
 		<replacelist wildcards="build.gradle">
 			<append>
 				<orig>//TAG-DEPENDENCIES//</orig>
-				<by>			implementation 'com.android.support:support-v4:28.0.0'</by>
+				<by>			implementation 'androidx.legacy:legacy-support-v4:1.0.0'</by>
 			</append>
        	</replacelist>
  	</template>
