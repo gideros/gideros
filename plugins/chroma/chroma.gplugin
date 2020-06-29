@@ -1,0 +1,5 @@
+<plugin
+ name="Chroma"
+ description="An interface for the RΛZΞR Chroma SDK.">
+ <target name="Html5,Windows,Win32" />
+</plugin>

@@ -1,0 +1,11 @@
+<project>
+ <properties backgroundColor="#ffffff" osx_installerId="" app_icon="" osx_org="GiderosMobile" win_domain="giderosmobile.com" packageName="com.yourdomain.yourapp" fps="60" encryptCode="0" logicalWidth="320" html5_host="" scaleMode="0" html5_fbload="100" version="1.0" logicalHeight="480" splashScaleMode="0" architecture="0" mainluaOnly="0" version_code="1" osx_signingId="" ios_bundle="com.yourdomain." mouseToTouch="1" html5_mem="256" tv_icon="" app_name="" html5_fbinstant="0" osx_bundle="com.yourdomain." build_number="1" retinaDisplay="0" vsync="0" winrt_package="com.yourdomain.yourapp" winrt_org="GiderosMobile" autorotation="0" orientation="0" splash_v_image="" win_org="GiderosMobile" mouseTouchOrder="0" html5_symbols="0" iosDevice="0" windowWidth="0" osx_domain="giderosmobile.com" splash_h_image="" android_template="0" html5_wasm="0" exportMode="0" touchToMouse="1" html5_crash="" encryptAssets="0" disableSplash="0" osx_category="5" windowHeight="0" html5_pack="0">
+  <imageScales/>
+  <plugins>
+   <plugin enabled="1" name="Chroma"/>
+   <plugin enabled="1" name="JSON"/>
+  </plugins>
+  <exports/>
+ </properties>
+ <file name="assets/main.lua"/>
+</project>
