@@ -43,7 +43,6 @@ local function apply()
   Export.callXml(([[<template name="AndroidPermissionsManifest" path="">
       <replacelist wildcards="AndroidManifest.xml;build.gradle">
         <replace><orig>minSdkVersion 9</orig><by>minSdkVersion %d</by></replace>
-        <replace><orig>android:minSdkVersion="9"</orig><by>android:minSdkVersion="%d"</by></replace>
        </replacelist>
   </template>]]):format(AndroidProject._minSdk,AndroidProject._minSdk))
   if AndroidProject._minSdk<21 then  

@@ -175,21 +175,7 @@ local ap=require("Tools/export_android")
     	        </append>
         	</replacelist>
     	</template>
-		</if>
-		<if condition="[[[export.buildAab]]]">		
-    	<template name="AndroidManifest" path="">
-        	<replacelist wildcards="AndroidManifest.xml">
-	            <replace>
-            		<orig><![CDATA[TAG:RM-SDK1 -->]]></orig>
-        	    	<by></by>
-    	        </replace>
-	            <replace>
-            		<orig><![CDATA[<-- TAG:RM-SDK2]]></orig>
-        	    	<by></by>
-    	        </replace>
-        	</replacelist>
-    	</template>
-		</if>
+		</if>		
 		<mkdir>app/src/main/assets/assets</mkdir>
 		<cd>app/src/main/assets/assets</cd>
 		<initPlugins/>

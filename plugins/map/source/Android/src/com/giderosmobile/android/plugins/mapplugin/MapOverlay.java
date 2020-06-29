@@ -86,6 +86,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -93,7 +94,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapOverlay
+public class MapOverlay implements OnMapReadyCallback
 {
 	
 	// Our own map types, used for a common interface between Google and Apple maps:
@@ -453,103 +454,101 @@ public class MapOverlay
 		return(return_value);
 	}
 
-	private void getMapFromFragment()
-	{
-		if (mMapNeedsConnection)
-		{
-			if (mMapFragment != null)
-			{
-				mGoogleMap = mMapFragment.getMap();
-				// The map fragment may not be ready to return its map yet. See if we got a map: 
-				if (mGoogleMap == null)
-				{
-					// Check back after a slight delay:
-					Handler h = new Handler();
-					h.postDelayed(new Runnable()
-						{ public void run() { getMapFromFragment(); } }, 250); // 250 ms delay
-					return;
+	private void setUpMapIfNeeded() {
+	}
+
+
+	private void getMapFromFragment() {
+		if (mMapNeedsConnection) {
+			if (mMapFragment != null) {
+				// The map fragment may not be ready to return its map yet. See if we got a map:
+				if (mGoogleMap == null) {
+					mMapFragment.getMapAsync(this);
 				}
-
-				// We have a map - set it up:
-				mGoogleMap.setMyLocationEnabled(true);
-				
-				// mMap.setOnMyLocationButtonClickListener(this);
-
-				if (mLatitude < -360.0f || mLatitude > 360)
-				{
-					mLatitude = 39.5f;
-					mLongitude = -98.0f;
-				}
-
-				CameraPosition cp = mGoogleMap.getCameraPosition();
-				double latitude = cp.target.latitude;
-				double longitude = cp.target.longitude;
-				LatLng ll = new LatLng(mLatitude, mLongitude);
-
-				// For some strange reason, setting the map position doesn't
-				// work for latitude on the first try. Maybe the map isn't
-				// entirely ready?
-				int tries = 0;
-				while (latitude != mLatitude && tries++ < 100)
-				{
-					//mAutoMapCameraMovePending = true;
-					//mNumCameraMovesPending++;
-					mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(ll));
-					cp = mGoogleMap.getCameraPosition();
-					latitude = cp.target.latitude;
-				}
-
-				//add_map_content();
-				setMoveListener();
-				mGoogleMap.setOnMarkerClickListener
-				(
-					new OnMarkerClickListener()
-					{
-			
-						@Override
-						public boolean onMarkerClick(Marker marker)
-						{
-							String marker_id = marker.getId();
-	
-							// Find the marker that was clicked in our array, and store the index					
-							int i;
-							mClickedMarkerIndex = MAP_NO_MARKER_CLICKED;
-	
-							for (i = 0; i < mNumMarkers; i++)
-							{
-								if (mMarkerArray.get(i).getId().contentEquals(marker_id))
-								{
-									mClickedMarkerIndex = i;
-									i = mNumMarkers;
-								}
-							}
-							marker.showInfoWindow();
-							return true;
-						} // end of on marker click
-					} // end of setOnMarkerClickListener 
-				);
-
-
-				mGoogleMap.setOnCameraChangeListener(new OnCameraChangeListener()
-				{
-
-					@Override
-					public void onCameraChange(CameraPosition position)
-					{ // TODO Auto-generated method stub
-					}
-				} // end of setOnCameraChangeListener
-				);
-
-				mMapNeedsConnection = false;
-				return;
 			}
 		}
 		else // map doesn't need connection
 		{
-			CameraPosition cp = mGoogleMap.getCameraPosition();
-			double latitude = cp.target.latitude;
-			double longitude = cp.target.longitude;
+				CameraPosition cp = mGoogleMap.getCameraPosition();
+				double latitude = cp.target.latitude;
+				double longitude = cp.target.longitude;
 		}
+	}
+
+	@Override
+	public void onMapReady(GoogleMap googleMap) {
+		mGoogleMap = googleMap;
+		// We have a map - set it up:
+		mGoogleMap.setMyLocationEnabled(true);
+		
+		// mMap.setOnMyLocationButtonClickListener(this);
+
+		if (mLatitude < -360.0f || mLatitude > 360)
+		{
+			mLatitude = 39.5f;
+			mLongitude = -98.0f;
+		}
+
+		CameraPosition cp = mGoogleMap.getCameraPosition();
+		double latitude = cp.target.latitude;
+		double longitude = cp.target.longitude;
+		LatLng ll = new LatLng(mLatitude, mLongitude);
+
+		// For some strange reason, setting the map position doesn't
+		// work for latitude on the first try. Maybe the map isn't
+		// entirely ready?
+		int tries = 0;
+		while (latitude != mLatitude && tries++ < 100)
+		{
+			//mAutoMapCameraMovePending = true;
+			//mNumCameraMovesPending++;
+			mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(ll));
+			cp = mGoogleMap.getCameraPosition();
+			latitude = cp.target.latitude;
+		}
+
+		//add_map_content();
+		setMoveListener();
+		mGoogleMap.setOnMarkerClickListener
+		(
+			new OnMarkerClickListener()
+			{
+	
+				@Override
+				public boolean onMarkerClick(Marker marker)
+				{
+					String marker_id = marker.getId();
+
+					// Find the marker that was clicked in our array, and store the index					
+					int i;
+					mClickedMarkerIndex = MAP_NO_MARKER_CLICKED;
+
+					for (i = 0; i < mNumMarkers; i++)
+					{
+						if (mMarkerArray.get(i).getId().contentEquals(marker_id))
+						{
+							mClickedMarkerIndex = i;
+							i = mNumMarkers;
+						}
+					}
+					marker.showInfoWindow();
+					return true;
+				} // end of on marker click
+			} // end of setOnMarkerClickListener 
+		);
+
+
+		mGoogleMap.setOnCameraChangeListener(new OnCameraChangeListener()
+		{
+
+			@Override
+			public void onCameraChange(CameraPosition position)
+			{ // TODO Auto-generated method stub
+			}
+		} // end of setOnCameraChangeListener
+		);
+
+		mMapNeedsConnection = false;
 	}
 	
 	
