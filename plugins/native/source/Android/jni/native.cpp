@@ -124,6 +124,32 @@ static gnative_Type getType(const char *parameter)
 	return type;
 }
 
+static std::string NormalizeClassName(const char* name) {
+  std::string result=name;
+  // Rewrite '.' as '/' for backwards compatibility.
+  if (result.find('.') != std::string::npos) {
+    std::replace(result.begin(), result.end(), '.', '/');
+  }
+  return result;
+}
+
+static std::string NormalizeTypeName(const char* name) {
+  std::string result;
+  // Add the missing "L;" if necessary.
+  if (name[0] == '[') {
+    result = name;
+  } else {
+    result += 'L';
+    result += name;
+    result += ';';
+  }
+  // Rewrite '.' as '/' for backwards compatibility.
+  if (result.find('.') != std::string::npos) {
+    std::replace(result.begin(), result.end(), '.', '/');
+  }
+  return result;
+}
+
 class GNative
 {
 public:
@@ -263,14 +289,15 @@ public:
         classes_.clear();
 	}
 
-	gnative_Class *ClassCreate(const char *className)
+	gnative_Class *ClassCreate(const char *_className)
 	{
 		JNIEnv *env = g_getJNIEnv();
+		std::string className=NormalizeClassName(_className);
 		std::map<std::string, gnative_Class*>::iterator iter = classes_.find(className);
 		if (iter != classes_.end())
 			return iter->second;
 
-		jclass tempClass = env->FindClass(className);
+		jclass tempClass = env->FindClass(className.c_str());
 		if (tempClass == NULL)
 			return NULL;
 
@@ -1367,7 +1394,7 @@ public:
 		}
 		else if(strcmp("string", type) == 0)
 		{
-			jclass StringCls = env->FindClass("java.lang.String");
+			jclass StringCls = env->FindClass("java/lang/String");
 			jobjectArray jparameters = env->NewObjectArray(length, StringCls, NULL);
 			env->DeleteLocalRef(StringCls);
 			for(int i = 0; i < length; i++)
@@ -1377,7 +1404,7 @@ public:
 				env->DeleteLocalRef(jstr);
 				values++;
 			}
-			gnative_Class *clsArray = ClassCreate("[Ljava.lang.String;");
+			gnative_Class *clsArray = ClassCreate("[Ljava/lang/String;");
 			ob->cls = clsArray;
 			ob->obj = env->NewGlobalRef(jparameters);
 			env->DeleteLocalRef(jparameters);	
@@ -1395,7 +1422,7 @@ public:
 		env->DeleteLocalRef(jstr);
 
 		gnative_Object *obj = new gnative_Object;
-		gnative_Class *cls = ClassCreate("java.lang.Object");
+		gnative_Class *cls = ClassCreate("java/lang/Object");
 		obj->cls = cls;
 		obj->obj = env->NewGlobalRef(ob);
 		env->DeleteLocalRef(ob);
