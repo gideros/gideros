@@ -15,7 +15,7 @@ PLUGINS_MACONLY=steam luamidi
 PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads luamidi harfbuzz reactphysics3d fastnoise
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct camera tts threads megacool map
+				struct camera tts threads megacool map share
 PLUGINS_HTML5=bitop controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise
 #Precompiled plugins only below
 PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d
