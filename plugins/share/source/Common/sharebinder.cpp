@@ -31,6 +31,7 @@ static int loader(lua_State* L)
 
 static void g_initializePlugin(lua_State *L)
 {
+	gshare_Init();
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
     
@@ -42,6 +43,7 @@ static void g_initializePlugin(lua_State *L)
 
 static void g_deinitializePlugin(lua_State *L)
 {
+	gshare_Cleanup();
 }
 
 REGISTER_PLUGIN("Share", "1.0")
