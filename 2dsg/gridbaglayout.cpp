@@ -407,7 +407,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 				nextSize = constraints->tempHeight;
 		}
 	}
-
+	
     //PASS 4: equalize cells if needed
     if (equalizeCells&&(sizeflag==PREFERREDSIZE)) {
         double mw=0;
@@ -438,7 +438,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
                 }
             }
         }
-
     }
 	return r;
 } //getLayoutInfo()

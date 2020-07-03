@@ -858,12 +858,12 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		const char* text, float r, float g, float b, float a,
         TextLayoutParameters *layout, bool /*hasSample*/, float minx, float miny,TextLayout &l) {
 
+    if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
+        l = layoutText(text, layout);
+
 	if (strlen(text) == 0) {
 		return;
 	}
-
-    if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
-        l = layoutText(text, layout);
 
 	std::map<int, int> layerMap;
 	std::map<int, int> gfxMap;

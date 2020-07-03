@@ -421,8 +421,8 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 		cbvsData += 16 - (cbvsData & 15);
 	cbpData = malloc(cbpsData);
 	cbvData = malloc(cbvsData);
-	cbpMod = false;
-	cbvMod = false;
+	cbpMod = true;
+	cbvMod = true;
 
 	for (int iu = 0; iu < this->uniforms.size(); iu++) {
 		char *b = (char *) (this->uniforms[iu].vertexShader ? cbvData : cbpData);
@@ -437,12 +437,18 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 	bd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	g_dev->CreateBuffer(&bd2, NULL, &g_CBP);
-	g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
+	if (cbpsData) {
+		g_dev->CreateBuffer(&bd2, NULL, &g_CBP);
+		g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
+	}
+	else g_CBP = nullptr;
 
 	bd2.ByteWidth = cbvsData;
-	g_dev->CreateBuffer(&bd2, NULL, &g_CBV);
-	g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
+	if (cbpsData) {
+		g_dev->CreateBuffer(&bd2, NULL, &g_CBV);
+		g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
+	}
+	else g_CBV = nullptr;
 
 	D3D11_INPUT_ELEMENT_DESC ied[16]; //Would someone really need more than 16 vertexdata flows ?
 	int nie = 0;
@@ -523,14 +529,14 @@ dx11ShaderProgram::~dx11ShaderProgram() {
 void dx11ShaderProgram::updateConstants() {
 	D3D11_MAPPED_SUBRESOURCE ms;
 	//Update CB{V,P} data
-	if (cbpMod) {
+	if (cbpMod && g_CBP) {
 		//floatdump("CBP", &cbpData, 6);
 		g_devcon->Map(g_CBP, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
 		memcpy(ms.pData, cbpData, cbpsData);                 // copy the data
 		g_devcon->Unmap(g_CBP, NULL);                        // unmap the buffer
 		cbpMod = false;
 	}
-	if (cbvMod) {
+	if (cbvMod && g_CBV) {
 		g_devcon->Map(g_CBV, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
 		memcpy(ms.pData, cbvData, cbvsData);                 // copy the data
 		g_devcon->Unmap(g_CBV, NULL);                        // unmap the buffer

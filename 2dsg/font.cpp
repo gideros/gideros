@@ -143,12 +143,12 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
         float minx, float miny, TextLayout &l) {
     size_t size = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 
+    if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
+        l = layoutText(text, layout);
+
 	if (size == 0) {
 		return;
 	}
-
-    if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
-        l = layoutText(text, layout);
 
     int gfx = vGraphicsBase->size();
     vGraphicsBase->resize(gfx+1);
