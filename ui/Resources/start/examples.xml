@@ -188,6 +188,12 @@
 				path="Shaders/Bloom/Bloom.gproj"
 				image="shd_bloom.png"
 				/>
+				
+	<example 	name="Lua Shaders"
+				description="Demonstrate how to write shaders in lua"
+				path="Shaders/LuaShaders/LuaShaders.gproj"
+				image="shd_lua.png"
+				/>
 </category>
 
 <category name="Audio">

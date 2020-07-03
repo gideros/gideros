@@ -1,0 +1,30 @@
+<project>
+ <properties win_domain="giderosmobile.com" architecture="4" exportMode="2" scaleMode="3" winrt_package="com.yourdomain.yourapp" fps="60" html5_symbols="0" html5_host="" html5_crash="" winrt_org="GiderosMobile" build_number="1" android_template="0" windowWidth="0" version_code="1" orientation="0" html5_mem="256" tv_icon="" mouseTouchOrder="0" html5_fbload="100" windowHeight="0" encryptAssets="0" encryptCode="0" autorotation="0" html5_fbinstant="0" splashScaleMode="0" osx_org="GiderosMobile" splash_h_image="" version="1.0" mainluaOnly="0" logicalWidth="320" osx_installerId="" osx_category="5" ios_bundle="com.yourdomain." osx_signingId="" splash_v_image="" html5_pack="0" packageName="com.yourdomain.yourapp" mouseToTouch="1" disableSplash="0" vsync="0" app_name="" retinaDisplay="0" app_icon="" iosDevice="0" logicalHeight="480" touchToMouse="1" backgroundColor="#ffffff" html5_wasm="0" osx_domain="giderosmobile.com" osx_bundle="com.yourdomain." win_org="GiderosMobile">
+  <imageScales/>
+  <plugins/>
+  <exports>
+   <export name="APK">
+    <property name="androidPath" value=""/>
+    <property name="androidSdk" value=""/>
+    <property name="androidTarget" value="26"/>
+    <property name="androidTools" value=""/>
+    <property name="buildAab" value="1"/>
+    <property name="buildApk" value="0"/>
+    <property name="deployApk" value="0"/>
+    <property name="javaPath" value=""/>
+    <property name="keyAlias" value=""/>
+    <property name="keyStore" value=""/>
+    <property name="packageName" value="com.yourdomain.yourapp"/>
+    <property name="timestampApk" value="0"/>
+   </export>
+  </exports>
+ </properties>
+ <folder name="luashader" path="../../../Library/luashader">
+  <file name="../../../Library/luashader/luac_codegen.lua"/>
+  <file name="../../../Library/luashader/luac_loader.lua"/>
+  <file name="../../../Library/luashader/luashader.lua"/>
+ </folder>
+ <file name="assets/effects.lua"/>
+ <file name="assets/main.lua"/>
+ <file name="assets/texture.jpg"/>
+</project>
