@@ -16,7 +16,9 @@ class Share
 		sActivity =  new WeakReference<Activity>(activity);
 	}
 	
+	private static int fileNum=0;
 	public static boolean share(String mimeType,byte[] data){
+		Activity activity=sActivity.get();
 
 		Intent shareIntent = new Intent();
 		shareIntent.setAction(Intent.ACTION_SEND);
@@ -29,12 +31,20 @@ class Share
 		   }
 		}
 		else {
-/*		    File file = new File(context.getCacheDir(), filename);
-		    Uri contentUri = FileProvider.getUriForFile(context, "com.package.example", file);
-			shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);*/
-			return false;
+		    File file = new File(context.getCacheDir()+"share/"+(++fileNum), filename);
+		    try {
+		        if (file.exists())
+		        	file.delete();
+	            file.createNewFile();
+		        FileOutputStream fos = new FileOutputStream(file);
+		        fos.write(bytes);
+		        fos.close();
+		    } catch (Exception e) {
+		        Log.e(TAG, e.getMessage());
+		    }
+		    Uri contentUri = FileProvider.getUriForFile(context, activity.getPackageName()+".share", file);
+			shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
 		}
-		Activity activity=sActivity.get();
 		activity.startActivity(Intent.createChooser(shareIntent, null));
 		return true;
 	}	
