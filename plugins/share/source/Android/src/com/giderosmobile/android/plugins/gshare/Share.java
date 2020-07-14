@@ -1,10 +1,17 @@
 package com.giderosmobile.android.plugins.gshare;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Build;
 import android.content.Intent;
+import android.util.Log;
+
+import androidx.core.content.FileProvider;
+
 import java.io.UnsupportedEncodingException;
 
 class Share
@@ -31,18 +38,23 @@ class Share
 		   }
 		}
 		else {
-		    File file = new File(context.getCacheDir()+"share/"+(++fileNum), filename);
+			String ext=".bin";
+			if (mimeType.equals("image/png")) ext=".png";
+			else if (mimeType.equals("image/jpeg")) ext=".jpg";
+			File dir= new File(activity.getCacheDir(),"share");
+			dir.mkdirs();
+		    File file = new File(dir, Integer.toString(++fileNum)+ext);
 		    try {
 		        if (file.exists())
 		        	file.delete();
 	            file.createNewFile();
 		        FileOutputStream fos = new FileOutputStream(file);
-		        fos.write(bytes);
+		        fos.write(data);
 		        fos.close();
 		    } catch (Exception e) {
-		        Log.e(TAG, e.getMessage());
+		        Log.e("GiderosShare", e.getMessage());
 		    }
-		    Uri contentUri = FileProvider.getUriForFile(context, activity.getPackageName()+".share", file);
+		    Uri contentUri = FileProvider.getUriForFile(activity, activity.getPackageName()+".share", file);
 			shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
 		}
 		activity.startActivity(Intent.createChooser(shareIntent, null));

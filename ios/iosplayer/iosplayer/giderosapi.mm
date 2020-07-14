@@ -1514,14 +1514,19 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 
     if (dontAutorotate){
         result = UIInterfaceOrientationMaskPortrait;
+		switch (application_->orientation()) {
+			case eLandscapeLeft:
+				result=UIInterfaceOrientationMaskLandscapeLeft;
+			case eLandscapeRight:
+				result=UIInterfaceOrientationMaskLandscapeRight;
+			case ePortrait:
+				result=UIInterfaceOrientationMaskPortrait;
+			case ePortraitUpsideDown:
+				result=UIInterfaceOrientationMaskPortraitUpsideDown;
+		}
     }
     else
     {
-        /*
-		if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
-            result = UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
-        else
-            result = UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;*/
         result= UIInterfaceOrientationMaskAll;
     }
 
