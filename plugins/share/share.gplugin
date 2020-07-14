@@ -16,7 +16,11 @@
 local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("Share",
 	"[[[sys.pluginDir]]]/source/iOS/Share",
-	{ "gshare-ios.mm", "sharebinder.cpp" },
+	{ "gshare-ios.mm" },
+	true,true)
+iOSProject.exportPluginFiles("Share",
+	"[[[sys.pluginDir]]]/source/Common",
+	{ "sharebinder.h", "sharebinder.cpp" },
 	true,true)
 	]]></lua>
  </target>
