@@ -4,6 +4,7 @@
 
 #include "sharebinder.h"
 #include <StoreKit/StoreKit.h>
+#include "gplugin.h"
 
 void gshare_Init()
 {
@@ -16,7 +17,7 @@ bool gshare_Share(const char *mimeType,const void *data,size_t datasize)
 {
     if ([UIDevice currentDevice].systemVersion.floatValue >= 6) {
     	NSObject *obj=NULL;
-		NSData *ndata = [NSData dataWithBytes:data length:strlen(datasize)];
+		NSData *ndata = [NSData dataWithBytes:data length:datasize];
 		
 
     	if (strstr(mimeType,"image/")==mimeType)
@@ -32,7 +33,7 @@ bool gshare_Share(const char *mimeType,const void *data,size_t datasize)
    		NSArray *objectsToShare = @[obj];
  
     	UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil];
-     	[self presentViewController:activityVC animated:YES completion:nil];
+     	[g_getRootViewController() presentViewController:activityVC animated:YES completion:nil];
         return true;
     }
     
