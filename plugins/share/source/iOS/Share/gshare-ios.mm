@@ -17,7 +17,7 @@ bool gshare_Share(const char *mimeType,const void *data,size_t datasize)
 {
     if ([UIDevice currentDevice].systemVersion.floatValue >= 6) {
     	NSObject *obj=NULL;
-		NSData *ndata = [NSData dataWithBytes:data length:strlen((const char *)datasize)];
+		NSData *ndata = [NSData dataWithBytes:data length:datasize];
 		
 
     	if (strstr(mimeType,"image/")==mimeType)
