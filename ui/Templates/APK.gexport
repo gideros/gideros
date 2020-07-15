@@ -2,7 +2,7 @@
     label="Android"
 	description="Export as an Android APK file">
 	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
-	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="26" />
+	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="28" />
 	<property name="buildAab" type="boolean" title="Build Android bundle (.aab file, no APK)" description="Build the android bundle file directly, no APK will be generated nor installed" default="1" />	
 	<property name="buildApk" type="boolean" title="Build APK file" description="Build the APK file directly, otherwise outputs the Android Studio project" default="0" />	
 	<property name="deployApk" type="boolean" title="Install APK to device" description="Try to deploy APK to connected device" default="0" />	

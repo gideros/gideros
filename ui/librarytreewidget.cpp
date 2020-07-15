@@ -1016,7 +1016,7 @@ void LibraryTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
 QDomDocument LibraryTreeWidget::toXml() const
 {
 	QDomDocument doc;
-	doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
+	doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\""));
 	QDomElement root = doc.createElement("project");
 
 	QDomElement properties = doc.createElement("properties");

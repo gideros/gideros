@@ -1258,7 +1258,9 @@ void MainWindow::saveProject()
         return;
     }
 
-    QTextStream(&file) << libraryWidget_->toXml().toString();
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << libraryWidget_->toXml().toString();
     file.close();
     libraryWidget_->setModified(false);
 }

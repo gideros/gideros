@@ -768,6 +768,7 @@ public class GiderosApplication
 	static int tisSelEnd=-1;
 	static int tisInitCapsMode=0;
 	static String tisBuffer="";
+	static int tisToken=-1;
 	
 	public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
 		outAttrs.actionLabel = tisActionLabel;
@@ -790,6 +791,20 @@ public class GiderosApplication
 					//Log.v("EBE","TE:"+tisEditable+" SS:"+tisSelStart+" SE:"+tisSelEnd+" BB:"+e.toString());
 					GiderosApplication app = GiderosApplication.getInstance();
 					nativeTextInput(tisBuffer,tisSelStart,tisSelEnd);
+					if (tisToken!=-1) {
+						Activity activity = WeakActivityHolder.get();
+				    	InputMethodManager imm = (InputMethodManager)
+				    			activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+						ExtractedText et=new ExtractedText();
+						et.text=e.toString();
+						et.startOffset=0; 
+						et.partialStartOffset=-1;
+						et.partialEndOffset=-1;
+						et.selectionStart=(tisSelStart>=0)?tisSelStart-et.startOffset:-1;
+						et.selectionEnd=(tisSelEnd>=0)?tisSelEnd-et.startOffset:-1;
+						et.flags=0;
+			    		imm.updateExtractedText(mGLView_,tisToken,et);
+					}
 				}
 				return super.endBatchEdit();
 			}
@@ -814,14 +829,19 @@ public class GiderosApplication
 				return super.sendKeyEvent(event);
 			}
 			public ExtractedText getExtractedText(ExtractedTextRequest request, int flags) {
-				//Log.v("EBE","GET "+request);
 				ExtractedText et=new ExtractedText();
-				et.text=getEditable();
+				et.text=getEditable().toString();
+				//Log.v("EBE","GET "+et.text);
 				et.startOffset=0; 
+				et.partialStartOffset=-1;
+				et.partialEndOffset=-1;
 				et.selectionStart=(tisSelStart>=0)?tisSelStart-et.startOffset:-1;
 				et.selectionEnd=(tisSelEnd>=0)?tisSelEnd-et.startOffset:-1;
 				et.flags=0;
 				//et.hint=Hint TODO ?
+				tisToken=-1;
+				if ((flags&1)!=0)
+					tisToken=request.token;
 				return et;
 			}
 		};
@@ -833,6 +853,7 @@ public class GiderosApplication
 		b.setSelection(tisSelStart,tisSelEnd);
 		} catch (Exception exc) {}
 		tisEditable=e;
+		tisToken=-1;
 		return b;
 	}	 
 	
@@ -863,6 +884,7 @@ public class GiderosApplication
 			    	InputMethodManager imm = (InputMethodManager)
 			    			activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 						Log.v("EBE","RSI");
+						tisToken=-1;
 				    	imm.restartInput(mGLView_);
 				}
 		    }

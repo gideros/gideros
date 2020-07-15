@@ -12,7 +12,13 @@
         </replacelist>
     </template>
    	<template name="AndroidManifest" path="">
-        	<replacelist wildcards="AndroidManifest.xml">
+			<replacelist wildcards="AndroidManifest.xml;build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+    implementation 'androidx.core:core:1.0.0'
+					</by>
+				</append>
             	<append>
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
