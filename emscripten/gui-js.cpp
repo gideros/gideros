@@ -180,7 +180,7 @@ G_API void gui_show(g_id gid)
 			Module.gui_displayDialog($0,
 			UTF8ToString($1),
 			UTF8ToString($2),
-			$8?UTF8ToString($8):null,
+			UTF8ToString($8),
 			UTF8ToString($3),
 			$4?UTF8ToString($4):null,
 			$5?UTF8ToString($5):null,
@@ -195,8 +195,7 @@ G_API void gui_show(g_id gid)
 		d->Button1.empty()?0:d->Button1.c_str(),
 		d->Button2.empty()?0:d->Button2.c_str(),
 		d->IsSecure,gui_eventInput,
-		d->Text.empty()?0:d->Text.c_str());
-
+		d->Text.c_str());
 	}
 }
 
