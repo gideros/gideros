@@ -707,7 +707,18 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
 	application_->enableExceptions();
 	application_->initialize();
-	application_->setResolution(width_, height_);
+    application_->setResolution(width_, height_);
+    hardwareOrientation_ = ePortrait;
+    #if TARGET_OS_OSX
+    hardwareOrientation_ = eFixed;
+    #endif
+    deviceOrientation_ = ePortrait;
+
+    #if TARGET_OS_TV == 1
+    hardwareOrientation_ = eLandscapeLeft;
+    deviceOrientation_ = eLandscapeLeft;
+    #endif
+
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
@@ -720,17 +731,6 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 
 	Binder::disableTypeChecking();
 	
-	hardwareOrientation_ = ePortrait;
-#if TARGET_OS_OSX
-    hardwareOrientation_ = eFixed;
-#endif
-    deviceOrientation_ = ePortrait;
-
-#if TARGET_OS_TV == 1
-	hardwareOrientation_ = eLandscapeLeft;
-	deviceOrientation_ = eLandscapeLeft;
-#endif
-
 	running_ = false;
 
 #if THREADED_RENDER_LOOP
@@ -1517,12 +1517,16 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 		switch (application_->orientation()) {
 			case eLandscapeLeft:
 				result=UIInterfaceOrientationMaskLandscapeLeft;
+                break;
 			case eLandscapeRight:
 				result=UIInterfaceOrientationMaskLandscapeRight;
+                break;
 			case ePortrait:
 				result=UIInterfaceOrientationMaskPortrait;
+                break;
 			case ePortraitUpsideDown:
 				result=UIInterfaceOrientationMaskPortraitUpsideDown;
+                break;
 		}
     }
     else
@@ -1553,10 +1557,10 @@ void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrien
             deviceOrientation_ = ePortraitUpsideDown;
             break;
         case UIInterfaceOrientationLandscapeRight:
-            deviceOrientation_ = eLandscapeLeft;
+            deviceOrientation_ = eLandscapeRight;
             break;
         case UIInterfaceOrientationLandscapeLeft:
-            deviceOrientation_ = eLandscapeRight;
+            deviceOrientation_ = eLandscapeLeft;
             break;
         default:
             deviceOrientation_ = ePortrait;
