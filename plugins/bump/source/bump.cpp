@@ -80,7 +80,7 @@ static void assertIsPositiveNumber(lua_State *L, int narg, const char *name) {
 	}
 }
 
-void assertIsRect(lua_State *L, int x, int y, int w, int h) {
+static void assertIsRect(lua_State *L, int x, int y, int w, int h) {
 	assertNumber(L, x, "x");
 	assertNumber(L, y, "y");
 	assertIsPositiveNumber(L, w, "w");
@@ -957,7 +957,7 @@ static TouchResponse responseTouch;
 static SlideResponse responseSlide;
 static BounceResponse responseBounce;
 
-int worldCreate(lua_State *L) {
+static int worldCreate(lua_State *L) {
 	World *w = new World();
 	g_pushInstance(L, "BumpWorld", w);
 	lua_newtable(L);
@@ -973,7 +973,7 @@ int worldCreate(lua_State *L) {
 	return 1;
 }
 
-int worldDestruct(lua_State *L) {
+static int worldDestruct(lua_State *L) {
 	World *w = *(World **)lua_touserdata(L, 1);
 	w->responses.erase("touch");
 	w->responses.erase("cross");
@@ -1015,7 +1015,7 @@ struct LuaItemFilter: ItemFilter {
 	}
 };
 
-int worldProject(lua_State *L) {
+static int worldProject(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
@@ -1112,19 +1112,19 @@ int worldProject(lua_State *L) {
 	return 2;
 }
 
-int worldCountCells(lua_State *L) {
+static int worldCountCells(lua_State *L) {
 	World *w = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_pushnumber(L, w->countCells());
 	return 1;
 }
 
-int worldCountItems(lua_State *L) {
+static int worldCountItems(lua_State *L) {
 	World *w = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_pushnumber(L,w->countItems());
 	return 1;
 }
 
-int worldHasItem(lua_State *L) {
+static int worldHasItem(lua_State *L) {
 	//World *w = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
@@ -1135,7 +1135,7 @@ int worldHasItem(lua_State *L) {
 	return 1;
 }
 
-int worldGetItems(lua_State *L) {
+static int worldGetItems(lua_State *L) {
 	World *w = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__itemsr");
 	std::set<int> items = w->getItems();
@@ -1150,7 +1150,7 @@ int worldGetItems(lua_State *L) {
 	return 2;
 }
 
-int worldGetRect(lua_State *L) {
+static int worldGetRect(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
@@ -1172,7 +1172,7 @@ int worldGetRect(lua_State *L) {
 	return 4;
 }
 
-int worldToWorld(lua_State *L) {
+static int worldToWorld(lua_State *L) {
 	World *w = (World *) g_getInstance(L, "BumpWorld", 1);
 	int cx = luaL_checknumber(L, 2);
 	int cy = luaL_checknumber(L, 3);
@@ -1183,7 +1183,7 @@ int worldToWorld(lua_State *L) {
 	return 2;
 }
 
-int worldToCell(lua_State *L) {
+static int worldToCell(lua_State *L) {
 	World *w = (World *) g_getInstance(L, "BumpWorld", 1);
 	double x = luaL_checknumber(L, 2);
 	double y = luaL_checknumber(L, 3);
@@ -1194,7 +1194,7 @@ int worldToCell(lua_State *L) {
 	return 2;
 }
 
-int worldQueryRect(lua_State *L) {
+static int worldQueryRect(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	bool hasFilter=false;
 	if (!lua_isnoneornil(L, 6)) {
@@ -1229,7 +1229,7 @@ int worldQueryRect(lua_State *L) {
 	return 2;
 }
 
-int worldQueryPoint(lua_State *L) {
+static int worldQueryPoint(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	bool hasFilter=false;
 	if (!lua_isnoneornil(L, 4)) {
@@ -1261,7 +1261,7 @@ int worldQueryPoint(lua_State *L) {
 	return 2;
 }
 
-int worldQuerySegment(lua_State *L) {
+static int worldQuerySegment(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	bool hasFilter=false;
 	if (!lua_isnoneornil(L, 6)) {
@@ -1295,7 +1295,7 @@ int worldQuerySegment(lua_State *L) {
 	return 2;
 }
 
-int worldQuerySegmentWithCoords(lua_State *L) {
+static int worldQuerySegmentWithCoords(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	bool hasFilter=false;
 	if (!lua_isnoneornil(L, 6)) {
@@ -1344,7 +1344,7 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 	return 2;
 }
 
-int worldAdd(lua_State *L) {
+static int worldAdd(lua_State *L) {
 	assertIsRect(L, 3, 4, 5,6);
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
@@ -1373,7 +1373,7 @@ int worldAdd(lua_State *L) {
 	return 1;
 }
 
-int worldRemove(lua_State *L) {
+static int worldRemove(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
@@ -1397,7 +1397,7 @@ int worldRemove(lua_State *L) {
 	return 0;
 }
 
-int worldUpdate(lua_State *L) {
+static int worldUpdate(lua_State *L) {
 	assertNumber(L, 3, "x");
 	assertNumber(L, 4, "y");
 	if (!lua_isnoneornil(L,5))
@@ -1424,7 +1424,7 @@ int worldUpdate(lua_State *L) {
 	return 0;
 }
 
-int worldMove(lua_State *L) {
+static int worldMove(lua_State *L) {
 	bool hasFilter=false;
 	if (!lua_isnoneornil(L, 5)) {
 		luaL_checktype(L, 5, LUA_TFUNCTION);
@@ -1535,7 +1535,7 @@ int worldMove(lua_State *L) {
 	return 4;
 }
 
-int worldCheck(lua_State *L) {
+static int worldCheck(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	bool hasFilter=false;
 	if (!lua_isnoneornil(L, 5)) {
@@ -1646,7 +1646,7 @@ int worldCheck(lua_State *L) {
 	return 4;
 }
 
-int rectGetNearestCorner(lua_State *L) {
+static int rectGetNearestCorner(lua_State *L) {
 	double x1 = luaL_checknumber(L, 1);
 	double y1 = luaL_checknumber(L, 2);
 	double w1 = luaL_checknumber(L, 3);
@@ -1660,7 +1660,7 @@ int rectGetNearestCorner(lua_State *L) {
 	return 2;
 }
 
-int rectGetSegmentIntersectionIndices(lua_State *L) {
+static int rectGetSegmentIntersectionIndices(lua_State *L) {
 	double x1 = luaL_checknumber(L, 1);
 	double y1 = luaL_checknumber(L, 2);
 	double w1 = luaL_checknumber(L, 3);
@@ -1681,7 +1681,7 @@ int rectGetSegmentIntersectionIndices(lua_State *L) {
 	return 6;
 }
 
-int rectGetDiff(lua_State *L) {
+static int rectGetDiff(lua_State *L) {
 	double x1 = luaL_checknumber(L, 1);
 	double y1 = luaL_checknumber(L, 2);
 	double w1 = luaL_checknumber(L, 3);
@@ -1702,7 +1702,7 @@ int rectGetDiff(lua_State *L) {
 	return 4;
 }
 
-int rectContainsPoint(lua_State *L) {
+static int rectContainsPoint(lua_State *L) {
 	double x1 = luaL_checknumber(L, 1);
 	double y1 = luaL_checknumber(L, 2);
 	double w1 = luaL_checknumber(L, 3);
@@ -1713,7 +1713,7 @@ int rectContainsPoint(lua_State *L) {
 	return 1;
 }
 
-int rectIsIntersecting(lua_State *L) {
+static int rectIsIntersecting(lua_State *L) {
 	double x1 = luaL_checknumber(L, 1);
 	double y1 = luaL_checknumber(L, 2);
 	double w1 = luaL_checknumber(L, 3);
@@ -1726,7 +1726,7 @@ int rectIsIntersecting(lua_State *L) {
 	return 1;
 }
 
-int rectGetSquareDistance(lua_State *L) {
+static int rectGetSquareDistance(lua_State *L) {
 	double x1 = luaL_checknumber(L, 1);
 	double y1 = luaL_checknumber(L, 2);
 	double w1 = luaL_checknumber(L, 3);
@@ -1739,7 +1739,7 @@ int rectGetSquareDistance(lua_State *L) {
 	return 1;
 }
 
-int rectDetectCollision(lua_State *L) {
+static int rectDetectCollision(lua_State *L) {
 	double x1 = luaL_checknumber(L, 1);
 	double y1 = luaL_checknumber(L, 2);
 	double w1 = luaL_checknumber(L, 3);
@@ -1802,7 +1802,7 @@ int rectDetectCollision(lua_State *L) {
 	return 0;
 }
 
-int bumpNewWorld(lua_State *L) {
+static int bumpNewWorld(lua_State *L) {
 	if (!lua_isnoneornil(L,1))
 		assertIsPositiveNumber(L, 1, "cellSize");
 	int cs = luaL_optinteger(L, 1, 64);
@@ -1814,7 +1814,7 @@ int bumpNewWorld(lua_State *L) {
 	return 1;
 }
 
-int loader(lua_State *L) {
+static int loader(lua_State *L) {
 	const luaL_Reg worldFuncs[] =
 			{
 					//    {"addResponse", worldAddResponse}, Don't implement

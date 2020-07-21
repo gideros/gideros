@@ -444,7 +444,7 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 	else g_CBP = nullptr;
 
 	bd2.ByteWidth = cbvsData;
-	if (cbpsData) {
+	if (cbvsData) {
 		g_dev->CreateBuffer(&bd2, NULL, &g_CBV);
 		g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
 	}

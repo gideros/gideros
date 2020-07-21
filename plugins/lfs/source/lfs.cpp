@@ -335,6 +335,10 @@ typedef struct lfs_Lock {
   HANDLE fd;
 } lfs_Lock;
 static int lfs_lock_dir(lua_State *L) {
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+    // Windows Store or Universal Windows Platform
+    lua_pushnil(L); lua_pushstring(L, "Locking a directory is not supported on UWP (yet)"); return 2;
+#else
   size_t pathl; HANDLE fd;
   lfs_Lock *lock;
   char *ln;
@@ -363,6 +367,7 @@ static int lfs_lock_dir(lua_State *L) {
   luaL_getmetatable (L, LOCK_METATABLE);
   lua_setmetatable (L, -2);
   return 1;
+#endif
 }
 static int lfs_unlock_dir(lua_State *L) {
   lfs_Lock *lock = (lfs_Lock *)luaL_checkudata(L, 1, LOCK_METATABLE);
@@ -849,7 +854,7 @@ static void push_st_perm (lua_State *L, STAT_STRUCT *info) {
     lua_pushstring (L, perm2string (info->st_mode));
 }
 
-static const char *flags2string (mode_t mode) {
+static const char *flags2string (int mode) {
   static char perms[10];
   int i;
   for (i=0;i<9;i++) perms[i]='\0';
