@@ -83,7 +83,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setShader", SpriteBinder::setShader},
 		{"setShaderConstant", SpriteBinder::setShaderConstant},
 		{"setStencilOperation", SpriteBinder::setStencilOperation},
-		{"setStopEventPropagation",setStopEventPropagation},
+        {"setStopEventPropagation",setStopEventPropagation},
+        {"getDrawCount", getDrawCount},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -1802,6 +1803,18 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 	sprite->setStencilOperation(ds);
 
 	return 0;
+}
+
+int SpriteBinder::getDrawCount(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::getDrawCount", 1);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    lua_pushinteger(L, sprite->drawCount());
+
+    return 1;
 }
 
 int SpriteBinder::set(lua_State* L)
