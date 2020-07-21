@@ -19,6 +19,7 @@
 static ApplicationManager *s_applicationManager = NULL;
 
 extern void linkCode();
+extern size_t GiderosUIShown;
 
 #ifdef EGL
 EGLDisplay display;
@@ -145,6 +146,7 @@ size_t utf8len(const char *s)
 
 EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
 {
+ if (GiderosUIShown) return false;
  const char *key=e->key;
  char kcode[2]={(char)(e->keyCode),0};
  if ((!key)||(!(*key)))
@@ -191,6 +193,7 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
 
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
+	 if (GiderosUIShown) return false;
 	 int x=e->canvasX*pixelRatio;
 	 int y=e->canvasY*pixelRatio;
 	 int b=e->buttons;
@@ -224,6 +227,7 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 
 EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userData)
 {
+	 if (GiderosUIShown) return false;
  double w=e->deltaY;
  if (e->deltaMode==1)
   w=w*40;
@@ -239,6 +243,7 @@ EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userD
 
 EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userData)
 {
+	 if (GiderosUIShown) return false;
 	int m=0;
 	 if (e->ctrlKey) m|=GINPUT_CTRL_MODIFIER;
 	 if (e->shiftKey) m|=GINPUT_SHIFT_MODIFIER;
