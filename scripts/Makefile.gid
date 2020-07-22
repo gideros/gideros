@@ -46,7 +46,7 @@ CXX=g++
 ifeq ($(UNAME_S),Linux)
 RELEASE=$(ROOT)/Build.Linux
 else
-vRELEASE=$(ROOT)/Build.Mac
+RELEASE=$(ROOT)/Build.Mac
 TARGET_PLF+=ios
 endif
 endif
