@@ -35,6 +35,7 @@ static void gui_eventAlert(g_id gid,int bi,const char *bt)
 	strcpy((char*)event->buttonText, bt);
 
 	gevent_EnqueueEvent(gid, map_[gid].callback, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, map_[gid].udata);
+	gui_hide(gid);
 }
 
 static void gui_eventInput(g_id gid,int bi,const char *bt,const char *t)
@@ -49,6 +50,7 @@ static void gui_eventInput(g_id gid,int bi,const char *bt,const char *t)
 	strcpy((char*)event->text, t);
 
 	gevent_EnqueueEvent(gid, map_[gid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, event, 1, map_[gid].udata);
+	gui_hide(gid);
 }
 
 

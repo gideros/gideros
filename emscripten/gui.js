@@ -29,7 +29,7 @@ Module.gui_displayDialog=function(gid,title,message,text,cancelButton,Button1,Bu
     messageEl.innerHTML = message || "";
     dialog.appendChild(messageEl);
     
-    if(text){
+    if(text!=null){
         var input = document.createElement("input");
         input.className = "gid_dialog_input";
         input.value = text || "";
