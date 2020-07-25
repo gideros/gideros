@@ -107,6 +107,7 @@ private:
 	static int setStencilOperation(lua_State* L);
 
 	static int setStopEventPropagation(lua_State *L);
+    static int getDrawCount(lua_State* L);
 };
 
 #endif

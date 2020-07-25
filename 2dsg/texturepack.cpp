@@ -66,11 +66,12 @@ TexturePack::TexturePack(Application* application,
 		for (std::size_t i = 0; i < dibs.size(); ++i)
 			tp->addTexture(dibs[i].width(), dibs[i].height());
 
-		tp->packTextures(&this->data->width, &this->data->height, padding);
-		this->data->exwidth = this->data->width;
-		this->data->exheight = this->data->height;
+        int pwidth, pheight;
+        tp->packTextures(&pwidth, &pheight, padding);
 
-		Dib texture(application, data->width, data->height);
+        Dib texture(application, pwidth, pheight);
+        static unsigned char transparent[4]={0,0,0,0};
+        texture.fill(transparent);
 		//unsigned char* texture = new unsigned char[width * height * 4];
 		//int texwidth = width;
 		//int texheight = height;

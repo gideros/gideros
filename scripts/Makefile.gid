@@ -30,16 +30,14 @@ SDK=$(ROOT)/Sdk
 GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | grep define | sed 's/^[^"]*"\([^"]*\)"/\1/')
 
 #TOOLS
+TARGET_PLF=qtapp
 ifeq ($(OS),Windows_NT)
 PATH:=$(QT)/bin:$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin:$(PATH):
 QMAKE=qmake
 CC=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/gcc
 CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 RELEASE=$(ROOT)/Build.Win
-all: qtapp.install android.install winrt.install html5.install win32.install
-
-clean: qtapp.clean android.clean win32.clean html5.clean winrt.clean
-	rm -rf $(RELEASE)
+TARGET_PLF+=android winrt html5 win32
 else
 QMAKE=$(QT)/bin/qmake
 UNAME_S := $(shell uname -s)
@@ -49,12 +47,14 @@ ifeq ($(UNAME_S),Linux)
 RELEASE=$(ROOT)/Build.Linux
 else
 RELEASE=$(ROOT)/Build.Mac
+TARGET_PLF+=ios
 endif
-all: qtapp.install ios.install
+endif
 
-clean: qtapp.clean ios.clean
+all: $(addsuffix .install,$(TARGET_PLF) $(TARGET_EXT))
+
+clean: $(addsuffix .clean,$(TARGET_PLF) $(TARGET_EXT))
 	rm -rf $(RELEASE)
-endif
 
 versioning:
 	A=`git rev-parse HEAD`; if grep -Fq $$A $(ROOT)/libgideros/gid*.h; then echo "VERSION OK"; else echo "#define GIDEROS_GIT_HASH \"$$A\"" >$(ROOT)/libgideros/gideros_build.h; fi 

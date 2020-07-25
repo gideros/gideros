@@ -20,7 +20,7 @@ private:
 	BYTE* m_waveData;
 	int m_capacity;
 public:
-	Wave(const char* szFile = NULL) : m_waveData(NULL) 
+	Wave(const char* szFile = NULL) : m_waveData(NULL), m_capacity(0)
 	{
 		ZeroMemory(&m_wf, sizeof(m_wf));
 		ZeroMemory(&m_xa, sizeof(m_xa));
@@ -72,13 +72,13 @@ public:
 		else
 			dsize = size;
 
-		if (m_waveData == NULL){  // non-NULL means it is already allocated
+		if ((m_waveData == NULL) || (dsize > m_capacity)) {  // new or enlarge
+			if (m_waveData != NULL)
+				delete [] m_waveData;
+
 			m_waveData = new BYTE[dsize];
 			m_xa.pAudioData = m_waveData;
 			m_capacity = dsize;
-		}
-		else {
-			assert(dsize <= m_capacity);
 		}
 	
 		memcpy(m_waveData, data, dsize);

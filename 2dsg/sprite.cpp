@@ -13,7 +13,7 @@ std::set<Sprite*> Sprite::allSprites_;
 std::set<Sprite*> Sprite::allSpritesWithListeners_;
 
 Sprite::Sprite(Application* application) :
-		application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0), spriteWithLayoutCount(0) {
+        spriteWithLayoutCount(0), application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0), drawCount_(0) {
 	allSprites_.insert(this);
 
 //	graphicsBases_.push_back(GraphicsBase());
@@ -239,7 +239,10 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		stack.pop();
 
 		if (pop == true) {
-			sprite->childrenDrawn();
+            sprite->drawCount_=1;
+            for (size_t i = 0;i< sprite->children_.size();i++)
+                sprite->drawCount_+=sprite->children_[i]->drawCount_;
+            sprite->childrenDrawn();
 			if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 				glPopColor();
 			if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1)
@@ -250,6 +253,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				ShaderEngine::Engine->popDepthStencil();
 			continue;
 		}
+
+        sprite->drawCount_=0;
 
 		if (sprite->isVisible_ == false) {
 			continue;

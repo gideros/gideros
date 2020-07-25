@@ -393,6 +393,8 @@ public:
 	void set(int param, float value, GStatus* status = NULL);
 	float get(int param, GStatus* status = NULL);
 
+    size_t drawCount() const  { return drawCount_; }
+
 	const Transform& transform() const
 	{
         return localTransform_;
@@ -472,6 +474,7 @@ private:
 	float clipx_,clipy_,clipw_,cliph_;
     float reqWidth_,reqHeight_;
     int stopPropagationMask_;
+    size_t drawCount_;
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);

@@ -17,9 +17,9 @@ using namespace reactphysics3d;
 #define _UNUSED(n)
 
 static lua_State *L;
-char key_b2 = ' ';
+static char key_b2 = ' ';
 
-void getb2(lua_State* L) {
+static void getb2(lua_State* L) {
 	//StackChecker checker(L, "getb2", 0);
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_b2);
 	lua_pushvalue(L, -2);
@@ -28,12 +28,12 @@ void getb2(lua_State* L) {
 	lua_remove(L, -2);
 }
 
-void getb2(lua_State* L, const void* ptr) {
+static void getb2(lua_State* L, const void* ptr) {
 	lua_pushlightuserdata(L, (void *) ptr);
 	getb2(L);
 }
 
-void setb2(lua_State* L) {
+static void setb2(lua_State* L) {
 	//StackChecker checker(L, "setb2", -2);
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_b2);
 	lua_pushvalue(L, -3);
@@ -129,7 +129,7 @@ static int r3dWorld_create(lua_State* L) {
 	return 1;
 }
 
-int r3dWorld_destruct(lua_State* L) {
+static int r3dWorld_destruct(lua_State* L) {
 	void* ptr = *(void**) lua_touserdata(L, 1);
 	rp3d::DynamicsWorld* world = static_cast<rp3d::DynamicsWorld*>(ptr);
 	GidEventListener *e = events[world];
@@ -143,7 +143,7 @@ int r3dWorld_destruct(lua_State* L) {
 	return 0;
 }
 
-int r3dWorld_SetEventListener(lua_State* L) {
+static int r3dWorld_SetEventListener(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -195,7 +195,7 @@ static void toTransform(lua_State *L, int n, rp3d::Transform &transform) {
 	}
 }
 
-int r3dWorld_CreateBody(lua_State* L) {
+static int r3dWorld_CreateBody(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -215,7 +215,7 @@ int r3dWorld_CreateBody(lua_State* L) {
 	return 1;
 }
 
-int r3dWorld_DestroyBody(lua_State* L) {
+static int r3dWorld_DestroyBody(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -242,7 +242,7 @@ int r3dWorld_DestroyBody(lua_State* L) {
 	return 0;
 }
 
-int r3dWorld_Step(lua_State* L) {
+static int r3dWorld_Step(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -287,7 +287,7 @@ public:
 	}
 };
 
-int r3dWorld_TestOverlap(lua_State* L) {
+static int r3dWorld_TestOverlap(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -300,7 +300,7 @@ int r3dWorld_TestOverlap(lua_State* L) {
 	return 1;
 }
 
-int r3dWorld_TestCollision(lua_State* L) {
+static int r3dWorld_TestCollision(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -328,7 +328,7 @@ int r3dWorld_TestCollision(lua_State* L) {
 	return 0;
 }
 
-int r3dWorld_TestAABBOverlap(lua_State* L) {
+static int r3dWorld_TestAABBOverlap(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -387,7 +387,7 @@ public:
 	}
 };
 
-int r3dWorld_RayCast(lua_State* L) {
+static int r3dWorld_RayCast(lua_State* L) {
 	Binder binder(L);
 	rp3d::DynamicsWorld* world =
 			static_cast<rp3d::DynamicsWorld*>(binder.getInstance("r3dWorld", 1));
@@ -404,7 +404,7 @@ int r3dWorld_RayCast(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_CreateFixture(lua_State* L) {
+static int r3dBody_CreateFixture(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -429,7 +429,7 @@ int r3dBody_CreateFixture(lua_State* L) {
 	return 1;
 }
 
-int r3dBody_DestroyFixture(lua_State* L) {
+static int r3dBody_DestroyFixture(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -453,7 +453,7 @@ int r3dBody_DestroyFixture(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_GetTransform(lua_State* L) {
+static int r3dBody_GetTransform(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -473,7 +473,7 @@ int r3dBody_GetTransform(lua_State* L) {
 	return 1;
 }
 
-int r3dBody_SetTransform(lua_State* L) {
+static int r3dBody_SetTransform(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -483,7 +483,7 @@ int r3dBody_SetTransform(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_SetType(lua_State* L) {
+static int r3dBody_SetType(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -491,7 +491,7 @@ int r3dBody_SetType(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_GetMaterial(lua_State* L) {
+static int r3dBody_GetMaterial(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -506,7 +506,7 @@ int r3dBody_GetMaterial(lua_State* L) {
 	return 1;
 }
 
-int r3dBody_SetMaterial(lua_State* L) {
+static int r3dBody_SetMaterial(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -526,7 +526,7 @@ int r3dBody_SetMaterial(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_EnableGravity(lua_State* L) {
+static int r3dBody_EnableGravity(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -535,13 +535,13 @@ int r3dBody_EnableGravity(lua_State* L) {
 }
 
 #define BODY_SETGETNUM(fct) \
-int r3dBody_Set##fct(lua_State* L) {\
+static int r3dBody_Set##fct(lua_State* L) {\
 	Binder binder(L);\
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
 	body->set##fct(luaL_checknumber(L, 2));\
 	return 0;\
 }\
-int r3dBody_Get##fct(lua_State* L) {\
+static int r3dBody_Get##fct(lua_State* L) {\
 	Binder binder(L);\
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
 	lua_pushnumber(L,body->get##fct());\
@@ -549,7 +549,7 @@ int r3dBody_Get##fct(lua_State* L) {\
 }
 
 #define BODY_SETGETVEC3(fct) \
-int r3dBody_Set##fct(lua_State* L) {\
+static int r3dBody_Set##fct(lua_State* L) {\
 	Binder binder(L);\
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
 	rp3d::Vector3 v;\
@@ -557,7 +557,7 @@ int r3dBody_Set##fct(lua_State* L) {\
 	body->set##fct(v);\
 	return 0;\
 }\
-int r3dBody_Get##fct(lua_State* L) {\
+static int r3dBody_Get##fct(lua_State* L) {\
 	Binder binder(L);\
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
 	rp3d::Vector3 v=body->get##fct();\
@@ -574,7 +574,7 @@ BODY_SETGETNUM(Mass)
 BODY_SETGETVEC3(LinearVelocity)
 BODY_SETGETVEC3(AngularVelocity)
 
-int r3dBody_SetIsAllowedToSleep(lua_State* L) {
+static int r3dBody_SetIsAllowedToSleep(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -582,7 +582,7 @@ int r3dBody_SetIsAllowedToSleep(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_SetIsSleeping(lua_State* L) {
+static int r3dBody_SetIsSleeping(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -590,7 +590,7 @@ int r3dBody_SetIsSleeping(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_ApplyForce(lua_State* L) {
+static int r3dBody_ApplyForce(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -606,7 +606,7 @@ int r3dBody_ApplyForce(lua_State* L) {
 	return 0;
 }
 
-int r3dBody_RayCast(lua_State* L) {
+static int r3dBody_RayCast(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -622,7 +622,7 @@ int r3dBody_RayCast(lua_State* L) {
 	return 1;
 }
 
-int r3dBody_TestPointInside(lua_State* L) {
+static int r3dBody_TestPointInside(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -633,7 +633,7 @@ int r3dBody_TestPointInside(lua_State* L) {
 	return 1;
 }
 
-int r3dBody_ApplyTorque(lua_State* L) {
+static int r3dBody_ApplyTorque(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
@@ -892,7 +892,7 @@ static int r3dShape_destruct(lua_State* L) {
 	return 0;
 }
 
-int r3dFixture_SetCollisionCategoryBits(lua_State* L) {
+static int r3dFixture_SetCollisionCategoryBits(lua_State* L) {
 	Binder binder(L);
 	rp3d::ProxyShape* shape = static_cast<rp3d::ProxyShape*>(binder.getInstance(
 			"r3dFixture", 1));
@@ -900,7 +900,7 @@ int r3dFixture_SetCollisionCategoryBits(lua_State* L) {
 	return 0;
 }
 
-int r3dFixture_SetCollideWithMaskBits(lua_State* L) {
+static int r3dFixture_SetCollideWithMaskBits(lua_State* L) {
 	Binder binder(L);
 	rp3d::ProxyShape* shape = static_cast<rp3d::ProxyShape*>(binder.getInstance(
 			"r3dFixture", 1));
@@ -908,7 +908,7 @@ int r3dFixture_SetCollideWithMaskBits(lua_State* L) {
 	return 0;
 }
 
-int r3dFixture_RayCast(lua_State* L) {
+static int r3dFixture_RayCast(lua_State* L) {
 	Binder binder(L);
 	rp3d::ProxyShape* shape = static_cast<rp3d::ProxyShape*>(binder.getInstance(
 			"r3dFixture", 1));
@@ -924,7 +924,7 @@ int r3dFixture_RayCast(lua_State* L) {
 	return 1;
 }
 
-int r3dFixture_TestPointInside(lua_State* L) {
+static int r3dFixture_TestPointInside(lua_State* L) {
 	Binder binder(L);
 	rp3d::ProxyShape* shape = static_cast<rp3d::ProxyShape*>(binder.getInstance(
 			"r3dFixture", 1));
@@ -1130,7 +1130,7 @@ static int r3dWorld_CreateFixedJoint(lua_State* L) {
 	return 1;
 }
 
-int loader(lua_State *L) {
+static int loader(lua_State *L) {
 //StackChecker checker(L, "Box2DBinder2::loader", 1);
 
 	Binder binder(L);

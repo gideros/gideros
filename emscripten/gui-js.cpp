@@ -23,6 +23,7 @@ public:
 
 static std::map<g_id, UiDialog> map_;
 
+size_t GiderosUIShown=0;
 
 static void gui_eventAlert(g_id gid,int bi,const char *bt)
 {
@@ -34,6 +35,7 @@ static void gui_eventAlert(g_id gid,int bi,const char *bt)
 	strcpy((char*)event->buttonText, bt);
 
 	gevent_EnqueueEvent(gid, map_[gid].callback, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, map_[gid].udata);
+	gui_hide(gid);
 }
 
 static void gui_eventInput(g_id gid,int bi,const char *bt,const char *t)
@@ -48,6 +50,7 @@ static void gui_eventInput(g_id gid,int bi,const char *bt,const char *t)
 	strcpy((char*)event->text, t);
 
 	gevent_EnqueueEvent(gid, map_[gid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, event, 1, map_[gid].udata);
+	gui_hide(gid);
 }
 
 
@@ -60,6 +63,7 @@ G_API void gui_init()
 G_API void gui_cleanup()
 {
  map_.clear();
+ GiderosUIShown=0;
 }
 
 G_API g_id gui_createAlertDialog(const char *title,
@@ -127,6 +131,7 @@ G_API void gui_show(g_id gid)
 	if (d->IsVisible)
 		return;
 	d->IsVisible=true;
+	GiderosUIShown++;
 	
 	if (!(d->input))
 	{
@@ -211,6 +216,7 @@ G_API void gui_hide(g_id gid)
 		EM_ASM_({
 			Module.gui_hideDialog($0);
 		},gid);
+		GiderosUIShown--;
 	}
 	iter->second.IsVisible=false;
 }

@@ -133,6 +133,7 @@
     gdr_foreground();
 }
 
+#ifdef GIDEROS_TAG_APNS
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     //GIDEROS-TAG-IOS:NOTIFICATION-RX//
 }
@@ -147,6 +148,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(nonnull NSData *)deviceToken {
     //GIDEROS-TAG-IOS:NOTIFICATION-TOKEN//
 }
+#endif
 
 - (void)dealloc
 {

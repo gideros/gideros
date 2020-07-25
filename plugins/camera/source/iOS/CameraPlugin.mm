@@ -3,16 +3,30 @@
 #import "CameraCapturePipeline.h"
 #import <UIKit/UIKit.h>
 #include "camerabinder.h"
+#define GLES
+#ifdef GLES
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
+#else
+#import "Metal/Metal.h"
+#endif
+#include <CoreVideo/CoreVideo.h>
 #include "graphicsbase.h"
+
+#ifndef GLES
+extern id<MTLDevice> metalDevice;
+#endif
 
 @interface CameraPluginController : NSObject <CameraCapturePipelineDelegate>
 {
 	BOOL _addedObservers;
 	UIBackgroundTaskIdentifier _backgroundRecordingID;
 	BOOL _allowedToUseGPU;
+#ifdef GLES
     CVOpenGLESTextureCacheRef videoTextureCache;
+#else
+    CVMetalTextureCacheRef videoTextureCache;
+#endif
 	CVPixelBufferRef videoBuffer;
     ShaderBuffer *rdrTgt;
     TextureData *tex;
@@ -48,12 +62,16 @@
     {
     videoTextureCache=NULL;
     videoBuffer=NULL;
-    EAGLContext *context=[EAGLContext currentContext];
-    CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge CVEAGLContext) context, NULL,&videoTextureCache);
+#ifdef GLES
+EAGLContext *context=[EAGLContext currentContext];
+CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge CVEAGLContext) context, NULL,&videoTextureCache);
+if (err)
+    NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreate %d",err);
+#else
+    CVReturn err = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, metalDevice, NULL,&videoTextureCache);
     if (err)
-    {
-        NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreate %d",err);
-    }
+        NSAssert(NO, @"Error at CVMetalTextureCacheCreate %d",err);
+#endif
     tex=NULL;
     rdrTgt=NULL;
     self.capturePipeline = [[[CameraCapturePipeline alloc] init] autorelease];
@@ -133,9 +151,9 @@
     int ao=0;
     switch (avo) {
         case AVCaptureVideoOrientationPortrait: ao=0; break;
-        case AVCaptureVideoOrientationLandscapeLeft: ao=270; break;
+        case AVCaptureVideoOrientationLandscapeLeft: ao=90; break;
         case AVCaptureVideoOrientationPortraitUpsideDown: ao=180; break;
-        case AVCaptureVideoOrientationLandscapeRight: ao=90; break;
+        case AVCaptureVideoOrientationLandscapeRight: ao=270; break;
     }
     ao=(orientation-ao+360)%360;
     int x0=0;
@@ -241,6 +259,7 @@
     {
         size_t frameWidth = CVPixelBufferGetWidth(videoBuffer);
         size_t frameHeight = CVPixelBufferGetHeight(videoBuffer);
+#ifdef GLES
     	CVOpenGLESTextureRef texture = NULL;
     	CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                 videoTextureCache,
@@ -254,7 +273,18 @@
                                                                 GL_UNSIGNED_BYTE,
                                                                 0,
                                                                 &texture);
-                                                                
+#else
+    CVMetalTextureRef texture = NULL;
+    CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                            videoTextureCache,
+                                                            videoBuffer,
+                                                            NULL,
+                                                            MTLPixelFormatRGBA8Unorm,
+                                                            frameWidth,
+                                                            frameHeight,
+                                                            0,
+                                                            &texture);
+#endif
 		if (texture)
 		{
             ShaderEngine::Engine->reset();
@@ -267,12 +297,13 @@
             ShaderEngine::Engine->setModel(model);
             ShaderEngine::Engine->clearColor(0,0,0,0);
                         
+#ifdef GLES
             GLuint glid=CVOpenGLESTextureGetName(texture);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, glid);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            
+#endif
             ShaderProgram::stdTexture->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,
                             &vertices[0], vertices.size(), vertices.modified,
                             &vertices.bufferCache);
@@ -285,8 +316,9 @@
             vertices.modified = false;
             texcoords.modified = false;
             indices.modified = false;
+#ifdef GLES
             glBindTexture(GL_TEXTURE_2D, 0);
-            
+#endif
             ShaderEngine::Engine->setFramebuffer(oldfbo);
             CFRelease(texture);
         }
