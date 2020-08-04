@@ -1653,7 +1653,10 @@ void ApplicationManager::surfaceChanged(int width,int height)
 	int sl,st,sr,sb;
 	getSafeDisplayArea(sl,st,sr,sb,this);
 	drawInfoMargins(sl,st);
-    if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
+    if (ShaderEngine::Engine) {
+    	ShaderEngine::Engine->resizeFramebuffer(width, height);
+		ShaderEngine::Engine->reset(true);
+	}
     Event event(Event::APPLICATION_RESIZE);
     GStatus status;
     application_->broadcastEvent(&event, &status);
