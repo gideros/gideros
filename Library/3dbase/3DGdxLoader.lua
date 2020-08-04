@@ -13,7 +13,7 @@ local function buildPart(gdx,mparts,bones)
 			b.translation=nil
 		end
 	end
-	local m={ vertices=mp.v, texcoords=mp.t, normals=mp.n, indices=mp.i, animdata={ bw=mp.bw, bi=mp.bi}, type="mesh",
+	local m={ vertices=mp.v, texcoords=mp.t, normals=mp.n, indices=mp.i, animdata=mp.bw and mp.bi and { bw=mp.bw, bi=mp.bi}, type="mesh",
 		material=gdx.materialid,bones=gdx.bones }
 			--[[treeDesc.material=mtl
 			treeDesc.color=m.color
@@ -115,7 +115,7 @@ function loadGdx(file,imtls)
 			local ia=part.indices
 			local ian=#part.indices
 			for i=1,ian do ia[i]+=1 end
-			mparts[part.id]={ v=attrs.v.d, t=attrs.t.d, n=attrs.n.d, i=part.indices, bw=attrs.bw.d, bi=attrs.bi.d }
+			mparts[part.id]={ v=attrs.v.d, t=attrs.t and attrs.t.d, n=attrs.n and attrs.n.d, i=part.indices, bw=attrs.bw and attrs.bw.d, bi=attrs.bi and attrs.bi.d }
 		end
 	end
 	local bones,all={},{}

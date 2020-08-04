@@ -85,8 +85,11 @@ void main()
 ]]
 
 D3._F_Shader=[[
-#ifdef GLES
+#ifdef GLES2
 #extension GL_OES_standard_derivatives : enable
+#ifdef SHADOWS
+#extension GL_EXT_shadow_samplers : require
+#endif
 #endif
 uniform lowp vec4 g_Color;
 uniform highp vec4 lightPos;
@@ -158,7 +161,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 		return 1.0;
 	projCoords.z-=0.001; //BIAS
 #ifdef GLES2	
-	float shadow=texture2D(g_ShadowMap, projCoords.xyz); 
+	float shadow=shadow2DEXT(g_ShadowMap, projCoords.xyz); 
 #else
 	//float shadow=shadow2D(g_ShadowMap, projCoords.xyz).r; 	
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)

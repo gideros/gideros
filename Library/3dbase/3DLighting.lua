@@ -1,10 +1,15 @@
 Lighting={}
 local glversion=Shader.getEngineVersion()
 local isES3Level=(glversion~="GLES2")
+local slang=Shader.getShaderLanguage()
 
 print(glversion)
 print(Shader.getProperties().version)
-print(json.encode(Shader.getProperties().extensions))
+Shader.extensions={}
+if slang=="glsl" then
+	for ex in Shader.getProperties().extensions:gmatch("%S+") do Shader.extensions[ex]=true end
+	print(json.encode(Shader.extensions))
+end
 
 local LightingShaderAttrs=
 {
@@ -51,7 +56,7 @@ Lighting._shaders={}
 Lighting.getShader=function(code)
 	local cmap={
 		{"t","TEXTURED",true},
-		{"s","SHADOWS",isES3Level},
+		{"s","SHADOWS",isES3Level and ((slang~="glsl") or Shader.extensions.GL_EXT_shadow_samplers)},
 		{"n","NORMMAP",true},
 		{"i","INSTANCED",true},
 		{"a","ANIMATED",true},
@@ -65,7 +70,7 @@ Lighting.getShader=function(code)
 			end
 		end
 	end
-	if lcode=="" then return nil,nil end
+	--if lcode=="" then return nil,nil end
 	if D3._V_Shader then
 		if not Lighting._shaders[lcode] then
 			for _,a in ipairs(LightingShaderAttrs) do
