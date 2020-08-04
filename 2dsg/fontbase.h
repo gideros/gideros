@@ -71,9 +71,9 @@ public:
 		unsigned int color;
 	};
 	struct TextLayout {
-    	TextLayout() : styleFlags(0) { };
+    	TextLayout() : x(0),y(0),w(0),h(0),bh(0),mw(0),lines(0),styleFlags(0) { };
 		float x,y;
-        float w,h,bh;
+        float w,h,bh,mw;
 		int lines;
 		int styleFlags;
 		std::vector<struct ChunkLayout> parts;
@@ -117,6 +117,7 @@ public:
 		TLF_LTR=(1<<12),
 		TLF_NOSHAPING=(1<<13),
 		TLF_NOBIDI=(1<<14),
+		TLF_SINGLELINE=(1<<15)
 	};
 
 	struct TextLayoutParameters {

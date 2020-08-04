@@ -587,6 +587,8 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		FILL_NUM("weightx",weightx); FILL_NUM("weighty",weighty);
 		FILL_INTT("anchor",anchor,GridBagConstraints::_Anchor); FILL_INTT("fill",fill,GridBagConstraints::_FillMode);
         FILL_NUM("anchorx",anchorX); FILL_NUM("anchory",anchorY);
+        FILL_NUM("offsetx",offsetX); FILL_NUM("offsety",offsetY);
+        FILL_NUM("originx",originX); FILL_NUM("originy",originY);
         FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
 		FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
@@ -646,6 +648,8 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 		STOR_NUM("prefWidth",prefWidth); STOR_NUM("prefHeight",prefHeight);
 		STOR_NUM("insetTop",insets.top); STOR_NUM("insetLeft",insets.left);
 		STOR_NUM("insetBottom",insets.bottom); STOR_NUM("insetRight",insets.right);
+        STOR_NUM("offsetx",offsetX); STOR_NUM("offsety",offsetY);
+        STOR_NUM("originx",originX); STOR_NUM("originy",originY);
 	}
 	else
 		lua_pushnil(L);

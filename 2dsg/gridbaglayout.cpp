@@ -39,11 +39,7 @@ void GridBagLayout::preInitMaximumArraySizes(Sprite *parent, size_t &a0,
 			preMaximumArrayXIndex = curY + curHeight;
 		if ((curX + curWidth) > preMaximumArrayYIndex)
 			preMaximumArrayYIndex = curX + curWidth;
-	} //for (components) loop
-	  // Must specify index++ to allocate well-working arrays.
-	/* fix for 4623196.
-	 * now return long array instead of Point
-	 */
+	}
 	a0 = preMaximumArrayXIndex;
 	a1 = preMaximumArrayYIndex;
 } //PreInitMaximumSizes
@@ -83,13 +79,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	size_t arraySizes0, arraySizes1;
 	preInitMaximumArraySizes(parent, arraySizes0, arraySizes1);
 
-	/* fix for 4623196.
-	 * If user try to create a very big grid we can
-	 * get NegativeArraySizeException because of integer value
-	 * overflow (EMPIRICMULTIPLIER*gridSize might be more then Integer.MAX_VALUE).
-	 * We need to detect this situation and try to create a
-	 * grid with Integer.MAX_VALUE size instead.
-	 */
 	maximumArrayXIndex =
 			(EMPIRICMULTIPLIER * arraySizes0 > INT_MAX) ?
                     INT_MAX : EMPIRICMULTIPLIER * arraySizes0;
@@ -152,6 +141,11 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 			dh = (sizeflag == PREFERREDSIZE) ?
 				comp->layoutConstraints->prefHeight :
 				comp->layoutConstraints->aminHeight;
+			if (sizeflag==PREFERREDSIZE) {
+				// If preferred size is unspecified, use minimum size spec first as a fallback
+				if (dw==-1) dw=comp->layoutConstraints->aminWidth;
+				if (dh==-1) dh=comp->layoutConstraints->aminHeight;
+			}
 			if ((dw==-1)||(dh==-1)) {
 				float diw,dih;
 				if (comp->layoutState) {
@@ -762,8 +756,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		componentAdjusting = comp;
 		AdjustForGravity(constraints, r);
 
-		/* fix for 4408108 - components were being created outside of the container */
-		/* fix for 4969409 "-" replaced by "+"  */
 		if (r.x < 0) {
 			r.width += r.x;
 			r.x = 0;
@@ -774,11 +766,9 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 			r.y = 0;
 		}
 
-		/*
-		 * If the window is too small to be interesting then
-		 * unmap it.  Otherwise configure it and then make sure
-		 * it's mapped.
-		 */
+		//Last step: displace the component according to its origin/offset
+		r.x+=constraints->offsetX+constraints->originX*r.width;
+		r.y+=constraints->offsetY+constraints->originY*r.height;
 
         comp->setBounds(r.x, r.y, r.width, r.height,true);
         if (comp->layoutState&&comp->layoutState->dirty)

@@ -42,6 +42,7 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
     lua_pushinteger(L,FontBase::TLF_LTR); lua_setfield(L,-2,"TLF_LTR");
     lua_pushinteger(L,FontBase::TLF_NOSHAPING); lua_setfield(L,-2,"TLF_NOSHAPING");
     lua_pushinteger(L,FontBase::TLF_NOBIDI); lua_setfield(L,-2,"TLF_NOBIDI");
+    lua_pushinteger(L,FontBase::TLF_SINGLELINE); lua_setfield(L,-2,"TLF_SINGLELINE");
     lua_pop(L,1);
 }
 

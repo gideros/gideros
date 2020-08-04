@@ -32,7 +32,7 @@ void TextFieldBase::getDimensions(float &w,float &h)
 
 void TextFieldBase::getMinimumSize(float &w,float &h,bool preferred)
 {
-	w=textlayout_.w;
+	w=preferred?textlayout_.w:textlayout_.mw;
 	h=textlayout_.bh;
 }
 

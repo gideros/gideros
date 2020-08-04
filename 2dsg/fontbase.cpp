@@ -111,8 +111,11 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
         styles.styleFlags|=TEXTSTYLEFLAG_LTR;
     if (params->flags&TLF_NOSHAPING)
         styles.styleFlags|=TEXTSTYLEFLAG_SKIPSHAPING;
+    bool singleline=(params->flags&TLF_SINGLELINE);
 	float y=0;
 	float cw=0;
+	float mcw=0; //Minimal current width
+	tl.mw=0;
     float lastNs=0;
     size_t st=0;
     size_t lines=0;
@@ -266,12 +269,15 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
             else
             {
                 //The current line will exceed max width (and is not empty): wrap
+    			if (singleline) break;
                 layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx,true);
                 st=tl.parts.size();
                 y+=lh;
                 cl.y+=lh;
                 cl.dy=y;
                 cw=0;
+                if (mcw>tl.mw) tl.mw=mcw;
+                mcw=0;
                 lines++;
                 cl.line=lines+1;
             }
@@ -280,8 +286,11 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
         lsepflags=sepflags;
         if (cw) cw+=lastNs;
 		cw+=cl.w;
+        if (mcw) mcw+=lastNs;
+		mcw+=cl.w;
         lastNs=ns;
-        while (wrap&&breakwords&&(cw>params->w))
+        bool forceBreak=false;
+        while ((wrap||singleline)&&breakwords&&(cw>params->w))
 		{
 			//Last line is too long but can't be cut at a space boundary: cut in as appropriate and add breakchar
 			size_t pmax=tl.parts.size();
@@ -294,14 +303,14 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 				ccw+=tl.parts[cur].w+tl.parts[cur].sepl;
                 cur++;
             }
-			if ((cur<pmax)&&(wmax>0)) //Should always happen, but better check anyhow
+            if (cur<pmax) //Should always happen, but better check anyhow
 			{
 				size_t brk=cur;
                 float bsize=0;
-                int cpos=getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing);
+                int cpos=(wmax>0)?getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing):0;
                 if (cpos>(int)(tl.parts[cur].text.size()))
 					brk++;
-				else if (cpos>0)
+                else if (cpos>=0)
 				{
                     cl=tl.parts[cur];
 					//Cut first part
@@ -317,16 +326,18 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		        	chunkMetrics(cl,params->letterSpacing);
 		            //Insert second part
 					brk++;
-					tl.parts.insert(tl.parts.begin()+brk,cl);
-					pmax++;
-				}
-				if ((brk<pmax)&&(brk>st)) {
-                    if (brk>st) {
-                        int ln=pmax-brk;
-						layoutHorizontal(&tl,st, params->w, ccw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx,true,brk-1);
-                        pmax=tl.parts.size();
-                        brk=pmax-ln;
+                    if ((cpos>0)&&!singleline) {
+                        tl.parts.insert(tl.parts.begin()+brk,cl);
+                        pmax++;
                     }
+				}
+                if (cpos==0) forceBreak=true;
+                if (singleline||(cpos==0)) { cw=ccw; break; }
+                if ((brk<pmax)&&(brk>st)) {
+                    int ln=pmax-brk;
+                    layoutHorizontal(&tl,st, params->w, ccw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx,true,brk-1);
+                    pmax=tl.parts.size();
+                    brk=pmax-ln;
 					st=brk;
 					y+=lh;
 					cl.y+=lh;
@@ -345,8 +356,14 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			}
             break;
 		}
+		if (sepflags&(CHUNKCLASS_FLAG_BREAK|CHUNKCLASS_FLAG_BREAKABLE)) {
+            if (mcw>tl.mw) tl.mw=mcw;
+            mcw=0;
+		}
+        if (forceBreak) break;
 		if (sepflags&CHUNKCLASS_FLAG_BREAK)
 		{
+			if (singleline) break;
 			//Line break
 			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx);
 			st=tl.parts.size();
@@ -384,9 +401,14 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		st=tl.parts.size();
 		y+=lh;
 		cw=0;
+        if (mcw>tl.mw) tl.mw=mcw;
+        mcw=0;
 		lines++;
 	}
 
+	//Adjust min width if breaking words is allowed
+	if (breakwords&&(tl.mw>breaksize))
+		tl.mw=breaksize;
 	//Compute block size
 	tl.x = 1e30;
 	tl.y = 1e30;

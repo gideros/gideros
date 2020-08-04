@@ -15,6 +15,7 @@
 #include <utf8.h>
 #include <algorithm>
 #include "glog.h"
+#include <cmath>
 
 // Textures shouldn't exceed 1024x1024 on most platforms, so limit possible font size to allow at least a few chars to be rendered
 #define FONT_SIZE_LIMIT 300.0
@@ -929,7 +930,17 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			graphicsBase->indices.Update();
 		}
 
-        float x = (c.dx-minx) / sizescalex_, y = (c.dy-miny) / sizescaley_;
+        float x = (c.dx-minx), y = (c.dy-miny);
+        LogicalScaleMode scaleMode=application_->getLogicalScaleMode();
+        if ((scaleMode==LogicalScaleMode::eNoScale)||(scaleMode==LogicalScaleMode::ePixelPerfect)) {
+        	float scalex = application_->getLogicalScaleX();
+       		float scaley = application_->getLogicalScaleY();
+        	x=round(x*scalex)/scalex;
+        	y=round(y*scaley)/scaley;
+        }
+
+        x /= sizescalex_;
+        y /= sizescaley_;
 
         /* if (hasSample) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
