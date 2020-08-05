@@ -356,7 +356,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			}
             break;
 		}
-		if (sepflags&(CHUNKCLASS_FLAG_BREAK|CHUNKCLASS_FLAG_BREAKABLE)) {
+		if (wrap&&(sepflags&CHUNKCLASS_FLAG_BREAKABLE)) {
             if (mcw>tl.mw) tl.mw=mcw;
             mcw=0;
 		}
@@ -364,6 +364,8 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		if (sepflags&CHUNKCLASS_FLAG_BREAK)
 		{
 			if (singleline) break;
+            if (mcw>tl.mw) tl.mw=mcw;
+            mcw=0;
 			//Line break
 			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx);
 			st=tl.parts.size();
