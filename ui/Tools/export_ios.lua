@@ -177,19 +177,27 @@ iOSProject.addFrameworkPath=function(path)
   iOSProject.insertData("FrameworksPaths",refline)
 end
 
-iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV)
+iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV,existing)
   if foriOS then
     local tgtDir=Export.getProperty("project.name").."/Plugins/"..pname
-    Export.mkdir(tgtDir)
+    if not existing then
+	    Export.mkdir(tgtDir)
+    end
     Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
-    iOSProject.addGroup(pname,"Plugins/"..pname,"Group"..pname.."_ios","GroupPlugins_ios")
+    if not existing then
+	    iOSProject.addGroup(pname,"Plugins/"..pname,"Group"..pname.."_ios","GroupPlugins_ios")
+    end
     iOSProject.addSources(srcfiles, "Group"..pname, "ios")
   end
   if forATV then
     local tgtDir="AppleTV/Plugins/"..pname
-    Export.mkdir(tgtDir)
+    if not existing then
+    	Export.mkdir(tgtDir)
+    end
     Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
-    iOSProject.addGroup(pname,pname,"Group"..pname.."_atv","GroupPlugins_atv")
+    if not existing then
+    	iOSProject.addGroup(pname,pname,"Group"..pname.."_atv","GroupPlugins_atv")
+    end
     iOSProject.addSources(srcfiles, "Group"..pname, "atv")
   end
   iOSProject.commit()

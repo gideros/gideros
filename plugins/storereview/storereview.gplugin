@@ -1,13 +1,49 @@
 <plugin
  name="StoreReview"
- description="Add store review call (iOS)">
+ description="Add store review call">
+  <target name="AndroidStudio,APK">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile" dest="app/src/main/java/com/giderosmobile" exclude="frameworks"/>
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;storereview&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.storereview.StoreReview&quot;,"/>
+        </replacelist>		
+    </template>
+ </target>
  <target name="iOS">
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("StoreReview",
 	"[[[sys.pluginDir]]]/source/IOS/StoreReview",
-	{ "gstoreReview-ios.mm", "storeReviewBinder.cpp" },
+	{ "gstoreReview-ios.mm" },
 	true,true)
+iOSProject.exportPluginFiles("StoreReview",
+	"[[[sys.pluginDir]]]/source/Common",
+	{ "storeReviewBinder.cpp" },
+	true,true,true)
 	]]></lua>
+ </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins"/>
+    <template name="sources" path="[[[sys.pluginDir]]]/source/Common"  dest="giderosgame/giderosgame.Shared/Plugins/StoreReview"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\StoreReview\gstoreReview-uwp.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\StoreReview\storeReviewBinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\StoreReview\gstoreReview.h" />
+]]></by>
+            </append>
+        </replacelist>
+    </template>
  </target>
 </plugin>
