@@ -105,7 +105,7 @@ public:
 			create_task(ctx->GetAssociatedStoreProductsAsync(pType)).then([=](task<StoreProductQueryResult^> previousTask)
 			{
 				StoreProductQueryResult^ products = previousTask.get();
-				Product p;
+				std::vector<Product> pl;
 				if (products->Products==nullptr) {
 					onProductsError(iab, us(products->ExtendedError.ToString()).c_str());
 				}
@@ -117,17 +117,21 @@ public:
 						auto sp = ip->Current->Value;
 						auto id = internalId[us(sp->StoreId)];
 						if (!id.empty()) {
+							Product p;
 							p.description = us(sp->Description);
 							p.productId = id;
 							p.price = us(sp->Price->FormattedPrice);
 							p.title = us(sp->Title);
-							onProductsComplete(iab, &p);
+							pl.push_back(p);
 						}
 						ip->MoveNext();
 					}
+					Product p;
+					pl.push_back(p);
+					onProductsComplete(iab, &pl[0]);
 				}
 			});
-		}, false);
+		}, true);
 	}
 	
 	void purchase(const char *iab, const char *productId)
@@ -152,7 +156,7 @@ public:
 						onPurchaseError(iab, us(result->ExtendedError.ToString()).c_str());
 					}
 				});
-			}, false);
+			}, true);
 	}
 	
 	void restore(const char *iab)
@@ -183,7 +187,7 @@ public:
 					onRestoreComplete(iab);
 				}
 			});
-		}, false);
+		}, true);
 	}
 	
 	void map2products(Product *product)
