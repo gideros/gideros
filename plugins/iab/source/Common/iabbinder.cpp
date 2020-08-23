@@ -88,6 +88,10 @@ static const char *RESTORE_ERROR = "restoreError";
 
 static char keyWeak = ' ';
 
+#ifdef WINSTORE
+#define strdup _strdup
+#endif
+
 class IAB : public GEventDispatcherProxy
 {
 public:
@@ -438,7 +442,7 @@ static int restore(lua_State *L)
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
-        {"detectStores", detectStores},
+		{"detectStores", detectStores},
         {"new", init},
         {"setUp", setup},
         {"setProducts", setProducts},

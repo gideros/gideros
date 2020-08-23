@@ -87,6 +87,15 @@ G_API void giab_check(const char *iab);
 G_API void giab_request(const char *iab);
 G_API void giab_purchase(const char *iab, const char *productId);
 G_API void giab_restore(const char *iab);
+    
+G_API void giab_onAvailable(const char *iap);
+G_API void giab_onNotAvailable(const char *iap);
+G_API void giab_onPurchaseComplete(const char* iap, const char *productId, const char* receiptId);
+G_API void giab_onPurchaseError(const char *iap, const char *value);
+G_API void giab_onProductsComplete(const char *iab, Product *product);
+G_API void giab_onProductsError(const char *iap, const char *value);
+G_API void giab_onRestoreComplete(const char *iap);
+G_API void giab_onRestoreError(const char *iap, const char *value);
 
 G_API g_id giab_addCallback(gevent_Callback callback, void *udata);
 G_API void giab_removeCallback(gevent_Callback callback, void *udata);
