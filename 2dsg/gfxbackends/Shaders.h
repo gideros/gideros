@@ -97,7 +97,7 @@ protected:
     int refCount;
     std::vector<ConstantDesc> uniforms;
     int sysconstmask;
-    char sysconstidx[8];
+    char sysconstidx[16]; //Current sysconst count is 9 (Timer), allocate 16 in case we add more and forget to increase this...
     void shaderInitialized();
     virtual bool updateConstant(int index,ConstantType type, int mult,const void *ptr);
     static void *LoadShaderFile(const char *fname, const char *ext, long *len);

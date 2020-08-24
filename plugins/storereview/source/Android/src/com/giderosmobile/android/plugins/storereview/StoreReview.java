@@ -1,15 +1,16 @@
 package com.giderosmobile.android.plugins.storereview;
 
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
-import java.util.Hashtable;
-import java.util.Map;
-
 import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Bundle;
-import android.util.SparseArray;
+
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.OnCompleteListener;
+import com.google.android.play.core.tasks.Task;
+
+import java.lang.ref.WeakReference;
+
+import androidx.annotation.NonNull;
 
 public class StoreReview {
 	
@@ -22,14 +23,18 @@ public class StoreReview {
 	
 	public static boolean review()
 	{	
-		ReviewManager manager = ReviewManagerFactory.create(sActivity.get());
+		final ReviewManager manager = ReviewManagerFactory.create(sActivity.get());
 		Task<ReviewInfo> request = manager.requestReviewFlow();
-		request.addOnCompleteListener(task -> {
-		    if (task.isSuccessful()) {
-		        // We can get the ReviewInfo object
-		        ReviewInfo reviewInfo = task.getResult();
-				Task<Void> flow = manager.launchReviewFlow(activity, reviewInfo);
-		    }
+		request.addOnCompleteListener(new OnCompleteListener<ReviewInfo>() {
+			@Override
+			public void onComplete(@NonNull Task<ReviewInfo> task) {
+				if (task.isSuccessful()) {
+					// We can get the ReviewInfo object
+					ReviewInfo reviewInfo = task.getResult();
+					Task<Void> flow = manager.launchReviewFlow(sActivity.get(), reviewInfo);
+				}
+
+			}
 		});
 		return true;
 	}

@@ -1,6 +1,7 @@
 <plugin
  name="StoreReview"
  description="Add store review call">
+ <property name="gmsVersion" type="string" title="Google Play Core version (android)" description="" default="1.8.0" />
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile" dest="app/src/main/java/com/giderosmobile" exclude="frameworks"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
@@ -10,7 +11,15 @@
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.storereview.StoreReview&quot;,"/>
         </replacelist>		
     </template>
- </target>
+	<replacelist wildcards="build.gradle">
+		<append>
+			<orig>//TAG-DEPENDENCIES//</orig>								
+			<by>
+           implementation 'com.google.android.play:core:[[[plugin.gmsVersion]]]'
+			</by>
+		</append>
+   	</replacelist>	
+  </target>
  <target name="iOS">
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
