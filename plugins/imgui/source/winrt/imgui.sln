@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "imgui", "imgui", "{7BB58701-4BD0-4931-B7CA-BC8D6B4A30FC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui.Shared", "imgui\imgui.Shared\imgui.Shared.vcxitems", "{44725AEA-718F-4A96-903D-58D4EB02B614}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui.Windows", "imgui\imgui.Windows\imgui.Windows.vcxproj", "{1EC00783-9790-4157-A9AD-CB13CB67B39A}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		imgui\imgui.Shared\imgui.Shared.vcxitems*{1ec00783-9790-4157-a9ad-cb13cb67b39a}*SharedItemsImports = 4
+		imgui\imgui.Shared\imgui.Shared.vcxitems*{44725aea-718f-4a96-903d-58d4eb02b614}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Debug|ARM.Build.0 = Debug|ARM
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Debug|x64.ActiveCfg = Debug|x64
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Debug|x64.Build.0 = Debug|x64
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Debug|x86.ActiveCfg = Debug|Win32
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Debug|x86.Build.0 = Debug|Win32
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Release|ARM.ActiveCfg = Release|ARM
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Release|ARM.Build.0 = Release|ARM
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Release|x64.ActiveCfg = Release|x64
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Release|x64.Build.0 = Release|x64
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Release|x86.ActiveCfg = Release|Win32
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{44725AEA-718F-4A96-903D-58D4EB02B614} = {7BB58701-4BD0-4931-B7CA-BC8D6B4A30FC}
+		{1EC00783-9790-4157-A9AD-CB13CB67B39A} = {7BB58701-4BD0-4931-B7CA-BC8D6B4A30FC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6FB6C8E0-E773-44CE-8FA9-B39DF8E128FD}
+	EndGlobalSection
+EndGlobal

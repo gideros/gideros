@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\retrosfxvoice.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\gaudio-loader-sfx.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\retrosfxvoice.cpp" />
+  </ItemGroup>
+</Project>
