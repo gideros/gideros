@@ -2449,7 +2449,7 @@ int ImGui_impl_Combo(lua_State *L)
             return 2;
         }
 
-        const char* items[len];
+        const char** items=new const char* [len];
         lua_pushvalue(L, 4);
         for (int i = 0; i < len; i++)
         {
@@ -2461,6 +2461,7 @@ int ImGui_impl_Combo(lua_State *L)
         lua_pop(L, 1);
 
         result = ImGui::Combo(label, &item_current, items, len, maxItems);
+		delete[] items;
     }
     else if (lua_type(L, 4) == LUA_TSTRING)
     {
@@ -3219,7 +3220,7 @@ int ImGui_impl_InputText(lua_State *L)
     const char* label = luaL_checkstring(L, 2);
     const char* text = luaL_checkstring(L, 3);
     unsigned int size_t = luaL_checkinteger(L, 4);
-    char buffer[size_t];
+    char *buffer=new char[size_t];
     sprintf(buffer, "%s", text);
 
     ImGuiInputTextFlags flags = luaL_optinteger(L, 5, 0);
@@ -3230,6 +3231,7 @@ int ImGui_impl_InputText(lua_State *L)
 
     lua_pushstring(L, &buffer[0]);
     lua_pushboolean(L, result);
+	delete[] buffer;
     return 2;
 }
 
@@ -3238,7 +3240,7 @@ int ImGui_impl_InputTextMultiline(lua_State *L)
     const char* label = luaL_checkstring(L, 2);
     const char* text = luaL_checkstring(L, 3);
     size_t buf_size = luaL_checkinteger(L, 4);
-    char buffer[buf_size];
+    char *buffer=new char[buf_size];
     sprintf(buffer, "%s", text);
 
     ImVec2 size = ImVec2(luaL_optnumber(L, 5, 0.0f), luaL_optnumber(L, 6, 0.0f));
@@ -3248,6 +3250,7 @@ int ImGui_impl_InputTextMultiline(lua_State *L)
     bool result = ImGui::InputTextMultiline(label, buffer, buf_size, size, flags);
     lua_pushstring(L, &buffer[0]);
     lua_pushboolean(L, result);
+	delete[] buffer;
     return 2;
 
 }
@@ -3259,7 +3262,7 @@ int ImGui_impl_InputTextWithHint(lua_State *L)
     const char* text = luaL_checkstring(L, 3);
     const char* hint = luaL_checkstring(L, 4);
     size_t buf_size = luaL_checkinteger(L, 5);
-    char buffer[buf_size];
+    char *buffer=new char[buf_size];
     sprintf(buffer, "%s", text);
     ImGuiInputTextFlags flags = luaL_optinteger(L, 6, 0);
     // ImGuiInputTextCallback callback = NULL; void* user_data = NULL;
@@ -3267,6 +3270,7 @@ int ImGui_impl_InputTextWithHint(lua_State *L)
     bool result = ImGui::InputTextWithHint(label, hint, buffer, buf_size, flags);
     lua_pushstring(L, &buffer[0]);
     lua_pushboolean(L, result);
+	delete[] buffer;
     return 2;
 }
 
@@ -3624,7 +3628,7 @@ int ImGui_impl_ListBox(lua_State *L)
 
     luaL_checktype(L, 4, LUA_TTABLE);
     int len = luaL_getn(L, 4);
-    const char* items[len];
+    const char** items=new const char*[len];
     lua_pushvalue(L, 4);
     for (int i = 0; i < len; i++)
     {
@@ -3641,6 +3645,7 @@ int ImGui_impl_ListBox(lua_State *L)
 
     lua_pushinteger(L, current_item);
     lua_pushboolean(L, result);
+	delete[] items;
     return 2;
 }
 
@@ -3675,7 +3680,7 @@ int ImGui_impl_PlotLines(lua_State *L)
 
     luaL_checktype(L, 3, LUA_TTABLE);
     int len = luaL_getn(L, 3);
-    float values[len];
+    float *values=new float[len];
     lua_pushvalue(L, 3);
     for (int i = 0; i < len; i++)
     {
@@ -3695,6 +3700,7 @@ int ImGui_impl_PlotLines(lua_State *L)
     int stride = sizeof(float);
 
     ImGui::PlotLines(label, (float*)&values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+	delete[] values;
 
     return 0;
 }
@@ -3705,7 +3711,7 @@ int ImGui_impl_PlotHistogram(lua_State *L)
 
     luaL_checktype(L, 3, LUA_TTABLE);
     int len = luaL_getn(L, 3);
-    float values[len];
+    float *values=new float[len];
     lua_pushvalue(L, 3);
     for (int i = 0; i < len; i++)
     {
@@ -3725,7 +3731,7 @@ int ImGui_impl_PlotHistogram(lua_State *L)
     int stride = sizeof(float);
 
     ImGui::PlotHistogram(label, (float*)&values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
-
+	delete[] values;
     return 0;
 }
 
@@ -4830,7 +4836,7 @@ int ImGui_impl_DrawList_AddPolyline(lua_State *L)
     luaL_checktype(L, 2, LUA_TTABLE);
     int index = 0;
     int num_points = luaL_getn(L, 2);
-    ImVec2 points[num_points];
+    ImVec2 *points=new ImVec2[num_points];
     lua_pushvalue(L, 2);
     for (int i = 0; i < num_points; i+=2)
     {
@@ -4854,38 +4860,39 @@ int ImGui_impl_DrawList_AddPolyline(lua_State *L)
 
     ImDrawList *list = ImGui::GetWindowDrawList();
     list->AddPolyline(points, index, col, closed, thickness);
-
+	delete[] points;
     return  0;
 }
 
-int ImGui_impl_DrawList_AddConvexPolyFilled(lua_State *L)
+int ImGui_impl_DrawList_AddConvexPolyFilled(lua_State* L)
 {
 
-    luaL_checktype(L, 2, LUA_TTABLE);
-    int index = 0;
-    int num_points = luaL_getn(L, 2);
-    ImVec2 points[num_points];
-    lua_pushvalue(L, 2);
-    for (int i = 0; i < num_points; i+=2)
-    {
-        lua_rawgeti(L, 2, i+1);
-        float x = luaL_checknumber(L, -1);
-        lua_pop(L, 1);
+	luaL_checktype(L, 2, LUA_TTABLE);
+	int index = 0;
+	int num_points = luaL_getn(L, 2);
+	ImVec2* points = new ImVec2[num_points];
+	lua_pushvalue(L, 2);
+	for (int i = 0; i < num_points; i += 2)
+	{
+		lua_rawgeti(L, 2, i + 1);
+		float x = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
 
-        lua_rawgeti(L, 2, i+2);
-        float y = luaL_checknumber(L, -1);
-        points[index] = ImVec2(x,y);
+		lua_rawgeti(L, 2, i + 2);
+		float y = luaL_checknumber(L, -1);
+		points[index] = ImVec2(x, y);
 
-        index ++;
+		index++;
 
-        lua_pop(L, 1);
-    }
-    lua_pop(L, 1);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
 
-    ImU32 col = GColor::toU32(luaL_checkinteger(L, 3), luaL_optnumber(L, 4, 1.0f));
+	ImU32 col = GColor::toU32(luaL_checkinteger(L, 3), luaL_optnumber(L, 4, 1.0f));
 
-    ImDrawList *list = ImGui::GetWindowDrawList();
-    list->AddConvexPolyFilled(points, index, col);
+	ImDrawList* list = ImGui::GetWindowDrawList();
+	list->AddConvexPolyFilled(points, index, col);
+	delete[] points;
 
     return  0;
 }
@@ -5072,7 +5079,6 @@ int ImGui_my_test_n_table(lua_State *L)
 {
     luaL_checktype(L, 2, LUA_TTABLE);
     size_t len = luaL_getn(L, 2);
-    const char* items[len];
     lua_pushvalue(L, 2);
     for (int i = 0; i < len; i++)
     {
