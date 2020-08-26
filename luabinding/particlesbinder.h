@@ -36,6 +36,7 @@ private:
     static int setTexture(lua_State *L);
     static int clearTexture(lua_State *L);
     static int scaleParticles(lua_State *L);
+    static int getNearestParticle(lua_State *L);
 };
 
 

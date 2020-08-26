@@ -2,6 +2,7 @@
 #include <particles.h>
 #include "luaapplication.h"
 #include <luautil.h>
+#include <cfloat>
 
 ParticlesBinder::ParticlesBinder(lua_State *L)
 {
@@ -31,6 +32,7 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
 		{"scaleParticles",scaleParticles},
 
 		{"getParticles",getParticles},
+		{"getNearestParticle",getNearestParticle},
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
 
@@ -553,6 +555,38 @@ static void buildParticleTable(lua_State *L,Particles *mesh,int i)
 		lua_setfield(L,-2,"tag");
 	}
 }
+
+int ParticlesBinder::getNearestParticle(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    double x=luaL_checknumber(L,2);
+    double y=luaL_checknumber(L,3);
+    int psize=mesh->getParticleCount();
+    double pd=DBL_MAX;
+    int pi=0;
+	for (int i=0;i<psize;i++)
+	{
+		if (mesh->getSize(i)==0) //Dead particle
+			continue;
+		float px,py;
+		mesh->getPosition(i,&px,&py);
+		double d=(px-x)*(px-x)+(py-y)*(py-y);
+		if (d<pd) {
+			pd=d;
+			pi=i+1;
+		}
+	}
+	if (pi>0)
+	{
+		lua_pushinteger(L,pi);
+		lua_pushnumber(L,pd);
+		return 2;
+	}
+
+    return 0;
+}
+
 
 int ParticlesBinder::getParticles(lua_State *L)
 {
