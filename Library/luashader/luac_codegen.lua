@@ -138,8 +138,15 @@ function gen_GETGLOBAL(is,f,a,b,c,bc)
 end
 
 function gen_SETGLOBAL(is,f,a,b,c,bc)
-mprint("_G["..KStr(f.k[bc+1]).."]=$"..a)
-outcode(f,mapGlobal(f,KStr(f.k[bc+1])).value.."="..f._l[a].value..";\n")
+	mprint("_G["..KStr(f.k[bc+1]).."]=$"..a)
+	if f._l[a].type=="func" then
+		local glf=mapGlobal(f,KStr(f.k[bc+1]))
+		assert(glf.type=="func",glf.value.." must be a function")
+		assert(f._l[a].funcnum,glf.value.." must be a local function")
+		glf.funcnum=f._l[a].funcnum
+	else
+		outcode(f,mapGlobal(f,KStr(f.k[bc+1])).value.."="..f._l[a].value..";\n")
+	end
 end
 
 local function checkSwizzling(var,sw)
@@ -191,8 +198,13 @@ end
 
 function gen_MOVE(is,f,a,b)
 	assert(f._l[b],"Local "..b.." not yet initialized")
-	f._l[a]=f._l[b]
-mprint("$"..a.."=$"..b)
+	mprint("$"..a.."=$"..b)
+	if f._l[b].type=="func" then
+		f._l[a]=f._l[b]
+	else
+		ensureLocalVar(f,a,f._l[b].vtype)
+		outcode(f,f._l[a].value.."="..f._l[b].value..";\n")
+	end
 end
 
 function gen_opun(is,f,a,b,op,rtype)
@@ -255,7 +267,7 @@ end
 function gen_opeq(is,f,a,b,op,rtype)
 	mprint("$"..a..op..RKStr(f,b))
 	local vb=KRVal(f,b)
-	rtype=rtype or f._ot[f._l[a].vtype..op..vb.vtype] or vb.vtype
+	rtype=rtype or f._ot[f._l[a].vtype..op..vb.vtype] or f._l[a].vtype
 	ensureLocalVar(f,a,rtype)
 	local terms=f._handlers.GENOPEQ and f._handlers.GENOPEQ(op,f._l[a],vb)
 	if not terms then 
@@ -298,7 +310,7 @@ local function endblock(c,f)
 end
 
 function gen_compop(is,f,a,b,c,op,lc)
-	mprint("$"..a.."="..RKStr(f,b)..op..RKStr(f,c))
+	mprint("$"..a.."(comp)"..RKStr(f,b)..op..RKStr(f,c))
 	
 	local jis=f.code[lc+1]
     assert((jis&0x3F)()==29,"JMP expected after a conditional")
@@ -311,7 +323,8 @@ function gen_compop(is,f,a,b,c,op,lc)
 	local abool="false" if (a>0) then abool="true" end
 	outcode(f,"if (("..terms..")!="..abool..") {\n")
 	--f._breaks[lc+2]={ callback=endblock	}
-	f._breaks[lc+2+joff]={ callback=endblock	}
+	f._breaks[lc+2+joff]=f._breaks[lc+2+joff] or {}
+	table.insert(f._breaks[lc+2+joff],{ callback=endblock })
 end
 
 function gen_EQ(is,f,a,b,c,bc,sbc,lc)
@@ -332,20 +345,31 @@ mprint("$"..a.."="..KStr(f.k[bc+1]))
 	f._l[a]={type="val",value=v.value, vtype="hF1"}
 end
 
+function gen_CLOSURE(is,f,a,b,c,bc)
+	assert(f.p[bc+1],"No such local function ("..bc..")")
+	mprint("$"..a.."=function("..bc..")")
+	f._l[a]={type="func",funcnum=bc+1}
+end
+
 function gen_JMP(is,f,a,b,c,bc,sbc,lc)
 assert(false,"Standalone JMP aren't supported")
  --Generate if context
 --	outcode(f,"if ("..f._l[a].value..") {\n")
-	f._breaks[lc+1+sbc]={ callback=endblock	}
+	f._breaks[lc+1+sbc]=f._breaks[lc+1+sbc] or {}
+	table.insert(f._breaks[lc+1+sbc],{ callback=endblock })
 --TODO: handle subpart
 end
 
 function gen_CALL(is,f,a,b,c)
 	assert((c-1)<=1,"Multiple returns aren't allowed ("..(c-1)..")")
-	assert(c>0,"Indeterminate return count aren't allowed. Avoid directly passing the result of a function as the last arg of another.")
-	assert(f._l[a].type=="func",f._l[a].value.." isn't a function")
+	--assert(c>0,"Indeterminate return count aren't allowed. Avoid directly passing the result of a function as the last arg of another.")
+	if c<=0 then c=2 end --Indeterminate return count, typically a tail call: assume one return since we don't support anything else
+	local fname=f._l[a].value or ("local("..f._l[a].funcnum..")")
+	assert(f._l[a].type=="func",fname.." isn't a function")
+	if b==0 then b=(f._l[a].acount or -1)+1 end
+	assert(b>0,"Indeterminate arg count aren't allowed on '"..fname.."'. Avoid directly passing the result of a function as the last arg of another.")
 	mprint("$"..a.."=$"..a.."(#"..b..")")
-	local fn=f._l[a].value
+	local fn=fname
 	local fne=f._l[a].evaluate
 	local fnr=f._l[a].rtype
 	if c==2 then -- Return
@@ -360,9 +384,9 @@ function gen_CALL(is,f,a,b,c)
 		--INLINE
 		local args={}
 		for p=1,b-1 do
-			args[p]=f._l[a+p].value
+			args[p]=f._l[a+p]
 		end
-		outcode(f,fne(unpack(args))..";\n")
+		outcode(f,fne(f._l[a],unpack(args))..";\n")
 	else
 		outcode(f,fn.."(")
 		for p=1,b-1 do
@@ -405,7 +429,11 @@ local function processFunction(f)
 		local lc=1
 		f._breaks={}
 		while lc<=f.codeSize do
-			if f._breaks[lc] then f._breaks[lc]:callback(f,lc) end
+			if f._breaks[lc] then 
+				for _,c in ipairs(f._breaks[lc])
+					do c:callback(f,lc) 
+				end 
+			end
 			local is=f.code[lc] lc+=1
 			local a=((is>>6)&0xFF)()
 			local c=((is>>14)&0x1FF)()
@@ -421,7 +449,6 @@ local function processFunction(f)
 		end
 	end
 	tcount+=1
-	--for _,p in ipairs(f.p) do processFunction(p) end
 end
 
 function codegen(f,argsmap,globalmap,typemap,optypemap,ophandlers)
@@ -438,8 +465,17 @@ function codegen(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 	f._ot=optypemap
 	f._handlers=ophandlers or {}
 	for k,v in ipairs(argsmap or {}) do f._l[k-1]=v  end
+	
 	processFunction(f)
 	--print("ProcessedCount",pcount,tcount)
-	--print("CODE:\n",f._c)
+	--print("CODE:\n",f._hc..f._c)
+	
+	local inner={}
+	for _,fg in pairs(f._g) do 
+		if fg.type=="func" and fg.funcnum and f.p[fg.funcnum] then
+			fg._fcode=f.p[fg.funcnum]
+		end
+	end
+
 	return f._hc..f._c
 end

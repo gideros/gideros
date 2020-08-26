@@ -1,4 +1,65 @@
 --!NEEDS:luac_codegen.lua
+local OPTYPE_MAP={
+	["hF44*hF4"]="hF4",
+	["hF1*hF2"]="hF2",
+	["hF1*hF3"]="hF3",
+	["hF1*hF4"]="hF4",
+	["hF1+hF2"]="hF2",
+	["hF1+hF3"]="hF3",
+	["hF1+hF4"]="hF4",
+	["hF1-hF2"]="hF2",
+	["hF1-hF3"]="hF3",
+	["hF1-hF4"]="hF4",
+	["hF1/hF2"]="hF2",
+	["hF1/hF3"]="hF3",
+	["hF1/hF4"]="hF4",
+	["hF1%hF2"]="hF2",
+	["hF1%hF3"]="hF3",
+	["hF1%hF4"]="hF4",
+}
+
+local GFUNC_MAP={
+	["discard"]={type="func", value="discard"},
+	["texture2D"]={type="func", value="texture2D", rtype="lF4"},
+	["sin"]={type="func", value="sin", rtype="1", acount=1},
+	["cos"]={type="func", value="cos", rtype="1", acount=1},
+	["floor"]={type="func", value="floor", rtype="1", acount=1},
+	["dot"]={type="func", value="dot", rtype="hF1", acount=2},
+	["mix"]={type="func", value="mix", rtype="1", acount=3},
+	["tan"]={type="func", value="tan", rtype="1", acount=1},
+	["asin"]={type="func", value="asin", rtype="1", acount=1},
+	["acos"]={type="func", value="acos", rtype="1", acount=1},
+	["atan"]={type="func", value="atan", rtype="1", acount=1},
+	["abs"]={type="func", value="abs", rtype="1", acount=1},
+	["sign"]={type="func", value="sign", rtype="1", acount=1},
+	["ceil"]={type="func", value="ceil", rtype="1", acount=1},
+	["fract"]={type="func", value="fract", rtype="1", acount=1},
+	["clamp"]={type="func", value="clamp", rtype="1", acount=3},
+	["step"]={type="func", value="step", rtype="2", acount=3},
+	["smoothstep"]={type="func", value="smoothstep", rtype="2", acount=3},
+	["length"]={type="func", value="length", rtype="hF1", acount=1},
+	["distance"]={type="func", value="distance", rtype="hF1", acount=2},
+	["cross"]={type="func", value="cross", rtype="1", acount=2},
+	["normalize"]={type="func", value="normalize", rtype="1", acount=1},
+	["max"]={type="func", value="max", rtype="1", acount=2},
+	["min"]={type="func", value="min", rtype="1", acount=2},
+	["pow"]={type="func", value="pow", rtype="1", acount=2},
+}
+
+local function populateGMap(gmap,tmap,funcs)
+	for k,v in pairs(tmap) do
+		local si=v:find(" ")
+		if si then v=v:sub(si+1) end
+		gmap[k]={type="func", value=v, rtype=k}
+	end
+	for k,v in pairs(GFUNC_MAP) do
+		gmap[k]=v
+	end
+	for k,v in ipairs(funcs) do 
+		gmap[v.name]={type="func", value=v.name, rtype=v.rtype, acount=v.acount}
+	end
+end
+
 local function shType(v)
 	local p
 	if v.type==Shader.CFLOAT then
@@ -32,21 +93,61 @@ local function shAType(v)
 	return p
 end
 
-function Shader.lua(vf,ff,opt,uniforms,attrs,varying,debug)
+function Shader.lua(vf,ff,opt,uniforms,attrs,varying,funcs,debug)
 	local lang=Shader.getShaderLanguage()
 	local mtd=Shader["lua_"..lang]
 	assert(mtd,"Language not supported: "..lang)
 	
-	local _vshader,_fshader=mtd(vf,ff,opt,uniforms,attrs,varying)
+	local _vshader,_fshader=mtd(vf,ff,opt,uniforms,attrs,varying,funcs or {})
 
 	if debug then
 		print("VSHADER_CODE:\n".._vshader)	
 		print("FSHADER_CODE:\n".._fshader)
 	end
-	
-	return Shader.new(_vshader,_fshader,Shader.FLAG_FROM_CODE|opt,uniforms,attrs)	
+	if not debug then
+		return Shader.new(_vshader,_fshader,Shader.FLAG_FROM_CODE|opt,uniforms,attrs)	
+	end
 end
 
+local function GEN_RETURN(rval)
+	if rval then
+		return "return "..rval..";\n"
+	else
+		return ""
+	end
+end
+
+local function genFunctions(gmap,tmap,omap,ophandler,funcs)
+	local _code=""
+	ophandler.RETURN=function(rval)
+			if rval then
+				return "return "..rval..";\n"
+			else
+				return ""
+			end
+		end
+	for _,fg in ipairs(funcs) do
+		local ff=gmap[fg.name]._fcode
+		if ff then
+			if fg.rtype then 
+				_code=_code..tmap[fg.rtype]
+			else
+				_code=_code.."void"
+			end
+			_code=_code.." "..fg.name.."("
+			_args=""
+			local amap={}
+			for k,v in ipairs(fg.args or {}) do 
+				amap[k]={type="var",value=v.name,vtype=v.type}
+				_args=_args..","..tmap[v.type].." "..v.name
+			end
+			if #_args then _args=_args:sub(2) end
+			_code=_code.._args..") {\n"
+			_code=_code..codegen(ff,amap,gmap,tmap,omap,ophandler).."}\n"
+		end
+	end
+	return _code
+end
 
 local function _GLSL_GENOP(o,a,b)
 	if o=="%" then
@@ -60,7 +161,7 @@ local function _GLSL_GENOPEQ(o,a,b)
 	end
 end
 
-function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying)
+function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs)
 	local amap={}
 	local gmap={}
 	local tmap={
@@ -75,46 +176,14 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying)
 		hI1="highp int",
 		hT1="highp sampler2D",
 		lT1="lowp sampler2D",
+		hF22="highp mat2",
+		hF33="highp mat3",
 		hF44="highp mat4",
 		BOOL="bool",
 	}
-	local omap={
-		["hF44*hF4"]="hF4",
-		["hF4*hF44"]="hF4",
-	}
-		
-	gmap["hF1"]={type="func", value="float", rtype="hF1"}
-	gmap["hF2"]={type="func", value="vec2", rtype="hF2"}
-	gmap["hF3"]={type="func", value="vec3", rtype="hF3"}
-	gmap["hF4"]={type="func", value="vec4", rtype="hF4"}
-	gmap["lF1"]={type="func", value="float", rtype="lF1"}
-	gmap["lF2"]={type="func", value="vec2", rtype="lF2"}
-	gmap["lF3"]={type="func", value="vec3", rtype="lF3"}
-	gmap["lF4"]={type="func", value="vec4", rtype="lF4"}
-	gmap["hF44"]={type="func", value="mat4", rtype="hF44"}
-	
-	gmap["discard"]={type="func", value="discard", evaluate=function (args) return "discard" end}
-	gmap["texture2D"]={type="func", value="texture2D", rtype="lF4"}	
-	gmap["sin"]={type="func", value="sin", rtype="1"}
-	gmap["cos"]={type="func", value="cos", rtype="1"}
-	gmap["floor"]={type="func", value="floor", rtype="1"}
-	gmap["dot"]={type="func", value="dot", rtype="hF1"}
-	gmap["mix"]={type="func", value="mix", rtype="1"}
-	gmap["tan"]={type="func", value="tan", rtype="1"}
-	gmap["asin"]={type="func", value="asin", rtype="1"}
-	gmap["acos"]={type="func", value="acos", rtype="1"}
-	gmap["atan"]={type="func", value="atan", rtype="1"}
-	gmap["abs"]={type="func", value="abs", rtype="1"}
-	gmap["sign"]={type="func", value="sign", rtype="1"}
-	gmap["ceil"]={type="func", value="ceil", rtype="1"}
-	gmap["fract"]={type="func", value="fract", rtype="1"}
-	gmap["clamp"]={type="func", value="clamp", rtype="1"}
-	gmap["step"]={type="func", value="step", rtype="2"}
-	gmap["smoothstep"]={type="func", value="smoothstep", rtype="2"}	
-	gmap["length"]={type="func", value="length", rtype="hF1"}
-	gmap["distance"]={type="func", value="distance", rtype="hF1"}
-	gmap["cross"]={type="func", value="cross", rtype="1"}
-	gmap["normalize"]={type="func", value="normalize", rtype="1"}
+	local omap=OPTYPE_MAP
+	populateGMap(gmap,tmap,funcs)
+	gmap["discard"]={type="func", value="discard", evaluate=function (fn,args) return "discard" end}
 
 
 	local _code=""
@@ -166,8 +235,8 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying)
 		gmap[v.name]={type="cvar", value=v.name, vtype=atype}
 		_code=_code..("varying %s %s;\n"):format(tmap[atype],v.name)
 	end
-	_code=_code.."\n void main() {\n"
-	_code=_code..codegen(ff,amap,gmap,tmap,omap,	{
+	
+	local mainCode=codegen(ff,amap,gmap,tmap,omap,	{
 		RETURN=function(rval)
 			if rval then
 				return "gl_FragColor = "..rval..";\n"
@@ -178,7 +247,9 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying)
 		GENOP=_GLSL_GENOP,
 		GENOPEQ=_GLSL_GENOPEQ,
 	})
-	_code=_code.."}"
+	_code=_code.."\n"
+	..genFunctions(gmap,tmap,omap,{GENOP=_GLSL_GENOP, GENOPEQ=_GLSL_GENOPEQ,},funcs)
+	.."void main() {\n"..mainCode.."}"
 	
 	local _fshader=_code
 	
@@ -198,7 +269,7 @@ local function _MSL_GENOPEQ(o,a,b)
 	end
 end
 
-function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying)
+function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs)
 	local amap={}
 	local gmap={}
 	local tmap={
@@ -213,49 +284,17 @@ function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying)
 		hI1="int",
 		hT1="sampler2D",
 		lT1="sampler2D",
+		hF22="float2x2",
+		hF33="float3x3",
 		hF44="float4x4",
 		BOOL="bool",
 	}
-	local omap={
-		["hF44*hF4"]="hF4",
-		["hF4*hF44"]="hF4",
-	}
-		
-	gmap["hF1"]={type="func", value="float", rtype="hF1"}
-	gmap["hF2"]={type="func", value="float2", rtype="hF2"}
-	gmap["hF3"]={type="func", value="float3", rtype="hF3"}
-	gmap["hF4"]={type="func", value="float4", rtype="hF4"}
-	gmap["lF1"]={type="func", value="half", rtype="lF1"}
-	gmap["lF2"]={type="func", value="half2", rtype="lF2"}
-	gmap["lF3"]={type="func", value="half3", rtype="lF3"}
-	gmap["lF4"]={type="func", value="half4", rtype="lF4"}
-	gmap["hF44"]={type="func", value="float4x4", rtype="hF44"}
-	
+	local omap=OPTYPE_MAP
+	populateGMap(gmap,tmap,funcs)
 	gmap["discard"]={type="func", value="discard_fragment"}
-	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (tex,sp)
-		return ("_tex_%s.sample(_smp_%s, %s)"):format(tex,tex,sp)
+	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (fn,tex,sp)
+		return ("_tex_%s.sample(_smp_%s, %s)"):format(tex.value,tex.value,sp.value)
 	end, rtype="lF4"}
-	gmap["sin"]={type="func", value="sin", rtype="1"}
-	gmap["cos"]={type="func", value="cos", rtype="1"}
-	gmap["floor"]={type="func", value="floor", rtype="1"}
-	gmap["dot"]={type="func", value="dot", rtype="hF1"}
-	gmap["mix"]={type="func", value="mix", rtype="1"}
-
-	gmap["tan"]={type="func", value="tan", rtype="1"}
-	gmap["asin"]={type="func", value="asin", rtype="1"}
-	gmap["acos"]={type="func", value="acos", rtype="1"}
-	gmap["atan"]={type="func", value="atan", rtype="1"}
-	gmap["abs"]={type="func", value="abs", rtype="1"}
-	gmap["sign"]={type="func", value="sign", rtype="1"}
-	gmap["ceil"]={type="func", value="ceil", rtype="1"}
-	gmap["fract"]={type="func", value="fract", rtype="1"}
-	gmap["clamp"]={type="func", value="clamp", rtype="1"}
-	gmap["step"]={type="func", value="step", rtype="2"}
-	gmap["smoothstep"]={type="func", value="smoothstep", rtype="2"}	
-	gmap["length"]={type="func", value="length", rtype="hF1"}
-	gmap["distance"]={type="func", value="distance", rtype="hF1"}
-	gmap["cross"]={type="func", value="cross", rtype="1"}
-	gmap["normalize"]={type="func", value="normalize", rtype="1"}
 
 	local _code=[=[
 #include <metal_stdlib>
@@ -322,28 +361,26 @@ vertex PVertex vmain(InVertex inVertex [[stage_in]],
 		local atype=shType(v)
 		gmap[v.name]={type="cvar", value="vert."..v.name, vtype=atype}
 	end
+	
 	local _code=[=[
 #include <metal_stdlib>
 using namespace metal;
 ]=]
-	_code=_code.._ucode.._pcode..(([=[
+
+	local mainCode=codegen(ff,amap,gmap,tmap,omap,	{
+		RETURN=GEN_RETURN,
+		GENOP=_MSL_GENOP,
+		GENOPEQ=_MSL_GENOPEQ,
+	})
+	_code=_code.._ucode.._pcode
+		..genFunctions(gmap,tmap,omap,{	GENOP=_MSL_GENOP,GENOPEQ=_MSL_GENOPEQ,},funcs)
+		..(([=[
 fragment half4 fmain(PVertex vert [[stage_in]],
                     constant Uniforms &uniforms [[buffer(0)]]%s)
 {
 ]=]):format(_fargs))
-	_code=_code..codegen(ff,amap,gmap,tmap,omap,	{
-		RETURN=function(rval)
-			if rval then
-				return "return "..rval..";\n"
-			else
-				return ""
-			end
-		end,
-		GENOP=_MSL_GENOP,
-		GENOPEQ=_MSL_GENOPEQ,
-	})
-	_code=_code.."}"
-	
+	_code=_code..mainCode.."}\n"
+
 	local _fshader=_code
 	
 	return _vshader,_fshader	
@@ -374,7 +411,10 @@ local function _HLSL_GENOPEQ(o,a,b)
 	end
 end
 
-function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying)
+local function _HLSL_ARGSWIZZLE(func,...)
+end
+
+function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs)
 	local amap={}
 	local gmap={}
 	local tmap={
@@ -389,49 +429,27 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying)
 		hI1="int",
 		hT1="sampler2D",
 		lT1="sampler2D",
+		hF22="float2x2",
+		hF33="float3x3",
 		hF44="float4x4",
 		BOOL="bool",
 	}
-	local omap={
-		["hF44*hF4"]="hF4",
-		["hF4*hF44"]="hF4",
-	}
-		
-	gmap["hF1"]={type="func", value="float", rtype="hF1"}
-	gmap["hF2"]={type="func", value="float2", rtype="hF2"}
-	gmap["hF3"]={type="func", value="float3", rtype="hF3"}
-	gmap["hF4"]={type="func", value="float4", rtype="hF4"}
-	gmap["lF1"]={type="func", value="half", rtype="lF1"}
-	gmap["lF2"]={type="func", value="half2", rtype="lF2"}
-	gmap["lF3"]={type="func", value="half3", rtype="lF3"}
-	gmap["lF4"]={type="func", value="half4", rtype="lF4"}
-	gmap["hF44"]={type="func", value="float4x4", rtype="hF44"}
-	
-	gmap["discard"]={type="func", value="discard", evaluate=function (args) return "discard" end}
-	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (tex,sp)
-		return ("_tex_%s.Sample(_smp_%s, %s)"):format(tex,tex,sp)
-	end, rtype="lF4"}
-	gmap["sin"]={type="func", value="sin", rtype="1"}
-	gmap["cos"]={type="func", value="cos", rtype="1"}
-	gmap["floor"]={type="func", value="floor", rtype="1"}
-	gmap["dot"]={type="func", value="dot", rtype="hF1"}
-	gmap["mix"]={type="func", value="lerp", rtype="1"}
+	local omap=OPTYPE_MAP
+	populateGMap(gmap,tmap,funcs)
+	for k,_ in pairs(tmap) do
+		local np=tonumber(k:sub(3)) or 0
+		if np>1 and np<=4 then
+			gmap[k].vecSize=np
+			--gmap[k].evaluate=_HLSL_ARGSWIZZLE
+		end
+	end
 
-	gmap["tan"]={type="func", value="tan", rtype="1"}
-	gmap["asin"]={type="func", value="asin", rtype="1"}
-	gmap["acos"]={type="func", value="acos", rtype="1"}
-	gmap["atan"]={type="func", value="atan", rtype="1"}
-	gmap["abs"]={type="func", value="abs", rtype="1"}
-	gmap["sign"]={type="func", value="sign", rtype="1"}
-	gmap["ceil"]={type="func", value="ceil", rtype="1"}
-	gmap["fract"]={type="func", value="frac", rtype="1"}
-	gmap["clamp"]={type="func", value="clamp", rtype="1"}
-	gmap["step"]={type="func", value="step", rtype="2"}
-	gmap["smoothstep"]={type="func", value="smoothstep", rtype="2"}	
-	gmap["length"]={type="func", value="length", rtype="hF1"}
-	gmap["distance"]={type="func", value="distance", rtype="hF1"}
-	gmap["cross"]={type="func", value="cross", rtype="1"}
-	gmap["normalize"]={type="func", value="normalize", rtype="1"}
+	gmap["discard"]={type="func", value="discard", evaluate=function (fn,args) return "discard" end}
+	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (fn,tex,sp)
+		return ("_tex_%s.Sample(_smp_%s, %s)"):format(tex.value,tex.value,sp.value)
+	end, rtype="lF4"}
+	gmap["mix"]={type="func", value="lerp", rtype="1", acount=3}
+	gmap["fract"]={type="func", value="frac", rtype="1", acount=1}
 
 	local _code,_dcode="",""
 
@@ -508,22 +526,19 @@ PVertex VShader(%s)
 		gmap[v.name]={type="cvar", value=v.name, vtype=atype}
 	end
 	local _code=""
-	_code=_code.._dcode.._ucode.._pcode..(([=[
-half4 PShader(%s) : SV_TARGET
-{
-]=]):format(_fargs))
-	_code=_code..codegen(ff,amap,gmap,tmap,omap,	{
-		RETURN=function(rval)
-			if rval then
-				return "return "..rval..";\n"
-			else
-				return ""
-			end
-		end,
+
+	local mainCode=codegen(ff,amap,gmap,tmap,omap,	{
+		RETURN=GEN_RETURN,
 		GENOP=_HLSL_GENOP,
 		GENOPEQ=_HLSL_GENOPEQ,
 	})
-	_code=_code.."}"
+	_code=_code.._dcode.._ucode.._pcode
+	..genFunctions(gmap,tmap,omap,{	GENOP=_HLSL_GENOP,GENOPEQ=_HLSL_GENOPEQ,},funcs)
+	..(([=[
+half4 PShader(%s) : SV_TARGET
+{
+]=]):format(_fargs))
+	_code=_code..mainCode.."}\n"
 	
 	local _fshader=_code
 	

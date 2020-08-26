@@ -64,6 +64,8 @@ local function loadConstants(f)
 			v=loadNumber()
 		elseif t==4 then
 			v=loadString()
+		else
+			assert(false,"Unsupported constant type in lua bytecode:"..t)
 		end
 		k[i]=v
 	end
