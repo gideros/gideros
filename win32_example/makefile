@@ -135,7 +135,7 @@ ttbmfont.o \
 ttfont.o                      ttfontbinder.o \
 tttextfield.o \
 urlloaderbinder.o             urlrequest.o \
-utf8.o                        zlibbinder.o cryptobinder.o \
+utf8.o                        zlibbinder.o gmathbinder.o cryptobinder.o \
 Shaders.o \
 gl2ShaderBuffer.o \
 gl2ShaderEngine.o \

@@ -268,6 +268,7 @@
 		EBB07718220AD76000611085 /* giderosShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EBB07716220AD75F00611085 /* giderosShaders.metal */; };
 		EBB07719220AD76000611085 /* pathShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EBB07717220AD76000611085 /* pathShaders.metal */; };
 		EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */; };
+		EBD254CA1ADD149000CC57FA /* gmathbbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57FA /* gmathbinder.cpp */; };
 		EBD8CA441B903A50002F9D6C /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C95E1B903A4F002F9D6C /* common.h */; };
 		EBD8CA451B903A50002F9D6C /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C95F1B903A4F002F9D6C /* control.c */; };
 		EBD8CA461B903A50002F9D6C /* dataio.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9601B903A4F002F9D6C /* dataio.c */; };
@@ -655,6 +656,7 @@
 		EBB07716220AD75F00611085 /* giderosShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = giderosShaders.metal; path = metal/giderosShaders.metal; sourceTree = "<group>"; };
 		EBB07717220AD76000611085 /* pathShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = pathShaders.metal; path = metal/pathShaders.metal; sourceTree = "<group>"; };
 		EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zlibbinder.cpp; path = ../../luabinding/zlibbinder.cpp; sourceTree = "<group>"; };
+		EBD254C91ADD149000CC57FA /* gmathbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gmathbinder.cpp; path = ../../luabinding/gmathbinder.cpp; sourceTree = "<group>"; };
 		EBD8C95E1B903A4F002F9D6C /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = "../../../libgid/external/libxmp-4.3/src/common.h"; sourceTree = "<group>"; };
 		EBD8C95F1B903A4F002F9D6C /* control.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = control.c; path = "../../../libgid/external/libxmp-4.3/src/control.c"; sourceTree = "<group>"; };
 		EBD8C9601B903A4F002F9D6C /* dataio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dataio.c; path = "../../../libgid/external/libxmp-4.3/src/dataio.c"; sourceTree = "<group>"; };
@@ -1143,6 +1145,7 @@
 				EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */,
 				EB82BDD51B305E2F00281732 /* shaderbinder.cpp */,
 				EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */,
+				EBD254C91ADD149000CC57FA /* gmathbinder.cpp */,
 				5F321F2415BBEB3200542289 /* accelerometerbinder.cpp */,
 				5F321F2515BBEB3200542289 /* alertdialogbinder.cpp */,
 				5F321F2615BBEB3200542289 /* applicationbinder.cpp */,
@@ -1731,6 +1734,7 @@
 				5F321F1E15BBC47500542289 /* render.c in Sources */,
 				5F321F1F15BBC47500542289 /* sweep.c in Sources */,
 				EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */,
+				EBD254CA1ADD149000CC57FA /* gmathbinder.cpp in Sources */,
 				EBD8CB101B903A50002F9D6C /* memio.c in Sources */,
 				5F321F2015BBC47500542289 /* tess.c in Sources */,
 				EBE2FCF123D1E79E00FC43D2 /* gaudio-loader-mp3.cpp in Sources */,

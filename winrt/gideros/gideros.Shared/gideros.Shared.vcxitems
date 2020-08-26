@@ -463,6 +463,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\viewportbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\zlibbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\gmathbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
     </ClCompile>

@@ -45,6 +45,7 @@ LSOURCES := \
         ../Common/imgui_src/imgui.cpp \
         ../Common/imgui_src/imgui_demo.cpp \
         ../Common/imgui_src/imgui_draw.cpp \
+        ../Common/imgui_src/imgui_user.cpp \
         ../Common/imgui_src/imgui_widgets.cpp \
 	   	../../../../luabinding/binder.cpp \
         ../Common/imgui_bindings.cpp 
