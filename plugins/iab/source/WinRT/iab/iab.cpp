@@ -77,7 +77,18 @@ public:
 	
 	void check(const char *iab)
 	{
+#if 0
+		gdr_dispatchUi([&]()
+		{
+			create_task(ctx->GetAppLicenseAsync()).then([=](task<StoreAppLicense^> previousTask)
+			{
+				StoreAppLicense^ license = previousTask.get();
+				onAvailable(iab);
+			});
+		}, true);
+#else
 		onAvailable(iab);
+#endif
 	}
 	
 	void setProducts(const char *iab, giab_DoubleEvent *params){

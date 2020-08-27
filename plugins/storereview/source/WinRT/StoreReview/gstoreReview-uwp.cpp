@@ -14,7 +14,7 @@ bool gstorereview_requestReview()
 			create_task(ctx->RequestRateAndReviewAppAsync()).then([=](task<StoreRateAndReviewResult^> previousTask)
 			{
 			});
-		}, false);
+		}, true);
 
     return true;
 }

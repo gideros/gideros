@@ -10,15 +10,15 @@
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;storereview&quot;);"/>
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.storereview.StoreReview&quot;,"/>
         </replacelist>		
+		<replacelist wildcards="build.gradle">
+			<append>
+				<orig>//TAG-DEPENDENCIES//</orig>								
+				<by>
+	           implementation 'com.google.android.play:core:[[[plugin.gmsVersion]]]'
+				</by>
+			</append>
+	   	</replacelist>	
     </template>
-	<replacelist wildcards="build.gradle">
-		<append>
-			<orig>//TAG-DEPENDENCIES//</orig>								
-			<by>
-           implementation 'com.google.android.play:core:[[[plugin.gmsVersion]]]'
-			</by>
-		</append>
-   	</replacelist>	
   </target>
  <target name="iOS">
 	<lua><![CDATA[
