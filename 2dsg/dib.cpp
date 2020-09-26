@@ -206,6 +206,8 @@ Dib::Dib(Application* application,
             }
     }
 
+    delete[] buf;
+
 	if (maketransparent)
 	{
 		unsigned int r = (transparentcolor >> 16) & 0xff;
