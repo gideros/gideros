@@ -407,7 +407,7 @@
   local function removeEP(pn)
 	  	Export.callXml(([=[
 	    <template name="Activity" path="">
-	        <replacelist wildcards="index.html">
+	        <replacelist wildcards="gidloader.js">
 	            <replace orig="&quot;%s.%s&quot;," by="" />
 	        </replacelist>
 	    </template>
