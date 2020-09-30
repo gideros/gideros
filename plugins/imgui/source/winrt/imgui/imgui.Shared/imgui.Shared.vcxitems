@@ -21,16 +21,16 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_demo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_draw.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_user.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_widgets.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_user.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imconfig.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_internal.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_user.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imstb_rectpack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imstb_textedit.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imstb_truetype.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_user.h" />
   </ItemGroup>
 </Project>

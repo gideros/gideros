@@ -19,16 +19,19 @@ SOURCES += \
         ../Common/imgui_src/imgui.cpp \
         ../Common/imgui_src/imgui_demo.cpp \
         ../Common/imgui_src/imgui_draw.cpp \
-        ../Common/imgui_src/imgui_user.cpp \
         ../Common/imgui_src/imgui_widgets.cpp \
+        ../Common/imgui_user.cpp \
+	   	../../../../2dsg/Matrices.cpp \
+	   	../../../../2dsg/mouseevent.cpp \
+	   	../../../../2dsg/keyboardevent.cpp \
 	   	../../../../luabinding/binder.cpp \
         ../Common/imgui_bindings.cpp 
 
 HEADERS += \
+    ../Common/imgui_user.h \
     ../Common/imgui_src/imconfig.h \
     ../Common/imgui_src/imgui.h \
     ../Common/imgui_src/imgui_internal.h \
-    ../Common/imgui_src/imgui_user.h \
     ../Common/imgui_src/imstb_rectpack.h \
     ../Common/imgui_src/imstb_textedit.h \
     ../Common/imgui_src/imstb_truetype.h

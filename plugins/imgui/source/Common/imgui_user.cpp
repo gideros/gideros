@@ -1,11 +1,11 @@
 #ifndef IMGUI_DISABLE
 
-#include "imgui.h"
-
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "imgui_internal.h"
+
+#include "imgui_src/imgui.h"
+#include "imgui_src/imgui_internal.h"
 
 static const ImGuiDataTypeInfo GDataTypeInfo[] =
 {
@@ -349,6 +349,34 @@ namespace ImGui
 
         if (textSize.x>0) ImGui::RenderText(start,label);
         return pressed;
+    }
+
+
+    void ImageFilled(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col, const ImVec4& border_col)
+    {
+        ImGuiWindow* window = GetCurrentWindow();
+        if (window->SkipItems)
+            return;
+
+        ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
+        if (border_col.w > 0.0f)
+            bb.Max += ImVec2(2, 2);
+        ItemSize(bb);
+        if (!ItemAdd(bb, 0))
+            return;
+
+        if (bg_col.w > 0.0f)
+            window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col), 0.0f);
+
+        if (border_col.w > 0.0f)
+        {
+            window->DrawList->AddRect(bb.Min, bb.Max, GetColorU32(border_col), 0.0f);
+            window->DrawList->AddImage(user_texture_id, bb.Min + ImVec2(1, 1), bb.Max - ImVec2(1, 1), uv0, uv1, GetColorU32(tint_col));
+        }
+        else
+        {
+            window->DrawList->AddImage(user_texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
+        }
     }
 }
 

@@ -45,8 +45,11 @@ LSOURCES := \
         ../Common/imgui_src/imgui.cpp \
         ../Common/imgui_src/imgui_demo.cpp \
         ../Common/imgui_src/imgui_draw.cpp \
-        ../Common/imgui_src/imgui_user.cpp \
         ../Common/imgui_src/imgui_widgets.cpp \
+        ../Common/imgui_user.cpp \
+	   	../../../../2dsg/Matrices.cpp \
+	   	../../../../2dsg/mouseevent.cpp \
+	   	../../../../2dsg/keyboardevent.cpp \
 	   	../../../../luabinding/binder.cpp \
         ../Common/imgui_bindings.cpp 
 

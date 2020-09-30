@@ -1,4 +1,21 @@
-#include "imgui.h"
+#include "imgui_src/imgui.h"
+
+enum ImGuiInputTextFlags_Extended
+{
+    ImGuiInputTextFlags_NoBackground = 1 << 19
+};
+
+enum ImGuiGlyphRanges
+{
+    ImGuiGlyphRanges_Default,
+    ImGuiGlyphRanges_Korean,
+    ImGuiGlyphRanges_ChineseFull,
+    ImGuiGlyphRanges_ChineseSimplifiedCommon,
+    ImGuiGlyphRanges_Japanese,
+    ImGuiGlyphRanges_Cyrillic,
+    ImGuiGlyphRanges_Thai,
+    ImGuiGlyphRanges_Vietnamese,
+};
 
 namespace ImGui
 {
@@ -18,4 +35,6 @@ namespace ImGui
     IMGUI_API bool VFilledSliderFloat(const char* label, bool mirror, const ImVec2& size, float* v, float v_min, float v_max, const char* format = "%.3f", ImGuiSliderFlags flags = 0);
     IMGUI_API bool VFilledSliderInt(const char* label, bool mirror, const ImVec2& size, int* v, int v_min, int v_max, const char* format = "%d", ImGuiSliderFlags flags = 0);
     IMGUI_API bool VFilledSliderScalar(const char* label, bool mirror, const ImVec2& size, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format = NULL, ImGuiSliderFlags flags = 0);
+
+    IMGUI_API void ImageFilled(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& bg_col = ImVec4(1,1,1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0));
 }
