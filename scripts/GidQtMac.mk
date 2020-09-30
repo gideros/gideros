@@ -32,7 +32,7 @@ qtlibs.install: buildqtlibs
 		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE) $(MAKEJOBS); fi 
 
 %.qtplugin.clean:
-	cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; elif [ -d "Desktop" ]; then cd Desktop; fi; if [ -f Makefile ]; then $(MAKE) clean; fi
+	cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; elif [ -d "Desktop" ]; then cd Desktop; fi; git clean -dfx .
 
 %.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
@@ -137,7 +137,7 @@ qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
 qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
 
 %.qmake.clean:
-	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MAKE) clean; fi
+	cd $(ROOT)/$*; git clean -dfx .
 
 %.qmake.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*.pro
