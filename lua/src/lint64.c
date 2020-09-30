@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <errno.h>
+#include <math.h>
 
 #define Int		long long
 #define FMT		"%lld"

@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <locale.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define llex_c
 #define LUA_CORE
