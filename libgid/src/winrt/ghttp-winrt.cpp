@@ -221,15 +221,16 @@ void handleTask(HttpResponseMessage^ response, g_id id, boolean streaming, geven
 	});
 }
 
-void add_headers(const ghttp_Header *header){
-	HttpRequestHeaderCollection ^headers = httpClient->DefaultRequestHeaders;
+void add_headers(const ghttp_Header *header, HttpRequestMessage^ request){
+	HttpRequestHeaderCollection^ headers = request->Headers;
 	headers->UserAgent->ParseAdd("Gideros");
 	if (header){
 		for (; header->name; ++header){
-			std::wstring wstrkey=utf8_ws(header->name);
-			std::wstring wstrval=utf8_ws(header->value);
-			if (_strnicmp(header->name, "content-", 8))
+			if (_strnicmp(header->name, "content-", 8)) {
+				std::wstring wstrkey = utf8_ws(header->name);
+				std::wstring wstrval = utf8_ws(header->value);
 				headers->Insert(ref new String(wstrkey.c_str()), ref new String(wstrval.c_str()));
+			}
 		}
 	}
 }
@@ -237,10 +238,11 @@ void add_headers(const ghttp_Header *header){
 void add_post_headers(const ghttp_Header *header, HttpBufferContent^ content){
 	if (header){
 		for (; header->name; ++header){
-			std::wstring wstrkey=utf8_ws(header->name);
-			std::wstring wstrval=utf8_ws(header->value);
-			if (!_stricmp(header->name, "content-type"))
-				content->Headers->ContentType=ref new HttpMediaTypeHeaderValue(ref new String(wstrval.c_str()));
+			if (!_stricmp(header->name, "content-type")) {
+				std::wstring wstrkey = utf8_ws(header->name);
+				std::wstring wstrval = utf8_ws(header->value);
+				content->Headers->ContentType = ref new HttpMediaTypeHeaderValue(ref new String(wstrval.c_str()));
+			}
 		}
 	}
 }
@@ -264,9 +266,11 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, geven
 	std::wstring wstrurl=utf8_ws(url);
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
 	g_id id = g_NextId();
-	add_headers(header);
 
-	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->GetAsync(uri, HttpCompletionOption::ResponseHeadersRead);
+	HttpRequestMessage^ request = ref new HttpRequestMessage(HttpMethod::Get,uri);
+	add_headers(header,request);
+	
+	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->SendRequestAsync(request, HttpCompletionOption::ResponseHeadersRead);
 	handleProcess(operation, id, callback, udata, streaming);
 	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
@@ -291,11 +295,13 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 	IBuffer ^postData = writer->DetachBuffer();
 
 	g_id id = g_NextId();
+	HttpRequestMessage^ request = ref new HttpRequestMessage(HttpMethod::Post, uri);
+	add_headers(header, request);
 	HttpBufferContent^ content = ref new HttpBufferContent(postData);
-	add_headers(header);
 	add_post_headers(header,content);
+	request->Content = content;
 
-	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->PostAsync(uri, content);
+	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->SendRequestAsync(request);
 	handleProcess(operation, id, callback, udata, streaming);
 
 	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
@@ -317,9 +323,11 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, ge
 	Uri^ uri = ref new Uri(ref new String(wstrurl.c_str()));
 	g_id id = g_NextId();
 
-	add_headers(header);
+	HttpRequestMessage^ request = ref new HttpRequestMessage(HttpMethod::Delete, uri);
+	add_headers(header, request);
 
-	create_task(httpClient->DeleteAsync(uri), cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
+	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->SendRequestAsync(request);
+	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
 		try {
 			handleTask(response.get(), id, streaming, callback, udata);
@@ -342,11 +350,14 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 	IBuffer ^postData = writer->DetachBuffer();
 
 	g_id id = g_NextId();
+	HttpRequestMessage^ request = ref new HttpRequestMessage(HttpMethod::Put, uri);
+	add_headers(header, request);
 	HttpBufferContent^ content = ref new HttpBufferContent(postData);
-	add_headers(header);
-	add_post_headers(header,content);
+	add_post_headers(header, content);
+	request->Content = content;
 
-	create_task(httpClient->PutAsync(uri, content), cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
+	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->SendRequestAsync(request);
+	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
 		try {
 			handleTask(response.get(), id, streaming, callback, udata);

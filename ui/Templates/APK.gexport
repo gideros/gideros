@@ -212,6 +212,7 @@ local ap=require("Tools/export_android")
 		<applyPlugins/>
 		<if condition="[[[or:[[[export.buildAab]]]:[[[export.buildApk]]]]]]">		
 			<lua><![CDATA[
+				local ap=require("Tools/export_android")
 				local apkName=Export.getProperty("project.namews")
 				if Export.isSet("export.timestampApk") then
 					apkName=apkName.."_"..os.date("%Y%m%d-%H%M%S").."_"..Export.getProperty("project.version_code")
@@ -231,6 +232,7 @@ local ap=require("Tools/export_android")
 				Export.setProperty("local.apkext",apkExt)
 				Export.setProperty("local.apkbuilt",apkBuilt)
 				Export.setProperty("local.install",apkInstall)
+				Export.setProperty("local.gradleExtra",ap.gradleExtraTarget or "")
 			]]></lua> 
 			<set key="local.gradleCmd" value="&quot;cmd.exe&quot; /c gradlew.bat"/>
     	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
@@ -239,7 +241,7 @@ local ap=require("Tools/export_android")
 			<exec>
 				<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
 				<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
-				[[[local.gradleCmd]]] [[[local.gradleTarget]]]
+				[[[local.gradleCmd]]] [[[local.gradleTarget]]] [[[local.gradleExtra]]]
 			</exec>			
 			<cp src="app/build/outputs/[[[local.apkbuilt]]]" dst="../[[[local.apkname]]][[[local.isUnsigned]]].[[[local.apkext]]]"/>
 			<cd>..</cd>
