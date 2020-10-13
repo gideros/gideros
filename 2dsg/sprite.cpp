@@ -111,6 +111,24 @@ void Sprite::clearLayoutConstraints()
 	layoutConstraints=NULL;
 }
 
+void Sprite::layoutSizesChanged() {
+	if (layoutConstraints) {
+		if ((layoutConstraints->prefWidth==-1)
+				||(layoutConstraints->aminWidth==-1)
+				||(layoutConstraints->prefHeight==-1)
+				||(layoutConstraints->aminHeight==-1)
+				) {
+	        Sprite *p=parent_;
+	        while (p&&(p->layoutState))
+	        {
+	        	p->layoutState->dirty=true;
+	        	p=p->parent_;
+	        }
+		}
+	}
+}
+
+
 void Sprite::childrenDrawn() {
 
 }
@@ -1284,12 +1302,7 @@ bool Sprite::setDimensions(float w,float h, bool forLayout)
         reqHeight_=h;
         if (layoutState)
             layoutState->dirty=true;
-        Sprite *p=parent_;
-        while (p&&(p->layoutState))
-        {
-        	p->layoutState->dirty=true;
-        	p=p->parent_;
-        }
+        layoutSizesChanged();
 
         if (hasEventListener(LayoutEvent::RESIZED))
         {

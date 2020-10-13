@@ -77,6 +77,10 @@ public:
 		int lines;
 		int styleFlags;
 		std::vector<struct ChunkLayout> parts;
+		void clear() {
+			x=y=w=h=bh=mw=lines=styleFlags=0;
+			parts.clear();
+		};
 	};
 	struct ChunkClass {
 		std::string text;

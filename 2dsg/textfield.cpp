@@ -156,12 +156,22 @@ const char* TextField::sample() const
     return sample_.c_str();
 }
 
+#define FDIF_EPSILON 0.01 //This assumes that logical space coordinates is similar to pixel space, which may not be true at all
+#define FDIF(a,b) (((a>b)?(a-b):(b-a))>FDIF_EPSILON)
 void TextField::createGraphics()
 {
 	scaleChanged(); //Mark current scale as graphics scale
     graphicsBase_.clear();
+    bool layoutSizeChanged=false;
+	float lmw=textlayout_.mw;
+	float lbh=textlayout_.bh;
+	float lw=textlayout_.w;
+	float lh=textlayout_.h;
     if (font_ != NULL)
         font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, textlayout_);
+    else
+    	textlayout_.clear();
+    layoutSizeChanged=FDIF(textlayout_.mw,lmw)||FDIF(textlayout_.bh,lbh)||FDIF(textlayout_.h,lh)||FDIF(textlayout_.w,lw);
 
     minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
@@ -173,6 +183,7 @@ void TextField::createGraphics()
 		maxx_ = std::max(maxx_, lmaxx_);
 		maxy_ = std::max(maxy_, lmaxy_);
 	}
+	if (layoutSizeChanged) layoutSizesChanged();
 }
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)

@@ -96,14 +96,16 @@ void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
 
 size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)
 {
-	size_t ti=0;
+    size_t ti=0;
+    size_t rti=0;
 	size_t parts=textlayout_.parts.size();
 	float rcx=0,rcy=0;
 	for (size_t i=0;i<parts;i++) {
 		FontBase::ChunkLayout &c=textlayout_.parts[i];
-		if (c.y>cy) { rcx=c.dx; rcy=c.dy; break; }
+        if (c.y>cy) break;
 		if ((c.y+c.h)>cy) {
-			if (c.dx>cx) { rcx=c.dx; rcy=c.dy; break; }
+            rti=ti;
+            if (c.dx>cx) { rcx=c.dx; rcy=c.dy; break; }
 			if ((c.dx+c.advX)>cx) {
 				size_t n=0;
 				size_t gln=c.shaped.size();
@@ -121,18 +123,14 @@ size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)
 					else
 						xbase+=ax;
 				}
-				    /* gln==0:
-					while n<=#c.text do
-						local advX=self.font:getAdvanceX(c.text,lp.letterSpacing,n)
-						if (c.x+advX)>cx then break	end
-						n+=1
-					end
-					*/
 				ti+=utf8_offset(c.text.c_str(),n);
+                rti=ti;
 				break;
 			}
 			else {
-				ti+=c.text.size();
+                ti+=c.text.size();
+                rti=ti;
+                if (c.sep) ti++;
 				if (c.sep>=0x80) ti++;
 				if (c.sep>=0x800) ti++;
 				if (c.sep>=0x10000) ti++;
@@ -140,15 +138,17 @@ size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)
 				rcy=c.dy;
 			}
 		} else {
-			ti+=c.text.size();
+            ti+=c.text.size();
+			if (c.sep) ti++;
 			if (c.sep>=0x80) ti++;
 			if (c.sep>=0x800) ti++;
 			if (c.sep>=0x10000) ti++;
 			rcx=c.dx+c.advX;
 			rcy=c.dy;
-		}
+            rti=ti;
+        }
 	}
 	cx=rcx;
 	cy=rcy;
-	return ti;
+    return rti;
 }

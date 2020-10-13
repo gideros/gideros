@@ -434,6 +434,7 @@ public:
     int spriteWithLayoutCount;
 
 protected:
+    void layoutSizesChanged();
     void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform) const;
     virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
 	{

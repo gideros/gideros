@@ -51,6 +51,8 @@ TTTextField::~TTTextField()
 	font_->unref();
 }
 
+#define FDIF_EPSILON 0.01 //This assumes that logical space coordinates is similar to pixel space, which may not be true at all
+#define FDIF(a,b) (((a>b)?(a-b):(b-a))>FDIF_EPSILON)
 void TTTextField::createGraphics()
 {
 	scaleChanged(); //Mark current scale as graphics scale
@@ -60,87 +62,92 @@ void TTTextField::createGraphics()
 		data_ = NULL;
 	}
 
+	float lmw=textlayout_.mw;
+	float lbh=textlayout_.bh;
+	float lw=textlayout_.w;
+	float lh=textlayout_.h;
 	if (text_.empty())
 	{
 		graphicsBase_.clear();
 		graphicsBase_.getBounds(&minx_, &miny_, &maxx_, &maxy_);
-		return;
+    	textlayout_.clear();
 	}
+	else {
+		float scalex = application_->getLogicalScaleX();
+		float scaley = application_->getLogicalScaleY();
 
-    float scalex = application_->getLogicalScaleX();
-    float scaley = application_->getLogicalScaleY();
+		TextureParameters parameters;
+		float smoothing=font_->getSmoothing();
+		if (smoothing!=0)
+		{
+			parameters.filter = eLinear;
+			scalex/=smoothing;
+			scaley/=smoothing;
+		}
 
-	TextureParameters parameters;
-	float smoothing=font_->getSmoothing();
-    if (smoothing!=0)
-    {
-        parameters.filter = eLinear;
-        scalex/=smoothing;
-        scaley/=smoothing;
-    }
+		int minx, miny, maxx, maxy;
+		bool isRGB;
+		Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB,textlayout_);
+		parameters.format=isRGB?eRGBA8888:eA8;
 
+		if (!sample_.empty())
+		{
+			maxx = maxx - minx;
+			minx = 0;
+			miny = miny - sminy*scaley;
+			maxy = maxy - sminy*scaley;
+		}
 
-    int minx, miny, maxx, maxy;
-    bool isRGB;
-    Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB,textlayout_);
-    parameters.format=isRGB?eRGBA8888:eA8;
+		int dx = minx - 1;
+		int dy = miny - 1;
 
+		data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);
 
-    if (!sample_.empty())
-    {
-        maxx = maxx - minx;
-        minx = 0;
-        miny = miny - sminy*scaley;
-        maxy = maxy - sminy*scaley;
-    }
+		graphicsBase_.data = data_;
 
-    int dx = minx - 1;
-    int dy = miny - 1;
+		graphicsBase_.mode = ShaderProgram::TriangleStrip;
 
-	data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);
+		graphicsBase_.vertices.resize(4);
+		graphicsBase_.vertices[0] = Point2f(dx / scalex,					dy / scaley);
+		graphicsBase_.vertices[1] = Point2f((data_->width + dx) / scalex,	dy / scaley);
+		graphicsBase_.vertices[2] = Point2f((data_->width + dx) / scalex,	(data_->height + dy) / scaley);
+		graphicsBase_.vertices[3] = Point2f(dx / scalex,					(data_->height + dy) / scaley);
+		graphicsBase_.vertices.Update();
 
-	graphicsBase_.data = data_;
+		float u = (float)data_->width / (float)data_->exwidth;
+		float v = (float)data_->height / (float)data_->exheight;
 
-	graphicsBase_.mode = ShaderProgram::TriangleStrip;
+		graphicsBase_.texcoords.resize(4);
+		graphicsBase_.texcoords[0] = Point2f(0, 0);
+		graphicsBase_.texcoords[1] = Point2f(u, 0);
+		graphicsBase_.texcoords[2] = Point2f(u, v);
+		graphicsBase_.texcoords[3] = Point2f(0, v);
+		graphicsBase_.texcoords.Update();
 
-	graphicsBase_.vertices.resize(4);
-	graphicsBase_.vertices[0] = Point2f(dx / scalex,					dy / scaley);
-	graphicsBase_.vertices[1] = Point2f((data_->width + dx) / scalex,	dy / scaley);
-	graphicsBase_.vertices[2] = Point2f((data_->width + dx) / scalex,	(data_->height + dy) / scaley);
-	graphicsBase_.vertices[3] = Point2f(dx / scalex,					(data_->height + dy) / scaley);
-	graphicsBase_.vertices.Update();
+		graphicsBase_.indices.resize(4);
+		graphicsBase_.indices[0] = 0;
+		graphicsBase_.indices[1] = 1;
+		graphicsBase_.indices[2] = 3;
+		graphicsBase_.indices[3] = 2;
+		graphicsBase_.indices.Update();
 
-	float u = (float)data_->width / (float)data_->exwidth;
-	float v = (float)data_->height / (float)data_->exheight;
+		if (!isRGB)
+		{
+			int a = (textColor_ >> 24) & 0xff;
+			int r = (textColor_ >> 16) & 0xff;
+			int g = (textColor_ >> 8) & 0xff;
+			int b = textColor_ & 0xff;
+			graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
+		}
 
-	graphicsBase_.texcoords.resize(4);
-	graphicsBase_.texcoords[0] = Point2f(0, 0);
-	graphicsBase_.texcoords[1] = Point2f(u, 0);
-	graphicsBase_.texcoords[2] = Point2f(u, v);
-	graphicsBase_.texcoords[3] = Point2f(0, v);
-	graphicsBase_.texcoords.Update();
-
-	graphicsBase_.indices.resize(4);
-	graphicsBase_.indices[0] = 0;
-	graphicsBase_.indices[1] = 1;
-	graphicsBase_.indices[2] = 3;
-	graphicsBase_.indices[3] = 2;
-	graphicsBase_.indices.Update();
-
-	if (!isRGB)
-	{
-		int a = (textColor_ >> 24) & 0xff;
-		int r = (textColor_ >> 16) & 0xff;
-		int g = (textColor_ >> 8) & 0xff;
-		int b = textColor_ & 0xff;
-		graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
+		minx_ = minx/scalex;
+		miny_ = miny/scaley;
+		maxx_ = maxx/scalex;
+		maxy_ = maxy/scaley;
+		styleFlags_=textlayout_.styleFlags;
 	}
-
-    minx_ = minx/scalex;
-    miny_ = miny/scaley;
-    maxx_ = maxx/scalex;
-    maxy_ = maxy/scaley;
-    styleFlags_=textlayout_.styleFlags;
+    bool layoutSizeChanged=FDIF(textlayout_.mw,lmw)||FDIF(textlayout_.bh,lbh)||FDIF(textlayout_.h,lh)||FDIF(textlayout_.w,lw);
+	if (layoutSizeChanged) layoutSizesChanged();
 }
 
 void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
