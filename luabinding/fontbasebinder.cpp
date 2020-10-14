@@ -12,6 +12,7 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
         {"getBounds", getBounds},
         {"getAdvanceX", getAdvanceX},
         {"getAscender", getAscender},
+        {"getDescender", getDescender},
         {"getLineHeight", getLineHeight},
         {"layoutText", layoutText},
 		{"getCharIndexAtOffset", getCharIndexAtOffset},

@@ -236,8 +236,8 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 
 		ChunkLayout cl;
 		cl.text=it->text;
-        cl.x=cl.y=cl.w=cl.h=0;
-        cl.dy=y; cl.dx=0;
+        cl.dx=cl.x=cl.w=cl.h=0;
+        cl.dy=cl.y=y;
 		cl.sep=it->sep;
 		uint8_t sepflags=it->sepFlags;
 		cl.sepflags=sepflags;
