@@ -2499,25 +2499,47 @@ static void fill_path(unsigned int path, int fill_mode,
 
 static void get_path_points_line(float sx, float sy, float dx, float dy,
 		float &offset, float interval, int &maxpts,
-		std::vector<Path2D::PathPoint> &pts) {
+		std::vector<Path2D::PathPoint> &pts, float &toffset, bool last) {
 	if (!maxpts)
 		return;
 	float dist = sqrtf((dx - sx)*(dx - sx) + (dy - sy)*(dy - sy));
 	if (!dist)
 		return;
-	if (offset < dist) {
-        float ey = (dy - sy) / dist;
-        float ex = (dx - sx) / dist;
-        float ea = atan2f(ex, -ey);
-		while (offset < dist) {
-			Path2D::PathPoint p;
-			p.x = sx + offset * ex;
-			p.y = sy + offset * ey;
-			p.angle = ea;
+	if (interval) {
+		if (offset < dist) {
+			float ey = (dy - sy) / dist;
+			float ex = (dx - sx) / dist;
+			float ea = atan2f(ex, -ey);
+			while (offset < dist) {
+				Path2D::PathPoint p;
+				p.x = sx + offset * ex;
+				p.y = sy + offset * ey;
+				p.angle = ea;
+				p.offset = toffset;
+				pts.push_back(p);
+				if (!--maxpts)
+					break;
+				offset += interval;
+				toffset += interval;
+			}
+		}
+	}
+	else {
+		float ey = (dy - sy) / dist;
+		float ex = (dx - sx) / dist;
+		float ea = atan2f(ex, -ey);
+		Path2D::PathPoint p;
+		p.x = sx;
+		p.y = sy;
+		p.angle = ea;
+		p.offset = toffset;
+		pts.push_back(p);
+		toffset += dist;
+		if (last) {
+			p.x = dx;
+			p.y = dy;
+			p.offset = toffset;
 			pts.push_back(p);
-			if (!--maxpts)
-				break;
-			offset += interval;
 		}
 	}
 	offset -= dist;
@@ -2601,11 +2623,11 @@ static void subdivide_quad(float c[],float r[]) {
 
 static void get_path_points_curve(float sx, float sy, float tx, float ty,
 		float dx, float dy, float &offset, float interval, int &maxpts,
-		std::vector<Path2D::PathPoint> &pts, float flatSq,int maxsub) {
+		std::vector<Path2D::PathPoint> &pts, float flatSq,int maxsub, float &toffset, bool last) {
 	if (!maxpts)
 		return;
 	if ((maxsub<=0)||(lengthSq(sx,sy,dx,dy,tx,ty)<flatSq)) {
-		get_path_points_line(sx,sy,dx,dy,offset,interval,maxpts,pts);
+		get_path_points_line(sx,sy,dx,dy,offset,interval,maxpts,pts,toffset,last);
 		return;
 	}
 	float c[6],d[6];
@@ -2616,8 +2638,8 @@ static void get_path_points_curve(float sx, float sy, float tx, float ty,
 	c[4]=dx;
 	c[5]=dy;
 	subdivide_quad(c,d);
-	get_path_points_curve(c[0],c[1],c[2],c[3],c[4],c[5],offset,interval,maxpts,pts,flatSq,maxsub-1);
-	get_path_points_curve(d[0],d[1],d[2],d[3],d[4],d[5],offset,interval,maxpts,pts,flatSq,maxsub-1);
+	get_path_points_curve(c[0],c[1],c[2],c[3],c[4],c[5],offset,interval,maxpts,pts,flatSq,maxsub-1,toffset,false);
+	get_path_points_curve(d[0],d[1],d[2],d[3],d[4],d[5],offset,interval,maxpts,pts,flatSq,maxsub-1,toffset,last);
 }
 
 
@@ -2633,6 +2655,7 @@ static void get_path_points(struct path *path, float &offset, float interval,
 	reduced_path_vec *reduced_paths = &path->reduced_paths;
 
 	size_t i, j;
+	float toffset=offset;
 
 	for (i = 0; i < kv_size(*reduced_paths); ++i) {
 		struct reduced_path *p = &kv_a(*reduced_paths, i);
@@ -2649,6 +2672,7 @@ static void get_path_points(struct path *path, float &offset, float interval,
 		float npepx = 0, npepy = 0;
 
 		for (j = 0; j < num_commands; ++j) {
+			bool last=(j==(num_commands-1));
 			switch (commands[j]) {
 			case PATHCMD_MOVE_TO:
 				set(c0, c1, c0, c1)
@@ -2658,17 +2682,17 @@ static void get_path_points(struct path *path, float &offset, float interval,
 				icoord += 2;
 				break;
 			case PATHCMD_LINE_TO:
-				get_path_points_line(cpx, cpy, c0,c1,offset,interval,maxpts,pts);
+				get_path_points_line(cpx, cpy, c0,c1,offset,interval,maxpts,pts,toffset,last);
 				set(c0, c1, c0, c1);
 				icoord += 2;
 				break;
 				case PATHCMD_QUADRATIC_CURVE_TO:
-				get_path_points_curve(cpx,cpy, c0,c1,c2,c3,offset,interval,maxpts,pts,flatSq,maxsub);
+				get_path_points_curve(cpx,cpy, c0,c1,c2,c3,offset,interval,maxpts,pts,flatSq,maxsub,toffset,last);
 				set(c2, c3, c0, c1);
 				icoord += 4;
 				break;
 				case PATHCMD_CLOSE_PATH:
-				get_path_points_line(cpx,cpy, spx,spy,offset,interval,maxpts,pts);
+				get_path_points_line(cpx,cpy, spx,spy,offset,interval,maxpts,pts,toffset,last);
 				set(spx, spy, spx, spy);
 				break;
 			}

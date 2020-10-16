@@ -159,7 +159,7 @@ int Path2DBinder::getPathPoints(lua_State* L)
 
 	std::vector<Path2D::PathPoint> points;
 
-    shape->getPathPoints(luaL_optnumber(L, 3, 0),luaL_checknumber(L,2),luaL_optinteger(L, 4, 1000),
+    shape->getPathPoints(luaL_optnumber(L, 3, 0),luaL_optnumber(L,2,0),luaL_optinteger(L, 4, 1000),
 			luaL_optnumber(L, 5, 1),luaL_optinteger(L, 6, 10),points);
 
 	lua_createtable(L,points.size(),0);
@@ -167,6 +167,7 @@ int Path2DBinder::getPathPoints(lua_State* L)
 		lua_createtable(L,0,3);
 		lua_pushnumber(L,points[i].x); lua_setfield(L,-2,"x");
 		lua_pushnumber(L,points[i].y); lua_setfield(L,-2,"y");
+		lua_pushnumber(L,points[i].offset); lua_setfield(L,-2,"offset");
         lua_pushnumber(L,(180.0*points[i].angle)/3.141592654); lua_setfield(L,-2,"angle");
 		lua_rawseti(L,-2,i+1);
 	}

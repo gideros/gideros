@@ -30,6 +30,7 @@ public:
     	float x;
     	float y;
     	float angle;
+    	float offset;
     };
 	Path2D(Application* application);
 	virtual ~Path2D();
