@@ -11,7 +11,7 @@ INCLUDEPATH += ../../../../libgid/include
 INCLUDEPATH += ../../../../luabinding
 INCLUDEPATH += ../../../../lua/src
 
-INCLUDEPATH += ../../reactphysics3d/src
+INCLUDEPATH += ../../reactphysics3d/include
 
 SOURCES += ../Common/reactbinder.cpp \
  	 	../../../../luabinding/binder.cpp \
@@ -22,10 +22,12 @@ SOURCES += ../Common/reactbinder.cpp \
   		$$files(../../reactphysics3d/src/collision/narrowphase/GJK/*.cpp) \
   		$$files(../../reactphysics3d/src/collision/narrowphase/SAT/*.cpp) \
   		$$files(../../reactphysics3d/src/collision/shapes/*.cpp) \
+  		$$files(../../reactphysics3d/src/components/*.cpp) \
   		$$files(../../reactphysics3d/src/constraint/*.cpp) \
   		$$files(../../reactphysics3d/src/engine/*.cpp) \
   		$$files(../../reactphysics3d/src/mathematics/*.cpp) \
   		$$files(../../reactphysics3d/src/memory/*.cpp) \
+  		$$files(../../reactphysics3d/src/systems/*.cpp) \
   		$$files(../../reactphysics3d/src/utils/*.cpp) 
 
 HEADERS += 

@@ -104,33 +104,34 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Common;../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../../reactphysics3d/include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +144,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +157,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,6 +170,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -179,6 +183,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -191,6 +196,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
