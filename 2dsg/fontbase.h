@@ -66,6 +66,7 @@ public:
 		wchar32_t sep;
 		float sepl;
 		int sepflags;
+        int extrasize; //adjustement from original text size (breakchar or styles)
 		//Styling
 		int styleFlags;
 		unsigned int color;

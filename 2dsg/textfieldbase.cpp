@@ -47,6 +47,7 @@ static size_t utf8_offset(const char *text,int cp) {
 	return o;
 }
 
+#define ESC	27
 void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
 {
 	if (ri>text_.size()) ri=text_.size();
@@ -54,10 +55,10 @@ void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
 	size_t parts=textlayout_.parts.size();
 	for (size_t i=0;i<parts;i++) {
 		FontBase::ChunkLayout &c=textlayout_.parts[i];
-		size_t cl=c.text.size();
+        size_t cl=c.text.size()-c.extrasize;
 		if (ri>cl) {
 			ri-=cl;
-			ri--;
+            if (c.sep) ri--;
 			if (c.sep>=0x80) ri--;
 			if (c.sep>=0x800) ri--;
 			if (c.sep>=0x10000) ri--;
@@ -123,23 +124,27 @@ size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)
 					else
 						xbase+=ax;
 				}
-				ti+=utf8_offset(c.text.c_str(),n);
+                size_t toff=utf8_offset(c.text.c_str(),n);
+                size_t tsize=c.text.size()-((c.extrasize>0)?c.extrasize:0);
+                if (toff>tsize) toff=tsize;
+                ti+=toff;
                 rti=ti;
 				break;
 			}
 			else {
-                ti+=c.text.size();
+                ti+=c.text.size()-((c.extrasize>0)?c.extrasize:0);
                 rti=ti;
                 if (c.sep) ti++;
-				if (c.sep>=0x80) ti++;
+                if (c.sep>=0x80) ti++;
 				if (c.sep>=0x800) ti++;
 				if (c.sep>=0x10000) ti++;
+                if (c.extrasize<0) ti-=c.extrasize;
 				rcx=c.dx+c.advX;
 				rcy=c.dy;
 			}
 		} else {
-            ti+=c.text.size();
-			if (c.sep) ti++;
+            ti+=c.text.size()-c.extrasize;
+            if (c.sep) ti++;
 			if (c.sep>=0x80) ti++;
 			if (c.sep>=0x800) ti++;
 			if (c.sep>=0x10000) ti++;

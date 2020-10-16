@@ -56,6 +56,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 				tl->parts[i].text=tl->parts[i].text+" "+tl->parts[i+1].text;
                 tl->parts[i].sep=tl->parts[i+1].sep;
                 tl->parts[i].sepflags=tl->parts[i+1].sepflags;
+                tl->parts[i].extrasize+=tl->parts[i+1].extrasize;
                 tl->parts.erase(tl->parts.begin()+i+1);
 				cur--;
 				merged=true;
@@ -101,7 +102,8 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	if (params->flags&TLF_BOTTOM) params->aligny=1;
 	else if (params->flags&TLF_VCENTER) params->aligny=0.5;
 	int breaksize=0;
-	if (breakwords&&params->breakchar.size())
+    size_t breakcharsz=params->breakchar.size();
+    if (breakwords&&breakcharsz)
 		breaksize=getAdvanceX(params->breakchar.c_str(),params->letterSpacing,-1);
 	ChunkLayout styles; //To hold styling info
 	styles.styleFlags=0;
@@ -177,8 +179,14 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	{
 		uint8_t textflags=it->textFlags;
 		if (textflags&CHUNKCLASS_FLAG_STYLE) {
+            size_t stlen=it->text.size();
+            size_t nparts=tl.parts.size();
+            if (nparts>0) { //Should be the case always
+                tl.parts[nparts-1].extrasize-=(stlen+2); //Add 2 to account for style brackets
+            }
+
 			const char *ss=it->text.c_str();
-			const char *se=ss+it->text.size();
+            const char *se=ss+stlen;
 			while (true) {
 				const char *sp=ss;
 				const char *sa=NULL;
@@ -250,6 +258,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		cl.color=styles.color;
 		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):(((cl.sep==ESC)||(cl.sep==0))?0:sw);
 		cl.sepl=ns;
+        cl.extrasize=0;
         if (cl.text.size())
         	chunkMetrics(cl,params->letterSpacing);
         else {
@@ -316,6 +325,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 					//Cut first part
 					tl.parts[cur].text=cl.text.substr(0,cpos);
 					tl.parts[cur].text+=params->breakchar;
+                    tl.parts[cur].extrasize=breakcharsz;
 					tl.parts[cur].sepl=0;
 					tl.parts[cur].sep=0;
 		        	chunkMetrics(tl.parts[cur],params->letterSpacing);
