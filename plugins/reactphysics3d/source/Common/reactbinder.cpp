@@ -684,6 +684,17 @@ static int r3dBoxShape_create(lua_State* L) {
 	binder.pushInstance("r3dBoxShape", shape);
 	return 1;
 }
+
+static int r3dBoxShape_SetHalfExtents(lua_State* L) {
+	Binder binder(L);
+	rp3d::BoxShape *shape  = static_cast<rp3d::BoxShape*>(binder.getInstance(
+			"r3dBoxShape", 1));
+	rp3d::Vector3 pt;
+	TO_VECTOR(L, 2, pt);
+	shape->setHalfExtents(pt);
+	return 0;
+}
+
 static int r3dSphereShape_create(lua_State* L) {
 	Binder binder(L);
 
@@ -693,6 +704,15 @@ static int r3dSphereShape_create(lua_State* L) {
 	binder.pushInstance("r3dSphereShape", shape);
 	return 1;
 }
+
+static int r3dSphereShape_SetRadius(lua_State* L) {
+	Binder binder(L);
+	rp3d::SphereShape *shape  = static_cast<rp3d::SphereShape*>(binder.getInstance(
+			"r3dSphereShape", 1));
+	shape->setRadius(luaL_checknumber(L,2));
+	return 0;
+}
+
 static int r3dCapsuleShape_create(lua_State* L) {
 	Binder binder(L);
 
@@ -702,6 +722,22 @@ static int r3dCapsuleShape_create(lua_State* L) {
 
 	binder.pushInstance("r3dCapsuleShape", shape);
 	return 1;
+}
+
+static int r3dCapsuleShape_SetHeight(lua_State* L) {
+	Binder binder(L);
+	rp3d::CapsuleShape *shape  = static_cast<rp3d::CapsuleShape*>(binder.getInstance(
+			"r3dCapsuleShape", 1));
+	shape->setHeight(luaL_checknumber(L,2));
+	return 0;
+}
+
+static int r3dCapsuleShape_SetRadius(lua_State* L) {
+	Binder binder(L);
+	rp3d::CapsuleShape *shape  = static_cast<rp3d::CapsuleShape*>(binder.getInstance(
+			"r3dCapsuleShape", 1));
+	shape->setRadius(luaL_checknumber(L,2));
+	return 0;
 }
 
 class gidMesh : public GidExtraData {
@@ -854,6 +890,16 @@ static int r3dConvexMeshShape_create(lua_State* L) {
 	return 1;
 }
 
+static int r3dConvexMeshShape_SetScale(lua_State* L) {
+	Binder binder(L);
+	rp3d::ConvexMeshShape *shape  = static_cast<rp3d::ConvexMeshShape*>(binder.getInstance(
+			"r3dConvexMeshShape", 1));
+	rp3d::Vector3 pt;
+	TO_VECTOR(L, 2, pt);
+	shape->setScale(pt);
+	return 0;
+}
+
 static int r3dConcaveMeshShape_create(lua_State* L) {
 	Binder binder(L);
 
@@ -864,6 +910,16 @@ static int r3dConcaveMeshShape_create(lua_State* L) {
 
 	binder.pushInstance("r3dConcaveMeshShape", shape);
 	return 1;
+}
+
+static int r3dConcaveMeshShape_SetScale(lua_State* L) {
+	Binder binder(L);
+	rp3d::ConcaveMeshShape *shape  = static_cast<rp3d::ConcaveMeshShape*>(binder.getInstance(
+			"r3dConcaveMeshShape", 1));
+	rp3d::Vector3 pt;
+	TO_VECTOR(L, 2, pt);
+	shape->setScale(pt);
+	return 0;
 }
 
 class gidHeightField: public GidExtraData {
@@ -903,6 +959,16 @@ static int r3dHeightFieldShape_create(lua_State* L) {
 
 	binder.pushInstance("r3dHeightFieldShape", shape);
 	return 1;
+}
+
+static int r3dHeightFieldShape_SetScale(lua_State* L) {
+	Binder binder(L);
+	rp3d::HeightFieldShape *shape  = static_cast<rp3d::HeightFieldShape*>(binder.getInstance(
+			"r3dHeightFieldShape", 1));
+	rp3d::Vector3 pt;
+	TO_VECTOR(L, 2, pt);
+	shape->setScale(pt);
+	return 0;
 }
 
 static int r3dShape_destruct(lua_State* L) {
@@ -1371,19 +1437,41 @@ static int loader(lua_State *L) {
 	const luaL_Reg r3dShape_functionList[] = { { NULL, NULL }, };
 	binder.createClass("r3dShape", NULL/*"EventDispatcher"*/, NULL,
 			r3dShape_destruct, r3dShape_functionList);
-	const luaL_Reg r3dBoxShape_functionList[] = { { NULL, NULL }, };
+
+	const luaL_Reg r3dBoxShape_functionList[] = {
+			{ "setHalfExtents", r3dBoxShape_SetHalfExtents },
+			{ NULL, NULL }, };
 	binder.createClass("r3dBoxShape", "r3dShape", r3dBoxShape_create, NULL,
 			r3dBoxShape_functionList);
+
+	const luaL_Reg r3dSphereShape_functionList[] = {
+			{ "setRadius", r3dSphereShape_SetRadius },
+			{ NULL, NULL }, };
 	binder.createClass("r3dSphereShape", "r3dShape", r3dSphereShape_create,
-			NULL, r3dBoxShape_functionList);
+			NULL, r3dSphereShape_functionList);
+
+	const luaL_Reg r3dCapsuleShape_functionList[] = {
+			{ "setRadius", r3dCapsuleShape_SetRadius },
+			{ "setHeight", r3dCapsuleShape_SetHeight },
+			{ NULL, NULL }, };
 	binder.createClass("r3dCapsuleShape", "r3dShape", r3dCapsuleShape_create,
-			NULL, r3dBoxShape_functionList);
+			NULL, r3dCapsuleShape_functionList);
+
+	const luaL_Reg r3dConvexMeshShape_functionList[] = {
+			{ "setScale", r3dConvexMeshShape_SetScale },
+			{ NULL, NULL }, };
 	binder.createClass("r3dConvexMeshShape", "r3dShape", r3dConvexMeshShape_create,
-				NULL, r3dBoxShape_functionList);
+				NULL, r3dConvexMeshShape_functionList);
+	const luaL_Reg r3dConcaveMeshShape_functionList[] = {
+			{ "setScale", r3dConcaveMeshShape_SetScale },
+			{ NULL, NULL }, };
 	binder.createClass("r3dConcaveMeshShape", "r3dShape", r3dConcaveMeshShape_create,
-				NULL, r3dBoxShape_functionList);
+				NULL, r3dConcaveMeshShape_functionList);
+	const luaL_Reg r3dHeightFieldShape_functionList[] = {
+			{ "setScale", r3dHeightFieldShape_SetScale },
+			{ NULL, NULL }, };
 	binder.createClass("r3dHeightFieldShape", "r3dShape", r3dHeightFieldShape_create,
-				NULL, r3dBoxShape_functionList);
+				NULL, r3dHeightFieldShape_functionList);
 
 	const luaL_Reg r3dJoint_functionList[] = { { NULL, NULL }, };
 	binder.createClass("r3dJoint", NULL/*"EventDispatcher"*/, NULL, NULL,

@@ -70,7 +70,7 @@ void TTTextField::createGraphics()
 	{
 		graphicsBase_.clear();
 		graphicsBase_.getBounds(&minx_, &miny_, &maxx_, &maxy_);
-    	textlayout_.clear();
+    	textlayout_=font_->layoutText("", &layout_);
 	}
 	else {
 		float scalex = application_->getLogicalScaleX();

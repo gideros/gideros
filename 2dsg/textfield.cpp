@@ -170,7 +170,7 @@ void TextField::createGraphics()
     if (font_ != NULL)
         font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, textlayout_);
     else
-    	textlayout_.clear();
+    	textlayout_=font_->layoutText("", &layout_);
     layoutSizeChanged=FDIF(textlayout_.mw,lmw)||FDIF(textlayout_.bh,lbh)||FDIF(textlayout_.h,lh)||FDIF(textlayout_.w,lw);
 
     minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;

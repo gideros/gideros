@@ -100,8 +100,14 @@ size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)
     size_t ti=0;
     size_t rti=0;
 	size_t parts=textlayout_.parts.size();
-    float rcx=0,rcy=getFont()->getAscender();
-	for (size_t i=0;i<parts;i++) {
+    float rcx=0,rcy=0;
+    if (parts>0) {
+        rcx=textlayout_.parts[0].dx;
+        rcy=textlayout_.parts[0].dy;
+    }
+    else
+        rcy=getFont()->getAscender();
+    for (size_t i=0;i<parts;i++) {
 		FontBase::ChunkLayout &c=textlayout_.parts[i];
         if (c.y>cy) break;
 		if ((c.y+c.h)>cy) {

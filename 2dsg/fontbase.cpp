@@ -24,9 +24,41 @@ void FontBase::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     part.advY=0;
 }
 
-float FontBase::getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing)
+static size_t utf8_offset(const char *text,int cp) {
+    size_t o=0;
+    while ((*text)&&cp) {
+        o++;
+        text++;
+        while (((*text)&0xC0)==0x80) { text++; o++; }
+        cp--;
+    }
+    return o;
+}
+
+size_t FontBase::getCharIndexAtOffset(struct ChunkLayout &c, float offset, float letterSpacing, bool notFirst)
 {
-	return getCharIndexAtOffset(part.text.c_str(),offset,letterSpacing,-1);
+    size_t gln=c.shaped.size();
+    if (gln>0) {
+        size_t n=0;
+        float xbase=0;
+        for (size_t g=0;g<gln;g++) {
+            FontBase::GlyphLayout &v=c.shaped[g];
+            float ax=v.advX*c.shapeScaleX;
+            if (offset<(xbase+ax))
+            {
+                n=v.srcIndex;
+                if ((!notFirst)||(n>0))
+                    break;
+            }
+            else
+                xbase+=ax;
+        }
+        return utf8_offset(c.text.c_str(),n);
+    }
+    size_t n=getCharIndexAtOffset(c.text.c_str(),offset,letterSpacing,-1);
+    if (notFirst&&(n==0))
+        return utf8_offset(c.text.c_str(),1);
+    return n;
 }
 
 
@@ -316,7 +348,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			{
 				size_t brk=cur;
                 float bsize=0;
-                int cpos=(wmax>0)?getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing):0;
+                int cpos=getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing,cur==st);
                 if (cpos>(int)(tl.parts[cur].text.size()))
 					brk++;
                 else if (cpos>=0)
@@ -386,7 +418,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	}
 
 	size_t nparts=tl.parts.size();
-	if ((nparts>0)&&(tl.parts[nparts-1].sep)) {
+	if ((nparts==0)||((nparts>0)&&(tl.parts[nparts-1].sep))) {
 		//Insert an empty chunk to cope with trailing separators in initial text
 		ChunkLayout cl;
 		cl.text="";

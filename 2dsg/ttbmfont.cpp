@@ -1139,7 +1139,7 @@ float TTBMFont::getCharIndexAtOffset(const char *text, float offset, float lette
 
 	wtext.push_back(0);
 	ensureChars(&wtext[0], len);
-	offset*=sizescalex_;
+    offset/=sizescalex_;
 
 	float x = 0;
 	float px = 0;
@@ -1155,7 +1155,7 @@ float TTBMFont::getCharIndexAtOffset(const char *text, float offset, float lette
 
         x += textureGlyph->advancex >> 6;
 
-		x += (int) (letterSpacing / sizescalex_);
+        x += (letterSpacing / sizescalex_);
 		if ((x>px)&&(offset>=px)&&(offset<x))
 		{
 			const char *tp=text;

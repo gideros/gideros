@@ -96,7 +96,7 @@ public:
 		uint16_t script;
 	};
     virtual void chunkMetrics(struct ChunkLayout &part, float letterSpacing);
-    float getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing);
+    size_t getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing, bool notFirst);
 
 	enum TextLayoutFlags {
 		TLF_LEFT=0,

@@ -683,10 +683,10 @@ float TTFont::getCharIndexAtOffset(const char *text, float offset, float letterS
 
 	wtext.push_back(0);
 
-	int x = 0;
+    float x = 0;
 	FT_Face prevFace = NULL;
 	FT_UInt prev = 0;
-	int px=0;
+    float px=0;
 	for (int i = 0; i < size; ++i) {
 		FT_UInt glyphIndex;
 		FT_Face face = getFace(wtext[i], glyphIndex);
@@ -703,7 +703,7 @@ float TTFont::getCharIndexAtOffset(const char *text, float offset, float letterS
 
 		x += face->glyph->advance.x >> 6;
 
-		x += (int) (letterSpacing * scalex);
+        x += (letterSpacing * scalex);
 		if ((x>px)&&(offset>=px)&&(offset<x))
 		{
 			const char *tp=text;
