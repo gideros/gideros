@@ -391,6 +391,7 @@ void Pixel::setNinePatch(float vl,float vr,float vt,float vb,float tl,float tr,f
 
 void Pixel::setTextureMatrix(const Matrix4* matrix)
 {
+	tmatrix_=*matrix;
     if (texture_[0]) updateTexture();
 }
 
