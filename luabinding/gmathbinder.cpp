@@ -433,8 +433,7 @@ static int math_cross (lua_State *L) {
     if (vt==VT_ARGS) vt=VT_ARGS3;
     if (vt==VT_ARRAY) vt=VT_ARRAY3;
     if (vt==VT_TABLE) vt=VT_TABLE3;
-    pushVec(L,vt,c);
-    return 1;
+    return pushVec(L,vt,c);
 }
 
 static int math_dot (lua_State *L) {
@@ -604,4 +603,5 @@ void register_gideros_math(lua_State *L) {
 	  {NULL, NULL}
 	};
 	luaL_register(L, LUA_MATHLIBNAME, mathlib);
+	lua_pop(L,1);
 }

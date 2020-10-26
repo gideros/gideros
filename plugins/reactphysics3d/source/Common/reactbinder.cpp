@@ -121,8 +121,8 @@ static int r3dWorld_create(lua_State* L) {
 	rp3d::PhysicsWorld *world = physicsCommon.createPhysicsWorld(ws);
 
 	binder.pushInstance("r3dWorld", world);
-	lua_newtable(L);
-	lua_setfield(L, -2, "__joints");
+    lua_newtable(L);
+    lua_setfield(L, -2, "__joints");
 
 	return 1;
 }
@@ -178,6 +178,52 @@ static int r3dWorld_SetEventListener(lua_State* L) {
 	lua_setfield(L,n,f);
 #define TO_VECTOR(L,n,v) v.x=luaL_checknumber(L,n); v.y=luaL_checknumber(L,n+1); v.z=luaL_checknumber(L,n+2);
 
+
+#define OBJ_SETNUM(obj,robj,fct) \
+static int r3d##obj##_Set##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::robj* body = static_cast<rp3d::robj*>(binder.getInstance("r3d" #obj, 1));\
+	body->set##fct((float)(luaL_checknumber(L, 2)));\
+	return 0;\
+}
+
+#define OBJ_GETNUM(obj,robj,fct) \
+static int r3d##obj##_Get##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::robj* body = static_cast<rp3d::robj*>(binder.getInstance("r3d" #obj, 1));\
+	lua_pushnumber(L,body->get##fct());\
+	return 1;\
+}
+
+#define OBJ_SETGETNUM(obj,robj,fct) OBJ_SETNUM(obj,robj,fct) OBJ_GETNUM(obj,robj,fct)
+
+#define OBJ_SETVEC3(obj,robj,fct) \
+static int r3d##obj##_Set##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::robj* body = static_cast<rp3d::robj*>(binder.getInstance("r3d" #obj, 1));\
+	rp3d::Vector3 v;\
+	TO_VECTOR(L, 2, v);\
+	body->set##fct(v);\
+	return 0;\
+}
+
+#define OBJ_GETVEC3(obj,robj,fct) \
+static int r3d##obj##_Get##fct(lua_State* L) {\
+	Binder binder(L);\
+	rp3d::robj* body = static_cast<rp3d::robj*>(binder.getInstance("r3d" #obj, 1));\
+	rp3d::Vector3 v=body->get##fct();\
+	lua_pushnumber(L,v.x);\
+	lua_pushnumber(L,v.y);\
+	lua_pushnumber(L,v.z);\
+	return 3;\
+}
+#define OBJ_SETGETVEC3(obj,robj,fct) OBJ_SETVEC3(obj,robj,fct) OBJ_GETVEC3(obj,robj,fct)
+
+#define WORLD_SETGETVEC3(fct) OBJ_SETGETVEC3(World,PhysicsWorld,fct)
+
+WORLD_SETGETVEC3(Gravity);
+
+
 static void toTransform(lua_State *L, int n, rp3d::Transform &transform) {
 	Binder binder(L);
 	lua_pushvalue(L, n);
@@ -191,6 +237,8 @@ static void toTransform(lua_State *L, int n, rp3d::Transform &transform) {
 		lua_pop(L, 17);
 		transform.setFromOpenGL(mat);
 	}
+	else
+		lua_pop(L,1);
 }
 
 static int r3dWorld_CreateBody(lua_State* L) {
@@ -201,6 +249,7 @@ static int r3dWorld_CreateBody(lua_State* L) {
 	toTransform(L, 2, transform);
 	rp3d::RigidBody *body = world->createRigidBody(transform);
 	binder.pushInstance("r3dBody", body);
+
 	lua_newtable(L);
 	lua_setfield(L, -2, "__fixtures");
 	lua_newtable(L);
@@ -208,9 +257,11 @@ static int r3dWorld_CreateBody(lua_State* L) {
     lua_pushvalue(L,1);
 	lua_setfield(L, -2, "__world"); //Retain world
 
+    body->setUserData(world);
+
 	lua_pushlightuserdata(L, body);
 	lua_pushvalue(L, -2);
-	setb2(L);
+    setb2(L);
 
 	return 1;
 }
@@ -235,12 +286,14 @@ static int r3dWorld_DestroyBody(lua_State* L) {
 	lua_pushnil(L);
 	lua_setfield(L, 2, "__world");
 
+    body->setUserData(NULL);
 	world->destroyRigidBody(body);
+
 	binder.setInstance(2, NULL);
 
 	lua_pushlightuserdata(L, body);
 	lua_pushnil(L);
-	setb2(L);
+    setb2(L);
 
 	return 0;
 }
@@ -484,17 +537,27 @@ static int r3dBody_SetType(lua_State* L) {
 static int r3dBody_destruct(lua_State* L) {
     void* ptr = *(void**) lua_touserdata(L, 1);
     getb2(L,ptr);
-    lua_getfield(L, -1, "__world"); //Retain world
-	if (!lua_isnil(L,-1))
-	{
-        lua_getfield(L,-1,"destroyBody");
-		lua_pushvalue(L,-2);
-        lua_pushvalue(L,-4);
-		lua_call(L,2,0);
-	}
-    lua_pop(L,1);
-
-	return 0;
+    if (lua_isnil(L,-1)) {
+      //Body has been GC'ed, check if still live in the world
+      rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(ptr);
+      rp3d::PhysicsWorld* world = static_cast<rp3d::PhysicsWorld*>(body->getUserData());
+      if (world!=NULL) { //Not yet destroyed
+          body->setUserData(NULL);
+          world->destroyRigidBody(body);
+      }
+    }
+    else {
+        lua_getfield(L, -1, "__world");
+        if (!lua_isnil(L,-1))
+        {
+            lua_getfield(L,-1,"destroyBody");
+            lua_pushvalue(L,-2);
+            lua_pushvalue(L,-4);
+            lua_call(L,2,0);
+        }
+    }
+    lua_pop(L,1);    
+    return 0;
 }
 
 static int r3dFixture_GetMaterial(lua_State* L) {
@@ -548,39 +611,8 @@ static int r3dBody_EnableGravity(lua_State* L) {
 	return 0;
 }
 
-#define BODY_SETGETNUM(fct) \
-static int r3dBody_Set##fct(lua_State* L) {\
-	Binder binder(L);\
-	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
-	body->set##fct(luaL_checknumber(L, 2));\
-	return 0;\
-}\
-static int r3dBody_Get##fct(lua_State* L) {\
-	Binder binder(L);\
-	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
-	lua_pushnumber(L,body->get##fct());\
-	return 1;\
-}
-
-#define BODY_SETGETVEC3(fct) \
-static int r3dBody_Set##fct(lua_State* L) {\
-	Binder binder(L);\
-	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
-	rp3d::Vector3 v;\
-	TO_VECTOR(L, 2, v);\
-	body->set##fct(v);\
-	return 0;\
-}\
-static int r3dBody_Get##fct(lua_State* L) {\
-	Binder binder(L);\
-	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance("r3dBody", 1));\
-	rp3d::Vector3 v=body->get##fct();\
-	lua_pushnumber(L,v.x);\
-	lua_pushnumber(L,v.y);\
-	lua_pushnumber(L,v.z);\
-	return 3;\
-}
-
+#define BODY_SETGETVEC3(fct) OBJ_SETGETVEC3(Body,RigidBody,fct)
+#define BODY_SETGETNUM(fct) OBJ_SETGETNUM(Body,RigidBody,fct)
 
 BODY_SETGETNUM(LinearDamping)
 BODY_SETGETNUM(AngularDamping)
@@ -592,7 +624,7 @@ static int r3dBody_SetIsAllowedToSleep(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	body->setIsAllowedToSleep(lua_toboolean(L, 2));
+	body->setIsAllowedToSleep((bool)lua_toboolean(L, 2));
 	return 0;
 }
 
@@ -600,7 +632,7 @@ static int r3dBody_SetIsActive(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	body->setIsActive(lua_toboolean(L, 2));
+	body->setIsActive((bool)lua_toboolean(L, 2));
 	return 0;
 }
 
@@ -1388,6 +1420,8 @@ static int loader(lua_State *L) {
 			{ "createSliderJoint", r3dWorld_CreateSliderJoint },
 			{ "createFixedJoint", r3dWorld_CreateFixedJoint },
 			{ "destroyJoint", r3dWorld_DestroyJoint },
+			{ "setGravity", r3dWorld_SetGravity },
+			{ "getGravity", r3dWorld_GetGravity },
 			{ NULL, NULL }, };
 	binder.createClass("r3dWorld", NULL/*"EventDispatcher"*/, r3dWorld_create,
 			r3dWorld_destruct, r3dWorld_functionList);
@@ -1536,9 +1570,9 @@ static void g_initializePlugin(lua_State *L) {
 	lua_pushcfunction(L, loader);
 	lua_setfield(L, -2, "reactphysics3d");
 
-	lua_pop(L, 2);
-	luaL_newweaktable(L);
-	luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_b2);
+    lua_pop(L, 2);
+    luaL_newweaktable(L);
+    luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_b2);
 }
 
 static void g_deinitializePlugin(lua_State *_UNUSED(L)) {
