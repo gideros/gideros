@@ -48,7 +48,9 @@ public:
 		SysConst_ParticleSize,
     	SysConst_WorldInverseTransposeMatrix3,
     	SysConst_ViewMatrix,
-		SysConst_Timer
+		SysConst_Timer,
+    	SysConst_ProjectionMatrix,
+    	SysConst_ViewProjectionMatrix,
     };
     enum ShaderFlags {
     	Flag_None=0,

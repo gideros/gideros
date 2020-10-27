@@ -167,6 +167,14 @@ void ShaderEngine::prepareDraw(ShaderProgram *program)
 	if (c>=0) {
 		program->setConstant(c,ShaderProgram::CMATRIX,1,oglView.data());
 	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_ProjectionMatrix);
+	if (c>=0) {
+		program->setConstant(c,ShaderProgram::CMATRIX,1,oglProjection.data());
+	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_ViewProjectionMatrix);
+	if (c>=0) {
+		program->setConstant(c,ShaderProgram::CMATRIX,1,(oglProjection*oglView).data());
+	}
 	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix);
 	if (c>=0) {
 		Matrix4 m=oglModel.inverse().transpose();

@@ -67,8 +67,14 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "SYS_TEXTUREINFO");
 	lua_pushinteger(L, ShaderProgram::SysConst_ParticleSize);
 	lua_setfield(L, -2, "SYS_PARTICLESIZE");
+	lua_pushinteger(L, ShaderProgram::SysConst_ViewMatrix);
+	lua_setfield(L, -2, "SYS_VIEW");
 	lua_pushinteger(L, ShaderProgram::SysConst_Timer);
 	lua_setfield(L, -2, "SYS_TIMER");
+	lua_pushinteger(L, ShaderProgram::SysConst_ProjectionMatrix);
+	lua_setfield(L, -2, "SYS_PROJECTION");
+	lua_pushinteger(L, ShaderProgram::SysConst_ViewProjectionMatrix);
+	lua_setfield(L, -2, "SYS_VP");
 
 	lua_pushinteger(L, ShaderProgram::Flag_None);
 	lua_setfield(L, -2, "FLAG_NONE");
