@@ -2427,6 +2427,19 @@ void MainWindow::dataReceived(const QByteArray& d)
 				localFileMapReverse[fileList[i].second] = fileList[i].first;
 			}
 		}
+        bool mainluaOnly=libraryWidget_->getProjectProperties().mainluaOnly;
+        std::vector<std::pair<QString, bool> > topologicalSort = libraryWidget_->topologicalSort(localFileMapReverse);
+		for (std::size_t i = 0; i < topologicalSort.size(); ++i)
+            if ((topologicalSort[i].second == false)&&(!mainluaOnly)&&(localFileMapReverse[topologicalSort[i].first]!="main.lua")) {
+            	//Masquerade all supposedly merged files except main.lua, to trigger 'require' issues
+            	//on player as it would happen on exported project
+            	QString fPath=topologicalSort[i].first;
+            	QString luaFile=localFileMapReverse[fPath];
+            	QString luaFileMasq=luaFile+".gideros_merged";
+            	localFileMap.erase(luaFile);
+				localFileMap[luaFileMasq] = fPath;
+				localFileMapReverse[fPath] = luaFileMasq;
+            }
 
 		std::map<QString, std::pair<int, QByteArray> > remoteFileMap;
 
@@ -2502,9 +2515,6 @@ void MainWindow::dataReceived(const QByteArray& d)
 			if (iter->first.startsWith("_LuaPlugins_/")&&iter->first.endsWith("/_preload.lua"))
 				luaFiles << iter->first;
 		}
-
-        std::vector<std::pair<QString, bool> > topologicalSort = libraryWidget_->topologicalSort(localFileMapReverse);
-        bool mainluaOnly=libraryWidget_->getProjectProperties().mainluaOnly;
 
 		for (std::size_t i = 0; i < topologicalSort.size(); ++i)
             if ((topologicalSort[i].second == false)&&((!mainluaOnly)||(localFileMapReverse[topologicalSort[i].first]=="main.lua")))
