@@ -1,27 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties touchToMouse="1" ios_bundle="com.yourdomain." iosDevice="0" osx_signingId="" windowWidth="0" exportMode="0" mouseTouchOrder="0" encryptCode="0" logicalHeight="480" osx_category="5" html5_host="" splashScaleMode="0" app_icon="" winrt_package="com.yourdomain.yourapp" version="1.0" android_template="0" osx_bundle="com.yourdomain." autorotation="0" win_org="GiderosMobile" packageName="com.yourdomain.yourapp" windowHeight="0" backgroundColor="#ffffff" build_number="1" html5_wasm="0" vsync="0" html5_crash="" winrt_org="GiderosMobile" tv_icon="" html5_mem="256" osx_org="GiderosMobile" splash_v_image="" osx_installerId="" html5_pack="1" logicalWidth="320" architecture="7" app_name="" version_code="1" encryptAssets="0" scaleMode="3" html5_fbload="100" html5_fbinstant="0" splash_h_image="" mouseToTouch="1" disableSplash="0" orientation="0" osx_domain="giderosmobile.com" win_domain="giderosmobile.com" retinaDisplay="0" fps="60" html5_symbols="0">
+ <properties mainluaOnly="0" osx_org="GiderosMobile" iosDevice="0" windowWidth="0" html5_symbols="0" osx_installerId="" windowHeight="0" app_icon="" orientation="0" packageName="com.yourdomain.yourapp" fps="60" android_template="0" mouseToTouch="1" logicalHeight="480" osx_signingId="" osx_bundle="com.yourdomain." html5_host="" win_org="GiderosMobile" scaleMode="3" retinaDisplay="0" encryptCode="0" splash_h_image="" architecture="7" app_name="" osx_category="5" html5_fbload="100" html5_mem="256" html5_crash="" html5_fbinstant="0" disableSplash="0" encryptAssets="0" winrt_package="com.yourdomain.yourapp" win_domain="giderosmobile.com" logicalWidth="320" html5_pack="1" version_code="1" splash_v_image="" mouseTouchOrder="0" backgroundColor="#ffffff" splashScaleMode="0" build_number="1" osx_domain="giderosmobile.com" autorotation="0" html5_wasm="0" winrt_org="GiderosMobile" touchToMouse="1" exportMode="0" ios_bundle="com.yourdomain." vsync="0" version="1.0" tv_icon="">
   <imageScales/>
   <plugins>
-   <plugin name="JSON" enabled="1"/>
+   <plugin enabled="1" name="JSON"/>
   </plugins>
   <exports>
    <export name="APK">
-    <property name="androidPath" value=""/>
-    <property name="androidSdk" value=""/>
-    <property name="androidTarget" value="26"/>
-    <property name="androidTools" value=""/>
-    <property name="buildAab" value="1"/>
-    <property name="buildApk" value="0"/>
-    <property name="deployApk" value="0"/>
-    <property name="javaPath" value=""/>
-    <property name="keyAlias" value=""/>
-    <property name="keyStore" value=""/>
-    <property name="packageName" value="com.yourdomain.yourapp"/>
-    <property name="timestampApk" value="0"/>
+    <property value="" name="androidPath"/>
+    <property value="" name="androidSdk"/>
+    <property value="26" name="androidTarget"/>
+    <property value="" name="androidTools"/>
+    <property value="1" name="buildAab"/>
+    <property value="0" name="buildApk"/>
+    <property value="0" name="deployApk"/>
+    <property value="" name="javaPath"/>
+    <property value="" name="keyAlias"/>
+    <property value="" name="keyStore"/>
+    <property value="com.yourdomain.yourapp" name="packageName"/>
+    <property value="0" name="timestampApk"/>
    </export>
   </exports>
  </properties>
- <folder path="../../../Library/3dbase" name="3dbase">
+ <folder name="luashader" path="../../../Library/luashader">
+  <file name="../../../Library/luashader/luac_codegen.lua"/>
+  <file name="../../../Library/luashader/luac_loader.lua"/>
+  <file name="../../../Library/luashader/luashader.lua"/>
+ </folder>
+ <folder name="3dbase" path="../../../Library/3dbase">
   <file name="../../../Library/3dbase/3DAnimation.lua"/>
   <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
   <file name="../../../Library/3dbase/3DLighting.lua"/>

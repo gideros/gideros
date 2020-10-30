@@ -1,6 +1,7 @@
 --!NEEDS:luac_codegen.lua
 local OPTYPE_MAP={
 	["hF44*hF4"]="hF4",
+	["hF33*hF3"]="hF3",
 	["hF1*hF2"]="hF2",
 	["hF1*hF3"]="hF3",
 	["hF1*hF4"]="hF4",
@@ -21,6 +22,7 @@ local OPTYPE_MAP={
 local GFUNC_MAP={
 	["discard"]={type="func", value="discard"},
 	["texture2D"]={type="func", value="texture2D", rtype="lF4"},
+	["shadow2D"]={type="func", value="shadow2D", rtype="hF4"},
 	["sin"]={type="func", value="sin", rtype="1", acount=1},
 	["cos"]={type="func", value="cos", rtype="1", acount=1},
 	["floor"]={type="func", value="floor", rtype="1", acount=1},
@@ -41,12 +43,19 @@ local GFUNC_MAP={
 	["distance"]={type="func", value="distance", rtype="hF1", acount=2},
 	["cross"]={type="func", value="cross", rtype="1", acount=2},
 	["normalize"]={type="func", value="normalize", rtype="1", acount=1},
+	["reflect"]={type="func", value="reflect", rtype="1", acount=2},
+	["dFdx"]={type="func", value="dFdx", rtype="1", acount=1},
+	["dFdy"]={type="func", value="dFdy", rtype="1", acount=1},
+	["inversesqrt"]={type="func", value="inversesqrt", rtype="1", acount=1},
 	["max"]={type="func", value="max", rtype="1", acount=2},
 	["min"]={type="func", value="min", rtype="1", acount=2},
 	["pow"]={type="func", value="pow", rtype="1", acount=2},
+	["mod"]={type="func", value="mod", rtype="1", acount=2},
+	["InstanceID"]={type="cvar", value="gl_InstanceID", vtype="hI1"},
+	["FragCoord"]={type="cvar", value="gl_FragCoord", vtype="hF4"},
 }
 
-local function populateGMap(gmap,tmap,funcs)
+local function populateGMap(gmap,tmap,funcs,const)
 	for k,v in pairs(tmap) do
 		local si=v:find(" ")
 		if si then v=v:sub(si+1) end
@@ -55,8 +64,15 @@ local function populateGMap(gmap,tmap,funcs)
 	for k,v in pairs(GFUNC_MAP) do
 		gmap[k]=v
 	end
+	if funcs then
 	for k,v in ipairs(funcs) do 
-		gmap[v.name]={type="func", value=v.name, rtype=v.rtype, acount=v.acount}
+			gmap[v.name]={type="func", value=v.name, rtype=v.rtype, acount=v.acount, fdef=v}
+	end
+end
+	if const then
+		for k,v in ipairs(const) do 
+			gmap[v.name]={type="cvar", value=v.value, vtype=v.type}
+		end
 	end
 end
 
@@ -73,7 +89,11 @@ local function shType(v)
 	elseif v.type==Shader.CINT then
 		p="hI1"
 	elseif v.type==Shader.CTEXTURE then
+		if v.subtype=="shadow" then
+			p="hS1"
+		else
 		p="lT1"
+		end
 	elseif v.type==Shader.CMATRIX then
 		p="hF44"
 	end
@@ -82,6 +102,7 @@ local function shType(v)
 end
 
 local function shAType(v)
+	if v.mult==0 then return nil end
 	local p
 	if v.type==Shader.DFLOAT then
 		p="hF"
@@ -93,18 +114,18 @@ local function shAType(v)
 	return p
 end
 
-function Shader.lua(vf,ff,opt,uniforms,attrs,varying,funcs,debug)
+function Shader.lua(vf,ff,opt,uniforms,attrs,varying,funcs,const,debug)
 	local lang=Shader.getShaderLanguage()
 	local mtd=Shader["lua_"..lang]
 	assert(mtd,"Language not supported: "..lang)
 	
-	local _vshader,_fshader=mtd(vf,ff,opt,uniforms,attrs,varying,funcs or {})
+	local _vshader,_fshader=mtd(vf,ff,opt,uniforms,attrs,varying,funcs or {},const)
 
 	if debug then
 		print("VSHADER_CODE:\n".._vshader)	
 		print("FSHADER_CODE:\n".._fshader)
 	end
-	if not debug then
+	if not vdebug then
 		return Shader.new(_vshader,_fshader,Shader.FLAG_FROM_CODE|opt,uniforms,attrs)	
 	end
 end
@@ -117,16 +138,11 @@ local function GEN_RETURN(rval)
 	end
 end
 
-local function genFunctions(gmap,tmap,omap,ophandler,funcs)
+local function genFunction(fg,gmap,tmap,omap,ophandler)
 	local _code=""
-	ophandler.RETURN=function(rval)
-			if rval then
-				return "return "..rval..";\n"
-			else
-				return ""
-			end
-		end
-	for _,fg in ipairs(funcs) do
+	local oh={}
+	for k,v in pairs(ophandler) do oh[k]=v end
+	oh.RETURN=GEN_RETURN
 		local ff=gmap[fg.name]._fcode
 		if ff then
 			if fg.rtype then 
@@ -141,10 +157,30 @@ local function genFunctions(gmap,tmap,omap,ophandler,funcs)
 				amap[k]={type="var",value=v.name,vtype=v.type}
 				_args=_args..","..tmap[v.type].." "..v.name
 			end
+		local fcode=codegen(ff,amap,gmap,tmap,omap,oh)
+		local callarg=""
+		if ff.extra_args then
+			for k,v in ipairs(ff.extra_args or {}) do 
+				_args=_args..v.decl
+				if #callarg>0 then callarg=callarg.."," end
+				callarg=callarg..v.use
+			end
+		end
 			if #_args then _args=_args:sub(2) end
 			_code=_code.._args..") {\n"
-			_code=_code..codegen(ff,amap,gmap,tmap,omap,ophandler).."}\n"
+		_code=_code..fcode.."}\n"
+		fg.code=_code
+		gmap[fg.name].callarg=callarg
 		end
+	end
+
+local function genFunctions(gmap,tmap,omap,ophandler,funcs)
+	local _code=""
+	for _,fg in ipairs(funcs) do
+		if not fg.code then
+			genFunction(fg,gmap,tmap,omap,ophandler)
+		end
+		_code=_code..fg.code
 	end
 	return _code
 end
@@ -161,7 +197,7 @@ local function _GLSL_GENOPEQ(o,a,b)
 	end
 end
 
-function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs)
+function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	local amap={}
 	local gmap={}
 	local tmap={
@@ -176,28 +212,40 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs)
 		hI1="highp int",
 		hT1="highp sampler2D",
 		lT1="lowp sampler2D",
+		hS1="highp sampler2DShadow",
 		hF22="highp mat2",
 		hF33="highp mat3",
 		hF44="highp mat4",
 		BOOL="bool",
 	}
 	local omap=OPTYPE_MAP
-	populateGMap(gmap,tmap,funcs)
-	gmap["discard"]={type="func", value="discard", evaluate=function (fn,args) return "discard" end}
+	populateGMap(gmap,tmap,funcs,const)
+	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
+	local _headers=[[#ifdef GLES2
+#extension GL_OES_standard_derivatives : enable
+#extension GL_EXT_shadow_samplers : require
+#define shadow2D(tex,pt) vec4(shadow2DEXT(tex,pt),0.0,0.0,0.0)
+#endif
+]]
 
-
-	local _code=""
+	local _code=_headers
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
+		if atype then
 		amap[k]={type="cvar", value=v.name, vtype=atype} 
 		assert(tmap[atype],"Attribute type not handled :"..atype)
 		_code=_code..("attribute %s %s;\n"):format(tmap[atype],v.name)
+		else 
+			amap[k]={}
+		end
 	end
 	for k,v in ipairs(uniforms) do 
 		if v.vertex then
 			local atype=shType(v)
-			gmap[v.name]={type="cvar", value=v.name, vtype=atype}
-			_code=_code..("uniform %s %s;\n"):format(tmap[atype],v.name)
+			local mult,vmult="",nil
+			if v.mult and v.mult>1 then mult="["..v.mult.."]" vmult=v.mult end
+			gmap[v.name]={type="cvar", value=v.name, vtype=atype, vmult=mult}
+			_code=_code..("uniform %s %s%s;\n"):format(tmap[atype],v.name,mult)
 		end
 	end
 	for k,v in ipairs(varying) do 
@@ -222,12 +270,14 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs)
 	local _vshader=_code
 	
 	
-	_code=""
+	_code=_headers
 	for k,v in ipairs(uniforms) do 
 		if not v.vertex then
 			local atype=shType(v)
-			gmap[v.name]={type="cvar", value=v.name, vtype=atype}
-			_code=_code..("uniform %s %s;\n"):format(tmap[atype],v.name)
+			local mult,vmult="",nil
+			if v.mult and v.mult>1 then mult="["..v.mult.."]" vmult=v.mult end
+			gmap[v.name]={type="cvar", value=v.name, vtype=atype, vmult=mult}
+			_code=_code..("uniform %s %s%s;\n"):format(tmap[atype],v.name,mult)
 		end
 	end
 	for k,v in ipairs(varying) do 
@@ -269,7 +319,7 @@ local function _MSL_GENOPEQ(o,a,b)
 	end
 end
 
-function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs)
+function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	local amap={}
 	local gmap={}
 	local tmap={
@@ -290,11 +340,33 @@ function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs)
 		BOOL="bool",
 	}
 	local omap=OPTYPE_MAP
-	populateGMap(gmap,tmap,funcs)
+	populateGMap(gmap,tmap,funcs,const)
 	gmap["discard"]={type="func", value="discard_fragment"}
-	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (fn,tex,sp)
+	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (ff,fn,tex,sp)
+		ff._MSL_args=ff._MSL_args or { }
+		if not ff._MSL_args["_smp_"..tex.value] and ff._MSL_spec then
+			ff._MSL_args["_smp_"..tex.value]=true
+			ff._MSL_args["_tex_"..tex.value]=true
+			ff.extra_args=ff.extra_args or { }
+			table.insert(ff.extra_args,ff._MSL_spec[tex.value])
+		end
 		return ("_tex_%s.sample(_smp_%s, %s)"):format(tex.value,tex.value,sp.value)
 	end, rtype="lF4"}
+	gmap["shadow2D"]={type="func", value="shadow2D", evaluate=function (ff,fn,tex,sp)
+		ff._MSL_args=ff._MSL_args or { }
+		if not ff._MSL_args["_smp_"..tex.value] and ff._MSL_spec then
+			ff._MSL_args["_smp_"..tex.value]=true
+			ff._MSL_args["_tex_"..tex.value]=true
+			ff.extra_args=ff.extra_args or { }
+			table.insert(ff.extra_args,ff._MSL_spec[tex.value])
+		end
+		return ("_tex_%s.sample_compare(_smp_%s, (%s).xy,((%s).z-0.5)*2.0)"):format(tex.value,tex.value,sp.value,sp.value)
+	end, rtype="hF4"}
+	gmap["mod"]={type="func", value="fmod", rtype="1", acount=2}
+	gmap["dFdx"]={type="func", value="dfdx", rtype="1", acount=1}
+	gmap["dFdy"]={type="func", value="dfdy", rtype="1", acount=1}
+	gmap["inversesqrt"]={type="func", value="rsqrt", rtype="1", acount=1}
+	gmap["FragCoord"]={type="cvar", value="vert.gl_Position", vtype="hF4"}
 
 	local _code=[=[
 #include <metal_stdlib>
@@ -304,24 +376,38 @@ using namespace metal;
 	_code=_code.."struct InVertex {\n"
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
+		if atype then
 		amap[k]={type="cvar", value="inVertex."..v.name, vtype=atype} 
 		assert(tmap[atype],"Attribute type not handled :"..atype)
 		_code=_code..("%s %s [[attribute(%d)]];\n"):format(tmap[atype],v.name,v.slot)
+		else 
+			amap[k]={}
+	end
 	end
 	_code=_code.."};\n"
 	
 	local _fargs=""
 	local _ucode="struct Uniforms {\n"
 	local _texc=0
+	local _msl_spec={}
 	for k,v in ipairs(uniforms) do 
 		local atype=shType(v)
 		if v.type==Shader.CTEXTURE then
 			gmap[v.name]={type="cvar", value=v.name, vtype=atype}
-			_fargs=_fargs..(",texture2d<half> _tex_%s [[texture(%d)]], sampler _smp_%s [[sampler(%d)]]"):format(v.name,_texc,v.name,_texc)
+			local exarg
+			if v.subtype=="shadow" then
+				exarg=(",depth2d<float> _tex_%s [[texture(%d)]], sampler _smp_%s [[sampler(%d)]]"):format(v.name,_texc,v.name,_texc)
+			else
+				exarg=(",texture2d<half> _tex_%s [[texture(%d)]], sampler _smp_%s [[sampler(%d)]]"):format(v.name,_texc,v.name,_texc)
+			end
+			_fargs=_fargs..exarg
+			_msl_spec[v.name]={ decl=exarg, use=("_tex_%s,_smp_%s"):format(v.name,v.name) }
 			_texc+=1
 		else
-			_ucode=_ucode..("%s %s;\n"):format(tmap[atype],v.name)
-			gmap[v.name]={type="cvar", value="uniforms."..v.name, vtype=atype}
+			local mult,vmult="",nil
+			if v.mult and v.mult>1 then mult="["..v.mult.."]" vmult=v.mult end
+			_ucode=_ucode..("%s %s%s;\n"):format(tmap[atype],v.name,mult)
+			gmap[v.name]={type="cvar", value="uniforms."..v.name, vtype=atype, vmult=mult}
 		end
 	end
 	_ucode=_ucode.."};\n"
@@ -371,6 +457,11 @@ using namespace metal;
 		RETURN=GEN_RETURN,
 		GENOP=_MSL_GENOP,
 		GENOPEQ=_MSL_GENOPEQ,
+		SUBFUNC=function(f,fg)
+			local ff=fg._fcode
+			ff._MSL_spec=_msl_spec
+			genFunction(fg.fdef,gmap,tmap,omap,{	GENOP=_MSL_GENOP,GENOPEQ=_MSL_GENOPEQ,})
+		end
 	})
 	_code=_code.._ucode.._pcode
 		..genFunctions(gmap,tmap,omap,{	GENOP=_MSL_GENOP,GENOPEQ=_MSL_GENOPEQ,},funcs)
@@ -414,7 +505,7 @@ end
 local function _HLSL_ARGSWIZZLE(func,...)
 end
 
-function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs)
+function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	local amap={}
 	local gmap={}
 	local tmap={
@@ -435,7 +526,7 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs)
 		BOOL="bool",
 	}
 	local omap=OPTYPE_MAP
-	populateGMap(gmap,tmap,funcs)
+	populateGMap(gmap,tmap,funcs,const)
 	for k,_ in pairs(tmap) do
 		local np=tonumber(k:sub(3)) or 0
 		if np>1 and np<=4 then
@@ -444,21 +535,35 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs)
 		end
 	end
 
-	gmap["discard"]={type="func", value="discard", evaluate=function (fn,args) return "discard" end}
-	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (fn,tex,sp)
+	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
+	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (ff,fn,tex,sp)
 		return ("_tex_%s.Sample(_smp_%s, %s)"):format(tex.value,tex.value,sp.value)
 	end, rtype="lF4"}
+	gmap["shadow2D"]={type="func", value="shadow2D", evaluate=function (ff,fn,tex,sp)
+		return ("_tex_%s.SampleCmp(_smp_%s, (%s).xy,((%s).z-0.5)*2.0)"):format(tex.value,tex.value,sp.value,sp.value)
+	end, rtype="hF4"}
 	gmap["mix"]={type="func", value="lerp", rtype="1", acount=3}
 	gmap["fract"]={type="func", value="frac", rtype="1", acount=1}
+	gmap["dFdx"]={type="func", value="ddx", rtype="1", acount=1}
+	gmap["dFdy"]={type="func", value="ddy", rtype="1", acount=1}
+	gmap["inversesqrt"]={type="func", value="rsqrt", rtype="1", acount=1}
+	gmap["mod"]={type="func", value="fmod", rtype="1", acount=2}
+	gmap["hF44"]={type="func", value="float4x4", rtype="hF44", acount=4, evaluate=function(ff,fn,a,b,c,d)
+		return ("transpose(float4x4(%s,%s,%s,%s))"):format(a.value,b.value,c.value,d.value)
+	end}
 
 	local _code,_dcode="",""
 
 	local _vargs,_fargs="",""
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
+		if atype then
 		amap[k]={type="cvar", value=v.name, vtype=atype} 
 		assert(tmap[atype],"Attribute type not handled :"..atype)
 		_vargs=_vargs..(",%s %s : %s"):format(tmap[atype],v.name,v.name)
+		else 
+			amap[k]={}
+		end
 	end
 	if #_vargs>0 then _vargs=_vargs:sub(2) end
 	
@@ -468,18 +573,24 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs)
 		local atype=shType(v)
 		if v.type==Shader.CTEXTURE then
 			gmap[v.name]={type="cvar", value=v.name, vtype=atype}
+			if v.subtype=="shadow" then
+				_dcode=_dcode..("Texture2D _tex_%s : register(t%d);\nSamplerComparisonState _smp_%s : register(s%d);\n"):format(v.name,_texc,v.name,_texc)
+			else
 			_dcode=_dcode..("Texture2D _tex_%s : register(t%d);\nSamplerState _smp_%s : register(s%d);\n"):format(v.name,_texc,v.name,_texc)
+			end
 			_texc+=1
 		elseif v.vertex then
-			_ucode=_ucode..("%s %s;\n"):format(tmap[atype],v.name)
-			gmap[v.name]={type="cvar", value=v.name, vtype=atype}
+			local mult,vmult="",nil
+			if v.mult and v.mult>1 then mult="["..v.mult.."]" vmult=v.mult end
+			_ucode=_ucode..("%s %s%s;\n"):format(tmap[atype],v.name,mult)
+			gmap[v.name]={type="cvar", value=v.name, vtype=atype, vmult=mult}
 		end
 	end
 	_ucode=_ucode.."};\n"
 
 	local _pcode="struct PVertex {\n"
 	_pcode=_pcode.."    float4 gl_Position : SV_POSITION;\n"
-	_fargs=_fargs.."float4 gl_Position : SV_POSITION"
+	_fargs=_fargs.."float4 gl_FragCoord : SV_POSITION"
 	for k,v in ipairs(varying) do 
 		local atype=shType(v)
 		gmap[v.name]={type="var", value="outVert."..v.name, vtype=atype}
@@ -515,8 +626,10 @@ PVertex VShader(%s)
 		if v.type==Shader.CTEXTURE then
 			gmap[v.name]={type="cvar", value=v.name, vtype=atype}
 		elseif not v.vertex then
-			_ucode=_ucode..("%s %s;\n"):format(tmap[atype],v.name)
-			gmap[v.name]={type="cvar", value=v.name, vtype=atype}
+			local mult,vmult="",nil
+			if v.mult and v.mult>1 then mult="["..v.mult.."]" vmult=v.mult end
+			_ucode=_ucode..("%s %s%s;\n"):format(tmap[atype],v.name,mult)
+			gmap[v.name]={type="cvar", value=v.name, vtype=atype, vmult=mult}
 		end
 	end
 	_ucode=_ucode.."};\n"

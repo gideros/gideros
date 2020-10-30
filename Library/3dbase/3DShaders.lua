@@ -3,6 +3,196 @@ D3=D3 or {}
 local slang=Shader.getShaderLanguage()
 print(slang)
 
+function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INSTMATA,INSTMATB,INSTMATC,INSTMATD)
+	if OPT_TEXTURED then
+		texCoord=TEXCOORD
+	end
+	local pos = hF4(POSITION,1.0)
+	local norm = hF4(NORMAL,0.0)
+	--[[
+	if OPT_INSTANCED_TEST then
+		local tc=hF2(((gl_InstanceID*2+1)/InstanceMapWidth)/2.0,0.5);
+		local itex=texture2D(g_InstanceMap, tc);
+		pos.x-=itex.r*512.0;
+		pos.y+=itex.g*512.0;
+		pos.z-=itex.b*512.0;
+	end]]
+	if OPT_INSTANCED then
+		local imat=hF44(INSTMATA,INSTMATB,INSTMATC,INSTMATD);
+		pos=imat*InstanceMatrix*pos;
+		norm = imat*InstanceMatrix*hF4(norm.xyz, 0.0);
+	end
+	if OPT_ANIMATED then
+		local nulv=hF4(0,0,0,0)
+		local skinning=hF44(nulv,nulv,nulv,nulv)
+		skinning+=bones[hI1(ANIMIDX.x)]*ANIMWEIGHT.x;
+		skinning+=bones[hI1(ANIMIDX.y)]*ANIMWEIGHT.y;
+		skinning+=bones[hI1(ANIMIDX.z)]*ANIMWEIGHT.z;
+		skinning+=bones[hI1(ANIMIDX.w)]*ANIMWEIGHT.w;
+		local npos = skinning * pos;
+		local nnorm = skinning * hF4(norm.xyz, 0.0);
+		pos=hF4(npos.xyz,1.0);
+		norm=nnorm;
+	end
+	
+	position = (g_MVMatrix*pos).xyz;
+	normalCoord = normalize((g_NMatrix*hF4(norm.xyz,0)).xyz);
+	if OPT_SHADOWS then
+		lightSpace = g_LMatrix*hF4(position,1.0);
+	end
+	return g_MVPMatrix * pos;
+end
+
+function D3._FLUA_Shader()
+	--mat3 cotangent_frame(vec3 N, vec3 p, vec2 uv)
+	function cotangent_frame(N,p,uv)
+		--// récupère les vecteurs du triangle composant le pixel
+		local dp1 = dFdx( p );
+		local dp2 = dFdy( p );
+		local duv1 = dFdx( uv );
+		local duv2 = dFdy( uv );
+
+		--// résout le système linéaire
+		local dp2perp = cross( dp2, N );
+		local dp1perp = cross( N, dp1 );
+		local T = dp2perp * duv1.x + dp1perp * duv2.x;
+		local B = dp2perp * duv1.y + dp1perp * duv2.y;
+
+		--// construit une trame invariante à l'échelle 
+		local invmax = inversesqrt( max( dot(T,T), dot(B,B) ) );
+		return hF33( T * invmax, B * invmax, N );
+	end
+
+	--vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
+	function perturb_normal( N, V, texcoord )
+		--// N, la normale interpolée et
+		--// V, le vecteur vue (vertex dirigé vers l'œil)
+		local map = texture2D(g_NormalMap, texcoord ).xyz;
+		map = hF3(hF3(map) * 255./127. - 128./127.)
+		local TBN = cotangent_frame(N, -V, texcoord);
+		return normalize(TBN * map);
+	end
+	function ShadowCalculation(fragPosLightSpace,fragCoord)
+		--// perform perspective divide
+		local projCoords = fragPosLightSpace / fragPosLightSpace.w;
+		--// transform to [0,1] range
+		projCoords = projCoords * 0.5 + 0.5;
+		local outside= false
+		if (projCoords.x<0.0) then outside=true end
+		if (projCoords.y<0.0) then outside=true end
+		if (projCoords.x>=1.0) then outside=true end
+		if (projCoords.y>=1.0) then outside=true end
+		if outside then
+			return 1.0; --TODO 'or' is not well supported in lua shaders
+		end
+		projCoords.z-=0.001; --BIAS
+		--[[ TODO
+	#ifdef GLES2	
+		float shadow=shadow2DEXT(g_ShadowMap, projCoords.xyz); 
+	#else
+	--]]
+		local shadow=0.0;
+		local scale=hF3(1/1024.0,1/1024.0,1/1024.0); --shadow map size
+		--[[
+		//shadow+=shadow2D(g_ShadowMap, projCoords.xyz).r; 	
+		// Poisson sampling
+		/*
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(-0.94201624, -0.39906216,0.0)*scale).r; 	
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(0.94558609, -0.76890725 ,0.0)*scale).r; 	
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(-0.094184101, -0.92938870,0.0)*scale).r; 	
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(0.34495938, 0.29387760,0.0)*scale).r; 
+		shadow/=4.0;	
+		*/
+		// 16 sampling
+		/*
+		float x, y;
+		for (y = -1.5; y <= 1.5; y += 1.0)
+		  for (x = -1.5; x <= 1.5; x += 1.0)
+			shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(x,y,0.0)*scale).r; 	
+		shadow/=16.0;	
+		*/
+		//9 sampling
+		/*
+		float x, y;
+		for (y = -1; y <= 1; y += 1.0)
+		  for (x = -1; x <= 1; x += 1.0)
+			shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(x,y,0.0)*scale).r; 	
+		shadow/=9.0;	
+		*/
+		]]
+		--Dithered
+		local offset =  hF3(mod(floor(fragCoord.xy),2.0),0)
+		offset.z=0.0
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+hF3(-1.5,0.5,0.0))*scale).r 	
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+hF3(0.5,0.5,0.0))*scale).r	
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+hF3(-1.5,-1.5,0.0))*scale).r
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+hF3(0.5,-1.5,0.0))*scale).r
+		shadow/=4.0;	
+		if(projCoords.z >= 0.999) then
+			shadow = 1.0
+		end
+		return shadow
+	end
+	local color0 = lF4(g_Color)
+	if OPT_TEXTURED then
+		color0 = color0*texture2D(g_Texture,texCoord)
+	end
+	local color1 = lF3(0.5, 0.5, 0.5)
+	local normal = normalize(normalCoord)
+	
+	local lightDir = normalize(lightPos.xyz - position.xyz)
+	local viewDir = normalize(cameraPos.xyz-position.xyz)
+	if OPT_NORMMAP then
+		normal=perturb_normal(normal, viewDir, texCoord)
+	end
+	
+	local diff = max(0.0, dot(normal, lightDir))
+	local spec =0.0
+    -- calculate shadow
+	local shadow=1.0
+	if OPT_SHADOWS then
+		shadow = ShadowCalculation(lightSpace,FragCoord)
+	end
+	if (diff>0.0) then
+		local nh = max(0.0, dot(reflect(-lightDir,normal),viewDir))
+		spec = pow(nh, 32.0)*shadow
+	end
+
+	diff=max(diff*shadow,ambient);
+	local frag = lF4(color0.rgb * diff + color1 * spec, color0.a)
+	return frag
+end
+	
+D3._FLUA_Shader_FDEF={
+	--mat3 cotangent_frame(vec3 N, vec3 p, vec2 uv)
+	{name="cotangent_frame", rtype="hF33", acount=3,
+		args={
+			{name="N", type="hF3"},
+			{name="p", type="hF3"},
+			{name="uv", type="hF2"},
+		}, 
+	},
+	--vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
+	{name="perturb_normal", rtype="hF3", acount=3,
+		args={
+			{name="N", type="hF3"},
+			{name="V", type="hF3"},
+			{name="texcoord", type="hF2"},
+		}, 
+	},
+	{name="ShadowCalculation", rtype="hF1", acount=2,
+		args={
+			{name="fragPosLightSpace", type="hF4"}, 
+			{name="fragCoord", type="hF4"},
+		}, 
+	},
+}
+
+
+
+
+
+
 if slang=="glsl" then
 D3._V_Shader=
 [[
@@ -116,7 +306,7 @@ varying highp vec4 lightSpace;
 #endif
 
 #ifdef GLES2
-precision mediump float;
+precision highp float;
 #endif
 
 #ifdef NORMMAP
@@ -154,7 +344,7 @@ vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
     // perform perspective divide
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    vec4 projCoords = fragPosLightSpace / fragPosLightSpace.w;
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
 	if ((projCoords.x<0.0)||(projCoords.y<0.0)||(projCoords.x>=1.0)||(projCoords.y>=1.0))
@@ -163,13 +353,42 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 #ifdef GLES2	
 	float shadow=shadow2DEXT(g_ShadowMap, projCoords.xyz); 
 #else
-	//float shadow=shadow2D(g_ShadowMap, projCoords.xyz).r; 	
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = shadow2D(g_ShadowMap, projCoords.xyz).r; 
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-	float shadow = currentDepth > closestDepth  ? 0.0 : 1.0;  	
+	// Single sampling
+	float shadow=0.0;
+	vec3 scale=vec3(1/1024.0,1/1024.0,1/1024.0); //shadow map size
+	//shadow+=shadow2D(g_ShadowMap, projCoords.xyz).r; 	
+	// Poisson sampling
+	/*
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(-0.94201624, -0.39906216,0.0)*scale).r; 	
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(0.94558609, -0.76890725 ,0.0)*scale).r; 	
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(-0.094184101, -0.92938870,0.0)*scale).r; 	
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(0.34495938, 0.29387760,0.0)*scale).r; 
+  shadow/=4.0;	
+	*/
+	// 16 sampling
+	/*
+	float x, y;
+	for (y = -1.5; y <= 1.5; y += 1.0)
+	  for (x = -1.5; x <= 1.5; x += 1.0)
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(x,y,0.0)*scale).r; 	
+	shadow/=16.0;	
+	*/
+	//9 sampling
+	/*
+	float x, y;
+	for (y = -1; y <= 1; y += 1.0)
+	  for (x = -1; x <= 1; x += 1.0)
+		shadow+=shadow2D(g_ShadowMap, projCoords.xyz+vec3(x,y,0.0)*scale).r; 	
+	shadow/=9.0;	
+	*/
+	//Ditehered
+	vec3 offset =  mod(floor(gl_FragCoord.xyz),2.0);  // mod
+	offset.z=0.0;
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+vec3(-1.5,0.5,0.0))*scale).r; 	
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+vec3(0.5,0.5,0.0))*scale).r; 	
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+vec3(-1.5,-1.5,0.0))*scale).r; 	
+	shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+vec3(0.5,-1.5,0.0))*scale).r; 
+	shadow/=4.0;	
 #endif
 	if(projCoords.z >= 0.999)
         shadow = 1.0;

@@ -1,3 +1,4 @@
+--!NEEDS:../luashader/luashader.lua
 Lighting={}
 local glversion=Shader.getEngineVersion()
 local isES3Level=(glversion~="GLES2")
@@ -39,7 +40,7 @@ LightingShaderConstants[#LightingShaderConstants+1]=
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false}
 LightingShaderConstants[#LightingShaderConstants+1]=
-	{name="g_ShadowMap",type=Shader.CTEXTURE,mult=1,vertex=false}
+	{name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false}
 --[[	
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_InstanceMap",type=Shader.CTEXTURE,mult=1,vertex=true}
@@ -51,24 +52,34 @@ LightingShaderConstants[#LightingShaderConstants+1]=
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true}
 
+local LightingShaderVarying={
+	{name="position",type=Shader.CFLOAT3},
+	{name="texCoord",type=Shader.CFLOAT2,code="t"},
+	{name="normalCoord",type=Shader.CFLOAT3},
+	{name="lightSpace",type=Shader.CFLOAT4,code="s"},
+}
 -- Shaders defs
 Lighting._shaders={}
 Lighting.getShader=function(code)
 	local cmap={
 		{"t","TEXTURED",true},
-		{"s","SHADOWS",isES3Level and ((slang~="glsl") or Shader.extensions.GL_EXT_shadow_samplers)},
+		{"s","SHADOWS",isES3Level and ((slang~="glsl") or Shader.extensions.GL_EXT_shadow_samplers or Shader.extensions.GL_EXT_shadow_funcs)},
 		{"n","NORMMAP",true},
 		{"i","INSTANCED",true},
 		{"a","ANIMATED",true},
 	}	
 	local lcode,ccode="",""
+	local lconst={}
 	for _,k in ipairs(cmap) do
+		local active="false"
 		if code:find(k[1]) then
 			lcode=lcode..k[1]
 			if k[3] then
 				ccode=ccode.."#define "..k[2].."\n"
+				active="true"
 			end
 		end
+		table.insert(lconst,{ name="OPT_"..k[2], type="BOOL", value=active})
 	end
 	--if lcode=="" then return nil,nil end
 	if D3._V_Shader then
@@ -76,11 +87,24 @@ Lighting.getShader=function(code)
 			for _,a in ipairs(LightingShaderAttrs) do
 				if not a.code or code:find(a.code) then a.mult=a.amult else a.mult=0 end	
 			end
+			--[[
 			v=Shader.new(
 				ccode..D3._V_Shader,
 				ccode..D3._F_Shader,
 				Shader.FLAG_FROM_CODE,
 				LightingShaderConstants,LightingShaderAttrs)
+			]]
+			v=Shader.lua(
+				D3._VLUA_Shader,
+				D3._FLUA_Shader,
+				0,
+				LightingShaderConstants,
+				LightingShaderAttrs,
+				LightingShaderVarying,
+				D3._FLUA_Shader_FDEF,
+				lconst
+				)
+
 			v:setConstant("lightPos",Shader.CFLOAT4,1,Lighting.light[1],Lighting.light[2],Lighting.light[3],1)
 			v:setConstant("ambient",Shader.CFLOAT,1,Lighting.light[4])
 			v:setConstant("cameraPos",Shader.CFLOAT4,1,Lighting.camera[1],Lighting.camera[2],Lighting.camera[3],1)
@@ -88,6 +112,18 @@ Lighting.getShader=function(code)
 		end
 	end
 	return Lighting._shaders[lcode],lcode
+end
+
+Lighting.prepareShader=function(v)
+  if D3._V_Shader then
+    if not Lighting._shaders[v] then
+      v:setConstant("lightPos",Shader.CFLOAT4,1,Lighting.light[1],Lighting.light[2],Lighting.light[3],1)
+      v:setConstant("ambient",Shader.CFLOAT,1,Lighting.light[4])
+      v:setConstant("cameraPos",Shader.CFLOAT4,1,Lighting.camera[1],Lighting.camera[2],Lighting.camera[3],1)
+      Lighting._shaders[v]=v
+    end
+  end
+  return Lighting._shaders[v],v
 end
 
 function Lighting.setLight(x,y,z,a)

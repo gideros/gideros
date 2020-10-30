@@ -137,6 +137,15 @@ function gen_GETGLOBAL(is,f,a,b,c,bc)
 	f._l[a]=mapGlobal(f,KStr(f.k[bc+1]))
 end
 
+local function genfunc(f,fg)
+	if fg.type=="func" and fg.funcnum and f.p[fg.funcnum] then
+		fg._fcode=f.p[fg.funcnum]
+		if f._handlers.SUBFUNC then
+			f._handlers.SUBFUNC(f,fg)
+		end
+	end
+end
+
 function gen_SETGLOBAL(is,f,a,b,c,bc)
 	mprint("_G["..KStr(f.k[bc+1]).."]=$"..a)
 	if f._l[a].type=="func" then
@@ -144,6 +153,7 @@ function gen_SETGLOBAL(is,f,a,b,c,bc)
 		assert(glf.type=="func",glf.value.." must be a function")
 		assert(f._l[a].funcnum,glf.value.." must be a local function")
 		glf.funcnum=f._l[a].funcnum
+		genfunc(f,glf)
 	else
 		outcode(f,mapGlobal(f,KStr(f.k[bc+1])).value.."="..f._l[a].value..";\n")
 	end
@@ -153,8 +163,8 @@ local function checkSwizzling(var,sw)
 	assert(#sw>0 and #sw<=4,"Swizzling pattern size issue:"..sw)
 	local vecType=var.vtype:sub(1,2)
 	local vecSize=tonumber(var.vtype:sub(3))
-	assert(vecSize,"Only vectors can be swizzled: "..var.vtype)
-	assert((vecType=="lF" or vecType=="hF" or vecType=="mF") and (vecSize>1) and (vecSize<=4),"Only vectors of float are supported when swizzling: "..var.vtype)
+	assert(vecSize,"Only vectors can be swizzled: "..var.vtype.."["..sw.."]")
+	assert((vecType=="lF" or vecType=="hF" or vecType=="mF") and (vecSize>1) and (vecSize<=4),"Only vectors of float are supported when swizzling: "..var.vtype.."["..sw.."]")
 	local comps="xyrgst"
 	if vecSize>2 then comps=comps.."zbp" end
 	if vecSize>3 then comps=comps.."waq" end
@@ -165,9 +175,16 @@ end
 function gen_GETTABLE(is,f,a,b,c,bc)
 	local idx=RKStr(f,c)
 	mprint("$"..a.."=$"..b.."["..idx.."]")
-	local newType=checkSwizzling(f._l[b],idx)
+	local bv,newType
+	if (c&0x100)>0 then
+		newType=checkSwizzling(f._l[b],idx)
 	--UGLY, this only handle swizzling, shader specific, and don't do any checks
-	local bv=f._l[b].value.."."..idx
+		bv=f._l[b].value.."."..idx
+	else
+		-- Assume integer lookup
+		bv=f._l[b].value.."["..f._l[c].value.."]"
+		newType=f._l[b].vtype
+	end
 	ensureLocalVar(f,a,newType)
 	outcode(f,f._l[a].value.."="..bv..";\n")
 	--f._l[a]={type=f._l[b].type,value=f._l[b].value.."."..idx,vtype=newType}
@@ -177,11 +194,17 @@ end
 function gen_SETTABLE(is,f,a,b,c,bc)
 	local idx=RKStr(f,b)
 	mprint("$"..a.."["..idx.."]".."=$"..c)
-	local newType=checkSwizzling(f._l[a],idx)
-	--UGLY, this only handle swizzling, shader specific, and don't do any checks
+	local bv,newType
 	assert(f._l[a].type=="var","Cannot set value of ("..f._l[a].value.."), a '"..f._l[a].type.."'")
+	if (b&0x100)>0 then
+		--UGLY, this only handle swizzling, shader specific, and don't do any checks
+		newType=checkSwizzling(f._l[a],idx)
 	--assert(f._l[a].vtype==newType,"Cannot set value of ("..f._l[a].value.."), type mismatch '"..f._l[a].vtype.."'!='"..newType.."'")
 	outcode(f,f._l[a].value.."."..idx.."="..KRVal(f,c).value..";\n")
+	else
+		--Assume integer index
+		outcode(f,f._l[a].value.."["..f._l[b].value.."]="..KRVal(f,c).value..";\n")
+	end
 end
 
 function gen_FORPREP(is,f,a,b,c,bc,sbc)
@@ -309,12 +332,38 @@ local function endblock(c,f)
 	outcode(f,"}\n")
 end
 
+local function elseblock(c,f)
+	outcode(f,"} else {\n")
+end
+
+local function  cond_end(f,lc)
+	local jis=f.code[lc-1]
+    local jcode=(jis&0x3F)()
+	local joff
+	if jcode==29 then --JMP
+		joff=((jis>>14)&0x3FFFF)()-131071
+		if joff==0 then joff=nil end
+	elseif jcode==2 then --LOADBOOL
+		local c=((jis>>14)&0x1FF)()
+		if c>0 then	joff=1 end
+	end
+	local cb=endblock
+	f._breaks[lc]=f._breaks[lc] or {}
+	if joff then
+		cb=elseblock
+		f._breaks[lc+joff]=f._breaks[lc+joff] or {}
+		table.insert(f._breaks[lc+joff],{ callback=endblock })
+	end
+	table.insert(f._breaks[lc],{ callback=cb })
+end
+
 function gen_compop(is,f,a,b,c,op,lc)
 	mprint("$"..a.."(comp)"..RKStr(f,b)..op..RKStr(f,c))
 	
 	local jis=f.code[lc+1]
     assert((jis&0x3F)()==29,"JMP expected after a conditional")
 	local joff=((jis>>14)&0x3FFFF)()-131071
+	mprint("JMP off:",joff,lc+2+joff)
 	f._lc=f._lc+1
 	local vb=KRVal(f,b)
 	local vc=KRVal(f,c)
@@ -322,9 +371,7 @@ function gen_compop(is,f,a,b,c,op,lc)
 	local terms="("..vb.value..op..vc.value..")"
 	local abool="false" if (a>0) then abool="true" end
 	outcode(f,"if (("..terms..")!="..abool..") {\n")
-	--f._breaks[lc+2]={ callback=endblock	}
-	f._breaks[lc+2+joff]=f._breaks[lc+2+joff] or {}
-	table.insert(f._breaks[lc+2+joff],{ callback=endblock })
+	cond_end(f,lc+2+joff)
 end
 
 function gen_EQ(is,f,a,b,c,bc,sbc,lc)
@@ -339,10 +386,48 @@ function gen_LE(is,f,a,b,c,bc,sbc,lc)
 	gen_compop(is,f,a,b,c,"<=",lc)
 end
 
+function gen_TEST(is,f,a,b,c,bc,sbc,lc)
+	mprint("$(test)"..RKStr(f,a)..","..c)
+	
+	local jis=f.code[lc+1]
+    assert((jis&0x3F)()==29,"JMP expected after a conditional")
+	local joff=((jis>>14)&0x3FFFF)()-131071
+	mprint("JMP off:",joff,lc+2+joff)
+	f._lc=f._lc+1
+	local vb=KRVal(f,a)
+	local abool="false" if (c>0) then abool="true" end
+	
+	if vb.type=="cvar" and vb.vtype=="BOOL" then
+		if vb.value==abool then
+			f._lc=lc+2+joff
+		else
+			outcode(f,"{\n")
+			f._breaks[lc+2+joff]=f._breaks[lc+2+joff] or {}
+			table.insert(f._breaks[lc+2+joff],{ callback=endblock })
+		end
+	else
+		local terms="("..vb.value..")"
+		outcode(f,"if (("..terms..")!="..abool..") {\n")
+		--f._breaks[lc+2]={ callback=endblock	}
+		cond_end(f,lc+2+joff)
+	end
+end
+
+
 function gen_LOADK(is,f,a,b,c,bc)
 mprint("$"..a.."="..KStr(f.k[bc+1]))
 	local v=KVal(f,bc)
-	f._l[a]={type="val",value=v.value, vtype="hF1"}
+	--f._l[a]={type="val",value=v.value, vtype="hF1"}	
+	ensureLocalVar(f,a,"hF1")
+	outcode(f,f._l[a].value.."="..v.value..";\n")
+end
+
+function gen_LOADBOOL(is,f,a,b,c,bc)
+	local v="true"
+	if (b==0) then v="false" end
+	mprint("$"..a.."="..v)
+	ensureLocalVar(f,a,"BOOL")
+	outcode(f,f._l[a].value.."="..v..";\n")
 end
 
 function gen_CLOSURE(is,f,a,b,c,bc)
@@ -372,6 +457,7 @@ function gen_CALL(is,f,a,b,c)
 	local fn=fname
 	local fne=f._l[a].evaluate
 	local fnr=f._l[a].rtype
+	local fnca=f._l[a].callarg
 	if c==2 then -- Return
 		assert(fnr,"Function '"..fn.."' return type not specified")
 		if tonumber(fnr) then 
@@ -386,12 +472,16 @@ function gen_CALL(is,f,a,b,c)
 		for p=1,b-1 do
 			args[p]=f._l[a+p]
 		end
-		outcode(f,fne(f._l[a],unpack(args))..";\n")
+		outcode(f,fne(f,f._l[a],unpack(args))..";\n")
 	else
 		outcode(f,fn.."(")
 		for p=1,b-1 do
 			outcode(f,f._l[a+p].value)
 			if p<(b-1) then outcode(f,",") end
+		end
+		if fnca and #fnca>0 then
+			if b>1 then outcode(f,",") end
+			outcode(f,fnca)
 		end
 		outcode(f,");\n")
 	end
@@ -419,6 +509,11 @@ assert(b<=2,"Multiple returns aren't allowed")
 	end
 end
 
+function gen_TAILCALL(is,f,a,b,c)
+	gen_CALL(is,f,a,b,c)
+	gen_RETURN(is,f,a,2,0)
+end
+
 local pcount=0
 local tcount=0
 local function processFunction(f)	
@@ -434,7 +529,7 @@ local function processFunction(f)
 					do c:callback(f,lc) 
 				end 
 			end
-			local is=f.code[lc] lc+=1
+			local is=f.code[lc]
 			local a=((is>>6)&0xFF)()
 			local c=((is>>14)&0x1FF)()
 			local b=((is>>23)&0x1FF)()
@@ -442,6 +537,7 @@ local function processFunction(f)
 			local op=(is&0x3F)()
 			local cn=codeName[op+1]
 			mprint(lc,cn,op,a,b,c,bc,bc-131071)
+			lc+=1
 			f._lc=lc
 			assert(_G["gen_"..cn],cn.." instruction isn't supported")
 			_G["gen_"..cn](is,f,a,b,c,bc,bc-131071,lc-1) --Add sbc with bias
@@ -470,12 +566,5 @@ function codegen(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 	--print("ProcessedCount",pcount,tcount)
 	--print("CODE:\n",f._hc..f._c)
 	
-	local inner={}
-	for _,fg in pairs(f._g) do 
-		if fg.type=="func" and fg.funcnum and f.p[fg.funcnum] then
-			fg._fcode=f.p[fg.funcnum]
-		end
-	end
-
 	return f._hc..f._c
 end
