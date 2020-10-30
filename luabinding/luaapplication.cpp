@@ -1042,8 +1042,14 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
     void *pool = application_->createAutounrefPool();
 
     lua_pushcnfunction(L, ::callFile, "callFile");
+    std::string chunkname=filename;
+    const char *suffix=".gideros_merged";
+    int filenamesz=chunkname.length();
+    int suffixlen=strlen(suffix);
+    if ((filenamesz>suffixlen)&&(!strcmp(suffix,filename+filenamesz-suffixlen)))
+    	chunkname.resize(filenamesz-suffixlen);
 
-    if (luaL_loadfile(L, filename))
+    if (luaL_loadfilenamed(L, filename, chunkname.c_str()))
 	{
 		if (exceptionsEnabled_ == true)
 		{
