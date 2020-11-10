@@ -454,7 +454,7 @@ void metalShaderEngine::setClip(int x, int y, int w, int h) {
 		if (x<0) { w+=x; x=0; }
 		if (y<0) { h+=y; y=0; }
 		if (x>tw) x=tw;
-		if (y>tw) y=th;
+		if (y>th) y=th;
 		if ((x+w)>tw) w=tw-x;
 		if ((y+h)>th) h=th-y;
         sr_.x=x;
