@@ -1,5 +1,10 @@
 #include "imgui_src/imgui.h"
 
+enum ImGuiWindowFlags_Extended
+{
+    ImGuiWindowFlags_FullScreen = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
+};
+
 enum ImGuiInputTextFlags_Extended
 {
     ImGuiInputTextFlags_NoBackground = 1 << 19

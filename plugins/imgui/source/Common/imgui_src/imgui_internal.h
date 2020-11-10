@@ -1,4 +1,4 @@
-// dear imgui, v1.79 WIP
+// dear imgui, v1.79
 // (internal structures/api)
 
 // You may use this file to debug, understand or extend ImGui features but we don't provide any guarantee of forward compatibility!
@@ -314,12 +314,18 @@ static inline ImVec4 operator*(const ImVec4& lhs, const ImVec4& rhs)            
 // Helpers: File System
 #ifdef IMGUI_DISABLE_FILE_FUNCTIONS
 #define IMGUI_DISABLE_DEFAULT_FILE_FUNCTIONS
-typedef void* ImFileHandle;
-static inline ImFileHandle  ImFileOpen(const char*, const char*)                    { return NULL; }
-static inline bool          ImFileClose(ImFileHandle)                               { return false; }
-static inline ImU64         ImFileGetSize(ImFileHandle)                             { return (ImU64)-1; }
-static inline ImU64         ImFileRead(void*, ImU64, ImU64, ImFileHandle)           { return 0; }
-static inline ImU64         ImFileWrite(const void*, ImU64, ImU64, ImFileHandle)    { return 0; }
+//typedef void* ImFileHandle;
+//static inline ImFileHandle  ImFileOpen(const char*, const char*)                    { return NULL; }
+//static inline bool          ImFileClose(ImFileHandle)                               { return false; }
+//static inline ImU64         ImFileGetSize(ImFileHandle)                             { return (ImU64)-1; }
+//static inline ImU64         ImFileRead(void*, ImU64, ImU64, ImFileHandle)           { return 0; }
+//static inline ImU64         ImFileWrite(const void*, ImU64, ImU64, ImFileHandle)    { return 0; }
+#include "gstdio.h"
+ImFileHandle ImFileOpen(const char* filename, const char* mode);
+bool ImFileClose(ImFileHandle f);
+ImU64 ImFileGetSize(ImFileHandle f);
+ImU64 ImFileRead(void* data, ImU64 sz, ImU64 count, ImFileHandle f);
+ImU64 ImFileWrite(const void* data, ImU64 sz, ImU64 count, ImFileHandle f);
 #endif
 #ifndef IMGUI_DISABLE_DEFAULT_FILE_FUNCTIONS
 typedef FILE* ImFileHandle;
@@ -777,7 +783,8 @@ enum ImGuiNavLayer
 enum ImGuiPopupPositionPolicy
 {
     ImGuiPopupPositionPolicy_Default,
-    ImGuiPopupPositionPolicy_ComboBox
+    ImGuiPopupPositionPolicy_ComboBox,
+    ImGuiPopupPositionPolicy_Tooltip
 };
 
 struct ImGuiDataTypeTempStorage
@@ -1496,9 +1503,8 @@ struct IMGUI_API ImGuiWindowTempData
 
     // Keyboard/Gamepad navigation
     ImGuiNavLayer           NavLayerCurrent;        // Current layer, 0..31 (we currently only use 0..1)
-    int                     NavLayerCurrentMask;    // = (1 << NavLayerCurrent) used by ItemAdd prior to clipping.
-    int                     NavLayerActiveMask;     // Which layer have been written to (result from previous frame)
-    int                     NavLayerActiveMaskNext; // Which layer have been written to (buffer for current frame)
+    int                     NavLayerActiveMask;     // Which layers have been written to (result from previous frame)
+    int                     NavLayerActiveMaskNext; // Which layers have been written to (accumulator for current frame)
     ImGuiID                 NavFocusScopeIdCurrent; // Current focus scope ID while appending
     bool                    NavHideHighlightOneFrame;
     bool                    NavHasScroll;           // Set when scrolling can be used (ScrollMax > 0.0f)
@@ -1543,7 +1549,6 @@ struct IMGUI_API ImGuiWindowTempData
 
         NavLayerActiveMask = NavLayerActiveMaskNext = 0x00;
         NavLayerCurrent = ImGuiNavLayer_Main;
-        NavLayerCurrentMask = (1 << ImGuiNavLayer_Main);
         NavFocusScopeIdCurrent = 0;
         NavHideHighlightOneFrame = false;
         NavHasScroll = false;
@@ -1702,7 +1707,8 @@ enum ImGuiTabBarFlagsPrivate_
 // Extend ImGuiTabItemFlags_
 enum ImGuiTabItemFlagsPrivate_
 {
-    ImGuiTabItemFlags_NoCloseButton             = 1 << 20   // Track whether p_open was set or not (we'll need this info on the next frame to recompute ContentWidth during layout)
+    ImGuiTabItemFlags_NoCloseButton             = 1 << 20,  // Track whether p_open was set or not (we'll need this info on the next frame to recompute ContentWidth during layout)
+    ImGuiTabItemFlags_Button                    = 1 << 21   // Used by TabItemButton, change the tab item behavior to mimic a button
 };
 
 // Storage for one active tab item (sizeof() 28~32 bytes)
@@ -1714,12 +1720,13 @@ struct ImGuiTabItem
     int                 LastFrameSelected;      // This allows us to infer an ordered list of the last activated tabs with little maintenance
     float               Offset;                 // Position relative to beginning of tab
     float               Width;                  // Width currently displayed
-    float               ContentWidth;           // Width of actual contents, stored during BeginTabItem() call
+    float               ContentWidth;           // Width of label, stored during BeginTabItem() call
     ImS16               NameOffset;             // When Window==NULL, offset to name within parent ImGuiTabBar::TabsNames
     ImS8                BeginOrder;             // BeginTabItem() order, used to re-order tabs after toggling ImGuiTabBarFlags_Reorderable
+    ImS8                IndexDuringLayout;      // Index only used during TabBarLayout()
     bool                WantClose;              // Marked as closed by SetTabItemClosed()
 
-    ImGuiTabItem()      { ID = 0; Flags = ImGuiTabItemFlags_None; LastFrameVisible = LastFrameSelected = -1; NameOffset = -1; Offset = Width = ContentWidth = 0.0f; BeginOrder = -1; WantClose = false; }
+    ImGuiTabItem()      { ID = 0; Flags = ImGuiTabItemFlags_None; LastFrameVisible = LastFrameSelected = -1; NameOffset = -1; Offset = Width = ContentWidth = 0.0f; BeginOrder = -1; IndexDuringLayout = -1; WantClose = false; }
 };
 
 // Storage for a tab bar (sizeof() 92~96 bytes)
@@ -1736,17 +1743,19 @@ struct ImGuiTabBar
     float               LastTabContentHeight;   // Record the height of contents submitted below the tab bar
     float               WidthAllTabs;           // Actual width of all tabs (locked during layout)
     float               WidthAllTabsIdeal;      // Ideal width if all tabs were visible and not clipped
-    float               OffsetNextTab;          // Distance from BarRect.Min.x, incremented with each BeginTabItem() call, not used if ImGuiTabBarFlags_Reorderable if set.
     float               ScrollingAnim;
     float               ScrollingTarget;
     float               ScrollingTargetDistToVisibility;
     float               ScrollingSpeed;
+    float               ScrollingRectMinX;
+    float               ScrollingRectMaxX;
     ImGuiTabBarFlags    Flags;
     ImGuiID             ReorderRequestTabId;
     ImS8                ReorderRequestDir;
     ImS8                TabsActiveCount;        // Number of tabs submitted this frame.
     bool                WantLayout;
     bool                VisibleTabWasSubmitted;
+    bool                TabsAddedNew;           // Set to true when a new tab item or button has been added to the tab bar during last frame
     short               LastTabItemIdx;         // Index of last BeginTabItem() tab for use by EndTabItem() 
     ImVec2              FramePadding;           // style.FramePadding locked at the time of BeginTabBar()
     ImGuiTextBuffer     TabsNames;              // For non-docking tab bar we re-append names in a contiguous buffer.
@@ -1846,6 +1855,7 @@ namespace ImGui
     IMGUI_API void          KeepAliveID(ImGuiID id);
     IMGUI_API void          MarkItemEdited(ImGuiID id);     // Mark data associated to given item as "edited", used by IsItemDeactivatedAfterEdit() function.
     IMGUI_API void          PushOverrideID(ImGuiID id);     // Push given value as-is at the top of the ID stack (whereas PushID combines old and new hashes)
+    IMGUI_API ImGuiID       GetIDWithSeed(const char* str_id_begin, const char* str_id_end, ImGuiID seed);
 
     // Basic Helpers for widget code
     IMGUI_API void          ItemSize(const ImVec2& size, float text_baseline_y = -1.0f);
@@ -1879,7 +1889,7 @@ namespace ImGui
     IMGUI_API void          BeginTooltipEx(ImGuiWindowFlags extra_flags, ImGuiTooltipFlags tooltip_flags);
     IMGUI_API ImGuiWindow*  GetTopMostPopupModal();
     IMGUI_API ImVec2        FindBestWindowPosForPopup(ImGuiWindow* window);
-    IMGUI_API ImVec2        FindBestWindowPosForPopupEx(const ImVec2& ref_pos, const ImVec2& size, ImGuiDir* last_dir, const ImRect& r_outer, const ImRect& r_avoid, ImGuiPopupPositionPolicy policy = ImGuiPopupPositionPolicy_Default);
+    IMGUI_API ImVec2        FindBestWindowPosForPopupEx(const ImVec2& ref_pos, const ImVec2& size, ImGuiDir* last_dir, const ImRect& r_outer, const ImRect& r_avoid, ImGuiPopupPositionPolicy policy);
 
     // Gamepad/Keyboard Navigation
     IMGUI_API void          NavInitWindow(ImGuiWindow* window, bool force_reinit);

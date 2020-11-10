@@ -5,47 +5,8 @@
 #endif
 
 #include "imgui_src/imgui.h"
-#include "imgui_src/imgui_internal.h"
-
-static const ImGuiDataTypeInfo GDataTypeInfo[] =
-{
-    { sizeof(char),             "%d",   "%d"    },  // ImGuiDataType_S8
-    { sizeof(unsigned char),    "%u",   "%u"    },
-    { sizeof(short),            "%d",   "%d"    },  // ImGuiDataType_S16
-    { sizeof(unsigned short),   "%u",   "%u"    },
-    { sizeof(int),              "%d",   "%d"    },  // ImGuiDataType_S32
-    { sizeof(unsigned int),     "%u",   "%u"    },
-#ifdef _MSC_VER
-    { sizeof(ImS64),            "%I64d","%I64d" },  // ImGuiDataType_S64
-    { sizeof(ImU64),            "%I64u","%I64u" },
-#else
-    { sizeof(ImS64),            "%lld", "%lld"  },  // ImGuiDataType_S64
-    { sizeof(ImU64),            "%llu", "%llu"  },
-#endif
-    { sizeof(float),            "%f",   "%f"    },  // ImGuiDataType_Float (float are promoted to double in va_arg)
-    { sizeof(double),           "%f",   "%lf"   },  // ImGuiDataType_Double
-};
-
-static const char* PatchFormatStringFloatToInt(const char* fmt)
-{
-    if (fmt[0] == '%' && fmt[1] == '.' && fmt[2] == '0' && fmt[3] == 'f' && fmt[4] == 0) // Fast legacy path for "%.0f" which is expected to be the most common case.
-        return "%d";
-    const char* fmt_start = ImParseFormatFindStart(fmt);    // Find % (if any, and ignore %%)
-    const char* fmt_end = ImParseFormatFindEnd(fmt_start);  // Find end of format specifier, which itself is an exercise of confidence/recklessness (because snprintf is dependent on libc or user).
-    if (fmt_end > fmt_start && fmt_end[-1] == 'f')
-    {
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-        if (fmt_start == fmt && fmt_end[0] == 0)
-            return "%d";
-        ImGuiContext& g = *GImGui;
-        ImFormatString(g.TempBuffer, IM_ARRAYSIZE(g.TempBuffer), "%.*s%%d%s", (int)(fmt_start - fmt), fmt, fmt_end); // Honor leading and trailing decorations, but lose alignment/precision.
-        return g.TempBuffer;
-#else
-        IM_ASSERT(0 && "DragInt(): Invalid format string!"); // Old versions used a default parameter of "%.0f", please replace with e.g. "%d"
-#endif
-    }
-    return fmt;
-}
+//#include "imgui_src/imgui_internal.h"
+#include "imgui_src/imgui_widgets.cpp"
 
 namespace ImGui
 {
@@ -99,7 +60,7 @@ namespace ImGui
         if (temp_input_is_active)
         {
             // Only clamp CTRL+Click input when ImGuiSliderFlags_ClampInput is set
-            const bool is_clamp_input = (flags & ImGuiSliderFlags_ClampOnInput) != 0;
+            const bool is_clamp_input = (flags & ImGuiSliderFlags_AlwaysClamp) != 0;
             return TempInputScalar(frame_bb, id, label, data_type, p_data, format, is_clamp_input ? p_min : NULL, is_clamp_input ? p_max : NULL);
         }
 
