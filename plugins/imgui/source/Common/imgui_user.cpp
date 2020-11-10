@@ -5,8 +5,56 @@
 #endif
 
 #include "imgui_src/imgui.h"
-//#include "imgui_src/imgui_internal.h"
-#include "imgui_src/imgui_widgets.cpp"
+#include "imgui_src/imgui_internal.h"
+//#include "imgui_src/imgui_widgets.cpp"
+
+//=============== CODE BORROWED FROM IMGUI_WIDGETS.CPP
+static const ImGuiDataTypeInfo GDataTypeInfo[] =
+{
+    { sizeof(char),             "S8",   "%d",   "%d"    },  // ImGuiDataType_S8
+    { sizeof(unsigned char),    "U8",   "%u",   "%u"    },
+    { sizeof(short),            "S16",  "%d",   "%d"    },  // ImGuiDataType_S16
+    { sizeof(unsigned short),   "U16",  "%u",   "%u"    },
+    { sizeof(int),              "S32",  "%d",   "%d"    },  // ImGuiDataType_S32
+    { sizeof(unsigned int),     "U32",  "%u",   "%u"    },
+#ifdef _MSC_VER
+    { sizeof(ImS64),            "S64",  "%I64d","%I64d" },  // ImGuiDataType_S64
+    { sizeof(ImU64),            "U64",  "%I64u","%I64u" },
+#else
+    { sizeof(ImS64),            "S64",  "%lld", "%lld"  },  // ImGuiDataType_S64
+    { sizeof(ImU64),            "U64",  "%llu", "%llu"  },
+#endif
+    { sizeof(float),            "float", "%f",  "%f"    },  // ImGuiDataType_Float (float are promoted to double in va_arg)
+    { sizeof(double),           "double","%f",  "%lf"   },  // ImGuiDataType_Double
+};
+IM_STATIC_ASSERT(IM_ARRAYSIZE(GDataTypeInfo) == ImGuiDataType_COUNT);
+
+// FIXME-LEGACY: Prior to 1.61 our DragInt() function internally used floats and because of this the compile-time default value for format was "%.0f".
+// Even though we changed the compile-time default, we expect users to have carried %f around, which would break the display of DragInt() calls.
+// To honor backward compatibility we are rewriting the format string, unless IMGUI_DISABLE_OBSOLETE_FUNCTIONS is enabled. What could possibly go wrong?!
+static const char* PatchFormatStringFloatToInt(const char* fmt)
+{
+    if (fmt[0] == '%' && fmt[1] == '.' && fmt[2] == '0' && fmt[3] == 'f' && fmt[4] == 0) // Fast legacy path for "%.0f" which is expected to be the most common case.
+        return "%d";
+    const char* fmt_start = ImParseFormatFindStart(fmt);    // Find % (if any, and ignore %%)
+    const char* fmt_end = ImParseFormatFindEnd(fmt_start);  // Find end of format specifier, which itself is an exercise of confidence/recklessness (because snprintf is dependent on libc or user).
+    if (fmt_end > fmt_start && fmt_end[-1] == 'f')
+    {
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+        if (fmt_start == fmt && fmt_end[0] == 0)
+            return "%d";
+        ImGuiContext& g = *GImGui;
+        ImFormatString(g.TempBuffer, IM_ARRAYSIZE(g.TempBuffer), "%.*s%%d%s", (int)(fmt_start - fmt), fmt, fmt_end); // Honor leading and trailing decorations, but lose alignment/precision.
+        return g.TempBuffer;
+#else
+        IM_ASSERT(0 && "DragInt(): Invalid format string!"); // Old versions used a default parameter of "%.0f", please replace with e.g. "%d"
+#endif
+    }
+    return fmt;
+}
+
+//END OF BORROWED CODE
+
 
 namespace ImGui
 {
