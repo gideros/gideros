@@ -98,6 +98,7 @@ MovieClipBinder::MovieClipBinder(lua_State* L)
 		{"setReverseAction", setReverseAction},
 		{"clearAction", clearAction},
 		{"getFrame", getFrame},
+		{"isPlaying", isPlaying},
 		{NULL, NULL},
 	};
 
