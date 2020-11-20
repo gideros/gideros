@@ -1299,7 +1299,7 @@ void r3dDebugDraw::doDraw(const CurrentTransform& , float _UNUSED(sx), float _UN
 		bool wireframe=true;
 		DebugRenderer& dr = world_->getDebugRenderer();
 	    ShaderEngine* engine=gtexture_get_engine();
-	    ShaderProgram* shp=engine->getDefault(ShaderEngine::STDP_COLOR);
+	    ShaderProgram* shp=engine->getDefault(ShaderEngine::STDP_COLOR,ShaderEngine::STDPV_3D);
 		size_t nt=dr.getNbTriangles();
 		size_t nl=dr.getNbLines();
 		size_t ntv=wireframe?0:nt*3;

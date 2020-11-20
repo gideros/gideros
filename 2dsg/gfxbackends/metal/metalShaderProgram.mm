@@ -187,7 +187,8 @@ void metalShaderProgram::useProgram() {
             [mrps[pkey] retain];
     }
 
-    [encoder() setRenderPipelineState:mrps[pkey]];
+    if (mrps[pkey]!=nil)
+        [encoder() setRenderPipelineState:mrps[pkey]];
 }
 
 void metalShaderProgram::setData(int index, DataType type, int mult,
