@@ -1292,7 +1292,22 @@ int SpriteBinder::isVisible(lua_State* L)
 	
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-
+	
+	bool recursiveCheck = lua_toboolean(L, 2);
+	
+	if (recursiveCheck)
+	{
+		Sprite* parent = sprite->parent();
+		while (parent)
+		{
+			if (!parent->visible()) 
+			{
+				lua_pushboolean(L, false);
+				return 1;
+			}
+			parent = parent->parent();
+		}
+	}
 	lua_pushboolean(L, sprite->visible());
 
 	return 1;
