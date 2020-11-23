@@ -98,6 +98,7 @@ MovieClipBinder::MovieClipBinder(lua_State* L)
 		{"setReverseAction", setReverseAction},
 		{"clearAction", clearAction},
 		{"getFrame", getFrame},
+		{"isPlaying", isPlaying},
 		{NULL, NULL},
 	};
 
@@ -418,6 +419,18 @@ int MovieClipBinder::getFrame(lua_State* L)
 
 	int frame=movieclip->getFrame();
 	lua_pushinteger(L,frame);
+
+	return 1;
+}
+
+int MovieClipBinder::isPlaying(lua_State* L)
+{
+	StackChecker checker(L, "MovieClipBinder::isPlaying", 1);
+
+	Binder binder(L);
+	MovieClip* movieclip = static_cast<MovieClip*>(binder.getInstance("MovieClip", 1));
+
+	lua_pushboolean(L,movieclip->isPlaying());
 
 	return 1;
 }

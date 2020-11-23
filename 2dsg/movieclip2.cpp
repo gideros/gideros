@@ -1301,6 +1301,11 @@ int MovieClip::getFrame()
 	return frame_;
 }
 
+bool MovieClip::isPlaying()
+{
+	return playing_;
+}
+
 void MovieClip::addChild2(Sprite* sprite)
 {
 	std::map<Sprite*, int>::iterator iter = counts_.find(sprite);

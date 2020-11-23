@@ -99,6 +99,7 @@ public:
 	void gotoAndPlay(int frame, bool reverse);
 	void gotoAndStop(int frame);
 	int getFrame();
+	bool isPlaying();
 
 protected:
 	struct Frame
