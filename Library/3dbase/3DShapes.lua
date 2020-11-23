@@ -289,7 +289,15 @@ function Cylinder:getCollisionShape()
 	return self._r3dshape
 end
 
+local Group3D=Core.class(Sprite)
+function Group3D:updateMode(set,clear)
+      for _,v in pairs(self.objs) do
+              v:updateMode(set,clear)
+      end
+end
+
 D3=D3 or {}
+D3.Group=Group3D
 D3.Mesh=Mesh3D
 D3.Cube=Box
 D3.Sphere=Sphere
