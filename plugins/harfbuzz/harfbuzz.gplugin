@@ -18,23 +18,10 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/harfbuzz</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
-   <mkdir>AppleTV/Plugins/harfbuzz</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("harfbuzz","Plugins/harfbuzz","GroupHarfBuzz_ios","GroupPlugins_ios")
-iOSProject.addGroup("harfbuzz","harfbuzz","GroupHarfBuzz_atv","GroupPlugins_atv")
-iOSProject.addSources({ "Plugins/libharfbuzz.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libharfbuzz.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("harfbuzz","harfbuzz",true,true,true)
 	]]></lua>
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(harfbuzz) "/>
-        </replacelist>
-    </template>
  </target>
  <target name="Html5">
  	<lua>

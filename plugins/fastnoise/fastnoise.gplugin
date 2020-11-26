@@ -18,18 +18,13 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/fastnoise</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/fastnoise" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <mkdir>AppleTV/Plugins/fastnoise</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/fastnoise" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-	<lua><![CDATA[
+ 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("fastnoise","Plugins/fastnoise","GroupFastnoise_ios","GroupPlugins_ios")
-iOSProject.addGroup("fastnoise","Plugins/fastnoise","GroupFastnoise_atv","GroupPlugins_atv")
-local sources={ "fastnoise.cpp"  }
-iOSProject.addSources(sources, "GroupFastnoise", "ios")
-iOSProject.addSources(sources, "GroupFastnoise", "atv")
-iOSProject.commit()
+iOSProject.exportPluginFiles("fastnoise",
+	"[[[sys.pluginDir]]]/source",
+	{ "FastNoise.cpp", "FastNoiseBinding..cpp"  },
+	false,
+	true,true,true)
 	]]></lua>
  </target>
  <target name="Html5">

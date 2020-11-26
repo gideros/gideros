@@ -18,23 +18,10 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/gsfxr</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
-   <mkdir>AppleTV/Plugins/gsfxr</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
-	<lua><![CDATA[
+ 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("gsfxr","Plugins/gsfxr","GroupGsfxr_ios","GroupPlugins_ios")
-iOSProject.addGroup("gsfxr","gsfxr","GroupGsfxr_atv","GroupPlugins_atv")
-iOSProject.addSources({ "Plugins/libgsfxr.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libgsfxr.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("gsfxr","Gsfxr",true,true,true)
 	]]></lua>
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Gsfxr) "/>
-        </replacelist>
-    </template>
  </target>
  <target name="Html5">
  	<lua>require("Tools/export_html5").export("Gsfxr")</lua>

@@ -7,7 +7,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("gamekit",
 	"[[[sys.pluginDir]]]/source/iOS",
 	{ "gamekit.mm" },
-	true,false)
+	false,
+	true,true,false)
 	]]></lua>
  </target>
 </plugin>

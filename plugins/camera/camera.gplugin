@@ -56,33 +56,13 @@
     </template>
  </target>
  <target name="iOS">
+ 	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportBinaryPlugin("camera","Camera",true,false,false)
+	]]></lua>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/iOS" dest="[[[project.name]]]/Plugins" />
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Camera) "/>
-        </replacelist>
-    </template>
    <template name="Project" path="">
         <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.name]]]-Info.plist">
-            <prepend>
-            	<orig>/* End PBXFileReference section */</orig>
-            	<by><![CDATA[
-		000000001BAC10CC005599BD = {isa = PBXBuildFile; fileRef = 000000011BAC10CC005599BD ; };
-		000000011BAC10CC005599BD = {isa = PBXFileReference; lastKnownFileType = archive.ar; name=libcamera.ios.a; path = [[[project.name]]]/Plugins/libcamera.ios.a; sourceTree = "<group>"; };
-            	]]></by>
-            </prepend>
-            <prepend>
-            	<orig>5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */,</orig>
-            	<by><![CDATA[
-		000000001BAC10CC005599BD,
-            	]]></by>
-            </prepend>
-            <prepend>
-            	<orig>5FD896EB15CED77F00D34824 /* UIKit.framework */,</orig>
-            	<by><![CDATA[
-		000000011BAC10CC005599BD,
-            	]]></by>
-            </prepend>
 	    <prepend>
     		<orig>//GIDEROS-TAG-IOS:PREDRAW//</orig>
 		<by>cameraplugin_render(); </by>

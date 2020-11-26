@@ -18,20 +18,9 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/spine</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a"/>
-   <mkdir>AppleTV/Plugins/spine</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(spine) "/>
-        </replacelist>
-    </template>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addSources({ "Plugins/libspine.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libspine.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("spine","spine",true,true,true)
 	]]></lua>
  </target>
  <target name="Html5">

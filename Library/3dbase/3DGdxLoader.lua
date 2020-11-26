@@ -127,7 +127,7 @@ function loadGdx(file,imtls)
 	root.bones=bones
 	root.animations=gdx.animations
     for _,mat in ipairs(gdx.materials or {}) do
-	   local md={}
+	   local md=mtls[mat.id] or {}
 	   md.kd=mat.diffuse
 	   mtls[mat.id]=md
     end

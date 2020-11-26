@@ -60,7 +60,8 @@ iOSProject.exportPluginFiles("controller",
 	{ "controller.h","controller.mm", "GController.h","GController.mm", "GControllerManager.h","GControllerManager.mm",
 	  "controllerbinder.cpp","ControllerProtocol.h", "iCadeState.h", "iCadeReaderView.h", "iCadeReaderView.m", 
 	  "GControllerIcade.h","GControllerIcade.m", "GControllerDefault.h","GControllerDefault.m" },
-	true,true)
+	false,
+	true,true,true)
 	]]></lua>
  </target>
   <target name="Win32">

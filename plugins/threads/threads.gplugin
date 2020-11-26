@@ -22,20 +22,9 @@
  </target>
 
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/threads</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a"/>
-   <mkdir>AppleTV/Plugins/threads</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(threads) "/>
-        </replacelist>
-    </template>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addSources({ "Plugins/libthreads.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libthreads.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("threads","threads",true,true,true)
 	]]></lua>
  </target>
 

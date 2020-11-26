@@ -7,7 +7,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("mficontroller",
 	"[[[sys.pluginDir]]]/source/iOS",
 	{ "mficontroller.mm" },
-	true,true)
+	false,
+	true,true,false)
 	]]></lua>
  </target>
 </plugin>
