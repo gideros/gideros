@@ -255,11 +255,6 @@
 		EB66822223D1C339001A43F5 /* bufferbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB66822123D1C339001A43F5 /* bufferbinder.cpp */; };
 		EB7A5EA51C9BE7D70068EFCA /* viewportbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */; };
 		EB7A5EA71C9BE8080068EFCA /* viewport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA61C9BE8080068EFCA /* viewport.cpp */; };
-		EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */; };
-		EB82BDCF1B29606C00281732 /* gl2ShaderEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */; };
-		EB82BDD01B29606C00281732 /* gl2ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */; };
-		EB82BDD11B29606C00281732 /* gl2Shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EB82BDC51B29606C00281732 /* gl2Shaders.h */; };
-		EB82BDD21B29606C00281732 /* gl2ShaderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */; };
 		EB82BDD31B29606C00281732 /* Shaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC71B29606C00281732 /* Shaders.cpp */; };
 		EB82BDD41B29606C00281732 /* Shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EB82BDC81B29606C00281732 /* Shaders.h */; };
 		EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDD51B305E2F00281732 /* shaderbinder.cpp */; };
@@ -268,7 +263,7 @@
 		EBB07718220AD76000611085 /* giderosShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EBB07716220AD75F00611085 /* giderosShaders.metal */; };
 		EBB07719220AD76000611085 /* pathShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EBB07717220AD76000611085 /* pathShaders.metal */; };
 		EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */; };
-		EBD254CA1ADD149000CC57FA /* gmathbbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57FA /* gmathbinder.cpp */; };
+		EBD254CA1ADD149000CC57FA /* gmathbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57FA /* gmathbinder.cpp */; };
 		EBD8CA441B903A50002F9D6C /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C95E1B903A4F002F9D6C /* common.h */; };
 		EBD8CA451B903A50002F9D6C /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C95F1B903A4F002F9D6C /* control.c */; };
 		EBD8CA461B903A50002F9D6C /* dataio.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9601B903A4F002F9D6C /* dataio.c */; };
@@ -323,7 +318,6 @@
 		EBD9AC751B99EEF2006C8316 /* path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC6A1B99EEF2006C8316 /* path.cpp */; };
 		EBD9AC761B99EEF2006C8316 /* path.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC6B1B99EEF2006C8316 /* path.h */; };
 		EBD9AC7B1B99EEF2006C8316 /* svg-path.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC701B99EEF2006C8316 /* svg-path.h */; };
-		EBD9AC7D1B99EF35006C8316 /* gl2PathShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */; };
 		EBD9AC7F1B99EF5A006C8316 /* path2dbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */; };
 		EBE2FCF123D1E79E00FC43D2 /* gaudio-loader-mp3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBE2FCF023D1E79D00FC43D2 /* gaudio-loader-mp3.cpp */; };
 		EBE2FF9723D1FABB00FC43D2 /* icy.c in Sources */ = {isa = PBXBuildFile; fileRef = EBE2FF6023D1FAAF00FC43D2 /* icy.c */; };
@@ -642,11 +636,6 @@
 		EB66822123D1C339001A43F5 /* bufferbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bufferbinder.cpp; path = ../../luabinding/bufferbinder.cpp; sourceTree = "<group>"; };
 		EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewportbinder.cpp; path = ../../luabinding/viewportbinder.cpp; sourceTree = "<group>"; };
 		EB7A5EA61C9BE8080068EFCA /* viewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewport.cpp; path = ../../2dsg/viewport.cpp; sourceTree = "<group>"; };
-		EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderBuffer.cpp; sourceTree = "<group>"; };
-		EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderEngine.cpp; sourceTree = "<group>"; };
-		EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderProgram.cpp; sourceTree = "<group>"; };
-		EB82BDC51B29606C00281732 /* gl2Shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gl2Shaders.h; sourceTree = "<group>"; };
-		EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderTexture.cpp; sourceTree = "<group>"; };
 		EB82BDC71B29606C00281732 /* Shaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shaders.cpp; sourceTree = "<group>"; };
 		EB82BDC81B29606C00281732 /* Shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shaders.h; sourceTree = "<group>"; };
 		EB82BDD51B305E2F00281732 /* shaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shaderbinder.cpp; path = ../../luabinding/shaderbinder.cpp; sourceTree = "<group>"; };
@@ -711,7 +700,6 @@
 		EBD9AC6A1B99EEF2006C8316 /* path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = path.cpp; sourceTree = "<group>"; };
 		EBD9AC6B1B99EEF2006C8316 /* path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = path.h; sourceTree = "<group>"; };
 		EBD9AC701B99EEF2006C8316 /* svg-path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "svg-path.h"; sourceTree = "<group>"; };
-		EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2PathShaders.cpp; sourceTree = "<group>"; };
 		EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = path2dbinder.cpp; path = ../../luabinding/path2dbinder.cpp; sourceTree = "<group>"; };
 		EBE2FCF023D1E79D00FC43D2 /* gaudio-loader-mp3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gaudio-loader-mp3.cpp"; path = "../../../libgid/src/gaudio-loader-mp3.cpp"; sourceTree = "<group>"; };
 		EBE2FF6023D1FAAF00FC43D2 /* icy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = icy.c; path = "../../../libgid/external/mpg123-1.15.3/src/libmpg123/icy.c"; sourceTree = "<group>"; };
@@ -1211,25 +1199,11 @@
 			isa = PBXGroup;
 			children = (
 				EBE67D4B22030D6A00CDC0A0 /* metal */,
-				EB82BDC11B29606C00281732 /* gl2 */,
 				EB82BDC71B29606C00281732 /* Shaders.cpp */,
 				EB82BDC81B29606C00281732 /* Shaders.h */,
 			);
 			name = gfxbackends;
 			path = ../../2dsg/gfxbackends;
-			sourceTree = "<group>";
-		};
-		EB82BDC11B29606C00281732 /* gl2 */ = {
-			isa = PBXGroup;
-			children = (
-				EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */,
-				EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */,
-				EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */,
-				EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */,
-				EB82BDC51B29606C00281732 /* gl2Shaders.h */,
-				EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */,
-			);
-			path = gl2;
 			sourceTree = "<group>";
 		};
 		EBD8C95C1B9039DB002F9D6C /* libxmp-4.3 */ = {
@@ -1407,7 +1381,6 @@
 				EBD8CAF81B903A50002F9D6C /* s3m.h in Headers */,
 				EBE2FF9F23D1FABB00FC43D2 /* reader.h in Headers */,
 				EBE2FFB623D1FABB00FC43D2 /* icy.h in Headers */,
-				EB82BDD11B29606C00281732 /* gl2Shaders.h in Headers */,
 				EBE2FFA823D1FABB00FC43D2 /* dither.h in Headers */,
 				EBD8CAB61B903A50002F9D6C /* mod.h in Headers */,
 				EBD8CB111B903A50002F9D6C /* memio.h in Headers */,
@@ -1599,7 +1572,6 @@
 				5F0CD89B15BB112300479287 /* jdpostct.c in Sources */,
 				5F0CD89C15BB112300479287 /* jdsample.c in Sources */,
 				5F0CD89D15BB112300479287 /* jdtrans.c in Sources */,
-				EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */,
 				EBD8CAF91B903A50002F9D6C /* s3m_load.c in Sources */,
 				5F0CD89E15BB112300479287 /* jerror.c in Sources */,
 				5F0CD89F15BB112300479287 /* jfdctflt.c in Sources */,
@@ -1618,7 +1590,6 @@
 				5F0CD91015BB492A00479287 /* ftbbox.c in Sources */,
 				5F0CD91215BB493200479287 /* ftbitmap.c in Sources */,
 				5F0CD91415BB493B00479287 /* ftglyph.c in Sources */,
-				EB82BDD01B29606C00281732 /* gl2ShaderProgram.cpp in Sources */,
 				5F0CD91615BB494600479287 /* ftlcdfil.c in Sources */,
 				5F0CD91815BB495000479287 /* ftstroke.c in Sources */,
 				5FE658B318FBF0FB001D8EE3 /* gzwrite.c in Sources */,
@@ -1719,7 +1690,6 @@
 				5F321F0A15BBC3FC00542289 /* tttextfield.cpp in Sources */,
 				EBD8CAFA1B903A50002F9D6C /* sample.c in Sources */,
 				EBD8CB121B903A50002F9D6C /* mix_all.c in Sources */,
-				EBD9AC7D1B99EF35006C8316 /* gl2PathShaders.cpp in Sources */,
 				5F321F0C15BBC3FC00542289 /* urlrequest.cpp in Sources */,
 				5F321F1815BBC47500542289 /* dict.c in Sources */,
 				5F321F1915BBC47500542289 /* geom.c in Sources */,
@@ -1791,7 +1761,6 @@
 				5F321F6715BBEB3200542289 /* tilemapbinder.cpp in Sources */,
 				5F321F6815BBEB3200542289 /* timerbinder.cpp in Sources */,
 				5F321F6915BBEB3200542289 /* ttfontbinder.cpp in Sources */,
-				EB82BDCF1B29606C00281732 /* gl2ShaderEngine.cpp in Sources */,
 				EB7A5EA51C9BE7D70068EFCA /* viewportbinder.cpp in Sources */,
 				5F321F6C15BBEB5F00542289 /* ginput-ios.mm in Sources */,
 				5F321F7615BBF2E100542289 /* giderosapi.mm in Sources */,
@@ -1829,7 +1798,6 @@
 				5F01040A1776F857002E6C6E /* rendertargetbinder.cpp in Sources */,
 				EBE2FFB523D1FABB00FC43D2 /* format.c in Sources */,
 				5F0B588817A0663000E3668E /* completeevent.cpp in Sources */,
-				EB82BDD21B29606C00281732 /* gl2ShaderTexture.cpp in Sources */,
 				5FB68B761833C32A00D552A7 /* luautil.cpp in Sources */,
 				EBD8CA7E1B903A50002F9D6C /* lfo.c in Sources */,
 			);

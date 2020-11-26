@@ -4,8 +4,9 @@
 #include <glog.h>
 #include <gapplication.h>
 #include <AVFoundation/AVFoundation.h>
-#include <UIKit/UIKit.h>
-
+#if !TARGET_OS_OSX
+#import <UIKit/UIKit.h>
+#endif
 
 #define BUFFER_COUNT 4
     
@@ -56,7 +57,11 @@ class GMicrophoneManager
 public:
     GMicrophoneManager()
     {
+#if !TARGET_OS_OSX
         active_ = [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
+#else
+        active_ = true;
+#endif
 
         microphoneCount_ = 0;
         currentAudioSessionCategory_ = nil;
@@ -377,9 +382,11 @@ private:
         
         if (++microphoneCount_ == 1)
         {
+#if !TARGET_OS_OSX
             AVAudioSession *audioSession = [AVAudioSession sharedInstance];
             currentAudioSessionCategory_ = audioSession.category;
             [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+#endif
         }
 
         for (int i = 0; i < BUFFER_COUNT; ++i)
@@ -407,7 +414,9 @@ private:
 
         if (--microphoneCount_ == 0)
         {
+#if !TARGET_OS_OSX
             [[AVAudioSession sharedInstance] setCategory:currentAudioSessionCategory_ error:nil];
+#endif
         }
     }
 };

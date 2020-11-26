@@ -117,7 +117,7 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtLinux.mk
 else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidiOS.mk
-include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidMac.mk
+#include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidMac.mk
 endif
 endif
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidHtml5.mk
