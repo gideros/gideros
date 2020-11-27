@@ -17,7 +17,7 @@ iOSProject.insertPoints={
   -- Build refs
   Frameworks_ios={ tag="5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */,", data={}},
   Frameworks_atv={ tag="B2E3EFD61BAC117B005599BD /* UIKit.framework in Frameworks */,", data={}},
-  --Frameworks_mac={ tag="B2E3EFD61BAC117B005599BD /* UIKit.framework in Frameworks */,", data={}},
+  Frameworks_mac={ tag="033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */,", data={}},
   SourceBuild_ios={ tag="EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,", data={}},
   SourceBuild_atv={ tag="EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */,", data={}},
   SourceBuild_mac={ tag="033BD45D256FA72E0059695F /* plugins.cpp in Sources */,", data={}},  
@@ -222,28 +222,25 @@ end
 function iOSProject.exportBinaryPlugin(name,sym,for_ios,for_atv,for_mac)
 local srcdir="[[[sys.pluginDir]]]/bin/iOS"
   if for_ios then
-    local tgtDir=Export.getProperty("project.name").."/Plugins/"..name
+    local tgtDir=Export.getProperty("project.name").."/Plugins"
     if not existing then Export.mkdir(tgtDir) end
     Export.recursiveCopy(name,srcdir,tgtDir,"*.ios.a")
-    iOSProject.addGroup(name,"Plugins/"..name,"Group"..name.."_ios","GroupPlugins_ios")
     iOSProject.addSources({ "Plugins/lib"..name..".ios.a"  }, "GroupPlugins", "ios")
     if sym then table.insert(iOSProject._plugins.ios,sym) end
   end
   
   if for_atv then
-    local tgtDir="AppleTV/Plugins/"..name
+    local tgtDir="AppleTV/Plugins"
     if not existing then Export.mkdir(tgtDir) end
     Export.recursiveCopy(name,srcdir,tgtDir,"*.atv.a")
-    iOSProject.addGroup(name,name,"Group"..name.."_atv","GroupPlugins_atv")
     iOSProject.addSources({ "lib"..name..".atv.a"  }, "GroupPlugins", "atv")
     if sym then table.insert(iOSProject._plugins.atv,sym) end
   end
   
   if for_mac then
-    local tgtDir="Mac/Plugins/"..name
+    local tgtDir="Mac/Plugins"
     if not existing then Export.mkdir(tgtDir) end
     Export.recursiveCopy(name,srcdir,tgtDir,"*.mac.a")
-    iOSProject.addGroup(name,name,"Group"..name.."_mac","GroupPlugins_mac")
     iOSProject.addSources({ "lib"..name..".mac.a"  }, "GroupPlugins", "mac")
     if sym then table.insert(iOSProject._plugins.mac,sym) end
   end
@@ -337,7 +334,7 @@ OTHER_LDFLAGS = "-ObjC";</by>
     if #iOSProject._plugins.ios>0 or #iOSProject._plugins.atv>0 or #iOSProject._plugins.mac>0 then
         local function plist(t)
             local pl=""
-            for _,p in ipairs(iOSProjects._plugins[t]) do
+            for _,p in ipairs(iOSProject._plugins[t]) do
                 pl=pl.."   IMPORT_PLUGIN("..p..")\n"
             end
             return pl

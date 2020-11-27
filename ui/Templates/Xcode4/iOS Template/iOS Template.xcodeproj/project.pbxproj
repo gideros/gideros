@@ -13,6 +13,10 @@
 		033BD42F256FA5B70059695F /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42C256FA5B70059695F /* EAGLView.m */; };
 		033BD430256FA5B70059695F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42E256FA5B70059695F /* ViewController.m */; };
 		033BD45D256FA72E0059695F /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 033BD45C256FA72E0059695F /* plugins.cpp */; };
+		033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 033BD4642570FF8A0059695F /* Cocoa.framework */; };
+		03697011257111D5002A4EB3 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697010257111D4002A4EB3 /* libgideros.a */; };
+		03697014257111E5002A4EB3 /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697012257111E5002A4EB3 /* libgvfs.a */; };
+		03697015257111E5002A4EB3 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697013257111E5002A4EB3 /* liblua.a */; };
 		5E68179A1BC6FFB20002D406 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E6817991BC6FFB20002D406 /* Images.xcassets */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
@@ -82,6 +86,12 @@
 		033BD42D256FA5B70059695F /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		033BD42E256FA5B70059695F /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		033BD45C256FA72E0059695F /* plugins.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = plugins.cpp; sourceTree = "<group>"; };
+		033BD4642570FF8A0059695F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		03697010257111D4002A4EB3 /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = Mac/libgideros.a; sourceTree = "<group>"; };
+		03697012257111E5002A4EB3 /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = Mac/libgvfs.a; sourceTree = "<group>"; };
+		03697013257111E5002A4EB3 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = Mac/liblua.a; sourceTree = "<group>"; };
+		0369701625711225002A4EB3 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
+		036970172571123B002A4EB3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
 		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Template iOS/Images.xcassets"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -169,6 +179,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03697015257111E5002A4EB3 /* liblua.a in Frameworks */,
+				033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */,
+				03697011257111D5002A4EB3 /* libgideros.a in Frameworks */,
+				03697014257111E5002A4EB3 /* libgvfs.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +298,12 @@
 		5FD896EA15CED77F00D34824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				036970172571123B002A4EB3 /* libz.tbd */,
+				0369701625711225002A4EB3 /* libsqlite3.tbd */,
+				03697012257111E5002A4EB3 /* libgvfs.a */,
+				03697013257111E5002A4EB3 /* liblua.a */,
+				03697010257111D4002A4EB3 /* libgideros.a */,
+				033BD4642570FF8A0059695F /* Cocoa.framework */,
 				B2011F911BAD9A24008812D4 /* GameController.framework */,
 				B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */,
 				B2E3EFE41BAC1A5C005599BD /* libsqlite3.tbd */,
@@ -419,7 +439,7 @@
 			dependencies = (
 			);
 			name = "iOS Template Mac";
-			productName = "iOS Template AppName";
+			productName = "iOS Template";
 			productReference = 033BD414256FA4D80059695F /* iOS Template Mac.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -620,8 +640,18 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"Mac/Plugins\"",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "iOS Template AppName/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/Mac/Plugins\"",
+					"\"$(SRCROOT)/Mac\"",
+					"$(inherited)",
+					"$(PROJECT_DIR)/Mac",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -672,8 +702,18 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"Mac/Plugins\"",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "iOS Template AppName/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/Mac/Plugins\"",
+					"\"$(SRCROOT)/Mac\"",
+					"$(inherited)",
+					"$(PROJECT_DIR)/Mac",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

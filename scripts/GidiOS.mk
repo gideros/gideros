@@ -128,8 +128,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 	rm -f $(PLUGINPATH)/lib*.mac.a
 
 %.mac.install.iosplugin:
-	mkdir -p $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/mac
-	cp $(PLUGINPATH)/lib$(notdir $*).mac.a $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/mac/
+	mkdir -p $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS
+	cp $(PLUGINPATH)/lib$(notdir $*).mac.a $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/
 
 ios.install: ios.libs.install atv.libs.install mac.libs.install ios.plugins.install ios.app
 
