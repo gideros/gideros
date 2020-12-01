@@ -5,6 +5,7 @@
 #endif
 #if TARGET_OS_OSX
 //TODO Use this for touchscreen/touchpad on OSX
+#include <Carbon/Carbon.h>
 @interface UITouch: NSObject
 @end
 #endif
@@ -97,6 +98,7 @@ public:
         isMouseToTouchEnabled_ = 0;
         isTouchToMouseEnabled_ = 0;
         mouseTouchOrder_= 0;
+        initKeyMap();
 		
         touchPoolMutex_ = [[NSLock alloc] init];
         mousePoolMutex_ = [[NSLock alloc] init];
@@ -965,18 +967,90 @@ private:
     
     int convertKeyCode(int keyCode)
     {
-        return keyCode;
-/*        std::map<int, int>::const_iterator iter = keyMap_.find(keyCode);
+        std::map<int, int>::const_iterator iter = keyMap_.find(keyCode);
         
         if (iter == keyMap_.end())
             return 0;
         
-        return iter->second;*/
+        return iter->second;
     }	
     std::vector<ginput_KeyEvent*> keyPool1_;
     std::vector<ginput_KeyEvent*> keyPool2_;
-    //std::map<int, int> keyMap_;
+    std::map<int, int> keyMap_;
+    void initKeyMap() {
+        keyMap_[0x33]=8; //BS
+#if TARGET_OS_OSX
+        keyMap_[kVK_Escape]=GINPUT_KEY_ESC;
+        keyMap_[kVK_Shift]=GINPUT_KEY_SHIFT;
+        keyMap_[kVK_Space]=GINPUT_KEY_SPACE;
+        keyMap_[kVK_Delete]=GINPUT_KEY_BACKSPACE;
+        keyMap_[kVK_Control]=GINPUT_KEY_CTRL;
+        keyMap_[kVK_Option]=GINPUT_KEY_ALT;
+        keyMap_[kVK_Tab]=GINPUT_KEY_TAB;
+        keyMap_[kVK_Return]=GINPUT_KEY_ENTER;
 
+        keyMap_[kVK_F1]=GINPUT_KEY_F1;
+        keyMap_[kVK_F2]=GINPUT_KEY_F2;
+        keyMap_[kVK_F3]=GINPUT_KEY_F3;
+        keyMap_[kVK_F4]=GINPUT_KEY_F4;
+        keyMap_[kVK_F5]=GINPUT_KEY_F5;
+        keyMap_[kVK_F6]=GINPUT_KEY_F6;
+        keyMap_[kVK_F7]=GINPUT_KEY_F7;
+        keyMap_[kVK_F8]=GINPUT_KEY_F8;
+        keyMap_[kVK_F9]=GINPUT_KEY_F9;
+        keyMap_[kVK_F10]=GINPUT_KEY_F10;
+        keyMap_[kVK_F11]=GINPUT_KEY_F11;
+        keyMap_[kVK_F12]=GINPUT_KEY_F12;
+        keyMap_[kVK_ANSI_A]=GINPUT_KEY_A;
+        keyMap_[kVK_ANSI_B]=GINPUT_KEY_B;
+        keyMap_[kVK_ANSI_C]=GINPUT_KEY_C;
+        keyMap_[kVK_ANSI_D]=GINPUT_KEY_D;
+        keyMap_[kVK_ANSI_E]=GINPUT_KEY_E;
+        keyMap_[kVK_ANSI_F]=GINPUT_KEY_F;
+        keyMap_[kVK_ANSI_G]=GINPUT_KEY_G;
+        keyMap_[kVK_ANSI_H]=GINPUT_KEY_H;
+        keyMap_[kVK_ANSI_I]=GINPUT_KEY_I;
+        keyMap_[kVK_ANSI_J]=GINPUT_KEY_J;
+        keyMap_[kVK_ANSI_K]=GINPUT_KEY_K;
+        keyMap_[kVK_ANSI_L]=GINPUT_KEY_L;
+        keyMap_[kVK_ANSI_M]=GINPUT_KEY_M;
+        keyMap_[kVK_ANSI_N]=GINPUT_KEY_N;
+        keyMap_[kVK_ANSI_O]=GINPUT_KEY_O;
+        keyMap_[kVK_ANSI_P]=GINPUT_KEY_P;
+        keyMap_[kVK_ANSI_Q]=GINPUT_KEY_Q;
+        keyMap_[kVK_ANSI_R]=GINPUT_KEY_R;
+        keyMap_[kVK_ANSI_S]=GINPUT_KEY_S;
+        keyMap_[kVK_ANSI_T]=GINPUT_KEY_T;
+        keyMap_[kVK_ANSI_U]=GINPUT_KEY_U;
+        keyMap_[kVK_ANSI_V]=GINPUT_KEY_V;
+        keyMap_[kVK_ANSI_W]=GINPUT_KEY_W;
+        keyMap_[kVK_ANSI_X]=GINPUT_KEY_X;
+        keyMap_[kVK_ANSI_Y]=GINPUT_KEY_Y;
+        keyMap_[kVK_ANSI_Z]=GINPUT_KEY_Z;
+        keyMap_[kVK_ANSI_1]=GINPUT_KEY_1;
+        keyMap_[kVK_ANSI_2]=GINPUT_KEY_2;
+        keyMap_[kVK_ANSI_3]=GINPUT_KEY_3;
+        keyMap_[kVK_ANSI_4]=GINPUT_KEY_4;
+        keyMap_[kVK_ANSI_5]=GINPUT_KEY_5;
+        keyMap_[kVK_ANSI_6]=GINPUT_KEY_6;
+        keyMap_[kVK_ANSI_7]=GINPUT_KEY_7;
+        keyMap_[kVK_ANSI_8]=GINPUT_KEY_8;
+        keyMap_[kVK_ANSI_9]=GINPUT_KEY_9;
+        keyMap_[kVK_ANSI_0]=GINPUT_KEY_0;
+        
+        keyMap_[kVK_Home]=GINPUT_KEY_HOME;
+        keyMap_[kVK_End]=GINPUT_KEY_END;
+        //keyMap_[kVK_Help]=GINPUT_KEY_INSERT;
+        keyMap_[kVK_ForwardDelete]=GINPUT_KEY_DELETE;
+        keyMap_[kVK_PageUp]=GINPUT_KEY_PAGEUP;
+        keyMap_[kVK_PageDown]=GINPUT_KEY_PAGEDOWN;
+
+        keyMap_[kVK_LeftArrow]=GINPUT_KEY_LEFT;
+        keyMap_[kVK_RightArrow]=GINPUT_KEY_RIGHT;
+        keyMap_[kVK_UpArrow]=GINPUT_KEY_UP;
+        keyMap_[kVK_DownArrow]=GINPUT_KEY_DOWN;
+#endif
+    }
 private:
 #if (!TARGET_OS_TV && !TARGET_OS_OSX)
     GGAccelerometer *accelerometer_;

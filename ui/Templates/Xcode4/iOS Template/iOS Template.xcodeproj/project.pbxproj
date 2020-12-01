@@ -14,9 +14,16 @@
 		033BD430256FA5B70059695F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42E256FA5B70059695F /* ViewController.m */; };
 		033BD45D256FA72E0059695F /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 033BD45C256FA72E0059695F /* plugins.cpp */; };
 		033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 033BD4642570FF8A0059695F /* Cocoa.framework */; };
+		034B58C125767BD8005D0134 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
 		03697011257111D5002A4EB3 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697010257111D4002A4EB3 /* libgideros.a */; };
 		03697014257111E5002A4EB3 /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697012257111E5002A4EB3 /* libgvfs.a */; };
 		03697015257111E5002A4EB3 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697013257111E5002A4EB3 /* liblua.a */; };
+		036970262571279A002A4EB3 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369701625711225002A4EB3 /* libsqlite3.tbd */; };
+		0369702A257127AE002A4EB3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 036970172571123B002A4EB3 /* libz.tbd */; };
+		0369703925712FF0002A4EB3 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369703825712FEF002A4EB3 /* OpenAL.framework */; };
+		0369703B25713037002A4EB3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369703A25713037002A4EB3 /* CoreLocation.framework */; };
+		03697059257133F7002A4EB3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697058257133F7002A4EB3 /* AudioToolbox.framework */; };
+		0369705B25713401002A4EB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369705A25713401002A4EB3 /* AVFoundation.framework */; };
 		5E68179A1BC6FFB20002D406 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E6817991BC6FFB20002D406 /* Images.xcassets */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
@@ -42,7 +49,6 @@
 		5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896EB15CED77F00D34824 /* UIKit.framework */; };
 		5FD896EE15CED77F00D34824 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896ED15CED77F00D34824 /* Foundation.framework */; };
 		5FD896F015CED77F00D34824 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896EF15CED77F00D34824 /* CoreGraphics.framework */; };
-		5FD896F415CED77F00D34824 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896F315CED77F00D34824 /* OpenGLES.framework */; };
 		5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5FD896F815CED77F00D34824 /* InfoPlist.strings */; };
 		5FD896FC15CED77F00D34824 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FD896FB15CED77F00D34824 /* main.m */; };
 		5FE658BE18FE68EA001D8EE3 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FE658BD18FE68EA001D8EE3 /* libz.dylib */; };
@@ -62,7 +68,6 @@
 		B2E3EFD61BAC117B005599BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD51BAC117B005599BD /* UIKit.framework */; };
 		B2E3EFD81BAC1181005599BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD71BAC1181005599BD /* Foundation.framework */; };
 		B2E3EFDA1BAC1187005599BD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD91BAC1187005599BD /* CoreGraphics.framework */; };
-		B2E3EFDC1BAC118B005599BD /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDB1BAC118B005599BD /* OpenGLES.framework */; };
 		B2E3EFE11BAC119E005599BD /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDE1BAC119E005599BD /* libgvfs.a */; };
 		B2E3EFE21BAC119E005599BD /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDF1BAC119E005599BD /* liblua.a */; };
 		B2E3EFE31BAC1249005599BD /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
@@ -92,6 +97,10 @@
 		03697013257111E5002A4EB3 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = Mac/liblua.a; sourceTree = "<group>"; };
 		0369701625711225002A4EB3 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		036970172571123B002A4EB3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
+		0369703825712FEF002A4EB3 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/OpenAL.framework; sourceTree = DEVELOPER_DIR; };
+		0369703A25713037002A4EB3 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
+		03697058257133F7002A4EB3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
+		0369705A25713401002A4EB3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Template iOS/Images.xcassets"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -179,7 +188,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0369703925712FF0002A4EB3 /* OpenAL.framework in Frameworks */,
+				036970262571279A002A4EB3 /* libsqlite3.tbd in Frameworks */,
+				0369705B25713401002A4EB3 /* AVFoundation.framework in Frameworks */,
+				0369702A257127AE002A4EB3 /* libz.tbd in Frameworks */,
 				03697015257111E5002A4EB3 /* liblua.a in Frameworks */,
+				0369703B25713037002A4EB3 /* CoreLocation.framework in Frameworks */,
+				03697059257133F7002A4EB3 /* AudioToolbox.framework in Frameworks */,
 				033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */,
 				03697011257111D5002A4EB3 /* libgideros.a in Frameworks */,
 				03697014257111E5002A4EB3 /* libgvfs.a in Frameworks */,
@@ -206,7 +221,6 @@
 				5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */,
 				5FD896EE15CED77F00D34824 /* Foundation.framework in Frameworks */,
 				5FD896F015CED77F00D34824 /* CoreGraphics.framework in Frameworks */,
-				5FD896F415CED77F00D34824 /* OpenGLES.framework in Frameworks */,
 				5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */,
 				5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */,
 				5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */,
@@ -221,7 +235,6 @@
 				B2E3EFE71BAC1AE5005599BD /* libsqlite3.tbd in Frameworks */,
 				B2E3EFE11BAC119E005599BD /* libgvfs.a in Frameworks */,
 				B2E3EFE21BAC119E005599BD /* liblua.a in Frameworks */,
-				B2E3EFDC1BAC118B005599BD /* OpenGLES.framework in Frameworks */,
 				B2E3EFDA1BAC1187005599BD /* CoreGraphics.framework in Frameworks */,
 				B2E3EFD81BAC1181005599BD /* Foundation.framework in Frameworks */,
 				B2E3EFD61BAC117B005599BD /* UIKit.framework in Frameworks */,
@@ -298,6 +311,10 @@
 		5FD896EA15CED77F00D34824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0369705A25713401002A4EB3 /* AVFoundation.framework */,
+				03697058257133F7002A4EB3 /* AudioToolbox.framework */,
+				0369703A25713037002A4EB3 /* CoreLocation.framework */,
+				0369703825712FEF002A4EB3 /* OpenAL.framework */,
 				036970172571123B002A4EB3 /* libz.tbd */,
 				0369701625711225002A4EB3 /* libsqlite3.tbd */,
 				03697012257111E5002A4EB3 /* libgvfs.a */,
@@ -522,6 +539,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				033BD41A256FA4D90059695F /* Assets.xcassets in Resources */,
+				034B58C125767BD8005D0134 /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -644,7 +662,7 @@
 					"\"Mac/Plugins\"",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "iOS Template AppName/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/Mac/Plugins\"",
@@ -652,7 +670,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Mac",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-Mac";
@@ -706,7 +724,7 @@
 					"\"Mac/Plugins\"",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "iOS Template AppName/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Mac/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/Mac/Plugins\"",
@@ -714,7 +732,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Mac",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-Mac";

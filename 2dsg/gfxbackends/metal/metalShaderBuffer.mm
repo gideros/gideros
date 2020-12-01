@@ -24,15 +24,16 @@ metalShaderBuffer::metalShaderBuffer(ShaderTexture *texture,bool forDepth)
     depth=nil;
     //Alway create depth stencil, to avoid resetting the encoder
     MTLTextureDescriptor *td=[MTLTextureDescriptor new];
-    td.pixelFormat=MTLPixelFormatStencil8;
+    td.pixelFormat=MTLPixelFormatDepth32Float_Stencil8;
+    td.storageMode=MTLStorageModePrivate;
     td.width=tex->width;
     td.height=tex->height;
     td.usage=MTLTextureUsageRenderTarget;
     stencil=[metalDevice newTextureWithDescriptor:td];
     if (!forDepth_) {
-        td.pixelFormat=MTLPixelFormatDepth32Float;
-        depth=[metalDevice newTextureWithDescriptor:td];
-        mrpd.depthAttachment.texture=depth;
+        //td.pixelFormat=MTLPixelFormatDepth32Float;
+        //depth=[metalDevice newTextureWithDescriptor:td];
+        mrpd.depthAttachment.texture=stencil;
     }
     else {
         /*

@@ -23,6 +23,7 @@ iosplayer.atv.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 lua.mac.libs: IOSLIBPATH=$(ROOT)/lua
 gvfs.mac.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.mac.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
+iosplayer.mac.dbg.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 lua.mac.libs.clean: IOSLIBPATH=$(ROOT)/lua
 gvfs.mac.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
@@ -45,8 +46,13 @@ iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
 %.mac.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
 	@cd $(IOSLIBPATH); cp build/Release/lib$*.a lib$*.mac.a
+
+%.mac.dbg.libs: 
+	#BUILDING $*
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration Debug -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); cp build/Debug/lib$*.a lib$*.mac.dbg.a
 
 ios.libs: versioning  gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
 ios.libs.clean : gvfs.ios.libs.clean lua.ios.libs.clean iosplayer.ios.libs.clean
@@ -65,6 +71,7 @@ ios.libs.install: ios.libs
 	cp $(ROOT)/libgvfs/libgvfs.ios.a $(IOS_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.ios.a $(IOS_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/build/Release-iphoneos/default.metallib $(IOS_TEMPLATE)
+	cp $(ROOT)/ios/iosplayer/build/Release-iphonesimulator/default.metallib $(IOS_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(IOS_TEMPLATE)
 
 atv.libs.install: atv.libs
@@ -73,6 +80,7 @@ atv.libs.install: atv.libs
 	cp $(ROOT)/libgvfs/libgvfs.atv.a $(ATV_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/build/Release-appletvos/default.metallib $(ATV_TEMPLATE)
+	cp $(ROOT)/ios/iosplayer/build/Release-appletvsimulator/default.metallib $(ATV_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
 
 mac.libs.install: mac.libs

@@ -51,7 +51,8 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
     	case PK_FLOAT:
     	    switch (format)
     	    {
-    	   		case FMT_DEPTH: glformat=MTLPixelFormatDepth32Float; bpr=4; break;
+                    //Stencil is always enabled too, so create a float/stencil texture
+    	   		case FMT_DEPTH: glformat=MTLPixelFormatDepth32Float_Stencil8; bpr=4; break;
     	   	}
     		break;
     }
@@ -62,6 +63,10 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
 	                                                   mipmapped:(BOOL)NO];
     if (forRT)
         md.usage=MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
+    if (format==FMT_DEPTH) {
+        md.storageMode=MTLStorageModePrivate; //Depth can only be private as per spec
+        data=NULL; //Don't try to upload data
+    }
 	mtex=[metalDevice newTextureWithDescriptor:md];
     [mtex retain];
     if (data) {
