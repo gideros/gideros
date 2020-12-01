@@ -27,12 +27,12 @@ iOSProject.exportPluginFiles("StoreReview",
 	"[[[sys.pluginDir]]]/source/IOS/StoreReview",
 	{ "gstoreReview-ios.mm" },
 	false,
-	true,true,false)
+	true,false,false)
 iOSProject.exportPluginFiles("StoreReview",
 	"[[[sys.pluginDir]]]/source/Common",
 	{ "storeReviewBinder.cpp" },
 	true,
-	true,true,false)
+	true,false,false)
 	]]></lua>
  </target>
  <target name="WinRT">

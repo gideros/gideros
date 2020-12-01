@@ -4,7 +4,7 @@
 //  Copyright 2012 Gideros Mobile. All rights reserved.
 //
 #import <Cocoa/Cocoa.h>
-
+#import <QuartzCore/CAMetalLayer.h>
 #import "Metal/Metal.h"
 extern id<MTLDevice> metalDevice;
 extern MTLRenderPassDescriptor *metalFramebuffer;
@@ -12,7 +12,7 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
 // Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
-@interface EAGLView : NSView <NSTextInput>
+@interface EAGLView : NSView
 {
 @private
     // The pixel dimensions of the CAEAGLLayer.
@@ -28,7 +28,7 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
     id<CAMetalDrawable> metalDrawable;
     CGRect safeArea;
     id<MTLTexture> metalDepth;
-    id<MTLTexture> metalStencil;
+    NSEventModifierFlags modifiers;
 }
 
 - (void)setFramebuffer;
@@ -36,5 +36,8 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 - (void)enableRetinaDisplay:(BOOL)enable;
 - (void) setup;
 - (void) tearDown;
+-(void) resized;
+- (BOOL) isFlipped;
+- (BOOL) acceptsFirstResponder;
 
 @end

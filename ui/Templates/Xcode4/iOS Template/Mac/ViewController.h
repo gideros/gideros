@@ -8,26 +8,23 @@
 #import <CoreVideo/CoreVideo.h>
 #import "EAGLView.h"
 
-@interface ViewController : NSViewController<NSTableViewDelegate, NSTableViewDataSource>
+@interface ViewController : NSViewController<NSWindowDelegate>
 {
     NSTableView *tableView;
 	    
     BOOL animating;
     NSInteger animationFrameInterval;
-    CVDisplayLink *displayLink;
+    CVDisplayLinkRef displayLink;
 
 	EAGLView* glView;
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
+@property (nonatomic, getter=getGlView) EAGLView *glView;
 @property (nonatomic) NSInteger animationFrameInterval;
-@property (nonatomic, assign) NSTableView *tableView;
 
 - (void)startAnimation;
 - (void)stopAnimation;
-- (void)addProject:(NSString*)project;
-- (void)initTable;
-- (void)showTable;
-- (void)hideTable;
+- (void)windowDidResize:(NSNotification *)notification;
 
 @end

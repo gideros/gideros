@@ -8,8 +8,16 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@class ViewController;
 
+@interface AppDelegate : NSObject <NSApplicationDelegate>
+{
+    NSWindow *window;
+    ViewController *viewController;
+}
+
+@property (nonatomic, retain) IBOutlet NSWindow *window;
+@property (nonatomic, retain) IBOutlet ViewController *viewController;
 
 @end
 

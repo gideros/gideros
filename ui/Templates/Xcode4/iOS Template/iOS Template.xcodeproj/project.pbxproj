@@ -8,13 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		033BD418256FA4D80059695F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD417256FA4D80059695F /* AppDelegate.m */; };
-		033BD41A256FA4D90059695F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 033BD419256FA4D90059695F /* Assets.xcassets */; };
 		033BD420256FA4D90059695F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD41F256FA4D90059695F /* main.m */; };
-		033BD42F256FA5B70059695F /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42C256FA5B70059695F /* EAGLView.m */; };
-		033BD430256FA5B70059695F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42E256FA5B70059695F /* ViewController.m */; };
 		033BD45D256FA72E0059695F /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 033BD45C256FA72E0059695F /* plugins.cpp */; };
 		033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 033BD4642570FF8A0059695F /* Cocoa.framework */; };
-		034B58C125767BD8005D0134 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
+		034B58B6257646E1005D0134 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 033BD41E256FA4D90059695F /* Info.plist */; };
+		034B58BA25767BB9005D0134 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
+		034B58DC25767F2C005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E6817991BC6FFB20002D406 /* Images.xcassets */; };
+		034B58EE25767FE3005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58ED25767FE3005D0134 /* Images.xcassets */; };
+		034B58F325768020005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58F225768020005D0134 /* Images.xcassets */; };
+		034B592125768A7B005D0134 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 034B592025768A7B005D0134 /* default.metallib */; };
 		03697011257111D5002A4EB3 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697010257111D4002A4EB3 /* libgideros.a */; };
 		03697014257111E5002A4EB3 /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697012257111E5002A4EB3 /* libgvfs.a */; };
 		03697015257111E5002A4EB3 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697013257111E5002A4EB3 /* liblua.a */; };
@@ -22,9 +24,11 @@
 		0369702A257127AE002A4EB3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 036970172571123B002A4EB3 /* libz.tbd */; };
 		0369703925712FF0002A4EB3 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369703825712FEF002A4EB3 /* OpenAL.framework */; };
 		0369703B25713037002A4EB3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369703A25713037002A4EB3 /* CoreLocation.framework */; };
-		03697059257133F7002A4EB3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697058257133F7002A4EB3 /* AudioToolbox.framework */; };
-		0369705B25713401002A4EB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369705A25713401002A4EB3 /* AVFoundation.framework */; };
-		5E68179A1BC6FFB20002D406 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E6817991BC6FFB20002D406 /* Images.xcassets */; };
+		0369704D257133A7002A4EB3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369704C257133A7002A4EB3 /* AudioToolbox.framework */; };
+		03697051257133DA002A4EB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369704725713304002A4EB3 /* AVFoundation.framework */; };
+		0369706225713A2F002A4EB3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42E256FA5B70059695F /* ViewController.m */; };
+		0369706625713A39002A4EB3 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42C256FA5B70059695F /* EAGLView.m */; };
+		036970792574EE7A002A4EB3 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 036970782574EE7A002A4EB3 /* default.metallib */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
 		5F4153FC15CEF227007B5365 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F915CEF227007B5365 /* ViewController.m */; };
@@ -82,7 +86,6 @@
 		033BD414256FA4D80059695F /* iOS Template Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		033BD416256FA4D80059695F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		033BD417256FA4D80059695F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		033BD419256FA4D90059695F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		033BD41E256FA4D90059695F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		033BD41F256FA4D90059695F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		033BD421256FA4D90059695F /* iOS_Template_AppName.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS_Template_AppName.entitlements; sourceTree = "<group>"; };
@@ -92,6 +95,9 @@
 		033BD42E256FA5B70059695F /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		033BD45C256FA72E0059695F /* plugins.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = plugins.cpp; sourceTree = "<group>"; };
 		033BD4642570FF8A0059695F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		034B58ED25767FE3005D0134 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		034B58F225768020005D0134 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		034B592025768A7B005D0134 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 		03697010257111D4002A4EB3 /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = Mac/libgideros.a; sourceTree = "<group>"; };
 		03697012257111E5002A4EB3 /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = Mac/libgvfs.a; sourceTree = "<group>"; };
 		03697013257111E5002A4EB3 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = Mac/liblua.a; sourceTree = "<group>"; };
@@ -99,9 +105,10 @@
 		036970172571123B002A4EB3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
 		0369703825712FEF002A4EB3 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/OpenAL.framework; sourceTree = DEVELOPER_DIR; };
 		0369703A25713037002A4EB3 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
-		03697058257133F7002A4EB3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
-		0369705A25713401002A4EB3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
-		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Template iOS/Images.xcassets"; sourceTree = "<group>"; };
+		0369704725713304002A4EB3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		0369704C257133A7002A4EB3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
+		036970782574EE7A002A4EB3 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
+		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "PlayerMetal iOS/Images.xcassets"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5F4153F615CEF227007B5365 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
@@ -188,13 +195,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0369704D257133A7002A4EB3 /* AudioToolbox.framework in Frameworks */,
 				0369703925712FF0002A4EB3 /* OpenAL.framework in Frameworks */,
 				036970262571279A002A4EB3 /* libsqlite3.tbd in Frameworks */,
-				0369705B25713401002A4EB3 /* AVFoundation.framework in Frameworks */,
 				0369702A257127AE002A4EB3 /* libz.tbd in Frameworks */,
 				03697015257111E5002A4EB3 /* liblua.a in Frameworks */,
 				0369703B25713037002A4EB3 /* CoreLocation.framework in Frameworks */,
-				03697059257133F7002A4EB3 /* AudioToolbox.framework in Frameworks */,
 				033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */,
 				03697011257111D5002A4EB3 /* libgideros.a in Frameworks */,
 				03697014257111E5002A4EB3 /* libgvfs.a in Frameworks */,
@@ -255,6 +261,7 @@
 		033BD415256FA4D80059695F /* Mac */ = {
 			isa = PBXGroup;
 			children = (
+				036970782574EE7A002A4EB3 /* default.metallib */,
 				033BD45B256FA7140059695F /* Plugins */,
 				033BD42B256FA5B70059695F /* EAGLView.h */,
 				033BD42C256FA5B70059695F /* EAGLView.m */,
@@ -262,10 +269,10 @@
 				033BD42E256FA5B70059695F /* ViewController.m */,
 				033BD416256FA4D80059695F /* AppDelegate.h */,
 				033BD417256FA4D80059695F /* AppDelegate.m */,
-				033BD419256FA4D90059695F /* Assets.xcassets */,
 				033BD41E256FA4D90059695F /* Info.plist */,
 				033BD41F256FA4D90059695F /* main.m */,
 				033BD421256FA4D90059695F /* iOS_Template_AppName.entitlements */,
+				034B58F225768020005D0134 /* Images.xcassets */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
@@ -311,8 +318,8 @@
 		5FD896EA15CED77F00D34824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0369705A25713401002A4EB3 /* AVFoundation.framework */,
-				03697058257133F7002A4EB3 /* AudioToolbox.framework */,
+				0369704C257133A7002A4EB3 /* AudioToolbox.framework */,
+				0369704725713304002A4EB3 /* AVFoundation.framework */,
 				0369703A25713037002A4EB3 /* CoreLocation.framework */,
 				0369703825712FEF002A4EB3 /* OpenAL.framework */,
 				036970172571123B002A4EB3 /* libz.tbd */,
@@ -396,6 +403,7 @@
 		B25B27FB1BAC0F3D0034D6C7 /* AppleTV */ = {
 			isa = PBXGroup;
 			children = (
+				034B592025768A7B005D0134 /* default.metallib */,
 				B2E3EEB21BAC104D005599BD /* EAGLView.h */,
 				B2E3EEB31BAC104D005599BD /* EAGLView.m */,
 				B25B27FF1BAC0F3D0034D6C7 /* AppDelegate.h */,
@@ -405,6 +413,7 @@
 				B2E3EF921BAC10CC005599BD /* Plugins */,
 				B25B280A1BAC0F3D0034D6C7 /* Info.plist */,
 				B25B27FC1BAC0F3D0034D6C7 /* Supporting Files */,
+				034B58ED25767FE3005D0134 /* Images.xcassets */,
 			);
 			path = AppleTV;
 			sourceTree = "<group>";
@@ -538,8 +547,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				033BD41A256FA4D90059695F /* Assets.xcassets in Resources */,
-				034B58C125767BD8005D0134 /* assets in Resources */,
+				036970792574EE7A002A4EB3 /* default.metallib in Resources */,
+				034B58F325768020005D0134 /* Images.xcassets in Resources */,
+				034B58BA25767BB9005D0134 /* assets in Resources */,
+				034B58B6257646E1005D0134 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,9 +560,9 @@
 			files = (
 				EBB07735222E80E000611085 /* default.metallib in Resources */,
 				5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */,
+				034B58DC25767F2C005D0134 /* Images.xcassets in Resources */,
 				5F58D85315D9268900137D76 /* assets in Resources */,
 				5F4EA0A617816A9D0043BBCD /* Default-568h@2x.png in Resources */,
-				5E68179A1BC6FFB20002D406 /* Images.xcassets in Resources */,
 				5F4EA0A717816A9D0043BBCD /* Default.png in Resources */,
 				5F4EA0A817816A9D0043BBCD /* Default@2x.png in Resources */,
 			);
@@ -561,7 +572,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				034B592125768A7B005D0134 /* default.metallib in Resources */,
 				B2E3EFE31BAC1249005599BD /* assets in Resources */,
+				034B58EE25767FE3005D0134 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,11 +595,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				033BD430256FA5B70059695F /* ViewController.m in Sources */,
 				5FD896FC15CED77F00D34824 /* main.m in Sources */,
 				5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */,
 				5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */,
-				033BD42F256FA5B70059695F /* EAGLView.m in Sources */,
 				5F4153FC15CEF227007B5365 /* ViewController.m in Sources */,
 				EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,
 			);

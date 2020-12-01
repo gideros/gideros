@@ -13,7 +13,6 @@
 
 
 @interface ViewController ()
-@property (nonatomic, retain) EAGLContext *context;
 @property (nonatomic, assign) CADisplayLink *displayLink;
 @end
 

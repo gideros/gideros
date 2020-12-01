@@ -602,10 +602,22 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::splashVImage(ctx,1125,2436,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1125x2436.png"));
 
         //tv stuff
-        ExportCommon::splashHImage(ctx,1920,1080,QString(ctx->base+" iOS/Images.xcassets/TVLaunchImage.launchimage/Splash1920x1080.png"));
-        ExportCommon::tvIcon(ctx,1920,720,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
-        ExportCommon::tvIcon(ctx,1280,768,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
-        ExportCommon::tvIcon(ctx,400,240,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
+        ExportCommon::splashHImage(ctx,1920,1080,QString("AppleTV/Images.xcassets/TVLaunchImage.launchimage/Splash1920x1080.png"));
+        ExportCommon::tvIcon(ctx,1920,720,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
+        ExportCommon::tvIcon(ctx,1280,768,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
+        ExportCommon::tvIcon(ctx,400,240,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
+
+        //macos
+        ExportCommon::appIcon(ctx,16,16,QString("Mac/Images.xcassets/AppIcon.iconset/icon_16x16.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("Mac/Images.xcassets/AppIcon.iconset/icon_16x16@2x.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("Mac/Images.xcassets/AppIcon.iconset/icon_32x32.png"));
+        ExportCommon::appIcon(ctx,64,64,QString("Mac/Images.xcassets/AppIcon.iconset/icon_32x32@2x.png"));
+        ExportCommon::appIcon(ctx,128,128,QString("Mac/Images.xcassets/AppIcon.iconset/icon_128x128.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("Mac/Images.xcassets/AppIcon.iconset/icon_128x128@2x.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("Mac/Images.xcassets/AppIcon.iconset/icon_256x256.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("Mac/Images.xcassets/AppIcon.iconset/icon_256x256@2x.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("Mac/Images.xcassets/AppIcon.iconset/icon_512x512.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString("Mac/Images.xcassets/AppIcon.iconset/icon_512x512@2x.png"));
    }
    else if(ctx->deviceFamily == e_MacOSXDesktop){
 	    ctx->outputDir.mkpath("icon.iconset/");

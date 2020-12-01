@@ -6,13 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
 #import "Metal/Metal.h"
 extern id<MTLDevice> metalDevice;
 extern MTLRenderPassDescriptor *metalFramebuffer;
 
-//#define GIDEROS_METAL
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
@@ -31,11 +28,8 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 
 	BOOL framebufferDirty;
 	BOOL retinaDisplay;
-	CAEAGLLayer *eaglLayer;
-#ifdef GIDEROS_METAL
     CAMetalLayer *metalLayer;
     id<CAMetalDrawable> metalDrawable;
-#endif
     CGRect safeArea;
     id<MTLTexture> metalDepth;
     id<MTLTexture> metalStencil;

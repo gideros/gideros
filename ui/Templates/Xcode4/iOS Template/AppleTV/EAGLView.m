@@ -12,7 +12,6 @@
 #include "giderosapi.h"
 //GIDEROS-TAG-ATV:DRAWDEFS//
 
-bool checkMetal=false;
 id<MTLDevice> metalDevice=nil;
 MTLRenderPassDescriptor *metalFramebuffer;
 extern void metalShaderEnginePresent(id<MTLDrawable>);
@@ -31,16 +30,11 @@ extern void metalShaderNewFrame();
 
 @implementation EAGLView
 
-@dynamic context;
-
 // You must implement this method
 + (Class)layerClass
 {
-    if (checkMetal)
         metalDevice= MTLCreateSystemDefaultDevice();
-    if (metalDevice)
         return [CAMetalLayer class];
-    return [CAEAGLLayer class];
 }
 
 - (id)initWithFrame:(CGRect)rect
@@ -53,14 +47,6 @@ extern void metalShaderNewFrame();
             metalLayer.opaque= TRUE;
             //metalLayer.presentsWithTransaction=YES;
         }
-        else {
-        eaglLayer = (CAEAGLLayer *)self.layer;
-        
-        eaglLayer.opaque = TRUE;
-        eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking,
-                                        kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat,
-                                        nil];
 		retinaDisplay = NO;
         _hasText = NO;
         _autocorrectionType = UITextAutocorrectionTypeNo;
@@ -72,11 +58,6 @@ extern void metalShaderNewFrame();
 - (void)dealloc
 {
     [self deleteFramebuffer];    
-    // Tear down context.
-    if ([EAGLContext currentContext] == context)
-        [EAGLContext setCurrentContext:nil];
-    [context release];
-    
     [super dealloc];
 }
 
@@ -92,57 +73,17 @@ extern void metalShaderNewFrame();
         metalFramebuffer=[MTLRenderPassDescriptor renderPassDescriptor];
         [metalFramebuffer retain];
     }
-    else
-    {
-    EAGLContext *aContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
-    if (aContext == nil)
-	    aContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    
-    if (!aContext)
-        NSLog(@"Failed to create ES context");
-    else if (![EAGLContext setCurrentContext:aContext])
-        NSLog(@"Failed to set ES context current");
-    
-    self.context = aContext;
-    [aContext release];
-    
-    [self setContext:context];
-    }
     [self setFramebuffer];
 }
 
 - (void) tearDown
 {
     // Tear down context.
-    if (metalDevice) {
-    }
-    else {
-        if ([EAGLContext currentContext] == context)
-            [EAGLContext setCurrentContext:nil];
-    }
 }
 
 - (BOOL)canBecomeFirstResponder
 {
     return gdr_keyboardVisible();
-}
-
-- (EAGLContext *)context
-{
-    return context;
-}
-
-- (void)setContext:(EAGLContext *)newContext
-{
-    if (context != newContext)
-    {
-        [self deleteFramebuffer];
-        
-        [context release];
-        context = [newContext retain];
-        
-        [EAGLContext setCurrentContext:nil];
-    }
 }
 
 static int lfbw=-1,lfbh=-1;
@@ -158,15 +99,12 @@ static int lfbw=-1,lfbh=-1;
             [metalDrawable retain];
             if (metalDepth==nil) {
                 MTLTextureDescriptor *td=[MTLTextureDescriptor new];
-                td.pixelFormat=MTLPixelFormatDepth32Float;
+                td.pixelFormat=MTLPixelFormatDepth32Float_Stencil8;
                 td.width=[metalDrawable.texture width];
                 td.height=[metalDrawable.texture height];
+                td.storageMode=MTLStorageModePrivate;
                 td.usage=MTLTextureUsageRenderTarget;
                 metalDepth=[metalDevice newTextureWithDescriptor:td];
-                [metalDepth retain];
-                td.pixelFormat=MTLPixelFormatStencil8;
-                metalStencil=[metalDevice newTextureWithDescriptor:td];
-                [metalStencil retain];
             }
             metalFramebuffer.colorAttachments[0].texture=metalDrawable.texture;
             metalFramebuffer.depthAttachment.texture=metalDepth;
@@ -184,61 +122,25 @@ static int lfbw=-1,lfbh=-1;
             metalShaderNewFrame();
         }
     }
-    else {
-    if (context && !defaultFramebuffer)
-    {
-        [EAGLContext setCurrentContext:context];
-        
-        // Create default framebuffer object.
-        glGenFramebuffers(1, &defaultFramebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
-        
-        // Create color render buffer and allocate backing store.
-        glGenRenderbuffers(1, &colorRenderbuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-        [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer];
-        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &framebufferWidth);
-        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &framebufferHeight);
-        
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
-        
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
-        gdr_surfaceChanged(framebufferWidth,framebufferHeight);
     }
-}
-}
 
 - (void)deleteFramebuffer
 {
     if (metalDevice)
     {
+        if (metalDrawable!=nil) {
+            metalShaderEnginePresent(metalDrawable);
         [metalDrawable release];
         metalDrawable=nil;
+            if (@available (iOS 11, tvOS 11, macOS 10.13, *))
+                [[MTLCaptureManager sharedCaptureManager].defaultCaptureScope endScope];
+        }
         [metalDepth release];
         metalDepth=nil;
         [metalStencil release];
         metalStencil=nil;
         lfbw=-1;
         lfbh=-1;
-    }
-    else {
-    if (context)
-    {
-        [EAGLContext setCurrentContext:context];
-        
-        if (defaultFramebuffer)
-        {
-            glDeleteFramebuffers(1, &defaultFramebuffer);
-            defaultFramebuffer = 0;
-        }
-        
-        if (colorRenderbuffer)
-        {
-            glDeleteRenderbuffers(1, &colorRenderbuffer);
-            colorRenderbuffer = 0;
-        }
-    }
     }
     framebufferDirty=FALSE;
 }
@@ -247,20 +149,10 @@ static int lfbw=-1,lfbh=-1;
 {
     if (framebufferDirty)
             [self deleteFramebuffer];
-   if (metalDevice||context)
+   if (metalDevice)
     {
-        if (metalDevice) {
-        }
-        if (context)
-        [EAGLContext setCurrentContext:context];
-        
-        if (context&&(!defaultFramebuffer))
+        if (!metalDrawable)
             [self createFramebuffer];
-        if (metalDevice&&(!metalDrawable))
-            [self createFramebuffer];
-        
-        if (context)
-        glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
         
         //GIDEROS-TAG-ATV:PREDRAW//
         //glViewport(0, 0, framebufferWidth, framebufferHeight);
@@ -271,8 +163,6 @@ static int lfbw=-1,lfbh=-1;
 {
     BOOL success = FALSE;
     
-    if (metalDevice||context)
-    {
         if (metalDevice) {
             metalShaderEnginePresent(metalDrawable);
             [metalDrawable release];
@@ -283,15 +173,7 @@ static int lfbw=-1,lfbh=-1;
             [self createFramebuffer];
             success= TRUE;
         }
-        else {
-        [EAGLContext setCurrentContext:context];
-        
-        glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-        
-        success = [context presentRenderbuffer:GL_RENDERBUFFER];
-        }
         //GIDEROS-TAG-ATV:POSTDRAW//
-    }
     
     return success;
 }
@@ -354,8 +236,8 @@ static int lfbw=-1,lfbh=-1;
 
 - (void)deleteBackward;
 {
-    gdr_keyDown(8,0); //Simulate a backspace key press and release
-    gdr_keyUp(8,0);
+    gdr_keyDown(0x33,0); //Simulate a backspace key press and release
+    gdr_keyUp(0x33,0);
 }
 
 - (void) reportLuaError:(NSString *)error

@@ -9,21 +9,19 @@
 #import "ViewController.h"
 #import "EAGLView.h"
 
+#define UIView NSView
 #include "giderosapi.h"
 
 @interface ViewController ()
-@property (nonatomic, assign) CVDisplayLink *displayLink;
+@property (nonatomic, assign) CVDisplayLinkRef displayLink;
 @end
 
 @implementation ViewController
 
-NSMutableArray *tableData;
-
-@synthesize animating, displayLink, glView, tableView;
+@synthesize animating, glView;
 
 - (id)init
 {
-    tableData = [[NSMutableArray alloc] init];
 	if (self = [super init])
 	{
 		animating = FALSE;
@@ -36,47 +34,37 @@ NSMutableArray *tableData;
 
 - (void)loadView
 {
-	self.glView = [[EAGLView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	self.glView.clearsContextBeforeDrawing = NO;
-	self.glView.multipleTouchEnabled = YES;
-	self.glView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	
-	UIView* rootView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];       
-	[rootView addSubview:glView];   
-	
-	self.view = rootView;
+    self.glView = [[EAGLView alloc] initWithFrame:CGRectMake(0,0,320,240)];
+	self.view = self.glView;
 }
 
 - (void)viewDidLoad
 {
     [self.glView setup];
-}
-
-- (void)dealloc
+    CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
+    CVDisplayLinkSetOutputHandler(displayLink, ^CVReturn(CVDisplayLinkRef  _Nonnull displayLink, const CVTimeStamp * _Nonnull inNow, const CVTimeStamp * _Nonnull inOutputTime, CVOptionFlags flagsIn, CVOptionFlags * _Nonnull flagsOut) {
+        dispatch_async(dispatch_get_main_queue(), ^
 {
-    [tableData release];
-    
-    [super dealloc];
+            [self drawFrame];
+        });
+        return kCVReturnSuccess;
+    });
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [self startAnimation];
-    
-    [super viewWillAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self stopAnimation];
-    
-    [super viewWillDisappear:animated];
 }
 
 - (void)viewDidUnload
 {
-	[super viewDidUnload];
-
+    CVDisplayLinkRelease(self.displayLink);
+    self.displayLink = NULL;
     [self.glView tearDown];
 }
 
@@ -105,12 +93,9 @@ NSMutableArray *tableData;
 
 - (void)startAnimation
 {
-    if (!animating)
+    if ((!animating)&&displayLink)
     {
-		CADisplayLink *aDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(drawFrame)];
-        [aDisplayLink setFrameInterval:animationFrameInterval];
-        [aDisplayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        self.displayLink = aDisplayLink;
+        CVDisplayLinkStart(displayLink);
         
         animating = TRUE;
     }
@@ -118,41 +103,30 @@ NSMutableArray *tableData;
 
 - (void)stopAnimation
 {
-    if (animating)
+    if ((animating)&&displayLink)
     {
-        [self.displayLink invalidate];
-        self.displayLink = nil;
+        CVDisplayLinkStop(displayLink);
         animating = FALSE;
     }
 }
 
 - (void)drawFrame
 {
+    @autoreleasepool {
     gdr_drawFrame();
+}
 }
 
 - (void)didReceiveMemoryWarning
 {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
     
     // Release any cached data, images, etc. that aren't in use.
 	gdr_didReceiveMemoryWarning();
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void)windowDidResize:(NSNotification *)notification
 {
-	return gdr_shouldAutorotateToInterfaceOrientation(interfaceOrientation);
-}
-
--(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-	gdr_willRotateToInterfaceOrientation(toInterfaceOrientation);
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-	gdr_didRotateFromInterfaceOrientation(fromInterfaceOrientation);
+    [self.glView resized];
 }
 
 - (NSUInteger)supportedInterfaceOrientations
@@ -169,82 +143,9 @@ NSMutableArray *tableData;
      if(supported)
      return result;
      else
-     return UIInterfaceOrientationMaskAll;*/
-    return gdr_supportedInterfaceOrientations();
-
-}
-
-- (void)initTable{
-    CGRect bounds = [[UIScreen mainScreen] bounds];
-    self.tableView=[[UITableView alloc]init];
-    self.tableView.frame = CGRectMake(0,0,bounds.size.width,bounds.size.height);
-    self.tableView.dataSource=self;
-    self.tableView.delegate=self;
-    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
-    
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, 100)];
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [button addTarget:self
-               action:@selector(hideTable)
-     forControlEvents:UIControlEventTouchUpInside];
-    [button setTitle:@"Back" forState:UIControlStateNormal];
-    button.frame = CGRectMake(0.0, 30.0, 80.0, 40.0);
-    [headerView  addSubview:button];
-    UILabel *labelView = [[UILabel alloc] initWithFrame:CGRectMake(120, 0, 200, 100)];
-    [labelView setText:@"Gideros Projects"];
-    labelView.font=[labelView.font fontWithSize:25];
-    [headerView addSubview:labelView];
-    self.tableView.tableHeaderView = headerView;
-    [labelView release];
-    [headerView release];
-    [self.tableView reloadData];
-    [self.view addSubview:self.tableView];
-    [self.tableView setHidden:true];
-}
-
-- (void)showTable{
-    if(self.tableView){
-        [self.tableView setHidden:false];
-    }
-}
-
-- (void)hideTable{
-    if(self.tableView){
-        [self.tableView setHidden:true];
-    }
-}
-
-- (void)addProject:(NSString*)project{
-    [tableData addObject:project];
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-
-    return [tableData count];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *simpleTableIdentifier = @"SimpleTableItem";
-    
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-    
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
-    }
-    cell.backgroundView = [[UIView alloc] init];
-    [cell.backgroundView setBackgroundColor:[UIColor whiteColor]];
-    [[[cell contentView] subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self hideTable];
-    gdr_openProject([tableData objectAtIndex:indexPath.row]);
+     return UIInterfaceOrientationMaskAll;
+    return gdr_supportedInterfaceOrientations();*/
+    return 0;
 }
 
 @end
