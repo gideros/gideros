@@ -507,7 +507,7 @@
 		5FD896DE15CED77F00D34824 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 1220;
 				ORGANIZATIONNAME = "Gideros Mobile";
 				TargetAttributes = {
 					033BD413256FA4D80059695F = {
@@ -521,10 +521,9 @@
 			};
 			buildConfigurationList = 5FD896E115CED77F00D34824 /* Build configuration list for PBXProject "iOS Template" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -684,7 +683,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-mac";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -747,7 +746,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-mac";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -771,6 +770,7 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_BITCODE = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -839,6 +839,7 @@
 					"\"$(SRCROOT)/iOS Template/Plugins\"",
 					"\"$(SRCROOT)/iOS Template\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-ios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -864,6 +865,7 @@
 					"\"$(SRCROOT)/iOS Template/Plugins\"",
 					"\"$(SRCROOT)/iOS Template\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-ios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -903,7 +905,7 @@
 					"$(PROJECT_DIR)/AppleTV",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-atv";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -947,7 +949,7 @@
 					Template,
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-atv";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;

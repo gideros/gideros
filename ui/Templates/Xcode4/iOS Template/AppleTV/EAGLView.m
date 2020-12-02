@@ -86,7 +86,7 @@ extern void metalShaderNewFrame();
     return gdr_keyboardVisible();
 }
 
-static int lfbw=-1,lfbh=-1;
+static NSUInteger lfbw=0,lfbh=0;
 - (void)createFramebuffer
 {
     if (metalDevice)
@@ -139,8 +139,8 @@ static int lfbw=-1,lfbh=-1;
         metalDepth=nil;
         [metalStencil release];
         metalStencil=nil;
-        lfbw=-1;
-        lfbh=-1;
+        lfbw=0;
+        lfbh=0;
     }
     framebufferDirty=FALSE;
 }

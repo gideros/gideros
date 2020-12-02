@@ -170,8 +170,7 @@ NSMutableArray *tableData;
      return result;
      else
      return UIInterfaceOrientationMaskAll;*/
-    return gdr_supportedInterfaceOrientations();
-
+    return (NSUInteger)gdr_supportedInterfaceOrientations();
 }
 
 - (void)initTable{

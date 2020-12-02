@@ -131,6 +131,8 @@ struct ProjectProperties
 		mouseToTouch = 1;
 		touchToMouse = 1;
 		mouseTouchOrder = 0;
+        windowWidth = 0;
+        windowHeight = 0;
 	}
 
 	int scaleMode;
@@ -144,6 +146,8 @@ struct ProjectProperties
 	int mouseToTouch;
 	int touchToMouse;
 	int mouseTouchOrder;
+    int windowWidth;
+    int windowHeight;
 };
 
 class ApplicationManager;
@@ -904,7 +908,13 @@ void ApplicationManager::openProject(const char* project){
         buffer >> properties.mouseToTouch;
         buffer >> properties.touchToMouse;
         buffer >> properties.mouseTouchOrder;
-        
+        buffer >> properties_.windowWidth;
+        buffer >> properties_.windowHeight;
+        if (properties_.windowWidth == 0 && properties_.windowHeight == 0) {
+            properties_.windowWidth = properties_.logicalWidth;
+            properties_.windowHeight = properties_.logicalHeight;
+        }
+
         setProjectProperties(properties);
         
         //loading lua files
@@ -1101,6 +1111,13 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.mouseToTouch;
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
+    
+    buffer >> properties_.windowWidth;
+    buffer >> properties_.windowHeight;
+    if (properties_.windowWidth == 0 && properties_.windowHeight == 0) {
+        properties_.windowWidth = properties_.logicalWidth;
+        properties_.windowHeight = properties_.logicalHeight;
+    }
 
 #if !TARGET_OS_OSX
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
@@ -1123,6 +1140,10 @@ void ApplicationManager::loadProperties()
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
+#if TARGET_OS_OSX
+    if (properties_.windowWidth == 0 && properties_.windowHeight == 0)
+        setWindowSize(properties_.windowWidth == 0,properties_.windowHeight);
+#endif
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
@@ -1210,6 +1231,11 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
+#if TARGET_OS_OSX
+    if (properties_.windowWidth == 0 && properties_.windowHeight == 0)
+        setWindowSize(properties_.windowWidth == 0,properties_.windowHeight);
+#endif
+    
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else

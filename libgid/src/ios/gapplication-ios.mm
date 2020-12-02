@@ -151,7 +151,9 @@ int gapplication_getScreenDensity()
 
 void gapplication_exit()
 {
-        
+#if TARGET_OS_OSX
+    [[NSApplication sharedApplication] terminate:nil];
+#endif
 }
 
 void gapplication_enqueueEvent(int type, void *event, int free)

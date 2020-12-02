@@ -32,7 +32,7 @@ end
 
 function D3Anim.animate(m,a)
 	local ta={}
-	local dtm=(os:clock()-a.tm)*1000
+	local dtm=(os:timer()-a.tm)*1000
 	local hasNext=false
 	for _,b in ipairs(a.anim.bones) do
 		local cf=1
@@ -50,7 +50,7 @@ function D3Anim.animate(m,a)
 	end
 	if not hasNext then
 		if not a.loop then return nil end
-		a.tm=os:clock()
+		a.tm=os:timer()
 	end
 	return ta
 end
@@ -68,7 +68,7 @@ function D3Anim.tick()
 			end
 			local ao,ac,aor=nil,nil,1
 			if anim.oldAnim then
-				local aratio=(os:clock()-anim.oldStart)/anim.oldLen
+				local aratio=(os:timer()-anim.oldStart)/anim.oldLen
 				if aratio>=1 then
 					anim.oldAnim=nil
 				else
@@ -115,7 +115,7 @@ end
 function D3Anim.setAnimation(model,anim,track,loop,transitionTime)
 	assert(D3Anim._animatedModel[model],"Model not animatable")
 	local an=D3Anim._animatedModel[model]
-	local oldAnim,oldStart,oldLen,tm=nil,nil,nil,os:clock()
+	local oldAnim,oldStart,oldLen,tm=nil,nil,nil,os:timer()
 	if transitionTime and an.animations[track] then
 		oldAnim=an.animations[track]
 		oldStart=tm

@@ -87,7 +87,7 @@ extern void metalShaderNewFrame();
     return gdr_keyboardVisible();
 }
 
-static int lfbw=-1,lfbh=-1;
+static NSUInteger lfbw=0,lfbh=0;
 - (void)createFramebuffer
 {
     if (metalDevice)
@@ -140,8 +140,8 @@ static int lfbw=-1,lfbh=-1;
         metalDepth=nil;
         [metalStencil release];
         metalStencil=nil;
-        lfbw=-1;
-        lfbh=-1;
+        lfbw=0;
+        lfbh=0;
     }
     framebufferDirty=FALSE;
 }
@@ -150,9 +150,9 @@ static int lfbw=-1,lfbh=-1;
 {
    if (framebufferDirty)
             [self deleteFramebuffer];
-   if (metalDevice||context)
+   if (metalDevice)
     {
-        if (metalDevice&&(!metalDrawable))
+        if (!metalDrawable)
             [self createFramebuffer];
         
         //GIDEROS-TAG-IOS:PREDRAW//
@@ -227,9 +227,7 @@ static int lfbw=-1,lfbh=-1;
     CGSize drawableSize = self.bounds.size;
     drawableSize.width *= self.contentScaleFactor;
     drawableSize.height *= self.contentScaleFactor;
-#ifdef GIDEROS_METAL
     metalLayer.drawableSize = drawableSize;
-#endif
     framebufferDirty=TRUE;
 }
 

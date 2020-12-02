@@ -34,7 +34,7 @@
 
 - (void)loadView
 {
-    self.glView = [[EAGLView alloc] initWithFrame:CGRectMake(0,0,320,240)];
+    self.glView = [[EAGLView alloc] initWithFrame:CGRectMake(0,0,320,480)];
 	self.view = self.glView;
 }
 

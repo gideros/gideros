@@ -68,11 +68,19 @@ std::vector<std::string> getDeviceInfo()
 }
 
 void setWindowSize(int width, int height){
-
+#if TARGET_OS_OSX
+   NSWindow *win=[[[NSApplication sharedApplication] delegate] window];
+   [win setContentSize:NSMakeSize(width, height)];
+#endif
 }
 
 void setFullScreen(bool fullScreen){
-
+#if TARGET_OS_OSX
+    NSWindow *win=[[[NSApplication sharedApplication] delegate] window];
+    bool isFs=[win styleMask]&NSWindowStyleMaskFullScreen;
+    if (isFs!=fullScreen)
+        [win toggleFullScreen:nil];
+#endif
 }
 
 std::string getDeviceName(){
@@ -179,7 +187,6 @@ bool g_checkStringProperty(bool isSet, const char* what){
 }
 
 void g_setProperty(const char* what, const char* arg){
-
 }
 
 static std::string g_propResult;

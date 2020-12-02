@@ -35,7 +35,6 @@
     self.window = [[[UIWindow alloc] initWithFrame:bounds] autorelease];
 	
     self.viewController = [[[ViewController alloc] init] autorelease];	
-    self.viewController.wantsFullScreenLayout = YES;
 
 	[self.viewController view];
 

@@ -18,6 +18,7 @@ metalShaderBuffer::metalShaderBuffer(ShaderTexture *texture,bool forDepth)
     if (forDepth) {
         mrpd.depthAttachment.texture=tex->mtex;
         mrpd.stencilAttachment.texture=tex->mtex;
+        stencil=nil;
     }
     else {
 	    mrpd.colorAttachments[0].texture=tex->mtex;

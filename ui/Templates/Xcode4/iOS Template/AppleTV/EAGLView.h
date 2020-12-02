@@ -16,15 +16,8 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 @interface EAGLView : UIView <UIKeyInput>
 {
 @private
-    
-    // The pixel dimensions of the CAEAGLLayer.
-    GLint framebufferWidth;
-    GLint framebufferHeight;
-    
-    // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view.
-    GLuint defaultFramebuffer, colorRenderbuffer;
-
-	BOOL framebufferDirty;
+    NSUInteger framebufferWidth;
+    NSUInteger framebufferHeight;	BOOL framebufferDirty;
 	BOOL retinaDisplay;
     CAMetalLayer *metalLayer;
     id<CAMetalDrawable> metalDrawable;

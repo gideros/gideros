@@ -26,7 +26,7 @@
 {
     [self copyUserDefaultsToCache];
     
-    CGRect bounds = CGRectMake(100,100, 240,320);
+    CGRect bounds = CGRectMake(100,100, 320,480);
  
     self.viewController = [[ViewController alloc] init];
     self.window = [NSWindow windowWithContentViewController:self.viewController];
@@ -46,8 +46,8 @@
         isPlayer = true;
     }
     
-    gdr_initialize([self.viewController getGlView], width, height, isPlayer);
-    
+    gdr_initialize([self.viewController getGlView], height, width, isPlayer); //Reversed width,height
+ 
     [window makeKeyAndOrderFront:NSApp];
     gdr_drawFirstFrame();
     

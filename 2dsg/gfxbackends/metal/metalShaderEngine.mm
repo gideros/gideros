@@ -258,7 +258,7 @@ id<MTLRenderCommandEncoder> metalShaderEngine::encoder()
         [mrce retain];
         metalShaderProgram::resetAll();
         [mrce setViewport:vp_];
-        [mrce setScissorRect:sr_];
+        setClip(sr_.x,sr_.y,sr_.width,sr_.height);
     }
     return mrce;
 }
