@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		031C2EAE2576A82F00E1E99D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42E256FA5B70059695F /* ViewController.m */; };
+		031C2EB22576A83300E1E99D /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42C256FA5B70059695F /* EAGLView.m */; };
 		033BD418256FA4D80059695F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD417256FA4D80059695F /* AppDelegate.m */; };
 		033BD420256FA4D90059695F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD41F256FA4D90059695F /* main.m */; };
 		033BD45D256FA72E0059695F /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 033BD45C256FA72E0059695F /* plugins.cpp */; };
 		033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 033BD4642570FF8A0059695F /* Cocoa.framework */; };
-		034B58B6257646E1005D0134 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 033BD41E256FA4D90059695F /* Info.plist */; };
 		034B58BA25767BB9005D0134 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
 		034B58DC25767F2C005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E6817991BC6FFB20002D406 /* Images.xcassets */; };
 		034B58EE25767FE3005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58ED25767FE3005D0134 /* Images.xcassets */; };
@@ -25,9 +26,6 @@
 		0369703925712FF0002A4EB3 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369703825712FEF002A4EB3 /* OpenAL.framework */; };
 		0369703B25713037002A4EB3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369703A25713037002A4EB3 /* CoreLocation.framework */; };
 		0369704D257133A7002A4EB3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369704C257133A7002A4EB3 /* AudioToolbox.framework */; };
-		03697051257133DA002A4EB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369704725713304002A4EB3 /* AVFoundation.framework */; };
-		0369706225713A2F002A4EB3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42E256FA5B70059695F /* ViewController.m */; };
-		0369706625713A39002A4EB3 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 033BD42C256FA5B70059695F /* EAGLView.m */; };
 		036970792574EE7A002A4EB3 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 036970782574EE7A002A4EB3 /* default.metallib */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
@@ -88,7 +86,7 @@
 		033BD417256FA4D80059695F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		033BD41E256FA4D90059695F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		033BD41F256FA4D90059695F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		033BD421256FA4D90059695F /* iOS_Template_AppName.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS_Template_AppName.entitlements; sourceTree = "<group>"; };
+		033BD421256FA4D90059695F /* iOS_Template_Mac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS_Template_Mac.entitlements; sourceTree = "<group>"; };
 		033BD42B256FA5B70059695F /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		033BD42C256FA5B70059695F /* EAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAGLView.m; sourceTree = "<group>"; };
 		033BD42D256FA5B70059695F /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -271,7 +269,7 @@
 				033BD417256FA4D80059695F /* AppDelegate.m */,
 				033BD41E256FA4D90059695F /* Info.plist */,
 				033BD41F256FA4D90059695F /* main.m */,
-				033BD421256FA4D90059695F /* iOS_Template_AppName.entitlements */,
+				033BD421256FA4D90059695F /* iOS_Template_Mac.entitlements */,
 				034B58F225768020005D0134 /* Images.xcassets */,
 			);
 			path = Mac;
@@ -550,7 +548,6 @@
 				036970792574EE7A002A4EB3 /* default.metallib in Resources */,
 				034B58F325768020005D0134 /* Images.xcassets in Resources */,
 				034B58BA25767BB9005D0134 /* assets in Resources */,
-				034B58B6257646E1005D0134 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,6 +584,8 @@
 			files = (
 				033BD420256FA4D90059695F /* main.m in Sources */,
 				033BD418256FA4D80059695F /* AppDelegate.m in Sources */,
+				031C2EAE2576A82F00E1E99D /* ViewController.m in Sources */,
+				031C2EB22576A83300E1E99D /* EAGLView.m in Sources */,
 				033BD45D256FA72E0059695F /* plugins.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -655,7 +654,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_ENTITLEMENTS = "iOS Template AppName/iOS_Template_AppName.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Mac/iOS_Template_Mac.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = BUILD_NUMBER;
@@ -684,7 +684,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-Mac";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -716,7 +716,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_ENTITLEMENTS = "iOS Template AppName/iOS_Template_AppName.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Mac/iOS_Template_Mac.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -746,7 +747,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-Mac";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};

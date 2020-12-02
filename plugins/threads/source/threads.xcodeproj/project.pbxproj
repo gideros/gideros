@@ -263,6 +263,7 @@
 					"../threads-runtimes/threads-c/threads-c/include",
 					../../../lua/src,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -285,6 +286,7 @@
 					"../threads-runtimes/threads-c/threads-c/include",
 					../../../lua/src,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

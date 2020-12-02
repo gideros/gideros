@@ -18,7 +18,7 @@
 
 @implementation ViewController
 
-@synthesize animating, glView;
+@synthesize animating, glView, displayLink;
 
 - (id)init
 {

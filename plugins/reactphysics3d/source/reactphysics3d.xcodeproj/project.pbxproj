@@ -576,6 +576,7 @@
 					../../../Sdk/include/gideros,
 					../reactphysics3d/include,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -599,6 +600,7 @@
 					../../../Sdk/include/gideros,
 					../reactphysics3d/include,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

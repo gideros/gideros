@@ -15,44 +15,35 @@ metalShaderBuffer::metalShaderBuffer(ShaderTexture *texture,bool forDepth)
 	
 	mrpd=[MTLRenderPassDescriptor renderPassDescriptor];
     [mrpd retain];
-    if (forDepth)
+    if (forDepth) {
         mrpd.depthAttachment.texture=tex->mtex;
-    else
-	    mrpd.colorAttachments[0].texture=tex->mtex;
-    mrpd.depthAttachment.clearDepth=1.0;
-    clearReq=0;
-    depth=nil;
-    //Alway create depth stencil, to avoid resetting the encoder
-    MTLTextureDescriptor *td=[MTLTextureDescriptor new];
-    td.pixelFormat=MTLPixelFormatDepth32Float_Stencil8;
-    td.storageMode=MTLStorageModePrivate;
-    td.width=tex->width;
-    td.height=tex->height;
-    td.usage=MTLTextureUsageRenderTarget;
-    stencil=[metalDevice newTextureWithDescriptor:td];
-    if (!forDepth_) {
-        //td.pixelFormat=MTLPixelFormatDepth32Float;
-        //depth=[metalDevice newTextureWithDescriptor:td];
-        mrpd.depthAttachment.texture=stencil;
+        mrpd.stencilAttachment.texture=tex->mtex;
     }
     else {
-        /*
-        //Create the color attachment (shouldn't be required)
-        td.pixelFormat=MTLPixelFormatRGBA8Unorm;
-        depth=[metalDevice newTextureWithDescriptor:td];
-        mrpd.colorAttachments[0].texture=depth;*/
+	    mrpd.colorAttachments[0].texture=tex->mtex;
+        //Alway create depth stencil, to avoid resetting the encoder
+        MTLTextureDescriptor *td=[MTLTextureDescriptor new];
+        td.pixelFormat=MTLPixelFormatDepth32Float_Stencil8;
+        td.storageMode=MTLStorageModePrivate;
+        td.width=tex->width;
+        td.height=tex->height;
+        td.usage=MTLTextureUsageRenderTarget;
+        stencil=[metalDevice newTextureWithDescriptor:td];
+        mrpd.depthAttachment.texture=stencil;
+        mrpd.stencilAttachment.texture=stencil;
+        [td release];
     }
-    mrpd.stencilAttachment.texture=stencil;
+    mrpd.depthAttachment.clearDepth=1.0;
     mrpd.depthAttachment.storeAction=MTLStoreActionStore;
-    [td release];
+    clearReq=0;
+    depth=nil; //Combined depth-stencil
 }
 
 metalShaderBuffer::~metalShaderBuffer()
 {
     //Delete depth buffer
     if (stencil) {
-        if (!forDepth_)
-            mrpd.depthAttachment.texture=nil;
+        mrpd.depthAttachment.texture=nil;
         mrpd.stencilAttachment.texture=nil;
         if (depth)
             [depth release];

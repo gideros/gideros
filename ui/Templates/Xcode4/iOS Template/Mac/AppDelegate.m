@@ -24,9 +24,6 @@
 
 - (void) applicationDidFinishLaunching:(NSNotification *)launchOptions
 {
-    NSArray *path1 = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cachesDirectory = [path1 objectAtIndex:0];
-        
     [self copyUserDefaultsToCache];
     
     CGRect bounds = CGRectMake(100,100, 240,320);
@@ -50,18 +47,6 @@
     }
     
     gdr_initialize([self.viewController getGlView], width, height, isPlayer);
-    /*
-    if ([[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending)
-    {
-        [self.window setRootViewController:self.viewController];
-    }
-    else
-    {
-        [self.window addSubview:self.viewController.view];
-    }
-    
-    [self.window makeKeyAndVisible];
-    */
     
     [window makeKeyAndOrderFront:NSApp];
     gdr_drawFirstFrame();
@@ -153,6 +138,11 @@
             
         }
     }
+}
+
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
+{
+    return TRUE;
 }
 
 - (void)dealloc
