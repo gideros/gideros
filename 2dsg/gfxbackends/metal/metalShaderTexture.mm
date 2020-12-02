@@ -16,7 +16,7 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
     this->format=format;
 
     MTLPixelFormat glformat=MTLPixelFormatRGBA8Unorm;
-    int bpr=4;
+    bpr=4;
     switch (packing)
     {
     	case PK_UBYTE: {

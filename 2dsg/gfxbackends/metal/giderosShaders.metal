@@ -149,11 +149,12 @@ vertex PVertexC gidCV(InVertexC inVertex [[stage_in]],
     return outVert;
 }
 
-vertex PVertex gidCV3(InVertex3 inVertex [[stage_in]],
+vertex PVertexC gidCV3(InVertexC3 inVertex [[stage_in]],
                     constant Uniforms &uniforms [[buffer(0)]])
 {
-    PVertex outVert;
+    PVertexC outVert;
     outVert.position = uniforms.vMatrix * float4(inVertex.vVertex,1.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
     return outVert;
 }
 

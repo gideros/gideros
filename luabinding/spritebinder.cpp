@@ -565,6 +565,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         FILL_BOOL("equalizeCells",equalizeCells);
         FILL_BOOL("resizeContainer",resizeContainer);
         FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
+        FILL_NUM("zOffset",zOffset);
         p->dirty=true;
 	}
 	return 0;
@@ -622,6 +623,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_BOOL("equalizeCells",equalizeCells);
         STOR_BOOL("resizeContainer",resizeContainer);
         STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
+        STOR_NUM("zOffset",zOffset);
 	}
 	else
 		lua_pushnil(L);

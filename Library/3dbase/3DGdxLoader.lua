@@ -126,6 +126,12 @@ function loadGdx(file,imtls)
 	if #bones==0 then bones=all end
 	root.bones=bones
 	root.animations=gdx.animations
+    for _,mat in ipairs(gdx.materials or {}) do
+	   local md={}
+	   md.kd=mat.diffuse
+	   mtls[mat.id]=md
+    end
+
 	G3DFormat.computeG3DSizes(root)
 	return root,mtls
 end

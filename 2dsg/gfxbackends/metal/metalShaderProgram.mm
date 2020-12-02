@@ -187,7 +187,8 @@ void metalShaderProgram::useProgram() {
             [mrps[pkey] retain];
     }
 
-    [encoder() setRenderPipelineState:mrps[pkey]];
+    if (mrps[pkey]!=nil)
+        [encoder() setRenderPipelineState:mrps[pkey]];
 }
 
 void metalShaderProgram::setData(int index, DataType type, int mult,
@@ -219,22 +220,27 @@ void metalShaderProgram::setData(int index, DataType type, int mult,
 
     int isize=elmSize * count * mult;
     id<MTLBuffer> vbo=cache?getCachedVBO(cache,modified,isize):nil;
-    if ((vbo==nil)&&(isize>4096))
+    bool releaseVbo=false;
+    if ((vbo==nil)&&(isize>4096)) {
         vbo=[metalDevice newBufferWithLength:isize options:MTLResourceStorageModeShared];
+        releaseVbo=true;
+    }
     if (vbo==nil) {
         [encoder() setVertexBytes:((char *)ptr)+offset length:isize atIndex:attributes[index].slot];
     }
     else {
-    if (modified||(!cache)) {
-        memcpy([vbo contents],ptr,isize);
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_1011
-        [vbo didModifyRange:NSMakeRange(0,isize)];
-#endif
-#endif
-    }
-    
-    [encoder() setVertexBuffer:vbo offset:offset atIndex:attributes[index].slot];
+        if (modified||(!cache)) {
+            memcpy([vbo contents],ptr,isize);
+    #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+    #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_1011
+            [vbo didModifyRange:NSMakeRange(0,isize)];
+    #endif
+    #endif
+        }
+        
+        [encoder() setVertexBuffer:vbo offset:offset atIndex:attributes[index].slot];
+        if (releaseVbo)
+                [vbo release];
     }
 }
 

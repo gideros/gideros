@@ -314,6 +314,8 @@ static int r3dWorld_Step(lua_State* L) {
 #ifndef _NO_THROW
 	} catch (std::runtime_error &e) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");
+	} catch (...) {
+		luaL_error(L,"Failed to step world, something is not set up correctly");
 	}
 #endif
 
@@ -788,10 +790,6 @@ public:
 					"Vertex array should contain a multiple of 3 items, %d supplied",
 					vn);
 		size_t in = lua_objlen(L, n + 1);
-		if (in % 3)
-			luaL_error(L,
-					"Index array should contain a multiple of 3 items, %d supplied",
-					in);
 		if (hasFaces) {
 			luaL_checktype(L, n + 2, LUA_TTABLE);
 			fc = lua_objlen(L, n + 2);
@@ -812,9 +810,15 @@ public:
 			}
 		}
 		else
+		{
 			facesn=NULL;
+			if (in % 3)
+			luaL_error(L,
+					"Index array should contain a multiple of 3 items, %d supplied",
+					in);
+		}
 		vc = vn / 3;
-		ic = in / 3;
+		ic = in;
 		indices = new int[in];
 		for (size_t k = 0; k < in; k++) {
 			lua_rawgeti(L, n + 1, k + 1);
@@ -853,7 +857,7 @@ public:
 		faces = new rp3d::PolygonVertexArray::PolygonFace[fc];
 		rp3d::PolygonVertexArray::PolygonFace* face = faces;
 		int ib=0;
-		for (size_t f = 0; f < ic; f++) {
+		for (size_t f = 0; f < fc; f++) {
 			face->indexBase = ib;
 			face->nbVertices = facesn[f];
 			ib+=facesn[f];
@@ -897,7 +901,7 @@ public:
 	rp3d::TriangleMesh *trimesh;
 	gidTriMesh(lua_State *L, int n) : gidMesh(L,n,false) {
 		triangleArray =
-		new rp3d::TriangleVertexArray(vc, vertices, 3 * sizeof(float), ic,
+		new rp3d::TriangleVertexArray(vc, vertices, 3 * sizeof(float), ic/3,
 				indices, 3 * sizeof(int),
 				rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 				rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
@@ -1299,7 +1303,7 @@ void r3dDebugDraw::doDraw(const CurrentTransform& , float _UNUSED(sx), float _UN
 		bool wireframe=true;
 		DebugRenderer& dr = world_->getDebugRenderer();
 	    ShaderEngine* engine=gtexture_get_engine();
-	    ShaderProgram* shp=engine->getDefault(ShaderEngine::STDP_COLOR);
+	    ShaderProgram* shp=engine->getDefault(ShaderEngine::STDP_COLOR,ShaderEngine::STDPV_3D);
 		size_t nt=dr.getNbTriangles();
 		size_t nl=dr.getNbLines();
 		size_t ntv=wireframe?0:nt*3;

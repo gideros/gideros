@@ -423,6 +423,7 @@ using namespace metal;
 
 	_code=_code.._ucode.._pcode..(([=[
 vertex PVertex vmain(InVertex inVertex [[stage_in]],
+			uint gl_InstanceID [[instance_id]],
            constant Uniforms &uniforms [[buffer(0)]]%s)
 {
     PVertex outVert;

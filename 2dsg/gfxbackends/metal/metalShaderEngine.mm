@@ -10,6 +10,7 @@
 #include "ogl.h"
 #include <sstream>
 #include "metalShaders.h"
+#include <map>
 
 metalShaderEngine::BlendFactor metalShaderEngine::curSFactor;
 metalShaderEngine::BlendFactor metalShaderEngine::curDFactor;
@@ -390,6 +391,7 @@ static MTLCompareFunction stencilfuncToMetal(ShaderEngine::StencilFunc sf)
     return MTLCompareFunctionAlways;
 }
 
+std::map<ShaderEngine::DepthStencil,id<MTLDepthStencilState>> stateCache;
 void metalShaderEngine::setDepthStencil(DepthStencil state)
 {
     if (currentBuffer&&(state.dTest||(state.sFunc!=ShaderEngine::STENCIL_DISABLE)))
@@ -398,23 +400,28 @@ void metalShaderEngine::setDepthStencil(DepthStencil state)
     state.dClear=false;
     state.sClear=false;
     dsCurrent=state;
-    MTLDepthStencilDescriptor *mdsd=[MTLDepthStencilDescriptor new];
-    mdsd.depthWriteEnabled=state.dTest;
-    mdsd.depthCompareFunction=state.dTest?MTLCompareFunctionLess:MTLCompareFunctionAlways;
-    mdsd.frontFaceStencil.stencilCompareFunction=stencilfuncToMetal(state.sFunc);
-    mdsd.backFaceStencil.stencilCompareFunction=stencilfuncToMetal(state.sFunc);
-    mdsd.frontFaceStencil.stencilFailureOperation=stencilopToMetal(state.sFail);
-    mdsd.backFaceStencil.stencilFailureOperation=stencilopToMetal(state.sFail);
-    mdsd.frontFaceStencil.depthStencilPassOperation=stencilopToMetal(state.dPass);
-    mdsd.backFaceStencil.depthStencilPassOperation=stencilopToMetal(state.dPass);
-    mdsd.frontFaceStencil.depthFailureOperation=stencilopToMetal(state.dFail);
-    mdsd.backFaceStencil.depthFailureOperation=stencilopToMetal(state.dFail);
-    mdsd.frontFaceStencil.readMask=state.sMask;
-    mdsd.backFaceStencil.readMask=state.sMask;
-    mdsd.frontFaceStencil.writeMask=state.sWMask;
-    mdsd.backFaceStencil.writeMask=state.sWMask;
-    id<MTLDepthStencilState> mds=[metalDevice newDepthStencilStateWithDescriptor:mdsd];
-    [mdsd release];
+    
+    id<MTLDepthStencilState> mds=stateCache[state];
+    if (mds==nil) {
+        MTLDepthStencilDescriptor *mdsd=[MTLDepthStencilDescriptor new];
+        mdsd.depthWriteEnabled=state.dTest;
+        mdsd.depthCompareFunction=state.dTest?MTLCompareFunctionLess:MTLCompareFunctionAlways;
+        mdsd.frontFaceStencil.stencilCompareFunction=stencilfuncToMetal(state.sFunc);
+        mdsd.backFaceStencil.stencilCompareFunction=stencilfuncToMetal(state.sFunc);
+        mdsd.frontFaceStencil.stencilFailureOperation=stencilopToMetal(state.sFail);
+        mdsd.backFaceStencil.stencilFailureOperation=stencilopToMetal(state.sFail);
+        mdsd.frontFaceStencil.depthStencilPassOperation=stencilopToMetal(state.dPass);
+        mdsd.backFaceStencil.depthStencilPassOperation=stencilopToMetal(state.dPass);
+        mdsd.frontFaceStencil.depthFailureOperation=stencilopToMetal(state.dFail);
+        mdsd.backFaceStencil.depthFailureOperation=stencilopToMetal(state.dFail);
+        mdsd.frontFaceStencil.readMask=state.sMask;
+        mdsd.backFaceStencil.readMask=state.sMask;
+        mdsd.frontFaceStencil.writeMask=state.sWMask;
+        mdsd.backFaceStencil.writeMask=state.sWMask;
+        mds=[metalDevice newDepthStencilStateWithDescriptor:mdsd];
+        [mdsd release];
+        stateCache[state]=mds;
+    }
     [encoder() setDepthStencilState:mds];
     [encoder() setStencilReferenceValue:state.sRef];
     //[encoder() setStencilStoreAction:state.sFunc==(ShaderEngine::STENCIL_DISABLE)?MTLStoreActionDontCare: MTLStoreActionStore];    

@@ -771,6 +771,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		r.y+=constraints->offsetY+constraints->originY*r.height;
 
         comp->setBounds(r.x, r.y, r.width, r.height,true);
+        if (zOffset!=0)
+        	comp->setZ(zOffset);
         if (comp->layoutState&&comp->layoutState->dirty)
         {
             comp->layoutState->dirty=false;

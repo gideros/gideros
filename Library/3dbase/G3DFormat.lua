@@ -35,6 +35,18 @@ function G3DFormat.computeG3DSizes(g3d)
 		assert(g3d.type,"No type G3D structure")
 		assert(false,"Unrecognized object type: "..g3d.type)
 	end
+	local m=nil
+	if g3d.transform then
+		m=Matrix.new()
+		m:setMatrix(unpack(g3d.transform))
+	elseif g3d.srt then
+		m=G3DFormat.srtToMatrix(g3d.srt)
+	end
+	if m then
+		g3d.min[1],g3d.min[2],g3d.min[3]=m:transformPoint(g3d.min[1],g3d.min[2],g3d.min[3])
+		g3d.max[1],g3d.max[2],g3d.max[3]=m:transformPoint(g3d.max[1],g3d.max[2],g3d.max[3])
+	end
+
 	g3d.center={(g3d.max[1]+g3d.min[1])/2,(g3d.max[2]+g3d.min[2])/2,(g3d.max[3]+g3d.min[3])/2}
 end
 
@@ -191,7 +203,7 @@ end
 function G3DFormat.buildG3D(g3d,mtl,top)
 	local spr=nil
 	if g3d.type=="group" then
-		spr=Sprite.new()
+		spr=D3.Group.new()
 		local ltop=top or spr
 		spr.name=g3d.name
 		spr.objs={}
