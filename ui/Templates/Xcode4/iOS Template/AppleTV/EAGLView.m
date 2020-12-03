@@ -109,7 +109,7 @@ static NSUInteger lfbw=0,lfbh=0;
             metalFramebuffer.colorAttachments[0].texture=metalDrawable.texture;
             metalFramebuffer.depthAttachment.texture=metalDepth;
             metalFramebuffer.depthAttachment.loadAction=MTLLoadActionClear;
-            metalFramebuffer.stencilAttachment.texture=metalStencil;
+            metalFramebuffer.stencilAttachment.texture=metalDepth;
             metalFramebuffer.stencilAttachment.loadAction=MTLLoadActionClear;
             framebufferWidth=[metalDrawable.texture width];
             framebufferHeight=[metalDrawable.texture height];
@@ -128,17 +128,14 @@ static NSUInteger lfbw=0,lfbh=0;
 {
     if (metalDevice)
     {
-        if (metalDrawable!=nil) {
+        if (metalDrawable) {
             metalShaderEnginePresent(metalDrawable);
-        [metalDrawable release];
-        metalDrawable=nil;
+            metalDrawable=nil;
             if (@available (iOS 11, tvOS 11, macOS 10.13, *))
                 [[MTLCaptureManager sharedCaptureManager].defaultCaptureScope endScope];
         }
-        [metalDepth release];
+        metalDrawable=nil;
         metalDepth=nil;
-        [metalStencil release];
-        metalStencil=nil;
         lfbw=0;
         lfbh=0;
     }

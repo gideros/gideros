@@ -31,6 +31,7 @@
     self.viewController = [[ViewController alloc] init];
     self.window = [NSWindow windowWithContentViewController:self.viewController];
     self.window.delegate=self.viewController;
+    [self.window setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey]];
 
     int height = bounds.size.width;
     int width = bounds.size.height;

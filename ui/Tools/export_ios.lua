@@ -341,9 +341,9 @@ OTHER_LDFLAGS = "-ObjC";</by>
         end
         Export.callXml([[<template name="Project" path="">
         <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="]]..plist("ios")..[["/>
-           <append orig="//GIDEROS-TAG-ATV:IMPORTPLUGIN//" by="]]..plist("atv")..[["/>
-           <append orig="//GIDEROS-TAG-MAC:IMPORTPLUGIN//" by="]]..plist("mac")..[["/>
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="]]..plist("ios")..[[" force="true" />
+           <append orig="//GIDEROS-TAG-ATV:IMPORTPLUGIN//" by="]]..plist("atv")..[[" force="true" />
+           <append orig="//GIDEROS-TAG-MAC:IMPORTPLUGIN//" by="]]..plist("mac")..[[" force="true" />
         </replacelist>
         </template>]])
     end        

@@ -14,6 +14,12 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
 	this->wrap=wrap;
 	this->filter=filtering;
     this->format=format;
+    
+    if (format==FMT_NATIVE) {
+        bpr=0;
+        mtex=nil;
+        return;
+    }
 
     MTLPixelFormat glformat=MTLPixelFormatRGBA8Unorm;
     bpr=4;
@@ -135,6 +141,11 @@ void metalShaderTexture::readPixels(int x,int y,int width,int height,ShaderTextu
 
 void metalShaderTexture::setNative(void *externalTexture)
 {
+    if (mtex)
+        [mtex release];
+    mtex=(id<MTLTexture>)externalTexture;
+    if (mtex)
+        [mtex retain];
 }
 
 void *metalShaderTexture::getNative()
@@ -144,7 +155,8 @@ void *metalShaderTexture::getNative()
 
 metalShaderTexture::~metalShaderTexture()
 {
-	[mtex release];
+    if (mtex)
+        [mtex release];
 }
 
 

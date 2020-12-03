@@ -106,7 +106,7 @@ class metalShaderEngine : public ShaderEngine
 	int devWidth,devHeight;
     id<MTLCommandQueue> mcq;
     MTLViewport vp_;
-    MTLScissorRect sr_;
+    int clipX,clipY,clipW,clipH;
 protected:
     id<MTLSamplerState> tsNC,tsFC,tsNR,tsFR,tsDC;
     id<MTLCommandBuffer> mcb;

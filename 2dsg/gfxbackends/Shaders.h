@@ -117,7 +117,8 @@ public:
 		FMT_RGBA,
 		FMT_Y,
 		FMT_YA,
-		FMT_DEPTH
+		FMT_DEPTH,
+        FMT_NATIVE
 	};
 	enum Packing {
 		PK_UBYTE,

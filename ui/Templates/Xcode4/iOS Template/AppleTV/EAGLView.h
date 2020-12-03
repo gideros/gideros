@@ -17,13 +17,13 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 {
 @private
     NSUInteger framebufferWidth;
-    NSUInteger framebufferHeight;	BOOL framebufferDirty;
+    NSUInteger framebufferHeight;
+    BOOL framebufferDirty;
 	BOOL retinaDisplay;
     CAMetalLayer *metalLayer;
     id<CAMetalDrawable> metalDrawable;
     CGRect safeArea;
     id<MTLTexture> metalDepth;
-    id<MTLTexture> metalStencil;
 }
 
 @property (nonatomic, readonly) BOOL hasText;

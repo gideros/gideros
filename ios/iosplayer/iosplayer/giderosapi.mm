@@ -560,6 +560,13 @@ void NetworkManager::setProperties(const std::vector<char> &data)
 	buffer >> properties.touchToMouse;
 	buffer >> properties.mouseTouchOrder;
     
+    buffer >> properties.windowWidth;
+    buffer >> properties.windowHeight;
+    if (properties.windowWidth == 0 && properties.windowHeight == 0) {
+        properties.windowWidth = properties.logicalWidth;
+        properties.windowHeight = properties.logicalHeight;
+    }
+
 	application_->setProjectProperties(properties);
 }
 
@@ -908,11 +915,11 @@ void ApplicationManager::openProject(const char* project){
         buffer >> properties.mouseToTouch;
         buffer >> properties.touchToMouse;
         buffer >> properties.mouseTouchOrder;
-        buffer >> properties_.windowWidth;
-        buffer >> properties_.windowHeight;
-        if (properties_.windowWidth == 0 && properties_.windowHeight == 0) {
-            properties_.windowWidth = properties_.logicalWidth;
-            properties_.windowHeight = properties_.logicalHeight;
+        buffer >> properties.windowWidth;
+        buffer >> properties.windowHeight;
+        if (properties.windowWidth == 0 && properties.windowHeight == 0) {
+            properties.windowWidth = properties.logicalWidth;
+            properties.windowHeight = properties.logicalHeight;
         }
 
         setProjectProperties(properties);
@@ -1141,8 +1148,8 @@ void ApplicationManager::loadProperties()
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
 #if TARGET_OS_OSX
-    if (properties_.windowWidth == 0 && properties_.windowHeight == 0)
-        setWindowSize(properties_.windowWidth == 0,properties_.windowHeight);
+    if (properties_.windowWidth != 0 && properties_.windowHeight != 0)
+        setWindowSize(properties_.windowWidth,properties_.windowHeight);
 #endif
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
@@ -1232,8 +1239,8 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
 #if TARGET_OS_OSX
-    if (properties_.windowWidth == 0 && properties_.windowHeight == 0)
-        setWindowSize(properties_.windowWidth == 0,properties_.windowHeight);
+    if (properties_.windowWidth != 0 && properties_.windowHeight != 0)
+        setWindowSize(properties_.windowWidth,properties_.windowHeight);
 #endif
     
 #if !TARGET_OS_TV && !TARGET_OS_OSX

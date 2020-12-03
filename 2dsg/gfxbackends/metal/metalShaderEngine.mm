@@ -14,6 +14,10 @@
 
 metalShaderEngine::BlendFactor metalShaderEngine::curSFactor;
 metalShaderEngine::BlendFactor metalShaderEngine::curDFactor;
+std::map<ShaderEngine::DepthStencil,id<MTLDepthStencilState>> stateCache;
+struct {
+    bool hasDepthCompare;
+} Features;
 
 const char *metalShaderEngine::getVersion() {
     return "Metal";
@@ -152,7 +156,16 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     [mcq retain];
     mcb=[mcq commandBuffer];
     [mcb retain];
-    
+
+    bool hasDepthCompare= FALSE;
+    if (@available(macOS 10.15, iOS 13, tvOS 13, *)) {
+        hasDepthCompare=[metalDevice supportsFamily:MTLGPUFamilyCommon2]; // Enable newer features
+    }
+    else
+    {
+        //Don't bother, right ?
+    }
+    Features.hasDepthCompare=hasDepthCompare;
     MTLSamplerDescriptor *sd=[MTLSamplerDescriptor new];
     sd.minFilter=MTLSamplerMinMagFilterNearest;
     sd.magFilter=MTLSamplerMinMagFilterNearest;
@@ -160,7 +173,8 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     sd.minFilter=MTLSamplerMinMagFilterLinear;
     sd.magFilter=MTLSamplerMinMagFilterLinear;
     tsFC=[metalDevice newSamplerStateWithDescriptor:sd];
-    sd.compareFunction=MTLCompareFunctionLessEqual;
+    if (hasDepthCompare)
+        sd.compareFunction=MTLCompareFunctionLessEqual;
     tsDC=[metalDevice newSamplerStateWithDescriptor:sd];
     sd.compareFunction=MTLCompareFunctionNever;
     sd.sAddressMode=MTLSamplerAddressModeRepeat;
@@ -258,7 +272,12 @@ id<MTLRenderCommandEncoder> metalShaderEngine::encoder()
         [mrce retain];
         metalShaderProgram::resetAll();
         [mrce setViewport:vp_];
-        setClip(sr_.x,sr_.y,sr_.width,sr_.height);
+        id<MTLDepthStencilState> mds=stateCache[dsCurrent];
+        if (mds!=nil){
+            [mrce setDepthStencilState:mds];
+            [mrce setStencilReferenceValue:dsCurrent.sRef];
+        }
+        setClip(clipX,clipY,clipW,clipH);
     }
     return mrce;
 }
@@ -391,7 +410,6 @@ static MTLCompareFunction stencilfuncToMetal(ShaderEngine::StencilFunc sf)
     return MTLCompareFunctionAlways;
 }
 
-std::map<ShaderEngine::DepthStencil,id<MTLDepthStencilState>> stateCache;
 void metalShaderEngine::setDepthStencil(DepthStencil state)
 {
     if (currentBuffer&&(state.dTest||(state.sFunc!=ShaderEngine::STENCIL_DISABLE)))
@@ -422,8 +440,11 @@ void metalShaderEngine::setDepthStencil(DepthStencil state)
         [mdsd release];
         stateCache[state]=mds;
     }
-    [encoder() setDepthStencilState:mds];
-    [encoder() setStencilReferenceValue:state.sRef];
+    
+    if (mrce!=nil) {
+        [encoder() setDepthStencilState:mds];
+        [encoder() setStencilReferenceValue:dsCurrent.sRef];
+    }
     //[encoder() setStencilStoreAction:state.sFunc==(ShaderEngine::STENCIL_DISABLE)?MTLStoreActionDontCare: MTLStoreActionStore];    
 }
 
@@ -450,6 +471,8 @@ void metalShaderEngine::bindTexture(int num, ShaderTexture *texture) {
 void metalShaderEngine::setClip(int x, int y, int w, int h) {
     NSUInteger tw=pass().depthAttachment.texture.width;
     NSUInteger th=pass().depthAttachment.texture.height;
+    MTLScissorRect sr_;
+    clipX=x; clipY=y; clipW=w; clipH=h;
     if ((w < 0) || (h < 0)) {
         sr_.x=0;
         sr_.y=0;
@@ -482,6 +505,7 @@ void metalShaderEngine::getProperties(std::map<std::string,std::string> &props)
 {
 	props["shader_compiler"]="1";
     props["renderer"]=[[metalDevice name] UTF8String];
+    props["samplerCompare"]=Features.hasDepthCompare?"1":"0";
 }
 
 ShaderEngine *createMetalShaderEngine(int sw,int sh) {

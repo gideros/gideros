@@ -834,6 +834,7 @@
 					"\"iOS Template/Plugins\"",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/iOS Template/Plugins\"",
@@ -860,6 +861,7 @@
 					"\"iOS Template/Plugins\"",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/iOS Template/Plugins\"",
