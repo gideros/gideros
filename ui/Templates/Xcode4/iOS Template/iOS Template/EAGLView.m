@@ -30,8 +30,6 @@ extern void metalShaderNewFrame();
 
 @implementation EAGLView
 
-@dynamic context;
-
 // You must implement this method
 + (Class)layerClass
 {
@@ -72,7 +70,7 @@ extern void metalShaderNewFrame();
         }
         metalFramebuffer=[MTLRenderPassDescriptor renderPassDescriptor];
     }
-    [self setFramebuffer];
+    //[self setFramebuffer];
 }
 
 - (void) tearDown
@@ -128,7 +126,6 @@ static NSUInteger lfbw=0,lfbh=0;
     {
         if (metalDrawable) {
             metalShaderEnginePresent(metalDrawable);
-            metalDrawable=nil;
             if (@available (iOS 11, tvOS 11, macOS 10.13, *))
                 [[MTLCaptureManager sharedCaptureManager].defaultCaptureScope endScope];
         }

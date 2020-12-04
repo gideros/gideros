@@ -27,7 +27,6 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
     id<MTLTexture> metalDepth;
 }
 
-@property (nonatomic, retain) EAGLContext *context;
 @property (nonatomic) UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
 
 - (void)setFramebuffer;

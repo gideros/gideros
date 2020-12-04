@@ -50,7 +50,7 @@
 @interface iCadeReaderView : UIView<UIKeyInput> {
     UIView                  *inputView;
     iCadeState              _iCadeState;
-    id<iCadeEventDelegate>  _delegate;
+    id<iCadeEventDelegate>  __unsafe_unretained _delegate;
     
     struct {
         bool stateChanged:1;
