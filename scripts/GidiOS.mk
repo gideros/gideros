@@ -2,6 +2,8 @@ XCODEBUILD=xcodebuild
 LIPO=lipo
 PRETTY=| xcpretty -c
 
+XCODE_CONFIG?=Release
+
 IOS_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template
 ATV_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/AppleTV
 MAC_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/Mac
@@ -31,28 +33,24 @@ iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 ##RULES
 %.ios.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release -arch x86_64 -project $*.xcodeproj $(PRETTY)
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(IOSLIBPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj $(PRETTY)
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); $(LIPO) build/$(XCODE_CONFIG)-iphoneos/lib$*.a build/$(XCODE_CONFIG)-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
 %.ios.libs.clean:
 	cd $(IOSLIBPATH); rm -rf build
 
 %.atv.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -arch x86_64 -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(IOSLIBPATH); $(LIPO) build/Release-appletvos/lib$*.a build/Release-appletvsimulator/lib$*.a -create -output lib$*.atv.a
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); $(LIPO) build/$(XCODE_CONFIG)-appletvos/lib$*.a build/$(XCODE_CONFIG)-appletvsimulator/lib$*.a -create -output lib$*.atv.a
 
 %.mac.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(IOSLIBPATH); cp build/Release/lib$*.a lib$*.mac.a
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); cp build/$(XCODE_CONFIG)/lib$*.a lib$*.mac.a
 
-%.mac.dbg.libs: 
-	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration Debug -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(IOSLIBPATH); cp build/Debug/lib$*.a lib$*.mac.dbg.a
 
 ios.libs: versioning  gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
 ios.libs.clean : gvfs.ios.libs.clean lua.ios.libs.clean iosplayer.ios.libs.clean
@@ -98,9 +96,9 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.ios.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release -arch x86_64 OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(LIPO) build/Release-iphoneos/lib$(notdir $*).a build/Release-iphonesimulator/lib$(notdir $*).a -create -output lib$(notdir $*).ios.a
+	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(LIPO) build/$(XCODE_CONFIG)-iphoneos/lib$(notdir $*).a build/$(XCODE_CONFIG)-iphonesimulator/lib$(notdir $*).a -create -output lib$(notdir $*).ios.a
 
 
 %.ios.clean.iosplugin:
@@ -113,9 +111,9 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.atv.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -arch x86_64 -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(LIPO) build/Release-appletvos/lib$(notdir $*).a build/Release-appletvsimulator/lib$(notdir $*).a -create -output lib$(notdir $*).atv.a
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(LIPO) build/$(XCODE_CONFIG)-appletvos/lib$(notdir $*).a build/$(XCODE_CONFIG)-appletvsimulator/lib$(notdir $*).a -create -output lib$(notdir $*).atv.a
 
 %.atv.clean.iosplugin:
 	rm -rf $(PLUGINPATH)/build
@@ -127,8 +125,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.mac.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration Release OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); cp build/Release/lib$*.a lib$*.mac.a
+	@cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); cp build/$(XCODE_CONFIG)/lib$*.a lib$*.mac.a
 
 
 %.mac.clean.iosplugin:
@@ -172,15 +170,5 @@ ios.plugins.install: ios.plugins $(addsuffix .ios.install.iosplugin,$(PLUGINS_IO
 	cp $(PLUGINS_IOS_DEFFILES) $(MAC_TEMPLATE)/Plugins
 
 player.ios.app: 
-	rm -rf $(IOS_PLAYER_DIR)/GiderosiOSPlayer/Plugins
-	cp -R $(IOS_TEMPLATE)/Plugins $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
-	cp $(PLUGINS_IOS_PLAYER) $(IOS_TEMPLATE)/Plugins
-	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.ios.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/Plugins/libluasocket.a
-	cp $(IOS_TEMPLATE)/*.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
-	cp $(IOS_TEMPLATE)/*.metallib $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
-	cp $(IOS_TEMPLATE)/giderosapi.h $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
-	mkdir -p $(RELEASE)/Players
-	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -sdk iphoneos$$IOS_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosiOSPlayer.xcodeproj -scheme GiderosiOSPlayer -archivePath GiderosiOSPlayer.xcarchive archive
-	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -exportArchive -exportPath ../../$(RELEASE)/Players/GiderosiOSPlayer.ipa -exportFormat ipa -archivePath GiderosiOSPlayer.xcarchive
-	R=$(PWD);cd $(IOS_PLAYER_DIR)/..; zip -r $$R/$(RELEASE)/Players/GiderosiOSPlayer.zip GiderosiOSPlayer 
+
 	

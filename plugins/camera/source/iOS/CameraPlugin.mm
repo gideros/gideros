@@ -155,7 +155,7 @@ if (err)
         case AVCaptureVideoOrientationPortraitUpsideDown: ao=180; break;
         case AVCaptureVideoOrientationLandscapeRight: ao=270; break;
     }
-    ao=(orientation-ao+360)%360;
+    ao=(ao-orientation+360)%360;
     int x0=0;
     int x1=1;
     if (self.capturePipeline.frontFacing) { x0=1; x1=0; }
