@@ -136,7 +136,7 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
 void metalShaderTexture::readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)
 {
     //TODO check format
-    [mtex getBytes:data bytesPerRow:bpr*this->width fromRegion:MTLRegionMake2D(x, y, width, height) mipmapLevel:0];
+    [mtex getBytes:data bytesPerRow:bpr*width fromRegion:MTLRegionMake2D(x, y, width, height) mipmapLevel:0];
 }
 
 void metalShaderTexture::setNative(void *externalTexture)

@@ -1,14 +1,14 @@
 #ifndef CAMERA_PLUGIN_BINDER
 #define CAMERA_PLUGIN_BINDER
 
-#include "texturebase.h"
+#include "grendertarget.h"
 #include "application.h"
 #include "luaapplication.h"
 #include <string>
 #include <vector>
 
 namespace cameraplugin {
-	extern TextureBase *cameraTexture;
+	extern GRenderTarget *cameraTexture;
 	extern LuaApplication* application;
 	struct CameraDesc {
 		std::string name;

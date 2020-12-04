@@ -6,7 +6,7 @@
 #include "binder.h"
 #include "luaapplication.h"
 
-TextureBase *cameraplugin::cameraTexture=NULL;
+GRenderTarget *cameraplugin::cameraTexture=NULL;
 LuaApplication *cameraplugin::application=NULL;
 
 static int availableDevices(lua_State* L)
@@ -35,7 +35,7 @@ static int availableDevices(lua_State* L)
 
 static int start(lua_State* L)
 {
-	TextureBase* textureBase = static_cast<TextureBase*>(g_getInstance(L,"TextureBase",1));
+	GRenderTarget* textureBase = static_cast<GRenderTarget*>(g_getInstance(L,"RenderTarget",1));
 	const char *name=luaL_optstring(L,2,NULL);
 	if (cameraplugin::cameraTexture)
 		cameraplugin::cameraTexture->unref();
