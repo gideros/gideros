@@ -35,9 +35,9 @@
     
     CGRect bounds = [[UIScreen mainScreen] bounds];
     
-    self.window = [[[UIWindow alloc] initWithFrame:bounds] autorelease];
+    self.window = [[UIWindow alloc] initWithFrame:bounds];
     
-    self.viewController = [[[ViewController alloc] init] autorelease];
+    self.viewController = [[ViewController alloc] init];
     
     [self.viewController view];
     
@@ -184,10 +184,7 @@
 
 - (void)dealloc
 {
-    [viewController release];
-    [window release];
     
-    [super dealloc];
 }
 
 @end

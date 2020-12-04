@@ -21,8 +21,9 @@
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
-@property (nonatomic, assign) EAGLView* glView;
-@property (nonatomic, assign) UITableView *tableView;
+@property (nonatomic) EAGLView* glView;
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) CADisplayLink *displayLink;
 
 - (void)startAnimation;
 - (void)stopAnimation;

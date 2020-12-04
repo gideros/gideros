@@ -22,10 +22,7 @@
     self.ad_ = nil;
     self.type_ = nil;
     if(self.listener_ != nil)
-    {
         [self.listener_ destroy];
-        [self.listener_ release];
-    }
     self.listener_ = nil;
 }
 -(void)setObject:(NSObject*)ad{

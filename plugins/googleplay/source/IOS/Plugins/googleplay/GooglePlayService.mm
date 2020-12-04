@@ -64,7 +64,7 @@ GPGPlayer *localPlayer;
 +(void)showLeaderboard:(NSString*)Id{
     if ([[GPGManager sharedInstance] hasAuthorizer]) {
     	if (Id==NULL) {
-			GPGLeaderboardsController* leadController = [[[GPGLeaderboardsController alloc] init] autorelease];
+			GPGLeaderboardsController* leadController = [[GPGLeaderboardsController alloc] init];
 			leadController.leaderboardsDelegate = [[GooglePlayService alloc] init];
 			[g_getRootViewController() presentViewController:leadController animated:YES completion:nil];
 		}

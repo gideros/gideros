@@ -20,8 +20,6 @@
 
 -(void)destroy{
     [self.mngr destroy];
-    [self.mngr release];
-    [self.popMap release];
     self.mngr = nil;
 }
 

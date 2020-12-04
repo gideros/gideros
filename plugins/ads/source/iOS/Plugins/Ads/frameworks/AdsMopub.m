@@ -19,7 +19,6 @@
 
 -(void)destroy{
     [self.mngr destroy];
-    [self.mngr release];
     self.mngr = nil;
 }
 
@@ -55,9 +54,9 @@
     {
         MPAdView *view_;
         if(tag != nil)
-            view_ = [[[MPAdView alloc] initWithAdUnitId:tag                                                          size:MOPUB_BANNER_SIZE] autorelease];
+            view_ = [[MPAdView alloc] initWithAdUnitId:tag size:MOPUB_BANNER_SIZE];
         else
-            view_ = [[[MPAdView alloc] initWithAdUnitId:self.appId                                                          size:MOPUB_BANNER_SIZE] autorelease];
+            view_ = [[MPAdView alloc] initWithAdUnitId:self.appId size:MOPUB_BANNER_SIZE];
         AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
         [listener setShow:^(){
             self.currentSize = [type copy];
@@ -66,10 +65,7 @@
         }];
         [listener setDestroy:^(){
             [self hideAd:type];
-            if(view_ != nil)
-            {
-                [view_ release];
-            }
+            view_=nil;
         }];
         [listener setHide:^(){
             if(view_ != nil)

@@ -21,7 +21,7 @@
 {
     char *argList = (char *)malloc(sizeof(NSString *) * [arguments count]);
     [arguments getObjects:(id *)argList];
-    NSString* result = [[[NSString alloc] initWithFormat:format arguments:argList] autorelease];
+    NSString* result = [[NSString alloc] initWithFormat:format arguments:argList];
     free(argList);
     return result;
 }
@@ -71,10 +71,7 @@ static bool canDispatch = false;
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center removeObserver:self];
 
-    for(NSString *key in self.notifics){
-        GNotification *note = [self.notifics objectForKey:key];
-        [note release];
-    }
+    [self.notifics removeAllObjects];
     
     canDispatch = false;
 }
@@ -491,11 +488,6 @@ static bool canDispatch = false;
 }
 
 -(void)cancelAll{
-    for(NSString *key in self.notifics){
-        GNotification *note = [self.notifics objectForKey:key];
-        [note release];
-        note = nil;
-    }
     [self.notifics removeAllObjects];
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     NSMutableDictionary *local = [self getAll:@"NotificationLocal"];

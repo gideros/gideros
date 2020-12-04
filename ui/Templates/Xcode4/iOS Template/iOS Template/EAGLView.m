@@ -59,7 +59,6 @@ extern void metalShaderNewFrame();
 - (void)dealloc
 {
     [self deleteFramebuffer];    
-    [super dealloc];
 }
 
 - (void) setup
@@ -72,7 +71,6 @@ extern void metalShaderNewFrame();
             sharedCaptureManager.defaultCaptureScope = myCaptureScope;
         }
         metalFramebuffer=[MTLRenderPassDescriptor renderPassDescriptor];
-        [metalFramebuffer retain];
     }
     [self setFramebuffer];
 }
@@ -97,7 +95,6 @@ static NSUInteger lfbw=0,lfbh=0;
                 [[MTLCaptureManager sharedCaptureManager].defaultCaptureScope beginScope];
 
             metalDrawable=[metalLayer nextDrawable];
-            [metalDrawable retain];
             if (metalDepth==nil) {
                 MTLTextureDescriptor *td=[MTLTextureDescriptor new];
                 td.pixelFormat=MTLPixelFormatDepth32Float_Stencil8;
@@ -164,7 +161,6 @@ static NSUInteger lfbw=0,lfbh=0;
     if (metalDevice)
     {
             metalShaderEnginePresent(metalDrawable);
-            [metalDrawable release];
             metalDrawable=nil;
             if (@available (iOS 11, tvOS 11, macOS 10.13, *))
                 [[MTLCaptureManager sharedCaptureManager].defaultCaptureScope endScope];

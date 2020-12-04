@@ -25,7 +25,6 @@ static NSMutableDictionary *players = [NSMutableDictionary dictionary];
 	for(NSString *key in types){
         id c = [types objectForKey:key];
         [c destroy];
-        [c release];
         c = nil;
     }
     [types removeAllObjects];

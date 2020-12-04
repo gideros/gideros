@@ -20,17 +20,8 @@
 
 -(void)deinit{
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
-    if(self.prods != nil)
-    {
-        [self.prods release];
-        self.prods = nil;
-    }
-    
-    if(self.prodKeys != nil)
-    {
-        [self.prodKeys release];
-        self.prodKeys = nil;
-    }
+    self.prods = nil;
+    self.prodKeys = nil;
 }
 
 -(void)check{
@@ -64,7 +55,7 @@
 }
 
 -(void)purchase:(NSString*)prod{
-    SKMutablePayment *payment = [[[SKMutablePayment alloc] init] autorelease];
+    SKMutablePayment *payment = [[SKMutablePayment alloc] init];
     payment.productIdentifier = [self.prods objectForKey:prod];
     payment.quantity = 1;
     [[SKPaymentQueue defaultQueue] addPayment:payment];
@@ -101,7 +92,6 @@
     Product gprod = {"", "", "", ""};
     prods.push_back(gprod);
     giab_onProductsComplete([self.iap UTF8String], &prods[0]);
-    [request autorelease];
 }
 
 - (void)paymentQueue:(SKPaymentQueue*)queue updatedTransactions:(NSArray*)transactions

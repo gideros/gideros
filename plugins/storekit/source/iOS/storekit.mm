@@ -173,7 +173,6 @@ static void dispatchEvent(lua_State* L, const char* type,
 			NSString* transactionDate = [dateFormatter stringFromDate:transaction.transactionDate];
 			lua_pushstring(L, [transactionDate UTF8String]);
 			lua_setfield(L, -2, "date");			
-			[dateFormatter release];
 		}
 		lua_setfield(L, -2, "transaction");
 		
@@ -191,7 +190,6 @@ static void dispatchEvent(lua_State* L, const char* type,
 			NSString* transactionDate = [dateFormatter stringFromDate:originalTransaction.transactionDate];
 			lua_pushstring(L, [transactionDate UTF8String]);
 			lua_setfield(L, -2, "date");			
-			[dateFormatter release];
 
 			lua_setfield(L, -2, "originalTransaction");
 		}
@@ -227,7 +225,6 @@ static std::set<SKRequest*> s_requests;
 - (void)requestDidFinish:(SKRequest *)request
 {
     s_requests.erase(request);
-    [request release];
 }
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error
@@ -235,7 +232,6 @@ static std::set<SKRequest*> s_requests;
 	dispatchEvent(L, REQUEST_PRODUCTS_COMPLETE, error, NULL, NULL, NULL);
 
     s_requests.erase(request);
-    [request release];
 }
 
 - (void)productsRequest:(SKProductsRequest*)request didReceiveResponse:(SKProductsResponse*)response
@@ -296,11 +292,10 @@ public:
         {
             SKRequest *request = *iter;
             [request cancel];
-            [request release];
         }
         s_requests.clear();
 
-		[helper release];
+		helper=nil;
 	}
 
 	BOOL canMakePayments()
@@ -318,7 +313,7 @@ public:
 
 	void purchase(NSString* productIdentifier, int quantity)
 	{
-		SKMutablePayment *payment = [[[SKMutablePayment alloc] init] autorelease];
+		SKMutablePayment *payment = [[SKMutablePayment alloc] init];
 		payment.productIdentifier = productIdentifier;
 		payment.quantity = quantity;
 		[[SKPaymentQueue defaultQueue] addPayment:payment];

@@ -15,7 +15,6 @@ public:
 
 		gevent_RemoveEventsWithGid(gid_);
         [gm deinit];
-        [gm release];
         gm = nil;
     }
 	

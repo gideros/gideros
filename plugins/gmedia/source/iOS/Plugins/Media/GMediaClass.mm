@@ -117,7 +117,6 @@
 
 -(void)deinit{
     [self.videoView stop];
-    [self.videoView release];
     self.videoView = nil;
 }
 
@@ -202,7 +201,6 @@
     }
     [picker dismissViewControllerAnimated:YES completion:nil];
     
-    [picker release];
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
     UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
     if(image != nil){
@@ -222,13 +220,11 @@
     }
     [picker dismissViewControllerAnimated:YES completion:nil];
 
-    [picker release];
     [[UIApplication sharedApplication] setStatusBarHidden:YES];
     gmedia_onMediaCanceled();
 }
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController{
-    [self.popover release];
     self.popover = nil;
     gmedia_onMediaCanceled();
 }
@@ -243,7 +239,6 @@
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyyMMdd_HHmmss"];
     NSString *dateString = [dateFormat stringFromDate:date];
-    [dateFormat release];
     path = [documentsDirectory stringByAppendingPathComponent:
                           [dateString stringByAppendingString: @"_gideros.png"] ];
     NSData* data = UIImagePNGRepresentation(image);
@@ -255,7 +250,6 @@
     if(self.popover != nil)
     {
         [self.popover dismissPopoverAnimated:YES];
-        [self.popover release];
         self.popover = nil;
     }
 }
@@ -349,11 +343,9 @@
     {
         [self.Alayer removeFromSuperlayer];
         self.Alayer = nil;
-        [self.Alayer release];
     }
     if(self.player != nil){
         [self.player pause];
-        [self.player release];
         self.player = nil;
     }
     if([self superview]!=nil)

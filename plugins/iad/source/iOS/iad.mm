@@ -141,8 +141,8 @@ public:
         delegate_.banner = NULL;
 		[view_ cancelBannerViewAction];
 		[view_ removeFromSuperview];
-		[view_ release];
-		[delegate_ release];
+		view_=nil;
+		delegate_=nil;
 	}
 	
 	void show()

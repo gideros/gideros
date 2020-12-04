@@ -33,9 +33,7 @@
     // without consuming them.
     lPGR.minimumPressDuration = 1.0;
     [self addGestureRecognizer:lPGR];
-    [lPGR release];
-
-}
+ }
 
 
 -(instancetype)initWithFrame:(CGRect)frame

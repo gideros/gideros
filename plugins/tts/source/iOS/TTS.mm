@@ -129,8 +129,8 @@ void gtts_Cleanup()
         Shutdown();
 		synthesizer_.delegate = nil;
         delegate_.tts = NULL;
-        [synthesizer_ release];
-		[delegate_ release];
+        synthesizer_=nil;
+		delegate_=nil;
 	}
 	
 	bool TTS::Speak(const char *text,const char *utteranceId)
@@ -247,9 +247,6 @@ void TTS::dispatchEvent(int type, NSString *utteranceId, NSString *state)
 - (void)dealloc
 {
    // tts_->shutdown();
-    [AVSpeechUtterance release];
-    [TTSSpeechSynthesizer release];
-    [TTSDelegate release];
     [super dealloc];
 }
 
