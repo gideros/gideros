@@ -109,7 +109,7 @@
                 }];
                 [listener setDestroy:^(){
                     [self hideAd:type];
-                    view2_=nil;
+                    //view2_=nil;
                 }];
                 [listener setHide:^(){
                     if(view2_ != nil)
@@ -143,7 +143,7 @@
                 }];
                 [listener setDestroy:^(){
                     [self hideAd:type];
-                    view1_=nil;
+                    //view1_=nil;
                 }];
                 [listener setHide:^(){
                     if(view1_ != nil)

@@ -124,7 +124,7 @@
         }];
         [listener setHide:^(){
         	//NOTE release is forbidden with ARC, but should we do something else ?
-            interstitial_=nil;            
+            //interstitial_=nil;            
         }];
         [self.mngr set:interstitial_ forType:type withListener:listener];
 
@@ -201,7 +201,7 @@
                 if(view_ != nil)
                 {
                     view_.delegate = nil;
-                    view_=nil;
+                    //view_=nil;
                 }
             }];
             [listener setHide:^(){
