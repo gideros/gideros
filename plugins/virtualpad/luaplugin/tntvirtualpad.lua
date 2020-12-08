@@ -1,5 +1,5 @@
 -- ######################################## --
--- TNT Virtual Pad v1.41                    --
+-- TNT Virtual Pad v1.42                    --
 -- Copyright (C) 2012 By Gianluca D'Angelo  --
 -- All right Reserved.                      --
 -- YOU CAN USE IN FREE OR COMMERCIAL GAMES  --
@@ -14,6 +14,7 @@
 
 -- GLOBALS "CONSTANTS" (NOT REALLY CONSTANTS BUT...) --
 
+-- v1.42 optimized with new gideros functions (math.pi, math.distance) along with removing unused vars
 -- v1.41 Add vPad:reset()
 --		 reset virtual pads to default "null" position
 -- v1.40 fix setMaxRadius half screen Bug...
@@ -102,9 +103,9 @@ PAD = {
 
 local qSin = math.sin
 local qCos = math.cos
-local qFloor = math.floor
+--local qFloor = math.floor -- XXX
 local qAtan2 = math.atan2
-local qSqrt = math.sqrt
+--local qSqrt = math.sqrt -- XXX
 
 -------------------------------------
 -- set default button sprites name --
@@ -124,15 +125,6 @@ end
 ---------------------------------------
 local function calcAngle(xA, yA, xB, yB)
     return qAtan2((yB - yA), (xB - xA))
-end
-
-------------------------------------------
--- calculates distance between 2 points --
-------------------------------------------
-local function distance(xA, yA, xB, yB)
-    local dx = (xB - xA)
-    local dy = (yB - yA)
-    return qSqrt(dx * dx + dy * dy)
 end
 
 --------------------------
@@ -673,17 +665,18 @@ function CTNTVirtualPad:init(parent, texturePack, padSticks, padButtons, borderS
     if self.parent == nil then
         error(PAD.ERRORHEADER .. ": bad argument #1 (parent) to 'CTNTVirtualPad new()' parent is NIL.", 3)
     end
-    -- ================ --
-
     if (type(padSticks) ~= "number") or (padSticks < PAD.STICK_NONE) or (padSticks > PAD.STICK_DOUBLE) then
-        error(PAD.ERRORHEADER .. ": bad argument #3 (padSticks) to 'CTNTVirtualPad New()' \nValid arguments are:  \n'PAD.STICK_NONE'\n'PAD.STICK_SINGLE'\n'PAD.STICK_DOUBLE'", 3)
+        error(PAD.ERRORHEADER .. ": bad argument #3 (padSticks) to 'CTNTVirtualPad New()'\n"..
+			"Valid arguments are:\n'PAD.STICK_NONE'\n'PAD.STICK_SINGLE'\n'PAD.STICK_DOUBLE'", 3)
     end
     if (type(padButtons) ~= "number") or (padButtons < PAD.BUTTONS_NONE) or (padButtons > PAD.BUTTONS_SIX) then
-        error(PAD.ERRORHEADER .. ": bad argument #4 (padButtons) to 'CTNTVirtualPad New()' \nValid arguments are:  \n'PAD.BUTTONS_NONE'\n'PAD.BUTTONS_ONE'\n'PAD.BUTTONS_TWO'\n'PAD.BUTTONS_THREE'\n'PAD.BUTTONS_FOUR'\n'PAD.BUTTONS_FIVE'\n'PAD.BUTTONS_SIX'", 3)
+        error(PAD.ERRORHEADER .. ": bad argument #4 (padButtons) to 'CTNTVirtualPad New()'\n"..
+			"Valid arguments are:\n'"..
+			"PAD.BUTTONS_NONE'\n'PAD.BUTTONS_ONE'\n'PAD.BUTTONS_TWO'\n'PAD.BUTTONS_THREE'\n"..
+			"'PAD.BUTTONS_FOUR'\n'PAD.BUTTONS_FIVE'\n'PAD.BUTTONS_SIX'", 3)
     end
     -- resources are ok. so continue --
     self:updateDeviceInfo()
-
     if restrict == nil then
         restrict = self.screenContentHeight
     end
@@ -696,7 +689,6 @@ function CTNTVirtualPad:init(parent, texturePack, padSticks, padButtons, borderS
             self.screenRestrict = restrict
         end
     end
-
     if (self.hideMode ~= PAD.MODE_NOHIDE) then
         self.hideTimer = Timer.new(self.hideDelay, 1)
     end
@@ -704,116 +696,160 @@ function CTNTVirtualPad:init(parent, texturePack, padSticks, padButtons, borderS
     -- JOY PAD --
     -- ======= --
     -- no joystick !
-
     if padSticks == PAD.STICK_NONE then
         self.padsCount = 0
         -- one joystick !
     elseif (padSticks == PAD.STICK_SINGLE) or (padSticks == PAD.STICK_DOUBLE) then
         self.padsCount = 1
         self.leftPad = CTNTJoystick.new(self.parent, self.skin, self.layer, self.flipped)
-
-        self.leftPad:setPosition(self.clippedX1 + self.borderSpace * self.flipped + self.leftPad.hWidthB * self.flipped, self.clippedY2 - self.vBorderSpace - (self.leftPad.hWidthB * self.flipped))
+        self.leftPad:setPosition(
+			self.clippedX1 + self.borderSpace * self.flipped + self.leftPad.hWidthB * self.flipped,
+			self.clippedY2 - self.vBorderSpace - (self.leftPad.hWidthB * self.flipped))
         self.leftPad.maxPower = self.leftPad.hWidthB
     end
     -- two joystick !
     if padSticks == PAD.STICK_DOUBLE then
         self.padsCount = 2
         self.rightPad = CTNTJoystick.new(self.parent, self.skin, self.layer, self.flipped)
-        self.rightPad:setPosition(self.clippedX2 - self.borderSpace * self.flipped - self.rightPad.hWidthB * self.flipped, self.clippedY2 - self.vBorderSpace - (self.rightPad.hWidthB * self.flipped))
+        self.rightPad:setPosition(
+			self.clippedX2 - self.borderSpace * self.flipped - self.rightPad.hWidthB * self.flipped,
+			self.clippedY2 - self.vBorderSpace - (self.rightPad.hWidthB * self.flipped))
         self.rightPad.maxPower = self.rightPad.hWidthB
         --	padButtons = PAD.BUTTONS_NONE
     end
     -- ======= --
     -- BUTTONS --
     -- ======= --
-
     -- SinisterSoft fix (pt2/2) for clipped drawing problem
     if padButtons == PAD.BUTTONS_NONE then -- NO BUTTONS
         self.buttonsCount = 0
     elseif padButtons == PAD.BUTTONS_ONE then -- ONE BUTTON
         self.buttons[1] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[1]:setPosition(self.clippedX2 - self.buttons[1].hWidthB * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[1]:setPosition(
+			self.clippedX2 - self.buttons[1].hWidthB * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[1]:setColor(255, 70, 60)
         self.buttonsCount = 1
     elseif padButtons == PAD.BUTTONS_TWO then -- TWO BUTTON
         self.buttons[1] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[1]:setPosition(self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[1]:setPosition(
+			self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[1]:setColor(255, 70, 60)
         self.buttons[2] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[2]:setPosition(self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
+        self.buttons[2]:setPosition(
+			self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
         self.buttons[2]:setColor(70, 255, 120)
         self.buttonsCount = 2
     elseif padButtons == PAD.BUTTONS_THREE then -- THREE BUTTONS
         self.buttons[1] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[1]:setPosition(self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[1]:setPosition(
+			self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[1]:setColor(255, 70, 60)
         self.buttons[2] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[2]:setPosition(self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
+        self.buttons[2]:setPosition(
+			self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
         self.buttons[2]:setColor(70, 255, 120)
         self.buttons[3] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[3]:setPosition(self.clippedX2 - self.buttons[3].hWidthB * 2.8 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
+        self.buttons[3]:setPosition(
+			self.clippedX2 - self.buttons[3].hWidthB * 2.8 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
         self.buttons[3]:setColor(90, 120, 255)
         self.buttonsCount = 3
     elseif padButtons == PAD.BUTTONS_FOUR then -- FOUR BUTTONS
         self.buttons[1] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[1]:setPosition(self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[1]:setPosition(
+			self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[1]:setColor(255, 70, 60)
         self.buttons[2] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[2]:setPosition(self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
+        self.buttons[2]:setPosition(
+			self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
         self.buttons[2]:setColor(70, 255, 120)
         self.buttons[3] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
-        self.buttons[3]:setPosition(self.clippedX2 - self.buttons[3].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
+        self.buttons[3]:setPosition(
+			self.clippedX2 - self.buttons[3].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
         self.buttons[3]:setColor(90, 120, 255)
         self.buttons[4] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped)
         if application:getOrientation() == "landscape" then
-            self.buttons[4]:setPosition(self.clippedX2 - self.buttons[4].hWidthB * 5 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[4].hHeightB * 2 * self.flipped - self.vBorderSpace)
+            self.buttons[4]:setPosition(
+				self.clippedX2 - self.buttons[4].hWidthB * 5 * self.flipped - self.borderSpace * self.flipped,
+				self.clippedY2 - self.buttons[4].hHeightB * 2 * self.flipped - self.vBorderSpace)
         else
-            self.buttons[4]:setPosition(self.clippedX2 - self.buttons[4].hWidthB * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[4].hHeightB * 4.2 * self.flipped - self.vBorderSpace)
+            self.buttons[4]:setPosition(
+				self.clippedX2 - self.buttons[4].hWidthB * self.flipped - self.borderSpace * self.flipped,
+				self.clippedY2 - self.buttons[4].hHeightB * 4.2 * self.flipped - self.vBorderSpace)
         end
         self.buttons[4]:setColor(210, 210, 60)
         self.buttonsCount = 4
     elseif padButtons == PAD.BUTTONS_FIVE then -- FIVE BUTTONS
         self.buttons[1] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- RED
-        self.buttons[1]:setPosition(self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[1]:setPosition(
+			self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[1]:setColor(255, 70, 60)
         self.buttons[2] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- GREEN
-        self.buttons[2]:setPosition(self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
+        self.buttons[2]:setPosition(
+			self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
         self.buttons[2]:setColor(70, 255, 120)
         self.buttons[3] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- BLUE
-        self.buttons[3]:setPosition(self.clippedX2 - self.buttons[3].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
+        self.buttons[3]:setPosition(
+			self.clippedX2 - self.buttons[3].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
         self.buttons[3]:setColor(90, 120, 255)
 
         self.buttons[4] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- GREEN
-        self.buttons[4]:setPosition(self.clippedX1 + self.buttons[4].hWidthB * self.flipped + self.borderSpace * self.flipped, self.clippedY2 - self.buttons[4].hHeightB * 2 * self.flipped - self.vBorderSpace)
+        self.buttons[4]:setPosition(
+			self.clippedX1 + self.buttons[4].hWidthB * self.flipped + self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[4].hHeightB * 2 * self.flipped - self.vBorderSpace)
         self.buttons[4]:setColor(70, 255, 120)
         self.buttons[5] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- RED
-        self.buttons[5]:setPosition(self.clippedX1 + self.buttons[5].hWidthB * 3 * self.flipped + self.borderSpace * self.flipped, self.clippedY2 - self.buttons[5].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[5]:setPosition(
+			self.clippedX1 + self.buttons[5].hWidthB * 3 * self.flipped + self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[5].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[5]:setColor(255, 70, 60)
 
         self.buttonsCount = 5
     elseif padButtons == PAD.BUTTONS_SIX then -- SIX BUTTONS
         self.buttons[1] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- RED
-        self.buttons[1]:setPosition(self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[1]:setPosition(
+			self.clippedX2 - self.buttons[1].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[1].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[1]:setColor(255, 70, 60)
         self.buttons[2] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- GREEN
-        self.buttons[2]:setPosition(self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
+        self.buttons[2]:setPosition(
+			self.clippedX2 - self.buttons[2].hWidthB * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[2].hHeightB * 2 * self.flipped - self.vBorderSpace)
         self.buttons[2]:setColor(70, 255, 120)
         self.buttons[3] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- BLUE
-        self.buttons[3]:setPosition(self.clippedX2 - self.buttons[3].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped, self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
+        self.buttons[3]:setPosition(
+			self.clippedX2 - self.buttons[3].hWidthB * 3 * self.flipped - self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[3].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
         self.buttons[3]:setColor(90, 120, 255)
 
         self.buttons[4] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- GREEN
-        self.buttons[4]:setPosition(self.clippedX1 + self.buttons[4].hWidthB * self.flipped + self.borderSpace * self.flipped, self.clippedY2 - self.buttons[4].hHeightB * 2 * self.flipped - self.vBorderSpace)
+        self.buttons[4]:setPosition(
+			self.clippedX1 + self.buttons[4].hWidthB * self.flipped + self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[4].hHeightB * 2 * self.flipped - self.vBorderSpace)
         self.buttons[4]:setColor(70, 255, 120)
         self.buttons[5] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- RED
-        self.buttons[5]:setPosition(self.clippedX1 + self.buttons[5].hWidthB * 3 * self.flipped + self.borderSpace * self.flipped, self.clippedY2 - self.buttons[5].hHeightB * self.flipped - self.vBorderSpace)
+        self.buttons[5]:setPosition(
+			self.clippedX1 + self.buttons[5].hWidthB * 3 * self.flipped + self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[5].hHeightB * self.flipped - self.vBorderSpace)
         self.buttons[5]:setColor(255, 70, 60)
         self.buttons[6] = CTNTVirtualButton.new(self.parent, self.skin, self.layer, self.flipped) -- BLUE
-        self.buttons[6]:setPosition(self.clippedX1 + self.buttons[6].hWidthB * 3 * self.flipped + self.borderSpace * self.flipped, self.clippedY2 - self.buttons[6].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
+        self.buttons[6]:setPosition(
+			self.clippedX1 + self.buttons[6].hWidthB * 3 * self.flipped + self.borderSpace * self.flipped,
+			self.clippedY2 - self.buttons[6].hHeightB * 3.2 * self.flipped - self.vBorderSpace)
         self.buttons[6]:setColor(90, 120, 255)
         self.buttonsCount = 6
     end
-
     -- ================ --
     self.button1_Event = Event.new(PAD.BUTTON1_EVENT)
     self.button2_Event = Event.new(PAD.BUTTON2_EVENT)
@@ -848,7 +884,8 @@ function CTNTVirtualPad:setJoyAsAnalog(padComponent, isAnalogic)
             self.rightPad.isAnalogic = isAnalogic
         end
     else
-        error(PAD.ERRORHEADER .. ": bad argument #1 (padComponent) to 'setAnalogMode(padComponent, isAnalogic)'  \nValid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD.", 2)
+        error(PAD.ERRORHEADER..": bad argument #1 (padComponent) to 'setAnalogMode(padComponent, isAnalogic)'\n"..
+			"Valid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD.", 2)
     end
 end
 
@@ -901,7 +938,10 @@ function CTNTVirtualPad:setColor(padComponent, r, g, b)
             self.buttons[6]:setColor(r, g, b)
         end
     else
-        error(PAD.ERRORHEADER .. ": bad argument #1 (padComponent) to 'setColor(padComponent, r, g, b)'  \nValid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\nPAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\nPAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
+        error(PAD.ERRORHEADER..": bad argument #1 (padComponent) to 'setColor(padComponent, r, g, b)'\n"..
+			"Valid arguments are:\nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\n"..
+			"PAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\n"..
+			"PAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
     end
 end
 
@@ -948,7 +988,10 @@ function CTNTVirtualPad:setScale(padComponent, scale)
             self.buttons[6]:setScale(scale)
         end
     else
-        error(PAD.ERRORHEADER .. ": bad argument #1 (padComponent) to 'setScale(padComponent, scale)'  \nValid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\nPAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\nPAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
+        error(PAD.ERRORHEADER..": bad argument #1 (padComponent) to 'setScale(padComponent, scale)'\n"..
+			"Valid arguments are:\nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\n"..
+			"PAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\n"..
+			"PAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
     end
 end
 
@@ -989,7 +1032,10 @@ function CTNTVirtualPad:setPosition(padComponent, x, y)
             self.buttons[6]:setPosition(x, y)
         end
     else
-        error(PAD.ERRORHEADER .. ": bad argument #1 (padComponent) to 'setPosition(padComponent, x, y)'  \nValid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\nPAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\nPAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
+        error(PAD.ERRORHEADER..": bad argument #1 (padComponent) to 'setPosition(padComponent, x, y)'\n"..
+			"Valid arguments are:\nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\n"..
+			"PAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\n"..
+			"PAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
     end
 end
 
@@ -1014,7 +1060,8 @@ function CTNTVirtualPad:setMaxRadius(padComponent, maxRadius)
             self.rightPad.maxRadius = maxRadius * self.rightPad:getScale()
         end
     else
-        error(PAD.ERRORHEADER .. ": bad argument #1 (padComponent) to 'setMaxRadius(padComponent, maxRadius)'  \nValid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD", 2)
+        error(PAD.ERRORHEADER..": bad argument #1 (padComponent) to 'setMaxRadius(padComponent, maxRadius)'\n"..
+			"Valid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD", 2)
     end
 end
 
@@ -1055,7 +1102,10 @@ function CTNTVirtualPad:setTextures(padComponent, textureA, textureB)
             self.buttons[6]:setTextures(textureA, textureB)
         end
     else
-        error(PAD.ERRORHEADER .. ": bad argument #1 (padComponent) to 'setTextures(padComponent, [textureA], [textureB])'  \nValid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\nPAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\nPAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
+        error(PAD.ERRORHEADER..": bad argument #1 (padComponent) to 'setTextures(padComponent, [textureA], [textureB])'\n"..
+		"Valid arguments are:\nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD\n"..
+		"PAD.COMPO_BUTTON1\nPAD.COMPO_BUTTON2\nPAD.COMPO_BUTTON3\n"..
+		"PAD.COMPO_BUTTON4\nPAD.COMPO_BUTTON5\nPAD.COMPO_BUTTON6.", 2)
     end
 end
 
@@ -1081,7 +1131,8 @@ end
 ------------------
 function CTNTVirtualPad:setHideMode(hideMode)
     if (hideMode ~= PAD.MODE_NOHIDE) and (hideMode ~= PAD.MODE_GHOST) and (hideMode ~= PAD.MODE_HIDDEN) then
-        error(PAD.ERRORHEADER .. " parameter #2 'hideMode' must be one of the accepted values. \n'PAD.MODE_NOHIDE'\n'PAD.MODE_GHOST'\n'PAD.MODE_HIDDEN'", 2)
+        error(PAD.ERRORHEADER.." parameter #2 'hideMode' must be one of the accepted values.\n"..
+			"'PAD.MODE_NOHIDE'\n'PAD.MODE_GHOST'\n'PAD.MODE_HIDDEN'", 2)
     end
     self.hideMode = hideMode
 end
@@ -1091,7 +1142,8 @@ end
 -------------------
 function CTNTVirtualPad:setJoyStyle(padComponent, style)
     if (style ~= PAD.STYLE_CLASSIC) and (style ~= PAD.STYLE_MOVABLE) and (style ~= PAD.STYLE_FOLLOW) then
-        error(PAD.ERRORHEADER .. " parameter #2 'style' must be one of the accepted values. \n'PAD.STYLE_CLASSIC'\n'PAD.STYLE_MOVABLE'\n'PAD.STYLE_FOLLOW'", 2)
+        error(PAD.ERRORHEADER.." parameter #2 'style' must be one of the accepted values.\n"..
+			"'PAD.STYLE_CLASSIC'\n'PAD.STYLE_MOVABLE'\n'PAD.STYLE_FOLLOW'", 2)
     end
     if padComponent == PAD.COMPO_LEFTPAD then
         if self.leftPad ~= nil then
@@ -1102,7 +1154,8 @@ function CTNTVirtualPad:setJoyStyle(padComponent, style)
             self.rightPad.padStyle = style
         end
     else
-        error(PAD.ERRORHEADER .. ": bad argument #1 (padComponent) to 'setPadStyle(padComponent, style)'  \nValid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD.", 2)
+        error(PAD.ERRORHEADER..": bad argument #1 (padComponent) to 'setPadStyle(padComponent, style)'\n"..
+			"Valid arguments are:  \nPAD.COMPO_LEFTPAD\nPAD.COMPO_RIGHTPAD.", 2)
     end
 end
 
@@ -1111,10 +1164,12 @@ end
 -----------------
 function CTNTVirtualPad:moveJoy(joyPad, Event, isOnMoveEvent)
     -- calc distance and angle from pad centre to user finger...
-    local dist = distance(Event.touch.x, Event.touch.y, joyPad.spriteB:getX(), joyPad.spriteB:getY())
+--    local dist = distance(Event.touch.x, Event.touch.y, joyPad.spriteB:getX(), joyPad.spriteB:getY())
+    local dist = math.distance(Event.touch.x, Event.touch.y, joyPad.spriteB:getX(), joyPad.spriteB:getY()) -- XXX
     local angle = calcAngle(Event.touch.x, Event.touch.y, joyPad.spriteB:getX(), joyPad.spriteB:getY())
     -- get half width and height of joystick
-    local pii = 3.14159265358979324
+--    local pii = 3.14159265358979324
+    local pii = math.pi -- XXX
     local power = dist / (joyPad.maxPower * joyPad.scale)
     if (dist > joyPad.hWidthB) then -- move only if user finger is outside joy border
         if (joyPad.padStyle == PAD.STYLE_MOVABLE) or (joyPad.padStyle == PAD.STYLE_FOLLOW) then
@@ -1128,7 +1183,9 @@ function CTNTVirtualPad:moveJoy(joyPad, Event, isOnMoveEvent)
                 else
                     -- Touch BEGIN
                     dist = joyPad.hWidthB
-                    joyPad:moveUpperStick(joyPad.startX - qCos(angle) * joyPad.hWidthB, joyPad.startY - qSin(angle) * joyPad.hWidthB)
+                    joyPad:moveUpperStick(
+						joyPad.startX - qCos(angle) * joyPad.hWidthB,
+						joyPad.startY - qSin(angle) * joyPad.hWidthB)
                 end
             end
             -- check top border
@@ -1228,7 +1285,9 @@ function CTNTVirtualPad:moveJoy(joyPad, Event, isOnMoveEvent)
     if jPad.isAnalogic then
         jPadData.angle = (angle) + pii
     else
-        jPadData.angle = qFloor((angle + pii + .37) / .79)
+--        jPadData.angle = qFloor((angle + pii + .37) / .79)
+--        jPadData.angle = ((angle + pii + .37) / .79) // 1
+        jPadData.angle = (angle + pii + .37) // .79
         if jPadData.angle > 7 then
             jPadData.angle = 0
         end
@@ -1248,7 +1307,9 @@ function CTNTVirtualPad:onTouchesBegin(Event)
     -- ============ --
     -- CHECK BUTTON --
     -- ============ --
-    if self.buttonsCount > 0 then --and ((not self.leftPad_Event.data.selected) or (not self.rightPad_Event.data.selected)) then -- there are button defined in pad ?
+    --and ((not self.leftPad_Event.data.selected) or (not self.rightPad_Event.data.selected)) then
+	-- there are button defined in pad?
+    if self.buttonsCount > 0 then
         for k = 1, self.buttonsCount do -- check buttons
             if (not self.buttons[k].buttonPressed) then -- button touched ?
                 -- current button is not pressed ?
@@ -1298,46 +1359,66 @@ function CTNTVirtualPad:onTouchesBegin(Event)
     -- check joypads --
     -- ============= --
     if self.flipped == 1 then
-        if (self.leftPad ~= nil) and (self.leftPad.scale > 0) and (Event.touch.x < self.halfScreenWidth) and (Event.touch.y > self.screenRestrict) and (not buttonHit) then -- left pad present ?
-            if self.leftPad.touchId == nil then
-                if self.leftPad.maxRadius < 1 then
-                    self.leftPad.touchId = Event.touch.id
-                    self:moveJoy(self.leftPad, Event, false)
-                elseif distance(Event.touch.x, Event.touch.y, self.leftPad.spriteB:getX(), self.leftPad.spriteB:getY()) < self.leftPad.maxRadius then
-                    self.leftPad.touchId = Event.touch.id
-                    self:moveJoy(self.leftPad, Event, false)
-                end
-            end
+        if (self.leftPad ~= nil)
+		and (self.leftPad.scale > 0)
+		and (Event.touch.x < self.halfScreenWidth)
+		and (Event.touch.y > self.screenRestrict)
+		and (not buttonHit) then -- left pad present ?
+			if self.leftPad.touchId == nil then
+				if self.leftPad.maxRadius < 1 then
+					self.leftPad.touchId = Event.touch.id
+					self:moveJoy(self.leftPad, Event, false)
+				elseif math.distance(Event.touch.x, Event.touch.y,
+					self.leftPad.spriteB:getX(), self.leftPad.spriteB:getY()) < self.leftPad.maxRadius then -- XXX
+					self.leftPad.touchId = Event.touch.id
+					self:moveJoy(self.leftPad, Event, false)
+				end
+			end
         end
-        if (self.rightPad ~= nil) and (self.rightPad.scale > 0) and (Event.touch.x > self.halfScreenWidth) and (Event.touch.y > self.screenRestrict) and (not buttonHit) then -- left pad present ?
-            if self.rightPad.touchId == nil then
-                if self.rightPad.maxRadius < 1 then
-                    self.rightPad.touchId = Event.touch.id
-                    self:moveJoy(self.rightPad, Event, false)
-                elseif distance(Event.touch.x, Event.touch.y, self.rightPad.spriteB:getX(), self.rightPad.spriteB:getY()) < self.rightPad.maxRadius then
-                    self.rightPad.touchId = Event.touch.id
-                    self:moveJoy(self.rightPad, Event, false)
-                end
-            end
+        if (self.rightPad ~= nil)
+		and (self.rightPad.scale > 0)
+		and (Event.touch.x > self.halfScreenWidth)
+		and (Event.touch.y > self.screenRestrict)
+		and (not buttonHit) then -- left pad present ?
+			if self.rightPad.touchId == nil then
+				if self.rightPad.maxRadius < 1 then
+					self.rightPad.touchId = Event.touch.id
+					self:moveJoy(self.rightPad, Event, false)
+				elseif math.distance(Event.touch.x, Event.touch.y,
+					self.rightPad.spriteB:getX(), self.rightPad.spriteB:getY()) < self.rightPad.maxRadius then -- XXX
+					self.rightPad.touchId = Event.touch.id
+					self:moveJoy(self.rightPad, Event, false)
+				end
+			end
         end
     else
-        if (self.leftPad ~= nil) and (self.leftPad.scale > 0) and (Event.touch.x > self.halfScreenWidth) and (Event.touch.y < self.screenRestrict) and (not buttonHit) then -- left pad present ?
+        if (self.leftPad ~= nil)
+		and (self.leftPad.scale > 0)
+		and (Event.touch.x > self.halfScreenWidth)
+		and (Event.touch.y < self.screenRestrict)
+		and (not buttonHit) then -- left pad present ?
             if self.leftPad.touchId == nil then
                 if self.leftPad.maxRadius < 1 then
                     self.leftPad.touchId = Event.touch.id
                     self:moveJoy(self.leftPad, Event, false)
-                elseif distance(Event.touch.x, Event.touch.y, self.leftPad.spriteB:getX(), self.leftPad.spriteB:getY()) < self.leftPad.maxRadius then
+                elseif math.distance(Event.touch.x, Event.touch.y,
+					self.leftPad.spriteB:getX(), self.leftPad.spriteB:getY()) < self.leftPad.maxRadius then -- XXX
                     self.leftPad.touchId = Event.touch.id
                     self:moveJoy(self.leftPad, Event, false)
                 end
             end
         end
-        if (self.rightPad ~= nil) and (self.rightPad.scale > 0) and (Event.touch.x < self.halfScreenWidth) and (Event.touch.y < self.screenRestrict) and (not buttonHit) then -- left pad present ?
+        if (self.rightPad ~= nil)
+		and (self.rightPad.scale > 0)
+		and (Event.touch.x < self.halfScreenWidth)
+		and (Event.touch.y < self.screenRestrict)
+		and (not buttonHit) then -- left pad present ?
             if self.rightPad.touchId == nil then
                 if self.rightPad.maxRadius < 1 then
                     self.rightPad.touchId = Event.touch.id
                     self:moveJoy(self.rightPad, Event, false)
-                elseif distance(Event.touch.x, Event.touch.y, self.rightPad.spriteB:getX(), self.rightPad.spriteB:getY()) < self.rightPad.maxRadius then
+                elseif math.distance(Event.touch.x, Event.touch.y,
+					self.rightPad.spriteB:getX(), self.rightPad.spriteB:getY()) < self.rightPad.maxRadius then -- XXX
                     self.rightPad.touchId = Event.touch.id
                     self:moveJoy(self.rightPad, Event, false)
                 end
@@ -1353,11 +1434,14 @@ function CTNTVirtualPad:onTouchesMove(Event)
     -- ============ --
     -- CHECK BUTTON --
     -- ============ --
-    if self.buttonsCount > 0 then --and ((not self.leftPad_Event.data.selected) or (not self.rightPad_Event.data.selected)) then -- there are button defined in pad ?
+	--and ((not self.leftPad_Event.data.selected) or (not self.rightPad_Event.data.selected)) then
+	-- there are button defined in pad ?
+    if self.buttonsCount > 0 then
         for k = 1, self.buttonsCount do -- check buttons
             if self.buttons[k].buttonPressed then -- current button is pressed ?
                 -- user slide finger outside the button...
-                if not (self.buttons[k].spriteB:hitTestPoint(Event.touch.x, Event.touch.y)) and (self.buttons[k].touchId == Event.touch.id) then
+                if not (self.buttons[k].spriteB:hitTestPoint(Event.touch.x, Event.touch.y))
+				and (self.buttons[k].touchId == Event.touch.id) then
                     self.buttons[k]:pushButton(false)
                     self.buttons[k].touchId = -1
                     Event:stopPropagation()
@@ -1394,7 +1478,9 @@ function CTNTVirtualPad:onTouchesMove(Event)
                     end
                     break
                 end
-            elseif (self.buttons[k].spriteA:hitTestPoint(Event.touch.x, Event.touch.y)) and (not self.leftPad_Event.data.selected) and (not self.rightPad_Event.data.selected) then
+            elseif (self.buttons[k].spriteA:hitTestPoint(Event.touch.x, Event.touch.y))
+			and (not self.leftPad_Event.data.selected)
+			and (not self.rightPad_Event.data.selected) then
                 -- if button is not pressed and user slide finger inside button then press button
                 self.buttons[k]:pushButton(true)
                 self.buttons[k].touchId = Event.touch.id
@@ -1451,23 +1537,35 @@ function CTNTVirtualPad:onTouchesMove(Event)
 	end	
 	
     if self.flipped == 1 then
-        if (self.leftPad ~= nil) and (self.leftPad.scale > 0) and (Event.touch.x < lWidth) and (Event.touch.y > self.screenRestrict) then -- left pad present ?
+        if (self.leftPad ~= nil)
+		and (self.leftPad.scale > 0)
+		and (Event.touch.x < lWidth)
+		and (Event.touch.y > self.screenRestrict) then -- left pad present ?
             if self.leftPad.touchId == Event.touch.id then
                 self:moveJoy(self.leftPad, Event, true)
             end
         end
-        if (self.rightPad ~= nil) and (self.rightPad.scale > 0) and (Event.touch.x > rWidth) and (Event.touch.y > self.screenRestrict) then -- left pad present ?
+        if (self.rightPad ~= nil)
+		and (self.rightPad.scale > 0)
+		and (Event.touch.x > rWidth)
+		and (Event.touch.y > self.screenRestrict) then -- left pad present ?
             if self.rightPad.touchId == Event.touch.id then
                 self:moveJoy(self.rightPad, Event, true)
             end
         end
     else
-        if (self.leftPad ~= nil) and (self.leftPad.scale > 0) and (Event.touch.x > lWidth) and (Event.touch.y < self.screenRestrict) then -- left pad present ?
+        if (self.leftPad ~= nil)
+		and (self.leftPad.scale > 0)
+		and (Event.touch.x > lWidth)
+		and (Event.touch.y < self.screenRestrict) then -- left pad present ?
             if self.leftPad.touchId == Event.touch.id then
                 self:moveJoy(self.leftPad, Event, true)
             end
         end
-        if (self.rightPad ~= nil) and (self.rightPad.scale > 0) and (Event.touch.x < rWidth) and (Event.touch.y < self.screenRestrict) then -- left pad present ?
+        if (self.rightPad ~= nil)
+		and (self.rightPad.scale > 0)
+		and (Event.touch.x < rWidth)
+		and (Event.touch.y < self.screenRestrict) then -- left pad present ?
             if self.rightPad.touchId == Event.touch.id then
                 self:moveJoy(self.rightPad, Event, true)
             end
@@ -1708,4 +1806,3 @@ function CTNTVirtualPad:free()
     self.buttons = nil
     self.padEvent = nil
 end
-
