@@ -82,7 +82,7 @@ Pixel::~Pixel()
 void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
     G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
-    if (!a_ && !shader_) return;
+    if (!a_ ) return;
 	if (isWhite_ == false)
 	{
 		glPushColor();
@@ -92,9 +92,8 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
 	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
 		if (texture_[t])
 			ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
-    ShaderProgram *shp=(texture_[0])?ShaderProgram::stdTexture:(
-        colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor);
-    if (shader_) shp=shader_;
+    ShaderProgram *shp=getShader((texture_[0])?ShaderEngine::STDP_TEXTURE:(
+        colors_.empty()?ShaderEngine::STDP_BASIC:ShaderEngine::STDP_COLOR));
 	int sc=shp->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
 	if ((sc>=0)&&texture_[0])
 	{

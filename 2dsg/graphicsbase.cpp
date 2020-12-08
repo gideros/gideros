@@ -15,6 +15,17 @@ void GraphicsBase::clear()
 	colors.clear();
 }
 
+ShaderEngine::StandardProgram GraphicsBase::getShaderType() {
+	if (data)
+	{
+		if (colors.empty())
+			return (data->parameters.format==eA8)?ShaderEngine::STDP_TEXTUREALPHA:ShaderEngine::STDP_TEXTURE;
+		else
+			return (data->parameters.format==eA8)?ShaderEngine::STDP_TEXTUREALPHACOLOR:ShaderEngine::STDP_TEXTURECOLOR;
+	}
+    return colors.empty()?ShaderEngine::STDP_BASIC:ShaderEngine::STDP_COLOR;
+}
+
 void GraphicsBase::draw(ShaderProgram *shp, VertexBuffer<unsigned short> *commonIndices)
 {
 	if (!commonIndices)

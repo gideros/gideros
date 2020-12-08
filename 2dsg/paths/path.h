@@ -44,11 +44,11 @@ public:
 	void getPathPoints(float offset, float advance,int max, float flatness, int maxsub,std::vector<PathPoint> &points);
 	static int buildPath(PrPath *);
 	static void removePath(int);
-	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
-	static void strokePath(int path,Matrix4 xform,float line[4]);
-	static void fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
-	static void impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil);
-	static void fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
+	void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
+	void strokePath(int path,Matrix4 xform,float line[4]);
+	void fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
+	void impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil);
+	void fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);
 	static void getPathBounds(int path,bool fill,bool stroke,float *minx,float *miny,float *maxx,float *maxy);
     void setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4);
     bool hasGradient()

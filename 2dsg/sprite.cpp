@@ -31,7 +31,6 @@ Sprite::Sprite(Application* application) :
 	clipw_ = -1;
 	cliph_ = -1;
 
-	shader_ = NULL;
 	stencil_.dTest=false;
 	layoutState=NULL;
 	layoutConstraints=NULL;
@@ -49,20 +48,89 @@ Sprite::~Sprite() {
 	allSprites_.erase(this);
 	allSpritesWithListeners_.erase(this);
 
-	if (shader_)
-		shader_->Release();
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.begin();
+	while (it!=shaders_.end())
+	{
+		if (it->second.shader)
+			it->second.shader->Release();
+		it++;
+	}
 
 	clearLayoutState();
 	clearLayoutConstraints();
 }
 
-void Sprite::setShader(ShaderProgram *shader) {
+void Sprite::setupShader(struct _ShaderSpec &spec) {
+	for(std::map<std::string,ShaderParam>::iterator it = spec.params.begin(); it != spec.params.end(); ++it) {
+			ShaderParam *p=&(it->second);
+			int idx=spec.shader->getConstantByName(p->name.c_str());
+			if (idx>=0)
+				spec.shader->setConstant(idx,p->type,p->mult,&(p->data[0]));
+	}
+}
+
+void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,int variant,bool inherit) {
+	int sid=(id<<8)|variant;
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
 	if (shader)
 		shader->Retain();
-	if (shader_)
-		shader_->Release();
-	shader_ = shader;
-	shaderParams_.clear();
+	if (it!=shaders_.end()) {
+		if (it->second.shader)
+			it->second.shader->Release();
+		if (shader) {
+			it->second.shader=shader;
+			it->second.inherit=inherit;
+		}
+		else {
+			it->second.params.clear();
+			shaders_.erase(it);
+		}
+	}
+	else if (shader) {
+		struct _ShaderSpec sp;
+		sp.shader=shader;
+		sp.inherit=inherit;
+		shaders_[sid]=sp;
+	}
+}
+
+bool Sprite::setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id,int variant)
+{
+	int sid=(id<<8)|variant;
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
+	if (it!=shaders_.end()) {
+		it->second.params[p.name]=p;
+		return true;
+	}
+	else
+		return false;
+}
+
+ShaderProgram *Sprite::getShader(ShaderEngine::StandardProgram id,int variant)
+{
+	int sid=(id<<8)|variant;
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
+	if (it!=shaders_.end()) {
+		setupShader(it->second);
+		return it->second.shader;
+	}
+	it=shaders_.find(0);
+	if (it!=shaders_.end()) {
+		setupShader(it->second);
+		return it->second.shader;
+	}
+	Sprite *p=parent();
+	while (p) {
+		it=p->shaders_.find(sid);
+        if (it!=p->shaders_.end()) {
+			if (it->second.inherit) {
+				setupShader(it->second);
+				return it->second.shader;
+			}
+		}
+        p=p->parent();
+    }
+	return ShaderEngine::Engine->getDefault(id, variant);
 }
 
 void Sprite::doDraw(const CurrentTransform&, float sx, float sy, float ex,
@@ -100,7 +168,7 @@ GridBagConstraints *Sprite::getLayoutConstraints()
 	if (!layoutConstraints)
 		layoutConstraints=new GridBagConstraints();
     if (parent_&&parent_->layoutState)
-        parent_->layoutState->dirty=true;
+    	parent_->layoutState->dirty=true;
 	return layoutConstraints;
 }
 
@@ -319,13 +387,6 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			ShaderEngine::Engine->setDepthStencil(stencil);
 		}
 
-		if (sprite->shader_)
-		for(std::map<std::string,ShaderParam>::iterator it = sprite->shaderParams_.begin(); it != sprite->shaderParams_.end(); ++it) {
-				ShaderParam *p=&(it->second);
-				int idx=sprite->shader_->getConstantByName(p->name.c_str());
-				if (idx>=0)
-					sprite->shader_->setConstant(idx,p->type,p->mult,&(p->data[0]));
-		}
 		sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
 
 		stack.push(std::make_pair(sprite, true));

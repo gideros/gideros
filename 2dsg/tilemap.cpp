@@ -393,7 +393,7 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
 		}
 
 	ShaderEngine::Engine->bindTexture(0,texture_->data->id());
-	ShaderProgram *shd=shader_?shader_:((hasTint!=0xFFFFFFFF)?ShaderProgram::stdTextureColor:ShaderProgram::stdTexture);
+	ShaderProgram *shd=getShader(((hasTint!=0xFFFFFFFF)?ShaderEngine::STDP_TEXTURECOLOR:ShaderEngine::STDP_TEXTURE));
     shd->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size()/2,true,NULL);
     shd->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size()/2,true,NULL);
 	if (hasTint!=0xFFFFFFFF)

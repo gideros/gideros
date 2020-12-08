@@ -381,12 +381,17 @@ public:
 		int mult;
 		std::vector<float> data;
 	};
-	void setShader(ShaderProgram *shader);
-	virtual ShaderProgram *getShader() { return shader_; };
-	void setShaderConstant(ShaderParam p)
-	{
-		shaderParams_[p.name]=p;
-	}
+protected:
+	struct _ShaderSpec {
+		std::map<std::string,ShaderParam> params;
+		ShaderProgram *shader;
+		bool inherit;
+	};
+	void setupShader(struct _ShaderSpec &spec);
+public:
+	void setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id=ShaderEngine::STDP_UNSPECIFIED,int variant=0, bool inherit=false);
+	virtual ShaderProgram *getShader(ShaderEngine::StandardProgram id,int variant=0);
+	bool setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id=ShaderEngine::STDP_UNSPECIFIED,int variant=0);
 
 	void set(const char* param, float value, GStatus* status = NULL);
 	float get(const char* param, GStatus* status = NULL);
@@ -486,9 +491,8 @@ protected:
 	static std::set<Sprite*> allSpritesWithListeners_;
 
 protected:
-	ShaderProgram *shader_;
+	std::map<int,struct _ShaderSpec> shaders_;
 	ShaderEngine::DepthStencil stencil_;
-	std::map<std::string,ShaderParam> shaderParams_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;
 

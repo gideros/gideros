@@ -1686,7 +1686,7 @@ int SpriteBinder::setShader(lua_State* L)
 	ShaderProgram* shader = NULL;
 	if (!lua_isnoneornil(L,2))
 		shader=static_cast<ShaderProgram*>(binder.getInstance("Shader", 2));
-	sprite->setShader(shader);
+	sprite->setShader(shader,(ShaderEngine::StandardProgram)luaL_optinteger(L,3,0),luaL_optinteger(L,4,0),lua_toboolean(L,5));
 
 	return 0;
 }
@@ -1718,6 +1718,9 @@ int SpriteBinder::setShaderConstant(lua_State* L)
 	}
 
 	cm*=sp.mult;
+	int li=lua_istable(L,5)?6:(5+cm);
+	int shtype=luaL_optinteger(L,li,0);
+	int shvar=luaL_optinteger(L,li+1,0);
 	switch (sp.type)
 	{
 	case ShaderProgram::CINT:
@@ -1768,7 +1771,7 @@ int SpriteBinder::setShaderConstant(lua_State* L)
 		break;
 	}
 
-	sprite->setShaderConstant(sp);
+	sprite->setShaderConstant(sp,(ShaderEngine::StandardProgram)shtype,shvar);
 	return 0;
 }
 

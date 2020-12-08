@@ -14,7 +14,7 @@ void Bitmap::doDraw(const CurrentTransform&, float sx, float sy, float ex, float
 		quad[3] = 2;
 		quad.Update();
 	}
-	graphicsBase_.draw(shader_,&quad);
+	graphicsBase_.draw(getShader(graphicsBase_.getShaderType()),&quad);
 }
 
 void Bitmap::updateBounds()

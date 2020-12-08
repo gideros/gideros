@@ -730,18 +730,18 @@ void GLCanvas::play(QDir directory){
         projectName_ = directory.dirName();
         emit projectNameChanged(projectName_);
 
+        QString docLocation;
+        #if defined(Q_OS_MAC)
+        docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+        #elif defined(RASPBERRY_PI)
+        docLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+        #else
+        docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        #endif
+        directory.mkpath(docLocation);
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
-            QString docLocation;
-            #if defined(Q_OS_MAC)
-                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-            #elif defined(RASPBERRY_PI)
-                docLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-            #else
-                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-            #endif
             QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-            directory.mkpath(docLocation);
             directory.mkpath(tempLocation);
             documentsDirectory_ = docLocation.toStdString();
             temporaryDirectory_ = tempLocation.toStdString();
@@ -751,12 +751,17 @@ void GLCanvas::play(QDir directory){
             dir_.cd("gideros");
             dir_.mkdir(projectName_);
             dir_.cd(projectName_);
-            dir_.mkdir("documents");
             dir_.mkdir("temporary");
+
+            temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
+
+            dir_ = QDir(docLocation);
+            dir_.mkdir("gideros");
+            dir_.cd("gideros");
+            dir_.mkdir("documents");
 
             resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString();
             documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();
-            temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
         }
 
         setDocumentsDirectory(documentsDirectory_.c_str());

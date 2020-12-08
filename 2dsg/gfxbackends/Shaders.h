@@ -285,13 +285,18 @@ public:
 	virtual void setViewport(int x,int y,int width,int height)=0;
 	virtual void resizeFramebuffer(int width,int height)=0;
 	enum StandardProgram {
-		STDP_BASIC,
+		STDP_UNSPECIFIED=0,
+		STDP_BASIC=1,
 		STDP_COLOR,
 		STDP_TEXTURE,
 		STDP_TEXTUREALPHA,
 		STDP_TEXTURECOLOR,
+		STDP_TEXTUREALPHACOLOR,
 		STDP_PARTICLE,
-		STDP_PARTICLES
+		STDP_PARTICLES,
+		STDP_PATHFILLCURVE,
+		STDP_PATHSTROKECURVE,
+		STDP_PATHSTROKELINE
 	};
     enum StandardProgramVariant {
         STDPV_TEXTURED=1,

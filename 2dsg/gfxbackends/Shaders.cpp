@@ -302,8 +302,12 @@ ShaderProgram *ShaderEngine::getDefault(StandardProgram id,int variant)
 	case STDP_TEXTURE: return ShaderProgram::stdTexture;
 	case STDP_TEXTUREALPHA: return ShaderProgram::stdTextureAlpha;
 	case STDP_TEXTURECOLOR: return ShaderProgram::stdTextureColor;
+	case STDP_TEXTUREALPHACOLOR: return ShaderProgram::stdTextureAlphaColor;
 	case STDP_PARTICLE: return ShaderProgram::stdParticle;
 	case STDP_PARTICLES: return ShaderProgram::stdParticles;
+	case STDP_PATHFILLCURVE: return ShaderProgram::pathShaderFillC;
+	case STDP_PATHSTROKECURVE: return ShaderProgram::pathShaderStrokeC;
+	case STDP_PATHSTROKELINE: return ShaderProgram::pathShaderStrokeLC;
 	default: return NULL;
 	}
 }

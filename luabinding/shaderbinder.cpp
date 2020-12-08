@@ -83,6 +83,24 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_pushinteger(L, ShaderProgram::Flag_FromCode);
 	lua_setfield(L, -2, "FLAG_FROM_CODE");
 
+#define PCONSTANT(name)	lua_pushinteger(L, ShaderEngine::STDP_##name); lua_setfield(L, -2, "SHADER_PROGRAM_"#name);
+#define VCONSTANT(name)	lua_pushinteger(L, ShaderEngine::STDPV_##name); lua_setfield(L, -2, "SHADER_VARIANT_"#name);
+	PCONSTANT(UNSPECIFIED);
+	PCONSTANT(BASIC);
+	PCONSTANT(COLOR);
+	PCONSTANT(TEXTURE);
+	PCONSTANT(TEXTUREALPHA);
+	PCONSTANT(TEXTUREALPHACOLOR);
+	PCONSTANT(PARTICLE);
+	PCONSTANT(PARTICLES);
+	PCONSTANT(PATHFILLCURVE);
+	PCONSTANT(PATHSTROKECURVE);
+	PCONSTANT(PATHSTROKELINE);
+	VCONSTANT(TEXTURED);
+	VCONSTANT(3D);
+#undef PCONSTANT
+#undef VCONSTANT
+
 	lua_pop(L, 1);
 
 }

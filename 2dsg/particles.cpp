@@ -398,9 +398,7 @@ void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
     if (ttl_.size() == 0)
 		return;
 
-    ShaderProgram *p = ShaderEngine::Engine->getDefault(ShaderEngine::STDP_PARTICLES,texture_?ShaderEngine::STDPV_TEXTURED:0);
-	if (shader_)
-		p = shader_;
+    ShaderProgram *p = getShader(ShaderEngine::STDP_PARTICLES,texture_?ShaderEngine::STDPV_TEXTURED:0);
 	float textureInfo[4] = { 0, 0, 0, 0 };
 	if (texture_) {
 		ShaderEngine::Engine->bindTexture(0, texture_->data->id());
