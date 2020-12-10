@@ -1567,7 +1567,8 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeTextInput(JN
 	if (ss>0) {
 		const char *r=sBytes;
 		while (ss&&(*r)) {
-			if (((*r)<128)||((*r)>=192))
+			int cr=(*r)&0xFF;
+			if ((cr<0x80)||(cr>=0xC0))
 				ss--;
 			r++;
 		}
@@ -1577,7 +1578,8 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeTextInput(JN
 	if (se>0) {
 		const char *r=sBytes;
 		while (se&&(*r)) {
-			if (((*r)<128)||((*r)>=192))
+			int cr=(*r)&0xFF;
+			if ((cr<0x80)||(cr>=0xC0))
 				se--;
 			r++;
 		}
