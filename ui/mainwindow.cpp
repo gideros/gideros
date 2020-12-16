@@ -2851,7 +2851,7 @@ void MainWindow::exportProject()
         QString templatename;
         QString templatenamews;
 
-        if (exportType=="iOS")
+        if (exportType=="Apple")
         {
             arguments << "-platform" << "ios";
             arguments << "-bundle" << dialog.ios_bundle();
