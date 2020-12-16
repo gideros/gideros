@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
             }
             QString platform = arguments[i + 1];
             ctx.platform=platform;
-            if ((platform.toLower() == "ios")||(platform.toLower() == "apple")||)
+            if ((platform.toLower() == "ios")||(platform.toLower() == "apple"))
             {
                 ctx.deviceFamily = e_iOS;
             }
