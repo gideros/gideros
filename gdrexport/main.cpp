@@ -225,7 +225,7 @@ void usage()
     fprintf(stderr, "    -encrypt-assets            #encrypts assets\n");
     fprintf(stderr, "    -assets-only               #exports only assets\n");
     fprintf(stderr, "\n");
-    fprintf(stderr, "Options ios: \n");
+    fprintf(stderr, "Options ios/apple: \n");
     fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options android: \n");
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
             }
             QString platform = arguments[i + 1];
             ctx.platform=platform;
-            if (platform.toLower() == "ios")
+            if ((platform.toLower() == "ios")||(platform.toLower() == "apple")||)
             {
                 ctx.deviceFamily = e_iOS;
             }
