@@ -14,6 +14,7 @@
 #include <map>
 #include "gridbaglayout.h"
 #include "gproxy.h"
+#include "grendertarget.h"
 
 typedef Matrix4 CurrentTransform;
 typedef Matrix4 Matrix;
@@ -433,6 +434,29 @@ public:
     bool hasLayoutConstraints() { return layoutConstraints!=NULL; };
     int getStopPropagationMask() { return stopPropagationMask_; }
     void setStopPropagationMask(int mask);
+    enum EffectUpdateMode {
+    	CONTINUOUS=0,
+		AUTOMATIC,
+		TRIGGERED
+    };
+    struct Effect {
+		std::map<std::string,ShaderParam> params;
+        std::vector<TextureBase *> textures;
+		Matrix4 transform;
+        Matrix4 postTransform;
+		ShaderProgram *shader;
+		GRenderTarget *buffer;
+		Effect() : shader(NULL), buffer(NULL) { };
+    };
+    void setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode);
+	bool setEffectShaderConstant(size_t effectNumber,ShaderParam p);
+	void redrawEffects();
+    void updateEffects();
+protected:
+	EffectUpdateMode effectsMode_;
+    bool effectsDirty_;
+    bool effectsDrawing_;
+    std::vector<Effect> effectStack_;
 public:
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;

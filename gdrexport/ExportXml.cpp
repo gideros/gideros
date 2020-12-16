@@ -75,7 +75,6 @@ void ExportXml::SetupProperties(ExportContext *ctx)
 	//Fill properties: Project
 	ctx->props["project.name"] = ctx->base;
 	ctx->props["project.namews"] = ctx->basews;
-	ctx->props["project.package"] = ctx->properties.packageName;
 	ctx->props["project.version"] = ctx->properties.version;
 	ctx->props["project.platform"] = ctx->platform;
 	ctx->props["project.app_name"] = ctx->appName;
@@ -89,6 +88,8 @@ void ExportXml::SetupProperties(ExportContext *ctx)
 	ctx->props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
 	ctx->props["project.backgroundColor"] = ctx->properties.backgroundColor;
 	ctx->props["project.ios_bundle"] = ctx->properties.ios_bundle;
+	ctx->props["project.atv_bundle"] = ctx->properties.atv_bundle;
+	ctx->props["project.macos_bundle"] = ctx->properties.macos_bundle;
 	ctx->props["project.html5_fbinstant"] = QString::number(ctx->properties.html5_fbinstant?1:0);
 	ctx->props["project.html5_pack"] = QString::number(ctx->properties.html5_pack?1:0);
 	ctx->props["project.html5_wasm"] = QString::number(ctx->properties.html5_wasm?1:0);

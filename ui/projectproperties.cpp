@@ -107,11 +107,12 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 
 	// export options
 	properties.setAttribute("architecture", this->architecture);
-    properties.setAttribute("android_template", this->android_template);
 	properties.setAttribute("exportMode", this->exportMode);
 	properties.setAttribute("iosDevice", this->iosDevice);
     properties.setAttribute("ios_bundle", this->ios_bundle);
-	properties.setAttribute("packageName", this->packageName);
+    properties.setAttribute("atv_bundle", this->atv_bundle);
+    properties.setAttribute("macos_bundle", this->macos_bundle);
+    properties.setAttribute("macos_category", this->macos_category);
 	properties.setAttribute("osx_org", this->osx_org);
 	properties.setAttribute("osx_domain", this->osx_domain);
     properties.setAttribute("osx_bundle", this->osx_bundle);
@@ -238,8 +239,6 @@ void ProjectProperties::loadXml(QDomElement properties)
 		// export options
 		if (!properties.attribute("architecture").isEmpty())
 			this->architecture = properties.attribute("architecture").toInt();
-        if (!properties.attribute("android_template").isEmpty())
-            this->android_template = properties.attribute("android_template").toInt();
 		if (!properties.attribute("exportMode").isEmpty())
 			this->exportMode = properties.attribute("exportMode").toInt();
 		if (!properties.attribute("iosDevice").isEmpty())
@@ -248,8 +247,12 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->app_name = properties.attribute("app_name");
         if (!properties.attribute("ios_bundle").isEmpty())
             this->ios_bundle = properties.attribute("ios_bundle");
-		if (!properties.attribute("packageName").isEmpty())
-			this->packageName = properties.attribute("packageName");
+        if (!properties.attribute("atv_bundle").isEmpty())
+            this->atv_bundle = properties.attribute("atv_bundle");
+        if (!properties.attribute("macos_bundle").isEmpty())
+            this->macos_bundle = properties.attribute("macos_bundle");
+        if (!properties.attribute("macos_category").isEmpty())
+            this->macos_category = properties.attribute("macos_category").toInt();
         if (!properties.attribute("osx_org").isEmpty())
 			this->osx_org = properties.attribute("osx_org");
         if (!properties.attribute("osx_domain").isEmpty())

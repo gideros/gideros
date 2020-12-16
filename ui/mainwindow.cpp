@@ -2855,23 +2855,13 @@ void MainWindow::exportProject()
         {
             arguments << "-platform" << "ios";
             arguments << "-bundle" << dialog.ios_bundle();
+            arguments << "-bundle_atv" << dialog.atv_bundle();
+            arguments << "-bundle_macos" << dialog.macos_bundle();
+            arguments << "-category" << dialog.macos_category();
             templatedir = "Xcode4";
             templatename = "iOS Template";
             templatenamews = "iOS_Template";
-        } else if (exportType=="Android") {
-            templatename = "Android Template";
-            templatenamews = "AndroidTemplate";
-            arguments << "-platform" << "android";
-            arguments << "-package" << dialog.packageName();
-            if(dialog.androidTemplate() == "Android Studio"){
-                arguments << "-template" << "androidstudio";
-                templatedir = "AndroidStudio";
-            }
-            else{
-                arguments << "-template" << "eclipse";
-                templatedir = "Eclipse";
-            }
-        } else if (exportType=="WinRT") {
+         } else if (exportType=="WinRT") {
             templatedir = "VisualStudio";
             templatename = "WinRT Template";
             templatenamews = "WinRTTemplate";

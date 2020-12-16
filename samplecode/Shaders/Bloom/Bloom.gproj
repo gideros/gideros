@@ -1,11 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties assetsOnly="0" mouseToTouch="1" logicalWidth="320" windowHeight="0" win_org="GiderosMobile" osx_org="GiderosMobile" retinaDisplay="0" win_domain="giderosmobile.com" architecture="0" fps="60" scaleMode="0" iosDevice="0" packageName="com.yourdomain.yourapp" touchToMouse="1" autorotation="0" orientation="0" logicalHeight="480" mouseTouchOrder="0" windowWidth="0" osx_domain="giderosmobile.com" encryptAssets="0" encryptCode="0">
+ <properties splashScaleMode="0" win_org="GiderosMobile" autorotation="0" app_icon="" build_number="1" mouseTouchOrder="0" logicalHeight="480" osx_bundle="com.yourdomain." html5_host="" html5_crash="" windowWidth="0" windowHeight="0" orientation="0" html5_mem="256" architecture="0" win_domain="giderosmobile.com" encryptAssets="0" disableSplash="0" app_name="" winrt_package="com.yourdomain.yourapp" osx_installerId="" html5_symbols="0" version="1.0" fps="60" touchToMouse="1" winrt_org="GiderosMobile" retinaDisplay="0" logicalWidth="320" osx_domain="giderosmobile.com" exportMode="0" encryptCode="0" android_template="0" iosDevice="0" splash_v_image="" html5_pack="0" backgroundColor="#ffffff" packageName="com.yourdomain.yourapp" html5_fbload="100" mainluaOnly="0" vsync="0" scaleMode="0" html5_fbinstant="0" ios_bundle="com.yourdomain." version_code="1" osx_signingId="" tv_icon="" splash_h_image="" mouseToTouch="1" html5_wasm="0" osx_category="5" osx_org="GiderosMobile">
   <imageScales/>
+  <plugins/>
+  <exports/>
  </properties>
- <file source="Bloom.lua"/>
- <file source="fBlur.glsl"/>
- <file source="fCombine.glsl"/>
- <file source="fExtract.glsl"/>
- <file source="vShader.glsl"/>
+ <folder path="../../../Library/luashader" name="luashader">
+  <file name="../../../Library/luashader/effects.lua"/>
+  <file name="../../../Library/luashader/luac_codegen.lua"/>
+  <file name="../../../Library/luashader/luac_loader.lua"/>
+  <file name="../../../Library/luashader/luashader.lua"/>
+ </folder>
  <file source="main.lua"/>
 </project>

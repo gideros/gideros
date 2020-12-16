@@ -52,8 +52,8 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     osxCat["Trivia Games"] = "public.app-category.trivia-games";
     osxCat["Word Games"] = "public.app-category.word-games";
 
-    exportTypes << "iOS" << "Windows" << "MacOSX"
-    		<< "WinRT" << "GApp" << "Win32" << "Html5" << "Android";
+    exportTypes << "Apple" << "Windows" << "MacOSX"
+            << "WinRT" << "GApp" << "Win32" << "Html5";
 
 	properties_ = properties;
 
@@ -62,6 +62,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     QMap<QString, QString>::iterator i;
     for (i = osxCat.begin(); i != osxCat.end(); ++i){
         ui->osx_category->addItem(i.key(), i.value());
+        ui->macos_category->addItem(i.key(), i.value());
     }
 
 	connect(ui->architecture, SIGNAL(currentIndexChanged(int)), ui->architectureTab, SLOT(setCurrentIndex(int)));
@@ -69,10 +70,11 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
 	connect(ui->html5_fbinstant, SIGNAL(stateChanged(int)), this, SLOT(actionHtml5FbInstant(int)));
 	//connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
 
-    ui->android_template->setCurrentIndex(properties_->android_template);
-	ui->exportMode->setCurrentIndex(properties_->exportMode);
+    ui->exportMode->setCurrentIndex(properties_->exportMode);
     ui->ios_bundle->setText(properties_->ios_bundle);
-	ui->packageName->setText(properties_->packageName);
+    ui->atv_bundle->setText(properties_->atv_bundle);
+    ui->macos_bundle->setText(properties_->macos_bundle);
+    ui->macos_category->setCurrentIndex(properties_->macos_category);
     ui->osx_org->setText(properties->osx_org);
     ui->osx_domain->setText(properties->osx_domain);
     ui->osx_bundle->setText(properties_->osx_bundle);
@@ -173,14 +175,19 @@ QString ExportProjectDialog::ios_bundle() const
     return ui->ios_bundle->text();
 }
 
-QString ExportProjectDialog::packageName() const
+QString ExportProjectDialog::atv_bundle() const
 {
-    return ui->packageName->text();
+    return ui->atv_bundle->text();
 }
 
-QString ExportProjectDialog::androidTemplate() const
+QString ExportProjectDialog::macos_bundle() const
 {
-    return ui->android_template->currentText();
+    return ui->macos_bundle->text();
+}
+
+QString ExportProjectDialog::macos_category() const
+{
+    return osxCat[ui->macos_category->currentText()];
 }
 
 QString ExportProjectDialog::osx_org() const
@@ -256,10 +263,11 @@ bool ExportProjectDialog::encryptAssets() const
 void ExportProjectDialog::onAccepted()
 {
 	properties_->architecture = ui->architecture->currentIndex();
-    properties_->android_template = ui->android_template->currentIndex();
 	properties_->exportMode = ui->exportMode->currentIndex();
     properties_->ios_bundle = ui->ios_bundle->text();
-	properties_->packageName = ui->packageName->text();
+    properties_->atv_bundle = ui->atv_bundle->text();
+    properties_->macos_bundle = ui->macos_bundle->text();
+    properties_->macos_category = ui->macos_category->currentIndex();
     properties_->osx_org = ui->osx_org->text();
     properties_->osx_domain = ui->osx_domain->text();
     properties_->osx_bundle = ui->osx_bundle->text();

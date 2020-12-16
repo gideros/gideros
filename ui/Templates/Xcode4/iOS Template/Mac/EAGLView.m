@@ -333,7 +333,7 @@ int keyMods(NSEventModifierFlags mod) {
 
 - (void) reportLuaError:(NSString *)error
 {
-    //GIDEROS-TAG-IOS:LUAERROR//
+    //GIDEROS-TAG-MAC:LUAERROR//
     @throw [[LuaException alloc] initWithName:@"Lua" reason:error userInfo:nil];
 }
 

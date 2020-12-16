@@ -121,9 +121,17 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     	replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
     	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         if(ctx->args.contains("bundle"))
-            replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template").toUtf8(), ctx->args["bundle"].toUtf8());
+            replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-ios").toUtf8(), ctx->args["bundle"].toUtf8());
+        if(ctx->args.contains("bundle_atv"))
+            replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-atv").toUtf8(), ctx->args["bundle_atv"].toUtf8());
+        if(ctx->args.contains("bundle_macos"))
+            replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-mac").toUtf8(), ctx->args["bundle_macos"].toUtf8());
         replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+ctx->properties.version+"</string>").toUtf8());
         replaceList1 << qMakePair(QString("<string>BUILD_NUMBER</string>").toUtf8(), ("<string>"+QString::number(ctx->properties.build_number)+"</string>").toUtf8());
+        QString category = "public.app-category.games";
+        if(ctx->args.contains("category"))
+            category = ctx->args["category"];
+        replaceList1 << qMakePair(QString("public.app-category.games").toUtf8(), category.toUtf8());
     }
     else if(ctx->deviceFamily == e_WinRT){
     	QString winver=ctx->properties.version.remove(QRegularExpression(QString("[^0-9.]")));

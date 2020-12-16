@@ -56,15 +56,16 @@ struct ProjectProperties
         // export options
         app_name="";
 		architecture = 0;
-        android_template = 0;
-        exportMode = 0;
+         exportMode = 0;
 		iosDevice = 0;
         version = "1.0";
         version_code = 1;
         build_number = 1;
 
-        ios_bundle = "com.yourdomain.";
-		packageName = "com.yourdomain.yourapp";
+        ios_bundle = "com.yourdomain.yourapp-ios";
+        atv_bundle = "com.yourdomain.yourapp-atv";
+        macos_bundle = "com.yourdomain.yourapp-macos";
+        macos_category = 5;
         osx_org = "GiderosMobile";
         osx_domain = "giderosmobile.com";
         osx_bundle = "com.yourdomain.";
@@ -119,7 +120,6 @@ struct ProjectProperties
 
     // export options
 	int architecture;
-    int android_template;
 	int exportMode;
 	int iosDevice;
 	QString app_name;
@@ -127,7 +127,9 @@ struct ProjectProperties
     QString version;
     int build_number;
     QString ios_bundle;
-	QString packageName;
+    QString atv_bundle;
+    QString macos_bundle;
+    int macos_category;
     QString osx_org;
     QString osx_domain;
     QString osx_bundle;

@@ -1,3 +1,5 @@
+--!NEDDS:luashader/effects.lua
+
 application:setScaleMode("pixelPerfect")
 local dw=application:getDeviceWidth()
 local dh=application:getDeviceHeight()
@@ -18,37 +20,40 @@ scene:endPath()
 lines={}
 
 local function makeShot()
-line=Shape.new()
-line:setLineStyle(10,math.random()*256*256*256)
-line:beginPath()
-local sz=math.random(30)
-line:moveTo(0,sz)
-line:lineTo(0,-sz)
-line:endPath()
-local ang=math.random()*math.pi*2
-line.dy=-math.cos(ang)
-line.dx=math.sin(ang)
-line.life=500
-line:setRotation(ang*180/math.pi)
-line:setPosition(math.random()*scrw,math.random()*scrh)
-table.insert(lines,line)
-return line
+	line=Shape.new()
+	line:setLineStyle(10,math.random()*256*256*256)
+	line:beginPath()
+	local sz=math.random(30)
+	line:moveTo(0,sz)
+	line:lineTo(0,-sz)
+	line:endPath()
+	local ang=math.random()*math.pi*2
+	line.dy=-math.cos(ang)
+	line.dx=math.sin(ang)
+	line.life=500
+	line:setRotation(ang*180/math.pi)
+	line:setPosition(math.random()*scrw,math.random()*scrh)
+	table.insert(lines,line)
+	return line
 end
 --
 local sw=scene:getWidth()
 local sh=scene:getHeight()
 
-local bloom=Bloom.new(sw,sh)
-stage:addChild(bloom)
+stage:addChild(scene)
+local bloom=ShaderEffect.Bloom.new(sw,sh)
+bloom:setRadiusAndGlow(7,4)
+bloom:apply(stage)
+local bloomApplied=true
 stage:setClip(0,0,sw,sh)
 
 stage:addEventListener(Event.MOUSE_DOWN,function ()
-	if bloom:getParent() then
-		stage:addChild(scene)
-		bloom:removeFromParent()
+	if bloomApplied then
+		bloom:remove(stage)
+		bloomApplied=false
 	else
-		stage:addChild(bloom)
-		scene:removeFromParent()
+		bloom:apply(stage)
+		bloomApplied=true
 	end
 end)
 
@@ -66,10 +71,7 @@ stage:addEventListener(Event.ENTER_FRAME,function ()
 		l:setPosition(lpx,lpy)
 		l.life=l.life-1
 		if (l.life<0) then
-		 l:removeFromParent()
-		 end
-	end
-	if bloom:getParent()~=nil then
-	bloom:draw(scene)
+			l:removeFromParent()
+		end
 	end
 end)
