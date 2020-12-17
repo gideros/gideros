@@ -1,4 +1,4 @@
---!NEDDS:luashader/effects.lua
+--!NEEDS:luashader/effects.lua
 
 application:setScaleMode("pixelPerfect")
 local dw=application:getDeviceWidth()
