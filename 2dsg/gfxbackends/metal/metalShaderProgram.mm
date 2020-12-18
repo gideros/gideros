@@ -100,7 +100,6 @@ id<MTLBuffer> getCachedVBO(ShaderBufferCache **cache,bool &modified, int isize) 
 	if (!dc->valid())
 	{
             dc->VBO=[metalDevice newBufferWithLength:isize options:MTLResourceStorageModeShared];
-            [dc->VBO retain];
 			modified=true;
 	}
 	return dc->VBO;
@@ -183,8 +182,6 @@ void metalShaderProgram::useProgram() {
         mrps[pkey]=[metalDevice newRenderPipelineStateWithDescriptor:mrpd error:&error];
         if (mrps[pkey]==nil)
             NSLog(@"Error creating render pipeline state: %@", error);
-        else
-            [mrps[pkey] retain];
     }
 
     if (mrps[pkey]!=nil)
@@ -262,7 +259,6 @@ metalShaderProgram::metalShaderProgram(const char *vprogram,const char *fprogram
     errorLog="";
     if (defaultLibrary==nil) {
         defaultLibrary=[metalDevice newDefaultLibrary];
-        [defaultLibrary retain];
     }
     
     mrpd=[[MTLRenderPipelineDescriptor alloc] init];

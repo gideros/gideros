@@ -74,7 +74,6 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
         data=NULL; //Don't try to upload data
     }
 	mtex=[metalDevice newTextureWithDescriptor:md];
-    [mtex retain];
     if (data) {
     	[mtex replaceRegion:MTLRegionMake2D(0,0,width,height) 
          mipmapLevel:0 

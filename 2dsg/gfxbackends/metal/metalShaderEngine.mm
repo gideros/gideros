@@ -153,7 +153,6 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     
     mrce=nil;
     mcq=[metalDevice newCommandQueue];
-    [mcq retain];
     mcb=[mcq commandBuffer];
     [mcb retain];
 
@@ -185,12 +184,7 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     sd.magFilter=MTLSamplerMinMagFilterNearest;
     tsNR=[metalDevice newSamplerStateWithDescriptor:sd];
     [sd release];
- /*   [tsNC retain];
-    [tsFC retain];
-    [tsNR retain];
-    [tsFR retain];
-    [tsDC retain];*/
-
+ 
     metalSetupShaders();
     pathShadersInit();
 
