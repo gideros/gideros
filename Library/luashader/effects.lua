@@ -15,7 +15,7 @@ local function genEffect(vshader,fshader)
 	},
 	{
 	{name="vVertex",type=Shader.DFLOAT,mult=2,slot=0,offset=0},
-	{name="vColor",type=Shader.DUBYTE,mult=4,slot=1,offset=0},
+	{name="vColor",type=Shader.DUBYTE,mult=0,slot=1,offset=0},
 	{name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
 	},
 	{
@@ -70,7 +70,7 @@ makeEffect("BloomExtract",
 	vertexShader,
 	function ()
 	 local c=texture2D(fTexture, fTexCoord)
-	 local BloomThreshold=fAmount.x
+	 local BloomThreshold=lF1(fAmount.x)
 	 c=clamp((c-BloomThreshold)/(1.0-BloomThreshold), 0.0, 1.0)
 	 c.a=1
 	 return c
@@ -81,7 +81,7 @@ makeEffect("BloomCombine",
 	function ()
 	 local base=texture2D(fTexture, fTexCoord)*fAmount.x
 	 local bloom=texture2D(fTexture2, fTexCoord)*fAmount.y
-	 base *= (hF4(1.0) - clamp(bloom,0.0,1.0))
+	 base *= (lF4(1.0) - clamp(bloom,0.0,1.0))
 	 base+=bloom
 	 return base
 	end)
