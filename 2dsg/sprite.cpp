@@ -62,6 +62,16 @@ Sprite::~Sprite() {
 }
 
 void Sprite::setupShader(struct _ShaderSpec &spec) {
+	if (spec.shader) {
+		int sc=spec.shader->getSystemConstant(ShaderProgram::SysConst_Bounds);
+		if (sc>=0)
+		{
+			float bounds[4]={0,0,0,0};
+			extraBounds(bounds+0,bounds+1,bounds+2,bounds+3);
+			spec.shader->setConstant(sc,ShaderProgram::CFLOAT4,1,bounds);
+		}
+    }
+
 	for(std::map<std::string,ShaderParam>::iterator it = spec.params.begin(); it != spec.params.end(); ++it) {
 			ShaderParam *p=&(it->second);
 			int idx=spec.shader->getConstantByName(p->name.c_str());

@@ -51,6 +51,7 @@ public:
 		SysConst_Timer,
     	SysConst_ProjectionMatrix,
     	SysConst_ViewProjectionMatrix,
+		SysConst_Bounds
     };
     enum ShaderFlags {
     	Flag_None=0,
