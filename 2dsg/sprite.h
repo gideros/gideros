@@ -446,7 +446,8 @@ public:
         Matrix4 postTransform;
 		ShaderProgram *shader;
 		GRenderTarget *buffer;
-		Effect() : shader(NULL), buffer(NULL) { };
+		bool clearBuffer;
+		Effect() : shader(NULL), buffer(NULL), clearBuffer(false) { };
     };
     void setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode);
 	bool setEffectShaderConstant(size_t effectNumber,ShaderParam p);

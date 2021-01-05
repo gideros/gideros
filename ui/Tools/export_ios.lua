@@ -28,6 +28,7 @@ iOSProject.insertPoints={
   FrameworksPaths={ tag="FRAMEWORK_SEARCH_PATHS = (", data={}},
 }
 iOSProject.InfoPlist={}
+iOSProject.Entitlements={ ios={}, atv={}, mac={} }
 iOSProject._pods={ ios={}, atv={}, mac={} }
 iOSProject._plugins={ ios={}, atv={}, mac={} }
 
@@ -303,6 +304,18 @@ OTHER_LDFLAGS = "-ObjC";</by>
     <replacelist wildcards="]]..Export.getProperty("project.name")..[[-Info.plist;Info.plist">
       <prepend>
         <orig>]].."<![CDATA[<key>CFBundleDisplayName</key>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
+      </prepend>
+    </replacelist>
+  </template>]])
+
+  local dic=""
+  for k,v in pairs(iOSProject.Entitlements.mac) do
+   dic=dic.."<key>"..k.."</key>\n"..plistValue(v).."\n"
+  end
+  Export.callXml([[<template name="Project" path="">
+    <replacelist wildcards="]]..Export.getProperty("project.name")..[[-Mac.entitlements">
+      <prepend>
+        <orig>]].."<![CDATA[<key>com.apple.security.app-sandbox</key>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
       </prepend>
     </replacelist>
   </template>]])

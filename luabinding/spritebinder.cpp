@@ -1803,6 +1803,8 @@ int SpriteBinder::setEffectStack(lua_State* L)
 		for (int en=0;en<ec;en++)
 		{
 			Sprite::Effect e;
+			e.clearBuffer=(en==0); //Clear buffer by default for first pass, don't clear for subsequent passes
+
 			lua_rawgeti(L,2,en+1);
 			luaL_checktype(L,-1,LUA_TTABLE);
 
@@ -1833,8 +1835,11 @@ int SpriteBinder::setEffectStack(lua_State* L)
 					e.textures.push_back(tex);
 				}
 			}
+			lua_getfield(L,-6,"clear");
+			if (!lua_isnoneornil(L,-1))
+				e.clearBuffer=lua_toboolean(L,-1);
 
-			lua_pop(L,5);
+			lua_pop(L,6);
 			effects.push_back(e);
 		}
 	}
