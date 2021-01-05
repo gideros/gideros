@@ -222,11 +222,11 @@ void Sprite::updateEffects()
 	effectsDrawing_=true;
 	for (size_t i=0;i<effectStack_.size();i++) {
 		if (effectStack_[i].buffer) {
-			if (i==0) //First stage, draw the Sprite normally onto the first buffer {
+			if (i==0) { //First stage, draw the Sprite normally onto the first buffer
 				if (effectStack_[i].clearBuffer)
 					effectStack_[i].buffer->clear(0,0,0,0,0,0);
 				effectStack_[i].buffer->draw(this,effectStack_[i].transform);
-		}
+			}
 			else if (effectStack_[i-1].buffer) {
 				if (effectStack_[i].clearBuffer)
 					effectStack_[i].buffer->clear(0,0,0,0,0,0);
