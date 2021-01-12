@@ -30,7 +30,6 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
 		{"setPaused",setPaused},
 		{"isPaused",isPaused},
 		{"scaleParticles",scaleParticles},
-
 		{"getParticles",getParticles},
 		{"getNearestParticle",getNearestParticle},
         {"setTexture", setTexture},

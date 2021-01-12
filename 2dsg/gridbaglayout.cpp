@@ -721,8 +721,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 * that has been collected.
 	 */
 
-	info.startx = diffw / 2 + insets.left;
-	info.starty = diffh / 2 + insets.top;
+	info.startx = diffw*gridAnchorX + insets.left;
+	info.starty = diffh*gridAnchorY + insets.top;
 
     layoutInfo = info;
     for (compindex = 0; compindex < parent->childCount(); compindex++) {

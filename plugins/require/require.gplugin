@@ -185,6 +185,10 @@
     	        </replace>
     	    </replacelist>
 	    </template>
+	    <lua>
+	    local ap=require("Tools/export_android")
+	    ap.usePermission("android.permission.ACCESS_BACKGROUND_LOCATION")
+	    </lua>
     </if>
     <if condition="[[[plugin.reqAlphaCanvas]]]">
     	<template name="AndroidManifest" path="">
@@ -377,7 +381,7 @@
 				end
 			end
 		end
-		if (tonumber(Export.getProperty("plugin.reqNoGps") or 0))==0 then
+		if (tonumber(Export.getProperty("plugin.reqNoGps")) or 0)==0 then
 			iOSProject.InfoPlist.NSLocationUsageDescription=Export.getProperty("plugin.reqGpsReason")
 			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=Export.getProperty("plugin.reqGpsReason")
 		else
@@ -385,12 +389,10 @@
 			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription="This app doesn't use GPS. You shouldn't see this message. If you do, close the app immediately."
 		end
 
-		if (tonumber(Export.getProperty("plugin.reqServerMode") or 0)>0 
+		if (tonumber(Export.getProperty("plugin.reqServerMode")) or 0)>0 
 		or (Export.getProperty("sys.exportType")=="player") then
 			iOSProject.Entitlements.mac["com.apple.security.network.server"]=true
 		end		
-	<true/>
-		
 	]]></lua>
 	   <if condition="[[[plugin.reqGpsBackground]]]">
     	<template name="Project" path="">

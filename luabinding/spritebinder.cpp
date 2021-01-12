@@ -575,6 +575,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         FILL_BOOL("equalizeCells",equalizeCells);
         FILL_BOOL("resizeContainer",resizeContainer);
         FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
+        FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
         FILL_NUM("zOffset",zOffset);
         p->dirty=true;
 	}
@@ -633,6 +634,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_BOOL("equalizeCells",equalizeCells);
         STOR_BOOL("resizeContainer",resizeContainer);
         STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
+        STOR_NUM("gridAnchorX",gridAnchorX); STOR_NUM("gridAnchorY",gridAnchorY);
         STOR_NUM("zOffset",zOffset);
 	}
 	else
@@ -1839,7 +1841,7 @@ int SpriteBinder::setEffectStack(lua_State* L)
 			if (!lua_isnoneornil(L,-1))
 				e.clearBuffer=lua_toboolean(L,-1);
 
-			lua_pop(L,6);
+			lua_pop(L,7);
 			effects.push_back(e);
 		}
 	}
@@ -1850,7 +1852,7 @@ int SpriteBinder::setEffectStack(lua_State* L)
 
 int SpriteBinder::setEffectConstant(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::setShaderConstant", 0);
+	StackChecker checker(L, "SpriteBinder::setEffectConstant", 1);
 
 	Binder binder(L);
 

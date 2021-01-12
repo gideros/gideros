@@ -290,6 +290,8 @@ OTHER_LDFLAGS = "-ObjC";</by>
       else
         return "<array></array>"
       end
+    elseif type(v)=="boolean" then
+      if v then return "<true/>" else return "<false/>" end
     else
       return "<string>"..xmlEscape(v).."</string>"
     end
@@ -313,7 +315,7 @@ OTHER_LDFLAGS = "-ObjC";</by>
    dic=dic.."<key>"..k.."</key>\n"..plistValue(v).."\n"
   end
   Export.callXml([[<template name="Project" path="">
-    <replacelist wildcards="]]..Export.getProperty("project.name")..[[-Mac.entitlements">
+    <replacelist wildcards="]]..Export.getProperty("project.name")..[[_Mac.entitlements">
       <prepend>
         <orig>]].."<![CDATA[<key>com.apple.security.app-sandbox</key>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
       </prepend>
