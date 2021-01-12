@@ -19,6 +19,7 @@ SRCS= \
 	   	Common/imgui_user \
 	   	../../../2dsg/Matrices \
 	   	../../../2dsg/mouseevent \
+	   	../../../2dsg/touchevent \
 	   	../../../2dsg/keyboardevent \
         ../../../luabinding/binder \
         Common/imgui_bindings

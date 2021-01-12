@@ -23,6 +23,7 @@ SOURCES += \
         ../Common/imgui_user.cpp \
 	   	../../../../2dsg/Matrices.cpp \
 	   	../../../../2dsg/mouseevent.cpp \
+	   	../../../../2dsg/touchevent.cpp \
 	   	../../../../2dsg/keyboardevent.cpp \
 	   	../../../../luabinding/binder.cpp \
         ../Common/imgui_bindings.cpp 
