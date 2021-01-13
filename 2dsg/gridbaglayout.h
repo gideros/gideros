@@ -141,7 +141,16 @@ public:
     bool dirty;
     bool resizeContainer;
     float cellSpacingX,cellSpacingY;
+    float gridAnchorX,gridAnchorY;
     float zOffset;
+    GridBagLayout() :
+    	    componentAdjusting(NULL),
+    		equalizeCells(false),dirty(false),resizeContainer(false),
+    		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
+			zOffset(0)
+    {
+
+    }
     GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag);
     void getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);

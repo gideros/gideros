@@ -196,7 +196,7 @@ void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, fl
     if (font_ != NULL)
         font_->preDraw();
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
-		(*it).draw(shader_);
+		(*it).draw(getShader((*it).getShaderType()));
 }
 
 void TextField::setLayout(FontBase::TextLayoutParameters *l)

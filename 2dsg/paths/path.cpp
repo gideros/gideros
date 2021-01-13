@@ -2328,7 +2328,7 @@ static struct path *get_path(unsigned int path) {
 	return kh_val(paths, iter);
 }
 
-static void stroke_path(unsigned int path, const Matrix4 *xform) {
+static void stroke_path(unsigned int path, const Matrix4 *xform, Sprite *spr) {
 	khiter_t iter = kh_get(path, paths, path);
 	if (iter == kh_end(paths))
 		return;
@@ -2343,14 +2343,13 @@ static void stroke_path(unsigned int path, const Matrix4 *xform) {
 	if (p->stroke_geoms[0].count > 0) {
 		VertexBuffer<float> *vb = p->stroke_geoms[0].vertex_buffer;
 		VertexBuffer<unsigned short> *ib = p->stroke_geoms[0].index_buffer;
-		ShaderProgram::pathShaderStrokeLC->setConstant(1,
-				ShaderProgram::CMATRIX, 1, xform->data());
-		ShaderProgram::pathShaderStrokeLC->setConstant(3, ShaderProgram::CFLOAT,
-				1, &p->stroke_feather);
-		ShaderProgram::pathShaderStrokeLC->setData(ShaderProgram::DataVertex,
+		ShaderProgram *shp=spr->getShader(ShaderEngine::STDP_PATHSTROKELINE);
+		shp->setConstant(1,	ShaderProgram::CMATRIX, 1, xform->data());
+		shp->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
+		shp->setData(ShaderProgram::DataVertex,
 				ShaderProgram::DFLOAT, 4, &((*vb)[0]), vb->size() / 4,
 				vb->modified, &vb->bufferCache);
-		ShaderProgram::pathShaderStrokeLC->drawElements(
+		shp->drawElements(
 				ShaderProgram::Triangles, p->stroke_geoms[0].count,
 				ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache);
@@ -2388,21 +2387,20 @@ static void stroke_path(unsigned int path, const Matrix4 *xform) {
 		ib->modified = false;
 
 #else
-		ShaderProgram::pathShaderStrokeC->setConstant(1, ShaderProgram::CMATRIX,
-				1, xform->data());
-		ShaderProgram::pathShaderStrokeC->setConstant(3, ShaderProgram::CFLOAT,
-				1, &p->stroke_feather);
-		ShaderProgram::pathShaderStrokeC->setData(0, ShaderProgram::DFLOAT, 4,
+		ShaderProgram *shp=spr->getShader(ShaderEngine::STDP_PATHSTROKECURVE);
+		shp->setConstant(1, ShaderProgram::CMATRIX, 1, xform->data());
+		shp->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
+		shp->setData(0, ShaderProgram::DFLOAT, 4,
 				&((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache, 48,
 				0);
 		vb->modified = false;
-		ShaderProgram::pathShaderStrokeC->setData(1, ShaderProgram::DFLOAT, 4,
+		shp->setData(1, ShaderProgram::DFLOAT, 4,
 				&((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache, 48,
 				16);
-		ShaderProgram::pathShaderStrokeC->setData(2, ShaderProgram::DFLOAT, 4,
+		shp->setData(2, ShaderProgram::DFLOAT, 4,
 				&((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache, 48,
 				32);
-		ShaderProgram::pathShaderStrokeC->drawElements(ShaderProgram::Triangles,
+		shp->drawElements(ShaderProgram::Triangles,
 				p->stroke_geoms[1].count, ShaderProgram::DUSHORT, &((*ib)[0]),
 				ib->modified, &ib->bufferCache);
 		ib->modified = false;
@@ -2412,7 +2410,7 @@ static void stroke_path(unsigned int path, const Matrix4 *xform) {
 }
 
 static void fill_path(unsigned int path, int fill_mode,
-		ShaderEngine::DepthStencil stencil, const Matrix4 *xform) {
+		ShaderEngine::DepthStencil stencil, const Matrix4 *xform, Sprite *spr) {
 	struct path *p = NULL;
 
 	khiter_t iter = kh_get(path, paths, path);
@@ -2450,8 +2448,9 @@ static void fill_path(unsigned int path, int fill_mode,
 		p->is_fill_dirty = 0;
 	}
 
-	ShaderProgram::pathShaderFillC->setConstant(1, ShaderProgram::CMATRIX, 1,
-			xform->data());
+	ShaderProgram *shp=spr->getShader(ShaderEngine::STDP_PATHFILLCURVE);
+
+	shp->setConstant(1, ShaderProgram::CMATRIX, 1,	xform->data());
 
 	VertexBuffer<vector4f> *vb = p->fill_vertex_buffer;
 	VertexBuffer<unsigned short> *ib = p->fill_index_buffer;
@@ -2469,11 +2468,11 @@ static void fill_path(unsigned int path, int fill_mode,
 			ShaderEngine::Engine->setDepthStencil(stencil);
 		stencil.sClear = false;
 		//glog_d("Fill path: Fill0=%d S=%d",p->fill_counts[0],p->fill_starts[0]);
-        ShaderProgram::pathShaderFillC->setData(0, ShaderProgram::DFLOAT, 4,
+        shp->setData(0, ShaderProgram::DFLOAT, 4,
                                                 vb->size() ? &((*vb)[0]) : NULL, vb->size(), vb->modified,
                                                 &vb->bufferCache);
         vb->modified = false;
-		ShaderProgram::pathShaderFillC->drawElements(ShaderProgram::Triangles,
+		shp->drawElements(ShaderProgram::Triangles,
 				ib->size(), ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache, p->fill_starts[0], p->fill_counts[0]);
 		ib->modified = false;
@@ -2485,11 +2484,11 @@ static void fill_path(unsigned int path, int fill_mode,
 			ShaderEngine::Engine->setDepthStencil(stencil);
 		stencil.sClear = false;
 		//glog_d("Fill path: Fill1=%d S=%d",p->fill_counts[1],p->fill_starts[1]);
-        ShaderProgram::pathShaderFillC->setData(0, ShaderProgram::DFLOAT, 4,
+        shp->setData(0, ShaderProgram::DFLOAT, 4,
                                                 vb->size() ? &((*vb)[0]) : NULL, vb->size(), vb->modified,
                                                 &vb->bufferCache);
         vb->modified = false;
-		ShaderProgram::pathShaderFillC->drawElements(ShaderProgram::Triangles,
+		shp->drawElements(ShaderProgram::Triangles,
 				ib->size(), ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache, p->fill_starts[1], p->fill_counts[1]);
 		ib->modified = false;
@@ -2811,12 +2810,12 @@ void Path2D::impressPath(int path, Matrix4 xform,
 		return; //No PATH
 
 	stencil.sFunc = ShaderEngine::STENCIL_NEVER;
-	fill_path(path, PATHFILLMODE_COUNT_UP, stencil, &xform);
+	fill_path(path, PATHFILLMODE_COUNT_UP, stencil, &xform, this);
 }
 
 void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 		TextureData *texture, ShaderEngine::DepthStencil stencil,
-		ShaderProgram *shp, const Matrix4 *textureMatrix,VertexBuffer<unsigned char> *cb) {
+		const Matrix4 *textureMatrix,VertexBuffer<unsigned char> *cb) {
 	glPushColor();
 	glMultColor(fill[0], fill[1], fill[2], fill[3]);
 
@@ -2826,7 +2825,7 @@ void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 	stencil.sMask = 0xFF;
 	stencil.sWMask = 0xFF;
 	ShaderEngine::Engine->setDepthStencil(stencil);
-
+	ShaderProgram *shp;
 	VertexBuffer<unsigned short> *ib = quadIndices;
 	if (texture) {
 		float sx = ((float) texture->width) / texture->exwidth;
@@ -2836,22 +2835,19 @@ void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 			for (int k = 0; k < 8; k += 2)
 				textureMatrix->transformPoint(texcoords[k], texcoords[k + 1],
 						texcoords + k, texcoords + k + 1);
-		if (!shp)
-			shp = ShaderProgram::stdTexture;
+		shp=getShader(ShaderEngine::STDP_TEXTURE);
 		ShaderEngine::Engine->bindTexture(0, texture->id());
 		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT, 2,
 				texcoords, 4, true, NULL);
 	} else {
 	    if (cb&&(!cb->empty()))
 	    {
-			if (!shp)
-				shp = ShaderProgram::stdColor;
+			shp=getShader(ShaderEngine::STDP_COLOR);
 	        shp->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,&((*cb)[0]),cb->size()/4,cb->modified,&cb->bufferCache);
 	        cb->modified=false;
 	    }
 	    else {
-			if (!shp)
-				shp = ShaderProgram::stdBasic;
+			shp=getShader(ShaderEngine::STDP_BASIC);
 	    }
 	}
 
@@ -2867,7 +2863,7 @@ void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 }
 
 void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
-		TextureData *texture, bool convex, ShaderProgram *shp,
+		TextureData *texture, bool convex,
 		const Matrix4 *textureMatrix,VertexBuffer<unsigned char> *cb) {
 	struct path *p = get_path(path);
 	if (!p)
@@ -2886,7 +2882,7 @@ void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 			memset(&stencil, 0, sizeof(stencil));
 			glPushColor();
 			glMultColor(fill[0], fill[1], fill[2], fill[3]);
-			fill_path(path, PATHFILLMODE_DIRECT, stencil, &xform);
+			fill_path(path, PATHFILLMODE_DIRECT, stencil, &xform,this);
 			glPopColor();
 		} else {
 			ShaderEngine::DepthStencil stencil =
@@ -2897,7 +2893,7 @@ void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 			stencil.sClear = true;
 			impressPath(path, xform, stencil);
 			stencil.sClear = false;
-			fillBounds(p->fill_bounds_vbo, fill, texture, stencil, shp,
+			fillBounds(p->fill_bounds_vbo, fill, texture, stencil,
 					textureMatrix,cb);
 			ShaderEngine::Engine->popClip();
 			ShaderEngine::Engine->popDepthStencil();
@@ -2912,15 +2908,15 @@ void Path2D::strokePath(int path, Matrix4 xform, float line[4]) {
 	if (line[3] > 0) {
 		glPushColor();
 		glMultColor(line[0], line[1], line[2], line[3]);
-		stroke_path(path, &xform);
+		stroke_path(path, &xform, this);
 		glPopColor();
 	}
 }
 
 void Path2D::drawPath(int path, Matrix4 xform, float fill[4], float line[4],
-		TextureData *texture, bool convex, ShaderProgram *shp,
+		TextureData *texture, bool convex,
 		const Matrix4 *textureMatrix,VertexBuffer<unsigned char> *cb) {
-	fillPath(path, xform, fill, texture, convex, shp, textureMatrix,cb);
+	fillPath(path, xform, fill, texture, convex, textureMatrix,cb);
 	strokePath(path, xform, line);
 }
 
@@ -2972,7 +2968,7 @@ void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 	float fill[4] = { fillr_, fillg_, fillb_, filla_ };
 	float line[4] = { liner_, lineg_, lineb_, linea_ };
 	drawPath(path, Matrix4(), fill, line,
-			texturebase_ ? (texturebase_->data) : NULL, convex_, shader_,
+			texturebase_ ? (texturebase_->data) : NULL, convex_,
 			&textureMatrix_,&colors_);
 }
 

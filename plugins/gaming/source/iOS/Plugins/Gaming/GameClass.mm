@@ -21,7 +21,6 @@ static NSMutableDictionary *games = [NSMutableDictionary dictionary];
 	for(NSString *key in games){
         id game = [games objectForKey:key];
         [game destroy];
-        [game release];
         game = nil;
     }
     [games removeAllObjects];
@@ -42,7 +41,6 @@ static NSMutableDictionary *games = [NSMutableDictionary dictionary];
 	if(game)
 	{
         [game destroy];
-        [game release];
         game = nil;
 		[games removeObjectForKey:[provider lowercaseString]];
     }

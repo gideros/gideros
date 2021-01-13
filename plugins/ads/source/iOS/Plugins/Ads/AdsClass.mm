@@ -21,7 +21,6 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
 	for(NSString *key in ads){
         id ad = [ads objectForKey:key];
         [ad destroy];
-        [ad release];
         ad = nil;
     }
     [ads removeAllObjects];
@@ -42,7 +41,6 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
 	if(ad)
 	{
         [ad destroy];
-        [ad release];
         ad = nil;
 		[ads removeObjectForKey:[adprovider lowercaseString]];
     }

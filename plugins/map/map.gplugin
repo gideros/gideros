@@ -17,7 +17,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("mapplugin",
 	"[[[sys.pluginDir]]]/source/iOS",
 	{ "AnnotatedMap.h", "AnnotatedMap.m", "CustomAnnotation.h","CustomAnnotation.m", "mapplugin.mm", "mapplugin.h", "mappluginbinder.cpp" },
-	true,false)
+	false,
+	true,false,false)
 	]]></lua>
  </target>
  </plugin>

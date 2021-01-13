@@ -361,7 +361,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 		if (texture_[t])
 			ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
 
-    ShaderProgram *p=shader_?shader_:ShaderEngine::Engine->getDefault(stdp,mesh3d_?ShaderEngine::STDPV_3D:0);
+    ShaderProgram *p=getShader(stdp,mesh3d_?ShaderEngine::STDPV_3D:0);
     
     p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),vertices_.modified,&vertices_.bufferCache);
     vertices_.modified=false;

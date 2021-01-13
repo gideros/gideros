@@ -60,7 +60,7 @@
     
 }
 -(void)showLeaderboard:(NSString*)Id{
-    GKGameCenterViewController* gameCenterController= [[[GKGameCenterViewController alloc] init] autorelease];
+    GKGameCenterViewController* gameCenterController= [[GKGameCenterViewController alloc] init];
     if (gameCenterController != nil)
     {
         gameCenterController.gameCenterDelegate = self;
@@ -71,7 +71,7 @@
     }
 }
 -(void)reportScore:(NSString*)Id andScore:(long)score with:(int)immediate{
-    GKScore* scoreOb = [[[GKScore alloc] initWithCategory:Id] autorelease];
+    GKScore* scoreOb = [[GKScore alloc] initWithCategory:Id];
     scoreOb.value = score;
     [scoreOb reportScoreWithCompletionHandler:^(NSError* error)
      {
@@ -84,7 +84,7 @@
      }];
 }
 -(void)showAchievements{
-    GKGameCenterViewController* gameCenterController= [[[GKGameCenterViewController alloc] init] autorelease];
+    GKGameCenterViewController* gameCenterController= [[GKGameCenterViewController alloc] init];
     if (gameCenterController != nil)
     {
         gameCenterController.gameCenterDelegate = self;
@@ -111,7 +111,7 @@
                 }
             }
         
-            GKAchievement* achievement = [[[GKAchievement alloc] initWithIdentifier:Id] autorelease];
+            GKAchievement* achievement = [[GKAchievement alloc] initWithIdentifier:Id];
             if (steps<0)
 	            achievement.percentComplete += (-steps);
             else if (steps>0)
@@ -153,7 +153,7 @@
                 }
             }
         
-            GKAchievement* achievement = [[[GKAchievement alloc] initWithIdentifier:Id] autorelease];
+            GKAchievement* achievement = [[GKAchievement alloc] initWithIdentifier:Id];
             achievement.percentComplete = 0;
             if([achievement respondsToSelector:@selector(setShowsCompletionBanner:)])
                 achievement.showsCompletionBanner = true;
@@ -226,7 +226,7 @@
     }];
 }
 -(void)loadScores:(NSString*)Id andSpan:(int) span forCollection:(int) collection withResults:(int)maxResults{
-    GKLeaderboard *lb = [[[GKLeaderboard alloc] init] autorelease];
+    GKLeaderboard *lb = [[GKLeaderboard alloc] init];
     lb.category = Id;
     lb.timeScope = span;
     lb.playerScope = collection;

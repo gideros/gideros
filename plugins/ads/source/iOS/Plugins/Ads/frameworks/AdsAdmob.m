@@ -74,8 +74,7 @@
 
 -(void)destroy{
     [self.mngr destroy];
-    [self.mngr release];
-    self.mngr = nil;
+     self.mngr = nil;
     
     self.currentSize = nil;
     self.appKey = nil;
@@ -124,7 +123,8 @@
             [self hideAd:type];
         }];
         [listener setHide:^(){
-            [interstitial_ release];
+        	//NOTE release is forbidden with ARC, but should we do something else ?
+            //interstitial_=nil;            
         }];
         [self.mngr set:interstitial_ forType:type withListener:listener];
 
@@ -201,7 +201,7 @@
                 if(view_ != nil)
                 {
                     view_.delegate = nil;
-                    [view_ release];
+                    //view_=nil;
                 }
             }];
             [listener setHide:^(){

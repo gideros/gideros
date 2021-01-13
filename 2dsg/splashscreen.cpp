@@ -130,10 +130,10 @@ void SplashScreen::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 	float a2 = alphaFunction(t - 0.25);
 	
 	graphicsBase1_.setColor(1, 1, 1, a1);
-	graphicsBase1_.draw(shader_);
+	graphicsBase1_.draw(getShader(graphicsBase1_.getShaderType()));
 
 	graphicsBase2_.setColor(1, 1, 1, a2);
-	graphicsBase2_.draw(shader_);
+	graphicsBase2_.draw(getShader(graphicsBase2_.getShaderType()));
 }
 
 bool SplashScreen::isFinished() const

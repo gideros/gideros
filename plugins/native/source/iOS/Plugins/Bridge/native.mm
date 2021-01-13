@@ -273,8 +273,6 @@ public:
 		gnative_Object *obj2;
 		if (iter == objects_.end())
 		{
-			if (retain)
-				[obj retain];
 
 			obj2 = new gnative_Object;
 			obj2->refCount = 1;
@@ -451,7 +449,6 @@ public:
 		if (--obj->refCount == 0)
 		{
 			objects_.erase(obj->obj);
-			[obj->obj release];
 			delete obj;
 			return 1;
 		}

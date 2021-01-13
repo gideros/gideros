@@ -225,7 +225,7 @@ keep:
 	grep -vh "invoke_" emscripten/Build/*.syms | sort | uniq | sed -e 's/g\$$//;s/"//g;s/^/KEEP\(/;s/$$/)/' >>emscripten/_keep.c
 	echo "}" >>emscripten/_keep.c
 					
-$(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
+$(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS))) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
 	@echo "EMLINK gideros WASM"
 	@$(EMCC) $(OBJS) $(LIBS) --minify 0  $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_ARW) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
@@ -233,7 +233,7 @@ $(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(OBJS) gidjs.js gui.js gidpost.js gi
 	@$(EMSDK_PREFIX) wasm2wat.exe $(BUILD)/gideros-wasm.wasm | grep '(export ' | grep '(func'| cut -d' ' -f4 >$(BUILD)/gideros.esyms
 	
 
-main: path $(BUILD)/gideros-wasm.html $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS)))
+main: path $(BUILD)/gideros-wasm.html 
 	cp gideros.png $(TEMPLATECOM)
 	cp gideros.css $(TEMPLATECOM)
 	cp $(BUILD)/gideros-wasm.wasm $(TEMPLATEWASM) 

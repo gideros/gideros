@@ -43,7 +43,6 @@
 
 -(void)destroy{
     [self.mngr destroy];
-    [self.mngr release];
     self.mngr = nil;
 }
 
@@ -110,10 +109,7 @@
                 }];
                 [listener setDestroy:^(){
                     [self hideAd:type];
-                    if(view2_ != nil)
-                    {
-                        [view2_ release];
-                    }
+                    //view2_=nil;
                 }];
                 [listener setHide:^(){
                     if(view2_ != nil)
@@ -147,10 +143,7 @@
                 }];
                 [listener setDestroy:^(){
                     [self hideAd:type];
-                    if(view1_ != nil)
-                    {
-                        [view1_ release];
-                    }
+                    //view1_=nil;
                 }];
                 [listener setHide:^(){
                     if(view1_ != nil)

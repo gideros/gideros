@@ -45,8 +45,9 @@ bool getClipboard(std::string &data,std::string &mimeType) {
 	return false;
 }
 
+extern int s_KeyboardModifiers;
 int getKeyboardModifiers() {
-	return 0;
+	return s_KeyboardModifiers;
 }
 
 void vibrate(int ms)

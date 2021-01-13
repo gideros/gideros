@@ -143,7 +143,7 @@ size_t utf8len(const char *s)
     for (; *s; ++s) if ((*s & 0xC0) != 0x80) ++len;
     return len;
 }
-
+int s_KeyboardModifiers=0;
 EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
 {
  if (GiderosUIShown) return false;
@@ -158,6 +158,12 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  if ((!strcmp(key,"Backspace"))||(*key=='\b')) skey=2;
  if ((!strcmp(key,"Enter"))||(*key=='\r')) skey=4;
  if ((!strcmp(key,"Escape"))||(*key=='\e')) skey=8;
+ int mkey=0;
+ if (e->shiftKey) mkey|=GINPUT_SHIFT_MODIFIER;
+ if (e->altKey) mkey|=GINPUT_ALT_MODIFIER;
+ if (e->ctrlKey) mkey|=GINPUT_CTRL_MODIFIER;
+ if (e->metaKey) mkey|=GINPUT_META_MODIFIER;
+ s_KeyboardModifiers=mkey;
  //printf("PressCode:%s %d (%d)\n",key,skey,eventType);
  if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
  {

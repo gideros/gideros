@@ -23,7 +23,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("json",
 	"[[[sys.pluginDir]]]/source",
 	{ "lua_cjson.c", "lua_cjson_stub.cpp", "fpconv.c", "strbuf.c"  },
-	true,true)
+	false,
+	true,true,true)
 	]]></lua>
  </target>
  <target name="Html5">

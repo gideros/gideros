@@ -15,13 +15,11 @@
 		EB4A6AD71D64A88F00162D26 /* camerabinder.h in Headers */ = {isa = PBXBuildFile; fileRef = EB4A6AD51D64A88F00162D26 /* camerabinder.h */; };
 		EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AD81D64A96600162D26 /* UIKit.framework */; };
 		EB4A6ADC1D64ABF400162D26 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */; };
-		EB4A6ADE1D64AC2C00162D26 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */; };
 		EB4A6AE01D64AC3100162D26 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */; };
 		EB4A6AE21D64AC3600162D26 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE11D64AC3600162D26 /* ImageIO.framework */; };
 		EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */; };
 		EB4A6AE61D64ACF900162D26 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */; };
 		EB4A6AE81D64AD0000162D26 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */; };
-		EB4A6AEA1D64AD0900162D26 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,13 +33,11 @@
 		EB4A6AD51D64A88F00162D26 /* camerabinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = camerabinder.h; path = common/camerabinder.h; sourceTree = SOURCE_ROOT; };
 		EB4A6AD81D64A96600162D26 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		EB4A6AE11D64AC3600162D26 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,13 +45,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB4A6AEA1D64AD0900162D26 /* OpenGLES.framework in Frameworks */,
 				EB4A6AE81D64AD0000162D26 /* CoreGraphics.framework in Frameworks */,
 				EB4A6AE61D64ACF900162D26 /* QuartzCore.framework in Frameworks */,
 				EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */,
 				EB4A6AE21D64AC3600162D26 /* ImageIO.framework in Frameworks */,
 				EB4A6AE01D64AC3100162D26 /* CoreMedia.framework in Frameworks */,
-				EB4A6ADE1D64AC2C00162D26 /* AssetsLibrary.framework in Frameworks */,
 				EB4A6ADC1D64ABF400162D26 /* AVFoundation.framework in Frameworks */,
 				EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */,
 				5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */,
@@ -85,13 +79,11 @@
 		5F9FAA9F15DD87E20039718F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */,
 				EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */,
 				EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */,
 				EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */,
 				EB4A6AE11D64AC3600162D26 /* ImageIO.framework */,
 				EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */,
-				EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */,
 				EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */,
 				EB4A6AD81D64A96600162D26 /* UIKit.framework */,
 				5F9FAAA015DD87E20039718F /* Foundation.framework */,
@@ -226,7 +218,8 @@
 					../../../lua/src,
 					../../../2dsg/gfxbackends,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 			};
@@ -258,7 +251,8 @@
 					../../../lua/src,
 					../../../2dsg/gfxbackends,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -268,24 +262,28 @@
 		5F9FAAAB15DD87E20039718F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				DSTROOT = /tmp/camera.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "camera-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
 		5F9FAAAC15DD87E20039718F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				DSTROOT = /tmp/camera.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "camera-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};

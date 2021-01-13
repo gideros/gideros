@@ -21,7 +21,6 @@
 
 -(void)destroy{
     [self.mngr destroy];
-    [self.mngr release];
     self.mngr = nil;
 }
 
@@ -109,7 +108,7 @@
                     {
                         self.view_.adLoadDelegate = nil;
                         self.view_.adDisplayDelegate = nil;
-                        [self.view_ release];
+                        self.view_=nil;
                     }
                 }];
                 [listener setHide:^(){

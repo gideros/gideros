@@ -301,9 +301,7 @@ SpineSprite::~SpineSprite() {
 
 void SpineSprite::drawMesh() {
 
-	ShaderProgram *p = proxy_->getShader();
-	if (!p)
-		p = gtexture_get_engine()->getDefault(ShaderEngine::STDP_TEXTURECOLOR);
+	ShaderProgram *p = proxy_->getShader(ShaderEngine::STDP_TEXTURECOLOR);
 	if (p) {
 		p->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,
 				&gvertices[0], gvertices.size(), true, NULL);

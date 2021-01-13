@@ -105,6 +105,9 @@ private:
 	static int setShader(lua_State* L);
 	static int setShaderConstant(lua_State* L);
 	static int setStencilOperation(lua_State* L);
+	static int setEffectStack(lua_State* L);
+	static int setEffectConstant(lua_State* L);
+	static int redrawEffects(lua_State* L);
 
 	static int setStopEventPropagation(lua_State *L);
     static int getDrawCount(lua_State* L);

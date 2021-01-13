@@ -11,10 +11,6 @@
 
 #include "giderosapi.h"
 
-@interface ViewController ()
-@property (nonatomic, assign) CADisplayLink *displayLink;
-@end
-
 @implementation ViewController
 
 NSMutableArray *tableData;
@@ -54,9 +50,6 @@ NSMutableArray *tableData;
 
 - (void)dealloc
 {
-    [tableData release];
-    
-    [super dealloc];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -170,8 +163,7 @@ NSMutableArray *tableData;
      return result;
      else
      return UIInterfaceOrientationMaskAll;*/
-    return gdr_supportedInterfaceOrientations();
-
+    return (NSUInteger)gdr_supportedInterfaceOrientations();
 }
 
 - (void)initTable{
@@ -196,8 +188,6 @@ NSMutableArray *tableData;
     labelView.font=[labelView.font fontWithSize:25];
     [headerView addSubview:labelView];
     self.tableView.tableHeaderView = headerView;
-    [labelView release];
-    [headerView release];
     [self.tableView reloadData];
     [self.view addSubview:self.tableView];
     [self.tableView setHidden:true];

@@ -169,7 +169,7 @@ void TTTextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, 
     G_UNUSED(ex);
     G_UNUSED(ey);
     if (scaleChanged()) createGraphics();
-	graphicsBase_.draw(shader_);
+	graphicsBase_.draw(getShader(graphicsBase_.getShaderType()));
 }
 
 void TTTextField::setFont(FontBase* font)

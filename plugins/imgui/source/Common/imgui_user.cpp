@@ -7,6 +7,7 @@
 #include "imgui_src/imgui.h"
 #include "imgui_src/imgui_internal.h"
 //#include "imgui_src/imgui_widgets.cpp"
+#include <math.h>
 
 //=============== CODE BORROWED FROM IMGUI_WIDGETS.CPP
 static const ImGuiDataTypeInfo GDataTypeInfo[] =
@@ -60,7 +61,7 @@ namespace ImGui
    // void FitImage(ImRect* bb, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor)
     void FitImage(ImVec2& Min, ImVec2& Max, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor)
     {
-        float s = std::fminf(size.x / texture_size.x, size.y / texture_size.y);
+        float s = fminf(size.x / texture_size.x, size.y / texture_size.y);
         ImVec2 scaled_texture_size = ImVec2(s * texture_size.x, s * texture_size.y);
 
         ImVec2 anchor_offset = anchor * (size - scaled_texture_size);

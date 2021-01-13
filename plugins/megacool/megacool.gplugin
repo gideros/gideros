@@ -105,7 +105,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("MegaCool",
 	"[[[sys.pluginDir]]]/source/iOS/Megacool",
 	{ "gmegacool.mm", "megacoolbinder.cpp" },
-	true,true)
+	false,
+	true,true,false)
 	]]></lua>
  </target>
  

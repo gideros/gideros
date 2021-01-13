@@ -6,7 +6,7 @@
 #include "binder.h"
 #include "luaapplication.h"
 
-TextureBase *cameraplugin::cameraTexture=NULL;
+GRenderTarget *cameraplugin::cameraTexture=NULL;
 LuaApplication *cameraplugin::application=NULL;
 
 static int availableDevices(lua_State* L)
@@ -35,7 +35,7 @@ static int availableDevices(lua_State* L)
 
 static int start(lua_State* L)
 {
-	TextureBase* textureBase = static_cast<TextureBase*>(g_getInstance(L,"TextureBase",1));
+	GRenderTarget* textureBase = static_cast<GRenderTarget*>(g_getInstance(L,"RenderTarget",1));
 	const char *name=luaL_optstring(L,2,NULL);
 	if (cameraplugin::cameraTexture)
 		cameraplugin::cameraTexture->unref();
@@ -133,7 +133,7 @@ static void g_deinitializePlugin(lua_State *L)
 }
 
 
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || (TARGET_OS_OSX && !defined(QT_CORE_LIB))
 REGISTER_PLUGIN_STATICNAMED_CPP("Camera", "1.0",Camera)
 #else
 REGISTER_PLUGIN("Camera", "1.0")

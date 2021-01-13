@@ -83,7 +83,6 @@
 
 -(void)destroy{
     [self.mngr destroy];
-    [self.mngr release];
     self.mngr = nil;
 }
 
@@ -105,7 +104,8 @@
             [self hideAd:type];
         }];
         [listener setHide:^(){
-            [interstitial_ release];
+        	//NOTE release is forbidden with ARC, but should we do something else ?
+        	//interstitial_ = nil;
         }];
         [self.mngr set:interstitial_ forType:type withListener:listener];
 

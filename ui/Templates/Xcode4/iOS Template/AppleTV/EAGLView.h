@@ -6,8 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
 #import "Metal/Metal.h"
 extern id<MTLDevice> metalDevice;
 extern MTLRenderPassDescriptor *metalFramebuffer;
@@ -18,26 +16,16 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 @interface EAGLView : UIView <UIKeyInput>
 {
 @private
-    EAGLContext *context;
-    
-    // The pixel dimensions of the CAEAGLLayer.
-    GLint framebufferWidth;
-    GLint framebufferHeight;
-    
-    // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view.
-    GLuint defaultFramebuffer, colorRenderbuffer;
-
-	BOOL framebufferDirty;
+    NSUInteger framebufferWidth;
+    NSUInteger framebufferHeight;
+    BOOL framebufferDirty;
 	BOOL retinaDisplay;
-	CAEAGLLayer *eaglLayer;
     CAMetalLayer *metalLayer;
     id<CAMetalDrawable> metalDrawable;
     CGRect safeArea;
     id<MTLTexture> metalDepth;
-    id<MTLTexture> metalStencil;
 }
 
-@property (nonatomic, retain) EAGLContext *context;
 @property (nonatomic, readonly) BOOL hasText;
 @property (nonatomic) UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
 

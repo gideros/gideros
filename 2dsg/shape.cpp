@@ -474,5 +474,5 @@ void Shape::extraBounds(float* minx, float* miny, float* maxx, float* maxy) cons
 void Shape::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
 	for (GraphicsBaseList::iterator iter = graphicsBases_.begin(), e = graphicsBases_.end(); iter != e; ++iter)
-		iter->draw(shader_);
+		iter->draw(getShader(iter->getShaderType()));
 }

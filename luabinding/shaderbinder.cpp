@@ -75,6 +75,8 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "SYS_PROJECTION");
 	lua_pushinteger(L, ShaderProgram::SysConst_ViewProjectionMatrix);
 	lua_setfield(L, -2, "SYS_VP");
+	lua_pushinteger(L, ShaderProgram::SysConst_Bounds);
+	lua_setfield(L, -2, "SYS_BOUNDS");
 
 	lua_pushinteger(L, ShaderProgram::Flag_None);
 	lua_setfield(L, -2, "FLAG_NONE");
@@ -82,6 +84,25 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "FLAG_NO_DEFAULT_HEADER");
 	lua_pushinteger(L, ShaderProgram::Flag_FromCode);
 	lua_setfield(L, -2, "FLAG_FROM_CODE");
+
+#define PCONSTANT(name)	lua_pushinteger(L, ShaderEngine::STDP_##name); lua_setfield(L, -2, "SHADER_PROGRAM_"#name);
+#define VCONSTANT(name)	lua_pushinteger(L, ShaderEngine::STDPV_##name); lua_setfield(L, -2, "SHADER_VARIANT_"#name);
+	PCONSTANT(UNSPECIFIED);
+	PCONSTANT(BASIC);
+	PCONSTANT(COLOR);
+	PCONSTANT(TEXTURE);
+	PCONSTANT(TEXTURECOLOR);
+	PCONSTANT(TEXTUREALPHA);
+	PCONSTANT(TEXTUREALPHACOLOR);
+	PCONSTANT(PARTICLE);
+	PCONSTANT(PARTICLES);
+	PCONSTANT(PATHFILLCURVE);
+	PCONSTANT(PATHSTROKECURVE);
+	PCONSTANT(PATHSTROKELINE);
+	VCONSTANT(TEXTURED);
+	VCONSTANT(3D);
+#undef PCONSTANT
+#undef VCONSTANT
 
 	lua_pop(L, 1);
 

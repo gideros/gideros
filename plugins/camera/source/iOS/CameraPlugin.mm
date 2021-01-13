@@ -3,7 +3,7 @@
 #import "CameraCapturePipeline.h"
 #import <UIKit/UIKit.h>
 #include "camerabinder.h"
-#define GLES
+//#define GLES
 #ifdef GLES
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
@@ -155,7 +155,7 @@ if (err)
         case AVCaptureVideoOrientationPortraitUpsideDown: ao=180; break;
         case AVCaptureVideoOrientationLandscapeRight: ao=270; break;
     }
-    ao=(orientation-ao+360)%360;
+    ao=(ao-orientation+360)%360;
     int x0=0;
     int x1=1;
     if (self.capturePipeline.frontFacing) { x0=1; x1=0; }
@@ -279,7 +279,7 @@ if (err)
                                                             videoTextureCache,
                                                             videoBuffer,
                                                             NULL,
-                                                            MTLPixelFormatRGBA8Unorm,
+                                                            MTLPixelFormatBGRA8Unorm,
                                                             frameWidth,
                                                             frameHeight,
                                                             0,
@@ -289,13 +289,13 @@ if (err)
 		{
             ShaderEngine::Engine->reset();
             ShaderBuffer *oldfbo = ShaderEngine::Engine->setFramebuffer(rdrTgt);
+            ShaderEngine::Engine->clearColor(0,0,0,0);
             ShaderEngine::Engine->setViewport(0, 0, tex->width, tex->height);
             Matrix4 projection = ShaderEngine::Engine->setOrthoFrustum(0,
                                                                        tex->baseWidth, tex->baseHeight,0, -1, 1,true);
             ShaderEngine::Engine->setProjection(projection);
             Matrix4 model;
             ShaderEngine::Engine->setModel(model);
-            ShaderEngine::Engine->clearColor(0,0,0,0);
                         
 #ifdef GLES
             GLuint glid=CVOpenGLESTextureGetName(texture);
@@ -303,6 +303,10 @@ if (err)
             glBindTexture(GL_TEXTURE_2D, glid);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#else
+            ShaderTexture *ctex=ShaderEngine::Engine->createTexture(ShaderTexture::FMT_NATIVE, ShaderTexture::PK_UBYTE, frameWidth, frameHeight, NULL, ShaderTexture::WRAP_CLAMP, ShaderTexture::FILT_LINEAR);
+            ctex->setNative(CVMetalTextureGetTexture(texture));
+            ShaderEngine::Engine->bindTexture(0, ctex);
 #endif
             ShaderProgram::stdTexture->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,
                             &vertices[0], vertices.size(), vertices.modified,
@@ -318,6 +322,8 @@ if (err)
             indices.modified = false;
 #ifdef GLES
             glBindTexture(GL_TEXTURE_2D, 0);
+#else
+            delete ctex;
 #endif
             ShaderEngine::Engine->setFramebuffer(oldfbo);
             CFRelease(texture);

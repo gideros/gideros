@@ -8,6 +8,7 @@
 #include "stage.h"
 #include <application.h>
 #include "layoutevent.h"
+#include "bitmap.h"
 
 std::set<Sprite*> Sprite::allSprites_;
 std::set<Sprite*> Sprite::allSpritesWithListeners_;
@@ -31,7 +32,6 @@ Sprite::Sprite(Application* application) :
 	clipw_ = -1;
 	cliph_ = -1;
 
-	shader_ = NULL;
 	stencil_.dTest=false;
 	layoutState=NULL;
 	layoutConstraints=NULL;
@@ -49,25 +49,204 @@ Sprite::~Sprite() {
 	allSprites_.erase(this);
 	allSpritesWithListeners_.erase(this);
 
-	if (shader_)
-		shader_->Release();
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.begin();
+	while (it!=shaders_.end())
+	{
+		if (it->second.shader)
+			it->second.shader->Release();
+		it++;
+	}
 
 	clearLayoutState();
 	clearLayoutConstraints();
 }
 
-void Sprite::setShader(ShaderProgram *shader) {
+void Sprite::setupShader(struct _ShaderSpec &spec) {
+	if (spec.shader) {
+		int sc=spec.shader->getSystemConstant(ShaderProgram::SysConst_Bounds);
+		if (sc>=0)
+		{
+			float bounds[4]={0,0,0,0};
+			extraBounds(bounds+0,bounds+1,bounds+2,bounds+3);
+			spec.shader->setConstant(sc,ShaderProgram::CFLOAT4,1,bounds);
+		}
+    }
+
+	for(std::map<std::string,ShaderParam>::iterator it = spec.params.begin(); it != spec.params.end(); ++it) {
+			ShaderParam *p=&(it->second);
+			int idx=spec.shader->getConstantByName(p->name.c_str());
+			if (idx>=0)
+				spec.shader->setConstant(idx,p->type,p->mult,&(p->data[0]));
+	}
+}
+
+void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,int variant,bool inherit) {
+	int sid=(id<<8)|variant;
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
 	if (shader)
 		shader->Retain();
-	if (shader_)
-		shader_->Release();
-	shader_ = shader;
-	shaderParams_.clear();
+	if (it!=shaders_.end()) {
+		if (it->second.shader)
+			it->second.shader->Release();
+		if (shader) {
+			it->second.shader=shader;
+			it->second.inherit=inherit;
+		}
+		else {
+			it->second.params.clear();
+			shaders_.erase(it);
+		}
+	}
+	else if (shader) {
+		struct _ShaderSpec sp;
+		sp.shader=shader;
+		sp.inherit=inherit;
+		shaders_[sid]=sp;
+	}
+}
+
+bool Sprite::setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id,int variant)
+{
+	int sid=(id<<8)|variant;
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
+	if (it!=shaders_.end()) {
+		it->second.params[p.name]=p;
+		return true;
+	}
+	else
+		return false;
+}
+
+ShaderProgram *Sprite::getShader(ShaderEngine::StandardProgram id,int variant)
+{
+	int sid=(id<<8)|variant;
+	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
+	if (it!=shaders_.end()) {
+		setupShader(it->second);
+		return it->second.shader;
+	}
+	it=shaders_.find(0);
+	if (it!=shaders_.end()) {
+		setupShader(it->second);
+		return it->second.shader;
+	}
+	Sprite *p=parent();
+	while (p) {
+		it=p->shaders_.find(sid);
+        if (it!=p->shaders_.end()) {
+			if (it->second.inherit) {
+				setupShader(it->second);
+				return it->second.shader;
+			}
+		}
+        p=p->parent();
+    }
+	return ShaderEngine::Engine->getDefault(id, variant);
 }
 
 void Sprite::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		float ey) {
  G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
+}
+
+void setupEffectShader(Bitmap *source,Sprite::Effect &e)
+{
+	source->setShader(e.shader);
+    if (e.shader)
+	for(std::map<std::string,Sprite::ShaderParam>::iterator it = e.params.begin(); it != e.params.end(); ++it) {
+			Sprite::ShaderParam *p=&(it->second);
+			int idx=e.shader->getConstantByName(p->name.c_str());
+			if (idx>=0)
+				e.shader->setConstant(idx,p->type,p->mult,&(p->data[0]));
+	}
+    for (size_t t=0;t<e.textures.size();t++)
+        if (e.textures[t]) {
+            if (t==0)
+                source->setTexture(e.textures[t]);
+            else
+                ShaderEngine::Engine->bindTexture(t,e.textures[t]->data->id());
+        }
+}
+
+void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
+	int diff=0;
+	if (effectStack_.size()>0) {
+		diff-=1;
+		for (size_t i=0;i<effectStack_.size();i++) {
+			if (effectStack_[i].shader)
+				effectStack_[i].shader->Release();
+			if (effectStack_[i].buffer)
+				effectStack_[i].buffer->unref();
+            for (size_t t=0;t<effectStack_[i].textures.size();t++)
+                if (effectStack_[i].textures[t])
+                    effectStack_[i].textures[t]->unref();
+		}
+	}
+	effectStack_=effects;
+	if (effectStack_.size()>0) {
+		diff+=1;
+		for (size_t i=0;i<effectStack_.size();i++) {
+			if (effectStack_[i].shader)
+				effectStack_[i].shader->Retain();
+			if (effectStack_[i].buffer)
+				effectStack_[i].buffer->ref();
+            for (size_t t=0;t<effectStack_[i].textures.size();t++)
+                if (effectStack_[i].textures[t])
+                    effectStack_[i].textures[t]->ref();
+		}
+	}
+	effectsDirty_=true;
+	effectsMode_=mode;
+
+	Sprite *p=this;
+	while (p) {
+		p->spriteWithLayoutCount+=diff;
+		p=parent();
+	}
+}
+
+bool Sprite::setEffectShaderConstant(size_t effectNumber,ShaderParam p)
+{
+	if (effectNumber>=effectStack_.size())
+		return false;
+	effectStack_[effectNumber].params[p.name]=p;
+	return true;
+}
+
+void Sprite::updateEffects()
+{
+	if (effectsMode_!=CONTINUOUS) {
+		if (!effectsDirty_) return;
+	}
+	ShaderProgram *shp=NULL;
+	effectsDrawing_=true;
+	for (size_t i=0;i<effectStack_.size();i++) {
+		if (effectStack_[i].buffer) {
+			if (i==0) { //First stage, draw the Sprite normally onto the first buffer
+				if (effectStack_[i].clearBuffer)
+					effectStack_[i].buffer->clear(0,0,0,0,0,0);
+				effectStack_[i].buffer->draw(this,effectStack_[i].transform);
+			}
+			else if (effectStack_[i-1].buffer) {
+				if (effectStack_[i].clearBuffer)
+					effectStack_[i].buffer->clear(0,0,0,0,0,0);
+				Bitmap source(application_,effectStack_[i-1].buffer);
+				setupEffectShader(&source,effectStack_[i-1]);
+				effectStack_[i].buffer->draw(&source,effectStack_[i].transform);
+			}
+			shp=effectStack_[i].shader;
+		}
+	}
+	effectsDirty_=false;
+	effectsDrawing_=false;
+}
+
+void Sprite::redrawEffects() {
+	Sprite *p=this;
+	while (p) {
+		p->effectsDirty_=true;
+		p=parent();
+	}
 }
 
 GridBagLayout *Sprite::getLayoutState()
@@ -100,7 +279,7 @@ GridBagConstraints *Sprite::getLayoutConstraints()
 	if (!layoutConstraints)
 		layoutConstraints=new GridBagConstraints();
     if (parent_&&parent_->layoutState)
-        parent_->layoutState->dirty=true;
+    	parent_->layoutState->dirty=true;
 	return layoutConstraints;
 }
 
@@ -256,6 +435,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		bool pop = stack.top().second;
 		stack.pop();
 
+		bool lastEffect=((!sprite->effectsDrawing_)&&(sprite->effectStack_.size()>0));
+
 		if (pop == true) {
             sprite->drawCount_=1;
             for (size_t i = 0;i< sprite->children_.size();i++)
@@ -297,7 +478,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 
 		if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1) {
 			glPushBlendFunc();
-			glSetBlendFunc(sprite->sfactor_, sprite->dfactor_);
+			if (!lastEffect)
+				glSetBlendFunc(sprite->sfactor_, sprite->dfactor_);
 		}
 
 		if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0))
@@ -316,19 +498,31 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			stencil.sMask=sprite->stencil_.sMask;
 			stencil.sWMask=sprite->stencil_.sWMask;
 			stencil.sRef=sprite->stencil_.sRef;
-			ShaderEngine::Engine->setDepthStencil(stencil);
+			if (!lastEffect)
+				ShaderEngine::Engine->setDepthStencil(stencil);
 		}
 
-		if (sprite->shader_)
-		for(std::map<std::string,ShaderParam>::iterator it = sprite->shaderParams_.begin(); it != sprite->shaderParams_.end(); ++it) {
-				ShaderParam *p=&(it->second);
-				int idx=sprite->shader_->getConstantByName(p->name.c_str());
-				if (idx>=0)
-					sprite->shader_->setConstant(idx,p->type,p->mult,&(p->data[0]));
+		if (lastEffect)
+		{
+            size_t i=sprite->effectStack_.size()-1;
+			Bitmap source(application_,sprite->effectStack_[i].buffer);
+			setupEffectShader(&source,sprite->effectStack_[i]);
+            Matrix4 xform;
+            if (sprite->parent_)
+                xform=sprite->parent_->worldTransform_;
+            else
+                xform=transform;
+            xform=xform*sprite->effectStack_[i].postTransform;
+            xform=xform*sprite->localTransform_.matrix();
+            ShaderEngine::Engine->setModel(xform);
+            ((Sprite *)&source)->doDraw(xform, sx, sy, ex, ey);
 		}
-		sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
+		else
+			sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
 
 		stack.push(std::make_pair(sprite, true));
+
+		if (!lastEffect) //Don't draw subs if rendering last effect
 		for (int i = (int) sprite->children_.size() - 1; i >= 0; --i)
 			stack.push(std::make_pair(sprite->children_[i], false));
 	}
@@ -367,6 +561,7 @@ void Sprite::computeLayout() {
 
 		for (size_t i = 0; i < sprite->children_.size(); ++i)
 			stack.push(sprite->children_[i]);
+		sprite->updateEffects();
 	}
 
 	stackPool.destroy(&stack);

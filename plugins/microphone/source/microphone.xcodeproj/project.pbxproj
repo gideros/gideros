@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,7 +13,7 @@
 		EB46E1EC20BD799400A1E878 /* gmicrophonebinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB46E1E820BD799400A1E878 /* gmicrophonebinder.cpp */; };
 		EB46E1ED20BD799400A1E878 /* gsoundencoder.h in Headers */ = {isa = PBXBuildFile; fileRef = EB46E1E920BD799400A1E878 /* gsoundencoder.h */; };
 		EB46E1EF20BD79A000A1E878 /* gmicrophone-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = EB46E1EE20BD79A000A1E878 /* gmicrophone-ios.mm */; };
-		EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AD81D64A96600162D26 /* UIKit.framework */; };
+		EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AD81D64A96600162D26 /* UIKit.framework */; platformFilter = ios; settings = {ATTRIBUTES = (Required, ); }; };
 		EB4A6ADC1D64ABF400162D26 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */; };
 		EB4A6AE01D64AC3100162D26 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */; };
 		EB4A6AE21D64AC3600162D26 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE11D64AC3600162D26 /* ImageIO.framework */; };
@@ -203,7 +203,8 @@
 					../../../Sdk/include,
 					../../../Sdk/include/gideros,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 			};
@@ -230,7 +231,8 @@
 					../../../Sdk/include,
 					../../../Sdk/include/gideros,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

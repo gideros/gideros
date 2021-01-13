@@ -6,13 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
 #import "Metal/Metal.h"
 extern id<MTLDevice> metalDevice;
 extern MTLRenderPassDescriptor *metalFramebuffer;
 
-//#define GIDEROS_METAL
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
@@ -20,28 +17,16 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
 @interface EAGLView : UIView <UITextInput>
 {
 @private
-    EAGLContext *context;
-    
-    // The pixel dimensions of the CAEAGLLayer.
-    GLint framebufferWidth;
-    GLint framebufferHeight;
-    
-    // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view.
-    GLuint defaultFramebuffer, colorRenderbuffer;
-
-	BOOL framebufferDirty;
+    NSUInteger framebufferWidth;
+    NSUInteger framebufferHeight;
+    BOOL framebufferDirty;
 	BOOL retinaDisplay;
-	CAEAGLLayer *eaglLayer;
-#ifdef GIDEROS_METAL
     CAMetalLayer *metalLayer;
     id<CAMetalDrawable> metalDrawable;
-#endif
     CGRect safeArea;
     id<MTLTexture> metalDepth;
-    id<MTLTexture> metalStencil;
 }
 
-@property (nonatomic, retain) EAGLContext *context;
 @property (nonatomic) UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
 
 - (void)setFramebuffer;

@@ -100,7 +100,6 @@ id<MTLBuffer> getCachedVBO(ShaderBufferCache **cache,bool &modified, int isize) 
 	if (!dc->valid())
 	{
             dc->VBO=[metalDevice newBufferWithLength:isize options:MTLResourceStorageModeShared];
-            [dc->VBO retain];
 			modified=true;
 	}
 	return dc->VBO;
@@ -183,8 +182,6 @@ void metalShaderProgram::useProgram() {
         mrps[pkey]=[metalDevice newRenderPipelineStateWithDescriptor:mrpd error:&error];
         if (mrps[pkey]==nil)
             NSLog(@"Error creating render pipeline state: %@", error);
-        else
-            [mrps[pkey] retain];
     }
 
     if (mrps[pkey]!=nil)
@@ -231,11 +228,13 @@ void metalShaderProgram::setData(int index, DataType type, int mult,
     else {
         if (modified||(!cache)) {
             memcpy([vbo contents],ptr,isize);
+            /*
     #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
     #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_1011
             [vbo didModifyRange:NSMakeRange(0,isize)];
     #endif
     #endif
+             */
         }
         
         [encoder() setVertexBuffer:vbo offset:offset atIndex:attributes[index].slot];
@@ -258,9 +257,9 @@ metalShaderProgram::metalShaderProgram(const char *vprogram,const char *fprogram
                    const ConstantDesc *uniforms, const DataDesc *attributes,int attmap,int attstride) {
     
     errorLog="";
-    if (defaultLibrary==nil)
+    if (defaultLibrary==nil) {
         defaultLibrary=[metalDevice newDefaultLibrary];
-    [defaultLibrary retain];
+    }
     
     mrpd=[[MTLRenderPipelineDescriptor alloc] init];
     mrpd.vertexFunction=[defaultLibrary newFunctionWithName:[NSString stringWithUTF8String:vprogram]];
@@ -560,11 +559,13 @@ void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
         vbo=[metalDevice newBufferWithLength:isize options:MTLResourceStorageModeShared];
     if (modified||(!cache)) {
         memcpy([vbo contents],indices,isize);
+        /*
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
     #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_1011
         [vbo didModifyRange:NSMakeRange(0,isize)];
     #endif
 #endif
+         */
     }
     //XXX bufferoffset should be int32 aligned per Apple's docs, this can break rendering when indices are u16 and first is an odd vindex
 	if (instances) 

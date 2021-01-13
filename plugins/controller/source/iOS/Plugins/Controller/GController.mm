@@ -40,15 +40,6 @@ void setDeadZone(float deadzone) {
 -(void)destroy{
     ghid_onDisconnected([self.playerId intValue]);
     
-    [self.rightStick release];
-    [self.leftStick release];
-    [self.rightTrigger release];
-    [self.leftTrigger release];
-    [self.DPadDown release];
-    [self.DPadUp release];
-    [self.DPadRight release];
-    [self.DPadLeft release];
-    
     self.rightStick = nil;
     self.leftStick = nil;
     self.rightTrigger = nil;

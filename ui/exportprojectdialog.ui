@@ -42,7 +42,7 @@ target platform to export the application source.</string>
        </property>
        <item>
         <property name="text">
-         <string>iOS</string>
+         <string>Apple</string>
         </property>
        </item>
        <item>
@@ -75,11 +75,6 @@ target platform to export the application source.</string>
          <string>Html5</string>
         </property>
        </item>
-       <item>
-        <property name="text">
-         <string>Android (Old)</string>
-        </property>
-       </item>
       </widget>
      </item>
      <item>
@@ -104,7 +99,7 @@ target platform to export the application source.</string>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>iOS</string>
+       <string>Apple</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_51">
        <item>
@@ -112,7 +107,7 @@ target platform to export the application source.</string>
          <item>
           <widget class="QLabel" name="label1">
            <property name="text">
-            <string>Bundle ID:   </string>
+            <string>iOS Bundle ID:   </string>
            </property>
           </widget>
          </item>
@@ -122,6 +117,48 @@ target platform to export the application source.</string>
             <string>com.yourdomain.yourapp</string>
            </property>
           </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Apple TV Bundle ID:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="atv_bundle"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>MacOS Bundle ID:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="macos_bundle"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>MacOS Application category:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="macos_category"/>
          </item>
         </layout>
        </item>
@@ -603,91 +640,6 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
           <size>
            <width>20</width>
            <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Android (Old)</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_33">
-         <item>
-          <widget class="QLabel" name="label2">
-           <property name="toolTip">
-            <string>Defines the package name of the Android application.
-
-Generally speaking, the first 2 package &quot;words&quot; are your
-web address in reverse.
-
-Example: com.giderosmobile.timthetimber</string>
-           </property>
-           <property name="text">
-            <string>Select Template:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="android_template">
-           <property name="minimumSize">
-            <size>
-             <width>90</width>
-             <height>0</height>
-            </size>
-           </property>
-           <item>
-            <property name="text">
-             <string>Eclipse</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Android Studio</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_39">
-         <item>
-          <widget class="QLabel" name="label3_3">
-           <property name="toolTip">
-            <string>Defines the package name of the Android application.
-
-Generally speaking, the first 2 package &quot;words&quot; are your
-web address in reverse.
-
-Example: com.giderosmobile.timthetimber</string>
-           </property>
-           <property name="text">
-            <string>Package Name:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="packageName">
-           <property name="text">
-            <string>com.yourdomain.yourapp</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>72</height>
           </size>
          </property>
         </spacer>

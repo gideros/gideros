@@ -7,7 +7,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("storekit",
 	"[[[sys.pluginDir]]]/source/iOS",
 	{ "storekit.mm" },
-	true,true)
+	false,
+	true,true,false)
 	]]></lua>
  </target>
 </plugin>

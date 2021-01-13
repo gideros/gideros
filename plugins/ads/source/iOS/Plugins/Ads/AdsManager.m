@@ -68,7 +68,6 @@
         AdsState *state = [self.adViews_ objectForKey:key];
         [state destroy];
         [state destruct];
-        [state release];
     }
 }
 

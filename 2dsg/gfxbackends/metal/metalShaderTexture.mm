@@ -14,6 +14,12 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
 	this->wrap=wrap;
 	this->filter=filtering;
     this->format=format;
+    
+    if (format==FMT_NATIVE) {
+        bpr=0;
+        mtex=nil;
+        return;
+    }
 
     MTLPixelFormat glformat=MTLPixelFormatRGBA8Unorm;
     bpr=4;
@@ -51,7 +57,8 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
     	case PK_FLOAT:
     	    switch (format)
     	    {
-    	   		case FMT_DEPTH: glformat=MTLPixelFormatDepth32Float; bpr=4; break;
+                    //Stencil is always enabled too, so create a float/stencil texture
+    	   		case FMT_DEPTH: glformat=MTLPixelFormatDepth32Float_Stencil8; bpr=4; break;
     	   	}
     		break;
     }
@@ -62,8 +69,11 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
 	                                                   mipmapped:(BOOL)NO];
     if (forRT)
         md.usage=MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
+    if (format==FMT_DEPTH) {
+        md.storageMode=MTLStorageModePrivate; //Depth can only be private as per spec
+        data=NULL; //Don't try to upload data
+    }
 	mtex=[metalDevice newTextureWithDescriptor:md];
-    [mtex retain];
     if (data) {
     	[mtex replaceRegion:MTLRegionMake2D(0,0,width,height) 
          mipmapLevel:0 
@@ -125,11 +135,16 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
 void metalShaderTexture::readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)
 {
     //TODO check format
-    [mtex getBytes:data bytesPerRow:bpr*this->width fromRegion:MTLRegionMake2D(x, y, width, height) mipmapLevel:0];
+    [mtex getBytes:data bytesPerRow:bpr*width fromRegion:MTLRegionMake2D(x, y, width, height) mipmapLevel:0];
 }
 
 void metalShaderTexture::setNative(void *externalTexture)
 {
+    if (mtex)
+        [mtex release];
+    mtex=(id<MTLTexture>)externalTexture;
+    if (mtex)
+        [mtex retain];
 }
 
 void *metalShaderTexture::getNative()
@@ -139,7 +154,8 @@ void *metalShaderTexture::getNative()
 
 metalShaderTexture::~metalShaderTexture()
 {
-	[mtex release];
+    if (mtex)
+        [mtex release];
 }
 
 

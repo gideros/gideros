@@ -135,46 +135,46 @@ struct GGameControllerEvent
     __weak typeof(self) weakself = self;
     self.pauseToggleObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kGameToggleMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSLog(@"toggleMenu");
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)];
     }];
 
     NSLog(@"activateExtendedController GC index %i",a);
     
     [[controller extendedGamepad].buttonA setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)];
     }];
     [[controller extendedGamepad].buttonB setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_B, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_B, pressed)];
     }];
     [[controller extendedGamepad].buttonX setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_X, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_X, pressed)];
     }];
     [[controller extendedGamepad].buttonY setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_Y, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_Y, pressed)];
     }];
     
     [[controller extendedGamepad].leftShoulder setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_LEFT_SHOULDER, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_LEFT_SHOULDER, pressed)];
     }];
     [[controller extendedGamepad].rightShoulder setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_RIGHT_SHOULDER, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_RIGHT_SHOULDER, pressed)];
     }];
     
     [[controller extendedGamepad].dpad.up setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_UP, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_UP, pressed)];
     }];
     [[controller extendedGamepad].dpad.down setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_DOWN, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_DOWN, pressed)];
     }];
     [[controller extendedGamepad].dpad.left setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_LEFT, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_LEFT, pressed)];
     }];
     [[controller extendedGamepad].dpad.right setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_RIGHT, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_RIGHT, pressed)];
     }];
     
     [controller setControllerPausedHandler:^(GCController *controller) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, PAUSE_EVENT, nil, a, 0, FALSE)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, PAUSE_EVENT, nil, a, 0, FALSE)];
     }];
     
 }
@@ -192,44 +192,44 @@ struct GGameControllerEvent
     __weak typeof(self) weakself = self;
     self.pauseToggleObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kGameToggleMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSLog(@"toggleMenu");
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)];
     }];
 
     [controller.gamepad.buttonA setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)];
     }];
     [controller.gamepad.buttonB setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_B, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_B, pressed)];
     }];
     [controller.gamepad.buttonX setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_X, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_X, pressed)];
     }];
     [controller.gamepad.buttonY setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_Y, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_Y, pressed)];
     }];
     
     [controller.gamepad.leftShoulder setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_LEFT_SHOULDER, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_LEFT_SHOULDER, pressed)];
     }];
     [controller.gamepad.rightShoulder setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_RIGHT_SHOULDER, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_RIGHT_SHOULDER, pressed)];
     }];
     
     [controller.gamepad.dpad.up setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_UP, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_UP, pressed)];
     }];
     [controller.gamepad.dpad.down setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_DOWN, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_DOWN, pressed)];
     }];
     [controller.gamepad.dpad.left setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_LEFT, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_LEFT, pressed)];
     }];
     [controller.gamepad.dpad.right setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_RIGHT, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_RIGHT, pressed)];
     }];
     
     [controller setControllerPausedHandler:^(GCController *controller) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, PAUSE_EVENT, nil, a, 0, FALSE)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, PAUSE_EVENT, nil, a, 0, FALSE)];
     }];
     
 }
@@ -245,31 +245,31 @@ struct GGameControllerEvent
     __weak typeof(self) weakself = self;
     self.pauseToggleObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kGameToggleMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         NSLog(@"toggleMenu");
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)];
     }];
 
     [controller.microGamepad.buttonA setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)];
     }];
     [controller.microGamepad.buttonX setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_X, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_X, pressed)];
     }];
     
     [controller.microGamepad.dpad.up setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_UP, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_UP, pressed)];
     }];
     [controller.microGamepad.dpad.down setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_DOWN, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_DOWN, pressed)];
     }];
     [controller.microGamepad.dpad.left setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_LEFT, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_LEFT, pressed)];
     }];
     [controller.microGamepad.dpad.right setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_RIGHT, pressed)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_RIGHT, pressed)];
     }];
     
     [controller setControllerPausedHandler:^(GCController *controller) {
-        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, PAUSE_EVENT, nil, a, 0, FALSE)] autorelease];
+        [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, PAUSE_EVENT, nil, a, 0, FALSE)];
     }];
     
 }
@@ -330,7 +330,7 @@ public:
         helper.connectObserver = [[NSNotificationCenter defaultCenter] addObserverForName:GCControllerDidConnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             //if ([[GCController controllers] count] > 0) {
             NSLog(@"New GC connected");
-            [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(this, CONNECTED_GC_EVENT, nil, 0, 0, FALSE)] autorelease];
+            [[GGameControllerEventPerformer alloc] init:GGameControllerEvent(this, CONNECTED_GC_EVENT, nil, 0, 0, FALSE)];
             //}
             if ([[helper getControllerAtIndex:[helper amountControllers]-1] extendedGamepad]) {
                 [helper activateExtendedController:[helper getControllerAtIndex:[helper amountControllers]-1] onGGameController:this];
@@ -359,7 +359,7 @@ public:
     
     GGameController()
     {
-        [helper release];
+        helper=nil;
     }
     
     BOOL isAvailable()

@@ -14,6 +14,7 @@
 #include <map>
 #include "gridbaglayout.h"
 #include "gproxy.h"
+#include "grendertarget.h"
 
 typedef Matrix4 CurrentTransform;
 typedef Matrix4 Matrix;
@@ -381,12 +382,17 @@ public:
 		int mult;
 		std::vector<float> data;
 	};
-	void setShader(ShaderProgram *shader);
-	virtual ShaderProgram *getShader() { return shader_; };
-	void setShaderConstant(ShaderParam p)
-	{
-		shaderParams_[p.name]=p;
-	}
+protected:
+	struct _ShaderSpec {
+		std::map<std::string,ShaderParam> params;
+		ShaderProgram *shader;
+		bool inherit;
+	};
+	void setupShader(struct _ShaderSpec &spec);
+public:
+	void setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id=ShaderEngine::STDP_UNSPECIFIED,int variant=0, bool inherit=false);
+	virtual ShaderProgram *getShader(ShaderEngine::StandardProgram id,int variant=0);
+	bool setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id=ShaderEngine::STDP_UNSPECIFIED,int variant=0);
 
 	void set(const char* param, float value, GStatus* status = NULL);
 	float get(const char* param, GStatus* status = NULL);
@@ -428,6 +434,30 @@ public:
     bool hasLayoutConstraints() { return layoutConstraints!=NULL; };
     int getStopPropagationMask() { return stopPropagationMask_; }
     void setStopPropagationMask(int mask);
+    enum EffectUpdateMode {
+    	CONTINUOUS=0,
+		AUTOMATIC,
+		TRIGGERED
+    };
+    struct Effect {
+		std::map<std::string,ShaderParam> params;
+        std::vector<TextureBase *> textures;
+		Matrix4 transform;
+        Matrix4 postTransform;
+		ShaderProgram *shader;
+		GRenderTarget *buffer;
+		bool clearBuffer;
+		Effect() : shader(NULL), buffer(NULL), clearBuffer(false) { };
+    };
+    void setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode);
+	bool setEffectShaderConstant(size_t effectNumber,ShaderParam p);
+	void redrawEffects();
+    void updateEffects();
+protected:
+	EffectUpdateMode effectsMode_;
+    bool effectsDirty_;
+    bool effectsDrawing_;
+    std::vector<Effect> effectStack_;
 public:
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;
@@ -486,9 +516,8 @@ protected:
 	static std::set<Sprite*> allSpritesWithListeners_;
 
 protected:
-	ShaderProgram *shader_;
+	std::map<int,struct _ShaderSpec> shaders_;
 	ShaderEngine::DepthStencil stencil_;
-	std::map<std::string,ShaderParam> shaderParams_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;
 

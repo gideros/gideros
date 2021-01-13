@@ -18,23 +18,10 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/imgui</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
-   <mkdir>AppleTV/Plugins/imgui</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("imgui","Plugins/imgui","GroupImgui_ios","GroupPlugins_ios")
-iOSProject.addGroup("imgui","imgui","GroupImgui_atv","GroupPlugins_atv")
-iOSProject.addSources({ "Plugins/libimgui.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libimgui.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("imgui","Imgui",true,true,true)
 	]]></lua>
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Imgui) "/>
-        </replacelist>
-    </template>
  </target>
  <target name="Html5">
  	<lua>require("Tools/export_html5").export("Imgui")</lua>

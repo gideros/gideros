@@ -18,22 +18,9 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/liquidfun</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a"/>
-   <mkdir>AppleTV/Plugins/liquidfun</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(liquidfun) "/>
-        </replacelist>
-    </template>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidfun_ios","GroupPlugins_ios")
-iOSProject.addGroup("liquidfun","liquidfun","GroupLiquidfun_atv","GroupPlugins_atv")
-iOSProject.addSources({ "Plugins/libliquidfun.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libliquidfun.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("liquidfun","liquidfun",true,true,true)
 	]]></lua>
  </target>
  <target name="Html5">

@@ -20,8 +20,7 @@
 
 -(void)destroy{
     [self.mngr destroy];
-    [self.mngr release];
-    self.mngr = nil;
+     self.mngr = nil;
 }
 
 -(void)setKey:(NSMutableArray*)parameters{

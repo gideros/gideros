@@ -42,7 +42,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("flurry",
 	"[[[sys.pluginDir]]]/source/iOS",
 	{ "gflurry-ios.m", "flurrybinder.cpp" },
-	true, false)
+	false,
+	true,false,false)
 	]]></lua>
  </target>
  -->

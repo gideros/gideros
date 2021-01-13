@@ -7,7 +7,8 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("iad",
 	"[[[sys.pluginDir]]]/source/iOS",
 	{ "iad.mm" },
-	true,false)
+	false,
+	true,false,false)
 	]]></lua>
  </target>
 </plugin>

@@ -85,6 +85,9 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setStencilOperation", SpriteBinder::setStencilOperation},
         {"setStopEventPropagation",setStopEventPropagation},
         {"getDrawCount", getDrawCount},
+		{"setEffectStack", SpriteBinder::setEffectStack},
+		{"setEffectConstant", SpriteBinder::setEffectConstant},
+		{"redrawEffects", SpriteBinder::redrawEffects},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -205,6 +208,13 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	lua_setfield(L, -2, "LAYOUT_INFO_PREFERRED");
 	lua_pushinteger(L, 3);
 	lua_setfield(L, -2, "LAYOUT_INFO_BEST");
+
+	lua_pushinteger(L, Sprite::CONTINUOUS);
+	lua_setfield(L, -2, "EFFECT_MODE_CONTINUOUS");
+	lua_pushinteger(L, Sprite::AUTOMATIC);
+	lua_setfield(L, -2, "EFFECT_MODE_AUTOMATIC");
+	lua_pushinteger(L, Sprite::TRIGGERED);
+	lua_setfield(L, -2, "EFFECT_MODE_TRIGGERED");
 
     lua_setglobal(L, "Sprite");
 }
@@ -565,6 +575,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         FILL_BOOL("equalizeCells",equalizeCells);
         FILL_BOOL("resizeContainer",resizeContainer);
         FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
+        FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
         FILL_NUM("zOffset",zOffset);
         p->dirty=true;
 	}
@@ -623,6 +634,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_BOOL("equalizeCells",equalizeCells);
         STOR_BOOL("resizeContainer",resizeContainer);
         STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
+        STOR_NUM("gridAnchorX",gridAnchorX); STOR_NUM("gridAnchorY",gridAnchorY);
         STOR_NUM("zOffset",zOffset);
 	}
 	else
@@ -1686,9 +1698,78 @@ int SpriteBinder::setShader(lua_State* L)
 	ShaderProgram* shader = NULL;
 	if (!lua_isnoneornil(L,2))
 		shader=static_cast<ShaderProgram*>(binder.getInstance("Shader", 2));
-	sprite->setShader(shader);
+	sprite->setShader(shader,(ShaderEngine::StandardProgram)luaL_optinteger(L,3,0),luaL_optinteger(L,4,0),lua_toboolean(L,5));
 
 	return 0;
+}
+
+void parseShaderParam(lua_State* L,int idx,Sprite::ShaderParam &sp,int &shtype,int &shvar) {
+	sp.name=luaL_checkstring(L,idx);
+	sp.type = (ShaderProgram::ConstantType) luaL_checkinteger(L, idx+1);
+	sp.mult = luaL_checknumber(L, idx+2);
+	int cm=1;
+	switch (sp.type)
+	{
+	case ShaderProgram::CFLOAT2: cm=2; break;
+	case ShaderProgram::CFLOAT3: cm=3; break;
+	case ShaderProgram::CFLOAT4: cm=4; break;
+	case ShaderProgram::CMATRIX: cm=16; break;
+	default: cm=1;
+	}
+
+	cm*=sp.mult;
+	int li=lua_istable(L,idx+3)?idx+4:(idx+3+cm);
+	shtype=luaL_optinteger(L,li,0);
+	shvar=luaL_optinteger(L,li+1,0);
+	switch (sp.type)
+	{
+	case ShaderProgram::CINT:
+	{
+		sp.data.resize((sizeof(int)*cm+sizeof(int)-1)/sizeof(float));
+		int *m=(int *)(&(sp.data[0]));
+		if (lua_istable(L,5))
+		{
+			for (int k=0;k<cm;k++)
+			{
+				lua_rawgeti(L, idx+3, k+1);
+				m[k]=luaL_checkinteger(L,-1);
+				lua_pop(L,1);
+			}
+		}
+		else
+		{
+			for (int k=0;k<cm;k++)
+				m[k]=luaL_checkinteger(L,idx+3+k);
+		}
+		break;
+	}
+	case ShaderProgram::CFLOAT:
+	case ShaderProgram::CFLOAT2:
+	case ShaderProgram::CFLOAT3:
+	case ShaderProgram::CFLOAT4:
+	case ShaderProgram::CMATRIX:
+	{
+		sp.data.resize(cm);
+		float *m=&(sp.data[0]);
+		if (lua_istable(L,idx+3))
+		{
+			for (int k=0;k<cm;k++)
+			{
+				lua_rawgeti(L, idx+3, k+1);
+				m[k]=luaL_checknumber(L,-1);
+				lua_pop(L,1);
+			}
+		}
+		else
+		{
+			for (int k=0;k<cm;k++)
+				m[k]=luaL_checknumber(L,idx+3+k);
+		}
+		break;
+	}
+	case ShaderProgram::CTEXTURE:
+		break;
+	}
 }
 
 int SpriteBinder::setShaderConstant(lua_State* L)
@@ -1702,73 +1783,103 @@ int SpriteBinder::setShaderConstant(lua_State* L)
    // virtual void setConstant(int index,ConstantType type,const void *ptr);
 
 	Sprite::ShaderParam sp;
+	int shtype,shvar;
+	parseShaderParam(L,2,sp,shtype,shvar);
 
+	sprite->setShaderConstant(sp,(ShaderEngine::StandardProgram)shtype,shvar);
+	return 0;
+}
 
-	sp.name=luaL_checkstring(L,2);
-	sp.type = (ShaderProgram::ConstantType) luaL_checkinteger(L, 3);
-	sp.mult = luaL_checknumber(L, 4);
-	int cm=1;
-	switch (sp.type)
-	{
-	case ShaderProgram::CFLOAT2: cm=2; break;
-	case ShaderProgram::CFLOAT3: cm=3; break;
-	case ShaderProgram::CFLOAT4: cm=4; break;
-	case ShaderProgram::CMATRIX: cm=16; break;
-	default: cm=1;
-	}
+int SpriteBinder::setEffectStack(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::setEffectStack", 0);
 
-	cm*=sp.mult;
-	switch (sp.type)
-	{
-	case ShaderProgram::CINT:
-	{
-		sp.data.resize((sizeof(int)*cm+sizeof(int)-1)/sizeof(float));
-		int *m=(int *)(&(sp.data[0]));
-		if (lua_istable(L,5))
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+	std::vector<Sprite::Effect> effects;
+	Sprite::EffectUpdateMode mode=Sprite::CONTINUOUS;
+	if (!lua_isnoneornil(L,2)) {
+		luaL_checktype(L,2,LUA_TTABLE);
+		int ec=lua_objlen(L,2);
+		mode=(Sprite::EffectUpdateMode) luaL_optinteger(L,3,0);
+		for (int en=0;en<ec;en++)
 		{
-			for (int k=0;k<cm;k++)
-			{
-				lua_rawgeti(L, 5, k+1);
-				m[k]=luaL_checkinteger(L,-1);
-				lua_pop(L,1);
+			Sprite::Effect e;
+			e.clearBuffer=(en==0); //Clear buffer by default for first pass, don't clear for subsequent passes
+
+			lua_rawgeti(L,2,en+1);
+			luaL_checktype(L,-1,LUA_TTABLE);
+
+			lua_getfield(L,-1,"buffer");
+			e.buffer=static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", -1));
+			lua_getfield(L,-2,"shader");
+			if (!lua_isnoneornil(L,-1))
+				e.shader=static_cast<ShaderProgram*>(binder.getInstance("Shader", -1));
+			lua_getfield(L,-3,"transform");
+			if (!lua_isnoneornil(L,-1)) {
+				Transform *t=static_cast<Transform*>(binder.getInstance("Matrix", -1));
+				e.transform=t->matrix();
 			}
-		}
-		else
-		{
-			for (int k=0;k<cm;k++)
-				m[k]=luaL_checkinteger(L,5+k);
-		}
-		break;
-	}
-	case ShaderProgram::CFLOAT:
-	case ShaderProgram::CFLOAT2:
-	case ShaderProgram::CFLOAT3:
-	case ShaderProgram::CFLOAT4:
-	case ShaderProgram::CMATRIX:
-	{
-		sp.data.resize(cm);
-		float *m=&(sp.data[0]);
-		if (lua_istable(L,5))
-		{
-			for (int k=0;k<cm;k++)
-			{
-				lua_rawgeti(L, 5, k+1);
-				m[k]=luaL_checknumber(L,-1);
-				lua_pop(L,1);
+			lua_getfield(L,-4,"postTransform");
+			if (!lua_isnoneornil(L,-1)) {
+				Transform *t=static_cast<Transform*>(binder.getInstance("Matrix", -1));
+				e.postTransform=t->matrix();
 			}
-		}
-		else
-		{
-			for (int k=0;k<cm;k++)
-				m[k]=luaL_checknumber(L,5+k);
-		}
-		break;
-	}
-	case ShaderProgram::CTEXTURE:
-		break;
-	}
+			lua_getfield(L,-5,"textures");
+			if (!lua_isnoneornil(L,-1)) {
+				luaL_checktype(L,-1,LUA_TTABLE);
+				int tc=lua_objlen(L,-1);
+				for (int tn=0;tn<tc;tn++)
+				{
+					lua_rawgeti(L,-1,tn+1);
+					TextureBase *tex=static_cast<TextureBase*>(binder.getInstance("TextureBase", -1));
+					lua_pop(L,1);
+					e.textures.push_back(tex);
+				}
+			}
+			lua_getfield(L,-6,"clear");
+			if (!lua_isnoneornil(L,-1))
+				e.clearBuffer=lua_toboolean(L,-1);
 
-	sprite->setShaderConstant(sp);
+			lua_pop(L,7);
+			effects.push_back(e);
+		}
+	}
+	sprite->setEffectStack(effects,mode);
+
+	return 0;
+}
+
+int SpriteBinder::setEffectConstant(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::setEffectConstant", 1);
+
+	Binder binder(L);
+
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    int num=luaL_checkinteger(L,2);
+    if (num<1) {
+    	lua_pushstring(L,"Effect index must be positive");
+    	lua_error(L);
+    }
+
+	Sprite::ShaderParam sp;
+	int shtype,shvar;
+	parseShaderParam(L,3,sp,shtype,shvar);
+
+	lua_pushboolean(L,sprite->setEffectShaderConstant(num-1,sp));
+	return 1;
+}
+
+int SpriteBinder::redrawEffects(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::setShaderConstant", 0);
+
+	Binder binder(L);
+
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+	sprite->redrawEffects();
 	return 0;
 }
 

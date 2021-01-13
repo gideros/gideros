@@ -5,4 +5,7 @@ end
 target 'iOS Template AppleTV' do
 #TAG-GIDEROS-POD-ATV
 end
+target 'iOS Template Mac' do
+#TAG-GIDEROS-POD-MAC
+end
 

@@ -186,9 +186,8 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		if top and top.bones and obj.bones then
 			m.animBones={}
 			for k,v in ipairs(obj.bones) do
-				local bone=top.bones[v.node]
 				local pose=G3DFormat.srtToMatrix(v.poseSrt)
-				m.animBones[k]={ bone=bone, poseMat=pose}
+				m.animBones[k]={ boneref=v.node, poseMat=pose}
 				top.animMeshes=top.animMeshes or {}
 				top.animMeshes[m]=true
 			end
@@ -247,6 +246,7 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 		for m,_ in pairs(spr.animMeshes) do
 			if m.animBones then
 				for _,b in ipairs(m.animBones) do
+          b.bone=spr.bones[b.boneref]
 					local pose=Matrix.new()
 					pose:setMatrix(b.poseMat:getMatrix())
 					local p=m

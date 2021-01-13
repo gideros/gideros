@@ -19,8 +19,8 @@ public:
 
 	BitmapData* clone();
 
-    void setRegion(int x, int y, int width, int height, int dx1, int dy1, int dx2, int dy2);
-    void getRegion(int *x, int *y, int *width, int *height, int *dx1, int *dy1, int *dx2, int *dy2);
+    virtual void setRegion(int x, int y, int width, int height, int dx1, int dy1, int dx2, int dy2);
+    virtual void getRegion(int *x, int *y, int *width, int *height, int *dx1, int *dy1, int *dx2, int *dy2);
 
 private:
 	friend class Bitmap;

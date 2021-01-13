@@ -34,6 +34,7 @@ public:
 		clear();
 	}
 
+	ShaderEngine::StandardProgram getShaderType();
 	void draw(ShaderProgram *shader = NULL, VertexBuffer<unsigned short> *commonIndices=NULL);
 
 	void clear();

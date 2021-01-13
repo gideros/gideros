@@ -121,9 +121,17 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     	replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
     	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         if(ctx->args.contains("bundle"))
-            replaceList1 << qMakePair(QString("com.yourcompany.${PRODUCT_NAME:rfc1034identifier}").toUtf8(), ctx->args["bundle"].toUtf8());
+            replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-ios").toUtf8(), ctx->args["bundle"].toUtf8());
+        if(ctx->args.contains("bundle_atv"))
+            replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-atv").toUtf8(), ctx->args["bundle_atv"].toUtf8());
+        if(ctx->args.contains("bundle_macos"))
+            replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-mac").toUtf8(), ctx->args["bundle_macos"].toUtf8());
         replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+ctx->properties.version+"</string>").toUtf8());
         replaceList1 << qMakePair(QString("<string>BUILD_NUMBER</string>").toUtf8(), ("<string>"+QString::number(ctx->properties.build_number)+"</string>").toUtf8());
+        QString category = "public.app-category.games";
+        if(ctx->args.contains("category"))
+            category = ctx->args["category"];
+        replaceList1 << qMakePair(QString("public.app-category.games").toUtf8(), category.toUtf8());
     }
     else if(ctx->deviceFamily == e_WinRT){
     	QString winver=ctx->properties.version.remove(QRegularExpression(QString("[^0-9.]")));
@@ -602,10 +610,22 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::splashVImage(ctx,1125,2436,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1125x2436.png"));
 
         //tv stuff
-        ExportCommon::splashHImage(ctx,1920,1080,QString(ctx->base+" iOS/Images.xcassets/TVLaunchImage.launchimage/Splash1920x1080.png"));
-        ExportCommon::tvIcon(ctx,1920,720,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
-        ExportCommon::tvIcon(ctx,1280,768,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
-        ExportCommon::tvIcon(ctx,400,240,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
+        ExportCommon::splashHImage(ctx,1920,1080,QString("AppleTV/Images.xcassets/TVLaunchImage.launchimage/Splash1920x1080.png"));
+        ExportCommon::tvIcon(ctx,1920,720,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
+        ExportCommon::tvIcon(ctx,1280,768,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
+        ExportCommon::tvIcon(ctx,400,240,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
+
+        //macos
+        ExportCommon::appIcon(ctx,16,16,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_16x16.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_16x16@2x.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_32x32.png"));
+        ExportCommon::appIcon(ctx,64,64,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_32x32@2x.png"));
+        ExportCommon::appIcon(ctx,128,128,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_128x128.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_128x128@2x.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_256x256.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_256x256@2x.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_512x512.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_512x512@2x.png"));
    }
    else if(ctx->deviceFamily == e_MacOSXDesktop){
 	    ctx->outputDir.mkpath("icon.iconset/");

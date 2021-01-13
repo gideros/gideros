@@ -18,22 +18,9 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/reactphysics3d</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a"/>
-   <mkdir>AppleTV/Plugins/reactphysics3d</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(reactphysics3d) "/>
-        </replacelist>
-    </template>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("reactphysics3d","Plugins/reactphysics3d","GroupReactphysics3d_ios","GroupPlugins_ios")
-iOSProject.addGroup("reactphysics3d","reactphysics3d","GroupReactphysics3d_atv","GroupPlugins_atv")
-iOSProject.addSources({ "Plugins/libreactphysics3d.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libreactphysics3d.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("reactphysics3d","reactphysics3d",true,true,true)
 	]]></lua>
  </target>
  <target name="Html5">

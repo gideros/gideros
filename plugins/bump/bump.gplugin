@@ -18,18 +18,13 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/bump</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <mkdir>AppleTV/Plugins/bump</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("bump","Plugins/bump","GroupBump_ios","GroupPlugins_ios")
-iOSProject.addGroup("bump","Plugins/bump","GroupBump_atv","GroupPlugins_atv")
-local sources={ "bump.cpp"  }
-iOSProject.addSources(sources, "GroupBump", "ios")
-iOSProject.addSources(sources, "GroupBump", "atv")
-iOSProject.commit()
+iOSProject.exportPluginFiles("bump",
+	"[[[sys.pluginDir]]]/source",
+	{ "bump.cpp", },
+	false,
+	true,true,true)
 	]]></lua>
  </target>
  <target name="Html5">

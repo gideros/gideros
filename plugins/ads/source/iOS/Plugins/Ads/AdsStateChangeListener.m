@@ -14,21 +14,9 @@
 }
 -(void) destroy{
      // Clean up.
-    if(_showHandler != nil)
-    {
-        [_showHandler release];
-        _showHandler = nil;
-    }
-    if(_hideHandler != nil)
-    {
-        [_hideHandler release];
-        _hideHandler = nil;
-    }
-    if(_destroyHandler != nil)
-    {
-        [_destroyHandler release];
-        _destroyHandler = nil;
-    }
+    _showHandler = nil;
+    _hideHandler = nil;
+    _destroyHandler = nil;
 }
 - (void) setShow:(void (^)())handler
 {

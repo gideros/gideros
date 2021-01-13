@@ -26,11 +26,13 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("StoreReview",
 	"[[[sys.pluginDir]]]/source/IOS/StoreReview",
 	{ "gstoreReview-ios.mm" },
-	true,true)
+	false,
+	true,false,false)
 iOSProject.exportPluginFiles("StoreReview",
 	"[[[sys.pluginDir]]]/source/Common",
 	{ "storeReviewBinder.cpp" },
-	true,true,true)
+	true,
+	true,false,false)
 	]]></lua>
  </target>
  <target name="WinRT">

@@ -22,23 +22,10 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/ogg</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
-   <mkdir>AppleTV/Plugins/ogg</mkdir>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("ogg","Plugins/ogg","GroupOgg_ios","GroupPlugins_ios")
-iOSProject.addGroup("ogg","ogg","GroupOgg_atv","GroupPlugins_atv")
-iOSProject.addSources({ "Plugins/libogg.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "libogg.atv.a"  }, "GroupPlugins", "atv")
-iOSProject.commit()
+iOSProject.exportBinaryPlugin("ogg","Ogg",true,true,true)
 	]]></lua>
-    <template name="Activity" path="">
-        <replacelist wildcards="plugins.cpp">
-           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Ogg) "/>
-        </replacelist>
-    </template>
  </target>
  <target name="Html5">
  	<lua>
