@@ -46,14 +46,24 @@
 #endif
 
 static lua_State* L;
+static Application* application;
+static SpriteProxy* imguiProxy;
+
 static char keyWeak = ' ';
 static bool autoUpdateCursor = false;
 static bool instanceCreated = false;
-static Application* application;
+static bool resetTouchPosOnEnd = false;
 static std::map<int, const char*> giderosCursorMap;
 
+static void resetStaticVars()
+{
+    instanceCreated = false;
+    resetTouchPosOnEnd = false;
+    autoUpdateCursor = false;
+}
+
 #define LUA_ASSERT(EXP, MSG) if (!(EXP)) { lua_pushstring(L, MSG); lua_error(L); }
-#define LUA_FASSERT(EXP, FMT, ...) if (!(EXP)) { lua_pushfstring(L, FMT, __VA_ARGS__); lua_error(L); }
+#define LUA_ASSERTF(EXP, FMT, ...) if (!(EXP)) { lua_pushfstring(L, FMT, __VA_ARGS__); lua_error(L); }
 #define LUA_THROW_ERROR(MSG) lua_pushstring(L, MSG); lua_error(L);
 #define LUA_THROW_ERRORF(FMT, ...) lua_pushfstring(L, FMT, __VA_ARGS__); lua_error(L);
 #define LUA_PRINTF(FMT, ...) lua_getglobal(L, "print"); lua_pushfstring(L, FMT, __VA_ARGS__); lua_call(L, 1, 0);
@@ -143,10 +153,11 @@ static void localToGlobal(SpriteProxy* proxy, float x, float y, float* tx, float
 
 static int convertGiderosMouseButton(const int button)
 {
-    LUA_FASSERT(button >= 0, "Button index must be >= 0, but was: %d", button);
-    //return log2(button);
+    LUA_ASSERTF(button >= 0, "Button index must be >= 0, but was: %d", button);
     switch (button)
     {
+        case GINPUT_NO_BUTTON:
+            return 4; // unused by ImGui itself
         case GINPUT_LEFT_BUTTON:
             return 0;
         case GINPUT_RIGHT_BUTTON:
@@ -158,7 +169,7 @@ static int convertGiderosMouseButton(const int button)
         case 16:
             return 4;
         default:
-            LUA_THROW_ERROR("Incorrect button index");
+            LUA_THROW_ERRORF("Incorrect button index. Expected 0, 1, 2, 4, 8 or 16, but got: %d", button);
             break;
     }
 }
@@ -880,11 +891,10 @@ class EventListener;
 class GidImGui
 {
 public:
-    GidImGui(LuaApplication* application, lua_State* L, bool addMouseListeners, bool addKeyboardListeners,
-             bool addResizeListener, bool addTouchListeners);
+    GidImGui(LuaApplication* application, lua_State* L,
+             bool addMouseListeners, bool addKeyboardListeners, bool addTouchListeners);
     ~GidImGui();
 
-    SpriteProxy* proxy;
     EventListener* eventListener;
 
     void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
@@ -922,18 +932,18 @@ private:
         }
         else
         {
-            io.KeyAlt = (mod & GINPUT_ALT_MODIFIER) > 0;
-            io.KeyCtrl = (mod & GINPUT_CTRL_MODIFIER) > 0;
-            io.KeyShift = (mod & GINPUT_SHIFT_MODIFIER) > 0;
-            io.KeySuper = (mod & GINPUT_META_MODIFIER) > 0;
+            io.KeyAlt = mod & GINPUT_ALT_MODIFIER;
+            io.KeyCtrl = mod & GINPUT_CTRL_MODIFIER;
+            io.KeyShift = mod & GINPUT_SHIFT_MODIFIER;
+            io.KeySuper = mod & GINPUT_META_MODIFIER;
         }
     }
 
     void mouseUpOrDown(float x, float y, int button, bool state)
     {
         ImGuiIO& io = ImGui::GetIO();
-        io.MousePos = getMousePos(x, y, 0.0f);
         io.MouseDown[button] = state;
+        io.MousePos = translateMousePos(x, y);
     }
 
     void scaleMouseCoords(float& x, float& y)
@@ -946,25 +956,19 @@ public:
     ImVec2 r_app_scale;
     ImVec2 app_bounds;
 
-    lua_State* L;
-    SpriteProxy* proxy;
-
-    EventListener(lua_State* L, SpriteProxy* proxy) :
-        L(L),
-        proxy(proxy)
+    EventListener()
     {
         applicationResize(nullptr);
     }
 
-    ~EventListener()
-    {
-    }
+    ~EventListener() { }
 
-    ImVec2 getMousePos(float x, float y, float z)
+    static ImVec2 translateMousePos(float x, float y)
     {
         std::stack<const Sprite*> stack;
+        float z;
 
-        const Sprite* curr = proxy;
+        const Sprite* curr = imguiProxy;
         while (curr)
         {
             stack.push(curr);
@@ -976,9 +980,14 @@ public:
             stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
             stack.pop();
         }
-
         return ImVec2(x, y);
     }
+
+    ///////////////////////////////////////////////////
+    ///
+    /// MOUSE
+    ///
+    ///////////////////////////////////////////////////
 
     void mouseDown(MouseEvent* event)
     {
@@ -1022,7 +1031,7 @@ public:
     void mouseHover(float x, float y)
     {
         ImGuiIO& io = ImGui::GetIO();
-        io.MousePos = getMousePos(x, y, 0.0f);
+        io.MousePos = translateMousePos(x, y);
     }
 
     void mouseWheel(MouseEvent* event)
@@ -1037,8 +1046,14 @@ public:
     {
         ImGuiIO& io = ImGui::GetIO();
         io.MouseWheel += wheel < 0 ? -1.0f : 1.0f;
-        io.MousePos = getMousePos(x, y, 0.0f);
+        io.MousePos = translateMousePos(x, y);
     }
+
+    ///////////////////////////////////////////////////
+    ///
+    /// TOUCH
+    ///
+    ///////////////////////////////////////////////////
 
     void touchesBegin(TouchEvent* event)
     {
@@ -1050,21 +1065,29 @@ public:
 
     void touchesBegin(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, true);
     }
 
     void touchesEnd(TouchEvent* event)
     {
-        float x = event->event->touch.x;
-        float y = event->event->touch.y;
+        float x;
+        float y;
+        if (resetTouchPosOnEnd)
+        {
+            x = FLT_MAX;
+            y = FLT_MAX;
+        }
+        else
+        {
+            x = event->event->touch.x;
+            y = event->event->touch.y;
+        }
         scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
 
     void touchesEnd(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
 
@@ -1078,23 +1101,37 @@ public:
 
     void touchesMove(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, true);
     }
 
     void touchesCancel(TouchEvent* event)
     {
-        float x = event->event->touch.x;
-        float y = event->event->touch.y;
+        float x;
+        float y;
+        if (resetTouchPosOnEnd)
+        {
+            x = FLT_MAX;
+            y = FLT_MAX;
+        }
+        else
+        {
+            x = event->event->touch.x;
+            y = event->event->touch.y;
+        }
         scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
 
     void touchesCancel(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
+
+    ///////////////////////////////////////////////////
+    ///
+    /// KEYBAORD
+    ///
+    ///////////////////////////////////////////////////
 
     void keyDown(KeyboardEvent* event)
     {
@@ -1182,50 +1219,45 @@ static void _Destroy(void* c)
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-GidImGui::GidImGui(LuaApplication* application, lua_State* L,
-                   bool addMouseListeners = true, bool addKeyboardListeners = true, bool addResizeListener = true,
-                   bool addTouchListeners = false)
+GidImGui::GidImGui(LuaApplication* application, lua_State* _UNUSED(L),
+                   bool addMouseListeners = true, bool addKeyboardListeners = true, bool addTouchListeners = false)
 {
     this->application = application;
-    proxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
-
-    eventListener = new EventListener(L, proxy);
+    imguiProxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
+    eventListener = new EventListener();
 
     if (addMouseListeners)
     {
-        proxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::mouseDown);
-        proxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::mouseUp);
-        proxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::mouseDown);
-        proxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::mouseHover);
-        proxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::mouseWheel);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::mouseDown);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::mouseUp);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::mouseDown);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::mouseHover);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::mouseWheel);
     }
 
     if (addTouchListeners)
     {
-        proxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::touchesBegin);
-        proxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::touchesEnd);
-        proxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::touchesMove);
-        proxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::touchesCancel);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::touchesBegin);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::touchesEnd);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::touchesMove);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::touchesCancel);
     }
 
     if (addKeyboardListeners)
     {
-        proxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::keyDown);
-        proxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::keyUp);
-        proxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::keyChar);
+        imguiProxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::keyDown);
+        imguiProxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::keyUp);
+        imguiProxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::keyChar);
     }
 
-    if (addResizeListener)
-    {
-        proxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::applicationResize);
-    }
+    imguiProxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::applicationResize);
 }
 
 GidImGui::~GidImGui()
 {
-    proxy->removeEventListeners();
+    imguiProxy->removeEventListeners();
     delete eventListener;
-    delete proxy;
+    delete imguiProxy;
 }
 
 void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey))
@@ -1377,11 +1409,9 @@ int initImGui(lua_State* L)
     io.Fonts->TexID = (void*)texture;
 
     Binder binder(L);
-    GidImGui* imgui = new GidImGui(application, L,
-                                   luaL_optboolean(L, 1, 1), luaL_optboolean(L, 2, 1),
-                                   luaL_optboolean(L, 3, 1), luaL_optboolean(L, 4, 1));
+    GidImGui* imgui = new GidImGui(application, L, luaL_optboolean(L, 1, 1), luaL_optboolean(L, 2, 1), luaL_optboolean(L, 3, 0));
     //GidImGuiPtr = imgui;
-    binder.pushInstance("ImGui", imgui->proxy);
+    binder.pushInstance("ImGui", imguiProxy);
 
     luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
     lua_pushvalue(L, -2);
@@ -1393,7 +1423,8 @@ int initImGui(lua_State* L)
 
 int destroyImGui(lua_State* L)
 {
-    instanceCreated = false;
+    resetStaticVars();
+
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->ClearTexData();
 
@@ -1553,16 +1584,6 @@ int KeyChar(lua_State* L)
 
     imgui->eventListener->keyChar2(text);
 
-    return 0;
-}
-
-/// RESIZE CALLBACK
-
-int applicationResize(lua_State* L)
-{
-    GidImGui* imgui = getImgui(L);
-    lua_remove(L, -1);
-    imgui->eventListener->applicationResize(nullptr);
     return 0;
 }
 
@@ -1770,11 +1791,11 @@ int GetWindowBounds(lua_State* L)
     vMin += pos;
     vMax += pos;
 
-    GidImGui* imgui = getImgui(L);
+    //GidImGui* imgui = getImgui(L);
     float x1, y1, x2, y2;
 
-    localToGlobal(imgui->proxy, vMin.x, vMin.y, &x1, &y1);
-    localToGlobal(imgui->proxy, vMax.x, vMax.y, &x2, &y2);
+    localToGlobal(imguiProxy, vMin.x, vMin.y, &x1, &y1);
+    localToGlobal(imguiProxy, vMax.x, vMax.y, &x2, &y2);
 
     lua_pushnumber(L, x1);
     lua_pushnumber(L, y1);
@@ -4421,7 +4442,7 @@ int SetTabItemClosed(lua_State* L)
     return 0;
 }
 
-#ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
 
 /// TODO list:
 /// windows api?
@@ -5402,7 +5423,7 @@ int TabBar_GetTabName(lua_State* L)
 
 /// TabBar -
 
-#endif // IMGUI_HAS_DOCK
+#endif // IS_BETA_BUILD
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -6831,7 +6852,7 @@ int GetIO(lua_State* L)
     return 1;
 }
 
-#ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
 int IO_GetConfigDockingNoSplit(lua_State* L)
 {
     ImGuiIO& io = getIO(L);
@@ -7016,7 +7037,7 @@ int IO_WantSaveIniSettings(lua_State* L)
 int getNavButtonIndex(lua_State* L, int idx = 2)
 {
     int index = luaL_checkinteger(L, idx);
-    LUA_FASSERT(index >= 0 && index <= ImGuiNavInput_COUNT - 5, "Nav input index is out of bounds! Must be [%d; %d]", 0, ImGuiNavInput_COUNT - 5);
+    LUA_ASSERTF(index >= 0 && index <= ImGuiNavInput_COUNT - 5, "Nav input index is out of bounds! Must be [%d; %d]", 0, ImGuiNavInput_COUNT - 5);
     return index;
 }
 
@@ -7309,7 +7330,9 @@ int IO_SetMouseDrawCursor(lua_State* L)
     io.MouseDrawCursor = lua_toboolean(L, 2) > 0;
     if (io.MouseDrawCursor)
     {
-        setApplicationCursor(L, "blank");
+        bool hideSystemCursor = luaL_optboolean(L, 3, 1);
+        if (hideSystemCursor)
+            setApplicationCursor(L, "blank");
     }
     else
     {
@@ -7517,6 +7540,31 @@ int IO_GetBackendRendererName(lua_State* L)
     return 1;
 }
 
+int IO_SetMouseDown(lua_State* L)
+{
+    int buttonIndex = luaL_checkinteger(L, 2);
+    LUA_ASSERTF(buttonIndex >= 0 && buttonIndex <= ImGuiMouseButton_COUNT,
+                "Button index is out of bounds. Must be: [0..%d], but was: %d", ImGuiMouseButton_COUNT, buttonIndex);
+    bool state = lua_toboolean(L, 3);
+    ImGuiIO& io = getIO(L);
+    io.MouseDown[buttonIndex] = state;
+}
+
+int IO_SetMousePos(lua_State* L)
+{
+    float x = luaL_checknumber(L, 2);
+    float y = luaL_checknumber(L, 3);
+    ImGuiIO& io = getIO(L);
+    io.MousePos = EventListener::translateMousePos(x, y);
+}
+
+int IO_SetMouseWheel(lua_State* L)
+{
+    float wheel = luaL_checknumber(L, 2);
+    ImGuiIO& io = getIO(L);
+    io.MouseWheel = wheel;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -7534,7 +7582,7 @@ FontData getFontData(lua_State* _UNUSED(L), const char* filename)
     size_t data_size = 0;
     void* data = ImFileLoadToMemory(filename, "rb", &data_size, 0);
 
-    LUA_FASSERT(data != nullptr, "Cant load '%s' font! File not found.", filename);
+    LUA_ASSERTF(data != nullptr, "Cant load '%s' font! File not found.", filename);
 
     return FontData(data, data_size);
 }
@@ -8501,6 +8549,19 @@ int GetAutoUpdateCursor(lua_State* L)
 {
 
     lua_pushboolean(L, autoUpdateCursor);
+    return 1;
+}
+
+int SetResetTouchPosOnEnd(lua_State* L)
+{
+    resetTouchPosOnEnd = lua_toboolean(L, 2);
+    return 0;
+}
+
+int GetResetTouchPosOnEnd(lua_State* L)
+{
+
+    lua_pushboolean(L, resetTouchPosOnEnd);
     return 1;
 }
 
@@ -10208,7 +10269,7 @@ int loader(lua_State* L)
         {"setDisplaySize", IO_SetDisplaySize},
         {"getDisplaySize", IO_GetDisplaySize},
 
-    #ifdef IMGUI_HAS_DOCK
+    #ifdef IS_BETA_BUILD
         {"setConfigDockingNoSplit", IO_GetConfigDockingNoSplit},
         {"setConfigDockingNoSplit", IO_SetConfigDockingNoSplit},
         {"setConfigDockingWithShift", IO_GetConfigDockingWithShift},
@@ -10238,6 +10299,9 @@ int loader(lua_State* L)
         {"setMouseDrawCursor", IO_SetMouseDrawCursor},
         {"getMouseDoubleClickMaxDist", IO_GetMouseDoubleClickMaxDist},
         {"setMouseDoubleClickMaxDist", IO_SetMouseDoubleClickMaxDist},
+        {"setMouseDown", IO_SetMouseDown},
+        {"setMousePos", IO_SetMousePos},
+        {"setMouseWheel", IO_SetMouseWheel},
         {"getKeyMapValue", IO_GetKeyMapValue},
         {"setKeyMapValue", IO_SetKeyMapValue},
         {"getKeyRepeatDelay", IO_GetKeyRepeatDelay},
@@ -10294,7 +10358,7 @@ int loader(lua_State* L)
     };
     binder.createClass("ImFont", 0, NULL, NULL, imguiFontFunctionList);
 
-#ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
     const luaL_Reg imguiDockNodeFunctionList[] = {
         {"getID", DockBuilder_Node_GetID},
         {"getSharedFlags", DockBuilder_Node_GetSharedFlags},
@@ -10581,6 +10645,8 @@ int loader(lua_State* L)
 #endif
         {"setAutoUpdateCursor", SetAutoUpdateCursor},
         {"getAutoUpdateCursor", GetAutoUpdateCursor},
+        {"setResetTouchPosOnEnd", SetResetTouchPosOnEnd},
+        {"getResetTouchPosOnEnd", GetResetTouchPosOnEnd},
 
         // Fonts API
         {"pushFont", Fonts_PushFont},
@@ -10614,10 +10680,6 @@ int loader(lua_State* L)
         {"onKeyUp", KeyUp},
         {"onKeyDown", KeyDown},
         {"onKeyChar", KeyChar},
-
-        /// Resize callback
-
-        {"onAppResize", applicationResize},
 
         /////////////////////////////////////////////////////////////////////////////// Inputs -
 
@@ -10978,7 +11040,7 @@ int loader(lua_State* L)
         {"endDragDropTarget", EndDragDropTarget},
         {"getDragDropPayload", GetDragDropPayload},
 
-    #ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
         {"dockSpace", DockSpace},
         {"dockSpaceOverViewport", DockSpaceOverViewport},
         {"setNextWindowDockID", SetNextWindowDockID},
@@ -10999,8 +11061,7 @@ int loader(lua_State* L)
         {"dockBuilderCopyWindowSettings", DockBuilderCopyWindowSettings},
         {"dockBuilderCopyDockSpace", DockBuilderCopyDockSpace},
         {"dockBuilderFinish", DockBuilderFinish},
-    #endif
-
+#endif
         {NULL, NULL}
     };
     binder.createClass("ImGui", "Sprite", initImGui, destroyImGui, imguiFunctionList);
@@ -11023,6 +11084,8 @@ static void g_initializePlugin(lua_State* L)
 {
     ::L = L;
 
+    resetStaticVars();
+
     giderosCursorMap[ImGuiMouseCursor_Hand]        = "pointingHand";
     giderosCursorMap[ImGuiMouseCursor_None]        = "blank";
     giderosCursorMap[ImGuiMouseCursor_Arrow]       = "arrow";
@@ -11043,7 +11106,7 @@ static void g_initializePlugin(lua_State* L)
     lua_pop(L, 2);
 }
 
-static void g_deinitializePlugin(lua_State* _UNUSED(L)) { instanceCreated = false; }
+static void g_deinitializePlugin(lua_State* _UNUSED(L)) { resetStaticVars(); }
 
 #ifdef IS_BETA_BUILD
 REGISTER_PLUGIN_NAMED(PLUGIN_NAME, "1.0.0", imgui_beta)
