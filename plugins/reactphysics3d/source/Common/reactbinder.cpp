@@ -117,6 +117,45 @@ static int r3dWorld_create(lua_State* L) {
 	ws.gravity.x = luaL_checknumber(L, 1);
 	ws.gravity.y = luaL_checknumber(L, 2);
 	ws.gravity.z = luaL_checknumber(L, 3);
+	if (lua_type(L,4)==LUA_TTABLE) {
+#define PINTT(n,t) lua_getfield(L,4,#n); if (!lua_isnoneornil(L,-1)) ws.n=(t) luaL_checkinteger(L,-1); lua_pop(L,1);
+#define PNUM(n) lua_getfield(L,4,#n); if (!lua_isnoneornil(L,-1)) ws.n=luaL_checknumber(L,-1); lua_pop(L,1);
+#define PBOOL(n) lua_getfield(L,4,#n); ws.n=lua_toboolean(L,-1); lua_pop(L,1);
+#define PUINT(n) PINTT(n,uint)
+		PNUM(persistentContactDistanceThreshold);
+        /// Default friction coefficient for a rigid body
+		PNUM(defaultFrictionCoefficient);
+        /// Default bounciness factor for a rigid body
+		PNUM(defaultBounciness);
+        /// Velocity threshold for contact velocity restitution
+		PNUM(restitutionVelocityThreshold);
+        /// Default rolling resistance
+		PNUM(defaultRollingRestistance);
+        /// True if the sleeping technique is enabled
+		PBOOL(isSleepingEnabled);
+        /// Number of iterations when solving the velocity constraints of the Sequential Impulse technique
+		PUINT(defaultVelocitySolverNbIterations);
+        /// Number of iterations when solving the position constraints of the Sequential Impulse technique
+		PUINT(defaultPositionSolverNbIterations);
+        /// Time (in seconds) that a body must stay still to be considered sleeping
+		PNUM(defaultTimeBeforeSleep);
+        /// A body with a linear velocity smaller than the sleep linear velocity (in m/s)
+        /// might enter sleeping mode.
+        PNUM(defaultSleepLinearVelocity);
+        /// A body with angular velocity smaller than the sleep angular velocity (in rad/s)
+        /// might enter sleeping mode
+        PNUM(defaultSleepAngularVelocity);
+        /// Maximum number of contact manifolds in an overlapping pair
+        PUINT(nbMaxContactManifolds);
+        /// This is used to test if two contact manifold are similar (same contact normal) in order to
+        /// merge them. If the cosine of the angle between the normals of the two manifold are larger
+        /// than the value bellow, the manifold are considered to be similar.
+        PNUM(cosAngleSimilarContactManifold);
+#undef PNUM
+#undef PBOOL
+#undef PUINT
+#undef PINTT
+	}
 
 	rp3d::PhysicsWorld *world = physicsCommon.createPhysicsWorld(ws);
 
