@@ -46,18 +46,30 @@
 #endif
 
 static lua_State* L;
+static Application* application;
+static SpriteProxy* imguiProxy;
+
 static char keyWeak = ' ';
 static bool autoUpdateCursor = false;
 static bool instanceCreated = false;
-static Application* application;
+static bool resetTouchPosOnEnd = false;
 static std::map<int, const char*> giderosCursorMap;
 
+static void resetStaticVars()
+{
+    instanceCreated = false;
+    resetTouchPosOnEnd = false;
+    autoUpdateCursor = false;
+}
+
 #define LUA_ASSERT(EXP, MSG) if (!(EXP)) { lua_pushstring(L, MSG); lua_error(L); }
-#define LUA_FASSERT(EXP, FMT, ...) if (!(EXP)) { lua_pushfstring(L, FMT, __VA_ARGS__); lua_error(L); }
+#define LUA_ASSERTF(EXP, FMT, ...) if (!(EXP)) { lua_pushfstring(L, FMT, __VA_ARGS__); lua_error(L); }
 #define LUA_THROW_ERROR(MSG) lua_pushstring(L, MSG); lua_error(L);
 #define LUA_THROW_ERRORF(FMT, ...) lua_pushfstring(L, FMT, __VA_ARGS__); lua_error(L);
 #define LUA_PRINTF(FMT, ...) lua_getglobal(L, "print"); lua_pushfstring(L, FMT, __VA_ARGS__); lua_call(L, 1, 0);
 #define LUA_PRINT(MSG) lua_getglobal(L, "print"); lua_pushstring(L, MSG); lua_call(L, 1, 0);
+
+#define BIND_ENUM(L, value, name) lua_pushinteger(L, value); lua_setfield(L, -2, name);
 
 namespace ImGui_impl
 {
@@ -143,10 +155,11 @@ static void localToGlobal(SpriteProxy* proxy, float x, float y, float* tx, float
 
 static int convertGiderosMouseButton(const int button)
 {
-    LUA_FASSERT(button >= 0, "Button index must be >= 0, but was: %d", button);
-    //return log2(button);
+    LUA_ASSERTF(button >= 0, "Button index must be >= 0, but was: %d", button);
     switch (button)
     {
+        case GINPUT_NO_BUTTON:
+            return 4; // unused by ImGui itself
         case GINPUT_LEFT_BUTTON:
             return 0;
         case GINPUT_RIGHT_BUTTON:
@@ -158,7 +171,7 @@ static int convertGiderosMouseButton(const int button)
         case 16:
             return 4;
         default:
-            LUA_THROW_ERROR("Incorrect button index");
+            LUA_THROW_ERRORF("Incorrect button index. Expected 0, 1, 2, 4, 8 or 16, but got: %d", button);
             break;
     }
 }
@@ -392,455 +405,450 @@ static bool* getPopen(lua_State* L, int idx, int top = 2)
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+
 void bindEnums(lua_State* L)
 {
 #ifdef IS_BETA_BUILD
     lua_getglobal(L, "ImGuiNodeEditor");
 
-    lua_pushinteger(L, (int)ED::PinKind::Input);                        lua_setfield(L, -2, "Input");
-    lua_pushinteger(L, (int)ED::PinKind::Output);                       lua_setfield(L, -2, "Output");
+    BIND_ENUM(L, (int)ED::PinKind::Input, "Input");
+    BIND_ENUM(L, (int)ED::PinKind::Output, "Output");
+    BIND_ENUM(L, ED::StyleColor_Bg, "StyleColor_Bg");
+    BIND_ENUM(L, ED::StyleColor_Grid, "StyleColor_Grid");
+    BIND_ENUM(L, ED::StyleColor_NodeBg, "StyleColor_NodeBg");
+    BIND_ENUM(L, ED::StyleColor_NodeBorder, "StyleColor_NodeBorder");
+    BIND_ENUM(L, ED::StyleColor_HovNodeBorder, "StyleColor_HovNodeBorder");
+    BIND_ENUM(L, ED::StyleColor_SelNodeBorder, "StyleColor_SelNodeBorder");
+    BIND_ENUM(L, ED::StyleColor_NodeSelRect, "StyleColor_NodeSelRect");
+    BIND_ENUM(L, ED::StyleColor_NodeSelRectBorder, "StyleColor_NodeSelRectBorder");
+    BIND_ENUM(L, ED::StyleColor_HovLinkBorder, "StyleColor_HovLinkBorder");
+    BIND_ENUM(L, ED::StyleColor_SelLinkBorder, "StyleColor_SelLinkBorder");
+    BIND_ENUM(L, ED::StyleColor_LinkSelRect, "StyleColor_LinkSelRect");
+    BIND_ENUM(L, ED::StyleColor_LinkSelRectBorder, "StyleColor_LinkSelRectBorder");
+    BIND_ENUM(L, ED::StyleColor_PinRect, "StyleColor_PinRect");
+    BIND_ENUM(L, ED::StyleColor_PinRectBorder, "StyleColor_PinRectBorder");
+    BIND_ENUM(L, ED::StyleColor_Flow, "StyleColor_Flow");
+    BIND_ENUM(L, ED::StyleColor_FlowMarker, "StyleColor_FlowMarker");
+    BIND_ENUM(L, ED::StyleColor_GroupBg, "StyleColor_GroupBg");
+    BIND_ENUM(L, ED::StyleColor_GroupBorder, "StyleColor_GroupBorder");
 
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_Bg);             lua_setfield(L, -2, "StyleColor_Bg");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_Grid);           lua_setfield(L, -2, "StyleColor_Grid");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_NodeBg);         lua_setfield(L, -2, "StyleColor_NodeBg");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_NodeBorder);     lua_setfield(L, -2, "StyleColor_NodeBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_HovNodeBorder);  lua_setfield(L, -2, "StyleColor_HovNodeBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_SelNodeBorder);  lua_setfield(L, -2, "StyleColor_SelNodeBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_NodeSelRect);    lua_setfield(L, -2, "StyleColor_NodeSelRect");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_NodeSelRectBorder);lua_setfield(L, -2, "StyleColor_NodeSelRectBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_HovLinkBorder);  lua_setfield(L, -2, "StyleColor_HovLinkBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_SelLinkBorder);  lua_setfield(L, -2, "StyleColor_SelLinkBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_LinkSelRect);    lua_setfield(L, -2, "StyleColor_LinkSelRect");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_LinkSelRectBorder);lua_setfield(L, -2, "StyleColor_LinkSelRectBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_PinRect);        lua_setfield(L, -2, "StyleColor_PinRect");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_PinRectBorder);  lua_setfield(L, -2, "StyleColor_PinRectBorder");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_Flow);           lua_setfield(L, -2, "StyleColor_Flow");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_FlowMarker);     lua_setfield(L, -2, "StyleColor_FlowMarker");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_GroupBg);        lua_setfield(L, -2, "StyleColor_GroupBg");
-    lua_pushinteger(L, (int)ED::StyleColor::StyleColor_GroupBorder);    lua_setfield(L, -2, "StyleColor_GroupBorder");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_NodePadding);        lua_setfield(L, -2, "StyleVar_NodePadding");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_NodeRounding);       lua_setfield(L, -2, "StyleVar_NodeRounding");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_NodeBorderWidth);    lua_setfield(L, -2, "StyleVar_NodeBorderWidth");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_HoveredNodeBorderWidth);lua_setfield(L, -2, "StyleVar_HoveredNodeBorderWidth");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_SelectedNodeBorderWidth);lua_setfield(L, -2, "StyleVar_SelectedNodeBorderWidth");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PinRounding);        lua_setfield(L, -2, "StyleVar_PinRounding");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PinBorderWidth);     lua_setfield(L, -2, "StyleVar_PinBorderWidth");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_LinkStrength);       lua_setfield(L, -2, "StyleVar_LinkStrength");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_SourceDirection);    lua_setfield(L, -2, "StyleVar_SourceDirection");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_TargetDirection);    lua_setfield(L, -2, "StyleVar_TargetDirection");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_ScrollDuration);     lua_setfield(L, -2, "StyleVar_ScrollDuration");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_FlowMarkerDistance); lua_setfield(L, -2, "StyleVar_FlowMarkerDistance");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_FlowSpeed);          lua_setfield(L, -2, "StyleVar_FlowSpeed");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_FlowDuration);       lua_setfield(L, -2, "StyleVar_FlowDuration");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PivotAlignment);     lua_setfield(L, -2, "StyleVar_PivotAlignment");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PivotSize);          lua_setfield(L, -2, "StyleVar_PivotSize");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PivotScale);         lua_setfield(L, -2, "StyleVar_PivotScale");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PinCorners);         lua_setfield(L, -2, "StyleVar_PinCorners");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PinRadius);          lua_setfield(L, -2, "StyleVar_PinRadius");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PinArrowSize);       lua_setfield(L, -2, "StyleVar_PinArrowSize");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_PinArrowWidth);      lua_setfield(L, -2, "StyleVar_PinArrowWidth");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_GroupRounding);      lua_setfield(L, -2, "StyleVar_GroupRounding");
-    lua_pushinteger(L, (int)ED::StyleVar::StyleVar_GroupBorderWidth);   lua_setfield(L, -2, "StyleVar_GroupBorderWidth");
+    BIND_ENUM(L, ED::StyleVar_NodePadding, "StyleVar_NodePadding");
+    BIND_ENUM(L, ED::StyleVar_NodeRounding, "StyleVar_NodeRounding");
+    BIND_ENUM(L, ED::StyleVar_NodeBorderWidth, "StyleVar_NodeBorderWidth");
+    BIND_ENUM(L, ED::StyleVar_HoveredNodeBorderWidth, "StyleVar_HoveredNodeBorderWidth");
+    BIND_ENUM(L, ED::StyleVar_SelectedNodeBorderWidth, "StyleVar_SelectedNodeBorderWidth");
+    BIND_ENUM(L, ED::StyleVar_PinRounding, "StyleVar_PinRounding");
+    BIND_ENUM(L, ED::StyleVar_PinBorderWidth, "StyleVar_PinBorderWidth");
+    BIND_ENUM(L, ED::StyleVar_LinkStrength, "StyleVar_LinkStrength");
+    BIND_ENUM(L, ED::StyleVar_SourceDirection, "StyleVar_SourceDirection");
+    BIND_ENUM(L, ED::StyleVar_TargetDirection, "StyleVar_TargetDirection");
+    BIND_ENUM(L, ED::StyleVar_ScrollDuration, "StyleVar_ScrollDuration");
+    BIND_ENUM(L, ED::StyleVar_FlowMarkerDistance, "StyleVar_FlowMarkerDistance");
+    BIND_ENUM(L, ED::StyleVar_FlowSpeed, "StyleVar_FlowSpeed");
+    BIND_ENUM(L, ED::StyleVar_FlowDuration, "StyleVar_FlowDuration");
+    BIND_ENUM(L, ED::StyleVar_PivotAlignment, "StyleVar_PivotAlignment");
+    BIND_ENUM(L, ED::StyleVar_PivotSize, "StyleVar_PivotSize");
+    BIND_ENUM(L, ED::StyleVar_PivotScale, "StyleVar_PivotScale");
+    BIND_ENUM(L, ED::StyleVar_PinCorners, "StyleVar_PinCorners");
+    BIND_ENUM(L, ED::StyleVar_PinRadius, "StyleVar_PinRadius");
+    BIND_ENUM(L, ED::StyleVar_PinArrowSize, "StyleVar_PinArrowSize");
+    BIND_ENUM(L, ED::StyleVar_PinArrowWidth, "StyleVar_PinArrowWidth");
+    BIND_ENUM(L, ED::StyleVar_GroupRounding, "StyleVar_GroupRounding");
+    BIND_ENUM(L, ED::StyleVar_GroupBorderWidth, "StyleVar_GroupBorderWidth");
 
     lua_pop(L, 1);
 #endif
 
     lua_getglobal(L, "ImGui");
-    // BackendFlags
-    lua_pushinteger(L, ImGuiBackendFlags_None);                         lua_setfield(L, -2, "BackendFlags_None");
-    lua_pushinteger(L, ImGuiBackendFlags_HasGamepad);                   lua_setfield(L, -2, "BackendFlags_HasGamepad");
-    lua_pushinteger(L, ImGuiBackendFlags_HasMouseCursors);              lua_setfield(L, -2, "BackendFlags_HasMouseCursors");
-    lua_pushinteger(L, ImGuiBackendFlags_HasSetMousePos);               lua_setfield(L, -2, "BackendFlags_HasSetMousePos");
-    lua_pushinteger(L, ImGuiBackendFlags_RendererHasVtxOffset);         lua_setfield(L, -2, "BackendFlags_RendererHasVtxOffset");
+    //BackendFlags
+    BIND_ENUM(L, ImGuiBackendFlags_None, "BackendFlags_None");
+    BIND_ENUM(L, ImGuiBackendFlags_HasGamepad, "BackendFlags_HasGamepad");
+    BIND_ENUM(L, ImGuiBackendFlags_HasMouseCursors, "BackendFlags_HasMouseCursors");
+    BIND_ENUM(L, ImGuiBackendFlags_HasSetMousePos, "BackendFlags_HasSetMousePos");
+    BIND_ENUM(L, ImGuiBackendFlags_RendererHasVtxOffset, "BackendFlags_RendererHasVtxOffset");
 
-    // ImGuiFocusedFlags
-    lua_pushinteger(L, ImGuiFocusedFlags_ChildWindows);                 lua_setfield(L, -2, "FocusedFlags_ChildWindows");
-    lua_pushinteger(L, ImGuiFocusedFlags_AnyWindow);                    lua_setfield(L, -2, "FocusedFlags_AnyWindow");
-    lua_pushinteger(L, ImGuiFocusedFlags_RootWindow);                   lua_setfield(L, -2, "FocusedFlags_RootWindow");
-    lua_pushinteger(L, ImGuiFocusedFlags_RootAndChildWindows);          lua_setfield(L, -2, "FocusedFlags_RootAndChildWindows");
-    lua_pushinteger(L, ImGuiFocusedFlags_None);                         lua_setfield(L, -2, "FocusedFlags_None");
+    //ImGuiFocusedFlags
+    BIND_ENUM(L, ImGuiFocusedFlags_ChildWindows, "FocusedFlags_ChildWindows");
+    BIND_ENUM(L, ImGuiFocusedFlags_AnyWindow, "FocusedFlags_AnyWindow");
+    BIND_ENUM(L, ImGuiFocusedFlags_RootWindow, "FocusedFlags_RootWindow");
+    BIND_ENUM(L, ImGuiFocusedFlags_RootAndChildWindows, "FocusedFlags_RootAndChildWindows");
+    BIND_ENUM(L, ImGuiFocusedFlags_None, "FocusedFlags_None");
 
-    // ImGuiPopupFlags
-    lua_pushinteger(L, ImGuiPopupFlags_NoOpenOverExistingPopup);        lua_setfield(L, -2, "PopupFlags_NoOpenOverExistingPopup");
-    lua_pushinteger(L, ImGuiPopupFlags_MouseButtonLeft);                lua_setfield(L, -2, "PopupFlags_MouseButtonLeft");
-    lua_pushinteger(L, ImGuiPopupFlags_MouseButtonMask_);               lua_setfield(L, -2, "PopupFlags_MouseButtonMask");
-    lua_pushinteger(L, ImGuiPopupFlags_MouseButtonRight);               lua_setfield(L, -2, "PopupFlags_MouseButtonRight");
-    lua_pushinteger(L, ImGuiPopupFlags_AnyPopupId);                     lua_setfield(L, -2, "PopupFlags_AnyPopupId");
-    lua_pushinteger(L, ImGuiPopupFlags_MouseButtonDefault_);            lua_setfield(L, -2, "PopupFlags_MouseButtonDefault");
-    lua_pushinteger(L, ImGuiPopupFlags_MouseButtonMiddle);              lua_setfield(L, -2, "PopupFlags_MouseButtonMiddle");
-    lua_pushinteger(L, ImGuiPopupFlags_None);                           lua_setfield(L, -2, "PopupFlags_None");
-    lua_pushinteger(L, ImGuiPopupFlags_AnyPopup);                       lua_setfield(L, -2, "PopupFlags_AnyPopup");
-    lua_pushinteger(L, ImGuiPopupFlags_AnyPopupLevel);                  lua_setfield(L, -2, "PopupFlags_AnyPopupLevel");
-    lua_pushinteger(L, ImGuiPopupFlags_NoOpenOverItems);                lua_setfield(L, -2, "PopupFlags_NoOpenOverItems");
+    //ImGuiPopupFlags
+    BIND_ENUM(L, ImGuiPopupFlags_NoOpenOverExistingPopup, "PopupFlags_NoOpenOverExistingPopup");
+    BIND_ENUM(L, ImGuiPopupFlags_MouseButtonLeft, "PopupFlags_MouseButtonLeft");
+    BIND_ENUM(L, ImGuiPopupFlags_MouseButtonMask_, "PopupFlags_MouseButtonMask");
+    BIND_ENUM(L, ImGuiPopupFlags_MouseButtonRight, "PopupFlags_MouseButtonRight");
+    BIND_ENUM(L, ImGuiPopupFlags_AnyPopupId, "PopupFlags_AnyPopupId");
+    BIND_ENUM(L, ImGuiPopupFlags_MouseButtonDefault_, "PopupFlags_MouseButtonDefault");
+    BIND_ENUM(L, ImGuiPopupFlags_MouseButtonMiddle, "PopupFlags_MouseButtonMiddle");
+    BIND_ENUM(L, ImGuiPopupFlags_None, "PopupFlags_None");
+    BIND_ENUM(L, ImGuiPopupFlags_AnyPopup, "PopupFlags_AnyPopup");
+    BIND_ENUM(L, ImGuiPopupFlags_AnyPopupLevel, "PopupFlags_AnyPopupLevel");
+    BIND_ENUM(L, ImGuiPopupFlags_NoOpenOverItems, "PopupFlags_NoOpenOverItems");
 
-    // ImGuiHoveredFlags
-    lua_pushinteger(L, ImGuiHoveredFlags_None);                         lua_setfield(L, -2, "HoveredFlags_None");
-    lua_pushinteger(L, ImGuiHoveredFlags_RootAndChildWindows);          lua_setfield(L, -2, "HoveredFlags_RootAndChildWindows");
-    lua_pushinteger(L, ImGuiHoveredFlags_AllowWhenBlockedByPopup);      lua_setfield(L, -2, "HoveredFlags_AllowWhenBlockedByPopup");
-    lua_pushinteger(L, ImGuiHoveredFlags_AllowWhenBlockedByActiveItem); lua_setfield(L, -2, "HoveredFlags_AllowWhenBlockedByActiveItem");
-    lua_pushinteger(L, ImGuiHoveredFlags_ChildWindows);                 lua_setfield(L, -2, "HoveredFlags_ChildWindows");
-    lua_pushinteger(L, ImGuiHoveredFlags_RectOnly);                     lua_setfield(L, -2, "HoveredFlags_RectOnly");
-    lua_pushinteger(L, ImGuiHoveredFlags_AllowWhenDisabled);            lua_setfield(L, -2, "HoveredFlags_AllowWhenDisabled");
-    lua_pushinteger(L, ImGuiHoveredFlags_AllowWhenOverlapped);          lua_setfield(L, -2, "HoveredFlags_AllowWhenOverlapped");
-    lua_pushinteger(L, ImGuiHoveredFlags_AnyWindow);                    lua_setfield(L, -2, "HoveredFlags_AnyWindow");
-    lua_pushinteger(L, ImGuiHoveredFlags_RootWindow);                   lua_setfield(L, -2, "HoveredFlags_RootWindow");
+    //ImGuiHoveredFlags
+    BIND_ENUM(L, ImGuiHoveredFlags_None, "HoveredFlags_None");
+    BIND_ENUM(L, ImGuiHoveredFlags_RootAndChildWindows, "HoveredFlags_RootAndChildWindows");
+    BIND_ENUM(L, ImGuiHoveredFlags_AllowWhenBlockedByPopup, "HoveredFlags_AllowWhenBlockedByPopup");
+    BIND_ENUM(L, ImGuiHoveredFlags_AllowWhenBlockedByActiveItem, "HoveredFlags_AllowWhenBlockedByActiveItem");
+    BIND_ENUM(L, ImGuiHoveredFlags_ChildWindows, "HoveredFlags_ChildWindows");
+    BIND_ENUM(L, ImGuiHoveredFlags_RectOnly, "HoveredFlags_RectOnly");
+    BIND_ENUM(L, ImGuiHoveredFlags_AllowWhenDisabled, "HoveredFlags_AllowWhenDisabled");
+    BIND_ENUM(L, ImGuiHoveredFlags_AllowWhenOverlapped, "HoveredFlags_AllowWhenOverlapped");
+    BIND_ENUM(L, ImGuiHoveredFlags_AnyWindow, "HoveredFlags_AnyWindow");
+    BIND_ENUM(L, ImGuiHoveredFlags_RootWindow, "HoveredFlags_RootWindow");
 
-    // ImGuiInputTextFlags
-    lua_pushinteger(L, ImGuiInputTextFlags_EnterReturnsTrue);           lua_setfield(L, -2, "InputTextFlags_EnterReturnsTrue");
-    lua_pushinteger(L, ImGuiInputTextFlags_CallbackCompletion);         lua_setfield(L, -2, "InputTextFlags_CallbackCompletion");
-    lua_pushinteger(L, ImGuiInputTextFlags_None);                       lua_setfield(L, -2, "InputTextFlags_None");
-    lua_pushinteger(L, ImGuiInputTextFlags_CallbackResize);             lua_setfield(L, -2, "InputTextFlags_CallbackResize");
-    lua_pushinteger(L, ImGuiInputTextFlags_ReadOnly);                   lua_setfield(L, -2, "InputTextFlags_ReadOnly");
-    lua_pushinteger(L, ImGuiInputTextFlags_AutoSelectAll);              lua_setfield(L, -2, "InputTextFlags_AutoSelectAll");
-    lua_pushinteger(L, ImGuiInputTextFlags_AllowTabInput);              lua_setfield(L, -2, "InputTextFlags_AllowTabInput");
-    lua_pushinteger(L, ImGuiInputTextFlags_CharsScientific);            lua_setfield(L, -2, "InputTextFlags_CharsScientific");
-    lua_pushinteger(L, ImGuiInputTextFlags_CallbackAlways);             lua_setfield(L, -2, "InputTextFlags_CallbackAlways");
-    lua_pushinteger(L, ImGuiInputTextFlags_CharsDecimal);               lua_setfield(L, -2, "InputTextFlags_CharsDecimal");
-    lua_pushinteger(L, ImGuiInputTextFlags_NoUndoRedo);                 lua_setfield(L, -2, "InputTextFlags_NoUndoRedo");
-    lua_pushinteger(L, ImGuiInputTextFlags_CallbackHistory);            lua_setfield(L, -2, "InputTextFlags_CallbackHistory");
-    lua_pushinteger(L, ImGuiInputTextFlags_CtrlEnterForNewLine);        lua_setfield(L, -2, "InputTextFlags_CtrlEnterForNewLine");
-    lua_pushinteger(L, ImGuiInputTextFlags_CharsHexadecimal);           lua_setfield(L, -2, "InputTextFlags_CharsHexadecimal");
-    lua_pushinteger(L, ImGuiInputTextFlags_CharsNoBlank);               lua_setfield(L, -2, "InputTextFlags_CharsNoBlank");
-    lua_pushinteger(L, ImGuiInputTextFlags_Password);                   lua_setfield(L, -2, "InputTextFlags_Password");
-    lua_pushinteger(L, ImGuiInputTextFlags_CallbackCharFilter);         lua_setfield(L, -2, "InputTextFlags_CallbackCharFilter");
-    lua_pushinteger(L, ImGuiInputTextFlags_NoHorizontalScroll);         lua_setfield(L, -2, "InputTextFlags_NoHorizontalScroll");
-    lua_pushinteger(L, ImGuiInputTextFlags_AlwaysInsertMode);           lua_setfield(L, -2, "InputTextFlags_AlwaysInsertMode");
-    lua_pushinteger(L, ImGuiInputTextFlags_CharsUppercase);             lua_setfield(L, -2, "InputTextFlags_CharsUppercase");
-    // Custom enum
-    lua_pushinteger(L, ImGuiInputTextFlags_NoBackground);               lua_setfield(L, -2, "InputTextFlags_NoBackground");
+    //ImGuiInputTextFlags
+    BIND_ENUM(L, ImGuiInputTextFlags_EnterReturnsTrue, "InputTextFlags_EnterReturnsTrue");
+    BIND_ENUM(L, ImGuiInputTextFlags_CallbackCompletion, "InputTextFlags_CallbackCompletion");
+    BIND_ENUM(L, ImGuiInputTextFlags_None, "InputTextFlags_None");
+    BIND_ENUM(L, ImGuiInputTextFlags_CallbackResize, "InputTextFlags_CallbackResize");
+    BIND_ENUM(L, ImGuiInputTextFlags_ReadOnly, "InputTextFlags_ReadOnly");
+    BIND_ENUM(L, ImGuiInputTextFlags_AutoSelectAll, "InputTextFlags_AutoSelectAll");
+    BIND_ENUM(L, ImGuiInputTextFlags_AllowTabInput, "InputTextFlags_AllowTabInput");
+    BIND_ENUM(L, ImGuiInputTextFlags_CharsScientific, "InputTextFlags_CharsScientific");
+    BIND_ENUM(L, ImGuiInputTextFlags_CallbackAlways, "InputTextFlags_CallbackAlways");
+    BIND_ENUM(L, ImGuiInputTextFlags_CharsDecimal, "InputTextFlags_CharsDecimal");
+    BIND_ENUM(L, ImGuiInputTextFlags_NoUndoRedo, "InputTextFlags_NoUndoRedo");
+    BIND_ENUM(L, ImGuiInputTextFlags_CallbackHistory, "InputTextFlags_CallbackHistory");
+    BIND_ENUM(L, ImGuiInputTextFlags_CtrlEnterForNewLine, "InputTextFlags_CtrlEnterForNewLine");
+    BIND_ENUM(L, ImGuiInputTextFlags_CharsHexadecimal, "InputTextFlags_CharsHexadecimal");
+    BIND_ENUM(L, ImGuiInputTextFlags_CharsNoBlank, "InputTextFlags_CharsNoBlank");
+    BIND_ENUM(L, ImGuiInputTextFlags_Password, "InputTextFlags_Password");
+    BIND_ENUM(L, ImGuiInputTextFlags_CallbackCharFilter, "InputTextFlags_CallbackCharFilter");
+    BIND_ENUM(L, ImGuiInputTextFlags_NoHorizontalScroll, "InputTextFlags_NoHorizontalScroll");
+    BIND_ENUM(L, ImGuiInputTextFlags_AlwaysInsertMode, "InputTextFlags_AlwaysInsertMode");
+    BIND_ENUM(L, ImGuiInputTextFlags_CharsUppercase, "InputTextFlags_CharsUppercase");
+    BIND_ENUM(L, ImGuiInputTextFlags_NoBackground, "InputTextFlags_NoBackground");
 
-    // ImGuiTabBarFlags
-    lua_pushinteger(L, ImGuiTabBarFlags_AutoSelectNewTabs);             lua_setfield(L, -2, "TabBarFlags_AutoSelectNewTabs");
-    lua_pushinteger(L, ImGuiTabBarFlags_NoCloseWithMiddleMouseButton);  lua_setfield(L, -2, "TabBarFlags_NoCloseWithMiddleMouseButton");
-    lua_pushinteger(L, ImGuiTabBarFlags_TabListPopupButton);            lua_setfield(L, -2, "TabBarFlags_TabListPopupButton");
-    lua_pushinteger(L, ImGuiTabBarFlags_NoTooltip);                     lua_setfield(L, -2, "TabBarFlags_NoTooltip");
-    lua_pushinteger(L, ImGuiTabBarFlags_FittingPolicyMask_);            lua_setfield(L, -2, "TabBarFlags_FittingPolicyMask");
-    lua_pushinteger(L, ImGuiTabBarFlags_Reorderable);                   lua_setfield(L, -2, "TabBarFlags_Reorderable");
-    lua_pushinteger(L, ImGuiTabBarFlags_FittingPolicyDefault_);         lua_setfield(L, -2, "TabBarFlags_FittingPolicyDefault");
-    lua_pushinteger(L, ImGuiTabBarFlags_FittingPolicyScroll);           lua_setfield(L, -2, "TabBarFlags_FittingPolicyScroll");
-    lua_pushinteger(L, ImGuiTabBarFlags_FittingPolicyResizeDown);       lua_setfield(L, -2, "TabBarFlags_FittingPolicyResizeDown");
-    lua_pushinteger(L, ImGuiTabBarFlags_None);                          lua_setfield(L, -2, "TabBarFlags_None");
-    lua_pushinteger(L, ImGuiTabBarFlags_NoTabListScrollingButtons);     lua_setfield(L, -2, "TabBarFlags_NoTabListScrollingButtons");
+    //ImGuiTabBarFlags
+    BIND_ENUM(L, ImGuiTabBarFlags_AutoSelectNewTabs, "TabBarFlags_AutoSelectNewTabs");
+    BIND_ENUM(L, ImGuiTabBarFlags_NoCloseWithMiddleMouseButton, "TabBarFlags_NoCloseWithMiddleMouseButton");
+    BIND_ENUM(L, ImGuiTabBarFlags_TabListPopupButton, "TabBarFlags_TabListPopupButton");
+    BIND_ENUM(L, ImGuiTabBarFlags_NoTooltip, "TabBarFlags_NoTooltip");
+    BIND_ENUM(L, ImGuiTabBarFlags_FittingPolicyMask_, "TabBarFlags_FittingPolicyMask");
+    BIND_ENUM(L, ImGuiTabBarFlags_Reorderable, "TabBarFlags_Reorderable");
+    BIND_ENUM(L, ImGuiTabBarFlags_FittingPolicyDefault_, "TabBarFlags_FittingPolicyDefault");
+    BIND_ENUM(L, ImGuiTabBarFlags_FittingPolicyScroll, "TabBarFlags_FittingPolicyScroll");
+    BIND_ENUM(L, ImGuiTabBarFlags_FittingPolicyResizeDown, "TabBarFlags_FittingPolicyResizeDown");
+    BIND_ENUM(L, ImGuiTabBarFlags_None, "TabBarFlags_None");
+    BIND_ENUM(L, ImGuiTabBarFlags_NoTabListScrollingButtons, "TabBarFlags_NoTabListScrollingButtons");
 
-    // ImGuiTreeNodeFlags
-    lua_pushinteger(L, ImGuiTreeNodeFlags_Bullet);                      lua_setfield(L, -2, "TreeNodeFlags_Bullet");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_None);                        lua_setfield(L, -2, "TreeNodeFlags_None");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_CollapsingHeader);            lua_setfield(L, -2, "TreeNodeFlags_CollapsingHeader");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_NavLeftJumpsBackHere);        lua_setfield(L, -2, "TreeNodeFlags_NavLeftJumpsBackHere");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_Framed);                      lua_setfield(L, -2, "TreeNodeFlags_Framed");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_FramePadding);                lua_setfield(L, -2, "TreeNodeFlags_FramePadding");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_AllowItemOverlap);            lua_setfield(L, -2, "TreeNodeFlags_AllowItemOverlap");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_OpenOnArrow);                 lua_setfield(L, -2, "TreeNodeFlags_OpenOnArrow");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_SpanFullWidth);               lua_setfield(L, -2, "TreeNodeFlags_SpanFullWidth");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_NoAutoOpenOnLog);             lua_setfield(L, -2, "TreeNodeFlags_NoAutoOpenOnLog");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_Leaf);                        lua_setfield(L, -2, "TreeNodeFlags_Leaf");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_NoTreePushOnOpen);            lua_setfield(L, -2, "TreeNodeFlags_NoTreePushOnOpen");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_Selected);                    lua_setfield(L, -2, "TreeNodeFlags_Selected");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_SpanAvailWidth);              lua_setfield(L, -2, "TreeNodeFlags_SpanAvailWidth");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_OpenOnDoubleClick);           lua_setfield(L, -2, "TreeNodeFlags_OpenOnDoubleClick");
-    lua_pushinteger(L, ImGuiTreeNodeFlags_DefaultOpen);                 lua_setfield(L, -2, "TreeNodeFlags_DefaultOpen");
+    //ImGuiTreeNodeFlags
+    BIND_ENUM(L, ImGuiTreeNodeFlags_Bullet, "TreeNodeFlags_Bullet");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_None, "TreeNodeFlags_None");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_CollapsingHeader, "TreeNodeFlags_CollapsingHeader");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_NavLeftJumpsBackHere, "TreeNodeFlags_NavLeftJumpsBackHere");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_Framed, "TreeNodeFlags_Framed");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_FramePadding, "TreeNodeFlags_FramePadding");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_AllowItemOverlap, "TreeNodeFlags_AllowItemOverlap");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_OpenOnArrow, "TreeNodeFlags_OpenOnArrow");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_SpanFullWidth, "TreeNodeFlags_SpanFullWidth");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_NoAutoOpenOnLog, "TreeNodeFlags_NoAutoOpenOnLog");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_Leaf, "TreeNodeFlags_Leaf");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_NoTreePushOnOpen, "TreeNodeFlags_NoTreePushOnOpen");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_Selected, "TreeNodeFlags_Selected");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_SpanAvailWidth, "TreeNodeFlags_SpanAvailWidth");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_OpenOnDoubleClick, "TreeNodeFlags_OpenOnDoubleClick");
+    BIND_ENUM(L, ImGuiTreeNodeFlags_DefaultOpen, "TreeNodeFlags_DefaultOpen");
 
-    // ImGuiStyleVar
-    lua_pushinteger(L, ImGuiStyleVar_GrabRounding);                     lua_setfield(L, -2, "StyleVar_GrabRounding");
-    lua_pushinteger(L, ImGuiStyleVar_Alpha);                            lua_setfield(L, -2, "StyleVar_Alpha");
-    lua_pushinteger(L, ImGuiStyleVar_WindowMinSize);                    lua_setfield(L, -2, "StyleVar_WindowMinSize");
-    lua_pushinteger(L, ImGuiStyleVar_PopupBorderSize);                  lua_setfield(L, -2, "StyleVar_PopupBorderSize");
-    lua_pushinteger(L, ImGuiStyleVar_WindowBorderSize);                 lua_setfield(L, -2, "StyleVar_WindowBorderSize");
-    lua_pushinteger(L, ImGuiStyleVar_FrameBorderSize);                  lua_setfield(L, -2, "StyleVar_FrameBorderSize");
-    lua_pushinteger(L, ImGuiStyleVar_ItemSpacing);                      lua_setfield(L, -2, "StyleVar_ItemSpacing");
-    lua_pushinteger(L, ImGuiStyleVar_IndentSpacing);                    lua_setfield(L, -2, "StyleVar_IndentSpacing");
-    lua_pushinteger(L, ImGuiStyleVar_FramePadding);                     lua_setfield(L, -2, "StyleVar_FramePadding");
-    lua_pushinteger(L, ImGuiStyleVar_WindowPadding);                    lua_setfield(L, -2, "StyleVar_WindowPadding");
-    lua_pushinteger(L, ImGuiStyleVar_ChildRounding);                    lua_setfield(L, -2, "StyleVar_ChildRounding");
-    lua_pushinteger(L, ImGuiStyleVar_ItemInnerSpacing);                 lua_setfield(L, -2, "StyleVar_ItemInnerSpacing");
-    lua_pushinteger(L, ImGuiStyleVar_WindowRounding);                   lua_setfield(L, -2, "StyleVar_WindowRounding");
-    lua_pushinteger(L, ImGuiStyleVar_FrameRounding);                    lua_setfield(L, -2, "StyleVar_FrameRounding");
-    lua_pushinteger(L, ImGuiStyleVar_TabRounding);                      lua_setfield(L, -2, "StyleVar_TabRounding");
-    lua_pushinteger(L, ImGuiStyleVar_ChildBorderSize);                  lua_setfield(L, -2, "StyleVar_ChildBorderSize");
-    lua_pushinteger(L, ImGuiStyleVar_GrabMinSize);                      lua_setfield(L, -2, "StyleVar_GrabMinSize");
-    lua_pushinteger(L, ImGuiStyleVar_ScrollbarRounding);                lua_setfield(L, -2, "StyleVar_ScrollbarRounding");
-    lua_pushinteger(L, ImGuiStyleVar_ScrollbarSize);                    lua_setfield(L, -2, "StyleVar_ScrollbarSize");
-    lua_pushinteger(L, ImGuiStyleVar_WindowTitleAlign);                 lua_setfield(L, -2, "StyleVar_WindowTitleAlign");
-    lua_pushinteger(L, ImGuiStyleVar_SelectableTextAlign);              lua_setfield(L, -2, "StyleVar_SelectableTextAlign");
-    lua_pushinteger(L, ImGuiStyleVar_PopupRounding);                    lua_setfield(L, -2, "StyleVar_PopupRounding");
-    lua_pushinteger(L, ImGuiStyleVar_ButtonTextAlign);                  lua_setfield(L, -2, "StyleVar_ButtonTextAlign");
+    //ImGuiStyleVar
+    BIND_ENUM(L, ImGuiStyleVar_GrabRounding, "StyleVar_GrabRounding");
+    BIND_ENUM(L, ImGuiStyleVar_Alpha, "StyleVar_Alpha");
+    BIND_ENUM(L, ImGuiStyleVar_WindowMinSize, "StyleVar_WindowMinSize");
+    BIND_ENUM(L, ImGuiStyleVar_PopupBorderSize, "StyleVar_PopupBorderSize");
+    BIND_ENUM(L, ImGuiStyleVar_WindowBorderSize, "StyleVar_WindowBorderSize");
+    BIND_ENUM(L, ImGuiStyleVar_FrameBorderSize, "StyleVar_FrameBorderSize");
+    BIND_ENUM(L, ImGuiStyleVar_ItemSpacing, "StyleVar_ItemSpacing");
+    BIND_ENUM(L, ImGuiStyleVar_IndentSpacing, "StyleVar_IndentSpacing");
+    BIND_ENUM(L, ImGuiStyleVar_FramePadding, "StyleVar_FramePadding");
+    BIND_ENUM(L, ImGuiStyleVar_WindowPadding, "StyleVar_WindowPadding");
+    BIND_ENUM(L, ImGuiStyleVar_ChildRounding, "StyleVar_ChildRounding");
+    BIND_ENUM(L, ImGuiStyleVar_ItemInnerSpacing, "StyleVar_ItemInnerSpacing");
+    BIND_ENUM(L, ImGuiStyleVar_WindowRounding, "StyleVar_WindowRounding");
+    BIND_ENUM(L, ImGuiStyleVar_FrameRounding, "StyleVar_FrameRounding");
+    BIND_ENUM(L, ImGuiStyleVar_TabRounding, "StyleVar_TabRounding");
+    BIND_ENUM(L, ImGuiStyleVar_ChildBorderSize, "StyleVar_ChildBorderSize");
+    BIND_ENUM(L, ImGuiStyleVar_GrabMinSize, "StyleVar_GrabMinSize");
+    BIND_ENUM(L, ImGuiStyleVar_ScrollbarRounding, "StyleVar_ScrollbarRounding");
+    BIND_ENUM(L, ImGuiStyleVar_ScrollbarSize, "StyleVar_ScrollbarSize");
+    BIND_ENUM(L, ImGuiStyleVar_WindowTitleAlign, "StyleVar_WindowTitleAlign");
+    BIND_ENUM(L, ImGuiStyleVar_SelectableTextAlign, "StyleVar_SelectableTextAlign");
+    BIND_ENUM(L, ImGuiStyleVar_PopupRounding, "StyleVar_PopupRounding");
+    BIND_ENUM(L, ImGuiStyleVar_ButtonTextAlign, "StyleVar_ButtonTextAlign");
 
-    // ImGuiCol
-    lua_pushinteger(L, ImGuiCol_PlotHistogram);                         lua_setfield(L, -2, "Col_PlotHistogram");
-    lua_pushinteger(L, ImGuiCol_TitleBg);                               lua_setfield(L, -2, "Col_TitleBg");
-    lua_pushinteger(L, ImGuiCol_Separator);                             lua_setfield(L, -2, "Col_Separator");
-    lua_pushinteger(L, ImGuiCol_HeaderActive);                          lua_setfield(L, -2, "Col_HeaderActive");
-    lua_pushinteger(L, ImGuiCol_HeaderHovered);                         lua_setfield(L, -2, "Col_HeaderHovered");
-    lua_pushinteger(L, ImGuiCol_ButtonHovered);                         lua_setfield(L, -2, "Col_ButtonHovered");
-    lua_pushinteger(L, ImGuiCol_NavWindowingHighlight);                 lua_setfield(L, -2, "Col_NavWindowingHighlight");
-    lua_pushinteger(L, ImGuiCol_ScrollbarGrab);                         lua_setfield(L, -2, "Col_ScrollbarGrab");
-    lua_pushinteger(L, ImGuiCol_FrameBg);                               lua_setfield(L, -2, "Col_FrameBg");
-    lua_pushinteger(L, ImGuiCol_TextSelectedBg);                        lua_setfield(L, -2, "Col_TextSelectedBg");
-    lua_pushinteger(L, ImGuiCol_ScrollbarGrabActive);                   lua_setfield(L, -2, "Col_ScrollbarGrabActive");
-    //lua_pushinteger(L, ImGuiCol_ModalWindowDarkening);                  lua_setfield(L, -2, "Col_ModalWindowDarkening");
-    lua_pushinteger(L, ImGuiCol_TitleBgCollapsed);                      lua_setfield(L, -2, "Col_TitleBgCollapsed");
-    lua_pushinteger(L, ImGuiCol_ModalWindowDimBg);                      lua_setfield(L, -2, "Col_ModalWindowDimBg");
-    lua_pushinteger(L, ImGuiCol_ResizeGripActive);                      lua_setfield(L, -2, "Col_ResizeGripActive");
-    lua_pushinteger(L, ImGuiCol_SeparatorHovered);                      lua_setfield(L, -2, "Col_SeparatorHovered");
-    lua_pushinteger(L, ImGuiCol_ScrollbarGrabHovered);                  lua_setfield(L, -2, "Col_ScrollbarGrabHovered");
-    lua_pushinteger(L, ImGuiCol_TabUnfocused);                          lua_setfield(L, -2, "Col_TabUnfocused");
-    lua_pushinteger(L, ImGuiCol_ScrollbarBg);                           lua_setfield(L, -2, "Col_ScrollbarBg");
-    lua_pushinteger(L, ImGuiCol_ChildBg);                               lua_setfield(L, -2, "Col_ChildBg");
-    lua_pushinteger(L, ImGuiCol_Header);                                lua_setfield(L, -2, "Col_Header");
-    lua_pushinteger(L, ImGuiCol_NavWindowingDimBg);                     lua_setfield(L, -2, "Col_NavWindowingDimBg");
-    lua_pushinteger(L, ImGuiCol_CheckMark);                             lua_setfield(L, -2, "Col_CheckMark");
-    lua_pushinteger(L, ImGuiCol_Button);                                lua_setfield(L, -2, "Col_Button");
-    lua_pushinteger(L, ImGuiCol_BorderShadow);                          lua_setfield(L, -2, "Col_BorderShadow");
-    lua_pushinteger(L, ImGuiCol_DragDropTarget);                        lua_setfield(L, -2, "Col_DragDropTarget");
-    lua_pushinteger(L, ImGuiCol_MenuBarBg);                             lua_setfield(L, -2, "Col_MenuBarBg");
-    lua_pushinteger(L, ImGuiCol_TitleBgActive);                         lua_setfield(L, -2, "Col_TitleBgActive");
-    lua_pushinteger(L, ImGuiCol_SeparatorActive);                       lua_setfield(L, -2, "Col_SeparatorActive");
-    lua_pushinteger(L, ImGuiCol_Text);                                  lua_setfield(L, -2, "Col_Text");
-    lua_pushinteger(L, ImGuiCol_PlotLinesHovered);                      lua_setfield(L, -2, "Col_PlotLinesHovered");
-    lua_pushinteger(L, ImGuiCol_Border);                                lua_setfield(L, -2, "Col_Border");
-    lua_pushinteger(L, ImGuiCol_TabUnfocusedActive);                    lua_setfield(L, -2, "Col_TabUnfocusedActive");
-    lua_pushinteger(L, ImGuiCol_PlotLines);                             lua_setfield(L, -2, "Col_PlotLines");
-    lua_pushinteger(L, ImGuiCol_PlotHistogramHovered);                  lua_setfield(L, -2, "Col_PlotHistogramHovered");
-    lua_pushinteger(L, ImGuiCol_ResizeGripHovered);                     lua_setfield(L, -2, "Col_ResizeGripHovered");
-    lua_pushinteger(L, ImGuiCol_Tab);                                   lua_setfield(L, -2, "Col_Tab");
-    lua_pushinteger(L, ImGuiCol_TabHovered);                            lua_setfield(L, -2, "Col_TabHovered");
-    lua_pushinteger(L, ImGuiCol_PopupBg);                               lua_setfield(L, -2, "Col_PopupBg");
-    lua_pushinteger(L, ImGuiCol_TabActive);                             lua_setfield(L, -2, "Col_TabActive");
-    lua_pushinteger(L, ImGuiCol_FrameBgActive);                         lua_setfield(L, -2, "Col_FrameBgActive");
-    lua_pushinteger(L, ImGuiCol_ButtonActive);                          lua_setfield(L, -2, "Col_ButtonActive");
-    lua_pushinteger(L, ImGuiCol_WindowBg);                              lua_setfield(L, -2, "Col_WindowBg");
-    lua_pushinteger(L, ImGuiCol_SliderGrabActive);                      lua_setfield(L, -2, "Col_SliderGrabActive");
-    lua_pushinteger(L, ImGuiCol_SliderGrab);                            lua_setfield(L, -2, "Col_SliderGrab");
-    lua_pushinteger(L, ImGuiCol_NavHighlight);                          lua_setfield(L, -2, "Col_NavHighlight");
-    lua_pushinteger(L, ImGuiCol_FrameBgHovered);                        lua_setfield(L, -2, "Col_FrameBgHovered");
-    lua_pushinteger(L, ImGuiCol_TextDisabled);                          lua_setfield(L, -2, "Col_TextDisabled");
-    lua_pushinteger(L, ImGuiCol_ResizeGrip);                            lua_setfield(L, -2, "Col_ResizeGrip");
-#ifdef IMGUI_HAS_DOCK
-    lua_pushinteger(L, ImGuiCol_DockingPreview);                        lua_setfield(L, -2, "Col_DockingPreview");
-    lua_pushinteger(L, ImGuiCol_DockingEmptyBg);                        lua_setfield(L, -2, "Col_DockingEmptyBg");
+    //ImGuiCol
+    BIND_ENUM(L, ImGuiCol_PlotHistogram, "Col_PlotHistogram");
+    BIND_ENUM(L, ImGuiCol_TitleBg, "Col_TitleBg");
+    BIND_ENUM(L, ImGuiCol_Separator, "Col_Separator");
+    BIND_ENUM(L, ImGuiCol_HeaderActive, "Col_HeaderActive");
+    BIND_ENUM(L, ImGuiCol_HeaderHovered, "Col_HeaderHovered");
+    BIND_ENUM(L, ImGuiCol_ButtonHovered, "Col_ButtonHovered");
+    BIND_ENUM(L, ImGuiCol_NavWindowingHighlight, "Col_NavWindowingHighlight");
+    BIND_ENUM(L, ImGuiCol_ScrollbarGrab, "Col_ScrollbarGrab");
+    BIND_ENUM(L, ImGuiCol_FrameBg, "Col_FrameBg");
+    BIND_ENUM(L, ImGuiCol_TextSelectedBg, "Col_TextSelectedBg");
+    BIND_ENUM(L, ImGuiCol_ScrollbarGrabActive, "Col_ScrollbarGrabActive");
+    BIND_ENUM(L, ImGuiCol_TitleBgCollapsed, "Col_TitleBgCollapsed");
+    BIND_ENUM(L, ImGuiCol_ModalWindowDimBg, "Col_ModalWindowDimBg");
+    BIND_ENUM(L, ImGuiCol_ResizeGripActive, "Col_ResizeGripActive");
+    BIND_ENUM(L, ImGuiCol_SeparatorHovered, "Col_SeparatorHovered");
+    BIND_ENUM(L, ImGuiCol_ScrollbarGrabHovered, "Col_ScrollbarGrabHovered");
+    BIND_ENUM(L, ImGuiCol_TabUnfocused, "Col_TabUnfocused");
+    BIND_ENUM(L, ImGuiCol_ScrollbarBg, "Col_ScrollbarBg");
+    BIND_ENUM(L, ImGuiCol_ChildBg, "Col_ChildBg");
+    BIND_ENUM(L, ImGuiCol_Header, "Col_Header");
+    BIND_ENUM(L, ImGuiCol_NavWindowingDimBg, "Col_NavWindowingDimBg");
+    BIND_ENUM(L, ImGuiCol_CheckMark, "Col_CheckMark");
+    BIND_ENUM(L, ImGuiCol_Button, "Col_Button");
+    BIND_ENUM(L, ImGuiCol_BorderShadow, "Col_BorderShadow");
+    BIND_ENUM(L, ImGuiCol_DragDropTarget, "Col_DragDropTarget");
+    BIND_ENUM(L, ImGuiCol_MenuBarBg, "Col_MenuBarBg");
+    BIND_ENUM(L, ImGuiCol_TitleBgActive, "Col_TitleBgActive");
+    BIND_ENUM(L, ImGuiCol_SeparatorActive, "Col_SeparatorActive");
+    BIND_ENUM(L, ImGuiCol_Text, "Col_Text");
+    BIND_ENUM(L, ImGuiCol_PlotLinesHovered, "Col_PlotLinesHovered");
+    BIND_ENUM(L, ImGuiCol_Border, "Col_Border");
+    BIND_ENUM(L, ImGuiCol_TabUnfocusedActive, "Col_TabUnfocusedActive");
+    BIND_ENUM(L, ImGuiCol_PlotLines, "Col_PlotLines");
+    BIND_ENUM(L, ImGuiCol_PlotHistogramHovered, "Col_PlotHistogramHovered");
+    BIND_ENUM(L, ImGuiCol_ResizeGripHovered, "Col_ResizeGripHovered");
+    BIND_ENUM(L, ImGuiCol_Tab, "Col_Tab");
+    BIND_ENUM(L, ImGuiCol_TabHovered, "Col_TabHovered");
+    BIND_ENUM(L, ImGuiCol_PopupBg, "Col_PopupBg");
+    BIND_ENUM(L, ImGuiCol_TabActive, "Col_TabActive");
+    BIND_ENUM(L, ImGuiCol_FrameBgActive, "Col_FrameBgActive");
+    BIND_ENUM(L, ImGuiCol_ButtonActive, "Col_ButtonActive");
+    BIND_ENUM(L, ImGuiCol_WindowBg, "Col_WindowBg");
+    BIND_ENUM(L, ImGuiCol_SliderGrabActive, "Col_SliderGrabActive");
+    BIND_ENUM(L, ImGuiCol_SliderGrab, "Col_SliderGrab");
+    BIND_ENUM(L, ImGuiCol_NavHighlight, "Col_NavHighlight");
+    BIND_ENUM(L, ImGuiCol_FrameBgHovered, "Col_FrameBgHovered");
+    BIND_ENUM(L, ImGuiCol_TextDisabled, "Col_TextDisabled");
+    BIND_ENUM(L, ImGuiCol_ResizeGrip, "Col_ResizeGrip");
+#ifdef IS_BETA_BUILD
+    BIND_ENUM(L, ImGuiCol_DockingPreview, "Col_DockingPreview");
+    BIND_ENUM(L, ImGuiCol_DockingEmptyBg, "Col_DockingEmptyBg");
 #endif
 
-    // ImGuiDataType
-    lua_pushinteger(L, ImGuiDataType_U8);                               lua_setfield(L, -2, "DataType_U8");
-    lua_pushinteger(L, ImGuiDataType_S64);                              lua_setfield(L, -2, "DataType_S64");
-    lua_pushinteger(L, ImGuiDataType_Float);                            lua_setfield(L, -2, "DataType_Float");
-    lua_pushinteger(L, ImGuiDataType_S16);                              lua_setfield(L, -2, "DataType_S16");
-    lua_pushinteger(L, ImGuiDataType_U16);                              lua_setfield(L, -2, "DataType_U16");
-    lua_pushinteger(L, ImGuiDataType_Double);                           lua_setfield(L, -2, "DataType_Double");
-    lua_pushinteger(L, ImGuiDataType_S8);                               lua_setfield(L, -2, "DataType_S8");
-    lua_pushinteger(L, ImGuiDataType_U32);                              lua_setfield(L, -2, "DataType_U32");
-    lua_pushinteger(L, ImGuiDataType_S32);                              lua_setfield(L, -2, "DataType_S32");
-    lua_pushinteger(L, ImGuiDataType_U64);                              lua_setfield(L, -2, "DataType_U64");
+    //ImGuiDataType
+    BIND_ENUM(L, ImGuiDataType_U8, "DataType_U8");
+    BIND_ENUM(L, ImGuiDataType_S64, "DataType_S64");
+    BIND_ENUM(L, ImGuiDataType_Float, "DataType_Float");
+    BIND_ENUM(L, ImGuiDataType_S16, "DataType_S16");
+    BIND_ENUM(L, ImGuiDataType_U16, "DataType_U16");
+    BIND_ENUM(L, ImGuiDataType_Double, "DataType_Double");
+    BIND_ENUM(L, ImGuiDataType_S8, "DataType_S8");
+    BIND_ENUM(L, ImGuiDataType_U32, "DataType_U32");
+    BIND_ENUM(L, ImGuiDataType_S32, "DataType_S32");
+    BIND_ENUM(L, ImGuiDataType_U64, "DataType_U64");
 
-    // ImGuiDir
-    lua_pushinteger(L, ImGuiDir_None);                                  lua_setfield(L, -2, "Dir_None");
-    lua_pushinteger(L, ImGuiDir_Left);                                  lua_setfield(L, -2, "Dir_Left");
-    lua_pushinteger(L, ImGuiDir_Up);                                    lua_setfield(L, -2, "Dir_Up");
-    lua_pushinteger(L, ImGuiDir_Down);                                  lua_setfield(L, -2, "Dir_Down");
-    lua_pushinteger(L, ImGuiDir_Right);                                 lua_setfield(L, -2, "Dir_Right");
+    //ImGuiDir
+    BIND_ENUM(L, ImGuiDir_None, "Dir_None");
+    BIND_ENUM(L, ImGuiDir_Left, "Dir_Left");
+    BIND_ENUM(L, ImGuiDir_Up, "Dir_Up");
+    BIND_ENUM(L, ImGuiDir_Down, "Dir_Down");
+    BIND_ENUM(L, ImGuiDir_Right, "Dir_Right");
 
-    // ImGuiWindowFlags
-    lua_pushinteger(L, ImGuiWindowFlags_NoScrollWithMouse);             lua_setfield(L, -2, "WindowFlags_NoScrollWithMouse");
-    lua_pushinteger(L, ImGuiWindowFlags_None);                          lua_setfield(L, -2, "WindowFlags_None");
-    lua_pushinteger(L, ImGuiWindowFlags_NoScrollbar);                   lua_setfield(L, -2, "WindowFlags_NoScrollbar");
-    lua_pushinteger(L, ImGuiWindowFlags_HorizontalScrollbar);           lua_setfield(L, -2, "WindowFlags_HorizontalScrollbar");
-    lua_pushinteger(L, ImGuiWindowFlags_NoFocusOnAppearing);            lua_setfield(L, -2, "WindowFlags_NoFocusOnAppearing");
-    lua_pushinteger(L, ImGuiWindowFlags_NoBringToFrontOnFocus);         lua_setfield(L, -2, "WindowFlags_NoBringToFrontOnFocus");
-    lua_pushinteger(L, ImGuiWindowFlags_NoDecoration);                  lua_setfield(L, -2, "WindowFlags_NoDecoration");
-    lua_pushinteger(L, ImGuiWindowFlags_NoCollapse);                    lua_setfield(L, -2, "WindowFlags_NoCollapse");
-    lua_pushinteger(L, ImGuiWindowFlags_NoTitleBar);                    lua_setfield(L, -2, "WindowFlags_NoTitleBar");
-    lua_pushinteger(L, ImGuiWindowFlags_NoMove);                        lua_setfield(L, -2, "WindowFlags_NoMove");
-    lua_pushinteger(L, ImGuiWindowFlags_NoInputs);                      lua_setfield(L, -2, "WindowFlags_NoInputs");
-    lua_pushinteger(L, ImGuiWindowFlags_NoMouseInputs);                 lua_setfield(L, -2, "WindowFlags_NoMouseInputs");
-    lua_pushinteger(L, ImGuiWindowFlags_NoSavedSettings);               lua_setfield(L, -2, "WindowFlags_NoSavedSettings");
-    lua_pushinteger(L, ImGuiWindowFlags_NoNav);                         lua_setfield(L, -2, "WindowFlags_NoNav");
-    lua_pushinteger(L, ImGuiWindowFlags_UnsavedDocument);               lua_setfield(L, -2, "WindowFlags_UnsavedDocument");
-    lua_pushinteger(L, ImGuiWindowFlags_NoNavFocus);                    lua_setfield(L, -2, "WindowFlags_NoNavFocus");
-    lua_pushinteger(L, ImGuiWindowFlags_AlwaysHorizontalScrollbar);     lua_setfield(L, -2, "WindowFlags_AlwaysHorizontalScrollbar");
-    lua_pushinteger(L, ImGuiWindowFlags_AlwaysUseWindowPadding);        lua_setfield(L, -2, "WindowFlags_AlwaysUseWindowPadding");
-    lua_pushinteger(L, ImGuiWindowFlags_NoNavInputs);                   lua_setfield(L, -2, "WindowFlags_NoNavInputs");
-    lua_pushinteger(L, ImGuiWindowFlags_NoResize);                      lua_setfield(L, -2, "WindowFlags_NoResize");
-    lua_pushinteger(L, ImGuiWindowFlags_AlwaysVerticalScrollbar);       lua_setfield(L, -2, "WindowFlags_AlwaysVerticalScrollbar");
-    lua_pushinteger(L, ImGuiWindowFlags_MenuBar);                       lua_setfield(L, -2, "WindowFlags_MenuBar");
-    lua_pushinteger(L, ImGuiWindowFlags_NoBackground);                  lua_setfield(L, -2, "WindowFlags_NoBackground");
-    lua_pushinteger(L, ImGuiWindowFlags_AlwaysAutoResize);              lua_setfield(L, -2, "WindowFlags_AlwaysAutoResize");
-#ifdef IMGUI_HAS_DOCK
-    lua_pushinteger(L, ImGuiWindowFlags_NoDocking);                     lua_setfield(L, -2, "WindowFlags_NoDocking");
+    //ImGuiWindowFlags
+    BIND_ENUM(L, ImGuiWindowFlags_NoScrollWithMouse, "WindowFlags_NoScrollWithMouse");
+    BIND_ENUM(L, ImGuiWindowFlags_None, "WindowFlags_None");
+    BIND_ENUM(L, ImGuiWindowFlags_NoScrollbar, "WindowFlags_NoScrollbar");
+    BIND_ENUM(L, ImGuiWindowFlags_HorizontalScrollbar, "WindowFlags_HorizontalScrollbar");
+    BIND_ENUM(L, ImGuiWindowFlags_NoFocusOnAppearing, "WindowFlags_NoFocusOnAppearing");
+    BIND_ENUM(L, ImGuiWindowFlags_NoBringToFrontOnFocus, "WindowFlags_NoBringToFrontOnFocus");
+    BIND_ENUM(L, ImGuiWindowFlags_NoDecoration, "WindowFlags_NoDecoration");
+    BIND_ENUM(L, ImGuiWindowFlags_NoCollapse, "WindowFlags_NoCollapse");
+    BIND_ENUM(L, ImGuiWindowFlags_NoTitleBar, "WindowFlags_NoTitleBar");
+    BIND_ENUM(L, ImGuiWindowFlags_NoMove, "WindowFlags_NoMove");
+    BIND_ENUM(L, ImGuiWindowFlags_NoInputs, "WindowFlags_NoInputs");
+    BIND_ENUM(L, ImGuiWindowFlags_NoMouseInputs, "WindowFlags_NoMouseInputs");
+    BIND_ENUM(L, ImGuiWindowFlags_NoSavedSettings, "WindowFlags_NoSavedSettings");
+    BIND_ENUM(L, ImGuiWindowFlags_NoNav, "WindowFlags_NoNav");
+    BIND_ENUM(L, ImGuiWindowFlags_UnsavedDocument, "WindowFlags_UnsavedDocument");
+    BIND_ENUM(L, ImGuiWindowFlags_NoNavFocus, "WindowFlags_NoNavFocus");
+    BIND_ENUM(L, ImGuiWindowFlags_AlwaysHorizontalScrollbar, "WindowFlags_AlwaysHorizontalScrollbar");
+    BIND_ENUM(L, ImGuiWindowFlags_AlwaysUseWindowPadding, "WindowFlags_AlwaysUseWindowPadding");
+    BIND_ENUM(L, ImGuiWindowFlags_NoNavInputs, "WindowFlags_NoNavInputs");
+    BIND_ENUM(L, ImGuiWindowFlags_NoResize, "WindowFlags_NoResize");
+    BIND_ENUM(L, ImGuiWindowFlags_AlwaysVerticalScrollbar, "WindowFlags_AlwaysVerticalScrollbar");
+    BIND_ENUM(L, ImGuiWindowFlags_MenuBar, "WindowFlags_MenuBar");
+    BIND_ENUM(L, ImGuiWindowFlags_NoBackground, "WindowFlags_NoBackground");
+    BIND_ENUM(L, ImGuiWindowFlags_AlwaysAutoResize, "WindowFlags_AlwaysAutoResize");
+#ifdef IS_BETA_BUILD
+    BIND_ENUM(L, ImGuiWindowFlags_NoDocking, "WindowFlags_NoDocking");
 #endif
     //@MultiPain
-    lua_pushinteger(L, ImGuiWindowFlags_FullScreen);                    lua_setfield(L, -2, "WindowFlags_FullScreen");
+    BIND_ENUM(L, ImGuiWindowFlags_FullScreen, "WindowFlags_FullScreen");
 
+    //ImGuiTabItemFlags
+    BIND_ENUM(L, ImGuiTabItemFlags_SetSelected, "TabItemFlags_SetSelected");
+    BIND_ENUM(L, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton, "TabItemFlags_NoCloseWithMiddleMouseButton");
+    BIND_ENUM(L, ImGuiTabItemFlags_NoTooltip, "TabItemFlags_NoTooltip");
+    BIND_ENUM(L, ImGuiTabItemFlags_None, "TabItemFlags_None");
+    BIND_ENUM(L, ImGuiTabItemFlags_NoPushId, "TabItemFlags_NoPushId");
+    BIND_ENUM(L, ImGuiTabItemFlags_UnsavedDocument, "TabItemFlags_UnsavedDocument");
+    BIND_ENUM(L, ImGuiTabItemFlags_Leading, "TabItemFlags_Leading");
+    BIND_ENUM(L, ImGuiTabItemFlags_Trailing, "TabItemFlags_Trailing");
+    BIND_ENUM(L, ImGuiTabItemFlags_NoReorder, "TabItemFlags_NoReorder");
 
-    // ImGuiTabItemFlags
-    lua_pushinteger(L, ImGuiTabItemFlags_SetSelected);                  lua_setfield(L, -2, "TabItemFlags_SetSelected");
-    lua_pushinteger(L, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton); lua_setfield(L, -2, "TabItemFlags_NoCloseWithMiddleMouseButton");
-    lua_pushinteger(L, ImGuiTabItemFlags_NoTooltip);                    lua_setfield(L, -2, "TabItemFlags_NoTooltip");
-    lua_pushinteger(L, ImGuiTabItemFlags_None);                         lua_setfield(L, -2, "TabItemFlags_None");
-    lua_pushinteger(L, ImGuiTabItemFlags_NoPushId);                     lua_setfield(L, -2, "TabItemFlags_NoPushId");
-    lua_pushinteger(L, ImGuiTabItemFlags_UnsavedDocument);              lua_setfield(L, -2, "TabItemFlags_UnsavedDocument");
-    lua_pushinteger(L, ImGuiTabItemFlags_Leading);                      lua_setfield(L, -2, "TabItemFlags_Leading");   // 1.79
-    lua_pushinteger(L, ImGuiTabItemFlags_Trailing);                     lua_setfield(L, -2, "TabItemFlags_Trailing");  // 1.79
-    lua_pushinteger(L, ImGuiTabItemFlags_NoReorder);                    lua_setfield(L, -2, "TabItemFlags_NoReorder"); // 1.79
+    //ImGuiComboFlags
+    BIND_ENUM(L, ImGuiComboFlags_HeightSmall, "ComboFlags_HeightSmall");
+    BIND_ENUM(L, ImGuiComboFlags_HeightLarge, "ComboFlags_HeightLarge");
+    BIND_ENUM(L, ImGuiComboFlags_PopupAlignLeft, "ComboFlags_PopupAlignLeft");
+    BIND_ENUM(L, ImGuiComboFlags_None, "ComboFlags_None");
+    BIND_ENUM(L, ImGuiComboFlags_NoPreview, "ComboFlags_NoPreview");
+    BIND_ENUM(L, ImGuiComboFlags_HeightRegular, "ComboFlags_HeightRegular");
+    BIND_ENUM(L, ImGuiComboFlags_HeightMask_, "ComboFlags_HeightMask");
+    BIND_ENUM(L, ImGuiComboFlags_NoArrowButton, "ComboFlags_NoArrowButton");
+    BIND_ENUM(L, ImGuiComboFlags_HeightLargest, "ComboFlags_HeightLargest");
 
-    // ImGuiComboFlags
-    lua_pushinteger(L, ImGuiComboFlags_HeightSmall);                    lua_setfield(L, -2, "ComboFlags_HeightSmall");
-    lua_pushinteger(L, ImGuiComboFlags_HeightLarge);                    lua_setfield(L, -2, "ComboFlags_HeightLarge");
-    lua_pushinteger(L, ImGuiComboFlags_PopupAlignLeft);                 lua_setfield(L, -2, "ComboFlags_PopupAlignLeft");
-    lua_pushinteger(L, ImGuiComboFlags_None);                           lua_setfield(L, -2, "ComboFlags_None");
-    lua_pushinteger(L, ImGuiComboFlags_NoPreview);                      lua_setfield(L, -2, "ComboFlags_NoPreview");
-    lua_pushinteger(L, ImGuiComboFlags_HeightRegular);                  lua_setfield(L, -2, "ComboFlags_HeightRegular");
-    lua_pushinteger(L, ImGuiComboFlags_HeightMask_);                    lua_setfield(L, -2, "ComboFlags_HeightMask");
-    lua_pushinteger(L, ImGuiComboFlags_NoArrowButton);                  lua_setfield(L, -2, "ComboFlags_NoArrowButton");
-    lua_pushinteger(L, ImGuiComboFlags_HeightLargest);                  lua_setfield(L, -2, "ComboFlags_HeightLargest");
+    //ImGuiCond
+    BIND_ENUM(L, ImGuiCond_Appearing, "Cond_Appearing");
+    BIND_ENUM(L, ImGuiCond_None, "Cond_None");
+    BIND_ENUM(L, ImGuiCond_Always, "Cond_Always");
+    BIND_ENUM(L, ImGuiCond_FirstUseEver, "Cond_FirstUseEver");
+    BIND_ENUM(L, ImGuiCond_Once, "Cond_Once");
 
-    // ImGuiCond
-    lua_pushinteger(L, ImGuiCond_Appearing);                            lua_setfield(L, -2, "Cond_Appearing");
-    lua_pushinteger(L, ImGuiCond_None);                                 lua_setfield(L, -2, "Cond_None");
-    lua_pushinteger(L, ImGuiCond_Always);                               lua_setfield(L, -2, "Cond_Always");
-    lua_pushinteger(L, ImGuiCond_FirstUseEver);                         lua_setfield(L, -2, "Cond_FirstUseEver");
-    lua_pushinteger(L, ImGuiCond_Once);                                 lua_setfield(L, -2, "Cond_Once");
+    //ImGuiSelectableFlags
+    BIND_ENUM(L, ImGuiSelectableFlags_None, "SelectableFlags_None");
+    BIND_ENUM(L, ImGuiSelectableFlags_SpanAllColumns, "SelectableFlags_SpanAllColumns");
+    BIND_ENUM(L, ImGuiSelectableFlags_AllowItemOverlap, "SelectableFlags_AllowItemOverlap");
+    BIND_ENUM(L, ImGuiSelectableFlags_DontClosePopups, "SelectableFlags_DontClosePopups");
+    BIND_ENUM(L, ImGuiSelectableFlags_AllowDoubleClick, "SelectableFlags_AllowDoubleClick");
+    BIND_ENUM(L, ImGuiSelectableFlags_Disabled, "SelectableFlags_Disabled");
 
-    // ImGuiSelectableFlags
-    lua_pushinteger(L, ImGuiSelectableFlags_None);                      lua_setfield(L, -2, "SelectableFlags_None");
-    lua_pushinteger(L, ImGuiSelectableFlags_SpanAllColumns);            lua_setfield(L, -2, "SelectableFlags_SpanAllColumns");
-    lua_pushinteger(L, ImGuiSelectableFlags_AllowItemOverlap);          lua_setfield(L, -2, "SelectableFlags_AllowItemOverlap");
-    lua_pushinteger(L, ImGuiSelectableFlags_DontClosePopups);           lua_setfield(L, -2, "SelectableFlags_DontClosePopups");
-    lua_pushinteger(L, ImGuiSelectableFlags_AllowDoubleClick);          lua_setfield(L, -2, "SelectableFlags_AllowDoubleClick");
-    lua_pushinteger(L, ImGuiSelectableFlags_Disabled);                  lua_setfield(L, -2, "SelectableFlags_Disabled");
+    //ImGuiMouseCursor
+    BIND_ENUM(L, ImGuiMouseCursor_None, "MouseCursor_None");
+    BIND_ENUM(L, ImGuiMouseCursor_Arrow, "MouseCursor_Arrow");
+    BIND_ENUM(L, ImGuiMouseCursor_TextInput, "MouseCursor_TextInput");
+    BIND_ENUM(L, ImGuiMouseCursor_ResizeAll, "MouseCursor_ResizeAll");
+    BIND_ENUM(L, ImGuiMouseCursor_ResizeNS, "MouseCursor_ResizeNS");
+    BIND_ENUM(L, ImGuiMouseCursor_ResizeEW, "MouseCursor_ResizeEW");
+    BIND_ENUM(L, ImGuiMouseCursor_ResizeNESW, "MouseCursor_ResizeNESW");
+    BIND_ENUM(L, ImGuiMouseCursor_ResizeNWSE, "MouseCursor_ResizeNWSE");
+    BIND_ENUM(L, ImGuiMouseCursor_Hand, "MouseCursor_Hand");
+    BIND_ENUM(L, ImGuiMouseCursor_NotAllowed, "MouseCursor_NotAllowed");
 
-    // ImGuiMouseCursor
-    lua_pushinteger(L, ImGuiMouseCursor_None);                          lua_setfield(L, -2, "MouseCursor_None");
-    lua_pushinteger(L, ImGuiMouseCursor_Arrow);                         lua_setfield(L, -2, "MouseCursor_Arrow");
-    lua_pushinteger(L, ImGuiMouseCursor_TextInput);                     lua_setfield(L, -2, "MouseCursor_TextInput");
-    lua_pushinteger(L, ImGuiMouseCursor_ResizeAll);                     lua_setfield(L, -2, "MouseCursor_ResizeAll");
-    lua_pushinteger(L, ImGuiMouseCursor_ResizeNS);                      lua_setfield(L, -2, "MouseCursor_ResizeNS");
-    lua_pushinteger(L, ImGuiMouseCursor_ResizeEW);                      lua_setfield(L, -2, "MouseCursor_ResizeEW");
-    lua_pushinteger(L, ImGuiMouseCursor_ResizeNESW);                    lua_setfield(L, -2, "MouseCursor_ResizeNESW");
-    lua_pushinteger(L, ImGuiMouseCursor_ResizeNWSE);                    lua_setfield(L, -2, "MouseCursor_ResizeNWSE");
-    lua_pushinteger(L, ImGuiMouseCursor_Hand);                          lua_setfield(L, -2, "MouseCursor_Hand");
-    lua_pushinteger(L, ImGuiMouseCursor_NotAllowed);                    lua_setfield(L, -2, "MouseCursor_NotAllowed");
+    //ImGuiColorEditFlags
+    BIND_ENUM(L, ImGuiColorEditFlags_AlphaPreview, "ColorEditFlags_AlphaPreview");
+    BIND_ENUM(L, ImGuiColorEditFlags_DisplayRGB, "ColorEditFlags_DisplayRGB");
+    BIND_ENUM(L, ImGuiColorEditFlags_DisplayHex, "ColorEditFlags_DisplayHex");
+    BIND_ENUM(L, ImGuiColorEditFlags_InputHSV, "ColorEditFlags_InputHSV");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoSidePreview, "ColorEditFlags_NoSidePreview");
+    BIND_ENUM(L, ImGuiColorEditFlags_Uint8, "ColorEditFlags_Uint8");
+    BIND_ENUM(L, ImGuiColorEditFlags_AlphaPreviewHalf, "ColorEditFlags_AlphaPreviewHalf");
+    BIND_ENUM(L, ImGuiColorEditFlags_Float, "ColorEditFlags_Float");
+    BIND_ENUM(L, ImGuiColorEditFlags_PickerHueWheel, "ColorEditFlags_PickerHueWheel");
+    BIND_ENUM(L, ImGuiColorEditFlags__OptionsDefault, "ColorEditFlags_OptionsDefault");
+    BIND_ENUM(L, ImGuiColorEditFlags_InputRGB, "ColorEditFlags_InputRGB");
+    BIND_ENUM(L, ImGuiColorEditFlags_HDR, "ColorEditFlags_HDR");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoPicker, "ColorEditFlags_NoPicker");
+    BIND_ENUM(L, ImGuiColorEditFlags_AlphaBar, "ColorEditFlags_AlphaBar");
+    BIND_ENUM(L, ImGuiColorEditFlags_DisplayHSV, "ColorEditFlags_DisplayHSV");
+    BIND_ENUM(L, ImGuiColorEditFlags_PickerHueBar, "ColorEditFlags_PickerHueBar");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoAlpha, "ColorEditFlags_NoAlpha");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoOptions, "ColorEditFlags_NoOptions");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoDragDrop, "ColorEditFlags_NoDragDrop");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoInputs, "ColorEditFlags_NoInputs");
+    BIND_ENUM(L, ImGuiColorEditFlags_None, "ColorEditFlags_None");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoSmallPreview, "ColorEditFlags_NoSmallPreview");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoBorder, "ColorEditFlags_NoBorder");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoLabel, "ColorEditFlags_NoLabel");
+    BIND_ENUM(L, ImGuiColorEditFlags_NoTooltip, "ColorEditFlags_NoTooltip");
 
-    // ImGuiColorEditFlags
-    lua_pushinteger(L, ImGuiColorEditFlags_AlphaPreview);               lua_setfield(L, -2, "ColorEditFlags_AlphaPreview");
-    lua_pushinteger(L, ImGuiColorEditFlags_DisplayRGB);                 lua_setfield(L, -2, "ColorEditFlags_DisplayRGB");
-    lua_pushinteger(L, ImGuiColorEditFlags_DisplayHex);                 lua_setfield(L, -2, "ColorEditFlags_DisplayHex");
-    lua_pushinteger(L, ImGuiColorEditFlags_InputHSV);                   lua_setfield(L, -2, "ColorEditFlags_InputHSV");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoSidePreview);              lua_setfield(L, -2, "ColorEditFlags_NoSidePreview");
-    lua_pushinteger(L, ImGuiColorEditFlags_Uint8);                      lua_setfield(L, -2, "ColorEditFlags_Uint8");
-    //lua_pushinteger(L, ImGuiColorEditFlags_HEX);                        lua_setfield(L, -2, "ColorEditFlags_HEX");
-    lua_pushinteger(L, ImGuiColorEditFlags_AlphaPreviewHalf);           lua_setfield(L, -2, "ColorEditFlags_AlphaPreviewHalf");
-    lua_pushinteger(L, ImGuiColorEditFlags_Float);                      lua_setfield(L, -2, "ColorEditFlags_Float");
-    lua_pushinteger(L, ImGuiColorEditFlags_PickerHueWheel);             lua_setfield(L, -2, "ColorEditFlags_PickerHueWheel");
-    lua_pushinteger(L, ImGuiColorEditFlags__OptionsDefault);            lua_setfield(L, -2, "ColorEditFlags_OptionsDefault");
-    lua_pushinteger(L, ImGuiColorEditFlags_InputRGB);                   lua_setfield(L, -2, "ColorEditFlags_InputRGB");
-    lua_pushinteger(L, ImGuiColorEditFlags_HDR);                        lua_setfield(L, -2, "ColorEditFlags_HDR");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoPicker);                   lua_setfield(L, -2, "ColorEditFlags_NoPicker");
-    //lua_pushinteger(L, ImGuiColorEditFlags_RGB);                        lua_setfield(L, -2, "ColorEditFlags_RGB");
-    lua_pushinteger(L, ImGuiColorEditFlags_AlphaBar);                   lua_setfield(L, -2, "ColorEditFlags_AlphaBar");
-    lua_pushinteger(L, ImGuiColorEditFlags_DisplayHSV);                 lua_setfield(L, -2, "ColorEditFlags_DisplayHSV");
-    lua_pushinteger(L, ImGuiColorEditFlags_PickerHueBar);               lua_setfield(L, -2, "ColorEditFlags_PickerHueBar");
-    //lua_pushinteger(L, ImGuiColorEditFlags_HSV);                        lua_setfield(L, -2, "ColorEditFlags_HSV");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoAlpha);                    lua_setfield(L, -2, "ColorEditFlags_NoAlpha");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoOptions);                  lua_setfield(L, -2, "ColorEditFlags_NoOptions");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoDragDrop);                 lua_setfield(L, -2, "ColorEditFlags_NoDragDrop");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoInputs);                   lua_setfield(L, -2, "ColorEditFlags_NoInputs");
-    lua_pushinteger(L, ImGuiColorEditFlags_None);                       lua_setfield(L, -2, "ColorEditFlags_None");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoSmallPreview);             lua_setfield(L, -2, "ColorEditFlags_NoSmallPreview");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoBorder);                   lua_setfield(L, -2, "ColorEditFlags_NoBorder");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoLabel);                    lua_setfield(L, -2, "ColorEditFlags_NoLabel");
-    lua_pushinteger(L, ImGuiColorEditFlags_NoTooltip);                  lua_setfield(L, -2, "ColorEditFlags_NoTooltip");
+    //ImGuiDragDropFlags
+    BIND_ENUM(L, ImGuiDragDropFlags_SourceNoPreviewTooltip, "DragDropFlags_SourceNoPreviewTooltip");
+    BIND_ENUM(L, ImGuiDragDropFlags_SourceAllowNullID, "DragDropFlags_SourceAllowNullID");
+    BIND_ENUM(L, ImGuiDragDropFlags_AcceptNoDrawDefaultRect, "DragDropFlags_AcceptNoDrawDefaultRect");
+    BIND_ENUM(L, ImGuiDragDropFlags_AcceptPeekOnly, "DragDropFlags_AcceptPeekOnly");
+    BIND_ENUM(L, ImGuiDragDropFlags_AcceptBeforeDelivery, "DragDropFlags_AcceptBeforeDelivery");
+    BIND_ENUM(L, ImGuiDragDropFlags_SourceNoHoldToOpenOthers, "DragDropFlags_SourceNoHoldToOpenOthers");
+    BIND_ENUM(L, ImGuiDragDropFlags_AcceptNoPreviewTooltip, "DragDropFlags_AcceptNoPreviewTooltip");
+    BIND_ENUM(L, ImGuiDragDropFlags_SourceAutoExpirePayload, "DragDropFlags_SourceAutoExpirePayload");
+    BIND_ENUM(L, ImGuiDragDropFlags_SourceExtern, "DragDropFlags_SourceExtern");
+    BIND_ENUM(L, ImGuiDragDropFlags_None, "DragDropFlags_None");
+    BIND_ENUM(L, ImGuiDragDropFlags_SourceNoDisableHover, "DragDropFlags_SourceNoDisableHover");
 
-    // ImGuiDragDropFlags
-    lua_pushinteger(L, ImGuiDragDropFlags_SourceNoPreviewTooltip);      lua_setfield(L, -2, "DragDropFlags_SourceNoPreviewTooltip");
-    lua_pushinteger(L, ImGuiDragDropFlags_SourceAllowNullID);           lua_setfield(L, -2, "DragDropFlags_SourceAllowNullID");
-    lua_pushinteger(L, ImGuiDragDropFlags_AcceptNoDrawDefaultRect);     lua_setfield(L, -2, "DragDropFlags_AcceptNoDrawDefaultRect");
-    lua_pushinteger(L, ImGuiDragDropFlags_AcceptPeekOnly);              lua_setfield(L, -2, "DragDropFlags_AcceptPeekOnly");
-    lua_pushinteger(L, ImGuiDragDropFlags_AcceptBeforeDelivery);        lua_setfield(L, -2, "DragDropFlags_AcceptBeforeDelivery");
-    lua_pushinteger(L, ImGuiDragDropFlags_SourceNoHoldToOpenOthers);    lua_setfield(L, -2, "DragDropFlags_SourceNoHoldToOpenOthers");
-    lua_pushinteger(L, ImGuiDragDropFlags_AcceptNoPreviewTooltip);      lua_setfield(L, -2, "DragDropFlags_AcceptNoPreviewTooltip");
-    lua_pushinteger(L, ImGuiDragDropFlags_SourceAutoExpirePayload);     lua_setfield(L, -2, "DragDropFlags_SourceAutoExpirePayload");
-    lua_pushinteger(L, ImGuiDragDropFlags_SourceExtern);                lua_setfield(L, -2, "DragDropFlags_SourceExtern");
-    lua_pushinteger(L, ImGuiDragDropFlags_None);                        lua_setfield(L, -2, "DragDropFlags_None");
-    lua_pushinteger(L, ImGuiDragDropFlags_SourceNoDisableHover);        lua_setfield(L, -2, "DragDropFlags_SourceNoDisableHover");
+    //ImDrawCornerFlags
+    BIND_ENUM(L, ImDrawCornerFlags_None, "CornerFlags_None");
+    BIND_ENUM(L, ImDrawCornerFlags_TopLeft, "CornerFlags_TopLeft");
+    BIND_ENUM(L, ImDrawCornerFlags_TopRight, "CornerFlags_TopRight");
+    BIND_ENUM(L, ImDrawCornerFlags_BotLeft, "CornerFlags_BotLeft");
+    BIND_ENUM(L, ImDrawCornerFlags_BotRight, "CornerFlags_BotRight");
+    BIND_ENUM(L, ImDrawCornerFlags_Top, "CornerFlags_Top");
+    BIND_ENUM(L, ImDrawCornerFlags_Bot, "CornerFlags_Bot");
+    BIND_ENUM(L, ImDrawCornerFlags_Left, "CornerFlags_Left");
+    BIND_ENUM(L, ImDrawCornerFlags_Right, "CornerFlags_Right");
+    BIND_ENUM(L, ImDrawCornerFlags_All, "CornerFlags_All");
 
-    // ImDrawCornerFlags
-    lua_pushinteger(L, ImDrawCornerFlags_None);                         lua_setfield(L, -2, "CornerFlags_None");
-    lua_pushinteger(L, ImDrawCornerFlags_TopLeft);                      lua_setfield(L, -2, "CornerFlags_TopLeft");
-    lua_pushinteger(L, ImDrawCornerFlags_TopRight);                     lua_setfield(L, -2, "CornerFlags_TopRight");
-    lua_pushinteger(L, ImDrawCornerFlags_BotLeft);                      lua_setfield(L, -2, "CornerFlags_BotLeft");
-    lua_pushinteger(L, ImDrawCornerFlags_BotRight);                     lua_setfield(L, -2, "CornerFlags_BotRight");
-    lua_pushinteger(L, ImDrawCornerFlags_Top);                          lua_setfield(L, -2, "CornerFlags_Top");
-    lua_pushinteger(L, ImDrawCornerFlags_Bot);                          lua_setfield(L, -2, "CornerFlags_Bot");
-    lua_pushinteger(L, ImDrawCornerFlags_Left);                         lua_setfield(L, -2, "CornerFlags_Left");
-    lua_pushinteger(L, ImDrawCornerFlags_Right);                        lua_setfield(L, -2, "CornerFlags_Right");
-    lua_pushinteger(L, ImDrawCornerFlags_All);                          lua_setfield(L, -2, "CornerFlags_All");
-
-    // 1.78* NEW*
+    //1.78 *NEW*
     //ImGuiSliderFlags
-    lua_pushinteger(L, ImGuiSliderFlags_None);                          lua_setfield(L, -2, "SliderFlags_None");
-    lua_pushinteger(L, ImGuiSliderFlags_AlwaysClamp);                   lua_setfield(L, -2, "SliderFlags_ClampOnInput"); // backward capability
-    lua_pushinteger(L, ImGuiSliderFlags_AlwaysClamp);                   lua_setfield(L, -2, "SliderFlags_AlwaysClamp");
-    lua_pushinteger(L, ImGuiSliderFlags_Logarithmic);                   lua_setfield(L, -2, "SliderFlags_Logarithmic");
-    lua_pushinteger(L, ImGuiSliderFlags_NoRoundToFormat);               lua_setfield(L, -2, "SliderFlags_NoRoundToFormat");
-    lua_pushinteger(L, ImGuiSliderFlags_NoInput);                       lua_setfield(L, -2, "SliderFlags_NoInput");
+    BIND_ENUM(L, ImGuiSliderFlags_None, "SliderFlags_None");
+    BIND_ENUM(L, ImGuiSliderFlags_AlwaysClamp, "SliderFlags_ClampOnInput");
+    BIND_ENUM(L, ImGuiSliderFlags_AlwaysClamp, "SliderFlags_AlwaysClamp");
+    BIND_ENUM(L, ImGuiSliderFlags_Logarithmic, "SliderFlags_Logarithmic");
+    BIND_ENUM(L, ImGuiSliderFlags_NoRoundToFormat, "SliderFlags_NoRoundToFormat");
+    BIND_ENUM(L, ImGuiSliderFlags_NoInput, "SliderFlags_NoInput");
 
-    // ImGuiConfigFlags
-    lua_pushinteger(L, ImGuiConfigFlags_None);                          lua_setfield(L, -2, "ConfigFlags_None");
-    lua_pushinteger(L, ImGuiConfigFlags_NavEnableKeyboard);             lua_setfield(L, -2, "ConfigFlags_NavEnableKeyboard");
-    lua_pushinteger(L, ImGuiConfigFlags_NavEnableGamepad);              lua_setfield(L, -2, "ConfigFlags_NavEnableGamepad");
-    lua_pushinteger(L, ImGuiConfigFlags_NavEnableSetMousePos);          lua_setfield(L, -2, "ConfigFlags_NavEnableSetMousePos");
-    lua_pushinteger(L, ImGuiConfigFlags_NavNoCaptureKeyboard);          lua_setfield(L, -2, "ConfigFlags_NavNoCaptureKeyboard");
-    lua_pushinteger(L, ImGuiConfigFlags_NoMouse);                       lua_setfield(L, -2, "ConfigFlags_NoMouse");
-    lua_pushinteger(L, ImGuiConfigFlags_NoMouseCursorChange);           lua_setfield(L, -2, "ConfigFlags_NoMouseCursorChange");
-    lua_pushinteger(L, ImGuiConfigFlags_IsSRGB);                        lua_setfield(L, -2, "ConfigFlags_IsSRGB");
-    lua_pushinteger(L, ImGuiConfigFlags_IsTouchScreen);                 lua_setfield(L, -2, "ConfigFlags_IsTouchScreen");
-#ifdef IMGUI_HAS_DOCK
-    lua_pushinteger(L, ImGuiConfigFlags_DockingEnable);                 lua_setfield(L, -2, "ConfigFlags_DockingEnable");
+    //ImGuiConfigFlags
+    BIND_ENUM(L, ImGuiConfigFlags_None, "ConfigFlags_None");
+    BIND_ENUM(L, ImGuiConfigFlags_NavEnableKeyboard, "ConfigFlags_NavEnableKeyboard");
+    BIND_ENUM(L, ImGuiConfigFlags_NavEnableGamepad, "ConfigFlags_NavEnableGamepad");
+    BIND_ENUM(L, ImGuiConfigFlags_NavEnableSetMousePos, "ConfigFlags_NavEnableSetMousePos");
+    BIND_ENUM(L, ImGuiConfigFlags_NavNoCaptureKeyboard, "ConfigFlags_NavNoCaptureKeyboard");
+    BIND_ENUM(L, ImGuiConfigFlags_NoMouse, "ConfigFlags_NoMouse");
+    BIND_ENUM(L, ImGuiConfigFlags_NoMouseCursorChange, "ConfigFlags_NoMouseCursorChange");
+    BIND_ENUM(L, ImGuiConfigFlags_IsSRGB, "ConfigFlags_IsSRGB");
+    BIND_ENUM(L, ImGuiConfigFlags_IsTouchScreen, "ConfigFlags_IsTouchScreen");
+#ifdef IS_BETA_BUILD
+    BIND_ENUM(L, ImGuiConfigFlags_DockingEnable, "ConfigFlags_DockingEnable");
 
-    // ImGuiDockNodeFlags
-    lua_pushinteger(L, ImGuiDockNodeFlags_None);                        lua_setfield(L, -2, "DockNodeFlags_None");
-    lua_pushinteger(L, ImGuiDockNodeFlags_KeepAliveOnly);               lua_setfield(L, -2, "DockNodeFlags_KeepAliveOnly");
-    lua_pushinteger(L, ImGuiDockNodeFlags_NoDockingInCentralNode);      lua_setfield(L, -2, "DockNodeFlags_NoDockingInCentralNode");
-    lua_pushinteger(L, ImGuiDockNodeFlags_PassthruCentralNode);         lua_setfield(L, -2, "DockNodeFlags_PassthruCentralNode");
-    lua_pushinteger(L, ImGuiDockNodeFlags_NoSplit);                     lua_setfield(L, -2, "DockNodeFlags_NoSplit");
-    lua_pushinteger(L, ImGuiDockNodeFlags_NoResize);                    lua_setfield(L, -2, "DockNodeFlags_NoResize");
-    lua_pushinteger(L, ImGuiDockNodeFlags_AutoHideTabBar);              lua_setfield(L, -2, "DockNodeFlags_AutoHideTabBar");
-    lua_pushinteger(L, ImGuiDockNodeFlags_NoWindowMenuButton);          lua_setfield(L, -2, "DockNodeFlags_NoWindowMenuButton");
-    lua_pushinteger(L, ImGuiDockNodeFlags_NoCloseButton);               lua_setfield(L, -2, "DockNodeFlags_NoCloseButton");
+    //ImGuiDockNodeFlags
+    BIND_ENUM(L, ImGuiDockNodeFlags_None, "DockNodeFlags_None");
+    BIND_ENUM(L, ImGuiDockNodeFlags_KeepAliveOnly, "DockNodeFlags_KeepAliveOnly");
+    BIND_ENUM(L, ImGuiDockNodeFlags_NoDockingInCentralNode, "DockNodeFlags_NoDockingInCentralNode");
+    BIND_ENUM(L, ImGuiDockNodeFlags_PassthruCentralNode, "DockNodeFlags_PassthruCentralNode");
+    BIND_ENUM(L, ImGuiDockNodeFlags_NoSplit, "DockNodeFlags_NoSplit");
+    BIND_ENUM(L, ImGuiDockNodeFlags_NoResize, "DockNodeFlags_NoResize");
+    BIND_ENUM(L, ImGuiDockNodeFlags_AutoHideTabBar, "DockNodeFlags_AutoHideTabBar");
+    BIND_ENUM(L, ImGuiDockNodeFlags_NoWindowMenuButton, "DockNodeFlags_NoWindowMenuButton");
+    BIND_ENUM(L, ImGuiDockNodeFlags_NoCloseButton, "DockNodeFlags_NoCloseButton");
 #endif
 
-    // @MultiPain
-    // ImGuiGlyphRanges
-    lua_pushinteger(L, ImGuiGlyphRanges_Default);                       lua_setfield(L, -2, "GlyphRanges_Default");
-    lua_pushinteger(L, ImGuiGlyphRanges_Korean);                        lua_setfield(L, -2, "GlyphRanges_Korean");
-    lua_pushinteger(L, ImGuiGlyphRanges_ChineseFull);                   lua_setfield(L, -2, "GlyphRanges_ChineseFull");
-    lua_pushinteger(L, ImGuiGlyphRanges_ChineseSimplifiedCommon);       lua_setfield(L, -2, "GlyphRanges_ChineseSimplifiedCommon");
-    lua_pushinteger(L, ImGuiGlyphRanges_Japanese);                      lua_setfield(L, -2, "GlyphRanges_Japanese");
-    lua_pushinteger(L, ImGuiGlyphRanges_Cyrillic);                      lua_setfield(L, -2, "GlyphRanges_Cyrillic");
-    lua_pushinteger(L, ImGuiGlyphRanges_Thai);                          lua_setfield(L, -2, "GlyphRanges_Thai");
-    lua_pushinteger(L, ImGuiGlyphRanges_Vietnamese);                    lua_setfield(L, -2, "GlyphRanges_Vietnamese");
+    //@MultiPain
+    //ImGuiGlyphRanges
+    BIND_ENUM(L, ImGuiGlyphRanges_Default, "GlyphRanges_Default");
+    BIND_ENUM(L, ImGuiGlyphRanges_Korean, "GlyphRanges_Korean");
+    BIND_ENUM(L, ImGuiGlyphRanges_ChineseFull, "GlyphRanges_ChineseFull");
+    BIND_ENUM(L, ImGuiGlyphRanges_ChineseSimplifiedCommon, "GlyphRanges_ChineseSimplifiedCommon");
+    BIND_ENUM(L, ImGuiGlyphRanges_Japanese, "GlyphRanges_Japanese");
+    BIND_ENUM(L, ImGuiGlyphRanges_Cyrillic, "GlyphRanges_Cyrillic");
+    BIND_ENUM(L, ImGuiGlyphRanges_Thai, "GlyphRanges_Thai");
+    BIND_ENUM(L, ImGuiGlyphRanges_Vietnamese, "GlyphRanges_Vietnamese");
 
-    // ImGuiItemFlags
-    lua_pushinteger(L, ImGuiItemFlags_Disabled);                        lua_setfield(L, -2, "ItemFlags_Disabled");
-    lua_pushinteger(L, ImGuiItemFlags_ButtonRepeat);                    lua_setfield(L, -2, "ItemFlags_ButtonRepeat");
+    //ImGuiItemFlags
+    BIND_ENUM(L, ImGuiItemFlags_Disabled, "ItemFlags_Disabled");
+    BIND_ENUM(L, ImGuiItemFlags_ButtonRepeat, "ItemFlags_ButtonRepeat");
 
-    // ImGuiNavInput
-    lua_pushinteger(L, ImGuiNavInput_FocusNext);                        lua_setfield(L, -2, "NavInput_FocusNext");
-    lua_pushinteger(L, ImGuiNavInput_TweakFast);                        lua_setfield(L, -2, "NavInput_TweakFast");
-    lua_pushinteger(L, ImGuiNavInput_Input);                            lua_setfield(L, -2, "NavInput_Input");
-    lua_pushinteger(L, ImGuiNavInput_DpadRight);                        lua_setfield(L, -2, "NavInput_DpadRight");
-    lua_pushinteger(L, ImGuiNavInput_FocusPrev);                        lua_setfield(L, -2, "NavInput_FocusPrev");
-    lua_pushinteger(L, ImGuiNavInput_LStickDown);                       lua_setfield(L, -2, "NavInput_LStickDown");
-    lua_pushinteger(L, ImGuiNavInput_LStickUp);                         lua_setfield(L, -2, "NavInput_LStickUp");
-    lua_pushinteger(L, ImGuiNavInput_Activate);                         lua_setfield(L, -2, "NavInput_Activate");
-    lua_pushinteger(L, ImGuiNavInput_LStickLeft);                       lua_setfield(L, -2, "NavInput_LStickLeft");
-    lua_pushinteger(L, ImGuiNavInput_LStickRight);                      lua_setfield(L, -2, "NavInput_LStickRight");
-    lua_pushinteger(L, ImGuiNavInput_DpadLeft);                         lua_setfield(L, -2, "NavInput_DpadLeft");
-    lua_pushinteger(L, ImGuiNavInput_DpadDown);                         lua_setfield(L, -2, "NavInput_DpadDown");
-    lua_pushinteger(L, ImGuiNavInput_TweakSlow);                        lua_setfield(L, -2, "NavInput_TweakSlow");
-    lua_pushinteger(L, ImGuiNavInput_DpadUp);                           lua_setfield(L, -2, "NavInput_DpadUp");
-    lua_pushinteger(L, ImGuiNavInput_Menu);                             lua_setfield(L, -2, "NavInput_Menu");
-    lua_pushinteger(L, ImGuiNavInput_Cancel);                           lua_setfield(L, -2, "NavInput_Cancel");
+    //ImGuiNavInput
+    BIND_ENUM(L, ImGuiNavInput_FocusNext, "NavInput_FocusNext");
+    BIND_ENUM(L, ImGuiNavInput_TweakFast, "NavInput_TweakFast");
+    BIND_ENUM(L, ImGuiNavInput_Input, "NavInput_Input");
+    BIND_ENUM(L, ImGuiNavInput_DpadRight, "NavInput_DpadRight");
+    BIND_ENUM(L, ImGuiNavInput_FocusPrev, "NavInput_FocusPrev");
+    BIND_ENUM(L, ImGuiNavInput_LStickDown, "NavInput_LStickDown");
+    BIND_ENUM(L, ImGuiNavInput_LStickUp, "NavInput_LStickUp");
+    BIND_ENUM(L, ImGuiNavInput_Activate, "NavInput_Activate");
+    BIND_ENUM(L, ImGuiNavInput_LStickLeft, "NavInput_LStickLeft");
+    BIND_ENUM(L, ImGuiNavInput_LStickRight, "NavInput_LStickRight");
+    BIND_ENUM(L, ImGuiNavInput_DpadLeft, "NavInput_DpadLeft");
+    BIND_ENUM(L, ImGuiNavInput_DpadDown, "NavInput_DpadDown");
+    BIND_ENUM(L, ImGuiNavInput_TweakSlow, "NavInput_TweakSlow");
+    BIND_ENUM(L, ImGuiNavInput_DpadUp, "NavInput_DpadUp");
+    BIND_ENUM(L, ImGuiNavInput_Menu, "NavInput_Menu");
+    BIND_ENUM(L, ImGuiNavInput_Cancel, "NavInput_Cancel");
 
     lua_pop(L, 1);
 }
@@ -880,11 +888,10 @@ class EventListener;
 class GidImGui
 {
 public:
-    GidImGui(LuaApplication* application, lua_State* L, bool addMouseListeners, bool addKeyboardListeners,
-             bool addResizeListener, bool addTouchListeners);
+    GidImGui(LuaApplication* application, lua_State* L,
+             bool addMouseListeners, bool addKeyboardListeners, bool addTouchListeners);
     ~GidImGui();
 
-    SpriteProxy* proxy;
     EventListener* eventListener;
 
     void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
@@ -922,18 +929,18 @@ private:
         }
         else
         {
-            io.KeyAlt = (mod & GINPUT_ALT_MODIFIER) > 0;
-            io.KeyCtrl = (mod & GINPUT_CTRL_MODIFIER) > 0;
-            io.KeyShift = (mod & GINPUT_SHIFT_MODIFIER) > 0;
-            io.KeySuper = (mod & GINPUT_META_MODIFIER) > 0;
+            io.KeyAlt = mod & GINPUT_ALT_MODIFIER;
+            io.KeyCtrl = mod & GINPUT_CTRL_MODIFIER;
+            io.KeyShift = mod & GINPUT_SHIFT_MODIFIER;
+            io.KeySuper = mod & GINPUT_META_MODIFIER;
         }
     }
 
     void mouseUpOrDown(float x, float y, int button, bool state)
     {
         ImGuiIO& io = ImGui::GetIO();
-        io.MousePos = getMousePos(x, y, 0.0f);
         io.MouseDown[button] = state;
+        io.MousePos = translateMousePos(x, y);
     }
 
     void scaleMouseCoords(float& x, float& y)
@@ -946,25 +953,19 @@ public:
     ImVec2 r_app_scale;
     ImVec2 app_bounds;
 
-    lua_State* L;
-    SpriteProxy* proxy;
-
-    EventListener(lua_State* L, SpriteProxy* proxy) :
-        L(L),
-        proxy(proxy)
+    EventListener()
     {
         applicationResize(nullptr);
     }
 
-    ~EventListener()
-    {
-    }
+    ~EventListener() { }
 
-    ImVec2 getMousePos(float x, float y, float z)
+    static ImVec2 translateMousePos(float x, float y)
     {
         std::stack<const Sprite*> stack;
+        float z;
 
-        const Sprite* curr = proxy;
+        const Sprite* curr = imguiProxy;
         while (curr)
         {
             stack.push(curr);
@@ -976,9 +977,14 @@ public:
             stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
             stack.pop();
         }
-
         return ImVec2(x, y);
     }
+
+    ///////////////////////////////////////////////////
+    ///
+    /// MOUSE
+    ///
+    ///////////////////////////////////////////////////
 
     void mouseDown(MouseEvent* event)
     {
@@ -1022,7 +1028,7 @@ public:
     void mouseHover(float x, float y)
     {
         ImGuiIO& io = ImGui::GetIO();
-        io.MousePos = getMousePos(x, y, 0.0f);
+        io.MousePos = translateMousePos(x, y);
     }
 
     void mouseWheel(MouseEvent* event)
@@ -1037,8 +1043,14 @@ public:
     {
         ImGuiIO& io = ImGui::GetIO();
         io.MouseWheel += wheel < 0 ? -1.0f : 1.0f;
-        io.MousePos = getMousePos(x, y, 0.0f);
+        io.MousePos = translateMousePos(x, y);
     }
+
+    ///////////////////////////////////////////////////
+    ///
+    /// TOUCH
+    ///
+    ///////////////////////////////////////////////////
 
     void touchesBegin(TouchEvent* event)
     {
@@ -1050,21 +1062,29 @@ public:
 
     void touchesBegin(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, true);
     }
 
     void touchesEnd(TouchEvent* event)
     {
-        float x = event->event->touch.x;
-        float y = event->event->touch.y;
+        float x;
+        float y;
+        if (resetTouchPosOnEnd)
+        {
+            x = FLT_MAX;
+            y = FLT_MAX;
+        }
+        else
+        {
+            x = event->event->touch.x;
+            y = event->event->touch.y;
+        }
         scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
 
     void touchesEnd(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
 
@@ -1078,23 +1098,37 @@ public:
 
     void touchesMove(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, true);
     }
 
     void touchesCancel(TouchEvent* event)
     {
-        float x = event->event->touch.x;
-        float y = event->event->touch.y;
+        float x;
+        float y;
+        if (resetTouchPosOnEnd)
+        {
+            x = FLT_MAX;
+            y = FLT_MAX;
+        }
+        else
+        {
+            x = event->event->touch.x;
+            y = event->event->touch.y;
+        }
         scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
 
     void touchesCancel(float x, float y)
     {
-        scaleMouseCoords(x, y);
         mouseUpOrDown(x, y, 0, false);
     }
+
+    ///////////////////////////////////////////////////
+    ///
+    /// KEYBAORD
+    ///
+    ///////////////////////////////////////////////////
 
     void keyDown(KeyboardEvent* event)
     {
@@ -1182,50 +1216,45 @@ static void _Destroy(void* c)
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-GidImGui::GidImGui(LuaApplication* application, lua_State* L,
-                   bool addMouseListeners = true, bool addKeyboardListeners = true, bool addResizeListener = true,
-                   bool addTouchListeners = false)
+GidImGui::GidImGui(LuaApplication* application, lua_State* _UNUSED(L),
+                   bool addMouseListeners = true, bool addKeyboardListeners = true, bool addTouchListeners = false)
 {
     this->application = application;
-    proxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
-
-    eventListener = new EventListener(L, proxy);
+    imguiProxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
+    eventListener = new EventListener();
 
     if (addMouseListeners)
     {
-        proxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::mouseDown);
-        proxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::mouseUp);
-        proxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::mouseDown);
-        proxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::mouseHover);
-        proxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::mouseWheel);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::mouseDown);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::mouseUp);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::mouseDown);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::mouseHover);
+        imguiProxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::mouseWheel);
     }
 
     if (addTouchListeners)
     {
-        proxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::touchesBegin);
-        proxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::touchesEnd);
-        proxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::touchesMove);
-        proxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::touchesCancel);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::touchesBegin);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::touchesEnd);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::touchesMove);
+        imguiProxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::touchesCancel);
     }
 
     if (addKeyboardListeners)
     {
-        proxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::keyDown);
-        proxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::keyUp);
-        proxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::keyChar);
+        imguiProxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::keyDown);
+        imguiProxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::keyUp);
+        imguiProxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::keyChar);
     }
 
-    if (addResizeListener)
-    {
-        proxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::applicationResize);
-    }
+    imguiProxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::applicationResize);
 }
 
 GidImGui::~GidImGui()
 {
-    proxy->removeEventListeners();
+    imguiProxy->removeEventListeners();
     delete eventListener;
-    delete proxy;
+    delete imguiProxy;
 }
 
 void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey))
@@ -1377,11 +1406,9 @@ int initImGui(lua_State* L)
     io.Fonts->TexID = (void*)texture;
 
     Binder binder(L);
-    GidImGui* imgui = new GidImGui(application, L,
-                                   luaL_optboolean(L, 1, 1), luaL_optboolean(L, 2, 1),
-                                   luaL_optboolean(L, 3, 1), luaL_optboolean(L, 4, 1));
+    GidImGui* imgui = new GidImGui(application, L, luaL_optboolean(L, 1, 1), luaL_optboolean(L, 2, 1), luaL_optboolean(L, 3, 0));
     //GidImGuiPtr = imgui;
-    binder.pushInstance("ImGui", imgui->proxy);
+    binder.pushInstance("ImGui", imguiProxy);
 
     luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
     lua_pushvalue(L, -2);
@@ -1393,7 +1420,8 @@ int initImGui(lua_State* L)
 
 int destroyImGui(lua_State* L)
 {
-    instanceCreated = false;
+    resetStaticVars();
+
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->ClearTexData();
 
@@ -1553,16 +1581,6 @@ int KeyChar(lua_State* L)
 
     imgui->eventListener->keyChar2(text);
 
-    return 0;
-}
-
-/// RESIZE CALLBACK
-
-int applicationResize(lua_State* L)
-{
-    GidImGui* imgui = getImgui(L);
-    lua_remove(L, -1);
-    imgui->eventListener->applicationResize(nullptr);
     return 0;
 }
 
@@ -1770,11 +1788,11 @@ int GetWindowBounds(lua_State* L)
     vMin += pos;
     vMax += pos;
 
-    GidImGui* imgui = getImgui(L);
+    //GidImGui* imgui = getImgui(L);
     float x1, y1, x2, y2;
 
-    localToGlobal(imgui->proxy, vMin.x, vMin.y, &x1, &y1);
-    localToGlobal(imgui->proxy, vMax.x, vMax.y, &x2, &y2);
+    localToGlobal(imguiProxy, vMin.x, vMin.y, &x1, &y1);
+    localToGlobal(imguiProxy, vMax.x, vMax.y, &x2, &y2);
 
     lua_pushnumber(L, x1);
     lua_pushnumber(L, y1);
@@ -4421,7 +4439,7 @@ int SetTabItemClosed(lua_State* L)
     return 0;
 }
 
-#ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
 
 /// TODO list:
 /// windows api?
@@ -5402,7 +5420,7 @@ int TabBar_GetTabName(lua_State* L)
 
 /// TabBar -
 
-#endif // IMGUI_HAS_DOCK
+#endif // IS_BETA_BUILD
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -6831,7 +6849,7 @@ int GetIO(lua_State* L)
     return 1;
 }
 
-#ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
 int IO_GetConfigDockingNoSplit(lua_State* L)
 {
     ImGuiIO& io = getIO(L);
@@ -7016,7 +7034,7 @@ int IO_WantSaveIniSettings(lua_State* L)
 int getNavButtonIndex(lua_State* L, int idx = 2)
 {
     int index = luaL_checkinteger(L, idx);
-    LUA_FASSERT(index >= 0 && index <= ImGuiNavInput_COUNT - 5, "Nav input index is out of bounds! Must be [%d; %d]", 0, ImGuiNavInput_COUNT - 5);
+    LUA_ASSERTF(index >= 0 && index <= ImGuiNavInput_COUNT - 5, "Nav input index is out of bounds! Must be [%d; %d]", 0, ImGuiNavInput_COUNT - 5);
     return index;
 }
 
@@ -7309,7 +7327,9 @@ int IO_SetMouseDrawCursor(lua_State* L)
     io.MouseDrawCursor = lua_toboolean(L, 2) > 0;
     if (io.MouseDrawCursor)
     {
-        setApplicationCursor(L, "blank");
+        bool hideSystemCursor = luaL_optboolean(L, 3, 1);
+        if (hideSystemCursor)
+            setApplicationCursor(L, "blank");
     }
     else
     {
@@ -7517,6 +7537,31 @@ int IO_GetBackendRendererName(lua_State* L)
     return 1;
 }
 
+int IO_SetMouseDown(lua_State* L)
+{
+    int buttonIndex = luaL_checkinteger(L, 2);
+    LUA_ASSERTF(buttonIndex >= 0 && buttonIndex <= ImGuiMouseButton_COUNT,
+                "Button index is out of bounds. Must be: [0..%d], but was: %d", ImGuiMouseButton_COUNT, buttonIndex);
+    bool state = lua_toboolean(L, 3);
+    ImGuiIO& io = getIO(L);
+    io.MouseDown[buttonIndex] = state;
+}
+
+int IO_SetMousePos(lua_State* L)
+{
+    float x = luaL_checknumber(L, 2);
+    float y = luaL_checknumber(L, 3);
+    ImGuiIO& io = getIO(L);
+    io.MousePos = EventListener::translateMousePos(x, y);
+}
+
+int IO_SetMouseWheel(lua_State* L)
+{
+    float wheel = luaL_checknumber(L, 2);
+    ImGuiIO& io = getIO(L);
+    io.MouseWheel = wheel;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -7534,7 +7579,7 @@ FontData getFontData(lua_State* _UNUSED(L), const char* filename)
     size_t data_size = 0;
     void* data = ImFileLoadToMemory(filename, "rb", &data_size, 0);
 
-    LUA_FASSERT(data != nullptr, "Cant load '%s' font! File not found.", filename);
+    LUA_ASSERTF(data != nullptr, "Cant load '%s' font! File not found.", filename);
 
     return FontData(data, data_size);
 }
@@ -8501,6 +8546,19 @@ int GetAutoUpdateCursor(lua_State* L)
 {
 
     lua_pushboolean(L, autoUpdateCursor);
+    return 1;
+}
+
+int SetResetTouchPosOnEnd(lua_State* L)
+{
+    resetTouchPosOnEnd = lua_toboolean(L, 2);
+    return 0;
+}
+
+int GetResetTouchPosOnEnd(lua_State* L)
+{
+
+    lua_pushboolean(L, resetTouchPosOnEnd);
     return 1;
 }
 
@@ -10208,7 +10266,7 @@ int loader(lua_State* L)
         {"setDisplaySize", IO_SetDisplaySize},
         {"getDisplaySize", IO_GetDisplaySize},
 
-    #ifdef IMGUI_HAS_DOCK
+    #ifdef IS_BETA_BUILD
         {"setConfigDockingNoSplit", IO_GetConfigDockingNoSplit},
         {"setConfigDockingNoSplit", IO_SetConfigDockingNoSplit},
         {"setConfigDockingWithShift", IO_GetConfigDockingWithShift},
@@ -10238,6 +10296,9 @@ int loader(lua_State* L)
         {"setMouseDrawCursor", IO_SetMouseDrawCursor},
         {"getMouseDoubleClickMaxDist", IO_GetMouseDoubleClickMaxDist},
         {"setMouseDoubleClickMaxDist", IO_SetMouseDoubleClickMaxDist},
+        {"setMouseDown", IO_SetMouseDown},
+        {"setMousePos", IO_SetMousePos},
+        {"setMouseWheel", IO_SetMouseWheel},
         {"getKeyMapValue", IO_GetKeyMapValue},
         {"setKeyMapValue", IO_SetKeyMapValue},
         {"getKeyRepeatDelay", IO_GetKeyRepeatDelay},
@@ -10294,7 +10355,7 @@ int loader(lua_State* L)
     };
     binder.createClass("ImFont", 0, NULL, NULL, imguiFontFunctionList);
 
-#ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
     const luaL_Reg imguiDockNodeFunctionList[] = {
         {"getID", DockBuilder_Node_GetID},
         {"getSharedFlags", DockBuilder_Node_GetSharedFlags},
@@ -10581,6 +10642,8 @@ int loader(lua_State* L)
 #endif
         {"setAutoUpdateCursor", SetAutoUpdateCursor},
         {"getAutoUpdateCursor", GetAutoUpdateCursor},
+        {"setResetTouchPosOnEnd", SetResetTouchPosOnEnd},
+        {"getResetTouchPosOnEnd", GetResetTouchPosOnEnd},
 
         // Fonts API
         {"pushFont", Fonts_PushFont},
@@ -10614,10 +10677,6 @@ int loader(lua_State* L)
         {"onKeyUp", KeyUp},
         {"onKeyDown", KeyDown},
         {"onKeyChar", KeyChar},
-
-        /// Resize callback
-
-        {"onAppResize", applicationResize},
 
         /////////////////////////////////////////////////////////////////////////////// Inputs -
 
@@ -10978,7 +11037,7 @@ int loader(lua_State* L)
         {"endDragDropTarget", EndDragDropTarget},
         {"getDragDropPayload", GetDragDropPayload},
 
-    #ifdef IMGUI_HAS_DOCK
+#ifdef IS_BETA_BUILD
         {"dockSpace", DockSpace},
         {"dockSpaceOverViewport", DockSpaceOverViewport},
         {"setNextWindowDockID", SetNextWindowDockID},
@@ -10999,8 +11058,7 @@ int loader(lua_State* L)
         {"dockBuilderCopyWindowSettings", DockBuilderCopyWindowSettings},
         {"dockBuilderCopyDockSpace", DockBuilderCopyDockSpace},
         {"dockBuilderFinish", DockBuilderFinish},
-    #endif
-
+#endif
         {NULL, NULL}
     };
     binder.createClass("ImGui", "Sprite", initImGui, destroyImGui, imguiFunctionList);
@@ -11023,6 +11081,8 @@ static void g_initializePlugin(lua_State* L)
 {
     ::L = L;
 
+    resetStaticVars();
+
     giderosCursorMap[ImGuiMouseCursor_Hand]        = "pointingHand";
     giderosCursorMap[ImGuiMouseCursor_None]        = "blank";
     giderosCursorMap[ImGuiMouseCursor_Arrow]       = "arrow";
@@ -11043,7 +11103,7 @@ static void g_initializePlugin(lua_State* L)
     lua_pop(L, 2);
 }
 
-static void g_deinitializePlugin(lua_State* _UNUSED(L)) { instanceCreated = false; }
+static void g_deinitializePlugin(lua_State* _UNUSED(L)) { resetStaticVars(); }
 
 #ifdef IS_BETA_BUILD
 REGISTER_PLUGIN_NAMED(PLUGIN_NAME, "1.0.0", imgui_beta)
