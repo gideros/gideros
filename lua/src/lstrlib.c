@@ -103,107 +103,190 @@ static int str_rep (lua_State *L) {
   return 1;
 }
 
-static int str_encode (lua_State *L) { //Added by Nico@gideros, encode numbers as bytes. ar:(value,type(i,f,d),bigendian)
- lua_Number val=luaL_checknumber(L,1);
- const char *type=luaL_checkstring(L,2);
+//Added by Nico@gideros, encode numbers as bytes. ar:(value,type,bigendian)
+LUA_API int (lua_pushint64)(lua_State *L, long long z);
+LUA_API long long (luaL_checkint64)(lua_State *L, int n);
+static int str_encode (lua_State *L) {
+#define MAXLEN	64
+ lua_Number val=0;
+ long long val64=0;
+ int isTable=0;
+ size_t slen;
+ const char *type=luaL_checklstring(L,2,&slen);
  int big=lua_toboolean(L,3);
-
- char vbytes[8];
- int vs=0;
-
- switch (*type) {
- case 'i':
- {
-	 int32_t m=val;
-	 memcpy(vbytes,&m,4);
-	 vs=4;
-	 break;
- }
- case 'f':
- {
-	 float m=val;
-	 memcpy(vbytes,&m,4);
-	 vs=4;
-	 break;
- }
- case 'd':
- {
-	 double m=val;
-	 memcpy(vbytes,&m,8);
-	 vs=8;
-	 break;
- }
- default:
-	 lua_pushfstring(L,"Type '%s' invalid",type);
+ if (slen>MAXLEN) {
+	 lua_pushfstring(L,"Cannot convert more than %d values at a time, %d given",MAXLEN,slen);
 	 lua_error(L);
  }
- int i=1;
- int isBE=(!*((char *)&i));
- if ((isBE&&(!big))||(big&&(!isBE))) {
-	 for (i=0;i<vs/2;i++)
-	 {
-		 char a=vbytes[i];
-		 vbytes[i]=vbytes[vs-1-i];
-		 vbytes[vs-1-i]=a;
+ if (lua_type(L,1)==LUA_TTABLE)
+ {
+	 isTable=1;
+	 int tlen=lua_objlen(L,1);
+	 if (tlen!=slen) {
+		 lua_pushfstring(L,"Input table length (%d) doesn't match type string length (%d)",tlen,slen);
+		 lua_error(L);
 	 }
  }
- lua_pushlstring(L,vbytes,vs);
+ else {
+	 if (slen!=1) {
+		 lua_pushfstring(L,"Single value supplied, type length should be 1, not %d",slen);
+		 lua_error(L);
+	 }
+	 if (!((*type=='F')||(*type=='f')||(*type=='D')||(*type=='d')))
+		 val64=luaL_checkint64(L,1);
+	 else
+		 val=luaL_checknumber(L,1);
+ }
+
+ char fbytes[8*MAXLEN];
+ char *vbytes=fbytes;
+ int vs=0,fs=0,ti=1;
+ int i=1;
+ int isBE=(!*((char *)&i));
+
+ while (slen--) {
+	 if (isTable) {
+		 lua_rawgeti(L,1,ti++);
+		 //Check int64
+		 if (!((*type=='F')||(*type=='f')||(*type=='D')||(*type=='d')))
+			 val64=luaL_checkint64(L,-1);
+		 else
+			 val=luaL_checknumber(L,-1);
+		 lua_pop(L,1);
+	 }
+	#define FTYPE(c,t,l) \
+	 case c: \
+	 { \
+		 t m=(t)val64; \
+		 memcpy(vbytes,&m,l); \
+		 vs=l; \
+		 break; \
+	 }
+
+	 switch (*(type++)) {
+		 FTYPE('b',int8_t,1);
+		 FTYPE('B',uint8_t,1);
+		 FTYPE('s',int16_t,2);
+		 FTYPE('S',uint16_t,2);
+		 FTYPE('i',int32_t,4);
+		 FTYPE('I',uint32_t,4);
+		 FTYPE('q',int64_t,8);
+		 FTYPE('Q',uint64_t,8);
+	 case 'F':
+	 case 'f':
+	 {
+		 float m=val;
+		 memcpy(vbytes,&m,4);
+		 vs=4;
+		 break;
+	 }
+	 case 'D':
+	 case 'd':
+	 {
+		 double m=val;
+		 memcpy(vbytes,&m,8);
+		 vs=8;
+		 break;
+	 }
+	 default:
+		 lua_pushfstring(L,"Type '%s' invalid",type);
+		 lua_error(L);
+	 }
+	 if ((isBE&&(!big))||(big&&(!isBE))) {
+		 for (i=0;i<vs/2;i++)
+		 {
+			 char a=vbytes[i];
+			 vbytes[i]=vbytes[vs-1-i];
+			 vbytes[vs-1-i]=a;
+		 }
+	 }
+	 vbytes+=vs;
+	 fs+=vs;
+ }
+ lua_pushlstring(L,fbytes,fs);
  return 1;
+#undef MAXLEN
+#undef FTYPE
 }
 
-static int str_decode (lua_State *L) { //Added by Nico@gideros, encode numbers as bytes. ar:(value,type(i,f,d),bigendian)
- size_t slen;
+static int str_decode (lua_State *L) { //Added by Nico@gideros, decode numbers from bytes. ar:(bytes,type,bigendian)
+ size_t slen,tlen;
  const char *str=luaL_checklstring(L,1,&slen);
- const char *type=luaL_checkstring(L,2);
+ const char *type=luaL_checklstring(L,2,&tlen);
  int big=lua_toboolean(L,3);
-
  int i=1;
  int isBE=(!*((char *)&i));
- char vbytes[8];
- if ((isBE&&(!big))||(big&&(!isBE))) {
-	 for (i=0;i<slen;i++)
-		 vbytes[i]=str[slen-1-i];
- }
- else
-	 memcpy(vbytes,str,(slen>8)?8:slen);
+ size_t tidx=(tlen>1)?1:0;
+ if (tlen==0) return 0;
 
- switch (*type) {
- case 'i':
- {
-	 if (slen<4) {
-		 lua_pushfstring(L,"String too short: %d<4",slen);
+ if (tidx) lua_newtable(L);
+
+ while (tlen--) {
+	 size_t vlen=4;
+	 switch (*type) {
+		 case 'B': case 'b': vlen=1; break;
+		 case 'S': case 's': vlen=2; break;
+		 case 'D': case 'd': vlen=8; break;
+		 case 'Q': case 'q': vlen=8; break;
+	 }
+	 if (slen<vlen) {
+		 lua_pushfstring(L,"String too short: needs %d more bytes but only %d remaining",vlen,slen);
 		 lua_error(L);
 	 }
-	 int32_t m;
-	 memcpy(&m,vbytes,4);
-	 lua_pushinteger(L,m);
-	 break;
- }
- case 'f':
- {
-	 if (slen<4) {
-		 lua_pushfstring(L,"String too short: %d<4",slen);
-		 lua_error(L);
+
+	 char vbytes[8];
+	 if ((isBE&&(!big))||(big&&(!isBE))) {
+		 for (i=0;i<vlen;i++)
+			 vbytes[i]=str[vlen-1-i];
 	 }
-	 float m;
-	 memcpy(&m,vbytes,4);
-	 lua_pushnumber(L,m);
-	 break;
- }
- case 'd':
- {
-	 if (slen<8) {
-		 lua_pushfstring(L,"String too short: %d<8",slen);
-		 lua_error(L);
+	 else
+		 memcpy(vbytes,str,vlen);
+	 str+=vlen;
+	 slen-=vlen;
+
+#define FTYPE(c,t,l) \
+		 case c: \
+		 { \
+			 t m; \
+			 memcpy(&m,vbytes,vlen); \
+			 if (((lua_Number)m)==m) \
+			 	 lua_pushinteger(L,m); \
+			 else \
+			 	 lua_pushint64(L,m); \
+			 break; \
+		 }
+	 switch (*(type++)) {
+		 FTYPE('b',int8_t,1);
+		 FTYPE('B',uint8_t,1);
+		 FTYPE('s',int16_t,2);
+		 FTYPE('S',uint16_t,2);
+		 FTYPE('i',int32_t,4);
+		 FTYPE('I',uint32_t,4);
+		 FTYPE('q',int64_t,8);
+		 FTYPE('Q',uint64_t,8);
+		 case 'F':
+		 case 'f':
+		 {
+			 float m;
+			 memcpy(&m,vbytes,4);
+			 lua_pushnumber(L,m);
+			 break;
+		 }
+		 case 'D':
+		 case 'd':
+		 {
+			 double m;
+			 memcpy(&m,vbytes,8);
+			 lua_pushnumber(L,m);
+			 break;
+		 }
+		 default:
+			 lua_pushfstring(L,"Type '%s' invalid",type);
+			 lua_error(L);
 	 }
-	 double m;
-	 memcpy(&m,vbytes,8);
-	 lua_pushnumber(L,m);
-	 break;
- }
- default:
-	 lua_pushfstring(L,"Type '%s' invalid",type);
-	 lua_error(L);
+
+	 if (tidx)
+		 lua_rawseti(L,-2,tidx++);
  }
  return 1;
 }

@@ -46,6 +46,16 @@ static int pushInt(lua_State *L, Int z)
  return 1;
 }
 
+int lua_pushint64(lua_State *L, Int z)
+{
+	return pushInt(L,z);
+}
+
+Int luaL_checkint64(lua_State *L, int n)
+{
+	return Pget(L,n);
+}
+
 static int Lpow(lua_State *L)			/** __pow(z,n) */
 {
  Int z=Z(1);
