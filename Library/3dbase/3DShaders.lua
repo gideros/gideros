@@ -67,12 +67,18 @@ function D3._FLUA_Shader()
 	function perturb_normal( N, V, texcoord )
 		--// N, la normale interpolée et
 		--// V, le vecteur vue (vertex dirigé vers l'œil)
+		local ret=hF3(0,0,0)
+		if OPT_NORMMAP then
 		local map = texture2D(g_NormalMap, texcoord ).xyz;
 		map = hF3(hF3(map) * 255./127. - 128./127.)
 		local TBN = cotangent_frame(N, -V, texcoord);
-		return normalize(TBN * map);
+			ret=normalize(TBN * map);
+		end
+		return ret
 	end
 	function ShadowCalculation(fragPosLightSpace,fragCoord)
+		local shadow=0.0;
+		if OPT_SHADOWS then
 		--// perform perspective divide
 		local projCoords = fragPosLightSpace / fragPosLightSpace.w;
 		--// transform to [0,1] range
@@ -91,7 +97,6 @@ function D3._FLUA_Shader()
 		float shadow=shadow2DEXT(g_ShadowMap, projCoords.xyz); 
 	#else
 	--]]
-		local shadow=0.0;
 		local scale=hF3(1/1024.0,1/1024.0,1/1024.0); --shadow map size
 		--[[
 		//shadow+=shadow2D(g_ShadowMap, projCoords.xyz).r; 	
@@ -130,6 +135,7 @@ function D3._FLUA_Shader()
 		shadow/=4.0;	
 		if(projCoords.z >= 0.999) then
 			shadow = 1.0
+		end
 		end
 		return shadow
 	end

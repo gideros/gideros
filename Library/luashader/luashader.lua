@@ -223,7 +223,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
 	local _headers=[[#ifdef GLES2
 #extension GL_OES_standard_derivatives : enable
-#extension GL_EXT_shadow_samplers : require
+#extension GL_EXT_shadow_samplers : enable
 #define shadow2D(tex,pt) vec4(shadow2DEXT(tex,pt),0.0,0.0,0.0)
 #endif
 ]]

@@ -34,24 +34,19 @@ local LightingShaderConstants={
 {name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
 {name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
 {name="cameraPos",type=Shader.CFLOAT4,mult=1,vertex=false},
-{name="ambient",type=Shader.CFLOAT,mult=1,vertex=false}}
-LightingShaderConstants[#LightingShaderConstants+1]=
-	{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false}
-LightingShaderConstants[#LightingShaderConstants+1]=
-	{name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false}
-LightingShaderConstants[#LightingShaderConstants+1]=
-	{name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false}
+{name="ambient",type=Shader.CFLOAT,mult=1,vertex=false},
+{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false,code="t"},
+{name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="n"},
+{name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false,code="s"},
 --[[	
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_InstanceMap",type=Shader.CTEXTURE,mult=1,vertex=true}
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="InstanceMapWidth",type=Shader.CFLOAT,mult=1,vertex=true}
 	]]
-LightingShaderConstants[#LightingShaderConstants+1]=
-	{name="bones",type=Shader.CMATRIX,mult=16,vertex=true}
-LightingShaderConstants[#LightingShaderConstants+1]=
-	{name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true}
-
+{name="bones",type=Shader.CMATRIX,mult=16,vertex=true,code="a"},
+{name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
+}
 local LightingShaderVarying={
 	{name="position",type=Shader.CFLOAT3},
 	{name="texCoord",type=Shader.CFLOAT2,code="t"},
@@ -59,6 +54,16 @@ local LightingShaderVarying={
 	{name="lightSpace",type=Shader.CFLOAT4,code="s"},
 }
 -- Shaders defs
+local function ShaderFilter(t,code)
+	local o={}
+	for _,l in ipairs(t) do
+		if l.code==nil or code:find(l.code) then
+			o[#o+1]=l
+		end
+	end
+	return o
+end
+
 Lighting._shaders={}
 Lighting.getShader=function(code)
 	local cmap={
@@ -68,13 +73,14 @@ Lighting.getShader=function(code)
 		{"i","INSTANCED",true},
 		{"a","ANIMATED",true},
 	}	
-	local lcode,ccode="",""
+	local lcode,ccode,acode="","",""
 	local lconst={}
 	for _,k in ipairs(cmap) do
 		local active="false"
 		if code:find(k[1]) then
 			lcode=lcode..k[1]
 			if k[3] then
+				acode=acode..k[1]
 				ccode=ccode.."#define "..k[2].."\n"
 				active="true"
 			end
@@ -98,9 +104,9 @@ Lighting.getShader=function(code)
 				D3._VLUA_Shader,
 				D3._FLUA_Shader,
 				0,
-				LightingShaderConstants,
+				ShaderFilter(LightingShaderConstants,acode),
 				LightingShaderAttrs,
-				LightingShaderVarying,
+				ShaderFilter(LightingShaderVarying,acode),
 				D3._FLUA_Shader_FDEF,
 				lconst
 				)
