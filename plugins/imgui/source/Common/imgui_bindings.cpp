@@ -4551,22 +4551,6 @@ int TableSortSpecs_GetColumnSortSpecs(lua_State* L)
     return 1;
 }
 
-int TEST123(lua_State* L)
-{
-    int n = luaL_checkinteger(L, 2);
-
-    lua_createtable(L, 0, n);
-
-    for (int i = 0; i < n; i++)
-    {
-        lua_pushnumber(L, i + 1);
-        lua_pushnumber(L, (i + 1) * 10);
-        lua_settable(L, -3);
-    }
-
-    return 1;
-}
-
 int TableSortSpecs_GetSpecsCount(lua_State* L)
 {
     ImGuiTableSortSpecs* specs = getSortSpecs(L);
@@ -4634,12 +4618,12 @@ ImGuiListClipper* getClipper(lua_State* L, int index = 1)
 
 int initImGuiListClipper(lua_State* L)
 {
-    ImGuiListClipper clipper;
-    g_pushInstance(L, "ImGuiListClipper", &clipper);
+    ImGuiListClipper* clipper = new ImGuiListClipper();
+    g_pushInstance(L, "ImGuiListClipper", clipper);
 
     luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
     lua_pushvalue(L, -2);
-    luaL_rawsetptr(L, -2, &clipper);
+    luaL_rawsetptr(L, -2, clipper);
     lua_pop(L, 1);
 
     return 1;
@@ -4654,7 +4638,7 @@ int Clipper_Begin(lua_State* L)
 {
     ImGuiListClipper* clipper = getClipper(L);
     int items_count = luaL_checkinteger(L, 2);
-    float items_height = luaL_optnumber(L, 3, 1.0f);
+    float items_height = luaL_optnumber(L, 3, -1.0f);
     clipper->Begin(items_count, items_height);
     return 0;
 }
@@ -11096,7 +11080,6 @@ int loader(lua_State* L)
 
     const luaL_Reg imguiFunctionList[] =
     {
-        {"testT", TEST123},
 #ifdef IS_BETA_BUILD
         {"setCurrentEditor", ED_SetCurrentEditor},
 #endif
