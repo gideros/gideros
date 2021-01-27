@@ -6,6 +6,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_demo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_draw.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_widgets.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_src\imgui_tables.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\imgui_user.cpp" />
   </ItemGroup>
   <ItemGroup>
