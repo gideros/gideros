@@ -347,7 +347,7 @@ static int luaL_optboolean(lua_State* L, int narg, int def)
 
 static lua_Number getfield(lua_State* L, const char* key)
 {
-    lua_getfield(L, -2, key);
+    lua_getfield(L, -1, key);
     lua_Number result = lua_tonumber(L, -1);
     lua_pop(L, 1);
     return result;
@@ -355,8 +355,8 @@ static lua_Number getfield(lua_State* L, const char* key)
 
 static lua_Number getsubfield(lua_State* L, const char* field, const char* key)
 {
-    lua_getfield(L, -2, field);
-    lua_getfield(L, -2, key);
+    lua_getfield(L, -1, field);
+    lua_getfield(L, -1, key);
     lua_Number result = lua_tonumber(L, -1);
     lua_pop(L, 2);
     return result;
