@@ -103,6 +103,7 @@ function Box:init(w,h,d)
 	self:setVertexArray(self._va)
 	self:setIndexArray(Box.ia)
 	self._va=Box.va self._ia=Box.ia
+	self.dims={w=w,h=h,d=d}
 end
 function Box:mapTexture(texture,sw,sh)
 	self:setTexture(texture)
@@ -123,7 +124,7 @@ function Box:mapTexture(texture,sw,sh)
 end
 function Box:getCollisionShape()
 	if not self._r3dshape then
-		self._r3dshape=r3d.BoxShape.new(1,1,1)
+		self._r3dshape=r3d.BoxShape.new(self.dims.w,self.dims.h,self.dims.d)
 	end
 	return self._r3dshape
 end
@@ -201,29 +202,31 @@ end
 
 --Unit Cylinder along Y axis
 local Cylinder=Core.class(Mesh3D)
-function Cylinder:init(steps)
+function Cylinder:init(steps,r,h)
+	h=h or 1
+	r=r or 1
 	local va,ia,na={},{},{}
 	local rs=(2*3.141592654)/steps
 	local i,ni=7,1
 	--Vertices/Normals
-	va[1]=0 va[2]=1 va[3]=0
-	va[4]=0	va[5]=-1 va[6]=0
+	va[1]=0 va[2]=h va[3]=0
+	va[4]=0	va[5]=-h va[6]=0
 	na[1]=0 na[2]=1 na[3]=0
 	na[4]=0	na[5]=-1 na[6]=0
 	for ix=0,steps do
-		local x=math.cos(ix*rs)
-		local z=-math.sin(ix*rs)
+		local x=math.cos(ix*rs)*r
+		local z=-math.sin(ix*rs)*r
 		va[i]=x na[i]=0 i+=1
-		va[i]=1 na[i]=1 i+=1
+		va[i]=h na[i]=1 i+=1
 		va[i]=z na[i]=0 i+=1
 		va[i]=x na[i]=x i+=1
-		va[i]=1 na[i]=0 i+=1
+		va[i]=h na[i]=0 i+=1
 		va[i]=z na[i]=z i+=1
 		va[i]=x na[i]=x i+=1
-		va[i]=-1 na[i]=0 i+=1
+		va[i]=-h na[i]=0 i+=1
 		va[i]=z na[i]=z i+=1
 		va[i]=x na[i]=0 i+=1
-		va[i]=-1 na[i]=-1 i+=1
+		va[i]=-h na[i]=-1 i+=1
 		va[i]=z na[i]=0 i+=1
 	end
 	--Indices
@@ -240,6 +243,7 @@ function Cylinder:init(steps)
 	self:setIndexArray(ia)
 	self._steps=steps
 	self._va=va self._ia=ia
+	self.dims={r=r,h=h}
 end
 function Cylinder:mapTexture(texture)
 	self:setTexture(texture)
