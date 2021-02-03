@@ -19,6 +19,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 Generated Files/
+Build.Win
+Build.Linux
+Build.Mac
 
 # Roslyn cache directories
 *.ide/
@@ -231,7 +234,7 @@ debug
 # Temp
 .tmp/
 
-# qt creator and vs generated files and folders
+# qt creator, vs and vs code generated files and folders
 *.user.*
 *.o
 tmp
@@ -240,6 +243,10 @@ tmp
 */moc_*.cpp
 */qrc_*.cpp
 moc_*.cpp
+.vscode/
+
+# xmake cache/build folders
+**/.xmake/
 
 # other generated files and folders
 *.exe
