@@ -38,7 +38,8 @@
 #endif
 
 #ifdef IS_BETA_BUILD
-#include "imgui-node-editor/imgui_node_editor.h" // https://github.com/thedmd/imgui-node-editor
+#include "custom/TextEditor.h" // https://github.com/BalazsJako/ImGuiColorTextEdit
+#include "custom/node-editor/imgui_node_editor.h" // https://github.com/thedmd/imgui-node-editor
 #define ED ax::NodeEditor
 #endif
 
@@ -2927,7 +2928,7 @@ int DragFloat4(lua_State* L)
     vec4f[0] = luaL_checknumber(L, 3);
     vec4f[1] = luaL_checknumber(L, 4);
     vec4f[2] = luaL_checknumber(L, 5);
-    vec4f[2] = luaL_checknumber(L, 6);
+    vec4f[3] = luaL_checknumber(L, 6);
 
     float v_speed = luaL_optnumber(L, 7, 1.0f);
     float v_min = luaL_optnumber(L, 8, 0.0f);
@@ -3032,7 +3033,7 @@ int DragInt4(lua_State* L)
     vec4i[0] = luaL_checkinteger(L, 3);
     vec4i[1] = luaL_checkinteger(L, 4);
     vec4i[2] = luaL_checkinteger(L, 5);
-    vec4i[2] = luaL_checkinteger(L, 6);
+    vec4i[3] = luaL_checkinteger(L, 6);
 
     double v_speed = luaL_optnumber(L, 7, 1.0f);
     int v_min = luaL_optinteger(L, 8, 0);
@@ -7199,8 +7200,7 @@ ImFont* getFont(lua_State* L, int index = 1)
 
 ImGuiIO& getIO(lua_State* L, int index = 1)
 {
-    ImGuiIO &io = *(static_cast<ImGuiIO*>(g_getInstance(L, "ImGuiIO", index)));
-    return io;
+    return *(static_cast<ImGuiIO*>(g_getInstance(L, "ImGuiIO", index)));
 }
 
 int GetIO(lua_State* L)
@@ -8168,8 +8168,6 @@ int FontAtlas_AddFont(lua_State *L)
 
     ImFont* font = addFont(L, atlas, file_name, size_pixels, lua_gettop(L) > 3, 4);
 
-    g_pushInstance(L, "ImFont", font);
-    //
     //ImFontConfig cfg = ImFontConfig();
     //if (lua_gettop(L) > 3)
     //{
@@ -8177,10 +8175,10 @@ int FontAtlas_AddFont(lua_State *L)
     //}
     //
     //ImFont* font = atlas->AddFontFromFileTTF(file_name, size_pixels, &cfg);
-    //
-    //g_pushInstance(L, "ImFont", font);
-    //
-    //return 1;
+
+    g_pushInstance(L, "ImFont", font);
+
+    return 1;
 }
 
 int FontAtlas_AddFonts(lua_State *L)
@@ -8994,349 +8992,6 @@ int GetResetTouchPosOnEnd(lua_State* L)
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-/*
-    int ImGui_my_Test2(lua_State* L)
-    {
-        float value = luaL_optnumber(L, 2, NULL);
-        LUA_ASSERT(value < 0, "bad argument #2");
-        lua_getglobal(L, "print");
-        lua_pushboolean(L, NULL == value);
-        lua_call(L, 1, 0);
-        lua_pop(L, 1);
-        return 0;
-    }
-    int ImGui_my_test_key_table(lua_State* L)
-    {
-        luaL_checktype(L, 2, LUA_TTABLE);
-        size_t len = lua_objlen(L, 2);
-        lua_pushvalue(L, 2);
-        lua_pushnil(L);
-        while (lua_next(L, -2))
-        {
-            lua_pushvalue(L, -2);
-            int index = lua_tointeger(L, -1);
-            const char* str = lua_tostring(L, -2);
-            lua_pop(L, 2);
-        }
-        lua_pop(L, 1);
-        return 0;
-    }
-    int ImGui_my_test_n_table(lua_State* L)
-    {
-        luaL_checktype(L, 2, LUA_TTABLE);
-        size_t len = luaL_getn(L, 2);
-        const char** items=new const char* [len];
-        lua_pushvalue(L, 2);
-        for (unsigned int i = 0; i < len; i++)
-        {
-            lua_rawgeti(L, 2, i + 1);
-            const char* str = lua_tostring(L, -1);
-            lua_getglobal(L, "print");
-            lua_pushstring(L, str);
-            lua_call(L, 1, 0);
-            lua_pop(L, 1);
-        }
-        lua_pop(L, 1);
-        delete[] items;
-        return 0;
-    }
-    */
-static void HelpMarker(const char* desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
-
-void DrawLuaStyleEditor(const char* title, bool* p_open = NULL, ImGuiWindowFlags flags = ImGuiWindowFlags_None)
-{
-    if (!ImGui::Begin(title, p_open, flags))
-    {
-        ImGui::End();
-        return;
-    }
-
-    ImGuiStyle& style = ImGui::GetStyle();
-    static ImGuiStyle ref_saved_style;
-    static ImGuiStyle* ref;
-
-    // Default to using internal storage as reference
-    static bool init = true;
-    if (init && ref == NULL)
-        ref_saved_style = style;
-    init = false;
-    if (ref == NULL)
-        ref = &ref_saved_style;
-
-    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
-
-    if (ImGui::ShowStyleSelector("Colors##Selector"))
-        ref_saved_style = style;
-    ImGui::ShowFontSelector("Fonts##Selector");
-
-    // Simplified Settings (expose floating-pointer border sizes as boolean representing 0.0f or 1.0f)
-    if (ImGui::SliderFloat("FrameRounding", &style.FrameRounding, 0.0f, 12.0f, "%.0f"))
-        style.GrabRounding = style.FrameRounding; // Make GrabRounding always the same value as FrameRounding
-    { bool border = (style.WindowBorderSize > 0.0f); if (ImGui::Checkbox("WindowBorder", &border)) { style.WindowBorderSize = border ? 1.0f : 0.0f; } }
-    ImGui::SameLine();
-    { bool border = (style.FrameBorderSize > 0.0f);  if (ImGui::Checkbox("FrameBorder",  &border)) { style.FrameBorderSize  = border ? 1.0f : 0.0f; } }
-    ImGui::SameLine();
-    { bool border = (style.PopupBorderSize > 0.0f);  if (ImGui::Checkbox("PopupBorder",  &border)) { style.PopupBorderSize  = border ? 1.0f : 0.0f; } }
-
-    static int output_dest = 0;
-
-    // Save/Revert button
-    if (ImGui::Button("Save Ref"))
-        *ref = ref_saved_style = style;
-    ImGui::SameLine();
-    if (ImGui::Button("Revert Ref"))
-        style =* ref;
-
-    static bool output_only_modified = true;
-
-    if (ImGui::Button("Export"))
-    {
-        if (output_dest == 0)
-            ImGui::LogToClipboard();
-        else
-            ImGui::LogToTTY();
-        ImGui::LogText("%s", "local style = imgui:getStyle()\r\n");
-        for (int i = 0; i < ImGuiCol_COUNT; i++)
-        {
-            const ImVec4& col = style.Colors[i];
-            const char* name = ImGui::GetStyleColorName(i);
-            GColor gcolor = GColor::toHex(col);
-            if (!output_only_modified || memcmp(&col, &ref->Colors[i], sizeof(ImVec4)) != 0)
-                ImGui::LogText("style:setColor(ImGui.Col_%s, 0x%06X, %.2f)\r\n", name, gcolor.hex, gcolor.alpha);
-        }
-        ImGui::LogFinish();
-    }
-
-
-    ImGui::SameLine(); ImGui::SetNextItemWidth(120); ImGui::Combo("##output_type", &output_dest, "To Clipboard\0To TTY\0");
-    ImGui::SameLine(); ImGui::Checkbox("Only Modified Colors", &output_only_modified);
-
-    static ImGuiTextFilter filter;
-    filter.Draw("Filter colors", ImGui::GetFontSize() * 16);
-
-    static ImGuiColorEditFlags alpha_flags = 0;
-    if (ImGui::RadioButton("Opaque", alpha_flags == ImGuiColorEditFlags_None))             { alpha_flags = ImGuiColorEditFlags_None; } ImGui::SameLine();
-    if (ImGui::RadioButton("Alpha",  alpha_flags == ImGuiColorEditFlags_AlphaPreview))     { alpha_flags = ImGuiColorEditFlags_AlphaPreview; } ImGui::SameLine();
-    if (ImGui::RadioButton("Both",   alpha_flags == ImGuiColorEditFlags_AlphaPreviewHalf)) { alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf; } ImGui::SameLine();
-    HelpMarker(
-                "In the color list:\n"
-                "Left-click on colored square to open color picker,\n"
-                "Right-click to open edit options menu.");
-
-    ImGui::BeginChild("##colors", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NavFlattened);
-    ImGui::PushItemWidth(-160);
-    for (int i = 0; i < ImGuiCol_COUNT; i++)
-    {
-        const char* name = ImGui::GetStyleColorName(i);
-        if (!filter.PassFilter(name))
-            continue;
-        ImGui::PushID(i);
-        ImGui::ColorEdit4("##color", (float*)&style.Colors[i], ImGuiColorEditFlags_AlphaBar | alpha_flags);
-        if (memcmp(&style.Colors[i], &ref->Colors[i], sizeof(ImVec4)) != 0)
-        {
-            // Tips: in a real user application, you may want to merge and use an icon font into the main font,
-            // so instead of "Save"/"Revert" you'd use icons!
-            // Read the FAQ and docs/FONTS.md about using icon fonts. It's really easy and super convenient!
-            ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Save")) { ref->Colors[i] = style.Colors[i]; }
-            ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Revert")) { style.Colors[i] = ref->Colors[i]; }
-        }
-        ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-        ImGui::TextUnformatted(name);
-        ImGui::PopID();
-    }
-    ImGui::PopItemWidth();
-    ImGui::EndChild();
-
-    ImGui::End();
-}
-
-int ShowLuaStyleEditor(lua_State* L)
-{
-    const char* title = luaL_checkstring(L, 2);
-
-    ImGuiWindowFlags window_flags = luaL_optinteger(L, 4, ImGuiWindowFlags_None);
-
-    int type = lua_type(L, 3);
-    if (type == LUA_TBOOLEAN)
-    {
-        bool p_open = lua_toboolean(L, 3);
-        DrawLuaStyleEditor(title, &p_open, window_flags);
-        lua_pushboolean(L, p_open);
-        return 1;
-    }
-    else
-    {
-        DrawLuaStyleEditor(title, NULL, window_flags);
-        return 0;
-    }
-}
-
-struct ExampleAppLog
-{
-    ImGuiTextBuffer     Buf;
-    ImGuiTextFilter     Filter;
-    ImVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
-    bool                AutoScroll;  // Keep scrolling if already at the bottom.
-    bool                Shown;
-
-    ExampleAppLog()
-    {
-        AutoScroll = true;
-        Clear();
-    }
-
-    void    Clear()
-    {
-        Buf.clear();
-        LineOffsets.clear();
-        LineOffsets.push_back(0);
-    }
-
-    void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
-    {
-        int old_size = Buf.size();
-        va_list args;
-        va_start(args, fmt);
-        Buf.appendfv(fmt, args);
-        va_end(args);
-        for (int new_size = Buf.size(); old_size < new_size; old_size++)
-            if (Buf[old_size] == '\n')
-                LineOffsets.push_back(old_size + 1);
-    }
-
-    void    Draw(const char* title, bool* p_open = NULL, ImGuiWindowFlags flags = ImGuiWindowFlags_None)
-    {
-        if (!ImGui::Begin(title, p_open, flags))
-        {
-            ImGui::End();
-            return;
-        }
-
-        // Options menu
-        if (ImGui::BeginPopup("Options"))
-        {
-            ImGui::Checkbox("Auto-scroll", &AutoScroll);
-            ImGui::EndPopup();
-        }
-
-        // Main window
-        if (ImGui::Button("Options"))
-            ImGui::OpenPopup("Options");
-        ImGui::SameLine();
-        bool clear = ImGui::Button("Clear");
-        ImGui::SameLine();
-        bool copy = ImGui::Button("Copy");
-        ImGui::SameLine();
-        Filter.Draw("Filter", -100.0f);
-        ImGui::SameLine();
-        if (ImGui::Button("X"))
-            Filter.Clear();
-
-        ImGui::Separator();
-        ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-        if (clear)
-            Clear();
-        if (copy)
-            ImGui::LogToClipboard();
-
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-        const char* buf = Buf.begin();
-        const char* buf_end = Buf.end();
-        if (Filter.IsActive())
-        {
-            // In this example we don't use the clipper when Filter is enabled.
-            // This is because we don't have a random access on the result on our filter.
-            // A real application processing logs with ten of thousands of entries may want to store the result of
-            // search/filter.. especially if the filtering function is not trivial (e.g. reg-exp).
-            for (int line_no = 0; line_no < LineOffsets.Size; line_no++)
-            {
-                const char* line_start = buf + LineOffsets[line_no];
-                const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
-                if (Filter.PassFilter(line_start, line_end))
-                    ImGui::TextUnformatted(line_start, line_end);
-            }
-        }
-        else
-        {
-            // The simplest and easy way to display the entire buffer:
-            //   ImGui::TextUnformatted(buf_begin, buf_end);
-            // And it'll just work. TextUnformatted() has specialization for large blob of text and will fast-forward
-            // to skip non-visible lines. Here we instead demonstrate using the clipper to only process lines that are
-            // within the visible area.
-            // If you have tens of thousands of items and their processing cost is non-negligible, coarse clipping them
-            // on your side is recommended. Using ImGuiListClipper requires
-            // - A) random access into your data
-            // - B) items all being the  same height,
-            // both of which we can handle since we an array pointing to the beginning of each line of text.
-            // When using the filter (in the block of code above) we don't have random access into the data to display
-            // anymore, which is why we don't use the clipper. Storing or skimming through the search result would make
-            // it possible (and would be recommended if you want to search through tens of thousands of entries).
-            ImGuiListClipper clipper;
-            clipper.Begin(LineOffsets.Size);
-            while (clipper.Step())
-            {
-                for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
-                {
-                    const char* line_start = buf + LineOffsets[line_no];
-                    const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
-                    ImGui::TextUnformatted(line_start, line_end);
-                }
-            }
-            clipper.End();
-        }
-        ImGui::PopStyleVar();
-
-        if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-            ImGui::SetScrollHereY(1.0f);
-
-        ImGui::EndChild();
-        ImGui::End();
-    }
-};
-
-static ExampleAppLog logapp;
-
-int ShowLog(lua_State* L)
-{
-    const char* title = luaL_checkstring(L, 2);
-    bool* p_open = getPopen(L, 3);
-    ImGuiWindowFlags window_flags = luaL_optinteger(L, 4, ImGuiWindowFlags_None);
-
-    logapp.Draw(title, p_open, window_flags);
-
-    if (p_open != nullptr)
-    {
-        logapp.Shown = *p_open;
-        lua_pushboolean(L, *p_open);
-        delete p_open;
-        return 1;
-    }
-    logapp.Shown = false;
-    return 0;
-}
-
-int WriteLog(lua_State* L)
-{
-    if (!logapp.Shown)
-        return 0;
-
-    const char* text = luaL_checkstring(L, 2);
-    logapp.AddLog("%s\n", text);
-
-    return 0;
-}
 
 #ifdef IS_BETA_BUILD
 
@@ -10507,10 +10162,983 @@ int ED_StyleSetColor(lua_State* L)
     return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// TextEditor
+///
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+template<class T>
+T* getObjectInstance(lua_State* L, const char* name, int idx)
+{
+    return static_cast<T*>(g_getInstance(L, name, idx));
+}
+
+template<class T>
+T& getObjectRInstance(lua_State* L, const char* name, int idx)
+{
+    return *(static_cast<T*>(g_getInstance(L, name, idx)));
+}
+
+int initTextEditor(lua_State* L)
+{
+    TextEditor* editor;
+    if (lua_gettop(L) > 0)
+    {
+        TextEditor* other = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+        editor = new TextEditor(*other);
+    }
+    else
+        editor = new TextEditor();
+
+    g_pushInstance(L, "ImGuiTextEditor", editor);
+
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
+    lua_pushvalue(L, -2);
+    luaL_rawsetptr(L, -2, editor);
+    lua_pop(L, 1);
+
+    return 1;
+}
+
+int TE_SetLanguageDefinition(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+
+    TextEditor::LanguageDefinition& lang = getObjectRInstance<TextEditor::LanguageDefinition>(L,"TextEditorLanguageDefinition", 2);
+    editor->SetLanguageDefinition(lang);
+    return 0;
+}
+
+int TE_GetLanguageDefinition_CPP(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = const_cast<TextEditor::LanguageDefinition*>(&(TextEditor::LanguageDefinition::CPlusPlus()));
+    g_pushInstance(L, "TextEditorLanguageDefinition", lang);
+    return 1;
+}
+
+int TE_GetLanguageDefinition_GLSL(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = const_cast<TextEditor::LanguageDefinition*>(&(TextEditor::LanguageDefinition::GLSL()));
+    g_pushInstance(L, "TextEditorLanguageDefinition", lang);
+    return 1;
+}
+
+int TE_GetLanguageDefinition_HLSL(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = const_cast<TextEditor::LanguageDefinition*>(&(TextEditor::LanguageDefinition::HLSL()));
+    g_pushInstance(L, "TextEditorLanguageDefinition", lang);
+    return 1;
+}
+
+int TE_GetLanguageDefinition_C(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = const_cast<TextEditor::LanguageDefinition*>(&(TextEditor::LanguageDefinition::C()));
+    g_pushInstance(L, "TextEditorLanguageDefinition", lang);
+    return 1;
+}
+
+int TE_GetLanguageDefinition_SQL(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = const_cast<TextEditor::LanguageDefinition*>(&(TextEditor::LanguageDefinition::SQL()));
+    g_pushInstance(L, "TextEditorLanguageDefinition", lang);
+    return 1;
+}
+
+int TE_GetLanguageDefinition_AngelScript(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = const_cast<TextEditor::LanguageDefinition*>(&(TextEditor::LanguageDefinition::AngelScript()));
+    g_pushInstance(L, "TextEditorLanguageDefinition", lang);
+    return 1;
+}
+
+int TE_GetLanguageDefinition_Lua(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = const_cast<TextEditor::LanguageDefinition*>(&(TextEditor::LanguageDefinition::Lua()));
+    g_pushInstance(L, "TextEditorLanguageDefinition", lang);
+    return 1;
+}
+
+int TE_GetName(lua_State* L)
+{
+    TextEditor::LanguageDefinition* lang = getObjectInstance<TextEditor::LanguageDefinition>(L, "TextEditorLanguageDefinition", 1);
+    lua_pushstring(L, lang->mName.c_str());
+    return 1;
+}
+
+int TE_GetLanguageDefinition(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    g_pushInstance(L, "TextEditorLanguageDefinition", const_cast<TextEditor::LanguageDefinition*>(&(editor->GetLanguageDefinition())));
+    return 1;
+}
+
+int TE_GetPalette_Dark(lua_State* L)
+{
+    const TextEditor::Palette& palette = TextEditor::GetDarkPalette();
+    TextEditor::Palette* ptr = const_cast<TextEditor::Palette*>(&palette);
+    g_pushInstance(L, "TextEditorPalette", ptr);
+    return 1;
+}
+
+int TE_GetPalette_Light(lua_State* L)
+{
+    TextEditor::Palette* palette = const_cast<TextEditor::Palette*>(&(TextEditor::GetLightPalette()));
+    g_pushInstance(L, "TextEditorPalette", palette);
+    return 1;
+}
+
+int TE_GetPalette_Retro(lua_State* L)
+{
+    TextEditor::Palette* palette = const_cast<TextEditor::Palette*>(&(TextEditor::GetRetroBluePalette()));
+    g_pushInstance(L, "TextEditorPalette", palette);
+    return 1;
+}
+
+int TE_SetPalette(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    TextEditor::Palette& palette = getObjectRInstance<TextEditor::Palette>(L, "TextEditorPalette", 2);
+    editor->SetPalette(palette);
+    return 0;
+}
+
+int TE_GetPalette(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    g_pushInstance(L, "TextEditorPalette", const_cast<TextEditor::Palette*>(&(editor->GetPalette())));
+
+    return 1;
+}
+
+int TE_SetErrorMarkers(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    TextEditor::ErrorMarkers& markers = getObjectRInstance<TextEditor::ErrorMarkers>(L, "ImGuiErrorMarkers", 2);
+    editor->SetErrorMarkers(markers);
+    return 0;
+}
+
+int TE_SetBreakpoints(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    TextEditor::Breakpoints& points = getObjectRInstance<TextEditor::Breakpoints>(L, "ImGuiBreakpoints", 2);
+    editor->SetBreakpoints(points);
+    return 0;
+}
+
+int TE_Render(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    const char* title = luaL_checkstring(L, 2);
+    ImVec2 size = ImVec2(luaL_optnumber(L, 3, 0.0f), luaL_optnumber(L, 4, 0.0f));
+    bool border = luaL_optboolean(L, 5, 0);
+    editor->Render(title, size, border);
+    return 0;
+}
+
+int TE_SetText(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    const char* buf = luaL_checkstring(L, 2);
+    std::string text(buf);
+    editor->SetText(text);
+    return 0;
+}
+
+int TE_GetText(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    std::string text = editor->GetText();
+    lua_pushlstring(L, text.c_str(), text.size());
+    return 1;
+}
+
+int TE_SetTextLines(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    luaL_checktype(L, 2, LUA_TTABLE);
+    int len = luaL_getn(L, 2);
+    std::vector<std::string> lines;
+
+    for (int i = 0; i < len; i++)
+    {
+        lua_rawgeti(L, 2, i + 1);
+        std::string line(luaL_checkstring(L, -1));
+        lua_pop(L, 1);
+        lines.push_back(line);
+    }
+
+    editor->SetTextLines(lines);
+    return 0;
+}
+
+int TE_GetTextLines(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    std::vector<std::string> lines = editor->GetTextLines();
+
+    lua_createtable(L, lines.size(), 0);
+
+    for (size_t i = 0; i < lines.size(); i++)
+    {
+        lua_pushstring(L, lines[i].c_str());
+        lua_rawseti(L, -2, i + 1);
+    }
+
+    return 1;
+}
+
+int TE_GetSelectedText(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    std::string text = editor->GetSelectedText();
+    lua_pushlstring(L, text.c_str(), text.size());
+    return 1;
+}
+
+int TE_GetCurrentLineText(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    std::string text = editor->GetCurrentLineText();
+    lua_pushlstring(L, text.c_str(), text.size());
+    return 1;
+}
+
+int TE_GetTotalLines(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushinteger(L, editor->GetTotalLines());
+    return 1;
+}
+
+int TE_IsOverwrite(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsOverwrite());
+    return 1;
+}
+
+int TE_SetReadOnly(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SetReadOnly(lua_toboolean(L, 2));
+    return 0;
+}
+
+int TE_IsReadOnly(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsReadOnly());
+    return 1;
+}
+
+int TE_IsTextChanged(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsTextChanged());
+    return 1;
+}
+
+int TE_IsCursorPositionChanged(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsCursorPositionChanged());
+    return 1;
+}
+
+int TE_IsColorizerEnabled(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsColorizerEnabled());
+    return 1;
+}
+
+int TE_SetColorizerEnable(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SetColorizerEnable(lua_toboolean(L, 2));
+    return 0;
+}
+
+int TE_GetCursorPosition(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    TextEditor::Coordinates coord = editor->GetCursorPosition();
+    lua_pushinteger(L, coord.mLine);
+    lua_pushinteger(L, coord.mColumn);
+    return 2;
+}
+
+int TE_SetCursorPosition(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int line = luaL_checkinteger(L, 2);
+    int column = luaL_checkinteger(L, 3);
+    TextEditor::Coordinates coord(line, column);
+    editor->SetCursorPosition(coord);
+    return 0;
+}
+
+int TE_SetHandleMouseInputs(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SetHandleMouseInputs(lua_toboolean(L, 2));
+    return 0;
+}
+
+int TE_IsHandleMouseInputsEnabled(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsHandleMouseInputsEnabled());
+    return 1;
+}
+
+int TE_SetHandleKeyboardInputs(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SetHandleKeyboardInputs(lua_toboolean(L, 2));
+    return 0;
+}
+
+int TE_IsHandleKeyboardInputsEnabled(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsHandleKeyboardInputsEnabled());
+    return 1;
+}
+
+int TE_SetImGuiChildIgnored(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SetImGuiChildIgnored(lua_toboolean(L, 2));
+    return 0;
+}
+
+int TE_IsImGuiChildIgnored(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsImGuiChildIgnored());
+    return 1;
+}
+
+int TE_SetShowWhitespaces(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SetShowWhitespaces(lua_toboolean(L, 2));
+    return 0;
+}
+
+int TE_IsShowingWhitespaces(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->IsShowingWhitespaces());
+    return 1;
+}
+
+int TE_SetTabSize(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int size = luaL_checknumber(L, 2);
+    editor->SetTabSize(size);
+    return 0;
+}
+
+int TE_GetTabSize(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushnumber(L, editor->GetTabSize());
+    return 1;
+}
+
+int TE_InsertText(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    const char* text = luaL_checkstring(L, 2);
+    editor->InsertText(text);
+    return 0;
+}
+
+int TE_MoveUp(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int amount = luaL_optinteger(L, 2, 1);
+    bool select = luaL_optboolean(L, 3, 0);
+    editor->MoveUp(amount, select);
+    return 0;
+}
+
+int TE_MoveDown(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int amount = luaL_optinteger(L, 2, 1);
+    bool select = luaL_optboolean(L, 3, 0);
+    editor->MoveDown(amount, select);
+    return 0;
+}
+
+int TE_MoveLeft(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int amount = luaL_optinteger(L, 2, 1);
+    bool select = luaL_optboolean(L, 3, 0);
+    editor->MoveLeft(amount, select);
+    return 0;
+}
+
+int TE_MoveRight(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int amount = luaL_optinteger(L, 2, 1);
+    bool select = luaL_optboolean(L, 3, 0);
+    editor->MoveRight(amount, select);
+    return 0;
+}
+
+int TE_MoveTop(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    bool select = luaL_optboolean(L, 2, 0);
+    editor->MoveTop(select);
+    return 0;
+}
+
+int TE_MoveBottom(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    bool select = luaL_optboolean(L, 2, 0);
+    editor->MoveBottom(select);
+    return 0;
+}
+
+int TE_MoveHome(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    bool select = luaL_optboolean(L, 2, 0);
+    editor->MoveHome(select);
+    return 0;
+}
+
+int TE_MoveEnd(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    bool select = luaL_optboolean(L, 2, 0);
+    editor->MoveEnd(select);
+    return 0;
+}
+
+int TE_SetSelectionStart(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int line = luaL_checkinteger(L, 2);
+    int column = luaL_checkinteger(L, 3);
+    TextEditor::Coordinates pos(line, column);
+    editor->SetSelectionStart(pos);
+    return 0;
+}
+
+int TE_SetSelectionEnd(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int line = luaL_checkinteger(L, 2);
+    int column = luaL_checkinteger(L, 3);
+    TextEditor::Coordinates pos(line, column);
+    editor->SetSelectionEnd(pos);
+    return 0;
+}
+
+int TE_SetSelection(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    TextEditor::Coordinates posStart(luaL_checkinteger(L, 2), luaL_checkinteger(L, 3));
+    TextEditor::Coordinates posEnd(luaL_checkinteger(L, 4), luaL_checkinteger(L, 5));
+    TextEditor::SelectionMode mode = (TextEditor::SelectionMode)luaL_optinteger(L, 6, 0);
+    editor->SetSelection(posStart, posEnd, mode);
+    return 0;
+}
+
+int TE_SelectWordUnderCursor(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SelectWordUnderCursor();
+    return 0;
+}
+
+int TE_SelectAll(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SelectAll();
+    return 0;
+}
+
+int TE_HasSelection(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->HasSelection());
+    return 1;
+}
+
+int TE_Copy(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->Copy();
+    return 0;
+}
+
+int TE_Cut(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->Cut();
+    return 0;
+}
+
+int TE_Paste(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->Paste();
+    return 0;
+}
+
+int TE_Delete(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->Delete();
+    return 0;
+}
+
+int TE_CanUndo(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->CanUndo());
+    return 1;
+}
+
+int TE_CanRedo(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    lua_pushboolean(L, editor->CanRedo());
+    return 1;
+}
+
+int TE_Undo(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int steps = luaL_optinteger(L, 2, 1);
+    editor->Undo(steps);
+    return 0;
+}
+
+int TE_Redo(lua_State* L)
+{
+    TextEditor* editor = getObjectInstance<TextEditor>(L, "ImGuiTextEditor", 1);
+    int steps = luaL_optinteger(L, 2, 1);
+    editor->Redo(steps);
+    return 0;
+}
+
+
+int initErrorMarkers(lua_State* L)
+{
+    TextEditor::ErrorMarkers* markers = new TextEditor::ErrorMarkers();
+    g_pushInstance(L, "ImGuiErrorMarkers", markers);
+
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
+    lua_pushvalue(L, -2);
+    luaL_rawsetptr(L, -2, markers);
+    lua_pop(L, 1);
+
+    return 1;
+}
+
+int EM_MAdd(lua_State* L)
+{
+    TextEditor::ErrorMarkers* markers = getObjectInstance<TextEditor::ErrorMarkers>(L, "ImGuiErrorMarkers", 1);
+    int lineNumber = luaL_checkinteger(L, 2);
+    std::string message(luaL_checkstring(L, 3));
+    (*markers)[lineNumber] = message;
+}
+
+int EM_MRemove(lua_State* L)
+{
+    TextEditor::ErrorMarkers* markers = getObjectInstance<TextEditor::ErrorMarkers>(L, "ImGuiErrorMarkers", 1);
+    int lineNumber = luaL_checkinteger(L, 2);
+    markers->erase(lineNumber);
+    return 0;
+}
+
+int EM_MGet(lua_State* L)
+{
+    TextEditor::ErrorMarkers* markers = getObjectInstance<TextEditor::ErrorMarkers>(L, "ImGuiErrorMarkers", 1);
+    int lineNumber = luaL_checkinteger(L, 2);
+    TextEditor::ErrorMarkers::iterator it = markers->find(lineNumber);
+    it == markers->end() ? lua_pushnil(L) : lua_pushstring(L, (*it).second.c_str());
+    return 1;
+}
+
+int EM_MSize(lua_State* L)
+{
+    TextEditor::ErrorMarkers* markers = getObjectInstance<TextEditor::ErrorMarkers>(L, "ImGuiErrorMarkers", 1);
+    lua_pushnumber(L, markers->size());
+    return 1;
+}
+
+
+int initBreakpoints(lua_State* L)
+{
+    TextEditor::Breakpoints* points = new TextEditor::Breakpoints();
+    g_pushInstance(L, "ImGuiBreakpoints", points);
+
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
+    lua_pushvalue(L, -2);
+    luaL_rawsetptr(L, -2, points);
+    lua_pop(L, 1);
+
+    return 1;
+}
+
+int EM_BAdd(lua_State* L)
+{
+    TextEditor::Breakpoints* points = getObjectInstance<TextEditor::Breakpoints>(L, "ImGuiBreakpoints", 1);
+    int lineNumber = luaL_checkinteger(L, 2);
+    points->insert(lineNumber);
+}
+
+int EM_BRemove(lua_State* L)
+{
+    TextEditor::Breakpoints* points = getObjectInstance<TextEditor::Breakpoints>(L, "ImGuiBreakpoints", 1);
+    int lineNumber = luaL_checkinteger(L, 2);
+    points->erase(lineNumber);
+    return 0;
+}
+
+int EM_BGet(lua_State* L)
+{
+    TextEditor::Breakpoints* points = getObjectInstance<TextEditor::Breakpoints>(L, "ImGuiBreakpoints", 1);
+    int lineNumber = luaL_checkinteger(L, 2);
+    TextEditor::Breakpoints::iterator it = points->find(lineNumber);
+    it == points->end() ? lua_pushnil(L) : lua_pushnumber(L, *it);
+    return 1;
+}
+
+int EM_BSize(lua_State* L)
+{
+    TextEditor::Breakpoints* points = getObjectInstance<TextEditor::Breakpoints>(L, "ImGuiBreakpoints", 1);
+    lua_pushnumber(L, points->size());
+    return 1;
+}
+
 #endif
+
+static void HelpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+void DrawLuaStyleEditor(const char* title, bool* p_open = NULL, ImGuiWindowFlags flags = ImGuiWindowFlags_None)
+{
+    if (!ImGui::Begin(title, p_open, flags))
+    {
+        ImGui::End();
+        return;
+    }
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    static ImGuiStyle ref_saved_style;
+    static ImGuiStyle* ref;
+
+    // Default to using internal storage as reference
+    static bool init = true;
+    if (init && ref == NULL)
+        ref_saved_style = style;
+    init = false;
+    if (ref == NULL)
+        ref = &ref_saved_style;
+
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
+
+    if (ImGui::ShowStyleSelector("Colors##Selector"))
+        ref_saved_style = style;
+    ImGui::ShowFontSelector("Fonts##Selector");
+
+    // Simplified Settings (expose floating-pointer border sizes as boolean representing 0.0f or 1.0f)
+    if (ImGui::SliderFloat("FrameRounding", &style.FrameRounding, 0.0f, 12.0f, "%.0f"))
+        style.GrabRounding = style.FrameRounding; // Make GrabRounding always the same value as FrameRounding
+    { bool border = (style.WindowBorderSize > 0.0f); if (ImGui::Checkbox("WindowBorder", &border)) { style.WindowBorderSize = border ? 1.0f : 0.0f; } }
+    ImGui::SameLine();
+    { bool border = (style.FrameBorderSize > 0.0f);  if (ImGui::Checkbox("FrameBorder",  &border)) { style.FrameBorderSize  = border ? 1.0f : 0.0f; } }
+    ImGui::SameLine();
+    { bool border = (style.PopupBorderSize > 0.0f);  if (ImGui::Checkbox("PopupBorder",  &border)) { style.PopupBorderSize  = border ? 1.0f : 0.0f; } }
+
+    static int output_dest = 0;
+
+    // Save/Revert button
+    if (ImGui::Button("Save Ref"))
+        *ref = ref_saved_style = style;
+    ImGui::SameLine();
+    if (ImGui::Button("Revert Ref"))
+        style =* ref;
+
+    static bool output_only_modified = true;
+
+    if (ImGui::Button("Export"))
+    {
+        if (output_dest == 0)
+            ImGui::LogToClipboard();
+        else
+            ImGui::LogToTTY();
+        ImGui::LogText("%s", "local style = imgui:getStyle()\r\n");
+        for (int i = 0; i < ImGuiCol_COUNT; i++)
+        {
+            const ImVec4& col = style.Colors[i];
+            const char* name = ImGui::GetStyleColorName(i);
+            GColor gcolor = GColor::toHex(col);
+            if (!output_only_modified || memcmp(&col, &ref->Colors[i], sizeof(ImVec4)) != 0)
+                ImGui::LogText("style:setColor(ImGui.Col_%s, 0x%06X, %.2f)\r\n", name, gcolor.hex, gcolor.alpha);
+        }
+        ImGui::LogFinish();
+    }
+
+
+    ImGui::SameLine(); ImGui::SetNextItemWidth(120); ImGui::Combo("##output_type", &output_dest, "To Clipboard\0To TTY\0");
+    ImGui::SameLine(); ImGui::Checkbox("Only Modified Colors", &output_only_modified);
+
+    static ImGuiTextFilter filter;
+    filter.Draw("Filter colors", ImGui::GetFontSize() * 16);
+
+    static ImGuiColorEditFlags alpha_flags = 0;
+    if (ImGui::RadioButton("Opaque", alpha_flags == ImGuiColorEditFlags_None))             { alpha_flags = ImGuiColorEditFlags_None; } ImGui::SameLine();
+    if (ImGui::RadioButton("Alpha",  alpha_flags == ImGuiColorEditFlags_AlphaPreview))     { alpha_flags = ImGuiColorEditFlags_AlphaPreview; } ImGui::SameLine();
+    if (ImGui::RadioButton("Both",   alpha_flags == ImGuiColorEditFlags_AlphaPreviewHalf)) { alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf; } ImGui::SameLine();
+    HelpMarker(
+                "In the color list:\n"
+                "Left-click on colored square to open color picker,\n"
+                "Right-click to open edit options menu.");
+
+    ImGui::BeginChild("##colors", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NavFlattened);
+    ImGui::PushItemWidth(-160);
+    for (int i = 0; i < ImGuiCol_COUNT; i++)
+    {
+        const char* name = ImGui::GetStyleColorName(i);
+        if (!filter.PassFilter(name))
+            continue;
+        ImGui::PushID(i);
+        ImGui::ColorEdit4("##color", (float*)&style.Colors[i], ImGuiColorEditFlags_AlphaBar | alpha_flags);
+        if (memcmp(&style.Colors[i], &ref->Colors[i], sizeof(ImVec4)) != 0)
+        {
+            // Tips: in a real user application, you may want to merge and use an icon font into the main font,
+            // so instead of "Save"/"Revert" you'd use icons!
+            // Read the FAQ and docs/FONTS.md about using icon fonts. It's really easy and super convenient!
+            ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Save")) { ref->Colors[i] = style.Colors[i]; }
+            ImGui::SameLine(0.0f, style.ItemInnerSpacing.x); if (ImGui::Button("Revert")) { style.Colors[i] = ref->Colors[i]; }
+        }
+        ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+        ImGui::TextUnformatted(name);
+        ImGui::PopID();
+    }
+    ImGui::PopItemWidth();
+    ImGui::EndChild();
+
+    ImGui::End();
+}
+
+int ShowLuaStyleEditor(lua_State* L)
+{
+    const char* title = luaL_checkstring(L, 2);
+
+    ImGuiWindowFlags window_flags = luaL_optinteger(L, 4, ImGuiWindowFlags_None);
+
+    int type = lua_type(L, 3);
+    if (type == LUA_TBOOLEAN)
+    {
+        bool p_open = lua_toboolean(L, 3);
+        DrawLuaStyleEditor(title, &p_open, window_flags);
+        lua_pushboolean(L, p_open);
+        return 1;
+    }
+    else
+    {
+        DrawLuaStyleEditor(title, NULL, window_flags);
+        return 0;
+    }
+}
+
+struct ExampleAppLog
+{
+    ImGuiTextBuffer     Buf;
+    ImGuiTextFilter     Filter;
+    ImVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
+    bool                AutoScroll;  // Keep scrolling if already at the bottom.
+    bool                Shown;
+
+    ExampleAppLog()
+    {
+        AutoScroll = true;
+        Clear();
+    }
+
+    void    Clear()
+    {
+        Buf.clear();
+        LineOffsets.clear();
+        LineOffsets.push_back(0);
+    }
+
+    void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
+    {
+        int old_size = Buf.size();
+        va_list args;
+        va_start(args, fmt);
+        Buf.appendfv(fmt, args);
+        va_end(args);
+        for (int new_size = Buf.size(); old_size < new_size; old_size++)
+            if (Buf[old_size] == '\n')
+                LineOffsets.push_back(old_size + 1);
+    }
+
+    void    Draw(const char* title, bool* p_open = NULL, ImGuiWindowFlags flags = ImGuiWindowFlags_None)
+    {
+        if (!ImGui::Begin(title, p_open, flags))
+        {
+            ImGui::End();
+            return;
+        }
+
+        // Options menu
+        if (ImGui::BeginPopup("Options"))
+        {
+            ImGui::Checkbox("Auto-scroll", &AutoScroll);
+            ImGui::EndPopup();
+        }
+
+        // Main window
+        if (ImGui::Button("Options"))
+            ImGui::OpenPopup("Options");
+        ImGui::SameLine();
+        bool clear = ImGui::Button("Clear");
+        ImGui::SameLine();
+        bool copy = ImGui::Button("Copy");
+        ImGui::SameLine();
+        Filter.Draw("Filter", -100.0f);
+        ImGui::SameLine();
+        if (ImGui::Button("X"))
+            Filter.Clear();
+
+        ImGui::Separator();
+        ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+        if (clear)
+            Clear();
+        if (copy)
+            ImGui::LogToClipboard();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        const char* buf = Buf.begin();
+        const char* buf_end = Buf.end();
+        if (Filter.IsActive())
+        {
+            // In this example we don't use the clipper when Filter is enabled.
+            // This is because we don't have a random access on the result on our filter.
+            // A real application processing logs with ten of thousands of entries may want to store the result of
+            // search/filter.. especially if the filtering function is not trivial (e.g. reg-exp).
+            for (int line_no = 0; line_no < LineOffsets.Size; line_no++)
+            {
+                const char* line_start = buf + LineOffsets[line_no];
+                const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
+                if (Filter.PassFilter(line_start, line_end))
+                    ImGui::TextUnformatted(line_start, line_end);
+            }
+        }
+        else
+        {
+            // The simplest and easy way to display the entire buffer:
+            //   ImGui::TextUnformatted(buf_begin, buf_end);
+            // And it'll just work. TextUnformatted() has specialization for large blob of text and will fast-forward
+            // to skip non-visible lines. Here we instead demonstrate using the clipper to only process lines that are
+            // within the visible area.
+            // If you have tens of thousands of items and their processing cost is non-negligible, coarse clipping them
+            // on your side is recommended. Using ImGuiListClipper requires
+            // - A) random access into your data
+            // - B) items all being the  same height,
+            // both of which we can handle since we an array pointing to the beginning of each line of text.
+            // When using the filter (in the block of code above) we don't have random access into the data to display
+            // anymore, which is why we don't use the clipper. Storing or skimming through the search result would make
+            // it possible (and would be recommended if you want to search through tens of thousands of entries).
+            ImGuiListClipper clipper;
+            clipper.Begin(LineOffsets.Size);
+            while (clipper.Step())
+            {
+                for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
+                {
+                    const char* line_start = buf + LineOffsets[line_no];
+                    const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
+                    ImGui::TextUnformatted(line_start, line_end);
+                }
+            }
+            clipper.End();
+        }
+        ImGui::PopStyleVar();
+
+        if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+            ImGui::SetScrollHereY(1.0f);
+
+        ImGui::EndChild();
+        ImGui::End();
+    }
+};
+
+static ExampleAppLog logapp;
+
+int ShowLog(lua_State* L)
+{
+    const char* title = luaL_checkstring(L, 2);
+    bool* p_open = getPopen(L, 3);
+    ImGuiWindowFlags window_flags = luaL_optinteger(L, 4, ImGuiWindowFlags_None);
+
+    logapp.Draw(title, p_open, window_flags);
+
+    if (p_open != nullptr)
+    {
+        logapp.Shown = *p_open;
+        lua_pushboolean(L, *p_open);
+        delete p_open;
+        return 1;
+    }
+    logapp.Shown = false;
+    return 0;
+}
+
+int WriteLog(lua_State* L)
+{
+    if (!logapp.Shown)
+        return 0;
+
+    const char* text = luaL_checkstring(L, 2);
+    logapp.AddLog("%s\n", text);
+
+    return 0;
+}
+
+int HelpMarker(lua_State* L)
+{
+    const char* message = luaL_checkstring(L, 2);
+    HelpMarker(message);
+    return 0;
+}
 
 int loader(lua_State* L)
 {
+    const luaL_Reg imguiEmptyFunctionsList[] = {
+        {NULL, NULL}
+    };
+
     const luaL_Reg imguiStylesFunctionList[] =
     {
         {"setColor", Style_SetColor},
@@ -10774,10 +11402,7 @@ int loader(lua_State* L)
     };
     g_createClass(L, "ImFontAtlas", 0, NULL, NULL, imguiFontAtlasFunctionList);
 
-    const luaL_Reg imguiFontFunctionList[] = {
-        {NULL, NULL}
-    };
-    g_createClass(L, "ImFont", 0, NULL, NULL, imguiFontFunctionList);
+    g_createClass(L, "ImFont", 0, NULL, NULL, imguiEmptyFunctionsList);
 
 #ifdef IS_BETA_BUILD
     const luaL_Reg imguiDockNodeFunctionList[] = {
@@ -10890,8 +11515,7 @@ int loader(lua_State* L)
         {NULL, NULL}
     };
     g_createClass(L, "ImGuiTabItem", 0, NULL, NULL, imguiTabItemFunctionList);
-#endif
-#ifdef IS_BETA_BUILD
+
     const luaL_Reg imguiNodeEditorFunctionList[] = {
         //{"getCurrentEditor", ED_GetCurrentEditor},
         //{"createEditor", ED_CreateEditor},
@@ -11046,6 +11670,125 @@ int loader(lua_State* L)
     };
     g_createClass(L, "ImGuiEDStyle", 0, NULL, NULL, imguiEDStyleFunctionsList);
 
+    const luaL_Reg imguiTextEditorFunctionsList[] = {
+        {"setLanguageDefinition", TE_SetLanguageDefinition},
+        {"getLanguageDefinition", TE_GetLanguageDefinition},
+
+        {"getLanguageCPP", TE_GetLanguageDefinition_CPP},
+        {"getLanguageGLSL", TE_GetLanguageDefinition_GLSL},
+        {"getLanguageHLSL", TE_GetLanguageDefinition_HLSL},
+        {"getLanguageC", TE_GetLanguageDefinition_C},
+        {"getLanguageSQL", TE_GetLanguageDefinition_SQL},
+        {"getLanguageAngelScript", TE_GetLanguageDefinition_AngelScript},
+        {"getLanguageLua", TE_GetLanguageDefinition_Lua},
+
+        {"getPaletteDark", TE_GetPalette_Dark},
+        {"getPaletteLight", TE_GetPalette_Light},
+        {"getPaletteRetro", TE_GetPalette_Retro},
+
+        {"setPalette", TE_SetPalette},
+        {"getPalette", TE_GetPalette},
+
+        {"setErrorMarkers", TE_SetErrorMarkers},
+        {"setBreakpoints", TE_SetBreakpoints},
+
+        {"render", TE_Render},
+
+        {"setText", TE_SetText},
+        {"getText", TE_GetText},
+        {"setTextLines", TE_SetTextLines},
+        {"getTextLines", TE_GetTextLines},
+
+        {"getSelectedText", TE_GetSelectedText},
+        {"getCurrentLineText", TE_GetCurrentLineText},
+
+        {"getTotalLines", TE_GetTotalLines},
+        {"isOverwrite", TE_IsOverwrite},
+
+        {"setReadOnly", TE_SetReadOnly},
+        {"isReadOnly", TE_IsReadOnly},
+        {"isTextChanged", TE_IsTextChanged},
+        {"isCursorPositionChanged", TE_IsCursorPositionChanged},
+
+        {"setColorizerEnable", TE_SetColorizerEnable},
+        {"isColorizerEnabled", TE_IsColorizerEnabled},
+
+        {"getCursorPosition", TE_GetCursorPosition},
+        {"setCursorPosition", TE_SetCursorPosition},
+
+        {"setHandleMouseInputs", TE_SetHandleMouseInputs},
+        {"isHandleMouseInputsEnabled", TE_IsHandleMouseInputsEnabled},
+
+        {"setHandleKeyboardInputs", TE_SetHandleKeyboardInputs},
+        {"isHandleKeyboardInputsEnabled", TE_IsHandleKeyboardInputsEnabled},
+
+        {"setImGuiChildIgnored", TE_SetImGuiChildIgnored},
+        {"isImGuiChildIgnored", TE_IsImGuiChildIgnored},
+
+        {"setShowWhitespaces", TE_SetShowWhitespaces},
+        {"isShowingWhitespaces", TE_IsShowingWhitespaces},
+
+        {"setTabSize", TE_SetTabSize},
+        {"getTabSize", TE_GetTabSize},
+
+        {"insertText", TE_InsertText},
+
+        {"moveUp", TE_MoveUp},
+        {"moveDown", TE_MoveDown},
+        {"moveLeft", TE_MoveLeft},
+        {"moveRight", TE_MoveRight},
+        {"moveTop", TE_MoveTop},
+        {"moveBottom", TE_MoveBottom},
+        {"moveHome", TE_MoveHome},
+        {"moveEnd", TE_MoveEnd},
+
+        {"setSelectionStart", TE_SetSelectionStart},
+        {"setSelectionEnd", TE_SetSelectionEnd},
+        {"setSelection", TE_SetSelection},
+        {"selectWordUnderCursor", TE_SelectWordUnderCursor},
+        {"selectAll", TE_SelectAll},
+        {"hasSelection", TE_HasSelection},
+
+        {"copy", TE_Copy},
+        {"cut", TE_Cut},
+        {"paste", TE_Paste},
+        {"delete", TE_Delete},
+
+        {"canUndo", TE_CanUndo},
+        {"canRedo", TE_CanRedo},
+        {"undo", TE_Undo},
+        {"redo", TE_Redo},
+
+        {NULL, NULL}
+    };
+    g_createClass(L, "ImGuiTextEditor", 0, initTextEditor, NULL, imguiTextEditorFunctionsList);
+
+    g_createClass(L, "TextEditorPalette", 0, NULL, NULL, imguiEmptyFunctionsList);
+
+    const luaL_Reg imguiLanguageDefenitionFunctionsList[] = {
+        {"getName", TE_GetName},
+        {NULL, NULL}
+    };
+    g_createClass(L, "TextEditorLanguageDefinition", 0, NULL, NULL, imguiLanguageDefenitionFunctionsList);
+
+    const luaL_Reg imguiErrorMarkersFunctionsList[] = {
+        {"add", EM_MAdd},
+        {"remove", EM_MRemove},
+        {"get", EM_MGet},
+        {"getSize", EM_MSize},
+        {NULL, NULL}
+    };
+    g_createClass(L, "ImGuiErrorMarkers", 0, initErrorMarkers, NULL, imguiErrorMarkersFunctionsList);
+
+    const luaL_Reg imguiBreakpointsFunctionsList[] = {
+        {"add", EM_BAdd},
+        {"remove", EM_BRemove},
+        {"get", EM_BGet},
+        {"getSize", EM_BSize},
+
+        {NULL, NULL}
+    };
+    g_createClass(L, "ImGuiBreakpoints", 0, initBreakpoints, NULL, imguiBreakpointsFunctionsList);
 #endif
 
     const luaL_Reg imguiPayloadFunctionsList[] = {
@@ -11097,6 +11840,8 @@ int loader(lua_State* L)
         {"getAutoUpdateCursor", GetAutoUpdateCursor},
         {"setResetTouchPosOnEnd", SetResetTouchPosOnEnd},
         {"getResetTouchPosOnEnd", GetResetTouchPosOnEnd},
+
+        {"helpMarker", HelpMarker},
 
         // Fonts API
         {"pushFont", PushFont},
