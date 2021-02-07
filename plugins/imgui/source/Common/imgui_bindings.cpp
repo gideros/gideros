@@ -2902,7 +2902,7 @@ int DragFloat2(lua_State* L)
 int DragFloat3(lua_State* L)
 {
     const char* label = luaL_checkstring(L, 2);
-    float vec3f[4];
+    float vec3f[3];
     vec3f[0] = luaL_checknumber(L, 3);
     vec3f[1] = luaL_checknumber(L, 4);
     vec3f[2] = luaL_checknumber(L, 5);
@@ -8216,7 +8216,7 @@ int FontAtlas_AddFonts(lua_State *L)
 int FontAtlas_Build(lua_State* L)
 {
     ImFontAtlas* atlas = getFontAtlas(L);
-    g_id backupID = (g_id)atlas->TexID;
+    gtexture_delete((g_id)atlas->TexID);
 
     atlas->Build();
 
@@ -8224,8 +8224,8 @@ int FontAtlas_Build(lua_State* L)
     int width, height;
     atlas->GetTexDataAsRGBA32(&pixels, &width, &height);
 
-    gtexture_update(backupID, width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP, GTEXTURE_LINEAR, pixels);
-    atlas->TexID = (void *)backupID;
+    g_id id = gtexture_create(width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP, GTEXTURE_LINEAR, pixels, NULL, NULL);
+    atlas->TexID = (void *)id;
 
     return 0;
 }
