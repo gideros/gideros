@@ -30,7 +30,7 @@
 
 #include "imgui_src/imgui.h"
 #include "imgui_src/imgui_internal.h"
-#include "custom/TextEditor.h" // https://github.com/BalazsJako/ImGuiColorTextEdit
+#include "TextEditor.h" // https://github.com/BalazsJako/ImGuiColorTextEdit
 
 #ifdef IS_BETA_BUILD
 #define PLUGIN_NAME "ImGui_beta"
