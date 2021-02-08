@@ -630,6 +630,29 @@ void bindEnums(lua_State* L)
     BIND_ENUM(L, ImGuiCol_DockingEmptyBg, "Col_DockingEmptyBg");
 #endif
 
+    // TextEditor
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Default, "TE_Default");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Keyword, "TE_Keyword");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Number, "TE_Number");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::String, "TE_String");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::CharLiteral, "TE_CharLiteral");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Punctuation, "TE_Punctuation");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Preprocessor, "TE_Preprocessor");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Identifier, "TE_Identifier");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::KnownIdentifier, "TE_KnownIdentifier");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::PreprocIdentifier, "TE_PreprocIdentifier");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Comment, "TE_Comment");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::MultiLineComment, "TE_MultiLineComment");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Background, "TE_Background");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Cursor, "TE_Cursor");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Selection, "TE_Selection");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::ErrorMarker, "TE_ErrorMarker");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::Breakpoint, "TE_Breakpoint");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::LineNumber, "TE_LineNumber");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::CurrentLineFill, "TE_CurrentLineFill");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::CurrentLineFillInactive, "TE_CurrentLineFillInactive");
+    BIND_ENUM(L, (int)TextEditor::PaletteIndex::CurrentLineEdge, "TE_CurrentLineEdge");
+
     //ImGuiDataType
     BIND_ENUM(L, ImGuiDataType_U8, "DataType_U8");
     BIND_ENUM(L, ImGuiDataType_S64, "DataType_S64");
@@ -10124,6 +10147,28 @@ int initTextEditor(lua_State* L)
     return 1;
 }
 
+int TE_LoadPalette(lua_State* L)
+{
+    luaL_checktype(L, 2, LUA_TTABLE);
+    int count = luaL_getn(L, 2);
+    const int MAX = (int)TextEditor::PaletteIndex::Max;
+    LUA_ASSERTF(count / 2 == MAX, "Incorrect number of colors. Expected: %d, but got: %d", MAX, count / 2);
+    TextEditor* editor = getPtr<TextEditor>(L, "ImGuiTextEditor", 1);
+    int j = 0;
+    for (int i = 0; i < count; i+=2)
+    {
+        lua_rawgeti(L, 2, i + 1);
+        lua_rawgeti(L, 2, i + 2);
+        int hex =luaL_checkinteger(L, -2);
+        float alpha = luaL_checknumber(L, -1);
+        ImU32 color = GColor::toU32(hex, alpha);
+        lua_pop(L, 2);
+        editor->SetPaletteColor(j, color);
+        j++;
+    }
+    return 0;
+}
+
 int TE_SetLanguageDefinition(lua_State* L)
 {
     TextEditor* editor = getPtr<TextEditor>(L, "ImGuiTextEditor", 1);
@@ -10223,6 +10268,15 @@ int TE_SetPalette(lua_State* L)
     TextEditor* editor = getPtr<TextEditor>(L, "ImGuiTextEditor", 1);
     TextEditor::Palette& palette = *getPtr<TextEditor::Palette>(L, "TextEditorPalette", 2);
     editor->SetPalette(palette);
+    return 0;
+}
+
+int TE_SetPaletteColor(lua_State* L)
+{
+    int i = luaL_checkinteger(L, 2);
+    ImU32 color = GColor::toU32(luaL_checkinteger(L, 3), luaL_optnumber(L, 4, 1.0f));
+    TextEditor* editor = getPtr<TextEditor>(L, "ImGuiTextEditor", 1);
+    editor->SetPaletteColor(i, color);
     return 0;
 }
 
@@ -11593,6 +11647,7 @@ int loader(lua_State* L)
 #endif
 
     const luaL_Reg imguiTextEditorFunctionsList[] = {
+
         {"setLanguageDefinition", TE_SetLanguageDefinition},
         {"getLanguageDefinition", TE_GetLanguageDefinition},
 
@@ -11610,6 +11665,9 @@ int loader(lua_State* L)
 
         {"setPalette", TE_SetPalette},
         {"getPalette", TE_GetPalette},
+
+        {"setPaletteColor", TE_SetPaletteColor},
+        {"loadPalette", TE_LoadPalette},
 
         {"setErrorMarkers", TE_SetErrorMarkers},
         {"setBreakpoints", TE_SetBreakpoints},
