@@ -18,6 +18,7 @@ SRCS= \
         Common/imgui_src/imgui_widgets \
         Common/imgui_src/imgui_tables \
 	   	Common/imgui_user \
+	   	Common/TextEditor \
 	   	../../../2dsg/Matrices \
 	   	../../../2dsg/mouseevent \
 	   	../../../2dsg/touchevent \

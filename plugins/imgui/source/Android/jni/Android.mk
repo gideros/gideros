@@ -48,6 +48,7 @@ LSOURCES := \
         ../Common/imgui_src/imgui_widgets.cpp \
         ../Common/imgui_src/imgui_tables.cpp \
         ../Common/imgui_user.cpp \
+        ../Common/TextEditor.cpp \
 	   	../../../../2dsg/Matrices.cpp \
 	   	../../../../2dsg/mouseevent.cpp \
 	   	../../../../2dsg/touchevent.cpp \
