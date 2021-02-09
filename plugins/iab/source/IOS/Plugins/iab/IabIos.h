@@ -11,9 +11,9 @@
 #include "iab.h"
 
 @interface IabIos : NSObject<SKProductsRequestDelegate, SKPaymentTransactionObserver>
-@property (nonatomic, assign) NSString *iap;
-@property (nonatomic, assign) NSMutableDictionary *prods;
-@property (nonatomic, assign) NSMutableDictionary *prodKeys;
+@property (nonatomic) NSString *iap;
+@property (nonatomic) NSMutableDictionary *prods;
+@property (nonatomic) NSMutableDictionary *prodKeys;
 
 -(id)init;
 -(void)deinit;

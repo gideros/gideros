@@ -1,6 +1,7 @@
 #include "dependencygraph.h"
 #include <stack>
 #include <QFile>
+#include <QDir>
 #include <QTextStream>
 
 void DependencyGraph::Vertex::parseTags(QDir projectDir,const DependencyGraph *graph,std::map<QString, QString> fileMap) {
@@ -21,6 +22,9 @@ void DependencyGraph::Vertex::parseTags(QDir projectDir,const DependencyGraph *g
                     if (lc>=0)
                         line=thisFile.mid(0,lc+1)+line;
                 }
+                else
+                    line=line.mid(1);
+                line=QDir::cleanPath(line);
                 Vertex *match=nullptr;
                 for (std::map<QString,QString>::iterator it=fileMap.begin();it!=fileMap.end();it++)
                     if (it->second==line) { match=graph->getVertex(it->first); break; }
