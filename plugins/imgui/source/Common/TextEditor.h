@@ -191,6 +191,7 @@ public:
 	const Palette& GetPalette() const { return mPaletteBase; }
 	void SetPalette(const Palette& aValue);
 	void SetPaletteColor(unsigned int index, ImU32 color);
+	ImU32 GetPaletteColor(unsigned int index);
 
 	void SetErrorMarkers(const ErrorMarkers& aMarkers) { mErrorMarkers = aMarkers; }
 	void SetBreakpoints(const Breakpoints& aMarkers) { mBreakpoints = aMarkers; }

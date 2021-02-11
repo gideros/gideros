@@ -79,6 +79,11 @@ void TextEditor::SetPaletteColor(unsigned int index, ImU32 color)
     mPaletteBase[index] = color;
 }
 
+ImU32 TextEditor::GetPaletteColor(unsigned int index)
+{
+    return mPaletteBase[index];
+}
+
 std::string TextEditor::GetText(const Coordinates & aStart, const Coordinates & aEnd) const
 {
     std::string result;
