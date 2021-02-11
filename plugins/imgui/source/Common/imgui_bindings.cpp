@@ -6506,13 +6506,12 @@ int ColorConvertHSVtoRGB(lua_State* L)
 int ColorConvertHEXtoHSV(lua_State* L)
 {
     int hex = luaL_checkinteger(L, 1);
-    float alpha = luaL_optnumber(L, 2, 1.0f);
 
     float h = 0;
     float s = 0;
     float v = 0;
 
-    ImVec4 in = GColor::toVec4(hex, alpha);
+    ImVec4 in = GColor::toVec4(hex);
 
     ImGui::ColorConvertRGBtoHSV(in.x, in.y, in.z, h, s, v);
 
@@ -8249,6 +8248,21 @@ int FontAtlas_GetFontByIndex(lua_State* L)
     return 1;
 }
 
+int FontAtlas_GetFonts(lua_State* L)
+{
+    ImFontAtlas* atlas = getPtr<ImFontAtlas>(L, "ImFontAtlas", 1);
+    int count = atlas->Fonts.Size;
+
+    lua_createtable(L, count, 0);
+    for (int i = 0; i < count; i++)
+    {
+        g_pushInstance(L, "ImFont", atlas->Fonts[i]);
+        lua_rawseti(L, -2, i + 1);
+    }
+
+    return 1;
+}
+
 int FontAtlas_GetFontsSize(lua_State* L)
 {
     ImFontAtlas* atlas = getPtr<ImFontAtlas>(L, "ImFontAtlas", 1);
@@ -8421,7 +8435,17 @@ int ImFont_CalcTextSizeA(lua_State* L)
     lua_pushnumber(L, tsize.y);
     return 2;
 }
-//const char*       CalcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width)
+
+int ImFont_CalcWordWrapPositionA(lua_State* L)
+{
+    ImFont* font = getPtr<ImFont>(L, "ImFont", 1);
+    float scale = luaL_checknumber(L, 2);
+    const char* text = luaL_checkstring(L, 3);
+    float wrap_width = luaL_checknumber(L, 4);
+    const char* t = font->CalcWordWrapPositionA(scale, text, NULL, wrap_width);
+    lua_pushstring(L, t);
+    return 1;
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -10838,17 +10862,8 @@ int EM_MGet(lua_State* L)
     TextEditor::ErrorMarkers* markers = getPtr<TextEditor::ErrorMarkers>(L, "ImGuiErrorMarkers", 1);
     int lineNumber = luaL_checkinteger(L, 2);
     TextEditor::ErrorMarkers::iterator it = markers->find(lineNumber);
-    if (it == markers->end())
-    {
-        lua_pushnil(L);
-        return 1;
-    }
-    else
-    {
-        lua_pushnumber(L, (*it).first);
-        lua_pushstring(L, (*it).second.c_str());
-        return 2;
-    }
+    it == markers->end() ? lua_pushnil(L) : lua_pushstring(L, (*it).second.c_str());
+    return 1;
 }
 
 int EM_MSize(lua_State* L)
@@ -11457,6 +11472,7 @@ int loader(lua_State* L)
         {"addFont", FontAtlas_AddFont},
         {"addFonts", FontAtlas_AddFonts},
         {"getFont", FontAtlas_GetFontByIndex},
+        {"getFonts", FontAtlas_GetFonts},
         {"getFontsCount", FontAtlas_GetFontsSize},
         {"getCurrentFont", FontAtlas_GetCurrentFont},
         {"addDefaultFont", FontAtlas_AddDefaultFont},
@@ -11484,6 +11500,7 @@ int loader(lua_State* L)
         {"isLoaded", ImFont_IsLoaded },
         {"getDebugName", ImFont_GetDebugName },
         {"calcTextSizeA", ImFont_CalcTextSizeA },
+        {"calcWordWrapPositionA", ImFont_CalcWordWrapPositionA},
         {NULL, NULL}
     };
     g_createClass(L, "ImFont", 0, NULL, NULL, imguiFontFunctionsList);
