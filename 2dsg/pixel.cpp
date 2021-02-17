@@ -169,7 +169,7 @@ void Pixel::updateVertices() {
 		vertices[2] = Point2f(width_-vr+dx,0+dy);
 		vertices[3] = Point2f(width_+dx,0+dy);
 		vertices[4] = Point2f(0+dx,vt+dy);
-		vertices[5] = Point2f(v1+dx,vt+dy);
+		vertices[5] = Point2f(vl+dx,vt+dy);
 		vertices[6] = Point2f(width_-vr+dx,vt+dy);
 		vertices[7] = Point2f(width_+dx,vt+dy);
 		vertices[8] = Point2f(0+dx,height_-vb+dy);
