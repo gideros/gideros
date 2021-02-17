@@ -184,7 +184,7 @@ struct GColor {
         alpha = converted.alpha;
     }
 
-    static ImVec4 toVec4(int hex, double alpha = 1.0f)
+    static ImVec4 toVec4(int hex, double alpha)
     {
         return ImVec4(
             ((hex >> IM_COL32_B_SHIFT) & 0xFF) * CC,
@@ -3924,7 +3924,7 @@ int InputScalar(lua_State* L)
 int ColorEdit3(lua_State* L)
 {
     const char* label = luaL_checkstring(L, 2);
-    ImVec4 col = GColor::toVec4(luaL_checkinteger(L, 3));
+    ImVec4 col = GColor::toVec4(luaL_checkinteger(L, 3),1.0);
     ImGuiColorEditFlags flags = luaL_optinteger(L, 4, 0);
 
     bool result = ImGui::ColorEdit3(label, (float*)&col, flags);
@@ -3954,7 +3954,7 @@ int ColorEdit4(lua_State* L)
 int ColorPicker3(lua_State* L)
 {
     const char* label = luaL_checkstring(L, 2);
-    ImVec4 col = GColor::toVec4(luaL_checkinteger(L, 3));
+    ImVec4 col = GColor::toVec4(luaL_checkinteger(L, 3),1.0);
     ImGuiColorEditFlags flags = luaL_optinteger(L, 4, 0);
 
     bool result = ImGui::ColorPicker3(label, (float*)&col, flags);
