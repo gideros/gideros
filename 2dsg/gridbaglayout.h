@@ -39,6 +39,7 @@ struct GridBagConstraints {
     float anchorX,anchorY;
     float offsetX,offsetY;
     float originX,originY;
+    bool optimizeSize;
 
 
     GridBagConstraints() {
@@ -61,6 +62,8 @@ struct GridBagConstraints {
         prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
         tempHeight=tempWidth=tempX=tempY=0;
         offsetX=offsetY=originX=originY=0;
+
+        optimizeSize=false;
     }
 
     GridBagConstraints(size_t gridx, size_t gridy,
@@ -91,6 +94,7 @@ struct GridBagConstraints {
 
         prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
         tempHeight=tempWidth=tempX=tempY=0;
+        optimizeSize=false;
     }
 
     bool isVerticallyResizable() {
@@ -119,7 +123,6 @@ class Sprite;
 class GridBagLayout {
     GridBagConstraints defaultConstraints;
     GridBagLayoutInfo layoutInfo;
-    Sprite *componentAdjusting;
 protected:
     struct Rectangle {
     	float x,y,width,height;
@@ -130,7 +133,7 @@ protected:
     void getLayoutDimension(float *wdim,float *hdim,int &wsize, int &hsize);
     void getLayoutWeights(double *wdim,double *hdim,int &wsize, int &hsize);*/
     void preInitMaximumArraySizes(Sprite *parent,size_t &a0,size_t &a1);
-    void AdjustForGravity(GridBagConstraints *constraints, Rectangle &r);
+    void AdjustForGravity(Sprite *comp,GridBagConstraints *constraints, Rectangle &r);
 public:
     std::vector<float> columnWidths;
     std::vector<float> rowHeights;
@@ -144,7 +147,6 @@ public:
     float gridAnchorX,gridAnchorY;
     float zOffset;
     GridBagLayout() :
-    	    componentAdjusting(NULL),
     		equalizeCells(false),dirty(false),resizeContainer(false),
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
 			zOffset(0)

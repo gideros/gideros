@@ -424,7 +424,8 @@ public:
 
 	virtual bool setDimensions(float w,float h,bool forLayout=false);
     virtual void getDimensions(float &w,float &h);
-    virtual void getMinimumSize(float &w,float &h,bool preferred) { getDimensions(w,h); }
+    virtual void getMinimumSize(float &w,float &h,bool preferred) {  G_UNUSED(preferred);  getDimensions(w,h); }
+    virtual bool optimizeSize(float &w,float &h) { G_UNUSED(w); G_UNUSED(h); return false; }
 
     GridBagLayout *getLayoutState();
     void clearLayoutState();

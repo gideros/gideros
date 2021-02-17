@@ -52,6 +52,9 @@ public:
     }
     void getMinimumSize(float &w,float &h,bool preferred) { w=minw_; h=minh_; }
 
+	void setAnchorPoint(float x, float y);
+	void getAnchorPoint(float* x, float* y) const;
+
     void setTexturePosition(float x,float y);
     void getTexturePosition(float &x, float &y)
     {
@@ -117,6 +120,7 @@ private:
     float insett_t_,insett_b_,insett_r_,insett_l_;
     float minw_,minh_;
 	float tx_,ty_,tw_,th_; //Texture coordinates in texels
+	float anchorx_, anchory_;
 };
 
 #endif

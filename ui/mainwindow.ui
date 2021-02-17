@@ -731,12 +731,12 @@ Gideros Player, Play button is enabled.</string>
   </action>
   <action name="actionClone_Project">
    <property name="text">
-    <string>Clone Project (BETA)</string>
+    <string>Clone Project</string>
    </property>
   </action>
   <action name="actionConsolidate_Project">
    <property name="text">
-    <string>Consolidate Project (BETA)</string>
+    <string>Consolidate Project</string>
    </property>
   </action>
  </widget>

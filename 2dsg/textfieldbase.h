@@ -40,6 +40,7 @@ public:
     virtual bool setDimensions(float w,float h,bool forLayout=false);
     virtual void getDimensions(float &w,float &h);
     void getMinimumSize(float &w,float &h,bool preferred);
+    bool optimizeSize(float &w,float &h);
     void getPointFromTextPos(size_t ri,float &cx,float &cy);
     size_t getTextPosFromPoint(float &cx,float &cy);
 

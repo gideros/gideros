@@ -98,7 +98,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
     std::vector<size_t> xMaxArray(maximumArrayXIndex);
     std::vector<size_t> yMaxArray(maximumArrayYIndex);
 
-	for (compindex = 0; compindex < parent->childCount(); compindex++) {
+    for (compindex = 0; compindex < (size_t)(parent->childCount()); compindex++) {
 		comp = parent->child(compindex);
 		if ((!comp->visible())||(!comp->layoutConstraints))
 			continue;
@@ -114,7 +114,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 			curHeight = 1;
 
 		/* Adjust the grid width and height
-		 *  fix for 5005945: unneccessary loops removed
 		 */
 		px = curX + curWidth;
 		if (layoutWidth < px) {
@@ -436,17 +435,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	return r;
 } //getLayoutInfo()
 
-/**
- * Adjusts the x, y, width, and height fields to the correct
- * values depending on the constraint geometry and pads.
- * This method should only be used internally by
- * <code>GridBagLayout</code>.
- *
- * @param constraints the constraints to be applied
- * @param r the <code>Rectangle</code> to be adjusted
- * @since 1.4
- */
-void GridBagLayout::AdjustForGravity(GridBagConstraints *constraints,
+void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constraints,
 		Rectangle &r) {
     float diffx, diffy;
 
@@ -454,6 +443,27 @@ void GridBagLayout::AdjustForGravity(GridBagConstraints *constraints,
 	r.width -= (constraints->insets.left + constraints->insets.right);
 	r.y += constraints->insets.top;
 	r.height -= (constraints->insets.top + constraints->insets.bottom);
+
+	if (constraints->optimizeSize) {
+		float proposeW=r.width-constraints->ipadx;
+		float proposeH=r.height-constraints->ipady;
+		if (comp->layoutState) {
+            comp->layoutState->ArrangeGrid(comp,proposeW,proposeH);
+			GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp, PREFERREDSIZE);
+			GridInsets insets = comp->layoutState->pInsets;
+			float dw,dh;
+			comp->layoutState->getMinSize(comp, info, dw, dh, insets);
+			if (dw<proposeW)
+				constraints->minWidth=dw;
+			if (dh<proposeH)
+				constraints->minHeight=dh;
+		}
+		else if (comp->optimizeSize(proposeW,proposeH))
+		{
+			constraints->minWidth=proposeW;
+			constraints->minHeight=proposeH;
+		}
+	}
 
 	diffx = 0;
 	if ((constraints->fill != GridBagConstraints::HORIZONTAL
@@ -505,18 +515,6 @@ void GridBagLayout::AdjustForGravity(GridBagConstraints *constraints,
 	}
 }
 
-/**
- * Figures out the minimum size of the
- * master based on the information from <code>getLayoutInfo</code>.
- * This method should only be used internally by
- * <code>GridBagLayout</code>.
- *
- * @param parent the layout container
- * @param info the layout info for this parent
- * @return a <code>Dimension</code> object containing the
- *   minimum size
- * @since 1.4
- */
 void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,
         float &h, GridInsets &insets) {
     size_t i;
@@ -753,8 +751,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		}
 		if (constraints->tempHeight>0) r.height-=cellSpacingY;
 
-		componentAdjusting = comp;
-		AdjustForGravity(constraints, r);
+		AdjustForGravity(comp, constraints, r);
 
 		if (r.x < 0) {
 			r.width += r.x;
