@@ -11,15 +11,26 @@
 // Call IMGUI_CHECKVERSION() from your .cpp files to verify that the data structures your files are using are matching the ones imgui.cpp is using.
 //-----------------------------------------------------------------------------
 
+//#define IS_BETA_BUILD
+
 #pragma once
 
 #include "gstdio.h"
 typedef G_FILE* ImFileHandle;
 
+#include "debugapi.h"
+
+#ifdef IS_BETA_BUILD
+#define IM_ASSERT( exp ) do { if (!(exp)) { char buffer[1024]; sprintf(buffer, "[%d] %s: %s\n", __LINE__, __FILE__, #exp); OutputDebugStringA( buffer ); }} while(0)
+#define IM_TRACE( msg ) do { char buffer[1024]; sprintf(buffer, "    [%d] %s: %s", __LINE__, __FILE__, msg); OutputDebugStringA( buffer ); } while(0)
+#else
+#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
+#define IM_TRACE( msg )   ((void)(msg))
+#endif
+
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
 //#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)
-//#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
 
 //---- Define attributes of all API symbols declarations, e.g. for DLL under Windows
 // Using dear imgui via a shared library is not recommended, because of function call overhead and because we don't guarantee backward nor forward ABI compatibility.
@@ -52,7 +63,7 @@ typedef G_FILE* ImFileHandle;
 //#define IMGUI_USE_BGRA_PACKED_COLOR
 
 //---- Use 32-bit for ImWchar (default is 16-bit) to support full unicode code points.
-//#define IMGUI_USE_WCHAR32
+#define IMGUI_USE_WCHAR32
 
 //---- Avoid multiple STB libraries implementations, or redefine path/filenames to prioritize another version
 // By default the embedded implementations are declared static and not available outside of imgui cpp files.
@@ -103,3 +114,22 @@ typedef G_FILE* ImFileHandle;
 //#define IMGUI_DEBUG_PARANOID
 
 //---- Tip: You can add extra functions within the ImGui:: namespace, here or in your own headers files.
+
+//static void* ImFileLoadToMemory(const char* filename, const char* mode, size_t* out_file_size, int padding_bytes = 0);
+
+#include "gstdio.h"
+namespace ImGui
+{
+
+static ImFileHandle ImFileOpen(const char* filename, const char* mode) { return g_fopen(filename, mode); }
+
+static bool ImFileClose(ImFileHandle f) { return g_fclose(f) == 0; }
+
+static size_t ImFileGetSize(ImFileHandle f) { long off = 0; long sz = 0; return ((off = g_ftell(f)) != -1 && !g_fseek(f, 0, SEEK_END) && (sz = g_ftell(f)) != -1 && !g_fseek(f, off, SEEK_SET)) ? (size_t)sz : (size_t)-1; }
+
+static size_t ImFileRead(void* data, size_t sz, size_t count, ImFileHandle f) { return g_fread(data, (size_t)sz, (size_t)count, f); }
+
+static size_t ImFileWrite(const void* data, size_t sz, size_t count, ImFileHandle f) { return g_fwrite(data, (size_t)sz, (size_t)count, f); }
+
+}
+
