@@ -448,16 +448,17 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 		float proposeW=r.width-constraints->ipadx;
 		float proposeH=r.height-constraints->ipady;
 		if (comp->layoutState) {
+            comp->layoutState->optimizing=true;
             comp->layoutState->ArrangeGrid(comp,proposeW,proposeH);
 			GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp, PREFERREDSIZE);
 			GridInsets insets = comp->layoutState->pInsets;
 			float dw,dh;
 			comp->layoutState->getMinSize(comp, info, dw, dh, insets);
-			if (dw<proposeW)
-				constraints->minWidth=dw;
-			if (dh<proposeH)
-				constraints->minHeight=dh;
-		}
+            comp->layoutState->optimizing=false;
+            comp->layoutState->dirty=true;
+            constraints->minWidth=dw;
+            constraints->minHeight=dh;
+        }
 		else if (comp->optimizeSize(proposeW,proposeH))
 		{
 			constraints->minWidth=proposeW;
@@ -767,6 +768,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 		r.x+=constraints->offsetX+constraints->originX*r.width;
 		r.y+=constraints->offsetY+constraints->originY*r.height;
 
+        if (comp->layoutState)
+            comp->layoutState->optimizing=constraints->optimizeSize;
         comp->setBounds(r.x, r.y, r.width, r.height,true);
         if (zOffset!=0)
         	comp->setZ(zOffset);
@@ -775,5 +778,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
             comp->layoutState->dirty=false;
             comp->layoutState->ArrangeGrid(comp,r.width,r.height);
         }
+        if (comp->layoutState)
+            comp->layoutState->optimizing=false;
 	}
 }

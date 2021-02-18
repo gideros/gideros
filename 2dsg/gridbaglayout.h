@@ -135,6 +135,7 @@ protected:
     void preInitMaximumArraySizes(Sprite *parent,size_t &a0,size_t &a1);
     void AdjustForGravity(Sprite *comp,GridBagConstraints *constraints, Rectangle &r);
 public:
+    bool optimizing;
     std::vector<float> columnWidths;
     std::vector<float> rowHeights;
     std::vector<double> columnWeights;
@@ -147,7 +148,7 @@ public:
     float gridAnchorX,gridAnchorY;
     float zOffset;
     GridBagLayout() :
-    		equalizeCells(false),dirty(false),resizeContainer(false),
+            optimizing(false),equalizeCells(false),dirty(false),resizeContainer(false),
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
 			zOffset(0)
     {

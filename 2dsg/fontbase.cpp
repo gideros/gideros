@@ -466,8 +466,8 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		my=std::max(my,tl.parts[k].y+tl.parts[k].h-1);
 		tl.styleFlags|=tl.parts[k].styleFlags;
 	}
-	tl.w=mx-tl.x+1;
-	tl.h=my-tl.y+1;
+    tl.w=mx-tl.x+1.01; //Add a margin due to rounding issues
+    tl.h=my-tl.y+1.01;
     tl.bh=y;
     if (tl.parts.size()==0)
     {
