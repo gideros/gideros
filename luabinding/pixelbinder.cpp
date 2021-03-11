@@ -12,6 +12,8 @@ PixelBinder::PixelBinder(lua_State* L)
 	static const luaL_Reg functionList[] = {
 		{"setWidth", setWidth},
 		{"setHeight", setHeight},
+		{"getAnchorPoint", getAnchorPoint},
+		{"setAnchorPoint", setAnchorPoint},
         {"setDimensions", setDimensions},
         {"getDimensions", getDimensions},
         {"setColor", setColor},
@@ -148,6 +150,39 @@ int PixelBinder::setHeight(lua_State* L)
 	bitmap->setHeight(h);
 
 	return 0;
+}
+
+int PixelBinder::setAnchorPoint(lua_State* L)
+{
+	StackChecker checker(L, "PixelBinder::setAnchorPoint", 0);
+
+	Binder binder(L);
+
+	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+
+	lua_Number x = luaL_checknumber(L, 2);
+	lua_Number y = luaL_checknumber(L, 3);
+
+	bitmap->setAnchorPoint(x, y);
+
+	return 0;
+}
+
+int PixelBinder::getAnchorPoint(lua_State* L)
+{
+	StackChecker checker(L, "PixelBinder::getAnchorPoint", 2);
+
+	Binder binder(L);
+
+	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+
+	float x, y;
+	bitmap->getAnchorPoint(&x, &y);
+
+	lua_pushnumber(L, x);
+	lua_pushnumber(L, y);
+
+	return 2;
 }
 
 int PixelBinder::setNinePatch(lua_State *L) {
