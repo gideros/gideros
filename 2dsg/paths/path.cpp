@@ -1496,8 +1496,82 @@ static void add_stroke_quad(struct path *p, float x0,
 }
 
 #else
+static float lengthSq(float x1,float y1,float x2,float y2,float px,float py)
+{
+       // Adjust vectors relative to x1,y1
+       // x2,y2 becomes relative vector from x1,y1 to end of segment
+       x2 -= x1;
+       y2 -= y1;
+       // px,py becomes relative vector from x1,y1 to test point
+       px -= x1;
+       py -= y1;
+       double dotprod = px * x2 + py * y2;
+       double projlenSq;
+       if (dotprod <= 0.0) {
+           // px,py is on the side of x1,y1 away from x2,y2
+           // distance to segment is length of px,py vector
+           // "length of its (clipped) projection" is now 0.0
+           projlenSq = 0.0;
+       } else {
+           // switch to backwards vectors relative to x2,y2
+           // x2,y2 are already the negative of x1,y1=>x2,y2
+           // to get px,py to be the negative of px,py=>x2,y2
+           // the dot product of two negated vectors is the same
+           // as the dot product of the two normal vectors
+           px = x2 - px;
+           py = y2 - py;
+           dotprod = px * x2 + py * y2;
+           if (dotprod <= 0.0) {
+               // px,py is on the side of x2,y2 away from x1,y1
+               // distance to segment is length of (backwards) px,py vector
+               // "length of its (clipped) projection" is now 0.0
+               projlenSq = 0.0;
+           } else {
+               // px,py is between x1,y1 and x2,y2
+               // dotprod is the length of the px,py vector
+               // projected on the x2,y2=>x1,y1 vector times the
+               // length of the x2,y2=>x1,y1 vector
+               projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
+           }
+       }
+       // Distance to line is now the length of the relative point
+       // vector minus the length of its projection onto the line
+       // (which is zero if the projection falls outside the range
+       //  of the line segment).
+       double lenSq = px * px + py * py - projlenSq;
+       if (lenSq < 0) {
+           lenSq = 0;
+       }
+       return lenSq;
+}
 
-static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
+static void subdivide_quad(float c[],float r[]) {
+        double x1 = c[0];
+        double y1 = c[1];
+        double ctrlx = c[2];
+        double ctrly = c[3];
+        double x2 = c[4];
+        double y2 = c[5];
+
+        r[4] = x2;
+        r[5] = y2;
+        x1 = (x1 + ctrlx) / 2.0;
+        y1 = (y1 + ctrly) / 2.0;
+        x2 = (x2 + ctrlx) / 2.0;
+        y2 = (y2 + ctrly) / 2.0;
+        ctrlx = (x1 + x2) / 2.0;
+        ctrly = (y1 + y2) / 2.0;
+        c[2] = x1;
+        c[3] = y1;
+        c[4] = ctrlx;
+        c[5] = ctrly;
+        r[0] = ctrlx;
+        r[1] = ctrly;
+        r[2] = x2;
+        r[3] = y2;
+}
+
+static void add_stroke_quad_int(struct path *path, double x0, double y0, double x1,
 		double y1, double x2, double y2) {
 	int i;
 
@@ -1560,12 +1634,31 @@ static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
 	kv_push_back(g->indices, index + 3);
 }
 
+static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
+		double y1, double x2, double y2,int max_sub) {
+	if ((max_sub<=0)||(lengthSq(x0,y0,x2,y2,x1,y1)<10)) { //FLATNESS
+		add_stroke_quad_int(path,x0,y0,x1,y1,x2,y2);
+		return;
+	}
+	float c[6],d[6];
+	c[0]=x0;
+	c[1]=y0;
+	c[2]=x1;
+	c[3]=y1;
+	c[4]=x2;
+	c[5]=y2;
+	subdivide_quad(c,d);
+	add_stroke_quad(path,c[0],c[1],c[2],c[3],c[4],c[5],max_sub-1);
+	add_stroke_quad(path,d[0],d[1],d[2],d[3],d[4],d[5],max_sub-1);
+}
+
 #endif
 
 static void add_stroke_quad_dashed(struct path *path, double x0, double y0,
 		double x1, double y1, double x2, double y2, double *dash_offset) {
+	int divide=4;
 	if (path->num_dashes == 0) {
-		add_stroke_quad(path, x0, y0, x1, y1, x2, y2);
+		add_stroke_quad(path, x0, y0, x1, y1, x2, y2,divide);
 		return;
 	}
 
@@ -1594,7 +1687,7 @@ static void add_stroke_quad_dashed(struct path *path, double x0, double y0,
 			double qout[6];
 			quad_segment(q, t0, t1, qout);
 			add_stroke_quad(path, qout[0], qout[1], qout[2], qout[3], qout[4],
-					qout[5]);
+					qout[5],divide);
 		}
 
 		offset += path->dashes[i] + path->dashes[i + 1];
@@ -2543,82 +2636,6 @@ static void get_path_points_line(float sx, float sy, float dx, float dy,
 	}
 	offset -= dist;
 }
-
-static float lengthSq(float x1,float y1,float x2,float y2,float px,float py)
-{
-       // Adjust vectors relative to x1,y1
-       // x2,y2 becomes relative vector from x1,y1 to end of segment
-       x2 -= x1;
-       y2 -= y1;
-       // px,py becomes relative vector from x1,y1 to test point
-       px -= x1;
-       py -= y1;
-       double dotprod = px * x2 + py * y2;
-       double projlenSq;
-       if (dotprod <= 0.0) {
-           // px,py is on the side of x1,y1 away from x2,y2
-           // distance to segment is length of px,py vector
-           // "length of its (clipped) projection" is now 0.0
-           projlenSq = 0.0;
-       } else {
-           // switch to backwards vectors relative to x2,y2
-           // x2,y2 are already the negative of x1,y1=>x2,y2
-           // to get px,py to be the negative of px,py=>x2,y2
-           // the dot product of two negated vectors is the same
-           // as the dot product of the two normal vectors
-           px = x2 - px;
-           py = y2 - py;
-           dotprod = px * x2 + py * y2;
-           if (dotprod <= 0.0) {
-               // px,py is on the side of x2,y2 away from x1,y1
-               // distance to segment is length of (backwards) px,py vector
-               // "length of its (clipped) projection" is now 0.0
-               projlenSq = 0.0;
-           } else {
-               // px,py is between x1,y1 and x2,y2
-               // dotprod is the length of the px,py vector
-               // projected on the x2,y2=>x1,y1 vector times the
-               // length of the x2,y2=>x1,y1 vector
-               projlenSq = dotprod * dotprod / (x2 * x2 + y2 * y2);
-           }
-       }
-       // Distance to line is now the length of the relative point
-       // vector minus the length of its projection onto the line
-       // (which is zero if the projection falls outside the range
-       //  of the line segment).
-       double lenSq = px * px + py * py - projlenSq;
-       if (lenSq < 0) {
-           lenSq = 0;
-       }
-       return lenSq;
-}
-
-static void subdivide_quad(float c[],float r[]) {
-        double x1 = c[0];
-        double y1 = c[1];
-        double ctrlx = c[2];
-        double ctrly = c[3];
-        double x2 = c[4];
-        double y2 = c[5];
-
-        r[4] = x2;
-        r[5] = y2;
-        x1 = (x1 + ctrlx) / 2.0;
-        y1 = (y1 + ctrly) / 2.0;
-        x2 = (x2 + ctrlx) / 2.0;
-        y2 = (y2 + ctrly) / 2.0;
-        ctrlx = (x1 + x2) / 2.0;
-        ctrly = (y1 + y2) / 2.0;
-        c[2] = x1;
-        c[3] = y1;
-        c[4] = ctrlx;
-        c[5] = ctrly;
-        r[0] = ctrlx;
-        r[1] = ctrly;
-        r[2] = x2;
-        r[3] = y2;
-}
-
 
 static void get_path_points_curve(float sx, float sy, float tx, float ty,
 		float dx, float dy, float &offset, float interval, int &maxpts,
