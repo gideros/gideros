@@ -1545,6 +1545,15 @@ static float lengthSq(float x1,float y1,float x2,float y2,float px,float py)
        return lenSq;
 }
 
+static float flatnessSq(float x1,float y1,float x2,float y2,float px,float py)
+{
+    float lsq=lengthSq(x1,y1,x2,y2,px,py);
+    x2 -= x1;
+    y2 -= y1;
+    lsq/=(x2*x2+y2*y2);
+    return lsq;
+}
+
 static void subdivide_quad(float c[],float r[]) {
         double x1 = c[0];
         double y1 = c[1];
@@ -1584,7 +1593,7 @@ static void add_stroke_quad_int(struct path *path, double x0, double y0, double 
 
 	double cx, cy, ux, uy, vx, vy;
 	get_quadratic_bounds_oriented(x0, y0, x1, y1, x2, y2,
-			path->stroke_width + 1, &cx, &cy, &ux, &uy, &vx, &vy);
+			path->stroke_width*2, &cx, &cy, &ux, &uy, &vx, &vy);
 
 	double a = -2 * dot(Ax, Ay, Ax, Ay);
 	double b = -3 * dot(Ax, Ay, Bx, By);
@@ -1636,7 +1645,7 @@ static void add_stroke_quad_int(struct path *path, double x0, double y0, double 
 
 static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
 		double y1, double x2, double y2,int max_sub) {
-	if ((max_sub<=0)||(lengthSq(x0,y0,x2,y2,x1,y1)<10)) { //FLATNESS
+	if ((max_sub<=0)||(flatnessSq(x0,y0,x2,y2,x1,y1)<0.1)) { //FLATNESS
 		add_stroke_quad_int(path,x0,y0,x1,y1,x2,y2);
 		return;
 	}
