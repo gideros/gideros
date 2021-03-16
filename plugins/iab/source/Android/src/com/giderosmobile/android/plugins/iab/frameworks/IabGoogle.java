@@ -1,34 +1,46 @@
 package com.giderosmobile.android.plugins.iab.frameworks;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.giderosmobile.android.plugins.iab.Iab;
 import com.giderosmobile.android.plugins.iab.IabInterface;
-import com.giderosmobile.android.plugins.iab.frameworks.google.IabHelper;
-import com.giderosmobile.android.plugins.iab.frameworks.google.IabResult;
-import com.giderosmobile.android.plugins.iab.frameworks.google.Inventory;
-import com.giderosmobile.android.plugins.iab.frameworks.google.Purchase;
-import com.giderosmobile.android.plugins.iab.frameworks.google.SkuDetails;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.SparseArray;
 
-public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedListener, IabHelper.QueryInventoryFinishedListener, IabHelper.OnIabPurchaseFinishedListener, IabHelper.OnConsumeFinishedListener {
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+public class IabGoogle implements IabInterface, PurchasesUpdatedListener {
 	private static WeakReference<Activity> sActivity;
-	IabHelper mHelper;
+	private BillingClient billingClient;
 	boolean wasChecked = false;
 	int sdkAvailable = -1;
-	
-	public IabHelper getHelper() { return mHelper; }
-	
+
 	public static Boolean isInstalled(){
 		if(Iab.isPackageInstalled("com.android.vending") || 
 			Iab.isPackageInstalled("com.google.vending") ||
@@ -44,9 +56,9 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 
 	@Override
 	public void onDestroy() {
-		if (mHelper != null) 
-			mHelper.disposeWhenFinished();  // updated from just dispose because of note in helper saying dispose shouldn't be used.
-		mHelper = null;
+		if (billingClient!=null)
+			billingClient.endConnection();
+		billingClient=null;
 	}
 	
 	@Override
@@ -54,18 +66,35 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		mHelper.handleActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
 	public void init(Object parameters) {
-		SparseArray<byte[]> p = (SparseArray<byte[]>)parameters;
-		try {
-			mHelper = new IabHelper(sActivity.get(), new String(p.get(0), "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		mHelper.startSetup(this);
+		billingClient = BillingClient.newBuilder(sActivity.get()).setListener(this).build();
+		billingClient.startConnection(new BillingClientStateListener() {
+			@Override
+			public void onBillingSetupFinished(BillingResult result) {
+				if (result.getResponseCode()==BillingClient.BillingResponseCode.OK)
+					sdkAvailable = 1;
+				else
+					sdkAvailable = 0;
+				if(wasChecked)
+				{
+					if(sdkAvailable == 1)
+						Iab.available(this);
+					else
+						Iab.notAvailable(this);
+				}
+			}
+
+			@Override
+			public void onBillingServiceDisconnected() {
+				sdkAvailable = 0;
+				if(wasChecked)
+					Iab.notAvailable(this);
+			}
+		});
+
 	}
 
 	@Override
@@ -77,11 +106,13 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 		else
 			wasChecked = true;
 	}
-	
+
+	Map<String, SkuDetails> inventory=new HashMap<String,SkuDetails>();
+	Set<String> purchasing=new HashSet<String>();
+
 	@Override
 	public void request(Hashtable<String, String> products) {
 		if (sdkAvailable == 1) {
-			mHelper.flagEndAsync();
 			List<String> skuList = new ArrayList<String>();
 			Enumeration<String> e = products.keys();
 			while(e.hasMoreElements())
@@ -90,7 +121,45 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 				skuList.add(products.get(prodName));
 			}
 			try {
-				mHelper.queryInventoryAsync(true, skuList, null, this);
+				billingClient.querySkuDetailsAsync(SkuDetailsParams.newBuilder().setType(BillingClient.SkuType.INAPP).setSkusList(skuList).build(),
+						new SkuDetailsResponseListener() {
+							@Override
+							public void onSkuDetailsResponse(@NonNull BillingResult result, @Nullable List<com.android.billingclient.api.SkuDetails> list) {
+								if (result.getResponseCode()!=BillingClient.BillingResponseCode.OK) {
+									Iab.productsError(this, result.getDebugMessage());
+									return;
+								}
+								Hashtable<String, String> products = Iab.getProducts(this);
+								if(products == null){
+									Iab.productsError(this, "Request Failed");
+									return;
+								}
+								Map<String, SkuDetails> inv=new HashMap<String, SkuDetails>();
+								for (SkuDetails s:list)
+									inv.put(s.getSku(),s);
+								inventory=inv;
+								SparseArray<Bundle> arr = new SparseArray<Bundle>();
+								Enumeration<String> e = products.keys();
+								int i = 0;
+								while(e.hasMoreElements())
+								{
+									String prodName = e.nextElement();
+									SkuDetails details = inv.get(products.get(prodName));
+									if(details != null)
+									{
+										Bundle map = new Bundle();
+										map.putString("productId", products.get(prodName));
+										map.putString("title", details.getTitle());
+										map.putString("description", details.getDescription());
+										map.putString("price", details.getPrice());
+										arr.put(i, map);
+										i++;
+									}
+								}
+								Iab.productsComplete(this, arr);
+
+							}
+						});
 			}
 			catch (Exception e2) {
 				
@@ -100,9 +169,19 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 
 	@Override
 	public void purchase(String productId) {
-		mHelper.flagEndAsync();
 		try{
-			mHelper.launchPurchaseFlow(sActivity.get(), productId, 10001, this);
+			SkuDetails sku=inventory.get(productId);
+			if (sku==null) {
+				Iab.purchaseError(this, "No such product id: "+productId);
+				return;
+			}
+			BillingFlowParams purchaseParams =
+					BillingFlowParams.newBuilder()
+							.setSkuDetails(sku)
+							.build();
+
+			billingClient.launchBillingFlow(sActivity.get(), purchaseParams);
+			purchasing.add(productId);
 		}
 		catch(Exception e){
 			Iab.purchaseError(this, e.getLocalizedMessage());
@@ -112,133 +191,83 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 
 	@Override
 	public void restore() {
-		mHelper.flagEndAsync();
 		try {
-			mHelper.queryInventoryAsync(new IabGooglePurchased(this));
-		}
-		catch (Exception e2) {
-			
-		}
-	}
-
-	@Override
-	public void onIabSetupFinished(IabResult result) {
-		 if (result.isSuccess())
-			 sdkAvailable = 1;
-		 else
-			 sdkAvailable = 0;
-	     if(wasChecked)
-	     {
-	    	 if(sdkAvailable == 1)
-	    		 Iab.available(this);
-	    	 else
-	    		 Iab.notAvailable(this);
-	     }
-	}
-
-	@Override
-	public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-		if (result.isFailure()) {
-			Iab.productsError(this, "Request Failed");
-			return;
-		}
-		Hashtable<String, String> products = Iab.getProducts(this);
-		if(products == null){
-			Iab.productsError(this, "Request Failed");
-			return;
-		}
-		SparseArray<Bundle> arr = new SparseArray<Bundle>();
-		Enumeration<String> e = products.keys();
-		int i = 0;
-		while(e.hasMoreElements())
-		{
-			String prodName = e.nextElement();
-        	SkuDetails details = inv.getSkuDetails(products.get(prodName));
-        	if(details != null)
-        	{
-        		Bundle map = new Bundle();
-        		map.putString("productId", products.get(prodName));
-        		map.putString("title", details.getTitle());
-        		map.putString("description", details.getDescription());
-        		map.putString("price", details.getPrice());
-        		arr.put(i, map);
-        		i++;
-        	}
-        }
-        Iab.productsComplete(this, arr);
-	}
-
-	@Override
-	public void onIabPurchaseFinished(IabResult result, Purchase info) {
-		if (result.isFailure()) {
-			Iab.purchaseError(this, result.getMessage());
-			return;
-		}
-		if(Iab.isConsumable(info.getSku(), this))
-		{
-			try {
-				mHelper.consumeAsync(info, this);
+			Purchase.PurchasesResult purchases = billingClient.queryPurchases(BillingClient.SkuType.INAPP);
+			if (purchases.getResponseCode()!=BillingClient.BillingResponseCode.OK) {
+				Iab.restoreError(this, "Request Failed");
 			}
-			catch (Exception e2) {
-				
-			}
-		}
-		else
-		{
-			Iab.purchaseComplete(this, info.getSku(), info.getOrderId());
-		}
-	}
+			else {
+				List<Purchase> plist = purchases.getPurchasesList();
+				if (plist!=null) {
+					for (final Purchase info:plist) {
+							if (Iab.isConsumable(info.getSku(), this)) {
+								try {
+									billingClient.consumeAsync(ConsumeParams.newBuilder().setPurchaseToken(info.getPurchaseToken()).build(), new ConsumeResponseListener() {
+										@Override
+										public void onConsumeResponse(@NonNull BillingResult result, @NonNull String s) {
+											if (result.getResponseCode()==BillingClient.BillingResponseCode.OK) {
+												Iab.purchaseComplete(this, info.getSku(), info.getOrderId());
+											}
+											else {
+												Iab.purchaseError(this, result.getDebugMessage());
+											}
+										}
+									});
+								} catch (Exception e2) {
 
-	@Override
-	public void onConsumeFinished(Purchase purchase, IabResult result) {
-		if (result.isSuccess()) {
-			Iab.purchaseComplete(this, purchase.getSku(), purchase.getOrderId());
-	    }
-	    else {
-	    	Iab.purchaseError(this, result.getMessage());
-	    }
-	}	
-}
-
-class IabGooglePurchased implements IabHelper.QueryInventoryFinishedListener{
-	IabGoogle caller;
-	public IabGooglePurchased(IabGoogle iabGoogle) {
-		caller = iabGoogle;
-	}
-	
-	@Override
-	public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-		if (result.isFailure()) {
-			Iab.restoreError(caller, "Request Failed");
-		}
-		else
-		{
-			Hashtable<String, String> products = Iab.getProducts(caller);
-			Enumeration<String> e = products.keys();
-			while(e.hasMoreElements())
-			{
-				String prodName = e.nextElement();
-				String sku=products.get(prodName);
-				if(inv.hasPurchase(sku))
-				{
-					Purchase info = inv.getPurchase(sku);
-					if(Iab.isConsumable(sku, caller))
-					{
-						try {
-							caller.getHelper().consumeAsync(info, caller);
-						}
-						catch (Exception e2) {							
-						}
+								}
+							} else {
+								Iab.purchaseComplete(this, info.getSku(), info.getOrderId());
+							}
 					}
-					else
-					{
-						Iab.purchaseComplete(caller, sku, info.getOrderId());
-					}
+					Iab.restoreComplete(this);
 				}
 			}
-			Iab.restoreComplete(caller);
+		}
+		catch (Exception e2) {
 		}
 	}
 
-	
+	@Override
+	public void onPurchasesUpdated(@NonNull BillingResult result, @Nullable List<com.android.billingclient.api.Purchase> list) {
+		if (result.getResponseCode()!=BillingClient.BillingResponseCode.OK) {
+			Iab.purchaseError(this, result.getDebugMessage());
+			return;
+		}
+		for (final Purchase info:list) {
+			if (purchasing.contains(info.getSku())) {
+				if (Iab.isConsumable(info.getSku(), this)) {
+					try {
+						billingClient.consumeAsync(ConsumeParams.newBuilder().setPurchaseToken(info.getPurchaseToken()).build(), new ConsumeResponseListener() {
+							@Override
+							public void onConsumeResponse(@NonNull BillingResult result, @NonNull String s) {
+								if (result.getResponseCode()==BillingClient.BillingResponseCode.OK) {
+									Iab.purchaseComplete(this, info.getSku(), info.getOrderId());
+								}
+								else {
+									Iab.purchaseError(this, result.getDebugMessage());
+								}
+							}
+						});
+					} catch (Exception e2) {
+
+					}
+				} else {
+					billingClient.acknowledgePurchase(AcknowledgePurchaseParams.newBuilder().setPurchaseToken(info.getPurchaseToken()).build(), new AcknowledgePurchaseResponseListener() {
+						@Override
+						public void onAcknowledgePurchaseResponse(@NonNull BillingResult result) {
+							if (result.getResponseCode()==BillingClient.BillingResponseCode.OK) {
+								Iab.purchaseComplete(this, info.getSku(), info.getOrderId());
+							}
+							else {
+								Iab.purchaseError(this, result.getDebugMessage());
+							}
+						}
+					});
+					Iab.purchaseComplete(this, info.getSku(), info.getOrderId());
+				}
+			}
+		}
+		purchasing.clear();;
+	}
 }
