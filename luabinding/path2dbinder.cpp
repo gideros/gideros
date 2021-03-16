@@ -18,7 +18,8 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setFontPath", setFontPath},
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
-		{"setConvex", setConvex },
+        {"setConvex", setConvex },
+        {"setFlatness", setFlatness },
 		{"getPathPoints", getPathPoints },
 		{NULL, NULL},
 	};
@@ -145,9 +146,11 @@ int Path2DBinder::setLineThickness(lua_State* L)
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D"));
 
 	double thickness = luaL_checknumber(L, 2);
-	double feather = luaL_optnumber(L, 3, -1);
+    double feather = luaL_optnumber(L, 3, -1);
+    double margin = luaL_optnumber(L, 4, -1);
+    double flatness = luaL_optnumber(L, 5, -1);
 
-	shape->setLineThickness(thickness,feather);
+	shape->setLineThickness(thickness,feather,margin,flatness);
 
 	return 0;
 }

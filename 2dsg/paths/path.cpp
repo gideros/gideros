@@ -369,6 +369,8 @@ struct path {
 
 	float stroke_width;
 	float stroke_feather;
+    float stroke_margin;
+    float stroke_flatness;
 	int join_style;
 	int initial_end_cap;
 	int terminal_end_cap;
@@ -1069,7 +1071,9 @@ static void path_commands(unsigned int path, int num_commands,
 		kh_value(paths, iter) = p;
 
 		p->stroke_width = 1;
+        p->stroke_margin = 1;
 		p->stroke_feather = 0.25;
+        p->stroke_flatness = 0;
 		p->join_style = PATHJOIN_BEVEL; //PATHJOIN_MITER_REVERT;
 		p->initial_end_cap = PATHEND_FLAT;
 		p->terminal_end_cap = PATHEND_FLAT;
@@ -1593,7 +1597,7 @@ static void add_stroke_quad_int(struct path *path, double x0, double y0, double 
 
 	double cx, cy, ux, uy, vx, vy;
 	get_quadratic_bounds_oriented(x0, y0, x1, y1, x2, y2,
-			path->stroke_width*2, &cx, &cy, &ux, &uy, &vx, &vy);
+			path->stroke_width+path->stroke_margin, &cx, &cy, &ux, &uy, &vx, &vy);
 
 	double a = -2 * dot(Ax, Ay, Ax, Ay);
 	double b = -3 * dot(Ax, Ay, Bx, By);
@@ -1644,8 +1648,8 @@ static void add_stroke_quad_int(struct path *path, double x0, double y0, double 
 }
 
 static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
-		double y1, double x2, double y2,int max_sub) {
-	if ((max_sub<=0)||(flatnessSq(x0,y0,x2,y2,x1,y1)<0.1)) { //FLATNESS
+		double y1, double x2, double y2,int max_sub,float flatness) {
+	if ((max_sub<=0)||(flatness==0)||(flatnessSq(x0,y0,x2,y2,x1,y1)<flatness)) { //FLATNESS
 		add_stroke_quad_int(path,x0,y0,x1,y1,x2,y2);
 		return;
 	}
@@ -1657,17 +1661,17 @@ static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
 	c[4]=x2;
 	c[5]=y2;
 	subdivide_quad(c,d);
-	add_stroke_quad(path,c[0],c[1],c[2],c[3],c[4],c[5],max_sub-1);
-	add_stroke_quad(path,d[0],d[1],d[2],d[3],d[4],d[5],max_sub-1);
+	add_stroke_quad(path,c[0],c[1],c[2],c[3],c[4],c[5],max_sub-1,flatness);
+	add_stroke_quad(path,d[0],d[1],d[2],d[3],d[4],d[5],max_sub-1,flatness);
 }
 
 #endif
 
 static void add_stroke_quad_dashed(struct path *path, double x0, double y0,
-		double x1, double y1, double x2, double y2, double *dash_offset) {
+		double x1, double y1, double x2, double y2, double *dash_offset,float flatness) {
 	int divide=4;
 	if (path->num_dashes == 0) {
-		add_stroke_quad(path, x0, y0, x1, y1, x2, y2,divide);
+		add_stroke_quad(path, x0, y0, x1, y1, x2, y2,divide,flatness);
 		return;
 	}
 
@@ -1696,7 +1700,7 @@ static void add_stroke_quad_dashed(struct path *path, double x0, double y0,
 			double qout[6];
 			quad_segment(q, t0, t1, qout);
 			add_stroke_quad(path, qout[0], qout[1], qout[2], qout[3], qout[4],
-					qout[5],divide);
+					qout[5],divide,flatness);
 		}
 
 		offset += path->dashes[i] + path->dashes[i + 1];
@@ -1942,7 +1946,7 @@ static void create_stroke_geometry(struct path *path) {
 				icoord += 2;
 				break;
 				case PATHCMD_QUADRATIC_CURVE_TO:
-				add_stroke_quad_dashed(path, cpx, cpy, c0, c1, c2, c3, &offset);
+				add_stroke_quad_dashed(path, cpx, cpy, c0, c1, c2, c3, &offset,path->stroke_flatness);
 				corner_continue(&corners, c0, c1, c2, c3, offset);
 				set(c2, c3, c0, c1);
 				icoord += 4;
@@ -2813,12 +2817,16 @@ void Path2D::setLineColor(unsigned int color, float alpha) {
 	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
 }
 
-void Path2D::setLineThickness(float thickness, float feather) {
+void Path2D::setLineThickness(float thickness, float feather, float margin, float flatness) {
 	struct path *p = get_path(path);
 	if (p) {
 		p->stroke_width = thickness;
 		if ((feather >= 0) && (feather <= 1.0))
 			p->stroke_feather = feather;
+        if (margin>=0)
+            p->stroke_margin=margin;
+        if (flatness>=0)
+            p->stroke_flatness=flatness;
 		p->is_stroke_dirty = 1;
 		getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_,
 				&maxy_);
@@ -2826,7 +2834,7 @@ void Path2D::setLineThickness(float thickness, float feather) {
 }
 
 void Path2D::setConvex(bool convex) {
-	convex_ = convex;
+    convex_ = convex;
 }
 
 void Path2D::impressPath(int path, Matrix4 xform,
