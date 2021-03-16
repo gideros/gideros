@@ -50,8 +50,6 @@
 	<if condition="[[[plugin.iabGoogle]]]">
 		<template name="Google" path="[[[local.iabfws]]]" dest="[[[local.iabfwd]]]" include="IabGoogle.java" />
 		<template name="Google" path="[[[local.iabfws]]]/google" dest="[[[local.iabfwd]]]/google" />
-		<mkdir>app/src/main/aidl/com/android</mkdir>
-        <template name="AIDL" path="[[[sys.pluginDir]]]/bin/Android/src/com/android" dest="app/src/main/aidl/com/android"/>
 		<template name="AndroidManifest" path="">
 			<replacelist wildcards="build.gradle">
 				<append>
