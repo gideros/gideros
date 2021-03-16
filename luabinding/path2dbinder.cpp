@@ -19,7 +19,6 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
         {"setConvex", setConvex },
-        {"setFlatness", setFlatness },
 		{"getPathPoints", getPathPoints },
 		{NULL, NULL},
 	};
