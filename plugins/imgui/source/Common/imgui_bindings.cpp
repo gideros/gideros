@@ -6414,21 +6414,24 @@ int CaptureMouseFromApp(lua_State* L)
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-int StyleDark(lua_State* _UNUSED(L))
+int StyleDark(lua_State* L)
 {
-    ImGui::StyleColorsDark();
+    GidImGui* imgui = getImgui(L);
+    ImGui::StyleColorsDark(&imgui->ctx->Style);
     return 0;
 }
 
-int StyleLight(lua_State* _UNUSED(L))
+int StyleLight(lua_State* L)
 {
-    ImGui::StyleColorsLight();
+    GidImGui* imgui = getImgui(L);
+    ImGui::StyleColorsLight(&imgui->ctx->Style);
     return 0;
 }
 
-int StyleClassic(lua_State* _UNUSED(L))
+int StyleClassic(lua_State* L)
 {
-    ImGui::StyleColorsClassic();
+    GidImGui* imgui = getImgui(L);
+    ImGui::StyleColorsClassic(&imgui->ctx->Style);
     return 0;
 }
 
