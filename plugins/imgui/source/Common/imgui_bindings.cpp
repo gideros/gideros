@@ -1753,7 +1753,7 @@ int Render(lua_State* L)
 
     if (imgui->autoUpdateCursor)
     {
-        ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+        ImGuiMouseCursor cursor = imgui->ctx->MouseCursor;
         const char* cursorName = giderosCursorMap[cursor];
         setApplicationCursor(L, cursorName);
     }
