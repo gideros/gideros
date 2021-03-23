@@ -180,8 +180,8 @@ public class IabGoogle implements IabInterface, PurchasesUpdatedListener {
 							.setSkuDetails(sku)
 							.build();
 
-			billingClient.launchBillingFlow(sActivity.get(), purchaseParams);
 			purchasing.add(productId);
+			billingClient.launchBillingFlow(sActivity.get(), purchaseParams);
 		}
 		catch(Exception e){
 			Iab.purchaseError(this, e.getLocalizedMessage());
