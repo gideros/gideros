@@ -858,7 +858,7 @@ static void g_deinitializePlugin(lua_State *L) {
     //unregister_oggenc("opus");
 #endif
 }
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER) || (TARGET_OS_OSX && !defined(QT_CORE_LIB))
+#if (!defined(QT_NO_DEBUG)) && (defined(TARGET_OS_MAC) || defined(_MSC_VER)  || defined(TARGET_OS_OSX))
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
 #elif EMSCRIPTEN
 REGISTER_PLUGIN_NAMED("Ogg", "1.0", OggCore)
