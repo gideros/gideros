@@ -58,24 +58,35 @@ static const char* PatchFormatStringFloatToInt(const char* fmt)
 
 namespace ImGui
 {
-   // void FitImage(ImRect* bb, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor)
-    void FitImage(ImVec2& Min, ImVec2& Max, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor)
+    ImVec2 GetItemSize(ImVec2 size, ImVec2 min, float defw, float defh)
     {
-        float s = fminf(size.x / texture_size.x, size.y / texture_size.y);
-        ImVec2 scaled_texture_size = ImVec2(s * texture_size.x, s * texture_size.y);
+        ImVec2 out_size = CalcItemSize(size, min.x + defw, min.y + defh);
+        size.x = std::fmaxf(size.x, min.x);
+        size.y = std::fmaxf(size.y, min.y);
+        return out_size;
+    }
 
-        ImVec2 anchor_offset = anchor * (size - scaled_texture_size);
+    void FitImage(ImVec2& Min, ImVec2& Max, const ImVec2& rect_size, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& anchor, ImVec2 padding)
+    {
+        ImVec2 scaled_texture_size = texture_size * ImMin((image_size.x - padding.x * 2.0f) / texture_size.x, (image_size.y - padding.y * 2.0f) / texture_size.y);
+        ImVec2 anchor_offset = anchor * (rect_size - scaled_texture_size);
         Min += anchor_offset;
+        Min.x -= padding.x * anchor.x * 2.0f;
+        Min.y -= padding.y;
         Max = Min + scaled_texture_size;
     }
 
-    void ScaledImage(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
+    void ScaledImage(ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size, const ImVec2& anchor, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col, const float frame_rounding)
     {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems)
             return;
 
-        ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
+        ImGuiContext& g = *GImGui;
+        const ImGuiStyle& style = g.Style;
+        ImVec2 size = GetItemSize(button_size, image_size, style.FramePadding.x * 2.0f, style.FramePadding.y * 2.0f);
+
+        ImRect bb(window->DC.CursorPos + style.FramePadding, window->DC.CursorPos + size - style.FramePadding);
         if (border_col.w > 0.0f)
             bb.Max += ImVec2(2, 2);
         ItemSize(bb);
@@ -85,67 +96,82 @@ namespace ImGui
 
         if (border_col.w > 0.0f)
         {
-            window->DrawList->AddRect(bb.Min, bb.Max, GetColorU32(border_col), 0.0f);
+            ImVec2 unit(1,1);
+            window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+            window->DrawList->AddRect(bb.Min, bb.Max, GetColorU32(border_col), frame_rounding);
+            //window->DrawList->PopClipRect();
             // @MultiPain +
-            FitImage(bb.Min, bb.Max, size + ImVec2(2, 2), texture_size, anchor);
+            FitImage(bb.Min, bb.Max, size, image_size, texture_size, anchor, style.FramePadding);
             // @MultiPain -
-            window->DrawList->AddImage(user_texture_id, bb.Min + ImVec2(1, 1), bb.Max - ImVec2(1, 1), uv0, uv1, GetColorU32(tint_col));
+            //window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+            window->DrawList->AddImage(user_texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
+            window->DrawList->PopClipRect();
         }
         else
         {
             // @MultiPain +
-            FitImage(bb.Min, bb.Max, size, texture_size, anchor);
+            FitImage(bb.Min, bb.Max, size, image_size, texture_size, anchor, style.FramePadding);
             // @MultiPain -
+            window->DrawList->PushClipRect(bb.Min, bb.Max, true);
             window->DrawList->AddImage(user_texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
+            window->DrawList->PopClipRect();
         }
     }
 
-    bool ScaledImageButtonEx(ImGuiID id, ImTextureID texture_id, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor, const ImVec2& uv0, const ImVec2& uv1, const ImVec2& padding, const ImVec4& bg_col, const ImVec4& tint_col)
+    bool ScaledImageButtonEx(ImGuiID id, ImTextureID texture_id, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size, const ImVec2& anchor, const ImVec2& uv0, const ImVec2& uv1, ImGuiButtonFlags flags, const ImVec4& tint_col, const ImVec4& bg_col)
     {
-        ImGuiContext& g = *GImGui;
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems)
             return false;
 
-        ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
+        ImGuiContext& g = *GImGui;
+        const ImGuiStyle& style = g.Style;
+
+        ImVec2 size = GetItemSize(button_size, image_size, style.FramePadding.x * 2.0f, style.FramePadding.y * 2.0f);
+        ImVec2 padding = g.Style.FramePadding;
+
+        ImRect bb(window->DC.CursorPos + padding, window->DC.CursorPos + size - padding);
         ItemSize(bb);
         if (!ItemAdd(bb, id))
             return false;
 
         bool hovered, held;
-        bool pressed = ButtonBehavior(bb, id, &hovered, &held);
+        bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
         // Render
-        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
         RenderNavHighlight(bb, id);
-        RenderFrame(bb.Min, bb.Max, col, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, g.Style.FrameRounding));
+
         if (bg_col.w > 0.0f)
-            window->DrawList->AddRectFilled(bb.Min + padding, bb.Max - padding, GetColorU32(bg_col));
+        {
+            RenderFrame(bb.Min, bb.Max, GetColorU32(bg_col), true, g.Style.FrameRounding);
+        }
+        else
+        {
+            const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+            RenderFrame(bb.Min, bb.Max, col, true, g.Style.FrameRounding);
+        }
 
         // @MultiPain +
-        FitImage(bb.Min, bb.Max, size + padding*2.0f, texture_size, anchor);
+        FitImage(bb.Min, bb.Max, size, image_size, texture_size, anchor, style.FramePadding);
         // @MultiPain -
-        window->DrawList->AddImage(texture_id, bb.Min + padding, bb.Max - padding, uv0, uv1, GetColorU32(tint_col));
+        window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+        window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
+        window->DrawList->PopClipRect();
 
         return pressed;
     }
 
-    bool ScaledImageButton(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor, const ImVec2& uv0,  const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
+    bool ScaledImageButton(ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size, const ImVec4& tint_col, const ImVec4& bg_col, ImGuiButtonFlags flags, const ImVec2& anchor, const ImVec2& uv0, const ImVec2& uv1)
     {
         ImGuiContext& g = *GImGui;
         ImGuiWindow* window = g.CurrentWindow;
         if (window->SkipItems)
             return false;
 
-        // Default to using texture ID as ID. User can still push string/integer prefixes.
-        PushID((void*)(intptr_t)user_texture_id);
-        const ImGuiID id = window->GetID("#image");
-        PopID();
+        const ImGuiID id = window->GetID(user_texture_id);
 
-        const ImVec2 padding = (frame_padding >= 0) ? ImVec2((float)frame_padding, (float)frame_padding) : g.Style.FramePadding;
-        return ScaledImageButtonEx(id, user_texture_id, size, texture_size, anchor, uv0, uv1, padding, bg_col, tint_col);
+        return ScaledImageButtonEx(id, user_texture_id, image_size, texture_size, button_size, anchor, uv0, uv1, flags, tint_col, bg_col);
     }
-
 
     bool FilledSliderScalar(const char* label, bool mirror, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
     {
@@ -449,57 +475,67 @@ namespace ImGui
         return pressed;
     }
 
-    bool ScaledImageButtonWithText(ImTextureID texId,const char* label, const ImVec2& texture_size, const ImVec2& anchor,const ImVec2& imageSize, const ImVec2 &uv0, const ImVec2 &uv1, int frame_padding, const ImVec4 &bg_col, const ImVec4 &tint_col)
+    bool ScaledImageButtonWithText(ImTextureID texId, const char* label, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size, const ImVec4& tint_col, const ImVec4& bg_col, ImGuiDir image_side, ImGuiButtonFlags flags, const ImVec2& uv0, const ImVec2& uv1)
     {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems)
             return false;
 
-        ImVec2 size = imageSize;
-        if (size.x<=0 && size.y<=0) {size.x=size.y=ImGui::GetTextLineHeightWithSpacing();}
-        else {
-            if (size.x<=0)          size.x=size.y;
-            else if (size.y<=0)     size.y=size.x;
-            size*=window->FontWindowScale*ImGui::GetIO().FontGlobalScale;
-        }
-
         ImGuiContext& g = *GImGui;
         const ImGuiStyle& style = g.Style;
-
+        ImVec2 padding = style.FramePadding;
         const ImGuiID id = window->GetID(label);
-        const ImVec2 textSize = ImGui::CalcTextSize(label,NULL,true);
-        const bool hasText = textSize.x>0;
+        const ImVec2 label_size = CalcTextSize(label, NULL, true);
 
-        const float innerSpacing = hasText ? ((frame_padding >= 0) ? (float)frame_padding : (style.ItemInnerSpacing.x)) : 0.f;
-        const ImVec2 padding = (frame_padding >= 0) ? ImVec2((float)frame_padding, (float)frame_padding) : style.FramePadding;
-        const ImVec2 totalSizeWithoutPadding(size.x+innerSpacing+textSize.x,size.y>textSize.y ? size.y : textSize.y);
-        const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + totalSizeWithoutPadding + padding*2);
-        ImVec2 start(0,0);
-        start = window->DC.CursorPos + padding;if (size.y<textSize.y) start.y+=(textSize.y-size.y)*.5f;
-        ImRect image_bb(start, start + size);
-        start = window->DC.CursorPos + padding;start.x+=size.x+innerSpacing;if (size.y>textSize.y) start.y+=(size.y-textSize.y)*.5f;
-        ItemSize(bb);
+        ImVec2 pos = window->DC.CursorPos;
+        if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && padding.y < window->DC.CurrLineTextBaseOffset)
+            pos.y += window->DC.CurrLineTextBaseOffset - padding.y;
+        ImVec2 size = CalcItemSize(button_size, label_size.x + padding.x * 2.0f, label_size.y + padding.y * 2.0f);
+
+        ImRect bb(pos, pos + size);
+        ItemSize(size, padding.y);
         if (!ItemAdd(bb, id))
             return false;
 
-        bool hovered=false, held=false;
-        bool pressed = ButtonBehavior(bb, id, &hovered, &held);
+        ImRect image_bb(pos + padding, pos + image_size - padding);
+        FitImage(image_bb.Min, image_bb.Max, size, image_size, texture_size, ImVec2(image_side == ImGuiDir_Left ? 0.0f : 1.0f, 0.5f), padding);
+
+        if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat)
+            flags |= ImGuiButtonFlags_Repeat;
+
+        bool hovered, held;
+        bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
         // Render
-        const ImU32 col = GetColorU32((hovered && held) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-        RenderFrame(bb.Min, bb.Max, col, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+        RenderNavHighlight(bb, id);
+
         if (bg_col.w > 0.0f)
-            window->DrawList->AddRectFilled(image_bb.Min, image_bb.Max, GetColorU32(bg_col));
+        {
+           RenderFrame(bb.Min, bb.Max, GetColorU32(bg_col), true, style.FrameRounding);
+        }
+        else
+        {
+            const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+            RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
+        }
 
-        // @MultiPain +
-        FitImage(image_bb.Min, image_bb.Max, size, texture_size, anchor);
-        // @MultiPain -
+        window->DrawList->PushClipRect(bb.Min, bb.Max, true);
         window->DrawList->AddImage(texId, image_bb.Min, image_bb.Max, uv0, uv1, GetColorU32(tint_col));
+        window->DrawList->PopClipRect();
 
-        if (textSize.x>0) ImGui::RenderText(start,label);
+        if (image_side == ImGuiDir_Right)
+        {
+            bb.Max.x = image_bb.Min.x;
+            RenderTextClipped(bb.Min + padding, bb.Max - padding, label, NULL, &label_size, style.ButtonTextAlign, &bb);
+        }
+        else
+        {
+            bb.Min.x = image_bb.Max.x;
+            RenderTextClipped(bb.Min + padding, bb.Max - padding, label, NULL, &label_size, style.ButtonTextAlign, &bb);
+        }
+
         return pressed;
     }
-
 
     void ImageFilled(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col, const ImVec4& border_col)
     {
@@ -528,11 +564,15 @@ namespace ImGui
         }
     }
 
-    void ScaledImageFilled(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col, const ImVec4& border_col)
+    void ScaledImageFilled(ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size, const ImVec2& anchor, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col, const ImVec4& border_col, const float frame_rounding)
     {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems)
             return;
+
+        ImGuiContext& g = *GImGui;
+        const ImGuiStyle& style = g.Style;
+        ImVec2 size = GetItemSize(button_size, image_size, style.FramePadding.x * 2.0f, style.FramePadding.y * 2.0f);
 
         ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
         if (border_col.w > 0.0f)
@@ -542,20 +582,21 @@ namespace ImGui
             return;
 
         if (bg_col.w > 0.0f)
-            window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col), 0.0f);
+            window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col), frame_rounding);
 
         if (border_col.w > 0.0f)
         {
-            window->DrawList->AddRect(bb.Min, bb.Max, GetColorU32(border_col), 0.0f);
+            ImVec2 unit(1,1);
+            window->DrawList->AddRect(bb.Min, bb.Max, GetColorU32(border_col), frame_rounding);
             // @MultiPain +
-            FitImage(bb.Min, bb.Max, size + ImVec2(2, 2), texture_size, anchor);
+            FitImage(bb.Min, bb.Max, size + unit * 2, image_size, texture_size, anchor, style.FramePadding);
             // @MultiPain -
-            window->DrawList->AddImage(user_texture_id, bb.Min + ImVec2(1, 1), bb.Max - ImVec2(1, 1), uv0, uv1, GetColorU32(tint_col));
+            window->DrawList->AddImage(user_texture_id, bb.Min - unit, bb.Max + unit, uv0, uv1, GetColorU32(tint_col));
         }
         else
         {
             // @MultiPain +
-            FitImage(bb.Min, bb.Max, size, texture_size, anchor);
+            FitImage(bb.Min, bb.Max, size, image_size, texture_size, anchor, style.FramePadding);
             // @MultiPain -
             window->DrawList->AddImage(user_texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
         }
