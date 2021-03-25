@@ -25,12 +25,13 @@ enum ImGuiGlyphRanges
 
 namespace ImGui
 {
-    IMGUI_API void FitImage(ImVec2& Min, ImVec2& Max, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor);
+    IMGUI_API void FitImage(ImVec2& Min, ImVec2& Max, const ImVec2& rect_size, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& anchor, ImVec2 padding = ImVec2(0.0f, 0.0f));
 
-    IMGUI_API void ScaledImage(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor = ImVec2(0.5f, 0.5f), const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0));
-    IMGUI_API bool ScaledImageButton(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor = ImVec2(0.5f, 0.5f), const ImVec2& uv0 = ImVec2(0, 0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,0), const ImVec4& tint_col = ImVec4(1,1,1,1));    // <0 frame_padding uses default frame padding settings. 0 for no padding
+    IMGUI_API void ScaledImage(ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size, const ImVec2& anchor = ImVec2(0.5f, 0.5f), const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0), const float frame_rounding = 0.0f);
+    IMGUI_API bool ScaledImageButton(ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size = ImVec2(0,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& bg_col = ImVec4(1,1,1,0), ImGuiButtonFlags flags = 0, const ImVec2& anchor = ImVec2(0.5f, 0.5f), const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1));
 
-    IMGUI_API bool ScaledImageButtonWithText(ImTextureID texId,const char* label, const ImVec2& texture_size, const ImVec2& anchor = ImVec2(0.5f, 0.5f), const ImVec2& size=ImVec2(0,0), const ImVec2& uv0 = ImVec2(0,0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,0), const ImVec4& tint_col = ImVec4(1,1,1,1));
+    IMGUI_API bool ScaledImageButtonWithText(ImTextureID texId, const char* label, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size = ImVec2(0,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& bg_col = ImVec4(1,1,1,0), ImGuiDir image_side = ImGuiDir_Left, ImGuiButtonFlags flags = 0, const ImVec2& uv0 = ImVec2(0,0), const ImVec2& uv1 = ImVec2(1,1));
+
     IMGUI_API bool ImageButtonWithText(ImTextureID texId,const char* label, const ImVec2& size=ImVec2(0,0), const ImVec2& uv0 = ImVec2(0,0),  const ImVec2& uv1 = ImVec2(1,1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0,0,0,0), const ImVec4& tint_col = ImVec4(1,1,1,1));
 
     IMGUI_API bool FilledSliderScalar(const char* label, bool mirror, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format = NULL, ImGuiSliderFlags flags = 0);
@@ -49,5 +50,5 @@ namespace ImGui
     IMGUI_API bool VFilledSliderScalar(const char* label, bool mirror, const ImVec2& size, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format = NULL, ImGuiSliderFlags flags = 0);
 
     IMGUI_API void ImageFilled(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& bg_col = ImVec4(1,1,1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0));
-    IMGUI_API void ScaledImageFilled(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& texture_size, const ImVec2& anchor = ImVec2(0.5f, 0.5f), const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& bg_col = ImVec4(1,1,1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0));
+    IMGUI_API void ScaledImageFilled(ImTextureID user_texture_id, const ImVec2& image_size, const ImVec2& texture_size, const ImVec2& button_size, const ImVec2& anchor = ImVec2(0.5f, 0.5f), const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1,1), const ImVec4& bg_col = ImVec4(1,1,1,0), const ImVec4& tint_col = ImVec4(1,1,1,1), const ImVec4& border_col = ImVec4(0,0,0,0), const float frame_rounding = 0.0f);
 }
