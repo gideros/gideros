@@ -61,8 +61,8 @@ namespace ImGui
     ImVec2 GetItemSize(ImVec2 size, ImVec2 min, float defw, float defh)
     {
         ImVec2 out_size = CalcItemSize(size, min.x + defw, min.y + defh);
-        size.x = std::fmaxf(size.x, min.x);
-        size.y = std::fmaxf(size.y, min.y);
+        size.x = fmaxf(size.x, min.x);
+        size.y = fmaxf(size.y, min.y);
         return out_size;
     }
 
