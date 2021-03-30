@@ -22,6 +22,21 @@ Generated Files/
 Build.Win
 Build.Linux
 Build.Mac
+Build.Win.Final
+Build.Linux.Final
+Build.Mac.Final
+/build-*
+/Build
+
+/Gideros.exe
+/Gideros.pkg
+
+.tmp
+.idea
+#Eclipse project
+.settings
+.cproject
+.externalToolBuilders
 
 # Roslyn cache directories
 *.ide/
@@ -63,6 +78,7 @@ dlldata.c
 *.pidb
 *.svclog
 *.scc
+*.VC.db
 
 # Chutzpah Test files
 _Chutzpah*
@@ -220,10 +236,17 @@ debug
 /android/GiderosAndroidPlayer/gen/
 /android/GiderosAndroidPlayer/libs/
 /android/GiderosAndroidPlayer/gideros.jar
+/android/GiderosAndroidPlayer/gideros.aar
 /android/GiderosAndroidPlayer/src/com/android/
 /android/GiderosAndroidPlayer/src/com/giderosmobile/android/plugins/
 /libs/
 /obj/
+/emscripten/**/*.co
+/emscripten/**/*.pc
+/emscripten/Build
+/plugins/**/emscripten/Build
+BundleArtifacts
+.gradle
 
 # QT project files
 *.config
@@ -244,6 +267,7 @@ tmp
 */qrc_*.cpp
 moc_*.cpp
 .vscode/
+.vs
 
 # xmake cache/build folders
 **/.xmake/
