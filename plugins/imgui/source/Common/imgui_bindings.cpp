@@ -3362,7 +3362,7 @@ int SliderScalar(lua_State* L)
     double value = luaL_checknumber(L, 4);
     double v_min = luaL_checknumber(L, 5);
     double v_max = luaL_checknumber(L, 6);
-    const char* format = luaL_optstring(L, 7, NULL);
+    const char* format = luaL_optstring(L, 7, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 8, 0);
 
     bool result = ImGui::SliderScalar(label, data_type, (void *)&value, (void *)&v_min, (void *)&v_max, format, sliderFlag);
@@ -3412,9 +3412,9 @@ int VSliderScalar(lua_State* L)
     const ImVec2 size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImGuiDataType data_type = luaL_checkinteger(L, 5);
     double value = luaL_checknumber(L, 6);
-    double v_min = luaL_optnumber(L, 7, NULL);
-    double v_max = luaL_optnumber(L, 8, NULL);
-    const char* format = luaL_optstring(L, 9, NULL);
+    double v_min = luaL_optnumber(L, 7, 0.0f);
+    double v_max = luaL_optnumber(L, 8, 0.0f);
+    const char* format = luaL_optstring(L, 9, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 10, 0);
 
     bool result = ImGui::VSliderScalar(label, size, data_type, (void *)&value, (void *)&v_min, (void *)&v_max, format, sliderFlag);
@@ -3435,8 +3435,8 @@ int FilledSliderFloat(lua_State* L)
     const char* label = luaL_checkstring(L, 2);
     bool mirror = lua_toboolean(L, 3) > 0;
     float v = luaL_checknumber(L, 4);
-    float v_min = luaL_optnumber(L, 5, 0);
-    float v_max = luaL_optnumber(L, 6, 0);
+    float v_min = luaL_optnumber(L, 5, 0.0f);
+    float v_max = luaL_optnumber(L, 6, 0.0f);
     const char* format = luaL_optstring(L, 7, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 8, 0);
 
@@ -3454,8 +3454,8 @@ int FilledSliderFloat2(lua_State* L)
     float vec2f[2];
     vec2f[0] = luaL_checknumber(L, 4);
     vec2f[1] = luaL_checknumber(L, 5);
-    float v_min = luaL_optnumber(L, 6, 0);
-    float v_max = luaL_optnumber(L, 7, 0);
+    float v_min = luaL_optnumber(L, 6, 0.0f);
+    float v_max = luaL_optnumber(L, 7, 0.0f);
     const char* format = luaL_optstring(L, 8, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 9, 0);
 
@@ -3475,8 +3475,8 @@ int FilledSliderFloat3(lua_State* L)
     vec3f[0] = luaL_checknumber(L, 4);
     vec3f[1] = luaL_checknumber(L, 5);
     vec3f[2] = luaL_checknumber(L, 6);
-    float v_min = luaL_optnumber(L, 7, 0);
-    float v_max = luaL_optnumber(L, 8, 0);
+    float v_min = luaL_optnumber(L, 7, 0.0f);
+    float v_max = luaL_optnumber(L, 8, 0.0f);
     const char* format = luaL_optstring(L, 9, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 10, 0);
 
@@ -3498,8 +3498,8 @@ int FilledSliderFloat4(lua_State* L)
     vec4f[1] = luaL_checknumber(L, 5);
     vec4f[2] = luaL_checknumber(L, 6);
     vec4f[3] = luaL_checknumber(L, 7);
-    float v_min = luaL_optnumber(L, 8, 0);
-    float v_max = luaL_optnumber(L, 9, 0);
+    float v_min = luaL_optnumber(L, 8, 0.0f);
+    float v_max = luaL_optnumber(L, 9, 0.0f);
     const char* format = luaL_optstring(L, 10, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 11, 0);
 
@@ -3620,8 +3620,8 @@ int FilledSliderScalar(lua_State* L)
     bool mirror = lua_toboolean(L, 3) > 0;
     ImGuiDataType data_type = luaL_checkinteger(L, 4);
     double value = luaL_checknumber(L, 5);
-    double v_min = luaL_optnumber(L, 6, 0);
-    double v_max = luaL_optnumber(L, 7, 0);
+    double v_min = luaL_optnumber(L, 6, 0.0f);
+    double v_max = luaL_optnumber(L, 7, 0.0f);
     const char* format = luaL_optstring(L, 8, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 9, 0);
 
@@ -3675,8 +3675,8 @@ int VFilledSliderScalar(lua_State* L)
     const ImVec2 size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
     ImGuiDataType data_type = luaL_checkinteger(L, 6);
     double value = luaL_checknumber(L, 7);
-    double v_min = luaL_optnumber(L, 8, 0);
-    double v_max = luaL_optnumber(L, 9, 0);
+    double v_min = luaL_optnumber(L, 8, 0.0f);
+    double v_max = luaL_optnumber(L, 9, 0.0f);
     const char* format = luaL_optstring(L, 10, "%.3f");
     ImGuiSliderFlags sliderFlag = luaL_optinteger(L, 11, 0);
 
@@ -3739,17 +3739,18 @@ int InputTextMultiline(lua_State* L)
 
 int InputTextWithHint(lua_State* L)
 {
-
     const char* label = luaL_checkstring(L, 2);
     const char* text = luaL_checkstring(L, 3);
     const char* hint = luaL_checkstring(L, 4);
-    size_t buf_size = luaL_checkinteger(L, 5);
-    char* buffer = new char[buf_size];
+//    size_t buf_size = luaL_checkinteger(L, 5);
+    int buffer_size = luaL_checkinteger(L, 5);
+	char* buffer = new char[buffer_size];
     sprintf(buffer, "%s", text);
     ImGuiInputTextFlags flags = luaL_optinteger(L, 6, 0);
 
-    bool result = ImGui::InputTextWithHint(label, hint, buffer, buf_size, flags);
-    lua_pushstring(L, &(*buffer));
+    bool result = ImGui::InputTextWithHint(label, hint, buffer, buffer_size, flags);
+
+	lua_pushstring(L, &(*buffer));
     lua_pushboolean(L, result);
     delete[] buffer;
     return 2;
