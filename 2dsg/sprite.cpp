@@ -201,7 +201,7 @@ void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
 	Sprite *p=this;
 	while (p) {
 		p->spriteWithLayoutCount+=diff;
-		p=parent();
+        p=p->parent();
 	}
 }
 
