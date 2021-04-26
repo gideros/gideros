@@ -136,13 +136,13 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
 void Pixel::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
 {
     if (minx)
-        *minx = 0;
+        *minx = -width_*anchorx_;
     if (miny)
-        *miny = 0;
+        *miny = -height_*anchory_;
     if (maxx)
-        *maxx = width_;
+        *maxx = width_-width_*anchorx_;
     if (maxy)
-        *maxy = height_;
+        *maxy = height_-height_*anchory_;
 }
 
 void Pixel::updateVertices() {

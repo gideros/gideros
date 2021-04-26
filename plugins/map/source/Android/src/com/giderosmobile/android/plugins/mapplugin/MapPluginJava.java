@@ -204,6 +204,24 @@ public class MapPluginJava {
 		return new_marker_index;
 	}
 	
+	public static void addMarkerAtIndex(final double lat, final double lon, final String title, final int index)
+	{
+		try
+		{	
+			Runnable myRunnable = new Runnable(){
+				@Override
+				public void run() {
+					if (mMap != null)
+					{
+						mMap.addMarkerAtIndex(lat, lon, title, index);
+					}
+				}				
+			};
+			sActivity.get().runOnUiThread(myRunnable) ;
+		}
+		catch(Exception ex)	{}
+	}
+	
 	public static void setMarkerHue(final int idx, final double hue)
 	{
 		try

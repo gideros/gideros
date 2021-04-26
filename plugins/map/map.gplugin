@@ -1,6 +1,7 @@
 <plugin
  name="Map"
  description="Providing native map services">
+ <property name="GoogleMapsAPIKey" type="string" title="Google Maps API Key"/>
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
@@ -8,8 +9,59 @@
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;mapplugin&quot;);"/>
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.mapplugin.MapPluginJava&quot;,"/>
+	        	<append>
+	        		<orig>Activity extends </orig>
+	        		<by>Fragment</by>
+		        </append>            
+	        	<prepend>
+	        		<orig>//GIDEROS-ACTIVITY-IMPORT//</orig>
+	        		<by>
+import androidx.fragment.app.FragmentActivity;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+	        		</by>    
+		        </prepend>
         </replacelist>
     </template>
+		<template name="AndroidManifest" path="">
+			<replacelist wildcards="build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+					 implementation fileTree(dir: "libs", include: ["*.jar"])
+					 implementation 'androidx.appcompat:appcompat:1.2.0'
+					 implementation 'com.google.android.gms:play-services-maps:17.0.0'
+					 implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+					</by>
+				</append>
+				
+			</replacelist>			
+    	<replacelist wildcards="AndroidManifest.xml">
+        	<append>
+        		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+        		<by><![CDATA[        		
+		<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+						]]></by>    
+	        </append>
+		
+        	<append>
+        		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+        		<by><![CDATA[        		
+			        <meta-data
+			            android:name="com.google.android.gms.version"
+			            android:value="@integer/google_play_services_version" />
+			        <meta-data
+			            android:name="com.google.android.maps.v2.API_KEY"
+			            android:value="[[[plugin.GoogleMapsAPIKey]]]" />
+						]]></by>    
+	        </append>
+		
+		
+			</replacelist>			
+			
+		</template>
+    
  </target>
 <target name="iOS">
 	<lua><![CDATA[

@@ -426,7 +426,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 			int maxsamples = (audiofd_fragsize - audiobuf_fill) / 2;
 			ogg_int64_t gpos=0;
 			if ((ret = handle->audio_p->GetAudio(audiobuf+(audiobuf_fill/2), maxsamples,gpos)) > 0) {
-				audiobuf_fill += ret * 2;
+                                audiobuf_fill += ret*2;
 				if (audiobuf_fill == audiofd_fragsize)
 					audiobuf_ready = 1;
 				if (gpos >= 0)

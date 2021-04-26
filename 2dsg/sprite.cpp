@@ -268,7 +268,7 @@ void Sprite::clearLayoutState() {
 		Sprite *p=this;
 		while (p) {
 			p->spriteWithLayoutCount--;
-			p=parent();
+            p=p->parent();
 		}
 	}
 	layoutState=NULL;

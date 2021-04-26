@@ -18,7 +18,7 @@ typedef struct gmapplugin_SimpleEvent
 
 typedef struct gmapplugin_SimpleParam
 {
-    std::string value;
+  std::string value;
 } gmapplugin_SimpleParam;
 
 typedef struct gmapplugin_Parameter
@@ -91,6 +91,7 @@ G_API void gmapplugin_setType(const char *iab, int t);
 G_API double gmapplugin_getCenterLatitude(const char *iab);
 G_API double gmapplugin_getCenterLongitude(const char *iab);
 G_API int gmapplugin_addMarker(const char *iab, double lat, double lon, const char *title);
+G_API void gmapplugin_addMarkerAtIndex(const char *iab, double lat, double lon, const char *title, int index);
 G_API void gmapplugin_setMarkerTitle(const char *iab, int idx, const char *title);
 G_API void gmapplugin_setMarkerHue(const char *iab, int idx, double hue);
 G_API void gmapplugin_setMarkerAlpha(const char *iab, int idx, double alpha);
