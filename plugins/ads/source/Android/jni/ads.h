@@ -59,6 +59,7 @@ G_API int gads_isAvailable();
 G_API void gads_init();
 G_API void gads_cleanup();
 
+G_API bool gads_hasProvider(const char *ad);
 G_API void gads_initialize(const char *ad);
 G_API void gads_destroy(const char *ad);
 G_API void gads_setKey(const char *ad, gads_Parameter *params);

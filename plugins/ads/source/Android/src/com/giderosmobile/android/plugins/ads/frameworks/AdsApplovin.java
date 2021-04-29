@@ -167,8 +167,7 @@ public class AdsApplovin implements AdsInterface {
 							AdsApplovinListener listener = new AdsApplovinListener(mngr.getState(type));
 							adView.setAdLoadListener(listener);
 							adView.setAdClickListener(listener);
-							adView.setAutoDestroy(false);
-							adView.loadNextAd();
+								adView.loadNextAd();
 						}
 					}
 					else
@@ -253,8 +252,6 @@ class AdsApplovinListener implements AppLovinAdLoadListener, AppLovinAdVideoPlay
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Unable to precache resources");
 		else if(errorCode == AppLovinErrorCodes.UNABLE_TO_PRECACHE_VIDEO_RESOURCES)
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Unable to precache video resources");
-		else if(errorCode == AppLovinErrorCodes.UNABLE_TO_PREPARE_NATIVE_AD)
-			Ads.adFailed(AdsApplovin.me, state.getType(), "Unable to prepare native ad");
 		else if(errorCode == AppLovinErrorCodes.UNSPECIFIED_ERROR)
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Unspecified error");
 		else if(errorCode == AppLovinErrorCodes.UNABLE_TO_RENDER_AD)

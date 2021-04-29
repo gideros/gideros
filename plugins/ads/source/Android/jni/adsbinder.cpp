@@ -364,6 +364,15 @@ static Ads *getInstance(lua_State* L, int index)
 	return ads;
 }
 
+static int hasProvider(lua_State *L)
+{
+    const char *ad = luaL_checkstring(L, 1);
+    bool b=gads_hasProvider(ad);
+    
+    lua_pushboolean(L, b);
+    return 1;
+}
+
 static int init(lua_State *L)
 {
     
@@ -570,6 +579,7 @@ static int hasConnection(lua_State *L)
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
+        {"hasProvider", hasProvider},
         {"new", init},
         {"setKey", setKey},
         {"loadAd", loadAd},

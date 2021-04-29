@@ -181,23 +181,18 @@
 	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
-    	<set key="local.adsAarVer" value="9.6.0" />
-    	<set key="local.adsJarVer" value="applovin-sdk-[[[local.adsAarVer]]].aar" />
-    	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
-    	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
+    	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsMax.java" />
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml;build.gradle">
             	<append>
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
-<meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />
-<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
-<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configChanges="orientation|screenSize" />]]></by>
+<meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />]]></by>
     	        </append>
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    implementation files('libs/[[[local.adsJarVer]]]')
+				    implementation 'com.applovin:applovin-sdk:+'
 		            implementation 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>

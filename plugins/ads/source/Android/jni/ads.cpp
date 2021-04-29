@@ -39,7 +39,17 @@ public:
 		
 		gevent_RemoveEventsWithGid(gid_);
 	}
-	
+
+	bool hasProvider(const char *ad)
+	{
+		JNIEnv *env = g_getJNIEnv();
+
+		jstring jAd = env->NewStringUTF(ad);
+		jboolean ret=env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "hasProvider", "(Ljava/lang/String;)Z"), jAd);
+		env->DeleteLocalRef(jAd);
+		return ret;
+	}
+
 	void init(const char *ad)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -431,6 +441,15 @@ extern "C" {
 int gads_isAvailable()
 {
 	return 1;
+}
+
+bool gads_hasProvider(const char *ad)
+{
+	if(s_ads)
+	{
+		return s_ads->hasProvider(ad);
+	}
+    return false;
 }
 
 void gads_init()
