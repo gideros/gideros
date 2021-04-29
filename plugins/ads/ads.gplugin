@@ -313,7 +313,8 @@ iOSProject.commit()
 	]]></lua>
 
 <if condition="[[[plugin.adsFwApplovin]]]">
-	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.*,AdsMax.*" exclude="*.framework" />
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.*" exclude="*.framework" />
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsMax.*" exclude="*.framework" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.needObjCLinking()
