@@ -13,6 +13,7 @@
 
 +(void)init;
 +(void)cleanup;
++ (BOOL) hasProvider:(NSString*)adprovider;
 
 +(UIViewController*)getRootViewController;
 

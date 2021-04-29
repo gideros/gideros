@@ -251,6 +251,11 @@ void gads_cleanup()
 	}
 }
 
+bool gads_hasProvider(const char *ad)
+{
+    return [AdsClass hasProvider:[NSString stringWithUTF8String:ad]];
+}
+
 void gads_initialize(const char *ad)
 {
 	if(s_ads)

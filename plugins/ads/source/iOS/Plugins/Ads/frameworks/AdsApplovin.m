@@ -11,7 +11,8 @@
 
 @implementation AdsApplovin
 -(id)init{
-    //[ALSdk initializeSdk];
+    [ALSdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration * _Nonnull configuration) {        
+    }];
     self.appKey = @"";
     self.curType = @"";
     self.view_ = nil;
@@ -39,7 +40,7 @@
             ALInterstitialAd* interstitial = [[ALInterstitialAd alloc] initWithSdk: sdk];
             interstitial.adDisplayDelegate = list;
             interstitial.adVideoPlaybackDelegate = list;
-            [interstitial showOver: [UIApplication sharedApplication].keyWindow andRender: (ALAd*)[self.mngr get:type]];
+            [interstitial showAd: (ALAd*)[self.mngr get:type]];
         }];
         [listener setDestroy:^(){
             [self hideAd:type];
@@ -49,7 +50,7 @@
         [self.mngr set:nil forType:type withListener:listener];
         [list setType:[self.mngr getState:type] with:self];
         ALAdService* adService = sdk.adService;
-        [adService loadNextAd: [ALAdSize sizeInterstitial] andNotify: list];
+        [adService loadNextAd: [ALAdSize interstitial] andNotify: list];
     }
     else if ([type isEqualToString:@"v4vc"]) {
         AdsApplovinListener *list = [[AdsApplovinListener alloc] init:nil with:self];
@@ -76,7 +77,7 @@
             if([self.mngr get:type] == nil)
             {
                 self.curType = [type copy];
-                ALAdSize* banner = [ALAdSize sizeBanner];
+                ALAdSize* banner = [ALAdSize banner];
                 float screenWidth = 0;
                 CGRect screenRect = [[UIScreen mainScreen] bounds];
                 if ([AdsClass isPortrait])
@@ -197,7 +198,10 @@
     [self.state reset];
 }
 
--(void) ad:(ALAd *)ad wasDisplayedIn:(UIView *)view{}
+-(void) ad:(ALAd *)ad wasDisplayedIn:(UIView *)view
+{
+    [AdsClass adDisplayed:[self.instance class] forType:[self.state getType]];
+}
 
 -(void) ad:(ALAd *)ad wasClickedIn:(UIView *)view
 {

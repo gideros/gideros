@@ -26,6 +26,13 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
     [ads removeAllObjects];
 }
 
++ (BOOL) hasProvider:(NSString*)adprovider
+{
+    NSString *ProviderClass = @"Ads";
+    ProviderClass = [ProviderClass stringByAppendingString:[adprovider capitalizedString]];
+    return NSClassFromString(ProviderClass)!=nil;
+}
+
 +(void)initialize:(NSString*)adprovider{
 	if(![ads objectForKey:[adprovider lowercaseString]])
 	{

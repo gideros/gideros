@@ -15,6 +15,9 @@
  -->
  <property name="adsFwApplovin" type="boolean" title="Enable AppLovin support (Android, iOS, Gaming/Google Play)"/>
  <property name="adsFwApplovinKey" type="string" title="AppLovin SDK key (Android, iOS)"/>
+ <property name="adsFwApplovinConsent" type="boolean" title="Enable AppLovin Consent Flow (iOS)"/>
+ <property name="adsFwApplovinPrivacy" type="string" title="AppLovin privacy policy URL (iOS)"/>
+ <property name="adsFwApplovinTOS" type="string" title="AppLovin terms of service URL (iOS)"/>
  <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android, iOS, Gaming/Google Play)"/>
  <!--
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
@@ -266,8 +269,8 @@
             	<prepend>
             		<orig><![CDATA[</resources>]]></orig>
             		<by><![CDATA[    <!-- AdMob ad unit IDs -->
-    <string name="banner_home_footer">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobBanner]]]</string>
-    <string name="interstitial_full_screen">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobInterstitial]]]</string>            		
+    <string name="banner_home_footer">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobBanner]]]",
+    <string name="interstitial_full_screen">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobInterstitial]]]",            		
             		]]></by>
     	        </prepend>   
         	</replacelist>
@@ -315,29 +318,86 @@ iOSProject.commit()
 	]]></lua>
 
 <if condition="[[[plugin.adsFwApplovin]]]">
-	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.*" exclude="*.framework" />
-	<download source="http://apps.giderosmobile.com/ext/ios/AppLovinSDK.framework-6.6.1.zip" dest="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" />
-	<unzip source="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" dest="[[[local.adsfwd]]]" />
-   <template name="Project" path="">
-        <replacelist wildcards="[[[project.name]]]-Info.plist">
-	    	<prepend>
-			<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
-			<by><![CDATA[	
-				<key>AppLovinSdkKey</key>
-				<string>[[[plugin.adsFwApplovinKey]]]</string>
-			]]></by>
-	    </prepend>
-        </replacelist>
-    </template>	
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.*,AdsMax.*" exclude="*.framework" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.needObjCLinking()
 iOSProject.addSources({
-"AdsApplovin.m","AdsApplovin.h","AppLovinSDK.framework"
+"AdsApplovin.m","AdsApplovin.h", "AdsMax.m", "AdsMax.h",
 },"GroupAdsFrameworks","ios")
-local sysFW={ "AdSupport","SystemConfiguration","CoreTelephony","CoreMedia","SafariServices","WebKit" }
-for _,v in ipairs(sysFW) do
-    iOSProject.addFramework(v..".framework","ios","System/Library/Frameworks/"..v..".framework","$SDKROOT")
+iOSProject.pod("AppLovinSDK",true)
+iOSProject.InfoPlist.AppLovinSdkKey=Export.getProperty("plugin.adsFwApplovinKey")
+iOSProject.InfoPlist.AppLovinConsentFlowInfo={
+	AppLovinConsentFlowEnabled=Export.isSet("plugin.adsFwApplovinConsent"),
+	AppLovinConsentFlowPrivacyPolicy=Export.getProperty("plugin.adsFwApplovinPrivacy"),
+	AppLovinConsentFlowTermsOfService=Export.getProperty("plugin.adsFwApplovinTOS"),
+}
+iOSProject.InfoPlist.SKAdNetworkItems=iOSProject.InfoPlist.SKAdNetworkItems or {}
+local nets={
+    "24t9a8vw3c.skadnetwork",
+    "2fnua5tdw4.skadnetwork",
+    "2u9pt9hc89.skadnetwork",
+    "32z4fx6l9h.skadnetwork",
+    "3qcr597p9d.skadnetwork",
+    "3rd42ekr43.skadnetwork",
+    "3sh42y64q3.skadnetwork",
+    "424m5254lk.skadnetwork",
+    "4468km3ulz.skadnetwork",
+    "4fzdc2evr5.skadnetwork",
+    "4pfyvq9l8r.skadnetwork",
+    "523jb4fst2.skadnetwork",
+    "54nzkqm89y.skadnetwork",
+    "578prtvx9j.skadnetwork",
+    "5a6flpkh64.skadnetwork",
+    "5l3tpt7t6e.skadnetwork",
+    "5lm9lj6jb7.skadnetwork",
+    "6xzpu9s2p8.skadnetwork",
+    "79pbpufp6p.skadnetwork",
+    "7rz58n8ntl.skadnetwork",
+    "7ug5zh24hu.skadnetwork",
+    "8s468mfl3y.skadnetwork",
+    "9b89h5y424.skadnetwork",
+    "9nlqeag3gk.skadnetwork",
+    "9rd848q2bz.skadnetwork",
+    "9t245vhmpl.skadnetwork",
+    "av6w8kgt66.skadnetwork",
+    "c6k4g5qg8m.skadnetwork",
+    "cg4yq2srnc.skadnetwork",
+    "cj5566h2ga.skadnetwork",
+    "cstr6suwn9.skadnetwork",
+    "ejvt5qm6ak.skadnetwork",
+    "f38h382jlk.skadnetwork",
+    "feyaarzu9v.skadnetwork",
+    "g28c52eehv.skadnetwork",
+    "ggvn48r87g.skadnetwork",
+    "glqzh8vgby.skadnetwork",
+    "gta9lk7p23.skadnetwork",
+    "hs6bdukanm.skadnetwork",
+    "k674qkevps.skadnetwork",
+    "kbd757ywx3.skadnetwork",
+    "klf5c3l5u5.skadnetwork",
+    "ludvb6z3bs.skadnetwork",
+    "m8dbw4sv7c.skadnetwork",
+    "mlmmfzh3r3.skadnetwork",
+    "mtkv5xtk9e.skadnetwork",
+    "n9x2a789qt.skadnetwork",
+    "p78axxw29g.skadnetwork",
+    "ppxm28t8ap.skadnetwork",
+    "prcb7njmu6.skadnetwork",
+    "pwa73g5rt2.skadnetwork",
+    "t38b2kh725.skadnetwork",
+    "tl55sbb4fm.skadnetwork",
+    "uw77j35x4d.skadnetwork",
+    "v72qych5uu.skadnetwork",
+    "wg4vff78zm.skadnetwork",
+    "wzmmz9fp6w.skadnetwork",
+    "xy9t38ct57.skadnetwork",
+    "yclnxrl5pm.skadnetwork",
+    "ydx93a7ass.skadnetwork",
+    "zmvfpc5aq8.skadnetwork",
+}
+for _,v in ipairs(nets) do 
+	table.insert(iOSProject.InfoPlist.SKAdNetworkItems, { SKAdNetworkIdentifier=v })
 end
 iOSProject.commit()
 	]]></lua>

@@ -12,7 +12,7 @@
 #import "AdsManager.h"
 
 @interface AdsApplovin : NSObject <AdsProtocol>
-@property(nonatomic, assign) ALAdView *view_;
+@property(nonatomic, retain) ALAdView *view_;
 @property(nonatomic, retain) NSString *appKey;
 @property(nonatomic, retain) NSString *curType;
 @property (nonatomic, retain) AdsManager *mngr;
