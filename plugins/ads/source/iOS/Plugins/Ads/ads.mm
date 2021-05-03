@@ -111,6 +111,15 @@ public:
         return [AdsClass getHeight:[NSString stringWithUTF8String:ad]];
 	}
 	
+	void onAdsReady(const char* ad, int state)
+	{
+		gads_ReadyEvent* event = (gads_ReadyEvent*)gevent_CreateEventStruct1(
+			sizeof(gads_ReadyEvent),
+			offsetof(gads_ReadyEvent, ad), ad);
+		event->state = state;
+		gevent_EnqueueEvent(gid_, callback_s, GADS_ADS_READY_EVENT, event, 1, this);
+	}
+	
 	void onAdReceived(const char *ad, const char *type)
 	{
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
@@ -376,7 +385,7 @@ void gads_removeCallbackWithGid(g_id gid)
 		s_ads->removeCallbackWithGid(gid);
 	}
 }
-    
+    	
 void gads_adReceived(const char *ad, const char *type){
     if(s_ads)
 	{

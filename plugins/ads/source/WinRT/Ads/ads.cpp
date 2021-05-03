@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <glog.h>
 #include "AdsAbstract.h"
-#include "frameworks/AdsPubcenter.h"
+//GID-ADS-FRAMEWORKS-INC
+#include "frameworks/AdsVungle.h"
 
 class GAds
 {
@@ -10,7 +11,9 @@ public:
 	GAds()
 	{
 		gid_ = g_NextId();
-		frameworks["pubcenter"] = &createInstance<AdsPubcenter>;
+
+		//GID-ADS-FRAMEWORKS-DEF
+		frameworks["vungle"] = &createInstance<AdsVungle>;
 	}
 
 	~GAds()
@@ -20,6 +23,12 @@ public:
 		frameworks.clear();
 		gevent_RemoveEventsWithGid(gid_);
 	}
+	
+	bool hasProvider(const char *ad)
+	{
+		return (frameworks[ad] != NULL);
+	}
+	
 	
 	void init(const char *ad)
 	{
@@ -114,7 +123,16 @@ public:
 			return instances[ad]->getHeight();
         return 0;
 	}
-	
+
+	void onAdsReady(const char* ad, int state)
+	{
+		gads_ReadyEvent* event = (gads_ReadyEvent*)gevent_CreateEventStruct1(
+			sizeof(gads_ReadyEvent),
+			offsetof(gads_ReadyEvent, ad), ad);
+		event->state = state;
+		gevent_EnqueueEvent(gid_, callback_s, GADS_ADS_READY_EVENT, event, 1, this);
+	}
+
 	void onAdReceived(const char *ad, const char *type)
 	{
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
@@ -122,6 +140,16 @@ public:
             offsetof(gads_SimpleEvent, ad), ad,
             offsetof(gads_SimpleEvent, type), type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_RECEIVED_EVENT, event, 1, this);
+	}
+
+	void onAdRewarded(const char* ad, const char* type, int amount)
+	{
+		gads_RewardEvent* event = (gads_RewardEvent*)gevent_CreateEventStruct2(
+			sizeof(gads_RewardEvent),
+			offsetof(gads_RewardEvent, ad), ad,
+			offsetof(gads_RewardEvent, type), type);
+		event->amount = amount;
+		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_REWARDED_EVENT, event, 1, this);
 	}
 	
 	void onAdFailed(const char *ad, const char *error, const char *type)
@@ -223,6 +251,15 @@ extern "C" {
 	{
 		return 1;
 	}
+
+bool gads_hasProvider(const char *ad)
+{
+	if(s_ads)
+	{
+		return s_ads->hasProvider(ad);
+	}
+    return false;
+}
 
 	void gads_init()
 	{
@@ -338,6 +375,11 @@ extern "C" {
 		return s_ads->getHeight(ad);
 	}
 
+	int gads_hasConnection(const char *ad)
+	{
+		return true;// s_ads->hasConnection(ad);
+	}
+
 	g_id gads_addCallback(gevent_Callback callback, void *udata)
 	{
 		return s_ads->addCallback(callback, udata);
@@ -359,10 +401,24 @@ extern "C" {
 		}
 	}
 
+	void gads_adsReady(const char* ad, int state) {
+		if (s_ads)
+		{
+			s_ads->onAdsReady(ad, state);
+		}
+	}
+
 	void gads_adReceived(const char *ad, const char *type){
 		if (s_ads)
 		{
 			s_ads->onAdReceived(ad, type);
+		}
+	}
+
+	void gads_adRewarded(const char* ad, const char* type, int amount) {
+		if (s_ads)
+		{
+			s_ads->onAdRewarded(ad, type, amount);
 		}
 	}
 

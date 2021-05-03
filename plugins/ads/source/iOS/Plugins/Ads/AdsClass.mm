@@ -241,6 +241,10 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
     return ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown);
 }
 
++(void)adsReady:(Class)adprovider state:(BOOL)state{
+    gads_adsReady([[AdsClass modifyName:adprovider] UTF8String], state);
+}
+
 +(void)adReceived:(Class)adprovider forType:(NSString*)type{
     gads_adReceived([[AdsClass modifyName:adprovider] UTF8String], [type UTF8String]);
 }

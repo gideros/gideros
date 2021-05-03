@@ -494,30 +494,70 @@ iOSProject.commit()
  		</lua>
     </if>
  </target>
- <target_deprecated name="WinRT">
+ <target name="WinRT">
     <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins"/>
+    <set key="local.adsfwd" value="giderosgame/giderosgame.Shared/Plugins/Ads/frameworks"/>
+    <set key="local.adsfws" value="[[[sys.pluginDir]]]/source/WinRT/Ads/frameworks"/>
+    <mkdir>[[[local.adsfwd]]]</mkdir>
     <template name="project" path="">
         <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
-        <append>
+	    <append>
             <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
             <by><![CDATA[
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h" />]]></by>
-            </append>
-        <append>
-            <orig><![CDATA[<!--SDK-REFERENCE-WIN-->]]></orig>
-            <by><![CDATA[
-    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0" />]]></by>
-         </append>
-        </replacelist>
+			    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
+			      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+			    </ClCompile>
+			    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
+			      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+			    </ClCompile>
+			    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
+			    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />]]></by>
+        </append>
+       </replacelist>
     </template>
- </target_deprecated>
+    <if condition="[[[plugin.adsFwVungle]]]">
+		<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsVungle.*" />
+		<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="Vungle" />
+	    <template name="project" path="">
+	        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
+	        <append>
+	            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+	            <by><![CDATA[
+				    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.cpp" />
+				    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.h" />]]></by>
+	        </append>	
+	        </replacelist>
+	    </template>
+	    <template name="project" path="">
+	        <replacelist wildcards="giderosgame.Windows.vcxproj">
+	        <prepend>
+	            <orig><![CDATA[</Project>]]></orig>
+	            <by><![CDATA[
+  <ItemGroup>
+    <Reference Include="VungleSDK">
+      <HintPath>..\giderosgame.Shared\Plugins\Ads\frameworks\Vungle\VungleSDK.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+				]]></by>
+	        </prepend>	
+	        </replacelist>
+	    </template>
+	    <template name="project" path="">
+	        <replacelist wildcards="ads.cpp">
+	        <append>
+	            <orig><![CDATA[//GID-ADS-FRAMEWORKS-INC]]></orig>
+	            <by><![CDATA[
+				    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.cpp" />
+				    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.h" />]]></by>
+	        </append>	
+	        <append>
+	            <orig><![CDATA[//GID-ADS-FRAMEWORKS-DEF]]></orig>
+	            <by><![CDATA[
+frameworks["vungle"] = &createInstance<AdsVungle>;]]></by>
+	        </append>	
+	        </replacelist>
+	    </template>
+	</if>        
+ </target>
 </plugin>

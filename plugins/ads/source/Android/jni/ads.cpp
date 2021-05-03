@@ -14,13 +14,13 @@ public:
 	GAds()
 	{
 		gid_ = g_NextId();
-		
+
 		JNIEnv *env = g_getJNIEnv();
 
 		jclass localClass = env->FindClass("com/giderosmobile/android/plugins/ads/Ads");
 		cls_ = (jclass)env->NewGlobalRef(localClass);
 		env->DeleteLocalRef(localClass);
-		
+
 		jclass class_sparse = env->FindClass("android/util/SparseArray");
 		clsSparse = static_cast<jclass>(env->NewGlobalRef(class_sparse));
 		env->DeleteLocalRef(class_sparse);
@@ -33,10 +33,10 @@ public:
 		JNIEnv *env = g_getJNIEnv();
 
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "cleanup", "()V"));
-		
+
 		env->DeleteGlobalRef(cls_);
 		env->DeleteGlobalRef(clsSparse);
-		
+
 		gevent_RemoveEventsWithGid(gid_);
 	}
 
@@ -53,7 +53,7 @@ public:
 	void init(const char *ad)
 	{
 		JNIEnv *env = g_getJNIEnv();
-		
+
 		jstring jAd = env->NewStringUTF(ad);
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "initialize", "(Ljava/lang/String;)V"), jAd);
 		env->DeleteLocalRef(jAd);
@@ -62,7 +62,7 @@ public:
 	void destroy(const char *ad)
 	{
 		JNIEnv *env = g_getJNIEnv();
-		
+
 		jstring jAd = env->NewStringUTF(ad);
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "destroy", "(Ljava/lang/String;)V"), jAd);
 		env->DeleteLocalRef(jAd);
@@ -87,7 +87,7 @@ public:
 		env->DeleteLocalRef(jparams);
 		env->DeleteLocalRef(jAd);
 	}
-	
+
 	void loadAd(const char *ad, gads_Parameter *params)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -137,7 +137,7 @@ public:
 		env->DeleteLocalRef(jAd);
 		env->DeleteLocalRef(jAdType);
 	}
-	
+
 	void enableTesting(const char *ad)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -157,7 +157,7 @@ public:
 		env->DeleteLocalRef(jVer);
 		env->DeleteLocalRef(jAd);
 	}
-	
+
 	void setX(const char *ad, int x)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -209,7 +209,7 @@ public:
 		env->DeleteLocalRef(jAd);
 		return height;
 	}
-	
+
 	int hasConnection(const char *ad)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -218,14 +218,14 @@ public:
 		env->DeleteLocalRef(jAd);
 		return has;
 	}
-	
+
 	void onAdReceived(jstring jAd, jstring jAdType)
 	{
 		JNIEnv *env = g_getJNIEnv();
 
 		const char *ad = env->GetStringUTFChars(jAd, NULL);
 		const char *type = env->GetStringUTFChars(jAdType, NULL);
-			
+
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
 			sizeof(gads_SimpleEvent),
 			offsetof(gads_SimpleEvent, ad), ad,
@@ -233,7 +233,7 @@ public:
 
 		env->ReleaseStringUTFChars(jAdType, ad);
 		env->ReleaseStringUTFChars(jAd, type);
-			
+
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_RECEIVED_EVENT, event, 1, this);
 	}
 	
@@ -263,7 +263,7 @@ public:
 		JNIEnv *env = g_getJNIEnv();
 		const char *ad = env->GetStringUTFChars(jAd, NULL);
 		const char *type = env->GetStringUTFChars(jAdType, NULL);
-			
+
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
 			sizeof(gads_SimpleEvent),
 			offsetof(gads_SimpleEvent, ad), ad,
@@ -279,7 +279,7 @@ public:
 		JNIEnv *env = g_getJNIEnv();
 		const char *ad = env->GetStringUTFChars(jAd, NULL);
 		const char *type = env->GetStringUTFChars(jAdType, NULL);
-			
+
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
 			sizeof(gads_SimpleEvent),
 			offsetof(gads_SimpleEvent, ad), ad,
@@ -295,7 +295,7 @@ public:
 		JNIEnv *env = g_getJNIEnv();
 		const char *ad = env->GetStringUTFChars(jAd, NULL);
 		const char *type = env->GetStringUTFChars(jAdType, NULL);
-			
+
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
 			sizeof(gads_SimpleEvent),
 			offsetof(gads_SimpleEvent, ad), ad,
@@ -305,18 +305,18 @@ public:
 		env->ReleaseStringUTFChars(jAd, type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_DISMISSED_EVENT, event, 1, this);
 	}
-	
+
 	void onAdDisplayed(jstring jAd, jstring jAdType)
 	{
 		JNIEnv *env = g_getJNIEnv();
 		const char *ad = env->GetStringUTFChars(jAd, NULL);
 		const char *type = env->GetStringUTFChars(jAdType, NULL);
-		
+
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
             sizeof(gads_SimpleEvent),
             offsetof(gads_SimpleEvent, ad), ad,
             offsetof(gads_SimpleEvent, type), type);
-			
+
 		env->ReleaseStringUTFChars(jAdType, ad);
 		env->ReleaseStringUTFChars(jAd, type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_DISPLAYED_EVENT, event, 1, this);

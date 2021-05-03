@@ -17,6 +17,7 @@ enum
 	GADS_AD_DISMISSED_EVENT,
 	GADS_AD_ERROR_EVENT,
 	GADS_AD_REWARDED_EVENT,
+	GADS_ADS_READY_EVENT,
 };
 
 typedef struct gads_AdErrorEvent
@@ -49,6 +50,12 @@ typedef struct gads_Parameter
 {
     const char *value;
 } gads_Parameter;
+
+typedef struct gads_ReadyEvent
+{
+	const char* ad;
+	int state;
+} gads_ReadyEvent;
 
 #ifdef __cplusplus
 extern "C" {
