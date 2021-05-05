@@ -310,7 +310,6 @@ void AdsVungleListener::OnAdStart(Platform::Object^ sender, VungleSDK::AdEventAr
 
 	try { adstate = adv->state->Lookup(stype); }
 	catch (Platform::OutOfBoundsException^ e) { return; };//No Such AD
-	adstate->loaded = false;
 	adstate->toshow = false;
 
 	gads_adDisplayed("vungle", adstate->type.c_str());
@@ -334,6 +333,7 @@ void AdsVungleListener::OnAdEnd(Platform::Object^ sender, VungleSDK::AdEndEventA
 
 	try { adstate = adv->state->Lookup(stype); }
 	catch (Platform::OutOfBoundsException^ e) { return; };//No Such AD
+	adstate->loaded = false;
 
 	if (e->CallToActionClicked)
 		gads_adActionBegin("vungle", adstate->type.c_str());

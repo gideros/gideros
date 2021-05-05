@@ -3,7 +3,6 @@
 #include <glog.h>
 #include "AdsAbstract.h"
 //GID-ADS-FRAMEWORKS-INC
-#include "frameworks/AdsVungle.h"
 
 class GAds
 {

@@ -65,7 +65,7 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 }
 
 void ExportCommon::resizeImage(QImage *image, int width, int height,
-		QString output, int quality, bool withAlpha, QColor fill, int mode) {
+        QString output, int quality, bool withAlpha, QColor fill, int mode, bool paletted) {
 	int iwidth = image->width(); //image width
 	int iheight = image->height(); //image height
 	int rwidth = width; //resampled width
@@ -131,13 +131,15 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 		painter.end();
 		xform = larger;
 	}
-	if (!withAlpha)
-		xform = xform.convertToFormat(QImage::Format_RGB888);
-	xform.save(output, "png", 0); //Use maximumt compression for PNG, not quality since png is lossless anyhow
+    if (!withAlpha)
+        xform = xform.convertToFormat(QImage::Format_RGB888);
+    if (paletted)
+        xform = xform.convertToFormat(QImage::Format_Indexed8);
+    xform.save(output, "png", 0); //Use maximumt compression for PNG, not quality since png is lossless anyhow
 }
 
 bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
-		QString output, bool withAlpha) {
+        QString output, bool withAlpha, bool paletted) {
 	if (ctx->appicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.app_icon.isEmpty())
@@ -163,7 +165,7 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating app icon (%dx%d)\n", width, height);
 	resizeImage(ctx->appicon, width, height,
-			ctx->outputDir.absoluteFilePath(output), 100, withAlpha);
+            ctx->outputDir.absoluteFilePath(output), 100, withAlpha, paletted);
 	return true;
 }
 

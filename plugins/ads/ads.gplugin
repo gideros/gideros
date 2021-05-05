@@ -36,7 +36,7 @@
  <property name="adsFwTapjoy" type="boolean" title="Enable Tapjoy support (Android)"/> 
  -->
  <property name="adsFwUnity" type="boolean" title="Enable Unity Ads support (Android,iOS)"/>
- <property name="adsFwVungle" type="boolean" title="Enable Vungle support (Android,iOS)"/>
+ <property name="adsFwVungle" type="boolean" title="Enable Vungle support (Android,iOS,UWP)"/>
  
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java" exclude="frameworks"/>
@@ -549,8 +549,7 @@ iOSProject.commit()
 	        <append>
 	            <orig><![CDATA[//GID-ADS-FRAMEWORKS-INC]]></orig>
 	            <by><![CDATA[
-				    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.cpp" />
-				    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.h" />]]></by>
+#include "frameworks/AdsVungle.h"]]></by>
 	        </append>	
 	        <append>
 	            <orig><![CDATA[//GID-ADS-FRAMEWORKS-DEF]]></orig>
