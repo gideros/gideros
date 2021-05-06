@@ -434,7 +434,14 @@ void gads_adRewarded(const char *ad, const char *type, int amount){
         s_ads->onAdRewarded(ad, type, amount);
     }
 }
-    
+
+void gads_adsReady(const char *ad, int state){
+    if(s_ads)
+    {
+        s_ads->onAdsReady(ad, state);
+    }
+}
+
 void gads_adError(const char *ad, const char *error){
     if(s_ads)
 	{

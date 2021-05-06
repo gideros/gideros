@@ -15,6 +15,7 @@
         
     [[ALSdk shared] initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
         // Start loading ads
+        [AdsClass adsReady:[self class] state:TRUE];
     }];
     
     self.appKey = @"";

@@ -12,7 +12,7 @@
 @implementation AdsApplovin
 -(id)init{
     [ALSdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration * _Nonnull configuration) {        
-	   [AdsClass adsReady:[self.instance class] state:TRUE];
+	   [AdsClass adsReady:[self class] state:TRUE];
     }];
     self.appKey = @"";
     self.curType = @"";
