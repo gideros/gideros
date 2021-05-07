@@ -15,6 +15,7 @@
         
     [[ALSdk shared] initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
         // Start loading ads
+        //[[ALSdk shared] showMediationDebugger];
         [AdsClass adsReady:[self class] state:TRUE];
     }];
     
@@ -64,11 +65,11 @@
         [interstitial loadAd];
     }
     else if ([type isEqualToString:@"v4vc"]) {
-        MARewardedInterstitialAd *interstitial=[self.units objectForKey:aid];
+        MARewardedAd *interstitial=[self.units objectForKey:aid];
         if (interstitial==nil) {
              AdsMaxListener *list = [[AdsMaxListener alloc] init:nil with:self];
             AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
-            interstitial=[[MARewardedInterstitialAd alloc] initWithAdUnitIdentifier:aid sdk:sdk];
+            interstitial=[MARewardedAd sharedWithAdUnitIdentifier:aid sdk:sdk];
             [listener setShow:^(){
                 [AdsClass adDisplayed:[self class] forType:type];
                 [interstitial showAd];
