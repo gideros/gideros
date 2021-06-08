@@ -535,11 +535,19 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_KEYDOWN){
-    ginputp_keyDown(wParam);
+	  int m=0;
+	  if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
+	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
+	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
+    ginputp_keyDown(wParam,m);
     return 0;
   }
   else if (iMsg==WM_KEYUP){
-    ginputp_keyUp(wParam);
+	  int m=0;
+	  if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
+	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
+	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
+    ginputp_keyUp(wParam,m);
     return 0;
   }
   else if (iMsg==WM_PAINT){

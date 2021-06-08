@@ -396,12 +396,12 @@ void Application::mouseWheel(int x, int y, int wheel, int modifiers) {
 			logicalTranslateY_, wheel);
 }
 
-void Application::keyDown(int keyCode, int realCode) {
-	stage_->keyDown(keyCode, realCode);
+void Application::keyDown(int keyCode, int realCode,int modifiers) {
+	stage_->keyDown(keyCode, realCode, modifiers);
 }
 
-void Application::keyUp(int keyCode, int realCode) {
-	stage_->keyUp(keyCode, realCode);
+void Application::keyUp(int keyCode, int realCode,int modifiers) {
+	stage_->keyUp(keyCode, realCode, modifiers);
 }
 
 void Application::keyChar(const char *code) {

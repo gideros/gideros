@@ -147,27 +147,27 @@ public:
         pthread_mutex_unlock(&touchPoolMutex_);
     }
 
-    void keyDown(const char *kval,const char *kcode)
+    void keyDown(const char *kval,const char *kcode, int modifiers)
     {
         int keyCode = convertKeyCode(kval);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, 0); //TODO SCAN CODE
+        ginput_KeyEvent *event = newKeyEvent(keyCode, 0, modifiers); //TODO SCAN CODE
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
-    void keyUp(const char *kval,const char *kcode)
+    void keyUp(const char *kval,const char *kcode, int modifiers)
     {
         int keyCode = convertKeyCode(kval);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, 0); //TODO SCAN CODE
+        ginput_KeyEvent *event = newKeyEvent(keyCode, 0, modifiers); //TODO SCAN CODE
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
     
     void keyChar(const char *keychar)
     {
-        ginput_KeyEvent *event = newKeyEvent(0,0);
+        ginput_KeyEvent *event = newKeyEvent(0,0,-1);
         if (strlen(keychar)<(sizeof(event->charCode)))
         {
             strcpy(event->charCode,keychar);
@@ -596,7 +596,7 @@ private:
         mousePool2_.push_back(event);
     }
 
-    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode, int modifiers)
     {
         ginput_KeyEvent *event;
 
@@ -612,6 +612,7 @@ private:
 
         event->keyCode = keyCode;
 		event->realCode = realCode;
+		event->modifiers = modifiers;
 
         return event;
     }
@@ -782,16 +783,16 @@ void ginput_getGyroscopeRotationRate(double *x, double *y, double *z)
         *z = 0;
 }
 
-void ginputp_keyDown(const char *keyVal,const char *keyCode)
+void ginputp_keyDown(const char *keyVal,const char *keyCode,int modifiers)
 {
     if (s_manager)
-        s_manager->keyDown(keyVal,keyCode);
+        s_manager->keyDown(keyVal,keyCode, modifiers);
 }
 
-void ginputp_keyUp(const char *keyVal,const char *keyCode)
+void ginputp_keyUp(const char *keyVal,const char *keyCode,int modifiers)
 {
     if (s_manager)
-        s_manager->keyUp(keyVal,keyCode);
+        s_manager->keyUp(keyVal,keyCode, modifiers);
 }
 
 void ginputp_keyChar(const char *keyChar)

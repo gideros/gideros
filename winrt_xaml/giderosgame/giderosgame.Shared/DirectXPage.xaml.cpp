@@ -372,13 +372,21 @@ void DirectXPage::OnPointerLost(Object^ sender, PointerEventArgs^ Args)
 void DirectXPage::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ Args)
 {
 	Args->Handled = true;
-	gdr_keyDown((int)Args->VirtualKey);
+	int m=0;
+	if (sender->GetKeyState(Windows::System::VirtualKey::Shift) !=CoreVirtualKeyStates::None) m |= 1;
+	if (sender->GetKeyState(Windows::System::VirtualKey::Menu) != CoreVirtualKeyStates::None) m |= 2;
+	if (sender->GetKeyState(Windows::System::VirtualKey::Control) != CoreVirtualKeyStates::None) m |= 4;
+	gdr_keyDown((int)Args->VirtualKey,m);
 }
 
 void DirectXPage::OnKeyUp(CoreWindow^ sender, KeyEventArgs^ Args)
 {
 	Args->Handled = true;
-	gdr_keyUp((int)Args->VirtualKey);
+	int m=0;
+	if (sender->GetKeyState(Windows::System::VirtualKey::Shift) != CoreVirtualKeyStates::None) m |= 1;
+	if (sender->GetKeyState(Windows::System::VirtualKey::Menu) != CoreVirtualKeyStates::None) m |= 2;
+	if (sender->GetKeyState(Windows::System::VirtualKey::Control) != CoreVirtualKeyStates::None) m |= 4;
+	gdr_keyUp((int)Args->VirtualKey,m);
 }
 
 void DirectXPage::OnKeyChar(CoreWindow^ sender, CharacterReceivedEventArgs^ Args)
@@ -403,8 +411,8 @@ void DirectXPage::OnBackButtonPressed(Object^ sender, BackPressedEventArgs^ args
 void DirectXPage::OnBackButtonPressed(Object^ sender, BackRequestedEventArgs^ args)
 #endif
 {
-	gdr_keyDown(301);
-	gdr_keyUp(301);
+	gdr_keyDown(301,0);
+	gdr_keyUp(301,0);
 	args->Handled = true;
 }
 

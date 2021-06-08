@@ -168,7 +168,7 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
  {
 	 if (!e->repeat)
-		 ginputp_keyDown(key,e->code);
+		 ginputp_keyDown(key,e->code,mkey);
   //printf("DownCode:%s %d\n",key,skey);
   if (skey==1) ginputp_keyChar("\t");
   if (skey==2) ginputp_keyChar("\b");
@@ -184,7 +184,7 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  else if (eventType == EMSCRIPTEN_EVENT_KEYUP)
  {
   //printf("UpCode:%s %d\n",key,skey);
-  ginputp_keyUp(key,e->code);
+  ginputp_keyUp(key,e->code,mkey);
  }
  else if (eventType == EMSCRIPTEN_EVENT_KEYPRESS)
  {

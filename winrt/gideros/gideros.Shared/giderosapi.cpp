@@ -1601,14 +1601,14 @@ extern "C" {
 		return s_manager->isRunning();
 	}
 
-	void gdr_keyDown(int keyCode)
+	void gdr_keyDown(int keyCode,int modifiers)
 	{
-		ginputp_keyDown(keyCode);
+		ginputp_keyDown(keyCode,modifiers);
 	}
 
-	void gdr_keyUp(int keyCode)
+	void gdr_keyUp(int keyCode,int modifiers)
 	{
-		ginputp_keyUp(keyCode);
+		ginputp_keyUp(keyCode,modifiers);
 	}
 
 	void gdr_keyChar(const char *keyChar)

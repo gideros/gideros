@@ -1102,6 +1102,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible) const {
 		pstack.push(curr);
 		last=curr;
 		curr = curr->parent_;
+		if (visible&&(!curr->isVisible_)) return false;
 	}
 	if (visible&&(!last->isStage())) return false;
 

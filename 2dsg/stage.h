@@ -30,8 +30,8 @@ public:
     void touchesEnd(ginput_TouchEvent *event, float sx, float sy, float tx, float ty);
     void touchesCancel(ginput_TouchEvent *event, float sx, float sy, float tx, float ty);
 
-    void keyDown(int keyCode, int realCode);
-    void keyUp(int keyCode, int realCode);
+    void keyDown(int keyCode, int realCode, int modifiers);
+    void keyUp(int keyCode, int realCode, int modifiers);
     void keyChar(const char *code);
 
     Application* application() const

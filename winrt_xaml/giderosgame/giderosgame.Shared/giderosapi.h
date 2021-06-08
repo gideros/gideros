@@ -21,8 +21,8 @@ extern "C" {
 	void gdr_background();
 	void gdr_openProject(const char* project);
 	bool gdr_isRunning();
-	void gdr_keyDown(int keyCode);
-	void gdr_keyUp(int keyCode);
+	void gdr_keyDown(int keyCode,int modifiers);
+	void gdr_keyUp(int keyCode,int modifiers);
 	void gdr_keyChar(const char *keyChar);
 	void gdr_mouseDown(int x, int y, int button);
 	void gdr_mouseMove(int x, int y);

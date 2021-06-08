@@ -529,27 +529,27 @@ public:
         }
     }
 
-    void keyDown(int realCode)
+    void keyDown(int realCode, int modifiers)
     {
         int keyCode = convertKeyCode(realCode);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode, modifiers);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
-    void keyUp(int realCode)
+    void keyUp(int realCode, int modifiers)
     {
         int keyCode = convertKeyCode(realCode);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode, modifiers);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
     void keyChar(const char *keychar)
     {
-        ginput_KeyEvent *event = newKeyEvent(0,0);
+        ginput_KeyEvent *event = newKeyEvent(0,0,-1);
     	if (strlen(keychar)<(sizeof(event->charCode)))
     	{
     		strcpy(event->charCode,keychar);
@@ -602,7 +602,7 @@ private:
         mousePool2_.push_back(event);
     }
 
-    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode, int modifiers)
     {
         ginput_KeyEvent *event;
 
@@ -618,6 +618,7 @@ private:
 
         event->keyCode = keyCode;
         event->realCode = realCode;
+        event->modifiers = modifiers;
         return event;
     }
 
@@ -832,16 +833,16 @@ void ginputp_touchesCancel(int x, int y, int id, float pressure, int touchType, 
         s_manager->touchesCancel(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes, mod);
 }
 
-void ginputp_keyDown(int keyCode)
+void ginputp_keyDown(int keyCode, int modifiers)
 {
     if (s_manager)
-        s_manager->keyDown(keyCode);
+        s_manager->keyDown(keyCode, modifiers);
 }
 
-void ginputp_keyUp(int keyCode)
+void ginputp_keyUp(int keyCode, int modifiers)
 {
     if (s_manager)
-        s_manager->keyUp(keyCode);
+        s_manager->keyUp(keyCode, modifiers);
 }
 
 void ginputp_keyChar(const char *keyChar)

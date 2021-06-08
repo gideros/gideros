@@ -721,6 +721,7 @@ private:
 
         event->keyCode = keyCode;
         event->realCode = realCode;
+        event->modifiers = -1;
 
         return event;
     }

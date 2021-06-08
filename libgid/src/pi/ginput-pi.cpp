@@ -618,6 +618,8 @@ private:
         }
 
         event->keyCode = keyCode;
+        event->realCode = 0;
+        event->modifiers = -1;
 
         return event;
     }

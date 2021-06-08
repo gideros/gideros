@@ -166,24 +166,24 @@ public:
         pthread_mutex_unlock(&touchPoolMutex_);
     }
 
-    void keyDown(int keyCode)
+    void keyDown(int keyCode,int modifiers)
     {
         keyCode = convertKeyCode(keyCode);
         if (keyCode == 0)
             return;
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode,modifiers);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
-    void keyUp(int keyCode)
+    void keyUp(int keyCode,int modifiers)
     {
         keyCode = convertKeyCode(keyCode);
         if (keyCode == 0)
             return;
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode,modifiers);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
@@ -613,7 +613,7 @@ private:
         mousePool2_.push_back(event);
     }
 
-    ginput_KeyEvent *newKeyEvent(int keyCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int modifiers)
     {
         ginput_KeyEvent *event;
 
@@ -628,6 +628,8 @@ private:
         }
 
         event->keyCode = keyCode;
+        event->realCode = 0;
+        event->modifiers = modifiers;
 
         return event;
     }
@@ -789,16 +791,16 @@ void ginput_getGyroscopeRotationRate(double *x, double *y, double *z)
         *z = 0;
 }
 
-void ginputp_keyDown(int keyCode)
+void ginputp_keyDown(int keyCode,int modifiers)
 {
     if (s_manager)
-        s_manager->keyDown(keyCode);
+        s_manager->keyDown(keyCode,modifiers);
 }
 
-void ginputp_keyUp(int keyCode)
+void ginputp_keyUp(int keyCode,int modifiers)
 {
     if (s_manager)
-        s_manager->keyUp(keyCode);
+        s_manager->keyUp(keyCode,modifiers);
 }
 
 void ginput_setMouseToTouchEnabled(int enabled)

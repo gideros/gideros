@@ -132,21 +132,21 @@ void Stage::touchesCancel(ginput_TouchEvent *event, float sx, float sy, float tx
     dispatchToSpritesWithListeners(&event2,SPRITE_EVENTMASK_TOUCH);
 }
 
-void Stage::keyDown(int keyCode, int realCode)
+void Stage::keyDown(int keyCode, int realCode, int modifiers)
 {
-    KeyboardEvent event(KeyboardEvent::KEY_DOWN, keyCode, realCode,"");
+    KeyboardEvent event(KeyboardEvent::KEY_DOWN, keyCode, realCode,"",modifiers);
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_KEY);
 }
 
-void Stage::keyUp(int keyCode, int realCode)
+void Stage::keyUp(int keyCode, int realCode, int modifiers)
 {
-    KeyboardEvent event(KeyboardEvent::KEY_UP, keyCode, realCode,"");
+    KeyboardEvent event(KeyboardEvent::KEY_UP, keyCode, realCode,"",modifiers);
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_KEY);
 }
 
 void Stage::keyChar(const char *code)
 {
-    KeyboardEvent event(KeyboardEvent::KEY_CHAR, 0, 0, code);
+    KeyboardEvent event(KeyboardEvent::KEY_CHAR, 0, 0, code, -1);
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_KEY);
 }
 

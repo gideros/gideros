@@ -792,6 +792,11 @@ public:
 
             lua_pushstring(L, v->charCode.c_str());
             lua_setfield(L, -2, "text");
+
+            if (v->modifiers!=-1) {
+                lua_pushinteger(L, v->modifiers);
+                lua_setfield(L, -2, "modifiers");
+            }
 		}
 		else
 		{
