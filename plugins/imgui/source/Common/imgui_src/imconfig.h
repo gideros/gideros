@@ -12,6 +12,7 @@
 //-----------------------------------------------------------------------------
 
 //#define IS_BETA_BUILD
+#define ENABLE_DEBUG_ASSERTS
 
 #pragma once
 
@@ -20,7 +21,7 @@ typedef G_FILE* ImFileHandle;
 
 #include "debugapi.h"
 
-#ifdef IS_BETA_BUILD
+#ifdef ENABLE_DEBUG_ASSERTS
 #define IM_ASSERT( exp ) do { if (!(exp)) { char buffer[1024]; sprintf(buffer, "[%d] %s: %s\n", __LINE__, __FILE__, #exp); OutputDebugStringA( buffer ); }} while(0)
 #define IM_TRACE( msg ) do { char buffer[1024]; sprintf(buffer, "    [%d] %s: %s", __LINE__, __FILE__, msg); OutputDebugStringA( buffer ); } while(0)
 #else
@@ -48,7 +49,7 @@ typedef G_FILE* ImFileHandle;
 
 //---- Don't implement some functions to reduce linkage requirements.
 //#define IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCTIONS   // [Win32] Don't implement default clipboard handler. Won't use and link with OpenClipboard/GetClipboardData/CloseClipboard etc.
-//#define IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS         // [Win32] Don't implement default IME handler. Won't use and link with ImmGetContext/ImmSetCompositionWindow.
+#define IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS         // [Win32] Don't implement default IME handler. Won't use and link with ImmGetContext/ImmSetCompositionWindow.
 //#define IMGUI_DISABLE_WIN32_FUNCTIONS                     // [Win32] Won't use and link with any Win32 function (clipboard, ime).
 //#define IMGUI_ENABLE_OSX_DEFAULT_CLIPBOARD_FUNCTIONS      // [OSX] Implement default OSX clipboard handler (need to link with '-framework ApplicationServices', this is why this is not the default).
 //#define IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS            // Don't implement ImFormatString/ImFormatStringV so you can implement them yourself (e.g. if you don't want to link with vsnprintf)

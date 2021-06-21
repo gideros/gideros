@@ -204,7 +204,8 @@ namespace ImGui
         bool temp_input_is_active = temp_input_allowed && TempInputIsActive(id);
         if (!temp_input_is_active)
         {
-            const bool focus_requested = temp_input_allowed && FocusableItemRegister(window, id);
+            bool focused = (GetItemStatusFlags() & ImGuiItemStatusFlags_Focused) != 0;
+            const bool focus_requested = temp_input_allowed && focused;
             const bool clicked = (hovered && g.IO.MouseClicked[0]);
             if (focus_requested || clicked || g.NavActivateId == id || g.NavInputId == id)
             {
@@ -215,7 +216,7 @@ namespace ImGui
                 if (temp_input_allowed && (focus_requested || (clicked && g.IO.KeyCtrl) || g.NavInputId == id))
                 {
                     temp_input_is_active = true;
-                    FocusableItemUnregister(window);
+                    //FocusableItemUnregister(window);
                 }
             }
         }
@@ -500,7 +501,7 @@ namespace ImGui
         ImRect image_bb(pos + padding, pos + image_size - padding);
         FitImage(image_bb.Min, image_bb.Max, size, image_size, texture_size, ImVec2(image_side == ImGuiDir_Left ? 0.0f : 1.0f, 0.5f), padding);
 
-        if (window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat)
+        if (g.CurrentItemFlags & ImGuiItemFlags_ButtonRepeat)
             flags |= ImGuiButtonFlags_Repeat;
 
         bool hovered, held;
