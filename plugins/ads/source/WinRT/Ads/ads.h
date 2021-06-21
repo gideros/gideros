@@ -19,6 +19,8 @@ enum
 	GADS_AD_DISMISSED_EVENT,
     GADS_AD_DISPLAYED_EVENT,
 	GADS_AD_ERROR_EVENT,
+	GADS_AD_REWARDED_EVENT,
+	GADS_ADS_READY_EVENT,
 };
 
 typedef struct gads_AdErrorEvent
@@ -40,10 +42,23 @@ typedef struct gads_SimpleEvent
     const char *type;
 } gads_SimpleEvent;
 
+typedef struct gads_RewardEvent
+{
+	const char *ad;
+	const char *type;
+	int amount;
+} gads_RewardEvent;
+
 typedef struct gads_Parameter
 {
     const char *value;
 } gads_Parameter;
+
+typedef struct gads_ReadyEvent
+{
+	const char* ad;
+	int state;
+} gads_ReadyEvent;
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,6 +69,7 @@ G_API int gads_isAvailable();
 G_API void gads_init();
 G_API void gads_cleanup();
 
+G_API bool gads_hasProvider(const char *ad);
 G_API void gads_initialize(const char *ad);
 G_API void gads_destroy(const char *ad);
 G_API void gads_setKey(const char *ad, gads_Parameter *params);
@@ -70,17 +86,20 @@ G_API int gads_getX(const char *ad);
 G_API int gads_getY(const char *ad);
 G_API int gads_getWidth(const char *ad);
 G_API int gads_getHeight(const char *ad);
+G_API int gads_hasConnection(const char *ad);
 
 G_API g_id gads_addCallback(gevent_Callback callback, void *udata);
 G_API void gads_removeCallback(gevent_Callback callback, void *udata);
 G_API void gads_removeCallbackWithGid(g_id gid);
     
+G_API void gads_adsReady(const char* ad, int state);
 G_API void gads_adReceived(const char *ad, const char *type);
 G_API void gads_adFailed(const char *ad, const char *error, const char *type);
 G_API void gads_adActionBegin(const char *ad, const char *type);
 G_API void gads_adActionEnd(const char *ad, const char *type);
 G_API void gads_adDismissed(const char *ad, const char *type);
 G_API void gads_adDisplayed(const char *ad, const char *type);
+G_API void gads_adRewarded(const char *ad, const char *type, int amount);
 G_API void gads_adError(const char *ad, const char *error);
 
 #ifdef __cplusplus

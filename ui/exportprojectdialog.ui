@@ -95,7 +95,7 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>0</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -590,18 +590,7 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Maximum memory usage (in MB), adjust according to your app needs:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="html5_mem"/>
-         </item>
-        </layout>
+        <layout class="QHBoxLayout" name="horizontalLayout_5"/>
        </item>
        <item>
         <widget class="QCheckBox" name="html5_pack">

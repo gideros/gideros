@@ -40,7 +40,7 @@ public:
 	void setConvex(bool convex);
 	void setFillColor(unsigned int color, float alpha);
 	void setLineColor(unsigned int color, float alpha);
-	void setLineThickness(float thickness, float feather);
+	void setLineThickness(float thickness, float feather, float margin = -1, float flatness = -1);
 	void getPathPoints(float offset, float advance,int max, float flatness, int maxsub,std::vector<PathPoint> &points);
 	static int buildPath(PrPath *);
 	static void removePath(int);

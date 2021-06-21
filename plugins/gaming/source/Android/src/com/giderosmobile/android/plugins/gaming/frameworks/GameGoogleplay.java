@@ -387,24 +387,28 @@ public class GameGoogleplay implements GameInterface {
 					public void onComplete(@NonNull Task<AnnotatedData<LeaderboardsClient.LeaderboardScores>> task) {
 						if(task.isSuccessful()){
 							LeaderboardsClient.LeaderboardScores ls=task.getResult().get();
-							String leaderboardId =  ls.getLeaderboard().getLeaderboardId();
-							String leaderboardName = ls.getLeaderboard().getDisplayName();
-							LeaderboardScoreBuffer scores = ls.getScores();
-							SparseArray<Bundle> lscores = new SparseArray<Bundle>();
-							int size = scores.getCount();
-							for(int i = 0; i < size; i++){
-								LeaderboardScore l = scores.get(i);
-								Bundle map = new Bundle();
-								map.putString("rank", l.getDisplayRank());
-		    					map.putString("formatScore", l.getDisplayScore());
-								map.putString("score", l.getDisplayScore());
-								map.putString("name", l.getScoreHolderDisplayName());
-								map.putString("playerId", l.getScoreHolder().getPlayerId());
-								map.putInt("timestamp", (int)(l.getTimestampMillis()/1000));
-								lscores.put(i, map);
+							if (ls!= null) {
+								if (ls.getLeaderboard() != null) {
+									String leaderboardId =  ls.getLeaderboard().getLeaderboardId();
+									String leaderboardName = ls.getLeaderboard().getDisplayName();
+									LeaderboardScoreBuffer scores = ls.getScores();
+									SparseArray<Bundle> lscores = new SparseArray<Bundle>();
+									int size = scores.getCount();
+									for(int i = 0; i < size; i++){
+										LeaderboardScore l = scores.get(i);
+										Bundle map = new Bundle();
+										map.putString("rank", l.getDisplayRank());
+										map.putString("formatScore", l.getDisplayScore());
+										map.putString("score", l.getDisplayScore());
+										map.putString("name", l.getScoreHolderDisplayName());
+										map.putString("playerId", l.getScoreHolder().getPlayerId());
+										map.putInt("timestamp", (int)(l.getTimestampMillis()/1000));
+										lscores.put(i, map);
+									}
+									Game.loadScoresComplete(me, leaderboardId, leaderboardName, lscores);
+								}
+								ls.release();
 							}
-							Game.loadScoresComplete(me, leaderboardId, leaderboardName, lscores);
-							ls.release();
 						}
 						else
 						{

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0321C67924F6433600E4B278 /* imgui_bindings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0321C67824F6433600E4B278 /* imgui_bindings.cpp */; };
+		039DC2D725DD229B00C802F2 /* TextEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 039DC2D525DD229A00C802F2 /* TextEditor.h */; };
+		039DC2D825DD229B00C802F2 /* TextEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 039DC2D625DD229B00C802F2 /* TextEditor.cpp */; };
 		03ACF90824F644F600851C74 /* imgui_user.h in Headers */ = {isa = PBXBuildFile; fileRef = 03ACF8FC24F644F500851C74 /* imgui_user.h */; };
 		03ACF90924F644F600851C74 /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03ACF8FD24F644F500851C74 /* imgui_demo.cpp */; };
 		03ACF90A24F644F600851C74 /* imstb_truetype.h in Headers */ = {isa = PBXBuildFile; fileRef = 03ACF8FE24F644F500851C74 /* imstb_truetype.h */; };
@@ -25,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		0321C67824F6433600E4B278 /* imgui_bindings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui_bindings.cpp; path = Common/imgui_bindings.cpp; sourceTree = "<group>"; };
+		039DC2D525DD229A00C802F2 /* TextEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextEditor.h; path = Common/TextEditor.h; sourceTree = "<group>"; };
+		039DC2D625DD229B00C802F2 /* TextEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextEditor.cpp; path = Common/TextEditor.cpp; sourceTree = "<group>"; };
 		03ACF8FC24F644F500851C74 /* imgui_user.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = imgui_user.h; path = Common/imgui_user.h; sourceTree = "<group>"; };
 		03ACF8FD24F644F500851C74 /* imgui_demo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui_demo.cpp; path = Common/imgui_src/imgui_demo.cpp; sourceTree = "<group>"; };
 		03ACF8FE24F644F500851C74 /* imstb_truetype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = imstb_truetype.h; path = Common/imgui_src/imstb_truetype.h; sourceTree = "<group>"; };
@@ -56,6 +60,8 @@
 		5F9FAA9215DD87E10039718F = {
 			isa = PBXGroup;
 			children = (
+				039DC2D625DD229B00C802F2 /* TextEditor.cpp */,
+				039DC2D525DD229A00C802F2 /* TextEditor.h */,
 				03ACF90624F644F600851C74 /* imconfig.h */,
 				03ACF8FD24F644F500851C74 /* imgui_demo.cpp */,
 				03ACF8FF24F644F500851C74 /* imgui_draw.cpp */,
@@ -103,6 +109,7 @@
 				03ACF90F24F644F600851C74 /* imstb_textedit.h in Headers */,
 				03ACF90824F644F600851C74 /* imgui_user.h in Headers */,
 				03ACF90D24F644F600851C74 /* imgui_internal.h in Headers */,
+				039DC2D725DD229B00C802F2 /* TextEditor.h in Headers */,
 				03ACF91224F644F600851C74 /* imconfig.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -159,6 +166,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				039DC2D825DD229B00C802F2 /* TextEditor.cpp in Sources */,
 				03ACF90B24F644F600851C74 /* imgui_draw.cpp in Sources */,
 				03ACF91124F644F600851C74 /* imgui_user.cpp in Sources */,
 				03ACF90924F644F600851C74 /* imgui_demo.cpp in Sources */,

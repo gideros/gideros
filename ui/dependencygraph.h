@@ -11,6 +11,12 @@ class DependencyGraph
 {
 
 public:
+    struct TagsContext {
+        QDir projectDir;
+        const DependencyGraph *graph;
+        std::map<QString, QString> fileMap;
+        std::map<QString,QString> libraries;
+    };
     struct Vertex
     {
         Vertex(const QString& code, bool excludeFromExecution) :
@@ -21,13 +27,15 @@ public:
         {
         }
 
-        void parseTags(QDir projectDir,const DependencyGraph *graph,std::map<QString, QString> fileMap);
+        void parseTags(TagsContext &ctx);
+        void processTags(TagsContext &ctx);
 
         QString code;
         bool excludeFromExecution;
         mutable bool visited;
         std::set<Vertex*> dependencies;
         //file tags
+        QStringList tags;
         bool excludeFromExecutionTag;
         std::set<Vertex*> dependenciesTag;
     };

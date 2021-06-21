@@ -14,6 +14,8 @@ private:
 
 	static int setWidth(lua_State* L);
 	static int setHeight(lua_State* L);
+	static int setAnchorPoint(lua_State* L);
+	static int getAnchorPoint(lua_State* L);
     static int setDimensions(lua_State *L);
     static int getDimensions(lua_State *L);
     static int setColor(lua_State *L);

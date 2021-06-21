@@ -87,7 +87,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     ui->winrt_package->setText(properties->winrt_package);
     ui->html5_host->setText(properties->html5_host);
     ui->html5_crash->setText(properties->html5_crash);
-    ui->html5_mem->setText(QString::number(properties->html5_mem));
+    //ui->html5_mem->setText(QString::number(properties->html5_mem));
     ui->html5_pack->setChecked(properties_->html5_pack);
     ui->html5_symbols->setChecked(properties_->html5_symbols);
     ui->html5_fbinstant->setChecked(properties_->html5_fbinstant);
@@ -282,7 +282,7 @@ void ExportProjectDialog::onAccepted()
     properties_->encryptAssets = ui->encryptAssets->isChecked();
     properties_->html5_host = ui->html5_host->text();
     properties_->html5_crash = ui->html5_crash->text();
-    properties_->html5_mem = ui->html5_mem->text().toInt();
+    properties_->html5_mem = 256; //ui->html5_mem->text().toInt();
     properties_->html5_pack = ui->html5_pack->isChecked();
     properties_->html5_symbols = ui->html5_symbols->isChecked();
     properties_->html5_fbinstant = ui->html5_fbinstant->isChecked();

@@ -120,7 +120,10 @@ function Shader.lua(vf,ff,opt,uniforms,attrs,varying,funcs,const,debug)
 	assert(mtd,"Language not supported: "..lang)
 	
 	local _vshader,_fshader=mtd(vf,ff,opt,uniforms,attrs,varying,funcs or {},const)
-
+  if funcs then
+		for _,fg in ipairs(funcs) do fg.code=nil end
+	end
+	
 	if debug then
 		print("VSHADER_CODE:\n".._vshader)	
 		print("FSHADER_CODE:\n".._fshader)

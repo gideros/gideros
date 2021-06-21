@@ -15,6 +15,9 @@
  -->
  <property name="adsFwApplovin" type="boolean" title="Enable AppLovin support (Android, iOS, Gaming/Google Play)"/>
  <property name="adsFwApplovinKey" type="string" title="AppLovin SDK key (Android, iOS)"/>
+ <property name="adsFwApplovinConsent" type="boolean" title="Enable AppLovin Consent Flow (iOS)"/>
+ <property name="adsFwApplovinPrivacy" type="string" title="AppLovin privacy policy URL (iOS)"/>
+ <property name="adsFwApplovinTOS" type="string" title="AppLovin terms of service URL (iOS)"/>
  <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android, iOS, Gaming/Google Play)"/>
  <!--
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
@@ -33,7 +36,7 @@
  <property name="adsFwTapjoy" type="boolean" title="Enable Tapjoy support (Android)"/> 
  -->
  <property name="adsFwUnity" type="boolean" title="Enable Unity Ads support (Android,iOS)"/>
- <property name="adsFwVungle" type="boolean" title="Enable Vungle support (Android,iOS)"/>
+ <property name="adsFwVungle" type="boolean" title="Enable Vungle support (Android,iOS,UWP)"/>
  
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java" exclude="frameworks"/>
@@ -178,23 +181,18 @@
 	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
-    	<set key="local.adsAarVer" value="9.6.0" />
-    	<set key="local.adsJarVer" value="applovin-sdk-[[[local.adsAarVer]]].aar" />
-    	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
-    	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
+    	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsMax.java" />
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml;build.gradle">
             	<append>
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
-<meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />
-<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
-<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configChanges="orientation|screenSize" />]]></by>
+<meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />]]></by>
     	        </append>
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    implementation files('libs/[[[local.adsJarVer]]]')
+				    implementation 'com.applovin:applovin-sdk:+'
 		            implementation 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
@@ -266,8 +264,8 @@
             	<prepend>
             		<orig><![CDATA[</resources>]]></orig>
             		<by><![CDATA[    <!-- AdMob ad unit IDs -->
-    <string name="banner_home_footer">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobBanner]]]</string>
-    <string name="interstitial_full_screen">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobInterstitial]]]</string>            		
+    <string name="banner_home_footer">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobBanner]]]",
+    <string name="interstitial_full_screen">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobInterstitial]]]",            		
             		]]></by>
     	        </prepend>   
         	</replacelist>
@@ -316,28 +314,86 @@ iOSProject.commit()
 
 <if condition="[[[plugin.adsFwApplovin]]]">
 	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.*" exclude="*.framework" />
-	<download source="http://apps.giderosmobile.com/ext/ios/AppLovinSDK.framework-6.6.1.zip" dest="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" />
-	<unzip source="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" dest="[[[local.adsfwd]]]" />
-   <template name="Project" path="">
-        <replacelist wildcards="[[[project.name]]]-Info.plist">
-	    	<prepend>
-			<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
-			<by><![CDATA[	
-				<key>AppLovinSdkKey</key>
-				<string>[[[plugin.adsFwApplovinKey]]]</string>
-			]]></by>
-	    </prepend>
-        </replacelist>
-    </template>	
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsMax.*" exclude="*.framework" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.needObjCLinking()
 iOSProject.addSources({
-"AdsApplovin.m","AdsApplovin.h","AppLovinSDK.framework"
+"AdsApplovin.m","AdsApplovin.h", "AdsMax.m", "AdsMax.h",
 },"GroupAdsFrameworks","ios")
-local sysFW={ "AdSupport","SystemConfiguration","CoreTelephony","CoreMedia","SafariServices","WebKit" }
-for _,v in ipairs(sysFW) do
-    iOSProject.addFramework(v..".framework","ios","System/Library/Frameworks/"..v..".framework","$SDKROOT")
+iOSProject.pod("AppLovinSDK",true)
+iOSProject.InfoPlist.AppLovinSdkKey=Export.getProperty("plugin.adsFwApplovinKey")
+iOSProject.InfoPlist.AppLovinConsentFlowInfo={
+	AppLovinConsentFlowEnabled=Export.isSet("plugin.adsFwApplovinConsent"),
+	AppLovinConsentFlowPrivacyPolicy=Export.getProperty("plugin.adsFwApplovinPrivacy"),
+	AppLovinConsentFlowTermsOfService=Export.getProperty("plugin.adsFwApplovinTOS"),
+}
+iOSProject.InfoPlist.SKAdNetworkItems=iOSProject.InfoPlist.SKAdNetworkItems or {}
+local nets={
+    "24t9a8vw3c.skadnetwork",
+    "2fnua5tdw4.skadnetwork",
+    "2u9pt9hc89.skadnetwork",
+    "32z4fx6l9h.skadnetwork",
+    "3qcr597p9d.skadnetwork",
+    "3rd42ekr43.skadnetwork",
+    "3sh42y64q3.skadnetwork",
+    "424m5254lk.skadnetwork",
+    "4468km3ulz.skadnetwork",
+    "4fzdc2evr5.skadnetwork",
+    "4pfyvq9l8r.skadnetwork",
+    "523jb4fst2.skadnetwork",
+    "54nzkqm89y.skadnetwork",
+    "578prtvx9j.skadnetwork",
+    "5a6flpkh64.skadnetwork",
+    "5l3tpt7t6e.skadnetwork",
+    "5lm9lj6jb7.skadnetwork",
+    "6xzpu9s2p8.skadnetwork",
+    "79pbpufp6p.skadnetwork",
+    "7rz58n8ntl.skadnetwork",
+    "7ug5zh24hu.skadnetwork",
+    "8s468mfl3y.skadnetwork",
+    "9b89h5y424.skadnetwork",
+    "9nlqeag3gk.skadnetwork",
+    "9rd848q2bz.skadnetwork",
+    "9t245vhmpl.skadnetwork",
+    "av6w8kgt66.skadnetwork",
+    "c6k4g5qg8m.skadnetwork",
+    "cg4yq2srnc.skadnetwork",
+    "cj5566h2ga.skadnetwork",
+    "cstr6suwn9.skadnetwork",
+    "ejvt5qm6ak.skadnetwork",
+    "f38h382jlk.skadnetwork",
+    "feyaarzu9v.skadnetwork",
+    "g28c52eehv.skadnetwork",
+    "ggvn48r87g.skadnetwork",
+    "glqzh8vgby.skadnetwork",
+    "gta9lk7p23.skadnetwork",
+    "hs6bdukanm.skadnetwork",
+    "k674qkevps.skadnetwork",
+    "kbd757ywx3.skadnetwork",
+    "klf5c3l5u5.skadnetwork",
+    "ludvb6z3bs.skadnetwork",
+    "m8dbw4sv7c.skadnetwork",
+    "mlmmfzh3r3.skadnetwork",
+    "mtkv5xtk9e.skadnetwork",
+    "n9x2a789qt.skadnetwork",
+    "p78axxw29g.skadnetwork",
+    "ppxm28t8ap.skadnetwork",
+    "prcb7njmu6.skadnetwork",
+    "pwa73g5rt2.skadnetwork",
+    "t38b2kh725.skadnetwork",
+    "tl55sbb4fm.skadnetwork",
+    "uw77j35x4d.skadnetwork",
+    "v72qych5uu.skadnetwork",
+    "wg4vff78zm.skadnetwork",
+    "wzmmz9fp6w.skadnetwork",
+    "xy9t38ct57.skadnetwork",
+    "yclnxrl5pm.skadnetwork",
+    "ydx93a7ass.skadnetwork",
+    "zmvfpc5aq8.skadnetwork",
+}
+for _,v in ipairs(nets) do 
+	table.insert(iOSProject.InfoPlist.SKAdNetworkItems, { SKAdNetworkIdentifier=v })
 end
 iOSProject.commit()
 	]]></lua>
@@ -439,30 +495,69 @@ iOSProject.commit()
  		</lua>
     </if>
  </target>
- <target_deprecated name="WinRT">
+ <target name="WinRT">
     <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins"/>
+    <set key="local.adsfwd" value="giderosgame/giderosgame.Shared/Plugins/Ads/frameworks"/>
+    <set key="local.adsfws" value="[[[sys.pluginDir]]]/source/WinRT/Ads/frameworks"/>
+    <mkdir>[[[local.adsfwd]]]</mkdir>
     <template name="project" path="">
         <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
-        <append>
+	    <append>
             <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
             <by><![CDATA[
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h" />]]></by>
-            </append>
-        <append>
-            <orig><![CDATA[<!--SDK-REFERENCE-WIN-->]]></orig>
-            <by><![CDATA[
-    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0" />]]></by>
-         </append>
-        </replacelist>
+			    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
+			      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+			    </ClCompile>
+			    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
+			      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+			    </ClCompile>
+			    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
+			    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />]]></by>
+        </append>
+       </replacelist>
     </template>
- </target_deprecated>
+    <if condition="[[[plugin.adsFwVungle]]]">
+		<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsVungle.*" />
+		<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="Vungle" />
+	    <template name="project" path="">
+	        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
+	        <append>
+	            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+	            <by><![CDATA[
+				    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.cpp" />
+				    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsVungle.h" />]]></by>
+	        </append>	
+	        </replacelist>
+	    </template>
+	    <template name="project" path="">
+	        <replacelist wildcards="giderosgame.Windows.vcxproj">
+	        <prepend>
+	            <orig><![CDATA[</Project>]]></orig>
+	            <by><![CDATA[
+  <ItemGroup>
+    <Reference Include="VungleSDK">
+      <HintPath>..\giderosgame.Shared\Plugins\Ads\frameworks\Vungle\VungleSDK.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+				]]></by>
+	        </prepend>	
+	        </replacelist>
+	    </template>
+	    <template name="project" path="">
+	        <replacelist wildcards="ads.cpp">
+	        <append>
+	            <orig><![CDATA[//GID-ADS-FRAMEWORKS-INC]]></orig>
+	            <by><![CDATA[
+#include "frameworks/AdsVungle.h"]]></by>
+	        </append>	
+	        <append>
+	            <orig><![CDATA[//GID-ADS-FRAMEWORKS-DEF]]></orig>
+	            <by><![CDATA[
+frameworks["vungle"] = &createInstance<AdsVungle>;]]></by>
+	        </append>	
+	        </replacelist>
+	    </template>
+	</if>        
+ </target>
 </plugin>

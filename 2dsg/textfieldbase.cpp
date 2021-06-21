@@ -15,6 +15,7 @@ bool TextFieldBase::scaleChanged() {
 
 bool TextFieldBase::setDimensions(float w,float h,bool forLayout)
 {
+    G_UNUSED(forLayout);
     bool changed=Sprite::setDimensions(w,h);
     if (changed) {
 		layout_.w=w;
@@ -35,6 +36,22 @@ void TextFieldBase::getMinimumSize(float &w,float &h,bool preferred)
 	w=preferred?textlayout_.w:textlayout_.mw;
 	h=textlayout_.bh;
 }
+
+bool TextFieldBase::optimizeSize(float &w,float &h)
+{
+	if ((w!=layout_.w)||(h!=layout_.h)) {
+		layout_.w=w;
+		layout_.h=h;
+		setLayout(&layout_);
+		if (textlayout_.w<w)
+			w=textlayout_.w;
+		if (textlayout_.h<h)
+			h=textlayout_.h;
+		return true;
+	}
+	return false;
+}
+
 
 static size_t utf8_offset(const char *text,int cp) {
 	size_t o=0;

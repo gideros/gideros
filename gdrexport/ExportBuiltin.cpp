@@ -537,12 +537,12 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    }
    else if(ctx->deviceFamily == e_WinRT){
        ExportCommon::appIcon(ctx,310,310,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-100.png"));
-       ExportCommon::appIcon(ctx,620,620,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-200.png"));
-       ExportCommon::appIcon(ctx,1240,1240,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-400.png"));
+       ExportCommon::appIcon(ctx,620,620,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-200.png"),true,true);
+       ExportCommon::appIcon(ctx,1240,1240,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-400.png"),true,true);
 
        ExportCommon::appIcon(ctx,150,150,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-100.png"));
        ExportCommon::appIcon(ctx,300,300,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-200.png"));
-       ExportCommon::appIcon(ctx,600,600,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-400.png"));
+       ExportCommon::appIcon(ctx,600,600,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-400.png"),true,true);
 
        ExportCommon::appIcon(ctx,16,16,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.altform-unplated_targetsize-16.png"));
        ExportCommon::appIcon(ctx,48,48,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.altform-unplated_targetsize-48.png"));

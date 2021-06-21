@@ -44,7 +44,9 @@ Map:getCenterLongitude(): Returns longitude of center of area shown
 
 Map:clear(): Remove all markers
 
-Map:addMarker(double latitude, double longitude, String title): Adds a marker, and returns an index that can be used to access it
+Map:addMarker(double latitude, double longitude, String title): Adds a marker, and returns an index that can be used to access it. Due to the asynchronous processing, adding multiple markers at once may cause incorrect indexes to be returned.  See addMarkerAtIndex below.
+
+Map:addMarkerAtIndex(double latitude, double longitude, String title, int index): Adds a marker at the given index.  Indexes should be used in order, starting at 0.
 
 Map:setMarkerTitle(int marker_idx, String title): Sets the title of the specified marker
 

@@ -35,7 +35,7 @@ local LightingShaderConstants={
 {name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
 {name="cameraPos",type=Shader.CFLOAT4,mult=1,vertex=false},
 {name="ambient",type=Shader.CFLOAT,mult=1,vertex=false},
-{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false,code="t"},
+{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false},
 {name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="n"},
 {name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false,code="s"},
 --[[	
@@ -100,11 +100,12 @@ Lighting.getShader=function(code)
 				Shader.FLAG_FROM_CODE,
 				LightingShaderConstants,LightingShaderAttrs)
 			]]
+			local csts=ShaderFilter(LightingShaderConstants,acode)
 			v=Shader.lua(
 				D3._VLUA_Shader,
 				D3._FLUA_Shader,
 				0,
-				ShaderFilter(LightingShaderConstants,acode),
+				csts,
 				LightingShaderAttrs,
 				ShaderFilter(LightingShaderVarying,acode),
 				D3._FLUA_Shader_FDEF,
@@ -114,7 +115,17 @@ Lighting.getShader=function(code)
 			v:setConstant("lightPos",Shader.CFLOAT4,1,Lighting.light[1],Lighting.light[2],Lighting.light[3],1)
 			v:setConstant("ambient",Shader.CFLOAT,1,Lighting.light[4])
 			v:setConstant("cameraPos",Shader.CFLOAT4,1,Lighting.camera[1],Lighting.camera[2],Lighting.camera[3],1)
+			v.acode=acode
 			Lighting._shaders[lcode]=v
+
+			local tidx=0
+			v.textureIndex={}
+			for _,tt in ipairs(csts) do
+				if tt.type==Shader.CTEXTURE then
+					v.textureIndex[tt.name]=tidx
+					tidx+=1
+				end
+			end
 		end
 	end
 	return Lighting._shaders[lcode],lcode
@@ -155,6 +166,7 @@ Lighting._shadowed={}
 function Lighting.setSpriteMode(sprite,mode)
 	local sh,sc=Lighting.getShader(mode)
 	sprite:setShader(sh)
+	sprite.shader=sh
 	local lsc=sprite._lighting_Mode
 	if lsc then
 		Lighting._sprites[lsc]=Lighting._sprites[lsc] or {}
@@ -167,7 +179,9 @@ function Lighting.setSpriteMode(sprite,mode)
 		Lighting._sprites[sc]=Lighting._sprites[sc] or {}
 		Lighting._sprites[sc][sprite]=sprite
 		if sc:find("s") then
-			sprite:setTexture(Lighting.getShadowMap(),2)
+			if sh.textureIndex.g_ShadowMap then
+				sprite:setTexture(Lighting.getShadowMap(),sh.textureIndex.g_ShadowMap)
+			end
 			Lighting._shadowed[sprite]=sprite
 		end
 		if sc:find("a") then
@@ -217,7 +231,9 @@ function Lighting.computeShadows(scene)
 	srt:clear(0,0)
 	srt:draw(view)
 	for _,v in pairs(Lighting._shadowed) do
-		v:setTexture(srt,2)
+		if v.shader.textureIndex.g_ShadowMap then
+			v:setTexture(srt,v.shader.textureIndex.g_ShadowMap)
+		end
 	end
 	--stage:addChild(Bitmap.new(srt))
 	--stage:addChild(Lighting.shadowview)

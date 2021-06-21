@@ -5,7 +5,7 @@ Android native map overlay class
 function Map:init(latitude, longitude, zoom, witdth, height, positionX, positionY)
 Status: Tested. Constructor for the Map class, calls set
 
-function Map:setPosition(positionX, positionY) � position the Map on the screen, relative to its parent, whether or not Map uses Sprite as a base class
+function Map:setPosition(positionX, positionY) – position the Map on the screen, relative to its parent, whether or not Map uses Sprite as a base class
 Status: Tested. Implemented in Map.setPosition() 
 
 function Map:setType(mapType) -- support "normal", "satellite", "terrain", "hybrid" (satellite with roads overlaid)
@@ -17,13 +17,13 @@ Status: Tested. Implemented in map.setCenterCoordinates()
 function Map:setZoom(zoomLevel) -- control the zoom level of the map, units TBD
 Status: Tested. Implemented in Map.setZoom() - Uses zoom level directly. iOS version will need to map to comparable altitudes
 
-function Map:setLocationEnabled(locationEnabled) -- at least for Android, enable the default �go to my location� button overlaid on the map
+function Map:setLocationEnabled(locationEnabled) -- at least for Android, enable the default “go to my location” button overlaid on the map
 Status: Tested. Implemented in Map.setMyLocationEnabled()
 
 function Map:onMapClickListener( event handler...)-- handle touches on the map, i.e. for selecting a location
 Status: Interface change - Call mapClicked() to see if a click occurred since last call, call getMapClickLatitude(), getMapClickLongitude() to get coordinates
 
-function Map:addMarker(marker) -- add a default style marker to the map � see below
+function Map:addMarker(marker) -- add a default style marker to the map – see below
 Status: Tested. Interface change- Takes latitude, longitude, title, teturns int index of new marker
 
 function Map:clear() -- remove all markers
@@ -38,7 +38,7 @@ Status: Tested. Implemented via getCenterLatitude(), getCenterLongitude.  A Lua 
 function MapMarker:init(latitude, longitude, title) -- Sets the coordinates and name of a marker
 Status: Not needed - use Map.addMarker
 
-function MapMarker:setAlpha(alpha) � 0 to 100, sets opacity of marker from 0 (transparent) to 100 (opaque)
+function MapMarker:setAlpha(alpha) – 0 to 100, sets opacity of marker from 0 (transparent) to 100 (opaque)
 Status: Tested. Implemented via Map.setMarkerAlpha()
 
 function MapMarker:setHue(hue) -- 0 to 360, angle to position on color wheel, from 0 (red) through orange and yellow to green (180) through blue and purple back to red (360.) Some other set of hue values could be used and mapped to platform specific values in the native code.
@@ -71,9 +71,11 @@ package com.giderosmobile.android.plugins.mapplugin;
 import java.util.ArrayList;
 
 import android.os.Handler;
+
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -86,7 +88,6 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -94,7 +95,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapOverlay implements OnMapReadyCallback
+public class MapOverlay
 {
 	
 	// Our own map types, used for a common interface between Google and Apple maps:
@@ -379,9 +380,24 @@ public class MapOverlay implements OnMapReadyCallback
 		return (new_marker_idx);
 	}
 	
+	public void addMarkerAtIndex(double latitude, double longitude, String title, int index)
+	{
+		int new_marker_idx = index;
+		if (mNumMarkers < index)
+			mNumMarkers = index;
+		Marker new_marker = mGoogleMap.addMarker(new MarkerOptions()
+			.position(new LatLng(latitude, longitude))
+			.title(title)
+			.icon(BitmapDescriptorFactory.defaultMarker(0.0f))); // 0.0f - defaults hue to red
+		mMarkerArray.add(new_marker_idx, new_marker);
+		mMarkerLatitudeArray.add(new_marker_idx, latitude);
+		mMarkerLongitudeArray.add(new_marker_idx, longitude);
+		mMarkerTitleArray.add(new_marker_idx, title);
+	}
+	
 	public void setMarkerTitle(int marker_idx, String title)
 	{
-		if (marker_idx >= 0 && marker_idx < mNumMarkers)
+		//if (marker_idx >= 0 && marker_idx < mNumMarkers)
 		{
 			mMarkerArray.get(marker_idx).setTitle(title);
 			mMarkerTitleArray.set(marker_idx, title);
@@ -390,7 +406,7 @@ public class MapOverlay implements OnMapReadyCallback
 	
 	public void setMarkerHue(int marker_idx, float hue)
 	{
-		if (marker_idx >= 0 && marker_idx < mNumMarkers)
+		//if (marker_idx >= 0 && marker_idx < mNumMarkers)
 		{
 			mMarkerArray.get(marker_idx).setIcon(BitmapDescriptorFactory.defaultMarker(hue));
 		}
@@ -398,7 +414,7 @@ public class MapOverlay implements OnMapReadyCallback
 	
 	public void setMarkerAlpha(int marker_idx, float alpha)
 	{
-		if (marker_idx >= 0 && marker_idx < mNumMarkers)
+	//	if (marker_idx >= 0 && marker_idx < mNumMarkers)
 		{
 			mMarkerArray.get(marker_idx).setAlpha(alpha / 100.0f);
 		}
@@ -406,7 +422,7 @@ public class MapOverlay implements OnMapReadyCallback
 
 	public void setMarkerCoordinates(int marker_idx, double latitude, double longitude)
 	{
-		if (marker_idx >= 0 && marker_idx < mNumMarkers)
+	//	if (marker_idx >= 0 && marker_idx < mNumMarkers)
 		{
 			LatLng lat_lon = new LatLng(latitude, longitude);			
 			mMarkerArray.get(marker_idx).setPosition(lat_lon);
@@ -417,29 +433,29 @@ public class MapOverlay implements OnMapReadyCallback
 	
 	public String getMarkerTitle(int marker_idx)
 	{
-		if (marker_idx >= 0 && marker_idx < mNumMarkers)
+	//	if (marker_idx >= 0 && marker_idx < mNumMarkers)
 		{
 			return(mMarkerTitleArray.get(marker_idx));
 		}
-		return null;
+		//return null;
 	}
 	
 	public double getMarkerLatitude(int marker_idx)
 	{
-		if (marker_idx >= 0 && marker_idx < mNumMarkers)
+		//if (marker_idx >= 0 && marker_idx < mNumMarkers)
 		{
 			return(mMarkerLatitudeArray.get(marker_idx));
 		}
-		return MAP_INVALID_COORDINATE;
+		//return MAP_INVALID_COORDINATE;
 	}
 
 	public double getMarkerLongitude(int marker_idx)
 	{
-		if (marker_idx >= 0 && marker_idx < mNumMarkers)
+	//	if (marker_idx >= 0 && marker_idx < mNumMarkers)
 		{
 			return(mMarkerLongitudeArray.get(marker_idx));
 		}
-		return MAP_INVALID_COORDINATE;
+		//return MAP_INVALID_COORDINATE;
 	}
 	
 	public int getClickedMarkerIndex()
@@ -454,101 +470,103 @@ public class MapOverlay implements OnMapReadyCallback
 		return(return_value);
 	}
 
-	private void setUpMapIfNeeded() {
-	}
-
-
-	private void getMapFromFragment() {
-		if (mMapNeedsConnection) {
-			if (mMapFragment != null) {
-				// The map fragment may not be ready to return its map yet. See if we got a map:
-				if (mGoogleMap == null) {
-					mMapFragment.getMapAsync(this);
+	private void getMapFromFragment()
+	{
+		if (mMapNeedsConnection)
+		{
+			if (mMapFragment != null)
+			{
+				mGoogleMap = mMapFragment.getMap();
+				// The map fragment may not be ready to return its map yet. See if we got a map: 
+				if (mGoogleMap == null)
+				{
+					// Check back after a slight delay:
+					Handler h = new Handler();
+					h.postDelayed(new Runnable()
+						{ public void run() { getMapFromFragment(); } }, 250); // 250 ms delay
+					return;
 				}
+
+				// We have a map - set it up:
+				mGoogleMap.setMyLocationEnabled(true);
+				
+				// mMap.setOnMyLocationButtonClickListener(this);
+
+				if (mLatitude < -360.0f || mLatitude > 360)
+				{
+					mLatitude = 39.5f;
+					mLongitude = -98.0f;
+				}
+
+				CameraPosition cp = mGoogleMap.getCameraPosition();
+				double latitude = cp.target.latitude;
+				double longitude = cp.target.longitude;
+				LatLng ll = new LatLng(mLatitude, mLongitude);
+
+				// For some strange reason, setting the map position doesn't
+				// work for latitude on the first try. Maybe the map isn't
+				// entirely ready?
+				int tries = 0;
+				while (latitude != mLatitude && tries++ < 100)
+				{
+					//mAutoMapCameraMovePending = true;
+					//mNumCameraMovesPending++;
+					mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(ll));
+					cp = mGoogleMap.getCameraPosition();
+					latitude = cp.target.latitude;
+				}
+
+				//add_map_content();
+				setMoveListener();
+				mGoogleMap.setOnMarkerClickListener
+				(
+					new OnMarkerClickListener()
+					{
+			
+						@Override
+						public boolean onMarkerClick(Marker marker)
+						{
+							String marker_id = marker.getId();
+	
+							// Find the marker that was clicked in our array, and store the index					
+							int i;
+							mClickedMarkerIndex = MAP_NO_MARKER_CLICKED;
+	
+							for (i = 0; i < mNumMarkers; i++)
+							{
+								if (mMarkerArray.get(i).getId().contentEquals(marker_id))
+								{
+									mClickedMarkerIndex = i;
+									i = mNumMarkers;
+								}
+							}
+							marker.showInfoWindow();
+							return true;
+						} // end of on marker click
+					} // end of setOnMarkerClickListener 
+				);
+
+
+				mGoogleMap.setOnCameraChangeListener(new OnCameraChangeListener()
+				{
+
+					@Override
+					public void onCameraChange(CameraPosition position)
+					{ // TODO Auto-generated method stub
+					}
+				} // end of setOnCameraChangeListener
+				);
+
+				mMapNeedsConnection = false;
+				return;
 			}
 		}
 		else // map doesn't need connection
 		{
-				CameraPosition cp = mGoogleMap.getCameraPosition();
-				double latitude = cp.target.latitude;
-				double longitude = cp.target.longitude;
+			CameraPosition cp = mGoogleMap.getCameraPosition();
+			double latitude = cp.target.latitude;
+			double longitude = cp.target.longitude;
 		}
-	}
-
-	@Override
-	public void onMapReady(GoogleMap googleMap) {
-		mGoogleMap = googleMap;
-		// We have a map - set it up:
-		mGoogleMap.setMyLocationEnabled(true);
-		
-		// mMap.setOnMyLocationButtonClickListener(this);
-
-		if (mLatitude < -360.0f || mLatitude > 360)
-		{
-			mLatitude = 39.5f;
-			mLongitude = -98.0f;
-		}
-
-		CameraPosition cp = mGoogleMap.getCameraPosition();
-		double latitude = cp.target.latitude;
-		double longitude = cp.target.longitude;
-		LatLng ll = new LatLng(mLatitude, mLongitude);
-
-		// For some strange reason, setting the map position doesn't
-		// work for latitude on the first try. Maybe the map isn't
-		// entirely ready?
-		int tries = 0;
-		while (latitude != mLatitude && tries++ < 100)
-		{
-			//mAutoMapCameraMovePending = true;
-			//mNumCameraMovesPending++;
-			mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(ll));
-			cp = mGoogleMap.getCameraPosition();
-			latitude = cp.target.latitude;
-		}
-
-		//add_map_content();
-		setMoveListener();
-		mGoogleMap.setOnMarkerClickListener
-		(
-			new OnMarkerClickListener()
-			{
-	
-				@Override
-				public boolean onMarkerClick(Marker marker)
-				{
-					String marker_id = marker.getId();
-
-					// Find the marker that was clicked in our array, and store the index					
-					int i;
-					mClickedMarkerIndex = MAP_NO_MARKER_CLICKED;
-
-					for (i = 0; i < mNumMarkers; i++)
-					{
-						if (mMarkerArray.get(i).getId().contentEquals(marker_id))
-						{
-							mClickedMarkerIndex = i;
-							i = mNumMarkers;
-						}
-					}
-					marker.showInfoWindow();
-					return true;
-				} // end of on marker click
-			} // end of setOnMarkerClickListener 
-		);
-
-
-		mGoogleMap.setOnCameraChangeListener(new OnCameraChangeListener()
-		{
-
-			@Override
-			public void onCameraChange(CameraPosition position)
-			{ // TODO Auto-generated method stub
-			}
-		} // end of setOnCameraChangeListener
-		);
-
-		mMapNeedsConnection = false;
 	}
 	
 	

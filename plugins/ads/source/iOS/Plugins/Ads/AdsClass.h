@@ -13,6 +13,7 @@
 
 +(void)init;
 +(void)cleanup;
++ (BOOL) hasProvider:(NSString*)adprovider;
 
 +(UIViewController*)getRootViewController;
 
@@ -40,4 +41,5 @@
 +(void)adDisplayed:(Class)adprovider forType:(NSString*)type;
 +(void)adRewarded:(Class)adprovider forType:(NSString*)type withAmount:(int)amount;
 +(void)adError:(Class)adprovider with:(NSString*)error;
++(void)adsReady:(Class)adprovider state:(BOOL)state;
 @end

@@ -429,7 +429,7 @@ static void g_deinitializePlugin(lua_State *L)
 	::L = NULL;
 }
 
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || (TARGET_OS_OSX && !defined(QT_CORE_LIB))
+#if (!defined(QT_NO_DEBUG)) && (defined(TARGET_OS_MAC) || defined(_MSC_VER)  || defined(TARGET_OS_OSX))
 REGISTER_PLUGIN_STATICNAMED_CPP("Microphone", "1.0",Microphone)
 #else
 REGISTER_PLUGIN("Microphone", "1.0")

@@ -1,37 +1,67 @@
 #include "dependencygraph.h"
 #include <stack>
 #include <QFile>
+#include <QDir>
 #include <QTextStream>
 
-void DependencyGraph::Vertex::parseTags(QDir projectDir,const DependencyGraph *graph,std::map<QString, QString> fileMap) {
-	excludeFromExecutionTag=false;
-	dependenciesTag.clear();
-    QFile inputFile(projectDir.filePath(code));
+void DependencyGraph::Vertex::parseTags(TagsContext &ctx) {
+    tags.clear();
+    QFile inputFile(ctx.projectDir.filePath(code));
     if (inputFile.open(QIODevice::ReadOnly))
     {
        QTextStream in(&inputFile);
        while (!in.atEnd())
        {
           QString line = in.readLine().trimmed();
-          if (line.startsWith("--!NEEDS:")) {
-                line=line.mid(9);
-                if (!line.startsWith("/")) {//Relative path
-                    QString thisFile=fileMap[code];
+          if (line.startsWith("--!")) tags << line;
+          if (line.startsWith("--!LIBRARY:")) {
+              line=line.mid(11);
+              QString thisFile=ctx.fileMap[code];
+              int lc=thisFile.lastIndexOf('/');
+              if (lc>=0)
+                  ctx.libraries[line]=thisFile.mid(0,lc);
+          }
+       }
+       inputFile.close();
+    }
+}
+
+void DependencyGraph::Vertex::processTags(TagsContext &ctx) {
+	excludeFromExecutionTag=false;
+	dependenciesTag.clear();
+    foreach (QString line,tags)
+   {
+      if (line.startsWith("--!NEEDS:")) {
+            line=line.mid(9);
+            if (!line.startsWith("/")) {//Relative path
+                if (line.startsWith("(")) {
+                    int llc=line.indexOf(')');
+                    if (llc>0) {
+                        QString lib=line.mid(1,llc-1);
+                        if (ctx.libraries.find(lib)!=ctx.libraries.end()) {
+                           line=ctx.libraries[lib]+line.mid(llc+1);
+                        }
+                    }
+                }
+                else {
+                    QString thisFile=ctx.fileMap[code];
                     int lc=thisFile.lastIndexOf('/');
                     if (lc>=0)
                         line=thisFile.mid(0,lc+1)+line;
                 }
-                Vertex *match=nullptr;
-                for (std::map<QString,QString>::iterator it=fileMap.begin();it!=fileMap.end();it++)
-                    if (it->second==line) { match=graph->getVertex(it->first); break; }
-                if (match)
-                    dependenciesTag.insert(match);
-          }
-          else if (line=="--!NOEXEC")
-              excludeFromExecutionTag=true;
-       }
-       inputFile.close();
-    }
+            }
+            else
+                line=line.mid(1);
+            line=QDir::cleanPath(line);
+            Vertex *match=nullptr;
+            for (std::map<QString,QString>::iterator it=ctx.fileMap.begin();it!=ctx.fileMap.end();it++)
+                if (it->second==line) { match=ctx.graph->getVertex(it->first); break; }
+            if (match)
+                dependenciesTag.insert(match);
+      }
+      else if (line=="--!NOEXEC")
+          excludeFromExecutionTag=true;
+   }
 }
 
 inline std::pair<int, QString> _(const QString& str)
@@ -170,10 +200,18 @@ void DependencyGraph::setExcludeFromExecution(const QString& code, bool excludeF
 std::vector<std::pair<QString, bool> > DependencyGraph::topologicalSort(QDir projectDir,std::map<QString, QString> fileMap) const
 {
     std::vector<std::pair<QString, bool> > result;
+    TagsContext tagCtx;
+    tagCtx.graph=this;
+    tagCtx.projectDir=projectDir;
+    tagCtx.fileMap=fileMap;
 
     for (const_iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter) {
-        iter->second->parseTags(projectDir,this,fileMap);
+        iter->second->parseTags(tagCtx);
         iter->second->visited = false;
+    }
+
+    for (const_iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter) {
+        iter->second->processTags(tagCtx);
     }
 
     for (const_iterator iter = vertices_.begin(); iter != vertices_.end(); ++iter)

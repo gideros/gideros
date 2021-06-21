@@ -604,6 +604,7 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
 		FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
+		FILL_BOOL("shrink",optimizeSize);
 
 		lua_getfield(L,2,"insets");
 		if (!lua_isnoneornil(L,-1))
@@ -664,6 +665,7 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 		STOR_NUM("insetBottom",insets.bottom); STOR_NUM("insetRight",insets.right);
         STOR_NUM("offsetx",offsetX); STOR_NUM("offsety",offsetY);
         STOR_NUM("originx",originX); STOR_NUM("originy",originY);
+		STOR_BOOL("shrink",optimizeSize);
 	}
 	else
 		lua_pushnil(L);
