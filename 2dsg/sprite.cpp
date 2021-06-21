@@ -201,7 +201,7 @@ void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
 	Sprite *p=this;
 	while (p) {
 		p->spriteWithLayoutCount+=diff;
-		p=parent();
+        p=p->parent();
 	}
 }
 
@@ -268,7 +268,7 @@ void Sprite::clearLayoutState() {
 		Sprite *p=this;
 		while (p) {
 			p->spriteWithLayoutCount--;
-			p=parent();
+            p=p->parent();
 		}
 	}
 	layoutState=NULL;
@@ -291,14 +291,14 @@ void Sprite::clearLayoutConstraints()
 }
 
 void Sprite::layoutSizesChanged() {
-	if (layoutConstraints) {
+    if (layoutConstraints) {
 		if ((layoutConstraints->prefWidth==-1)
 				||(layoutConstraints->aminWidth==-1)
 				||(layoutConstraints->prefHeight==-1)
 				||(layoutConstraints->aminHeight==-1)
 				) {
 	        Sprite *p=parent_;
-	        while (p&&(p->layoutState))
+            while (p&&(p->layoutState)&&(!p->layoutState->optimizing))
 	        {
 	        	p->layoutState->dirty=true;
 	        	p=p->parent_;
@@ -1491,6 +1491,7 @@ void Sprite::setStopPropagationMask(int mask) {
 bool Sprite::setDimensions(float w,float h, bool forLayout)
 {
 //    bool changed=((reqWidth_!=w)||(reqHeight_!=h));
+    G_UNUSED(forLayout);
     bool changed=(fabs(reqWidth_-w)+fabs(reqHeight_-h))>0.01;
     if (changed) {
         reqWidth_=w;

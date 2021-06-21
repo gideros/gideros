@@ -21,8 +21,8 @@ public:
 	static bool initPlugins(ExportContext *ctx);
 	static void requestPlugin(ExportContext *ctx,QString name);
 	static bool applyPlugins(ExportContext *ctx);
-    static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1,bool withAlpha=true,QColor fill=QColor("transparent"), int mode = 0);
-	static bool appIcon(ExportContext *ctx,int width,int height,QString output,bool withAlpha=true);
+    static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1,bool withAlpha=true,QColor fill=QColor("transparent"), int mode = 0, bool paletted=false);
+    static bool appIcon(ExportContext *ctx,int width,int height,QString output,bool withAlpha=true, bool paletted=false);
     static bool tvIcon(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);
     static bool splashHImage(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);
     static bool splashVImage(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);

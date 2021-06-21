@@ -26,6 +26,13 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
     [ads removeAllObjects];
 }
 
++ (BOOL) hasProvider:(NSString*)adprovider
+{
+    NSString *ProviderClass = @"Ads";
+    ProviderClass = [ProviderClass stringByAppendingString:[adprovider capitalizedString]];
+    return NSClassFromString(ProviderClass)!=nil;
+}
+
 +(void)initialize:(NSString*)adprovider{
 	if(![ads objectForKey:[adprovider lowercaseString]])
 	{
@@ -232,6 +239,10 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
 
 +(BOOL)isPortrait{
     return ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown);
+}
+
++(void)adsReady:(Class)adprovider state:(BOOL)state{
+    gads_adsReady([[AdsClass modifyName:adprovider] UTF8String], state);
 }
 
 +(void)adReceived:(Class)adprovider forType:(NSString*)type{

@@ -1370,8 +1370,10 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
 
-	if (xaml||(width_ < height_))
+	if (xaml)
 		application_->setResolution(width_, height_);
+	else if ((width_ < height_))
+		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
 

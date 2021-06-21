@@ -426,7 +426,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 			int maxsamples = (audiofd_fragsize - audiobuf_fill) / 2;
 			ogg_int64_t gpos=0;
 			if ((ret = handle->audio_p->GetAudio(audiobuf+(audiobuf_fill/2), maxsamples,gpos)) > 0) {
-				audiobuf_fill += ret * 2;
+                                audiobuf_fill += ret*2;
 				if (audiobuf_fill == audiofd_fragsize)
 					audiobuf_ready = 1;
 				if (gpos >= 0)
@@ -858,7 +858,7 @@ static void g_deinitializePlugin(lua_State *L) {
     //unregister_oggenc("opus");
 #endif
 }
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER) || (TARGET_OS_OSX && !defined(QT_CORE_LIB))
+#if (!defined(QT_NO_DEBUG)) && (defined(TARGET_OS_MAC) || defined(_MSC_VER)  || defined(TARGET_OS_OSX))
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
 #elif EMSCRIPTEN
 REGISTER_PLUGIN_NAMED("Ogg", "1.0", OggCore)

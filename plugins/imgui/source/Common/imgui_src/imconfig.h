@@ -18,9 +18,8 @@
 #include "gstdio.h"
 typedef G_FILE* ImFileHandle;
 
-#include "debugapi.h"
-
 #ifdef IS_BETA_BUILD
+#include "debugapi.h"
 #define IM_ASSERT( exp ) do { if (!(exp)) { char buffer[1024]; sprintf(buffer, "[%d] %s: %s\n", __LINE__, __FILE__, #exp); OutputDebugStringA( buffer ); }} while(0)
 #define IM_TRACE( msg ) do { char buffer[1024]; sprintf(buffer, "    [%d] %s: %s", __LINE__, __FILE__, msg); OutputDebugStringA( buffer ); } while(0)
 #else

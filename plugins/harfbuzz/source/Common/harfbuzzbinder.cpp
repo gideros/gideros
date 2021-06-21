@@ -253,7 +253,7 @@ static void g_deinitializePlugin(lua_State *) {
     g_setGlobalHook(GID_GLOBALHOOK_TEXTCLASSIFIER,NULL);
 }
 
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER) || (TARGET_OS_OSX && !defined(QT_CORE_LIB))
+#if (!defined(QT_NO_DEBUG)) && (defined(TARGET_OS_MAC) || defined(_MSC_VER)  || defined(TARGET_OS_OSX))
 REGISTER_PLUGIN_STATICNAMED_CPP("Harfbuzz", "1.0",harfbuzz)
 #else
 REGISTER_PLUGIN_NAMED("Harfbuzz", "1.0", harfbuzz)

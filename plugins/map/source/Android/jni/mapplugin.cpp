@@ -141,6 +141,12 @@ class MapPluginCPPClass
 			return env->CallStaticIntMethod(cls_, env->GetStaticMethodID(cls_, "addMarker", "(DDLjava/lang/String;)I"), lat, lon, env->NewStringUTF(title));
 		}
 
+		int mpcpp_addMarkerAtIndex(const char *mapplugin, double lat, double lon, const char *title, int index)
+		{
+			JNIEnv *env = g_getJNIEnv();
+			env->CallStaticIntMethod(cls_, env->GetStaticMethodID(cls_, "addMarker", "(DDLjava/lang/String;I)"), lat, lon, env->NewStringUTF(title), index);
+		}
+
 		void mpcpp_setMarkerTitle(const char *mapplugin, int idx, const char *title)
 		{
 			JNIEnv *env = g_getJNIEnv();

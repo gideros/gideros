@@ -26,6 +26,18 @@
 {
     [self copyUserDefaultsToCache];
     
+    id menubar = [NSMenu new];
+    id appMenuItem = [NSMenuItem new];
+    [menubar addItem:appMenuItem];
+    [NSApp setMainMenu:menubar];
+    id appMenu = [NSMenu new];
+    id appName = [[NSProcessInfo processInfo] processName];
+    id quitTitle = [@"Quit " stringByAppendingString:appName];
+    id quitMenuItem = [[NSMenuItem alloc] initWithTitle:quitTitle action:@selector(terminate:) keyEquivalent:@"q"];
+    [quitMenuItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
+    [appMenu addItem:quitMenuItem];
+    [appMenuItem setSubmenu:appMenu];
+    
     CGRect bounds = CGRectMake(100,100, 320,480);
  
     self.viewController = [[ViewController alloc] init];

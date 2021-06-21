@@ -108,6 +108,7 @@ static std::map<std::string, std::string> tableToMap(lua_State *L, int index)
     return result;
 }
 
+static const char* ADS_READY = "adsReady";
 static const char *AD_RECEIVED = "adReceived";
 static const char *AD_FAILED = "adFailed";
 static const char *AD_ACTION_BEGIN = "adActionBegin";
@@ -241,6 +242,14 @@ private:
 					shouldDispatch = 1;
 				}
 			}
+			else if (type == GADS_ADS_READY_EVENT)
+			{
+				gads_ReadyEvent* event2 = (gads_ReadyEvent*)event;
+				if (strcmp(event2->ad, ad_) == 0)
+				{
+					shouldDispatch = 1;
+				}
+			}
 			else
 			{
 				gads_SimpleEvent *event2 = (gads_SimpleEvent*)event;
@@ -271,6 +280,9 @@ private:
 				
 				switch (type)
 				{
+					case GADS_ADS_READY_EVENT:
+						lua_pushstring(L, ADS_READY);
+						break;
 					case GADS_AD_RECEIVED_EVENT:
 						lua_pushstring(L, AD_RECEIVED);
 						break;
@@ -326,6 +338,13 @@ private:
 					lua_pushinteger(L, event2->amount);
 					lua_setfield(L, -2, "amount");
 				}
+				else if (type == GADS_ADS_READY_EVENT)
+				{
+					gads_ReadyEvent* event2 = (gads_ReadyEvent*)event;
+
+					lua_pushboolean(L,event2->state);
+					lua_setfield(L, -2, "state");
+				}
 				else
 				{
 					gads_SimpleEvent *event2 = (gads_SimpleEvent*)event;
@@ -362,6 +381,15 @@ static Ads *getInstance(lua_State* L, int index)
 	Ads *ads = static_cast<Ads*>(object->proxy());
     
 	return ads;
+}
+
+static int hasProvider(lua_State *L)
+{
+    const char *ad = luaL_checkstring(L, 1);
+    bool b=gads_hasProvider(ad);
+    
+    lua_pushboolean(L, b);
+    return 1;
 }
 
 static int init(lua_State *L)
@@ -570,6 +598,7 @@ static int hasConnection(lua_State *L)
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
+        {"hasProvider", hasProvider},
         {"new", init},
         {"setKey", setKey},
         {"loadAd", loadAd},
@@ -612,6 +641,8 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "AD_DISPLAYED");
     lua_pushstring(L, AD_REWARDED);
 	lua_setfield(L, -2, "AD_REWARDED");
+	lua_pushstring(L, ADS_READY);
+	lua_setfield(L, -2, "ADS_READY");
 	lua_pushstring(L, AD_ERROR);
 	lua_setfield(L, -2, "AD_ERROR");
 	lua_pop(L, 1);

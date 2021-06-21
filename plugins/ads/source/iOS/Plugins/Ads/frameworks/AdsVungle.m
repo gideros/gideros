@@ -54,7 +54,7 @@
 
 - (void)vungleSDKDidInitialize
 {
-    
+ 	[AdsClass adsReady:[self class] state:TRUE];    
 }
 
 - (void)vungleAdPlayabilityUpdate:(BOOL)isAdPlayable placementID:(NSString *)placementID {

@@ -111,6 +111,15 @@ public:
         return [AdsClass getHeight:[NSString stringWithUTF8String:ad]];
 	}
 	
+	void onAdsReady(const char* ad, int state)
+	{
+		gads_ReadyEvent* event = (gads_ReadyEvent*)gevent_CreateEventStruct1(
+			sizeof(gads_ReadyEvent),
+			offsetof(gads_ReadyEvent, ad), ad);
+		event->state = state;
+		gevent_EnqueueEvent(gid_, callback_s, GADS_ADS_READY_EVENT, event, 1, this);
+	}
+	
 	void onAdReceived(const char *ad, const char *type)
 	{
 		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
@@ -251,6 +260,11 @@ void gads_cleanup()
 	}
 }
 
+bool gads_hasProvider(const char *ad)
+{
+    return [AdsClass hasProvider:[NSString stringWithUTF8String:ad]];
+}
+
 void gads_initialize(const char *ad)
 {
 	if(s_ads)
@@ -371,7 +385,7 @@ void gads_removeCallbackWithGid(g_id gid)
 		s_ads->removeCallbackWithGid(gid);
 	}
 }
-    
+    	
 void gads_adReceived(const char *ad, const char *type){
     if(s_ads)
 	{
@@ -420,7 +434,14 @@ void gads_adRewarded(const char *ad, const char *type, int amount){
         s_ads->onAdRewarded(ad, type, amount);
     }
 }
-    
+
+void gads_adsReady(const char *ad, int state){
+    if(s_ads)
+    {
+        s_ads->onAdsReady(ad, state);
+    }
+}
+
 void gads_adError(const char *ad, const char *error){
     if(s_ads)
 	{

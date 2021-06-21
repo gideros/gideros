@@ -194,7 +194,18 @@ public class Ads {
 		}
 		catch(Exception ex)	{}
 	}
-	
+
+	public static boolean hasProvider(String adprovider){
+		final String adp = modifyName(adprovider);
+		String className = "com.giderosmobile.android.plugins.ads.frameworks.Ads"+adp;
+		Class classz = null;
+		try {
+			classz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+		}
+		return classz!=null;
+	}
+
 	public static void initialize(String adprovider){
 		final String adp = modifyName(adprovider);
 		if(ads.get(adp) == null)

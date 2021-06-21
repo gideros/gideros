@@ -11,6 +11,8 @@ Pixel::Pixel(Application *application) : Sprite(application)
     width_ = 1, height_ = 1;
     sx_ = 1, sy_ = 1;
     x_ = 0, y_ = 0;
+    anchorx_ = 0, anchory_ = 0;
+    tx_=0, ty_=0, tw_=0, th_=0;
     isStretching_ = false;
     isNinePatch_=false;
     tmatrix_.identity();
@@ -134,16 +136,18 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
 void Pixel::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
 {
     if (minx)
-        *minx = 0;
+        *minx = -width_*anchorx_;
     if (miny)
-        *miny = 0;
+        *miny = -height_*anchory_;
     if (maxx)
-        *maxx = width_;
+        *maxx = width_-width_*anchorx_;
     if (maxy)
-        *maxy = height_;
+        *maxy = height_-height_*anchory_;
 }
 
 void Pixel::updateVertices() {
+	float dx=-width_*anchorx_;
+	float dy=-height_*anchory_;
 	if (isNinePatch_) {
 		float vt=insetv_t_;
 		float vb=insetv_b_;
@@ -160,29 +164,29 @@ void Pixel::updateVertices() {
 			vt*=r; vb*=r;
 		}
 		vertices.resize(16);
-		vertices[0] = Point2f(0,0);
-		vertices[1] = Point2f(vl,0);
-		vertices[2] = Point2f(width_-vr,0);
-		vertices[3] = Point2f(width_,0);
-		vertices[4] = Point2f(0,vt);
-		vertices[5] = Point2f(vl,vt);
-		vertices[6] = Point2f(width_-vr,vt);
-		vertices[7] = Point2f(width_,vt);
-		vertices[8] = Point2f(0,height_-vb);
-		vertices[9] = Point2f(vl,height_-vb);
-		vertices[10] = Point2f(width_-vr,height_-vb);
-		vertices[11] = Point2f(width_,height_-vb);
-		vertices[12] = Point2f(0,height_);
-		vertices[13] = Point2f(vl,height_);
-		vertices[14] = Point2f(width_-vr,height_);
-		vertices[15] = Point2f(width_,height_);
+		vertices[0] = Point2f(0+dx,0+dy);
+		vertices[1] = Point2f(vl+dx,0+dy);
+		vertices[2] = Point2f(width_-vr+dx,0+dy);
+		vertices[3] = Point2f(width_+dx,0+dy);
+		vertices[4] = Point2f(0+dx,vt+dy);
+		vertices[5] = Point2f(vl+dx,vt+dy);
+		vertices[6] = Point2f(width_-vr+dx,vt+dy);
+		vertices[7] = Point2f(width_+dx,vt+dy);
+		vertices[8] = Point2f(0+dx,height_-vb+dy);
+		vertices[9] = Point2f(vl+dx,height_-vb+dy);
+		vertices[10] = Point2f(width_-vr+dx,height_-vb+dy);
+		vertices[11] = Point2f(width_+dx,height_-vb+dy);
+		vertices[12] = Point2f(0+dx,height_+dy);
+		vertices[13] = Point2f(vl+dx,height_+dy);
+		vertices[14] = Point2f(width_-vr+dx,height_+dy);
+		vertices[15] = Point2f(width_+dx,height_+dy);
 	}
 	else {
 		vertices.resize(4);
-		vertices[0] = Point2f(0,0);
-		vertices[1] = Point2f(width_,0);
-		vertices[2] = Point2f(width_,height_);
-		vertices[3] = Point2f(0,height_);
+		vertices[0] = Point2f(0+dx,0+dy);
+		vertices[1] = Point2f(width_+dx,0+dy);
+		vertices[2] = Point2f(width_+dx,height_+dy);
+		vertices[3] = Point2f(0+dx,height_+dy);
 	}
 	vertices.Update();
 }
@@ -321,6 +325,22 @@ void Pixel::updateTexture()
     for (size_t tc=0;tc<texcoords.size();tc++)
 		tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
     texcoords.Update();
+}
+
+void Pixel::setAnchorPoint(float x, float y)
+{
+	anchorx_ = x;
+	anchory_ = y;
+
+	updateVertices();
+}
+
+void Pixel::getAnchorPoint(float* x, float* y) const
+{
+	if (x)
+		*x = anchorx_;
+	if (y)
+		*y = anchory_;
 }
 
 bool Pixel::setDimensions(float width,float height,bool forLayout)
