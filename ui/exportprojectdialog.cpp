@@ -91,6 +91,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     ui->html5_pack->setChecked(properties_->html5_pack);
     ui->html5_symbols->setChecked(properties_->html5_symbols);
     ui->html5_fbinstant->setChecked(properties_->html5_fbinstant);
+    ui->html5_pwa->setChecked(properties_->html5_pwa);
     ui->html5_fbload->setValue(properties_->html5_fbload);
     actionHtml5FbInstant(0);
     //plugins=properties->plugins;
@@ -286,6 +287,7 @@ void ExportProjectDialog::onAccepted()
     properties_->html5_pack = ui->html5_pack->isChecked();
     properties_->html5_symbols = ui->html5_symbols->isChecked();
     properties_->html5_fbinstant = ui->html5_fbinstant->isChecked();
+    properties_->html5_pwa = ui->html5_pwa->isChecked();
     properties_->html5_fbload = ui->html5_fbload->value();
     //properties_->plugins=plugins;
 

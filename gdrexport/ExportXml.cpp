@@ -91,6 +91,7 @@ void ExportXml::SetupProperties(ExportContext *ctx)
 	ctx->props["project.atv_bundle"] = ctx->properties.atv_bundle;
 	ctx->props["project.macos_bundle"] = ctx->properties.macos_bundle;
 	ctx->props["project.html5_fbinstant"] = QString::number(ctx->properties.html5_fbinstant?1:0);
+	ctx->props["project.html5_pwa"] = QString::number(ctx->properties.html5_pwa?1:0);
 	ctx->props["project.html5_pack"] = QString::number(ctx->properties.html5_pack?1:0);
 	ctx->props["project.html5_wasm"] = QString::number(ctx->properties.html5_wasm?1:0);
 

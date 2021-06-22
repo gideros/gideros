@@ -84,6 +84,7 @@ struct ProjectProperties
         html5_symbols = false;
         html5_fbinstant = false;
         html5_fbload = 100;
+        html5_pwa = false;
         encryptCode = false;
         encryptAssets = false;
         app_icon="";
@@ -147,6 +148,7 @@ struct ProjectProperties
     bool html5_symbols;
     bool html5_fbinstant;
     int html5_fbload;
+    bool html5_pwa;
     QString html5_crash;
     QString app_icon;
     QString tv_icon;

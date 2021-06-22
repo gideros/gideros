@@ -1,0 +1,34 @@
+{
+  "short_name": "Gideros",
+  "name": "Gideros",
+  "icons": [
+    {
+      "src": "appicon192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "appicon512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#ffffff",
+  "description": "",
+  "screenshots": [
+    {
+      "src": "splash_h.png",
+      "type": "image/png",
+      "sizes": "1280x720"
+    },
+    {
+      "src": "splash_v.png",
+      "type": "image/png",
+      "sizes": "720x1280"
+    }
+  ]
+}

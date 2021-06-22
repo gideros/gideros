@@ -48,7 +48,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         "*.xml" <<
         "*.appxmanifest" <<
         "*.gradle" <<
-        "*.html" << "gidloader.js" <<
+        "*.html" << "gidloader.js" << "manifest.json" <<
         "*.project";
     ctx->wildcards << wildcards1;
 
@@ -181,6 +181,14 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-END").toUtf8(),QString("<!-- GIDEROS-FBINSTANT-END").toUtf8());
             replaceList1 << qMakePair(QString("setLoadingProgress(pro)").toUtf8(),QString("setLoadingProgress(%1*pro/100)").arg(ctx->properties.html5_fbload).toUtf8());
+        }
+        if (ctx->properties.html5_pwa) {
+            replaceList1 << qMakePair(QString("\"short_name\": \"Gideros\",").toUtf8(),QString("\"short_name\": \""+ctx->appName+"\",").toUtf8());
+            replaceList1 << qMakePair(QString("\"name\": \"Gideros\",").toUtf8(), QString("\"name\": \""+ctx->appName+"\",").toUtf8());
+            replaceList1 << qMakePair(QString("\"background_color\": \"#ffffff\",").toUtf8(), QString("\"background_color\": \""+ctx->properties.backgroundColor+"\",").toUtf8());
+            replaceList1 << qMakePair(QString("\"theme_color\": \"#ffffff\",").toUtf8(), QString("\"theme_color\": \""+ctx->properties.backgroundColor+"\",").toUtf8());
+            replaceList1 << qMakePair(QString("GIDEROS-PWA-START").toUtf8(),QString("GIDEROS-PWA-START -->").toUtf8());
+            replaceList1 << qMakePair(QString("GIDEROS-PWA-END").toUtf8(),QString("<!-- GIDEROS-PWA-END").toUtf8());
         }
     }
     ctx->replaceList << replaceList1;
@@ -443,6 +451,10 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 		   ctx->outputDir.rename("gideros.html.symbols","../gideros.html.symbols");
 		   ctx->outputDir.remove("gideros.png");
 	   }
+	   if (!ctx->properties.html5_pwa) {
+		   ctx->outputDir.remove("manifest.json");
+		   ctx->outputDir.remove("serviceWorker.js");
+	   }
 	   if (!ctx->properties.html5_symbols)
 		   ctx->outputDir.remove("gideros-wasm.html.symbols");
 
@@ -470,6 +482,12 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 		   ExportCommon::splashHImage(ctx,800,150,QString("cover.png"));
        }
        else {
+           if (ctx->properties.html5_pwa) {
+    	   	   ExportCommon::appIcon(ctx,512,512,QString("appicon512.png"));
+    	   	   ExportCommon::appIcon(ctx,192,192,QString("appicon192.png"));
+        	   ExportCommon::splashHImage(ctx,1280,720,QString("splash_h.png"));
+        	   ExportCommon::splashVImage(ctx,720,1280,QString("splash_v.png"));
+           }
     	   ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
 	   	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
        }

@@ -175,7 +175,7 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
   if (skey==4) ginputp_keyChar("\r");
   if (skey==8) ginputp_keyChar("\e");
   //Emulate keypress
-  if( (!skey)&&(*key))
+  if( (!skey)&&(*key)&&((mkey&(~GINPUT_SHIFT_MODIFIER))==0))
   {
 	  if ((utf8len(key)==1)||((*key)<'A')||((*key)>'Z'))
 		   ginputp_keyChar(key);

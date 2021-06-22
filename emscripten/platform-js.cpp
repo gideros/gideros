@@ -38,10 +38,41 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 }
 
 int setClipboard(std::string data,std::string mimeType, int luaFunc) {
+	if ((mimeType=="")||(mimeType=="text/plain")) {
+		EM_ASM_({
+			if (window.navigator.clipboard && window.navigator.clipboard.writeText) {
+				window.navigator.clipboard.writeText(UTF8ToString($1)).then(
+					function() { Module._gapplication_clipboardCallback($0,1,0,0) }
+				).catch(
+					function() { Module._gapplication_clipboardCallback($0,-1,0,0) }
+				);
+			}
+			else
+				Module._gapplication_clipboardCallback($0,-1,"","");
+		},luaFunc,data.c_str());
+		return 0;
+	}
 	return -1;
 }
 
 int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
+	if ((mimeType=="")||(mimeType=="text/plain")) {
+		EM_ASM_({
+			if (window.navigator.clipboard && window.navigator.clipboard.readText) {
+				window.navigator.clipboard.readText().then(function (clipText) {
+						Module._gapplication_clipboardCallback($0,1,
+								allocate(intArrayFromString(clipText), 'i8', ALLOC_STACK),
+								allocate(intArrayFromString("text/plain"), 'i8', ALLOC_STACK))
+					}
+				).catch(
+					err => Module._gapplication_clipboardCallback($0,-1,0,0)
+				);
+			}
+			else
+				Module._gapplication_clipboardCallback($0,-1,0,0);
+		},luaFunc);
+		return 0;
+	}
 	return -1;
 }
 

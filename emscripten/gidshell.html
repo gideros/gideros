@@ -7,6 +7,22 @@
     <link href="gideros.css" rel="stylesheet">
     <link href="favicon.png" rel="icon">
     <title>Gideros</title>
+<!-- GIDEROS-PWA-START
+    <link href="manifest.json" rel="manifest">
+    <script>
+    if (navigator.serviceWorker.controller) {
+    	console.log("Active service worker found");
+    } else {
+        navigator.serviceWorker
+        .register("serviceWorker.js", {
+        scope: "./"
+        })
+        .then(function (reg) {
+        console.log("Service worker  registered");
+        });
+    }
+    </script>
+GIDEROS-PWA-END -->
   </head>
   <body class="fullscreen toplevel">
     <div id="infopane" class="fullscreen flex">

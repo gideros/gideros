@@ -593,6 +593,13 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
         <layout class="QHBoxLayout" name="horizontalLayout_5"/>
        </item>
        <item>
+        <widget class="QCheckBox" name="html5_pwa">
+         <property name="text">
+          <string>Enable PWA</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="html5_pack">
          <property name="text">
           <string>Compress files: lower download time but higher memory usage during loading</string>

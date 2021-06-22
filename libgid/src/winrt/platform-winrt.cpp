@@ -210,14 +210,18 @@ int setClipboard(std::string data,std::string mimeType, int luaFunc) {
 		dp = nullptr;
 	if (!d) return -1;
 
-	Windows::ApplicationModel::DataTransfer::Clipboard::SetContent(dp);
-
+	gdr_dispatchUi([&] {
+		Windows::ApplicationModel::DataTransfer::Clipboard::SetContent(dp);
+	}, true);
 	return 1;
 }
 
 int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
 	if (luaFunc <0) return -1;
-	Windows::ApplicationModel::DataTransfer::DataPackageView^ dv = Windows::ApplicationModel::DataTransfer::Clipboard::GetContent();
+	Windows::ApplicationModel::DataTransfer::DataPackageView^ dv = nullptr;
+	gdr_dispatchUi([&] {
+		dv= Windows::ApplicationModel::DataTransfer::Clipboard::GetContent();
+	}, true);
 	if (dv != nullptr) {
 		Platform::String^ type = Windows::ApplicationModel::DataTransfer::StandardDataFormats::Text;
 		std::string res = "text/plain";
@@ -233,7 +237,7 @@ int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
 				gapplication_clipboardCallback(luaFunc, 1,data.c_str() , res.c_str());
 			});
 			else //if (res=="text/plain")
-				create_task(dv->GetHtmlFormatAsync()).then([=](String^ cdata)
+				create_task(dv->GetTextAsync()).then([=](String^ cdata)
 			{
 				std::string data = utf8_us(cdata->Data());
 				gapplication_clipboardCallback(luaFunc, 1, data.c_str(), res.c_str());

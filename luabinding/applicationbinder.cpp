@@ -387,6 +387,7 @@ void gapplication_clipboardCallback(int luaFuncRef,int result,const char *data, 
 			sizeof(gapplication_ClipboardResponseCb),
 			offsetof(gapplication_ClipboardResponseCb,data),data,
 			offsetof(gapplication_ClipboardResponseCb,mimeType),type);
+	r->result=result>0;
 	gapplication_luaCallback(luaFuncRef,r,getsetClipboardLuaCb);
 }
 

@@ -209,7 +209,7 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
 EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//;s/fp\$$/')))
-EXP_FUNCS=["_main",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
+EXP_FUNCS=["_main","_gapplication_clipboardCallback",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
 
 $(BUILD)/lib%.w.a:
 	@echo "EMAR" $@
@@ -236,6 +236,7 @@ $(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(addprefix $(BUILD)/,$(addsuffix .wa
 main: path $(BUILD)/gideros-wasm.html 
 	cp gideros.png $(TEMPLATECOM)
 	cp gideros.css $(TEMPLATECOM)
+	cp manifest.json serviceWorker.js $(TEMPLATECOM)
 	cp $(BUILD)/gideros-wasm.wasm $(TEMPLATEWASM) 
 	cp $(BUILD)/gideros-wasm.js $(TEMPLATEWASM) 
 	cp $(BUILD)/gideros-wasm.html $(TEMPLATEWASM)/index.html
