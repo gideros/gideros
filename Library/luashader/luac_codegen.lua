@@ -112,6 +112,7 @@ local function mapGlobal(f,sym)
 	return f._g[sym]
 end
 local ivar=1
+local ccvar=1
 local function ensureLocalVar(f,v,r)
 	--print("LOCAL:"..v) 
 	if (f._l[v] and f._l[v].type=="var" and f._l[v].vtype==r) then return end
@@ -336,7 +337,33 @@ local function elseblock(c,f)
 	outcode(f,"} else {\n")
 end
 
-local function  cond_end(f,lc)
+local function crossJump(f,lcs,lce)
+	for lc=lcs,lce do
+		local jis=f.code[lc]
+		local jcode=(jis&0x3F)()
+		local joff
+		if jcode==29 then --JMP
+			joff=((jis>>14)&0x3FFFF)()-131071
+			if joff==0 then joff=nil end
+		elseif jcode==2 then --LOADBOOL
+			local c=((jis>>14)&0x1FF)()
+			if c>0 then	joff=1 end
+		end
+		if joff and (lc+joff)>lce then return true end
+	end
+	return false
+end
+
+local function insBreak(f,lc,brk)
+	f._breaks[lc]=f._breaks[lc] or {}
+	table.insert(f._breaks[lc],1,brk)
+end
+
+local function popBreak(f,lc)
+	table.remove(f._breaks[lc],1)
+end
+
+local function  cond_end(f,lc,lcs)
 	local jis=f.code[lc-1]
     local jcode=(jis&0x3F)()
 	local joff
@@ -349,12 +376,41 @@ local function  cond_end(f,lc)
 	end
 	local cb=endblock
 	f._breaks[lc]=f._breaks[lc] or {}
+	local condvar=false
 	if joff then
+		local jtst=(f.code[lc-2]&0x3F)()
+		local lce=lc-2
+		if jtst>=30 and jtst<=33 then lce+=1 end
+		--print("IF-BLK:",lcs,lce,"ELSE-BLK:",lc,lc+joff-1)
+		local cji,cje=crossJump(f,lcs,lce),crossJump(f,lc,lc+joff-1)
+		--print("IFC:",cji,"ELSE",cje)
+		assert(cje==false,"Complex else block found, not supported. Avoid complex conditions and 'else' clauses")
+		condVar=cji
+		if cji then
+			local vname="_GID_Cond_"..ccvar
+			ccvar+=1
+			f._hc=f._hc.."bool "..vname..";\n"
+			outcode(f,vname.."=true;\n")
+			insBreak(f,lcs,{ callback=function(c,f) outcode(f,vname.."=false;\n") end })
+			insBreak(f,lc,{ callback=function(c,f) outcode(f,"}\nif ("..vname..") {\n") end })
+			insBreak(f,lc+joff,{ callback=endblock })
+			f._elsetgt[lc]=vname
+			cb=nil
+		else
+			f._jignore[lc-1]=true
+			if f._elsetgt[lc] then
+				cb=function(c,f) outcode(f,"} else "..f._elsetgt[lc].."=true;\n") end
+			else
 		cb=elseblock
-		f._breaks[lc+joff]=f._breaks[lc+joff] or {}
-		table.insert(f._breaks[lc+joff],{ callback=endblock })
+				f._jignore[lc-1]=true
+				insBreak(f,lc+joff,{ callback=endblock })
+			end
+		end
 	end
-	table.insert(f._breaks[lc],{ callback=cb })
+	if cb then
+		insBreak(f,lc,{ callback=cb })
+	end
+	return condVar
 end
 
 function gen_compop(is,f,a,b,c,op,lc)
@@ -368,10 +424,18 @@ function gen_compop(is,f,a,b,c,op,lc)
 	local vb=KRVal(f,b)
 	local vc=KRVal(f,c)
 			
+	local cj=cond_end(f,lc+2+joff,lc+2)
+			
 	local terms="("..vb.value..op..vc.value..")"
 	local abool="false" if (a>0) then abool="true" end
-	outcode(f,"if (("..terms..")!="..abool..") {\n")
-	cond_end(f,lc+2+joff)
+	outcode(f,"if (("..terms..")!="..abool..") ")
+	if f._elsetgt[lc+2] then
+		outcode(f,f._elsetgt[lc+2].."=true;\n")
+		popBreak(f,lc+2+joff)
+	else
+		outcode(f,"{\n")
+	end
+	
 end
 
 function gen_EQ(is,f,a,b,c,bc,sbc,lc)
@@ -406,10 +470,17 @@ function gen_TEST(is,f,a,b,c,bc,sbc,lc)
 			table.insert(f._breaks[lc+2+joff],{ callback=endblock })
 		end
 	else
+		local cj=cond_end(f,lc+2+joff,lc+2)
+			
 		local terms="("..vb.value..")"
-		outcode(f,"if (("..terms..")!="..abool..") {\n")
-		--f._breaks[lc+2]={ callback=endblock	}
-		cond_end(f,lc+2+joff)
+		
+		outcode(f,"if (("..terms..")!="..abool..") ")
+		if f._elsetgt[lc+2] then
+			outcode(f,f._elsetgt[lc+2].."=true;\n")
+			popBreak(f,lc+2+joff)
+		else
+			outcode(f,"{\n")
+		end
 	end
 end
 
@@ -437,6 +508,7 @@ function gen_CLOSURE(is,f,a,b,c,bc)
 end
 
 function gen_JMP(is,f,a,b,c,bc,sbc,lc)
+	if f._jignore[lc] then return end
 assert(false,"Standalone JMP aren't supported")
  --Generate if context
 --	outcode(f,"if ("..f._l[a].value..") {\n")
@@ -560,6 +632,8 @@ function codegen(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 	f._t=typemap
 	f._ot=optypemap
 	f._handlers=ophandlers or {}
+	f._jignore={}
+	f._elsetgt={}
 	for k,v in ipairs(argsmap or {}) do f._l[k-1]=v  end
 	
 	processFunction(f)

@@ -435,6 +435,7 @@ ApplicationManager::ApplicationManager(bool player, const char *appname,
 	player_ = player;
 	appName = appname;
 	appPath = urlpath;
+	deviceOrientation_ = eFixed;
 
 	// gpath & gvfs
 	gpath_init();

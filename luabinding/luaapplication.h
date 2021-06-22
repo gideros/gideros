@@ -60,6 +60,9 @@ private:
 };
 */
 
+typedef int (*gapplication_LuaArgPusher)(struct lua_State *L,void *returnData);
+void gapplication_luaCallback(int luaFuncRef,void *data,gapplication_LuaArgPusher pusher);
+
 class LuaApplication : public LuaApplicationBase
 {
 public:

@@ -1384,6 +1384,8 @@ static void _Destroy(void* c)
 GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
                    bool addMouseListeners = true, bool addKeyboardListeners = true, bool addTouchListeners = false)
 {
+	autoUpdateCursor=false;
+	resetTouchPosOnEnd=false;
     ctx = ImGui::CreateContext(atlas);
 
     ImGuiIO& io = ctx->IO;

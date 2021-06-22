@@ -372,6 +372,24 @@ int ApplicationBinder::setKeepAwake(lua_State* L)
 	return 0;
 }
 
+static int getsetClipboardLuaCb(lua_State *L,void *result) {
+	gapplication_ClipboardResponseCb *r=(gapplication_ClipboardResponseCb *)result;
+	lua_pushboolean(L,r->result);
+	lua_pushstring(L,r->data);
+	lua_pushstring(L,r->mimeType);
+    return 3;
+}
+
+extern "C"
+void gapplication_clipboardCallback(int luaFuncRef,int result,const char *data, const char *type)
+{
+	gapplication_ClipboardResponseCb *r=(gapplication_ClipboardResponseCb *)gevent_CreateEventStruct2(
+			sizeof(gapplication_ClipboardResponseCb),
+			offsetof(gapplication_ClipboardResponseCb,data),data,
+			offsetof(gapplication_ClipboardResponseCb,mimeType),type);
+	gapplication_luaCallback(luaFuncRef,r,getsetClipboardLuaCb);
+}
+
 int ApplicationBinder::setClipboard(lua_State* L)
 {
 	Binder binder(L);
@@ -380,9 +398,23 @@ int ApplicationBinder::setClipboard(lua_State* L)
 	const char *cdata=luaL_optstring(L,2,NULL);
 	std::string data=cdata?cdata:"";
 	std::string type=luaL_optstring(L,3,cdata?"text/plain":"");
-	lua_pushboolean(L,::setClipboard(data,type));
+	int fref=LUA_NOREF;
+	if (lua_isfunction(L,4)){
+		lua_pushvalue(L,4);
+        fref=lua_ref(L,-1);
+		lua_pop(L,1);
+	}
 
-	return 1;
+	int ret=::setClipboard(data,type,fref);
+	if (fref==LUA_NOREF) {
+		lua_pushboolean(L,ret>0);
+		return 1;
+	}
+	else {
+		if (ret!=0)
+			gapplication_clipboardCallback(fref,ret>0,NULL,NULL);
+	}
+	return 0;
 }
 
 int ApplicationBinder::getClipboard(lua_State* L)
@@ -392,16 +424,28 @@ int ApplicationBinder::getClipboard(lua_State* L)
 
 	std::string data;
 	std::string type=luaL_optstring(L,2,"text/plain");
-	if (::getClipboard(data,type))
-	{
-		lua_pushstring(L,data.c_str());
-		lua_pushstring(L,type.c_str());
-		return 2;
+	int fref=LUA_NOREF;
+    if (lua_isfunction(L,3)){
+        lua_pushvalue(L,3);
+        fref=lua_ref(L,-1);
+		lua_pop(L,1);
 	}
-	else
-	{
-		return 0;
+	int ret=::getClipboard(data,type,fref);
+	if (fref==LUA_NOREF) {
+		if (ret>0)
+		{
+			lua_pushstring(L,data.c_str());
+			lua_pushstring(L,type.c_str());
+			return 2;
+		}
+		else
+			return 0;
 	}
+	else {
+		if (ret!=0)
+			gapplication_clipboardCallback(fref,ret>0,data.c_str(),type.c_str());
+	}
+	return 0;
 }
 
 int ApplicationBinder::setKeyboardVisibility(lua_State* L)

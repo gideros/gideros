@@ -6,6 +6,9 @@
 #include <concrt.h>
 #include <ppltasks.h>
 #include <giderosapi.h>
+#include "gapplication.h"
+
+using namespace Concurrency;
 
 using namespace Windows::System;
 using namespace Platform;
@@ -192,16 +195,64 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 	return false;
 }
 
-bool setClipboard(std::string data,std::string mimeType) {
-	return false;
+int setClipboard(std::string data,std::string mimeType, int luaFunc) {
+	Windows::ApplicationModel::DataTransfer::DataPackage^ dp = ref new Windows::ApplicationModel::DataTransfer::DataPackage;
+	bool d = false;
+	if (mimeType == "text/html") {
+		dp->SetHtmlFormat(ref new String(utf8_ws(data.c_str()).c_str()));
+		d = true;
+	}
+	if ((mimeType == "text/plain") || (mimeType == "")) {
+		dp->SetText(ref new String(utf8_ws(data.c_str()).c_str()));
+		d = true;
+	}
+	if (data == "")
+		dp = nullptr;
+	if (!d) return -1;
+
+	Windows::ApplicationModel::DataTransfer::Clipboard::SetContent(dp);
+
+	return 1;
 }
 
-bool getClipboard(std::string &data,std::string &mimeType) {
-	return false;
+int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
+	if (luaFunc <0) return -1;
+	Windows::ApplicationModel::DataTransfer::DataPackageView^ dv = Windows::ApplicationModel::DataTransfer::Clipboard::GetContent();
+	if (dv != nullptr) {
+		Platform::String^ type = Windows::ApplicationModel::DataTransfer::StandardDataFormats::Text;
+		std::string res = "text/plain";
+		if (mimeType=="text/html") {
+			type = Windows::ApplicationModel::DataTransfer::StandardDataFormats::Html;
+			res = mimeType;
+		}
+		if (dv->Contains(type)) {
+			if (res=="text/html")
+			create_task(dv->GetHtmlFormatAsync()).then([=](String^ cdata)
+			{
+				std::string data = utf8_us(cdata->Data());
+				gapplication_clipboardCallback(luaFunc, 1,data.c_str() , res.c_str());
+			});
+			else //if (res=="text/plain")
+				create_task(dv->GetHtmlFormatAsync()).then([=](String^ cdata)
+			{
+				std::string data = utf8_us(cdata->Data());
+				gapplication_clipboardCallback(luaFunc, 1, data.c_str(), res.c_str());
+			});
+			return 0;
+		}
+	}
+	return -1;
 }
 
 int getKeyboardModifiers() {
-	return 0;
+	int m = 0;
+	gdr_dispatchUi([&] {
+		Windows::UI::Core::CoreWindow ^sender= Windows::UI::Core::CoreWindow::GetForCurrentThread();
+		if (sender->GetKeyState(Windows::System::VirtualKey::Shift) != CoreVirtualKeyStates::None) m |= 1;
+		if (sender->GetKeyState(Windows::System::VirtualKey::Menu) != CoreVirtualKeyStates::None) m |= 2;
+		if (sender->GetKeyState(Windows::System::VirtualKey::Control) != CoreVirtualKeyStates::None) m |= 4;
+	}, true);
+	return m;
 }
 
 static int s_fps = 60;

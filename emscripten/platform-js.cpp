@@ -37,12 +37,12 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 	return false;
 }
 
-bool setClipboard(std::string data,std::string mimeType) {
-	return false;
+int setClipboard(std::string data,std::string mimeType, int luaFunc) {
+	return -1;
 }
 
-bool getClipboard(std::string &data,std::string &mimeType) {
-	return false;
+int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
+	return -1;
 }
 
 extern int s_KeyboardModifiers;

@@ -400,6 +400,9 @@ void NetworkManager::calculateMD5(const char* file)
 
 
 ApplicationManager::ApplicationManager() {
+
+	deviceOrientation_ = eFixed;
+
 	// gpath & gvfs
 	gpath_init();
 	gpath_addDrivePrefix(0, "|R|");

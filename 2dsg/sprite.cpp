@@ -1090,19 +1090,16 @@ void Sprite::getDimensions(float& w,float &h)
 }
 
 bool Sprite::hitTestPoint(float x, float y, bool visible) const {
-	if (visible & (!isVisible_))
-		return false;
-
 	Matrix transform;
 	std::stack<Matrix4> pxform;
 	std::stack<const Sprite *> pstack;
 	const Sprite *curr = this;
 	const Sprite *last=NULL;
 	while (curr) {
-		pstack.push(curr);
+        if (visible&&(!curr->isVisible_)) return false;
+        pstack.push(curr);
 		last=curr;
 		curr = curr->parent_;
-		if (visible&&(!curr->isVisible_)) return false;
 	}
 	if (visible&&(!last->isStage())) return false;
 

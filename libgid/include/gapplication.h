@@ -44,6 +44,8 @@ G_API g_id gapplication_addCallback(gevent_Callback callback, void *udata);
 G_API void gapplication_removeCallback(gevent_Callback callback, void *udata);
 G_API void gapplication_removeCallbackWithGid(g_id gid);
 
+G_API void gapplication_clipboardCallback(int luaFuncRef,int result,const char *data, const char *type);
+
 #ifdef __cplusplus
 }
 #endif

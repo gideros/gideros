@@ -55,6 +55,9 @@ local GFUNC_MAP={
 	["FragCoord"]={type="cvar", value="gl_FragCoord", vtype="hF4"},
 }
 
+local platform=application:getDeviceInfo()
+local isHTML = platform and platform=="Web"
+
 local function populateGMap(gmap,tmap,funcs,const)
 	for k,v in pairs(tmap) do
 		local si=v:find(" ")
@@ -128,10 +131,11 @@ function Shader.lua(vf,ff,opt,uniforms,attrs,varying,funcs,const,debug)
 		print("VSHADER_CODE:\n".._vshader)	
 		print("FSHADER_CODE:\n".._fshader)
 	end
-	if not vdebug then
+	if isHTML then
+		opt = opt | Shader.FLAG_NO_DEFAULT_HEADER
+	end
 		return Shader.new(_vshader,_fshader,Shader.FLAG_FROM_CODE|opt,uniforms,attrs)	
 	end
-end
 
 local function GEN_RETURN(rval)
 	if rval then
@@ -224,12 +228,20 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	local omap=OPTYPE_MAP
 	populateGMap(gmap,tmap,funcs,const)
 	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
-	local _headers=[[#ifdef GLES2
+	
+	local _headers = nil
+	if isHTML then
+		_headers=[[
+#define shadow2D(tex,pt) vec4(shadow2DEXT(tex,pt),0.0,0.0,0.0)
+]]
+	else
+		_headers=[[#ifdef GLES2
 #extension GL_OES_standard_derivatives : enable
 #extension GL_EXT_shadow_samplers : enable
 #define shadow2D(tex,pt) vec4(shadow2DEXT(tex,pt),0.0,0.0,0.0)
 #endif
 ]]
+	end
 
 	local _code=_headers
 	for k,v in ipairs(attrs) do 

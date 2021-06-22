@@ -956,6 +956,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bufferbinder.cpp">
       <Filter>luabinding</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\gmathbinder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">

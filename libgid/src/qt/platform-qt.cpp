@@ -81,7 +81,7 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 	return false;
 }
 
-bool setClipboard(std::string data,std::string mimeType) {
+int setClipboard(std::string data,std::string mimeType, int luaFunc) {
 	if (mimeType.size()==0)
 		QApplication::clipboard()->clear();
 	else {
@@ -89,24 +89,24 @@ bool setClipboard(std::string data,std::string mimeType) {
 		mime->setData(QString(mimeType.c_str()),QByteArray(data.c_str(),data.size()));
 		QApplication::clipboard()->setMimeData(mime);
 	}
-	return true;
+	return 1;
 }
 
-bool getClipboard(std::string &data,std::string &mimeType) {
+int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
 	const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
-    if (mimeData==NULL) return false;
+    if (mimeData==NULL) return -1;
     if (mimeType.size()>0)
     {
     	if (!mimeData->hasFormat(QString(mimeType.c_str())))
     		return false;
     	QByteArray d=mimeData->data(QString(mimeType.c_str()));
     	data=std::string(d.data(),d.size());
-    	return true;
+    	return 1;
     }
     mimeType=mimeData->formats().join(" ").toStdString();
 
-	return true;
+	return 1;
 }
 
 int getKeyboardModifiers() {

@@ -79,6 +79,26 @@ std::map<int,bool> LuaApplication::breakpoints;
 void (*LuaApplication::debuggerHook)(void *context,lua_State *L,lua_Debug *ar)=NULL;
 void *LuaApplication::debuggerContext=NULL;
 
+static g_id luaCbGid=g_NextId();
+static lua_State *globalLuaState=NULL;
+
+static void LuaCallback_s(int type, void *event, void *udata)
+{
+	lua_State* L = globalLuaState;
+	if (L == NULL)
+		return;
+
+	lua_getref(L,type);
+	lua_unref(L,type);
+    int nret=((gapplication_LuaArgPusher)udata)(L,event);
+    lua_call(L, nret, 0);
+}
+
+void gapplication_luaCallback(int luaFuncRef,void *data,gapplication_LuaArgPusher pusher)
+{
+	gevent_EnqueueEvent(luaCbGid, LuaCallback_s, luaFuncRef, data,1,(void *)pusher);
+}
+
 const char* LuaApplication::fileNameFunc_s(const char* filename, void* data)
 {
 	LuaApplication* that = static_cast<LuaApplication*>(data);
@@ -1116,6 +1136,7 @@ void LuaApplication::deinitialize()
 
 	lua_close(L);
 	L = NULL;
+	globalLuaState=NULL;
 
 	delete application_;
     application_ = NULL;
@@ -1583,6 +1604,7 @@ void LuaApplication::initialize()
     LuaDebugging::yieldHookMask=0;
     LuaDebugging::hook=yieldHook;
     lua_sethook(L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1);
+    globalLuaState=L;
 
     Core_profilerReset(L);
     if (LuaDebugging::profiling)
