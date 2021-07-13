@@ -8,7 +8,7 @@ enum ImGuiWindowFlags_Extended
 
 enum ImGuiInputTextFlags_Extended
 {
-    ImGuiInputTextFlags_NoBackground = 1 << 19
+    ImGuiInputTextFlags_NoBackground = 1 << 20
 };
 
 enum ImGuiGlyphRanges
