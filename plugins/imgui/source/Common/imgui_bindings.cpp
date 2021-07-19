@@ -9377,6 +9377,146 @@ int GetResetTouchPosOnEnd(lua_State* L)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///
+/// ImGuiContext
+///
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+int CTX_GetHoveredWindow(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    if (ui->ctx->HoveredWindow)
+        lua_pushstring(L, ui->ctx->HoveredWindow->Name);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
+int CTX_GetHoveredWindowRoot(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    if (ui->ctx->HoveredWindow)
+        lua_pushstring(L, ui->ctx->HoveredWindow->RootWindow->Name);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
+int CTX_GetHoveredWindowUnderMovingWindow(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    if (ui->ctx->HoveredWindowUnderMovingWindow)
+        lua_pushstring(L, ui->ctx->HoveredWindowUnderMovingWindow->Name);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
+int CTX_GetMovingWindow(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    if (ui->ctx->MovingWindow)
+        lua_pushstring(L, ui->ctx->MovingWindow->Name);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
+int CTX_GetActiveIdWindow(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    if (ui->ctx->ActiveIdWindow)
+        lua_pushstring(L, ui->ctx->ActiveIdWindow->Name);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
+int CTX_GetActiveId(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->ActiveId);
+    return 1;
+}
+
+int CTX_GetActiveIdPreviousFrame(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->ActiveIdPreviousFrame);
+    return 1;
+}
+
+int CTX_GetActiveIdTimer(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->ActiveIdTimer);
+    return 1;
+}
+
+int CTX_GetActiveIdAllowOverlap(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->ActiveIdAllowOverlap);
+    return 1;
+}
+
+int CTX_GetHoveredId(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->HoveredId);
+    return 1;
+}
+
+int CTX_GetHoveredIdPreviousFrame(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->HoveredIdPreviousFrame);
+    return 1;
+}
+
+int CTX_GetHoveredIdTimer(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->HoveredIdTimer);
+    return 1;
+}
+
+int CTX_GetHoveredIdAllowOverlap(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->HoveredIdAllowOverlap);
+    return 1;
+}
+
+int CTX_GetDragDropActive(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushboolean(L, ui->ctx->DragDropActive);
+    return 1;
+}
+
+int CTX_GetDragDropPayloadSourceId(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushnumber(L, ui->ctx->DragDropPayload.SourceId);
+    return 1;
+}
+
+int CTX_GetDragDropPayloadDataType(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushstring(L, ui->ctx->DragDropPayload.DataType);
+    return 1;
+}
+
+int CTX_GetDragDropPayloadDataSize(lua_State* L)
+{
+    GidImGui* ui = getImgui(L);
+    lua_pushinteger(L, ui->ctx->DragDropPayload.DataSize);
+    return 1;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+///
 /// TextEditor
 ///
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -11427,6 +11567,24 @@ int loader(lua_State* L)
         {"tableGetColumnFlags", TableGetColumnFlags},
         {"tableSetBgColor", TableSetBgColor},
 
+        {"getHoveredWindow", CTX_GetHoveredWindow},
+        {"getHoveredWindowRoot", CTX_GetHoveredWindowRoot},
+        {"getHoveredWindowUnderMovingWindow", CTX_GetHoveredWindowUnderMovingWindow},
+        {"getMovingWindow", CTX_GetMovingWindow},
+        {"getActiveIdWindow", CTX_GetActiveIdWindow},
+        {"getActiveId", CTX_GetActiveId},
+        {"getActiveIdPreviousFrame", CTX_GetActiveIdPreviousFrame},
+        {"getActiveIdTimer", CTX_GetActiveIdTimer},
+        {"getActiveIdAllowOverlap", CTX_GetActiveIdAllowOverlap},
+        {"getHoveredId", CTX_GetHoveredId},
+        {"getHoveredIdPreviousFrame", CTX_GetHoveredIdPreviousFrame},
+        {"getHoveredIdTimer", CTX_GetHoveredIdTimer},
+        {"getHoveredIdAllowOverlap", CTX_GetHoveredIdAllowOverlap},
+        {"getDragDropActive", CTX_GetDragDropActive},
+        {"getDragDropPayloadSourceId", CTX_GetDragDropPayloadSourceId},
+        {"getDragDropPayloadDataType", CTX_GetDragDropPayloadDataType},
+        {"getDragDropPayloadDataSize", CTX_GetDragDropPayloadDataSize},
+        
 #ifdef IS_BETA_BUILD
         {"dockSpace", DockSpace},
         {"dockSpaceOverViewport", DockSpaceOverViewport},
