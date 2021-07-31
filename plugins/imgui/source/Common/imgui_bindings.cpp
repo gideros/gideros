@@ -152,7 +152,7 @@ struct VColor
 
 struct GColor {
     int hex; // 0xffffff
-    float alpha; // [0..1]
+    double alpha; // [0..1]
 
     GColor()
     {
