@@ -1,5 +1,7 @@
-// regex: (\s\*)+\b
 #define _UNUSED(n)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-function"
 
 #include "lua.hpp"
 #include "luautil.h"
@@ -205,7 +207,7 @@ struct GColor {
         return toVec4(converted);
     }
 
-    static GColor toHex(double _r, double _g, double _b, double _a = 1.0f)
+    static GColor toHex(double _r, double _g, double _b, double _a = 1.0)
     {
         int r = _r * 255;
         int g = _g * 255;
@@ -229,7 +231,7 @@ struct GColor {
         return GColor(hex, alpha);
     }
 
-    static ImU32 toU32(double _r, double _g, double _b, double _a = 1.0f)
+    static ImU32 toU32(double _r, double _g, double _b, double _a = 1.0)
     {
         ImU32 r = _r * 255;
         ImU32 g = _g * 255;
@@ -243,7 +245,7 @@ struct GColor {
         return GColor::toU32(color.x, color.y, color.y, color.w);
     }
 
-    static ImU32 toU32(int hex, double alpha = 1.0f)
+    static ImU32 toU32(int hex, double alpha = 1.0)
     {
         alpha *= 255.0f;
         ImU32 ghex = (int)alpha | hex << 8;
@@ -1082,6 +1084,11 @@ void bindEnums(lua_State* L)
     BIND_IENUM(L, ImGuiSortDirection_Ascending, "SortDirection_Ascending");
     BIND_IENUM(L, ImGuiSortDirection_Descending, "SortDirection_Descending");
 
+    BIND_IENUM(L, ImGuiImageScaleMode_LetterBox, "ImageScaleMode_LetterBox");
+    BIND_IENUM(L, ImGuiImageScaleMode_FitWidth, "ImageScaleMode_FitWidth");
+    BIND_IENUM(L, ImGuiImageScaleMode_FitHeight, "ImageScaleMode_FitHeight");
+    BIND_IENUM(L, ImGuiImageScaleMode_Stretch, "ImageScaleMode_Stretch");
+
     BIND_FENUM(L, FLT_MAX, "FLT_MAX");
     BIND_FENUM(L, DBL_MAX, "DBL_MAX");
 
@@ -1856,6 +1863,8 @@ void UpdatePlotContext(lua_State* L)
     ImPlot::SetCurrentContext(ctx);
 }
 
+// Plot
+
 int ImPlot_BeginPlot(lua_State* L)
 {
     const char* title_id = luaL_checkstring(L, 2);
@@ -2270,6 +2279,288 @@ int ImPlot_PlotDummy(lua_State* L)
 {
     const char* label = luaL_checkstring(L, 2);
     ImPlot::PlotDummy(label);
+    return 0;
+}
+
+// Utils
+
+int ImPlot_SetNextPlotLimits(lua_State* L)
+{
+    double xmin = luaL_checknumber(L, 2);
+    double xmax = luaL_checknumber(L, 3);
+    double ymin = luaL_checknumber(L, 4);
+    double ymax = luaL_checknumber(L, 5);
+    ImGuiCond cond = luaL_optinteger(L, 6, ImGuiCond_Once);
+
+    ImPlot::SetNextPlotLimits(xmin, xmax, ymin, ymax, cond);
+    return 0;
+}
+
+int ImPlot_SetNextPlotLimitsX(lua_State* L)
+{
+    double xmin = luaL_checknumber(L, 2);
+    double xmax = luaL_checknumber(L, 3);
+    ImGuiCond cond = luaL_optinteger(L, 4, ImGuiCond_Once);
+
+    ImPlot::SetNextPlotLimitsX(xmin, xmax, cond);
+    return 0;
+}
+
+int ImPlot_SetNextPlotLimitsY(lua_State* L)
+{
+    double ymin = luaL_checknumber(L, 2);
+    double ymax = luaL_checknumber(L, 3);
+    ImGuiCond cond = luaL_optinteger(L, 4, ImGuiCond_Once);
+    ImPlotYAxis y_axis = luaL_optinteger(L, 5, ImPlotYAxis_1);
+
+    ImPlot::SetNextPlotLimitsY(ymin, ymax, cond, y_axis);
+    return 0;
+}
+
+// TODO: return all the values?
+int ImPlot_LinkNextPlotLimits(lua_State* L)
+{
+    double xmin = luaL_checknumber(L, 2);
+    double xmax = luaL_checknumber(L, 3);
+    double ymin = luaL_checknumber(L, 4);
+    double ymax = luaL_checknumber(L, 5);
+    double ymin2 = luaL_optnumber(L, 6, 0);
+    double ymax2 = luaL_optnumber(L, 7, 0);
+    double ymin3 = luaL_optnumber(L, 8, 0);
+    double ymax3 = luaL_optnumber(L, 9, 0);
+
+    ImPlot::LinkNextPlotLimits(&xmin, &xmax, &ymin, &ymax, &ymin2, &ymax2, &ymin3, &ymax3);
+    return 0;
+}
+
+int ImPlot_FitNextPlotAxes(lua_State* L)
+{
+    bool x  = luaL_optboolean(L, 2, 1);
+    bool y  = luaL_optboolean(L, 3, 1);
+    bool y2 = luaL_optboolean(L, 4, 1);
+    bool y3 = luaL_optboolean(L, 5, 1);
+
+    ImPlot::FitNextPlotAxes(x, y, y2, y3);
+    return 0;
+}
+
+int ImPlot_SetNextPlotTicksX(lua_State* L)
+{
+    if (lua_type(L, 2) == LUA_TTABLE)
+    {
+        const double* values = getTableValues<double>(L, 2);
+        int n_ticks = luaL_checkinteger(L, 3);
+        const char** labels = getTableValues<const char*>(L, 4, luaL_getn(L, 4));
+        bool keep_default = lua_toboolean(L, 5);
+
+        ImPlot::SetNextPlotTicksX(values, n_ticks, labels, keep_default);
+    }
+    else
+    {
+        double x_min = luaL_checknumber(L, 2);
+        double x_max = luaL_checknumber(L, 3);
+        int n_ticks = luaL_checkinteger(L, 4);
+        const char** labels = getTableValues<const char*>(L, 5, luaL_getn(L, 5));
+        bool keep_default = lua_toboolean(L, 6);
+
+        ImPlot::SetNextPlotTicksX(x_min, x_max, n_ticks, labels, keep_default);
+    }
+    return 0;
+}
+
+int ImPlot_SetNextPlotTicksY(lua_State* L)
+{
+    if (lua_type(L, 2) == LUA_TTABLE)
+    {
+        const double* values = getTableValues<double>(L, 2);
+        int n_ticks = luaL_checkinteger(L, 3);
+        const char** labels = getTableValues<const char*>(L, 4, luaL_getn(L, 4));
+        bool keep_default = lua_toboolean(L, 5);
+        ImPlotYAxis y_axis = luaL_optinteger(L, 6, ImPlotYAxis_1);
+
+        ImPlot::SetNextPlotTicksY(values, n_ticks, labels, keep_default, y_axis);
+    }
+    else
+    {
+        double y_min = luaL_checknumber(L, 2);
+        double y_max = luaL_checknumber(L, 3);
+        int n_ticks = luaL_checkinteger(L, 4);
+        const char** labels = getTableValues<const char*>(L, 5, luaL_getn(L, 5));
+        bool keep_default = lua_toboolean(L, 6);
+        ImPlotYAxis y_axis = luaL_optinteger(L, 7, ImPlotYAxis_1);
+
+        ImPlot::SetNextPlotTicksY(y_min, y_max, n_ticks, labels, keep_default, y_axis);
+    }
+    return 0;
+}
+
+int ImPlot_SetNextPlotFormatX(lua_State* L)
+{
+    const char* fmt = luaL_checkstring(L, 2);
+    ImPlot::SetNextPlotFormatX(fmt);
+    return 0;
+}
+
+int ImPlot_SetNextPlotFormatY(lua_State* L)
+{
+    const char* fmt = luaL_checkstring(L, 2);
+    ImPlotYAxis y_axis = luaL_optinteger(L, 3, ImPlotYAxis_1);
+
+    ImPlot::SetNextPlotFormatY(fmt, y_axis);
+    return 0;
+}
+
+int ImPlot_SetPlotYAxis(lua_State* L)
+{
+    ImPlotYAxis y_axis = luaL_checkinteger(L, 2);
+
+    ImPlot::SetPlotYAxis(y_axis);
+    return 0;
+}
+
+int ImPlot_HideNextItem(lua_State* L)
+{
+    bool hidden = luaL_optboolean(L, 2, 1);
+    ImGuiCond cond = luaL_optinteger(L, 3, ImGuiCond_Once);
+
+    ImPlot::HideNextItem(hidden, cond);
+    return 0;
+}
+
+int ImPlot_PixelsToPlot(lua_State* L)
+{
+    float x = luaL_checknumber(L, 2);
+    float y = luaL_checknumber(L, 3);
+    ImPlotYAxis y_axis = luaL_optinteger(L, 4, IMPLOT_AUTO);
+
+    ImPlotPoint value = ImPlot::PixelsToPlot(x, y, y_axis);
+    lua_pushnumber(L, value.x);
+    lua_pushnumber(L, value.y);
+    return 2;
+}
+
+int ImPlot_PlotToPixels(lua_State* L)
+{
+    double x = luaL_checknumber(L, 2);
+    double y = luaL_checknumber(L, 3);
+    ImPlotYAxis y_axis = luaL_optinteger(L, 4, IMPLOT_AUTO);
+
+    ImVec2 value = ImPlot::PlotToPixels(x, y, y_axis);
+    lua_pushnumber(L, value.x);
+    lua_pushnumber(L, value.y);
+    return 2;
+}
+
+int ImPlot_GetPlotPos(lua_State* L)
+{
+    ImVec2 value = ImPlot::GetPlotPos();
+    lua_pushnumber(L, value.x);
+    lua_pushnumber(L, value.y);
+    return 2;
+}
+
+int ImPlot_GetPlotSize(lua_State* L)
+{
+
+    ImVec2 value = ImPlot::GetPlotSize();
+    lua_pushnumber(L, value.x);
+    lua_pushnumber(L, value.y);
+    return 2;
+}
+
+int ImPlot_IsPlotHovered(lua_State* L)
+{
+    bool value = ImPlot::IsPlotHovered();
+    lua_pushboolean(L, value);
+    return 1;
+}
+
+int ImPlot_IsPlotXAxisHovered(lua_State* L)
+{
+    bool value = ImPlot::IsPlotXAxisHovered();
+    lua_pushboolean(L, value);
+    return 1;
+}
+
+int ImPlot_IsPlotYAxisHovered(lua_State* L)
+{
+    ImPlotYAxis y_axis = luaL_optinteger(L, 2, ImPlotYAxis_1);
+
+    bool value = ImPlot::IsPlotYAxisHovered(y_axis);
+    lua_pushboolean(L, value);
+    return 1;
+}
+
+int ImPlot_GetPlotMousePos(lua_State* L)
+{
+    ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
+
+    ImPlotPoint value = ImPlot::GetPlotMousePos(y_axis);
+    lua_pushnumber(L, value.x);
+    lua_pushnumber(L, value.y);
+    return 2;
+}
+
+int ImPlot_GetPlotLimits(lua_State* L)
+{
+    ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
+
+    ImPlotLimits value = ImPlot::GetPlotLimits(y_axis);
+    lua_pushnumber(L, value.X.Min);
+    lua_pushnumber(L, value.X.Max);
+    lua_pushnumber(L, value.Y.Min);
+    lua_pushnumber(L, value.Y.Max);
+    return 4;
+}
+
+int ImPlot_IsPlotSelected(lua_State* L)
+{
+    bool value = ImPlot::IsPlotSelected();
+    lua_pushboolean(L, value);
+    return 1;
+}
+
+int ImPlot_GetPlotSelection(lua_State* L)
+{
+    ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
+
+    ImPlotLimits value = ImPlot::GetPlotSelection(y_axis);
+    lua_pushnumber(L, value.X.Min);
+    lua_pushnumber(L, value.X.Max);
+    lua_pushnumber(L, value.Y.Min);
+    lua_pushnumber(L, value.Y.Max);
+    return 4;
+}
+
+int ImPlot_IsPlotQueried(lua_State* L)
+{
+    bool value = ImPlot::IsPlotQueried();
+    lua_pushboolean(L, value);
+    return 1;
+}
+
+int ImPlot_GetPlotQuery(lua_State* L)
+{
+    ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
+
+    ImPlotLimits value = ImPlot::GetPlotQuery(y_axis);
+    lua_pushnumber(L, value.X.Min);
+    lua_pushnumber(L, value.X.Max);
+    lua_pushnumber(L, value.Y.Min);
+    lua_pushnumber(L, value.Y.Max);
+    return 4;
+}
+
+int ImPlot_SetPlotQuery(lua_State* L)
+{
+    double xmin = luaL_checknumber(L, 2);
+    double xmax = luaL_checknumber(L, 3);
+    double ymin = luaL_checknumber(L, 4);
+    double ymax = luaL_checknumber(L, 5);
+    const ImPlotLimits& query = ImPlotLimits(xmin, xmax, ymin, ymax);
+    ImPlotYAxis y_axis = luaL_optinteger(L, 6, IMPLOT_AUTO);
+
+    ImPlot::SetPlotQuery(query, y_axis);
     return 0;
 }
 
@@ -3386,18 +3677,6 @@ int Image(lua_State* L)
     return 0;
 }
 
-int ImageFilled(lua_State* L)
-{
-    GTextureData data = getTexture(L, 2);
-    const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-    const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 5, 0xffffff), luaL_optnumber(L, 6, 1.0f));
-    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 0.0f));
-    const ImVec4& border = GColor::toVec4(luaL_optinteger(L, 9, 0xffffff), luaL_optnumber(L, 10, 0.0f));
-
-    ImGui::ImageFilled(data.texture, size, data.uv0, data.uv1, bg_col, tint, border);
-    return 0;
-}
-
 int ImageButton(lua_State* L)
 {
     GTextureData data = getTexture(L, 2);
@@ -3410,59 +3689,36 @@ int ImageButton(lua_State* L)
     return 1;
 }
 
-int ImageButtonWithText(lua_State* L)
-{
-    GTextureData data = getTexture(L, 2);
-    const char* label = luaL_checkstring(L, 3);
-    const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
-    int frame_padding = luaL_optinteger(L, 6, -1);
-    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 0.0f));
-    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 9, 0xffffff), luaL_optnumber(L, 10, 1.0f));
-
-    lua_pushboolean(L, ImGui::ImageButtonWithText(data.texture, label, size, data.uv0, data.uv1, frame_padding, bg_col, tint_col));
-    return 1;
-}
-
 int ScaledImage(lua_State* L)
 {
     GTextureData data = getTexture(L, 2);
-    const ImVec2& button_size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-    const ImVec2& image_size = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
-    const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 1.0f));
-    const ImVec4& border = GColor::toVec4(luaL_optinteger(L, 9, 0xffffff), luaL_optnumber(L, 10, 0.0f));
-    const ImVec2& anchor = ImVec2(luaL_optnumber(L,  11, 0.5f), luaL_optnumber(L, 12, 0.5f));
-    float frame_rounding = luaL_optnumber(L, 13, 0.0f);
+    const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+    ImGuiImageScaleMode fit_mode = luaL_optinteger(L, 5, ImGuiImageScaleMode_LetterBox);
+    bool keep_size = lua_toboolean(L, 6);
+    const ImVec2& anchor = ImVec2(luaL_optnumber(L, 7, 0.5f), luaL_optnumber(L, 8, 0.5f));
+    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 9, 0xffffff), luaL_optnumber(L, 10, 1.0f));
+    const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 11, 0), luaL_optnumber(L, 12, 0.0f));
+    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 13, 0), luaL_optnumber(L, 14, 0.0f));
 
-    ImGui::ScaledImage(data.texture, image_size, data.texture_size, button_size, anchor, data.uv0, data.uv1, tint, border, frame_rounding);
-    return 0;
-}
-
-int ScaledImageFilled(lua_State* L)
-{
-    GTextureData data = getTexture(L, 2);
-    const ImVec2& button_size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-    const ImVec2& image_size = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
-    const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 1.0f));
-    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 9, 0xffffff), luaL_optnumber(L, 10, 0.0f));
-    const ImVec4& border = GColor::toVec4(luaL_optinteger(L, 11, 0xffffff), luaL_optnumber(L, 12, 0.0f));
-    const ImVec2& anchor = ImVec2(luaL_optnumber(L, 13, 0.5f), luaL_optnumber(L, 14, 0.5f));
-    float frame_rounding = luaL_optnumber(L, 15, 0.0f);
-
-    ImGui::ScaledImageFilled(data.texture, image_size, data.texture_size, button_size, anchor, data.uv0, data.uv1, bg_col, tint, border, frame_rounding);
+    ImGui::ScaledImage(data.texture_size, data.texture, size, fit_mode, keep_size, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
     return 0;
 }
 
 int ScaledImageButton(lua_State* L)
 {
     GTextureData data = getTexture(L, 2);
-    const ImVec2& image_size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-    const ImVec2& button_size = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
-    ImGuiButtonFlags flags = luaL_optinteger(L, 7, 0);
-    const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 8, 0xffffff), luaL_optnumber(L, 9, 1.0f));
-    const ImVec4& bg = GColor::toVec4(luaL_optinteger(L, 10, 0), luaL_optnumber(L, 11, 0.0f));
-    const ImVec2& anchor = ImVec2(luaL_optnumber(L, 12, 0.5f), luaL_optnumber(L, 13, 0.5f));
+    const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+    int fit_mode = luaL_optinteger(L, 5, 0);
+    bool keep_size = lua_toboolean(L, 6);
+    int flags = luaL_optinteger(L, 7, 0);
+    const ImVec2& anchor = ImVec2(luaL_optnumber(L, 8, 1.0f), luaL_optnumber(L, 9, 1.0f));
+    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 10, 0xffffff), luaL_optnumber(L, 11, 1.0f));
+    const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 12, 0), luaL_optnumber(L, 13, 0.0f));
+    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
 
-    lua_pushboolean(L, ImGui::ScaledImageButton(data.texture, image_size, data.texture_size, button_size, tint, bg, flags, anchor, data.uv0, data.uv1));
+    bool pressed = ImGui::ScaledImageButton(data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
+
+    lua_pushboolean(L, pressed);
     return 1;
 }
 
@@ -3470,14 +3726,18 @@ int ScaledImageButtonWithText(lua_State* L)
 {
     GTextureData data = getTexture(L, 2);
     const char* label = luaL_checkstring(L, 3);
-    const ImVec2& image_size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
-    const ImVec2& button_size = ImVec2(luaL_checknumber(L, 6), luaL_checknumber(L, 7));
-    ImGuiDir image_side = luaL_optinteger(L, 8, ImGuiDir_Left);
-    ImGuiButtonFlags flags = luaL_optinteger(L, 9, 0);
-    const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 10, 0xffffff), luaL_optnumber(L, 11, 1.0f));
-    const ImVec4& bg = GColor::toVec4(luaL_optinteger(L, 12, 0), luaL_optnumber(L, 13, 0.0f));
+    const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+    const ImVec2& button_size = ImVec2(luaL_optnumber(L, 6, 0.0f), luaL_optnumber(L, 7, 0.0f));
+    ImGuiButtonFlags flags = luaL_optinteger(L, 8, 0);
+    ImGuiImageScaleMode fit_mode = luaL_optinteger(L, 9, 0);
+    bool keep_size = lua_toboolean(L, 10);
+    const ImVec2& anchor = ImVec2(luaL_optnumber(L, 11, 0.5f), luaL_optnumber(L, 12, 0.5f));
+    int image_side = luaL_optinteger(L, 13, ImGuiDir_Left);
+    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 14, 0xffffff), luaL_optnumber(L, 15, 1.0f));
+    const ImVec4& boreder_col = GColor::toVec4(luaL_optinteger(L, 16, 0), luaL_optnumber(L, 17, 0.0f));
+    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 18, 0), luaL_optnumber(L, 19, 0.0f));
 
-    lua_pushboolean(L, ImGui::ScaledImageButtonWithText(data.texture, label, image_size, data.texture_size, button_size, tint, bg, image_side, flags, data.uv0, data.uv1));
+    lua_pushboolean(L, ImGui::ScaledImageButtonWithText(data.texture_size, data.texture, label, size, button_size, flags, fit_mode, keep_size, anchor, image_side, tint_col, boreder_col, bg_col, data.uv0, data.uv1));
     return 1;
 }
 
@@ -6705,7 +6965,7 @@ int TabBar_GetTabOrder(lua_State* L)
 int TabBar_GetTabName(lua_State* L)
 {
     ImGuiTabBar* tabBar = getPtr<ImGuiTabBar>(L, "ImGuiTabBar");
-    ImGuiTabItem* tab = getPtr<ImGuiTabItem>(L, "ImGuiTabItem", 2);
+    ImGuiTabItem* tab = getPtr<ImGuiTabItem>(L, "ImGuiTabItem");
 
     lua_pushstring(L, tabBar->GetTabName(tab));
     return 1;
@@ -9908,8 +10168,6 @@ int DrawList_AddImage(lua_State* L)
 
     ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
     ImVec2 area = p_max - p_min;
-    ImGui::FitImage(p_min, p_max, area, area, data.texture_size, ImVec2(0.5f, 0.5f), ImGui::GetStyle().FramePadding);
-
     list->AddImage(data.texture, p_min, p_max, data.uv0, data.uv1, col);
     return 0;
 }
@@ -9942,12 +10200,12 @@ int DrawList_AddImageRounded(lua_State* L)
     ImDrawFlags rounding_corners = luaL_optinteger(L, 10, ImDrawFlags_RoundCornersAll);
 
     ImVec2 area = p_max - p_min;
-    ImGui::FitImage(p_min, p_max, area, area, data.texture_size, ImVec2(0.5f, 0.5f));
-
     ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
     list->AddImageRounded(data.texture, p_min, p_max, data.uv0, data.uv1, col, rounding, rounding_corners);
     return 0;
 }
+
+// TODO: add scaled images to draw lists
 
 int DrawList_PathClear(lua_State* L)
 {
@@ -12048,12 +12306,9 @@ int loader(lua_State* L)
         /// Images +
 
         {"image", Image},
-        {"imageFilled", ImageFilled},
         {"imageButton", ImageButton},
-        {"imageButtonWithText", ImageButtonWithText},
 
         {"scaledImage", ScaledImage},
-        {"scaledImageFilled", ScaledImageFilled},
         {"scaledImageButton", ScaledImageButton},
         {"scaledImageButtonWithText", ScaledImageButtonWithText},
 
@@ -12383,6 +12638,37 @@ int loader(lua_State* L)
         {"plotImage", ImPlot_PlotImage},
         {"plotText", ImPlot_PlotText},
         {"plotDummy", ImPlot_PlotDummy},
+
+        {"setNextPlotLimits", ImPlot_SetNextPlotLimits},
+        {"setNextPlotLimitsX", ImPlot_SetNextPlotLimitsX},
+        {"setNextPlotLimitsY", ImPlot_SetNextPlotLimitsY},
+        {"linkNextPlotLimits", ImPlot_LinkNextPlotLimits},
+        {"fitNextPlotAxes", ImPlot_FitNextPlotAxes},
+        {"setNextPlotTicksX", ImPlot_SetNextPlotTicksX},
+        {"setNextPlotTicksX", ImPlot_SetNextPlotTicksX},
+        {"setNextPlotTicksY", ImPlot_SetNextPlotTicksY},
+        {"setNextPlotTicksY", ImPlot_SetNextPlotTicksY},
+        {"setNextPlotFormatX", ImPlot_SetNextPlotFormatX},
+        {"setNextPlotFormatY", ImPlot_SetNextPlotFormatY},
+        {"setPlotYAxis", ImPlot_SetPlotYAxis},
+        {"hideNextItem", ImPlot_HideNextItem},
+        {"pixelsToPlot", ImPlot_PixelsToPlot},
+        {"pixelsToPlot", ImPlot_PixelsToPlot},
+        {"plotToPixels", ImPlot_PlotToPixels},
+        {"plotToPixels", ImPlot_PlotToPixels},
+        {"getPlotPos", ImPlot_GetPlotPos},
+        {"getPlotSize", ImPlot_GetPlotSize},
+        {"isPlotHovered", ImPlot_IsPlotHovered},
+        {"isPlotXAxisHovered", ImPlot_IsPlotXAxisHovered},
+        {"isPlotYAxisHovered", ImPlot_IsPlotYAxisHovered},
+        {"getPlotMousePos", ImPlot_GetPlotMousePos},
+        {"getPlotLimits", ImPlot_GetPlotLimits},
+        {"isPlotSelected", ImPlot_IsPlotSelected},
+        {"getPlotSelection", ImPlot_GetPlotSelection},
+        {"isPlotQueried", ImPlot_IsPlotQueried},
+        {"getPlotQuery", ImPlot_GetPlotQuery},
+        {"setPlotQuery", ImPlot_SetPlotQuery},
+
         {NULL, NULL}
     };
 
