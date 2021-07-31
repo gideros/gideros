@@ -9140,8 +9140,8 @@ int IO_GetBackendRendererName(lua_State* L)
 int IO_SetMouseDown(lua_State* L)
 {
     int buttonIndex = luaL_checkinteger(L, 2);
-    LUA_ASSERTF(buttonIndex >= 0 && buttonIndex <= ImGuiMouseButton_COUNT,
-                "Button index is out of bounds. Must be: [0..%d], but was: %d", ImGuiMouseButton_COUNT, buttonIndex);
+    LUA_ASSERTF(buttonIndex >= 0 && buttonIndex < ImGuiMouseButton_COUNT,
+                "Button index is out of bounds. Must be: [0..%d], but was: %d", ImGuiMouseButton_COUNT - 1, buttonIndex);
     bool state = lua_toboolean(L, 3);
     ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
     io.MouseDown[buttonIndex] = state;

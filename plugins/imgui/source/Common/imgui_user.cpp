@@ -11,8 +11,6 @@
 
 #include "imgui_src/imgui.h"
 #include "imgui_src/imgui_internal.h"
-//#include "imgui_src/imgui_widgets.cpp"
-#include <math.h>
 
 //=============== CODE BORROWED FROM IMGUI_WIDGETS.CPP
 static const ImGuiDataTypeInfo GDataTypeInfo[] =
