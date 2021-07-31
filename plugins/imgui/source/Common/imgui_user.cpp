@@ -60,14 +60,6 @@ static const char* PatchFormatStringFloatToInt(const char* fmt)
 
 namespace ImGui
 {
-    ImVec2 GetItemSize(ImVec2 size, ImVec2 min, float defw, float defh)
-    {
-        ImVec2 out_size = CalcItemSize(size, min.x + defw, min.y + defh);
-        size.x = ImMax(size.x, min.x);
-        size.y = ImMax(size.y, min.y);
-        return out_size;
-    }
-
     void FitImage(ImRect& bb, const ImVec2& rect_size,
                    const ImVec2& texture_size, const ImVec2& anchor,
                    ImGuiImageScaleMode fit_mode, bool keep_size)
@@ -139,7 +131,7 @@ namespace ImGui
         }
     }
 
-    bool ScaledImageButtonEx(const ImVec2& texture_size, ImTextureID texture_id, ImGuiID id, const ImVec2& size,
+    bool ScaledImageButtonEx(const ImVec2& texture_size, ImTextureID texture_id, ImGuiID id, const ImVec2& size_arg,
                              ImGuiImageScaleMode fit_mode, bool keep_size, ImGuiButtonFlags flags, const ImVec2& anchor,
                              const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
                              const ImVec2& uv0, const ImVec2& uv1)
@@ -148,7 +140,11 @@ namespace ImGui
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems)
             return false;
-        const ImVec2 padding = g.Style.FramePadding;
+
+        ImGuiStyle style = g.Style;
+        const ImVec2 padding = style.FramePadding;
+
+        ImVec2 size = CalcItemSize(size_arg, texture_size.x + padding.x * 2.0f, texture_size.y + padding.y * 2.0f);
 
         ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
         ItemSize(bb);
@@ -161,18 +157,18 @@ namespace ImGui
         // Render
         const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
         RenderNavHighlight(bb, id);
-        RenderFrame(bb.Min, bb.Max, col, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, g.Style.FrameRounding));
+        RenderFrame(bb.Min, bb.Max, col, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
         if (bg_col.w > 0.0f)
             window->DrawList->AddRectFilled(bb.Min + padding, bb.Max - padding, GetColorU32(bg_col));
-        if (border_col.w > 0.0f)
-            window->DrawList->AddRect(bb.Min + padding, bb.Max - padding, GetColorU32(border_col));
+        ImRect backup_bb = bb;
         bb.Min += padding;
         bb.Max -= padding;
         window->DrawList->PushClipRect(bb.Min, bb.Max);
         FitImage(bb, size, texture_size, anchor, fit_mode, keep_size);
         window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
         window->DrawList->PopClipRect();
-
+        if (border_col.w > 0.0f)
+            window->DrawList->AddRect(backup_bb.Min + padding, backup_bb.Max - padding, GetColorU32(border_col));
         return pressed;
     }
 
@@ -193,7 +189,7 @@ namespace ImGui
         return ScaledImageButtonEx(texture_size, texture_id, id, size, fit_mode, keep_size, flags, anchor, tint_col, border_col, bg_col, uv0, uv1);
     }
 
-    bool ScaledImageButtonWithText(const ImVec2& texture_size, ImTextureID texture_id, const char* label, const ImVec2& image_size,
+    bool ScaledImageButtonWithText(const ImVec2& texture_size, ImTextureID texture_id, const char* label, const ImVec2& image_size_arg,
                                    const ImVec2& button_size, ImGuiButtonFlags flags,
                                    ImGuiImageScaleMode fit_mode, bool keep_size, const ImVec2& anchor, ImGuiDir image_side,
                                    const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
@@ -208,6 +204,7 @@ namespace ImGui
         const ImGuiID id = window->GetID(label);
         const ImVec2 label_size = CalcTextSize(label, NULL, true);
         const ImVec2 padding = style.FramePadding;
+        const ImVec2 image_size = CalcItemSize(image_size_arg, texture_size.x + padding.x * 2.0f, texture_size.y + padding.y * 2.0f);
 
         ImVec2 pos = window->DC.CursorPos;
         if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && padding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
@@ -283,6 +280,7 @@ namespace ImGui
 
         return pressed;
     }
+
 
     bool FilledSliderScalar(const char* label, bool mirror, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
     {
