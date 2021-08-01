@@ -1,3 +1,7 @@
+// TODO
+// tables instead of vectors?
+// Nav settings
+
 #define _UNUSED(n)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-variable"
@@ -38,7 +42,7 @@
 #define PLUGIN_NAME "ImGui_beta"
 #elif defined(IS_PRE_BUILD)
 #define PLUGIN_NAME "ImGui_pre_build"
-#include "implot.h" // WIP
+#include "implot_src/implot.h" // WIP
 #else
 #define PLUGIN_NAME "ImGui"
 #endif
@@ -143,6 +147,44 @@ struct GTextureData
     ImVec2 texture_size;
     ImVec2 uv0;
     ImVec2 uv1;
+
+    GTextureData(lua_State* L, int idx = 1)
+    {
+        if (g_isInstanceOf(L, "TextureBase", idx))
+        {
+            TextureBase* textureBase = getPtr<TextureBase>(L, "TextureBase", idx);
+
+            TextureData* gdata = textureBase->data;
+
+            texture_size.x = (float)gdata->width;
+            texture_size.y = (float)gdata->height;
+            texture = (void*)gdata->gid;
+            uv0.x = 0.0f;
+            uv0.y = 0.0f;
+            uv1.x = texture_size.x / (float)gdata->exwidth;
+            uv1.y = texture_size.y / (float)gdata->exheight;
+        }
+        else if (g_isInstanceOf(L, "TextureRegion", idx))
+        {
+            BitmapData* bitmapData = getPtr<BitmapData>(L, "TextureRegion", idx);
+
+            TextureData* gdata = bitmapData->texture()->data;
+
+            int x, y, w, h;
+            bitmapData->getRegion(&x, &y, &w, &h, 0, 0, 0, 0);
+            texture_size.x = (float)w;
+            texture_size.y = (float)h;
+            uv0.x = (float)x / (float)gdata->exwidth;
+            uv0.y = (float)y / (float)gdata->exheight;
+            uv1.x = (float)(x + w) / (float)gdata->exwidth;
+            uv1.y = (float)(y + h) / (float)gdata->exheight;
+            texture = (void*)gdata->gid;
+        }
+        else
+        {
+            luaL_typerror(L, idx, "TextureBase or TextureRegion");
+        }
+    }
 };
 
 struct VColor
@@ -263,51 +305,6 @@ struct GColor {
         return GColor::toU32(color.hex, color.alpha);
     }
 };
-
-GTextureData getTexture(lua_State* L, int idx = 1)
-{
-    if (g_isInstanceOf(L, "TextureBase", idx))
-    {
-        GTextureData data;
-        TextureBase* textureBase = getPtr<TextureBase>(L, "TextureBase", idx);
-
-        TextureData* gdata = textureBase->data;
-
-        data.texture_size.x = (float)gdata->width;
-        data.texture_size.y = (float)gdata->height;
-        data.texture = (void*)gdata->gid;
-        data.uv0.x = 0.0f;
-        data.uv0.y = 0.0f;
-        data.uv1.x = data.texture_size.x / (float)gdata->exwidth;
-        data.uv1.y = data.texture_size.y / (float)gdata->exheight;
-        return data;
-    }
-    else if (g_isInstanceOf(L, "TextureRegion", idx))
-    {
-        GTextureData data;
-        BitmapData* bitmapData = getPtr<BitmapData>(L, "TextureRegion", idx);
-
-        TextureData* gdata = bitmapData->texture()->data;
-
-        int x, y, w, h;
-        bitmapData->getRegion(&x, &y, &w, &h, 0, 0, 0, 0);
-        data.texture_size.x = (float)w;
-        data.texture_size.y = (float)h;
-
-        data.uv0.x = (float)x / (float)gdata->exwidth;
-        data.uv0.y = (float)y / (float)gdata->exheight;
-        data.uv1.x = (float)(x + w) / (float)gdata->exwidth;
-        data.uv1.y = (float)(y + h) / (float)gdata->exheight;
-        data.texture = (void*)gdata->gid;
-
-        return data;
-    }
-    else
-    {
-        luaL_typerror(L, idx, "TextureBase or TextureRegion");
-        return GTextureData();
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -554,6 +551,64 @@ T* getTableValues(lua_State* L, int idx)
     T* values = getTableValues<T>(L, idx, len);
     return values;
 }
+
+lua_Number getTableValue(lua_State* L, int idx, int tid, lua_Number def)
+{
+    lua_rawgeti(L, idx, tid);
+    lua_Number value = luaL_optnumber(L, -1, def);
+    lua_pop(L, 1);
+    return value;
+}
+
+void setupUVs(lua_State* L, GTextureData& data, int idx)
+{
+    if (lua_gettop(L) > idx - 1)
+    {
+        float x = 0.0f;
+        float y = 0.0f;
+        float w = data.texture_size.x;
+        float h = data.texture_size.y;
+        bool clamp_area;
+
+        if (lua_type(L, idx) == LUA_TTABLE)
+        {
+            x = getTableValue(L, idx, 1, 0.0f);
+            y = getTableValue(L, idx, 2, 0.0f);
+            w = getTableValue(L, idx, 3, data.texture_size.x);
+            h = getTableValue(L, idx, 4, data.texture_size.y);
+            clamp_area = lua_toboolean(L, idx + 1);
+        }
+        else
+        {
+            x = luaL_optnumber(L, idx + 0, 0.0f);
+            y = luaL_optnumber(L, idx + 1, 0.0f);
+            w = luaL_optnumber(L, idx + 2, data.texture_size.x);
+            h = luaL_optnumber(L, idx + 3, data.texture_size.y);
+            clamp_area = lua_toboolean(L, idx + 4);
+        }
+
+        float uv0x = x / data.texture_size.x;
+        float uv0y = y / data.texture_size.y;
+        float uv1x = (x + w) / data.texture_size.x;
+        float uv1y = (y + h) / data.texture_size.y;
+
+        if (clamp_area)
+        {
+            data.uv0.x = ImClamp(uv0x, 0.0f, 1.0f);
+            data.uv0.y = ImClamp(uv0y, 0.0f, 1.0f);
+            data.uv1.x = ImClamp(uv1x, 0.0f, 1.0f);
+            data.uv1.y = ImClamp(uv1y, 0.0f, 1.0f);
+        }
+        else
+        {
+            data.uv0.x = uv0x;
+            data.uv0.y = uv0y;
+            data.uv1.x = uv1x;
+            data.uv1.y = uv1y;
+        }
+    }
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -2256,7 +2311,7 @@ int ImPlot_PlotDigital(lua_State* L)
 int ImPlot_PlotImage(lua_State* L)
 {
     const char* label = luaL_checkstring(L, 2);
-    GTextureData data = getTexture(L, 3);
+    GTextureData data(L, 3);
     const ImPlotPoint& bounds_min = ImPlotPoint(luaL_optnumber(L, 4, 0), luaL_optnumber(L, 5, 0));
     const ImPlotPoint& bounds_max = ImPlotPoint(luaL_optnumber(L, 6, 0), luaL_optnumber(L, 7, 0));
     const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 8, 0xffffff), luaL_optnumber(L, 9, 1));
@@ -3668,10 +3723,12 @@ int ArrowButton(lua_State* L)
 
 int Image(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 5, 0xffffff), luaL_optnumber(L, 6, 1.0f));
     const ImVec4& border = GColor::toVec4(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 0.0f));
+
+    setupUVs(L, data, 9);
 
     ImGui::Image(data.texture, size, data.uv0, data.uv1, tint, border);
     return 0;
@@ -3679,19 +3736,23 @@ int Image(lua_State* L)
 
 int ImageButton(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     int frame_padding = luaL_optinteger(L, 5, -1);
     const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 6, 0xffffff), luaL_optnumber(L, 7, 1.0f));
     const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 8, 0xffffff), luaL_optnumber(L, 9, 0.0f));
 
+    setupUVs(L, data, 10);
+
     lua_pushboolean(L, ImGui::ImageButton(data.texture, size, data.uv0, data.uv1, frame_padding, bg_col, tint));
     return 1;
 }
 
+
+
 int ScaledImage(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImGuiImageScaleMode fit_mode = luaL_optinteger(L, 5, ImGuiImageScaleMode_LetterBox);
     bool keep_size = lua_toboolean(L, 6);
@@ -3700,13 +3761,16 @@ int ScaledImage(lua_State* L)
     const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 11, 0), luaL_optnumber(L, 12, 0.0f));
     const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 13, 0), luaL_optnumber(L, 14, 0.0f));
 
+    setupUVs(L, data, 15);
+
     ImGui::ScaledImage(data.texture_size, data.texture, size, fit_mode, keep_size, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
+
     return 0;
 }
 
 int ScaledImageButton(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     int fit_mode = luaL_optinteger(L, 5, 0);
     bool keep_size = lua_toboolean(L, 6);
@@ -3716,6 +3780,8 @@ int ScaledImageButton(lua_State* L)
     const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 12, 0), luaL_optnumber(L, 13, 0.0f));
     const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
 
+    setupUVs(L, data, 16);
+
     bool pressed = ImGui::ScaledImageButton(data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
 
     lua_pushboolean(L, pressed);
@@ -3724,7 +3790,7 @@ int ScaledImageButton(lua_State* L)
 
 int ScaledImageButtonWithText(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     const char* label = luaL_checkstring(L, 3);
     const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
     const ImVec2& button_size = ImVec2(luaL_optnumber(L, 6, 0.0f), luaL_optnumber(L, 7, 0.0f));
@@ -3736,6 +3802,8 @@ int ScaledImageButtonWithText(lua_State* L)
     const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 14, 0xffffff), luaL_optnumber(L, 15, 1.0f));
     const ImVec4& boreder_col = GColor::toVec4(luaL_optinteger(L, 16, 0), luaL_optnumber(L, 17, 0.0f));
     const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 18, 0), luaL_optnumber(L, 19, 0.0f));
+
+    setupUVs(L, data, 20);
 
     lua_pushboolean(L, ImGui::ScaledImageButtonWithText(data.texture_size, data.texture, label, size, button_size, flags, fit_mode, keep_size, anchor, image_side, tint_col, boreder_col, bg_col, data.uv0, data.uv1));
     return 1;
@@ -8909,16 +8977,6 @@ int IO_SetMouseDrawCursor(lua_State* L)
 {
     ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
     io.MouseDrawCursor = lua_toboolean(L, 2) > 0;
-    if (io.MouseDrawCursor)
-    {
-        bool hideSystemCursor = luaL_optboolean(L, 3, 1);
-        if (hideSystemCursor)
-            setApplicationCursor(L, "blank");
-    }
-    else
-    {
-        setApplicationCursor(L, "arrow");
-    }
     return 0;
 }
 
@@ -9836,8 +9894,8 @@ int DrawList_PopClipRect(lua_State* L)
 int DrawList_PushTextureID(lua_State* L)
 {
     ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
-    ImTextureID texture_id = getTexture(L, 2).texture;
-    list->PushTextureID(texture_id);
+    GTextureData data(L, 2);
+    list->PushTextureID(data.texture);
     return 0;
 }
 
@@ -10161,7 +10219,7 @@ int DrawList_AddBezierQuadratic(lua_State* L)
 
 int DrawList_AddImage(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     ImVec2 p_min = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImVec2 p_max = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
     ImU32 col = GColor::toU32(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 1.0f));
@@ -10174,7 +10232,7 @@ int DrawList_AddImage(lua_State* L)
 
 int DrawList_AddImageQuad(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     ImVec2 p1 = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImVec2 p2 = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
     ImVec2 p3 = ImVec2(luaL_checknumber(L, 7), luaL_checknumber(L, 8));
@@ -10192,7 +10250,7 @@ int DrawList_AddImageQuad(lua_State* L)
 
 int DrawList_AddImageRounded(lua_State* L)
 {
-    GTextureData data = getTexture(L, 2);
+    GTextureData data(L, 2);
     ImVec2 p_min = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImVec2 p_max = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
     ImU32 col = GColor::toU32(luaL_checkinteger(L, 7), luaL_optnumber(L, 8, 1.0f));
