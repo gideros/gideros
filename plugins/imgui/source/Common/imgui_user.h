@@ -36,6 +36,9 @@ enum ImGuiImageScaleMode_
 
 namespace ImGui
 {
+    IMGUI_API void FitImage(ImVec2& min, ImVec2& max, const ImVec2& rect_size,
+                            const ImVec2& texture_size, const ImVec2& anchor,
+                            ImGuiImageScaleMode fit_mode, bool keep_size);
     IMGUI_API void ScaledImage(const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
                                ImGuiImageScaleMode fit_mode = 0, bool keep_size = false, const ImVec2& anchor = ImVec2(0.5f, 0.5f),
                                const ImVec4& tint_col = ImVec4(1.0f,1.0f,1.0f,1.0f), const ImVec4& border_col = ImVec4(0.0f,0.0f,0.0f,0.0f), const ImVec4& bg_col = ImVec4(0.0f,0.0f,0.0f,0.0f),

@@ -60,7 +60,7 @@ static const char* PatchFormatStringFloatToInt(const char* fmt)
 
 namespace ImGui
 {
-    void FitImage(ImRect& bb, const ImVec2& rect_size,
+    void FitImage(ImVec2& min, ImVec2& max, const ImVec2& rect_size,
                    const ImVec2& texture_size, const ImVec2& anchor,
                    ImGuiImageScaleMode fit_mode, bool keep_size)
     {
@@ -82,14 +82,14 @@ namespace ImGui
 
         if (keep_size)
         {
-            bb.Min += anchor * (rect_size - texture_size);
-            bb.Max = bb.Min + texture_size;
+            min += anchor * (rect_size - texture_size);
+            max = min + texture_size;
         }
         else
         {
             ImVec2 anchor_offset = anchor * (rect_size - scaled_texture_size);
-            bb.Min += anchor_offset;
-            bb.Max = bb.Min + scaled_texture_size;
+            min += anchor_offset;
+            max = min + scaled_texture_size;
         }
     }
 
@@ -117,15 +117,15 @@ namespace ImGui
             ImVec2 backup_min = bb.Min;
             ImVec2 backup_max = bb.Max;
             window->DrawList->PushClipRect(bb.Min, bb.Max);
-            FitImage(bb, size, texture_size, anchor, fit_mode, keep_size);
+            FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
             window->DrawList->AddImage(texture_id, bb.Min + ImVec2(1, 1), bb.Max + ImVec2(1, 1), uv0, uv1, GetColorU32(tint_col));
             window->DrawList->AddRect(backup_min, backup_max, GetColorU32(border_col));
             window->DrawList->PopClipRect();
         }
         else
         {
-            window->DrawList->PushClipRect(bb.Min, bb.Max);
-            FitImage(bb, size, texture_size, anchor, fit_mode, keep_size);
+            window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+            FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
             window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
             window->DrawList->PopClipRect();
         }
@@ -163,8 +163,8 @@ namespace ImGui
         ImRect backup_bb = bb;
         bb.Min += padding;
         bb.Max -= padding;
-        window->DrawList->PushClipRect(bb.Min, bb.Max);
-        FitImage(bb, size, texture_size, anchor, fit_mode, keep_size);
+        window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+        FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
         window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
         window->DrawList->PopClipRect();
         if (border_col.w > 0.0f)
@@ -270,7 +270,7 @@ namespace ImGui
             window->DrawList->AddRectFilled(ibb.Min, ibb.Max, GetColorU32(bg_col));
         ImRect backup_ibb = ibb;
         window->DrawList->PushClipRect(ibb.Min, ibb.Max, true);
-        FitImage(ibb, ibb.Max - ibb.Min, texture_size, anchor, fit_mode, keep_size);
+        FitImage(ibb.Min, ibb.Max, ibb.Max - ibb.Min, texture_size, anchor, fit_mode, keep_size);
         window->DrawList->AddImage(texture_id, ibb.Min, ibb.Max, uv0, uv1, GetColorU32(tint_col));
         window->DrawList->PopClipRect();
 

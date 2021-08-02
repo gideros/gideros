@@ -1907,14 +1907,9 @@ int destroyImPlot(lua_State* L)
     return 0;
 }
 
-ImPlotContext* getPlotContext(lua_State* L, int index = 1)
-{
-    return getPtr<ImPlotContext>(L, "ImPlot", index);
-}
-
 void UpdatePlotContext(lua_State* L)
 {
-    ImPlotContext* ctx = getPlotContext(L);
+    ImPlotContext* ctx = getPtr<ImPlotContext>(L, "ImPlotContext");
     ImPlot::SetCurrentContext(ctx);
 }
 
@@ -2409,6 +2404,8 @@ int ImPlot_SetNextPlotTicksX(lua_State* L)
         bool keep_default = lua_toboolean(L, 5);
 
         ImPlot::SetNextPlotTicksX(values, n_ticks, labels, keep_default);
+        delete values;
+        delete[] labels;
     }
     else
     {
@@ -2419,6 +2416,7 @@ int ImPlot_SetNextPlotTicksX(lua_State* L)
         bool keep_default = lua_toboolean(L, 6);
 
         ImPlot::SetNextPlotTicksX(x_min, x_max, n_ticks, labels, keep_default);
+        delete[] labels;
     }
     return 0;
 }
@@ -2434,6 +2432,8 @@ int ImPlot_SetNextPlotTicksY(lua_State* L)
         ImPlotYAxis y_axis = luaL_optinteger(L, 6, ImPlotYAxis_1);
 
         ImPlot::SetNextPlotTicksY(values, n_ticks, labels, keep_default, y_axis);
+        delete values;
+        delete[] labels;
     }
     else
     {
@@ -2445,6 +2445,7 @@ int ImPlot_SetNextPlotTicksY(lua_State* L)
         ImPlotYAxis y_axis = luaL_optinteger(L, 7, ImPlotYAxis_1);
 
         ImPlot::SetNextPlotTicksY(y_min, y_max, n_ticks, labels, keep_default, y_axis);
+        delete[] labels;
     }
     return 0;
 }
@@ -3747,8 +3748,6 @@ int ImageButton(lua_State* L)
     lua_pushboolean(L, ImGui::ImageButton(data.texture, size, data.uv0, data.uv1, frame_padding, bg_col, tint));
     return 1;
 }
-
-
 
 int ScaledImage(lua_State* L)
 {
@@ -5260,7 +5259,7 @@ int PlotLines(lua_State* L)
     int stride = sizeof(float);
 
     ImGui::PlotLines(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
-    delete[] values;
+    delete values;
     return 0;
 }
 
@@ -5279,7 +5278,7 @@ int PlotHistogram(lua_State* L)
     int stride = sizeof(float);
 
     ImGui::PlotHistogram(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
-    delete[] values;
+    delete values;
     return 0;
 }
 
@@ -5315,7 +5314,7 @@ int Value(lua_State* L)
         }
         default:
         {
-            LUA_THROW_ERROR("Type mismatch. 'Number' or 'Boolean' expected.");
+            luaL_typerror(L, 3, "'number' or 'boolean'");
             break;
         }
     }
@@ -10219,19 +10218,19 @@ int DrawList_AddBezierQuadratic(lua_State* L)
 
 int DrawList_AddImage(lua_State* L)
 {
+    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
     GTextureData data(L, 2);
     ImVec2 p_min = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImVec2 p_max = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
     ImU32 col = GColor::toU32(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 1.0f));
 
-    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
-    ImVec2 area = p_max - p_min;
     list->AddImage(data.texture, p_min, p_max, data.uv0, data.uv1, col);
     return 0;
 }
 
 int DrawList_AddImageQuad(lua_State* L)
 {
+    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
     GTextureData data(L, 2);
     ImVec2 p1 = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImVec2 p2 = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
@@ -10243,23 +10242,57 @@ int DrawList_AddImageQuad(lua_State* L)
     ImVec2 uv3 = ImVec2(luaL_optnumber(L, 17, 1.0f), luaL_optnumber(L, 18, 1.0f));
     ImVec2 uv4 = ImVec2(luaL_optnumber(L, 19, 0.0f), luaL_optnumber(L, 20, 1.0f));
 
-    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
     list->AddImageQuad(data.texture, p1, p2, p3, p4, uv1, uv2, uv3, uv4, col);
     return 0;
 }
 
 int DrawList_AddImageRounded(lua_State* L)
 {
+    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
     GTextureData data(L, 2);
     ImVec2 p_min = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
     ImVec2 p_max = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
     ImU32 col = GColor::toU32(luaL_checkinteger(L, 7), luaL_optnumber(L, 8, 1.0f));
     double rounding = luaL_checknumber(L, 9);
     ImDrawFlags rounding_corners = luaL_optinteger(L, 10, ImDrawFlags_RoundCornersAll);
-
-    ImVec2 area = p_max - p_min;
-    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
     list->AddImageRounded(data.texture, p_min, p_max, data.uv0, data.uv1, col, rounding, rounding_corners);
+    return 0;
+}
+
+int DrawList_AddScaledImage(lua_State* L)
+{
+    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
+    GTextureData data(L, 2);
+    ImVec2 p_min = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+    ImVec2 p_max = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
+    ImU32 col = GColor::toU32(luaL_optinteger(L, 7, 0xffffff), luaL_optnumber(L, 8, 1.0f));
+    ImVec2 anchor = ImVec2(luaL_optnumber(L, 9, 0.5f), luaL_optnumber(L, 10, 0.5f));
+    int scale_mode = luaL_optinteger(L, 11, 0);
+    bool keep_size = lua_toboolean(L, 12);
+
+
+    ImRect bb(p_min, p_max);
+    ImGui::FitImage(bb.Min, bb.Max, p_max - p_min, data.texture_size, anchor, scale_mode, keep_size);
+    list->AddImage(data.texture, p_min, p_max, data.uv0, data.uv1, col);
+    return 0;
+}
+
+int DrawList_AddScaledImageRounded(lua_State* L)
+{
+    ImDrawList* list = getPtr<ImDrawList>(L, "ImDrawList");
+    GTextureData data(L, 2);
+    ImVec2 p_min = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+    ImVec2 p_max = ImVec2(luaL_checknumber(L, 5), luaL_checknumber(L, 6));
+    ImU32 col = GColor::toU32(luaL_checkinteger(L, 7), luaL_optnumber(L, 8, 1.0f));
+    double rounding = luaL_checknumber(L, 9);
+    ImDrawFlags rounding_corners = luaL_optinteger(L, 10, ImDrawFlags_RoundCornersAll);
+    ImVec2 anchor = ImVec2(luaL_optnumber(L, 11, 0.5f), luaL_optnumber(L, 12, 0.5f));
+    int scale_mode = luaL_optinteger(L, 13, 0);
+    bool keep_size = lua_toboolean(L, 14);
+
+    ImRect bb(p_min, p_max);
+    ImGui::FitImage(bb.Min, bb.Max, p_max - p_min, data.texture_size, anchor, scale_mode, keep_size);
+    list->AddImageRounded(data.texture, bb.Min, bb.Max, data.uv0, data.uv1, col, rounding, rounding_corners);
     return 0;
 }
 
@@ -11713,6 +11746,8 @@ int loader(lua_State* L)
         {"addImage", DrawList_AddImage},
         {"addImageQuad", DrawList_AddImageQuad},
         {"addImageRounded", DrawList_AddImageRounded},
+        {"addScaledImage", DrawList_AddScaledImage},
+        {"addScaledImageRounded", DrawList_AddScaledImageRounded},
         {"pathClear", DrawList_PathClear},
         {"pathLineTo", DrawList_PathLineTo},
         {"pathLineToMergeDuplicate", DrawList_PathLineToMergeDuplicate},
