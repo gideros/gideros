@@ -154,21 +154,26 @@ namespace ImGui
         bool hovered, held;
         bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
-        // Render
+        // Render bg frame
         const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
         RenderNavHighlight(bb, id);
-        RenderFrame(bb.Min, bb.Max, col, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-        if (bg_col.w > 0.0f)
-            window->DrawList->AddRectFilled(bb.Min + padding, bb.Max - padding, GetColorU32(bg_col));
+        RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
+
+        // Calculate image area
+        bb.Min = ImVec2(ImMax(bb.Min.x, bb.Min.x + padding.x), ImMax(bb.Min.y, bb.Min.y + padding.y));
+        bb.Max = ImVec2(ImMin(bb.Max.x, bb.Max.x - padding.x), ImMin(bb.Max.y, bb.Max.y - padding.y));
+
+        // Backup area to draw border after image
         ImRect backup_bb = bb;
-        bb.Min += padding;
-        bb.Max -= padding;
+
         window->DrawList->PushClipRect(bb.Min, bb.Max, true);
-        FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
+        FitImage(bb.Min, bb.Max, bb.GetSize(), texture_size, anchor, fit_mode, keep_size);
         window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
         window->DrawList->PopClipRect();
+
         if (border_col.w > 0.0f)
-            window->DrawList->AddRect(backup_bb.Min + padding, backup_bb.Max - padding, GetColorU32(border_col));
+            window->DrawList->AddRect(backup_bb.Min, backup_bb.Max, GetColorU32(border_col));
+
         return pressed;
     }
 
@@ -227,42 +232,42 @@ namespace ImGui
         RenderNavHighlight(bb, id);
         RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
 
-
+        // Calculate image area
+        bb.Min = ImVec2(ImMax(bb.Min.x, bb.Min.x + padding.x), ImMax(bb.Min.y, bb.Min.y + padding.y));
+        bb.Max = ImVec2(ImMin(bb.Max.x, bb.Max.x - padding.x), ImMin(bb.Max.y, bb.Max.y - padding.y));
         if (g.LogEnabled)
             LogSetNextTextDecoration("[", "]");
 
-        float image_width = ImMax(image_size.x, padding.x * 2.0f + 1.0f);
-        float image_height = ImMax(image_size.y, padding.y * 2.0f + 1.0f);
         ImRect ibb;
 
         switch (image_side) {
         case ImGuiDir_Right:
             {
                 ImVec2 backup_max = bb.Max;
-                bb.Max.x = ImClamp(bb.Max.x - image_width, bb.Min.x, bb.Max.x);
-                ibb = ImRect(ImVec2(bb.Max.x + padding.x, bb.Min.y + padding.y), backup_max - padding);
+                bb.Max.x = ImClamp(bb.Max.x - image_size.x, bb.Min.x, bb.Max.x);
+                ibb = ImRect(ImVec2(bb.Max.x, bb.Min.y), backup_max);
             }
             break;
         case ImGuiDir_Up:
             {
                 ImVec2 backup_min = bb.Min;
-                bb.Min.y = ImClamp(bb.Min.y + image_height, bb.Min.y, bb.Max.y);
-                ibb = ImRect(backup_min + padding, ImVec2(bb.Max.x - padding.x, bb.Min.y - padding.y));
+                bb.Min.y = ImClamp(bb.Min.y + image_size.y, bb.Min.y, bb.Max.y);
+                ibb = ImRect(backup_min, ImVec2(bb.Max.x, bb.Min.y));
             }
             break;
         case ImGuiDir_Down:
             {
                 ImVec2 backup_max = bb.Max;
-                bb.Max.y = ImClamp(bb.Max.y - image_height, bb.Min.y, bb.Max.y);
-                ibb = ImRect(ImVec2(bb.Min.x + padding.x, bb.Max.y + padding.y), backup_max - padding);
+                bb.Max.y = ImClamp(bb.Max.y - image_size.y, bb.Min.y, bb.Max.y);
+                ibb = ImRect(ImVec2(bb.Min.x, bb.Max.y), backup_max);
             }
             break;
         // Left align by default
         default:
             {
                 ImVec2 backup_min = bb.Min;
-                bb.Min.x = ImClamp(bb.Min.x + image_width, bb.Min.x, bb.Max.x);
-                ibb = ImRect(backup_min + padding, ImVec2(bb.Min.x - padding.x, bb.Max.y - padding.y));
+                bb.Min.x = ImClamp(bb.Min.x + image_size.x, bb.Min.x, bb.Max.x);
+                ibb = ImRect(backup_min, ImVec2(bb.Min.x , bb.Max.y));
             }
             break;
         }
@@ -270,13 +275,14 @@ namespace ImGui
             window->DrawList->AddRectFilled(ibb.Min, ibb.Max, GetColorU32(bg_col));
         ImRect backup_ibb = ibb;
         window->DrawList->PushClipRect(ibb.Min, ibb.Max, true);
-        FitImage(ibb.Min, ibb.Max, ibb.Max - ibb.Min, texture_size, anchor, fit_mode, keep_size);
+        FitImage(ibb.Min, ibb.Max, ibb.GetSize(), texture_size, anchor, fit_mode, keep_size);
         window->DrawList->AddImage(texture_id, ibb.Min, ibb.Max, uv0, uv1, GetColorU32(tint_col));
         window->DrawList->PopClipRect();
 
         if (border_col.w > 0.0f)
             window->DrawList->AddRect(backup_ibb.Min, backup_ibb.Max, GetColorU32(border_col));
-        RenderTextClipped(bb.Min + padding, bb.Max - padding, label, NULL, &label_size, style.ButtonTextAlign, &bb);
+
+        RenderTextClipped(bb.Min, bb.Max, label, NULL, &label_size, style.ButtonTextAlign, &bb);
 
         return pressed;
     }
