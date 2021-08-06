@@ -145,6 +145,7 @@ struct GTextureData
 {
     void* texture;
     ImVec2 texture_size;
+    ImVec2 ex_size;
     ImVec2 uv0;
     ImVec2 uv1;
 
@@ -158,11 +159,11 @@ struct GTextureData
 
             texture_size.x = (float)gdata->width;
             texture_size.y = (float)gdata->height;
+            ex_size = ImVec2((float)gdata->exwidth, (float)gdata->exheight);
             texture = (void*)gdata->gid;
             uv0.x = 0.0f;
             uv0.y = 0.0f;
-            uv1.x = texture_size.x / (float)gdata->exwidth;
-            uv1.y = texture_size.y / (float)gdata->exheight;
+            uv1 = texture_size / ex_size;
         }
         else if (g_isInstanceOf(L, "TextureRegion", idx))
         {
@@ -174,10 +175,13 @@ struct GTextureData
             bitmapData->getRegion(&x, &y, &w, &h, 0, 0, 0, 0);
             texture_size.x = (float)w;
             texture_size.y = (float)h;
-            uv0.x = (float)x / (float)gdata->exwidth;
-            uv0.y = (float)y / (float)gdata->exheight;
-            uv1.x = (float)(x + w) / (float)gdata->exwidth;
-            uv1.y = (float)(y + h) / (float)gdata->exheight;
+            float fx = (float)x;
+            float fy = (float)y;
+            ex_size = ImVec2((float)gdata->exwidth, (float)gdata->exheight);
+            uv0.x = fx / ex_size.x;
+            uv0.y = fy / ex_size.y;
+            uv1.x = (fx + texture_size.x) / ex_size.x;
+            uv1.y = (fy + texture_size.y) / ex_size.y;
             texture = (void*)gdata->gid;
         }
         else
@@ -587,10 +591,10 @@ void setupUVs(lua_State* L, GTextureData& data, int idx)
             clamp_area = lua_toboolean(L, idx + 4);
         }
 
-        float uv0x = x / data.texture_size.x;
-        float uv0y = y / data.texture_size.y;
-        float uv1x = (x + w) / data.texture_size.x;
-        float uv1y = (y + h) / data.texture_size.y;
+        float uv0x = x / data.ex_size.x;
+        float uv0y = y / data.ex_size.y;
+        float uv1x = (x + w) / data.ex_size.x;
+        float uv1y = (y + h) / data.ex_size.y;
 
         if (clamp_area)
         {
@@ -1143,6 +1147,12 @@ void bindEnums(lua_State* L)
     BIND_IENUM(L, ImGuiImageScaleMode_FitWidth, "ImageScaleMode_FitWidth");
     BIND_IENUM(L, ImGuiImageScaleMode_FitHeight, "ImageScaleMode_FitHeight");
     BIND_IENUM(L, ImGuiImageScaleMode_Stretch, "ImageScaleMode_Stretch");
+
+    // ImGuiButtonFlags
+    BIND_IENUM(L, ImGuiButtonFlags_None, "ButtonFlags_None");
+    BIND_IENUM(L, ImGuiButtonFlags_MouseButtonLeft, "ButtonFlags_MouseButtonLeft");
+    BIND_IENUM(L, ImGuiButtonFlags_MouseButtonRight, "ButtonFlags_MouseButtonRight");
+    BIND_IENUM(L, ImGuiButtonFlags_MouseButtonMiddle, "ButtonFlags_MouseButtonMiddle");
 
     BIND_FENUM(L, FLT_MAX, "FLT_MAX");
     BIND_FENUM(L, DBL_MAX, "DBL_MAX");
@@ -1808,7 +1818,7 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
             }
             else
             {
-                g_id textureId = (g_id)pcmd->TextureId;
+                g_id textureId = (g_id)pcmd->GetTexID();
 
                 engine->bindTexture(0, gtexture_getInternalTexture(textureId));
 
@@ -3774,16 +3784,15 @@ int ScaledImageButton(lua_State* L)
     int fit_mode = luaL_optinteger(L, 5, 0);
     bool keep_size = lua_toboolean(L, 6);
     int flags = luaL_optinteger(L, 7, 0);
-    const ImVec2& anchor = ImVec2(luaL_optnumber(L, 8, 1.0f), luaL_optnumber(L, 9, 1.0f));
-    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 10, 0xffffff), luaL_optnumber(L, 11, 1.0f));
-    const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 12, 0), luaL_optnumber(L, 13, 0.0f));
-    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
+    const ImVec2& anchor = ImVec2(luaL_optnumber(L, 8, 0.5f), luaL_optnumber(L, 9, 0.5f));
+    const ImVec2& clip_offset = ImVec2(luaL_optnumber(L, 10, 0.0f), luaL_optnumber(L, 11, 0.0f));
+    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 12, 0xffffff), luaL_optnumber(L, 13, 1.0f));
+    const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
+    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 16, 0), luaL_optnumber(L, 17, 0.0f));
 
-    setupUVs(L, data, 16);
+    setupUVs(L, data, 18);
 
-    bool pressed = ImGui::ScaledImageButton(data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
-
-    lua_pushboolean(L, pressed);
+    lua_pushboolean(L, ImGui::ScaledImageButton(data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, data.uv0, data.uv1));
     return 1;
 }
 
@@ -3798,13 +3807,14 @@ int ScaledImageButtonWithText(lua_State* L)
     bool keep_size = lua_toboolean(L, 10);
     const ImVec2& anchor = ImVec2(luaL_optnumber(L, 11, 0.5f), luaL_optnumber(L, 12, 0.5f));
     int image_side = luaL_optinteger(L, 13, ImGuiDir_Left);
-    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 14, 0xffffff), luaL_optnumber(L, 15, 1.0f));
-    const ImVec4& boreder_col = GColor::toVec4(luaL_optinteger(L, 16, 0), luaL_optnumber(L, 17, 0.0f));
-    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 18, 0), luaL_optnumber(L, 19, 0.0f));
+    const ImVec2& clip_offset = ImVec2(luaL_optnumber(L, 14, 0.0f), luaL_optnumber(L, 15, 0.0f));
+    const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 16, 0xffffff), luaL_optnumber(L, 17, 1.0f));
+    const ImVec4& boreder_col = GColor::toVec4(luaL_optinteger(L, 18, 0), luaL_optnumber(L, 19, 0.0f));
+    const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 20, 0), luaL_optnumber(L, 21, 0.0f));
 
-    setupUVs(L, data, 20);
+    setupUVs(L, data, 22);
 
-    lua_pushboolean(L, ImGui::ScaledImageButtonWithText(data.texture_size, data.texture, label, size, button_size, flags, fit_mode, keep_size, anchor, image_side, tint_col, boreder_col, bg_col, data.uv0, data.uv1));
+    lua_pushboolean(L, ImGui::ScaledImageButtonWithText(data.texture_size, data.texture, label, size, button_size, flags, fit_mode, keep_size, anchor, image_side, clip_offset, tint_col, boreder_col, bg_col, data.uv0, data.uv1));
     return 1;
 }
 
@@ -5458,9 +5468,17 @@ int EndPopup(lua_State* _UNUSED(L))
 
 int OpenPopup(lua_State* L)
 {
-    const char* str_id = luaL_checkstring(L, 2);
     ImGuiPopupFlags popup_flags = luaL_optinteger(L, 3, 0);
-    ImGui::OpenPopup(str_id, popup_flags);
+    if (lua_type(L, 2) == LUA_TSTRING)
+    {
+        const char* str_id = lua_tostring(L, 2);
+        ImGui::OpenPopup(str_id, popup_flags);
+    }
+    else
+    {
+        ImGuiID id = checkID(L, 2);
+        ImGui::OpenPopup(id, popup_flags);
+    }
     return 0;
 }
 
@@ -5585,6 +5603,14 @@ int TableSetupScrollFreeze(lua_State* L)
     int rows = luaL_checkinteger(L, 3);
     ImGui::TableSetupScrollFreeze(cols, rows);
     return 0;
+}
+
+int TableSetColumnEnabled(lua_State* L)
+{
+    int col = luaL_checkinteger(L, 2);
+    luaL_checktype(L, 3, LUA_TBOOLEAN);
+    bool v = lua_toboolean(L, 3);
+    ImGui::TableSetColumnEnabled(col, v);
 }
 
 int TableHeadersRow(lua_State* _UNUSED(L))
@@ -12650,6 +12676,7 @@ int loader(lua_State* L)
 
         {"tableSetupColumn", TableSetupColumn},
         {"tableSetupScrollFreeze", TableSetupScrollFreeze},
+        {"tableSetColumnEnabled", TableSetColumnEnabled},
         {"tableHeadersRow", TableHeadersRow},
         {"tableHeader", TableHeader},
 

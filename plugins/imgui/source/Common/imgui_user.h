@@ -1,5 +1,4 @@
 #include "imgui_src/imgui.h"
-//#include "imgui_src/imgui_internal.h"
 
 typedef int ImGuiImageScaleMode;
 
@@ -40,16 +39,18 @@ namespace ImGui
                             const ImVec2& texture_size, const ImVec2& anchor,
                             ImGuiImageScaleMode fit_mode, bool keep_size);
     IMGUI_API void ScaledImage(const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
-                               ImGuiImageScaleMode fit_mode = 0, bool keep_size = false, const ImVec2& anchor = ImVec2(0.5f, 0.5f),
+                               ImGuiImageScaleMode fit_mode = ImGuiImageScaleMode_LetterBox, bool keep_size = false, const ImVec2& anchor = ImVec2(0.5f, 0.5f),
                                const ImVec4& tint_col = ImVec4(1.0f,1.0f,1.0f,1.0f), const ImVec4& border_col = ImVec4(0.0f,0.0f,0.0f,0.0f), const ImVec4& bg_col = ImVec4(0.0f,0.0f,0.0f,0.0f),
                                const ImVec2& uv0 = ImVec2(0.0f, 0.0f), const ImVec2& uv1 = ImVec2(1.0f,1.0f));
     IMGUI_API bool ScaledImageButton(const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
-                                     ImGuiImageScaleMode fit_mode = 0, bool keep_size = false, ImGuiButtonFlags flags = 0, const ImVec2& anchor = ImVec2(0.5f, 0.5f),
+                                     ImGuiImageScaleMode fit_mode = ImGuiImageScaleMode_LetterBox, bool keep_size = false, ImGuiButtonFlags flags = 0, const ImVec2& anchor = ImVec2(0.5f, 0.5f),
+                                     const ImVec2& clipOffset = ImVec2(0.0f, 0.0f),
                                      const ImVec4& tint_col = ImVec4(1.0f,1.0f,1.0f,1.0f), const ImVec4& border_col = ImVec4(0.0f,0.0f,0.0f,0.0f), const ImVec4& bg_col = ImVec4(0.0f,0.0f,0.0f,0.0f),
                                      const ImVec2& uv0 = ImVec2(0.0f, 0.0f), const ImVec2& uv1 = ImVec2(1.0f,1.0f));
     IMGUI_API bool ScaledImageButtonWithText(const ImVec2& texture_size, ImTextureID texture_id, const char* label, const ImVec2& image_size,
                                              const ImVec2& button_size = ImVec2(0.0f, 0.0f), ImGuiButtonFlags flags = 0,
-                                             ImGuiImageScaleMode fit_mode = 0, bool keep_size = false, const ImVec2& anchor = ImVec2(0.5f, 0.5f), ImGuiDir image_side = ImGuiDir_Left,
+                                             ImGuiImageScaleMode fit_mode = ImGuiImageScaleMode_LetterBox, bool keep_size = false, const ImVec2& anchor = ImVec2(0.5f, 0.5f), ImGuiDir image_side = ImGuiDir_Left,
+                                             const ImVec2& clipOffset = ImVec2(0.0f, 0.0f),
                                              const ImVec4& tint_col = ImVec4(1.0f,1.0f,1.0f,1.0f), const ImVec4& border_col = ImVec4(0.0f,0.0f,0.0f,0.0f), const ImVec4& bg_col = ImVec4(0.0f,0.0f,0.0f,0.0f),
                                              const ImVec2& uv0 = ImVec2(0.0f, 0.0f), const ImVec2& uv1 = ImVec2(1.0f,1.0f));
 

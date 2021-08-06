@@ -87,8 +87,7 @@ namespace ImGui
         }
         else
         {
-            ImVec2 anchor_offset = anchor * (rect_size - scaled_texture_size);
-            min += anchor_offset;
+            min += anchor * (rect_size - scaled_texture_size);
             max = min + scaled_texture_size;
         }
     }
@@ -103,8 +102,6 @@ namespace ImGui
             return;
 
         ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
-        if (border_col.w > 0.0f)
-            bb.Max += ImVec2(2, 2);
         ItemSize(bb);
         if (!ItemAdd(bb, 0))
             return;
@@ -112,27 +109,21 @@ namespace ImGui
         if (bg_col.w > 0.0f)
             window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col));
 
+        // Backup area to draw border after image
+        ImRect backup_bb = bb;
+
+        window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+        FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
+        window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
+        window->DrawList->PopClipRect();
+
         if (border_col.w > 0.0f)
-        {
-            ImVec2 backup_min = bb.Min;
-            ImVec2 backup_max = bb.Max;
-            window->DrawList->PushClipRect(bb.Min, bb.Max);
-            FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
-            window->DrawList->AddImage(texture_id, bb.Min + ImVec2(1, 1), bb.Max + ImVec2(1, 1), uv0, uv1, GetColorU32(tint_col));
-            window->DrawList->AddRect(backup_min, backup_max, GetColorU32(border_col));
-            window->DrawList->PopClipRect();
-        }
-        else
-        {
-            window->DrawList->PushClipRect(bb.Min, bb.Max, true);
-            FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
-            window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
-            window->DrawList->PopClipRect();
-        }
+            window->DrawList->AddRect(backup_bb.Min, backup_bb.Max, GetColorU32(border_col));
     }
 
     bool ScaledImageButtonEx(const ImVec2& texture_size, ImTextureID texture_id, ImGuiID id, const ImVec2& size_arg,
                              ImGuiImageScaleMode fit_mode, bool keep_size, ImGuiButtonFlags flags, const ImVec2& anchor,
+                             const ImVec2& clip_offset,
                              const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
                              const ImVec2& uv0, const ImVec2& uv1)
     {
@@ -163,10 +154,14 @@ namespace ImGui
         bb.Min = ImVec2(ImMax(bb.Min.x, bb.Min.x + padding.x), ImMax(bb.Min.y, bb.Min.y + padding.y));
         bb.Max = ImVec2(ImMin(bb.Max.x, bb.Max.x - padding.x), ImMin(bb.Max.y, bb.Max.y - padding.y));
 
+        //
+        if (bg_col.w > 0.0f)
+            window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col));
+
         // Backup area to draw border after image
         ImRect backup_bb = bb;
 
-        window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+        window->DrawList->PushClipRect(bb.Min - clip_offset, bb.Max + clip_offset, true);
         FitImage(bb.Min, bb.Max, bb.GetSize(), texture_size, anchor, fit_mode, keep_size);
         window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
         window->DrawList->PopClipRect();
@@ -179,6 +174,7 @@ namespace ImGui
 
     bool ScaledImageButton(const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
                            ImGuiImageScaleMode fit_mode, bool keep_size, ImGuiButtonFlags flags, const ImVec2& anchor,
+                           const ImVec2& clip_offset,
                            const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
                            const ImVec2& uv0, const ImVec2& uv1)
     {
@@ -191,12 +187,13 @@ namespace ImGui
         const ImGuiID id = window->GetID("#image");
         PopID();
 
-        return ScaledImageButtonEx(texture_size, texture_id, id, size, fit_mode, keep_size, flags, anchor, tint_col, border_col, bg_col, uv0, uv1);
+        return ScaledImageButtonEx(texture_size, texture_id, id, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, uv0, uv1);
     }
 
     bool ScaledImageButtonWithText(const ImVec2& texture_size, ImTextureID texture_id, const char* label, const ImVec2& image_size_arg,
                                    const ImVec2& button_size, ImGuiButtonFlags flags,
                                    ImGuiImageScaleMode fit_mode, bool keep_size, const ImVec2& anchor, ImGuiDir image_side,
+                                   const ImVec2& clip_offset,
                                    const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
                                    const ImVec2& uv0, const ImVec2& uv1)
     {
@@ -271,10 +268,12 @@ namespace ImGui
             }
             break;
         }
+
         if (bg_col.w > 0.0f)
             window->DrawList->AddRectFilled(ibb.Min, ibb.Max, GetColorU32(bg_col));
+
         ImRect backup_ibb = ibb;
-        window->DrawList->PushClipRect(ibb.Min, ibb.Max, true);
+        window->DrawList->PushClipRect(ibb.Min - clip_offset, ibb.Max + clip_offset, true);
         FitImage(ibb.Min, ibb.Max, ibb.GetSize(), texture_size, anchor, fit_mode, keep_size);
         window->DrawList->AddImage(texture_id, ibb.Min, ibb.Max, uv0, uv1, GetColorU32(tint_col));
         window->DrawList->PopClipRect();
