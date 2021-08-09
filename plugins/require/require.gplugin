@@ -394,7 +394,7 @@
 		or (Export.getProperty("sys.exportType")=="player") then
 			iOSProject.Entitlements.mac["com.apple.security.network.server"]=true
 		end		
-	]]></lua>
+iOSProject.InfoPlist.NSUserTrackingUsageDescription=Export.getProperty("plugin.reqTrackingReason")   	]]></lua>
 	   <if condition="[[[plugin.reqGpsBackground]]]">
     	<template name="Project" path="">
 		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
@@ -407,7 +407,7 @@
 		</replacelist>
 		</template>
     </if>
-	iOSProject.InfoPlist.NSUserTrackingUsageDescription=Export.getProperty("plugin.reqTrackingReason")     
+	  
  </target> 
  <target name="Html5">
 	<lua><![CDATA[
