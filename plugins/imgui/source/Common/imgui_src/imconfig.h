@@ -11,20 +11,24 @@
 // Call IMGUI_CHECKVERSION() from your .cpp files to verify that the data structures your files are using are matching the ones imgui.cpp is using.
 //-----------------------------------------------------------------------------
 
-//#define IS_BETA_BUILD
+//#define IS_BETA_BUILD // includes docking (droped for now)
+//#define IS_PRE_BUILD // test things
 
 #pragma once
 
 #include "gstdio.h"
 typedef G_FILE* ImFileHandle;
 
+#if defined(IS_BETA_BUILD) || defined(IS_PRE_BUILD)
 #include "debugapi.h"
-
-//#define IM_ASSERTF( exp, format, ...) do { if (!(exp)) { char buffer[1024]; sprintf(buffer, format, __VA_ARGS__); OutputDebugStringA( buffer ); } } while(0)
-//#define IM_ASSERT( exp ) do { if (!(exp)) { char buffer[1024]; sprintf(buffer, "[%d] %s: %s\n", __LINE__, __FILE__, #exp); OutputDebugStringA( buffer ); }} while(0)
-//#define IM_TRACE( msg ) do { char buffer[1024]; sprintf(buffer, "    [%d] %s: %s", __LINE__, __FILE__, msg); OutputDebugStringA( buffer ); } while(0)
+#define IM_ASSERTF( exp, format, ...) do { if (!(exp)) { char buffer[1024]; sprintf(buffer, format, __VA_ARGS__); OutputDebugStringA( buffer ); } } while(0)
+#define IM_ASSERT( exp ) do { if (!(exp)) { char buffer[1024]; sprintf(buffer, "[%d] %s: %s\n", __LINE__, __FILE__, #exp); OutputDebugStringA( buffer ); }} while(0)
+#define IM_TRACE( msg ) do { char buffer[1024]; sprintf(buffer, "    [%d] %s: %s", __LINE__, __FILE__, msg); OutputDebugStringA( buffer ); } while(0)
+#define DPRINTF( format, ...) do { char buffer[1024]; sprintf(buffer, format, __VA_ARGS__); OutputDebugStringA( buffer ); } while(0)
+#else
 #define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
 #define IM_TRACE( msg )   ((void)(msg))
+#endif
 
 //---- Define assertion handler. Defaults to calling assert().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
