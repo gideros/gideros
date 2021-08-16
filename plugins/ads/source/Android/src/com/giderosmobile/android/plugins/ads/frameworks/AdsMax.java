@@ -8,12 +8,15 @@ import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxError;
+import com.applovin.mediation.MaxErrorCode;
 import com.applovin.mediation.MaxErrorCodes;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinPrivacySettings;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.giderosmobile.android.plugins.ads.Ads;
@@ -46,9 +49,10 @@ public class AdsMax implements AdsInterface {
 		AppLovinSdk.initializeSdk( sActivity.get(), new AppLovinSdk.SdkInitializationListener() {
 			@Override
 			public void onSdkInitialized(AppLovinSdkConfiguration config) {
-
 			}
 		} );
+		AppLovinPrivacySettings.setIsAgeRestrictedUser(true,sActivity.get());
+		AppLovinPrivacySettings.setHasUserConsent(false,sActivity.get());
 		AppLovinSdk.initializeSdk(sActivity.get());
 		currentType = MaxAdFormat.BANNER;
 
@@ -243,19 +247,25 @@ class AdsMaxListener implements MaxAdListener, MaxRewardedAdListener, MaxAdViewA
 	}
 	
 	public void failed(int errorCode) {
-		if(errorCode == MaxErrorCodes.NO_FILL)
+		if(errorCode == MaxErrorCode.NO_FILL)
 			Ads.adFailed(AdsMax.me, state.getType(), "No fill");
-		else if(errorCode == MaxErrorCodes.DONT_KEEP_ACTIVITIES_ENABLED)
+		else if(errorCode == MaxErrorCode.DONT_KEEP_ACTIVITIES_ENABLED)
 			Ads.adFailed(AdsMax.me, state.getType(), "'Don't keep activities' Enabled");
-		else if(errorCode == MaxErrorCodes.FULLSCREEN_AD_ALREADY_SHOWING)
+		else if(errorCode == MaxErrorCode.FULLSCREEN_AD_ALREADY_SHOWING)
 			Ads.adFailed(AdsMax.me, state.getType(), "Fullscreen Ad already shwing");
-		else if(errorCode == MaxErrorCodes.NO_ACTIVITY)
+		else if(errorCode == MaxErrorCode.NO_ACTIVITY)
 			Ads.adFailed(AdsMax.me, state.getType(), "No activity");
-		else if(errorCode == MaxErrorCodes.INVALID_INTERNAL_STATE)
-			Ads.adFailed(AdsMax.me, state.getType(), "Invalid internal state");
-		else if(errorCode == MaxErrorCodes.MEDIATION_ADAPTER_LOAD_FAILED)
-			Ads.adFailed(AdsMax.me, state.getType(), "Mediation adapter load failed");
-		else if(errorCode == MaxErrorCodes.UNSPECIFIED_ERROR)
+		else if(errorCode == MaxErrorCode.NO_NETWORK)
+			Ads.adFailed(AdsMax.me, state.getType(), "No network");
+		else if(errorCode == MaxErrorCode.NETWORK_ERROR)
+			Ads.adFailed(AdsMax.me, state.getType(), "Network error");
+		else if(errorCode == MaxErrorCode.FULLSCREEN_AD_NOT_READY)
+			Ads.adFailed(AdsMax.me, state.getType(), "Fullscreen ad not ready");
+		else if(errorCode == MaxErrorCode.NETWORK_TIMEOUT)
+			Ads.adFailed(AdsMax.me, state.getType(), "Network timeout");
+		else if(errorCode == MaxErrorCode.AD_LOAD_FAILED)
+			Ads.adFailed(AdsMax.me, state.getType(), "Ad load failed");
+		else if(errorCode == MaxErrorCode.UNSPECIFIED)
 			Ads.adFailed(AdsMax.me, state.getType(), "Unspecified error");
 		else
 			Ads.adFailed(AdsMax.me, state.getType(), "Unknown error");
@@ -273,8 +283,8 @@ class AdsMaxListener implements MaxAdListener, MaxRewardedAdListener, MaxAdViewA
 	}
 
 	@Override
-	public void onAdLoadFailed(String adUnitId, int errorCode) {
-		failed(errorCode);
+	public void onAdLoadFailed(String adUnitId, MaxError errorCode) {
+		failed(errorCode.getCode());
 	}
 
 	@Override
@@ -293,8 +303,8 @@ class AdsMaxListener implements MaxAdListener, MaxRewardedAdListener, MaxAdViewA
 	}
 
 	@Override
-	public void onAdDisplayFailed(MaxAd ad, int errorCode) {
-		failed(errorCode);
+	public void onAdDisplayFailed(MaxAd ad, MaxError errorCode) {
+		failed(errorCode.getCode());
 	}
 
 	@Override

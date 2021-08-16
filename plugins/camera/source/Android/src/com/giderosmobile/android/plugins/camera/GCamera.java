@@ -12,6 +12,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GCamera {
@@ -50,6 +51,7 @@ public class GCamera {
 
 	@SuppressWarnings("JniMissingFunction")
 	static native void nativeRender(int camtex, float[] mat);
+	static native void nativeEvent(int type,byte[] data);
 
 	private static int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 
@@ -76,9 +78,133 @@ public class GCamera {
 		return cams;
 	}
 
+	static String flashMode=Camera.Parameters.FLASH_MODE_AUTO;
+	private static final String flashModes[]=new String[] {
+			Camera.Parameters.FLASH_MODE_AUTO,
+			Camera.Parameters.FLASH_MODE_OFF,
+			Camera.Parameters.FLASH_MODE_ON,
+			Camera.Parameters.FLASH_MODE_TORCH,
+			Camera.Parameters.FLASH_MODE_RED_EYE
+	};
+
+	public static void setFlash(int mode) {
+		if ((mode<0)||(mode>4)) mode=0;
+		flashMode=flashModes[mode];
+	}
+
+	public static class CamCaps {
+		public int[] previewSizes;
+		public int[] pictureSizes;
+		public int angle;
+		public int[] flashModes;
+	}
+	public static CamCaps queryCamera(String device, int angle) {
+		CamCaps caps=null;
+		int camId = -1;
+		try {
+			camId = Integer.parseInt(device);
+		} catch (Exception e) {
+		}
+		if ((camId == -1) || (camId >= Camera.getNumberOfCameras())) {
+			int ncams = Camera.getNumberOfCameras();
+			Camera.CameraInfo cami = new Camera.CameraInfo();
+			camId = 0;
+			for (int k = 0; k < ncams; k++) {
+				Camera.getCameraInfo(k, cami);
+				if (cami.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+					camId = k;
+					break;
+				}
+			}
+		}
+		if (camera == null) {
+			try {
+				camera = Camera.open(camId);
+			} catch (Exception e) {
+			}
+			if (camera != null) {
+				android.hardware.Camera.CameraInfo info =
+						new android.hardware.Camera.CameraInfo();
+				android.hardware.Camera.getCameraInfo(camId, info);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+					Camera.Parameters parameters = camera.getParameters();
+					caps=new CamCaps();
+					boolean swap = ((angle % 180) != (info.orientation % 180));
+					caps.angle=(angle - info.orientation + 360) % 360;
+					caps.previewSizes=sizeListToIntList(camera.getParameters().getSupportedPreviewSizes(),swap);
+					caps.pictureSizes=sizeListToIntList(camera.getParameters().getSupportedPictureSizes(),swap);
+
+					List<String> focusmodes = parameters.getSupportedFocusModes();
+					if (focusmodes != null) {
+						if (focusmodes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
+							parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+						else if (focusmodes.contains(Camera.Parameters.FOCUS_MODE_AUTO))
+							parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+					}
+
+					List<String> flist = parameters.getSupportedFlashModes();
+					List<Integer> fsup=new ArrayList<Integer>();
+					if (flist!=null) {
+						for (String fm:flist) {
+							for (int k=0;k<flashModes.length;k++)
+								if (fm.equals(flashModes[k]))
+									fsup.add(k);
+						}
+						caps.flashModes=new int [flist.size()];
+						parameters.setFlashMode(flashMode);
+					}
+					caps.flashModes=new int[fsup.size()];
+					for (int k=0;k<fsup.size();k++)
+						caps.flashModes[k]=fsup.get(k);
+				}
+				camera.release();
+				camera = null;
+			}
+		}
+		return caps;
+	}
+
+	private static int[] sizeListToIntList(List<Camera.Size> szs, boolean swap) {
+		if (szs!=null) {
+			int[] sz=new int[szs.size()*2];
+			for (int k=0;k<szs.size();k++) {
+				int w=szs.get(k).width;
+				int h=szs.get(k).height;
+				sz[k*2+0]=swap?h:w;
+				sz[k*2+1]=swap?w:h;
+			}
+			return sz;
+		}
+		else
+			return new int[0];
+	}
+
+	public static boolean takePicture() {
+		if (camera==null) return false;
+		camera.takePicture(new Camera.ShutterCallback() {
+			   @Override
+			   public void onShutter() {
+					nativeEvent(0,null); //SHUTTER
+			   }
+		   }, new Camera.PictureCallback() {
+			   @Override
+			   public void onPictureTaken(byte[] data, Camera camera) {
+				   nativeEvent(1,data); //RAW DATA
+			   }
+		   },
+			null,
+			new Camera.PictureCallback() {
+				@Override
+				public void onPictureTaken(byte[] data, Camera camera) {
+					nativeEvent(2,data); //JPEG DATA
+				}
+			});
+		return true;
+	}
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static int[] start(int width, int height, int angle, String device) {
-		int[] dimret = new int[4];
+	public static int[] start(int width, int height, int angle, String device, int picWidth, int picHeight) {
+		int[] dimret = new int[6];
 		int camId = -1;
 		try {
 			camId = Integer.parseInt(device);
@@ -138,6 +264,20 @@ public class GCamera {
 							dimret[1] = previewSize.height;
 						}
 
+						if (camera.getParameters().getSupportedPictureSizes() != null) {
+							int cw = picWidth;
+							int ch = picHeight;
+							if ((angle % 180) != (info.orientation % 180)) {
+								cw = picHeight;
+								ch = picWidth;
+							}
+
+							Camera.Size picSize = getOptimalPreviewSize2(camera.getParameters().getSupportedPictureSizes(), cw, ch);
+							parameters.setPictureSize(picSize.width, picSize.height);
+							dimret[4] = picSize.width;
+							dimret[5] = picSize.height;
+						}
+
 						List<String> focusmodes = parameters.getSupportedFocusModes();
 						if (focusmodes != null) {
 							if (focusmodes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
@@ -146,8 +286,8 @@ public class GCamera {
 								parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 						}
 
-						if (parameters.getSupportedFlashModes() != null && parameters.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_AUTO)) {
-							parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+						if (parameters.getSupportedFlashModes() != null && parameters.getSupportedFlashModes().contains(flashMode)) {
+							parameters.setFlashMode(flashMode);
 						}
 
 						camera.setParameters(parameters);
@@ -161,6 +301,9 @@ public class GCamera {
 					int c = dimret[0];
 					dimret[0] = dimret[1];
 					dimret[1] = c;
+					c = dimret[4];
+					dimret[4] = dimret[5];
+					dimret[5] = c;
 				}
 				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
 					dimret[2] = (angle - info.orientation + 360) % 360;

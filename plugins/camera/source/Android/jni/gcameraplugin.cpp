@@ -22,6 +22,21 @@ static void GetJStringContent(JNIEnv *AEnv, jstring AStr, std::string &ARes) {
   AEnv->ReleaseStringUTFChars(AStr,s);
 }
 
+void GetJIntArrayContent(JNIEnv *AEnv, jobject AArr, std::vector<int> &ARes)
+{
+	  if (!AArr) {
+	    ARes.clear();
+	    return;
+	  }
+
+		jboolean isCopy;
+		jsize acnt=AEnv->GetArrayLength((jintArray)AArr);
+		jint *rvals = AEnv->GetIntArrayElements((jintArray)AArr, &isCopy);
+		for (int k=0;k<acnt;k++)
+			ARes.push_back(rvals[k]);
+		AEnv->ReleaseIntArrayElements((jintArray)AArr, rvals, 0);
+}
+
 static const char *VShaderCode = "attribute highp vec3 vVertex;\n"
 		"attribute mediump vec2 vTexCoord;\n"
 		"uniform highp mat4 vMatrix;\n"
@@ -57,6 +72,8 @@ static const ShaderProgram::DataDesc camAttributes[] = { { "vVertex",
 		ShaderProgram::DFLOAT, 3, 0, 0 }, { "vColor", ShaderProgram::DUBYTE, 4,
 		1, 0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 }, { "",
 		ShaderProgram::DFLOAT, 0, 0, 0 } };
+
+static g_id gid = g_NextId();
 
 class GCAMERA {
 	ShaderBuffer *rdrTgt;
@@ -154,7 +171,39 @@ public:
 		}
 	}
 
-	void start(TextureData *texture,int orientation,int *camwidth,int *camheight,const char *device) {
+	bool setFlash(int mode) {
+		JNIEnv *env = g_getJNIEnv();
+		return env->CallStaticBooleanMethod(cls_,
+				env->GetStaticMethodID(cls_, "setFlash", "(I)Z"),mode);
+	}
+
+	bool takePicture() {
+		JNIEnv *env = g_getJNIEnv();
+		return env->CallStaticBooleanMethod(cls_,
+				env->GetStaticMethodID(cls_, "takePicture", "()Z"));
+	}
+
+	cameraplugin::CameraInfo queryCamera(const char *device, int orientation)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jdev=device?env->NewStringUTF(device):NULL;
+		jobject	data=env->CallStaticObjectMethod(cls_,
+				env->GetStaticMethodID(cls_, "queryCamera", "(Ljava/lang/String;I)Lcom/giderosmobile/android/plugins/camera/GCamera$CamCaps;"),
+				jdev,orientation
+				);
+
+		jclass ccls = env->FindClass(
+				"com/giderosmobile/android/plugins/camera/GCamera$CamCaps");
+
+		cameraplugin::CameraInfo c;
+		GetJIntArrayContent(env,(jobject)env->GetObjectField(data,env->GetFieldID(ccls,"previewSizes","[I")),c.previewSizes);
+		GetJIntArrayContent(env,(jobject)env->GetObjectField(data,env->GetFieldID(ccls,"pictureSizes","[I")),c.pictureSizes);
+		c.angle= env->GetIntField(data,env->GetFieldID(ccls,"angle","I"));
+		GetJIntArrayContent(env,(jobject)env->GetObjectField(data,env->GetFieldID(ccls,"flashModes","[I")),c.flashModes);
+		return c;
+	}
+
+	void start(TextureData *texture,int orientation,int *camwidth,int *camheight,const char *device,int *picWidth,int *picHeight) {
 		tex = texture;
 		rdrTgt = ShaderEngine::Engine->createRenderTarget(tex->id());
 		vertices[0] = Point2f(0, 0);
@@ -165,10 +214,12 @@ public:
 		JNIEnv *env = g_getJNIEnv();
 		jstring jdev=device?env->NewStringUTF(device):NULL;
 		jintArray ret=(jintArray) env->CallStaticObjectMethod(cls_,
-				env->GetStaticMethodID(cls_, "start", "(IIILjava/lang/String;)[I"),tex->width, tex->height,orientation,jdev);
+				env->GetStaticMethodID(cls_, "start", "(IIILjava/lang/String;II)[I"),tex->width, tex->height,orientation,jdev,*picWidth,*picHeight);
 		if (!ret) { //Shouldn't happen really, but JNI reports it happened
 			*camwidth=0;
 			*camheight=0;
+			*picWidth=0;
+			*picHeight=0;
 			delete rdrTgt;
 			return;
 		}
@@ -176,6 +227,8 @@ public:
 		jint *rvals = env->GetIntArrayElements(ret, &isCopy);
 		*camwidth=rvals[0];
 		*camheight=rvals[1];
+		*picWidth=rvals[4];
+		*picHeight=rvals[5];
 		if ((*camwidth==0)&&(*camheight==0)) {
 			delete rdrTgt;
 			return;
@@ -214,6 +267,13 @@ public:
 		env->ReleaseIntArrayElements(ret, rvals, 0);
 
 		running=true;
+	}
+
+	void nativeEvent(int code, char *data, int size) {
+		char *event=(char *)malloc(sizeof(int)+size);
+		memcpy(event+sizeof(int),data,size);
+		*((int *)event)=size;
+		gevent_EnqueueEvent(gid, cameraplugin::callback_s, code, event, 1, NULL);
 	}
 
 	void nativeRender(int camtex, float *mat) {
@@ -280,7 +340,7 @@ bool cameraplugin::isAvailable() {
     return s_gcamera->isCameraAvailable();
 }
 
-void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *device) {
+void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *device,int *picWidth,int *picHeight) {
 	int o=0;
 	switch (orientation)
 	{
@@ -298,12 +358,49 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,co
 		o=270;
 		break;
 	}
-	s_gcamera->start(cameraplugin::cameraTexture->data,o,camwidth,camheight,device);
+	s_gcamera->start(cameraplugin::cameraTexture->data,o,camwidth,camheight,device,picWidth,picHeight);
 }
 
 void cameraplugin::stop() {
 	if (s_gcamera)
 		s_gcamera->stop();
+}
+
+bool cameraplugin::setFlash(int mode) {
+	if (s_gcamera)
+		return s_gcamera->setFlash(mode);
+	return false;
+}
+
+bool cameraplugin::takePicture() {
+	if (s_gcamera)
+		return s_gcamera->takePicture();
+	return false;
+}
+
+cameraplugin::CameraInfo cameraplugin::queyCamera(const char *device, Orientation orientation)
+{
+	int o=0;
+	switch (orientation)
+	{
+	case ePortrait:
+	case eFixed:
+		o=0;
+		break;
+	case eLandscapeLeft:
+		o=90;
+		break;
+	case ePortraitUpsideDown:
+		o=180;
+		break;
+	case eLandscapeRight:
+		o=270;
+		break;
+	}
+	if (s_gcamera)
+		return s_gcamera->queryCamera(device,o);
+	cameraplugin::CameraInfo dummy;
+	return dummy;
 }
 
 extern "C" {
@@ -315,6 +412,21 @@ void Java_com_giderosmobile_android_plugins_camera_GCamera_nativeRender(
 		jfloat *fmat = env->GetFloatArrayElements(mat, &isCopy);
 		s_gcamera->nativeRender((int) camtex, fmat);
 		env->ReleaseFloatArrayElements(mat,fmat,0);
+	}
+}
+
+void Java_com_giderosmobile_android_plugins_camera_GCamera_nativeEvent(
+		JNIEnv *env, jclass clz, jint code, jbyteArray data) {
+	if (s_gcamera) {
+		if (data) {
+			jsize fsz = env->GetArrayLength(data);
+			jboolean isCopy;
+			jbyte *fdata = env->GetByteArrayElements(data, &isCopy);
+			s_gcamera->nativeEvent((int) code, (char *)fdata,fsz);
+			env->ReleaseByteArrayElements(data,fdata,0);
+		}
+		else
+			s_gcamera->nativeEvent((int) code, NULL, 0);
 	}
 }
 
