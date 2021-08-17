@@ -87,9 +87,17 @@ public class GCamera {
 			Camera.Parameters.FLASH_MODE_RED_EYE
 	};
 
-	public static void setFlash(int mode) {
-		if ((mode<0)||(mode>4)) mode=0;
+	public static boolean setFlash(int mode) {
+		if ((mode<0)||(mode>4)) { mode=0; return false; }
 		flashMode=flashModes[mode];
+		if (camera!=null) {
+			Camera.Parameters parameters = camera.getParameters();
+			if (parameters.getSupportedFlashModes() != null && parameters.getSupportedFlashModes().contains(flashMode)) {
+				parameters.setFlashMode(flashMode);
+			}
+			camera.setParameters(parameters);
+		}
+		return true;
 	}
 
 	public static class CamCaps {
@@ -134,14 +142,6 @@ public class GCamera {
 					caps.previewSizes=sizeListToIntList(camera.getParameters().getSupportedPreviewSizes(),swap);
 					caps.pictureSizes=sizeListToIntList(camera.getParameters().getSupportedPictureSizes(),swap);
 
-					List<String> focusmodes = parameters.getSupportedFocusModes();
-					if (focusmodes != null) {
-						if (focusmodes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
-							parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-						else if (focusmodes.contains(Camera.Parameters.FOCUS_MODE_AUTO))
-							parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-					}
-
 					List<String> flist = parameters.getSupportedFlashModes();
 					List<Integer> fsup=new ArrayList<Integer>();
 					if (flist!=null) {
@@ -150,8 +150,6 @@ public class GCamera {
 								if (fm.equals(flashModes[k]))
 									fsup.add(k);
 						}
-						caps.flashModes=new int [flist.size()];
-						parameters.setFlashMode(flashMode);
 					}
 					caps.flashModes=new int[fsup.size()];
 					for (int k=0;k<fsup.size();k++)
@@ -182,23 +180,24 @@ public class GCamera {
 	public static boolean takePicture() {
 		if (camera==null) return false;
 		camera.takePicture(new Camera.ShutterCallback() {
-			   @Override
-			   public void onShutter() {
-					nativeEvent(0,null); //SHUTTER
-			   }
-		   }, new Camera.PictureCallback() {
-			   @Override
-			   public void onPictureTaken(byte[] data, Camera camera) {
-				   nativeEvent(1,data); //RAW DATA
-			   }
-		   },
-			null,
-			new Camera.PictureCallback() {
-				@Override
-				public void onPictureTaken(byte[] data, Camera camera) {
-					nativeEvent(2,data); //JPEG DATA
-				}
-			});
+							   @Override
+							   public void onShutter() {
+								   nativeEvent(0,null); //SHUTTER
+							   }
+						   }, new Camera.PictureCallback() {
+							   @Override
+							   public void onPictureTaken(byte[] data, Camera camera) {
+								   nativeEvent(1,data); //RAW DATA
+							   }
+						   },
+				null,
+				new Camera.PictureCallback() {
+					@Override
+					public void onPictureTaken(byte[] data, Camera camera) {
+						nativeEvent(2,data); //JPEG DATA 
+						camera.startPreview();
+					}
+				});
 		return true;
 	}
 
