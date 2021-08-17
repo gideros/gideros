@@ -58,6 +58,7 @@
 // These methods are synchronous
 - (void)startRunning;
 - (void)stopRunning;
+- (void)setOrientation:(AVCaptureVideoOrientation) angle;
 
 
 @property(readwrite) BOOL renderingEnabled; // When set to false the GPU will not be used after the setRenderingEnabled: call returns.
@@ -68,6 +69,9 @@
 
 - (CGAffineTransform)transformFromVideoBufferOrientationToOrientation:(AVCaptureVideoOrientation)orientation withAutoMirroring:(BOOL)mirroring; // only valid after startRunning has been called
 - (void) getVideoWidth:(int *)width andHeight:(int *)height;
+- (void) getStillWidth:(int *)width andHeight:(int *)height;
+- (BOOL) takePicture:(void (^)(NSData *image)) handler;
+- (BOOL) setFlash:(int) mode;
 
 // Stats
 @property(readonly) float videoFrameRate;

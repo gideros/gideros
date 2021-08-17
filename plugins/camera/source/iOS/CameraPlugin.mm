@@ -17,6 +17,7 @@
 extern id<MTLDevice> metalDevice;
 #endif
 
+static g_id gid=g_NextId();
 @interface CameraPluginController : NSObject <CameraCapturePipelineDelegate>
 {
 	BOOL _addedObservers;
@@ -110,7 +111,7 @@ if (err)
 	self.capturePipeline.renderingEnabled = YES;
 }
 
-- (void)start:(TextureData *)texture o:(int) orientation cw:(int *)camwidth ch:(int *)camheight device:(NSString *) dev
+- (void)start:(TextureData *)texture o:(AVCaptureVideoOrientation) orientation cw:(int *)camwidth ch:(int *)camheight device:(NSString *) dev pw:(int *)picwidth ph:(int *)picheight
 {
     tex = texture;
     rdrTgt = ShaderEngine::Engine->createRenderTarget(tex->id());
@@ -119,7 +120,12 @@ if (err)
     vertices[2] = Point2f(tex->width, tex->height);
     vertices[3] = Point2f(0, tex->height);
     vertices.Update();
-	
+    texcoords[0] = Point2f(0, 0);
+    texcoords[1] = Point2f(1, 0);
+    texcoords[2] = Point2f(1, 1);
+    texcoords[3] = Point2f(0, 1);
+    texcoords.Update();
+
     if (!_addedObservers)
     {
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -145,8 +151,11 @@ if (err)
 	_allowedToUseGPU = ( [UIApplication sharedApplication].applicationState != UIApplicationStateBackground );
     self.capturePipeline.renderingEnabled = _allowedToUseGPU;
     self.capturePipeline.camdev = dev;
+    [self.capturePipeline setOrientation:orientation];
     [self.capturePipeline startRunning];
     [self.capturePipeline getVideoWidth:camwidth andHeight:camheight];
+    [self.capturePipeline getStillWidth:picwidth andHeight:picheight];
+    /*
     AVCaptureVideoOrientation avo=self.capturePipeline.videoOrientation;
     int ao=0;
     switch (avo) {
@@ -199,7 +208,57 @@ if (err)
             break;
         default:
             break;
+    }*/
+}
+
+- (void)queryCamera:(NSString *) dev o:(int) orientation ret:(cameraplugin::CameraInfo *) ci
+{
+    AVCaptureDevice *videoDevice=NULL;
+    if (dev)
+        videoDevice= [AVCaptureDevice deviceWithUniqueID:dev];
+    if (!videoDevice)
+        videoDevice= [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    
+    std::set<uint32_t> rset,fset;
+    
+    for (AVCaptureDeviceFormat *f in videoDevice.formats) {
+        CMVideoDimensions d=CMVideoFormatDescriptionGetDimensions(f.formatDescription);
+        uint32_t ds=(d.width<<16)|d.height;
+        if (rset.find(ds)==rset.end()) {
+            ci->previewSizes.push_back(d.width);
+            ci->previewSizes.push_back(d.height);
+            rset.insert(ds);
+        }
+        d=f.highResolutionStillImageDimensions;
+        ds=(d.width<<16)|d.height;
+        if (fset.find(ds)==fset.end()) {
+            ci->pictureSizes.push_back(d.width);
+            ci->pictureSizes.push_back(d.height);
+            fset.insert(ds);
+        }
     }
+    if ([videoDevice isFlashModeSupported:AVCaptureFlashModeAuto])
+        ci->flashModes.push_back(0);
+    if ([videoDevice isFlashModeSupported:AVCaptureFlashModeOff])
+        ci->flashModes.push_back(1);
+    if ([videoDevice isFlashModeSupported:AVCaptureFlashModeOn]) {
+        ci->flashModes.push_back(2);
+        if ([videoDevice isTorchModeSupported:AVCaptureTorchModeOn])
+            ci->flashModes.push_back(3);
+    }
+}
+
+- (BOOL) setFlash:(int) mode {
+    return [self.capturePipeline setFlash:mode];
+}
+
+- (BOOL) takePicture {
+    return [self.capturePipeline takePicture:^(NSData *image) {
+        char *event=(char *)malloc(sizeof(int)+[image length]);
+        *((int *)event)=(int)[image length];
+        [image getBytes:event+sizeof(int) length:[image length]];
+        gevent_EnqueueEvent(gid, cameraplugin::callback_s, 2, event, 1, NULL);
+    }];
 }
 
 - (void)stop
@@ -253,7 +312,7 @@ if (err)
 {
 	bool hasBuffer=false;
 	@synchronized (self) {
-    	hasBuffer=(videoBuffer!=NULL);
+    	hasBuffer=(videoBuffer!=nullptr);
     }
     if (hasBuffer)
     {
@@ -264,7 +323,7 @@ if (err)
     	CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                 videoTextureCache,
                                                                 videoBuffer,
-                                                                NULL,
+                                                                nullptr,
                                                                 GL_TEXTURE_2D,
                                                                 GL_RGBA,
                                                                 frameWidth,
@@ -274,11 +333,11 @@ if (err)
                                                                 0,
                                                                 &texture);
 #else
-    CVMetalTextureRef texture = NULL;
+    CVMetalTextureRef texture = nullptr;
     CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                             videoTextureCache,
                                                             videoBuffer,
-                                                            NULL,
+                                                            nullptr,
                                                             MTLPixelFormatBGRA8Unorm,
                                                             frameWidth,
                                                             frameHeight,
@@ -372,29 +431,30 @@ std::vector<cameraplugin::CameraDesc> cameraplugin::availableDevices()
 	return cams;
 }
 
-void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *device)
+void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *device, int *picwidth, int *picheight)
 {
-    int o=0;
+    AVCaptureVideoOrientation o=AVCaptureVideoOrientationPortrait;
     switch (orientation)
     {
+        default:
         case ePortrait:
-            o=0;
+            o=AVCaptureVideoOrientationPortrait;
             break;
         case eLandscapeLeft:
-            o=90;
+            o=AVCaptureVideoOrientationLandscapeLeft;
             break;
         case ePortraitUpsideDown:
-            o=180;
+            o=AVCaptureVideoOrientationPortraitUpsideDown;
             break;
         case eLandscapeRight:
-            o=270;
+            o=AVCaptureVideoOrientationLandscapeRight;
             break;
     }
 
     NSString *dev=NULL;
     if (device)
         dev=[NSString stringWithUTF8String:device];
-    [ctrl start:cameraplugin::cameraTexture->data o:o cw:camwidth ch:camheight device:dev];
+    [ctrl start:cameraplugin::cameraTexture->data o:o cw:camwidth ch:camheight device:dev pw:picwidth ph:picheight];
 }
 
 void cameraplugin::stop()
@@ -415,6 +475,43 @@ void cameraplugin::deinit()
 bool cameraplugin::isAvailable()
 {
     return true;
+}
+
+bool cameraplugin::setFlash(int mode) {
+    return [ctrl setFlash:mode];
+}
+
+bool cameraplugin::takePicture() {
+    return [ctrl takePicture];
+}
+
+cameraplugin::CameraInfo cameraplugin::queyCamera(const char *device, Orientation orientation)
+{
+    int o=0;
+    switch (orientation)
+    {
+        default:
+        case ePortrait:
+            o=0;
+            break;
+        case eLandscapeLeft:
+            o=90;
+            break;
+        case ePortraitUpsideDown:
+            o=180;
+            break;
+        case eLandscapeRight:
+            o=270;
+            break;
+    }
+
+    NSString *dev=NULL;
+    if (device)
+        dev=[NSString stringWithUTF8String:device];
+    
+    cameraplugin::CameraInfo ci;
+    [ctrl queryCamera:dev o:o ret:&ci];
+    return ci;
 }
 
 extern "C" void cameraplugin_render()

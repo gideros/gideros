@@ -44,8 +44,11 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 
 	AVCaptureSession *_captureSession;
 	AVCaptureDevice *_videoDevice;
+    AVCaptureStillImageOutput *_stillOut;
+    
 	AVCaptureConnection *_audioConnection;
-	AVCaptureConnection *_videoConnection;
+    AVCaptureConnection *_videoConnection;
+    AVCaptureConnection *_stillConnection;
 	BOOL _running;
 	BOOL _startCaptureSessionOnEnteringForeground;
 	id _applicationWillEnterForegroundNotificationObserver;
@@ -56,6 +59,7 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	dispatch_queue_t _videoDataOutputQueue;
 	
 	BOOL _renderingEnabled;
+    AVCaptureVideoOrientation _angle;
 	
 	NSURL *_recordingURL;
 	CameraRecordingStatus _recordingStatus;
@@ -64,6 +68,7 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
     long camWidth;
     long camHeight;
     CVPixelBufferRef _currentPreviewPixelBuffer;
+    int flashMode;
 }
 
 @property(readwrite) float videoFrameRate;
@@ -161,6 +166,11 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 
 #pragma mark Capture Session
 
+- (void)setOrientation:(AVCaptureVideoOrientation) angle
+{
+    _angle=angle;
+}
+
 - (void)startRunning
 {
 	dispatch_sync( _sessionQueue, ^{
@@ -182,6 +192,47 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 		
 		[self teardownCaptureSession];
 	} );
+}
+
+- (BOOL) takePicture:(void (^)(NSData *image)) handler {
+    if ( ! _captureSession ) {
+        return FALSE;
+    }
+    [_stillOut captureStillImageAsynchronouslyFromConnection:_stillConnection completionHandler:^(CMSampleBufferRef  _Nullable imageDataSampleBuffer, NSError * _Nullable error) {
+        NSData *idata=[AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
+        handler(idata);
+    }];
+    return TRUE;
+}
+
+- (BOOL) setFlash:(int) mode {
+    flashMode=mode;
+    BOOL ret=TRUE;
+    if ( _captureSession ) {
+        AVCaptureFlashMode fmode;
+        AVCaptureTorchMode tmode=AVCaptureTorchModeOff;
+        switch (mode) {
+            case 4: //Red-eye
+            case 0: fmode=AVCaptureFlashModeAuto; break;
+            case 1: fmode=AVCaptureFlashModeOff; break;
+            case 3: tmode=AVCaptureTorchModeOn;//Torch
+            case 2: fmode=AVCaptureFlashModeOn; break;
+        }
+        if ([_videoDevice lockForConfiguration:NULL]) {
+            if (![_videoDevice isFlashModeSupported:fmode])
+                fmode=AVCaptureFlashModeOff;
+            if ([_videoDevice isFlashModeSupported:fmode])
+                [_videoDevice setFlashMode:fmode];
+            if (![_videoDevice isTorchModeSupported:tmode])
+                tmode=AVCaptureTorchModeOff;
+            if ([_videoDevice isTorchModeSupported:tmode])
+                [_videoDevice setTorchMode:tmode];
+            [_videoDevice unlockForConfiguration];
+        }
+        else
+            ret=FALSE;
+    }
+    return ret;
 }
 
 - (void)setupCaptureSession
@@ -249,6 +300,20 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 		[_captureSession addOutput:videoOut];
 	}
 	_videoConnection = [videoOut connectionWithMediaType:AVMediaTypeVideo];
+    [_videoConnection setVideoOrientation:_angle];
+    [_videoConnection setVideoMirrored:_frontFacing];
+    
+    AVCaptureStillImageOutput *stillOut=[[AVCaptureStillImageOutput alloc] init];
+    stillOut.outputSettings= @{ AVVideoCodecKey: AVVideoCodecJPEG };
+    stillOut.highResolutionStillImageOutputEnabled=TRUE;
+    
+    if ( [_captureSession canAddOutput:stillOut] ) {
+        [_captureSession addOutput:stillOut];
+    }
+    _stillConnection = [stillOut connectionWithMediaType:AVMediaTypeVideo];
+    [_stillConnection setVideoOrientation:_angle];
+    [_stillConnection setVideoMirrored:_frontFacing];
+    _stillOut = stillOut;
 		
 	int frameRate;
 	NSString *sessionPreset = AVCaptureSessionPresetHigh;
@@ -295,6 +360,7 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
     camHeight = [[outputSettings objectForKey:@"Height"] longValue];
 
 	[videoOut release];
+    [self setFlash:flashMode];
 	
 	return;
 }
@@ -660,8 +726,17 @@ static CGFloat angleOffsetFromPortraitOrientationToOrientation(AVCaptureVideoOri
 
 - (void) getVideoWidth:(int *)width andHeight:(int *)height
 {
-    *width=camWidth;
-    *height=camHeight;
+    *width=(int)camWidth;
+    *height=(int)camHeight;
+}
+
+- (void) getStillWidth:(int *)width andHeight:(int *)height
+{
+    CMVideoDimensions stillDim=[[_videoDevice activeFormat] highResolutionStillImageDimensions];
+    
+    // AVVideoWidthKey and AVVideoHeightKey did not work. I had to use these literal keys.
+    *width  = (int)stillDim.width;
+    *height = (int)stillDim.height;
 }
 
 @end
