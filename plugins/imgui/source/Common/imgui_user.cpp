@@ -1,8 +1,12 @@
 #ifndef IMGUI_DISABLE
 
 #ifndef DPRINTF
+#ifdef WIN32
 #include "debugapi.h"
 #define DPRINTF( format, ...) do { char buffer[1024]; sprintf(buffer, format, __VA_ARGS__); OutputDebugStringA( buffer ); } while(0)
+#else
+#define DPRINTF( format,...) 
+#endif
 #endif
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
