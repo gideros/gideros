@@ -112,7 +112,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
         tl->parts[i].x+=ox+rx;
         tl->parts[i].dx=ox+rx;
         char sep=tl->parts[i].sep;
-        rx+=tl->parts[i].advX;
+        rx+=tl->parts[i].w;
         float ns=(sep=='\t')?(tabSpace*(1+floor(rx/tabSpace))-rx):sw;
         if (sep==ESC) ns=0;
         rx+=ns;
@@ -462,12 +462,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	{
 		tl.x=std::min(tl.x,tl.parts[k].x);
 		tl.y=std::min(tl.y,tl.parts[k].y);
-		mx=std::max(mx,tl.parts[k].x+tl.parts[k].w-1);
-		my=std::max(my,tl.parts[k].y+tl.parts[k].h-1);
+        mx=std::max(mx,tl.parts[k].x+tl.parts[k].w);
+        my=std::max(my,tl.parts[k].y+tl.parts[k].h);
 		tl.styleFlags|=tl.parts[k].styleFlags;
 	}
-    tl.w=mx-tl.x+1.01; //Add a margin due to rounding issues
-    tl.h=my-tl.y+1.01;
+    tl.w=mx-tl.x+.01; //Add a margin due to rounding issues
+    tl.h=my-tl.y+.01;
     tl.bh=y;
     if (tl.parts.size()==0)
     {
