@@ -309,6 +309,7 @@ function getParameterByName(name, url) {
     	else if (what.includes('dependency:')||what.includes('dependencies:')||what.includes('(end of list)')) {} //Ignore (loading)       
     	else if (what.includes('Real sample count')) {} //Ignore (MP3)
     	else if (what.includes('iCCP: known incorrect sRGB profile')) {} //Ignore (libpng)
+    	else if (what.includes('Interlace handling should be turned on when using png_read_image')) {} //Ignore (Interlace handling)
     	else if (what.trim().length < 2) {} //Ignore
     	else if (what.includes('stub instead of')) {} //Stubs warnings
     	else if (what.includes('DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1')) {} //Event changing warnings   
