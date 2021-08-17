@@ -248,7 +248,7 @@ void cameraplugin::deinit()
 	stop();
 }
 
-void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *cam)
+void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *cam, int *picwidth, int *picheight)
 {
 	QCameraInfo caminfo=QCameraInfo::defaultCamera();
 	if (cam)
@@ -309,6 +309,9 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,co
     camera->setViewfinder(camerasurface);
     camera->start();
    	cameraplugin::application->addTicker(camerasurface);
+
+   	*picwidth=0;
+   	*picheight=0;
 }
 
 void cameraplugin::stop()
@@ -327,5 +330,17 @@ bool cameraplugin::isAvailable()
     return true;
 }
 
+bool cameraplugin::setFlash(int mode) {
+    return false;
+}
 
+bool cameraplugin::takePicture() {
+    return false;
+}
+
+cameraplugin::CameraInfo cameraplugin::queyCamera(const char *device, Orientation orientation)
+{
+    cameraplugin::CameraInfo ci; //Dummy info, not supported
+    return ci;
+}
 
