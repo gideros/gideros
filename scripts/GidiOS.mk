@@ -125,8 +125,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.mac.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); cp build/$(XCODE_CONFIG)/lib$*.a lib$*.mac.a
+	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); cp build/$(XCODE_CONFIG)/lib$(notdir $*).a lib$(notdir $*).mac.a
 
 
 %.mac.clean.iosplugin:
