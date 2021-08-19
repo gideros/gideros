@@ -218,7 +218,6 @@ void Sprite::updateEffects()
 	if (effectsMode_!=CONTINUOUS) {
 		if (!effectsDirty_) return;
 	}
-	ShaderProgram *shp=NULL;
 	effectsDrawing_=true;
 	for (size_t i=0;i<effectStack_.size();i++) {
 		if (effectStack_[i].buffer) {
@@ -234,7 +233,6 @@ void Sprite::updateEffects()
 				setupEffectShader(&source,effectStack_[i-1]);
 				effectStack_[i].buffer->draw(&source,effectStack_[i].transform);
 			}
-			shp=effectStack_[i].shader;
 		}
 	}
 	effectsDirty_=false;
@@ -279,8 +277,8 @@ GridBagConstraints *Sprite::getLayoutConstraints()
 	if (!layoutConstraints)
 		layoutConstraints=new GridBagConstraints();
     if (parent_&&parent_->layoutState)
-    	parent_->layoutState->dirty=true;
-	return layoutConstraints;
+        parent_->layoutState->dirty=true;
+    return layoutConstraints;
 }
 
 void Sprite::clearLayoutConstraints()
@@ -415,7 +413,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			}
 
             if ((sprite!=this)&&(sprite->parent_))
-			sprite->worldTransform_ = sprite->parent_->worldTransform_
+                sprite->worldTransform_ = sprite->parent_->worldTransform_
 					* sprite->localTransform_.matrix();
 
 			for (size_t i = 0; i < sprite->children_.size(); ++i)
@@ -635,8 +633,7 @@ void Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
     if (layoutState&&sprite->layoutConstraints)
         layoutState->dirty=true;
 
-
-	sprite->unref();	// unguard
+    sprite->unref();	// unguard
 
 	Stage *stage2 = sprite->getStage();
 

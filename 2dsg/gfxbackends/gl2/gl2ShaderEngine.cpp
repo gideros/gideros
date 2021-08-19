@@ -270,15 +270,15 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
     glog_i("FrameBuffer:(%d) %d,%d Real(%d,%d)",crb,width,height,fw,fh);*/
 	devWidth = width;
 	devHeight = height;
-	int depthfmt = 0;
-#ifdef GL_DEPTH24_STENCIL8_OES
-	depthfmt=GL_DEPTH24_STENCIL8_OES;
-#else
-	depthfmt = GL_DEPTH24_STENCIL8;
-#endif
 #ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
 #ifndef __EMSCRIPTEN__
+    int depthfmt = 0;
+#ifdef GL_DEPTH24_STENCIL8_OES
+    depthfmt=GL_DEPTH24_STENCIL8_OES;
+#else
+    depthfmt = GL_DEPTH24_STENCIL8;
+#endif
     GLCALL glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
 	GLCALL glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
 	GLCALL glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -304,18 +304,17 @@ void ogl2ShaderEngine::reset(bool reinit) {
 		ogl2ShaderProgram::current = NULL;
 		ogl2ShaderProgram::curProg=0;
 
-		int depthfmt = 0;
-#ifdef GL_DEPTH24_STENCIL8_OES
-		depthfmt=GL_DEPTH24_STENCIL8_OES;
-#else
-		depthfmt = GL_DEPTH24_STENCIL8;
-#endif
-
 #ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
 		if (!GLCALL glIsRenderbuffer(_depthRenderBuffer))
 		{
-			GLCALL glGenRenderbuffers(1, &_depthRenderBuffer);
+            int depthfmt = 0;
+    #ifdef GL_DEPTH24_STENCIL8_OES
+            depthfmt=GL_DEPTH24_STENCIL8_OES;
+    #else
+            depthfmt = GL_DEPTH24_STENCIL8;
+    #endif
+            GLCALL glGenRenderbuffers(1, &_depthRenderBuffer);
 			GLCALL glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
 			GLCALL glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
 			GLCALL glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -505,7 +504,6 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 }
 
 ogl2ShaderEngine::~ogl2ShaderEngine() {
-	GLCALL_INIT;
 	if (currentBuffer)
 		setFramebuffer(NULL);
 
@@ -518,7 +516,7 @@ ogl2ShaderEngine::~ogl2ShaderEngine() {
 	pathShadersRelease();
 #ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
-	GLCALL glDeleteRenderbuffers(1,&_depthRenderBuffer);
+    glDeleteRenderbuffers(1,&_depthRenderBuffer);
 #endif
 #endif
 }
@@ -526,6 +524,7 @@ ogl2ShaderEngine::~ogl2ShaderEngine() {
 ShaderTexture *ogl2ShaderEngine::createTexture(ShaderTexture::Format format,
 		ShaderTexture::Packing packing, int width, int height, const void *data,
 		ShaderTexture::Wrap wrap, ShaderTexture::Filtering filtering,bool forRT) {
+    G_UNUSED(forRT);
 	return new ogl2ShaderTexture(format, packing, width, height, data, wrap,
 			filtering);
 }
@@ -583,10 +582,11 @@ void ogl2ShaderEngine::setProjection(const Matrix4 p) {
 
 Matrix4 ogl2ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRT)
 {
-	return ShaderEngine::setOrthoFrustum(l, r, forRT?t:b, forRT?b:t, n, f, true);
+    return ShaderEngine::setOrthoFrustum(l, r, forRT?t:b, forRT?b:t, n, f, forRT);
 }
 
 void ogl2ShaderEngine::adjustViewportProjection(Matrix4 &vp, float width, float height) {
+    G_UNUSED(width);
 	vp.scale(1, -1, 1);
 	vp.translate(0, height, 0);
 }

@@ -146,16 +146,19 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
 #endif
 
     g_id gid = 0;
+    unsigned char bpp=1;
     switch (parameters.format)
     {
     case eRGBA8888:
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, dib.data(), &sig[0], sig.size());
+        bpp=4;
         break;
     case eRGB888:
     {
         unsigned char *data = dib.to888();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
         delete[] data;
+        bpp=3;
         break;
     }
     case eRGB565:
@@ -163,6 +166,7 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
         unsigned short *data = dib.to565();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
         delete[] data;
+        bpp=2;
         break;
     }
     case eRGBA4444:
@@ -170,6 +174,7 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
         unsigned short *data = dib.to4444();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
         delete[] data;
+        bpp=2;
         break;
     }
     case eRGBA5551:
@@ -177,6 +182,7 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
         unsigned short *data = dib.to5551();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
         delete[] data;
+        bpp=2;
         break;
     }
     case eY8:
@@ -198,6 +204,7 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
         unsigned char *data = dib.toYA8();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
         delete[] data;
+        bpp=2;
         break;
     }
     }
@@ -206,6 +213,7 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
 
     data->gid = gid;
     data->parameters = parameters;
+    data->parameters.bpp=bpp;
     data->width = dib.originalWidth();
     data->height = dib.originalHeight();
     data->exwidth = dib.width();
@@ -294,16 +302,19 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
 
 
     g_id gid = 0;
+    unsigned char bpp=1;
     switch (parameters.format)
     {
     case eRGBA8888:
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, dib2.data(), NULL, 0);
+        bpp=4;
         break;
     case eRGB888:
     {
         unsigned char *data = dib2.to888();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
         delete[] data;
+        bpp=3;
         break;
     }
     case eRGB565:
@@ -311,6 +322,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         unsigned short *data = dib2.to565();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
         delete[] data;
+        bpp=2;
         break;
     }
     case eRGBA4444:
@@ -318,6 +330,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         unsigned short *data = dib2.to4444();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
         delete[] data;
+        bpp=2;
         break;
     }
     case eRGBA5551:
@@ -325,6 +338,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         unsigned short *data = dib2.to5551();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
         delete[] data;
+        bpp=2;
         break;
     }
     case eY8:
@@ -346,6 +360,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         unsigned char *data = dib2.toYA8();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
         delete[] data;
+        bpp=2;
         break;
     }
     }
@@ -354,6 +369,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
 
     data->gid = gid;
     data->parameters = parameters;
+    data->parameters.bpp=bpp;
     data->width = dib.originalWidth();
     data->height = dib.originalHeight();
     data->exwidth = dib.width();
@@ -539,6 +555,44 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
         break;
     }
 
+    int format = 0;
+    int type = 0;
+    switch (parameters.format)
+    {
+    case eRGBA8888:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eRGB888:
+        format = GTEXTURE_RGB;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eRGB565:
+        format = GTEXTURE_RGB;
+        type = GTEXTURE_UNSIGNED_SHORT_5_6_5;
+        break;
+    case eRGBA4444:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_SHORT_4_4_4_4;
+        break;
+    case eRGBA5551:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_SHORT_5_5_5_1;
+        break;
+    case eY8:
+        format = GTEXTURE_LUMINANCE;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eA8:
+        format = GTEXTURE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eYA8:
+        format = GTEXTURE_LUMINANCE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    }
+
     float scale=1.0;
     if (selectScale)
     	application_->getImageSuffix(&scale);
@@ -554,12 +608,14 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     int exwidth = nextpow2(w);
     int exheight = nextpow2(h);
 
-    g_id gid = gtexture_RenderTargetCreate(exwidth, exheight, wrap, filter, depth);
+    unsigned char bpp;
+    g_id gid = gtexture_RenderTargetCreate(exwidth, exheight, wrap, filter, depth?GTEXTURE_DEPTH:format,&bpp);
 
     TextureData *data = new TextureData;
 
     data->gid = gid;
     data->parameters = parameters;
+    data->parameters.bpp=bpp;;
     data->width = width;
     data->height = height;
     data->exwidth = exwidth;

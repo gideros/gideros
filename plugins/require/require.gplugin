@@ -347,16 +347,6 @@
             </replacelist>
         </template>
     </if>
-    <if condition="[[[]]]">
-        <template name="Project" path="">
-            <replacelist wildcards="EAGLView.m">
-                <replace>
-                    <orig>Layer.opaque = TRUE;</orig>
-                    <by>Layer.opaque = FALSE;</by>
-                </replace>
-            </replacelist>
-        </template>
-    </if>
 	<lua><![CDATA[
 		local urls = Export.getProperty("plugin.reqCanOpenUrl")
 		if urls and string.len(urls)>0 then

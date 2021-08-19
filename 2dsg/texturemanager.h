@@ -49,6 +49,7 @@ struct TextureParameters
     bool maketransparent;
     unsigned int transparentcolor;
     bool grayscale;
+    unsigned char bpp;
 };
 
 struct TextureData

@@ -222,7 +222,7 @@ Matrix4 ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float 
 	Matrix4 mat;
 	mat[0] = 2 / (r - l);
 	mat[5] = 2 / (t - b);
-	mat[10] = -2 / (f - n);
+    mat[10] = (forRT?2:-2) / (f - n);
 	mat[12] = -(r + l) / (r - l);
 	mat[13] = -(t + b) / (t - b);
 	mat[14] = -(f + n) / (f - n);

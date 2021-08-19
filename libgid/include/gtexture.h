@@ -72,7 +72,7 @@ G_API void gtexture_reloadTextures();
 G_API size_t gtexture_getMemoryUsage();
 
 G_API g_id gtexture_RenderTargetCreate(int width, int height,
-                                       int wrap, int filter, bool depth);
+                                       int wrap, int filter, int format, unsigned char *bpp);
 
 G_API ShaderBuffer *gtexture_RenderTargetGetFBO(g_id renderTarget);
 

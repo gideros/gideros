@@ -27,6 +27,33 @@
 #include <algorithm>
 
 
+static ShaderTexture::Format gFormatTosFormat(int iformat) {
+    switch (iformat)
+    {
+    case GTEXTURE_ALPHA: return ShaderTexture::FMT_ALPHA;
+    case GTEXTURE_RGB: return ShaderTexture::FMT_RGB;
+    default:
+    case GTEXTURE_RGBA: return ShaderTexture::FMT_RGBA;
+    case GTEXTURE_LUMINANCE: return ShaderTexture::FMT_Y;
+    case GTEXTURE_LUMINANCE_ALPHA: return ShaderTexture::FMT_YA;
+    case GTEXTURE_DEPTH: return ShaderTexture::FMT_DEPTH;
+    }
+}
+
+static ShaderTexture::Packing gTypeTosPacking(int type)
+{
+	switch (type) {
+	default:
+	case GTEXTURE_UNSIGNED_BYTE: return ShaderTexture::PK_UBYTE;
+	case GTEXTURE_UNSIGNED_SHORT_5_6_5: return ShaderTexture::PK_USHORT_565;
+	case GTEXTURE_UNSIGNED_SHORT_4_4_4_4: return ShaderTexture::PK_USHORT_4444;
+	case GTEXTURE_UNSIGNED_SHORT_5_5_5_1: return ShaderTexture::PK_USHORT_5551;
+	case GTEXTURE_UNSIGNED_SHORT: return ShaderTexture::PK_USHORT;
+	case GTEXTURE_FLOAT: return ShaderTexture::PK_FLOAT;
+	case GTEXTURE_UNSIGNED_INT: return ShaderTexture::PK_UINT;
+	}
+}
+
 namespace g_private {
 static ShaderEngine *engine =NULL;
 static ScreenManager *screenManager = NULL;
@@ -79,6 +106,7 @@ static int pixelSize(int format, int type)
     case GTEXTURE_UNSIGNED_BYTE:
         switch (format)
         {
+        case GTEXTURE_DEPTH:
         case GTEXTURE_ALPHA:
         case GTEXTURE_LUMINANCE:
             return 1;
@@ -187,33 +215,19 @@ public:
                 int wrap, int filter,
                 const void *pixels)
     {
+    	G_UNUSED(format); //XXX We should sanity check format and type instead
+    	G_UNUSED(type);
+    	G_UNUSED(wrap);
+    	G_UNUSED(filter);
     	std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(gid);
 
     	if (iter != textureElements_.end())
     	{
     	     TextureElement* element = iter->second;
 
-    	        ShaderTexture::Format format;
-    	        switch (element->format)
-    	        {
-    	        case GTEXTURE_ALPHA:
-    	            format = ShaderTexture::FMT_ALPHA;
-    	            break;
-    	        case GTEXTURE_RGB:
-    	            format = ShaderTexture::FMT_RGB;
-    	            break;
-    	        case GTEXTURE_RGBA:
-    	            format = ShaderTexture::FMT_RGBA;
-    	            break;
-    	        case GTEXTURE_LUMINANCE:
-    	            format = ShaderTexture::FMT_Y;
-    	            break;
-    	        case GTEXTURE_LUMINANCE_ALPHA:
-    	            format = ShaderTexture::FMT_YA;
-    	            break;
-    	        }
+    	        ShaderTexture::Format format = gFormatTosFormat(element->format);
 
-    	        ShaderTexture::Packing type;
+    	        ShaderTexture::Packing type= ShaderTexture::PK_UBYTE;
     	        switch (element->type)
     	        {
     	        case GTEXTURE_UNSIGNED_BYTE:
@@ -478,10 +492,12 @@ public:
 
 
     g_id RenderTargetCreate(int width, int height,
-                            int wrap, int filter, bool depth)
+                            int wrap, int filter, int iformat, unsigned char *bpp)
     {
-        int format = depth?GTEXTURE_DEPTH:GTEXTURE_RGBA;
-        ShaderTexture::Packing pk=engine->getPreferredPackingForTextureFormat(depth?ShaderTexture::FMT_DEPTH:ShaderTexture::FMT_RGBA);
+
+        ShaderTexture::Format format=gFormatTosFormat(iformat);
+
+        ShaderTexture::Packing pk=engine->getPreferredPackingForTextureFormat(format);
         int type=GTEXTURE_UNSIGNED_BYTE;
         switch (pk) {
         case ShaderTexture::PK_FLOAT: type=GTEXTURE_FLOAT; break;
@@ -503,17 +519,19 @@ public:
         element->refcount = 1;
         element->width = width;
         element->height = height;
-        element->format = format;
+        element->format = iformat;
         element->type = type;
         element->wrap = wrap;
         element->filter = filter;
         element->udata = NULL;
         element->renderTarget = true;
-        element->depth=depth;
+        element->depth=(iformat==GTEXTURE_DEPTH);
         element->buffer=NULL;
         element->bufferSize=0;
 
-        element->textureSize = width * height * pixelSize(format, type);
+        *bpp=pixelSize(iformat, type);
+
+        element->textureSize = width * height * (*bpp);
 
         void *pixels = malloc(element->textureSize);
         memset(pixels, 0, element->textureSize);
@@ -551,11 +569,17 @@ public:
         for (iter = renderTargetElements_.begin(); iter != e; ++iter)
         {
             RenderTargetElement *element = iter->second;
-            char *pixels=(char *)malloc(element->width * element->height * 4);
-            element->_framebuffer->readPixels(0, 0, element->width, element->height, ShaderTexture::FMT_RGBA, ShaderTexture::PK_UBYTE, pixels);
-            size_t output_length = snappy_max_compressed_length(element->width * element->height * 4);
+            int bps=pixelSize(element->format, element->type);
+
+	        ShaderTexture::Format format=gFormatTosFormat(element->format);
+
+	        ShaderTexture::Packing type= gTypeTosPacking(element->type);
+
+            char *pixels=(char *)malloc(element->width * element->height * bps);
+            element->_framebuffer->readPixels(0, 0, element->width, element->height, format, type, pixels);
+            size_t output_length = snappy_max_compressed_length(element->width * element->height * bps);
             char *temp=(char *)malloc(output_length);
-            snappy_compress(pixels,element->width * element->height * 4, temp, &output_length);
+            snappy_compress(pixels,element->width * element->height * bps, temp, &output_length);
             free(pixels);
             element->buffer = new char[output_length];
             memcpy(element->buffer,temp,output_length);
@@ -654,54 +678,9 @@ private:
 private:
     void genAndUploadTexture(CommonElement *element, const void *pixels)
     {
-        ShaderTexture::Format format;
-        switch (element->format)
-        {
-        case GTEXTURE_ALPHA:
-            format = ShaderTexture::FMT_ALPHA;
-            break;
-        case GTEXTURE_RGB:
-            format = ShaderTexture::FMT_RGB;
-            break;
-        case GTEXTURE_RGBA:
-            format = ShaderTexture::FMT_RGBA;
-            break;
-        case GTEXTURE_LUMINANCE:
-            format = ShaderTexture::FMT_Y;
-            break;
-        case GTEXTURE_LUMINANCE_ALPHA:
-            format = ShaderTexture::FMT_YA;
-            break;
-        case GTEXTURE_DEPTH:
-            format = ShaderTexture::FMT_DEPTH;
-            break;
-        }
+        ShaderTexture::Format format= gFormatTosFormat(element->format);
+        ShaderTexture::Packing type= gTypeTosPacking(element->type);
 
-        ShaderTexture::Packing type;
-        switch (element->type)
-        {
-        case GTEXTURE_UNSIGNED_BYTE:
-            type = ShaderTexture::PK_UBYTE;
-            break;
-        case GTEXTURE_UNSIGNED_SHORT_5_6_5:
-            type = ShaderTexture::PK_USHORT_565;
-            break;
-        case GTEXTURE_UNSIGNED_SHORT_4_4_4_4:
-            type = ShaderTexture::PK_USHORT_4444;
-            break;
-        case GTEXTURE_UNSIGNED_SHORT_5_5_5_1:
-            type = ShaderTexture::PK_USHORT_5551;
-            break;
-        case GTEXTURE_FLOAT:
-            type = ShaderTexture::PK_FLOAT;
-            break;
-        case GTEXTURE_UNSIGNED_SHORT:
-            type = ShaderTexture::PK_USHORT;
-            break;
-        case GTEXTURE_UNSIGNED_INT:
-            type = ShaderTexture::PK_UINT;
-            break;
-        }
         ShaderTexture::Wrap wrap=ShaderTexture::WRAP_CLAMP;
         if (element->wrap==GTEXTURE_REPEAT)
         	wrap=ShaderTexture::WRAP_REPEAT;
@@ -845,9 +824,9 @@ G_API size_t gtexture_getMemoryUsage()
 }
 
 g_id gtexture_RenderTargetCreate(int width, int height,
-                                 int wrap, int filter,bool depth)
+                                 int wrap, int filter,int format, unsigned char *bpp)
 {
-    return s_manager->RenderTargetCreate(width, height, wrap, filter, depth);
+    return s_manager->RenderTargetCreate(width, height, wrap, filter, format, bpp);
 }
 
 ShaderBuffer *gtexture_RenderTargetGetFBO(g_id renderTarget)

@@ -35,11 +35,36 @@ int RenderTargetBinder::create(lua_State *L)
     bool selectScale = lua_toboolean(L, 5);
     bool depth = lua_toboolean(L, 6);
 
+    Format format = eRGBA8888;
+    const char *formatstr = luaL_optstring(L, 7, "rgba8888");
+    if (strcmp(formatstr, "rgba8888") == 0)
+        format = eRGBA8888;
+    else if (strcmp(formatstr, "rgb888") == 0)
+        format = eRGB888;
+    else if (strcmp(formatstr, "rgb565") == 0)
+        format = eRGB565;
+    else if (strcmp(formatstr, "rgba4444") == 0)
+        format = eRGBA4444;
+    else if (strcmp(formatstr, "rgba5551") == 0)
+        format = eRGBA5551;
+    else if (strcmp(formatstr, "y8") == 0)
+        format = eY8;
+    else if (strcmp(formatstr, "a8") == 0)
+        format = eA8;
+    else if (strcmp(formatstr, "ya8") == 0)
+        format = eYA8;
+    else
+    {
+        GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
+        luaL_error(L, status.errorString());
+    }
+
+
 	//Ensure requested size is never negative
 	if (width <= 0) width = 0;
 	if (height <= 0) height = 0;
 
-    binder.pushInstance("RenderTarget", new GRenderTarget(application->getApplication(), width, height, smoothing ? eLinear : eNearest, repeat ? eRepeat : eClamp,selectScale,depth));
+    binder.pushInstance("RenderTarget", new GRenderTarget(application->getApplication(), width, height, smoothing ? eLinear : eNearest, repeat ? eRepeat : eClamp,format,selectScale,depth));
 
     return 1;
 }
@@ -105,7 +130,7 @@ int RenderTargetBinder::getPixels(lua_State *L)
     int y = luaL_optinteger(L, 3, 0);
     unsigned int w = luaL_optinteger(L, 4, renderTarget->data->width);
     unsigned int h = luaL_optinteger(L, 5, renderTarget->data->height);
-    size_t bsize=w*h*4;
+    size_t bsize=w*h*renderTarget->data->parameters.bpp;
 
     void *buffer=malloc(bsize);
     memset(buffer,0xFF,bsize);
@@ -122,9 +147,10 @@ int RenderTargetBinder::getPixels(lua_State *L)
     if ((w>0)&&(h>0))
     	renderTarget->getPixels(x,y,w,h,buffer);
     lua_pushlstring(L,(char *)buffer,bsize);
+    lua_pushinteger(L,renderTarget->data->parameters.bpp);
     free(buffer);
 
-    return 1;
+    return 2;
 }
 
 int RenderTargetBinder::getPixel(lua_State *L)
@@ -135,11 +161,10 @@ int RenderTargetBinder::getPixel(lua_State *L)
     int x = luaL_checkinteger(L, 2);
     int y = luaL_checkinteger(L, 3);
 
-    unsigned char pixel[4]={0xFF,0xFF,0xFF,0xFF};
+    unsigned char pixel[4]={0xFF,0xFF,0xFF,0xFF}; //Only works for RGBA textures
 
     if ((x>=0)&&(y>=0))
     	renderTarget->getPixels(x,y,1,1,pixel);
-
     lua_pushinteger(L,(pixel[0]<<16)|(pixel[1]<<8)|(pixel[2]<<0));
     lua_pushnumber(L,((float)pixel[3])/255.0);
 

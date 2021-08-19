@@ -1,6 +1,7 @@
 <plugin
  name="Share"
  description="Add support for data sharing with other apps">
+ <property name="photoShareReason" type="string" title="Explain why you want to access to photo library (Apple)"/> 
  <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
@@ -49,6 +50,8 @@ iOSProject.exportPluginFiles("Share",
 	{ "sharebinder.h", "sharebinder.cpp" },
 	false,
 	true,true,false)
+	
+	iOSProject.InfoPlist.NSPhotoLibraryUsageDescription=Export.getProperty("plugin.photoShareReason")
 	]]></lua>
  </target>
 </plugin>
