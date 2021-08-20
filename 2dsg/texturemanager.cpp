@@ -165,6 +165,8 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
             std::promise<TextureData *> res;
             std::future<TextureData *> ret=res.get_future();
             res.set_value(data);
+            if (async)
+                async(data,nullptr);
             return ret;
         }
     }
