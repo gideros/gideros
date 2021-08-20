@@ -49,7 +49,7 @@ void _spAtlasPage_createTexture(spAtlasPage* self, const char* path) {
 	parameters.format = eRGBA8888;
 
 	TextureData *tex = application->getTextureManager()->createTextureFromFile(
-			path, parameters, false);
+			path, parameters, false).get();
 	self->rendererObject = tex;
 	self->width = tex->baseWidth;
 	self->height = tex->baseHeight;

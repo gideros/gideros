@@ -24,7 +24,7 @@ TextureBase::TextureBase(	Application* application,
 	parameters.maketransparent = maketransparent;
 	parameters.transparentcolor = transparentcolor;
 
-	data = application_->getTextureManager()->createTextureFromFile(filename, parameters,pow2);
+    data = application_->getTextureManager()->createTextureFromFile(filename, parameters,pow2).get();
 	sizescalex = 1;
 	sizescaley = 1;
     uvscalex = (float)data->width / (float)data->baseWidth;

@@ -9,6 +9,7 @@
 #include <glog.h>
 #include "ogl.h"
 #include <application.h>
+#include <future>
 
 ShaderTexture *TextureData::id()
 {
@@ -32,7 +33,7 @@ static void append(std::vector<char>& buffer, const TextureParameters& parameter
 }
 
 TextureManager::TextureManager(Application* application) :
-    application_(application)
+    application_(application), _async(1)
 {
 }
 
@@ -40,7 +41,37 @@ TextureManager::~TextureManager()
 {
 }
 
-TextureData* TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters,bool pow2)
+struct TextureLoadEvent {
+    std::string file;
+    std::vector<char> sig;
+    std::function<void(TextureData *,std::exception_ptr)> async;
+    std::promise<TextureData *> promise;
+    std::exception_ptr exception;
+    TextureParameters parameters;
+    Dib *dib;
+};
+
+static void callback_s(int type, void *event, void *udata)
+{
+    G_UNUSED(type);
+    TextureLoadEvent *e=(TextureLoadEvent *)event;
+    if (e->exception) {
+        e->promise.set_exception(e->exception);
+        e->async(NULL,e->exception);
+    }
+    else {
+        TextureData *data= ((TextureManager *)udata)->createTextureFromDib(*e->dib,e->parameters,&(e->sig[0]),e->sig.size());
+        delete e->dib;
+        e->promise.set_value(data);
+        e->async(data,nullptr);
+    }
+    delete e;
+
+}
+
+static g_id gid_evt=g_NextId();
+
+std::future<TextureData*> TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters,bool pow2, std::function<void(TextureData *,std::exception_ptr)> async)
 {
     int flags = gpath_getDriveFlags(gpath_getPathDrive(filename));
 
@@ -131,104 +162,130 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
             TextureData* internal = (TextureData*)gtexture_getUserData(gid);
             TextureData* data = new TextureData(*internal);
             data->gid = gid;
-
-            return data;
+            std::promise<TextureData *> res;
+            std::future<TextureData *> ret=res.get_future();
+            res.set_value(data);
+            return ret;
         }
     }
 
-    Dib dib(application_, filename, true, pow2, parameters.maketransparent, parameters.transparentcolor);
+    if (!async)
+    {
+        Dib *dib=new Dib(application_, filename, true, pow2, parameters.maketransparent, parameters.transparentcolor);
 
-    if (parameters.grayscale)
-        dib.convertGrayscale();
+        if (parameters.grayscale)
+            dib->convertGrayscale();
 
 #if PREMULTIPLIED_ALPHA
-    dib.premultiplyAlpha();
+        dib->premultiplyAlpha();
 #endif
+        g_id gid = 0;
+        unsigned char bpp=1;
+        switch (parameters.format)
+        {
+        case eRGBA8888:
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, dib->data(), &sig[0], sig.size());
+            bpp=4;
+            break;
+        case eRGB888:
+        {
+            unsigned char *data = dib->to888();
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            delete[] data;
+            bpp=3;
+            break;
+        }
+        case eRGB565:
+        {
+            unsigned short *data = dib->to565();
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            delete[] data;
+            bpp=2;
+            break;
+        }
+        case eRGBA4444:
+        {
+            unsigned short *data = dib->to4444();
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            delete[] data;
+            bpp=2;
+            break;
+        }
+        case eRGBA5551:
+        {
+            unsigned short *data = dib->to5551();
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            delete[] data;
+            bpp=2;
+            break;
+        }
+        case eY8:
+        {
+            unsigned char *data = dib->toY8();
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, NULL, 0);
+            delete[] data;
+            break;
+        }
+        case eA8:
+        {
+            unsigned char *data = dib->toA8();
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, NULL, 0);
+            delete[] data;
+            break;
+        }
+        case eYA8:
+        {
+            unsigned char *data = dib->toYA8();
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, NULL, 0);
+            delete[] data;
+            bpp=2;
+            break;
+        }
+        }
 
-    g_id gid = 0;
-    unsigned char bpp=1;
-    switch (parameters.format)
-    {
-    case eRGBA8888:
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, dib.data(), &sig[0], sig.size());
-        bpp=4;
-        break;
-    case eRGB888:
-    {
-        unsigned char *data = dib.to888();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
-        delete[] data;
-        bpp=3;
-        break;
-    }
-    case eRGB565:
-    {
-        unsigned short *data = dib.to565();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
-        delete[] data;
-        bpp=2;
-        break;
-    }
-    case eRGBA4444:
-    {
-        unsigned short *data = dib.to4444();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
-        delete[] data;
-        bpp=2;
-        break;
-    }
-    case eRGBA5551:
-    {
-        unsigned short *data = dib.to5551();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, &sig[0], sig.size());
-        delete[] data;
-        bpp=2;
-        break;
-    }
-    case eY8:
-    {
-        unsigned char *data = dib.toY8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
-        delete[] data;
-        break;
-    }
-    case eA8:
-    {
-        unsigned char *data = dib.toA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
-        delete[] data;
-        break;
-    }
-    case eYA8:
-    {
-        unsigned char *data = dib.toYA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
-        delete[] data;
-        bpp=2;
-        break;
-    }
+        TextureData* data = new TextureData;
+
+        data->gid = gid;
+        data->parameters = parameters;
+        data->parameters.bpp=bpp;
+        data->width = dib->originalWidth();
+        data->height = dib->originalHeight();
+        data->exwidth = dib->width();
+        data->exheight = dib->height();
+        data->baseWidth = dib->baseOriginalWidth();
+        data->baseHeight = dib->baseOriginalHeight();
+        data->scale = dib->scale();
+
+        delete dib;
+
+        TextureData* internal = new TextureData(*data);
+        gtexture_setUserData(gid, internal);
+
+        std::promise<TextureData *> res;
+        std::future<TextureData *> ret=res.get_future();
+        res.set_value(data);
+        return ret;
     }
 
-    TextureData* data = new TextureData;
+    TextureLoadEvent *evt= new TextureLoadEvent;
+    evt->file=filename;
+    evt->sig=sig;
+    evt->async=async;
+    evt->parameters=parameters;
+    _async.enqueue([=]{
+        //Safe:  this (should never be destroyed, unless application exits ?)
+        try {
+            evt->dib=new Dib(application_, evt->file.c_str(), true, pow2, evt->parameters.maketransparent, evt->parameters.transparentcolor);
+        } catch (const std::exception &e) {
+            evt->exception=std::current_exception();
+        }
+        gevent_EnqueueEvent(gid_evt, callback_s, 0, (void *)evt,0,this);
+    });
 
-    data->gid = gid;
-    data->parameters = parameters;
-    data->parameters.bpp=bpp;
-    data->width = dib.originalWidth();
-    data->height = dib.originalHeight();
-    data->exwidth = dib.width();
-    data->exheight = dib.height();
-    data->baseWidth = dib.baseOriginalWidth();
-    data->baseHeight = dib.baseOriginalHeight();
-    data->scale = dib.scale();
-
-    TextureData* internal = new TextureData(*data);
-    gtexture_setUserData(gid, internal);
-
-    return data;
+    return evt->promise.get_future();
 }
 
-TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureParameters& parameters)
+TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureParameters& parameters, const void *sig,size_t sigsize)
 {
     int wrap = 0;
     switch (parameters.wrap)
@@ -306,13 +363,13 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     switch (parameters.format)
     {
     case eRGBA8888:
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, dib2.data(), NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, dib2.data(), sig, sigsize);
         bpp=4;
         break;
     case eRGB888:
     {
         unsigned char *data = dib2.to888();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, sig, sigsize);
         delete[] data;
         bpp=3;
         break;
@@ -320,7 +377,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     case eRGB565:
     {
         unsigned short *data = dib2.to565();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, sig, sigsize);
         delete[] data;
         bpp=2;
         break;
@@ -328,7 +385,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     case eRGBA4444:
     {
         unsigned short *data = dib2.to4444();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, sig, sigsize);
         delete[] data;
         bpp=2;
         break;
@@ -336,7 +393,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     case eRGBA5551:
     {
         unsigned short *data = dib2.to5551();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, sig, sigsize);
         delete[] data;
         bpp=2;
         break;
@@ -344,21 +401,21 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     case eY8:
     {
         unsigned char *data = dib2.toY8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, sig, sigsize);
         delete[] data;
         break;
     }
     case eA8:
     {
         unsigned char *data = dib2.toA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, sig, sigsize);
         delete[] data;
         break;
     }
     case eYA8:
     {
         unsigned char *data = dib2.toYA8();
-        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, NULL, 0);
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, data, sig, sigsize);
         delete[] data;
         bpp=2;
         break;
@@ -592,6 +649,8 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
         type = GTEXTURE_UNSIGNED_BYTE;
         break;
     }
+
+    G_UNUSED(type);
 
     float scale=1.0;
     if (selectScale)

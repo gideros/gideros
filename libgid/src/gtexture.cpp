@@ -249,6 +249,8 @@ public:
     	        ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
     	        if (element->filter==GTEXTURE_NEAREST)
     	        	filtering=ShaderTexture::FILT_NEAREST;
+             element->width=width;
+             element->height=height;
     	     element->_texture->updateData(format,type,element->width, element->height,pixels,wrap,filtering);
 
     	     textureMemory_ -= element->textureSize;

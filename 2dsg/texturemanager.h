@@ -3,6 +3,7 @@
 
 #include <gtexture.h>
 #include <map>
+#include <threadpool.h>
 
 class Application;
 class Dib;
@@ -70,14 +71,15 @@ public:
     TextureManager(Application* application);
     ~TextureManager();
 
-    virtual TextureData* createTextureFromFile(const char* filename, const TextureParameters& parameters, bool pow2=true);
-    virtual TextureData* createTextureFromDib(const Dib& dib, const TextureParameters& parameters);
+    virtual std::future<TextureData*> createTextureFromFile(const char* filename, const TextureParameters& parameters, bool pow2=true, std::function<void(TextureData *,std::exception_ptr)> async={});
+    virtual TextureData* createTextureFromDib(const Dib& dib, const TextureParameters& parameters, const void *sig=NULL,size_t sigsize=0);
     virtual TextureData* createRenderTarget(int width, int height, const TextureParameters& parameters, bool selectScale=false,bool depth=false);
     virtual void updateTextureFromDib(TextureData* data, const Dib& dib);
     virtual void destroyTexture(TextureData* texture);
 
 private:
     Application *application_;
+    ThreadPool _async;
 };
 
 

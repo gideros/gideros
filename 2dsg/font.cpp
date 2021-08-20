@@ -107,7 +107,7 @@ void Font::constructor(const char *glympfile, const char *imagefile,
 	parameters.wrap = eClamp;
 	parameters.grayscale = (format == 0);
 	data_ = application_->getTextureManager()->createTextureFromFile(imagefile,
-			parameters);
+            parameters).get();
 
 	if (f) {
 		switch (format) {

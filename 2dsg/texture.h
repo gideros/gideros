@@ -2,10 +2,12 @@
 #define TEXTURE_H
 
 #include "texturebase.h"
+#include <functional>
 
 class Texture : public TextureBase
 {
 public:
+    Texture(Application* application);
 	// can throw GiderosException
 	Texture(Application* application,
             const char* filename, Filter filter, Wrap wrap, Format format,
@@ -14,6 +16,10 @@ public:
 			const unsigned char* pixels, unsigned int width, unsigned int height, Filter filter, Wrap wrap, Format format,
 			bool maketransparent = false, unsigned int transparentcolor = 0x00000000, bool pow2=true, float scale=1);
 	virtual ~Texture();
+    static void loadAsync(Application* application,
+                    const char* filename, Filter filter, Wrap wrap, Format format,
+                    bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/, bool pow2, std::function<void(Texture *,std::exception_ptr)> callback);
+
 };
 
 
