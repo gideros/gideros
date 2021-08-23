@@ -169,6 +169,11 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 - (void)setOrientation:(AVCaptureVideoOrientation) angle
 {
     _angle=angle;
+    if ( _captureSession ) {
+        [_videoConnection setVideoOrientation:_angle];
+        [_stillConnection setVideoOrientation:_angle];
+    }
+
 }
 
 - (void)startRunning

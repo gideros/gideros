@@ -47,8 +47,6 @@ static g_id gid=g_NextId();
 	if ( _addedObservers ) {
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:[UIApplication sharedApplication]];
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:[UIApplication sharedApplication]];
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:[UIDevice currentDevice]];
-		[[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 	}
 
 	[_capturePipeline release];
@@ -111,6 +109,12 @@ if (err)
 	self.capturePipeline.renderingEnabled = YES;
 }
 
+- (void)setOrientation:(AVCaptureVideoOrientation)o
+{
+    [self.capturePipeline setRecordingOrientation:o];
+    [self.capturePipeline setOrientation:o];
+}
+
 - (void)start:(TextureData *)texture o:(AVCaptureVideoOrientation) orientation cw:(int *)camwidth ch:(int *)camheight device:(NSString *) dev pw:(int *)picwidth ph:(int *)picheight
 {
     tex = texture;
@@ -136,10 +140,6 @@ if (err)
 											 selector:@selector(applicationWillEnterForeground)
 												 name:UIApplicationWillEnterForegroundNotification
 											   object:[UIApplication sharedApplication]];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(deviceOrientationDidChange)
-												 name:UIDeviceOrientationDidChangeNotification
-											   object:[UIDevice currentDevice]];
 	
     // Keep track of changes to the device orientation so we can update the capture pipeline
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -151,6 +151,7 @@ if (err)
 	_allowedToUseGPU = ( [UIApplication sharedApplication].applicationState != UIApplicationStateBackground );
     self.capturePipeline.renderingEnabled = _allowedToUseGPU;
     self.capturePipeline.camdev = dev;
+    [self.capturePipeline setRecordingOrientation:orientation];
     [self.capturePipeline setOrientation:orientation];
     [self.capturePipeline startRunning];
     [self.capturePipeline getVideoWidth:camwidth andHeight:camheight];
@@ -279,16 +280,6 @@ if (err)
     }
 }
 
-- (void)deviceOrientationDidChange
-{
-    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-	
-	// Update recording orientation if device changes to portrait or landscape orientation (but not face up/down)
-	if ( UIDeviceOrientationIsPortrait( deviceOrientation ) || UIDeviceOrientationIsLandscape( deviceOrientation ) ) {
-        [self.capturePipeline setRecordingOrientation:(AVCaptureVideoOrientation)deviceOrientation];
-	}
-}
-
 - (void)capturePipeline:(CameraCapturePipeline *)capturePipeline didStopRunningWithError:(NSError *)error
 {
 }
@@ -334,7 +325,7 @@ if (err)
                                                                 &texture);
 #else
     CVMetalTextureRef texture = nullptr;
-    CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+    /*CVReturn err = */CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                             videoTextureCache,
                                                             videoBuffer,
                                                             nullptr,
@@ -363,17 +354,17 @@ if (err)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #else
-            ShaderTexture *ctex=ShaderEngine::Engine->createTexture(ShaderTexture::FMT_NATIVE, ShaderTexture::PK_UBYTE, frameWidth, frameHeight, NULL, ShaderTexture::WRAP_CLAMP, ShaderTexture::FILT_LINEAR);
+            ShaderTexture *ctex=ShaderEngine::Engine->createTexture(ShaderTexture::FMT_NATIVE, ShaderTexture::PK_UBYTE, (int)frameWidth, (int)frameHeight, NULL, ShaderTexture::WRAP_CLAMP, ShaderTexture::FILT_LINEAR);
             ctex->setNative(CVMetalTextureGetTexture(texture));
             ShaderEngine::Engine->bindTexture(0, ctex);
 #endif
             ShaderProgram::stdTexture->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,
-                            &vertices[0], vertices.size(), vertices.modified,
+                            &vertices[0], (unsigned int) vertices.size(), vertices.modified,
                             &vertices.bufferCache);
             ShaderProgram::stdTexture->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT, 2,
-                            &texcoords[0], texcoords.size(), texcoords.modified,
+                            &texcoords[0], (unsigned int)texcoords.size(), texcoords.modified,
                             &texcoords.bufferCache);
-            ShaderProgram::stdTexture->drawElements(ShaderProgram::TriangleStrip, indices.size(),
+            ShaderProgram::stdTexture->drawElements(ShaderProgram::TriangleStrip, (unsigned int)indices.size(),
                                  ShaderProgram::DUSHORT, &indices[0], indices.modified,
                                  &indices.bufferCache);
             vertices.modified = false;
@@ -513,6 +504,28 @@ cameraplugin::CameraInfo cameraplugin::queyCamera(const char *device, Orientatio
     [ctrl queryCamera:dev o:o ret:&ci];
     return ci;
 }
+
+void cameraplugin::setOrientation(Orientation orientation) {
+    AVCaptureVideoOrientation o=AVCaptureVideoOrientationPortrait;
+    switch (orientation)
+    {
+        default:
+        case ePortrait:
+            o=AVCaptureVideoOrientationPortrait;
+            break;
+        case eLandscapeLeft:
+            o=AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        case ePortraitUpsideDown:
+            o=AVCaptureVideoOrientationPortraitUpsideDown;
+            break;
+        case eLandscapeRight:
+            o=AVCaptureVideoOrientationLandscapeRight;
+            break;
+    }
+    [ctrl setOrientation:o];
+}
+
 
 extern "C" void cameraplugin_render()
 {

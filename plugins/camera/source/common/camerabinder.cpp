@@ -28,13 +28,38 @@ static int availableDevices(lua_State* L)
 	 else
 		 lua_pushstring(L,"unknown");
 	 lua_setfield(L,-2,"position");
-	 lua_rawseti(L,-2,k+1);
+	 lua_rawseti(L,-2,(int)(k+1));
  }
  return 1;
 }
 
+static int setOrientation(lua_State *L)
+{
+    Orientation orientation=eFixed;
+    const char *ors;
+    if (lua_isnoneornil(L, 1)) {
+        lua_getglobal(L,"application");
+        lua_getfield(L,-1,"getOrientation");
+        lua_getglobal(L,"application");
+        lua_call(L,1,1);
+        ors=lua_tostring(L,-1);
+        lua_pop(L,1);
+    }
+    else
+        ors=luaL_checkstring(L, 1);
+    orientation=ePortrait;
+    if (!strcmp(ors,"landscapeLeft"))
+        orientation=eLandscapeLeft;
+    else if (!strcmp(ors,"landscapeRight"))
+        orientation=eLandscapeRight;
+    else if (!strcmp(ors,"portraitUpsideDown"))
+        orientation=ePortraitUpsideDown;
+    cameraplugin::setOrientation(orientation);
+    return 0;
+}
+
 static int setFlash(lua_State* L) {
-	lua_pushboolean(L,cameraplugin::setFlash(luaL_optinteger(L,1,0)));
+	lua_pushboolean(L,cameraplugin::setFlash((int)luaL_optinteger(L,1,0)));
 	return 1;
 }
 
@@ -68,27 +93,27 @@ static int queryCamera(lua_State* L) {
 	cameraplugin::CameraInfo ci=cameraplugin::queyCamera(name,orientation);
 	 lua_newtable(L);
 
-	 lua_createtable(L,ci.previewSizes.size(),0);
+	 lua_createtable(L,(int)ci.previewSizes.size(),0);
 	 for (size_t k=0;k<ci.previewSizes.size();k++) {
 		 lua_pushinteger(L,ci.previewSizes[k]);
-		 lua_rawseti(L,-2,k+1);
+		 lua_rawseti(L,-2,(int)k+1);
 	 }
 	 lua_setfield(L,-2,"previewSizes");
 
-	 lua_createtable(L,ci.pictureSizes.size(),0);
+	 lua_createtable(L,(int)ci.pictureSizes.size(),0);
 	 for (size_t k=0;k<ci.pictureSizes.size();k++) {
 		 lua_pushinteger(L,ci.pictureSizes[k]);
-		 lua_rawseti(L,-2,k+1);
+		 lua_rawseti(L,-2,(int)k+1);
 	 }
 	 lua_setfield(L,-2,"pictureSizes");
 
 	 lua_pushinteger(L,ci.angle);
 	 lua_setfield(L,-2,"angle");
 
-	 lua_createtable(L,ci.flashModes.size(),0);
+	 lua_createtable(L,(int)ci.flashModes.size(),0);
 	 for (size_t k=0;k<ci.flashModes.size();k++) {
 		 lua_pushinteger(L,ci.flashModes[k]);
-		 lua_rawseti(L,-2,k+1);
+		 lua_rawseti(L,-2,(int)k+1);
 	 }
 	 lua_setfield(L,-2,"flashModes");
 
@@ -99,8 +124,8 @@ static int start(lua_State* L)
 {
 	GRenderTarget* textureBase = static_cast<GRenderTarget*>(g_getInstance(L,"RenderTarget",1));
 	const char *name=luaL_optstring(L,2,NULL);
-	int picwidth=luaL_optinteger(L,3,0);
-	int picheight=luaL_optinteger(L,4,0);
+	int picwidth=(int)luaL_optinteger(L,3,0);
+	int picheight=(int)luaL_optinteger(L,4,0);
 	if (cameraplugin::cameraTexture)
 		cameraplugin::cameraTexture->unref();
 	textureBase->ref();
@@ -186,6 +211,7 @@ static int loader(lua_State* L)
         {"setFlash", setFlash},
         {"takePicture", takePicture},
         {"queryCamera", queryCamera},
+        {"setOrientation", setOrientation},
 		{NULL, NULL},
 	};
 

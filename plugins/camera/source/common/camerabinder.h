@@ -30,6 +30,7 @@ namespace cameraplugin {
 	void init();
 	std::vector<CameraDesc> availableDevices();
 	void start(Orientation orientation,int *camwidth,int *camheight,const char *device,int *picWidth,int *picHeight);
+    void setOrientation(Orientation orientation);
 	void stop();
 	void deinit();
     bool isAvailable();
