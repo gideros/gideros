@@ -18,6 +18,7 @@ import java.util.List;
 public class GCamera {
 	private static WeakReference<Activity> sActivity;
 	private static Camera camera;
+	private static Camera.CameraInfo caminfo;
 
 	public static void onCreate(Activity activity) {
 		sActivity = new WeakReference<Activity>(activity);
@@ -137,10 +138,9 @@ public class GCamera {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					Camera.Parameters parameters = camera.getParameters();
 					caps=new CamCaps();
-					boolean swap = ((angle % 180) != (info.orientation % 180));
-					caps.angle=(angle - info.orientation + 360) % 360;
-					caps.previewSizes=sizeListToIntList(camera.getParameters().getSupportedPreviewSizes(),swap);
-					caps.pictureSizes=sizeListToIntList(camera.getParameters().getSupportedPictureSizes(),swap);
+					caps.angle=(info.orientation + 360) % 360;
+					caps.previewSizes=sizeListToIntList(camera.getParameters().getSupportedPreviewSizes(),false);
+					caps.pictureSizes=sizeListToIntList(camera.getParameters().getSupportedPictureSizes(),false);
 
 					List<String> flist = parameters.getSupportedFlashModes();
 					List<Integer> fsup=new ArrayList<Integer>();
@@ -194,7 +194,7 @@ public class GCamera {
 				new Camera.PictureCallback() {
 					@Override
 					public void onPictureTaken(byte[] data, Camera camera) {
-						nativeEvent(2,data); //JPEG DATA 
+						nativeEvent(2,data); //JPEG DATA
 						camera.startPreview();
 					}
 				});
@@ -231,6 +231,7 @@ public class GCamera {
 				android.hardware.Camera.CameraInfo info =
 						new android.hardware.Camera.CameraInfo();
 				android.hardware.Camera.getCameraInfo(camId, info);
+				caminfo=info;
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 					try {
 						GLES20.glGenTextures(1, camtex, 0);
@@ -296,6 +297,8 @@ public class GCamera {
 					}
 				}
 
+				dimret[2]=0;//info.orientation;
+
 				if ((angle % 180) != (info.orientation % 180)) {
 					int c = dimret[0];
 					dimret[0] = dimret[1];
@@ -304,16 +307,23 @@ public class GCamera {
 					dimret[4] = dimret[5];
 					dimret[5] = c;
 				}
-				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
-					dimret[2] = (angle - info.orientation + 360) % 360;
-				else
-					dimret[2] = (angle + info.orientation + 360) % 360;
 				dimret[3] = 1;
-				camera.setDisplayOrientation(0);
+				setOrientation(angle);
 				camera.startPreview();
 			}
 		}
 		return dimret;
+	}
+
+	public static void setOrientation(int angle) {
+		if (camera != null) {
+			if (caminfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
+				angle = (angle - caminfo.orientation + 360) % 360;
+			else
+				angle = (angle + caminfo.orientation + 360) % 360;
+			angle=(360-angle)%360;
+			camera.setDisplayOrientation(angle);
+		}
 	}
 
 	static private Camera.Size getOptimalPreviewSize2(List<Camera.Size> sizes, int w, int h) {

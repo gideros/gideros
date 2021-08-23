@@ -183,6 +183,12 @@ public:
 				env->GetStaticMethodID(cls_, "takePicture", "()Z"));
 	}
 
+	void setOrientation(int angle) {
+		JNIEnv *env = g_getJNIEnv();
+		env->CallStaticVoidMethod(cls_,
+				env->GetStaticMethodID(cls_, "setOrientation", "(I)V"),angle);
+	}
+
 	cameraplugin::CameraInfo queryCamera(const char *device, int orientation)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -376,6 +382,27 @@ bool cameraplugin::takePicture() {
 	if (s_gcamera)
 		return s_gcamera->takePicture();
 	return false;
+}
+
+void cameraplugin::setOrientation(Orientation orientation) {
+	int o=0;
+	switch (orientation)
+	{
+	case ePortrait:
+	case eFixed:
+		o=0;
+		break;
+	case eLandscapeLeft:
+		o=90;
+		break;
+	case ePortraitUpsideDown:
+		o=180;
+		break;
+	case eLandscapeRight:
+		o=270;
+		break;
+	}
+	if (s_gcamera) s_gcamera->setOrientation(o);
 }
 
 cameraplugin::CameraInfo cameraplugin::queyCamera(const char *device, Orientation orientation)

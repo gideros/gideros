@@ -247,6 +247,7 @@ if (err)
         if ([videoDevice isTorchModeSupported:AVCaptureTorchModeOn])
             ci->flashModes.push_back(3);
     }
+    ci->angle=-1;
 }
 
 - (BOOL) setFlash:(int) mode {

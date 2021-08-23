@@ -344,3 +344,6 @@ cameraplugin::CameraInfo cameraplugin::queyCamera(const char *device, Orientatio
     return ci;
 }
 
+void cameraplugin::setOrientation(Orientation orientation) {
+}
+

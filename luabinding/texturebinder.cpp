@@ -156,7 +156,6 @@ int TextureBinder::loadAsync(lua_State* L)
     Wrap wrap = eClamp;
     Format format = eRGBA8888;
     bool pow2=true;
-    float scale=1.0;
     if (!lua_isnoneornil(L, 4))
     {
         if (lua_type(L, 4) != LUA_TTABLE)
@@ -231,18 +230,32 @@ int TextureBinder::loadAsync(lua_State* L)
         Binder binder(LL);
         lua_rawgeti(LL, LUA_REGISTRYINDEX, func);
         luaL_unref(LL, LUA_REGISTRYINDEX, func);
-        try
+/*        try
         {
             if (e) std::rethrow_exception(e);
         }
         catch (const GiderosException& e)
         {
             luaL_error(LL, e.what());
-        }
+        }*/
 
-        binder.pushInstance("Texture", texture);
-        lua_call(LL,1,0);
+        if (texture)
+        	binder.pushInstance("Texture", texture);
+        else
+        	lua_pushnil(L);
+        if (e) {
+            try { std::rethrow_exception(e); }
+            catch (const std::exception &e) { lua_pushstring(L,e.what()); }
+            catch (const std::string    &e) { lua_pushstring(L,e.c_str()); }
+            catch (const char           *e) { lua_pushstring(L,e); }
+            catch (...)                     { lua_pushstring(L,"Unspecified error"); }
+        }
+        else
+        	lua_pushnil(L);
+        lua_call(LL,2,0);
         });
 
     return 0;
 }
+
+

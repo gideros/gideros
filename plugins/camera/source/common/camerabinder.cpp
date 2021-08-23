@@ -107,8 +107,18 @@ static int queryCamera(lua_State* L) {
 	 }
 	 lua_setfield(L,-2,"pictureSizes");
 
-	 lua_pushinteger(L,ci.angle);
-	 lua_setfield(L,-2,"angle");
+	 const char *oname=NULL;
+	 switch (ci.angle)
+	 {
+	 case 0: oname="portrait"; break;
+	 case 90: oname="landscapeLeft"; break;
+	 case 180: oname="portraitUpsideDown"; break;
+	 case 270: oname="landscapeRight"; break;
+	 }
+	 if (oname) {
+		 lua_pushstring(L,oname);
+		 lua_setfield(L,-2,"angle");
+	 }
 
 	 lua_createtable(L,(int)ci.flashModes.size(),0);
 	 for (size_t k=0;k<ci.flashModes.size();k++) {
