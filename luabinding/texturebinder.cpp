@@ -216,9 +216,6 @@ int TextureBinder::loadAsync(lua_State* L)
         if (!lua_isnil(L, -1))
           pow2=lua_toboolean(L,-1);
         lua_pop(L, 1);
-        lua_getfield(L, 4, "scale");
-        scale=luaL_optnumber(L,-1,1.0);
-        lua_pop(L, 1);
     }
 
 

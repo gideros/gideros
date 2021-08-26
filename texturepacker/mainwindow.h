@@ -17,6 +17,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
 	~MainWindow();
+    void openStartProject(const QString& fileName);
 
 
 private slots:

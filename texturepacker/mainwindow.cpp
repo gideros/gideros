@@ -107,6 +107,11 @@ MainWindow::~MainWindow()
 
 }
 
+void MainWindow::openStartProject(const QString& fileName)
+{
+    openProject(fileName);
+}
+
 void MainWindow::setLibraryWidgetModified(bool modified)
 {
 	if (modified)

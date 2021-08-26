@@ -62,6 +62,9 @@ Section "Remove previous install"
   Delete "$INSTDIR\*.dll"
   Delete "$INSTDIR\*.exe"
   ${unregisterExtension} ".gproj" "Gideros project"
+  ${unregisterExtension} ".tpproj" "Gideros texture packer project" 
+  ${unregisterExtension} ".GApp" "Gideros application" 
+  
 SectionEnd
 
 ;--------------------------------
@@ -83,6 +86,7 @@ Section "Gideros (required)"
 
   ${registerExtension} "$INSTDIR\GiderosStudio.exe" ".gproj" "Gideros project" 
   ${registerExtension} "$INSTDIR\GiderosTexturePacker.exe" ".tpproj" "Gideros texture packer project" 
+  ${registerExtension} "$INSTDIR\GiderosPlayer.exe" ".GApp" "Gideros application" 
    
   
 SectionEnd
