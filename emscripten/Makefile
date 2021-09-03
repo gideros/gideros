@@ -98,32 +98,34 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
-POPTS=-s WASM_OBJECT_FILES=0
+POPTS=#-pthread 
 #POPTS+= -s PRECISE_F32=1
 ifneq ($(PROFILING),)
 POPTS+=--profiling
 endif
 
 OPTS+=-Os $(POPTS)
-LOPTS=--llvm-opts "['-disable-inlining']"
+LOPTS=-disable-inlining
 LOPTS_WASM=$(LOPTS)
 LOPTS_JS=$(LOPTS) #--separate-asm
 
 export POPTS
 
-$(BUILD)/emscripten/plugin_support.em.o: CFLGS+=--llvm-opts "['-disable-inlining']" -fno-rtti -fno-exceptions 
+$(BUILD)/emscripten/plugin_support.em.o: CFLGS+=-disable-inlining -fno-rtti -fno-exceptions 
 
 #LINE BELOW FOR WASM
-EOPTS_WASM+= WASM=1 TOTAL_MEMORY=256MB ALLOW_MEMORY_GROWTH=1 #BINARYEN_TRAP_MODE="clamp" #BINARYEN_METHOD="native-wasm" 
-EOPTS+=EXTRA_EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccall','cwrap','getValue','UTF8ToString','loadDynamicLibrary']"
+EOPTS_WASM+= TOTAL_MEMORY=256MB ALLOW_MEMORY_GROWTH=1 #BINARYEN_TRAP_MODE="clamp" #BINARYEN_METHOD="native-wasm" 
+EOPTS+=EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccall','cwrap','getValue','UTF8ToString','loadDynamicLibrary']"
 #EOPTS+=EMCC_FORCE_STDLIBS
 #EOPTS+=EXPORT_ALL=1
 EOPTS+=MAIN_MODULE=2  
 EOPTS+=ASSERTIONS=0
 #EOPTS+=GL_STATE_CACHE=1
-EOPTS+=DISABLE_EXCEPTION_CATCHING=0
+EOPTS+=DISABLE_EXCEPTION_CATCHING=0 PROXY_POSIX_SOCKETS=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
-EOPTS+=USE_WEBGL2=1 WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
+#EOPTS+=USE_WEBGL2=1 WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
+EOPTS+=MAX_WEBGL_VERSION=2
+EOPTS+=USE_GLFW=3
 #EOPTS+=ERROR_ON_UNDEFINED_SYMBOLS=0
 #EOPTS+=LINKABLE=1
 EOPTS+=FORCE_FILESYSTEM=1
@@ -131,16 +133,22 @@ ifneq ($(DEBUG),)
 OPTS+=-g4
 EOPTS+=ASSERTIONS=2
 else
-OPTS+=--emit-symbol-map
+LOPTS+=--emit-symbol-map
 endif
-OPTS+=-lidbfs.js
+LOPTS+=-lwebsocket.js
+LOPTS+=-lidbfs.js
+LOPTS+=-lglfw.js
 
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	-D_REENTRANT -DLIBXMP_CORE_PLAYER \
 	$(OPTS)
-CFLGS+=	-fno-rtti -s DISABLE_EXCEPTION_CATCHING=0 -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
+CFLGS+=	-fno-rtti -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
+PCFLGS+= -s MAIN_MODULE=2 -fno-exceptions
+MCFLGS+= -s SIDE_MODULE=2 -s DISABLE_EXCEPTION_CATCHING=0 
+
+#OBJS=$(addprefix $(BUILD)/,$(addsuffix .emw.o,$(MAIN_SRCS)))
 
 TEMPLATECOM=$(BUILD)/Html5/Html5
 TEMPLATEJASM=$(BUILD)/Html5/Jasm
@@ -197,9 +205,11 @@ SUBLIBS_WOBJS=$(addprefix $(BUILD)/,$(addsuffix .emw.o,$(SUBLIBS_SRCS)))
 define EP_template
 $$(BUILD)/$(1).wasm: $$(addprefix $(BUILD)/,$$(addsuffix .emwp.o,$$($(1)_SRCS)))
 	@echo "EMLINK WASM" $(TARGET)
-	@$$(EMCC) $$(addprefix $(BUILD)/,$$(addsuffix .emwp.o,$$($(1)_SRCS))) -s SIDE_MODULE=2 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@
+	$$(EMCC) -s SIDE_MODULE=2 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $$@ $$(addprefix $(BUILD)/,$$(addsuffix .emwp.o,$$($(1)_SRCS)))
 	@echo "SYMGEN" $(TARGET)
-	$$(EMSDK_PREFIX) wasm2wat.exe $$@ | grep 'import "env"' | grep '(func' | sed 's/^[ \t]*//' | cut -d' ' -f3 >$(BUILD)/$(1).syms
+	@$$(EMSDK_PREFIX) wasm-dis.exe $$@ | grep '(import ' | grep -v '(table ' | grep -v '(memory ' | sed 's/^[ \t]*//' | cut -d' ' -f3 >$(BUILD)/$(1).isyms
+	@$$(EMSDK_PREFIX) wasm-dis.exe $$@ | grep '(export ' | sed 's/^[ \t]*//' | cut -d' ' -f2 >$(BUILD)/$(1).esyms
+	@grep -Fvxf $(BUILD)/$(1).esyms $(BUILD)/$(1).isyms >$(BUILD)/$(1).syms
 SUBLIBS_SRCS+=$$($(1)_SRCS)
 endef
 
@@ -217,7 +227,7 @@ $(BUILD)/lib%.w.a:
 
 $(BUILD)/lib%.w.bc:
 	@echo "EMLD" $@
-	@$(EMCC) $(OPTS)  -s WASM=1 -o $@ $^
+	@$(EMCC) $(OPTS)  -o $@ -r $^
 
 keep: 
 	echo "#define KEEP(v) extern volatile const char *v; *v;" >emscripten/_keep.c
@@ -230,7 +240,7 @@ $(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(addprefix $(BUILD)/,$(addsuffix .wa
 	@echo "EMLINK gideros WASM"
 	@$(EMCC) $(OBJS) $(LIBS) --minify 0  $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_ARW) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 	@echo "SYMGEN gideros"
-	@$(EMSDK_PREFIX) wasm2wat.exe $(BUILD)/gideros-wasm.wasm | grep '(export ' | grep '(func'| cut -d' ' -f4 >$(BUILD)/gideros.esyms
+	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/gideros-wasm.wasm | grep '(export ' | grep '(func'| cut -d' ' -f4 >$(BUILD)/gideros.esyms
 	
 
 main: path $(BUILD)/gideros-wasm.html 
@@ -263,16 +273,16 @@ init:
 
 $(BUILD)/%.emw.o: ../%.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
 
 $(BUILD)/%.emw.o: ../%.c
 	@echo "EMWCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -c $< --default-obj-ext .emw.o -o $@
 
 $(BUILD)/%.emwp.o: ../%.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
 
 $(BUILD)/%.emwp.o: ../%.c
 	@echo "EMWCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -s WASM=1 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -c $< --default-obj-ext .emw.o -o $@

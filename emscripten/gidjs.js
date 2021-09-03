@@ -22,22 +22,25 @@ Module.preRun
 
 				var loader=new Promise(function (resolve,reject) { resolve(); });
 				Module['addRunDependency']("gidPlugins");
-				var r=read_;
-				read_=function (l) {
-					if (l.startsWith("local:"))
-						return l.substring(6);
-					else
-						return r(l);
+				var directLoader={
+					'cache': {},
+				}
+				directLoader.findObject= function (name) {
+					return name in directLoader.cache;
+				}
+				directLoader.readFile= function (name,enc) {
+					return directLoader.cache[name];
 				}
 				Module.GiderosPlugins.forEach(function(p) {
-					var wasmBinary=wasmBinary || wasmBinaryFile;
 					if (p.endsWith(".gidz")) {
-						if (wasmBinary)
 							loader=loader.then(function () { console.log("Loading plugin:"+p); return JZPLoadPromise(p,"array");})
-								.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(c,{global: true, nodelete: true, loadAsync:true}); });
-						else
-							loader=loader.then(function () {console.log("Loading plugin:"+p); return JZPLoadPromise(p);})
-							.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary("local:"+c); });
+								.then(function (c) { 
+									console.log("Instanciating plugin:"+p);
+									directLoader.cache[p]=c;
+									var so=loadDynamicLibrary(p,{global: true, nodelete: true, loadAsync:true, fs:directLoader});
+									directLoader.cache[p]=undefined;
+									return so;
+								});
 					} else {
 						loader=loader.then(function () {
 							return new Promise(function (resolve,reject) {
@@ -53,15 +56,17 @@ Module.preRun
 										}
 									}
 								};								
-								if (wasmBinary)
-									xhr.responseType = 'arraybuffer';
+								xhr.responseType = 'arraybuffer';
 								xhr.send();
 							});
 						});
-						if (wasmBinary)
-							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary(new Uint8Array(c),{global: true, nodelete: true, loadAsync:true}); });
-						else
-							loader=loader.then(function (c) { console.log("Instanciating plugin:"+p); return loadDynamicLibrary("local:"+c); });
+						loader=loader.then(function (c) { 
+							console.log("Instanciating plugin:"+p); 
+							directLoader.cache[p]=new Uint8Array(c);
+							var so=loadDynamicLibrary(p,{global: true, nodelete: true, loadAsync:true, fs:directLoader});
+							directLoader.cache[p]=undefined;
+							return so;
+							});
 					}
 				});
 				loader=loader.then(function () { console.log("Plugins loaded"); Module['removeRunDependency']("gidPlugins");});							
@@ -113,8 +118,8 @@ Module.registerPlugins = function() {
 				var pname = p.split(".")[0].split("/").pop();
 				var pentry = "g_pluginMain_" + pname;
 				// var pp=getCFunc(pentry);
-				Module.ccall('main_registerPlugin', 'number', [ 'string' ],
-						[ pentry ]);
+				Module.ccall('main_registerPlugin', 'number', [ 'string', 'string' ],
+						[ p, pentry ]);
 				// g_registerPlugin(g_pluginMain_##symbol);
 				console.log(pname);
 			});

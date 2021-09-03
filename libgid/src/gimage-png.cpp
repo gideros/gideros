@@ -142,12 +142,14 @@ int gimage_loadPng(const char *pathname, void *buf)
     png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
     png_byte channels = png_get_channels(png_ptr, info_ptr);
 
-    std::vector<unsigned char *> row_pointers(height);
+    unsigned char **row_pointers=new unsigned char *[height];
 
     for (png_uint_32 i = 0; i < height; ++i)
         row_pointers[i] = (unsigned char*)buf + (i * width * channels);
 
-    png_read_image(png_ptr, &row_pointers[0]);
+    png_read_image(png_ptr, row_pointers);
+
+    delete[] row_pointers;
 
     // If one has no need for the post-IDAT chunk data, the second argument can be NULL
     png_read_end(png_ptr, NULL);

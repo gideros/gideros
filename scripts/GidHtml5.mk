@@ -21,6 +21,9 @@ html5.init:
 html5.clean:
 	cd emscripten; $(MAKE) $(MAKEJOBS) clean plugins.clean
 
+html5.plugins.clean:
+	cd emscripten; $(MAKE) $(MAKEJOBS) plugins.clean
+
 html5.main:  
 	cd emscripten; $(MAKE) $(MAKEJOBS) main
 

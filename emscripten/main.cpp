@@ -2,7 +2,7 @@
 #ifdef EGL
 #include <EGL/egl.h>
 #else
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #endif
 #include <iostream>
 #include <emscripten/emscripten.h>
@@ -41,6 +41,7 @@ static void errorLua(const char *detail)
 	emscripten_force_exit(1);
 }
 
+static GLFWwindow *glfw_win;
 int initGL(int &width, int &height)
 {
  //emscripten_set_canvas_size(width,height);
@@ -58,10 +59,10 @@ int initGL(int &width, int &height)
  height*=pixelRatio;
  printf("CanvasSize: %d,%d (%f)\n",width,height,pixelRatio);
                       
- if (glfwOpenWindow(width, height, 8, 8, 8, 8, 16, 8, GLFW_WINDOW) != GL_TRUE) {
-    printf("glfwOpenWindow() failed\n");
-    return GL_FALSE;
- }
+ //8, 8, 8, 8, 16, 8, GLFW_WINDOW
+ //glfwWindowHint(,);
+ glfw_win = glfwCreateWindow(width, height, "", NULL, NULL);
+ glfwMakeContextCurrent(glfw_win);
  
 /* float ratio=1.0;//
  EM_ASM_({
@@ -103,21 +104,32 @@ int initGL(int &width, int &height)
  return 0;
 }
 
-extern "C" void GGStreamOpenALTick();                                                                                                    
-void looptick()
+extern "C" void GGStreamOpenALTick();
+static double dueTime=0;
+extern "C" int g_getFps();
+
+void looptick(void *a)
 {
+	double t=emscripten_get_now()/1000;
+	if (t<dueTime) return;
+
+	//Compute next minium frame time. Don't be too strict because of jitter, actual call rate will be a sub-multiple of 60Hz anyhow
+	int fps=g_getFps();
+	if (fps==0) fps=60;
+	dueTime=t+0.7/fps;
+
 	try {
 		// Check for size change in main loop, due to buggy iOS behavior
 		  int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
 		  int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
 		  if (defWidth!=lastGLWidth || defHeight!=lastGLHeight) {
-			  glfwCloseWindow();
+			  glfwDestroyWindow(glfw_win);
 			  initGL(defWidth,defHeight);
 			  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
 		  }
 		s_applicationManager->drawFrame();
 #ifndef EGL
-    glfwSwapBuffers();
+    glfwSwapBuffers(glfw_win);
 #else
     eglSwapInterval(display,1);
 #endif
@@ -200,8 +212,8 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
 	 if (GiderosUIShown) return false;
-	 int x=e->canvasX*pixelRatio;
-	 int y=e->canvasY*pixelRatio;
+	 int x=e->targetX*pixelRatio;
+	 int y=e->targetY*pixelRatio;
 	 int b=e->buttons;
 	 int bs=0,m=0;
 	 if (e->button==0)
@@ -239,8 +251,8 @@ EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userD
   w=w*40;
  if (e->deltaMode==2)
   w=w*120;
- int x=e->mouse.canvasX*pixelRatio;
- int y=e->mouse.canvasY*pixelRatio;
+ int x=e->mouse.targetX*pixelRatio;
+ int y=e->mouse.targetY*pixelRatio;
  int b=e->mouse.buttons;
  b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
   ginputp_mouseWheel(x,y,b,-w,0);
@@ -257,8 +269,8 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 	 if (e->metaKey) m|=GINPUT_META_MODIFIER;
     for (int k=0;k<e->numTouches;k++) {
      if (!e->touches[k].isChanged) continue;
-	 int x=e->touches[k].canvasX*pixelRatio;
-	 int y=e->touches[k].canvasY*pixelRatio;
+	 int x=e->touches[k].targetX*pixelRatio;
+	 int y=e->touches[k].targetY*pixelRatio;
 	 int i=e->touches[k].identifier;
 	 if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
 		 ginputp_touchBegin(x,y,i,m);
@@ -275,7 +287,7 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
   return true;
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE int main_registerPlugin(const char *pname);
+extern "C" EMSCRIPTEN_KEEPALIVE int main_registerPlugin(const char *pname,const char *psym);
 extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_JSNative(lua_State* L, int type);
 
 extern "C" EMSCRIPTEN_KEEPALIVE long _keep();
@@ -339,22 +351,22 @@ char *url=(char *) EM_ASM_INT_V({
     EMSCRIPTEN_RESULT ret;
     bool capture=false;
     //ret = emscripten_set_resize_callback(0, 0, true, resize_callback);
-    ret = emscripten_set_mousedown_callback(0, 0, capture, mouse_callback);
-    ret = emscripten_set_mouseup_callback(0, 0, capture, mouse_callback);
-    ret = emscripten_set_mousemove_callback(0, 0, capture, mouse_callback);
-    ret = emscripten_set_wheel_callback(0, 0, capture, wheel_callback);
-    ret = emscripten_set_touchstart_callback(0, 0, capture, touch_callback);
-    ret = emscripten_set_touchend_callback(0, 0, capture, touch_callback);
-    ret = emscripten_set_touchmove_callback(0, 0, capture, touch_callback);
-    ret = emscripten_set_touchcancel_callback(0, 0, capture, touch_callback);
-    ret = emscripten_set_keydown_callback(0, 0, true, key_callback);
-    ret = emscripten_set_keyup_callback(0, 0, true, key_callback);
-    ret = emscripten_set_keypress_callback(0, 0, true, key_callback);
+    ret = emscripten_set_mousedown_callback("#canvas", 0, capture, mouse_callback);
+    ret = emscripten_set_mouseup_callback("#canvas", 0, capture, mouse_callback);
+    ret = emscripten_set_mousemove_callback("#canvas", 0, capture, mouse_callback);
+    ret = emscripten_set_wheel_callback("#canvas", 0, capture, wheel_callback);
+    ret = emscripten_set_touchstart_callback("#canvas", 0, capture, touch_callback);
+    ret = emscripten_set_touchend_callback("#canvas", 0, capture, touch_callback);
+    ret = emscripten_set_touchmove_callback("#canvas", 0, capture, touch_callback);
+    ret = emscripten_set_touchcancel_callback("#canvas", 0, capture, touch_callback);
+    ret = emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
+    ret = emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
+    ret = emscripten_set_keypress_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
    //printf("URL:%s\n",url);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
-    emscripten_set_main_loop(looptick, 0, 1);
-    main_registerPlugin(NULL);
+    emscripten_set_main_loop_arg(looptick, NULL,  0, 1);
+    main_registerPlugin(NULL,NULL);
   }
   catch(const luaException& e)
   {
@@ -372,17 +384,17 @@ char *url=(char *) EM_ASM_INT_V({
 }
 
 
-int main_registerPlugin(const char *pname)
+int main_registerPlugin(const char *pname,const char *psym)
 {
  if (!pname)
   return 0;
- void *hndl = dlopen (NULL, RTLD_LAZY);
+ void *hndl = dlopen (pname, RTLD_LAZY);
  if (!hndl) { fprintf(stderr, "dlopen failed: %s\n", dlerror()); 
            exit (EXIT_FAILURE); 
  };
  void *(*func)(lua_State *,
        int)=(void *(*)(lua_State *,
-             int))dlsym(hndl,pname);
+             int))dlsym(hndl,psym);
  int ret=0;
  if (func)
   ret=g_registerPlugin(func);

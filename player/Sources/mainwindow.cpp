@@ -17,6 +17,9 @@
 #include "platform.h"
 #include "settingsdialog.h"
 #include "constants.cpp"
+#ifndef G_UNUSED
+#define G_UNUSED(x) (void)(x)
+#endif
 
 MainWindow* MainWindow::instance;
 
@@ -465,6 +468,7 @@ void MainWindow::actionAuto_Scale(bool checked){
 }
 
 void MainWindow::actionUse_VSYNC(bool checked){
+    G_UNUSED(checked);
 	QMessageBox::information(this, tr("Gideros Player"), tr("You will need to restart the player for this change to take effect."));
 }
 
@@ -547,6 +551,7 @@ void MainWindow::actionRotate(){
     if(action->property("rotate").toInt() == eLeft){
         switch(orientation())
         {
+        default:
         case ePortrait:
             ui.actionLandscape_Left->trigger();
             break;
@@ -564,6 +569,7 @@ void MainWindow::actionRotate(){
     }else{
         switch (orientation())
         {
+        default:
         case ePortrait:
             ui.actionLandscape_Right->trigger();
             break;
@@ -632,6 +638,7 @@ void MainWindow::updateResolution(bool event){
     ui.glCanvas->setScale(canvasScaleFactor);
 
     switch (orientation()){
+        default:
         case ePortrait:
         case ePortraitUpsideDown:
             ui.glCanvas->setFixedSize(width() / widgetScaleFactor, height() / widgetScaleFactor);
@@ -863,7 +870,7 @@ void MainWindow::projectNameChanged(const QString& projectName){
 }
 
 void MainWindow::setFixedSize(bool fixedSize){
-
+    G_UNUSED(fixedSize);
 }
 
 QSize MainWindow::windowSize(){

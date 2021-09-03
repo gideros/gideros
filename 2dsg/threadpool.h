@@ -11,6 +11,10 @@
 #include <functional>
 #include <stdexcept>
 
+#ifdef EMSCRIPTEN
+#define NO_THREADS
+#endif
+
 class ThreadPool {
 public:
     ThreadPool(size_t);
@@ -34,6 +38,7 @@ private:
 inline ThreadPool::ThreadPool(size_t threads)
     :   stop(false)
 {
+#ifndef NO_THREADS
     for(size_t i = 0;i<threads;++i)
         workers.emplace_back(
             [this]
@@ -56,6 +61,7 @@ inline ThreadPool::ThreadPool(size_t threads)
                 }
             }
         );
+#endif
 }
 
 // add new work item to the pool
@@ -70,6 +76,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
         );
 
     std::future<return_type> res = task->get_future();
+#ifndef NO_THREADS
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
 
@@ -84,12 +91,16 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
         	tasks.emplace([task](){ (*task)(); });
     }
     condition.notify_one();
+#else
+    (*task)();
+#endif
     return res;
 }
 
 // the destructor joins all threads
 inline ThreadPool::~ThreadPool()
 {
+#ifndef NO_THREADS
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
         stop = true;
@@ -97,6 +108,7 @@ inline ThreadPool::~ThreadPool()
     condition.notify_all();
     for(std::thread &worker: workers)
         worker.join();
+#endif
 }
 
 #endif

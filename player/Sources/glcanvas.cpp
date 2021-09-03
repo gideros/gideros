@@ -39,6 +39,11 @@
 #include <screen.h>
 #include <Qt>
 
+extern "C" {
+int g_getFps();
+void g_setFps(int fps);
+}
+
 class QtScreenManager : public ScreenManager {
 public:
 	QOpenGLWidget *master_;
@@ -180,6 +185,7 @@ void QtScreenManager::screenDestroyed()
 
 Screen *QtScreenManager::openScreen(Application *application,int id)
 {
+    G_UNUSED(id);
     Screen *s=new QtScreen(application);
     master_->makeCurrent();
     return s;
@@ -198,7 +204,8 @@ QString GLCanvas::appPackage;
 bool GLCanvas::EnableVSYNC=false;
 
 static void printToServer(const char* str, int len, void* data) {
-	unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
+    G_UNUSED(data);
+    unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
 	char* buffer = (char*) malloc(size);
 
 	buffer[0] = gptPrint;
@@ -522,7 +529,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
                     {
                         std::string fileName = &data[1];
                         FILE* fos = fopen(g_pathForFile(fileName.c_str()), "wb");
-                        int pos = 1 + fileName.size() + 1;
+                        size_t pos = 1 + fileName.size() + 1;
                         if(data.size() > pos)
                             fwrite(&data[pos], data.size() - pos, 1, fos);
                         fclose(fos);
@@ -1402,7 +1409,7 @@ bool GLCanvas::event(QEvent *event){
 }
 
 void GLCanvas::onTimer() {
-	double deltat = 1.0 / fps_;
+    double deltat = 1.0 / g_getFps();
 	if (sync_) //if we are synced, try to go a little faster and let vsync regulate things for us
 		deltat-=0.005;
 
@@ -1621,7 +1628,7 @@ void GLCanvas::setScale(float scale) {
 }
 
 void GLCanvas::setFps(int fps) {
-	fps_ = fps;
+	g_setFps(fps);
 	clock_ = iclock();
 }
 

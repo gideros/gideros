@@ -59,7 +59,6 @@ private:
     std::string temporaryDirectory_;
     std::string md5filename_;
     int sync_;
-    int fps_;
     double clock_;
     QString projectName_;
     bool running_;
