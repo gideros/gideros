@@ -23,9 +23,9 @@ public:
 
     virtual void drawText(std::vector<GraphicsBase> * graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l);
 
-    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
-    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
-    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1);
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy, std::string name="");
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1, std::string name="");
+    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1, std::string name="");
     virtual float getAscender();
     virtual float getDescender();
     virtual float getLineHeight();

@@ -16,11 +16,11 @@ FontBase::~FontBase()
 
 void FontBase::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 {
-    getBounds(part.text.c_str(),letterSpacing,&part.x,&part.y,&part.w,&part.h);
+    getBounds(part.text.c_str(),letterSpacing,&part.x,&part.y,&part.w,&part.h,part.style.font);
     part.w=part.w-part.x+1;
     part.h=part.h-part.y+1;
     part.y+=part.dy;
-    part.advX=getAdvanceX(part.text.c_str(),letterSpacing,-1);
+    part.advX=getAdvanceX(part.text.c_str(),letterSpacing,-1,part.style.font);
     part.advY=0;
 }
 
@@ -55,7 +55,7 @@ size_t FontBase::getCharIndexAtOffset(struct ChunkLayout &c, float offset, float
         }
         return utf8_offset(c.text.c_str(),n);
     }
-    size_t n=getCharIndexAtOffset(c.text.c_str(),offset,letterSpacing,-1);
+    size_t n=getCharIndexAtOffset(c.text.c_str(),offset,letterSpacing,-1,c.style.font);
     if (notFirst&&(n==0))
         return utf8_offset(c.text.c_str(),1);
     return n;
@@ -83,7 +83,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 		{
 			if ((tl->parts[i].sepflags&CHUNKCLASS_FLAG_BREAKABLE)&&
                     (tl->parts[i].sep!='\t')&& //Don't merge on tab separator
-                    (tl->parts[i].styleFlags==tl->parts[i+1].styleFlags)) //Don't merge if styles differs
+                    (tl->parts[i].style==tl->parts[i+1].style)) //Don't merge if styles differs
 			{
 				tl->parts[i].text=tl->parts[i].text+" "+tl->parts[i+1].text;
                 tl->parts[i].sep=tl->parts[i+1].sep;
@@ -112,7 +112,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
         tl->parts[i].x+=ox+rx;
         tl->parts[i].dx=ox+rx;
         char sep=tl->parts[i].sep;
-        rx+=tl->parts[i].w;
+        rx+=tl->parts[i].advX;
         float ns=(sep=='\t')?(tabSpace*(1+floor(rx/tabSpace))-rx):sw;
         if (sep==ESC) ns=0;
         rx+=ns;
@@ -137,7 +137,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
     size_t breakcharsz=params->breakchar.size();
     if (breakwords&&breakcharsz)
 		breaksize=getAdvanceX(params->breakchar.c_str(),params->letterSpacing,-1);
-	ChunkLayout styles; //To hold styling info
+    ChunkStyle styles; //To hold styling info
 	styles.styleFlags=0;
     if (params->flags&TLF_RTL)
         styles.styleFlags|=TEXTSTYLEFLAG_RTL;
@@ -268,7 +268,9 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 						}
 					}
 				}
-				if (sp==se) break;
+                else if (!key.compare("font"))
+                    styles.font=val;
+                if (sp==se) break;
 				ss=sp+1;
 			}
 			continue;
@@ -282,13 +284,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		uint8_t sepflags=it->sepFlags;
 		cl.sepflags=sepflags;
 		cl.line=lines+1;
-		cl.styleFlags=styles.styleFlags;
+        cl.style=styles;
 		if (textflags&CHUNKCLASS_FLAG_RTL)
-			cl.styleFlags=(cl.styleFlags&(~TEXTSTYLEFLAG_LTR))|TEXTSTYLEFLAG_RTL;
+            cl.style.styleFlags=(cl.style.styleFlags&(~TEXTSTYLEFLAG_LTR))|TEXTSTYLEFLAG_RTL;
 		if (textflags&CHUNKCLASS_FLAG_LTR)
-			cl.styleFlags=(cl.styleFlags&(~TEXTSTYLEFLAG_RTL))|TEXTSTYLEFLAG_LTR;
-		cl.color=styles.color;
-		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):(((cl.sep==ESC)||(cl.sep==0))?0:sw);
+            cl.style.styleFlags=(cl.style.styleFlags&(~TEXTSTYLEFLAG_RTL))|TEXTSTYLEFLAG_LTR;
+        float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):(((cl.sep==ESC)||(cl.sep==0))?0:sw);
 		cl.sepl=ns;
         cl.extrasize=0;
         if (cl.text.size())
@@ -299,9 +300,9 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
             cl.shapeScaleX=0;
             cl.shapeScaleY=0;
         }
-        if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&((cw+cl.w+ns)>params->w))
+        if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&((cw+cl.advX+ns)>params->w))
 		{
-            if (breakwords&&(cl.w>params->w)&&(cw<(params->w/2)))
+            if (breakwords&&(cl.advX>params->w)&&(cw<(params->w/2)))
             {
                 // Next word is too long to fit into a line no matter what,
                 // and we have still more than half a line space to fill up.
@@ -326,9 +327,9 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		tl.parts.push_back(cl);
         lsepflags=sepflags;
         if (cw) cw+=lastNs;
-		cw+=cl.w;
+        cw+=cl.advX;
         if (mcw) mcw+=lastNs;
-		mcw+=cl.w;
+        mcw+=cl.advX;
         lastNs=ns;
         bool forceBreak=false;
         while ((wrap||singleline)&&breakwords&&(cw>params->w))
@@ -339,9 +340,9 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			float wmax=params->w-breaksize;
 			float ccw=0;
 			//Locate the exceeding chunk
-			while ((cur<pmax)&&(wmax>(tl.parts[cur].w+tl.parts[cur].sepl))) {
-				wmax-=tl.parts[cur].w+tl.parts[cur].sepl;
-				ccw+=tl.parts[cur].w+tl.parts[cur].sepl;
+            while ((cur<pmax)&&(wmax>(tl.parts[cur].advX+tl.parts[cur].sepl))) {
+                wmax-=tl.parts[cur].advX+tl.parts[cur].sepl;
+                ccw+=tl.parts[cur].advX+tl.parts[cur].sepl;
                 cur++;
             }
             if (cur<pmax) //Should always happen, but better check anyhow
@@ -361,7 +362,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 					tl.parts[cur].sepl=0;
 					tl.parts[cur].sep=0;
 		        	chunkMetrics(tl.parts[cur],params->letterSpacing);
-		            ccw+=tl.parts[cur].w;
+                    ccw+=tl.parts[cur].advX;
                     bsize=breaksize;
 		            //Compute second part
 					cl.text=cl.text.substr(cpos);
@@ -428,8 +429,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		cl.sep=0;
 		cl.sepflags=0;
 		cl.line=lines+1;
-		cl.styleFlags=styles.styleFlags;
-		cl.color=styles.color;
+        cl.style=styles;
 		cl.sepl=0;
         cl.advX=0;
         cl.advY=0;
@@ -464,7 +464,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		tl.y=std::min(tl.y,tl.parts[k].y);
         mx=std::max(mx,tl.parts[k].x+tl.parts[k].w);
         my=std::max(my,tl.parts[k].y+tl.parts[k].h);
-		tl.styleFlags|=tl.parts[k].styleFlags;
+        tl.styleFlags|=tl.parts[k].style.styleFlags;
 	}
     tl.w=mx-tl.x+.01; //Add a margin due to rounding issues
     tl.h=my-tl.y+.01;
@@ -497,7 +497,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		tl.parts[k].dy+=yo;
 	}
     if (tl.parts.size()!=0)
-    	tl.y+=yo;
+        tl.y+=yo;
 
 	return tl;
 }
@@ -534,32 +534,42 @@ void CompositeFont::preDraw() {
 	}
 }
 
+size_t CompositeFont::selectFont(std::string name) {
+    size_t fc=fonts_.size();
+    for (size_t i=0;i<fc;i++)
+        if (fonts_[i].name==name) return i;
+    return 0;
+}
+
 void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l)
 {
     std::vector<CompositeFontSpec>::iterator bit = fonts_.begin();
     if (bit==fonts_.end()) return;
-    l=bit->font->layoutText(text, layout);
+    l=layoutText(text, layout);
     l.styleFlags|=TEXTSTYLEFLAG_SKIPLAYOUT;
     int colorFlag=l.styleFlags&(TEXTSTYLEFLAG_COLOR);
     TextLayout l2=l;
     for (std::vector<CompositeFontSpec>::iterator it=bit;it != fonts_.end(); it++) {
-        if (it!=bit) {
-            for (size_t pn = 0; pn < l2.parts.size(); pn++) {
-                ChunkLayout &c = l.parts[pn];
-                ChunkLayout &c2 = l2.parts[pn];
+        l2.parts.clear();
+        size_t p2=0;
+        for (size_t pn = 0; pn < l.parts.size(); pn++) {
+            ChunkLayout &c = l.parts[pn];
+            if (c.style.font==it->name) {
+                l2.parts.push_back(c);
+                ChunkLayout &c2 = l2.parts[p2];
                 it->font->chunkMetrics(c2,layout->letterSpacing);
-                c.shaped=c2.shaped;
+                p2++;
             }
         }
-    	if ((it->colorR>=0)||(it->colorG>=0)||(it->colorB>=0))
-    	    l.styleFlags&=~colorFlag;
+        if ((it->colorR>=0)||(it->colorG>=0)||(it->colorB>=0))
+            l2.styleFlags&=~colorFlag;
     	else
-    	    l.styleFlags|=colorFlag;
-        it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB,(it->colorA<0)?a:it->colorA, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l);
+            l2.styleFlags|=colorFlag;
+        it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB,(it->colorA<0)?a:it->colorA, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l2);
 	}
 }
 
-void CompositeFont::getBounds(const char *text, float letterSpacing, float *rminx, float *rminy, float *rmaxx, float *rmaxy)
+void CompositeFont::getBounds(const char *text, float letterSpacing, float *rminx, float *rminy, float *rmaxx, float *rmaxy, std::string name)
 {
 	float minx = 1e30;
 	float miny = 1e30;
@@ -567,19 +577,20 @@ void CompositeFont::getBounds(const char *text, float letterSpacing, float *rmin
 	float maxy = -1e30;
 	for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
 			it != fonts_.end(); it++) {
-		float pminx = 1e30;
-		float pminy = 1e30;
-		float pmaxx = -1e30;
-		float pmaxy = -1e30;
-		it->font->getBounds(text, letterSpacing, &pminx, &pminy, &pmaxx, &pmaxy);
-		pminx+=it->offsetX;
-		pmaxx+=it->offsetX;
-		pminy+=it->offsetY;
-		pmaxy+=it->offsetY;
-		minx = std::min(minx, pminx);
-		miny = std::min(miny, pminy);
-		maxx = std::max(maxx, pmaxx);
-		maxy = std::max(maxy, pmaxy);
+        if (it->name!=name) continue;
+        float pminx = 1e30;
+        float pminy = 1e30;
+        float pmaxx = -1e30;
+        float pmaxy = -1e30;
+        it->font->getBounds(text, letterSpacing, &pminx, &pminy, &pmaxx, &pmaxy);
+        pminx+=it->offsetX;
+        pmaxx+=it->offsetX;
+        pminy+=it->offsetY;
+        pmaxy+=it->offsetY;
+        minx = std::min(minx, pminx);
+        miny = std::min(miny, pminy);
+        maxx = std::max(maxx, pmaxx);
+        maxy = std::max(maxy, pmaxy);
 	}
 	if (rminx)
 		*rminx = minx;
@@ -591,16 +602,16 @@ void CompositeFont::getBounds(const char *text, float letterSpacing, float *rmin
 		*rmaxy = maxy;
 }
 
-float CompositeFont::getAdvanceX(const char *text, float letterSpacing, int size)
+float CompositeFont::getAdvanceX(const char *text, float letterSpacing, int size, std::string name)
 {
 	if (fonts_.empty()) return 0;
-	return fonts_[0].font->getAdvanceX(text, letterSpacing, size);
+    return fonts_[selectFont(name)].font->getAdvanceX(text, letterSpacing, size);
 }
 
-float CompositeFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size)
+float CompositeFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size, std::string name)
 {
     if (fonts_.empty()) return 0;
-    return fonts_[0].font->getCharIndexAtOffset(text, offset, letterSpacing, size);
+    return fonts_[selectFont(name)].font->getCharIndexAtOffset(text, offset, letterSpacing, size);
 }
 
 float CompositeFont::getAscender()

@@ -27,9 +27,9 @@ public:
 
     Dib renderFont(const char *text, TextLayoutParameters *layout, int *pminx, int *pminy, int *pmaxx, int *pmaxy,unsigned int color, bool &isRGB,TextLayout &l);
 
-    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
-    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
-    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1);
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy, std::string name="");
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1, std::string name="");
+    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1, std::string name="");
     virtual float getAscender();
     virtual float getDescender();
     virtual float getLineHeight();

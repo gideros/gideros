@@ -27,9 +27,9 @@ public:
 		eCompositeFont,
 	};
 
-    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) = 0;
-    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) = 0;
-    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1) = 0;
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy, std::string name="") = 0;
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1, std::string name="") = 0;
+    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1, std::string name="") = 0;
     virtual float getAscender() = 0;
     virtual float getDescender() = 0;
     virtual float getLineHeight() = 0;
@@ -54,6 +54,16 @@ public:
 #define TEXTSTYLEFLAG_RTL			4
 #define TEXTSTYLEFLAG_LTR			8
 #define TEXTSTYLEFLAG_SKIPSHAPING	16
+    struct ChunkStyle {
+        int styleFlags;
+        unsigned int color;
+        std::string font;
+        bool operator==(const ChunkStyle &b) {
+            return (styleFlags==b.styleFlags)&&
+                    (font==b.font)&&
+                    (color==b.color);
+        }
+    };
     struct ChunkLayout {
 		std::string text;
 		std::vector<struct GlyphLayout> shaped;
@@ -67,9 +77,7 @@ public:
 		float sepl;
 		int sepflags;
         int extrasize; //adjustement from original text size (breakchar or styles)
-		//Styling
-		int styleFlags;
-		unsigned int color;
+        ChunkStyle style;
 	};
 	struct TextLayout {
     	TextLayout() : x(0),y(0),w(0),h(0),bh(0),mw(0),lines(0),styleFlags(0) { };
@@ -167,6 +175,7 @@ public:
 		BMFontBase *font;
 		float offsetX,offsetY;
 		float colorA,colorR,colorG,colorB;
+        std::string name;
 	};
     CompositeFont(Application *application, std::vector<CompositeFontSpec> fonts);
     virtual ~CompositeFont();
@@ -177,14 +186,15 @@ public:
     }
 
     virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l);
-    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
-    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
-    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1);
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy, std::string name="");
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1, std::string name="");
+    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1, std::string name="");
     virtual float getAscender();
     virtual float getDescender();
     virtual float getLineHeight();
     virtual void preDraw();
 protected:
+    size_t selectFont(std::string name);
     std::vector<CompositeFontSpec> fonts_;
     struct FontInfo
     {

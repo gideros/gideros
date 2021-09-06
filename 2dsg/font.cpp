@@ -141,6 +141,7 @@ void Font::constructor(const char *glympfile, const char *imagefile,
 void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 		float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample,
         float minx, float miny, TextLayout &l) {
+    G_UNUSED(hasSample);
     size_t size = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 
     if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
@@ -178,15 +179,15 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 	graphicsBase->indices.Update();
 
     size_t gi=0;
-	for (int pn = 0; pn < l.parts.size(); pn++) {
+    for (size_t pn = 0; pn < l.parts.size(); pn++) {
 		ChunkLayout c = l.parts[pn];
 		unsigned char rgba[4];
 		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
 		{
-			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):a;
-			rgba[0]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>16)&0xFF:r*255));
-			rgba[1]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>8)&0xFF:g*255));
-			rgba[2]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>0)&0xFF:b*255));
+            float ca=(c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.style.color>>24)&0xFF):a;
+            rgba[0]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>16)&0xFF:r*255));
+            rgba[1]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>8)&0xFF:g*255));
+            rgba[2]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>0)&0xFF:b*255));
 			rgba[3]=(unsigned char)(ca*255);
 		}
 		std::basic_string<wchar32_t> wtext;
@@ -205,7 +206,7 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
         }*/
 
 		wchar32_t prev = 0;
-		for (int i = 0; i < wsize; ++i) {
+        for (size_t i = 0; i < wsize; ++i) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(wtext[i]);
 
@@ -483,7 +484,8 @@ Font::~Font() {
 }
 
 void Font::getBounds(const char *text, float letterSpacing, float *pminx,
-		float *pminy, float *pmaxx, float *pmaxy) {
+        float *pminy, float *pmaxx, float *pmaxy, std::string name) {
+    G_UNUSED(name);
 	float minx = 1e30;
 	float miny = 1e30;
 	float maxx = -1e30;
@@ -547,8 +549,9 @@ void Font::getBounds(const char *text, float letterSpacing, float *pminx,
 		*pmaxy = maxy;
 }
 
-float Font::getAdvanceX(const char *text, float letterSpacing, int size) {
-	std::vector<wchar32_t> wtext;
+float Font::getAdvanceX(const char *text, float letterSpacing, int size, std::string name) {
+    G_UNUSED(name);
+    std::vector<wchar32_t> wtext;
 	size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 	if (len != 0) {
 		wtext.resize(len);
@@ -584,16 +587,17 @@ float Font::getAdvanceX(const char *text, float letterSpacing, int size) {
 	return x * sizescalex_;
 }
 
-float Font::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size)
+float Font::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size, std::string name)
 {
-	std::vector<wchar32_t> wtext;
+    G_UNUSED(name);
+    std::vector<wchar32_t> wtext;
 	size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 	if (len != 0) {
 		wtext.resize(len);
 		utf8_to_wchar(text, strlen(text), &wtext[0], len, 0);
 	}
 
-	if (size < 0 || size > wtext.size())
+    if (size < 0 || size > (int)wtext.size())
 		size = wtext.size();
 
 	wtext.push_back(0);

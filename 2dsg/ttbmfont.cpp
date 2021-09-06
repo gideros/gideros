@@ -300,6 +300,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 
 		FontFace &ff = fontFaces_[nf++];
 		memset(&ff.stream, 0, sizeof(ff.stream));
+        ff.shaper=NULL;
 
 		g_fseek(fis, 0, SEEK_END);
 		ff.stream.size = g_ftell(fis);
@@ -596,7 +597,9 @@ TTBMFont::~TTBMFont() {
 			it != fontFaces_.end(); it++) {
         (*it).textureGlyphs.clear();
 		FT_Done_Face((*it).face);
-	}
+        if (it->shaper)
+            delete it->shaper;
+    }
 	fontFaces_.clear();
 	if (currentDib_)
 		delete currentDib_;
@@ -658,7 +661,10 @@ void TTBMFont::checkLogicalScale() {
 					(int) (((*it).face->size->metrics.height
 							- (*it).face->size->metrics.ascender) >> 6));
 			it->textureGlyphs.clear();
-		}
+            if (it->shaper)
+                delete it->shaper;
+            it->shaper=NULL;
+        }
 		fontInfo_.kernings.clear();
 
 		if (!staticCharsetInit()) {
@@ -689,38 +695,60 @@ void TTBMFont::checkLogicalScale() {
 
 bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
 {
-	if (part.styleFlags&TEXTSTYLEFLAG_SKIPSHAPING)
+    if (part.style.styleFlags&TEXTSTYLEFLAG_SKIPSHAPING)
 		return false;
     FontshaperBuilder_t builder=(FontshaperBuilder_t) g_getGlobalHook(GID_GLOBALHOOK_FONTSHAPER);
     if (!builder)
         return false;
-    if (fontFaces_.size()!=1) //Multi font not supported (yet ?)
-        return false;
-    if (!shaper_) {
+    size_t fNum=0;
+    size_t fCount=fontFaces_.size();
+    if (fCount!=1)
+    {
+        std::map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
+        size_t tCount=wtext.size();
+        ensureChars(&wtext[0], tCount);
+        std::vector<int> cnts(fCount);
+        for (size_t ti=0;ti<tCount;ti++) {
+            wchar32_t chr=wtext[ti];
+            if (charGlyphs.find(chr)!=charGlyphs.end()) {
+                size_t facenum=fontInfo_.charFace[chr];
+                (*(&cnts[facenum]))++;
+            }
+        }
+        int mx=cnts[0];
+        for (size_t f=1;f<fCount;f++) {
+            if (cnts[f]>mx) {
+                mx=cnts[f];
+                fNum=f;
+            }
+        }
+    }
+    FontFace &fCurrent=fontFaces_[fNum];
+    if (!fCurrent.shaper) {
         float scalex = currentLogicalScaleX_;
         float scaley = currentLogicalScaleY_;
-        float RESOLUTION=(int) floor(defaultSize_ * fontFaces_[0].sizeMult + 0.5f);//72; //This a empirical, but seems to work
-        void *data=malloc(fontFaces_[0].stream.size);
-        fontFaces_[0].stream.read(&fontFaces_[0].stream,0,(unsigned char *)data,fontFaces_[0].stream.size);
-        shaper_=builder(data,fontFaces_[0].stream.size,
+        float RESOLUTION=(int) floor(defaultSize_ * fCurrent.sizeMult + 0.5f);//72; //This a empirical, but seems to work
+        void *data=malloc(fCurrent.stream.size);
+        fCurrent.stream.read(&fCurrent.stream,0,(unsigned char *)data,fCurrent.stream.size);
+        fCurrent.shaper=builder(data,fCurrent.stream.size,
                     //(int) floor(defaultSize_ * fontFaces_[0].sizeMult * 64 + 0.5f),
-                    fontFaces_[0].face->units_per_EM,
+                    fCurrent.face->units_per_EM,
                     (int) floor(RESOLUTION * scalex + 0.5f),
                     (int) floor(RESOLUTION * scaley + 0.5f));
         free(data);
     }
-    if (!shaper_)
+    if (!fCurrent.shaper)
         return false;
-    bool shaped=shaper_->shape(part,wtext);
+    bool shaped=fCurrent.shaper->shape(part,wtext);
     if (!shaped) return false;
     for (size_t k=0;k<part.shaped.size();k++) {
-        part.shaped[k]._private=(void *) 0;
+        part.shaped[k]._private=(void *) fNum;
     }
     return true;
 }
 
 TTBMFont::TextureGlyph *TTBMFont::getCharGlyph(wchar32_t chr,int &facenum,FT_UInt &glyph) {
-	std::map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
+    std::map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
 	if (charGlyphs.find(chr)==charGlyphs.end()) return NULL;
 	facenum=fontInfo_.charFace[chr];
 	glyph=charGlyphs[chr];
@@ -729,7 +757,7 @@ TTBMFont::TextureGlyph *TTBMFont::getCharGlyph(wchar32_t chr,int &facenum,FT_UIn
 
 void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 {
-	std::vector<wchar32_t> wtext;
+    std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(part.text.c_str(), part.text.size(), NULL, 0, 0);
 	if (len != 0) {
 		wtext.resize(len);
@@ -753,7 +781,10 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
    		wtext1.resize(len);
         for (size_t i = 0; i < len; ++i)
         	wtext1[i]=part.shaped[i].glyph;
-        ensureGlyphs(0,&wtext1[0], len);
+        int facenum=0;
+        if (len)
+            facenum=(int) (uintptr_t) part.shaped[0]._private;
+        ensureGlyphs(facenum,&wtext1[0], len);
 
         for (size_t i = 0; i < len; ++i) {
             GlyphLayout &gl=part.shaped[i];
@@ -878,10 +909,10 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		unsigned char rgba[4];
 		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
 		{
-			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):a;
-			rgba[0]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>16)&0xFF:r*255));
-			rgba[1]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>8)&0xFF:g*255));
-			rgba[2]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>0)&0xFF:b*255));
+            float ca=(c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.style.color>>24)&0xFF):a;
+            rgba[0]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>16)&0xFF:r*255));
+            rgba[1]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>8)&0xFF:g*255));
+            rgba[2]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>0)&0xFF:b*255));
 			rgba[3]=(unsigned char)(ca*255);
 		}
 
@@ -1028,8 +1059,9 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 }
 
 void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,
-		float *pminy, float *pmaxx, float *pmaxy) {
-	float minx = 1e30;
+        float *pminy, float *pmaxx, float *pmaxy, std::string name) {
+    G_UNUSED(name);
+    float minx = 1e30;
 	float miny = 1e30;
 	float maxx = -1e30;
 	float maxy = -1e30;
@@ -1091,8 +1123,9 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,
 		*pmaxy = maxy;
 }
 
-float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) {
-	std::vector<wchar32_t> wtext;
+float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size, std::string name) {
+    G_UNUSED(name);
+    std::vector<wchar32_t> wtext;
 	size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 	if (len != 0) {
 		wtext.resize(len);
@@ -1126,8 +1159,9 @@ float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 	return x * sizescalex_;
 }
 
-float TTBMFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size) {
-	std::vector<wchar32_t> wtext;
+float TTBMFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size, std::string name) {
+    G_UNUSED(name);
+    std::vector<wchar32_t> wtext;
 	size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 	if (len != 0) {
 		wtext.resize(len);

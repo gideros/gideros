@@ -271,7 +271,7 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx,
 
 bool TTFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
 {
-	if (part.styleFlags&TEXTSTYLEFLAG_SKIPSHAPING)
+    if (part.style.styleFlags&TEXTSTYLEFLAG_SKIPSHAPING)
 		return false;
     FontshaperBuilder_t builder=(FontshaperBuilder_t) g_getGlobalHook(GID_GLOBALHOOK_FONTSHAPER);
     if (!builder)
@@ -554,7 +554,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 
 			if (l.styleFlags&TEXTSTYLEFLAG_COLOR) {
 				unsigned char rgba[4];
-                unsigned int col=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?c.color:color;
+                unsigned int col=(c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?c.style.color:color;
 				rgba[0]=(col>>16)&0xFF;
 				rgba[1]=(col>>8)&0xFF;
 				rgba[2]=(col>>0)&0xFF;
@@ -596,8 +596,9 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 }
 
 void TTFont::getBounds(const char *text, float letterSpacing, float *pminx,
-		float *pminy, float *pmaxx, float *pmaxy) {
-	std::vector<wchar32_t> wtext;
+        float *pminy, float *pmaxx, float *pmaxy, std::string name) {
+    G_UNUSED(name);
+    std::vector<wchar32_t> wtext;
 	size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 	if (len != 0) {
 		wtext.resize(len);
@@ -621,8 +622,9 @@ void TTFont::getBounds(const char *text, float letterSpacing, float *pminx,
 		*pmaxy = maxy / scaley;
 }
 
-float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
-	checkLogicalScale();
+float TTFont::getAdvanceX(const char *text, float letterSpacing, int size, std::string name) {
+    G_UNUSED(name);
+    checkLogicalScale();
 	float scalex = currentLogicalScaleX_;
 
 	std::vector<wchar32_t> wtext;
@@ -665,8 +667,9 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 	return x / scalex;
 }
 
-float TTFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size)
+float TTFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size, std::string name)
 {
+    G_UNUSED(name);
 	checkLogicalScale();
 	float scalex = currentLogicalScaleX_;
 	offset*=scalex;

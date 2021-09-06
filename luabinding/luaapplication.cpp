@@ -357,8 +357,8 @@ static int bindAll(lua_State* L)
 	SpriteBinder spriteBinder(L);
 	TextureBaseBinder textureBaseBinder(L);
 	TextureBinder textureBinder(L);
-	TexturePackBinder texturePackBinder(L);
-	BitmapDataBinder bitmapDataBinder(L);
+    TexturePackBinder texturePackBinder(L);
+    BitmapDataBinder bitmapDataBinder(L);
 	BitmapBinder bitmapBinder(L);
 	StageBinder stageBinder(L, application);
 	FontBaseBinder fontBaseBinder(L);
@@ -366,6 +366,7 @@ static int bindAll(lua_State* L)
 	CompositeFontBinder compositeFontBinder(L);
 	TTFontBinder ttfontBinder(L);
 	TextFieldBinder textFieldBinder(L);
+    TexturePackFontBinder texturePackFontBinder(L);
 #if TARGET_OS_TV == 0
     AccelerometerBinder accelerometerBinder(L);
 #endif

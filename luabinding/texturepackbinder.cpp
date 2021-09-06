@@ -5,183 +5,283 @@
 #include "giderosexception.h"
 #include <string.h>
 #include <luautil.h>
+#include <utf8.h>
 
 TexturePackBinder::TexturePackBinder(lua_State* L)
 {
 	Binder binder(L);
 
 	static const luaL_Reg functionList[] = {
-		{"getLocation", TexturePackBinder::getLocation},
-		{NULL, NULL},
+        {"getLocation", TexturePackBinder::getLocation},
+        {"loadAsync", TexturePackBinder::loadAsync},
+        {NULL, NULL},
 	};
 
 	binder.createClass("TexturePack", "TextureBase", create, destruct, functionList);
 }
 
+int TexturePackBinder::createCommon(lua_State* L,bool async)
+{
+    LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application* application = luaapplication->getApplication();
+
+    int argn=1;
+    if (async) {
+        luaL_checktype(L,1,LUA_TFUNCTION);
+        argn++;
+    }
+
+    if (lua_type(L, argn) == LUA_TTABLE)
+    {
+        // collect the filenames to vector<string>
+        std::vector<std::string> fileNames;
+        int n = lua_objlen(L, argn);
+        for (int i = 1; i <= n; ++i)
+        {
+            lua_rawgeti(L, argn, i);
+            fileNames.push_back(luaL_checkstring(L, -1));
+            lua_pop(L, 1);
+        }
+
+        int padding = luaL_optint(L, argn+1, 2);
+
+        bool smoothing = lua_toboolean(L, argn+2);
+
+        bool maketransparent = false;
+        unsigned int transparentcolor = 0x00000000;
+        Format format = eRGBA8888;
+        if (!lua_isnoneornil(L, argn+3))
+        {
+            if (lua_type(L, argn+3) != LUA_TTABLE)
+                return luaL_typerror(L, argn+3, "table");
+
+            lua_getfield(L, argn+3, "transparentColor");
+            if (!lua_isnil(L, -1))
+            {
+                maketransparent = true;
+                transparentcolor = luaL_checkinteger(L, -1);
+            }
+            lua_pop(L, 1);
+
+            lua_getfield(L, argn+3, "format");
+            if (!lua_isnil(L, -1))
+            {
+                const char *formatstr = luaL_checkstring(L, -1);
+                if (strcmp(formatstr, "rgba8888") == 0)
+                    format = eRGBA8888;
+                else if (strcmp(formatstr, "rgb888") == 0)
+                    format = eRGB888;
+                else if (strcmp(formatstr, "rgb565") == 0)
+                    format = eRGB565;
+                else if (strcmp(formatstr, "rgba4444") == 0)
+                    format = eRGBA4444;
+                else if (strcmp(formatstr, "rgba5551") == 0)
+                    format = eRGBA5551;
+                else if (strcmp(formatstr, "y8") == 0)
+                    format = eY8;
+                else if (strcmp(formatstr, "a8") == 0)
+                    format = eA8;
+                else if (strcmp(formatstr, "ya8") == 0)
+                    format = eYA8;
+                else
+                {
+                    GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
+                    luaL_error(L, status.errorString());
+                }
+            }
+            lua_pop(L, 1);
+        }
+
+
+        // collect the pointers to filenames into vector<const char*>
+        std::vector<const char*> fileNamePointers;
+        for (std::size_t i = 0; i < fileNames.size(); ++i)
+            fileNamePointers.push_back(fileNames[i].c_str());
+        fileNamePointers.push_back(0);
+
+        Binder binder(L);
+
+        if (async) {
+            lua_State *LL=luaapplication->getLuaState();
+            lua_pushvalue(L,1);
+            int func=luaL_ref(L, LUA_REGISTRYINDEX);
+            TexturePack::loadAsync(application,
+                                   &fileNamePointers[0],
+                                   padding,
+                                   smoothing ? eLinear : eNearest,
+                                   eClamp,
+                                   format,
+                                   maketransparent,
+                                   transparentcolor,
+                                          [=](TexturePack *texturePack,std::exception_ptr e) {
+                Binder binder(LL);
+                lua_rawgeti(LL, LUA_REGISTRYINDEX, func);
+                luaL_unref(LL, LUA_REGISTRYINDEX, func);
+                if (texturePack)
+                    binder.pushInstance("TexturePack", texturePack);
+                else
+                    lua_pushnil(L);
+                if (e) {
+                    try { std::rethrow_exception(e); }
+                    catch (const std::exception &e) { lua_pushstring(L,e.what()); }
+                    catch (const std::string    &e) { lua_pushstring(L,e.c_str()); }
+                    catch (const char           *e) { lua_pushstring(L,e); }
+                    catch (...)                     { lua_pushstring(L,"Unspecified error"); }
+                }
+                else
+                    lua_pushnil(L);
+                lua_call(LL,2,0);
+                });
+            return 0;
+        }
+        else {
+            TexturePack* texturePack = 0;
+            try
+            {
+                texturePack = new TexturePack(application,
+                                              &fileNamePointers[0],
+                                              padding,
+                                              smoothing ? eLinear : eNearest,
+                                              eClamp,
+                                              format,
+                                              maketransparent,
+                                              transparentcolor);
+            }
+            catch (const GiderosException& e)
+            {
+                luaL_error(L, e.what());				// TODO: burada luaL_error dedigimiz icin longjmp yuzunden vectorlerin destructor'lari cagirilmiyor
+                return 0;
+            }
+
+            binder.pushInstance("TexturePack", texturePack);
+        }
+    }
+    else if (lua_type(L, argn) == LUA_TSTRING && lua_type(L, argn+1) == LUA_TSTRING)
+    {
+        const char* texturelistfile = lua_tostring(L, argn);
+        const char* imagefile = lua_tostring(L, argn+1);
+        bool smoothing = lua_toboolean(L, argn+2);
+
+        bool maketransparent = false;
+        unsigned int transparentcolor = 0x00000000;
+        Format format = eRGBA8888;
+        if (!lua_isnoneornil(L, argn+3))
+        {
+            if (lua_type(L, argn+3) != LUA_TTABLE)
+                return luaL_typerror(L, argn+3, "table");
+
+            lua_getfield(L, argn+3, "transparentColor");
+            if (!lua_isnil(L, -1))
+            {
+                maketransparent = true;
+                transparentcolor = luaL_checkinteger(L, -1);
+            }
+            lua_pop(L, 1);
+
+            lua_getfield(L, argn+3, "format");
+            if (!lua_isnil(L, -1))
+            {
+                const char *formatstr = luaL_checkstring(L, -1);
+                if (strcmp(formatstr, "rgba8888") == 0)
+                    format = eRGBA8888;
+                else if (strcmp(formatstr, "rgb888") == 0)
+                    format = eRGB888;
+                else if (strcmp(formatstr, "rgb565") == 0)
+                    format = eRGB565;
+                else if (strcmp(formatstr, "rgba4444") == 0)
+                    format = eRGBA4444;
+                else if (strcmp(formatstr, "rgba5551") == 0)
+                    format = eRGBA5551;
+                else if (strcmp(formatstr, "y8") == 0)
+                    format = eY8;
+                else if (strcmp(formatstr, "a8") == 0)
+                    format = eA8;
+                else if (strcmp(formatstr, "ya8") == 0)
+                    format = eYA8;
+                else
+                {
+                    GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
+                    luaL_error(L, status.errorString());
+                }
+            }
+            lua_pop(L, 1);
+        }
+
+        Binder binder(L);
+
+        if (async) {
+            lua_State *LL=luaapplication->getLuaState();
+            lua_pushvalue(L,1);
+            int func=luaL_ref(L, LUA_REGISTRYINDEX);
+            TexturePack::loadAsync(application,
+                                   texturelistfile,
+                                   imagefile,
+                                   smoothing ? eLinear : eNearest,
+                                   eClamp,
+                                   format,
+                                   maketransparent,
+                                   transparentcolor,
+                                          [=](TexturePack *texturePack,std::exception_ptr e) {
+                Binder binder(LL);
+                lua_rawgeti(LL, LUA_REGISTRYINDEX, func);
+                luaL_unref(LL, LUA_REGISTRYINDEX, func);
+                if (texturePack)
+                    binder.pushInstance("TexturePack", texturePack);
+                else
+                    lua_pushnil(L);
+                if (e) {
+                    try { std::rethrow_exception(e); }
+                    catch (const std::exception &e) { lua_pushstring(L,e.what()); }
+                    catch (const std::string    &e) { lua_pushstring(L,e.c_str()); }
+                    catch (const char           *e) { lua_pushstring(L,e); }
+                    catch (...)                     { lua_pushstring(L,"Unspecified error"); }
+                }
+                else
+                    lua_pushnil(L);
+                lua_call(LL,2,0);
+                });
+            return 0;
+        }
+        else {
+            TexturePack* texturePack = 0;
+            try
+            {
+                texturePack = new TexturePack(application,
+                                              texturelistfile,
+                                              imagefile,
+                                              smoothing ? eLinear : eNearest,
+                                              eClamp,
+                                              format,
+                                              maketransparent,
+                                              transparentcolor);
+            }
+            catch (const GiderosException& e)
+            {
+                luaL_error(L, e.what());
+                return 0;
+            }
+
+            binder.pushInstance("TexturePack", texturePack);
+        }
+    }
+    else
+    {
+        return luaL_error(L, "Bad argument to 'TexturePack.new'. Candidates are TexturePack.new(table) and TexturePack.new(string, string).");
+    }
+
+    return 1;
+}
+
 int TexturePackBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "TexturePackBinder::create", 1);
+    return createCommon(L,false);
+}
 
-	LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
-	Application* application = luaapplication->getApplication();
-
-	if (lua_type(L, 1) == LUA_TTABLE)
-	{
-		// collect the filenames to vector<string>
-		std::vector<std::string> fileNames;
-		int n = lua_objlen(L, 1);
-		for (int i = 1; i <= n; ++i)
-		{
-			lua_rawgeti(L, 1, i);
-			fileNames.push_back(luaL_checkstring(L, -1));
-			lua_pop(L, 1);
-		}
-
-		int padding = luaL_optint(L, 2, 2);
-
-		bool smoothing = lua_toboolean(L, 3);
-
-		bool maketransparent = false;
-		unsigned int transparentcolor = 0x00000000;
-        Format format = eRGBA8888;
-        if (!lua_isnoneornil(L, 4))
-		{
-			if (lua_type(L, 4) != LUA_TTABLE)
-				return luaL_typerror(L, 3, "table");
-
-			lua_getfield(L, 4, "transparentColor");
-			if (!lua_isnil(L, -1))
-			{
-				maketransparent = true;
-				transparentcolor = luaL_checkinteger(L, -1);
-			}
-			lua_pop(L, 1);
-
-            lua_getfield(L, 4, "format");
-            if (!lua_isnil(L, -1))
-            {
-                const char *formatstr = luaL_checkstring(L, -1);
-                if (strcmp(formatstr, "rgba8888") == 0)
-                    format = eRGBA8888;
-                else if (strcmp(formatstr, "rgb888") == 0)
-                    format = eRGB888;
-                else if (strcmp(formatstr, "rgb565") == 0)
-                    format = eRGB565;
-                else if (strcmp(formatstr, "rgba4444") == 0)
-                    format = eRGBA4444;
-                else if (strcmp(formatstr, "rgba5551") == 0)
-                    format = eRGBA5551;
-                else
-                {
-                    GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                    luaL_error(L, status.errorString());
-                }
-            }
-            lua_pop(L, 1);
-        }
-
-
-		// collect the pointers to filenames into vector<const char*>
-		std::vector<const char*> fileNamePointers;
-		for (std::size_t i = 0; i < fileNames.size(); ++i)
-			fileNamePointers.push_back(fileNames[i].c_str());
-		fileNamePointers.push_back(0);
-		
-		Binder binder(L);
-
-		TexturePack* texturePack = 0;
-		try
-		{
-            texturePack = new TexturePack(application,
-                                          &fileNamePointers[0],
-                                          padding,
-                                          smoothing ? eLinear : eNearest,
-                                          eClamp,
-                                          format,
-                                          maketransparent,
-                                          transparentcolor);
-		}
-		catch (const GiderosException& e)
-		{
-			luaL_error(L, e.what());				// TODO: burada luaL_error dedigimiz icin longjmp yuzunden vectorlerin destructor'lari cagirilmiyor
-			return 0;
-		}
-
-		binder.pushInstance("TexturePack", texturePack);
-	}
-	else if (lua_type(L, 1) == LUA_TSTRING && lua_type(L, 2) == LUA_TSTRING)
-	{
-		const char* texturelistfile = lua_tostring(L, 1);
-		const char* imagefile = lua_tostring(L, 2);
-		bool smoothing = lua_toboolean(L, 3);
-
-		bool maketransparent = false;
-		unsigned int transparentcolor = 0x00000000;
-        Format format = eRGBA8888;
-		if (!lua_isnoneornil(L, 4))
-		{
-			if (lua_type(L, 4) != LUA_TTABLE)
-				return luaL_typerror(L, 3, "table");
-
-			lua_getfield(L, 4, "transparentColor");
-			if (!lua_isnil(L, -1))
-			{
-				maketransparent = true;
-				transparentcolor = luaL_checkinteger(L, -1);
-			}
-			lua_pop(L, 1);
-
-            lua_getfield(L, 4, "format");
-            if (!lua_isnil(L, -1))
-            {
-                const char *formatstr = luaL_checkstring(L, -1);
-                if (strcmp(formatstr, "rgba8888") == 0)
-                    format = eRGBA8888;
-                else if (strcmp(formatstr, "rgb888") == 0)
-                    format = eRGB888;
-                else if (strcmp(formatstr, "rgb565") == 0)
-                    format = eRGB565;
-                else if (strcmp(formatstr, "rgba4444") == 0)
-                    format = eRGBA4444;
-                else if (strcmp(formatstr, "rgba5551") == 0)
-                    format = eRGBA5551;
-                else
-                {
-                    GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                    luaL_error(L, status.errorString());
-                }
-            }
-            lua_pop(L, 1);
-        }
-
-		Binder binder(L);
-
-		TexturePack* texturePack = 0;
-		try
-		{
-            texturePack = new TexturePack(application,
-                                          texturelistfile,
-                                          imagefile,
-                                          smoothing ? eLinear : eNearest,
-                                          eClamp,
-                                          format,
-                                          maketransparent,
-                                          transparentcolor);
-		}
-		catch (const GiderosException& e)
-		{
-			luaL_error(L, e.what());
-			return 0;
-		}
-
-		binder.pushInstance("TexturePack", texturePack);
-	}
-	else
-	{
-		return luaL_error(L, "Bad argument to 'TexturePack.new'. Candidates are TexturePack.new(table) and TexturePack.new(string, string).");
-	}
-
-	return 1;
+int TexturePackBinder::loadAsync(lua_State* L)
+{
+    StackChecker checker(L, "TexturePackBinder::loadAsync", 0);
+    return createCommon(L,true);
 }
 
 
@@ -249,3 +349,60 @@ int TexturePackBinder::getLocation(lua_State* L)
 
 
 
+TexturePackFontBinder::TexturePackFontBinder(lua_State* L)
+{
+    Binder binder(L);
+
+    static const luaL_Reg functionList[] = {
+        {NULL, NULL},
+    };
+
+    binder.createClass("TexturePackFont", "FontBase", create, destruct, functionList);
+}
+
+int TexturePackFontBinder::create(lua_State* L)
+{
+    StackChecker checker(L, "TexturePackFontBinder::create", 1);
+    LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application* application = luaapplication->getApplication();
+
+    Binder binder(L);
+
+    if (!binder.isInstanceOf("TexturePack", 1))
+    {
+        luaL_typerror(L, 1, "TexturePack");
+        return 0;
+    }
+    TexturePack *tp= static_cast<TexturePack*>(binder.getInstance("TexturePack", 1));
+    std::map<wchar32_t,std::string> mappings;
+    if (!lua_istable(L,2))
+    {
+        luaL_typerror(L, 2, "table");
+        return 0;
+    }
+    double scale=luaL_optnumber(L,3,1);
+    double anchory=luaL_optnumber(L,4,1);
+    lua_pushnil(L);  /* first key */
+    while (lua_next(L, 2) != 0) {
+       const char *key=lua_tostring(L,-2);
+       wchar32_t w=0;
+       utf8_to_wchar(key,strlen(key),&w,1,0);
+       mappings[w]=lua_tostring(L,-1);
+       lua_pop(L, 1);
+    }
+
+    TexturePackFont *tpf=new TexturePackFont(application,tp,mappings,scale,anchory);
+    binder.pushInstance("TexturePackFont", tpf);
+
+    return 1;
+}
+
+
+int TexturePackFontBinder::destruct(lua_State* L)
+{
+    void* ptr = *(void**)lua_touserdata(L, 1);
+    TexturePackFont* texturePack = static_cast<TexturePackFont*>(ptr);
+    texturePack->unref();
+
+    return 0;
+}

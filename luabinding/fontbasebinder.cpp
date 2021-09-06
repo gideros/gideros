@@ -292,9 +292,12 @@ int CompositeFontBinder::create(lua_State* L)
 			fspec.colorB=-1;
 		}
 		lua_pop(L,1);
-		lua_getfield(L,-1,"alpha");
-		fspec.colorA=luaL_optnumber(L,-1,-1);
-		lua_pop(L,1);
+        lua_getfield(L,-1,"alpha");
+        fspec.colorA=luaL_optnumber(L,-1,-1);
+        lua_pop(L,1);
+        lua_getfield(L,-1,"name");
+        fspec.name=luaL_optstring(L,-1,"");
+        lua_pop(L,1);
 
 		fonts.push_back(fspec);
 		lua_pop(L,1);

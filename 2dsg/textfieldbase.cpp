@@ -85,7 +85,7 @@ void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
 			float advX=0;
 			size_t gln=c.shaped.size();
 			const char *t=c.text.c_str();
-            bool rtl=c.styleFlags&TEXTSTYLEFLAG_RTL;
+            bool rtl=c.style.styleFlags&TEXTSTYLEFLAG_RTL;
 			for (size_t g=0;g<gln;g++) {
                 FontBase::GlyphLayout &v=c.shaped[g];
                 size_t ui=utf8_offset(t,v.srcIndex);
