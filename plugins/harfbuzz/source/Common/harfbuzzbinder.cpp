@@ -51,8 +51,8 @@ bool HarfBuzzFontShaper::shape(struct FontBase::ChunkLayout &part,std::vector<wc
     hb_buffer_guess_segment_properties(buffer);
     //hb_buffer_set_language(buffer, hb_language_from_string("ar",2));
     //hb_buffer_set_script(buffer,HB_SCRIPT_ARABIC);
-    if (part.styleFlags&(TEXTSTYLEFLAG_RTL|TEXTSTYLEFLAG_LTR))
-    	hb_buffer_set_direction (buffer, (part.styleFlags&TEXTSTYLEFLAG_RTL)?HB_DIRECTION_RTL:HB_DIRECTION_LTR);
+    if (part.style.styleFlags&(TEXTSTYLEFLAG_RTL|TEXTSTYLEFLAG_LTR))
+    	hb_buffer_set_direction (buffer, (part.style.styleFlags&TEXTSTYLEFLAG_RTL)?HB_DIRECTION_RTL:HB_DIRECTION_LTR);
 
     hb_shape (font, buffer, NULL, 0);
 
