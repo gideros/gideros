@@ -13,7 +13,7 @@ private:
     static int create(lua_State* L);
 	static int destruct(lua_State* L);
     static int loadAsync(lua_State* L);
-
+    static int getRegionsNames(lua_State* L);
 	static int getLocation(lua_State* L);
 };
 

@@ -5,6 +5,7 @@
 #include "fontbase.h"
 #include <map>
 #include <string>
+#include <vector>
 #include <wchar32.h>
 #include <gstatus.h>
 
@@ -24,6 +25,7 @@ public:
     static void loadAsync(Application* application, const char** filenames, int padding, Filter filter, Wrap wrap, Format format, bool maketransparent, unsigned int transparentcolor,std::function<void(TexturePack *,std::exception_ptr)> callback);
     static void loadAsync(Application* application, const char* texturelistfile, const char* imagefile, Filter filter, Wrap wrap, Format format, bool maketransparent, unsigned int transparentcolor,std::function<void(TexturePack *,std::exception_ptr)> callback);
 
+    std::vector<std::string> getRegionsNames();
 	bool location(int index, int* x, int* y, int* width, int* height, int* dx1, int* dy1, int* dx2, int* dy2) const;
 	bool location(const char* filename, int* x, int* y, int* width, int* height, int* dx1, int* dy1, int* dx2, int* dy2) const;
 

@@ -153,6 +153,15 @@ Module.gnetplayerSend = function(data) {
 		GiderosNetplayerWS.send(data);
 }
 
+var gid_wget = {
+		 wgetRequests: {},
+		 nextWgetRequestHandle: 0,
+		 getNextWgetRequestHandle: function() {
+		  var handle = gid_wget.nextWgetRequestHandle;
+		  gid_wget.nextWgetRequestHandle++;
+		  return handle;
+		 }
+		};
 Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 		onerror, onprogress) {
 	var _url = url;
@@ -171,7 +180,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
     	rhdr+=4; //Assuming 32bit
 		http.setRequestHeader(Module.UTF8ToString(rk), Module.UTF8ToString(rv));
     }
-	var handle = wget.getNextWgetRequestHandle();
+	var handle = gid_wget.getNextWgetRequestHandle();
 
 	// LOAD
 	http.onload = function http_onload(e) {
@@ -192,7 +201,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 		 * dynCall('viiii', onerror, [handle, arg, http.status,
 		 * http.statusText]); }
 		 */
-		delete wget.wgetRequests[handle];
+		delete gid_wget.wgetRequests[handle];
 	};
 
 	// ERROR
@@ -201,7 +210,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 			dynCall('viiii', onerror, [ handle, arg, http.status,
 					http.statusText ]);
 		}
-		delete wget.wgetRequests[handle];
+		delete gid_wget.wgetRequests[handle];
 	};
 
 	// PROGRESS
@@ -221,7 +230,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 
 	// ABORT
 	http.onabort = function http_onabort(e) {
-		delete wget.wgetRequests[handle];
+		delete gid_wget.wgetRequests[handle];
 	};
 
 	// Useful because the browser can limit the number of redirection
@@ -237,7 +246,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 		http.send(null);
 	}
 
-	wget.wgetRequests[handle] = http;
+	gid_wget.wgetRequests[handle] = http;
 
 	return handle;
 }

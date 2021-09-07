@@ -211,6 +211,12 @@ bool TexturePack::location(const char* filename, int* x, int* y, int* width, int
 	return true;
 }
 
+std::vector<std::string> TexturePack::getRegionsNames() {
+	std::vector<std::string> names;
+	for (auto it = filenameMap_.begin(); it != filenameMap_.end(); ++it)
+		names.push_back(it->first);
+	return names;
+}
 
 void TexturePack::readTextureList(const char* texturelistfile,
 								  std::vector<Rect>& textures_,
@@ -369,7 +375,7 @@ void TexturePackFont::drawText(std::vector<GraphicsBase> * vGraphicsBase, const 
     size_t gi=0;
     for (size_t pn = 0; pn < l.parts.size(); pn++) {
         ChunkLayout c = l.parts[pn];
-        unsigned char rgba[4];
+        unsigned char rgba[4]={1,1,1,1};
         if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
         {
             float ca=(c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.style.color>>24)&0xFF):a;

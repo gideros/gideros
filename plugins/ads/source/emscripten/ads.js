@@ -1,4 +1,5 @@
-GiderosAds={};
+if (GiderosAds === undefined) { GiderosAds={ frameworks: {} }; }
+
 GiderosAds.evtShow=false;
 
 GiderosAds.ClickChain=window.onclick;
@@ -15,7 +16,6 @@ window.onclick=function()
 GiderosAds.Init=function(){};
 GiderosAds.Deinit=function(){};
 
-GiderosAds.frameworks = {};
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }

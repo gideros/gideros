@@ -14,6 +14,7 @@ TexturePackBinder::TexturePackBinder(lua_State* L)
 	static const luaL_Reg functionList[] = {
         {"getLocation", TexturePackBinder::getLocation},
         {"loadAsync", TexturePackBinder::loadAsync},
+		{"getRegionsNames", TexturePackBinder::getRegionsNames},
         {NULL, NULL},
 	};
 
@@ -292,6 +293,23 @@ int TexturePackBinder::destruct(lua_State* L)
 	texturePack->unref();
 
 	return 0;
+}
+
+int TexturePackBinder::getRegionsNames(lua_State* L)
+{
+	StackChecker checker(L, "TexturePackBinder::getRegionsNames", 1);
+
+	Binder binder(L);
+	TexturePack* texturePack = static_cast<TexturePack*>(binder.getInstance("TexturePack", 1));
+
+	std::vector<std::string> names=texturePack->getRegionsNames();
+	size_t nnames=names.size();
+	lua_createtable(L,nnames,0);
+	for (size_t i=0;i<nnames;i++) {
+		lua_pushstring(L,names[i].c_str());
+		lua_rawseti(L,-2,i+1);
+	}
+	return 1;
 }
 
 
