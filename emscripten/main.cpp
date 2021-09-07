@@ -287,6 +287,17 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
   return true;
 }
 
+static bool curHidden=false;
+EM_BOOL visibility_callback(int eventType, const EmscriptenVisibilityChangeEvent *e, void *userData)
+{
+	if (e->hidden&&(!curHidden))
+		s_applicationManager->pause();
+	else if (curHidden&&(!e->hidden))
+		s_applicationManager->resume();
+	curHidden=e->hidden;
+  return true;
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE int main_registerPlugin(const char *pname,const char *psym);
 extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_JSNative(lua_State* L, int type);
 
@@ -295,6 +306,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE long _keep();
 
 extern const char *codeKey_;
 const char *currentUrl=NULL;
+
 
 int main() {
   EM_ASM(Module.setStatus("Initializing"));
@@ -362,6 +374,7 @@ char *url=(char *) EM_ASM_INT_V({
     ret = emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
     ret = emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
     ret = emscripten_set_keypress_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
+    ret = emscripten_set_visibilitychange_callback(0, true, visibility_callback);
    //printf("URL:%s\n",url);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);

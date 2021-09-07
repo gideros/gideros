@@ -761,11 +761,11 @@ void GLCanvas::play(QDir directory){
             dir_.mkdir("temporary");
 
             temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
-
-            dir_ = QDir(docLocation);
+            //This code path is used when openging or restarting a project from the player menu, which assumes all files are in a single directory
+ /*           dir_ = QDir(docLocation);
             dir_.mkdir("gideros");
             dir_.cd("gideros");
-            dir_.mkdir("documents");
+            dir_.mkdir("documents");*/
 
             resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString();
             documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();

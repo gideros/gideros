@@ -171,7 +171,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
     	rhdr+=4; //Assuming 32bit
 		http.setRequestHeader(Module.UTF8ToString(rk), Module.UTF8ToString(rv));
     }
-	var handle = Browser.getNextWgetRequestHandle();
+	var handle = wget.getNextWgetRequestHandle();
 
 	// LOAD
 	http.onload = function http_onload(e) {
@@ -192,7 +192,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 		 * dynCall('viiii', onerror, [handle, arg, http.status,
 		 * http.statusText]); }
 		 */
-		delete Browser.wgetRequests[handle];
+		delete wget.wgetRequests[handle];
 	};
 
 	// ERROR
@@ -201,7 +201,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 			dynCall('viiii', onerror, [ handle, arg, http.status,
 					http.statusText ]);
 		}
-		delete Browser.wgetRequests[handle];
+		delete wget.wgetRequests[handle];
 	};
 
 	// PROGRESS
@@ -221,7 +221,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 
 	// ABORT
 	http.onabort = function http_onabort(e) {
-		delete Browser.wgetRequests[handle];
+		delete wget.wgetRequests[handle];
 	};
 
 	// Useful because the browser can limit the number of redirection
@@ -237,7 +237,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 		http.send(null);
 	}
 
-	Browser.wgetRequests[handle] = http;
+	wget.wgetRequests[handle] = http;
 
 	return handle;
 }
