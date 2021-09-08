@@ -102,7 +102,7 @@ function AdsAdsense(){
     GiderosAds.frameworks[ad]=this;    
 }
 
-if (GiderosAds === undefined) { GiderosAds={ frameworks: {} }; }
+if (typeof GiderosAds === 'undefined') { GiderosAds={ frameworks: {} }; }
 
 GiderosAds.frameworks["adsense"]=new AdsAdsense();    
 

@@ -1,4 +1,4 @@
-if (GiderosAds === undefined) { GiderosAds={ frameworks: {} }; }
+if (typeof GiderosAds === 'undefined') { GiderosAds={ frameworks: {} }; }
 
 GiderosAds.evtShow=false;
 
