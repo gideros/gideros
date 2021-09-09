@@ -191,11 +191,15 @@ hkey_queryvalue(lua_State *L)
 	DBUG_ENTER("hkey_queryvalue");
 	k = *checkkey(L, 1);
 	vnam = ws(luaL_checkstring(L, 2));
-	data = lua_isnoneornil(L, 3) ? autobuf : 0;
+	data=NULL;
+	if (lua_isnoneornil(L, 3)) {
+		data=autobuf;
+		datalen=1020; //Leave out four bytes for String terminator
+	}
 	do {
 		DBUG_PRINT("W", ("RegQueryValueEx(%p,\"%s\",...)", k, vnam));
 		ret = RegQueryValueEx(k, vnam.c_str(), 0, &type, (LPBYTE) data, &datalen);
-	} while (ret == ERROR_MORE_DATA && data && (data = smalloc(datalen)));
+	} while (ret == ERROR_MORE_DATA && data && (data = smalloc(datalen+4)));
 	if (data) {
 		if (ret == ERROR_SUCCESS) {
 			switch (type) {
@@ -206,6 +210,7 @@ hkey_queryvalue(lua_State *L)
 			case REG_MULTI_SZ: /* return each string? */
 			case REG_SZ:
 			case REG_EXPAND_SZ: {
+				*((wchar_t *)(data+datalen))=0;
 				std::string u=us((wchar_t *)data);
 				data=(void *) u.c_str();
 				datalen=u.size();

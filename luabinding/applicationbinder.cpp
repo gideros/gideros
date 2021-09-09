@@ -56,6 +56,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"getLogicalScaleX", ApplicationBinder::getLogicalScaleX},
 		{"getLogicalScaleY", ApplicationBinder::getLogicalScaleY},
 		{"getLogicalBounds", ApplicationBinder::getLogicalBounds},
+		{"getNativePath", ApplicationBinder::getNativePath},
 		{"getDeviceInfo", ApplicationBinder::getDeviceInfo},
 		{"getContentWidth", ApplicationBinder::getContentWidth},
 		{"getContentHeight", ApplicationBinder::getContentHeight},
@@ -137,6 +138,15 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 
 	binder.pushInstance("Application", NULL);
 	lua_setglobal(L, "application");
+}
+
+int ApplicationBinder::getNativePath(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+	const char *path = luaL_checkstring(L, 2);
+    lua_pushstring(L,g_pathForFile(path));
+	return 1;
 }
 
 int ApplicationBinder::openUrl(lua_State* L)

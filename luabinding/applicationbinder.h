@@ -15,6 +15,7 @@ private:
 	static int getLogicalHeight(lua_State* L);
 	static int getDeviceWidth(lua_State* L);
 	static int getDeviceHeight(lua_State* L);
+	static int getNativePath(lua_State* L);
 	static int vibrate(lua_State* L);
 	static int getLocale(lua_State* L);
 	static int getLanguage(lua_State* L);
