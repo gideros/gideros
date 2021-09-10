@@ -587,6 +587,8 @@ struct World {
 		//goalX = goalX or x
 		//goalY = goalY or y
 		//filter  = filter  or defaultFilter
+        if (!filter)
+            filter = &df;
 
 		std::set<int> visited;
 		if (item)
@@ -952,6 +954,231 @@ struct BounceResponse: Response {
 	}
 };
 
+// @MultiPain
+struct UserResponse : Response {
+    int functionIndex;
+    lua_State* L;
+
+    UserResponse(lua_State* pL, int index)
+    {
+        L = pL;
+        luaL_checktype(L, index, LUA_TFUNCTION);
+        functionIndex = luaL_ref(L, LUA_REGISTRYINDEX);
+    }
+
+    void ComputeResponse(World*, Collision &col, double x,
+            double y, double w, double h, double goalX, double goalY,
+            ColFilter*, double &actualX, double &actualY,std::vector<Collision> &cols) {
+
+        // stack: ...
+        lua_rawgeti(L, LUA_REGISTRYINDEX, functionIndex); // stack: ..., callback_function
+        lua_pushvalue(L, 1);            // stack: ..., callback_function, world
+        lua_newtable(L);                 // stack: ..., callback_function, world, collision
+        lua_pushboolean(L, col.overlaps);
+        lua_setfield(L, -2, "overlaps");
+        lua_pushnumber(L, col.ti);
+        lua_setfield(L, -2, "ti");
+
+        lua_newtable(L);
+        lua_pushnumber(L, col.move.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, col.move.y);
+        lua_setfield(L, -2, "y");
+        lua_setfield(L, -2, "move");
+        lua_newtable(L);
+        lua_pushnumber(L, col.normal.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, col.normal.y);
+        lua_setfield(L, -2, "y");
+        lua_setfield(L, -2, "normal");
+        lua_newtable(L);
+        lua_pushnumber(L, col.touch.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, col.touch.y);
+        lua_setfield(L, -2, "y");
+        lua_setfield(L, -2, "touch");
+
+        lua_newtable(L);
+        lua_pushnumber(L, col.itemRect.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, col.itemRect.y);
+        lua_setfield(L, -2, "y");
+        lua_pushnumber(L, col.itemRect.w);
+        lua_setfield(L, -2, "w");
+        lua_pushnumber(L, col.itemRect.h);
+        lua_setfield(L, -2, "h");
+        lua_setfield(L, -2, "itemRect");
+        lua_newtable(L);
+        lua_pushnumber(L, col.otherRect.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, col.otherRect.y);
+        lua_setfield(L, -2, "y");
+        lua_pushnumber(L, col.otherRect.w);
+        lua_setfield(L, -2, "w");
+        lua_pushnumber(L, col.otherRect.h);
+        lua_setfield(L, -2, "h");
+        lua_setfield(L, -2, "otherRect");
+        lua_getfield(L, -2, "__itemsr");// stack: ..., callback_function, world, collision, world.__itemsr
+        lua_rawgeti(L, -1, col.item);   // stack: ..., callback_function, world, collision, world.__itemsr, world.__itemsr[col.item]
+        lua_setfield(L, -3, "item");    // stack: ..., callback_function, world, collision, world.__itemsr
+        lua_rawgeti(L, -1, col.other);  // stack: ..., callback_function, world, collision, world.__itemsr, world.__itemsr[col.item]
+        lua_setfield(L, -3, "other");   // stack: ..., callback_function, world, collision, world.__itemsr
+        lua_pop(L, 1);                  // stack: ..., callback_function, world, collision
+        lua_pushstring(L, col.type);    // stack: ..., callback_function, world, collision, type
+        lua_setfield(L, -2, "type");    // stack: ..., callback_function, world, collision
+        if ((!strcmp(col.type, "bounce")) || (!strcmp(col.type, "slide"))) {
+            lua_newtable(L);            // stack: ..., callback_function, world, collision, {}
+            lua_pushnumber(L, col.response.x);// stack: ..., callback_function, world, collision, {}, number
+            lua_setfield(L, -2, "x");   // stack: ..., callback_function, world, collision, {x = number}
+            lua_pushnumber(L, col.response.y);// stack: ..., callback_function, world, collision, {x = number}, number
+            lua_setfield(L, -2, "y");   // stack: ..., callback_function, world, collision, {x = number, y = number}
+            lua_setfield(L, -2, "response"); // stack: ..., callback_function, world, collision
+        }
+        lua_pushnumber(L, x);           // stack: ..., callback_function, world, collision, x
+        lua_pushnumber(L, y);           // stack: ..., callback_function, world, collision, x, y
+        lua_pushnumber(L, w);           // stack: ..., callback_function, world, collision, x, y, w
+        lua_pushnumber(L, h);           // stack: ..., callback_function, world, collision, x, y, w, h
+        lua_pushnumber(L, goalX);       // stack: ..., callback_function, world, collision, x, y, w, h, goalX
+        lua_pushnumber(L, goalY);       // stack: ..., callback_function, world, collision, x, y, w, h, goalX, goalY
+        lua_pushvalue(L, -11);          // stack: ..., callback_function, world, collision, x, y, w, h, goalX, goalY, filter
+        lua_call(L, 9, 3);              // stack: ..., goalX, goalY, collisions_table
+
+        actualX = luaL_checknumber(L, -3);
+        actualY = luaL_checknumber(L, -2);
+        luaL_checktype(L, -1, LUA_TTABLE); // stack: ..., goalX, goalY, collisions_table
+        int size = luaL_getn(L, -1);
+
+        for (int i = 0; i < size; ++i) {
+            Collision col;
+            lua_rawgeti(L, -1, i + 1);     // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1]
+
+            lua_getfield(L, 1, "__items"); // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1], world.__items
+            lua_getfield(L, -2, "item");   // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1], world.__items, collisions_table[i + 1]["item"]
+            if (!lua_isnil(L, -1))
+            {
+                lua_gettable(L, -2);       // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1], world.__items, world.__items[collisions_table[i + 1]["item"]]
+                col.item = lua_tonumber(L, -1);
+
+            }
+            lua_pop(L, 1);                 // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1]
+
+            lua_getfield(L, -2, "other");  // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1], world.__items, collisions_table[i + 1]["other"]
+            if (!lua_isnil(L, -1))
+            {
+                lua_gettable(L, -2);
+                col.other = lua_tonumber(L, -1);
+            }
+            lua_pop(L, 2);                 // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1]
+
+            lua_getfield(L, -1, "overlaps");
+            if (!lua_isnil(L, -1)) col.overlaps = lua_toboolean(L, -1);
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "type");
+            if (!lua_isnil(L, -1)) col.type = lua_tostring(L, -1);
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "ti");
+            if (!lua_isnil(L, -1)) col.ti = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "move");   // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1], collisions_table[i + 1]["move"]
+            if (!lua_isnil(L, -1))
+            {
+                lua_getfield(L, -1, "x");
+                col.move.x = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "y");
+                col.move.y = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);                 // stack: ..., goalX, goalY, collisions_table, collisions_table[i + 1]
+
+            lua_getfield(L, -1, "normal");
+            if (!lua_isnil(L, -1))
+            {
+                lua_getfield(L, -1, "x");
+                col.normal.x = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "y");
+                col.normal.y = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "touch");
+            if (!lua_isnil(L, -1))
+            {
+                lua_getfield(L, -1, "x");
+                col.touch.x = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "y");
+                col.touch.y = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "itemRect");
+            if (!lua_isnil(L, -1))
+            {
+                lua_getfield(L, -1, "x");
+                col.itemRect.x = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "y");
+                col.itemRect.y = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "w");
+                col.itemRect.w = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "h");
+                col.itemRect.h = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "otherRect");
+            if (!lua_isnil(L, -1))
+            {
+                lua_getfield(L, -1, "x");
+                col.itemRect.x = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "y");
+                col.itemRect.y = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "w");
+                col.itemRect.w = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "h");
+                col.itemRect.h = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "response");
+            if (!lua_isnil(L, -1))
+            {
+                lua_getfield(L, -1, "x");
+                col.response.x = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+                lua_getfield(L, -1, "y");
+                col.response.y = lua_tonumber(L, -1);
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            lua_pop(L, 1);
+
+            cols.push_back(col);
+        }
+        lua_pop(L, 3);                 // stack: ...
+    }
+
+    ~UserResponse()
+    {
+        luaL_unref(L, LUA_REGISTRYINDEX, functionIndex);
+    }
+};
+
 static CrossResponse responseCross;
 static TouchResponse responseTouch;
 static SlideResponse responseSlide;
@@ -1015,101 +1242,114 @@ struct LuaItemFilter: ItemFilter {
 	}
 };
 
+// @MultiPain
+static int worldAddResponse(lua_State *L)
+{
+    World *w = (World *) g_getInstance(L, "BumpWorld", 1);
+    const char* name = luaL_checkstring(L, 2);
+    UserResponse* data = new UserResponse(L, 3);
+    w->addResponse(name, data);
+    return 0;
+}
+
 static int worldProject(lua_State *L) {
-	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
-	lua_getfield(L, 1, "__items");
-	lua_pushvalue(L, 2);
-	lua_gettable(L, -2);
-	if (lua_isnil(L, -1)) {
-		lua_pushfstring(L,
-				"Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
-				luaL_tostring(L, 2));
-		lua_error(L);
-	}
-	int item = lua_tonumber(L, -1);
-	lua_pop(L, 2);
-	double x = luaL_checknumber(L, 3);
-	double y = luaL_checknumber(L, 4);
-	double w = luaL_checknumber(L, 5);
-	double h = luaL_checknumber(L, 6);
-	double gx = luaL_checknumber(L, 7);
-	double gy = luaL_checknumber(L, 8);
+    World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
+    lua_getfield(L, 1, "__items");
+    lua_pushvalue(L, 2);
+    lua_gettable(L, -2);
+    if (lua_isnil(L, -1)) {
+        lua_pushfstring(L,
+                "Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
+                luaL_tostring(L, 2));
+        lua_error(L);
+    }
+    int item = lua_tonumber(L, -1);
+    lua_pop(L, 2);
+    double x = luaL_checknumber(L, 3);
+    double y = luaL_checknumber(L, 4);
+    double w = luaL_checknumber(L, 5);
+    double h = luaL_checknumber(L, 6);
+    double gx = luaL_checknumber(L, 7);
+    double gy = luaL_checknumber(L, 8);
 
-	ColFilter *f = NULL;
-	LuaColFilter lf;
-	lf.L = L;
-	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 9)) {
-		luaL_checktype(L, 9, LUA_TFUNCTION);
-		lf.func = 9;
-		f = &lf;
-	}
-	lua_getfield(L, 1, "__itemsr");
-	std::vector<Collision> items;
-	wr->project(item, x, y, w,h, gx,gy,f,items);
-	lua_pop(L, 1);
-	int n = 0;
-	lua_newtable(L);
-	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
-			it++) {
-		lua_newtable(L);
-		lua_rawgeti(L, -2, (*it).item);
-		lua_setfield(L, -2, "item");
-		lua_rawgeti(L, -2, (*it).other);
-		lua_setfield(L, -2, "other");
-		lua_pushstring(L, (*it).type);
-		lua_setfield(L, -2, "type");
-		lua_pushboolean(L, (*it).overlaps);
-		lua_setfield(L, -2, "overlaps");
-		lua_pushnumber(L, (*it).ti);
-		lua_setfield(L, -2, "ti");
+    ColFilter *f = NULL;
+    LuaColFilter lf;
+    lf.L = L;
+    lf.itemsr = -1;
+    if (!lua_isnoneornil(L, 9)) {
+        luaL_checktype(L, 9, LUA_TFUNCTION);
+        lf.func = 9;
+        f = &lf;
+    }
+    else
+    {
+        f = new defaultFilter();
+    }
+    lua_getfield(L, 1, "__itemsr");
+    std::vector<Collision> items;
+    wr->project(item, x, y, w,h, gx,gy,f,items);
+    int n = 0;
+    lua_newtable(L);
+    for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
+            it++) {
+        lua_newtable(L);
+        lua_rawgeti(L, -3, (*it).item);
+        lua_setfield(L, -2, "item");
+        lua_rawgeti(L, -3, (*it).other);
+        lua_setfield(L, -2, "other");
+        lua_pushstring(L, (*it).type);
+        lua_setfield(L, -2, "type");
+        lua_pushboolean(L, (*it).overlaps);
+        lua_setfield(L, -2, "overlaps");
+        lua_pushnumber(L, (*it).ti);
+        lua_setfield(L, -2, "ti");
 
-		lua_newtable(L);
-		lua_pushnumber(L, (*it).move.x);
-		lua_setfield(L, -2, "x");
-		lua_pushnumber(L, (*it).move.y);
-		lua_setfield(L, -2, "y");
-		lua_setfield(L, -2, "move");
-		lua_newtable(L);
-		lua_pushnumber(L, (*it).normal.x);
-		lua_setfield(L, -2, "x");
-		lua_pushnumber(L, (*it).normal.y);
-		lua_setfield(L, -2, "y");
-		lua_setfield(L, -2, "normal");
-		lua_newtable(L);
-		lua_pushnumber(L, (*it).touch.x);
-		lua_setfield(L, -2, "x");
-		lua_pushnumber(L, (*it).touch.y);
-		lua_setfield(L, -2, "y");
-		lua_setfield(L, -2, "touch");
+        lua_newtable(L);
+        lua_pushnumber(L, (*it).move.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, (*it).move.y);
+        lua_setfield(L, -2, "y");
+        lua_setfield(L, -2, "move");
+        lua_newtable(L);
+        lua_pushnumber(L, (*it).normal.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, (*it).normal.y);
+        lua_setfield(L, -2, "y");
+        lua_setfield(L, -2, "normal");
+        lua_newtable(L);
+        lua_pushnumber(L, (*it).touch.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, (*it).touch.y);
+        lua_setfield(L, -2, "y");
+        lua_setfield(L, -2, "touch");
 
-		lua_newtable(L);
-		lua_pushnumber(L, (*it).itemRect.x);
-		lua_setfield(L, -2, "x");
-		lua_pushnumber(L, (*it).itemRect.y);
-		lua_setfield(L, -2, "y");
-		lua_pushnumber(L, (*it).itemRect.w);
-		lua_setfield(L, -2, "w");
-		lua_pushnumber(L, (*it).itemRect.h);
-		lua_setfield(L, -2, "h");
-		lua_setfield(L, -2, "itemRect");
-		lua_newtable(L);
-		lua_pushnumber(L, (*it).otherRect.x);
-		lua_setfield(L, -2, "x");
-		lua_pushnumber(L, (*it).otherRect.y);
-		lua_setfield(L, -2, "y");
-		lua_pushnumber(L, (*it).otherRect.w);
-		lua_setfield(L, -2, "w");
-		lua_pushnumber(L, (*it).otherRect.h);
-		lua_setfield(L, -2, "h");
-		lua_setfield(L, -2, "otherRect");
+        lua_newtable(L);
+        lua_pushnumber(L, (*it).itemRect.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, (*it).itemRect.y);
+        lua_setfield(L, -2, "y");
+        lua_pushnumber(L, (*it).itemRect.w);
+        lua_setfield(L, -2, "w");
+        lua_pushnumber(L, (*it).itemRect.h);
+        lua_setfield(L, -2, "h");
+        lua_setfield(L, -2, "itemRect");
+        lua_newtable(L);
+        lua_pushnumber(L, (*it).otherRect.x);
+        lua_setfield(L, -2, "x");
+        lua_pushnumber(L, (*it).otherRect.y);
+        lua_setfield(L, -2, "y");
+        lua_pushnumber(L, (*it).otherRect.w);
+        lua_setfield(L, -2, "w");
+        lua_pushnumber(L, (*it).otherRect.h);
+        lua_setfield(L, -2, "h");
+        lua_setfield(L, -2, "otherRect");
 
-		lua_rawseti(L, -3, ++n);
-	}
-	lua_pop(L, 1);
-	lua_pushinteger(L, n);
+        lua_rawseti(L, -2, ++n);
+    }
+    lua_remove(L, -2);
+    lua_pushinteger(L, n);
 
-	return 2;
+    return 2;
 }
 
 static int worldCountCells(lua_State *L) {
@@ -1447,12 +1687,17 @@ static int worldMove(lua_State *L) {
 
 	ColFilter *f = NULL;
 	LuaColFilter lf;
+    defaultFilter df;
 	lf.L = L;
 	lf.itemsr = -1;
 	if (hasFilter) {
 		lf.func = 5;
 		f = &lf;
 	}
+    else
+    {
+        f = &df;
+    }
 	double ax, ay;
 	lua_getfield(L, 1, "__itemsr");
 	std::vector<Collision> items;
@@ -1817,7 +2062,7 @@ static int bumpNewWorld(lua_State *L) {
 static int loader(lua_State *L) {
 	const luaL_Reg worldFuncs[] =
 			{
-					//    {"addResponse", worldAddResponse}, Don't implement
+                    { "addResponse", worldAddResponse},
 					{ "project", worldProject },
 					{ "countCells", worldCountCells },
 					{ "hasItem", worldHasItem }, { "getItems", worldGetItems },
