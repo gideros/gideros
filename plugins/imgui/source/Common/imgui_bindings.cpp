@@ -9026,6 +9026,18 @@ int IO_SaveIniSettingsToDisk(lua_State* L)
 	return 0;
 }
 
+int IO_LoadIniSettingsFromDisk(lua_State* L)
+{
+	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
+	if (lua_type(L, 2) == LUA_TSTRING)
+	{
+		ImGui::LoadIniSettingsFromDisk(lua_tostring(L, 2));
+		return 0;
+	}
+	ImGui::LoadIniSettingsFromDisk(io.IniFilename);
+	return 0;
+}
+
 int IO_SetIniFilename(lua_State* L)
 {
     ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
@@ -11948,6 +11960,7 @@ int loader(lua_State* L)
         {"getIniFilename", IO_GetIniFilename},
         {"setIniFilename", IO_SetIniFilename},
 		{"saveIniSettings", IO_SaveIniSettingsToDisk},
+		{"loadIniSettings", IO_LoadIniSettingsFromDisk},
         {"getLogFilename", IO_GetLogFilename},
         {"setLogFilename", IO_SetLogFilename},
         {"getMouseDoubleClickTime", IO_GetMouseDoubleClickTime},
