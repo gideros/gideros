@@ -758,6 +758,8 @@ void bindEnums(lua_State* L)
     BIND_IENUM(L, ImGuiStyleVar_PopupRounding, "StyleVar_PopupRounding");
     BIND_IENUM(L, ImGuiStyleVar_ButtonTextAlign, "StyleVar_ButtonTextAlign");
     BIND_IENUM(L, ImGuiStyleVar_CellPadding, "StyleVar_CellPadding");
+    BIND_IENUM(L, ImGuiStyleVar_DisabledAlpha, "StyleVar_DisabledAlpha");
+
 
     //ImGuiCol
     BIND_IENUM(L, ImGuiCol_PlotHistogram, "Col_PlotHistogram");
@@ -951,7 +953,7 @@ void bindEnums(lua_State* L)
     BIND_IENUM(L, ImGuiColorEditFlags_AlphaPreviewHalf, "ColorEditFlags_AlphaPreviewHalf");
     BIND_IENUM(L, ImGuiColorEditFlags_Float, "ColorEditFlags_Float");
     BIND_IENUM(L, ImGuiColorEditFlags_PickerHueWheel, "ColorEditFlags_PickerHueWheel");
-    BIND_IENUM(L, ImGuiColorEditFlags__OptionsDefault, "ColorEditFlags_OptionsDefault");
+    BIND_IENUM(L, ImGuiColorEditFlags_DefaultOptions_, "ColorEditFlags_OptionsDefault");
     BIND_IENUM(L, ImGuiColorEditFlags_InputRGB, "ColorEditFlags_InputRGB");
     BIND_IENUM(L, ImGuiColorEditFlags_HDR, "ColorEditFlags_HDR");
     BIND_IENUM(L, ImGuiColorEditFlags_NoPicker, "ColorEditFlags_NoPicker");
@@ -1089,6 +1091,8 @@ void bindEnums(lua_State* L)
     BIND_IENUM(L, ImGuiTableColumnFlags_IsVisible, "TableColumnFlags_IsVisible");
     BIND_IENUM(L, ImGuiTableColumnFlags_IsSorted, "TableColumnFlags_IsSorted");
     BIND_IENUM(L, ImGuiTableColumnFlags_IsHovered, "TableColumnFlags_IsHovered");
+    BIND_IENUM(L, ImGuiTableColumnFlags_Disabled, "TableColumnFlags_Disabled");
+    BIND_IENUM(L, ImGuiTableColumnFlags_NoHeaderLabel, "TableColumnFlags_NoHeaderLabel");
 
     // ImGuiTableFlags
     BIND_IENUM(L, ImGuiTableFlags_None, "TableFlags_None");
@@ -2925,12 +2929,23 @@ int BeginFullScreenWindow(lua_State* L)
     return ret;
 }
 
+int BeginDisabled(lua_State* L)
+{
+    int disabled = lua_toboolean(L, 2);
+    ImGui::BeginDisabled(disabled);
+}
+
+int EndDisabled(lua_State* L)
+{
+    ImGui::EndDisabled();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
 /// Child Windows
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
-/// 
+
 int BeginChild(lua_State* L)
 {
     ImVec2 size = ImVec2(luaL_optnumber(L, 3, 0.0f), luaL_optnumber(L, 4, 0.0f));
@@ -8560,6 +8575,20 @@ int Style_GetAntiAliasedFill(lua_State* L)
     return 1;
 }
 
+int Style_SetDisabledAlpha(lua_State* L)
+{
+    ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+    style.DisabledAlpha = luaL_checknumber(L, 2);
+    return 0;
+}
+
+int Style_GetDisabledAlpha(lua_State* L)
+{
+    ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+    lua_pushnumber(L, style.DisabledAlpha);
+    return 1;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -8985,16 +9014,6 @@ int IO_GetIniFilename(lua_State* L)
     return 1;
 }
 
-int IO_SetIniFilename(lua_State* L)
-{
-    ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
-	if (lua_gettop(L) == 2 && lua_isnil(L, 2))
-        io.IniFilename = NULL;
-    else
-        io.IniFilename = luaL_checkstring(L, 2);
-    return 0;
-}
-
 int IO_SaveIniSettingsToDisk(lua_State* L)
 {
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
@@ -9005,6 +9024,16 @@ int IO_SaveIniSettingsToDisk(lua_State* L)
 	}
 	ImGui::SaveIniSettingsToDisk(io.IniFilename);
 	return 0;
+}
+
+int IO_SetIniFilename(lua_State* L)
+{
+    ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
+    if (lua_gettop(L) == 2 && lua_isnil(L, 2))
+        io.IniFilename = NULL;
+    else
+        io.IniFilename = luaL_checkstring(L, 2);
+    return 0;
 }
 
 int IO_GetLogFilename(lua_State* L)
@@ -11790,6 +11819,8 @@ int loader(lua_State* L)
         {"getAntiAliasedLinesUseTex", Style_GetAntiAliasedLinesUseTex},
         {"setAntiAliasedFill", Style_SetAntiAliasedFill},
         {"getAntiAliasedFill", Style_GetAntiAliasedFill},
+        {"setDisabledAlpha", Style_SetDisabledAlpha},
+        {"getDisabledAlpha", Style_GetDisabledAlpha},
 
         {NULL, NULL},
     };
@@ -11915,7 +11946,7 @@ int loader(lua_State* L)
         {"getIniSavingRate", IO_GetIniSavingRate},
         {"setIniSavingRate", IO_SetIniSavingRate},
         {"getIniFilename", IO_GetIniFilename},
-		{"setIniFilename", IO_SetIniFilename},
+        {"setIniFilename", IO_SetIniFilename},
 		{"saveIniSettings", IO_SaveIniSettingsToDisk},
         {"getLogFilename", IO_GetLogFilename},
         {"setLogFilename", IO_SetLogFilename},
@@ -12324,6 +12355,10 @@ int loader(lua_State* L)
 
     const luaL_Reg imguiFunctionList[] =
     {
+
+        {"beginDisabled", BeginDisabled},
+        {"endDisabled", EndDisabled},
+
         {"updateCursor", UpdateMouseCursor},
         {"setResetTouchPosOnEnd", SetResetTouchPosOnEnd},
         {"getResetTouchPosOnEnd", GetResetTouchPosOnEnd},
