@@ -243,7 +243,7 @@ void Sprite::redrawEffects() {
 	Sprite *p=this;
 	while (p) {
 		p->effectsDirty_=true;
-		p=parent();
+		p=p->parent();
 	}
 }
 
