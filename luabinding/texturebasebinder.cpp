@@ -9,6 +9,7 @@ TextureBaseBinder::TextureBaseBinder(lua_State* L)
 	static const luaL_Reg functionList[] = {
 		{"getWidth", TextureBaseBinder::getWidth},
 		{"getHeight", TextureBaseBinder::getHeight},
+		{"getSize", TextureBaseBinder::getSize},
 		{"getTexelSize", TextureBaseBinder::getTexelSize},
 		{NULL, NULL},
 	};
@@ -61,6 +62,18 @@ int TextureBaseBinder::getHeight(lua_State* L)
 	lua_pushinteger(L, textureBase->data->baseHeight);
 
 	return 1;
+}
+
+int TextureBaseBinder::getSize(lua_State* L)
+{
+	StackChecker checker(L, "TextureBaseBinder::getSize", 2);
+	
+	Binder binder(L);
+	TextureBase* textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase"));
+	
+	lua_pushinteger(L, textureBase->data->baseWidth);
+	lua_pushinteger(L, textureBase->data->baseHeight);
+	return 2;
 }
 
 int TextureBaseBinder::getTexelSize(lua_State* L)
