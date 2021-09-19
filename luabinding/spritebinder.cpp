@@ -1876,7 +1876,7 @@ int SpriteBinder::setEffectConstant(lua_State* L)
 
 int SpriteBinder::redrawEffects(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::setShaderConstant", 0);
+	StackChecker checker(L, "SpriteBinder::redrawEffects", 0);
 
 	Binder binder(L);
 

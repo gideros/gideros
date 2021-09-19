@@ -11,6 +11,7 @@ public:
 private:
 	static int getWidth(lua_State* L);
 	static int getHeight(lua_State* L);
+	static int getSize(lua_State* L);
 	static int getTexelSize(lua_State* L);
 };
 
