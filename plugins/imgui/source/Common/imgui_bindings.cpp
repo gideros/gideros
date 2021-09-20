@@ -1355,8 +1355,7 @@ class GidImGui
 		EventListener* eventListener;
 		ImGuiContext* ctx;
 		SpriteProxy* proxy;
-		CallbackData* resizeCallback;
-		CallbackData* inputCallback;
+        std::vector<CallbackData*> callbacks;
 		
 		bool resetTouchPosOnEnd;
 		
@@ -1709,11 +1708,9 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 				   bool addMouseListeners = true, bool addKeyboardListeners = true, bool addTouchListeners = false)
 {
 	
-	ctx = ImGui::CreateContext(atlas);
-	resizeCallback = nullptr;
-	inputCallback = nullptr;
-	
-	resetTouchPosOnEnd = false;
+    ctx = ImGui::CreateContext(atlas);
+
+    resetTouchPosOnEnd = false;
 	
 	ImGuiIO& io = ctx->IO;
 	
@@ -2985,18 +2982,14 @@ int EndFrame(lua_State* L)
 {
 	STACK_CHECKER(L, "endFrame", 0);
 	GidImGui* imgui = getImgui(L);
-	if (imgui->resizeCallback != nullptr)
-	{
-		delete imgui->resizeCallback;
-		imgui->resizeCallback = nullptr;
-	}
-	if (imgui->inputCallback != nullptr)
-	{
-		delete imgui->inputCallback;
-		imgui->inputCallback = nullptr;
-	}
 
-	ImGui::EndFrame();
+    for (int i = imgui->callbacks.size() - 1; i >= 0; i--)
+    {
+        delete imgui->callbacks[i];
+        imgui->callbacks.pop_back();
+    }
+
+    ImGui::EndFrame();
 	return 0;
 }
 
@@ -3263,8 +3256,10 @@ int SetNextWindowSizeConstraints(lua_State* L)
 	
 	if (lua_type(L, 6) == LUA_TFUNCTION)
 	{
-		imgui->resizeCallback = new CallbackData(L, 6);
-		ImGui::SetNextWindowSizeConstraints(size_min, size_max, NextWindowSizeConstraintCallback, (void *)imgui->resizeCallback);		
+        CallbackData* resizeCallback = new CallbackData(L, 6);
+        imgui->callbacks.push_back(resizeCallback);
+
+        ImGui::SetNextWindowSizeConstraints(size_min, size_max, NextWindowSizeConstraintCallback, (void *)resizeCallback);
 	}
 	else
 	{
@@ -5254,8 +5249,10 @@ int InputText(lua_State* L)
 	
 	if (lua_gettop(L) > 5)
 	{
-		imgui->inputCallback = new CallbackData(L, 6);
-		result = ImGui::InputText(label, buffer, buffer_size, flags, InputTextCallback, (void*)imgui->inputCallback);
+        CallbackData* inputCallback = new CallbackData(L, 6);
+        imgui->callbacks.push_back(inputCallback);
+
+        result = ImGui::InputText(label, buffer, buffer_size, flags, InputTextCallback, (void*)inputCallback);
 	}
 	else
 	{
@@ -10356,11 +10353,11 @@ int IO_GetIniSavingRate(lua_State* L)
 
 int IO_SetIniSavingRate(lua_State* L)
 {
-	STACK_CHECKER(L, "setIniSavingRate", 1);
+    STACK_CHECKER(L, "setIniSavingRate", 0);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	io.IniSavingRate = luaL_optnumber(L, 2, 5.0f);
-	return 1;
+    return 0;
 }
 
 int IO_GetIniFilename(lua_State* L)
