@@ -57,6 +57,7 @@ local GFUNC_MAP={
 
 local platform=application:getDeviceInfo()
 local isHTML = platform and platform=="Web"
+local isWebGL2 = Shader.getProperties().version:find("WebGL 2")
 
 local function populateGMap(gmap,tmap,funcs,const)
 	for k,v in pairs(tmap) do
@@ -230,10 +231,21 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
 	
 	local _headers = nil
+	local _eheaders = ""
 	if isHTML then
 		_headers=[[
 #define shadow2D(tex,pt) vec4(shadow2DEXT(tex,pt),0.0,0.0,0.0)
 ]]
+		if isWebGL2 then
+			_eheaders=[[
+#version 300 es		
+#define attribute in
+#define varying out
+	]]
+		_headers=_headers..[[
+#define texture2D texture
+]]
+		end
 	else
 		_headers=[[#ifdef GLES2
 #extension GL_OES_standard_derivatives : enable
@@ -243,7 +255,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 ]]
 	end
 
-	local _code=_headers
+	local _code=_eheaders.._headers
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
 		if atype then
@@ -284,8 +296,19 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	
 	local _vshader=_code
 	
+	outVariable="gl_FragColor"
+	if isHTML then
+		if isWebGL2 then
+			_eheaders=[[
+#version 300 es		
+#define varying in
+out lowp vec4 _gl_FragColor;
+	]]
+			outVariable="_gl_FragColor"
+		end
+	end
 	
-	_code=_headers
+	_code=_eheaders.._headers
 	for k,v in ipairs(uniforms) do 
 		if not v.vertex then
 			local atype=shType(v)
@@ -304,7 +327,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	local mainCode=codegen(ff,amap,gmap,tmap,omap,	{
 		RETURN=function(rval)
 			if rval then
-				return "gl_FragColor = "..rval..";\n"
+				return outVariable.." = "..rval..";\n"
 			else
 				return ""
 			end
