@@ -126,6 +126,7 @@ FORMS += \
     ../player/Forms/settingsdialog.ui \
 
 HEADERS += \
+    ../player/Headers/tabletapplication.h \
     headers/mainwindow.h \
     ../player/Headers/applicationwrapper.h \
     ../player/Headers/glcanvas.h \
