@@ -1848,7 +1848,13 @@ int SpriteBinder::setEffectStack(lua_State* L)
             if (!lua_isnoneornil(L,-1))
                 e.autoBuffer=lua_toboolean(L,-1);
 
-            lua_pop(L,8);
+            lua_getfield(L,-8,"autoTransform");
+            if (!lua_isnoneornil(L,-1)) {
+                Transform *t=static_cast<Transform*>(binder.getInstance("Matrix", -1));
+                e.autoTransform=t->matrix();
+            }
+
+            lua_pop(L,9);
 			effects.push_back(e);
 		}
 	}

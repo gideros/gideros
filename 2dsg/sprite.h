@@ -445,6 +445,7 @@ public:
         std::vector<TextureBase *> textures;
 		Matrix4 transform;
         Matrix4 postTransform;
+        Matrix4 autoTransform;
 		ShaderProgram *shader;
 		GRenderTarget *buffer;
 		bool clearBuffer;
@@ -455,6 +456,7 @@ public:
 	bool setEffectShaderConstant(size_t effectNumber,ShaderParam p);
 	void redrawEffects();
     void updateEffects();
+    void logicalTransformChanged();
 protected:
 	EffectUpdateMode effectsMode_;
     bool effectsDirty_;

@@ -223,66 +223,58 @@ void Sprite::updateEffects()
     if (effectStack_.size()) {
         float minx, miny, maxx, maxy;
 
-        localBounds(&minx, &miny, &maxx, &maxy);
+        objectBounds(&minx, &miny, &maxx, &maxy);
 
         if (minx > maxx || miny > maxy)
                return; //Empty Sprite, do nothing
-        swidth=maxx - minx;
-        sheight=maxy - miny;
-        swidth*=application_->getLogicalScaleX();
-        sheight*=application_->getLogicalScaleY();
+        swidth=maxx;
+        sheight=maxy;
     }
 	for (size_t i=0;i<effectStack_.size();i++) {
 		if (effectStack_[i].buffer) {
 			if (i==0) { //First stage, draw the Sprite normally onto the first buffer
+                Matrix xform;
                 if (effectStack_[i].autoBuffer) {
-                    float minx, miny, maxx, maxy;
+                    float maxx, maxy;
 
-                    effectStack_[i].transform.transformPoint(0,0,&minx,&miny);
-                    maxx=minx; maxy=miny;
+                    effectStack_[i].autoTransform.transformPoint(0,0,&maxx,&maxy);
                     float tx,ty;
-                    effectStack_[i].transform.transformPoint(swidth,0,&tx,&ty);
+                    effectStack_[i].autoTransform.transformPoint(swidth,0,&tx,&ty);
                     maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
-                    minx=std::min(minx,tx); miny=std::min(miny,ty);
-                    effectStack_[i].transform.transformPoint(0,sheight,&tx,&ty);
+                    effectStack_[i].autoTransform.transformPoint(0,sheight,&tx,&ty);
                     maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
-                    minx=std::min(minx,tx); miny=std::min(miny,ty);
-                    effectStack_[i].transform.transformPoint(swidth,sheight,&tx,&ty);
+                    effectStack_[i].autoTransform.transformPoint(swidth,sheight,&tx,&ty);
                     maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
-                    minx=std::min(minx,tx); miny=std::min(miny,ty);
                     maxx=std::max(maxx,.0F); maxy=std::max(maxy,.0F);
-                    minx=std::max(minx,.0F); miny=std::max(miny,.0F);
-                    swidth=maxx-minx; sheight=maxy-miny;
-                    effectStack_[i].buffer->resize(ceilf(swidth),ceilf(sheight));
+                    swidth=maxx; sheight=maxy;
+                    swidth*=application_->getLogicalScaleX();
+                    sheight*=application_->getLogicalScaleY();
+                    effectStack_[i].buffer->resize(ceilf(swidth),ceilf(sheight),application_->getLogicalScaleX(),application_->getLogicalScaleY());
+                    xform.scale(application_->getLogicalScaleX(),application_->getLogicalScaleY(),1);
                 }
                 if (effectStack_[i].clearBuffer)
                     effectStack_[i].buffer->clear(0,0,0,0,-1,-1);
+                xform=xform*effectStack_[i].transform;
                 Matrix invL=localTransform_.matrix().inverse();
-                invL.scale(application_->getLogicalScaleX(),application_->getLogicalScaleY(),1);
-                invL*=effectStack_[i].transform;
+                xform=xform*invL;
 
-                effectStack_[i].buffer->draw(this,invL);
+                effectStack_[i].buffer->draw(this,xform);
 			}
 			else if (effectStack_[i-1].buffer) {
                 if (effectStack_[i].autoBuffer) {
-                    float minx, miny, maxx, maxy;
+                    float maxx, maxy;
 
-                    effectStack_[i].transform.transformPoint(0,0,&minx,&miny);
-                    maxx=minx; maxy=miny;
+                    effectStack_[i].autoTransform.transformPoint(0,0,&maxx,&maxy);
                     float tx,ty;
-                    effectStack_[i].transform.transformPoint(swidth,0,&tx,&ty);
+                    effectStack_[i].autoTransform.transformPoint(swidth,0,&tx,&ty);
                     maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
-                    minx=std::min(minx,tx); miny=std::min(miny,ty);
-                    effectStack_[i].transform.transformPoint(0,sheight,&tx,&ty);
+                    effectStack_[i].autoTransform.transformPoint(0,sheight,&tx,&ty);
                     maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
-                    minx=std::min(minx,tx); miny=std::min(miny,ty);
-                    effectStack_[i].transform.transformPoint(swidth,sheight,&tx,&ty);
+                    effectStack_[i].autoTransform.transformPoint(swidth,sheight,&tx,&ty);
                     maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
-                    minx=std::min(minx,tx); miny=std::min(miny,ty);
                     maxx=std::max(maxx,.0F); maxy=std::max(maxy,.0F);
-                    minx=std::max(minx,.0F); miny=std::max(miny,.0F);
-                    swidth=maxx-minx; sheight=maxy-miny;
-                    effectStack_[i].buffer->resize(ceilf(swidth),ceilf(sheight));
+                    swidth=maxx; sheight=maxy;
+                    effectStack_[i].buffer->resize(ceilf(swidth),ceilf(sheight),application_->getLogicalScaleX(),application_->getLogicalScaleY());
                 }
                 if (effectStack_[i].clearBuffer)
                     effectStack_[i].buffer->clear(0,0,0,0,-1,-1);
@@ -568,8 +560,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
                 xform=sprite->parent_->worldTransform_;
             else
                 xform=transform;
-            xform=xform*sprite->effectStack_[i].postTransform;
             xform=xform*sprite->localTransform_.matrix();
+            xform=xform*sprite->effectStack_[i].postTransform;
             if (sprite->effectStack_[0].autoBuffer) {
                 Matrix mscale;
                 mscale.scale(1/application_->getLogicalScaleX(),1/application_->getLogicalScaleY(),1);
@@ -589,6 +581,13 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 	}
 
 	stackPool.destroy(&stack);
+}
+
+void Sprite::logicalTransformChanged()
+{
+    effectsDirty_=true;
+    for (size_t i = 0; i < children_.size(); ++i)
+        children_[i]->logicalTransformChanged();
 }
 
 void Sprite::computeLayout() {
@@ -1557,6 +1556,7 @@ bool Sprite::setDimensions(float w,float h, bool forLayout)
         if (layoutState)
             layoutState->dirty=true;
         layoutSizesChanged();
+        redrawEffects();
 
         if (hasEventListener(LayoutEvent::RESIZED))
         {

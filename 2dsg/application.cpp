@@ -332,6 +332,7 @@ void Application::renderScene(int deltaFrameCount) {
 			std::swap(hw, hh);
 	}
 	gfx->setProjection(projectionMatrix_);
+    gfx->setScreenScale(lsx,lsy);
 
 	// hardware start/end x/y
 	//if(lsx == 0) lsx = 1;
@@ -680,6 +681,8 @@ void Application::calculateLogicalTransformation() {
 		logicalTranslateY_ = 0;
 	}
 	projectionDirty_ = true;
+    if (stage_)
+        stage_->logicalTransformChanged();
 }
 
 void Application::correctTouchPositionLogical(int* x, int* y) {

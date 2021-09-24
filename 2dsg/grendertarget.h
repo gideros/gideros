@@ -16,6 +16,6 @@ public:
     void clear(unsigned int color, float a, int x, int y, int w, int h);
     void draw(const Sprite *sprite, const Matrix4 transform);
     void getPixels(int x,int y,int w,int h,void *buffer);
-    void resize(int width, int height);
+    void resize(int width, int height, float scaleX, float scaleY);
     int save(const char *filename,int x,int y,int w,int h);
 };
