@@ -40,6 +40,14 @@ ShaderBuffer *GRenderTarget::prepareForDraw()
 	return oldfbo;
 }
 
+void GRenderTarget::resize(int width, int height)
+{
+    if ((data->baseWidth==width)&&(data->baseHeight==height)) return;
+    TextureData *data2 = application_->getTextureManager()->createRenderTarget(width, height, data->parameters, false, false);
+    application_->getTextureManager()->destroyTexture(data);
+    data=data2;
+}
+
 void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int h)
 {
 	if (!ShaderEngine::isReady())

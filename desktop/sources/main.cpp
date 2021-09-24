@@ -24,6 +24,7 @@
 #include <glog.h>
 #include <bytebuffer.h>
 #include "constants.cpp"
+#include "tabletapplication.h"
 
 static void loadPlugins(){
 	QDir dir = QDir::currentPath();
@@ -47,7 +48,7 @@ static void loadPlugins(){
 
 int main(int argc, char *argv[]){
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-    QApplication a(argc, argv);
+    TabletApplication a(argc, argv);
 
     QDir dir = QCoreApplication::applicationDirPath();
 

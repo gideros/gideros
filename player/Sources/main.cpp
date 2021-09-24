@@ -25,6 +25,7 @@
 #include "constants.cpp"
 //#include <curl/curl.h>
 #include <QSurfaceFormat>
+#include "tabletapplication.h"
 
 
 static void loadPlugins(){
@@ -50,8 +51,6 @@ static void loadPlugins(){
 	}
 }
 
-
-
 int main(int argc, char *argv[]){
 //	curl_global_init(CURL_GLOBAL_WIN32);
 
@@ -74,7 +73,7 @@ int main(int argc, char *argv[]){
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 
-	QApplication a(argc, argv);
+    TabletApplication a(argc, argv);
 
 	QDir dir = QCoreApplication::applicationDirPath();
 

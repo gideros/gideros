@@ -219,16 +219,73 @@ void Sprite::updateEffects()
 		if (!effectsDirty_) return;
 	}
 	effectsDrawing_=true;
+    float swidth,sheight;
+    if (effectStack_.size()) {
+        float minx, miny, maxx, maxy;
+
+        localBounds(&minx, &miny, &maxx, &maxy);
+
+        if (minx > maxx || miny > maxy)
+               return; //Empty Sprite, do nothing
+        swidth=maxx - minx;
+        sheight=maxy - miny;
+        swidth*=application_->getLogicalScaleX();
+        sheight*=application_->getLogicalScaleY();
+    }
 	for (size_t i=0;i<effectStack_.size();i++) {
 		if (effectStack_[i].buffer) {
 			if (i==0) { //First stage, draw the Sprite normally onto the first buffer
-				if (effectStack_[i].clearBuffer)
-					effectStack_[i].buffer->clear(0,0,0,0,-1,-1);
-				effectStack_[i].buffer->draw(this,effectStack_[i].transform);
+                if (effectStack_[i].autoBuffer) {
+                    float minx, miny, maxx, maxy;
+
+                    effectStack_[i].transform.transformPoint(0,0,&minx,&miny);
+                    maxx=minx; maxy=miny;
+                    float tx,ty;
+                    effectStack_[i].transform.transformPoint(swidth,0,&tx,&ty);
+                    maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
+                    minx=std::min(minx,tx); miny=std::min(miny,ty);
+                    effectStack_[i].transform.transformPoint(0,sheight,&tx,&ty);
+                    maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
+                    minx=std::min(minx,tx); miny=std::min(miny,ty);
+                    effectStack_[i].transform.transformPoint(swidth,sheight,&tx,&ty);
+                    maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
+                    minx=std::min(minx,tx); miny=std::min(miny,ty);
+                    maxx=std::max(maxx,.0F); maxy=std::max(maxy,.0F);
+                    minx=std::max(minx,.0F); miny=std::max(miny,.0F);
+                    swidth=maxx-minx; sheight=maxy-miny;
+                    effectStack_[i].buffer->resize(ceilf(swidth),ceilf(sheight));
+                }
+                if (effectStack_[i].clearBuffer)
+                    effectStack_[i].buffer->clear(0,0,0,0,-1,-1);
+                Matrix invL=localTransform_.matrix().inverse();
+                invL.scale(application_->getLogicalScaleX(),application_->getLogicalScaleY(),1);
+                invL*=effectStack_[i].transform;
+
+                effectStack_[i].buffer->draw(this,invL);
 			}
 			else if (effectStack_[i-1].buffer) {
-				if (effectStack_[i].clearBuffer)
-					effectStack_[i].buffer->clear(0,0,0,0,-1,-1);
+                if (effectStack_[i].autoBuffer) {
+                    float minx, miny, maxx, maxy;
+
+                    effectStack_[i].transform.transformPoint(0,0,&minx,&miny);
+                    maxx=minx; maxy=miny;
+                    float tx,ty;
+                    effectStack_[i].transform.transformPoint(swidth,0,&tx,&ty);
+                    maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
+                    minx=std::min(minx,tx); miny=std::min(miny,ty);
+                    effectStack_[i].transform.transformPoint(0,sheight,&tx,&ty);
+                    maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
+                    minx=std::min(minx,tx); miny=std::min(miny,ty);
+                    effectStack_[i].transform.transformPoint(swidth,sheight,&tx,&ty);
+                    maxx=std::max(maxx,tx); maxy=std::max(maxy,ty);
+                    minx=std::min(minx,tx); miny=std::min(miny,ty);
+                    maxx=std::max(maxx,.0F); maxy=std::max(maxy,.0F);
+                    minx=std::max(minx,.0F); miny=std::max(miny,.0F);
+                    swidth=maxx-minx; sheight=maxy-miny;
+                    effectStack_[i].buffer->resize(ceilf(swidth),ceilf(sheight));
+                }
+                if (effectStack_[i].clearBuffer)
+                    effectStack_[i].buffer->clear(0,0,0,0,-1,-1);
 				Bitmap source(application_,effectStack_[i-1].buffer);
 				setupEffectShader(&source,effectStack_[i-1]);
 				effectStack_[i].buffer->draw(&source,effectStack_[i].transform);
@@ -471,7 +528,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				a = sprite->colorTransform_->alphaMultiplier();
 			}
 
-			glMultColor(r, g, b, a * sprite->alpha_);
+            if (!lastEffect)
+                glMultColor(r, g, b, a * sprite->alpha_);
 		}
 
 		if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1) {
@@ -512,6 +570,11 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
                 xform=transform;
             xform=xform*sprite->effectStack_[i].postTransform;
             xform=xform*sprite->localTransform_.matrix();
+            if (sprite->effectStack_[0].autoBuffer) {
+                Matrix mscale;
+                mscale.scale(1/application_->getLogicalScaleX(),1/application_->getLogicalScaleY(),1);
+                xform=xform*mscale;
+            }
             ShaderEngine::Engine->setModel(xform);
             ((Sprite *)&source)->doDraw(xform, sx, sy, ex, ey);
 		}

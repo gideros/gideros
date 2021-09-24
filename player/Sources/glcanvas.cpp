@@ -202,6 +202,7 @@ static int __mkdir(const char* path) {
 static Server* g_server = NULL;
 QString GLCanvas::appPackage;
 bool GLCanvas::EnableVSYNC=false;
+bool GLCanvas::TabletActive=false;
 
 static void printToServer(const char* str, int len, void* data) {
     G_UNUSED(data);
@@ -1121,8 +1122,8 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
-    if (event->source() == Qt::MouseEventSynthesizedBySystem) {
-	  event->accept();
+    if ((event->source() == Qt::MouseEventSynthesizedBySystem)||TabletActive) {
+      event->accept();
 	  return;
 	}
     if (event->button() <= 4){
@@ -1138,7 +1139,7 @@ void GLCanvas::mousePressEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
-   if (event->source() == Qt::MouseEventSynthesizedBySystem) {
+   if ((event->source() == Qt::MouseEventSynthesizedBySystem)||TabletActive) {
 	  event->accept();
 	  return;
 	}
@@ -1164,8 +1165,8 @@ void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->source() == Qt::MouseEventSynthesizedBySystem) {
-	  event->accept();
+    if ((event->source() == Qt::MouseEventSynthesizedBySystem)||TabletActive) {
+      event->accept();
 	  return;
 	}
     if (event->button() <= 4){

@@ -95,6 +95,7 @@ INCLUDEPATH += \
     ../player/Forms
 
 SOURCES += \
+    ../player/Sources/tabletapplication.cpp \
     sources/main.cpp \
     sources/mainwindow.cpp \
     ../player/Sources/glcanvas.cpp \

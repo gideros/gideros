@@ -448,7 +448,8 @@ public:
 		ShaderProgram *shader;
 		GRenderTarget *buffer;
 		bool clearBuffer;
-		Effect() : shader(NULL), buffer(NULL), clearBuffer(false) { };
+        bool autoBuffer;
+        Effect() : shader(NULL), buffer(NULL), clearBuffer(false), autoBuffer(false) { };
     };
     void setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode);
 	bool setEffectShaderConstant(size_t effectNumber,ShaderParam p);
