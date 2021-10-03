@@ -230,7 +230,7 @@ public:
 
 #ifdef OCULUS
 	void oculusTick(double elapsed);
-	void oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen);
+	void oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
 	void oculusInputEvent(oculus::Input &input);
 #endif
 
@@ -943,15 +943,16 @@ void ApplicationManager::oculusTick(double elapsed)
 const float vrRoom_Loc[3]={40,-15,-50};
 const float vrRoom_TV[3]={-45.57,24.777,4.175};
 const float vrRoom_TVScale=0.042;
-const float vrRoom_Scale=1;
-void ApplicationManager::oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen)
+const float vrRoom_Scale=.08;
+const float vrRoom_Floor=-15;
+void ApplicationManager::oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor)
 {
 	application_->clearBuffers();
 	application_->renderScene(1,vmat,pmat,[=](ShaderEngine *gfx,Matrix4 &xform)
 			{
 		if (room) {
 			Matrix4 modelMat;
-			modelMat.translate(vrRoom_Loc[0],vrRoom_Loc[1],vrRoom_Loc[2]);
+			modelMat.translate(vrRoom_Loc[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0),vrRoom_Loc[2]);
 			modelMat.scale(vrRoom_Scale);
 			gfx->setViewport(0, 0, width,height);
 			gfx->clearColor(0.2,0.3,0.7,1);
@@ -968,13 +969,29 @@ void ApplicationManager::oculusRender(float *vmat,float *pmat,int width, int hei
 			gfx->popDepthStencil();
 			if (screen) {
 				xform.scale(vrRoom_TVScale,-vrRoom_TVScale,1);
-				xform.translate(vrRoom_Loc[0]+vrRoom_TV[0],vrRoom_Loc[1]+vrRoom_TV[1],vrRoom_Loc[2]+vrRoom_TV[2]);
+				xform.translate(vrRoom_Loc[0]+vrRoom_TV[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0)+vrRoom_TV[1],vrRoom_Loc[2]+vrRoom_TV[2]);
 				xform.scale(vrRoom_Scale);
 			}
 		}
 			});
 
 	drawIPs();
+}
+
+
+static void pushVector(lua_State *L,oculus::Vector v) {
+	lua_newtable(L);
+	lua_pushnumber(L,v.x); lua_rawseti(L,-2,1);
+	lua_pushnumber(L,v.y); lua_rawseti(L,-2,2);
+	lua_pushnumber(L,v.z); lua_rawseti(L,-2,3);
+}
+
+static void pushVector4(lua_State *L,oculus::Vector4 v) {
+	lua_newtable(L);
+	lua_pushnumber(L,v.x); lua_rawseti(L,-2,1);
+	lua_pushnumber(L,v.y); lua_rawseti(L,-2,2);
+	lua_pushnumber(L,v.z); lua_rawseti(L,-2,3);
+	lua_pushnumber(L,v.w); lua_rawseti(L,-2,4);
 }
 
 void ApplicationManager::oculusInputEvent(oculus::Input &input) {
@@ -992,6 +1009,24 @@ void ApplicationManager::oculusInputEvent(oculus::Input &input) {
 		lua_setfield(L, -2, "batteryPercent");
     	lua_pushinteger(L,input.recenterCount);
 		lua_setfield(L, -2, "recenterCount");
+
+		//Pose
+		lua_pushinteger(L,input.poseStatus);
+		lua_setfield(L, -2,	"poseStatus");
+		pushVector(L,input.pos);
+		lua_setfield(L, -2, "position");
+		pushVector4(L,input.rot);
+		lua_setfield(L, -2, "rotation");
+		pushVector(L,input.velPos);
+		lua_setfield(L, -2, "linearVelocity");
+		pushVector(L,input.velRot);
+		lua_setfield(L, -2, "angularVelocity");
+		pushVector(L,input.accPos);
+		lua_setfield(L, -2, "linearAcceleration");
+		pushVector(L,input.accRot);
+		lua_setfield(L, -2, "angularAcceleration");
+
+		//Remote
     	lua_pushinteger(L,input.caps);
 		lua_setfield(L, -2, "caps");
     	lua_pushinteger(L,input.buttons);
@@ -1615,8 +1650,8 @@ void eventFlush()
 void oculus::doTick(double elapsed) {
 	s_applicationManager->oculusTick(elapsed);
 }
-void oculus::doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen) {
-	s_applicationManager->oculusRender(vmat,pmat,width,height,room,screen);
+void oculus::doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor) {
+	s_applicationManager->oculusRender(vmat,pmat,width,height,room,screen,floor);
 }
 #endif
 

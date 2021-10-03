@@ -24,12 +24,26 @@ void onSurfaceChanged(JNIEnv *env,jobject surface);
 void onSurfaceDestroyed();
 void onLuaReinit();
 
+typedef struct Vector_ {
+	float x,y,z;
+} Vector;
+typedef struct Vector4_ {
+	float x,y,z,w;
+} Vector4;
 typedef struct Input_ {
 	//Generic
 	int deviceId;
 	int deviceType;
 	int batteryPercent;
 	int recenterCount;
+	//Pose
+	int poseStatus;
+	Vector pos;
+	Vector4 rot;
+	Vector velPos;
+	Vector velRot;
+	Vector accPos;
+	Vector accRot;
 	//Remote
 	int caps;
 	int buttons;
@@ -40,5 +54,5 @@ typedef struct Input_ {
 //Implemented in gideros.cpp
 void doInputEvent(Input &input);
 void doTick(double elapsed);
-void doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen);
+void doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
 }

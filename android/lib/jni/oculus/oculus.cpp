@@ -689,7 +689,9 @@ static void ovrRenderer_Destroy(ovrRenderer* renderer) {
     }
 }
 
-static bool roomEnabled=true,roomScreenEnabled=true;
+#define ASSIGNV(a,b) a.x=b.x; a.y=b.y; a.z=b.z;
+#define ASSIGNV4(a,b) a.x=b.x; a.y=b.y; a.z=b.z; a.w=b.z;
+static bool roomEnabled=true,roomScreenEnabled=true,roomFloor=false;
 static ovrLayerProjection2 ovrRenderer_RenderFrame(
     ovrRenderer* renderer,
     const ovrJava* java,
@@ -718,6 +720,17 @@ static ovrLayerProjection2 ovrRenderer_RenderFrame(
 				input.stickY=state.JoystickNoDeadZone.y;
 				input.gripTrigger=state.GripTrigger;
 				input.indexTrigger=state.IndexTrigger;
+				ovrTracking trackingState;
+				input.poseStatus=0;
+				if ( vrapi_GetInputTrackingState( ovr, capsHeader.DeviceID, 0, &trackingState ) >= 0 )		{
+					input.poseStatus=trackingState.Status;
+					ASSIGNV(input.pos,trackingState.HeadPose.Pose.Position);
+					ASSIGNV4(input.rot,trackingState.HeadPose.Pose.Orientation);
+					ASSIGNV(input.velPos,trackingState.HeadPose.LinearVelocity);
+					ASSIGNV(input.velRot,trackingState.HeadPose.AngularVelocity);
+					ASSIGNV(input.accPos,trackingState.HeadPose.LinearAcceleration);
+					ASSIGNV(input.accRot,trackingState.HeadPose.AngularAcceleration);
+				}
 				oculus::doInputEvent(input);
 			}
 		}
@@ -756,7 +769,7 @@ static ovrLayerProjection2 ovrRenderer_RenderFrame(
         float vmat[16],pmat[16];
         float *m=vmat; for (int j=0;j<4;j++) for (int i=0;i<4;i++) *(m++)=eyeViewMatrixTransposed[eye].M[j][i];
         m=pmat; for (int j=0;j<4;j++) for (int i=0;i<4;i++) *(m++)=projectionMatrixTransposed[eye].M[j][i];
-        oculus::doRender(vmat,pmat,frameBuffer->Width,frameBuffer->Height,roomEnabled,roomScreenEnabled);
+        oculus::doRender(vmat,pmat,frameBuffer->Width,frameBuffer->Height,roomEnabled,roomScreenEnabled,roomFloor);
 
         ovrFramebuffer_Resolve(frameBuffer);
         ovrFramebuffer_Advance(frameBuffer);
@@ -1386,6 +1399,7 @@ typedef struct {
     ANativeWindow* NativeWindow;
 } ovrAppThread;
 
+ovrApp appState;
 void* AppThreadFunction(void* parm) {
     ovrAppThread* appThread = (ovrAppThread*)parm;
 
@@ -1404,7 +1418,6 @@ void* AppThreadFunction(void* parm) {
         exit(0);
     }
 
-    ovrApp appState;
     ovrApp_Clear(&appState);
     appState.Java = java;
 
@@ -1789,17 +1802,29 @@ static int enableRoom(lua_State *L) {
 	roomScreenEnabled=lua_toboolean(L,2);
 	return 0;
 }
+
+static int setTrackingSpace(lua_State *L) {
+	ovrTrackingSpace s=(ovrTrackingSpace)luaL_optinteger(L,1,VRAPI_TRACKING_SPACE_LOCAL);
+	vrapi_SetTrackingSpace(appState.Ovr,s);
+	roomFloor=(s==VRAPI_TRACKING_SPACE_STAGE);
+	return 0;
+}
+
 void setupApi(lua_State *L)
 {
 	roomEnabled=true;
 	roomScreenEnabled=true;
+	roomFloor=false;
+	if (appState.Ovr)
+		vrapi_SetTrackingSpace(appState.Ovr,VRAPI_TRACKING_SPACE_LOCAL);
     static const luaL_Reg functionList[] = {
-        {"enableRoom", enableRoom},
+		{"enableRoom", enableRoom},
+		{"setTrackingSpace", setTrackingSpace},
         {NULL, NULL},
     };
 
     lua_newtable(L);
-    luaL_register(L, NULL, functionList);
+    luaL_register(L, NULL, functionList);;
     lua_setglobal(L, "Oculus");
 	ALOGV("=== API registered");
 }
