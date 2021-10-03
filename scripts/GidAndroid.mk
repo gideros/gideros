@@ -11,6 +11,10 @@ android: androidlibs androidso androidplugins
 	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew assembleRelease
 	mv $(ROOT)/android/GiderosAndroidPlayer/app/build/outputs/aar/app-release.aar $(ROOT)/android/GiderosAndroidPlayer/gideros.aar
 
+android.aar: 
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew assembleRelease
+	mv $(ROOT)/android/GiderosAndroidPlayer/app/build/outputs/aar/app-release.aar $(ROOT)/android/GiderosAndroidPlayer/gideros.aar
+
 android.install: android androidlibs.install androidso.install androidplugins.install
 	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.aar $(RELEASE)/Templates/Eclipse/Android\ Template
 	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.aar $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs	
@@ -25,6 +29,12 @@ androidlibs.clean: libgvfs.androidlib.clean lua.androidlib.clean
 
 androidso: versioning androidso.prep
 	cd $(ROOT)/android/lib;$(NDKBUILD) $(MAKEJOBS)
+	rm -rf $(ROOT)/Sdk/lib/android
+	mkdir -p $(ROOT)/Sdk/lib/android
+	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 
+
+oculusso: versioning androidso.prep
+	cd $(ROOT)/android/lib;OCULUS=y $(NDKBUILD) $(MAKEJOBS)
 	rm -rf $(ROOT)/Sdk/lib/android
 	mkdir -p $(ROOT)/Sdk/lib/android
 	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 

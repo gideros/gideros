@@ -25,10 +25,12 @@ class Ticker;
 struct Touch;
 
 #include "orientation.h"
-
 class Event;
 
 #include <gstatus.h>
+#include <functional>
+#include "Shaders.h"
+#include "Matrices.h"
 
 /*
 class LuaException : public std::exception
@@ -82,7 +84,7 @@ public:
     void tick(GStatus *status);
     void enterFrame(GStatus *status);
 	void clearBuffers();
-	void renderScene(int deltaFrameCount = -1);
+	void renderScene(int deltaFrameCount = -1,float *vmat=NULL, float *pmat=NULL,const std::function<void(ShaderEngine *,Matrix4 &)> &preStage=nullptr);
 	
     virtual void deinitialize();
 
@@ -93,7 +95,7 @@ public:
     bool isPlayer_;
 
 	void setHardwareOrientation(Orientation orientation);
-	void setResolution(int width, int height);
+	void setResolution(int width, int height,bool keepBuffers=false);
 
 //	void broadcastApplicationDidFinishLaunching();
 //	void broadcastApplicationWillTerminate();

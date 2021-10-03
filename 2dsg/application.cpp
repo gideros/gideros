@@ -158,7 +158,7 @@ void Application::configureFrustum(float fov, float farplane, float nearplane) {
 	fov_ = fov;
 }
 
-void Application::renderScene(int deltaFrameCount) {
+void Application::renderScene(int deltaFrameCount, float *vmat, float *pmat, const std::function<void(ShaderEngine *,Matrix4 &)> &preStage) {
 	if (nframe_ < 0 || time_ < 0) {
 		nframe_ = 0;
 		time_ = iclock();
@@ -310,6 +310,16 @@ void Application::renderScene(int deltaFrameCount) {
 		projectionMatrix_ = frustum * projection;
 		vpProjectionMatrix_ = vpProjection;
 	}
+	if (pmat) {
+		Matrix4 pm(pmat);
+		projectionMatrix_=pm;
+		vpProjectionMatrix_=pm;
+	}
+	if (vmat) {
+		Matrix4 vm(vmat);
+		gfx->setView(vm);
+	}
+
 	if ((hardwareOrientation_==eLandscapeRight)||(hardwareOrientation_==eLandscapeLeft))
 		gfx->setViewportProjection(vpProjectionMatrix_,height_ / scale_,width_ / scale_);
 	else
@@ -343,6 +353,8 @@ void Application::renderScene(int deltaFrameCount) {
 	float ey = (hh - lty) / lsy;
 
 	CurrentTransform currentTransform;
+	if (preStage)
+		preStage(gfx,currentTransform);
 	stage_->draw(currentTransform, sx, sy, ex, ey);
 
 #if 0 && defined(QT_CORE_LIB)
@@ -477,11 +489,11 @@ Orientation Application::getDeviceOrientation() const {
 	return deviceOrientation_;
 }
 
-void Application::setResolution(int width, int height) {
+void Application::setResolution(int width, int height,bool keepBuffers) {
 	width_ = width;
 	height_ = height;
 
-    if (ShaderEngine::Engine) {
+    if (ShaderEngine::Engine&&!keepBuffers) {
         if (hardwareOrientation_==eLandscapeLeft||hardwareOrientation_==eLandscapeRight)
             std::swap(width,height);
 		ShaderEngine::Engine->resizeFramebuffer(width, height);

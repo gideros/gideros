@@ -13,6 +13,7 @@
 #include <timercontainer.h>
 #include <refptr.h>
 #include "Matrices.h"
+#include <functional>
 
 
 class Font;
@@ -36,7 +37,7 @@ public:
     void setDeviceOrientation(Orientation orientation);
     Orientation getDeviceOrientation() const;
 	
-	void setResolution(int width, int height);
+	void setResolution(int width, int height,bool keepBuffers=false);
 	void resolution(int* width, int* height);
 
 	void initView();
@@ -44,7 +45,7 @@ public:
 
 	void enterFrame();
 	void clearBuffers();
-	void renderScene(int deltaFrameCount = -1);
+	void renderScene(int deltaFrameCount = -1,float *vmat=NULL,float *pmat=NULL,const std::function<void(ShaderEngine *,Matrix4 &)> &preStage=nullptr);
 
     void mouseDown(int x, int y, int button, int modifiers);
     void mouseUp(int x, int y, int button, int modifiers);
