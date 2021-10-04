@@ -998,7 +998,7 @@ void ApplicationManager::oculusInputEvent(oculus::Input &input) {
 	lua_State *L=LuaDebugging::L;
 	if (!L) return;
     lua_getglobal(L, "Oculus");
-    lua_getfield(L,-1, "oculusInputEventHandler");
+    lua_getfield(L,-1, "inputEventHandler");
     if (lua_isfunction(L,-1)) {
     	lua_newtable(L);
     	lua_pushinteger(L,input.deviceType);
@@ -1653,7 +1653,6 @@ void oculus::doTick(double elapsed) {
 void oculus::doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor) {
 	s_applicationManager->oculusRender(vmat,pmat,width,height,room,screen,floor);
 }
-#endif
 
 static void oculus_callback_s(int type, void *event, void *udata)
 {
@@ -1666,6 +1665,7 @@ void oculus::doInputEvent(oculus::Input &input) {
 	*_in=input;
 	gevent_EnqueueEvent(oculusGid, oculus_callback_s, 0, _in, 1, NULL);
 }
+#endif
 
 extern "C" {
 

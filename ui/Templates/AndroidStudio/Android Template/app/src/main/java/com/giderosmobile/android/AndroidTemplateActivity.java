@@ -15,9 +15,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.InputDevice;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Gravity;
@@ -53,7 +56,11 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			null
 	};
 	
-	private GLSurfaceView mGLView;
+	private SurfaceView mGLView;
+	//For Oculus
+	private SurfaceHolder mSurfaceHolder;
+	private long mNativeHandle;
+	//
 
 	private boolean mHasFocus = false;
 	private boolean mPlaying = false;
@@ -67,52 +74,69 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-				
-		mGLView = new GiderosGLSurfaceView(this);
-		GiderosSettings.mainView=mGLView;
-		setContentView(mGLView);
-		mGLView.setOnTouchListener(this);
-		
-		boolean showSplash = true;
-		
-		if(showSplash && getResources().getIdentifier("splash", "drawable", getPackageName()) != 0){
-			layout = (FrameLayout)getWindow().getDecorView();
-			hasSplash = 11;
-			//create a layout for animation
-			splashLayout = new FrameLayout(this);
-			//parameters for layout
-			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-						FrameLayout.LayoutParams.MATCH_PARENT ,
+
+		if (GiderosSettings.oculusNative)
+		{
+			mGLView = new SurfaceView(this);
+			setContentView(mGLView);
+			mGLView.getHolder().addCallback(this);
+		}
+		else {
+			mGLView = new GiderosGLSurfaceView(this);
+			GiderosSettings.mainView = mGLView;
+			setContentView(mGLView);
+			mGLView.setOnTouchListener(this);
+
+			boolean showSplash = true;
+
+			if (showSplash && getResources().getIdentifier("splash", "drawable", getPackageName()) != 0) {
+				layout = (FrameLayout) getWindow().getDecorView();
+				hasSplash = 11;
+				//create a layout for animation
+				splashLayout = new FrameLayout(this);
+				//parameters for layout
+				FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+						FrameLayout.LayoutParams.MATCH_PARENT,
 						FrameLayout.LayoutParams.MATCH_PARENT,
 						Gravity.CENTER);
-			splashLayout.setLayoutParams(params);
-			//set background color
-			splashLayout.setBackgroundColor(Color.parseColor("#ffffff"));
-		 
-			//create image view for animation
-			splash = new ImageView(this);
-			//image view parameters
-			FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(
-						 FrameLayout.LayoutParams.WRAP_CONTENT,
-						 FrameLayout.LayoutParams.WRAP_CONTENT,
-						 Gravity.CENTER);
-			splash.setLayoutParams(params2);
-		 
-			//scale your image
-			splash.setScaleType(ImageView.ScaleType.CENTER );
-		 
-			//load image source	 
-			splash.setBackgroundResource(R.drawable.splash);
-		
-			//add image view to layout
-			splashLayout.addView(splash);
-			//add image layout to main layout
-			layout.addView(splashLayout);
+				splashLayout.setLayoutParams(params);
+				//set background color
+				splashLayout.setBackgroundColor(Color.parseColor("#e8f4ff"));
+
+				//create image view for animation
+				splash = new ImageView(this);
+				//image view parameters
+				FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(
+						FrameLayout.LayoutParams.WRAP_CONTENT,
+						FrameLayout.LayoutParams.WRAP_CONTENT,
+						Gravity.CENTER);
+				splash.setLayoutParams(params2);
+
+				//scale your image
+				splash.setScaleType(ImageView.ScaleType.CENTER);
+
+				//load image source
+				splash.setBackgroundResource(R.drawable.splash);
+
+				//add image view to layout
+				splashLayout.addView(splash);
+				//add image layout to main layout
+				layout.addView(splashLayout);
+			}
 		}
 		
 		WeakActivityHolder.set(this);
 
 		GiderosApplication.onCreate(externalClasses,mGLView);
+		if (GiderosSettings.oculusNative) {
+			Thread oThread=new Thread() {
+				public void run() {
+					GiderosApplication.oculusRunThread();
+				}
+			};
+			oThread.start();
+			GiderosApplication.oculusPostCreate();
+		}
 		processIntent(getIntent());
 	}
 
@@ -172,7 +196,8 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		if (mPlaying == true)
 		{
 			GiderosApplication.getInstance().onPause();
-			mGLView.onPause();
+			if (!GiderosSettings.oculusNative)
+				mGLView.onPause();
 			mPlaying = false;
 		}
 		
@@ -186,7 +211,8 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 
 		if (mHasFocus == true && mPlaying == false)
 		{
-			mGLView.onResume();
+			if (!GiderosSettings.oculusNative)
+				mGLView.onResume();
 			GiderosApplication.getInstance().onResume();
 			mPlaying = true;
 		}
@@ -235,7 +261,8 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 
 		if (mHasFocus == true && mPlaying == false)
 		{
-			mGLView.onResume();
+			if (!GiderosSettings.oculusNative)
+				mGLView.onResume();
 			GiderosApplication.getInstance().onResume();
 			mPlaying = true;
 		}
@@ -323,7 +350,32 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			return true;
 		
 		return super.onKeyMultiple(keyCode, repeatCount, event);
-	}	
+	}
+
+/**** START FOR OCULUS ***/
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		GiderosApplication.getInstance().onSurfaceCreated(holder.getSurface());
+		mSurfaceHolder = holder;
+	}
+
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		GiderosApplication.getInstance().onSurfaceChanged(width,height,holder.getSurface());
+		mSurfaceHolder = holder;
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		GiderosApplication.getInstance().onSurfaceDestroyed();
+		mSurfaceHolder = null;
+	}
+
+	@Override
+	public void onPointerCaptureChanged(boolean hasCapture) {
+
+	}
+/**** END FOR OCULUS ***/
 
 	//GIDEROS-ACTIVTIY-METHODS//
 	
@@ -424,12 +476,12 @@ class GiderosRenderer implements GLSurfaceView.Renderer
 {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config)
 	{
-		GiderosApplication.getInstance().onSurfaceCreated();
+		GiderosApplication.getInstance().onSurfaceCreated(null);
 	}
 
 	public void onSurfaceChanged(GL10 gl, int w, int h)
 	{
-		GiderosApplication.getInstance().onSurfaceChanged(w, h);
+		GiderosApplication.getInstance().onSurfaceChanged(w, h, null);
 	}
 
 	public void onDrawFrame(GL10 gl)
