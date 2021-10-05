@@ -690,7 +690,7 @@ static void ovrRenderer_Destroy(ovrRenderer* renderer) {
 }
 
 #define ASSIGNV(a,b) a.x=b.x; a.y=b.y; a.z=b.z;
-#define ASSIGNV4(a,b) a.x=b.x; a.y=b.y; a.z=b.z; a.w=b.z;
+#define ASSIGNV4(a,b) a.x=b.x; a.y=b.y; a.z=b.z; a.w=b.w;
 static bool roomEnabled=true,roomScreenEnabled=true,roomFloor=false;
 static ovrLayerProjection2 ovrRenderer_RenderFrame(
     ovrRenderer* renderer,
