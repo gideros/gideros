@@ -257,7 +257,7 @@ local ap=require("Tools/export_android")
 			 os.remove("app/src/main/jniLibs/armeabi-v7a/libgiderosvr.so")
 			 os.remove("app/src/main/jniLibs/armeabi-v7a/libvrapi.so")
 			end
-		]]>
+		]]></lua>
 		<if condition="[[[or:[[[export.buildAab]]]:[[[export.buildApk]]]]]]">		
 			<lua><![CDATA[
 				local ap=require("Tools/export_android")
