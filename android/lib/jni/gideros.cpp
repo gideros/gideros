@@ -950,29 +950,28 @@ void ApplicationManager::oculusRender(float *vmat,float *pmat,int width, int hei
 	application_->clearBuffers();
 	application_->renderScene(1,vmat,pmat,[=](ShaderEngine *gfx,Matrix4 &xform)
 			{
-		if (room) {
-			Matrix4 modelMat;
-			modelMat.translate(vrRoom_Loc[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0),vrRoom_Loc[2]);
-			modelMat.scale(vrRoom_Scale);
-			gfx->setViewport(0, 0, width,height);
-			gfx->clearColor(0.2,0.3,0.7,1);
-			gfx->setModel(modelMat);
-			 ShaderEngine::DepthStencil stencil=gfx->pushDepthStencil();
-			 stencil.dTest=true;
-			 gfx->setDepthStencil(stencil);
-			 ShaderProgram *shp=getLightingShader(gfx);
-			//ShaderProgram *shp=gfx->getDefault(ShaderEngine::STDP_COLOR);
-			shp->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,oculusRoomC,sizeof(oculusRoomC)/4,true,NULL);
-			shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,3,oculusRoomV,sizeof(oculusRoomV)/(sizeof(float)*3),true,NULL);
-			shp->setData(3,ShaderProgram::DFLOAT,3,oculusRoomN,sizeof(oculusRoomN)/(sizeof(float)*3),true,NULL);
-			shp->drawElements(ShaderProgram::Triangles, sizeof(oculusRoomI)/sizeof(unsigned short), ShaderProgram::DUSHORT, oculusRoomI,true,NULL);
-			gfx->popDepthStencil();
-			if (screen) {
-				xform.scale(vrRoom_TVScale,-vrRoom_TVScale,1);
-				xform.translate(vrRoom_Loc[0]+vrRoom_TV[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0)+vrRoom_TV[1],vrRoom_Loc[2]+vrRoom_TV[2]);
-				xform.scale(vrRoom_Scale);
-			}
-		}
+				gfx->setViewport(0, 0, width,height);
+				if (room) {
+					Matrix4 modelMat;
+					modelMat.translate(vrRoom_Loc[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0),vrRoom_Loc[2]);
+					modelMat.scale(vrRoom_Scale);
+					gfx->clearColor(0.2,0.3,0.7,1);
+					gfx->setModel(modelMat);
+					 ShaderEngine::DepthStencil stencil=gfx->pushDepthStencil();
+					 stencil.dTest=true;
+					 gfx->setDepthStencil(stencil);
+					 ShaderProgram *shp=getLightingShader(gfx);
+					shp->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,oculusRoomC,sizeof(oculusRoomC)/4,true,NULL);
+					shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,3,oculusRoomV,sizeof(oculusRoomV)/(sizeof(float)*3),true,NULL);
+					shp->setData(3,ShaderProgram::DFLOAT,3,oculusRoomN,sizeof(oculusRoomN)/(sizeof(float)*3),true,NULL);
+					shp->drawElements(ShaderProgram::Triangles, sizeof(oculusRoomI)/sizeof(unsigned short), ShaderProgram::DUSHORT, oculusRoomI,true,NULL);
+					gfx->popDepthStencil();
+					if (screen) {
+						xform.scale(vrRoom_TVScale,-vrRoom_TVScale,1);
+						xform.translate(vrRoom_Loc[0]+vrRoom_TV[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0)+vrRoom_TV[1],vrRoom_Loc[2]+vrRoom_TV[2]);
+						xform.scale(vrRoom_Scale);
+					}
+				}
 			});
 
 	drawIPs();
