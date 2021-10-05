@@ -288,13 +288,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       break;
 
     case e_Android:
-      templatedir = "Eclipse";
-      ctx->platform = "Android";
-      if(ctx->args.contains("template") && ctx->args["template"] == "androidstudio")
-      {
-          templatedir = "AndroidStudio";
-          ctx->platform = "AndroidStudio";
-      }
+	  templatedir = "AndroidStudio";
+	  ctx->platform = "AndroidStudio";
       ctx->templatename = "Android Template";
       ctx->templatenamews = "AndroidTemplate";
       underscore = false;
@@ -493,65 +488,33 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        }
    }
    else if(ctx->deviceFamily == e_Android){
-       if(templatedir.compare("Eclipse") == 0){
-           ExportCommon::appIcon(ctx,36,36,QString("res/drawable-ldpi/icon.png"));
-           ExportCommon::appIcon(ctx,48,48,QString("res/drawable-mdpi/icon.png"));
-           ExportCommon::appIcon(ctx,72,72,QString("res/drawable-hdpi/icon.png"));
-           ExportCommon::appIcon(ctx,96,96,QString("res/drawable-xhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,144,144,QString("res/drawable-xxhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,192,192,QString("res/drawable-xxxhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,96,96,QString("res/drawable/icon.png"));
+	   ExportCommon::appIcon(ctx,36,36,QString("app/src/main/res/drawable-ldpi/icon.png"));
+	   ExportCommon::appIcon(ctx,48,48,QString("app/src/main/res/drawable-mdpi/icon.png"));
+	   ExportCommon::appIcon(ctx,72,72,QString("app/src/main/res/drawable-hdpi/icon.png"));
+	   ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable-xhdpi/icon.png"));
+	   ExportCommon::appIcon(ctx,144,144,QString("app/src/main/res/drawable-xxhdpi/icon.png"));
+	   ExportCommon::appIcon(ctx,192,192,QString("app/src/main/res/drawable-xxxhdpi/icon.png"));
+	   ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable/icon.png"));
+	   //tv stuff
+	   ExportCommon::tvIcon(ctx,732,412,QString("app/src/main/res/drawable-xhdpi/ouya_icon.png"));
+	   ExportCommon::tvIcon(ctx,320,180,QString("app/src/main/res/drawable/banner.png"),false);
 
-           //tv stuff
-           ExportCommon::tvIcon(ctx,732,412,QString("res/drawable-xhdpi/ouya_icon.png"));
-           ExportCommon::tvIcon(ctx,320,180,QString("res/drawable/banner.png"),false);
-
-           if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
-               ExportCommon::splashVImage(ctx,200,320,QString("res/drawable-ldpi/splash.png"));
-               ExportCommon::splashVImage(ctx,320,480,QString("res/drawable-mdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,480,800,QString("res/drawable-hdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,720,1280,QString("res/drawable-xhdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,960,1600,QString("res/drawable-xxhdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,1280,1920,QString("res/drawable-xxxhdpi/splash.png"));
-           }
-           else{
-               ExportCommon::splashHImage(ctx,320,200,QString("res/drawable-ldpi/splash.png"));
-               ExportCommon::splashHImage(ctx,480,320,QString("res/drawable-mdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,800,480,QString("res/drawable-hdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,1280,720,QString("res/drawable-xhdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,1600,960,QString("res/drawable-xxhdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,1920,1280,QString("res/drawable-xxxhdpi/splash.png"));
-           }
-       }
-       else{
-           ExportCommon::appIcon(ctx,36,36,QString("app/src/main/res/drawable-ldpi/icon.png"));
-           ExportCommon::appIcon(ctx,48,48,QString("app/src/main/res/drawable-mdpi/icon.png"));
-           ExportCommon::appIcon(ctx,72,72,QString("app/src/main/res/drawable-hdpi/icon.png"));
-           ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable-xhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,144,144,QString("app/src/main/res/drawable-xxhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,192,192,QString("app/src/main/res/drawable-xxxhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable/icon.png"));
-           //tv stuff
-           ExportCommon::tvIcon(ctx,732,412,QString("app/src/main/res/drawable-xhdpi/ouya_icon.png"));
-           ExportCommon::tvIcon(ctx,320,180,QString("app/src/main/res/drawable/banner.png"),false);
-
-           if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
-               ExportCommon::splashVImage(ctx,200,320,QString("app/src/main/res/drawable-ldpi/splash.png"));
-               ExportCommon::splashVImage(ctx,320,480,QString("app/src/main/res/drawable-mdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,480,800,QString("app/src/main/res/drawable-hdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,720,1280,QString("app/src/main/res/drawable-xhdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,960,1600,QString("app/src/main/res/drawable-xxhdpi/splash.png"));
-               ExportCommon::splashVImage(ctx,1280,1920,QString("app/src/main/res/drawable-xxxhdpi/splash.png"));
-           }
-           else{
-               ExportCommon::splashHImage(ctx,320,200,QString("app/src/main/res/drawable-ldpi/splash.png"));
-               ExportCommon::splashHImage(ctx,480,320,QString("app/src/main/res/drawable-mdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,800,480,QString("app/src/main/res/drawable-hdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,1280,720,QString("app/src/main/res/drawable-xhdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,1600,960,QString("app/src/main/res/drawable-xxhdpi/splash.png"));
-               ExportCommon::splashHImage(ctx,1920,1280,QString("app/src/main/res/drawable-xxxhdpi/splash.png"));
-           }
-       }
+	   if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
+		   ExportCommon::splashVImage(ctx,200,320,QString("app/src/main/res/drawable-ldpi/splash.png"));
+		   ExportCommon::splashVImage(ctx,320,480,QString("app/src/main/res/drawable-mdpi/splash.png"));
+		   ExportCommon::splashVImage(ctx,480,800,QString("app/src/main/res/drawable-hdpi/splash.png"));
+		   ExportCommon::splashVImage(ctx,720,1280,QString("app/src/main/res/drawable-xhdpi/splash.png"));
+		   ExportCommon::splashVImage(ctx,960,1600,QString("app/src/main/res/drawable-xxhdpi/splash.png"));
+		   ExportCommon::splashVImage(ctx,1280,1920,QString("app/src/main/res/drawable-xxxhdpi/splash.png"));
+	   }
+	   else{
+		   ExportCommon::splashHImage(ctx,320,200,QString("app/src/main/res/drawable-ldpi/splash.png"));
+		   ExportCommon::splashHImage(ctx,480,320,QString("app/src/main/res/drawable-mdpi/splash.png"));
+		   ExportCommon::splashHImage(ctx,800,480,QString("app/src/main/res/drawable-hdpi/splash.png"));
+		   ExportCommon::splashHImage(ctx,1280,720,QString("app/src/main/res/drawable-xhdpi/splash.png"));
+		   ExportCommon::splashHImage(ctx,1600,960,QString("app/src/main/res/drawable-xxhdpi/splash.png"));
+		   ExportCommon::splashHImage(ctx,1920,1280,QString("app/src/main/res/drawable-xxxhdpi/splash.png"));
+	   }
    }
    else if(ctx->deviceFamily == e_WinRT){
        ExportCommon::appIcon(ctx,310,310,QString("giderosgame/giderosgame.Windows/Assets/LargeTile.scale-100.png"));

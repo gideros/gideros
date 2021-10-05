@@ -95,10 +95,6 @@ qt.install: buildqt qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/res/layout
 	cp -R $(ROOT)/ui/Templates/AndroidStudio $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs
 	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/assets

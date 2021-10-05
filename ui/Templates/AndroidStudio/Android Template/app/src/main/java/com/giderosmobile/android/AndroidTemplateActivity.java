@@ -39,7 +39,7 @@ import com.giderosmobile.android.GiderosSettings;
 
 //GIDEROS-ACTIVITY-IMPORT//
 
-public class AndroidTemplateActivity extends Activity implements OnTouchListener
+public class AndroidTemplateActivity extends Activity implements OnTouchListener, SurfaceHolder.Callback
 {
 	static
 	{
@@ -197,7 +197,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		{
 			GiderosApplication.getInstance().onPause();
 			if (!GiderosSettings.oculusNative)
-				mGLView.onPause();
+				((GiderosGLSurfaceView)mGLView).onPause();
 			mPlaying = false;
 		}
 		
@@ -212,7 +212,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		if (mHasFocus == true && mPlaying == false)
 		{
 			if (!GiderosSettings.oculusNative)
-				mGLView.onResume();
+				((GiderosGLSurfaceView)mGLView).onResume();
 			GiderosApplication.getInstance().onResume();
 			mPlaying = true;
 		}
@@ -262,7 +262,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		if (mHasFocus == true && mPlaying == false)
 		{
 			if (!GiderosSettings.oculusNative)
-				mGLView.onResume();
+				((GiderosGLSurfaceView)mGLView).onResume();
 			GiderosApplication.getInstance().onResume();
 			mPlaying = true;
 		}
@@ -369,11 +369,6 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		GiderosApplication.getInstance().onSurfaceDestroyed();
 		mSurfaceHolder = null;
-	}
-
-	@Override
-	public void onPointerCaptureChanged(boolean hasCapture) {
-
 	}
 /**** END FOR OCULUS ***/
 
