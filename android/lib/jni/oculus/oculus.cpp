@@ -692,6 +692,7 @@ static void ovrRenderer_Destroy(ovrRenderer* renderer) {
 #define ASSIGNV(a,b) a.x=b.x; a.y=b.y; a.z=b.z;
 #define ASSIGNV4(a,b) a.x=b.x; a.y=b.y; a.z=b.z; a.w=b.w;
 static bool roomEnabled=true,roomScreenEnabled=true,roomFloor=false;
+static ovrTracking2 last_Head;
 static ovrLayerProjection2 ovrRenderer_RenderFrame(
     ovrRenderer* renderer,
     const ovrJava* java,
@@ -699,6 +700,8 @@ static ovrLayerProjection2 ovrRenderer_RenderFrame(
     const ovrTracking2* tracking,
     ovrMobile* ovr) {
 
+	if (tracking)
+		last_Head=*tracking;
 	ovrInputCapabilityHeader capsHeader;
 	uint32_t did=0;
 	while ( vrapi_EnumerateInputDevices( ovr, did, &capsHeader ) >= 0 ) {
@@ -1810,6 +1813,41 @@ static int setTrackingSpace(lua_State *L) {
 	return 0;
 }
 
+static void pushVector(lua_State *L,ovrVector3f v) {
+	lua_newtable(L);
+	lua_pushnumber(L,v.x); lua_rawseti(L,-2,1);
+	lua_pushnumber(L,v.y); lua_rawseti(L,-2,2);
+	lua_pushnumber(L,v.z); lua_rawseti(L,-2,3);
+}
+
+static void pushVector4(lua_State *L,ovrQuatf v) {
+	lua_newtable(L);
+	lua_pushnumber(L,v.x); lua_rawseti(L,-2,1);
+	lua_pushnumber(L,v.y); lua_rawseti(L,-2,2);
+	lua_pushnumber(L,v.z); lua_rawseti(L,-2,3);
+	lua_pushnumber(L,v.w); lua_rawseti(L,-2,4);
+}
+
+static int getHeadPose(lua_State *L) {
+	lua_newtable(L);
+	//Pose
+	lua_pushinteger(L,last_Head.Status);
+	lua_setfield(L, -2,	"poseStatus");
+	pushVector(L,last_Head.HeadPose.Pose.Position);
+	lua_setfield(L, -2, "position");
+	pushVector4(L,last_Head.HeadPose.Pose.Orientation);
+	lua_setfield(L, -2, "rotation");
+	pushVector(L,last_Head.HeadPose.LinearVelocity);
+	lua_setfield(L, -2, "linearVelocity");
+	pushVector(L,last_Head.HeadPose.AngularVelocity);
+	lua_setfield(L, -2, "angularVelocity");
+	pushVector(L,last_Head.HeadPose.LinearAcceleration);
+	lua_setfield(L, -2, "linearAcceleration");
+	pushVector(L,last_Head.HeadPose.AngularAcceleration);
+	lua_setfield(L, -2, "angularAcceleration");
+	return 1;
+}
+
 void setupApi(lua_State *L)
 {
 	roomEnabled=true;
@@ -1820,6 +1858,7 @@ void setupApi(lua_State *L)
     static const luaL_Reg functionList[] = {
 		{"enableRoom", enableRoom},
 		{"setTrackingSpace", setTrackingSpace},
+		{"getHeadPose", getHeadPose},
         {NULL, NULL},
     };
 
