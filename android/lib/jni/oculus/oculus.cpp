@@ -737,6 +737,34 @@ static ovrLayerProjection2 ovrRenderer_RenderFrame(
 				oculus::doInputEvent(input);
 			}
 		}
+		else if ( capsHeader.Type == ovrControllerType_Hand ) {
+			ovrInputHandCapabilities caps;
+			caps.Header = capsHeader;
+			vrapi_GetInputDeviceCapabilities( ovr, &caps.Header );
+			ovrInputStateHand state;
+			oculus::Input input;
+			if ( vrapi_GetCurrentInputState( ovr, capsHeader.DeviceID, &state.Header ) >= 0 ) {
+				input.deviceId=capsHeader.DeviceID;
+				input.deviceType=capsHeader.Type;
+				input.caps=caps.HandCapabilities;
+				//input.buttons=state.PinchStrength
+				//ASSIGNV(input.pos,state.PointerPose.Position);
+				//ASSIGNV4(input.rot,state.PointerPose.Orientation);
+				ovrHandPose trackingState;
+				trackingState.Header.Version=ovrHandVersion_1;
+				input.poseStatus=0;
+				if ( vrapi_GetHandPose( ovr, capsHeader.DeviceID, 0, &trackingState.Header ) >= 0 )		{
+					input.poseStatus=trackingState.Status;
+					ASSIGNV(input.pos,trackingState.RootPose.Position);
+					ASSIGNV4(input.rot,trackingState.RootPose.Orientation);
+					for (int k=0;k<ovrHandBone_Max;k++) {
+						ASSIGNV4(input.handBone[k],trackingState.BoneRotations[k]);
+					}
+					input.handScale=trackingState.HandScale;
+				}
+				oculus::doInputEvent(input);
+			}
+		}
 		did++;
 	}
     oculus::doTick(elapsed);
@@ -1850,125 +1878,136 @@ static int getHeadPose(lua_State *L) {
 
 static int getHandMesh(lua_State *L) {
 	if (appState.Ovr) {
-		ovrHandMesh mesh;
-		vrapi_GetHandMesh(appState.Ovr, (ovrHandedness) luaL_checkinteger(L,1), &mesh.Header);
-		lua_newtable(L);
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumIndices;k++)
+		ovrHandMesh *mesh=new ovrHandMesh;
+		mesh->Header.Version=ovrHandVersion_1;
+		if (vrapi_GetHandMesh(appState.Ovr, (ovrHandedness) luaL_checkinteger(L,1), &mesh->Header)>=0)
 		{
-			lua_pushinteger(L,mesh.Indices[k]);
-			lua_rawseti(L,-2,k+1);
-		}
-		lua_setfield(L,-2,"indices");
+			lua_newtable(L);
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumIndices;k++)
+			{
+				lua_pushinteger(L,mesh->Indices[k]);
+				lua_rawseti(L,-2,k+1);
+			}
+			lua_setfield(L,-2,"indices");
 
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumVertices;k++)
-		{
-			lua_pushnumber(L,mesh.VertexPositions[k].x);
-			lua_rawseti(L,-2,k*3+1);
-			lua_pushnumber(L,mesh.VertexPositions[k].y);
-			lua_rawseti(L,-2,k*3+2);
-			lua_pushnumber(L,mesh.VertexPositions[k].z);
-			lua_rawseti(L,-2,k*3+3);
-		}
-		lua_setfield(L,-2,"vertices");
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumVertices;k++)
+			{
+				lua_pushnumber(L,mesh->VertexPositions[k].x);
+				lua_rawseti(L,-2,k*3+1);
+				lua_pushnumber(L,mesh->VertexPositions[k].y);
+				lua_rawseti(L,-2,k*3+2);
+				lua_pushnumber(L,mesh->VertexPositions[k].z);
+				lua_rawseti(L,-2,k*3+3);
+			}
+			lua_setfield(L,-2,"vertices");
 
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumVertices;k++)
-		{
-			lua_pushnumber(L,mesh.VertexNormals[k].x);
-			lua_rawseti(L,-2,k*3+1);
-			lua_pushnumber(L,mesh.VertexNormals[k].y);
-			lua_rawseti(L,-2,k*3+2);
-			lua_pushnumber(L,mesh.VertexNormals[k].z);
-			lua_rawseti(L,-2,k*3+3);
-		}
-		lua_setfield(L,-2,"normals");
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumVertices;k++)
+			{
+				lua_pushnumber(L,mesh->VertexNormals[k].x);
+				lua_rawseti(L,-2,k*3+1);
+				lua_pushnumber(L,mesh->VertexNormals[k].y);
+				lua_rawseti(L,-2,k*3+2);
+				lua_pushnumber(L,mesh->VertexNormals[k].z);
+				lua_rawseti(L,-2,k*3+3);
+			}
+			lua_setfield(L,-2,"normals");
 
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumVertices;k++)
-		{
-			lua_pushnumber(L,mesh.VertexUV0[k].x);
-			lua_rawseti(L,-2,k*2+1);
-			lua_pushnumber(L,mesh.VertexUV0[k].y);
-			lua_rawseti(L,-2,k*2+2);
-		}
-		lua_setfield(L,-2,"texcoords");
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumVertices;k++)
+			{
+				lua_pushnumber(L,mesh->VertexUV0[k].x);
+				lua_rawseti(L,-2,k*2+1);
+				lua_pushnumber(L,mesh->VertexUV0[k].y);
+				lua_rawseti(L,-2,k*2+2);
+			}
+			lua_setfield(L,-2,"texcoords");
 
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumVertices;k++)
-		{
-			lua_pushinteger(L,mesh.BlendIndices[k].x);
-			lua_rawseti(L,-2,k*4+1);
-			lua_pushinteger(L,mesh.BlendIndices[k].y);
-			lua_rawseti(L,-2,k*4+2);
-			lua_pushinteger(L,mesh.BlendIndices[k].z);
-			lua_rawseti(L,-2,k*4+3);
-			lua_pushinteger(L,mesh.BlendIndices[k].w);
-			lua_rawseti(L,-2,k*4+4);
-		}
-		lua_setfield(L,-2,"blendIndices");
+			lua_newtable(L);
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumVertices;k++)
+			{
+				lua_pushinteger(L,mesh->BlendIndices[k].x);
+				lua_rawseti(L,-2,k*4+1);
+				lua_pushinteger(L,mesh->BlendIndices[k].y);
+				lua_rawseti(L,-2,k*4+2);
+				lua_pushinteger(L,mesh->BlendIndices[k].z);
+				lua_rawseti(L,-2,k*4+3);
+				lua_pushinteger(L,mesh->BlendIndices[k].w);
+				lua_rawseti(L,-2,k*4+4);
+			}
+			lua_setfield(L,-2,"bi");
 
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumVertices;k++)
-		{
-			lua_pushnumber(L,mesh.BlendWeights[k].x);
-			lua_rawseti(L,-2,k*4+1);
-			lua_pushnumber(L,mesh.BlendWeights[k].y);
-			lua_rawseti(L,-2,k*4+2);
-			lua_pushnumber(L,mesh.BlendWeights[k].z);
-			lua_rawseti(L,-2,k*4+3);
-			lua_pushnumber(L,mesh.BlendWeights[k].w);
-			lua_rawseti(L,-2,k*4+4);
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumVertices;k++)
+			{
+				lua_pushnumber(L,mesh->BlendWeights[k].x);
+				lua_rawseti(L,-2,k*4+1);
+				lua_pushnumber(L,mesh->BlendWeights[k].y);
+				lua_rawseti(L,-2,k*4+2);
+				lua_pushnumber(L,mesh->BlendWeights[k].z);
+				lua_rawseti(L,-2,k*4+3);
+				lua_pushnumber(L,mesh->BlendWeights[k].w);
+				lua_rawseti(L,-2,k*4+4);
+			}
+			lua_setfield(L,-2,"bw");
+			lua_setfield(L,-2,"animdata");
+			delete mesh;
+			return 1;
 		}
-		lua_setfield(L,-2,"blendWeights");
-		return 1;
+		delete mesh;
 	}
 	return 0;
 }
 
 static int getHandSkeleton(lua_State *L) {
 	if (appState.Ovr) {
-		ovrHandSkeleton mesh;
-		vrapi_GetHandSkeleton(appState.Ovr, (ovrHandedness) luaL_checkinteger(L,1), &mesh.Header);
-		lua_newtable(L);
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumCapsules;k++)
-		{
+		ovrHandSkeleton *mesh=new ovrHandSkeleton;
+		mesh->Header.Version=ovrHandVersion_1;
+		if (vrapi_GetHandSkeleton(appState.Ovr, (ovrHandedness) luaL_checkinteger(L,1), &mesh->Header)>=0) {
 			lua_newtable(L);
-			lua_pushinteger(L,mesh.Capsules[k].BoneIndex);
-			lua_setfield(L, -2, "boneIndex");
-			pushVector(L,mesh.Capsules[k].Points[0]);
-			lua_setfield(L, -2, "pointA");
-			pushVector(L,mesh.Capsules[k].Points[1]);
-			lua_setfield(L, -2, "pointB");
-			lua_pushnumber(L,mesh.Capsules[k].Radius);
-			lua_setfield(L, -2, "radius");
-			lua_rawseti(L,-2,k+1);
-		}
-		lua_setfield(L,-2,"capsules");
-
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumBones;k++)
-		{
-			lua_pushinteger(L,mesh.BoneParentIndices[k]);
-			lua_rawseti(L,-2,k+1);
-		}
-		lua_setfield(L,-2,"boneParents");
-
-		lua_newtable(L);
-		for (int k=0;k<mesh.NumBones;k++)
-		{
 			lua_newtable(L);
-			pushVector(L,mesh.BonePoses[k].Position);
-			lua_setfield(L, -2, "position");
-			pushVector4(L,mesh.BonePoses[k].Orientation);
-			lua_setfield(L, -2, "rotation");
-			lua_rawseti(L,-2,k+1);
-		}
-		lua_setfield(L,-2,"bones");
+			for (int k=0;k<mesh->NumCapsules;k++)
+			{
+				lua_newtable(L);
+				lua_pushinteger(L,mesh->Capsules[k].BoneIndex);
+				lua_setfield(L, -2, "boneIndex");
+				pushVector(L,mesh->Capsules[k].Points[0]);
+				lua_setfield(L, -2, "pointA");
+				pushVector(L,mesh->Capsules[k].Points[1]);
+				lua_setfield(L, -2, "pointB");
+				lua_pushnumber(L,mesh->Capsules[k].Radius);
+				lua_setfield(L, -2, "radius");
+				lua_rawseti(L,-2,k+1);
+			}
+			lua_setfield(L,-2,"capsules");
 
-		return 1;
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumBones;k++)
+			{
+				lua_pushinteger(L,mesh->BoneParentIndices[k]);
+				lua_rawseti(L,-2,k+1);
+			}
+			lua_setfield(L,-2,"boneParents");
+
+			lua_newtable(L);
+			for (int k=0;k<mesh->NumBones;k++)
+			{
+				lua_newtable(L);
+				pushVector(L,mesh->BonePoses[k].Position);
+				lua_setfield(L, -2, "position");
+				pushVector4(L,mesh->BonePoses[k].Orientation);
+				lua_setfield(L, -2, "rotation");
+				lua_rawseti(L,-2,k+1);
+			}
+			lua_setfield(L,-2,"bones");
+			delete mesh;
+
+			return 1;
+		}
+		delete mesh;
 	}
 	return 0;
 }

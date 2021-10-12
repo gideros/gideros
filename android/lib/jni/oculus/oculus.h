@@ -50,6 +50,9 @@ typedef struct Input_ {
 	float stickX,stickY;
     float indexTrigger;
     float gripTrigger;
+    //Hand
+    Vector4 handBone[24];
+    float handScale;
 } Input;
 //Implemented in gideros.cpp
 void doInputEvent(Input &input);
