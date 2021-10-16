@@ -48,7 +48,7 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 
 	if (!include.count()) {
 		if (ctx->assetsOnly) {
-			include << "libgideros.so" << "libgideros.a" << "gideros.jar"
+			include << "libgideros.so" << "libgiderosvr.so" << "libgideros.a" << "gideros.jar"
 					<< "gideros.dll" << "gid.dll" << "libgideros.dylib"
 					<< "libgideros.1.dylib" << "gideros.WindowsPhone.lib"
 					<< "gideros.Windows.lib" << "WindowsDesktopTemplate.exe"
