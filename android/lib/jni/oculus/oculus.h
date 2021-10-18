@@ -44,12 +44,16 @@ typedef struct Input_ {
 	Vector velRot;
 	Vector accPos;
 	Vector accRot;
-	//Remote
 	int caps;
+	//Remote
 	int buttons;
 	float stickX,stickY;
     float indexTrigger;
     float gripTrigger;
+    int trackpadStatus;
+    float trackpadX;
+    float trackpadY;
+    int touches;
     //Hand
     Vector4 handBone[24];
     float handScale;

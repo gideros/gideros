@@ -723,6 +723,10 @@ static ovrLayerProjection2 ovrRenderer_RenderFrame(
 				input.stickY=state.JoystickNoDeadZone.y;
 				input.gripTrigger=state.GripTrigger;
 				input.indexTrigger=state.IndexTrigger;
+				input.trackpadStatus=state.TrackpadStatus;
+				input.trackpadX=state.TrackpadPosition.x;
+				input.trackpadY=state.TrackpadPosition.y;
+				input.touches=state.Touches;
 				ovrTracking trackingState;
 				input.poseStatus=0;
 				if ( vrapi_GetInputTrackingState( ovr, capsHeader.DeviceID, 0, &trackingState ) >= 0 )		{

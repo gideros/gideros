@@ -1024,30 +1024,34 @@ void ApplicationManager::oculusInputEvent(oculus::Input &input) {
 		lua_setfield(L, -2, "linearAcceleration");
 		pushVector(L,input.accRot);
 		lua_setfield(L, -2, "angularAcceleration");
-
-		//Remote
     	lua_pushinteger(L,input.caps);
 		lua_setfield(L, -2, "caps");
-    	lua_pushinteger(L,input.buttons);
-		lua_setfield(L, -2, "buttons");
-    	lua_pushnumber(L,input.stickX);
-		lua_setfield(L, -2, "stickX");
-    	lua_pushnumber(L,input.stickY);
-		lua_setfield(L, -2, "stickY");
-    	lua_pushnumber(L,input.gripTrigger);
-		lua_setfield(L, -2, "gripTrigger");
-    	lua_pushnumber(L,input.indexTrigger);
-		lua_setfield(L, -2, "indexTrigger");
+
+		//Remote
+		if (input.deviceType==4) {
+			lua_pushinteger(L,input.buttons);
+			lua_setfield(L, -2, "buttons");
+			lua_pushnumber(L,input.stickX);
+			lua_setfield(L, -2, "stickX");
+			lua_pushnumber(L,input.stickY);
+			lua_setfield(L, -2, "stickY");
+			lua_pushnumber(L,input.gripTrigger);
+			lua_setfield(L, -2, "gripTrigger");
+			lua_pushnumber(L,input.indexTrigger);
+			lua_setfield(L, -2, "indexTrigger");
+		}
 
 		//Hand
-    	lua_pushnumber(L,input.handScale);
-		lua_setfield(L, -2, "handScale");
-		lua_newtable(L);
-		for (int k=0;k<24;k++) {
-			pushVector4(L,input.handBone[k]);
-			lua_rawseti(L,-2,k+1);
+		if (input.deviceType==32) {
+			lua_pushnumber(L,input.handScale);
+			lua_setfield(L, -2, "handScale");
+			lua_newtable(L);
+			for (int k=0;k<24;k++) {
+				pushVector4(L,input.handBone[k]);
+				lua_rawseti(L,-2,k+1);
+			}
+			lua_setfield(L, -2, "handBone");
 		}
-		lua_setfield(L, -2, "handBone");
 
 	    lua_call(L, 1, 0);
 	    lua_pop(L,1);
