@@ -3,6 +3,7 @@
 #include "stackchecker.h"
 #include <transform.h>
 #include "Shaders.h"
+#include <math.h>
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
@@ -41,6 +42,8 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"multiply",multiply},
 		{"invert",invert},
 		{"transformPoint",transformPoint},
+		{"duplicate",duplicate},
+		{"fromSRT",fromSRT},
 
 		{"getX", getX},
 		{"getY", getY},
@@ -770,4 +773,121 @@ int MatrixBinder::getScale(lua_State* L)
 	return 3;
 }
 
+int MatrixBinder::duplicate(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+	Transform *t=new Transform();
+	t->setMatrix(matrix->matrix().data());
+    binder.pushInstance("Matrix", t);
+
+	return 1;
+}
+
+int MatrixBinder::fromSRT(lua_State* L)
+{
+	Binder binder(L);
+	bool rev=lua_toboolean(L,2);
+	luaL_checktype(L,1,LUA_TTABLE);
+	//Fields
+	lua_getfield(L,1,"t");
+	if (lua_isnoneornil(L,-1)) {
+		lua_pop(L,1);
+		lua_getfield(L,1,"translate");
+		if (lua_isnoneornil(L,-1)) {
+			lua_pop(L,1);
+			lua_getfield(L,1,"position");
+		}
+	}
+	lua_getfield(L,1,"r");
+	if (lua_isnoneornil(L,-1)) {
+		lua_pop(L,1);
+		lua_getfield(L,1,"rotation");
+	}
+	lua_getfield(L,1,"s");
+	if (lua_isnoneornil(L,-1)) {
+		lua_pop(L,1);
+		lua_getfield(L,1,"scale");
+	}
+
+	Transform *t=new Transform();
+	Matrix4 mt;
+	if (rev&&(!lua_isnoneornil(L,-3))) {
+		lua_rawgeti(L,-3,1);
+		lua_rawgeti(L,-4,2);
+		lua_rawgeti(L,-5,3);
+		mt.translate(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
+		lua_pop(L,3);
+	} else {
+		if (!lua_isnoneornil(L,-1)) {
+			lua_rawgeti(L,-1,1);
+			lua_rawgeti(L,-2,2);
+			lua_rawgeti(L,-3,3);
+			mt.scale(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
+			lua_pop(L,3);
+		}
+	}
+	if (!lua_isnoneornil(L,-2)) {
+		lua_rawgeti(L,-2,1);
+		lua_rawgeti(L,-3,2);
+		lua_rawgeti(L,-4,3);
+		lua_rawgeti(L,-5,4);
+		float X=luaL_optnumber(L,-4,0);
+		float Y=luaL_optnumber(L,-3,0);
+		float Z=luaL_optnumber(L,-2,0);
+		float W=luaL_optnumber(L,-1,0);
+		lua_pop(L,4);
+
+		float L=sqrt(X*X+Y*Y+Z*Z+W*W);
+		X/=L; Y/=L; Z/=L; W/=L;
+		float xx,xy,xz,xw,yy,yz,yw,zz,zw;
+		float m00,m01,m02,m10,m11,m12,m20,m21,m22;
+		xx      = X * X;
+		xy      = X * Y;
+		xz      = X * Z;
+		xw      = X * W;
+
+		yy      = Y * Y;
+		yz      = Y * Z;
+		yw      = Y * W;
+
+		zz      = Z * Z;
+		zw      = Z * W;
+
+		m00  = 1 - 2 * ( yy + zz );
+		m01  =     2 * ( xy - zw );
+		m02 =     2 * ( xz + yw );
+		m10  =     2 * ( xy + zw );
+		m11  = 1 - 2 * ( xx + zz );
+		m12  =     2 * ( yz - xw );
+		m20  =     2 * ( xz - yw );
+		m21  =     2 * ( yz + xw );
+		m22 = 1 - 2 * ( xx + yy );
+
+		Matrix4 rm(m00,m10,m20,0,m01,m11,m21,0,m02,m12,m22,0,0,0,0,1);
+		mt=rm*mt;
+	}
+
+	if (rev&&(!lua_isnoneornil(L,-1))) {
+		lua_rawgeti(L,-1,1);
+		lua_rawgeti(L,-2,2);
+		lua_rawgeti(L,-3,3);
+		mt.scale(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
+		lua_pop(L,3);
+	} else {
+		if (!lua_isnoneornil(L,-3)) {
+			lua_rawgeti(L,-3,1);
+			lua_rawgeti(L,-4,2);
+			lua_rawgeti(L,-5,3);
+			mt.translate(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
+			lua_pop(L,3);
+		}
+	}
+
+	t->setMatrix(mt.data());
+    binder.pushInstance("Matrix", t);
+
+	return 1;
+}
 

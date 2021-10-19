@@ -723,6 +723,10 @@ static ovrLayerProjection2 ovrRenderer_RenderFrame(
 				input.stickY=state.JoystickNoDeadZone.y;
 				input.gripTrigger=state.GripTrigger;
 				input.indexTrigger=state.IndexTrigger;
+				input.trackpadStatus=state.TrackpadStatus;
+				input.trackpadX=state.TrackpadPosition.x;
+				input.trackpadY=state.TrackpadPosition.y;
+				input.touches=state.Touches;
 				ovrTracking trackingState;
 				input.poseStatus=0;
 				if ( vrapi_GetInputTrackingState( ovr, capsHeader.DeviceID, 0, &trackingState ) >= 0 )		{
@@ -743,6 +747,7 @@ static ovrLayerProjection2 ovrRenderer_RenderFrame(
 			vrapi_GetInputDeviceCapabilities( ovr, &caps.Header );
 			ovrInputStateHand state;
 			oculus::Input input;
+			state.Header.ControllerType = capsHeader.Type;
 			if ( vrapi_GetCurrentInputState( ovr, capsHeader.DeviceID, &state.Header ) >= 0 ) {
 				input.deviceId=capsHeader.DeviceID;
 				input.deviceType=capsHeader.Type;
@@ -1886,7 +1891,7 @@ static int getHandMesh(lua_State *L) {
 			lua_newtable(L);
 			for (int k=0;k<mesh->NumIndices;k++)
 			{
-				lua_pushinteger(L,mesh->Indices[k]);
+				lua_pushinteger(L,mesh->Indices[k]+1);
 				lua_rawseti(L,-2,k+1);
 			}
 			lua_setfield(L,-2,"indices");
