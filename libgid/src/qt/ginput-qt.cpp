@@ -346,8 +346,8 @@ public:
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
-            touchEvent->allTouches[i].mouseButton = 0;
-            touchEvent->allTouches[i].modifiers = 0;
+            touchEvent->allTouches[i].mouseButton = (ids[i]==id)?button:0;
+            touchEvent->allTouches[i].modifiers = (ids[i]==id)?mod:0;
         }
 
         ginput_MouseEvent *mouseEvent = NULL;

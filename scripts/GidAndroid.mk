@@ -34,7 +34,6 @@ androidso: versioning androidso.prep
 
 oculusso: versioning androidso.prep
 	cd $(ROOT)/android/lib;OCULUS=y $(NDKBUILD) $(MAKEJOBS)
-	rm -rf $(ROOT)/Sdk/lib/android
 	mkdir -p $(ROOT)/Sdk/lib/android
 	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 
 
