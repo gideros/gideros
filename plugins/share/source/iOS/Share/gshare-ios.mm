@@ -19,17 +19,22 @@ bool gshare_Share(const char *mimeType,const void *data,size_t datasize)
     	NSObject *obj=NULL;
 		NSData *ndata = [NSData dataWithBytes:data length:datasize];
 		
-
+    	obj=ndata;
     	if (strstr(mimeType,"image/")==mimeType)
     	{
 		 obj= [[UIImage alloc] initWithData:ndata];
-    	}		
+    	}
+    	else if (!strcmp(mimeType,"text/vcard")) {
+    	 obj=[[NSItemProvider alloc] initWithItem:ndata typeIdentifier:kUTTypeVCard];
+    	}
+    	else if (!strcmp(mimeType,"text/uri-list")) {
+    	 obj=[NSURL URLWithString:ndata];
+    	}
     	else if (strstr(mimeType,"text/")==mimeType)
     	{
     	 obj=[[NSString alloc] initWithData:ndata encoding:NSUTF8StringEncoding];
     	}
     	
-    	obj=ndata;
    		NSArray *objectsToShare = @[obj];
  
     	UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil];

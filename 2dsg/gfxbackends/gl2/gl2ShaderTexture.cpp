@@ -68,7 +68,7 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     const void *idata=data;
     if (ogl2ShaderEngine::isGLES&&(ogl2ShaderEngine::version>=3)) {
     	if (glformat==GL_DEPTH_COMPONENT) {
-    		iformat=GL_DEPTH_COMPONENT24;
+    		iformat=GL_DEPTH_COMPONENT32F;
     		idata=NULL; //Don't supply data for depth component
     	}
     }
