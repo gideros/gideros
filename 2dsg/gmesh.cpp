@@ -63,7 +63,7 @@ void GMesh::setVertex(int i, float x, float y,float z)
     boundsDirty_ = true;
 }
 
-void GMesh::setIndex(int i, unsigned short index)
+void GMesh::setIndex(int i, unsigned int index)
 {
     if (i >= indices_.size())
         indices_.resize(i + 1);
@@ -155,7 +155,7 @@ void GMesh::setVertexArray(const float *vertices, size_t size)
     boundsDirty_ = true;
 }
 
-void GMesh::setIndexArray(const unsigned short *indices, size_t size)
+void GMesh::setIndexArray(const unsigned int *indices, size_t size)
 {
     indices_.assign(indices, indices + size);
     indices_.Update();
@@ -267,7 +267,7 @@ void GMesh::getVertex(int i, float *x, float *y, float *z) const
     	*z = vertices_[i * order + 2];
 }
 
-void GMesh::getIndex(int i, unsigned short *index) const
+void GMesh::getIndex(int i, unsigned int *index) const
 {
     *index = indices_[i];
 }
@@ -424,7 +424,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
             genericArray[k-3].modified=false;
     	}
 
-    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache,0,0,instanceCount_);
+    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DINT, &indices_[0],indices_.modified,&indices_.bufferCache,0,0,instanceCount_);
     indices_.modified=false;
 }
 
