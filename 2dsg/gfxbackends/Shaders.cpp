@@ -113,6 +113,7 @@ void ShaderEngine::reset(bool reinit)
     dsCurrent.dFail=STENCIL_KEEP;
     dsCurrent.dPass=STENCIL_KEEP;
     dsCurrent.sFunc=STENCIL_DISABLE;
+    dsCurrent.cullMode=CULL_NONE;
     while (!dsStack.empty())
     	dsStack.pop();
     setDepthStencil(dsCurrent);

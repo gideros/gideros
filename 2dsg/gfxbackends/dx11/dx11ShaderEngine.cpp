@@ -46,12 +46,13 @@ void dx11ShaderEngine::reset(bool reinit)
 {
 	ShaderEngine::reset(reinit);
 	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
-	g_devcon->RSSetState(g_pRSNormal);
+	g_devcon->RSSetState(g_pRSNormalCN);
 	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
 	curDstFactor = ONE_MINUS_SRC_ALPHA;
 	curSrcFactor = ONE;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
+	s_clipEnabled=false;
 }
 
 void dx11SetupShaders()
@@ -267,7 +268,6 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	D3D11_RASTERIZER_DESC rasterDesc;
 
 	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0;
 	rasterDesc.DepthClipEnable = true;
@@ -277,9 +277,20 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormal);
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormalCN);
+	rasterDesc.CullMode = D3D11_CULL_FRONT;
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormalCF);
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormalCB);
+
 	rasterDesc.ScissorEnable = true;
-	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissorCN);
+	rasterDesc.CullMode = D3D11_CULL_FRONT;
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissorCF);
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissorCB);
 
 	D3D11_BLEND_DESC blendStateDesc;
 	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
@@ -390,8 +401,12 @@ dx11ShaderEngine::~dx11ShaderEngine()
 
     g_depthStencil->Release();
     g_pBlendState->Release();
-    g_pRSNormal->Release();
-    g_pRSScissor->Release();
+    g_pRSNormalCN->Release();
+    g_pRSNormalCF->Release();
+    g_pRSNormalCB->Release();
+    g_pRSScissorCN->Release();
+    g_pRSScissorCF->Release();
+    g_pRSScissorCB->Release();
     g_pDSDepth->Release();
     g_pDSOff->Release();
 	dx11ShaderTexture::samplerClamp->Release();
@@ -467,11 +482,23 @@ void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 		g_devcon->PSSetSamplers(num, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerRepeat:&dx11ShaderTexture::samplerRepeatFilter);
 }
 
+void dx11ShaderEngine::updateRasterizer()
+{
+	ID3D11RasterizerState *rs=NULL;
+	switch (dsCurrent.cullMode) { //TODO
+	case CULL_FRONT: rs=s_clipEnabled?g_pRSScissorCF:g_pRSNormalCF; break;
+	case CULL_BACK: rs=s_clipEnabled?g_pRSScissorCB:g_pRSNormalCB; break;
+	default: rs=s_clipEnabled?g_pRSScissorCN:g_pRSNormalCN; break;
+	}
+	g_devcon->RSSetState(rs);
+}
 
 void dx11ShaderEngine::setClip(int x,int y,int w,int h)
 {
-	if ((w<0)||(h<0))
-		g_devcon->RSSetState(g_pRSNormal);
+	if ((w<0)||(h<0)) {
+		s_clipEnabled=false;
+		updateRasterizer();
+	}
 	else
 	{
 		D3D11_RECT pRect;
@@ -480,7 +507,8 @@ void dx11ShaderEngine::setClip(int x,int y,int w,int h)
 		pRect.right = x + w;
 		pRect.bottom = y + h;
 		g_devcon->RSSetScissorRects(1, &pRect);
-		g_devcon->RSSetState(g_pRSScissor);
+		s_clipEnabled=true;
+		updateRasterizer();
 	}
 }
 
@@ -589,6 +617,7 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 
 	g_devcon->OMSetDepthStencilState(cs, state.sRef);
 	dsCurrent = state;
+	updateRasterizer();
 }
 
 

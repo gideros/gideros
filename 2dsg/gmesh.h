@@ -53,6 +53,7 @@ public:
     void clearTexture(int slot=0);
     void setPrimitiveType(ShaderProgram::ShapeType type);
     void setInstanceCount(size_t instances);
+    void setCullMode(ShaderEngine::CullMode cullMode);
 
 private:
     virtual void doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey);
@@ -91,6 +92,7 @@ private:
     ShaderProgram::ShapeType meshtype_;
     size_t instanceCount_;
     bool mesh3d_;
+    ShaderEngine::CullMode cullMode_;
 };
 
 #endif

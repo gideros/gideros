@@ -26,6 +26,7 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
     meshtype_=ShaderProgram::Triangles;
     mesh3d_=is3d;
     instanceCount_=0;
+    cullMode_=ShaderEngine::CULL_NONE;
 }
 
 GMesh::~GMesh()
@@ -340,6 +341,11 @@ void GMesh::clearTexture(int slot)
     setTexture(NULL,slot);
 }
 
+void GMesh::setCullMode(ShaderEngine::CullMode cullMode)
+{
+	cullMode_=cullMode;
+}
+
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
     G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
@@ -347,6 +353,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 	{
 		 ShaderEngine::DepthStencil stencil=ShaderEngine::Engine->pushDepthStencil();
 		 stencil.dTest=true;
+		 stencil.cullMode=cullMode_;
 		 ShaderEngine::Engine->setDepthStencil(stencil);
 	}
 	if (vertices_.size() == 0) return;

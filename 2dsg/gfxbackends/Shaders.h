@@ -179,6 +179,11 @@ public:
 		STENCIL_NOTEQUAL,
 		STENCIL_ALWAYS
 	};
+	enum CullMode {
+		CULL_NONE,
+		CULL_FRONT,
+		CULL_BACK,
+	};
 	struct DepthStencil {
 		bool dTest;
 		bool dClear;
@@ -190,6 +195,7 @@ public:
 		StencilOp dFail;
 		StencilOp dPass;
 		bool sClear;
+		CullMode cullMode;
         bool operator==(const DepthStencil &o) const {
             return dTest==o.dTest && dClear==o.dClear;
         }
@@ -202,12 +208,14 @@ public:
             |(((unsigned int)sFunc)<<4)
             |(((unsigned int)sFail)<<8)
             |(((unsigned int)dFail)<<12)
-            |(((unsigned int)dPass)<<16);
+            |(((unsigned int)dPass)<<16)
+            |(((unsigned int)cullMode)<<20);
             unsigned int d2=(o.dTest?1:0)|(o.dClear?2:0)|(o.sClear?4:0)
             |(((unsigned int)o.sFunc)<<4)
             |(((unsigned int)o.sFail)<<8)
             |(((unsigned int)o.dFail)<<12)
-            |(((unsigned int)o.dPass)<<16);
+            |(((unsigned int)o.dPass)<<16)
+            |(((unsigned int)o.cullMode)<<20);
             CHECK(d1,d2)
 #undef CHECK
             return false;

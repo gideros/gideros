@@ -361,6 +361,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 
 	GLCALL glEnable(GL_BLEND);
 	GLCALL glDisable(GL_SCISSOR_TEST);
+	GLCALL glDisable(GL_CULL_FACE);
 	GLCALL glDepthFunc(GL_LEQUAL);
 
 #ifndef PREMULTIPLIED_ALPHA
@@ -675,6 +676,18 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 		}
 		GLCALL glStencilFunc(sf,state.sRef,state.sMask);
 		GLCALL glStencilMask(state.sWMask);
+	}
+	switch (state.cullMode) {
+	case CULL_FRONT:
+		GLCALL glEnable(GL_CULL_FACE);
+		GLCALL glCullFace(GL_FRONT);
+		break;
+	case CULL_BACK:
+		GLCALL glEnable(GL_CULL_FACE);
+		GLCALL glCullFace(GL_BACK);
+		break;
+	default:
+		GLCALL glDisable(GL_CULL_FACE);
 	}
 	dsCurrent=state;
 }

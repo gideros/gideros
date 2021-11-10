@@ -53,6 +53,7 @@ private:
     static int setTextureSlot(lua_State *L);
     static int setPrimitiveType(lua_State *L);
     static int setInstanceCount(lua_State *L);
+    static int setCullMode(lua_State *L);
 };
 
 

@@ -48,6 +48,7 @@ MeshBinder::MeshBinder(lua_State *L)
         {"clearTexture", clearTexture},
         {"setPrimitiveType", setPrimitiveType},
 	    {"setInstanceCount",setInstanceCount},
+	    {"setCullMode",setCullMode},
 
         {NULL, NULL},
     };
@@ -901,6 +902,14 @@ int MeshBinder::setInstanceCount(lua_State *L)
     return 0;
 }
 
+int MeshBinder::setCullMode(lua_State *L)
+{
+    Binder binder(L);
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    mesh->setCullMode((ShaderEngine::CullMode)(luaL_checkinteger(L,2)&3));
+
+    return 0;
+}
 
 int MeshBinder::setTexture(lua_State *L)
 {

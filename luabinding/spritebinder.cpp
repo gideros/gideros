@@ -163,6 +163,12 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	lua_pushinteger(L, ShaderEngine::STENCIL_ZERO);
 	lua_setfield(L, -2, "STENCIL_ZERO");
 
+	lua_pushinteger(L, ShaderEngine::CULL_NONE);
+	lua_setfield(L, -2, "CULL_NONE");
+	lua_pushinteger(L, ShaderEngine::CULL_FRONT);
+	lua_setfield(L, -2, "CULL_FRONT");
+	lua_pushinteger(L, ShaderEngine::CULL_BACK);
+	lua_setfield(L, -2, "CULL_BACK");
 
     lua_pushstring(L, "alpha");
     lua_setfield(L, -2, "ALPHA");
@@ -1904,6 +1910,7 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	ShaderEngine::DepthStencil ds;
+	ds.cullMode=ShaderEngine::CULL_NONE;
 
 	if (lua_isnoneornil(L,2))
 		ds.dTest=false;
@@ -1941,6 +1948,10 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 		lua_getfield(L,2,"depthFail");
 		if (!lua_isnil(L,-1))
 			ds.dFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"cullMode");
+		if (!lua_isnil(L,-1))
+			ds.cullMode=((ShaderEngine::CullMode)(luaL_checkinteger(L,-1)&3));
 		lua_pop(L,1);
 		ds.dTest=true;
 	}

@@ -546,6 +546,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			stencil.sMask=sprite->stencil_.sMask;
 			stencil.sWMask=sprite->stencil_.sWMask;
 			stencil.sRef=sprite->stencil_.sRef;
+			stencil.cullMode=sprite->stencil_.cullMode;
 			if (!lastEffect)
 				ShaderEngine::Engine->setDepthStencil(stencil);
 		}
