@@ -1,11 +1,18 @@
 package com.giderosmobile.android.player;
 
 import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
 import java.net.Socket;
-import java.net.URI;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -14,36 +21,22 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.http.Header;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRouteParams;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
-
 public class HTTPManager {
 	static boolean ignoreSslErrors = false;
-	static String proxyName,proxyUser,proxyPass;
-	static int proxyPort=0;
+	static String proxyName, proxyUser, proxyPass;
+	static int proxyPort = 0;
 
 	void Get(String url, String[] headers, boolean streaming, long udata, long id) {
 		HTTPThread thread = new HTTPThread(url, headers, null, 0, streaming, udata, id,
@@ -83,7 +76,7 @@ public class HTTPManager {
 
 	void Close(long id) {
 		HTTPThread thread = ids_.get(id);
-		if (thread==null)
+		if (thread == null)
 			return;
 
 
@@ -102,21 +95,21 @@ public class HTTPManager {
 	}
 
 	public static native void nativeghttpResponseCallback(long id, byte[] data,
-			int size, int statusCode, int hdrCount, int hdrSize, boolean header,long udata);
+														  int size, int statusCode, int hdrCount, int hdrSize, boolean header, long udata);
 
 	public static native void nativeghttpErrorCallback(long id, long udata);
 
 	public static native void nativeghttpProgressCallback(long id,
-			int bytesLoaded, int bytesTotal, byte[] data, int size,long udata);
+														  int bytesLoaded, int bytesTotal, byte[] data, int size, long udata);
 
 	ConcurrentHashMap<Long, HTTPThread> ids_ = new ConcurrentHashMap<Long, HTTPThread>();
 
 	public void responseCallback(long id, long udata, byte[] data,
-			int statusCode, int hdrCount, int dataSize, boolean header) {
+								 int statusCode, int hdrCount, int dataSize, boolean header) {
 		if (!ids_.containsKey(id))
 			return;
 
-		nativeghttpResponseCallback(id, data, dataSize, statusCode, hdrCount, data.length-dataSize, header, udata);
+		nativeghttpResponseCallback(id, data, dataSize, statusCode, hdrCount, data.length - dataSize, header, udata);
 
 		if (!header)
 			ids_.remove(id);
@@ -132,7 +125,7 @@ public class HTTPManager {
 	}
 
 	public void progressCallback(long id, long udata, int bytesLoaded,
-			int bytesTotal, byte[] data, int size) {
+								 int bytesTotal, byte[] data, int size) {
 		if (!ids_.containsKey(id))
 			return;
 
@@ -154,30 +147,30 @@ public class HTTPManager {
 		HTTPManager.ignoreSslErrors = true;
 	}
 
-	static public void ghttp_SetProxy(String name,int port,String user,String pass) {
-		HTTPManager.proxyName=name;
-		HTTPManager.proxyPort=port;
-		HTTPManager.proxyUser=user;
-		HTTPManager.proxyPass=pass;
+	static public void ghttp_SetProxy(String name, int port, String user, String pass) {
+		HTTPManager.proxyName = name;
+		HTTPManager.proxyPort = port;
+		HTTPManager.proxyUser = user;
+		HTTPManager.proxyPass = pass;
 	}
 
 	static public void ghttp_Get(String url, String[] headers, boolean streaming, long udata,
-			long id) {
+								 long id) {
 		httpManager.Get(url, headers, streaming, udata, id);
 	}
 
 	static public void ghttp_Post(String url, String[] headers, byte[] data, boolean streaming,
-			long udata, long id) {
+								  long udata, long id) {
 		httpManager.Post(url, headers, data, streaming, udata, id);
 	}
 
 	static public void ghttp_Put(String url, String[] headers, byte[] data, boolean streaming,
-			long udata, long id) {
+								 long udata, long id) {
 		httpManager.Put(url, headers, data, streaming, udata, id);
 	}
 
 	static public void ghttp_Delete(String url, String[] headers, boolean streaming, long udata,
-			long id) {
+									long id) {
 		httpManager.Delete(url, headers, streaming, udata, id);
 	}
 
@@ -188,10 +181,9 @@ public class HTTPManager {
 	static public void ghttp_CloseAll() {
 		httpManager.CloseAll();
 	}
-}
 
-class TrustAllHttpClient extends DefaultHttpClient {
-	TrustManager easyTrustManager = new X509TrustManager() {
+
+	TrustManager trustAll = new X509TrustManager() {
 		@Override
 		public void checkClientTrusted(X509Certificate[] chain, String authType)
 				throws CertificateException {
@@ -208,199 +200,142 @@ class TrustAllHttpClient extends DefaultHttpClient {
 		}
 	};
 
-	public TrustAllHttpClient() {
-	}
+	HostnameVerifier yesHotnameVerifier = new HostnameVerifier() {
+		public boolean verify(String arg0, SSLSession arg1) {
+			return true;
+		}
+	};
 
-	@Override
-	protected ClientConnectionManager createClientConnectionManager() {
-		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("http", PlainSocketFactory
-				.getSocketFactory(), 80));
-		registry.register(new Scheme("https", newSslSocketFactory(), 443));
-		return new SingleClientConnManager(getParams(), registry);
-	}
 
-	private MySSLSocketFactory newSslSocketFactory() {
-		try {
-			KeyStore trusted = KeyStore.getInstance("BKS");
+	class HTTPThread extends Thread {
+		long id_;
+		long udata_;
+		String url_;
+		String[] headers_;
+		byte[] data_;
+		HTTPManager manager_;
+		int method_;
+		boolean streaming_;
+
+		volatile boolean close;
+
+		public HTTPThread(String url, String[] headers, byte[] data, int method, boolean streaming,
+						  long udata, long id, HTTPManager manager) {
+			url_ = url;
+			headers_ = headers;
+			data_ = data;
+			method_ = method;
+			udata_ = udata;
+			id_ = id;
+			manager_ = manager;
+			streaming_ = streaming;
+
+			close = false;
+		}
+
+		@Override
+		public void run() {
 			try {
-				trusted.load(null, null);
+				HttpURLConnection conn;
 
-			} finally {
-			}
-
-			MySSLSocketFactory sslfactory = new MySSLSocketFactory(trusted);
-			sslfactory
-					.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			return sslfactory;
-		} catch (Exception e) {
-			throw new AssertionError(e);
-		}
-
-	}
-
-	public class MySSLSocketFactory extends SSLSocketFactory {
-		SSLContext sslContext = SSLContext.getInstance("TLS");
-
-		public MySSLSocketFactory(KeyStore certs)
-				throws NoSuchAlgorithmException, KeyManagementException,
-				KeyStoreException, UnrecoverableKeyException {
-			super(certs);
-			sslContext.init(null, new TrustManager[] { easyTrustManager }, null);
-		}
-
-		@Override
-		public Socket createSocket(Socket socket, String host, int port,
-				boolean autoClose) throws IOException, UnknownHostException {
-			return sslContext.getSocketFactory().createSocket(socket, host,
-					port, autoClose);
-		}
-
-		@Override
-		public Socket createSocket() throws IOException {
-			return sslContext.getSocketFactory().createSocket();
-		}
-	}
-}
-
-class HTTPThread extends Thread {
-	long id_;
-	long udata_;
-	String url_;
-	String[] headers_;
-	byte[] data_;
-	HTTPManager manager_;
-	int method_;
-	boolean streaming_;
-
-	volatile boolean close;
-
-	public HTTPThread(String url, String[] headers, byte[] data, int method, boolean streaming,
-			long udata, long id, HTTPManager manager) {
-		url_ = url;
-		headers_ = headers;
-		data_ = data;
-		method_ = method;
-		udata_ = udata;
-		id_ = id;
-		manager_ = manager;
-		streaming_ = streaming;
-
-		close = false;
-	}
-
-	@Override
-	public void run() {
-		try {
-			DefaultHttpClient httpClient;
-			if (HTTPManager.ignoreSslErrors)
-				httpClient=new TrustAllHttpClient();
-			else
-				httpClient=new DefaultHttpClient();
-			
-			if (HTTPManager.proxyName!=null)
-			{
-				HttpHost proxy = new HttpHost(HTTPManager.proxyName, HTTPManager.proxyPort); 
-				httpClient.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY, proxy);
-				if (HTTPManager.proxyUser!=null)
-					httpClient.getCredentialsProvider().setCredentials(  
-							new AuthScope(HTTPManager.proxyName, HTTPManager.proxyPort),  
-							new UsernamePasswordCredentials(
-									HTTPManager.proxyUser,HTTPManager.proxyPass));
-			}
-
-			HttpUriRequest method = null;
-			switch (method_) {
-			case 0:
-				HttpGet get = new HttpGet(new URI(url_));
-				get.setHeader("User-Agent", "Gideros");
-				if (headers_ != null)
-					for (int i = 0; i < headers_.length; i += 2)
-						get.setHeader(headers_[i], headers_[i + 1]);
-				method = get;
-				break;
-			case 1:
-				HttpPost post = new HttpPost(new URI(url_));
-				post.setHeader("User-Agent", "Gideros");
-				if (headers_ != null)
-					for (int i = 0; i < headers_.length; i += 2)
-						post.setHeader(headers_[i], headers_[i + 1]);
-				if (data_ != null)
-					post.setEntity(new ByteArrayEntity(data_));
-				method = post;
-				break;
-			case 2:
-				HttpPut put = new HttpPut(new URI(url_));
-				put.setHeader("User-Agent", "Gideros");
-				if (headers_ != null)
-					for (int i = 0; i < headers_.length; i += 2)
-						put.setHeader(headers_[i], headers_[i + 1]);
-				if (data_ != null)
-					put.setEntity(new ByteArrayEntity(data_));
-				method = put;
-				break;
-			case 3:
-				HttpDelete delete = new HttpDelete(new URI(url_));
-				delete.setHeader("User-Agent", "Gideros");
-				if (headers_ != null)
-					for (int i = 0; i < headers_.length; i += 2)
-						delete.setHeader(headers_[i], headers_[i + 1]);
-				method = delete;
-				break;
-			}
-			HttpResponse response = httpClient.execute(method);
-			int statusCode = response.getStatusLine().getStatusCode();
-			int contentLength = (int) response.getEntity().getContentLength();
-			InputStream input = response.getEntity().getContent();
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			Header[] hdr=response.getAllHeaders();
-
-			if (streaming_) {
-				int hdrCount=0;
-				
-				for (Header h:hdr)
-				{
-					output.write(h.getName().getBytes());
-					output.write(0);
-					output.write(h.getValue().getBytes());
-					output.write(0);
-					hdrCount++;
+				URL url = new URL(url_);
+				if (HTTPManager.proxyName != null) {
+					Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(HTTPManager.proxyName, HTTPManager.proxyPort));
+					Authenticator authenticator = new Authenticator() {
+						public PasswordAuthentication getPasswordAuthentication() {
+							return (new PasswordAuthentication(HTTPManager.proxyUser, HTTPManager.proxyPass.toCharArray()));
+						}
+					};
+					Authenticator.setDefault(authenticator);
+					conn = (HttpURLConnection) url.openConnection(proxy);
+				} else
+					conn = (HttpURLConnection) url.openConnection();
+				if (streaming_)
+					conn.setChunkedStreamingMode(0);
+				if (HTTPManager.ignoreSslErrors) {
+					SSLContext sc = SSLContext.getInstance("SSL");
+					sc.init(null, new TrustManager[]{trustAll}, new java.security.SecureRandom());
+					SSLContext.setDefault(sc);
+					((HttpsURLConnection) conn).setSSLSocketFactory(sc.getSocketFactory());
+					((HttpsURLConnection) conn).setHostnameVerifier(yesHotnameVerifier);
 				}
+
+				conn.setConnectTimeout(5000);
+				conn.setReadTimeout(300000);
+
+				if (headers_ != null)
+					for (int i = 0; i < headers_.length; i += 2)
+						conn.setRequestProperty(headers_[i], headers_[i + 1]);
+				conn.setRequestProperty("User-Agent", "Gideros");
+
+				if (data_ != null) {
+					conn.setDoOutput(true);
+					OutputStream os = conn.getOutputStream();
+					os.write(data_);
+					os.flush();
+				}
+
+				InputStream input = conn.getInputStream();
+				int statusCode = conn.getResponseCode();
+				int contentLength = conn.getContentLength();
+				ByteArrayOutputStream output = new ByteArrayOutputStream();
+				Map<String, List<String>> hdr = conn.getHeaderFields();
+
+				if (streaming_) {
+					int hdrCount = 0;
+
+					for (Map.Entry<String, List<String>> h : hdr.entrySet()) {
+						for (String v : h.getValue()) {
+							if ((h.getKey()!=null)&&(v!=null)) {
+								output.write(h.getKey().getBytes());
+								output.write(0);
+								output.write(v.getBytes());
+								output.write(0);
+								hdrCount++;
+							}
+						}
+					}
+					manager_.responseCallback(id_, udata_, output.toByteArray(),
+							statusCode, hdrCount, 0, true);
+					output.reset();
+				}
+				int readBytes = 0;
+				byte[] sBuffer = new byte[1024];
+				while ((readBytes = input.read(sBuffer)) != -1) {
+					if (close == true) {
+						input.close();
+						conn.disconnect();
+						return;
+					}
+					if (!streaming_)
+						output.write(sBuffer, 0, readBytes);
+					manager_.progressCallback(id_, udata_, output.size(),
+							contentLength, streaming_ ? sBuffer : null, readBytes);
+				}
+				input.close();
+				int hdrCount = 0;
+				int dataSize = output.size();
+
+				for (Map.Entry<String, List<String>> h : hdr.entrySet()) {
+					for (String v : h.getValue()) {
+						if ((h.getKey()!=null)&&(v!=null)) {
+							output.write(h.getKey().getBytes());
+							output.write(0);
+							output.write(v.getBytes());
+							output.write(0);
+							hdrCount++;
+						}
+					}
+				}
+
+				conn.disconnect();
+
 				manager_.responseCallback(id_, udata_, output.toByteArray(),
-						statusCode,hdrCount,0, true);
-				output.reset();
+						statusCode, hdrCount, dataSize, false);
+			} catch (Exception e) {
+				Log.e("Gideros", "HTTP exception", e);
+				manager_.errorCallback(id_, udata_);
 			}
-			int readBytes = 0;
-			byte[] sBuffer = new byte[1024];
-			while ((readBytes = input.read(sBuffer)) != -1) {
-				if (close == true) {
-					httpClient.getConnectionManager().shutdown();
-					return;
-				}
-				if (!streaming_)
-					output.write(sBuffer, 0, readBytes);
-				manager_.progressCallback(id_, udata_, output.size(),
-						contentLength, streaming_?sBuffer:null,readBytes);
-			}
-			int hdrCount=0;
-			int dataSize=output.size();
-			
-			for (Header h:hdr)
-			{
-				output.write(h.getName().getBytes());
-				output.write(0);
-				output.write(h.getValue().getBytes());
-				output.write(0);
-				hdrCount++;
-			}
-
-			httpClient.getConnectionManager().shutdown();
-
-			manager_.responseCallback(id_, udata_, output.toByteArray(),
-					statusCode,hdrCount,dataSize, false);
-		} catch (Exception e) {
-			Log.e("Gideros", "HTTP exception", e);
-			manager_.errorCallback(id_, udata_);
 		}
 	}
 }

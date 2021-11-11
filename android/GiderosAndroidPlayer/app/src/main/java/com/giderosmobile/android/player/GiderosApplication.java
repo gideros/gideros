@@ -538,7 +538,8 @@ public class GiderosApplication
 
 		if (isSurfaceCreated_ == true) {
 			synchronized (eventQueue_) {
-				eventQueue_.add(STOP);
+				nativeStop();
+				nativeTick();
 			}
 		}
 	}
@@ -556,12 +557,8 @@ public class GiderosApplication
 
 		if (isSurfaceCreated_ == true) {
 			synchronized (eventQueue_) {
-				eventQueue_.add(PAUSE);
-				try {
-					//on some devices, onDrawFrame will not called when screen locked,this thread will not wake up
-					eventQueue_.wait(100);
-				} catch (InterruptedException e) {
-				}
+				nativePause();
+				nativeTick();
 			}
 		}
 
@@ -602,12 +599,8 @@ public class GiderosApplication
 
 		if (isSurfaceCreated_ == true) {
 			synchronized (eventQueue_) {
-				eventQueue_.add(RESUME);
-				try {
-					//on some devices, onDrawFrame will not called when screen locked,this thread will not wake up
-					eventQueue_.wait(100);
-				} catch (InterruptedException e) {
-				}
+				nativeResume();
+				nativeTick();
 			}
 		}
 	}
@@ -1490,6 +1483,7 @@ public class GiderosApplication
 	static private native void nativeSurfaceChanged(int w, int h, int rotation,Surface surface);
 	static private native void nativeSurfaceDestroyed();
 	static private native void nativeDrawFrame();
+	static private native void nativeTick();
 	static private native void nativeMouseWheel(int x,int y,int button,float amount);
 	static private native void nativeTouchesBegin(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex);
 	static private native void nativeTouchesMove(int size, int[] id, int[] x, int[] y, float[] pressure);

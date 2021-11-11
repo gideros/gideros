@@ -3,7 +3,7 @@
 // Nav settings
 
 #define _UNUSED(n)
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+//#pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-function"
 
@@ -65,7 +65,6 @@
 static lua_State* L;
 static Application* application;
 static char keyWeak = ' ';
-static std::map<int, const char*> giderosCursorMap;
 
 namespace ImGui_impl
 {
@@ -88,34 +87,34 @@ static void stackDump(lua_State* L, const char* prefix = "")
 		int t = lua_type(L, i);
 		switch (t)
 		{
-			case LUA_TSTRING:
-			{
-				lua_getglobal(L, "print");
-				lua_pushfstring(L, "[S] %d:'%s'", i, lua_tostring(L, i));
-				lua_call(L, 1, 0);
-			}
-				break;
-			case LUA_TBOOLEAN:
-			{
-				lua_getglobal(L, "print");
-				lua_pushfstring(L, "[B] %d: %s", i, lua_toboolean(L, i) ? "true" : "false");
-				lua_call(L, 1, 0);
-			}
-				break;
-			case LUA_TNUMBER:
-			{
-				lua_getglobal(L, "print");
-				lua_pushfstring(L, "[N] %d: %f", i, lua_tonumber(L, i));
-				lua_call(L, 1, 0);
-			}
-				break;
-			default:
-			{
-				lua_getglobal(L, "print");
-				lua_pushfstring(L, "[D] %d: %s", i, lua_typename(L, t));
-				lua_call(L, 1, 0);
-			}
-				break;
+		case LUA_TSTRING:
+		{
+			lua_getglobal(L, "print");
+			lua_pushfstring(L, "[S] %d:'%s'", i, lua_tostring(L, i));
+			lua_call(L, 1, 0);
+		}
+			break;
+		case LUA_TBOOLEAN:
+		{
+			lua_getglobal(L, "print");
+			lua_pushfstring(L, "[B] %d: %s", i, lua_toboolean(L, i) ? "true" : "false");
+			lua_call(L, 1, 0);
+		}
+			break;
+		case LUA_TNUMBER:
+		{
+			lua_getglobal(L, "print");
+			lua_pushfstring(L, "[N] %d: %f", i, lua_tonumber(L, i));
+			lua_call(L, 1, 0);
+		}
+			break;
+		default:
+		{
+			lua_getglobal(L, "print");
+			lua_pushfstring(L, "[D] %d: %s", i, lua_typename(L, t));
+			lua_call(L, 1, 0);
+		}
+			break;
 		}
 		i--;
 	}
@@ -187,171 +186,171 @@ T* getTableValues(lua_State* L, int idx)
 
 struct GTextureData
 {
-		void* texture;
-		ImVec2 texture_size;
-		ImVec2 ex_size;
-		ImVec2 uv0;
-		ImVec2 uv1;
-		
-		GTextureData(lua_State* L, int idx = 1)
+	void* texture;
+	ImVec2 texture_size;
+	ImVec2 ex_size;
+	ImVec2 uv0;
+	ImVec2 uv1;
+
+	GTextureData(lua_State* L, int idx = 1)
+	{
+		if (g_isInstanceOf(L, "TextureBase", idx))
 		{
-			if (g_isInstanceOf(L, "TextureBase", idx))
-			{
-				TextureBase* textureBase = getPtr<TextureBase>(L, "TextureBase", idx);
-				
-				TextureData* gdata = textureBase->data;
-				
-				texture_size.x = (float)gdata->width;
-				texture_size.y = (float)gdata->height;
-				ex_size = ImVec2((float)gdata->exwidth, (float)gdata->exheight);
-				texture = (void*)gdata->gid;
-				uv0.x = 0.0f;
-				uv0.y = 0.0f;
-				uv1 = texture_size / ex_size;
-			}
-			else if (g_isInstanceOf(L, "TextureRegion", idx))
-			{
-				BitmapData* bitmapData = getPtr<BitmapData>(L, "TextureRegion", idx);
-				
-				TextureData* gdata = bitmapData->texture()->data;
-				
-				int x, y, w, h;
-				bitmapData->getRegion(&x, &y, &w, &h, 0, 0, 0, 0);
-				texture_size.x = (float)w;
-				texture_size.y = (float)h;
-				float fx = (float)x;
-				float fy = (float)y;
-				ex_size = ImVec2((float)gdata->exwidth, (float)gdata->exheight);
-				uv0.x = fx / ex_size.x;
-				uv0.y = fy / ex_size.y;
-				uv1.x = (fx + texture_size.x) / ex_size.x;
-				uv1.y = (fy + texture_size.y) / ex_size.y;
-				texture = (void*)gdata->gid;
-			}
-			else
-			{
-				luaL_typerror(L, idx, "TextureBase or TextureRegion");
-			}
+			TextureBase* textureBase = getPtr<TextureBase>(L, "TextureBase", idx);
+
+			TextureData* gdata = textureBase->data;
+
+			texture_size.x = (float)gdata->width;
+			texture_size.y = (float)gdata->height;
+			ex_size = ImVec2((float)gdata->exwidth, (float)gdata->exheight);
+			texture = (void*)gdata->gid;
+			uv0.x = 0.0f;
+			uv0.y = 0.0f;
+			uv1 = texture_size / ex_size;
 		}
+		else if (g_isInstanceOf(L, "TextureRegion", idx))
+		{
+			BitmapData* bitmapData = getPtr<BitmapData>(L, "TextureRegion", idx);
+
+			TextureData* gdata = bitmapData->texture()->data;
+
+			int x, y, w, h;
+			bitmapData->getRegion(&x, &y, &w, &h, 0, 0, 0, 0);
+			texture_size.x = (float)w;
+			texture_size.y = (float)h;
+			float fx = (float)x;
+			float fy = (float)y;
+			ex_size = ImVec2((float)gdata->exwidth, (float)gdata->exheight);
+			uv0.x = fx / ex_size.x;
+			uv0.y = fy / ex_size.y;
+			uv1.x = (fx + texture_size.x) / ex_size.x;
+			uv1.y = (fy + texture_size.y) / ex_size.y;
+			texture = (void*)gdata->gid;
+		}
+		else
+		{
+			luaL_typerror(L, idx, "TextureBase or TextureRegion");
+		}
+	}
 };
 
 struct VColor
 {
-		uint8_t r,g,b,a;
+	uint8_t r,g,b,a;
 };
 
 struct GColor {
-		int hex; // 0xffffff
-		double alpha; // [0..1]
-		
-		GColor()
-		{
-			hex = 0;
-			alpha = 0;
-		}
-		
-		GColor(ImU32 color)
-		{
-			GColor converted = GColor::toHex(color);
-			hex = converted.hex;
-			alpha = converted.alpha;
-		}
-		
-		GColor(ImVec4 color)
-		{
-			GColor converted = GColor::toHex(color);
-			hex = converted.hex;
-			alpha = converted.alpha;
-		}
-		
-		GColor(int _hex, double _alpha = 1.0)
-		{
-			hex = _hex;
-			alpha = _alpha;
-		}
-		
-		GColor(double _r, double _g, double _b, double _a = 1.0)
-		{
-			GColor converted = GColor::toHex(_r, _g, _b, _a);
-			hex = converted.hex;
-			alpha = converted.alpha;
-		}
-		
-		static ImVec4 toVec4(int hex, double alpha = 1.0)
-		{
-			return ImVec4(
-						((hex >> IM_COL32_B_SHIFT) & 0xFF) * CC,
-						((hex >> IM_COL32_G_SHIFT) & 0xFF) * CC,
-						((hex >> IM_COL32_R_SHIFT) & 0xFF) * CC,
-						alpha);
-		}
-		
-		static ImVec4 toVec4(GColor color)
-		{
-			return GColor::toVec4(color.hex, color.alpha);
-		}
-		
-		static ImVec4 toVec4(ImU32 color)
-		{
-			GColor converted(color);
-			return toVec4(converted);
-		}
-		
-		static GColor toHex(double _r, double _g, double _b, double _a = 1.0)
-		{
-			int r = _r * 255;
-			int g = _g * 255;
-			int b = _b * 255;
-			
-			int hex = (r << IM_COL32_B_SHIFT) + (g << IM_COL32_G_SHIFT) + (b << IM_COL32_R_SHIFT);
-			
-			return GColor(hex, _a);
-		}
-		
-		static GColor toHex(ImVec4 color)
-		{
-			return GColor::toHex(color.x, color.y, color.z, color.w);
-		}
-		
-		static GColor toHex(ImU32 color)
-		{
-			int a = color >> IM_COL32_A_SHIFT;
-			int hex = color & ~IM_COL32_A_MASK;
-			float alpha = a / 255.0f;
-			return GColor(hex, alpha);
-		}
-		
-		static ImU32 toU32(double _r, double _g, double _b, double _a = 1.0)
-		{
-			ImU32 r = _r * 255;
-			ImU32 g = _g * 255;
-			ImU32 b = _b * 255;
-			ImU32 a = _a * 255;
-			return ((a << IM_COL32_A_SHIFT) | (b << IM_COL32_B_SHIFT) | (g << IM_COL32_G_SHIFT) | (r << IM_COL32_R_SHIFT));
-		}
-		
-		static ImU32 toU32(ImVec4 color)
-		{
-			return GColor::toU32(color.x, color.y, color.y, color.w);
-		}
-		
-		static ImU32 toU32(int hex, double alpha = 1.0)
-		{
-			alpha *= 255.0f;
-			ImU32 ghex = (int)alpha | hex << 8;
-			
-			ImU32 out =
-					(((ghex << IM_COL32_R_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_A_SHIFT) |
-					(((ghex << IM_COL32_G_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_B_SHIFT) |
-					(((ghex << IM_COL32_B_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_G_SHIFT) |
-					(((ghex << IM_COL32_A_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_R_SHIFT);
-			return out;
-		}
-		
-		static ImU32 toU32(GColor color)
-		{
-			return GColor::toU32(color.hex, color.alpha);
-		}
+	int hex; // 0xffffff
+	double alpha; // [0..1]
+
+	GColor()
+	{
+		hex = 0;
+		alpha = 0;
+	}
+
+	GColor(ImU32 color)
+	{
+		GColor converted = GColor::toHex(color);
+		hex = converted.hex;
+		alpha = converted.alpha;
+	}
+
+	GColor(ImVec4 color)
+	{
+		GColor converted = GColor::toHex(color);
+		hex = converted.hex;
+		alpha = converted.alpha;
+	}
+
+	GColor(int _hex, double _alpha = 1.0)
+	{
+		hex = _hex;
+		alpha = _alpha;
+	}
+
+	GColor(double _r, double _g, double _b, double _a = 1.0)
+	{
+		GColor converted = GColor::toHex(_r, _g, _b, _a);
+		hex = converted.hex;
+		alpha = converted.alpha;
+	}
+
+	static ImVec4 toVec4(int hex, double alpha = 1.0)
+	{
+		return ImVec4(
+					((hex >> IM_COL32_B_SHIFT) & 0xFF) * CC,
+					((hex >> IM_COL32_G_SHIFT) & 0xFF) * CC,
+					((hex >> IM_COL32_R_SHIFT) & 0xFF) * CC,
+					alpha);
+	}
+
+	static ImVec4 toVec4(GColor color)
+	{
+		return GColor::toVec4(color.hex, color.alpha);
+	}
+
+	static ImVec4 toVec4(ImU32 color)
+	{
+		GColor converted(color);
+		return toVec4(converted);
+	}
+
+	static GColor toHex(double _r, double _g, double _b, double _a = 1.0)
+	{
+		int r = _r * 255;
+		int g = _g * 255;
+		int b = _b * 255;
+
+		int hex = (r << IM_COL32_B_SHIFT) + (g << IM_COL32_G_SHIFT) + (b << IM_COL32_R_SHIFT);
+
+		return GColor(hex, _a);
+	}
+
+	static GColor toHex(ImVec4 color)
+	{
+		return GColor::toHex(color.x, color.y, color.z, color.w);
+	}
+
+	static GColor toHex(ImU32 color)
+	{
+		int a = color >> IM_COL32_A_SHIFT;
+		int hex = color & ~IM_COL32_A_MASK;
+		float alpha = a / 255.0f;
+		return GColor(hex, alpha);
+	}
+
+	static ImU32 toU32(double _r, double _g, double _b, double _a = 1.0)
+	{
+		ImU32 r = _r * 255;
+		ImU32 g = _g * 255;
+		ImU32 b = _b * 255;
+		ImU32 a = _a * 255;
+		return ((a << IM_COL32_A_SHIFT) | (b << IM_COL32_B_SHIFT) | (g << IM_COL32_G_SHIFT) | (r << IM_COL32_R_SHIFT));
+	}
+
+	static ImU32 toU32(ImVec4 color)
+	{
+		return GColor::toU32(color.x, color.y, color.y, color.w);
+	}
+
+	static ImU32 toU32(int hex, double alpha = 1.0)
+	{
+		alpha *= 255.0f;
+		ImU32 ghex = (int)alpha | hex << 8;
+
+		ImU32 out =
+				(((ghex << IM_COL32_R_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_A_SHIFT) |
+				(((ghex << IM_COL32_G_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_B_SHIFT) |
+				(((ghex << IM_COL32_B_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_G_SHIFT) |
+				(((ghex << IM_COL32_A_SHIFT) & IM_COL32_A_MASK) >> IM_COL32_R_SHIFT);
+		return out;
+	}
+
+	static ImU32 toU32(GColor color)
+	{
+		return GColor::toU32(color.hex, color.alpha);
+	}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -362,35 +361,35 @@ struct GColor {
 
 class CallbackData
 {
-	public:
-		int functionIndex = -1;
-		int argumentIndex = -1;
-		
-		lua_State* _L;
-		
-		CallbackData(lua_State* L, int index)
-		{			
-			_L = L;
-			
-			if (lua_gettop(_L) == index + 1)
-			{
-				argumentIndex = luaL_ref(_L, LUA_REGISTRYINDEX);
-			}
-			
-			functionIndex = luaL_ref(_L, LUA_REGISTRYINDEX);
-		}
-		
-		~CallbackData()
+public:
+	int functionIndex = -1;
+	int argumentIndex = -1;
+
+	lua_State* _L;
+
+	CallbackData(lua_State* L, int index)
+	{
+		_L = L;
+
+		if (lua_gettop(_L) == index + 1)
 		{
-			if (functionIndex != -1)
-			{
-				luaL_unref(_L, LUA_REGISTRYINDEX, functionIndex);
-			}
-			if (argumentIndex != -1)
-			{
-				luaL_unref(_L, LUA_REGISTRYINDEX, argumentIndex);
-			}
+			argumentIndex = luaL_ref(_L, LUA_REGISTRYINDEX);
 		}
+
+		functionIndex = luaL_ref(_L, LUA_REGISTRYINDEX);
+	}
+
+	~CallbackData()
+	{
+		if (functionIndex != -1)
+		{
+			luaL_unref(_L, LUA_REGISTRYINDEX, functionIndex);
+		}
+		if (argumentIndex != -1)
+		{
+			luaL_unref(_L, LUA_REGISTRYINDEX, argumentIndex);
+		}
+	}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -421,24 +420,24 @@ static int convertGiderosMouseButton(const int button)
 	LUA_ASSERTF(button >= 0, "Button index must be >= 0, but was: %d", button);
 	switch (button)
 	{
-		case GINPUT_NO_BUTTON:
-			return 4; // unused by ImGui itself
-		case GINPUT_LEFT_BUTTON:
-			return 0;
-		case GINPUT_RIGHT_BUTTON:
-			return 1;
-		case GINPUT_MIDDLE_BUTTON:
-			return 2;
-		case 8:
-			return 3;
-		case 16:
-			return 4;
-		default:
-			LUA_THROW_ERRORF("Incorrect button index. Expected 0, 1, 2, 4, 8 or 16, but got: %d", button);
-			return -1;
+	case GINPUT_NO_BUTTON:
+		return 4; // unused by ImGui itself
+	case GINPUT_LEFT_BUTTON:
+		return 0;
+	case GINPUT_RIGHT_BUTTON:
+		return 1;
+	case GINPUT_MIDDLE_BUTTON:
+		return 2;
+	case 8:
+		return 3;
+	case 16:
+		return 4;
+	default:
+		LUA_THROW_ERRORF("Incorrect button index. Expected 0, 1, 2, 4, 8 or 16, but got: %d", button);
+		return -1;
 	}
 }
-
+/*
 static int getKeyboardModifiers(lua_State *L)
 {
 	lua_getglobal(L, "application");
@@ -450,6 +449,7 @@ static int getKeyboardModifiers(lua_State *L)
 	lua_remove(L, -1);
 	return mod;
 }
+*/
 
 static lua_Number getAppProperty(lua_State *L, const char* name)
 {
@@ -536,7 +536,7 @@ static int InputTextCallback(ImGuiInputTextCallbackData* data)
 	else
 	{
 		lua_call(L, 1, 0);
-	}	
+	}
 	return 0;
 }
 
@@ -1347,24 +1347,24 @@ class EventListener;
 
 class GidImGui
 {
-	public:
-		GidImGui(LuaApplication* application, ImFontAtlas* atlas,
-				 bool addMouseListeners, bool addKeyboardListeners, bool addTouchListeners);
-		~GidImGui();
-		
-		EventListener* eventListener;
-		ImGuiContext* ctx;
-		SpriteProxy* proxy;
-		CallbackData* resizeCallback;
-		CallbackData* inputCallback;
-		
-		bool resetTouchPosOnEnd;
-		
-		void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
-	private:
-		VertexBuffer<Point2f> vertices;
-		VertexBuffer<Point2f> texcoords;
-		VertexBuffer<VColor> colors;
+public:
+	GidImGui(LuaApplication* application, ImFontAtlas* atlas,
+			 bool addMouseListeners, bool addKeyboardListeners, bool addTouchListeners);
+	~GidImGui();
+
+	EventListener* eventListener;
+	ImGuiContext* ctx;
+	SpriteProxy* proxy;
+	std::vector<CallbackData*> callbacks;
+
+	bool resetTouchPosOnEnd;
+
+	void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
+	void emptyCallbacksList();
+private:
+	VertexBuffer<Point2f> vertices;
+	VertexBuffer<Point2f> texcoords;
+	VertexBuffer<VColor> colors;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1375,30 +1375,30 @@ class GidImGui
 
 class EventListener : public EventDispatcher
 {
-	private:
-		GidImGui* gidImGui;
-		
-		void updateModifiers(int modifiers)
-		{
-			ImGuiIO& io = gidImGui->ctx->IO;
-			io.KeyAlt = modifiers & GINPUT_ALT_MODIFIER;
-			io.KeyCtrl = modifiers & GINPUT_CTRL_MODIFIER;
-			io.KeyShift = modifiers & GINPUT_SHIFT_MODIFIER;
-			io.KeySuper = modifiers & GINPUT_META_MODIFIER;
-		}
-		
-		void keyUpOrDown(int keyCode, bool state)
-		{
-			ImGuiIO& io = gidImGui->ctx->IO;
-			io.KeysDown[keyCode] = state;
-			
-			if (keyCode == GINPUT_KEY_SHIFT)
-				io.KeyShift = state;
-			if (keyCode == GINPUT_KEY_CTRL)
-				io.KeyCtrl = state;
-			if (keyCode == GINPUT_KEY_ALT)
-				io.KeyAlt = state;
-			/*
+private:
+	GidImGui* gidImGui;
+
+	void updateModifiers(int modifiers)
+	{
+		ImGuiIO& io = gidImGui->ctx->IO;
+		io.KeyAlt = modifiers & GINPUT_ALT_MODIFIER;
+		io.KeyCtrl = modifiers & GINPUT_CTRL_MODIFIER;
+		io.KeyShift = modifiers & GINPUT_SHIFT_MODIFIER;
+		io.KeySuper = modifiers & GINPUT_META_MODIFIER;
+	}
+
+	void keyUpOrDown(int keyCode, bool state)
+	{
+		ImGuiIO& io = gidImGui->ctx->IO;
+		io.KeysDown[keyCode] = state;
+
+		if (keyCode == GINPUT_KEY_SHIFT)
+			io.KeyShift = state;
+		if (keyCode == GINPUT_KEY_CTRL)
+			io.KeyCtrl = state;
+		if (keyCode == GINPUT_KEY_ALT)
+			io.KeyAlt = state;
+		/*
 			int mod = getKeyboardModifiers(L);
 			
 			if (!mod)
@@ -1418,269 +1418,269 @@ class EventListener : public EventDispatcher
 				io.KeySuper = mod & GINPUT_META_MODIFIER;
 			}
 			*/
-		}
-		
-		void mouseUpOrDown(float x, float y, int button, bool state, int modifiers)
+	}
+
+	void mouseUpOrDown(float x, float y, int button, bool state, int modifiers)
+	{
+		ImGuiIO& io = gidImGui->ctx->IO;
+		io.MouseDown[button] = state;
+		io.MousePos = translateMousePos(gidImGui->proxy, x, y);
+		updateModifiers(modifiers);
+	}
+
+	void scaleMouseCoords(float& x, float& y)
+	{
+		x = x * r_app_scale.x + app_bounds.x;
+		y = y * r_app_scale.y + app_bounds.y;
+	}
+
+public:
+	ImVec2 r_app_scale;
+	ImVec2 app_bounds;
+
+	EventListener(GidImGui* p_gidImGui)
+	{
+		this->gidImGui = p_gidImGui;
+		applicationResize(nullptr);
+	}
+
+	~EventListener() { }
+
+	static ImVec2 translateMousePos(Sprite* sprite, float x, float y)
+	{
+		std::stack<const Sprite*> stack;
+		float z;
+
+		const Sprite* curr = sprite;
+		while (curr)
 		{
-			ImGuiIO& io = gidImGui->ctx->IO;
-			io.MouseDown[button] = state;
-			io.MousePos = translateMousePos(gidImGui->proxy, x, y);
-			updateModifiers(modifiers);
+			stack.push(curr);
+			curr = curr->parent();
 		}
-		
-		void scaleMouseCoords(float& x, float& y)
+
+		while (!stack.empty())
 		{
-			x = x * r_app_scale.x + app_bounds.x;
-			y = y * r_app_scale.y + app_bounds.y;
+			stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
+			stack.pop();
 		}
-		
-	public:
-		ImVec2 r_app_scale;
-		ImVec2 app_bounds;
-		
-		EventListener(GidImGui* p_gidImGui)
+		return ImVec2(x, y);
+	}
+
+	///////////////////////////////////////////////////
+	///
+	/// MOUSE
+	///
+	///////////////////////////////////////////////////
+
+	void mouseDown(MouseEvent* event)
+	{
+		float x = (float)event->x;
+		float y = (float)event->y;
+		scaleMouseCoords(x, y);
+		mouseUpOrDown(x, y, convertGiderosMouseButton(event->button), true, event->modifiers);
+	}
+
+	void mouseDown(float x, float y, int button, int modifiers)
+	{
+		mouseUpOrDown(x, y, convertGiderosMouseButton(button), true, modifiers);
+	}
+
+	void mouseUp(MouseEvent* event)
+	{
+		float x = (float)event->x;
+		float y = (float)event->y;
+		scaleMouseCoords(x, y);
+		mouseUpOrDown(x, y, convertGiderosMouseButton(event->button), false, event->modifiers);
+	}
+
+	void mouseUp(float x, float y, int button, int modifiers)
+	{
+		mouseUpOrDown(x, y, convertGiderosMouseButton(button), false, modifiers);
+	}
+
+	void mouseMove(float x, float y, int button, int modifiers)
+	{
+		mouseUpOrDown(x, y, convertGiderosMouseButton(button), true, modifiers);
+	}
+
+	void mouseHover(float x, float y, int modifiers)
+	{
+		ImGuiIO& io = gidImGui->ctx->IO;
+		io.MousePos = translateMousePos(gidImGui->proxy, x, y);
+		updateModifiers(modifiers);
+	}
+
+	void mouseHover(MouseEvent* event)
+	{
+		float x = (float)event->x;
+		float y = (float)event->y;
+		scaleMouseCoords(x, y);
+		mouseHover(x, y, event->modifiers);
+	}
+
+	void mouseWheel(float x, float y, int wheel, int modifiers)
+	{
+		ImGuiIO& io = gidImGui->ctx->IO;
+		io.MouseWheel += wheel < 0 ? -1.0f : 1.0f;
+		io.MousePos = translateMousePos(gidImGui->proxy, x, y);
+		updateModifiers(modifiers);
+	}
+
+	void mouseWheel(MouseEvent* event)
+	{
+		float x = (float)event->x;
+		float y = (float)event->y;
+		scaleMouseCoords(x, y);
+		mouseWheel(x, y, event->wheel, event->modifiers);
+	}
+
+	///////////////////////////////////////////////////
+	///
+	/// TOUCH
+	///
+	///////////////////////////////////////////////////
+
+	void touchesBegin(TouchEvent* event)
+	{
+		float x = event->event->touch.x;
+		float y = event->event->touch.y;
+		scaleMouseCoords(x, y);
+		mouseUpOrDown(x, y, 0, true, event->event->touch.modifiers);
+	}
+
+	void touchesBegin(float x, float y, int modifiers)
+	{
+		mouseUpOrDown(x, y, 0, true, modifiers);
+	}
+
+	void touchesEnd(TouchEvent* event)
+	{
+		float x;
+		float y;
+		if (gidImGui->resetTouchPosOnEnd)
 		{
-			this->gidImGui = p_gidImGui;
-			applicationResize(nullptr);
+			x = FLT_MAX;
+			y = FLT_MAX;
 		}
-		
-		~EventListener() { }
-		
-		static ImVec2 translateMousePos(Sprite* sprite, float x, float y)
+		else
 		{
-			std::stack<const Sprite*> stack;
-			float z;
-			
-			const Sprite* curr = sprite;
-			while (curr)
-			{
-				stack.push(curr);
-				curr = curr->parent();
-			}
-			
-			while (!stack.empty())
-			{
-				stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
-				stack.pop();
-			}
-			return ImVec2(x, y);
+			x = event->event->touch.x;
+			y = event->event->touch.y;
 		}
-		
-		///////////////////////////////////////////////////
-		///
-		/// MOUSE
-		///
-		///////////////////////////////////////////////////
-		
-		void mouseDown(MouseEvent* event)
+		scaleMouseCoords(x, y);
+		mouseUpOrDown(x, y, 0, false, event->event->touch.modifiers);
+	}
+
+	void touchesEnd(float x, float y, int modifiers)
+	{
+		mouseUpOrDown(x, y, 0, false, modifiers);
+	}
+
+	void touchesMove(TouchEvent* event)
+	{
+		float x = event->event->touch.x;
+		float y = event->event->touch.y;
+		scaleMouseCoords(x, y);
+		mouseUpOrDown(x, y, 0, true, event->event->touch.modifiers);
+	}
+
+	void touchesMove(float x, float y, int modifiers)
+	{
+		mouseUpOrDown(x, y, 0, true, modifiers);
+	}
+
+	void touchesCancel(TouchEvent* event)
+	{
+		float x;
+		float y;
+		if (gidImGui->resetTouchPosOnEnd)
 		{
-			float x = (float)event->x;
-			float y = (float)event->y;
-			scaleMouseCoords(x, y);
-			mouseUpOrDown(x, y, convertGiderosMouseButton(event->button), true, event->modifiers);
+			x = FLT_MAX;
+			y = FLT_MAX;
 		}
-		
-		void mouseDown(float x, float y, int button, int modifiers)
+		else
 		{
-			mouseUpOrDown(x, y, convertGiderosMouseButton(button), true, modifiers);
+			x = event->event->touch.x;
+			y = event->event->touch.y;
 		}
-		
-		void mouseUp(MouseEvent* event)
-		{
-			float x = (float)event->x;
-			float y = (float)event->y;
-			scaleMouseCoords(x, y);
-			mouseUpOrDown(x, y, convertGiderosMouseButton(event->button), false, event->modifiers);
-		}
-		
-		void mouseUp(float x, float y, int button, int modifiers)
-		{
-			mouseUpOrDown(x, y, convertGiderosMouseButton(button), false, modifiers);
-		}
-		
-		void mouseMove(float x, float y, int button, int modifiers)
-		{
-			mouseUpOrDown(x, y, convertGiderosMouseButton(button), true, modifiers);
-		}
-		
-		void mouseHover(float x, float y, int modifiers)
-		{
-			ImGuiIO& io = gidImGui->ctx->IO;
-			io.MousePos = translateMousePos(gidImGui->proxy, x, y);
-			updateModifiers(modifiers);
-		}
-		
-		void mouseHover(MouseEvent* event)
-		{
-			float x = (float)event->x;
-			float y = (float)event->y;
-			scaleMouseCoords(x, y);
-			mouseHover(x, y, event->modifiers);
-		}
-		
-		void mouseWheel(float x, float y, int wheel, int modifiers)
-		{
-			ImGuiIO& io = gidImGui->ctx->IO;
-			io.MouseWheel += wheel < 0 ? -1.0f : 1.0f;
-			io.MousePos = translateMousePos(gidImGui->proxy, x, y);
-			updateModifiers(modifiers);
-		}
-		
-		void mouseWheel(MouseEvent* event)
-		{
-			float x = (float)event->x;
-			float y = (float)event->y;
-			scaleMouseCoords(x, y);
-			mouseWheel(x, y, event->wheel, event->modifiers);
-		}
-		
-		///////////////////////////////////////////////////
-		///
-		/// TOUCH
-		///
-		///////////////////////////////////////////////////
-		
-		void touchesBegin(TouchEvent* event)
-		{
-			float x = event->event->touch.x;
-			float y = event->event->touch.y;
-			scaleMouseCoords(x, y);
-			mouseUpOrDown(x, y, 0, true, event->event->touch.modifiers);
-		}
-		
-		void touchesBegin(float x, float y, int modifiers)
-		{
-			mouseUpOrDown(x, y, 0, true, modifiers);
-		}
-		
-		void touchesEnd(TouchEvent* event)
-		{
-			float x;
-			float y;
-			if (gidImGui->resetTouchPosOnEnd)
-			{
-				x = FLT_MAX;
-				y = FLT_MAX;
-			}
-			else
-			{
-				x = event->event->touch.x;
-				y = event->event->touch.y;
-			}
-			scaleMouseCoords(x, y);
-			mouseUpOrDown(x, y, 0, false, event->event->touch.modifiers);
-		}
-		
-		void touchesEnd(float x, float y, int modifiers)
-		{
-			mouseUpOrDown(x, y, 0, false, modifiers);
-		}
-		
-		void touchesMove(TouchEvent* event)
-		{
-			float x = event->event->touch.x;
-			float y = event->event->touch.y;
-			scaleMouseCoords(x, y);
-			mouseUpOrDown(x, y, 0, true, event->event->touch.modifiers);
-		}
-		
-		void touchesMove(float x, float y, int modifiers)
-		{
-			mouseUpOrDown(x, y, 0, true, modifiers);
-		}
-		
-		void touchesCancel(TouchEvent* event)
-		{
-			float x;
-			float y;
-			if (gidImGui->resetTouchPosOnEnd)
-			{
-				x = FLT_MAX;
-				y = FLT_MAX;
-			}
-			else
-			{
-				x = event->event->touch.x;
-				y = event->event->touch.y;
-			}
-			scaleMouseCoords(x, y);
-			mouseUpOrDown(x, y, 0, false, event->event->touch.modifiers);
-		}
-		
-		void touchesCancel(float x, float y, int modifiers)
-		{
-			mouseUpOrDown(x, y, 0, false, modifiers);
-		}
-		
-		///////////////////////////////////////////////////
-		///
-		/// KEYBAORD
-		///
-		///////////////////////////////////////////////////
-		
-		void keyDown(KeyboardEvent* event)
-		{
-			keyDown(event->keyCode);
-		}
-		
-		void keyDown(int keyCode)
-		{
-			keyUpOrDown(keyCode, true);
-		}
-		
-		void keyUp(KeyboardEvent* event)
-		{
-			keyUpOrDown(event->keyCode, false);
-		}
-		
-		void keyUp(int keyCode)
-		{
-			keyUpOrDown(keyCode, false);
-		}
-		
-		void keyChar(KeyboardEvent* event)
-		{
-			keyChar(event->charCode);
-		}
-		
-		void keyChar(std::string text)
-		{
-			ImGuiIO& io = gidImGui->ctx->IO;
-			io.AddInputCharactersUTF8(text.c_str());
-		}
-		
-		void keyChar2(const char* text) // error when adding event listener to a proxy in GidImGui constructor
-		{
-			ImGuiIO& io = gidImGui->ctx->IO;
-			io.AddInputCharactersUTF8(text);
-		}
-		
-		void applicationResize(Event *)
-		{
-			lua_getglobal(L, "application");
-			
-			lua_getfield(L, -1, "getLogicalScaleX");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-			float sx = lua_tonumber(L, -1);
-			lua_pop(L, 1);
-			
-			lua_getfield(L, -1, "getLogicalScaleY");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-			float sy = lua_tonumber(L, -1);
-			lua_pop(L, 1);
-			
-			lua_getfield(L, -1, "getLogicalBounds");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 4);
-			app_bounds.x = luaL_checknumber(L, -4);
-			app_bounds.y = luaL_checknumber(L, -3);
-			lua_pop(L, 5);
-			
-			r_app_scale.x = 1.0f / sx;
-			r_app_scale.y = 1.0f / sy;
-		}
+		scaleMouseCoords(x, y);
+		mouseUpOrDown(x, y, 0, false, event->event->touch.modifiers);
+	}
+
+	void touchesCancel(float x, float y, int modifiers)
+	{
+		mouseUpOrDown(x, y, 0, false, modifiers);
+	}
+
+	///////////////////////////////////////////////////
+	///
+	/// KEYBAORD
+	///
+	///////////////////////////////////////////////////
+
+	void keyDown(KeyboardEvent* event)
+	{
+		keyDown(event->keyCode);
+	}
+
+	void keyDown(int keyCode)
+	{
+		keyUpOrDown(keyCode, true);
+	}
+
+	void keyUp(KeyboardEvent* event)
+	{
+		keyUpOrDown(event->keyCode, false);
+	}
+
+	void keyUp(int keyCode)
+	{
+		keyUpOrDown(keyCode, false);
+	}
+
+	void keyChar(KeyboardEvent* event)
+	{
+		keyChar(event->charCode);
+	}
+
+	void keyChar(std::string text)
+	{
+		ImGuiIO& io = gidImGui->ctx->IO;
+		io.AddInputCharactersUTF8(text.c_str());
+	}
+
+	void keyChar2(const char* text) // error when adding event listener to a proxy in GidImGui constructor
+	{
+		ImGuiIO& io = gidImGui->ctx->IO;
+		io.AddInputCharactersUTF8(text);
+	}
+
+	void applicationResize(Event *)
+	{
+		lua_getglobal(L, "application");
+
+		lua_getfield(L, -1, "getLogicalScaleX");
+		lua_pushvalue(L, -2);
+		lua_call(L, 1, 1);
+		float sx = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "getLogicalScaleY");
+		lua_pushvalue(L, -2);
+		lua_call(L, 1, 1);
+		float sy = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, -1, "getLogicalBounds");
+		lua_pushvalue(L, -2);
+		lua_call(L, 1, 4);
+		app_bounds.x = luaL_checknumber(L, -4);
+		app_bounds.y = luaL_checknumber(L, -3);
+		lua_pop(L, 5);
+
+		r_app_scale.x = 1.0f / sx;
+		r_app_scale.y = 1.0f / sy;
+	}
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1710,9 +1710,7 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 {
 	
 	ctx = ImGui::CreateContext(atlas);
-	resizeCallback = nullptr;
-	inputCallback = nullptr;
-	
+
 	resetTouchPosOnEnd = false;
 	
 	ImGuiIO& io = ctx->IO;
@@ -1789,6 +1787,7 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 
 GidImGui::~GidImGui()
 {
+	emptyCallbacksList();
 	ImGui::DestroyContext(this->ctx);
 	delete proxy;
 }
@@ -1871,6 +1870,15 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 	
 }
 
+void GidImGui::emptyCallbacksList()
+{
+	for (int i = callbacks.size() - 1; i >= 0; i--)
+	{
+		delete callbacks[i];
+		callbacks.pop_back();
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 GidImGui* getImgui(lua_State* L, int index = 1)
@@ -1931,16 +1939,16 @@ int destroyImGui(lua_State* L)
 
 class GImPlot
 {
-	public:
-		ImPlotContext* ctx;
-		GImPlot()
-		{
-			ctx = ImPlot::CreateContext();
-		}
-		~GImPlot()
-		{
-			ImPlot::DestroyContext(ctx);
-		}
+public:
+	ImPlotContext* ctx;
+	GImPlot()
+	{
+		ctx = ImPlot::CreateContext();
+	}
+	~GImPlot()
+	{
+		ImPlot::DestroyContext(ctx);
+	}
 };
 
 int initImPlot(lua_State* L)
@@ -2984,18 +2992,9 @@ int Render(lua_State* L)
 int EndFrame(lua_State* L)
 {
 	STACK_CHECKER(L, "endFrame", 0);
-	GidImGui* imgui = getImgui(L);
-	if (imgui->resizeCallback != nullptr)
-	{
-		delete imgui->resizeCallback;
-		imgui->resizeCallback = nullptr;
-	}
-	if (imgui->inputCallback != nullptr)
-	{
-		delete imgui->inputCallback;
-		imgui->inputCallback = nullptr;
-	}
 
+	GidImGui* imgui = getImgui(L);
+	imgui->emptyCallbacksList();
 	ImGui::EndFrame();
 	return 0;
 }
@@ -3077,6 +3076,7 @@ int BeginDisabled(lua_State* L)
 
 	int disabled = lua_toboolean(L, 2);
 	ImGui::BeginDisabled(disabled);
+	return 0;
 }
 
 int EndDisabled(lua_State* L)
@@ -3084,6 +3084,7 @@ int EndDisabled(lua_State* L)
 	STACK_CHECKER(L, "endDisabled", 1);
 
 	ImGui::EndDisabled();
+	return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -3263,8 +3264,10 @@ int SetNextWindowSizeConstraints(lua_State* L)
 	
 	if (lua_type(L, 6) == LUA_TFUNCTION)
 	{
-		imgui->resizeCallback = new CallbackData(L, 6);
-		ImGui::SetNextWindowSizeConstraints(size_min, size_max, NextWindowSizeConstraintCallback, (void *)imgui->resizeCallback);		
+		CallbackData* resizeCallback = new CallbackData(L, 6);
+		imgui->callbacks.push_back(resizeCallback);
+
+		ImGui::SetNextWindowSizeConstraints(size_min, size_max, NextWindowSizeConstraintCallback, (void *)resizeCallback);
 	}
 	else
 	{
@@ -3966,20 +3969,20 @@ int PushID(lua_State* L)
 		const int arg_type = lua_type(L, 2);
 		switch(arg_type)
 		{
-			case(LUA_TNIL):
-			{
-				LUA_THROW_ERROR("bad argument #2 to 'pushID' (string/number/table/function expected, got nil)");
-			}
-				break;
-			case(LUA_TSTRING):
-				ImGui::PushID(luaL_checkstring(L, 2));
-				break;
-			case(LUA_TNUMBER):
-				ImGui::PushID(luaL_checknumber(L, 2));
-				break;
-			default:
-				ImGui::PushID(lua_topointer(L, 2));
-				break;
+		case(LUA_TNIL):
+		{
+			LUA_THROW_ERROR("bad argument #2 to 'pushID' (string/number/table/function expected, got nil)");
+		}
+			break;
+		case(LUA_TSTRING):
+			ImGui::PushID(luaL_checkstring(L, 2));
+			break;
+		case(LUA_TNUMBER):
+			ImGui::PushID(luaL_checknumber(L, 2));
+			break;
+		default:
+			ImGui::PushID(lua_topointer(L, 2));
+			break;
 		}
 	}
 	else
@@ -4003,19 +4006,19 @@ int GetID(lua_State* L)
 
 	switch(lua_type(L, 2))
 	{
-		case LUA_TSTRING:
-		{
-			const char* str_id = luaL_checkstring(L, 2);
-			ImGuiID id = ImGui::GetID(str_id);
-			lua_pushnumber(L, static_cast<double>(id));
-		}
-			break;
-		default:
-		{
-			ImGuiID id = ImGui::GetID(lua_topointer(L, 2));
-			lua_pushnumber(L, static_cast<double>(id));
-		}
-			break;
+	case LUA_TSTRING:
+	{
+		const char* str_id = luaL_checkstring(L, 2);
+		ImGuiID id = ImGui::GetID(str_id);
+		lua_pushnumber(L, static_cast<double>(id));
+	}
+		break;
+	default:
+	{
+		ImGuiID id = ImGui::GetID(lua_topointer(L, 2));
+		lua_pushnumber(L, static_cast<double>(id));
+	}
+		break;
 	}
 	
 	return 1;
@@ -4335,41 +4338,41 @@ int Combo(lua_State* L)
 	
 	switch (arg_type)
 	{
-		case LUA_TTABLE:
+	case LUA_TTABLE:
+	{
+		int len = luaL_getn(L, 4);
+		if (!len)
 		{
-			int len = luaL_getn(L, 4);
-			if (!len)
-			{
-				lua_pushnumber(L, -1);
-				return 1;
-			}
-			
-			const char** items = new const char*[len];
-			lua_pushvalue(L, 4);
-			for (int i = 0; i < len; i++)
-			{
-				lua_rawgeti(L, 4, i + 1);
-				const char* str = lua_tostring(L, -1);
-				items[i] = str;
-				lua_pop(L, 1);
-			}
-			lua_pop(L, 1);
-			
-			result = ImGui::Combo(label, &item_current, items, len, maxItems);
-			
-			delete[] items;
-		} break;
-		case LUA_TSTRING:
-		{
-			const char* items = luaL_checkstring(L, 4);
-			
-			result = ImGui::Combo(label, &item_current, items, maxItems);
-		} break;
-		default:
-		{
-			LUA_THROW_ERRORF("bad argument #3 to 'combo' (table/string expected, got %s)", lua_typename(L, arg_type));
-			return 0;
+			lua_pushnumber(L, -1);
+			return 1;
 		}
+
+		const char** items = new const char*[len];
+		lua_pushvalue(L, 4);
+		for (int i = 0; i < len; i++)
+		{
+			lua_rawgeti(L, 4, i + 1);
+			const char* str = lua_tostring(L, -1);
+			items[i] = str;
+			lua_pop(L, 1);
+		}
+		lua_pop(L, 1);
+
+		result = ImGui::Combo(label, &item_current, items, len, maxItems);
+
+		delete[] items;
+	} break;
+	case LUA_TSTRING:
+	{
+		const char* items = luaL_checkstring(L, 4);
+
+		result = ImGui::Combo(label, &item_current, items, maxItems);
+	} break;
+	default:
+	{
+		LUA_THROW_ERRORF("bad argument #3 to 'combo' (table/string expected, got %s)", lua_typename(L, arg_type));
+		return 0;
+	}
 	}
 	
 	lua_pushinteger(L, item_current);
@@ -5254,8 +5257,10 @@ int InputText(lua_State* L)
 	
 	if (lua_gettop(L) > 5)
 	{
-		imgui->inputCallback = new CallbackData(L, 6);
-		result = ImGui::InputText(label, buffer, buffer_size, flags, InputTextCallback, (void*)imgui->inputCallback);
+		CallbackData* inputCallback = new CallbackData(L, 6);
+		imgui->callbacks.push_back(inputCallback);
+
+		result = ImGui::InputText(label, buffer, buffer_size, flags, InputTextCallback, (void*)inputCallback);
 	}
 	else
 	{
@@ -5715,7 +5720,7 @@ int CollapsingHeader(lua_State* L)
 	}
 	STACK_CHECKER(L, "collapsingHeader", 2);
 	
-	bool p_open = lua_toboolean(L, 3); 
+	bool p_open = lua_toboolean(L, 3);
 	bool result = ImGui::CollapsingHeader(label, &p_open, flags);
 	lua_pushboolean(L, p_open);
 	lua_pushboolean(L, result);
@@ -5870,29 +5875,29 @@ int Value(lua_State* L)
 	const int valueType = lua_type(L, 3);
 	switch(valueType)
 	{
-		case LUA_TBOOLEAN:
+	case LUA_TBOOLEAN:
+	{
+		ImGui::Value(prefix, lua_toboolean(L, 3));
+		break;
+	}
+	case LUA_TNUMBER:
+	{
+		float n = luaL_checknumber(L, 3);
+		if (lua_gettop(L) > 3)
 		{
-			ImGui::Value(prefix, lua_toboolean(L, 3));
-			break;
+			ImGui::Value(prefix, n, luaL_optstring(L, 4, ""));
 		}
-		case LUA_TNUMBER:
+		else
 		{
-			float n = luaL_checknumber(L, 3);
-			if (lua_gettop(L) > 3)
-			{
-				ImGui::Value(prefix, n, luaL_optstring(L, 4, ""));
-			}
-			else
-			{
-				ImGui::Value(prefix, n);
-			}
-			break;
+			ImGui::Value(prefix, n);
 		}
-		default:
-		{
-			luaL_typerror(L, 3, "'number' or 'boolean'");
-			break;
-		}
+		break;
+	}
+	default:
+	{
+		luaL_typerror(L, 3, "'number' or 'boolean'");
+		break;
+	}
 	}
 	
 	return 0;
@@ -6241,6 +6246,7 @@ int TableSetColumnEnabled(lua_State* L)
 	luaL_checktype(L, 3, LUA_TBOOLEAN);
 	bool v = lua_toboolean(L, 3);
 	ImGui::TableSetColumnEnabled(col, v);
+	return 0;
 }
 
 int TableHeadersRow(lua_State* _UNUSED(L))
@@ -10356,11 +10362,11 @@ int IO_GetIniSavingRate(lua_State* L)
 
 int IO_SetIniSavingRate(lua_State* L)
 {
-	STACK_CHECKER(L, "setIniSavingRate", 1);
+	STACK_CHECKER(L, "setIniSavingRate", 0);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	io.IniSavingRate = luaL_optnumber(L, 2, 5.0f);
-	return 1;
+	return 0;
 }
 
 int IO_GetIniFilename(lua_State* L)
@@ -10834,21 +10840,21 @@ int IO_SetModKeyDown(lua_State* L)
 	bool state = lua_toboolean(L, 3);
 	switch (mod)
 	{
-		case GINPUT_ALT_MODIFIER:
-			io.KeyAlt = state;
-			break;
-		case GINPUT_SHIFT_MODIFIER:
-			io.KeyShift = state;
-			break;
-		case GINPUT_CTRL_MODIFIER:
-			io.KeyCtrl = state;
-			break;
-		case GINPUT_META_MODIFIER:
-			io.KeySuper = state;
-			break;
-		default:
-			LUA_THROW_ERROR("incorrect key code (#1), must be ALT/CTRL/SHIFT/SUPER (e.g. META)");
-			break;
+	case GINPUT_ALT_MODIFIER:
+		io.KeyAlt = state;
+		break;
+	case GINPUT_SHIFT_MODIFIER:
+		io.KeyShift = state;
+		break;
+	case GINPUT_CTRL_MODIFIER:
+		io.KeyCtrl = state;
+		break;
+	case GINPUT_META_MODIFIER:
+		io.KeySuper = state;
+		break;
+	default:
+		LUA_THROW_ERROR("incorrect key code (#1), must be ALT/CTRL/SHIFT/SUPER (e.g. META)");
+		break;
 	}
 	return 0;
 }
@@ -10878,22 +10884,22 @@ const ImWchar* getRanges(ImFontAtlas* atlas, const int ranges)
 {
 	switch(ranges)
 	{
-		case ImGuiGlyphRanges_Korean:
-			return atlas->GetGlyphRangesKorean();
-		case ImGuiGlyphRanges_ChineseFull:
-			return atlas->GetGlyphRangesChineseFull();
-		case ImGuiGlyphRanges_ChineseSimplifiedCommon:
-			return atlas->GetGlyphRangesChineseSimplifiedCommon();
-		case ImGuiGlyphRanges_Japanese:
-			return atlas->GetGlyphRangesJapanese();
-		case ImGuiGlyphRanges_Cyrillic:
-			return atlas->GetGlyphRangesCyrillic();
-		case ImGuiGlyphRanges_Thai:
-			return atlas->GetGlyphRangesThai();
-		case ImGuiGlyphRanges_Vietnamese:
-			return atlas->GetGlyphRangesVietnamese();
-		default:
-			return atlas->GetGlyphRangesDefault();
+	case ImGuiGlyphRanges_Korean:
+		return atlas->GetGlyphRangesKorean();
+	case ImGuiGlyphRanges_ChineseFull:
+		return atlas->GetGlyphRangesChineseFull();
+	case ImGuiGlyphRanges_ChineseSimplifiedCommon:
+		return atlas->GetGlyphRangesChineseSimplifiedCommon();
+	case ImGuiGlyphRanges_Japanese:
+		return atlas->GetGlyphRangesJapanese();
+	case ImGuiGlyphRanges_Cyrillic:
+		return atlas->GetGlyphRangesCyrillic();
+	case ImGuiGlyphRanges_Thai:
+		return atlas->GetGlyphRangesThai();
+	case ImGuiGlyphRanges_Vietnamese:
+		return atlas->GetGlyphRangesVietnamese();
+	default:
+		return atlas->GetGlyphRangesDefault();
 	}
 }
 
@@ -11180,7 +11186,7 @@ int FontAtlas_Build(lua_State* L)
 	int width, height;
 	atlas->GetTexDataAsRGBA32(&pixels, &width, &height);
 	
-	g_id id = gtexture_create(width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP, GTEXTURE_LINEAR, pixels, NULL, NULL);
+	g_id id = gtexture_create(width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP, GTEXTURE_LINEAR, pixels, nullptr, 0);
 	atlas->TexID = (void *)id;
 	
 	return 0;
@@ -12180,7 +12186,22 @@ int UpdateMouseCursor(lua_State* L)
 #if defined(QT_CORE_LIB) || defined(WINSTORE)
 	GidImGui* imgui = getImgui(L);
 	ImGuiMouseCursor cursor = imgui->ctx->MouseCursor;
-	setApplicationCursor(L, giderosCursorMap[cursor]);
+	const char* giderosCursor = "arrow";
+	
+	switch (cursor)
+	{
+		case ImGuiMouseCursor_Hand:       giderosCursor = "pointingHand"; break;
+		case ImGuiMouseCursor_None:       giderosCursor = "blank";		  break;
+		case ImGuiMouseCursor_ResizeEW:   giderosCursor = "sizeHor";	  break;
+		case ImGuiMouseCursor_ResizeNS:   giderosCursor = "sizeVer";	  break;
+		case ImGuiMouseCursor_ResizeAll:  giderosCursor = "sizeAll";	  break;
+		case ImGuiMouseCursor_TextInput:  giderosCursor = "IBeam";		  break;
+		case ImGuiMouseCursor_NotAllowed: giderosCursor = "forbidden";	  break;
+		case ImGuiMouseCursor_ResizeNESW: giderosCursor = "sizeBDiag";	  break;
+		case ImGuiMouseCursor_ResizeNWSE: giderosCursor = "sizeFDiag";	  break;
+	}
+	
+	setApplicationCursor(L, giderosCursor);
 #endif
 	return 0;
 }
@@ -13385,126 +13406,126 @@ int ShowLuaStyleEditor(lua_State* L)
 
 struct ExampleAppLog
 {
-		ImGuiTextBuffer     Buf;
-		ImGuiTextFilter     Filter;
-		ImVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
-		bool                AutoScroll;  // Keep scrolling if already at the bottom.
-		bool                Shown;
-		
-		ExampleAppLog()
+	ImGuiTextBuffer     Buf;
+	ImGuiTextFilter     Filter;
+	ImVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
+	bool                AutoScroll;  // Keep scrolling if already at the bottom.
+	bool                Shown;
+
+	ExampleAppLog()
+	{
+		AutoScroll = true;
+		Clear();
+	}
+
+	void    Clear()
+	{
+		Buf.clear();
+		LineOffsets.clear();
+		LineOffsets.push_back(0);
+	}
+
+	void    AddLog(const char* fmt, ...) //IM_FMTARGS(2)
+	{
+		int old_size = Buf.size();
+		va_list args;
+		va_start(args, fmt);
+		Buf.appendfv(fmt, args);
+		va_end(args);
+		for (int new_size = Buf.size(); old_size < new_size; old_size++)
+			if (Buf[old_size] == '\n')
+				LineOffsets.push_back(old_size + 1);
+	}
+
+	void    Draw(const char* title, bool* p_open = NULL, ImGuiWindowFlags flags = ImGuiWindowFlags_None)
+	{
+		if (!ImGui::Begin(title, p_open, flags))
 		{
-			AutoScroll = true;
+			ImGui::End();
+			return;
+		}
+
+		// Options menu
+		if (ImGui::BeginPopup("Options"))
+		{
+			ImGui::Checkbox("Auto-scroll", &AutoScroll);
+			ImGui::EndPopup();
+		}
+
+		// Main window
+		if (ImGui::Button("Options"))
+			ImGui::OpenPopup("Options");
+		ImGui::SameLine();
+		bool clear = ImGui::Button("Clear");
+		ImGui::SameLine();
+		bool copy = ImGui::Button("Copy");
+		ImGui::SameLine();
+		Filter.Draw("Filter", -100.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("X"))
+			Filter.Clear();
+
+		ImGui::Separator();
+		ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+		if (clear)
 			Clear();
-		}
-		
-		void    Clear()
+		if (copy)
+			ImGui::LogToClipboard();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		const char* buf = Buf.begin();
+		const char* buf_end = Buf.end();
+		if (Filter.IsActive())
 		{
-			Buf.clear();
-			LineOffsets.clear();
-			LineOffsets.push_back(0);
-		}
-		
-		void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
-		{
-			int old_size = Buf.size();
-			va_list args;
-			va_start(args, fmt);
-			Buf.appendfv(fmt, args);
-			va_end(args);
-			for (int new_size = Buf.size(); old_size < new_size; old_size++)
-				if (Buf[old_size] == '\n')
-					LineOffsets.push_back(old_size + 1);
-		}
-		
-		void    Draw(const char* title, bool* p_open = NULL, ImGuiWindowFlags flags = ImGuiWindowFlags_None)
-		{
-			if (!ImGui::Begin(title, p_open, flags))
+			// In this example we don't use the clipper when Filter is enabled.
+			// This is because we don't have a random access on the result on our filter.
+			// A real application processing logs with ten of thousands of entries may want to store the result of
+			// search/filter.. especially if the filtering function is not trivial (e.g. reg-exp).
+			for (int line_no = 0; line_no < LineOffsets.Size; line_no++)
 			{
-				ImGui::End();
-				return;
+				const char* line_start = buf + LineOffsets[line_no];
+				const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
+				if (Filter.PassFilter(line_start, line_end))
+					ImGui::TextUnformatted(line_start, line_end);
 			}
-			
-			// Options menu
-			if (ImGui::BeginPopup("Options"))
+		}
+		else
+		{
+			// The simplest and easy way to display the entire buffer:
+			//   ImGui::TextUnformatted(buf_begin, buf_end);
+			// And it'll just work. TextUnformatted() has specialization for large blob of text and will fast-forward
+			// to skip non-visible lines. Here we instead demonstrate using the clipper to only process lines that are
+			// within the visible area.
+			// If you have tens of thousands of items and their processing cost is non-negligible, coarse clipping them
+			// on your side is recommended. Using ImGuiListClipper requires
+			// - A) random access into your data
+			// - B) items all being the  same height,
+			// both of which we can handle since we an array pointing to the beginning of each line of text.
+			// When using the filter (in the block of code above) we don't have random access into the data to display
+			// anymore, which is why we don't use the clipper. Storing or skimming through the search result would make
+			// it possible (and would be recommended if you want to search through tens of thousands of entries).
+			ImGuiListClipper clipper;
+			clipper.Begin(LineOffsets.Size);
+			while (clipper.Step())
 			{
-				ImGui::Checkbox("Auto-scroll", &AutoScroll);
-				ImGui::EndPopup();
-			}
-			
-			// Main window
-			if (ImGui::Button("Options"))
-				ImGui::OpenPopup("Options");
-			ImGui::SameLine();
-			bool clear = ImGui::Button("Clear");
-			ImGui::SameLine();
-			bool copy = ImGui::Button("Copy");
-			ImGui::SameLine();
-			Filter.Draw("Filter", -100.0f);
-			ImGui::SameLine();
-			if (ImGui::Button("X"))
-				Filter.Clear();
-			
-			ImGui::Separator();
-			ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-			
-			if (clear)
-				Clear();
-			if (copy)
-				ImGui::LogToClipboard();
-			
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-			const char* buf = Buf.begin();
-			const char* buf_end = Buf.end();
-			if (Filter.IsActive())
-			{
-				// In this example we don't use the clipper when Filter is enabled.
-				// This is because we don't have a random access on the result on our filter.
-				// A real application processing logs with ten of thousands of entries may want to store the result of
-				// search/filter.. especially if the filtering function is not trivial (e.g. reg-exp).
-				for (int line_no = 0; line_no < LineOffsets.Size; line_no++)
+				for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
 				{
 					const char* line_start = buf + LineOffsets[line_no];
 					const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
-					if (Filter.PassFilter(line_start, line_end))
-						ImGui::TextUnformatted(line_start, line_end);
+					ImGui::TextUnformatted(line_start, line_end);
 				}
 			}
-			else
-			{
-				// The simplest and easy way to display the entire buffer:
-				//   ImGui::TextUnformatted(buf_begin, buf_end);
-				// And it'll just work. TextUnformatted() has specialization for large blob of text and will fast-forward
-				// to skip non-visible lines. Here we instead demonstrate using the clipper to only process lines that are
-				// within the visible area.
-				// If you have tens of thousands of items and their processing cost is non-negligible, coarse clipping them
-				// on your side is recommended. Using ImGuiListClipper requires
-				// - A) random access into your data
-				// - B) items all being the  same height,
-				// both of which we can handle since we an array pointing to the beginning of each line of text.
-				// When using the filter (in the block of code above) we don't have random access into the data to display
-				// anymore, which is why we don't use the clipper. Storing or skimming through the search result would make
-				// it possible (and would be recommended if you want to search through tens of thousands of entries).
-				ImGuiListClipper clipper;
-				clipper.Begin(LineOffsets.Size);
-				while (clipper.Step())
-				{
-					for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
-					{
-						const char* line_start = buf + LineOffsets[line_no];
-						const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
-						ImGui::TextUnformatted(line_start, line_end);
-					}
-				}
-				clipper.End();
-			}
-			ImGui::PopStyleVar();
-			
-			if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-				ImGui::SetScrollHereY(1.0f);
-			
-			ImGui::EndChild();
-			ImGui::End();
+			clipper.End();
 		}
+		ImGui::PopStyleVar();
+
+		if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+			ImGui::SetScrollHereY(1.0f);
+
+		ImGui::EndChild();
+		ImGui::End();
+	}
 };
 
 static ExampleAppLog logapp;
@@ -14728,18 +14749,6 @@ int loader(lua_State* L)
 static void g_initializePlugin(lua_State* L)
 {
 	::L = L;
-	
-	giderosCursorMap[ImGuiMouseCursor_Hand]        = "pointingHand";
-	giderosCursorMap[ImGuiMouseCursor_None]        = "blank";
-	giderosCursorMap[ImGuiMouseCursor_Arrow]       = "arrow";
-	giderosCursorMap[ImGuiMouseCursor_ResizeEW]    = "sizeHor";
-	giderosCursorMap[ImGuiMouseCursor_ResizeNS]    = "sizeVer";
-	giderosCursorMap[ImGuiMouseCursor_ResizeAll]   = "sizeAll";
-	giderosCursorMap[ImGuiMouseCursor_TextInput]   = "IBeam";
-	giderosCursorMap[ImGuiMouseCursor_NotAllowed]  = "forbidden";
-	giderosCursorMap[ImGuiMouseCursor_ResizeNESW]  = "sizeBDiag";
-	giderosCursorMap[ImGuiMouseCursor_ResizeNWSE]  = "sizeFDiag";
-	
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	

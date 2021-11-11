@@ -1732,6 +1732,11 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeDrawFrame(JN
 	s_applicationManager->drawFrame();
 }
 
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTick(JNIEnv *env, jclass cls)
+{
+	s_applicationManager->forceTick();
+}
+
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeSetDirectories(JNIEnv *env, jclass cls, jstring jExternalDir, jstring jInternalDir, jstring jCacheDir)
 {
     const char *szExternalDir = env->GetStringUTFChars(jExternalDir, NULL);

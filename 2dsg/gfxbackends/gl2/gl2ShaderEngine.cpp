@@ -595,7 +595,7 @@ ShaderTexture::Packing ogl2ShaderEngine::getPreferredPackingForTextureFormat(Sha
 {
 	switch (format) {
 	case ShaderTexture::FMT_DEPTH:
-		return ShaderTexture::PK_UINT;
+		return (ogl2ShaderEngine::isGLES&&(ogl2ShaderEngine::version>=3))?ShaderTexture::PK_FLOAT:ShaderTexture::PK_UINT;
 	default:
 		return ShaderTexture::PK_UBYTE;
 	}
