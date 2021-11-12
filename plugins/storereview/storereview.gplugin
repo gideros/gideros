@@ -15,6 +15,7 @@
 				<orig>//TAG-DEPENDENCIES//</orig>								
 				<by>
 	           implementation 'com.google.android.play:core:[[[plugin.gmsVersion]]]'
+			   implementation 'androidx.annotation:annotation:1.1.0'
 				</by>
 			</append>
 	   	</replacelist>	

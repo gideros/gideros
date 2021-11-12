@@ -33,6 +33,7 @@
 					<by>
 		           implementation 'com.google.android.gms:play-services-auth:[[[plugin.gmsVersion]]]'
 		           implementation 'com.google.android.gms:play-services-games:[[[plugin.gmsVersion]]]'
+				   implementation 'androidx.annotation:annotation:1.1.0'
 		           //implementation 'com.google.android.gms:play-services-drive:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
