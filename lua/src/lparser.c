@@ -394,6 +394,7 @@ Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff, const char *name) {
   lexstate.mlen = 0;
   lexstate.mswt = 0;
   lexstate.buff = buff;
+  lexstate.tokens = luaX_tokens;
   luaX_setinput(L, &lexstate, z, luaS_new(L, name));
   open_func(&lexstate, &funcstate);
   funcstate.f->is_vararg = VARARG_ISVARARG;  /* main func. is always vararg */
