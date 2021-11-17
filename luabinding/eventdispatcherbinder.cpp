@@ -396,6 +396,15 @@ public:
 
             lua_pushnumber(L, v->modifiers);
             lua_setfield(L, -2, "modifiers");
+
+            switch (v->mouseType){
+                case 0: {lua_pushstring(L, "mouse"); break;}
+                case 1: {lua_pushstring(L, "pen"); break;}
+                case 2: {lua_pushstring(L, "finger"); break;}
+                case 3: {lua_pushstring(L, "penTablet"); break;}
+            }
+            lua_setfield(L, -2, "mouseType");
+
 		}
 		else
 		{

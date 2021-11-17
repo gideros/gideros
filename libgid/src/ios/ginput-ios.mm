@@ -373,8 +373,10 @@ public:
             }
             
             ginput_MouseEvent *mouseEvent = NULL;
-            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0)
+            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0) {
                 mouseEvent = newMouseEvent(touchEvent->touch.x, touchEvent->touch.y, GINPUT_LEFT_BUTTON);
+				mouseEvent->mouseType = 2; //Finger (assumed)
+			}
             
             if (mouseTouchOrder_ == 0)
             {
@@ -449,8 +451,10 @@ public:
             }
 
             ginput_MouseEvent *mouseEvent = NULL;
-            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0)
+            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0) {
                 mouseEvent = newMouseEvent(touchEvent->touch.x, touchEvent->touch.y, GINPUT_NO_BUTTON);
+				mouseEvent->mouseType = 2; //Finger (assumed)
+			}
             
 			if (mouseTouchOrder_ == 0)
 			{
@@ -524,8 +528,10 @@ public:
             }
             
             ginput_MouseEvent *mouseEvent = NULL;
-            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0)
+            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0) {
                 mouseEvent = newMouseEvent(touchEvent->touch.x, touchEvent->touch.y, GINPUT_LEFT_BUTTON);
+				mouseEvent->mouseType = 2; //Finger (assumed)
+			}
 
             if (mouseTouchOrder_ == 0)
             {
@@ -603,8 +609,10 @@ public:
             }
             
             ginput_MouseEvent *mouseEvent = NULL;
-            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0)
+            if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0) {
                 mouseEvent = newMouseEvent(touchEvent->touch.x, touchEvent->touch.y, GINPUT_LEFT_BUTTON);
+				mouseEvent->mouseType = 2; //Finger (assumed)
+			}
 
 			if (mouseTouchOrder_ == 0)
 			{
@@ -713,6 +721,7 @@ private:
         event->button = button;
         event->wheel = 0;      
         event->modifiers=mod;
+        event->mouseType=0;
         
         return event;
     }

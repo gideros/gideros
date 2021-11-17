@@ -116,6 +116,7 @@ typedef struct ginput_MouseEvent
     int button;
     int wheel;
     int modifiers;
+    int mouseType;
 } ginput_MouseEvent;
 
 typedef struct ginput_Touch
