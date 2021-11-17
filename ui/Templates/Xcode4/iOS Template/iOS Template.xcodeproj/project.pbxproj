@@ -18,6 +18,7 @@
 		034B58EE25767FE3005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58ED25767FE3005D0134 /* Images.xcassets */; };
 		034B58F325768020005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58F225768020005D0134 /* Images.xcassets */; };
 		034B592125768A7B005D0134 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 034B592025768A7B005D0134 /* default.metallib */; };
+		034B592125768A7C005D0134 /* default-sim.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 034B592025768A7C005D0134 /* default-sim.metallib */; };
 		03697011257111D5002A4EB3 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697010257111D4002A4EB3 /* libgideros.a */; };
 		03697014257111E5002A4EB3 /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697012257111E5002A4EB3 /* libgvfs.a */; };
 		03697015257111E5002A4EB3 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03697013257111E5002A4EB3 /* liblua.a */; };
@@ -27,6 +28,7 @@
 		0369703B25713037002A4EB3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369703A25713037002A4EB3 /* CoreLocation.framework */; };
 		0369704D257133A7002A4EB3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369704C257133A7002A4EB3 /* AudioToolbox.framework */; };
 		036970792574EE7A002A4EB3 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 036970782574EE7A002A4EB3 /* default.metallib */; };
+		036970792574EE7B002A4EB3 /* default-sim.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 036970782574EE7B002A4EB3 /* default-sim.metallib */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
 		5F4153FC15CEF227007B5365 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F915CEF227007B5365 /* ViewController.m */; };
@@ -78,6 +80,7 @@
 		EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
 		EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A0601D674BCB00766D7E /* plugins.cpp */; };
 		EBB07735222E80E000611085 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = EBB07734222E80E000611085 /* default.metallib */; };
+		EBB07735222E80E100611085 /* default-sim.metallib in Resources */ = {isa = PBXBuildFile; fileRef = EBB07734222E80E100611085 /* default-sim.metallib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +99,7 @@
 		034B58ED25767FE3005D0134 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		034B58F225768020005D0134 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		034B592025768A7B005D0134 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
+		034B592025768A7C005D0134 /* default-sim.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default-sim.metallib; sourceTree = "<group>"; };
 		03697010257111D4002A4EB3 /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = Mac/libgideros.a; sourceTree = "<group>"; };
 		03697012257111E5002A4EB3 /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = Mac/libgvfs.a; sourceTree = "<group>"; };
 		03697013257111E5002A4EB3 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = Mac/liblua.a; sourceTree = "<group>"; };
@@ -106,6 +110,7 @@
 		0369704725713304002A4EB3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		0369704C257133A7002A4EB3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		036970782574EE7A002A4EB3 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
+		036970782574EE7B002A4EB3 /* default-sim.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default-sim.metallib; sourceTree = "<group>"; };
 		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Template iOS/Images.xcassets"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -186,6 +191,7 @@
 		EB42A05D1D66ED5000766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plugins.cpp; path = Plugins/plugins.cpp; sourceTree = "<group>"; };
 		EB42A0601D674BCB00766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = plugins.cpp; sourceTree = "<group>"; };
 		EBB07734222E80E000611085 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
+		EBB07734222E80E100611085 /* default-sim.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default-sim.metallib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -260,6 +266,7 @@
 			isa = PBXGroup;
 			children = (
 				036970782574EE7A002A4EB3 /* default.metallib */,
+				036970782574EE7B002A4EB3 /* default-sim.metallib */,
 				033BD45B256FA7140059695F /* Plugins */,
 				033BD42B256FA5B70059695F /* EAGLView.h */,
 				033BD42C256FA5B70059695F /* EAGLView.m */,
@@ -371,6 +378,7 @@
 			isa = PBXGroup;
 			children = (
 				EBB07734222E80E000611085 /* default.metallib */,
+				EBB07734222E80E100611085 /* default-sim.metallib */,
 				5F4153F615CEF227007B5365 /* EAGLView.h */,
 				5F4153F715CEF227007B5365 /* EAGLView.m */,
 				5F4153F415CEF227007B5365 /* AppDelegate.h */,
@@ -402,6 +410,7 @@
 			isa = PBXGroup;
 			children = (
 				034B592025768A7B005D0134 /* default.metallib */,
+				034B592025768A7C005D0134 /* default-sim.metallib */,
 				B2E3EEB21BAC104D005599BD /* EAGLView.h */,
 				B2E3EEB31BAC104D005599BD /* EAGLView.m */,
 				B25B27FF1BAC0F3D0034D6C7 /* AppDelegate.h */,
@@ -545,6 +554,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				036970792574EE7A002A4EB3 /* default.metallib in Resources */,
+				036970792574EE7B002A4EB3 /* default-sim.metallib in Resources */,
 				034B58F325768020005D0134 /* Images.xcassets in Resources */,
 				034B58BA25767BB9005D0134 /* assets in Resources */,
 			);
@@ -555,6 +565,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EBB07735222E80E000611085 /* default.metallib in Resources */,
+				EBB07735222E80E100611085 /* default-sim.metallib in Resources */,
 				5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */,
 				034B58DC25767F2C005D0134 /* Images.xcassets in Resources */,
 				5F58D85315D9268900137D76 /* assets in Resources */,
@@ -569,6 +580,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				034B592125768A7B005D0134 /* default.metallib in Resources */,
+				034B592125768A7C005D0134 /* default-sim.metallib in Resources */,
 				B2E3EFE31BAC1249005599BD /* assets in Resources */,
 				034B58EE25767FE3005D0134 /* Images.xcassets in Resources */,
 			);

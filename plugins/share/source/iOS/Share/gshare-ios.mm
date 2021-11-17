@@ -33,10 +33,10 @@ bool gshare_Share(std::map<std::string,std::string> values)
 			 obj= [[UIImage alloc] initWithData:ndata];
 	    	}
 	    	else if (!strcmp(mimeType,"text/vcard")) {
-	    	 obj=[[NSItemProvider alloc] initWithItem:ndata typeIdentifier:kUTTypeVCard];
+	    	 obj=[[NSItemProvider alloc] initWithItem:ndata typeIdentifier:@"public.vcard"];
 	    	}
 	    	else if (!strcmp(mimeType,"text/uri-list")) {
-	    	 obj=[NSURL URLWithString:ndata];
+	    	 obj=[NSURL URLWithString:[[NSString alloc] initWithData:ndata encoding:NSUTF8StringEncoding]];
 	    	}
 	    	else if (strstr(mimeType,"text/")==mimeType)
 	    	{
