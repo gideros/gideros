@@ -13,29 +13,38 @@ void gshare_Cleanup()
 {
 }
 
-bool gshare_Share(const char *mimeType,const void *data,size_t datasize)
+bool gshare_Share(std::map<std::string,std::string> values)
 {
     if ([UIDevice currentDevice].systemVersion.floatValue >= 6) {
-    	NSObject *obj=NULL;
-		NSData *ndata = [NSData dataWithBytes:data length:datasize];
-		
-    	obj=ndata;
-    	if (strstr(mimeType,"image/")==mimeType)
-    	{
-		 obj= [[UIImage alloc] initWithData:ndata];
-    	}
-    	else if (!strcmp(mimeType,"text/vcard")) {
-    	 obj=[[NSItemProvider alloc] initWithItem:ndata typeIdentifier:kUTTypeVCard];
-    	}
-    	else if (!strcmp(mimeType,"text/uri-list")) {
-    	 obj=[NSURL URLWithString:ndata];
-    	}
-    	else if (strstr(mimeType,"text/")==mimeType)
-    	{
-    	 obj=[[NSString alloc] initWithData:ndata encoding:NSUTF8StringEncoding];
-    	}
+    	NSMutableArray *objectsToShare = [[NSMutableArray alloc] init];
     	
-   		NSArray *objectsToShare = @[obj];
+    	std::map<std::string, std::string>::const_iterator citr = values.begin();
+		for( ; citr != values.end(); ++citr) {
+    	
+	    	NSObject *obj=NULL;
+	    	const char *mimeType=citr->first.c_str();
+	    	const char *data=citr->second.c_str();
+			size_t datasize = citr->second.size();
+			NSData *ndata = [NSData dataWithBytes:data length:datasize];
+			
+	    	obj=ndata;
+	    	if (strstr(mimeType,"image/")==mimeType)
+	    	{
+			 obj= [[UIImage alloc] initWithData:ndata];
+	    	}
+	    	else if (!strcmp(mimeType,"text/vcard")) {
+	    	 obj=[[NSItemProvider alloc] initWithItem:ndata typeIdentifier:kUTTypeVCard];
+	    	}
+	    	else if (!strcmp(mimeType,"text/uri-list")) {
+	    	 obj=[NSURL URLWithString:ndata];
+	    	}
+	    	else if (strstr(mimeType,"text/")==mimeType)
+	    	{
+	    	 obj=[[NSString alloc] initWithData:ndata encoding:NSUTF8StringEncoding];
+	    	}
+	    	
+			[objectsToShare addObject:obj];
+		}
  
     	UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil];
      	[g_getRootViewController() presentViewController:activityVC animated:YES completion:nil];

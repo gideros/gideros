@@ -320,6 +320,15 @@ void TextEdit::newFile()
 	setWindowTitle(fileName_ + "[*]");
 }
 
+void TextEdit::setLuaLanguage(QString lang) {
+    if (lang=="FR") {
+        sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETKEYWORDS, (int) 0, (const char *)
+                                     "et arreter faire sinon fin faux pour si "
+                                     "dans local rien non ou repeter retourne alors vrai jusqua tantque"
+                                     );
+    }
+}
+
 bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool suppressErrors/* = false*/)
 {
 	QFile file(fileName);
@@ -350,7 +359,10 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
 	in.setCodec("UTF-8");
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	sciScintilla_->setUtf8(true);
-	sciScintilla_->setText(in.readAll());
+	QString txt=in.readAll();
+    if ((lexer!=NULL)&&(lexer->lexer()!=NULL)&&(!strcmp(lexer->lexer(),"lua"))&&txt.startsWith("!")&&(txt.length()>3))
+        setLuaLanguage(txt.mid(1,2).toUpper());
+	sciScintilla_->setText(txt);
 	QApplication::restoreOverrideCursor();
 
 	sciScintilla_->setModified(false);

@@ -3,6 +3,7 @@ package com.giderosmobile.android.plugins.gshare;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
+import java.util.Map;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -24,9 +25,12 @@ class Share
 	}
 	
 	private static int fileNum=0;
-	public static boolean share(String mimeType,byte[] data){
+	public static boolean share(Map<String,byte[]> map){
 		Activity activity=sActivity.get();
-
+		if (map.isEmpty()) return true;
+		String mimeType=map.keySet().get(0);
+		byte[] data=map.get(mimeType);
+		
 		Intent shareIntent = new Intent();
 		shareIntent.setAction(Intent.ACTION_SEND);
 		shareIntent.setType(mimeType);
