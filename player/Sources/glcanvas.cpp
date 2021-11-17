@@ -1243,7 +1243,7 @@ void GLCanvas::tabletEvent(QTabletEvent* event) {
         ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->button());
 
     }else if(event->type() == QEvent::TabletMove){
-        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->button());
+        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->buttons());
 
     }else if(event->type() == QEvent::TabletRelease){
         ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->button());

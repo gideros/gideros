@@ -47,10 +47,10 @@ public:
 	void clearBuffers();
 	void renderScene(int deltaFrameCount = -1,float *vmat=NULL,float *pmat=NULL,const std::function<void(ShaderEngine *,Matrix4 &)> &preStage=nullptr);
 
-    void mouseDown(int x, int y, int button, int modifiers);
-    void mouseUp(int x, int y, int button, int modifiers);
-    void mouseMove(int x, int y, int button, int modifiers);
-    void mouseHover(int x, int y, int button, int modifiers);
+    void mouseDown(int x, int y, int button, int modifiers, int type);
+    void mouseUp(int x, int y, int button, int modifiers, int type);
+    void mouseMove(int x, int y, int button, int modifiers, int type);
+    void mouseHover(int x, int y, int button, int modifiers, int type);
 	void mouseWheel(int x, int y, int wheel, int modifiers);
 
     void touchesBegin(ginput_TouchEvent *event);

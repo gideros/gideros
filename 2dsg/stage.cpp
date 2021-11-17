@@ -8,35 +8,39 @@
 
 #include <stack>
 
-void Stage::mouseDown(int x, int y, int button, int modifiers, float sx, float sy, float tx, float ty)
+void Stage::mouseDown(int x, int y, int button, int modifiers, int type, float sx, float sy, float tx, float ty)
 {
     MouseEvent event(MouseEvent::MOUSE_DOWN, x, y, sx, sy, tx, ty);
     event.button = button;
     event.modifiers = modifiers;
+    event.mouseType = type;
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
 }
 
-void Stage::mouseUp(int x, int y, int button, int modifiers, float sx, float sy, float tx, float ty)
+void Stage::mouseUp(int x, int y, int button, int modifiers, int type, float sx, float sy, float tx, float ty)
 {
     MouseEvent event(MouseEvent::MOUSE_UP, x, y, sx, sy, tx, ty);
     event.button = button;
     event.modifiers = modifiers;
+    event.mouseType = type;
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
 }
 
-void Stage::mouseMove(int x, int y, int button, int modifiers, float sx, float sy, float tx, float ty)
+void Stage::mouseMove(int x, int y, int button, int modifiers, int type, float sx, float sy, float tx, float ty)
 {
     MouseEvent event(MouseEvent::MOUSE_MOVE, x, y, sx, sy, tx, ty);
     event.button = button;
     event.modifiers = modifiers;
+    event.mouseType = type;
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
 }
 
-void Stage::mouseHover(int x, int y, int button, int modifiers, float sx, float sy, float tx, float ty)
+void Stage::mouseHover(int x, int y, int button, int modifiers, int type, float sx, float sy, float tx, float ty)
 {
     MouseEvent event(MouseEvent::MOUSE_HOVER, x, y, sx, sy, tx, ty);
     event.button = button;
     event.modifiers = modifiers;
+    event.mouseType = type;
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
 }
 

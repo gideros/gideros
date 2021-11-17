@@ -12,7 +12,7 @@ public:
     MouseEvent(const Type& type, int x, int y, float sx, float sy, float tx, float ty) :
         Event(type.type()),
         x(x), y(y),wheel(0),button(GINPUT_LEFT_BUTTON),modifiers(GINPUT_NO_MODIFIER),
-        sx(sx), sy(sy), tx(tx), ty(ty)
+        sx(sx), sy(sy), tx(tx), ty(ty), mouseType(0)
 	{
 
 	}
@@ -21,6 +21,7 @@ public:
     int wheel;
     int button;
     int modifiers;
+    int mouseType;
 
     float sx, sy, tx, ty;
 

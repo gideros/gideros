@@ -145,6 +145,7 @@ public:
 
     static void posttick_s(int type, void *event, void *udata)
     {
+    	Q_UNUSED(event);
         if (type == GEVENT_POST_TICK_EVENT)
             static_cast<InputManager*>(udata)->posttick();
     }
@@ -354,6 +355,7 @@ public:
         if (isTouchToMouseEnabled_)
         {
             mouseEvent = newMouseEvent(x, y, button, mod);
+            mouseEvent->mouseType=(touchType==0)?2:touchType;
         }
 
         if (mouseTouchOrder_ == 0)
@@ -397,13 +399,14 @@ public:
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
-            touchEvent->allTouches[i].mouseButton = 0;
-            touchEvent->allTouches[i].modifiers = 0;
+            touchEvent->allTouches[i].mouseButton = (ids[i]==id)?button:0;
+            touchEvent->allTouches[i].modifiers = (ids[i]==id)?mod:0;
         }
 
         if (isTouchToMouseEnabled_)
         {
             mouseEvent = newMouseEvent(x, y, button, mod);
+            mouseEvent->mouseType=(touchType==0)?2:touchType;
         }
 
         if (mouseTouchOrder_ == 0)
@@ -447,13 +450,14 @@ public:
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
-            touchEvent->allTouches[i].mouseButton = 0;
-            touchEvent->allTouches[i].modifiers = 0;
-        }
+            touchEvent->allTouches[i].mouseButton = (ids[i]==id)?button:0;
+            touchEvent->allTouches[i].modifiers = (ids[i]==id)?mod:0;
+      }
 
         if (isTouchToMouseEnabled_)
         {
             mouseEvent = newMouseEvent(x, y, button, mod);
+            mouseEvent->mouseType=(touchType==0)?2:touchType;
         }
 
         if (mouseTouchOrder_ == 0)
@@ -497,13 +501,14 @@ public:
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
-            touchEvent->allTouches[i].mouseButton = 0;
-            touchEvent->allTouches[i].modifiers = 0;
+            touchEvent->allTouches[i].mouseButton = (ids[i]==id)?button:0;
+            touchEvent->allTouches[i].modifiers = (ids[i]==id)?mod:0;
         }
 
         if (isTouchToMouseEnabled_)
         {
             mouseEvent = newMouseEvent(x, y, button, mod);
+            mouseEvent->mouseType=(touchType==0)?2:touchType;
         }
 
         if (mouseTouchOrder_ == 0)
@@ -593,6 +598,7 @@ private:
         event->button = button;
         event->wheel = 0;
         event->modifiers = mod;
+        event->mouseType=0;
 
         return event;
     }
