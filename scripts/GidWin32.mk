@@ -1,3 +1,5 @@
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
+
 win32.install: win32.libs.install win32.plugins.install
 
 
@@ -124,11 +126,14 @@ win32.install: win32.libs.install win32.plugins.install win32.app
 win32.clean: win32.plugins.clean
 	rm -rf $(WIN32_BUILDDIR) 
 		
-win32.plugins: $(addsuffix .win32.plugin,$(PLUGINS_WIN32))
+win32.plugins: 
+	$(SUBMAKE) $(addsuffix .win32.plugin,$(PLUGINS_WIN32))
 
-win32.plugins.clean: $(addsuffix .win32.plugin.clean,$(PLUGINS_WIN32))
+win32.plugins.clean: 
+	$(SUBMAKE) $(addsuffix .win32.plugin.clean,$(PLUGINS_WIN32))
 
-win32.plugins.install: win32.plugins $(addsuffix .win32.plugin.install,$(PLUGINS_WIN32))
+win32.plugins.install: win32.plugins 
+	$(SUBMAKE) $(addsuffix .win32.plugin.install,$(PLUGINS_WIN32))
 
 
 		

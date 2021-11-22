@@ -576,7 +576,7 @@ int MeshBinder::setIndexArray(lua_State *L)
 
     if (lua_type(L, 2) == LUA_TSTRING)
     	toIntComponents(L,2,1,indices);
-    if (lua_type(L, 2) == LUA_TTABLE)
+    else if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
         indices.resize(n);
@@ -658,7 +658,7 @@ int MeshBinder::setTextureCoordinateArray(lua_State *L)
 
     if (lua_type(L, 2) == LUA_TSTRING)
     	toFloatComponents(L,2,2,textureCoordinates);
-    if (lua_type(L, 2) == LUA_TTABLE)
+    else if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
         n = (n / 2) * 2;

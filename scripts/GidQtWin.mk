@@ -15,6 +15,8 @@ QTTGT_EXT=rel
 QTTGT_DIR=release
 endif
 
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
+
 
 vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):lua/$(QTTGT_DIR):libgid/external/openal-soft-1.13/build/mingw48_32
 
@@ -127,11 +129,14 @@ qt5.install:
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
 	
-buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+buildqtplugins: 
+	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
-qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+qtplugins.clean: 
+	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_WINONLY)) 
 
-qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+qtplugins.install: buildqtplugins 
+	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MINGWMAKE) clean; fi

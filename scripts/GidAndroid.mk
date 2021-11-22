@@ -1,5 +1,6 @@
 #ANDROID
 ANDROID_ARCHS=armeabi-v7a x86 x86_64 arm64-v8a
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
 export JAVA_HOME
 
@@ -37,9 +38,11 @@ oculusso: versioning androidso.prep
 	mkdir -p $(ROOT)/Sdk/lib/android
 	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 
 
-androidplugins: $(addsuffix .androidplugin,$(PLUGINS_ANDROID))
+androidplugins: 
+	$(SUBMAKE) $(addsuffix .androidplugin,$(PLUGINS_ANDROID))
 
-androidplugins.clean: $(addsuffix .androidplugin.clean,$(PLUGINS_ANDROID))
+androidplugins.clean: 
+	$(SUBMAKE) $(addsuffix .androidplugin.clean,$(PLUGINS_ANDROID))
 
 androidso.prep:
 
