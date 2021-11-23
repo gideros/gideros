@@ -1,4 +1,5 @@
-SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
+#MSBuild has issues with parallel uses, stick to single thread
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid 
 
 WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor TextureAlphaColor Particle Particles PathFillC PathStrokeC PathStrokeLC
 WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11

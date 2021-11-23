@@ -230,9 +230,10 @@ public:
 
 		XAUDIO2_VOICE_STATE state;
 		channel2->source->GetState(&state);
-		int offset = (channel2->samPosition + state.SamplesPlayed) / (wf->nSamplesPerSec);
+		uint64_t offset = (channel2->samPosition + state.SamplesPlayed);
+		offset=(offset*1000)/ (wf->nSamplesPerSec);  // milliseconds
 
-		return offset * 1000.0;  // milliseconds
+		return (unsigned int)offset;
     }
 
     void ChannelSetPaused(g_id channel, bool paused)
