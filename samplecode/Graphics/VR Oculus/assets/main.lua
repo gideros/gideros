@@ -6,7 +6,7 @@ if Oculus then
 	stage:addChild(scene)
 else
 	local sw,sh=application:getContentWidth(),application:getContentHeight()
-	view=D3.View.new(sw,sh,-70)
+	view=D3.View.new(sw,sh,70)
 	stage:addChild(view)
 	scene=view:getScene()
 	view:lookAt(0,2,0,0,1.8,-1,0,1,0)
