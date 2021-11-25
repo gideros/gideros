@@ -3,7 +3,7 @@ require "json"
 local function buildPart(gdx,mparts,bones)
 	local mp=mparts[gdx.meshpartid]
 	assert(mp,"No such part id:"..gdx.meshpartid)
-	print("NodeMesh:",gdx.meshpartid)
+	--print("NodeMesh:",gdx.meshpartid)
 	if gdx.bones then
 		for _,b in ipairs(gdx.bones) do
 			bones[b.node]=true
@@ -14,7 +14,7 @@ local function buildPart(gdx,mparts,bones)
 		end
 	end
 	local m={ vertices=mp.v, texcoords=mp.t, normals=mp.n, indices=mp.i, animdata=mp.bw and mp.bi and { bw=mp.bw, bi=mp.bi}, type="mesh",
-		material=gdx.materialid,bones=gdx.bones }
+		material=gdx.materialid,bones=gdx.bones,name=gdx.meshpartid }
 			--[[treeDesc.material=mtl
 			treeDesc.color=m.color
 			treeDesc.material=m.material]]

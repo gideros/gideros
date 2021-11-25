@@ -9,9 +9,13 @@ local function genEffect(vshader,fshader)
 	{name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=false},
 	{name="fTexture",type=Shader.CTEXTURE,vertex=false},
 	{name="fTextureInfo",type=Shader.CFLOAT4,sys=Shader.SYS_TEXTUREINFO,vertex=false},
+	{name="vRtScale",type=Shader.CFLOAT2,sys=Shader.SYS_RTSCALE,vertex=true},
 	{name="fAmount",type=Shader.CFLOAT2,vertex=false},
 	{name="fDirection",type=Shader.CFLOAT2,vertex=false},
 	{name="fTexture2",type=Shader.CTEXTURE,vertex=false},
+	{name="fQuad",type=Shader.CFLOAT4,vertex=false},
+	{name="vDirection",type=Shader.CFLOAT2,vertex=true},
+	{name="vAmount",type=Shader.CFLOAT2,vertex=true},
 	},
 	{
 	{name="vVertex",type=Shader.DFLOAT,mult=2,slot=0,offset=0},
@@ -94,8 +98,9 @@ function ShaderEffect:init()
     setmetatable(self.applied, weak)
 end
 
-function ShaderEffect:apply(sprite)
-	sprite:setEffectStack(self.stack)
+function ShaderEffect:apply(sprite,mode)
+	if self.applyStackTo then self:applyStackTo(sprite) end
+	sprite:setEffectStack(self.stack,mode)
 	self.applied[sprite]=true
 	self:applyParametersTo(sprite)
 end
@@ -162,8 +167,8 @@ local BlurEffect=Core.class(ShaderEffect)
 ShaderEffect.Blur=BlurEffect
 
 function BlurEffect:init(width,height,resolution)
-	width*=(resolution or 1)
-	height*=(resolution or 1)
+	width=(width or 0)*(resolution or 1)
+	height=(height or 0)*(resolution or 1)
 	local xform,pxform
 	if resolution then
 		xform=Matrix.new()
@@ -175,8 +180,8 @@ function BlurEffect:init(width,height,resolution)
 	local rt2=RenderTarget.new(width,height)
 
 	self.stack={
-		{ buffer=rt1, shader=getEffect("Blur"), transform=xform},
-		{ buffer=rt2, shader=getEffect("Blur"), postTransform=pxform},
+		{ buffer=rt1, shader=getEffect("Blur"), transform=xform, autoBuffer=(width==0)},
+		{ buffer=rt2, shader=getEffect("Blur"), postTransform=pxform, autoBuffer=(width==0)},
 	}
 	
 	self.radius=7
@@ -192,4 +197,77 @@ function BlurEffect:applyParametersTo(sprite)
 	sprite:setEffectConstant(2,"fDirection",Shader.CFLOAT2,1,0,1)
 	sprite:setEffectConstant(1,"fAmount",Shader.CFLOAT2,1,self.radius,0)
 	sprite:setEffectConstant(2,"fAmount",Shader.CFLOAT2,1,self.radius,0)
+end
+
+local ShadowEffect=Core.class(ShaderEffect)
+ShaderEffect.Shadow=ShadowEffect
+
+makeEffect("ShadowExtract",
+	function (vVertex,vColor,vTexCoord)
+		local vertex = hF4(vVertex,0.0,1.0)
+		vertex.xy+=vDirection*vRtScale
+		fTexCoord=vTexCoord
+		return vMatrix*vertex
+	end,
+	function ()
+	 local c=texture2D(fTexture, fTexCoord)
+	 c.a*=fQuad.a
+	 c.rgb=lF3(fQuad.r*c.a,fQuad.g*c.a,fQuad.b*c.a)
+	 return c
+	end)
+
+makeEffect("ShadowCombine",
+	function (vVertex,vColor,vTexCoord)
+		local vertex = hF4(vVertex,0.0,1.0)
+		vertex.xy+=vDirection*vRtScale
+		fTexCoord=vTexCoord
+		return vMatrix*vertex
+	end,
+	function ()
+	 local base=texture2D(fTexture, fTexCoord)
+	 local sh=texture2D(fTexture2, fTexCoord)
+	 return mix(base,sh,1-base.a)
+	end)
+
+function ShadowEffect:init(params)
+	local rt1=RenderTarget.new(1,1)
+	local rt2=RenderTarget.new(1,1)
+	local rt3=RenderTarget.new(1,1)
+
+	self.stack={
+		{ buffer=rt3, shader=getEffect("ShadowExtract"), transform=Matrix.new(), autoBuffer=true, autoTransform=Matrix.new()},
+		{ buffer=rt1, shader=getEffect("Blur"), clear=true, autoBuffer=true},
+		{ buffer=rt2, shader=getEffect("Blur"), clear=true, autoBuffer=true},
+		{ buffer=rt1, shader=getEffect("ShadowCombine"),textures={rt3,rt1}, postTransform=Matrix.new()},
+	}
+	params=params or {}
+	self.displace=params.displace or 10
+	self.angle=params.angle or 215
+	self.radius=params.radius or 7
+	self.shadow=params.color or {0,0,0,0.3} --Color and alpha
+end
+
+function ShadowEffect:setRadius(radius)
+	self.radius=radius
+	self:applyParameters()
+end
+
+function ShadowEffect:applyStackTo(sprite)
+	local disx=(math.sin(^<self.angle)*self.displace)><0
+	local disy=(-math.cos(^<self.angle)*self.displace)><0
+	self.stack[1].autoTransform:setPosition(2*self.radius+self.displace,2*self.radius+self.displace)
+	self.stack[1].transform:setPosition(self.radius-disx,self.radius-disy)
+end
+
+function ShadowEffect:applyParametersTo(sprite)
+	local disx=(math.sin(^<self.angle)*self.displace)
+	local disy=(-math.cos(^<self.angle)*self.displace)
+	sprite:setEffectConstant(1,"vDirection",Shader.CFLOAT2,1,disx,disy)
+	sprite:setEffectConstant(1,"fQuad",Shader.CFLOAT4,1,self.shadow[1],self.shadow[2],self.shadow[3],self.shadow[4])
+	sprite:setEffectConstant(2,"fDirection",Shader.CFLOAT2,1,1,0)
+	sprite:setEffectConstant(3,"fDirection",Shader.CFLOAT2,1,0,1)
+	sprite:setEffectConstant(2,"fAmount",Shader.CFLOAT2,1,self.radius,0)
+	sprite:setEffectConstant(3,"fAmount",Shader.CFLOAT2,1,self.radius,0)
+	sprite:setEffectConstant(4,"fAmount",Shader.CFLOAT2,1,self.angle,self.displace)
+	sprite:setEffectConstant(4,"vDirection",Shader.CFLOAT2,1,-self.radius+(disx><0),-self.radius+(disy><0))
 end

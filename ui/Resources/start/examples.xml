@@ -129,6 +129,11 @@
 				path="Graphics/SpineC example/SpineC example.gproj"
 				image="spine.png"
 				/>
+	<example 	name="VR Dungeon"
+				description="Oculus Quest support demonstration"
+				path="Graphics/VR Oculus/VR Oculus.gproj"
+				image="dungeon.png"
+				/>
 </category>
 
 <category name="Graphics 3D">

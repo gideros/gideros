@@ -1,5 +1,5 @@
 Gltf=Core.class()
-require "mime.core"
+
 function Gltf:init(path,name)
 	self.path=path
 	if name then
@@ -100,7 +100,7 @@ GL_UNSIGNED_SHORT (5123)
 	end
 	if stride>0 then stride=stride-cl*bm end
 	local br=bd.byteOffset or 0
-	print(br,bm,bc,stride)
+	--print(br,bm,bc,stride)
 	local ii=1
 	for ci=1,bc do
 		for mi=1,bm do
@@ -135,11 +135,10 @@ function Gltf:getBufferView(n,ext)
 	local bd=self.desc.bufferViews[n]
 	local buf=self.desc.buffers[bd.buffer+1]
 	if not buf.data then
-		print(buf.uri)
 		if buf.uri then
 			local d=buf.uri:sub(1,37)
 			if d=="data:application/octet-stream;base64," then
-				buf.data=mime.unb64(buf.uri:sub(38))
+				buf.data=Cryptography.unb64(buf.uri:sub(38))
 			end
 		end
 		if not buf.data then
@@ -199,7 +198,12 @@ end
 Glb=Core.class(Gltf,function (path,name) return path,nil end)
 
 function Glb:init(path,name)
-	local f=io.open(path.."/"..name)
+	local fn=name
+	if path then
+		fn=path.."/"..name
+	end
+	local f=io.open(fn)
+	assert(f,"File not found:"..fn)
 	self.binData=f:read("*a")
 	f:close()
 	

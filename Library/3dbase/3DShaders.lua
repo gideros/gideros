@@ -1,7 +1,6 @@
 D3=D3 or {}
 
 local slang=Shader.getShaderLanguage()
-print(slang)
 
 function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INSTMATA,INSTMATB,INSTMATC,INSTMATD)
 	if OPT_TEXTURED then

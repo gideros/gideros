@@ -1438,6 +1438,7 @@ typedef struct {
 ovrApp appState;
 void* AppThreadFunction(void* parm) {
     ovrAppThread* appThread = (ovrAppThread*)parm;
+    bool LuaInitialized=false;
 
     ovrJava java;
     java.Vm = appThread->JavaVm;
@@ -1518,14 +1519,16 @@ void* AppThreadFunction(void* parm) {
                 }
                 case MESSAGE_ON_SURFACE_CREATED: {
                     appState.NativeWindow = (ANativeWindow*)ovrMessage_GetPointerParm(&message, 0);
-                    roomEnabled=true;
-                    roomScreenEnabled=true;
-                    _gapp->initialize();
-                    setupApi(LuaDebugging::L);
+                    if (!LuaInitialized) {
+                        roomEnabled=true;
+                        roomScreenEnabled=true;
+						_gapp->initialize();
+						setupApi(LuaDebugging::L);
+						LuaInitialized=true;
+                    }
                     break;
                 }
                 case MESSAGE_ON_SURFACE_DESTROYED: {
-            		_gapp->deinitialize();
                     appState.NativeWindow = NULL;
                     break;
                 }
@@ -1652,6 +1655,9 @@ void* AppThreadFunction(void* parm) {
 #else
     ovrRenderer_Destroy(&appState.Renderer);
 #endif
+
+    if (LuaInitialized)
+    	_gapp->deinitialize();
 
     ovrEgl_DestroyContext(&appState.Egl);
 

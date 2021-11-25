@@ -131,15 +131,15 @@ end
 
 --Unit Sphere
 local Sphere=Core.class(Mesh3D)
-function Sphere:init(steps)
+function Sphere:init(steps,rad)
 	local va,ia={},{}
 	local rs=(2*3.141592654)/steps
 	local i,ni=4,1
 	--Vertices
-	va[1]=0 va[2]=1 va[3]=0
+	va[1]=0 va[2]=rad va[3]=0
 	for iy=1,(steps//2)-1 do
-		local y=math.cos(iy*rs)
-		local r=math.sin(iy*rs)
+		local y=math.cos(iy*rs)*rad
+		local r=math.sin(iy*rs)*rad
 		for ix=0,steps do
 			local x=r*math.cos(ix*rs)
 			local z=r*math.sin(ix*rs)
@@ -148,7 +148,7 @@ function Sphere:init(steps)
 			va[i]=z i+=1
 		end
 	end
-	va[i]=0	va[i+1]=-1 va[i+2]=0
+	va[i]=0	va[i+1]=-rad va[i+2]=0
 	local lvi=i//3+1
 	--Indices
 	--a) top and bottom fans
@@ -168,6 +168,7 @@ function Sphere:init(steps)
 	self:setVertexArray(va)
 	self:setIndexArray(ia)
 	self._steps=steps
+	self.rad=rad
 	self._va=va self._ia=ia
 end
 function Sphere:mapTexture(texture)
@@ -179,7 +180,7 @@ function Sphere:mapTexture(texture)
 		--TexCoords
 		va[1]=tw/2 va[2]=0
 		for iy=1,(self._steps//2)-1 do
-			local y=th*(1-iy*2/self._steps)
+			local y=th*(iy*2/self._steps)
 			for ix=0,self._steps do
 				local x=tw*(ix/self._steps)
 				va[i]=x i+=1
@@ -195,7 +196,7 @@ function Sphere:mapTexture(texture)
 end
 function Sphere:getCollisionShape()
 	if not self._r3dshape then
-		self._r3dshape=r3d.SphereShape.new(1)
+		self._r3dshape=r3d.SphereShape.new(self.rad)
 	end
 	return self._r3dshape
 end
@@ -203,28 +204,34 @@ end
 --Unit Cylinder along Y axis
 local Cylinder=Core.class(Mesh3D)
 function Cylinder:init(steps,r,h)
-	h=h or 1
-	r=r or 1
 	local va,ia,na={},{},{}
 	local rs=(2*3.141592654)/steps
 	local i,ni=7,1
+	local r=r or 1
+	local h=h or 1
+	self.radius=r
+	self.height=h
 	--Vertices/Normals
-	va[1]=0 va[2]=h va[3]=0
-	va[4]=0	va[5]=-h va[6]=0
-	na[1]=0 na[2]=1 na[3]=0
-	na[4]=0	na[5]=-1 na[6]=0
+	va[1]=0 va[2]=h va[3]=0 --TOP
+	va[4]=0	va[5]=-h va[6]=0 --BOTTOM
+	na[1]=0 na[2]=1 na[3]=0 --TOP
+	na[4]=0	na[5]=-1 na[6]=0 --BOTTOM
 	for ix=0,steps do
 		local x=math.cos(ix*rs)*r
 		local z=-math.sin(ix*rs)*r
+		--EDGE-TOP
 		va[i]=x na[i]=0 i+=1
 		va[i]=h na[i]=1 i+=1
 		va[i]=z na[i]=0 i+=1
+		--EDGE-TOPEXT
 		va[i]=x na[i]=x i+=1
 		va[i]=h na[i]=0 i+=1
 		va[i]=z na[i]=z i+=1
+		--EDGE-BOTTOMEXT
 		va[i]=x na[i]=x i+=1
 		va[i]=-h na[i]=0 i+=1
 		va[i]=z na[i]=z i+=1
+		--EDGE-BOTTOM
 		va[i]=x na[i]=0 i+=1
 		va[i]=-h na[i]=-1 i+=1
 		va[i]=z na[i]=0 i+=1
@@ -232,10 +239,10 @@ function Cylinder:init(steps,r,h)
 	--Indices
 	for i=3,steps*4-1,4 do
 		--For rendering, take care of normals
-		ia[ni]=1 ni+=1 ia[ni]=i ni+=1 ia[ni]=i+4 ni+=1
-		ia[ni]=2 ni+=1 ia[ni]=i+3 ni+=1 ia[ni]=i+7 ni+=1
-		ia[ni]=i+1 ni+=1 ia[ni]=i+2 ni+=1 ia[ni]=i+5 ni+=1
-		ia[ni]=i+2 ni+=1 ia[ni]=i+6 ni+=1 ia[ni]=i+5 ni+=1
+		ia[ni]=1 ni+=1 ia[ni]=i ni+=1 ia[ni]=i+4 ni+=1 --TOP-PART
+		ia[ni]=2 ni+=1 ia[ni]=i+3 ni+=1 ia[ni]=i+7 ni+=1 --BOTTOM-PART
+		ia[ni]=i+1 ni+=1 ia[ni]=i+2 ni+=1 ia[ni]=i+5 ni+=1 --EDGE-TRI1
+		ia[ni]=i+2 ni+=1 ia[ni]=i+6 ni+=1 ia[ni]=i+5 ni+=1 --EDFE-TRI2
 	end
 	
 	self:setGenericArray(3,Shader.DFLOAT,3,#na//3,na)
@@ -278,7 +285,7 @@ function Cylinder:getCollisionShape()
 		local steps=self._steps
 		local ca,fa={},{}
 		local nc,nf=1,1
-		for i=3,steps*4-1,4 do ca[nc]=i+1 nc+=1 end
+		for i=3,steps*4-1,4 do ca[nc]=i+1 nc+=1 end --TOP SURFACE
 		fa[nf]=steps nf+=1
 		for i=3,steps*4-1,4 do
 			ca[nc]=i+1 nc+=1 ca[nc]=i+2 nc+=1 
@@ -317,6 +324,6 @@ D3.checkCCW=function(v,i,f)
 			s=s..string.format("%d:[%f,%f,%f] ",i[l],ax,ay,az)
 		end
 		fi+=f[fn]
-		print(fn,f[fn],s)
+		--print(fn,f[fn],s)
 	end
 end

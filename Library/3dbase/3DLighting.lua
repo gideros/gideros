@@ -1,15 +1,20 @@
 --!NEEDS:../luashader/luashader.lua
+
+local debug = nil
+if debug then print("3DLighting.lua debug !!!!!!!!!!!!!!!!!!!!!!") end
+
 Lighting={}
 local glversion=Shader.getEngineVersion()
 local isES3Level=(glversion~="GLES2")
+local isES3=(glversion=="GLES3")
 local slang=Shader.getShaderLanguage()
 
-print(glversion)
-print(Shader.getProperties().version)
+if debug then print(glversion) end
+if debug then print(Shader.getProperties().version) end
 Shader.extensions={}
 if slang=="glsl" then
 	for ex in Shader.getProperties().extensions:gmatch("%S+") do Shader.extensions[ex]=true end
-	print(json.encode(Shader.extensions))
+	if debug then print(json.encode(Shader.extensions)) end
 end
 
 local LightingShaderAttrs=
@@ -44,7 +49,7 @@ LightingShaderConstants[#LightingShaderConstants+1]=
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="InstanceMapWidth",type=Shader.CFLOAT,mult=1,vertex=true}
 	]]
-{name="bones",type=Shader.CMATRIX,mult=16,vertex=true,code="a"},
+{name="bones",type=Shader.CMATRIX,mult=32,vertex=true,code="a"},
 {name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
 }
 local LightingShaderVarying={
@@ -68,7 +73,10 @@ Lighting._shaders={}
 Lighting.getShader=function(code)
 	local cmap={
 		{"t","TEXTURED",true},
-		{"s","SHADOWS",isES3Level and ((slang~="glsl") or Shader.extensions.GL_EXT_shadow_samplers or Shader.extensions.GL_EXT_shadow_funcs)},
+		{"s","SHADOWS",isES3Level and ((slang~="glsl") or 
+--			isES3 or
+			Shader.extensions.GL_EXT_shadow_samplers or 
+			Shader.extensions.GL_EXT_shadow_funcs)},
 		{"n","NORMMAP",true},
 		{"i","INSTANCED",true},
 		{"a","ANIMATED",true},
