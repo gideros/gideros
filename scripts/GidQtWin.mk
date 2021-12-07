@@ -18,20 +18,22 @@ endif
 SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
 
-vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):lua/$(QTTGT_DIR):libgid/external/openal-soft-1.13/build/mingw48_32
+vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):libgid/openal/$(QTTGT_DIR):lua/$(QTTGT_DIR)
 
 $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop
 	
 
-SDK_LIBS_QT=libgideros.a liblua.a libgid.a libgvfs.a libOpenAL32.dll.a
+SDK_LIBS_QT=libgideros.a liblua.a libgid.a libgvfs.a libopenal.a
 
 sdk.qtlibs.dir:
 	mkdir -p $(SDK)/lib/desktop	
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.$(QTTGT_EXT),libpystring libgvfs) libgid.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),lua libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.$(QTTGT_EXT),libpystring libgvfs libgid/openal libgid/xmp) libgid.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),lua libgideros) sdk.qtlibs
+
+qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/openal libgid/xmp libgid lua libgideros)
 
 export MSBUILD
 
@@ -73,7 +75,7 @@ qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros
 
 buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
-qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
+qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
 qt.install: buildqt qt5.install qt.player tools html5.tools
 	cp $(ROOT)/ui/$(QTTGT_DIR)/GiderosStudio.exe $(RELEASE)
@@ -117,7 +119,7 @@ qt.player:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
 	mkdir -p $(addprefix $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/,$(dir $(QT5PLUGINS)))
 	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/$$a.dll$(QTDLLEXT); done
-	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	cp $(ROOT)/libgid/openal/release/openal.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins
 
 qt5.install:
@@ -125,7 +127,7 @@ qt5.install:
 	mkdir -p $(addprefix $(RELEASE)/,$(dir $(QT5PLUGINS)))
 	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/$$a.dll$(QTDLLEXT); done
 	cp $(QT)/lib/qscintilla2_qt5.dll $(RELEASE)
-	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)
+	cp $(ROOT)/libgid/openal/release/openal.dll $(RELEASE)
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
 	
@@ -142,19 +144,19 @@ qtplugins.install: buildqtplugins
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MINGWMAKE) clean; fi
 
 %.qmake.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*).pro
 	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) release
 
 %.qmake.dbg:
-	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*).pro
 	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) debug
 
 %.qmake5.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*)_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) release
 
 %.qmake5.dbg:
-	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*)_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) debug
 
 tools:

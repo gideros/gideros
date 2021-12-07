@@ -6,7 +6,6 @@
 #include <QStringList>
 #include <QLocale>
 #include <QDesktopServices>
-#include <QDesktopWidget>
 #include <QUrl>
 #include <QHostInfo>
 #include "mainwindow.h"
@@ -16,6 +15,8 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <ginput.h>
+#include <QStandardPaths>
+#include <QScreen>
 
 #if defined(Q_OS_WIN)
     #include <windows.h>
@@ -236,7 +237,7 @@ void g_setProperty(const char* what, const char* arg){
         argString = argGet;
         argString.replace("\\","\\\\");
     }else{
-        QStringList arrayArg = argGet.split("|",QString::KeepEmptyParts);
+        QStringList arrayArg = argGet.split("|",Qt::KeepEmptyParts);
         arg1 = arrayArg.at(0).toInt();
         arg2 = arrayArg.at(1).toInt();
         arg3 = arrayArg.at(2).toInt();
@@ -391,7 +392,7 @@ void g_setProperty(const char* what, const char* arg){
         /*------------------------------------------------------------------*/
     }else if (strcmp(what, "mkDir") == 0)
     {
-        QStringList argSplit = argString.split("|",QString::KeepEmptyParts);
+        QStringList argSplit = argString.split("|",Qt::KeepEmptyParts);
         if(argSplit.size() == 1){
 
             MainWindow::getInstance()->printToOutput("[[Usage Example]]");
@@ -449,7 +450,7 @@ const char* g_getProperty(const char* what, const char* arg){
         argString = argGet;
         argString.replace("\\","\\\\");
     }else{
-        QStringList arrayArg = argGet.split("|",QString::KeepEmptyParts);
+        QStringList arrayArg = argGet.split("|",Qt::KeepEmptyParts);
         arg1 = arrayArg.at(0).toInt();
         arg2 = arrayArg.at(1).toInt();
         arg3 = arrayArg.at(2).toInt();
@@ -474,9 +475,9 @@ const char* g_getProperty(const char* what, const char* arg){
         /*------------------------------------------------------------------*/
     }else if (strcmp(what, "screenSize") == 0)
     {
-        returnedProperty.append( QString::number(QApplication::desktop()->availableGeometry().width()) );
+        returnedProperty.append( QString::number(QApplication::primaryScreen()->geometry().width()) );
         returnedProperty.append("|");
-        returnedProperty.append( QString::number(QApplication::desktop()->availableGeometry().height()) );
+        returnedProperty.append( QString::number(QApplication::primaryScreen()->geometry().height()) );
         /*------------------------------------------------------------------*/
     }else if (strcmp(what, "cursorPosition") == 0)
     {
@@ -555,7 +556,7 @@ const char* g_getProperty(const char* what, const char* arg){
             || (strcmp(what, "openFileDialog") == 0)
             || (strcmp(what, "saveFileDialog") == 0))
         {
-        QStringList dialogArg = argString.split("|",QString::KeepEmptyParts);
+        QStringList dialogArg = argString.split("|",Qt::KeepEmptyParts);
         if(dialogArg.size() == 1){
 
             MainWindow::getInstance()->printToOutput("[[Usage Example]]");

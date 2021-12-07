@@ -6,7 +6,6 @@
 #include <QMap>
 
 class QAbstractButton;
-class QStringList;
 class UIManager;
 class QLineEdit;
 

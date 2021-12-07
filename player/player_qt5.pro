@@ -1,8 +1,14 @@
-QT += core gui opengl network multimedia
-CONFIG   += silent
+QT += core gui opengl network multimedia widgets
+CONFIG   += silent qt
+
+equals(QT_VERSION, 6){
+   QT += openglwidgets
+}
+
+INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 
 INCLUDEPATH += \
-    "../libgid/external/zlib-1.2.8"
+#    "../libgid/external/zlib-1.2.8"
 #    "../libgid/external/glew-1.10.0/include"
 
 
@@ -13,15 +19,15 @@ win32{
     QMAKE_LFLAGS+=-Wl,-Map=LinkerMap.txt
 
     LIBS += \
-        -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\
+#        -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\
 #        -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32\
         -lws2_32\
         -liphlpapi
 
-     release{
-        _CONFIG_ = release
-            } else {
+    CONFIG(debug, debug|release){
         _CONFIG_ = debug
+    } else {
+        _CONFIG_ = release
     }
 
     debug_in_place{
@@ -37,6 +43,7 @@ win32{
         message("Build Target: "$$_CONFIG_)
         LIBS += \
             -L"../libgid/$$_CONFIG_" -lgid\
+            -L"../libgid/openal/$$_CONFIG_" -lopenal\
             -L"../libgvfs/$$_CONFIG_" -lgvfs\
             -L"../lua/$$_CONFIG_" -llua\
             -L"../libgideros/$$_CONFIG_" -lgideros\

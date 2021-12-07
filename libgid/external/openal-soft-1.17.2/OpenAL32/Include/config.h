@@ -11,7 +11,9 @@
 /* Define to the library version */
 #define ALSOFT_VERSION "1.17.2"
 
+#ifdef __ANDROID__
 #define HAVE_OPENSL
+#endif
 
 /* Define if we have the stat function */
 #define HAVE_STAT
@@ -68,16 +70,21 @@
 #define HAVE_STDALIGN_H
 
 /* Define if we have windows.h */
-//#define HAVE_WINDOWS_H
-
+#ifdef WIN32
+#define HAVE_WINDOWS_H
+#endif
+#ifdef __ANDROID__
 /* Define if we have dlfcn.h */
 #define HAVE_DLFCN_H
+#endif
 
 /* Define if we have pthread_np.h */
 //#define HAVE_PTHREAD_NP_H
 
+#ifdef __ANDROID__
 /* Define if we have alloca.h */
 #define HAVE_ALLOCA_H
+#endif
 
 /* Define if we have malloc.h */
 #define HAVE_MALLOC_H

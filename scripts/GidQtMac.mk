@@ -22,7 +22,9 @@ sdk.qtlibs.dir:
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs libgid/xmp) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdk.qtlibs
+
+qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid lua libgideros)
 
 
 qtlibs.install: buildqtlibs
@@ -50,7 +52,7 @@ qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros
 
 buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
 
-qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
+qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
 QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
 qt.install: buildqt qt.player tools html5.tools

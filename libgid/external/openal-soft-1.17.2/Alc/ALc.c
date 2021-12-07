@@ -3453,7 +3453,7 @@ ALC_API ALCdevice* ALC_APIENTRY alcOpenDevice(const ALCchar *deviceName)
     }
 
     ConfigValueUInt(deviceName, NULL, "periods", &device->NumUpdates);
-    device->NumUpdates = clampu(device->NumUpdates, 1, 16);
+    device->NumUpdates = clampu(device->NumUpdates, 4, 16);
 
     ConfigValueUInt(deviceName, NULL, "period_size", &device->UpdateSize);
     device->UpdateSize = clampu(device->UpdateSize, 64, 8192);

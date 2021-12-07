@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += opengl network
+QT += opengl network widgets
 
 TARGET = gid
 TEMPLATE = lib
@@ -88,8 +88,6 @@ HEADERS += \
     ./external/snappy-1.1.0/snappy-sinksource.h
 INCLUDEPATH += ./external/snappy-1.1.0
 
-
-#LibXMP
 defineReplace(expand) {
     variable = $$1
     prefix=$$2
@@ -103,44 +101,65 @@ defineReplace(expand) {
     return ($$expanded)
 }
 
+#ZLIB
+LZIP_FILES=adler32 compress crc32 deflate gzclose gzlib gzread gzwrite infback inffast inflate inftrees trees uncompr zutil
+#SOURCES += $$expand(LZIP_FILES,./external/zlib-1.2.8/,.c)
+
+#PNG
+PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans \
+        pngwio pngwrite pngwtran pngwutil
+SOURCES += $$expand(PNGFILES,./external/libpng-1.6.2/,.c)
+
+#JPEG
+JPEGFILES=jaricom jdapimin jdapistd jdarith jdatadst jdatasrc jdcoefct jdcolor jddctmgr jdhuff jdinput \
+        jdmainct jdmarker jdmaster jdmerge jdpostct jdsample jdtrans jerror jfdctflt jfdctfst jfdctint \
+        jidctflt jidctfst jidctint jquant1 jquant2 jutils jmemmgr jmemnobs jcomapi \
+        jcapimin jcapistd jcarith jccoefct jccolor jcdctmgr jchuff jcinit jcmainct \
+        jcmarker jcmaster jcparam jcprepct jcsample jctrans
+SOURCES += $$expand(JPEGFILES,./external/jpeg-9/,.c)
+
+#MP3
+MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 index layer1 layer2 layer3 \
+        libmpg123 ntom optimize parse readers stringbuf synth synth_8bit synth_real synth_s32 tabinit
+SOURCES += $$expand(MP3FILES,./external/mpg123-1.15.3/src/libmpg123/,.c)
+DEFINES += OPT_GENERIC REAL_IS_FLOAT
+
+#LibXMP
 DEFINES+=_REENTRANT LIBXMP_CORE_PLAYER
-XMP_SRC=virtual period player read_event dataio lfo envelope \
-		scan control filter effects mixer mix_all load_helpers load \
-		hio smix memio
-XMP_HDR=common effects envelope format lfo list mixer period player \
-		virtual precomp_lut hio memio mdataio tempfile 
-XMP_LOADERS=xm_load s3m_load it_load \
-			common itsex sample
-XMP_LOADERS_HDR=it loader mod s3m xm
-SOURCES += $$expand(XMP_SRC,./external/libxmp-4.3/src/,.c)
-SOURCES += $$expand(XMP_LOADERS,./external/libxmp-4.3/src/loaders/,.c)
-SOURCES += \
-	./external/libxmp-4.3/lite/src/format.c \
-	./external/libxmp-4.3/lite/src/loaders/mod_load.c
-HEADERS += $$expand(XMP_HDR,./external/libxmp-4.3/src/,.h)
-HEADERS += $$expand(XMP_LOADERS_HDR,./external/libxmp-4.3/src/loaders/,.h)
 INCLUDEPATH += "./external/libxmp-4.3/include"
-INCLUDEPATH += "./external/libxmp-4.3/src"
-INCLUDEPATH += "./external/libxmp-4.3/src/loaders"
+CONFIG(debug, debug|release){
+    LIBS += -L"./xmp/debug" -lxmp
+} else {
+    LIBS += -L"./xmp/release" -lxmp
+}
 
 INCLUDEPATH += "./external/libpng-1.6.2"
 INCLUDEPATH += "./external/jpeg-9"
 INCLUDEPATH += "./external/glew-1.10.0/include"
-INCLUDEPATH += "../libgid/external/mpg123-1.15.3/src/libmpg123"
+INCLUDEPATH += "./external/mpg123-1.15.3/src/libmpg123"
+INCLUDEPATH += "./external/mpg123-1.15.3/src"
+INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 
 win32 {
 DEFINES += OPENAL_SUBDIR_AL
-INCLUDEPATH += "./external/openal-soft-1.13/include"
-LIBS += -L"../libgid/external/openal-soft-1.13/build/mingw48_32" -lOpenAL32
-LIBS += -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32
-LIBS += -L"../libgid/external/libpng-1.6.2/build/mingw48_32" -lpng
-LIBS += -L"../libgid/external/jpeg-9/build/mingw48_32" -ljpeg
+INCLUDEPATH += "./external/openal-soft-1.17.2/include"
+CONFIG(debug, debug|release){
+    LIBS += -L"./openal/debug" -lopenal
+} else {
+    LIBS += -L"./openal/release" -lopenal
+}
 
-LIBS += -L"../libgid/external/mpg123-1.15.3/lib/mingw48_32" -lmpg123
+#INCLUDEPATH += "./external/openal-soft-1.13/include"
+#LIBS += -L"../libgid/external/openal-soft-1.13/build/mingw48_32" -lOpenAL32
+#LIBS += -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32
+#LIBS += -L"../libgid/external/libpng-1.6.2/build/mingw48_32" -lpng
+#LIBS += -L"../libgid/external/jpeg-9/build/mingw48_32" -ljpeg
+
+#LIBS += -L"../libgid/external/mpg123-1.15.3/lib/mingw48_32" -lmpg123
 
 LIBS += -lpthread
 
-LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
+#LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
 }
 
 macx {
@@ -155,7 +174,7 @@ LIBS += -framework CoreFoundation
 LIBS += -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
 LIBS += -L"../libgid/external/libpng-1.6.2/build/clang_64" -lpng
 LIBS += -L"../libgid/external/jpeg-9/build/clang_64" -ljpeg
-LIBS += -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx
+#LIBS += -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx
 
 LIBS += -lpthread
 }
@@ -176,7 +195,7 @@ LIBS += -L"../libgid/external/mpg123-1.15.3/lib/gcc484_64" -lmpg123
 
 LIBS += -lpthread
 
-LIBS += -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx
+#LIBS += -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx
 }
 
 win32 {
