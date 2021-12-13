@@ -5,13 +5,13 @@ SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 export JAVA_HOME
 
 android.clean: androidlibs.clean androidso.clean androidplugins.clean
-	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew clean; rm -f local.properties *.aar *.jar
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew --console=plain clean; rm -f local.properties *.aar *.jar
 	
 
 android: androidlibs androidso androidplugins android.aar
 
 android.aar: 
-	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew assembleRelease
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew --console=plain assembleRelease
 	mv $(ROOT)/android/GiderosAndroidPlayer/app/build/outputs/aar/app-release.aar $(ROOT)/android/GiderosAndroidPlayer/gideros.aar
 
 android.install: android androidlibs.install androidso.install oculusso.install androidplugins.install
