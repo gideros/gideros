@@ -14,10 +14,10 @@ end
 function D3View:setSize(w,h)
 	self.sw=w
 	self.sh=h
-	self.projection:perspectiveProjection(self.fov,self.sw/self.sh,self.near,self.far)
+	self.projection:perspectiveProjection(self.fov,-self.sw/self.sh,self.near,self.far)
 	self.view:setProjection(self.projection)
 	self.view:setPosition(self.sw/2,self.sh/2)
-	self.view:setScale(-self.sw/2,-self.sh/2,1)
+	self.view:setScale(self.sw/2,self.sh/2,1)
 end
 
 function D3View:lookAt(eyex,eyey,eyez,targetx,targety,targetz,upx,upy,upz)

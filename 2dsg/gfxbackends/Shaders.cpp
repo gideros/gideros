@@ -102,6 +102,8 @@ void ShaderEngine::reset(bool reinit)
     oglModel.identity();
     oglView.identity();
     oglCombined.identity();
+    screenScaleX=1;
+    screenScaleY=1;
     dsCurrent.dTest=false;
     dsCurrent.sRef=0;
     dsCurrent.sMask=0xFF;
@@ -111,6 +113,7 @@ void ShaderEngine::reset(bool reinit)
     dsCurrent.dFail=STENCIL_KEEP;
     dsCurrent.dPass=STENCIL_KEEP;
     dsCurrent.sFunc=STENCIL_DISABLE;
+    dsCurrent.cullMode=CULL_NONE;
     while (!dsStack.empty())
     	dsStack.pop();
     setDepthStencil(dsCurrent);
@@ -195,6 +198,14 @@ void ShaderEngine::prepareDraw(ShaderProgram *program)
 		float clk=iclock();
 		program->setConstant(c,ShaderProgram::CFLOAT,1,&clk);
 	}
+    c=program->getSystemConstant(ShaderProgram::SysConst_RenderTargetScale);
+    if (c>=0) {
+        float sx=screenScaleX,sy=screenScaleY;
+        ShaderBuffer *fbo=getFramebuffer();
+        if (fbo) fbo->getScale(sx,sy);
+        float s[2]={sx,sy};
+        program->setConstant(c,ShaderProgram::CFLOAT2,1,s);
+    }
 }
 
 Matrix4 ShaderEngine::setFrustum(float l, float r, float b, float t, float n, float f)

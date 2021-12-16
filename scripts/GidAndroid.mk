@@ -1,5 +1,6 @@
 #ANDROID
 ANDROID_ARCHS=armeabi-v7a x86 x86_64 arm64-v8a
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
 export JAVA_HOME
 
@@ -7,12 +8,13 @@ android.clean: androidlibs.clean androidso.clean androidplugins.clean
 	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew clean; rm -f local.properties *.aar *.jar
 	
 
-android: androidlibs androidso androidplugins
+android: androidlibs androidso androidplugins android.aar
+
+android.aar: 
 	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew assembleRelease
 	mv $(ROOT)/android/GiderosAndroidPlayer/app/build/outputs/aar/app-release.aar $(ROOT)/android/GiderosAndroidPlayer/gideros.aar
 
-android.install: android androidlibs.install androidso.install androidplugins.install
-	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.aar $(RELEASE)/Templates/Eclipse/Android\ Template
+android.install: android androidlibs.install androidso.install oculusso.install androidplugins.install
 	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.aar $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs	
 	mkdir -p $(RELEASE)/Players
 	cd $(RELEASE); Tools/gdrexport.exe -platform APK Examples/Misc/GiderosPlayer/GiderosPlayer.gproj Players
@@ -29,9 +31,16 @@ androidso: versioning androidso.prep
 	mkdir -p $(ROOT)/Sdk/lib/android
 	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 
 
-androidplugins: $(addsuffix .androidplugin,$(PLUGINS_ANDROID))
+oculusso: versioning androidso.prep
+	cd $(ROOT)/android/lib;OCULUS=y $(NDKBUILD) $(MAKEJOBS)
+	mkdir -p $(ROOT)/Sdk/lib/android
+	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 
 
-androidplugins.clean: $(addsuffix .androidplugin.clean,$(PLUGINS_ANDROID))
+androidplugins: 
+	$(SUBMAKE) $(addsuffix .androidplugin,$(PLUGINS_ANDROID))
+
+androidplugins.clean: 
+	$(SUBMAKE) $(addsuffix .androidplugin.clean,$(PLUGINS_ANDROID))
 
 androidso.prep:
 
@@ -52,9 +61,9 @@ androidso.clean:
 	rm -rf $(ROOT)/$*/libs $(ROOT)/$*/obj
 
 androidso.install: androidso
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/jni
-	cp $(ROOT)/android/lib/jni/Application.mk $(RELEASE)/Templates/Eclipse/Android\ Template/jni
-	cp -R $(ROOT)/android/lib/libs $(RELEASE)/Templates/Eclipse/Android\ Template/
+	cp -R $(ROOT)/android/lib/libs/. $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/
+
+oculusso.install: oculusso
 	cp -R $(ROOT)/android/lib/libs/. $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/
 
 androidplugins.install: androidplugins $(addsuffix .androidplugin.install,$(PLUGINS_ANDROID))

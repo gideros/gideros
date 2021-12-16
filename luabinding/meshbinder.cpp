@@ -48,6 +48,7 @@ MeshBinder::MeshBinder(lua_State *L)
         {"clearTexture", clearTexture},
         {"setPrimitiveType", setPrimitiveType},
 	    {"setInstanceCount",setInstanceCount},
+	    {"setCullMode",setCullMode},
 
         {NULL, NULL},
     };
@@ -68,6 +69,141 @@ MeshBinder::MeshBinder(lua_State *L)
     lua_setfield(L, -2, "PRIMITIVE_TRIANGLESTRIP");
 
     lua_pop(L, 1);
+}
+
+static int decodeType(lua_State *L,int idx) {
+	const char *tstr=luaL_checkstring(L,idx);
+	int t=0;
+	while (*tstr) {
+		switch (*tstr) {
+		case '>': t|=0x80; break; //BE
+		case '<': break; //LE, default
+		case 'f':
+		case 'F':
+			t|=0x14; return t; //Float
+		case 'd':
+		case 'D':
+			t|=0x18; return t; //Double
+		case 'b':
+			t|=0x01; return t; //Byte
+		case 'B':
+			t|=0x21; return t; //UByte
+		case 's':
+			t|=0x02; return t; //Short
+		case 'S':
+			t|=0x22; return t; //UShort
+		case 'i':
+			t|=0x04; return t; //Int/Long
+		case 'I':
+			t|=0x24; return t; //UInt/ULong
+		}
+		tstr++;
+	}
+	return 0;
+}
+
+static void toFloatComponents(lua_State *L,int idx,int mult,std::vector<float> &v) {
+	int i=1;
+	int isBE=(!*((char *)&i));
+	size_t sl;
+	const char *s=luaL_checklstring(L,idx,&sl);
+	int type=decodeType(L,idx+1);
+	int big=type&0x80;
+	int bswap=(isBE&&(!big))||(big&&(!isBE));
+	int vlen=(type&0x0F);
+	int vt=type&0x3F;
+	if (!type) {
+		lua_pushstring(L,"Bad component type");
+		lua_error(L);
+	}
+	sl=sl/mult;
+	sl=sl/(type&0x0F);
+	sl*=mult;
+	v.resize(sl);
+	int vi=0;
+	while (sl) {
+		 char vbytes[8];
+		 if (bswap) {
+			 for (i=0;i<vlen;i++)
+				 vbytes[i]=s[vlen-1-i];
+		 }
+		 else
+			 memcpy(vbytes,s,vlen);
+		 s+=vlen;
+		 sl--;
+
+	#define FTYPE(c,t) \
+			 case c: \
+			 { \
+				 t m; \
+				 memcpy(&m,vbytes,vlen); \
+				 v[vi++]=m; \
+				 break; \
+			 }
+		 switch (vt) {
+			 FTYPE(0x01,int8_t);
+			 FTYPE(0x21,uint8_t);
+			 FTYPE(0x02,int16_t);
+			 FTYPE(0x22,uint16_t);
+			 FTYPE(0x04,int32_t);
+			 FTYPE(0x24,uint32_t);
+			 FTYPE(0x14,float);
+			 FTYPE(0x18,double);
+		 }
+	#undef FTYPE
+	}
+}
+
+static void toIntComponents(lua_State *L,int idx,int mult,std::vector<unsigned int> &v) {
+	int i=1;
+	int isBE=(!*((char *)&i));
+	size_t sl;
+	const char *s=luaL_checklstring(L,idx,&sl);
+	int type=decodeType(L,idx+1);
+	int big=type&0x80;
+	int bswap=(isBE&&(!big))||(big&&(!isBE));
+	int vlen=(type&0x0F);
+	int vt=type&0x3F;
+	if (!type) {
+		lua_pushstring(L,"Bad component type");
+		lua_error(L);
+	}
+	sl=sl/mult;
+	sl=sl/(type&0x0F);
+	sl*=mult;
+	v.resize(sl);
+	int vi=0;
+	while (sl) {
+		 char vbytes[8];
+		 if (bswap) {
+			 for (i=0;i<vlen;i++)
+				 vbytes[i]=s[vlen-1-i];
+		 }
+		 else
+			 memcpy(vbytes,s,vlen);
+		 s+=vlen;
+		 sl--;
+
+	#define FTYPE(c,t) \
+			 case c: \
+			 { \
+				 t m; \
+				 memcpy(&m,vbytes,vlen); \
+				 v[vi++]=m; \
+				 break; \
+			 }
+		 switch (vt) {
+			 FTYPE(0x01,int8_t);
+			 FTYPE(0x21,uint8_t);
+			 FTYPE(0x02,int16_t);
+			 FTYPE(0x22,uint16_t);
+			 FTYPE(0x04,int32_t);
+			 FTYPE(0x24,uint32_t);
+			 FTYPE(0x14,float);
+			 FTYPE(0x18,double);
+		 }
+	#undef FTYPE
+	}
 }
 
 int MeshBinder::create(lua_State *L)
@@ -400,8 +536,9 @@ int MeshBinder::setVertexArray(lua_State *L)
     std::vector<float> vertices;
     
     int order=mesh->is3d()?3:2;
-
-    if (lua_type(L, 2) == LUA_TTABLE)
+    if (lua_type(L, 2) == LUA_TSTRING)
+    	toFloatComponents(L,2,order,vertices);
+	else if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
         n = (n / order) * order;
@@ -435,9 +572,11 @@ int MeshBinder::setIndexArray(lua_State *L)
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
 
-    std::vector<unsigned short> indices;
+    std::vector<unsigned int> indices;
 
-    if (lua_type(L, 2) == LUA_TTABLE)
+    if (lua_type(L, 2) == LUA_TSTRING)
+    	toIntComponents(L,2,1,indices);
+    else if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
         indices.resize(n);
@@ -517,7 +656,9 @@ int MeshBinder::setTextureCoordinateArray(lua_State *L)
 
     std::vector<float> textureCoordinates;
 
-    if (lua_type(L, 2) == LUA_TTABLE)
+    if (lua_type(L, 2) == LUA_TSTRING)
+    	toFloatComponents(L,2,2,textureCoordinates);
+    else if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
         n = (n / 2) * 2;
@@ -697,7 +838,7 @@ int MeshBinder::getIndex(lua_State *L)
     if (i < 0 || i >= mesh->getIndexArraySize())
         return luaL_error(L, "The supplied index is out of bounds.");
 
-    unsigned short index;
+    unsigned int index;
     mesh->getIndex(i, &index);
     lua_pushinteger(L, (int)index + 1);
 
@@ -761,6 +902,14 @@ int MeshBinder::setInstanceCount(lua_State *L)
     return 0;
 }
 
+int MeshBinder::setCullMode(lua_State *L)
+{
+    Binder binder(L);
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    mesh->setCullMode((ShaderEngine::CullMode)(luaL_checkinteger(L,2)&3));
+
+    return 0;
+}
 
 int MeshBinder::setTexture(lua_State *L)
 {

@@ -11,7 +11,7 @@ function D3Anim.updateBones()
 				local name=b.name
 
 				local m=Matrix.new()
-				m:setMatrix(bd.poseIMat:getMatrix())
+				m:setMatrix(b.poseIMat:getMatrix())
 				while true do
 					local m1=b:getMatrix()
 					m1:multiply(m) m=m1
@@ -32,7 +32,7 @@ end
 
 function D3Anim.animate(m,a)
 	local ta={}
-	local dtm=(os:timer()-a.tm)*1000
+	local dtm=(os:timer()-a.tm)*1000*(a.speed or 1)
 	local hasNext=false
 	for _,b in ipairs(a.anim.bones) do
 		local cf=1
@@ -42,20 +42,21 @@ function D3Anim.animate(m,a)
 		else
 		end
 		local f=b.keyframes[cf]
-		if m.bones[b.boneId] then
+		if type(m.bones[b.boneId])=="table" then
 			local nf=m.bones[b.boneId]
 			local cm={ s=f.scale or nf.srt.s, r=f.rotation or nf.srt.r, t=f.translation or nf.srt.t}
 			ta[b.boneId]=cm
 		end
 	end
 	if not hasNext then
-		if not a.loop then return nil end
+		if not a.loop then return ta,true end
 		a.tm=os:timer()
 	end
-	return ta
+	return ta,false
 end
 
 function D3Anim.tick()
+
 	for k,a in pairs(D3Anim._animatedModel) do	
 		local ares={}
 		local aend={}
@@ -69,12 +70,12 @@ function D3Anim.tick()
 			local ao,ac,aor=nil,nil,1
 			if anim.oldAnim then
 				local aratio=(os:timer()-anim.oldStart)/anim.oldLen
-				if aratio>=1 then
+				if aratio>=1 then aratio=1 end
+				if aratio<0 then aratio=0 end
+				ao,al=D3Anim.animate(k,anim.oldAnim)
+				aor=1-aratio
+				if al or aratio>=1 then 
 					anim.oldAnim=nil
-				else
-					if aratio<0 then aratio=0 end
-					ao=D3Anim.animate(k,anim.oldAnim)
-					if ao then aor=1-aratio end
 				end
 			end
 			ac=D3Anim.animate(k,anim)
@@ -97,14 +98,13 @@ function D3Anim.tick()
 				local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 				local tsr=0
 				for _,srt in ipairs(srtl) do tsr+=srt.ratio end
-				if tsr>0 then
-					for _,srt in ipairs(srtl) do
-						local rsc=srt.ratio/tsr
-						for k=1,16 do cm[k]+=srt.mat[k]*rsc end
-					end
-					local rm=Matrix.new() rm:setMatrix(unpack(cm))
-					k.bones[bone]:setMatrix(rm)
+				for _,srt in ipairs(srtl) do
+					local rsc=1/#srtl
+					if tsr>0 then rsc=srt.ratio/tsr end
+					for k=1,16 do cm[k]+=srt.mat[k]*rsc end
 				end
+				local rm=Matrix.new() rm:setMatrix(unpack(cm))
+				k.bones[bone]:setMatrix(rm)
 			end
 		end
 		a.dirty=true
@@ -112,7 +112,29 @@ function D3Anim.tick()
 	D3Anim.updateBones()
 end
 
-function D3Anim.setAnimation(model,anim,track,loop,transitionTime)
+function D3Anim.setBonesPose(m,poses)
+	local m=m.bonesTop
+	local a=D3Anim._animatedModel[m]
+	for bone,srtl in pairs(poses) do
+		if #srtl>0 then
+			local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			local tsr=0
+			for _,srt in ipairs(srtl) do tsr+=srt.ratio end
+			if tsr>0 then
+				for _,srt in ipairs(srtl) do
+					local rsc=1/#srtl
+					if tsr>0 then rsc=srt.ratio/tsr end
+					for k=1,16 do cm[k]+=srt.mat[k]*rsc end
+				end
+				local rm=Matrix.new() rm:setMatrix(unpack(cm))
+				m.bones[bone]:setMatrix(rm)
+			end
+		end
+	end
+	a.dirty=true
+end
+
+function D3Anim.setAnimation(model,anim,track,loop,transitionTime,speed)
 	assert(D3Anim._animatedModel[model],"Model not animatable")
 	local an=D3Anim._animatedModel[model]
 	local oldAnim,oldStart,oldLen,tm=nil,nil,nil,os:timer()
@@ -121,7 +143,7 @@ function D3Anim.setAnimation(model,anim,track,loop,transitionTime)
 		oldStart=tm
 		oldLen=transitionTime
 	end
-	an.animations[track]={anim=anim,tm=tm,loop=loop,oldAnim=oldAnim,oldStart=oldStart,oldLen=oldLen}
+	an.animations[track]={anim=anim,tm=tm,loop=loop,oldAnim=oldAnim,oldStart=oldStart,oldLen=oldLen,speed=speed}
 end
 
 function D3Anim._addMesh(m)

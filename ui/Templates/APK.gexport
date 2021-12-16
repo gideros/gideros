@@ -2,6 +2,9 @@
     label="Android"
 	description="Export as an Android APK file">
 	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
+	<property name="forOculus" type="boolean" title="Build for Oculus Quest" default="0" />	
+	<property name="oculusHT" type="boolean" title="- Support hand tracking (Oculus)" default="0" />	
+	<property name="oculusHTR" type="boolean" title="- Require hand tracking (Oculus)" default="0" />	
 	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="30" />
 	<property name="buildAab" type="boolean" title="Build Android bundle (.aab file, no APK)" description="Build the android bundle file directly, no APK will be generated nor installed" default="1" />	
 	<property name="buildApk" type="boolean" title="Build APK file" description="Build the APK file directly, otherwise outputs the Android Studio project" default="0" />	
@@ -166,8 +169,8 @@ local ap=require("Tools/export_android")
         		<replace><orig>setProperty("archivesBaseName"</orig><by>[[[local.noRename]]]setProperty("archivesBaseName"</by></replace>
         	</replacelist>		
 		</template>
-		<if condition="[[[eq:[[[sys.exporType]]]:player]]]">
-    	<template name="AndroidManifest" path="">
+		<if condition="[[[eq:[[[sys.exportType]]]:player]]]">
+    	<template name="$MANIFEST$" path="">
         	<replacelist wildcards="AndroidManifest.xml">
 	            <append>
             		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
@@ -176,6 +179,44 @@ local ap=require("Tools/export_android")
         	</replacelist>
     	</template>
 		</if>		
+		<if condition="[[[export.forOculus]]]">
+	    	<template name="$MANIFEST$" path="">
+		        <replacelist wildcards="GiderosSettings.java">
+		            <replace>
+	            		<orig>oculusNative=false</orig>
+	        	    	<by>oculusNative=true</by>
+	    	        </replace>
+	    	    </replacelist>
+		    </template>
+	    	<template name="$MANIFEST$" path="">
+	        	<replacelist wildcards="AndroidManifest.xml">
+	        		<append>
+	        			<orig><![CDATA[<application ]]></orig>
+	        			<by><![CDATA[android:hardwareAccelerated="true" android:isGame="true" ]]></by>
+	        		</append>
+		            <append>
+	            		<orig><![CDATA[<!-- TAG:INTENT-FILTER-EXTRA -->]]></orig>
+	        	    	<by><![CDATA[<meta-data android:name="com.oculus.vr.focusaware" android:value="true"/>
+	        	    	]]></by>
+	    	        </append>
+		            <append>
+	            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+	        	    	<by><![CDATA[<meta-data android:name="com.samsung.android.vr.application.mode" android:value="vr_only"/>
+        <meta-data android:name="com.oculus.supportedDevices" android:value="all" />
+        				]]></by>
+	    	        </append>    
+	        	</replacelist>
+	    	</template>
+		    <lua>
+		    	local ap=require("Tools/export_android")
+			    ap.useFeature("android.hardware.vr.headtracking",true)
+		    	if Export.isSet("export.oculusHT") or Export.isSet("export.oculusHTR") then
+			    	ap.usePermission("com.oculus.permission.HAND_TRACKING")
+			    	ap.useFeature("oculus.software.handtracking",Export.isSet("export.oculusHTR"))
+			   end
+		    </lua>
+	    </if>
+		
 		<mkdir>app/src/main/assets/assets</mkdir>
 		<cd>app/src/main/assets/assets</cd>
 		<initPlugins/>
@@ -210,6 +251,25 @@ local ap=require("Tools/export_android")
 			<splashHorizontal width="1920" height="1280" dest="app/src/main/res/drawable-xxxhdpi/splash.png"/>
 		</if>
 		<applyPlugins/>
+		<lua><![CDATA[
+			local bdir=Export.getProperty("sys.exportDir")
+			if Export.isSet("export.buildAab") or Export.isSet("export.buildApk") then
+				bdir=bdir.."/tmp"
+			end
+			bdir=bdir.."/app/src/main/jniLibs/"
+			print("OCULUS-LIBS:"..bdir)
+			if Export.isSet("export.forOculus") then
+			 os.remove(bdir.."arm64-v8a/libgideros.so")
+			 os.rename(bdir.."arm64-v8a/libgiderosvr.so",bdir.."arm64-v8a/libgideros.so")
+			 os.remove(bdir.."armeabi-v7a/libgideros.so")
+			 os.rename(bdir.."armeabi-v7a/libgiderosvr.so",bdir.."armeabi-v7a/libgideros.so")
+			else
+			 os.remove(bdir.."arm64-v8a/libgiderosvr.so")
+			 os.remove(bdir.."arm64-v8a/libvrapi.so")
+			 os.remove(bdir.."armeabi-v7a/libgiderosvr.so")
+			 os.remove(bdir.."armeabi-v7a/libvrapi.so")
+			end
+		]]></lua>
 		<if condition="[[[or:[[[export.buildAab]]]:[[[export.buildApk]]]]]]">		
 			<lua><![CDATA[
 				local ap=require("Tools/export_android")

@@ -51,7 +51,8 @@ public:
 		SysConst_Timer,
     	SysConst_ProjectionMatrix,
     	SysConst_ViewProjectionMatrix,
-		SysConst_Bounds
+        SysConst_Bounds,
+        SysConst_RenderTargetScale,
     };
     enum ShaderFlags {
     	Flag_None=0,
@@ -143,12 +144,15 @@ public:
 
 class ShaderBuffer
 {
+    float scaleX,scaleY;
 public:
 	virtual ~ShaderBuffer() { };
 	virtual void prepareDraw()=0;
 	virtual void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)=0;
 	virtual void unbound()=0;
 	virtual void needDepthStencil()=0;
+    virtual void setScale(float x,float y) { scaleX=x; scaleY=y; }
+    virtual void getScale(float &x,float &y) { x=scaleX; y=scaleY; }
 };
 
 class ShaderEngine
@@ -175,6 +179,11 @@ public:
 		STENCIL_NOTEQUAL,
 		STENCIL_ALWAYS
 	};
+	enum CullMode {
+		CULL_NONE,
+		CULL_FRONT,
+		CULL_BACK,
+	};
 	struct DepthStencil {
 		bool dTest;
 		bool dClear;
@@ -186,6 +195,7 @@ public:
 		StencilOp dFail;
 		StencilOp dPass;
 		bool sClear;
+		CullMode cullMode;
         bool operator==(const DepthStencil &o) const {
             return dTest==o.dTest && dClear==o.dClear;
         }
@@ -198,12 +208,14 @@ public:
             |(((unsigned int)sFunc)<<4)
             |(((unsigned int)sFail)<<8)
             |(((unsigned int)dFail)<<12)
-            |(((unsigned int)dPass)<<16);
+            |(((unsigned int)dPass)<<16)
+            |(((unsigned int)cullMode)<<20);
             unsigned int d2=(o.dTest?1:0)|(o.dClear?2:0)|(o.sClear?4:0)
             |(((unsigned int)o.sFunc)<<4)
             |(((unsigned int)o.sFail)<<8)
             |(((unsigned int)o.dFail)<<12)
-            |(((unsigned int)o.dPass)<<16);
+            |(((unsigned int)o.dPass)<<16)
+            |(((unsigned int)o.cullMode)<<20);
             CHECK(d1,d2)
 #undef CHECK
             return false;
@@ -218,6 +230,7 @@ protected:
 	Matrix4 oglModel; //Model matrix
 	Matrix4 oglCombined; //MVP Matrix
 	float constCol[4];
+    float screenScaleX,screenScaleY;
 	//Scissor structs
 	struct Scissor
 	{
@@ -280,11 +293,13 @@ public:
 	virtual ShaderTexture::Packing getPreferredPackingForTextureFormat(ShaderTexture::Format format);
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false)=0;
-	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;
-	virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags,
+    virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;
+    virtual ShaderBuffer *getFramebuffer()=0;
+    virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags,
 	                     const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)=0;
 	virtual void setViewport(int x,int y,int width,int height)=0;
 	virtual void resizeFramebuffer(int width,int height)=0;
+    virtual void setScreenScale(float scaleX,float scaleY) { screenScaleX=scaleX; screenScaleY=scaleY; };
 	enum StandardProgram {
 		STDP_UNSPECIFIED=0,
 		STDP_BASIC=1,

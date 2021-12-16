@@ -10,18 +10,12 @@
 #define gshare_h_
 
 #include <gglobal.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
+#include <map>
 
 void gshare_Init();
-bool gshare_Share(const char *mimeType,const void *data,size_t datasize);
+bool gshare_Share(std::map<std::string,std::string> values);
 void gshare_Cleanup();
     
-#ifdef __cplusplus
-}
-#endif
-
 #endif/* gstoreReview_h */
 

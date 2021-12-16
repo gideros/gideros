@@ -63,6 +63,9 @@ function G3DFormat.srtToMatrix(v,rev)
 	end
 	if v.r then 
 		local X,Y,Z,W=v.r[1],v.r[2],v.r[3],v.r[4]
+		local L=(X*X+Y*Y+Z*Z+W*W)^0.5
+		--print(X,Y,Z,W,L)
+		X/=L Y/=L Z/=L W/=L
 		local xx,xy,xz,xw,yy,yz,yw,zz,zw
 		local m00,m01,m02,m10,m11,m12,m20,m21,m22
 		xx      = X * X
@@ -134,12 +137,17 @@ end
 function G3DFormat.buildG3DObject(obj,mtls,top)
 	mtls=mtls or {}
 	m=D3.Mesh.new()
+	m.name=obj.name
 	m:setVertexArray(obj.vertices)
 	m:setIndexArray(obj.indices)
 	mtl={}
 	if obj.material then 
-		mtl=mtls[obj.material]
-		assert(mtl,"No such material: "..obj.material)
+		if type(obj.material)=="table" then
+			mtl=obj.material
+		else
+			mtl=mtls[obj.material]
+			assert(mtl,"No such material: "..obj.material)
+		end
 	end
 	if obj.color then
 		m:setColorTransform(obj.color[1],obj.color[2],obj.color[3],obj.color[4])
@@ -147,7 +155,7 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 	--m:setColorArray(c)
 	local smode=0
 	if mtl.textureFile and not mtl.texture then
-		mtl.texture=Texture.new(mtl.textureFile,true)
+		mtl.texture=Texture.new(mtl.textureFile,true,{ wrap=Texture.REPEAT, extend=false})
 		mtl.texturew=mtl.texture:getWidth()
 		mtl.textureh=mtl.texture:getHeight()
 	end
@@ -186,8 +194,8 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		if top and top.bones and obj.bones then
 			m.animBones={}
 			for k,v in ipairs(obj.bones) do
-				local pose=G3DFormat.srtToMatrix(v.poseSrt)
-				m.animBones[k]={ boneref=v.node, poseMat=pose}
+				m.animBones[k]={ boneref=v.node }
+				if v.poseSrt then m.animBones[k].poseMat=G3DFormat.srtToMatrix(v.poseSrt) end
 				top.animMeshes=top.animMeshes or {}
 				top.animMeshes[m]=true
 			end
@@ -217,9 +225,9 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 			local m=G3DFormat.buildG3D(v,mtl,ltop)
 			spr:addChild(m)
 			spr.objs[k]=m
-			if top and top.bones then
-				if top.bones[k] then 
-					top.bones[k]=m 
+			if ltop and ltop.bones then
+				if ltop.bones[k] then 
+					ltop.bones[k]=m 
 				end
 			end
 		end
@@ -246,18 +254,29 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 		for m,_ in pairs(spr.animMeshes) do
 			if m.animBones then
 				for _,b in ipairs(m.animBones) do
-          b.bone=spr.bones[b.boneref]
-					local pose=Matrix.new()
-					pose:setMatrix(b.poseMat:getMatrix())
-					local p=m
-					local id=Matrix.new()
-					while true do
-						p:setMatrix(id)
-						p=p:getParent()
-						if p==spr then break end
+					b.bone=spr.bones[b.boneref]
+					local mi=Matrix.new()
+					local p=b.bone
+					if b.poseMat then
+						mi:setMatrix(b.poseMat:getMatrix())
+						p=m
+						while p do
+							p:setMatrix(Matrix.new())
+							if p==m.bonesTop then break end
+							p=p:getParent()
+						end
+						p=nil
 					end
-					pose:invert()
-					b.poseIMat=pose
+					while p do
+						local m1=p:getMatrix()
+						m1:multiply(mi) mi=m1
+						if p==m.bonesTop then break end
+						p=p:getParent()
+					end
+					b.bone.poseMat=Matrix.new()
+					b.bone.poseMat:setMatrix(mi:getMatrix())
+					mi:invert()
+					b.bone.poseIMat=mi
 				end
 			end
 		end

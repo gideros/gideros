@@ -1017,6 +1017,13 @@ struct LuaItemFilter: ItemFilter {
 
 static int worldProject(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
+	double x = luaL_checknumber(L, 3);
+	double y = luaL_checknumber(L, 4);
+	double w = luaL_checknumber(L, 5);
+	double h = luaL_checknumber(L, 6);
+	double gx = luaL_checknumber(L, 7);
+	double gy = luaL_checknumber(L, 8);
+	bool hasFunc=!lua_isnoneornil(L, 9);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
 	lua_gettable(L, -2);
@@ -1028,18 +1035,12 @@ static int worldProject(lua_State *L) {
 	}
 	int item = lua_tonumber(L, -1);
 	lua_pop(L, 2);
-	double x = luaL_checknumber(L, 3);
-	double y = luaL_checknumber(L, 4);
-	double w = luaL_checknumber(L, 5);
-	double h = luaL_checknumber(L, 6);
-	double gx = luaL_checknumber(L, 7);
-	double gy = luaL_checknumber(L, 8);
 
 	ColFilter *f = NULL;
 	LuaColFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 9)) {
+	if (hasFunc) {
 		luaL_checktype(L, 9, LUA_TFUNCTION);
 		lf.func = 9;
 		f = &lf;
@@ -1104,9 +1105,8 @@ static int worldProject(lua_State *L) {
 		lua_setfield(L, -2, "h");
 		lua_setfield(L, -2, "otherRect");
 
-		lua_rawseti(L, -3, ++n);
+		lua_rawseti(L, -2, ++n);
 	}
-	lua_pop(L, 1);
 	lua_pushinteger(L, n);
 
 	return 2;

@@ -1,0 +1,39 @@
+# Made using Asset Forge (2.1.2)
+
+:materials
+
+[name:Water;color:RGBA(0.503, 0.293, 0.144, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:stone;color:RGBA(0.571, 0.559, 0.736, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:stoneLight;color:RGBA(0.710, 0.701, 0.840, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Oak_Leaves;color:RGBA(0.322, 0.541, 0.157, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Coconut;color:RGBA(0.518, 0.420, 0.333, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Wood_Palm;color:RGBA(0.545, 0.435, 0.278, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Wood_Dark;color:RGBA(0.518, 0.420, 0.333, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Rock;color:RGBA(0.631, 0.624, 0.612, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Fabric_1;color:RGBA(0.859, 0.780, 0.733, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Fabric_2;color:RGBA(0.706, 0.628, 0.561, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Dark_Wood;color:RGBA(0.510, 0.384, 0.290, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Medium_Wood;color:RGBA(0.655, 0.475, 0.353, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Matte_Black;color:RGBA(0.177, 0.177, 0.177, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:LCD;color:RGBA(1.000, 1.000, 1.000, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+
+:models
+
+[name:;collection:modular_terrain_collection;type:Beach_Prop_Tree_Palm_3;position:(11.0000, 0.0000, 0.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(1.0000, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Oak_Leaves+Coconut+Wood_Palm;]
+[name:;collection:modular_terrain_collection;type:Hilly_Prop_Tree_Oak_3;position:(-4.0000, 0.0000, 3.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(1.0000, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Oak_Leaves+Wood_Dark;]
+[name:;collection:modular_terrain_collection;type:Hilly_Prop_Tree_Oak_4;position:(6.0000, 0.0000, 11.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(1.0000, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Oak_Leaves+Wood_Dark;]
+[name:;collection:modular_terrain_collection;type:Shared_Prop_Boulder_3;position:(12.0000, 0.0000, 6.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(1.0000, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Rock;]
+[name:;collection:modular_terrain_collection;type:Mountain_1;position:(-5.0000, 0.0000, -8.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(1.0000, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Rock;]
+[name:;collection:modular_terrain_collection;type:Hilly_Terrain_Water_Curve;position:(8.0000, -0.7000, -1.0000);rotation:(0.0000, 270.0000, 0.0000);scale:(9.0008, 1.0000, 9.0008);group:Group_4;locked:False;hidden:False;materials:Water;]
+[name:;collection:modular_terrain_collection;type:Hilly_Terrain_Water_Curve;position:(-1.0000, -0.7000, -1.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(9.0000, 1.0000, 9.0000);group:Group_4;locked:False;hidden:False;materials:Water;]
+[name:;collection:modular_terrain_collection;type:Hilly_Terrain_Water_Curve;position:(-1.0000, -0.7000, 8.0000);rotation:(0.0000, 90.0000, 0.0000);scale:(9.0009, 1.0000, 9.0009);group:Group_4;locked:False;hidden:False;materials:Water;]
+[name:;collection:modular_terrain_collection;type:Hilly_Terrain_Water_Curve;position:(8.0000, -0.7000, 8.0000);rotation:(0.0000, 180.0000, 0.0000);scale:(9.0000, 1.0000, 9.0000);group:Group_4;locked:False;hidden:False;materials:Water;]
+[name:;collection:Roofs;type:roof_flatSideRound%;position:(5.9875, 0.0000, 3.9875);rotation:(0.0000, 270.0000, 0.0000);scale:(4.8000, 1.0000, 4.8000);group:;locked:False;hidden:False;materials:stone+stoneLight;]
+[name:;collection:Roofs;type:roof_flatSideRound%;position:(1.1875, 0.0000, 3.9875);rotation:(0.0000, 180.0000, 0.0000);scale:(4.8000, 1.0000, 4.8000);group:;locked:False;hidden:False;materials:stone+stoneLight;]
+[name:;collection:Roofs;type:roof_flatSideRound%;position:(5.9875, 0.0000, -0.8125);rotation:(0.0000, 0.0000, 0.0000);scale:(4.8000, 1.0000, 4.8000);group:;locked:False;hidden:False;materials:stone+stoneLight;]
+[name:;collection:Roofs;type:roof_flatSideRound%;position:(1.1875, 0.0000, -0.8125);rotation:(0.0000, 90.0000, 0.0000);scale:(4.7999, 1.0000, 4.7999);group:;locked:False;hidden:False;materials:stone+stoneLight;]
+[name:;collection:KeithHouse;type:Prop_Living_Room_TV;position:(3.5500, 0.8000, 0.4000);rotation:(0.0000, 0.0000, 0.0000);scale:(2.1200, 2.5000, 1.0000);group:;locked:False;hidden:False;materials:LCD+Matte_Black;]
+[name:;collection:KeithHouse;type:Prop_Living_Room_TV_Stand;position:(3.5400, 0.1000, 0.5000);rotation:(0.0000, 0.0000, 0.0000);scale:(3.1200, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Dark_Wood+Medium_Wood+Matte_Black+LCD;]
+[name:;collection:KeithHouse;type:Prop_Living_Room_Modular_Couch_Corner;position:(4.5000, 0.1000, 4.9000);rotation:(0.0000, 180.0000, 0.0000);scale:(1.0000, 1.2000, 1.0000);group:Group_5;locked:False;hidden:False;materials:Fabric_1+Fabric_2;]
+[name:;collection:KeithHouse;type:Prop_Living_Room_Modular_Couch_Corner;position:(2.5000, 0.1000, 4.9000);rotation:(0.0000, 90.0000, 0.0000);scale:(1.0000, 1.2000, 1.0000);group:Group_5;locked:False;hidden:False;materials:Fabric_1+Fabric_2;]
+[name:;collection:KeithHouse;type:Prop_Living_Room_Modular_Couch_Center;position:(3.5000, 0.1000, 4.9000);rotation:(0.0000, 180.0000, 0.0000);scale:(1.0000, 1.2000, 1.0000);group:Group_5;locked:False;hidden:False;materials:Fabric_1+Fabric_2;]

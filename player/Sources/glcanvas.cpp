@@ -202,6 +202,7 @@ static int __mkdir(const char* path) {
 static Server* g_server = NULL;
 QString GLCanvas::appPackage;
 bool GLCanvas::EnableVSYNC=false;
+bool GLCanvas::TabletActive=false;
 
 static void printToServer(const char* str, int len, void* data) {
     G_UNUSED(data);
@@ -1121,8 +1122,8 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
-    if (event->source() == Qt::MouseEventSynthesizedBySystem) {
-	  event->accept();
+    if ((event->source() == Qt::MouseEventSynthesizedBySystem)||TabletActive) {
+      event->accept();
 	  return;
 	}
     if (event->button() <= 4){
@@ -1138,7 +1139,7 @@ void GLCanvas::mousePressEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
-   if (event->source() == Qt::MouseEventSynthesizedBySystem) {
+   if ((event->source() == Qt::MouseEventSynthesizedBySystem)||TabletActive) {
 	  event->accept();
 	  return;
 	}
@@ -1164,8 +1165,8 @@ void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->source() == Qt::MouseEventSynthesizedBySystem) {
-	  event->accept();
+    if ((event->source() == Qt::MouseEventSynthesizedBySystem)||TabletActive) {
+      event->accept();
 	  return;
 	}
     if (event->button() <= 4){
@@ -1239,13 +1240,13 @@ void GLCanvas::tabletEvent(QTabletEvent* event) {
 
 
     if(event->type() == QEvent::TabletPress){
-        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m);
+        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->button());
 
     }else if(event->type() == QEvent::TabletMove){
-        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m);
+        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->buttons());
 
     }else if(event->type() == QEvent::TabletRelease){
-        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m);
+        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->button());
     }
     event->accept();
 }
@@ -1318,16 +1319,16 @@ bool GLCanvas::event(QEvent *event){
             QTouchEvent::TouchPoint p = list[i];
             int tid=touchIdMap[p.id()]-1;
             if(event->type() == QEvent::TouchCancel){
-                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, tid, p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, tid, p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m,GINPUT_NO_BUTTON);
             }
             else if(p.state() == Qt::TouchPointPressed){
-                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m,GINPUT_NO_BUTTON);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m,GINPUT_NO_BUTTON);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m,GINPUT_NO_BUTTON);
             }
         }
         touchIdUsed=curIds;

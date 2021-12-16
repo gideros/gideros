@@ -14763,5 +14763,11 @@ static void g_deinitializePlugin(lua_State* _UNUSED(L)) { }
 #ifdef IS_BETA_BUILD
 REGISTER_PLUGIN_NAMED(PLUGIN_NAME, "1.0.0", imgui_beta)
 #else
+#ifdef QT_NO_DEBUG
 REGISTER_PLUGIN_NAMED(PLUGIN_NAME, "1.0.0", Imgui)
+#elif defined(TARGET_OS_MAC) || defined(_MSC_VER)
+REGISTER_PLUGIN_STATICNAMED_CPP(PLUGIN_NAME, "1.0.0", Imgui)
+#else
+REGISTER_PLUGIN_NAMED(PLUGIN_NAME, "1.0.0", Imgui)
+#endif
 #endif

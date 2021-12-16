@@ -383,8 +383,21 @@ static int mpbs_getCenterLongitude(lua_State* L)
 	return 1;
 }
 
+static int mpbs_addMarker(lua_State* L)
+{
 
-static void mpbs_addMarkerAtIndex(lua_State* L)
+    MAPPLUGINBINDER *mapplugin = getInstance(L, 1);
+	double lat = lua_tonumber(L, 2);
+	double lon = lua_tonumber(L, 3);
+	const char *title = lua_tostring(L, 4);
+
+	mapplugin->mpb_addMarker(lat, lon, title);
+
+	return 1;
+}
+
+/*
+static int mpbs_addMarkerAtIndex(lua_State* L)
 {
 
     MAPPLUGINBINDER *mapplugin = getInstance(L, 1);
@@ -397,7 +410,7 @@ static void mpbs_addMarkerAtIndex(lua_State* L)
 
 	return 1;
 }
-
+*/
 static int mpbs_setMarkerTitle(lua_State* L)
 {
 
@@ -525,7 +538,7 @@ static int loader(lua_State *L)
 		{"getCenterLatitude", mpbs_getCenterLatitude},
 		{"getCenterLongitude", mpbs_getCenterLongitude},
 		{"addMarker", mpbs_addMarker},
-		{"addMarkerAtIndex", mpbs_addMarkerAtIndex)
+//		{"addMarkerAtIndex", mpbs_addMarkerAtIndex},
 		{"setMarkerTitle", mpbs_setMarkerTitle},
 		{"setMarkerHue", mpbs_setMarkerHue},
 		{"setMarkerAlpha", mpbs_setMarkerAlpha},

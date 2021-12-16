@@ -72,6 +72,7 @@ typedef struct LexState {
   int mpos; /* current character position of macro string */
   int mlen; /* macro string length */
   int mswt; /* number of switches between source and macro */
+  const char *const *tokens; /* current (localized) token names */
 } LexState;
 
 

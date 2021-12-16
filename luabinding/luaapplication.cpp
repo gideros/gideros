@@ -704,22 +704,22 @@ void LuaApplication::callback(int type, void *event)
     if (type == GINPUT_MOUSE_DOWN_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseDown(event2->x, event2->y, event2->button, event2->modifiers);
+        application_->mouseDown(event2->x, event2->y, event2->button, event2->modifiers, event2->mouseType);
     }
     else if (type == GINPUT_MOUSE_MOVE_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseMove(event2->x, event2->y, event2->button, event2->modifiers);
+        application_->mouseMove(event2->x, event2->y, event2->button, event2->modifiers, event2->mouseType);
     }
     else if (type == GINPUT_MOUSE_HOVER_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseHover(event2->x, event2->y, event2->button, event2->modifiers);
+        application_->mouseHover(event2->x, event2->y, event2->button, event2->modifiers, event2->mouseType);
     }
     else if (type == GINPUT_MOUSE_UP_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseUp(event2->x, event2->y, event2->button, event2->modifiers);
+        application_->mouseUp(event2->x, event2->y, event2->button, event2->modifiers, event2->mouseType);
     }
     else if (type == GINPUT_MOUSE_WHEEL_EVENT)
     {
@@ -1365,9 +1365,9 @@ void LuaApplication::clearBuffers()
 	application_->clearBuffers();
 }
 
-void LuaApplication::renderScene(int deltaFrameCount)
+void LuaApplication::renderScene(int deltaFrameCount,float *vmat,float *pmat,const std::function<void(ShaderEngine *,Matrix4 &)> &preStage)
 {
-	application_->renderScene();
+	application_->renderScene(-1,vmat,pmat,preStage);
 
 	//Compute frame timings
     double frmEnd=iclock();
@@ -1426,12 +1426,12 @@ void LuaApplication::setHardwareOrientation(Orientation orientation)
 }
 
 
-void LuaApplication::setResolution(int width, int height)
+void LuaApplication::setResolution(int width, int height,bool keepBuffers)
 {
 	width_ = width;
 	height_ = height;
 
-	application_->setResolution(width_, height_);
+	application_->setResolution(width_, height_, keepBuffers);
 }
 
 

@@ -54,4 +54,22 @@ iOSProject.exportPluginFiles("Share",
 	iOSProject.InfoPlist.NSPhotoLibraryUsageDescription=Export.getProperty("plugin.photoShareReason")
 	]]></lua>
  </target>
+  <target name="WinRT">
+    <mkdir>giderosgame/giderosgame.Shared/Plugins/Share</mkdir>
+    <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins/Share"/>
+    <template name="sources" path="[[[sys.pluginDir]]]/source/Common"  dest="giderosgame/giderosgame.Shared/Plugins/Share"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Share\sharebinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Share\gshare-uwp.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Share\sharebinder.h" />]]></by>
+            </append>
+        </replacelist>
+    </template>
+ </target>
 </plugin>

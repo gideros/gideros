@@ -161,9 +161,20 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src \
 
 include $(BUILD_STATIC_LIBRARY)
 
+ifneq ($(OCULUS),)
+include $(CLEAR_VARS)
+LOCAL_MODULE := vrapi-prebuilt
+LOCAL_SRC_FILES := $(LOCAL_PATH)/../oculus/Libs/$(TARGET_ARCH_ABI)/Release/libvrapi.so
+include $(PREBUILT_SHARED_LIBRARY)
+endif
+
 include $(CLEAR_VARS)
 
+ifneq ($(OCULUS),)
+LOCAL_MODULE := giderosvr
+else
 LOCAL_MODULE := gideros
+endif
 
 LOCAL_CFLAGS := -O2
 
@@ -199,7 +210,6 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../libgid/external/jpeg-9
 
 LOCAL_SRC_FILES += gideros.cpp
-
 
 LOCAL_SRC_FILES += \
     ../../../libgid/src/gimage-png.cpp \
@@ -518,6 +528,16 @@ LOCAL_LDLIBS := -lGLESv3 -ldl -llog -lOpenSLES -latomic
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
 LOCAL_STATIC_LIBRARIES := openal mpg123 libxmp
+
+ifneq ($(OCULUS),)
+LOCAL_LDLIBS += -lEGL -landroid 
+LOCAL_SRC_FILES += oculus/oculus.cpp
+LOCAL_CFLAGS += -DOCULUS 
+LOCAL_C_INCLUDES += \
+	$(LOCAL_PATH)/../oculus \
+	$(LOCAL_PATH)/../oculus/Include 
+LOCAL_SHARED_LIBRARIES+=vrapi-prebuilt
+endif
 
 include $(BUILD_SHARED_LIBRARY)
 

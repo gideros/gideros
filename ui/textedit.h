@@ -54,6 +54,7 @@ public:
 
 protected:
 	virtual void closeEvent(QCloseEvent* event);
+    void setLuaLanguage(QString lang);
 
 public slots:
 	// bookmarks

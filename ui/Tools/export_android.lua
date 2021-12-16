@@ -4,10 +4,15 @@ Tools to simplify android exports
 
 AndroidProject={
   permissions={},
+  features={},
   _minSdk=14
 }
 
 local MAX_SDK=1000
+
+function AndroidProject.useFeature(name,req)
+    AndroidProject.features[name]=req or false
+end
 
 function AndroidProject.usePermission(name,maxSdk)
   local msdk=maxSdk or MAX_SDK
@@ -30,13 +35,17 @@ local function apply()
     if s<MAX_SDK then
       e=([[android:maxSdkVersion="%d" ]]):format(s)
     end
-    perms=perms..(([[
-    <uses-permission android:name="%s" %s/>]]):format(n,e))
+    perms=perms..(([[<uses-permission android:name="%s" %s/>
+      ]]):format(n,e))
+  end
+  for n,r in pairs(AndroidProject.features) do
+    perms=perms..(([[<uses-feature android:name="%s" android:required="%s" />
+      ]]):format(n,tostring(not not r)))
   end
   Export.callXml(([[<template name="AndroidPermissionsManifest" path="">
       <replacelist wildcards="AndroidManifest.xml">
         <append>
-        <orig>]].."<![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig><by><![CDATA[%s]]></by>"..
+        <orig>]].."<![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig><by><![CDATA[\n%s]]></by>"..
         [[</append>
           </replacelist>
   </template>]]):format(perms))

@@ -270,6 +270,13 @@ id<MTLRenderCommandEncoder> metalShaderEngine::encoder()
         if (mds!=nil){
             [mrce setDepthStencilState:mds];
             [mrce setStencilReferenceValue:dsCurrent.sRef];
+            MTLCullMode cull; 
+            switch (dsCurrent.cullMode) {
+             case CULL_FRONT: cull=MTLCullModeFront; break;
+             case CULL_BACK: cull=MTLCullModeBack; break;
+             default: cull=MTLCullModeNone;
+            }
+            [mrce setCullMode:cull];
         }
         setClip(clipX,clipY,clipW,clipH);
     }
@@ -438,6 +445,13 @@ void metalShaderEngine::setDepthStencil(DepthStencil state)
     if (mrce!=nil) {
         [encoder() setDepthStencilState:mds];
         [encoder() setStencilReferenceValue:dsCurrent.sRef];
+        MTLCullMode cull; 
+        switch (state.cullMode) {
+        case CULL_FRONT: cull=MTLCullModeFront; break;
+        case CULL_BACK: cull=MTLCullModeBack; break;
+        default: cull=MTLCullModeNone;
+        }
+        [encoder() setCullMode:cull];
     }
     //[encoder() setStencilStoreAction:state.sFunc==(ShaderEngine::STENCIL_DISABLE)?MTLStoreActionDontCare: MTLStoreActionStore];    
 }

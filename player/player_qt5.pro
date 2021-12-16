@@ -136,7 +136,8 @@ SOURCES += \
     $$files(../external/glu/libtess/*.c) \
     "../external/minizip-1.1/source/ioapi.c" \
     "../external/minizip-1.1/source/unzip.c" \
-    $$files(../libpvrt/*.h)
+    $$files(../libpvrt/*.h) \
+    Sources/tabletapplication.cpp
 
 FORMS += \
     Forms/mainwindow.ui\
@@ -153,7 +154,8 @@ HEADERS += \
     $$files(../luabinding/*.h)\
     $$files(../libnetwork/*.h)\
     ../2dsg/gfxbackends/gl2/gl2Shaders.h \
-    ../2dsg/gfxbackends/Shaders.h
+    ../2dsg/gfxbackends/Shaders.h \
+    Headers/tabletapplication.h
 
 DEFINES += USE_FILE32API
 

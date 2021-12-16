@@ -26,8 +26,9 @@ all: path $(WOBJS)
 	@echo "EMLINK WASM" $(TARGET)
 	@$(EMCC) -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) $(LOPTS) -o $(BUILD)/Html/$(TARGET).wasm $(WOBJS)
 	@echo "SYMGEN" $(TARGET)
-	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/Html/$(TARGET).wasm | grep '(import ' | grep -v '(table ' | grep -v '(memory ' | sed 's/^[ \t]*//' | cut -d' ' -f3 >$(BUILD)/$(TARGET).isyms
-	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/Html/$(TARGET).wasm | grep '(export ' | sed 's/^[ \t]*//' | cut -d' ' -f2 >$(BUILD)/$(TARGET).esyms
+	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/Html/$(TARGET).wasm >$(BUILD)/$(TARGET).dis
+	@grep '(import ' $(BUILD)/$(TARGET).dis | grep -v '(table ' | grep -v '(memory ' | sed 's/^[ \t]*//' | cut -d' ' -f3 >$(BUILD)/$(TARGET).isyms
+	@grep '(export ' $(BUILD)/$(TARGET).dis | sed 's/^[ \t]*//' | cut -d' ' -f2 >$(BUILD)/$(TARGET).esyms
 	@cat $(BUILD)/*.esyms >$(BUILD)/$(TARGET).asyms
 	@grep -Fvxf $(BUILD)/$(TARGET).asyms $(BUILD)/$(TARGET).isyms >$(HTML5_ROOT)/Build/$(TARGET).syms
 

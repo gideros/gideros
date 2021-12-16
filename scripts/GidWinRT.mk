@@ -1,3 +1,6 @@
+#MSBuild has issues with parallel uses, stick to single thread
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid 
+
 WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor TextureAlphaColor Particle Particles PathFillC PathStrokeC PathStrokeLC
 WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11
 WINRT_SHADERS_FILE=dx11_shaders.c
@@ -78,9 +81,11 @@ luasocket.plugin.winrt:
 luasocket.plugin.winrt.clean:
 	$(call WINRT_CLEAN,plugins/luasocket/source/winrt/luasocket,luasocket)
 
-winrt.plugins: $(addsuffix .plugin.winrt,$(PLUGINS_WINRT))
+winrt.plugins: 
+	$(SUBMAKE) $(addsuffix .plugin.winrt,$(PLUGINS_WINRT))
 	
-winrt.plugins.clean: $(addsuffix .plugin.winrt.clean,$(PLUGINS_WINRT))
+winrt.plugins.clean: 
+	$(SUBMAKE) $(addsuffix .plugin.winrt.clean,$(PLUGINS_WINRT))
 	
 winrt.core: versioning winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)

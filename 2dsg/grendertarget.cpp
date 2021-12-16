@@ -19,6 +19,7 @@ GRenderTarget::GRenderTarget(Application *application, int width, int height, Fi
     sizescaley = 1;
     uvscalex = (float)data->width / (float)data->baseWidth;
     uvscaley = (float)data->height / (float)data->baseHeight;
+    gtexture_RenderTargetGetFBO(data->gid)->setScale(uvscalex,uvscaley);
 }
 
 GRenderTarget::~GRenderTarget()
@@ -38,6 +39,15 @@ ShaderBuffer *GRenderTarget::prepareForDraw()
 	ShaderEngine::Engine->setProjection(projection);
 
 	return oldfbo;
+}
+
+void GRenderTarget::resize(int width, int height, float scaleX, float scaleY)
+{
+    if ((data->baseWidth==width)&&(data->baseHeight==height)) return;
+    TextureData *data2 = application_->getTextureManager()->createRenderTarget(width, height, data->parameters, false, false);
+    application_->getTextureManager()->destroyTexture(data);
+    data=data2;
+    gtexture_RenderTargetGetFBO(data->gid)->setScale(scaleX,scaleY);
 }
 
 void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int h)

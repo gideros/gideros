@@ -42,6 +42,7 @@ public:
     std::set<std::string> allResourceFiles;
     static QString appPackage;
     static bool EnableVSYNC;
+    static bool TabletActive;
 
 private slots:
 	void onTimer();

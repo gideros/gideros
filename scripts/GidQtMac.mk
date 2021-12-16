@@ -1,4 +1,5 @@
 DEPLOYQT=$(QT)/bin/macdeployqt
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
@@ -95,10 +96,6 @@ qt.install: buildqt qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/res/layout
 	cp -R $(ROOT)/ui/Templates/AndroidStudio $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs
 	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/assets
@@ -130,11 +127,14 @@ qt.player:
 	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
 	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
 	
-buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
+buildqtplugins: 
+	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
 
-qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
+qtplugins.clean: 
+	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_MACONLY)) 
 
-qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
+qtplugins.install: buildqtplugins 
+	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; git clean -dfx .

@@ -58,6 +58,9 @@ int g_getFps();
 void g_setFps(int fps);
 }
 void drawInfo();
+void drawInfoResolution(int width, int height, int scale, int lWidth,
+		int lHeight, bool drawRunning, float canvasColor[3],
+		float infoColor[3],int ho, int ao, float fps, float cpu);
 void refreshLocalIPs();
 void g_exit();
 
@@ -65,6 +68,12 @@ static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
 //-----------------------------------------01234567890123456------------------
 
 
+#ifdef OCULUS
+#include "oculus/oculus.h"
+#define _OCULUS(f,...) oculus::f( __VA_ARGS__);
+#else
+#define _OCULUS(...) ;
+#endif
 struct ProjectProperties
 {
 	ProjectProperties()
@@ -206,6 +215,7 @@ public:
 	void surfaceChanged(int width, int height, int rotation);
 	void updateHardwareOrientation();
 	void drawFrame();
+	LuaApplication *getApplication() { return application_;};
 
 	void setDirectories(const char *externalDir, const char *internalDir, const char *cacheDir);
 	void setFileSystem(const char *files);
@@ -217,7 +227,13 @@ public:
 	void setProjectName(const char *projectName);
 	void setProjectProperties(const ProjectProperties &properties);
 	bool isRunning();
-	
+
+#ifdef OCULUS
+	void oculusTick(double elapsed);
+	void oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
+	void oculusInputEvent(oculus::Input &input);
+#endif
+
 	void mouseWheel(int x,int y,int button,float amount);
 	void touchesBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex);
 	void touchesMove(int size, int *id, int *x, int *y, float *pressure);
@@ -720,6 +736,7 @@ void ApplicationManager::luaError(const char *error)
 		networkManager_->printToServer("\n", -1);
 		application_->deinitialize();
 		application_->initialize();	
+		_OCULUS(onLuaReinit);
 	}
 	else
 	{
@@ -740,6 +757,7 @@ void ApplicationManager::surfaceCreated()
 	{
 		init_ = true;
 		application_->initialize();
+		_OCULUS(onLuaReinit);
 	}
 	else
 	{
@@ -767,7 +785,11 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 		height_ = height;
 	}
 	
-	application_->setResolution(width_, height_);
+	bool keepBuffers=false;
+#ifndef OCULUS
+	keepBuffers=true;
+#endif
+	application_->setResolution(width_, height_,keepBuffers);
 	
 	switch (rotation)
 	{
@@ -815,6 +837,229 @@ void ApplicationManager::updateHardwareOrientation()
 
     application_->setHardwareOrientation(hardwareOrientation_);	
 }
+
+#ifdef OCULUS
+static const char VERTEX_SHADER[] =
+    "attribute highp vec3 vVertex;\n"
+    "attribute lowp vec4 vertexColor;\n"
+    "attribute highp vec3 vertexNormal;\n"
+	"uniform highp mat4 g_MVPMatrix;\n"
+	"uniform highp mat4 g_MVMatrix;\n"
+	"uniform highp mat4 g_NMatrix;\n"
+	"varying highp vec3 fragmentPosition;\n"
+	"varying lowp vec4 fragmentColor;\n"
+	"varying highp vec3 fragmentNormal;\n"
+    "void main()\n"
+    "{\n"
+	"	fragmentPosition = (g_MVMatrix*vec4(vVertex.xyz,0.0)).xyz;\n"
+	"	fragmentNormal = normalize((g_NMatrix*vec4(vertexNormal.xyz,0.0)).xyz);\n"
+    "	fragmentColor = vertexColor;\n"
+	"   highp vec4 vertex = vec4(vVertex,1.0);\n"
+	"   gl_Position = g_MVPMatrix*vertex;\n"
+    "}\n";
+
+static const char FRAGMENT_SHADER[] =
+	"varying highp vec3 fragmentPosition;\n"
+	"varying lowp vec4 fragmentColor;\n"
+	"varying highp vec3 fragmentNormal;\n"
+    "void main()\n"
+    "{\n"
+		"	lowp vec3 color0 = fragmentColor.xyz;\n"
+		"	lowp vec3 color1 = vec3(0.5, 0.5, 0.5);\n"
+		"	highp vec3 normal = fragmentNormal;\n"
+		"	highp vec3 lightPos = vec3(0,50,50);\n"
+		"	highp vec3 lightDir = normalize(lightPos.xyz - fragmentPosition.xyz);\n"
+		"	highp vec3 viewDir = normalize(-fragmentPosition.xyz);\n"
+		"	mediump float ambient=0.4;\n"
+		"	mediump float diff = max(0.0, dot(normal, lightDir));\n"
+		"	mediump float spec =0.0;\n"
+		"	if (diff>0.0)\n"
+		"	{\n"
+		"		mediump float nh = max(0.0, dot(reflect(-lightDir,normal),viewDir));\n"
+		"		spec = pow(nh, 96.0);\n"
+		"	}\n"
+		"	diff=max(diff,ambient);\n"
+
+		"	gl_FragColor = vec4(color0 * diff + color1 * spec, 1);\n"
+    "}\n";
+
+const ShaderProgram::ConstantDesc stdUniforms[] = {
+		{ "g_MVPMatrix",ShaderProgram::CMATRIX, 1,	ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
+		{ "g_MVMatrix",ShaderProgram::CMATRIX, 1,	ShaderProgram::SysConst_WorldMatrix, true, 0, NULL },
+		{ "g_NMatrix",ShaderProgram::CMATRIX, 1,	ShaderProgram::SysConst_WorldInverseTransposeMatrix3, true, 0, NULL },
+		{ "",ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
+const ShaderProgram::DataDesc stdAttributes[] = {
+		{ "vVertex",	ShaderProgram::DFLOAT, 3, 0, 0,0 },
+		{ "vertexColor", ShaderProgram::DUBYTE,	4, 1, 0,0 },
+		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{ "vertexNormal", ShaderProgram::DFLOAT, 3, 3, 0,0 },
+		{ "",ShaderProgram::DFLOAT, 0, 0, 0,0 } };
+
+static ShaderProgram *cachedLS=NULL;
+ShaderProgram *getLightingShader(ShaderEngine *gfx) {
+	if (cachedLS) return cachedLS;
+	cachedLS=gfx->createShaderProgram(VERTEX_SHADER, FRAGMENT_SHADER, ShaderProgram::Flag_FromCode, stdUniforms, stdAttributes);
+	glog(cachedLS->compilationLog());
+	return cachedLS;
+}
+
+void ApplicationManager::oculusTick(double elapsed)
+{
+	tickLock.Lock();
+	if (networkManager_)
+		networkManager_->tick();
+
+	if (player_ == false)
+	{
+		if (applicationStarted_ == false)
+		{
+			loadProperties();
+
+			loadLuaFiles();
+			skipFirstEnterFrame_ = true;
+
+			applicationStarted_ = true;
+			running_ = true;
+		}
+
+	}
+
+	if (skipFirstEnterFrame_ == true)
+	{
+		skipFirstEnterFrame_ = false;
+	}
+	else
+	{
+		GStatus status;
+		application_->enterFrame(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
+
+	tickLock.Unlock();
+}
+
+#include "oculus/vr-room.h"
+const float vrRoom_Loc[3]={40,-15,-50};
+const float vrRoom_TV[3]={-45.57,24.777,4.175};
+const float vrRoom_TVScale=0.042;
+const float vrRoom_Scale=.08;
+const float vrRoom_Floor=-15;
+void ApplicationManager::oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor)
+{
+	application_->clearBuffers();
+	application_->renderScene(1,vmat,pmat,[=](ShaderEngine *gfx,Matrix4 &xform)
+			{
+				gfx->setViewport(0, 0, width,height);
+				if (room) {
+					Matrix4 modelMat;
+					modelMat.translate(vrRoom_Loc[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0),vrRoom_Loc[2]);
+					modelMat.scale(vrRoom_Scale);
+					gfx->clearColor(0.2,0.3,0.7,1);
+					gfx->setModel(modelMat);
+					 ShaderEngine::DepthStencil stencil=gfx->pushDepthStencil();
+					 stencil.dTest=true;
+					 gfx->setDepthStencil(stencil);
+					 ShaderProgram *shp=getLightingShader(gfx);
+					shp->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,oculusRoomC,sizeof(oculusRoomC)/4,true,NULL);
+					shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,3,oculusRoomV,sizeof(oculusRoomV)/(sizeof(float)*3),true,NULL);
+					shp->setData(3,ShaderProgram::DFLOAT,3,oculusRoomN,sizeof(oculusRoomN)/(sizeof(float)*3),true,NULL);
+					shp->drawElements(ShaderProgram::Triangles, sizeof(oculusRoomI)/sizeof(unsigned short), ShaderProgram::DUSHORT, oculusRoomI,true,NULL);
+					gfx->popDepthStencil();
+					if (screen) {
+						xform.scale(vrRoom_TVScale,-vrRoom_TVScale,1);
+						xform.translate(vrRoom_Loc[0]+vrRoom_TV[0],vrRoom_Loc[1]-(floor?vrRoom_Floor:0)+vrRoom_TV[1],vrRoom_Loc[2]+vrRoom_TV[2]);
+						xform.scale(vrRoom_Scale);
+					}
+				}
+			});
+
+	drawIPs();
+}
+
+
+static void pushVector(lua_State *L,oculus::Vector v) {
+	lua_newtable(L);
+	lua_pushnumber(L,v.x); lua_rawseti(L,-2,1);
+	lua_pushnumber(L,v.y); lua_rawseti(L,-2,2);
+	lua_pushnumber(L,v.z); lua_rawseti(L,-2,3);
+}
+
+static void pushVector4(lua_State *L,oculus::Vector4 v) {
+	lua_newtable(L);
+	lua_pushnumber(L,v.x); lua_rawseti(L,-2,1);
+	lua_pushnumber(L,v.y); lua_rawseti(L,-2,2);
+	lua_pushnumber(L,v.z); lua_rawseti(L,-2,3);
+	lua_pushnumber(L,v.w); lua_rawseti(L,-2,4);
+}
+
+void ApplicationManager::oculusInputEvent(oculus::Input &input) {
+	lua_State *L=LuaDebugging::L;
+	if (!L) return;
+    lua_getglobal(L, "Oculus");
+    lua_getfield(L,-1, "inputEventHandler");
+    if (lua_isfunction(L,-1)) {
+    	lua_newtable(L);
+    	lua_pushinteger(L,input.deviceType);
+		lua_setfield(L, -2, "deviceType");
+    	lua_pushinteger(L,input.deviceId);
+		lua_setfield(L, -2, "deviceId");
+    	lua_pushinteger(L,input.batteryPercent);
+		lua_setfield(L, -2, "batteryPercent");
+    	lua_pushinteger(L,input.recenterCount);
+		lua_setfield(L, -2, "recenterCount");
+
+		//Pose
+		lua_pushinteger(L,input.poseStatus);
+		lua_setfield(L, -2,	"poseStatus");
+		pushVector(L,input.pos);
+		lua_setfield(L, -2, "position");
+		pushVector4(L,input.rot);
+		lua_setfield(L, -2, "rotation");
+		pushVector(L,input.velPos);
+		lua_setfield(L, -2, "linearVelocity");
+		pushVector(L,input.velRot);
+		lua_setfield(L, -2, "angularVelocity");
+		pushVector(L,input.accPos);
+		lua_setfield(L, -2, "linearAcceleration");
+		pushVector(L,input.accRot);
+		lua_setfield(L, -2, "angularAcceleration");
+    	lua_pushinteger(L,input.caps);
+		lua_setfield(L, -2, "caps");
+
+		//Remote
+		if (input.deviceType==4) {
+			lua_pushinteger(L,input.buttons);
+			lua_setfield(L, -2, "buttons");
+			lua_pushnumber(L,input.stickX);
+			lua_setfield(L, -2, "stickX");
+			lua_pushnumber(L,input.stickY);
+			lua_setfield(L, -2, "stickY");
+			lua_pushnumber(L,input.gripTrigger);
+			lua_setfield(L, -2, "gripTrigger");
+			lua_pushnumber(L,input.indexTrigger);
+			lua_setfield(L, -2, "indexTrigger");
+		}
+
+		//Hand
+		if (input.deviceType==32) {
+			lua_pushnumber(L,input.handScale);
+			lua_setfield(L, -2, "handScale");
+			lua_newtable(L);
+			for (int k=0;k<24;k++) {
+				pushVector4(L,input.handBone[k]);
+				lua_rawseti(L,-2,k+1);
+			}
+			lua_setfield(L, -2, "handBone");
+		}
+
+	    lua_call(L, 1, 0);
+	    lua_pop(L,1);
+    }
+    else
+    	lua_pop(L,2);
+}
+#endif
 
 void ApplicationManager::drawFrame()
 {
@@ -1112,6 +1357,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	
 	application_->deinitialize();
 	application_->initialize();
+	_OCULUS(onLuaReinit);
 	application_->setResolution(width_, height_);
 	application_->setOrientation((Orientation)properties_.orientation);
 	updateHardwareOrientation();
@@ -1162,6 +1408,7 @@ void ApplicationManager::stop()
 
 	application_->deinitialize();
 	application_->initialize();
+	_OCULUS(onLuaReinit);
 }
 
 bool ApplicationManager::isRunning()
@@ -1173,7 +1420,13 @@ void ApplicationManager::drawIPs()
 {
 	if (player_ == true && running_ == false)
 	{	
-		drawInfo();
+	    float canvasColor_[3];
+	    float infoColor_[3]={0,0,0};
+		int lWidth = application_->getLogicalWidth();
+		int lHeight = application_->getLogicalHeight();
+		drawInfoResolution(width_, height_, 100, lWidth, lHeight,
+				true, canvasColor_, infoColor_, (int) application_->hardwareOrientation(), (int) application_->orientation(),
+				1.0/application_->meanFrameTime_,1-(application_->meanFreeTime_/application_->meanFrameTime_));
 	}
 }
 
@@ -1407,6 +1660,27 @@ void eventFlush()
     	s_applicationManager->forceTick();
 }
 
+#ifdef OCULUS
+void oculus::doTick(double elapsed) {
+	s_applicationManager->oculusTick(elapsed);
+}
+void oculus::doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor) {
+	s_applicationManager->oculusRender(vmat,pmat,width,height,room,screen,floor);
+}
+
+static void oculus_callback_s(int type, void *event, void *udata)
+{
+	oculus::Input *input=(oculus::Input *)event;
+	s_applicationManager->oculusInputEvent(*input);
+}
+static g_id oculusGid=g_NextId();
+void oculus::doInputEvent(oculus::Input &input) {
+	oculus::Input *_in=(oculus::Input *)malloc(sizeof(oculus::Input));
+	*_in=input;
+	gevent_EnqueueEvent(oculusGid, oculus_callback_s, 0, _in, 1, NULL);
+}
+#endif
+
 extern "C" {
 
 int GiderosOpenALConfig_sampleRate=44100;
@@ -1416,32 +1690,51 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeOpenALSetup(
 	GiderosOpenALConfig_sampleRate=sampleRate;
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeCreate(JNIEnv *env, jclass cls, jboolean player)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeCreate(JNIEnv *env, jclass cls, jboolean player, jobject activity)
 {
 	if (s_applicationManager != NULL)
 		delete s_applicationManager;
 	s_applicationManager = new ApplicationManager(env, player != 0);
+	_OCULUS(onCreate,env,activity,s_applicationManager->getApplication());
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeDestroy(JNIEnv *env, jclass cls)
 {
+	_OCULUS(onDestroy,env);
 	delete s_applicationManager;
 	s_applicationManager = NULL;
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceCreated(JNIEnv *env, jclass cls)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceCreated(JNIEnv *env, jclass cls, jobject surface)
 {
+#ifdef OCULUS
+	_OCULUS(onSurfaceCreated,env,surface);
+#else
 	s_applicationManager->surfaceCreated();
+#endif
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceChanged(JNIEnv *env, jclass cls, jint width, jint height, jint rotation)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceChanged(JNIEnv *env, jclass cls, jint width, jint height, jint rotation, jobject surface)
 {
+#ifdef OCULUS
+	_OCULUS(onSurfaceChanged,env,surface);
+#endif
 	s_applicationManager->surfaceChanged(width, height, rotation);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceDestroyed(JNIEnv *env, jclass cls)
+{
+	_OCULUS(onSurfaceDestroyed);
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeDrawFrame(JNIEnv *env, jclass cls)
 {
 	s_applicationManager->drawFrame();
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTick(JNIEnv *env, jclass cls)
+{
+	s_applicationManager->forceTick();
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeSetDirectories(JNIEnv *env, jclass cls, jstring jExternalDir, jstring jInternalDir, jstring jCacheDir)
@@ -1629,6 +1922,35 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeHandleOpenUr
 	env->ReleaseStringUTFChars(url, sBytes);
 }
 
+void Java_com_giderosmobile_android_player_GiderosApplication_oculusPause(JNIEnv* env, jclass cls)
+{
+	_OCULUS(onPause);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_oculusResume(JNIEnv* env, jclass cls)
+{
+	_OCULUS(onResume);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_oculusStop(JNIEnv* env, jclass cls)
+{
+	_OCULUS(onStop);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_oculusStart(JNIEnv* env, jclass cls)
+{
+	_OCULUS(onStart);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_oculusRunThread(JNIEnv* env, jclass cls)
+{
+	_OCULUS(runThread);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_oculusPostCreate(JNIEnv* env, jclass cls)
+{
+	_OCULUS(postCreate);
+}
 
 }
 

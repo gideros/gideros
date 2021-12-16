@@ -8,6 +8,7 @@
 #include "glog.h"
 #include <set>
 #include "metalShaders.h"
+#include "TargetConditionals.h"
 
 #define encoder ((metalShaderEngine *)ShaderEngine::Engine)->encoder
 
@@ -258,7 +259,13 @@ metalShaderProgram::metalShaderProgram(const char *vprogram,const char *fprogram
     
     errorLog="";
     if (defaultLibrary==nil) {
-        defaultLibrary=[metalDevice newDefaultLibrary];
+#if TARGET_IPHONE_SIMULATOR
+        NSError *error = nil;
+        NSString *libPath = [[NSBundle mainBundle] pathForResource:@"default-sim" ofType:@"metallib"];
+        defaultLibrary = [metalDevice newLibraryWithFile:libPath error:&error];
+        if (defaultLibrary==nil)
+#endif
+        defaultLibrary=[metalDevice newDefaultLibrary];        
     }
     
     mrpd=[[MTLRenderPipelineDescriptor alloc] init];

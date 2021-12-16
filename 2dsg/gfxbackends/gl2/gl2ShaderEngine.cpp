@@ -361,6 +361,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 
 	GLCALL glEnable(GL_BLEND);
 	GLCALL glDisable(GL_SCISSOR_TEST);
+	GLCALL glDisable(GL_CULL_FACE);
 	GLCALL glDepthFunc(GL_LEQUAL);
 
 #ifndef PREMULTIPLIED_ALPHA
@@ -582,7 +583,7 @@ void ogl2ShaderEngine::setProjection(const Matrix4 p) {
 
 Matrix4 ogl2ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRT)
 {
-    return ShaderEngine::setOrthoFrustum(l, r, forRT?t:b, forRT?b:t, n, f, forRT);
+    return ShaderEngine::setOrthoFrustum(l, r, forRT?t:b, forRT?b:t, n, f, false);
 }
 
 void ogl2ShaderEngine::adjustViewportProjection(Matrix4 &vp, float width, float height) {
@@ -595,7 +596,7 @@ ShaderTexture::Packing ogl2ShaderEngine::getPreferredPackingForTextureFormat(Sha
 {
 	switch (format) {
 	case ShaderTexture::FMT_DEPTH:
-		return ShaderTexture::PK_UINT;
+		return (ogl2ShaderEngine::isGLES&&(ogl2ShaderEngine::version>=3))?ShaderTexture::PK_FLOAT:ShaderTexture::PK_UINT;
 	default:
 		return ShaderTexture::PK_UBYTE;
 	}
@@ -675,6 +676,18 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 		}
 		GLCALL glStencilFunc(sf,state.sRef,state.sMask);
 		GLCALL glStencilMask(state.sWMask);
+	}
+	switch (state.cullMode) {
+	case CULL_FRONT:
+		GLCALL glEnable(GL_CULL_FACE);
+		GLCALL glCullFace(GL_FRONT);
+		break;
+	case CULL_BACK:
+		GLCALL glEnable(GL_CULL_FACE);
+		GLCALL glCullFace(GL_BACK);
+		break;
+	default:
+		GLCALL glDisable(GL_CULL_FACE);
 	}
 	dsCurrent=state;
 }

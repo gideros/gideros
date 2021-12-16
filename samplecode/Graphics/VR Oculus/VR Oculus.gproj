@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+ <properties splash_v_image="../Choari.png" build_number="1" html5_pwa="0" fps="60" osx_signingId="" windowHeight="0" mouseTouchOrder="0" retinaDisplay="3" html5_wasm="0" osx_category="5" autorotation="0" win_org="GiderosMobile" html5_mem="256" osx_bundle="com.yourdomain." app_icon="Gfx/Icone.png" mouseToTouch="1" splash_h_image="../Choari.png" mainluaOnly="0" html5_fbinstant="0" tv_icon="" macos_bundle="net.hieroglyphe.catporspo-macos" osx_installerId="" disableSplash="0" html5_pack="0" html5_symbols="0" winrt_org="GiderosMobile" version_code="110" version="1.1" win_domain="giderosmobile.com" backgroundColor="#e8f4ff" html5_host="" macos_category="11" html5_crash="" encryptCode="1" osx_domain="giderosmobile.com" windowWidth="0" logicalHeight="1825" exportMode="0" orientation="3" splashScaleMode="0" vsync="0" winrt_package="com.yourdomain.yourapp" app_name="Porspoder: la piste du reporter" atv_bundle="net.hieroglyphe.catporspo-atv" ios_bundle="net.hieroglyphe.catporspo" logicalWidth="1024" iosDevice="0" osx_org="GiderosMobile" architecture="0" scaleMode="5" touchToMouse="1" encryptAssets="1" html5_fbload="100">
+  <imageScales/>
+  <plugins>
+   <plugin enabled="0" name="Camera">
+    <property name="camRequired" value="1"/>
+    <property name="camUsageDesc" value="Pour certaines ?nigmes, votre appareil photo sera n?cessaire."/>
+   </plugin>
+   <plugin enabled="0" name="Firebase">
+    <property name="firBomVersion" value="25.5.0"/>
+    <property name="firCrash" value="1"/>
+    <property name="firInfoJson" value="google-services.json"/>
+    <property name="firInfoPlist" value="GoogleService-Info.plist"/>
+    <property name="firMessaging" value="0"/>
+    <property name="firRemoteConfig" value="0"/>
+    <property name="licenseCode" value="56fb283a18cf3d8b0df64b413eab1c3c"/>
+   </plugin>
+   <plugin enabled="0" name="GSFXR"/>
+   <plugin enabled="0" name="Iab">
+    <property name="iabAmazon" value="0"/>
+    <property name="iabGoogle" value="1"/>
+    <property name="iabiOS" value="1"/>
+   </plugin>
+   <plugin enabled="1" name="JSON"/>
+   <plugin enabled="1" name="Require">
+    <property name="reqAccel" value="0"/>
+    <property name="reqAlphaCanvas" value="0"/>
+    <property name="reqCanOpenUrl" value=""/>
+    <property name="reqCanRespondUrl" value=""/>
+    <property name="reqCompass" value="0"/>
+    <property name="reqDisable32bits" value="0"/>
+    <property name="reqDisable64bits" value="0"/>
+    <property name="reqDisableArm" value="0"/>
+    <property name="reqDisableX86" value="0"/>
+    <property name="reqExpRegCompliance" value="1"/>
+    <property name="reqFullOrientation" value="0"/>
+    <property name="reqGps" value="1"/>
+    <property name="reqGpsBackground" value="0"/>
+    <property name="reqGpsReason" value="Les ?nigmes seront accessibles quand vous serez ? proximit?. Activez votre GPS pour pouvoir jouer."/>
+    <property name="reqGyro" value="0"/>
+    <property name="reqMaxAspect" value="1"/>
+    <property name="reqNoGps" value="0"/>
+    <property name="reqNoInternet" value="1"/>
+    <property name="reqNoMP3" value="0"/>
+    <property name="reqNoSensor" value="0"/>
+    <property name="reqNoVibrator" value="1"/>
+    <property name="reqNoXMP" value="0"/>
+    <property name="reqPhoneOnly" value="0"/>
+    <property name="reqPreventBackup" value="0"/>
+    <property name="reqScreenShape" value="1"/>
+    <property name="reqServerMode" value="0"/>
+    <property name="reqTVCompat" value="0"/>
+    <property name="reqTVExtCompat" value="0"/>
+    <property name="reqTouch" value="0"/>
+    <property name="reqWriteExternalStorage" value="0"/>
+   </plugin>
+   <plugin enabled="0" name="Share"/>
+   <plugin enabled="0" name="StoreReview">
+    <property name="gmsVersion" value="1.8.0"/>
+   </plugin>
+  </plugins>
+  <exports>
+   <export name="APK">
+    <property name="androidPath" value=""/>
+    <property name="androidSdk" value=""/>
+    <property name="androidTarget" value="29"/>
+    <property name="androidTools" value=""/>
+    <property name="buildAab" value="1"/>
+    <property name="buildApk" value="1"/>
+    <property name="deployApk" value="0"/>
+    <property name="javaPath" value=""/>
+    <property name="keyAlias" value="choari"/>
+    <property name="keyStore" value="C:/Users/hgy01/git/gidgames/choari-gs.jks"/>
+    <property name="packageName" value="net.hieroglyphe.catporspo"/>
+    <property name="timestampApk" value="1"/>
+   </export>
+  </exports>
+ </properties>
+ <folder path="../../../Library/3dbase" name="3dbase">
+  <file name="../../../Library/3dbase/3DAnimation.lua"/>
+  <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
+  <file name="../../../Library/3dbase/3DLighting.lua"/>
+  <file name="../../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../../Library/3dbase/3DShaders.lua"/>
+  <file name="../../../Library/3dbase/3DShapes.lua"/>
+  <file name="../../../Library/3dbase/3DView.lua"/>
+  <file name="../../../Library/3dbase/G3DFormat.lua"/>
+  <file name="../../../Library/3dbase/gltf.lua"/>
+ </folder>
+ <folder path="../../../Library/luashader" name="luashader">
+  <file name="../../../Library/luashader/effects.lua"/>
+  <file name="../../../Library/luashader/luac_codegen.lua"/>
+  <file name="../../../Library/luashader/luac_loader.lua"/>
+  <file name="../../../Library/luashader/luashader.lua"/>
+ </folder>
+ <folder path="../../../Library/oculus" name="oculus">
+  <folder name="jedi">
+   <file name="../../../Library/oculus/jedi/BC_L.png"/>
+   <file name="../../../Library/oculus/jedi/BC_R.png"/>
+   <file name="../../../Library/oculus/jedi/LICENSE.txt"/>
+   <file name="../../../Library/oculus/jedi/controllergui.txt"/>
+   <file name="../../../Library/oculus/jedi/jedi_left.bin"/>
+   <file name="../../../Library/oculus/jedi/jedi_left.gltf"/>
+   <file name="../../../Library/oculus/jedi/jedi_right.bin"/>
+   <file name="../../../Library/oculus/jedi/jedi_right.gltf"/>
+  </folder>
+  <file name="../../../Library/oculus/lhand.json"/>
+  <file name="../../../Library/oculus/oculus.lua"/>
+  <file name="../../../Library/oculus/rhand.json"/>
+ </folder>
+ <file name="assets/dungeon.glb"/>
+ <file name="assets/envbox.jpg"/>
+ <file name="assets/main.lua"/>
+</project>

@@ -25,8 +25,7 @@ protected:
 
 	virtual ~TextureBase();
 
-private:
-	Application* application_;
+    Application* application_;
 };
 
 

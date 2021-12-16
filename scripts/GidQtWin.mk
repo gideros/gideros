@@ -15,6 +15,8 @@ QTTGT_EXT=rel
 QTTGT_DIR=release
 endif
 
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
+
 
 vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):lua/$(QTTGT_DIR):libgid/external/openal-soft-1.13/build/mingw48_32
 
@@ -87,10 +89,6 @@ qt.install: buildqt qt5.install qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
-	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/res/layout
 	cp -R $(ROOT)/ui/Templates/AndroidStudio $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs
 	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/assets
@@ -131,11 +129,14 @@ qt5.install:
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
 	
-buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+buildqtplugins: 
+	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
-qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+qtplugins.clean: 
+	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_WINONLY)) 
 
-qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+qtplugins.install: buildqtplugins 
+	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MINGWMAKE) clean; fi

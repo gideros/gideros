@@ -75,8 +75,10 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "SYS_PROJECTION");
 	lua_pushinteger(L, ShaderProgram::SysConst_ViewProjectionMatrix);
 	lua_setfield(L, -2, "SYS_VP");
-	lua_pushinteger(L, ShaderProgram::SysConst_Bounds);
-	lua_setfield(L, -2, "SYS_BOUNDS");
+    lua_pushinteger(L, ShaderProgram::SysConst_Bounds);
+    lua_setfield(L, -2, "SYS_BOUNDS");
+    lua_pushinteger(L, ShaderProgram::SysConst_RenderTargetScale);
+    lua_setfield(L, -2, "SYS_RTSCALE");
 
 	lua_pushinteger(L, ShaderProgram::Flag_None);
 	lua_setfield(L, -2, "FLAG_NONE");

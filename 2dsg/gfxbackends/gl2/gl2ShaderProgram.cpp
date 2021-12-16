@@ -606,7 +606,7 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		elmSize=2;
 		break;
 	case DINT:
-		dtype = GL_INT;
+		dtype = GL_UNSIGNED_INT; //Indices are unsigned
 		elmSize=4;
 		break;
 	}

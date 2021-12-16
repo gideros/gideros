@@ -95,6 +95,7 @@ INCLUDEPATH += \
     ../player/Forms
 
 SOURCES += \
+    ../player/Sources/tabletapplication.cpp \
     sources/main.cpp \
     sources/mainwindow.cpp \
     ../player/Sources/glcanvas.cpp \
@@ -125,6 +126,7 @@ FORMS += \
     ../player/Forms/settingsdialog.ui \
 
 HEADERS += \
+    ../player/Headers/tabletapplication.h \
     headers/mainwindow.h \
     ../player/Headers/applicationwrapper.h \
     ../player/Headers/glcanvas.h \

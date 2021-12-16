@@ -163,6 +163,12 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	lua_pushinteger(L, ShaderEngine::STENCIL_ZERO);
 	lua_setfield(L, -2, "STENCIL_ZERO");
 
+	lua_pushinteger(L, ShaderEngine::CULL_NONE);
+	lua_setfield(L, -2, "CULL_NONE");
+	lua_pushinteger(L, ShaderEngine::CULL_FRONT);
+	lua_setfield(L, -2, "CULL_FRONT");
+	lua_pushinteger(L, ShaderEngine::CULL_BACK);
+	lua_setfield(L, -2, "CULL_BACK");
 
     lua_pushstring(L, "alpha");
     lua_setfield(L, -2, "ALPHA");
@@ -1808,6 +1814,7 @@ int SpriteBinder::setEffectStack(lua_State* L)
 		{
 			Sprite::Effect e;
 			e.clearBuffer=(en==0); //Clear buffer by default for first pass, don't clear for subsequent passes
+            e.autoBuffer=false;
 
 			lua_rawgeti(L,2,en+1);
 			luaL_checktype(L,-1,LUA_TTABLE);
@@ -1843,7 +1850,17 @@ int SpriteBinder::setEffectStack(lua_State* L)
 			if (!lua_isnoneornil(L,-1))
 				e.clearBuffer=lua_toboolean(L,-1);
 
-			lua_pop(L,7);
+            lua_getfield(L,-7,"autoBuffer");
+            if (!lua_isnoneornil(L,-1))
+                e.autoBuffer=lua_toboolean(L,-1);
+
+            lua_getfield(L,-8,"autoTransform");
+            if (!lua_isnoneornil(L,-1)) {
+                Transform *t=static_cast<Transform*>(binder.getInstance("Matrix", -1));
+                e.autoTransform=t->matrix();
+            }
+
+            lua_pop(L,9);
 			effects.push_back(e);
 		}
 	}
@@ -1893,6 +1910,7 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	ShaderEngine::DepthStencil ds;
+	ds.cullMode=ShaderEngine::CULL_NONE;
 
 	if (lua_isnoneornil(L,2))
 		ds.dTest=false;
@@ -1930,6 +1948,10 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 		lua_getfield(L,2,"depthFail");
 		if (!lua_isnil(L,-1))
 			ds.dFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"cullMode");
+		if (!lua_isnil(L,-1))
+			ds.cullMode=((ShaderEngine::CullMode)(luaL_checkinteger(L,-1)&3));
 		lua_pop(L,1);
 		ds.dTest=true;
 	}

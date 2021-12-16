@@ -575,6 +575,14 @@ static int r3dBody_SetType(lua_State* L) {
 	return 0;
 }
 
+static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+	body->updateMassPropertiesFromColliders();
+	return 0;
+}
+
 static int r3dBody_destruct(lua_State* L) {
     void* ptr = *(void**) lua_touserdata(L, 1);
     getb2(L,ptr);
@@ -613,6 +621,8 @@ static int r3dFixture_GetMaterial(lua_State* L) {
 	lua_setfield(L, -2, "frictionCoefficient");
 	lua_pushnumber(L, mat.getRollingResistance());
 	lua_setfield(L, -2, "rollingResistance");
+	lua_pushnumber(L, mat.getMassDensity());
+	lua_setfield(L, -2, "massDensity");
 	return 1;
 }
 
@@ -632,6 +642,10 @@ static int r3dFixture_SetMaterial(lua_State* L) {
 	lua_getfield(L, 2, "rollingResistance");
 	if (!lua_isnil(L,-1))
 		mat.setRollingResistance(luaL_checknumber(L, -1));
+	lua_pop(L, 1);
+	lua_getfield(L, 2, "massDensity");
+	if (!lua_isnil(L,-1))
+		mat.setMassDensity(luaL_checknumber(L, -1));
 	lua_pop(L, 1);
 	return 0;
 }
@@ -1497,6 +1511,7 @@ static int loader(lua_State *L) {
 			{ "applyLocalForce", r3dBody_ApplyLocalForce },
 			{ "raycast", r3dBody_RayCast },
 			{ "testPointInside", r3dBody_TestPointInside },
+			{ "updateMassPropertiesFromColliders", r3dBody_UpdateMassPropertiesFromColliders },
 			{ NULL, NULL }, };
     binder.createClass("r3dBody", NULL/*"EventDispatcher"*/, NULL, r3dBody_destruct,
 			r3dBody_functionList);

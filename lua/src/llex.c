@@ -49,6 +49,20 @@ const char *const luaX_tokens [] = {
   NULL
 };
 
+const char *const tokensFR [] = {
+  "et", "sortir", "faire", "sinon", "sinonsi",
+  "fin", "faux", "pour", "fonction", "si",
+  "dans", "local", "rien", "non", "ou", "repeter",
+  "retourne", "alors", "vrai", "jusqua", "inclure", "tantque",
+  "..", "...", "==", ">=", "<=", "~=",
+  "<<", ">>", "//",
+  "<>", "><",
+  "^>","^<",
+  "+=", "-=", "*=", "/=", "%=", "^=",
+  "<nombre>", "<nom>", "<chaine>", "<fof>",
+  NULL
+};
+
 
 #define save_and_next(ls) (save(ls, ls->current), next(ls))
 
@@ -87,7 +101,7 @@ const char *luaX_token2str (LexState *ls, int token) {
                               luaO_pushfstring(ls->L, "%c", token);
   }
   else
-    return luaX_tokens[token-FIRST_RESERVED];
+    return ls->tokens[token-FIRST_RESERVED];
 }
 
 
@@ -466,7 +480,27 @@ static int llex (LexState *ls, SemInfo *seminfo) {
 	  }
 	
     case '!': {
-      luaX_lexerror(ls, "assembler support is not implemented yet", 0);
+      char lang[2];
+	  next(ls);
+	  lang[0]=ls->current;
+	  next(ls);
+	  lang[1]=ls->current;
+	  if ((lang[0]=='F')&&(lang[1]=='R')) {
+	      int i;
+		  ls->tokens=tokensFR;
+	      while (!currIsNewline(ls) && ls->current != EOZ)
+	        next(ls);
+	      for (i=0; i<NUM_RESERVED; i++) {
+	        TString *ts = luaS_new(ls->L, ls->tokens[i]);
+	        luaS_fix(ts);  /* reserved words are never collected */
+	        lua_assert(strlen(ls->tokens[i])+1 <= TOKEN_LEN);
+	        ts->tsv.reserved = cast_byte(i+1);  /* reserved word */
+	      }
+	      continue;
+	  }
+	  else
+		  luaX_lexerror(ls, "assembler support is not implemented yet", 0);
+	  break;
     }
     case '"':
     case '\'': {
@@ -809,7 +843,7 @@ static int llex (LexState *ls, SemInfo *seminfo) {
                   lua_pushstring(L,s);
                 }
                 else
-                  lua_pushstring(L,luaX_tokens[t-FIRST_RESERVED]);
+                  lua_pushstring(L,ls->tokens[t-FIRST_RESERVED]);
                 break;
               }
               lua_rawseti(L,-2,i);

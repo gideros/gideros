@@ -62,6 +62,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.giderosmobile.android.GiderosSettings;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 public class GiderosApplication
 {
@@ -177,7 +179,7 @@ public class GiderosApplication
 				
 		synchronized (lock)
 		{
-			GiderosApplication.nativeCreate(allfiles_ == null);
+			GiderosApplication.nativeCreate(allfiles_ == null,activity);
 			GiderosApplication.nativeSetDirectories(externalDir_, internalDir_, cacheDir_);
 			if (allfiles_ != null)
 				GiderosApplication.nativeSetFileSystem(allfiles_);
@@ -476,8 +478,8 @@ public class GiderosApplication
 	} 
 	
 	
-	private static GLSurfaceView mGLView_;
-	static public void onCreate(String[] externalClasses, GLSurfaceView mGLView)
+	private static SurfaceView mGLView_;
+	static public void onCreate(String[] externalClasses, SurfaceView mGLView)
 	{
 		mGLView_=mGLView;
 		instance_ = new GiderosApplication(externalClasses);
@@ -505,6 +507,7 @@ public class GiderosApplication
 
 	public void onStart()
 	{
+		oculusStart();
 		if (isSurfaceCreated_ == true) {
 			synchronized (eventQueue_) {
 				eventQueue_.add(START);
@@ -527,6 +530,7 @@ public class GiderosApplication
 	
 	public void onStop()
 	{
+		oculusStop();
 		for ( Class < ? > theClass : sAvailableClasses ) {
 
 			executeMethod ( theClass, null, "onStop", new Class < ? > [] { }, new Object [] { });
@@ -534,7 +538,8 @@ public class GiderosApplication
 
 		if (isSurfaceCreated_ == true) {
 			synchronized (eventQueue_) {
-				eventQueue_.add(STOP);
+				nativeStop();
+				nativeTick();
 			}
 		}
 	}
@@ -542,6 +547,7 @@ public class GiderosApplication
 	
 	public void onPause()
 	{
+		oculusPause();
 		isForeground_ = false;
 
 		for ( Class < ? > theClass : sAvailableClasses ) {
@@ -551,12 +557,8 @@ public class GiderosApplication
 
 		if (isSurfaceCreated_ == true) {
 			synchronized (eventQueue_) {
-				eventQueue_.add(PAUSE);
-				try {
-					//on some devices, onDrawFrame will not called when screen locked,this thread will not wake up
-					eventQueue_.wait(100);
-				} catch (InterruptedException e) {
-				}
+				nativePause();
+				nativeTick();
 			}
 		}
 
@@ -574,6 +576,7 @@ public class GiderosApplication
 	
 	public void onResume()
 	{
+		oculusResume();
 		isForeground_ = true;
 		if (isAccelerometerStarted_)
 			accelerometer_.enable();
@@ -596,12 +599,8 @@ public class GiderosApplication
 
 		if (isSurfaceCreated_ == true) {
 			synchronized (eventQueue_) {
-				eventQueue_.add(RESUME);
-				try {
-					//on some devices, onDrawFrame will not called when screen locked,this thread will not wake up
-					eventQueue_.wait(100);
-				} catch (InterruptedException e) {
-				}
+				nativeResume();
+				nativeTick();
 			}
 		}
 	}
@@ -637,20 +636,28 @@ public class GiderosApplication
 		}
 	}
 	
-	public void onSurfaceCreated()
+	public void onSurfaceCreated(Surface surface)
 	{
 		synchronized (lock)
 		{
-			GiderosApplication.nativeSurfaceCreated();
+			GiderosApplication.nativeSurfaceCreated(surface);
 			isSurfaceCreated_ = true;
 		}		
 	}
 	
-	public void onSurfaceChanged(int w, int h)
+	public void onSurfaceChanged(int w, int h,Surface surface)
 	{
 		synchronized (lock)
 		{
-			GiderosApplication.nativeSurfaceChanged(w, h, getRotation(w,h));
+			GiderosApplication.nativeSurfaceChanged(w, h, getRotation(w,h),surface);
+		}	
+	}
+
+	public void onSurfaceDestroyed()
+	{
+		synchronized (lock)
+		{
+			GiderosApplication.nativeSurfaceDestroyed();
 		}	
 	}
 
@@ -1466,15 +1473,17 @@ public class GiderosApplication
 	static private native void nativeKeyChar(String keyChar);
 	static private native void nativeTextInput(String buffer,int selStart,int selEnd);
 	static private native void nativeOpenALSetup(int sampleRate);
-	static private native void nativeCreate(boolean player);
+	static private native void nativeCreate(boolean player,Activity activity);
 	static private native void nativeSetDirectories(String externalDir, String internalDir, String cacheDir);
 	static private native void nativeSetFileSystem(String files);
 	static private native void nativePause();
 	static private native void nativeResume();
 	static private native void nativeDestroy();
-	static private native void nativeSurfaceCreated();
-	static private native void nativeSurfaceChanged(int w, int h, int rotation);
+	static private native void nativeSurfaceCreated(Surface surface);
+	static private native void nativeSurfaceChanged(int w, int h, int rotation,Surface surface);
+	static private native void nativeSurfaceDestroyed();
 	static private native void nativeDrawFrame();
+	static private native void nativeTick();
 	static private native void nativeMouseWheel(int x,int y,int button,float amount);
 	static private native void nativeTouchesBegin(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex);
 	static private native void nativeTouchesMove(int size, int[] id, int[] x, int[] y, float[] pressure);
@@ -1483,4 +1492,10 @@ public class GiderosApplication
 	static private native void nativeStop();
 	static private native void nativeStart();
 	static private native void nativeHandleOpenUrl(String url);
+	static private native void oculusStop();
+	static private native void oculusStart();
+	static private native void oculusPause();
+	static private native void oculusResume();
+	static public native void oculusRunThread();
+	static public native void oculusPostCreate();
 }

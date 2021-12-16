@@ -57,6 +57,9 @@ local GFUNC_MAP={
 
 local platform=application:getDeviceInfo()
 local isHTML = platform and platform=="Web"
+local glversion=Shader.getEngineVersion()
+local isES3=(glversion=="GLES3")
+local isWebGL2 = (Shader.getProperties().version or ""):find("WebGL 2")
 
 local function populateGMap(gmap,tmap,funcs,const)
 	for k,v in pairs(tmap) do
@@ -131,11 +134,11 @@ function Shader.lua(vf,ff,opt,uniforms,attrs,varying,funcs,const,debug)
 		print("VSHADER_CODE:\n".._vshader)	
 		print("FSHADER_CODE:\n".._fshader)
 	end
-	if isHTML then
+	if isHTML or isES3 then
 		opt = opt | Shader.FLAG_NO_DEFAULT_HEADER
 	end
-		return Shader.new(_vshader,_fshader,Shader.FLAG_FROM_CODE|opt,uniforms,attrs)	
-	end
+	return Shader.new(_vshader,_fshader,Shader.FLAG_FROM_CODE|opt,uniforms,attrs)	
+end
 
 local function GEN_RETURN(rval)
 	if rval then
@@ -230,10 +233,24 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
 	
 	local _headers = nil
+	local _eheaders = ""
 	if isHTML then
 		_headers=[[
 #define shadow2D(tex,pt) vec4(shadow2DEXT(tex,pt),0.0,0.0,0.0)
 ]]
+		if isWebGL2 then
+		_headers=[[#version 300 es
+#extension GL_OES_standard_derivatives : enable
+#define shadow2D(tex,pt) vec4(texture(tex,pt),0.0,0.0,0.0)
+#define texture2D(tex,pt) texture(tex,pt)
+  ]]
+		end
+	elseif isES3 then
+		_headers=[[#version 300 es
+#extension GL_OES_standard_derivatives : enable
+#define shadow2D(tex,pt) vec4(texture(tex,pt),0.0,0.0,0.0)
+#define texture2D(tex,pt) texture(tex,pt)
+	]]
 	else
 		_headers=[[#ifdef GLES2
 #extension GL_OES_standard_derivatives : enable
@@ -243,13 +260,19 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 ]]
 	end
 
-	local _code=_headers
+  local isGLSL300=isES3 or isWebGL2
+
+	local _code=_eheaders.._headers
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
 		if atype then
 		amap[k]={type="cvar", value=v.name, vtype=atype} 
 		assert(tmap[atype],"Attribute type not handled :"..atype)
-		_code=_code..("attribute %s %s;\n"):format(tmap[atype],v.name)
+			if isGLSL300 then
+				_code=_code..("in %s %s;\n"):format(tmap[atype],v.name)
+			else
+				_code=_code..("attribute %s %s;\n"):format(tmap[atype],v.name)
+			end
 		else 
 			amap[k]={}
 		end
@@ -266,7 +289,11 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	for k,v in ipairs(varying) do 
 		local atype=shType(v)
 		gmap[v.name]={type="var", value=v.name, vtype=atype}
+		if isGLSL300 then
+			_code=_code..("out %s %s;\n"):format(tmap[atype],v.name)
+		else
 		_code=_code..("varying %s %s;\n"):format(tmap[atype],v.name)
+		end
 	end
 	_code=_code.."\n void main() {\n"
 	_code=_code..codegen(vf,amap,gmap,tmap,omap,	{
@@ -284,8 +311,12 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	
 	local _vshader=_code
 	
+	outVariable="gl_FragColor"
+	if isGLSL300 then
+		outVariable="_gl_FragColor"
+	end
 	
-	_code=_headers
+	_code=_eheaders.._headers
 	for k,v in ipairs(uniforms) do 
 		if not v.vertex then
 			local atype=shType(v)
@@ -298,13 +329,20 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	for k,v in ipairs(varying) do 
 		local atype=shType(v)
 		gmap[v.name]={type="cvar", value=v.name, vtype=atype}
+		if isGLSL300 then
+			_code=_code..("in %s %s;\n"):format(tmap[atype],v.name)
+		else
 		_code=_code..("varying %s %s;\n"):format(tmap[atype],v.name)
+	end
+	end
+	if isGLSL300 then 
+		_code=_code.."out lowp vec4 _gl_FragColor;\n"
 	end
 	
 	local mainCode=codegen(ff,amap,gmap,tmap,omap,	{
 		RETURN=function(rval)
 			if rval then
-				return "gl_FragColor = "..rval..";\n"
+				return outVariable.." = "..rval..";\n"
 			else
 				return ""
 			end

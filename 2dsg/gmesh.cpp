@@ -26,6 +26,7 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
     meshtype_=ShaderProgram::Triangles;
     mesh3d_=is3d;
     instanceCount_=0;
+    cullMode_=ShaderEngine::CULL_NONE;
 }
 
 GMesh::~GMesh()
@@ -63,7 +64,7 @@ void GMesh::setVertex(int i, float x, float y,float z)
     boundsDirty_ = true;
 }
 
-void GMesh::setIndex(int i, unsigned short index)
+void GMesh::setIndex(int i, unsigned int index)
 {
     if (i >= indices_.size())
         indices_.resize(i + 1);
@@ -155,7 +156,7 @@ void GMesh::setVertexArray(const float *vertices, size_t size)
     boundsDirty_ = true;
 }
 
-void GMesh::setIndexArray(const unsigned short *indices, size_t size)
+void GMesh::setIndexArray(const unsigned int *indices, size_t size)
 {
     indices_.assign(indices, indices + size);
     indices_.Update();
@@ -267,7 +268,7 @@ void GMesh::getVertex(int i, float *x, float *y, float *z) const
     	*z = vertices_[i * order + 2];
 }
 
-void GMesh::getIndex(int i, unsigned short *index) const
+void GMesh::getIndex(int i, unsigned int *index) const
 {
     *index = indices_[i];
 }
@@ -340,6 +341,11 @@ void GMesh::clearTexture(int slot)
     setTexture(NULL,slot);
 }
 
+void GMesh::setCullMode(ShaderEngine::CullMode cullMode)
+{
+	cullMode_=cullMode;
+}
+
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
     G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
@@ -347,6 +353,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 	{
 		 ShaderEngine::DepthStencil stencil=ShaderEngine::Engine->pushDepthStencil();
 		 stencil.dTest=true;
+		 stencil.cullMode=cullMode_;
 		 ShaderEngine::Engine->setDepthStencil(stencil);
 	}
 	if (vertices_.size() == 0) return;
@@ -424,7 +431,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
             genericArray[k-3].modified=false;
     	}
 
-    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache,0,0,instanceCount_);
+    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DINT, &indices_[0],indices_.modified,&indices_.bufferCache,0,0,instanceCount_);
     indices_.modified=false;
 }
 

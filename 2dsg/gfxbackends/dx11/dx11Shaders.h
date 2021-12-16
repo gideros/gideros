@@ -133,14 +133,20 @@ class dx11ShaderEngine : public ShaderEngine
 	ID3D11DepthStencilState *g_pDSOff;
 	ID3D11DepthStencilState *g_pDSDepth;
 	ID3D11DepthStencilState *g_pCDSState;
-	ID3D11RasterizerState *g_pRSNormal;
-	ID3D11RasterizerState *g_pRSScissor;
+	ID3D11RasterizerState *g_pRSNormalCN;
+	ID3D11RasterizerState *g_pRSNormalCF;
+	ID3D11RasterizerState *g_pRSNormalCB;
+	ID3D11RasterizerState *g_pRSScissorCN;
+	ID3D11RasterizerState *g_pRSScissorCF;
+	ID3D11RasterizerState *g_pRSScissorCB;
 	ID3D11BlendState *g_pBlendState;
 	ID3D11BlendState *g_pCBlendState;
+	bool s_clipEnabled;
 	int s_depthEnable;
 	bool s_depthBufferCleared;
 	D3D11_BLEND blendFactor2D3D11(BlendFactor blendFactor);
 	D3D11_BLEND blendAlpha2D3D11(BlendFactor blendFactor);
+	void updateRasterizer();
 	BlendFactor curSrcFactor, curDstFactor;
 	BlendFactor curCSrcFactor, curCDstFactor;
 public:
@@ -153,6 +159,7 @@ public:
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT=false);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture,bool forDepth=false);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
+    ShaderBuffer *getFramebuffer() { return currentBuffer; };
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);
 	void resizeFramebuffer(int width,int height);
