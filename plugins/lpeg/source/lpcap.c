@@ -207,7 +207,7 @@ static int foldcap (CapState *cs) {
   if (isfullcap(cs->cap++) ||  /* no nested captures? */
       isclosecap(cs->cap) ||  /* no nested captures (large subject)? */
       (n = pushcapture(cs)) == 0)  /* nested captures with no values? */
-    return luaL_error(L, "no initial value for fold capture");
+    luaL_error(L, "no initial value for fold capture");
   if (n > 1)
     lua_pop(L, n - 1);  /* leave only one result for accumulator */
   while (!isclosecap(cs->cap)) {
@@ -246,7 +246,7 @@ static int numcap (CapState *cs) {
   else {
     int n = pushnestedvalues(cs, 0);
     if (n < idx)  /* invalid index? */
-      return luaL_error(cs->L, "no capture '%d'", idx);
+      luaL_error(cs->L, "no capture '%d'", idx);
     else {
       lua_pushvalue(cs->L, -(n - idx + 1));  /* get selected capture */
       lua_replace(cs->L, -(n + 1));  /* put it in place of 1st capture */
@@ -462,7 +462,7 @@ static int pushcapture (CapState *cs) {
     case Carg: {
       int arg = (cs->cap++)->idx;
       if (arg + FIXEDARGS > cs->ptop)
-        return luaL_error(L, "reference to absent argument #%d", arg);
+        luaL_error(L, "reference to absent argument #%d", arg);
       lua_pushvalue(L, arg + FIXEDARGS);
       return 1;
     }

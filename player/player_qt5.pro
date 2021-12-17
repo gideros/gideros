@@ -5,6 +5,18 @@ equals(QT_VERSION, 6){
    QT += openglwidgets
 }
 
+LUA_ENGINE=$$(LUA_ENGINE)
+isEmpty(LUA_ENGINE) {
+    LUA_ENGINE=lua
+}
+equals(LUA_ENGINE,luau) {
+    LUA_INCLUDE=../luau/VM/include ../luau/VM/src
+}
+else
+{
+    LUA_INCLUDE=../lua/src
+}
+
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 
 INCLUDEPATH += \
@@ -45,7 +57,7 @@ win32{
             -L"../libgid/$$_CONFIG_" -lgid\
             -L"../libgid/openal/$$_CONFIG_" -lopenal\
             -L"../libgvfs/$$_CONFIG_" -lgvfs\
-            -L"../lua/$$_CONFIG_" -llua\
+            -L"../$$LUA_ENGINE/$$_CONFIG_" -llua\
             -L"../libgideros/$$_CONFIG_" -lgideros\
             -L"../libpystring/$$_CONFIG_" -lpystring
     }
@@ -63,7 +75,7 @@ macx {
         -framework IOKit\
         -L"../libgid" -lgid\
         -L"../libgvfs" -lgvfs\
-        -L"../lua" -llua\
+        -L"../$$LUA_ENGINE" -llua\
         -L"../libgideros" -lgideros\
         -L"../libpystring" -lpystring\
         -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx\
@@ -86,7 +98,7 @@ unix:!macx {
 #        -liphlpapi\
         ../libgid/libgid.so \
         ../libgvfs/libgvfs.so \
-        ../lua/liblua.so \
+        ../$$LUA_ENGINE/liblua.so \
         ../libgideros/libgideros.so \
         ../libpystring/libpystring.so
     LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
@@ -108,7 +120,7 @@ INCLUDEPATH += \
     ../libsound \
     ../libnetwork \
     ../luabinding \
-    ../lua/src \
+    $$LUA_INCLUDE \
     ../libpvrt \
     ../libgvfs \
     ../libgid/include \

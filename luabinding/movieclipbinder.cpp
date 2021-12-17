@@ -171,7 +171,7 @@ int MovieClipBinder::create(lua_State* L)
     else if (lua_type(L, 1) == LUA_TSTRING)
     {
         if (lua_type(L, 2) != LUA_TTABLE)
-            return luaL_typerror(L, 2, "table");
+            luaL_typerror(L, 2, "table");
 
         const char *t = lua_tostring(L, 1);
 
@@ -182,7 +182,7 @@ int MovieClipBinder::create(lua_State* L)
         else
         {
             GStatus status(2008, "type");	// Parameter %s must be one of the accepted values.
-            return luaL_error(binder.L, status.errorString());
+            luaL_error(binder.L, status.errorString());
         }
 
         index = 2;
@@ -190,7 +190,7 @@ int MovieClipBinder::create(lua_State* L)
         stopped=lua_toboolean(L,4);
     }
     else
-        return luaL_typerror(L, 1, "string or table");
+        luaL_typerror(L, 1, "string or table");
 
     if (lua_objlen(L, index) == 0)
         luaL_error(L, GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.

@@ -88,7 +88,7 @@ int TTFontBinder::create(lua_State* L)
     if (status.error())
     {
         delete font;
-        return luaL_error(L, status.errorString());
+        luaL_error(L, status.errorString());
     }
 
     binder.pushInstance("TTFont", font);

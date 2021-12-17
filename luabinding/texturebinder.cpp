@@ -50,7 +50,7 @@ int TextureBinder::create(lua_State* L)
 	if (!lua_isnoneornil(L, paramsIndex))
 	{
 		if (lua_type(L, paramsIndex) != LUA_TTABLE)
-			return luaL_typerror(L, paramsIndex, "table");
+            luaL_typerror(L, paramsIndex, "table");
 
 		lua_getfield(L, paramsIndex, "transparentColor");
 		if (!lua_isnil(L, -1))
@@ -125,7 +125,7 @@ int TextureBinder::create(lua_State* L)
 	}
 	catch (const GiderosException& e)
 	{
-		return luaL_error(L, e.what());
+        luaL_error(L, e.what());
 	}
 
 	binder.pushInstance("Texture", texture);
@@ -159,7 +159,7 @@ int TextureBinder::loadAsync(lua_State* L)
     if (!lua_isnoneornil(L, 4))
     {
         if (lua_type(L, 4) != LUA_TTABLE)
-            return luaL_typerror(L, 4, "table");
+            luaL_typerror(L, 4, "table");
 
         lua_getfield(L, 4, "transparentColor");
         if (!lua_isnil(L, -1))

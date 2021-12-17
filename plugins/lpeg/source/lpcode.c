@@ -430,12 +430,18 @@ typedef struct CompileState {
 static void codegen (CompileState *compst, TTree *tree, int opt, int tt,
                      const Charset *fl);
 
-
+#ifdef LUA_IS_LUAU
+#include <stdlib.h>
+#endif
 void reallocprog (lua_State *L, Pattern *p, int nsize) {
+#ifdef LUA_IS_LUAU
+	  void *newblock = realloc(p->code, nsize * sizeof(Instruction));
+#else
   void *ud;
   lua_Alloc f = lua_getallocf(L, &ud);
   void *newblock = f(ud, p->code, p->codesize * sizeof(Instruction),
                                   nsize * sizeof(Instruction));
+#endif
   if (newblock == NULL && nsize > 0)
     luaL_error(L, "not enough memory");
   p->code = (Instruction *)newblock;

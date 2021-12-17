@@ -1,6 +1,18 @@
 QT += core gui opengl network multimedia
 CONFIG   += silent
 
+LUA_ENGINE=$$(LUA_ENGINE)
+isEmpty(LUA_ENGINE) {
+    LUA_ENGINE=lua
+}
+equals(LUA_ENGINE,luau) {
+    LUA_INCLUDE=../luau/VM/include ../luau/VM/src
+}
+else
+{
+    LUA_INCLUDE=../lua/src
+}
+
 win32{
     RC_FILE = other_files/desktop.rc
 
@@ -11,7 +23,7 @@ win32{
         -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
         -L"../libgid/release" -lgid \
         -L"../libgvfs/release" -lgvfs \
-        -L"../lua/release" -llua \
+        -L"../$$LUA_ENGINE/release" -llua \
         -L"../libgideros/release" -lgideros \
         -L"../libpystring/release" -lpystring \
         -lws2_32 \
@@ -30,7 +42,7 @@ macx {
         -framework IOKit\
         -L"../libgid" -lgid \
         -L"../libgvfs" -lgvfs \
-        -L"../lua" -llua \
+        -L"../$$LUA_ENGINE" -llua \
         -L"../libgideros" -lgideros \
         -L"../libpystring" -lpystring \
         -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx \
@@ -54,7 +66,7 @@ unix:!macx {
 #        -liphlpapi\
         ../libgid/libgid.so \
         ../libgvfs/libgvfs.so \
-        ../lua/liblua.so \
+        ../$$LUA_ENGINE/liblua.so \
         ../libgideros/libgideros.so \
         ../libpystring/libpystring.so
     LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
@@ -79,7 +91,7 @@ INCLUDEPATH += \
     ../libsound \
     ../libnetwork \
     ../luabinding \
-    ../lua/src \
+    $$LUA_INCLUDE \
     ../libpvrt \
     ../libgvfs \
     ../libgid/include \

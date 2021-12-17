@@ -123,7 +123,7 @@ int udp_open(lua_State *L)
 #if LUA_VERSION_NUM > 501 && !defined(LUA_COMPAT_MODULE)
     luaL_setfuncs(L, func, 0);
 #else
-    luaL_openlib(L, NULL, func, 0);
+    luaL_register(L, NULL, func);
 #endif
     return 0;
 }

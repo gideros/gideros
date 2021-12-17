@@ -512,7 +512,7 @@ static void g_initializePlugin(lua_State *L)
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
-    lua_pushcfunction(L, loader);
+    lua_pushcnfunction(L, loader,"plugin_init_clipper");
     lua_setfield(L, -2, "clipper");
 
     lua_pop(L, 2);

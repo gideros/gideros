@@ -17,7 +17,7 @@ static void g_initializePlugin(lua_State* L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
-	lua_pushcfunction(L, luaopen_lsqlite3);
+	lua_pushcnfunction(L, luaopen_lsqlite3,"plugin_init_lsqlite3");
 	lua_setfield(L, -2, "lsqlite3");
 	
 	lua_pop(L, 2);

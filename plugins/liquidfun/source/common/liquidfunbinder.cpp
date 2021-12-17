@@ -93,10 +93,10 @@ Box2DBinder2::Box2DBinder2(lua_State* L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 
-	lua_pushcfunction(L, loader);
+	lua_pushcnfunction(L, loader,"plugin_init_liquidfun");
 	lua_setfield(L, -2, "liquidfun");
 
-	lua_pushcfunction(L, loader);
+	lua_pushcnfunction(L, loader,"plugin_init_box2d");
 	lua_setfield(L, -2, "box2d");
 
 	lua_pop(L, 2);
@@ -757,43 +757,43 @@ int Box2DBinder2::loader(lua_State *L)
     lua_pushinteger(L, e_ropeJoint);
     lua_setfield(L, -2, "ROPE_JOINT");
 
-	lua_pushcfunction(L, b2GetScale);
+	lua_pushcnfunction(L, b2GetScale, "getScale");
 	lua_setfield(L, -2, "getScale");
 
-	lua_pushcfunction(L, b2SetScale);
+	lua_pushcnfunction(L, b2SetScale, "setScale");
 	lua_setfield(L, -2, "setScale");
 
-	lua_pushcfunction(L, getRevoluteJointDef);
+	lua_pushcnfunction(L, getRevoluteJointDef, "createRevoluteJointDef");
 	lua_setfield(L, -2, "createRevoluteJointDef");
 
-	lua_pushcfunction(L, getPrismaticJointDef);
+	lua_pushcnfunction(L, getPrismaticJointDef, "createPrismaticJointDef");
 	lua_setfield(L, -2, "createPrismaticJointDef");
 
-	lua_pushcfunction(L, getDistanceJointDef);
+	lua_pushcnfunction(L, getDistanceJointDef, "createDistanceJointDef");
 	lua_setfield(L, -2, "createDistanceJointDef");
 
-	lua_pushcfunction(L, getPulleyJointDef);
+	lua_pushcnfunction(L, getPulleyJointDef, "createPulleyJointDef");
 	lua_setfield(L, -2, "createPulleyJointDef");
 
-	lua_pushcfunction(L, getMouseJointDef);
+	lua_pushcnfunction(L, getMouseJointDef, "createMouseJointDef");
 	lua_setfield(L, -2, "createMouseJointDef");
 
-	lua_pushcfunction(L, getGearJointDef);
+	lua_pushcnfunction(L, getGearJointDef, "createGearJointDef");
 	lua_setfield(L, -2, "createGearJointDef");
 
-	lua_pushcfunction(L, getWheelJointDef);
+	lua_pushcnfunction(L, getWheelJointDef, "createWheelJointDef");
 	lua_setfield(L, -2, "createWheelJointDef");
 
-	lua_pushcfunction(L, getWeldJointDef);
+	lua_pushcnfunction(L, getWeldJointDef, "createWeldJointDef");
 	lua_setfield(L, -2, "createWeldJointDef");
 
-	lua_pushcfunction(L, getFrictionJointDef);
+	lua_pushcnfunction(L, getFrictionJointDef, "createFrictionJointDef");
 	lua_setfield(L, -2, "createFrictionJointDef");
 
-    lua_pushcfunction(L, getRopeJointDef);
+    lua_pushcnfunction(L, getRopeJointDef, "createRopeJointDef");
     lua_setfield(L, -2, "createRopeJointDef");
 
-    lua_pushcfunction(L, testOverlap);
+    lua_pushcnfunction(L, testOverlap, "testOverlap");
     lua_setfield(L, -2, "testOverlap");
 
 	lua_pushvalue(L, -1);
@@ -912,7 +912,7 @@ int Box2DBinder2::b2World_CreateBody(lua_State* L)
 	//	b2BodyDef* bodyDef = static_cast<b2BodyDef*>(binder.getInstance("b2BodyDef", 2));
 
 	if (world->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	b2BodyDef bodyDef;
 	tableToBodyDef(L, 2, &bodyDef, application->getPhysicsScale());
@@ -955,7 +955,7 @@ int Box2DBinder2::b2World_Step(lua_State* L)
 	if (!world->error.empty())
 	{
 		lua_pushstring(L, world->error.c_str());
-		return lua_error(L);
+		lua_error(L);
 	}
 
 	return 0;
@@ -1014,7 +1014,7 @@ int Box2DBinder2::b2World_DestroyBody(lua_State* L)
 	b2Body* body = toBody(binder, 2);
 
 	if (world->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 #if 0
 	// artik asagidaki islemi DestructionListener yapiyor
@@ -1209,7 +1209,7 @@ int Box2DBinder2::b2Body_CreateFixture(lua_State* L)
 	//b2FixtureDef* fixtureDef = static_cast<b2FixtureDef*>(binder.getInstance("b2FixtureDef", 2));
 
 	if (body->GetWorld()->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	b2FixtureDef fixtureDef;
 	tableToFixtureDef(L, 2, &fixtureDef);
@@ -1268,7 +1268,7 @@ int Box2DBinder2::b2Body_DestroyFixture(lua_State* L)
 	b2Fixture* fixture = toFixture(binder, 2);
 
 	if (body->GetWorld()->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->DestroyFixture(fixture);
 
@@ -1327,7 +1327,7 @@ int Box2DBinder2::b2Body_SetPosition(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = luaL_checknumber(L, 3);
@@ -1345,7 +1345,7 @@ int Box2DBinder2::b2Body_SetAngle(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->SetTransform(body->GetPosition(), luaL_checknumber(L, 2));
 
@@ -1533,7 +1533,7 @@ int Box2DBinder2::b2Body_setActive(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->SetActive(lua_toboolean(L, 2) != 0);
 
@@ -1561,7 +1561,7 @@ int Box2DBinder2::b2Body_setType(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->SetType((b2BodyType)luaL_checkinteger(L, 2));
 
@@ -1867,7 +1867,7 @@ int Box2DBinder2::b2Body_setTransform(lua_State* L)
     b2Body* body = toBody(binder, 1);
 
     if (body->GetWorld()->IsLocked())
-        return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+        luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
     lua_Number x = luaL_checknumber(L, 2);
     lua_Number y = luaL_checknumber(L, 3);
@@ -2169,7 +2169,7 @@ int Box2DBinder2::b2PolygonShape_Set(lua_State* L)
 		std::vector<b2Vec2>& m_vertices = vertices;
 
 		if (!(3 <= count && count <= b2_maxPolygonVertices))
-			return luaL_error(L, "Number of polygon vertices should be between 3 and 8.");
+			luaL_error(L, "Number of polygon vertices should be between 3 and 8.");
 
 		// Compute normals. Ensure the edges have non-zero length.
 		for (int32 i = 0; i < m_vertexCount; ++i)
@@ -2178,7 +2178,7 @@ int Box2DBinder2::b2PolygonShape_Set(lua_State* L)
 			int32 i2 = i + 1 < m_vertexCount ? i + 1 : 0;
 			b2Vec2 edge = m_vertices[i2] - m_vertices[i1];
 			if (!(edge.LengthSquared() > b2_epsilon * b2_epsilon))
-				return luaL_error(L, "Polygon edges should have non-zero length.");
+				luaL_error(L, "Polygon edges should have non-zero length.");
 		}
 
 		// Ensure the polygon is convex and the interior
@@ -2203,7 +2203,7 @@ int Box2DBinder2::b2PolygonShape_Set(lua_State* L)
 				// or the winding order is wrong.
 				float32 s = b2Cross(edge, r);
 				if (!(s > 0.0f))
-					return luaL_error(L, "Polygon should be convex and should have a CCW winding order.");
+					luaL_error(L, "Polygon should be convex and should have a CCW winding order.");
 			}
 		}
 	}
@@ -2326,10 +2326,10 @@ int Box2DBinder2::b2ChainShape_createLoop(lua_State* L)
     }
 
     if (!(vertices.size() >= 3))
-        return luaL_error(L, "Number of vertices should be greater than or equal to 3.");
+        luaL_error(L, "Number of vertices should be greater than or equal to 3.");
 
     if (!(chainShape->m_vertices == NULL && chainShape->m_count == 0))
-        return luaL_error(L, "Vertices are set already.");
+        luaL_error(L, "Vertices are set already.");
 
     chainShape->CreateLoop(&vertices[0], vertices.size());
 
@@ -2366,10 +2366,10 @@ int Box2DBinder2::b2ChainShape_createChain(lua_State* L)
     }
 
     if (!(vertices.size() >= 2))
-        return luaL_error(L, "Number of vertices should be greater than or equal to 2.");
+        luaL_error(L, "Number of vertices should be greater than or equal to 2.");
 
     if (!(chainShape->m_vertices == NULL && chainShape->m_count == 0))
-        return luaL_error(L, "Vertices are set already.");
+        luaL_error(L, "Vertices are set already.");
 
     chainShape->CreateChain(&vertices[0], vertices.size());
 
@@ -2472,7 +2472,7 @@ int Box2DBinder2::b2World_createJoint(lua_State* L)
 	b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
 
 	if (world->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	// table to jointdef
 	int index = 2;
@@ -3148,7 +3148,7 @@ int Box2DBinder2::b2World_destroyJoint(lua_State* L)
 	b2Joint* joint = toJoint(binder, 2);
 
 	if (world->IsLocked())
-		return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	world->DestroyJoint(joint);
 

@@ -91,10 +91,13 @@ typedef struct {
 /* forward declarations */
 static int lzstream_docompress(lua_State *L, lz_stream *s, int from, int to, int flush);
 
-
+static int lzstream_gc(lua_State *L);
 static lz_stream *lzstream_new(lua_State *L, int src) {
+#ifdef LUA_IS_LUAU
+    lz_stream *s = (lz_stream*)lua_newuserdataluadtor(L, sizeof(lz_stream),(void (*)(void *))lzstream_gc);
+#else
     lz_stream *s = (lz_stream*)lua_newuserdata(L, sizeof(lz_stream));
-
+#endif
     luaL_getmetatable(L, ZSTREAMMETA);
     lua_setmetatable(L, -2);        /* set metatable */
 
@@ -575,7 +578,7 @@ static int lzstream_decompress(lua_State *L) {
                         success = 1; /* always success */
                         break;
                     default:
-                        return luaL_argerror(L, n, "invalid format");
+                        luaL_argerror(L, n, "invalid format");
                 }
             }
         }
@@ -781,15 +784,23 @@ static int lzlib_compress(lua_State *L) {
 
     for(;;)
     {
+#ifdef LUA_IS_LUAU
+        luaL_reservebuffer(&b,LUA_BUFFERSIZE,-1);
+        zs.next_out = (unsigned char *)b.p;
+        zs.avail_out = LUA_BUFFERSIZE;
+#else
         zs.next_out = (unsigned char*)luaL_prepbuffer(&b);
         zs.avail_out = LUAL_BUFFERSIZE;
-
+#endif
         /* munch some more */
         ret = deflate(&zs, Z_FINISH);
 
         /* push gathered data */
+#ifdef LUA_IS_LUAU
+        b.p+=(LUA_BUFFERSIZE-zs.avail_out);
+#else
         luaL_addsize(&b, LUAL_BUFFERSIZE - zs.avail_out);
-
+#endif
         /* done processing? */
         if (ret == Z_STREAM_END)
             break;
@@ -840,15 +851,23 @@ static int lzlib_decompress(lua_State *L)
     zs.avail_in = avail_in;
 
     for (;;) {
+#ifdef LUA_IS_LUAU
+        luaL_reservebuffer(&b,LUA_BUFFERSIZE,-1);
+        zs.next_out = (unsigned char *)b.p;
+        zs.avail_out = LUA_BUFFERSIZE;
+#else
         zs.next_out = (unsigned char*)luaL_prepbuffer(&b);
         zs.avail_out = LUAL_BUFFERSIZE;
-
+#endif
         /* bake some more */
         ret = inflate(&zs, Z_FINISH);
 
         /* push gathered data */
+#ifdef LUA_IS_LUAU
+        b.p+=(LUA_BUFFERSIZE-zs.avail_out);
+#else
         luaL_addsize(&b, LUAL_BUFFERSIZE - zs.avail_out);
-
+#endif
         /* done processing? */
         if (ret == Z_STREAM_END)
             break;

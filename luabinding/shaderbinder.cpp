@@ -125,7 +125,7 @@ int ShaderBinder::create(lua_State* L)
 	std::vector<ShaderProgram::ConstantDesc> constants;
 	std::vector<ShaderProgram::DataDesc> datas;
 
-    int n = luaL_getn(L, 4);  /* get size of table */
+    int n = lua_objlen(L, 4);  /* get size of table */
     for (int i=1; i<=n; i++) {
     	ShaderProgram::ConstantDesc cst={"",ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
         lua_rawgeti(L, 4, i);  /* push t[i] */
@@ -144,7 +144,7 @@ int ShaderBinder::create(lua_State* L)
     	constants.push_back(cst);
       }
 
-    n = luaL_getn(L, 5);  /* get size of table */
+    n = lua_objlen(L, 5);  /* get size of table */
     for (int i=1; i<=n; i++) {
     	ShaderProgram::DataDesc cst={"",ShaderProgram::DFLOAT,0,0,0};
         lua_rawgeti(L, 5, i);  /* push t[i] */

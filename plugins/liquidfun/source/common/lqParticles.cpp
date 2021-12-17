@@ -83,7 +83,7 @@ int Box2DBinder2::b2World_createParticleSystem(lua_State* L)
     b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
 
     if (world->IsLocked())
-        return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+        luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
     b2ParticleSystemDef particleSystemDef;
     tableToParticleSystemDef(L, 2, &particleSystemDef, application->getPhysicsScale());
@@ -165,7 +165,7 @@ int Box2DBinder2::b2ParticleSystem_createParticle(lua_State* L)
     tableToParticleDef(L, 2, &particleDef, application->getPhysicsScale());
 
     if (ps->GetWorld()->IsLocked())
-    	return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+    	luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
     int32 p=ps->GetSystem()->CreateParticle(particleDef);
     lua_pushinteger(L, p);
@@ -207,11 +207,11 @@ int Box2DBinder2::b2ParticleSystem_getParticleGroupList(lua_State *L)
     b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
     if (ps == NULL)
     {
-        return luaL_error(L, "ParticleSystem required in argument #1");
+        luaL_error(L, "ParticleSystem required in argument #1");
     }
 
     if (ps->GetWorld()->IsLocked())
-        return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+        luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
     int index = 0;
     lua_newtable(L);
@@ -552,7 +552,7 @@ int Box2DBinder2::b2ParticleSystem_createParticleGroup(lua_State* L)
 
     b2ParticleGroup* particleGroup =ps->GetSystem()->CreateParticleGroup(particleGroupDef);
     if (!particleGroup)
-    	return luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+    	luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
 
     binder.pushInstance("b2ParticleGroup", particleGroup);
 	lua_pushlightuserdata(L, particleGroup);

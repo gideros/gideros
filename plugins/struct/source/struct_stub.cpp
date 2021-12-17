@@ -11,7 +11,7 @@ static void g_initializePlugin(lua_State *L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 
-	lua_pushcfunction(L, luaopen_struct);
+	lua_pushcnfunction(L, luaopen_struct,"plugin_init_struct");
 	lua_setfield(L, -2, "struct");
 
 	lua_pop(L, 2);

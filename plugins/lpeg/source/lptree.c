@@ -704,7 +704,7 @@ static int lp_divcapture (lua_State *L) {
       tree->key = n;
       return 1;
     }
-    default: return luaL_argerror(L, 2, "invalid replacement value");
+    default: luaL_argerror(L, 2, "invalid replacement value");
   }
 }
 
@@ -918,11 +918,11 @@ static int verifyerror (lua_State *L, int *passed, int npassed) {
     for (j = i - 1; j >= 0; j--) {
       if (passed[i] == passed[j]) {
         lua_rawgeti(L, -1, passed[i]);  /* get rule's key */
-        return luaL_error(L, "rule '%s' may be left recursive", val2str(L, -1));
+        luaL_error(L, "rule '%s' may be left recursive", val2str(L, -1));
       }
     }
   }
-  return luaL_error(L, "too many left calls in grammar");
+  luaL_error(L, "too many left calls in grammar");
 }
 
 

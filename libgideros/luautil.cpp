@@ -13,7 +13,7 @@ extern "C" {
 int lua_toboolean2(lua_State *L, int idx)
 {
     if (lua_isnone(L, idx))
-        return luaL_typerror(L, idx, "boolean");
+        luaL_typerror(L, idx, "boolean");
 
     return lua_toboolean(L, idx);
 }
@@ -110,6 +110,38 @@ static int db_errorfb (lua_State *L) {
   else if (!lua_isstring(L, arg+1)) return 1;  /* message is not a string */
   else lua_pushliteral(L, "\n");
   lua_pushliteral(L, "stack traceback:");
+#ifdef LUA_IS_LUAU
+  while (lua_getinfo(L1, level++, "sSnl", &ar)) {
+    if (level > LEVELS1 && firstpart) {
+      /* no more than `LEVELS2' more levels? */
+      if (!lua_getinfo(L1, level+LEVELS2, "sSnl", &ar))
+        level--;  /* keep going */
+      else {
+        lua_pushliteral(L, "\n\t...");  /* too many levels */
+        while (lua_getinfo(L1, level+LEVELS2, "sSnl", &ar))  /* find last levels */
+          level++;
+      }
+      firstpart = 0;
+      continue;
+    }
+    if (*ar.what == 'C')
+        continue;
+    lua_pushliteral(L, "\n\t");
+    lua_pushfstring(L, "%s:", ar.short_src);
+    if (ar.currentline > 0)
+      lua_pushfstring(L, "%d:", ar.currentline);
+    if (ar.name)  /* is there a name? */
+        lua_pushfstring(L, " in function %s", ar.name);
+    else {
+      if (*ar.what == 'm')  /* main? */
+        lua_pushfstring(L, " in main chunk");
+      else if (*ar.what == 'C' || *ar.what == 't')
+        lua_pushliteral(L, " ?");  /* C function or tail call */
+      else
+        lua_pushfstring(L, " in function <%s:%d>",
+                           ar.short_src, ar.linedefined);
+    }
+#else
   while (lua_getstack(L1, level++, &ar)) {
     if (level > LEVELS1 && firstpart) {
       /* no more than `LEVELS2' more levels? */
@@ -141,12 +173,12 @@ static int db_errorfb (lua_State *L) {
         lua_pushfstring(L, " in function <%s:%d>",
                            ar.short_src, ar.linedefined);
     }
+#endif
     lua_concat(L, lua_gettop(L) - arg);
   }
   lua_concat(L, lua_gettop(L) - arg);
   return 1;
 }
-
 static char key_tracebackFunction = ' ';
 
 int lua_pcall_traceback(lua_State* L, int nargs, int nresults, int unused)
@@ -180,7 +212,7 @@ void lua_traceback(lua_State* L)
 {
 	if (!lua_isstring(L, -1))  /* 'message' not a string? */
 		return;  /* keep it intact */
-	lua_pushcnfunction(L, db_errorfb, "db_errorfb");
+    lua_pushcnfunction(L, db_errorfb, "db_errorfb");
 	lua_pushvalue(L, -2);  /* pass error message */
 	lua_pushinteger(L, 1);  /* skip this function */
 	lua_call(L, 2, 1);  /* call debug.traceback */

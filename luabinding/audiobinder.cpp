@@ -682,7 +682,7 @@ int AudioBinder::SoundChannel_setPitch(lua_State *L)
     GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(binder.getInstance("SoundChannel", 1));
 
     if (!soundChannel->isPitchingAvailable())
-        return luaL_error(L, "Sound pitching is not supported for background music.");
+        luaL_error(L, "Sound pitching is not supported for background music.");
 
     soundChannel->setPitch(luaL_checknumber(L, 2));
 
@@ -696,7 +696,7 @@ int AudioBinder::SoundChannel_getPitch(lua_State *L)
     GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(binder.getInstance("SoundChannel", 1));
 
     if (!soundChannel->isPitchingAvailable())
-        return luaL_error(L, "Sound pitching is not supported for background music.");
+        luaL_error(L, "Sound pitching is not supported for background music.");
 
     lua_pushnumber(L, soundChannel->getPitch());
 

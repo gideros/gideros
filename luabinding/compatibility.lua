@@ -57,6 +57,18 @@ function Timer.delayedCall(delay, func, data)
 	return timer
 end
 
+if not package then
+	package={ preload={}, loaded={} }
+	require=function(module)
+		if package.loaded[module] then return package.loaded[module] end
+		assert(package.preload[module],"Module "..module.." not found")
+		assert(type(package.preload[module])=="function","Module loader isn't a function")
+		local m=package.preload[module](module)
+		package.loaded[module]=m or true
+		return m
+	end
+end
+
 package.preload["accelerometer"] = function()
 	accelerometer = Accelerometer.new()
 	return accelerometer

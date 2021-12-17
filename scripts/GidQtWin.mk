@@ -18,7 +18,7 @@ endif
 SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
 
-vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):libgid/openal/$(QTTGT_DIR):lua/$(QTTGT_DIR)
+vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):libgid/openal/$(QTTGT_DIR):$(LUA_ENGINE)/$(QTTGT_DIR)
 
 $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop
@@ -31,9 +31,9 @@ sdk.qtlibs.dir:
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.$(QTTGT_EXT),libpystring libgvfs libgid/openal libgid/xmp) libgid.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),lua libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.$(QTTGT_EXT),libpystring libgvfs libgid/openal libgid/xmp) libgid.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),$(LUA_ENGINE) libgideros) sdk.qtlibs
 
-qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/openal libgid/xmp libgid lua libgideros)
+qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/openal libgid/xmp libgid $(LUA_ENGINE) libgideros)
 
 export MSBUILD
 
@@ -41,7 +41,7 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
 	cp $(ROOT)/libgid/$(QTTGT_DIR)/gid.dll $(RELEASE)
 	cp $(ROOT)/libgvfs/$(QTTGT_DIR)/gvfs.dll $(RELEASE)
-	cp $(ROOT)/lua/$(QTTGT_DIR)/lua.dll $(RELEASE)
+	cp $(ROOT)/$(LUA_ENGINE)/$(QTTGT_DIR)/lua.dll $(RELEASE)
 	cp $(ROOT)/libgideros/$(QTTGT_DIR)/gideros.dll $(RELEASE)
 	cp $(ROOT)/libpystring/$(QTTGT_DIR)/pystring.dll $(RELEASE)
 
@@ -71,13 +71,13 @@ qtlibs.install: buildqtlibs
 		cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/All\ Plugins/$(notdir $*)/bin/Windows;\
 		fi
 
-qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
+qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid $(LUA_ENGINE) libgideros)
 
 buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
-qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
+qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) qtplugins.clean
 
-qt.install: buildqt qt5.install qt.player tools html5.tools
+qt.install: buildqt qt5.install qt.player html5.tools
 	cp $(ROOT)/ui/$(QTTGT_DIR)/GiderosStudio.exe $(RELEASE)
 	cp $(ROOT)/player/$(QTTGT_DIR)/GiderosPlayer.exe $(RELEASE)
 	cp $(ROOT)/texturepacker/$(QTTGT_DIR)/GiderosTexturePacker.exe $(RELEASE)
@@ -160,13 +160,24 @@ qtplugins.install: buildqtplugins
 	cd $(ROOT)/$*; $(MINGWMAKE) $(MAKEJOBS) debug
 
 tools:
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+	mkdir -p $(BUILDTOOLS)
+	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(BUILDTOOLS); done
+	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
+		$(addprefix CLI/,Coverage FileUtils Profiler Repl) \
+		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
+    	lgcdebug linit lint64lib lmathlib lmem lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
+        ludata lutf8lib lvmexecute lvmload lvmutils) \
+		$(addprefix Compiler/src/,lcode Compiler BytecodeBuilder) \
+		$(addprefix Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace))
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -shared -o lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -shared -o../../$(BUILDTOOLS)/lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o lua lua.c lua51.a
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o../../$(BUILDTOOLS)/lua lua.c lua51.a
+	gcc -I. -DDESKTOP_TOOLS -o$(BUILDTOOLS)/bin2c scripts/bin2c.c
+	
 	
 bundle:
 	rm -rf $(RELEASE).Tmp

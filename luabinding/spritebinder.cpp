@@ -291,7 +291,7 @@ int SpriteBinder::addChild(lua_State* L)
 
 	GStatus status;
 	if (sprite->canChildBeAdded(child, &status) == false)
-		return luaL_error(L, status.errorString());
+        luaL_error(L, status.errorString());
 
 	if (child->parent() == sprite)
 	{
@@ -342,7 +342,7 @@ int SpriteBinder::addChildAt(lua_State* L)
 
 	GStatus status;
     if (sprite->canChildBeAddedAt(child, index - 1, &status) == false)
-		return luaL_error(L, status.errorString());
+        luaL_error(L, status.errorString());
 
 	if (child->parent() == sprite)
 	{
@@ -391,7 +391,7 @@ int SpriteBinder::removeChildAt(lua_State* L)
 	int index = luaL_checknumber(L, 2);
 	if (index < 0) index = sprite->childCount() + index + 1;
 	if (index < 1 || index > sprite->childCount())
-		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index is out of bounds.
+        luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index is out of bounds.
 
 	Sprite* child = sprite->getChildAt(index - 1);
 
@@ -424,7 +424,7 @@ int SpriteBinder::removeChild(lua_State* L)
 	GStatus status;
 	int index = sprite->getChildIndex(child, &status);
 	if (status.error() == true)
-		return luaL_error(L, status.errorString());
+        luaL_error(L, status.errorString());
 
 	lua_pushnil(L);
 	lua_setfield(L, 2, "__parent");		// child.__parent = nil
@@ -473,11 +473,11 @@ int SpriteBinder::swapChildrenAt(lua_State* L)
 	int index1 = luaL_checknumber(L, 2);
 	if (index1 < 0) index1 = sprite->childCount() + index1 + 1;
 	if (index1 < 1 || index1 > sprite->childCount())
-		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index1 is out of bounds.
+        luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index1 is out of bounds.
         int index2 = luaL_checknumber(L, 3);
         if (index2 < 0) index2 = sprite->childCount() + index2 + 1;
 	if (index2 < 1 || index2 > sprite->childCount())
-		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index2 is out of bounds.
+        luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index2 is out of bounds.
 
 	sprite->swapChildrenAt(index1-1,index2-1);
 
@@ -493,7 +493,7 @@ int SpriteBinder::getChildAt(lua_State* L)
 	int index = luaL_checkinteger(L, 2);
 	if (index < 0) index = sprite->childCount() + index + 1;
 	if (index < 1 || index > sprite->childCount())
-		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index is out of bounds.
+        luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index is out of bounds.
 
 	Sprite* child = sprite->getChildAt(index - 1);
 

@@ -26,6 +26,7 @@
 #include "bitmapdata.h"
 #include "bitmap.h"
 
+#define luaL_getn lua_objlen
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -473,10 +474,12 @@ static void setApplicationCursor(lua_State* L, const char* name)
 	lua_pop(L, 2);
 }
 
+#ifndef LUA_IS_LUAU
 static int luaL_optboolean(lua_State* L, int narg, int def)
 {
 	return lua_isboolean(L, narg) ? lua_toboolean(L, narg) : def;
 }
+#endif
 
 static lua_Number getfield(lua_State* L, const char* key)
 {
@@ -14752,7 +14755,7 @@ static void g_initializePlugin(lua_State* L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
-	lua_pushcfunction(L, ImGui_impl::loader);
+	lua_pushcnfunction(L, ImGui_impl::loader,"plugin_init_imgui");
 	lua_setfield(L, -2, PLUGIN_NAME);
 	
 	lua_pop(L, 2);

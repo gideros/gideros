@@ -90,7 +90,14 @@ void LuaDebugging::serializeValue(ByteBuffer &buffer,lua_State *L,int n,int nref
 }
 
 void LuaDebugging::setupBreakMode(int m) {
+    //Modes used by the studio:
+    //0x00: stop debugger, i.e resume without any breakpoints
+    //0x04: step into, i.e break at next source line
+    //0x44: step over, i.e break at next source line excluding sub calls
+    //0x46: step return, i.e break at return exclusing sub calls (plus line, needed for internal processing)
+    //0x84: resume, i.e break at next line matching a breakpoint
 	debuggerMode=m;
+#ifndef LUA_IS_LUAU
 	LuaApplication::debuggerBreak=m;
 	if (debuggerMode&DBG_MASKSUB)
 	{
@@ -100,6 +107,7 @@ void LuaDebugging::setupBreakMode(int m) {
             LuaApplication::debuggerBreak&=~LUA_MASKLINE;
 	}
     lua_sethook(L, LuaDebugging::hook, LuaDebugging::yieldHookMask | (LuaApplication::debuggerBreak&DBG_MASKLUA), lua_gethookcount(L));
+#endif
 }
 
 static void lookupVariable(const char *sym,lua_State *L, lua_Debug *ar) {
@@ -107,7 +115,11 @@ static void lookupVariable(const char *sym,lua_State *L, lua_Debug *ar) {
 	int n=1;
 	bool found=false;
 	const char *name;
-	while ((name=lua_getlocal(L,ar,n))!=NULL)
+#ifdef LUA_IS_LUAU
+    while ((name=lua_getlocal(L,1,n))!=NULL)
+#else
+    while ((name=lua_getlocal(L,ar,n))!=NULL)
+#endif
 	{
 		bool nfound=(!strcmp(name,sym));
 		if (found&&nfound)
@@ -120,7 +132,11 @@ static void lookupVariable(const char *sym,lua_State *L, lua_Debug *ar) {
 	if (!found) {
 		//2. upvalues
 		n=1;
+#ifdef LUA_IS_LUAU
+        lua_getinfo(L, 1, "f", ar);
+#else
         lua_getinfo(L, "f", ar);
+#endif
         while ((name=lua_getupvalue(L,-1,n))!=NULL)
 		{
 			found=(!strcmp(name,sym));
@@ -228,7 +244,8 @@ void LuaDebugging::studioCommand(const std::vector<char> &data) {
 }
 
 void LuaDebugging::debuggerHook(void *context, lua_State *L, lua_Debug *ar) {
-	if ((ar->event==LUA_HOOKCALL)&&(LuaApplication::debuggerBreak&DBG_MASKSUB)) {
+#ifndef LUA_IS_LUAU
+    if ((ar->event==LUA_HOOKCALL)&&(LuaApplication::debuggerBreak&DBG_MASKSUB)) {
 		subCount++;
 		LuaApplication::debuggerBreak&=~LUA_MASKLINE;
         lua_sethook(L, LuaDebugging::hook, LuaDebugging::yieldHookMask | (LuaApplication::debuggerBreak&DBG_MASKLUA), lua_gethookcount(L));
@@ -292,4 +309,5 @@ void LuaDebugging::debuggerHook(void *context, lua_State *L, lua_Debug *ar) {
 		}
 
 	}
+#endif
 }

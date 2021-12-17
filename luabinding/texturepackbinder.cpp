@@ -54,7 +54,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         if (!lua_isnoneornil(L, argn+3))
         {
             if (lua_type(L, argn+3) != LUA_TTABLE)
-                return luaL_typerror(L, argn+3, "table");
+                luaL_typerror(L, argn+3, "table");
 
             lua_getfield(L, argn+3, "transparentColor");
             if (!lua_isnil(L, -1))
@@ -169,7 +169,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         if (!lua_isnoneornil(L, argn+3))
         {
             if (lua_type(L, argn+3) != LUA_TTABLE)
-                return luaL_typerror(L, argn+3, "table");
+                luaL_typerror(L, argn+3, "table");
 
             lua_getfield(L, argn+3, "transparentColor");
             if (!lua_isnil(L, -1))
@@ -267,7 +267,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
     }
     else
     {
-        return luaL_error(L, "Bad argument to 'TexturePack.new'. Candidates are TexturePack.new(table) and TexturePack.new(string, string).");
+        luaL_error(L, "Bad argument to 'TexturePack.new'. Candidates are TexturePack.new(table) and TexturePack.new(string, string).");
     }
 
     return 1;
