@@ -117,9 +117,9 @@ int PixelBinder::create(lua_State* L)
 	return 1;
 }
 
-int PixelBinder::destruct(lua_State* L)
+int PixelBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Pixel* bitmap = static_cast<Pixel*>(ptr);
 	bitmap->unref();
 

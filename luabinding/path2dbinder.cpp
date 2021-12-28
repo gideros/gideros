@@ -59,9 +59,9 @@ int Path2DBinder::create(lua_State* L)
 	return 1;
 }
 
-int Path2DBinder::destruct(lua_State* L)
+int Path2DBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Path2D* shape = static_cast<Path2D*>(ptr);
 	shape->unref();
 

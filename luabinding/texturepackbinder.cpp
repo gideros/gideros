@@ -286,9 +286,9 @@ int TexturePackBinder::loadAsync(lua_State* L)
 }
 
 
-int TexturePackBinder::destruct(lua_State* L)
+int TexturePackBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	TexturePack* texturePack = static_cast<TexturePack*>(ptr);
 	texturePack->unref();
 
@@ -416,9 +416,9 @@ int TexturePackFontBinder::create(lua_State* L)
 }
 
 
-int TexturePackFontBinder::destruct(lua_State* L)
+int TexturePackFontBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
     TexturePackFont* texturePack = static_cast<TexturePackFont*>(ptr);
     texturePack->unref();
 

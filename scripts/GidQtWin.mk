@@ -165,9 +165,9 @@ tools:
 	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
 		$(addprefix CLI/,Coverage FileUtils Profiler Repl) \
 		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
-    	lgcdebug linit lint64lib lmathlib lmem lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
+    	lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
         ludata lutf8lib lvmexecute lvmload lvmutils) \
-		$(addprefix Compiler/src/,lcode Compiler BytecodeBuilder) \
+		$(addprefix Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
 		$(addprefix Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace))
 	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc\

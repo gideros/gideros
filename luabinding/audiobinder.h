@@ -10,12 +10,12 @@ public:
 
 private:
     static int Sound_create(lua_State *L);
-    static int Sound_destruct(lua_State *L);
+    static int Sound_destruct(void *p);
     static int Sound_getLength(lua_State *L);
     static int Sound_play(lua_State *L);
     static int Sound_setListenerPosition(lua_State *L);
 
-    static int SoundChannel_destruct(lua_State *L);
+    static int SoundChannel_destruct(void *p);
     static int SoundChannel_stop(lua_State *L);
     static int SoundChannel_setPosition(lua_State *L);
     static int SoundChannel_getPosition(lua_State *L);

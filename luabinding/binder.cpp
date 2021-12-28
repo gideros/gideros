@@ -16,7 +16,7 @@ void Binder::enableTypeChecking()
 void Binder::createClass(const char* classname,
                          const char* basename,
                          int (*constructor) (lua_State*),
-                         int (*destructor) (lua_State*),
+                         int (*destructor) (void*),
                          const luaL_reg* functionlist)
 {
     g_createClass(L, classname, basename, constructor, destructor, functionlist);
@@ -25,7 +25,7 @@ void Binder::createClass(const char* classname,
 void Binder::createClass(std::string classname,
                          std::string basename,
                          int (*constructor) (lua_State*),
-                         int (*destructor) (lua_State*),
+                         int (*destructor) (void*),
                          std::vector<luaL_Reg> functionlist)
 {
     const char* _class = classname == "" ? NULL : classname.c_str();

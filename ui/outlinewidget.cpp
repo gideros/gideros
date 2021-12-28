@@ -20,6 +20,7 @@
 
 #include "iconlibrary.h"
 #include "lua.hpp"
+#ifndef LUA_IS_LUAU
 extern "C" {
 #include "ldo.h"
 #include "lfunc.h"
@@ -29,12 +30,17 @@ extern "C" {
 #include "lstring.h"
 #include "lundump.h"
 }
+#else
+#include "Luau/Compiler.h"
+#include "Luau/Ast.h"
+#endif
 
 #define TYPING_DELAY 1000
 #define OT_GLOBAL   0x10
 #define OT_LOCAL    0x20
 #define OT_FUNCTION 1
 
+#ifndef LUA_IS_LUAU
 #define toproto(L,i) (clvalue(L->top+(i))->l.p)
 
 static int decodeValType(int t)
@@ -62,12 +68,89 @@ static QString getLuaString(TValue *v,bool field=false)
     else
         return field?".?":"?";
 }
+#else
+class OutlineVisitor : public Luau::AstVisitor
+{
+    virtual bool visit(class Luau::AstExprFunction* node)
+    {
+        return false;
+    }
+    virtual bool visit(class Luau::AstExprLocal* node)
+    {
+        //*ol << OutLineItem(node->local->name.value,OT_LOCAL|0,node->location.begin.line+1);
+        return false;
+    }
+    virtual bool visit(class Luau::AstExprGlobal* node)
+    {
+        return false;
+    }
+    virtual bool visit(class Luau::AstStatLocal* node)
+    {
+        for (Luau::AstLocal* var : node->vars)
+        {
+            *ol << OutLineItem(var->name.value,OT_LOCAL|0,node->location.begin.line+1);
+        }
+        return false;
+    }
+    std::string toExprName(Luau::AstExpr *expr, bool &glb) {
+        if (expr->is<Luau::AstExprGlobal>()) {
+            glb=true;
+            return expr->as<Luau::AstExprGlobal>()->name.value;
+        }
+        else if (expr->is<Luau::AstExprLocal>())
+            return expr->as<Luau::AstExprLocal>()->local->name.value;
+        else if (expr->is<Luau::AstExprIndexName>())
+            return toExprName(expr->as<Luau::AstExprIndexName>()->expr,glb) + "." + expr->as<Luau::AstExprIndexName>()->index.value;
+        return "Undef";
+    }
+    virtual bool visit(class Luau::AstStatAssign* node)
+    {
+        for (Luau::AstExpr* var : node->vars)
+        {
+            bool glb=false;
+            *ol << OutLineItem(toExprName(var,glb).c_str(),(glb?OT_GLOBAL:OT_LOCAL)|0,node->location.begin.line+1);
+        }
+        return false;
+    }
+    virtual bool visit(class Luau::AstStatFunction* node)
+    {
+        bool glb=false;
+        *ol << OutLineItem(toExprName(node->name,glb).c_str(),(glb?OT_GLOBAL:OT_LOCAL)|OT_FUNCTION,node->location.begin.line+1);
+        return false;
+    }
+    virtual bool visit(class Luau::AstStatLocalFunction* node)
+    {
+        *ol << OutLineItem(node->name->name.value,OT_LOCAL|OT_FUNCTION,node->location.begin.line+1);
+         return false;
+    }
+    virtual bool visit(class Luau::AstStatDeclareFunction* node)
+    {
+        return false;
+    }
+    virtual bool visit(class Luau::AstStatDeclareGlobal* node)
+    {
+        return false;
+    }
+    virtual bool visit(class Luau::AstStatDeclareClass* node)
+    {
+        return false;
+    }
+
+public:
+    QList<OutLineItem> *ol;
+    OutlineVisitor(QList<OutLineItem> *outline) {
+        ol=outline;
+    }
+};
+
+#endif
 
 void OutlineWorkerThread::run()
 {
   QList<OutLineItem> outline;
 
   lua_State *L = luaL_newstate();
+#ifndef LUA_IS_LUAU
   if (!luaL_loadbuffer(L,btext.constData(),btext.size(),filename.toUtf8().constData()))
   {
       Proto *p=toproto(L,-1);
@@ -194,6 +277,24 @@ void OutlineWorkerThread::run()
       emit reportError(error);
       //qDebug() << "LUAP" << error;
   }
+#else
+      Luau::CompileOptions opts;
+      Luau::ParseOptions popts;
+      Luau::ParseResult result;
+      Luau::Allocator allocator;
+      Luau::AstNameTable names(allocator);
+      result = Luau::Parser::parse(btext.constData(),btext.size(), names, allocator, popts);
+      std::string error = Luau::compile(std::string(btext.constData(),btext.size()), opts,popts,nullptr,&result);
+      if (error.at(0)==0) {
+          QString qerror=QString(error.substr(1).c_str());
+          emit reportError("[string "+filename+"]"+qerror);
+      }
+      else  {
+          OutlineVisitor visitor(&outline);
+          result.root->visit(&visitor);
+          emit reportError("");
+      }
+#endif
   lua_close(L);
 
   emit updateOutline(outline);

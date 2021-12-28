@@ -356,11 +356,10 @@ static int json_cfg_decode_invalid_numbers(lua_State *l)
     return 1;
 }
 
-static int json_destroy_config(lua_State *l)
+static int json_destroy_config(void *p)
 {
-    json_config_t *cfg;
+    json_config_t *cfg=LUA_DTOR_UDATA(p);
 
-    cfg = lua_touserdata(l, 1);
     if (cfg)
         strbuf_free(&cfg->encode_buf);
     cfg = NULL;
@@ -374,7 +373,7 @@ static void json_create_config(lua_State *l)
     int i;
 
 #ifdef LUA_IS_LUAU
-    cfg = lua_newuserdataluadtor(l, sizeof(*cfg), (void (*)(void *))json_destroy_config);
+    cfg = lua_newuserdatadtor(l, sizeof(*cfg), (void (*)(void *))json_destroy_config);
 #else
     cfg = lua_newuserdata(l, sizeof(*cfg));
 

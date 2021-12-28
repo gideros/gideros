@@ -1,8 +1,10 @@
 #pragma once
 
 #include "lua.hpp"
+#include "luautil.h"
 #include <string>
 #include <vector>
+#include "gplugin.h"
 
 class Binder
 {
@@ -14,7 +16,7 @@ public:
     void createClass(const char* classname,
                      const char* basename,
                      int (*constructor) (lua_State*),
-                     int (*destructor) (lua_State*),
+                     int (*destructor) (void*),
                      const luaL_reg* functionlist);
 
     // eg: createClass("Blah", "", nullptr, nullptr, {{ "bling", bling }, { nullptr, nullptr }});
@@ -22,7 +24,7 @@ public:
     void createClass(std::string classname,
                      std::string basename,
                      int (*constructor) (lua_State*),
-                     int (*destructor) (lua_State*),
+                     int (*destructor) (void*),
                      std::vector<luaL_Reg> functionlist);
 
     void pushInstance(const char* classname, void* ptr);

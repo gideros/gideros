@@ -219,9 +219,9 @@ int MeshBinder::create(lua_State *L)
     return 1;
 }
 
-int MeshBinder::destruct(lua_State *L)
+int MeshBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     GMesh* mesh = static_cast<GMesh*>(ptr);
     mesh->unref();
 

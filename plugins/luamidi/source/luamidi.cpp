@@ -105,7 +105,7 @@ static RtMidiOut* checkMidiOut(lua_State* L, int index)
 static RtMidiOut** pushMidiOut(lua_State* L, RtMidiOut* mo)
 {
 #ifdef LUA_IS_LUAU
-	RtMidiOut** midiout = (RtMidiOut**)lua_newuserdataluadtor(L, sizeof(RtMidiOut*),(void (*)(void*))MidiOut_gc);
+	RtMidiOut** midiout = (RtMidiOut**)lua_newuserdatadtor(L, sizeof(RtMidiOut*),(void (*)(void*))MidiOut_gc);
 #else
 	RtMidiOut** midiout = (RtMidiOut**)lua_newuserdata(L, sizeof(RtMidiOut*));
 #endif
@@ -192,7 +192,7 @@ static RtMidiIn* checkMidiIn(lua_State* L, int index)
 static RtMidiIn** pushMidiIn(lua_State* L, RtMidiIn* mi)
 {
 #ifdef LUA_IS_LUAU
-	RtMidiIn **midiin = (RtMidiIn**)lua_newuserdataluadtor(L, sizeof(RtMidiIn*),(void (*)(void*))MidiIn_gc);
+	RtMidiIn **midiin = (RtMidiIn**)lua_newuserdatadtor(L, sizeof(RtMidiIn*),(void (*)(void*))MidiIn_gc);
 #else
 	RtMidiIn** midiin = (RtMidiIn**)lua_newuserdata(L, sizeof(RtMidiIn*));
 #endif

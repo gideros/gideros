@@ -286,9 +286,9 @@ static int create(lua_State *L)
     return 1;
 }
 
-static int destruct(lua_State *L)
+static int destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GReferenced* proxy = object->proxy();
     proxy->unref();

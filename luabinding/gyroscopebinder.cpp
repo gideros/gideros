@@ -70,9 +70,9 @@ int GyroscopeBinder::create(lua_State* L)
     return 1;
 }
 
-int GyroscopeBinder::destruct(lua_State* L)
+int GyroscopeBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
     GGGyroscope *gyroscope = static_cast<GGGyroscope*>(ptr);
     gyroscope->unref();
 

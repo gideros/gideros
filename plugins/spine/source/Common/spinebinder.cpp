@@ -533,7 +533,7 @@ int createSpineSprite(lua_State *L) {
 	return 1;
 }
 
-int destroySpineSprite(lua_State *L) {
+int destroySpineSprite(void *p) {
 	return 0;
 }
 

@@ -567,9 +567,9 @@ public:
     cimg_library::CImg<unsigned char> image;
 };
 
-static int destructManager(lua_State* L)
+static int destructManager(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GMediaManager *g = static_cast<GMediaManager*>(object->proxy());
 
@@ -578,9 +578,9 @@ static int destructManager(lua_State* L)
     return 0;
 }
 
-static int destructMedia(lua_State* L)
+static int destructMedia(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GMedia *g = static_cast<GMedia*>(object->proxy());
 

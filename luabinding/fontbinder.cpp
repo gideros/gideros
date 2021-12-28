@@ -59,9 +59,9 @@ int FontBinder::getDefault(lua_State* L)
 	return 1;
 }
 
-int FontBinder::destruct(lua_State* L)
+int FontBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Font* font = static_cast<Font*>(ptr);
 	font->unref();
 

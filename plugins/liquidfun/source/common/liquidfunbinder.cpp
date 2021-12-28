@@ -1128,10 +1128,10 @@ int Box2DBinder2::b2World_rayCast(lua_State* L)
     return 0;
 }
 
-int Box2DBinder2::b2Body_destruct(lua_State* _UNUSED(L))
+int Box2DBinder2::b2Body_destruct(void* _UNUSED(p))
 {
 #if 0
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2Body* body = static_cast<b2Body*>(ptr);
 	if (body != 0)
 		body->GetWorld()->DestroyBody(body);
@@ -1897,10 +1897,10 @@ int Box2DBinder2::b2Body_getTransform(lua_State* L)
 }
 
 
-int Box2DBinder2::b2Fixture_destruct(lua_State* _UNUSED(L))
+int Box2DBinder2::b2Fixture_destruct(void* _UNUSED(p))
 {
 #if 0
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* GIDEROS_DTOR_UDATA(p);
 	b2Fixture* fixture = static_cast<b2Fixture*>(ptr);
 	if (fixture != 0)
 		fixture->GetBody()->DestroyFixture(fixture);
@@ -1990,9 +1990,9 @@ int Box2DBinder2::b2Fixture_GetFilterData(lua_State* L)
 	return 1;
 }
 
-int Box2DBinder2::b2Shape_destruct(lua_State* L)
+int Box2DBinder2::b2Shape_destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2Shape* shape = static_cast<b2Shape*>(ptr);
 	delete shape;
 
@@ -2026,9 +2026,9 @@ int Box2DBinder2::b2CircleShape_create(lua_State* L)
 	return 1;
 }
 
-int Box2DBinder2::b2CircleShape_destruct(lua_State* L)
+int Box2DBinder2::b2CircleShape_destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2CircleShape* circleShape = static_cast<b2CircleShape*>(ptr);
 	delete circleShape;
 
@@ -2070,9 +2070,9 @@ int Box2DBinder2::b2PolygonShape_create(lua_State* L)
 	return 1;
 }
 
-int Box2DBinder2::b2PolygonShape_destruct(lua_State* L)
+int Box2DBinder2::b2PolygonShape_destruct(void* p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2PolygonShape* polygonShape = static_cast<b2PolygonShape*>(ptr);
 	delete polygonShape;
 
@@ -2243,9 +2243,9 @@ int Box2DBinder2::b2EdgeShape_create(lua_State* L)
 	return 1;
 }
 
-int Box2DBinder2::b2EdgeShape_destruct(lua_State* L)
+int Box2DBinder2::b2EdgeShape_destruct(void* p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2EdgeShape* edgeShape = static_cast<b2EdgeShape*>(ptr);
 	delete edgeShape;
 
@@ -2287,9 +2287,9 @@ int Box2DBinder2::b2ChainShape_create(lua_State* L)
     return 1;
 }
 
-int Box2DBinder2::b2ChainShape_destruct(lua_State* L)
+int Box2DBinder2::b2ChainShape_destruct(void* p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     b2ChainShape* chainShape = static_cast<b2ChainShape*>(ptr);
     delete chainShape;
 
@@ -2390,9 +2390,9 @@ int Box2DBinder2::b2AABB_create(lua_State* L)
 	return 1;
 }
 
-int Box2DBinder2::b2AABB_destruct(lua_State* L)
+int Box2DBinder2::b2AABB_destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2AABB* aabb = static_cast<b2AABB*>(ptr);
 	delete aabb;
 
@@ -3128,10 +3128,10 @@ int Box2DBinder2::b2Joint_getReactionTorque(lua_State* L)
     return 1;
 }
 
-int Box2DBinder2::b2Joint_destruct(lua_State* _UNUSED(L))
+int Box2DBinder2::b2Joint_destruct(void* _UNUSED(p))
 {
 #if 0
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2Joint* joint = static_cast<b2Joint*>(ptr);
 	if (joint != 0)
 		static_cast<b2WorldED*>(joint->GetUserData())->DestroyJoint(joint);

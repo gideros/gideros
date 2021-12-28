@@ -210,6 +210,7 @@ static int g_pluginRef_##symbol = g_registerPlugin(g_pluginMain_##symbol);
 extern "C" {
 #endif
 
+#define GIDEROS_DTOR_UDATA(p) (*(void**)LUA_DTOR_UDATA(p))
 GIDEROS_API void g_disableTypeChecking();
 GIDEROS_API void g_enableTypeChecking();
 GIDEROS_API int g_isTypeCheckingEnabled();
@@ -217,7 +218,7 @@ GIDEROS_API void g_createClass(lua_State* L,
 								 const char* classname,
 								 const char* basename,
 								 int (*constructor) (lua_State*),
-								 int (*destructor) (lua_State*),
+								 int (*destructor) (void*),
 								 const luaL_reg* functionlist);
 GIDEROS_API void g_pushInstance(lua_State* L, const char* classname, void* ptr);
 GIDEROS_API void* g_getInstance(lua_State* L, const char* classname, int index);

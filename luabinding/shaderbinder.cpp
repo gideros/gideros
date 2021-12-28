@@ -180,9 +180,9 @@ int ShaderBinder::create(lua_State* L)
 	return 1;
 }
 
-int ShaderBinder::destruct(lua_State* L)
+int ShaderBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	ShaderProgram* shd = static_cast<ShaderProgram*>(ptr);
 	shd->Release();
 

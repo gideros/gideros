@@ -2,7 +2,7 @@ D3=D3 or {}
 
 local slang=Shader.getShaderLanguage()
 
-function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INSTMATA,INSTMATB,INSTMATC,INSTMATD)
+function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INSTMATA,INSTMATB,INSTMATC,INSTMATD) : Shader
 	if OPT_TEXTURED then
 		texCoord=TEXCOORD
 	end
@@ -42,7 +42,7 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 	return g_MVPMatrix * pos;
 end
 
-function D3._FLUA_Shader()
+function D3._FLUA_Shader() : Shader
 	--mat3 cotangent_frame(vec3 N, vec3 p, vec2 uv)
 	function cotangent_frame(N,p,uv)
 		--// récupère les vecteurs du triangle composant le pixel

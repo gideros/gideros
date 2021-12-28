@@ -13,7 +13,7 @@ class MovieClipLua : public MovieClip
 {
 public:
     MovieClipLua(Type type, LuaApplication *lapplication, bool holdWhilePlaying);
-    void destruct(lua_State *L);
+    void destruct();
  	void addFrame(int start, int end, Sprite* sprite,int spref,  const std::vector<Parameter>& parameters, GStatus* status = NULL);
 	std::vector<int> spriteRefs;
 private:
@@ -28,12 +28,12 @@ MovieClipLua::MovieClipLua(Type type, LuaApplication *lapplication, bool holdWhi
 	lapplication_=lapplication;
 }
 
-void MovieClipLua::destruct(lua_State *L)
+void MovieClipLua::destruct()
 {
 	int n=spriteRefs.size();
 	for (int k=0;k<n;k++)
 		if (spriteRefs[k])
-			luaL_unref(L, LUA_REGISTRYINDEX, spriteRefs[k]);
+            luaL_unref(lapplication_->getLuaState(), LUA_REGISTRYINDEX, spriteRefs[k]);
 }
 
 void MovieClipLua::addFrame(int start, int end, Sprite* sprite,int spref,  const std::vector<Parameter>& parameters, GStatus* status)
@@ -276,7 +276,7 @@ int MovieClipBinder::create(lua_State* L)
 
 		int spRef=0;
 		if (needRef)
-			spRef = luaL_ref(L, LUA_REGISTRYINDEX);
+            spRef = luaL_ref(application->getLuaState(), LUA_REGISTRYINDEX);
 		else
 			lua_pop(L, 1);
 		movieclip->addFrame(start, end, sprite, spRef, parameters);
@@ -293,11 +293,11 @@ int MovieClipBinder::create(lua_State* L)
 	return 1;
 }
 
-int MovieClipBinder::destruct(lua_State* L)
+int MovieClipBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	MovieClipLua* movieclip = static_cast<MovieClipLua*>(ptr);
-	movieclip->destruct(L);
+    movieclip->destruct();
 	movieclip->unref();
 
 	return 0;

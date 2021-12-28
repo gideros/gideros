@@ -42,9 +42,9 @@ StageBinder::StageBinder(lua_State* L, Application* application)
 	lua_setglobal(L, "stage");
 }
 
-int StageBinder::destruct(lua_State* L)
+int StageBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Stage* stage = static_cast<Stage*>(ptr);
 	stage->unref();
 

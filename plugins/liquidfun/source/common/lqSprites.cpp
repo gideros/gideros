@@ -175,9 +175,9 @@ int Box2DBinder2::b2DebugDraw_create(lua_State* L)
 	return 1;
 }
 
-int Box2DBinder2::b2DebugDraw_destruct(lua_State* L)
+int Box2DBinder2::b2DebugDraw_destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2DebugDraw* debugDraw = static_cast<b2DebugDraw*>(static_cast<SpriteProxy *>(ptr)->getContext());
 	debugDraw->proxy_->unref();
 

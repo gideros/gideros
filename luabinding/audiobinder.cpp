@@ -522,9 +522,9 @@ int AudioBinder::Sound_create(lua_State *L)
     return 1;
 }
 
-int AudioBinder::Sound_destruct(lua_State *L)
+int AudioBinder::Sound_destruct(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GGSound *sound = static_cast<GGSound*>(ptr);
     sound->unref();
 
@@ -592,9 +592,9 @@ int AudioBinder::Sound_play(lua_State *L)
     return 1;
 }
 
-int AudioBinder::SoundChannel_destruct(lua_State *L)
+int AudioBinder::SoundChannel_destruct(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(ptr);
     soundChannel->unref();
 

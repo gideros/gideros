@@ -16,6 +16,7 @@
 #include <sprite.h>
 #include <texturebase.h>
 #include "luaapplication.h"
+#include "gplugin.h"
 
 class b2DebugDraw : public b2Draw
 {

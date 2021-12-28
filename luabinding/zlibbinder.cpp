@@ -94,7 +94,8 @@ static int lzstream_docompress(lua_State *L, lz_stream *s, int from, int to, int
 static int lzstream_gc(lua_State *L);
 static lz_stream *lzstream_new(lua_State *L, int src) {
 #ifdef LUA_IS_LUAU
-    lz_stream *s = (lz_stream*)lua_newuserdataluadtor(L, sizeof(lz_stream),(void (*)(void *))lzstream_gc);
+    lz_stream *s = (lz_stream*)lua_newuserdata(L, sizeof(lz_stream)); //Warning destructor won't be called!!! We should fix this
+    //lz_stream *s = (lz_stream*)lua_newuserdatadtor(L, sizeof(lz_stream),(void (*)(void *))lzstream_gc);
 #else
     lz_stream *s = (lz_stream*)lua_newuserdata(L, sizeof(lz_stream));
 #endif
@@ -184,7 +185,7 @@ static int lzstream_tostring(lua_State *L) {
 /* ====================================================================== */
 
 static int lzstream_gc(lua_State *L) {
-    lz_stream *s = lzstream_get(L, 1);
+    lz_stream *s = (lz_stream *)lua_touserdata(L,1);
     lzstream_cleanup(L, s);
     return 0;
 }

@@ -123,9 +123,9 @@ static void pushPolygons(lua_State *L, Polygons p)
 }
 
 
-static int destructPoly(lua_State* L)
+static int destructPoly(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GPoly *n = static_cast<GPoly*>(object->proxy());
 
@@ -317,9 +317,9 @@ private:
     Polygons solution;
 };
 
-static int destructClipper(lua_State* L)
+static int destructClipper(void* p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GClipper *c = static_cast<GClipper*>(object->proxy());
 

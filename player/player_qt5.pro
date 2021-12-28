@@ -6,16 +6,10 @@ equals(QT_VERSION, 6){
 }
 
 LUA_ENGINE=$$(LUA_ENGINE)
-isEmpty(LUA_ENGINE) {
-    LUA_ENGINE=lua
-}
-equals(LUA_ENGINE,luau) {
-    LUA_INCLUDE=../luau/VM/include ../luau/VM/src
-}
-else
-{
-    LUA_INCLUDE=../lua/src
-}
+LUA_ENGINE=luau
+isEmpty(LUA_ENGINE): LUA_ENGINE=lua
+equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src
+equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 

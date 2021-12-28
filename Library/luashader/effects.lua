@@ -44,7 +44,7 @@ local function getEffect(name)
 	return shaderCache[name].shader 
 end
 
-local function vertexShader(vVertex,vColor,vTexCoord)
+local function vertexShader(vVertex,vColor,vTexCoord) : Shader
 	local vertex = hF4(vVertex,0.0,1.0)
 	fTexCoord=vTexCoord
 	return vMatrix*vertex
@@ -53,7 +53,7 @@ end
 
 makeEffect("Blur",
 	vertexShader,
-	function ()
+	function () : Shader
 	 local frag=lF4(0,0,0,0)
 	 local frad=fAmount.x
 	 local ext=2*frad+1
@@ -72,7 +72,7 @@ makeEffect("Blur",
 
 makeEffect("BloomExtract",
 	vertexShader,
-	function ()
+	function () : Shader
 	 local c=texture2D(fTexture, fTexCoord)
 	 local BloomThreshold=lF1(fAmount.x)
 	 c=clamp((c-BloomThreshold)/(1.0-BloomThreshold), 0.0, 1.0)
@@ -82,7 +82,7 @@ makeEffect("BloomExtract",
 
 makeEffect("BloomCombine",
 	vertexShader,
-	function ()
+	function () : Shader
 	 local base=texture2D(fTexture, fTexCoord)*fAmount.x
 	 local bloom=texture2D(fTexture2, fTexCoord)*fAmount.y
 	 base *= (lF4(1.0) - clamp(bloom,0.0,1.0))
@@ -209,7 +209,7 @@ makeEffect("ShadowExtract",
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local c=texture2D(fTexture, fTexCoord)
 	 c.a*=fQuad.a
 	 c.rgb=lF3(fQuad.r*c.a,fQuad.g*c.a,fQuad.b*c.a)
@@ -223,7 +223,7 @@ makeEffect("ShadowCombine",
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local base=texture2D(fTexture, fTexCoord)
 	 local sh=texture2D(fTexture2, fTexCoord)
 	 return mix(base,sh,1-base.a)

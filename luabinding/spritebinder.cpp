@@ -246,9 +246,9 @@ int SpriteBinder::create(lua_State* L)
 	return 1;
 }
 
-int SpriteBinder::destruct(lua_State* L)
+int SpriteBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Sprite* sprite = static_cast<Sprite*>(ptr);
 	sprite->unref();
 

@@ -62,9 +62,9 @@ int TileMapBinder::create(lua_State* L)
 	return 1;
 }
 
-int TileMapBinder::destruct(lua_State* L)
+int TileMapBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	TileMap* tilemap = static_cast<TileMap*>(ptr);
 	tilemap->unref();
 	

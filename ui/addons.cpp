@@ -26,7 +26,7 @@ lua_State *AddonsManager::getLua() {
 	lua_pushcnfunction(L, luaopen_cjson, "cjson_loader");
     lua_call(L, 0, 1);
     lua_pop(L,1);
-	if (luaL_loadfile(L,"Tools/StudioServer.lua")==0) { //No Error while loading
+    if (luaL_loadfilenamed(L,"Tools/StudioServer.lua","Tools/StudioServer.lua")==0) { //No Error while loading
 		 if (lua_pcall(L, 0, 0, 0)==0) { //No error while running
 		 }
 	}
@@ -83,7 +83,7 @@ std::vector<Addon> AddonsManager::loadAddons(bool refresh) {
 
 	std::map<std::string,bool> seen;
 	for (int i = 0; i < plugins.count(); i++) {
-		if (luaL_loadfile(L,plugins[i].toUtf8().constData())==0) { //No Error while loading
+        if (luaL_loadfilenamed(L,plugins[i].toUtf8().constData(),plugins[i].toUtf8().constData())==0) { //No Error while loading
 			 if (lua_pcall(L, 0, 1, 0)==0) { //No error while running
 				 Addon a(QFileInfo(plugins[i]).absolutePath().toStdString());
 				 lua_getfield(L,-1,"name"); const char *name=luaL_optstring(L,-1,NULL); lua_pop(L,1);

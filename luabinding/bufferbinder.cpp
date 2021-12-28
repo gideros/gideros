@@ -227,9 +227,9 @@ int BufferBinder::create(lua_State* L)
 	return 1;
 }
 
-int BufferBinder::destruct(lua_State* L)
+int BufferBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Buffer* buffer = static_cast<Buffer*>(ptr);
 	if (buffer->refCount()==1)
 		bufferMap[buffer->id]=NULL;

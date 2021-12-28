@@ -54,7 +54,7 @@ void g_createClass(lua_State* L,
 					 const char* classname,
 					 const char* basename,
 					 int (*constructor) (lua_State*),
-					 int (*destructor) (lua_State*),
+					 int (*destructor) (void*),
 					 const luaL_reg* functionlist)
 {
 	luaL_newmetatable(L, classname); // registry[classname] = {} and new empty metatable is now at top
@@ -137,7 +137,7 @@ void g_pushInstance(lua_State* L, const char* classname, void* ptr)
     lua_setmetatable(L, -2);		 // set metatable for table and pop metatable
     void** userdata;
     if (destructor)
-        userdata= (void**)lua_newuserdataluadtor(L,sizeof(void*),(void (*)(void *))(*destructor)); // create userdata and push it onto the stack
+        userdata= (void**)lua_newuserdatadtor(L,sizeof(void*),(void (*)(void *))(*destructor)); // create userdata and push it onto the stack
     else
         userdata= (void**)lua_newuserdata(L,sizeof(void*)); // create userdata and push it onto the stack
 #else

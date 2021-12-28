@@ -166,8 +166,8 @@ static int r3dWorld_create(lua_State* L) {
 	return 1;
 }
 
-static int r3dWorld_destruct(lua_State* L) {
-	void* ptr = *(void**) lua_touserdata(L, 1);
+static int r3dWorld_destruct(void *p) {
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	rp3d::PhysicsWorld* world = static_cast<rp3d::PhysicsWorld*>(ptr);
 	GidEventListener *e = events[world];
 	if (e) {
@@ -583,8 +583,8 @@ static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
 	return 0;
 }
 
-static int r3dBody_destruct(lua_State* L) {
-    void* ptr = *(void**) lua_touserdata(L, 1);
+static int r3dBody_destruct(void *p) {
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     getb2(L,ptr);
     if (lua_isnil(L,-1)) {
       //Body has been GC'ed, check if still live in the world
@@ -1060,8 +1060,8 @@ static int r3dHeightFieldShape_SetScale(lua_State* L) {
 	return 0;
 }
 
-static int r3dShape_destruct(lua_State* L) {
-	void* ptr = *(void**) lua_touserdata(L, 1);
+static int r3dShape_destruct(void *p) {
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	rp3d::CollisionShape* shape = static_cast<rp3d::CollisionShape*>(ptr);
 
 	if (shapeData[shape]) delete shapeData[shape];
@@ -1449,9 +1449,9 @@ int r3dDebugDraw_create(lua_State* L)
 	return 1;
 }
 
-int r3dDebugDraw_destruct(lua_State* L)
+int r3dDebugDraw_destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	r3dDebugDraw* debugDraw = static_cast<r3dDebugDraw*>(static_cast<SpriteProxy *>(ptr)->getContext());
 	debugDraw->proxy_->unref();
 

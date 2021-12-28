@@ -2,16 +2,9 @@ QT += core gui opengl network multimedia
 CONFIG   += silent
 
 LUA_ENGINE=$$(LUA_ENGINE)
-isEmpty(LUA_ENGINE) {
-    LUA_ENGINE=lua
-}
-equals(LUA_ENGINE,luau) {
-    LUA_INCLUDE=../luau/VM/include ../luau/VM/src
-}
-else
-{
-    LUA_INCLUDE=../lua/src
-}
+isEmpty(LUA_ENGINE): LUA_ENGINE=lua
+equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src
+equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
 win32{
     RC_FILE = other_files/desktop.rc

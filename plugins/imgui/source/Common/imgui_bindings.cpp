@@ -1918,9 +1918,9 @@ int initImGui(lua_State* L) // ImGui.new() call
 	return 1;
 }
 
-int destroyImGui(lua_State* L)
+int destroyImGui(void* p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	GidImGui* imgui = static_cast<GidImGui*>(static_cast<SpriteProxy *>(ptr)->getContext());
 	if (imgui->ctx->FontAtlasOwnedByContext && ImGui::GetCurrentContext()->FontAtlasOwnedByContext)
 	{

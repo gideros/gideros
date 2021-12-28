@@ -427,9 +427,9 @@ int UrlLoaderBinder::create(lua_State* L)
     return 1;
 }
 
-int UrlLoaderBinder::destruct(lua_State* L)
+int UrlLoaderBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
     GGUrlLoader* urlloader = static_cast<GGUrlLoader*>(ptr);
     urlloader->unref();
 

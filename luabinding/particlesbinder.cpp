@@ -52,9 +52,9 @@ int ParticlesBinder::create(lua_State *L)
     return 1;
 }
 
-int ParticlesBinder::destruct(lua_State *L)
+int ParticlesBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     Particles* mesh = static_cast<Particles*>(ptr);
     mesh->unref();
 

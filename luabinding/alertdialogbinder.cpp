@@ -123,9 +123,9 @@ int AlertDialogBinder::create(lua_State *L)
     return 1;
 }
 
-int AlertDialogBinder::destruct(lua_State *L)
+int AlertDialogBinder::destruct(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GGAlertDialog *alertDialog = static_cast<GGAlertDialog*>(ptr);
     alertDialog->unref();
 

@@ -973,8 +973,8 @@ static int worldCreate(lua_State *L) {
 	return 1;
 }
 
-static int worldDestruct(lua_State *L) {
-	World *w = *(World **)lua_touserdata(L, 1);
+static int worldDestruct(void *p) {
+	World *w = *(World **)GIDEROS_DTOR_UDATA(p);
 	w->responses.erase("touch");
 	w->responses.erase("cross");
 	w->responses.erase("bounce");

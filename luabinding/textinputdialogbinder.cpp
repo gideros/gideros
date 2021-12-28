@@ -188,9 +188,9 @@ int TextInputDialogBinder::create(lua_State *L)
     return 1;
 }
 
-int TextInputDialogBinder::destruct(lua_State *L)
+int TextInputDialogBinder::destruct(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GGTextInputDialog *textInputDialog = static_cast<GGTextInputDialog*>(ptr);
     textInputDialog->unref();
 

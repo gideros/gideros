@@ -65,9 +65,9 @@ int ShapeBinder::create(lua_State* L)
 	return 1;
 }
 
-int ShapeBinder::destruct(lua_State* L)
+int ShapeBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Shape* shape = static_cast<Shape*>(ptr);
 	shape->unref();
 

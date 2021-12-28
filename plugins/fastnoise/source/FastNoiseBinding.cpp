@@ -289,9 +289,9 @@ public:
     FN_DECIMAL getWhiteNoiseInt(int x, int y, int z, int w) const { return noise.GetWhiteNoiseInt(x,y,z,w); }
 };
 
-static int destructNoise(lua_State* L)
+static int destructNoise(void* p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GNoise *n = static_cast<GNoise*>(object->proxy());
 

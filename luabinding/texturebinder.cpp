@@ -132,9 +132,9 @@ int TextureBinder::create(lua_State* L)
 	return 1;
 }
 
-int TextureBinder::destruct(lua_State* L)
+int TextureBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Texture* texture = static_cast<Texture*>(ptr);
 	texture->unref();
 
