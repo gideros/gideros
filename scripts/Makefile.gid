@@ -6,10 +6,14 @@ export LUA_ENGINE
 ifeq ($(LUA_ENGINE),luau)
 LUAC=$(BUILDTOOLS)/luauc --compile=binary $(1) >$(2)
 LUA_INCLUDE=luau/VM/include
+LUA_INCLUDE_CORE=luau/VM/src
 else
 LUAC=$(BUILDTOOLS)/luac -o $(2) $(1)
 LUA_INCLUDE=lua/src
+LUA_INCLUDE_CORE=lua/src
 endif
+export LUA_INCLUDE
+export LUA_INCLUDE_CORE
 
 #Used in plugin bundle recipes
 CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
@@ -25,12 +29,13 @@ PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera
 PLUGINS_WINONLY=spout steam luamidi
 PLUGINS_MACONLY=steam luamidi
 PLUGINS_WIN32=lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui
-PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
+PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct camera tts threads megacool map share storereview
+				struct camera tts megacool map share storereview
 PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_WIN+=threads
+PLUGINS_ANDROID+=threads
 PLUGINS_WIN32+=bitop threads
 PLUGINS_HTML5+=bitop
 endif

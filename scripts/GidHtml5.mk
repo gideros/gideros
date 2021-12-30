@@ -27,7 +27,7 @@ html5.plugins.clean:
 html5.main:  
 	cd emscripten; $(MAKE) $(MAKEJOBS) main
 
-html5.libs: versioning 
+html5.libs: 
 	cd emscripten; $(MAKE) $(MAKEJOBS)
 
 %.html5plugin:

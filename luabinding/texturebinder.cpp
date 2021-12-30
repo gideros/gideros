@@ -71,7 +71,7 @@ int TextureBinder::create(lua_State* L)
             else
             {
                 GStatus status(2008, "wrap");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -99,7 +99,7 @@ int TextureBinder::create(lua_State* L)
             else
             {
                 GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -125,7 +125,7 @@ int TextureBinder::create(lua_State* L)
 	}
 	catch (const GiderosException& e)
 	{
-        luaL_error(L, e.what());
+        luaL_error(L, "%s", e.what());
 	}
 
 	binder.pushInstance("Texture", texture);
@@ -180,7 +180,7 @@ int TextureBinder::loadAsync(lua_State* L)
             else
             {
                 GStatus status(2008, "wrap");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -208,7 +208,7 @@ int TextureBinder::loadAsync(lua_State* L)
             else
             {
                 GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -233,7 +233,7 @@ int TextureBinder::loadAsync(lua_State* L)
         }
         catch (const GiderosException& e)
         {
-            luaL_error(LL, e.what());
+            luaL_error(LL, "%s", e.what());
         }*/
 
         if (texture)

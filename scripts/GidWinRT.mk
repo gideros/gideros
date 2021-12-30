@@ -42,10 +42,10 @@ $(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE): $(BIN2C) $(addsuffix .hlsl,$(addpre
 winrt.shaders: $(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE)
 
 winrt.lua:
-	$(call WINRT_BUILD_WIN,lua/luawinrt,luawinrt)
+	$(call WINRT_BUILD_WIN,$(LUA_ENGINE)/luawinrt,luawinrt)
 
 winrt.lua.clean:
-	$(call WINRT_CLEAN,lua/luawinrt,luawinrt)
+	$(call WINRT_CLEAN,$(LUA_ENGINE)/luawinrt,luawinrt)
 
 winrt.gvfs:
 	$(call WINRT_BUILD_WIN,libgvfs/libgvfswinrt,libgvfswinrt)
@@ -87,27 +87,27 @@ winrt.plugins:
 winrt.plugins.clean: 
 	$(SUBMAKE) $(addsuffix .plugin.winrt.clean,$(PLUGINS_WINRT))
 	
-winrt.core: versioning winrt.libs winrt.shaders
+winrt.core: winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)
 	#X86 Release version for Windows
 	mkdir -p winrt/Release/gideros.Windows
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib winrt/Release/gideros.Windows
 	mkdir -p winrt/Release/luawinrt.Windows
-	cp lua/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/Release/luawinrt.Windows
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/Release/luawinrt.Windows
 	mkdir -p winrt/Release/libgvfswinrt.Windows
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/Release/libgvfswinrt.Windows
 	#ARM release version for WinPhone
 	mkdir -p winrt/ARM/Release/gideros.Windows
 	cp winrt/gideros/gideros.Windows/ARM/Release/gideros.Windows/gideros.Windows.lib winrt/ARM/Release/gideros.Windows
 	mkdir -p winrt/ARM/Release/luawinrt.Windows
-	cp lua/luawinrt/luawinrt/luawinrt.Windows/ARM/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/ARM/Release/luawinrt.Windows
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/ARM/Release/luawinrt.Windows
 	mkdir -p winrt/ARM/Release/libgvfswinrt.Windows
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/ARM/Release/libgvfswinrt.Windows
 	#x64 release version for Windows
 	mkdir -p winrt/x64/Release/gideros.Windows
 	cp winrt/gideros/gideros.Windows/x64/Release/gideros.Windows/gideros.Windows.lib winrt/x64/Release/gideros.Windows
 	mkdir -p winrt/x64/Release/luawinrt.Windows
-	cp lua/luawinrt/luawinrt/luawinrt.Windows/x64/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/x64/Release/luawinrt.Windows
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/x64/Release/luawinrt.Windows
 	mkdir -p winrt/x64/Release/libgvfswinrt.Windows
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/x64/Release/libgvfswinrt.Windows
 
@@ -135,15 +135,15 @@ winrt.template: winrt.core winrt.plugins
 	
 	#X86 Release version for Windows
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
-	cp lua/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
 	#ARM release version for WinPhone
 	cp winrt/gideros/gideros.Windows/ARM/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
-	cp lua/luawinrt/luawinrt/luawinrt.Windows/ARM/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
 	#x64 Release version for Windows
 	cp winrt/gideros/gideros.Windows/x64/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
-	cp lua/luawinrt/luawinrt/luawinrt.Windows/x64/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
 	#Plugins libs
 	#cp $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/*.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"

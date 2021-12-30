@@ -279,7 +279,7 @@ int TextInputDialogBinder::setInputType(lua_State *L)
     else
     {
         GStatus status(2008, "inputType"); // Error #2008: Parameter '%s' must be one of the accepted values.
-        luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
     }
 
     textInputDialog->setInputType(inputType);

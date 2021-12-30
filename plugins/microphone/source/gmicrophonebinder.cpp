@@ -311,7 +311,7 @@ static int start(lua_State *L)
     std::string error;
     microphone->start(&error);
     if (!error.empty())
-        luaL_error(L, error.c_str());
+        luaL_error(L, "%s", error.c_str());
 
     luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyStrong);
     lua_pushvalue(L, -2);

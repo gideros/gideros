@@ -182,7 +182,7 @@ int MovieClipBinder::create(lua_State* L)
         else
         {
             GStatus status(2008, "type");	// Parameter %s must be one of the accepted values.
-            luaL_error(binder.L, status.errorString());
+            luaL_error(binder.L, "%s", status.errorString());
         }
 
         index = 2;
@@ -193,7 +193,7 @@ int MovieClipBinder::create(lua_State* L)
         luaL_typerror(L, 1, "string or table");
 
     if (lua_objlen(L, index) == 0)
-        luaL_error(L, GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.
+        luaL_error(L, "%s", GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.
 
     MovieClipLua* movieclip = new MovieClipLua(type, application,holdWhilePlaying);	// box movieclip to unref
 
@@ -205,7 +205,7 @@ int MovieClipBinder::create(lua_State* L)
         lua_rawgeti(L, index, i);
 
         if (lua_type(L, -1) != LUA_TTABLE)
-            luaL_error(L, GStatus(2103).errorString());     // Error #2102 Timeline element is not a table
+            luaL_error(L, "%s", GStatus(2103).errorString());     // Error #2102 Timeline element is not a table
 
 		lua_rawgeti(L, -1, 1);
 		int start = luaL_checkinteger(L, -1);

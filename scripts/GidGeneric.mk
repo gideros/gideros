@@ -11,9 +11,17 @@ INCLUDEPATHS_pystring = libpystring
 OBJFILES_pystring = $(addprefix libpystring/,pystring)
 DEFINES_pystring=PYSTRING_LIBRARY
 
+DEFINES_lua=LUA_BUILD_AS_DLL LUA_CORE
+ifeq ($(LUA_ENGINE),luau)
+INCLUDEPATHS_lua=luau/VM/src luau/VM/include luau/Compiler/include luau/Ast/include libgvfs
+OBJFILES_lua=$(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib \
+         ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils) \
+        $(addprefix luau/Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
+        $(addprefix luau/Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)
+else
 INCLUDEPATHS_lua=lua/src libgvfs
 OBJFILES_lua=lua/etc/all_lua
-DEFINES_lua=LUA_BUILD_AS_DLL
+endif
 
 
 XMP_SRC=virtual period player read_event dataio lfo envelope \
@@ -55,14 +63,14 @@ OBJFILES_gid += \
 
 DEFINES_gid=GIDEROS_LIBRARY _REENTRANT LIBXMP_CORE_PLAYER
 
-INCLUDEPATHS_gideros = libgideros lua/src libpystring libgid/include
+INCLUDEPATHS_gideros = libgideros $(LUA_INCLUDE) $(LUA_INCLUDE_CORE) libpystring libgid/include
 OBJFILES_gideros = $(addprefix libgideros/,binderutil stringid eventdispatcher \
 	event refptr eventvisitor pluginmanager luautil)
 DEFINES_gideros=GIDEROS_LIBRARY
 
 ##PLAYER
 FREETYPE_VER=2.7.1
-INCLUDEPATHS_player = libgvfs libgideros lua/src libpystring libgid/include \
+INCLUDEPATHS_player = libgvfs libgideros $(LUA_INCLUDE) $(LUA_INCLUDE_CORE) libpystring libgid/include \
 	libnetwork libpvrt luabinding \
 	2dsg 2dsg/gfxbackends 2dsg/paths \
 	libgid/external/glew-1.10.0/include \

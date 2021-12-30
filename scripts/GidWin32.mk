@@ -73,7 +73,7 @@ win32.app.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 
 $(WIN32_BUILDDIR)/%.o : %.cpp
 	#C+ $(basename $(notdir $@))
-	@$(CXX) -g -std=c++11 $(CXXFLAGS) -c $< -o $@
+	@$(CXX) -g -std=c++17 $(CXXFLAGS) -c $< -o $@
 
 $(WIN32_BUILDDIR)/%.o : %.c
 	#CC $(basename $(notdir $@))

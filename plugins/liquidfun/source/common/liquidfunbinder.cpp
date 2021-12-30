@@ -912,7 +912,7 @@ int Box2DBinder2::b2World_CreateBody(lua_State* L)
 	//	b2BodyDef* bodyDef = static_cast<b2BodyDef*>(binder.getInstance("b2BodyDef", 2));
 
 	if (world->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	b2BodyDef bodyDef;
 	tableToBodyDef(L, 2, &bodyDef, application->getPhysicsScale());
@@ -999,7 +999,7 @@ static b2Body* toBody(const Binder& binder, int index)
 	if (body == 0)
 	{
 		LFStatus status(5001);	// Body is already destroyed.
-		luaL_error(binder.L, status.errorString());
+		luaL_error(binder.L, "%s", status.errorString());
 	}
 
 	return body;
@@ -1014,7 +1014,7 @@ int Box2DBinder2::b2World_DestroyBody(lua_State* L)
 	b2Body* body = toBody(binder, 2);
 
 	if (world->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 #if 0
 	// artik asagidaki islemi DestructionListener yapiyor
@@ -1209,7 +1209,7 @@ int Box2DBinder2::b2Body_CreateFixture(lua_State* L)
 	//b2FixtureDef* fixtureDef = static_cast<b2FixtureDef*>(binder.getInstance("b2FixtureDef", 2));
 
 	if (body->GetWorld()->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	b2FixtureDef fixtureDef;
 	tableToFixtureDef(L, 2, &fixtureDef);
@@ -1240,7 +1240,7 @@ static b2Fixture* toFixture(const Binder& binder, int index)
 	if (fixture == 0)
 	{
 		LFStatus status(5002);	// Fixture is already destroyed.
-		luaL_error(binder.L, status.errorString());
+		luaL_error(binder.L, "%s", status.errorString());
 	}
 
 	return fixture;
@@ -1253,7 +1253,7 @@ static b2Joint* toJoint(const Binder& binder, int index, const char* type = "b2J
 	if (joint == 0)
 	{
 		LFStatus status(5003);	// Joint is already destroyed.
-		luaL_error(binder.L, status.errorString());
+		luaL_error(binder.L, "%s", status.errorString());
 	}
 
 	return joint;
@@ -1268,7 +1268,7 @@ int Box2DBinder2::b2Body_DestroyFixture(lua_State* L)
 	b2Fixture* fixture = toFixture(binder, 2);
 
 	if (body->GetWorld()->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->DestroyFixture(fixture);
 
@@ -1327,7 +1327,7 @@ int Box2DBinder2::b2Body_SetPosition(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = luaL_checknumber(L, 3);
@@ -1345,7 +1345,7 @@ int Box2DBinder2::b2Body_SetAngle(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->SetTransform(body->GetPosition(), luaL_checknumber(L, 2));
 
@@ -1533,7 +1533,7 @@ int Box2DBinder2::b2Body_setActive(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->SetActive(lua_toboolean(L, 2) != 0);
 
@@ -1561,7 +1561,7 @@ int Box2DBinder2::b2Body_setType(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 
 	if (body->GetWorld()->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	body->SetType((b2BodyType)luaL_checkinteger(L, 2));
 
@@ -1867,7 +1867,7 @@ int Box2DBinder2::b2Body_setTransform(lua_State* L)
     b2Body* body = toBody(binder, 1);
 
     if (body->GetWorld()->IsLocked())
-        luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+        luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
     lua_Number x = luaL_checknumber(L, 2);
     lua_Number y = luaL_checknumber(L, 3);
@@ -2472,7 +2472,7 @@ int Box2DBinder2::b2World_createJoint(lua_State* L)
 	b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
 
 	if (world->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	// table to jointdef
 	int index = 2;
@@ -2493,7 +2493,7 @@ int Box2DBinder2::b2World_createJoint(lua_State* L)
         type != e_ropeJoint)
 	{
 		LFStatus status(2008, "joint type");	// Parameter %s must be one of the accepted values.
-		luaL_error(binder.L, status.errorString());
+		luaL_error(binder.L, "%s", status.errorString());
 	}
 
 	b2JointDef* jointDef = NULL;
@@ -3148,7 +3148,7 @@ int Box2DBinder2::b2World_destroyJoint(lua_State* L)
 	b2Joint* joint = toJoint(binder, 2);
 
 	if (world->IsLocked())
-		luaL_error(L, LFStatus(5004).errorString());	// Error #5004: World is locked.
+		luaL_error(L, "%s", LFStatus(5004).errorString());	// Error #5004: World is locked.
 
 	world->DestroyJoint(joint);
 

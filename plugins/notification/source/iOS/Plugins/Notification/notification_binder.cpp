@@ -249,9 +249,9 @@ private:
     bool initialized_;
 };
 
-static int destruct_manager(lua_State* L)
+static int destruct_manager(void *p)
 {
-	void *ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	GReferenced* object = static_cast<GReferenced*>(ptr);
 	NotificationManager *mngr = static_cast<NotificationManager*>(object->proxy());
 	
@@ -520,9 +520,9 @@ private:
 	int number_;
 };
 
-static int destruct_notification(lua_State* L)
+static int destruct_notification(void *p)
 {
-	void *ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	GReferenced* object = static_cast<GReferenced*>(ptr);
 	Notification *n = static_cast<Notification*>(object->proxy());
 	
@@ -848,7 +848,7 @@ static void g_initializePlugin(lua_State *L)
     lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
-	lua_pushcfunction(L, loader);
+	lua_pushcnfunction(L, loader, "plugin_init_notification");
 	lua_setfield(L, -2, "notification");
 	
 	lua_pop(L, 2);

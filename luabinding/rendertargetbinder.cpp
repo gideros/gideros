@@ -56,7 +56,7 @@ int RenderTargetBinder::create(lua_State *L)
     else
     {
         GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-        luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
     }
 
 

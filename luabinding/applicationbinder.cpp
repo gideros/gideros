@@ -660,7 +660,7 @@ int ApplicationBinder::setOrientation(lua_State* L)
 	else
 	{
 		GStatus status(2008, "orientation");	// Parameter %s must be one of the accepted values.
-        luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
 	}
 
 	return 0;
@@ -737,7 +737,7 @@ int ApplicationBinder::setScaleMode(lua_State *L)
 	else
 	{
         GStatus status(2008, "scaleMode");	// Parameter %s must be one of the accepted values.
-        luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
 	}
 
 	return 0;
@@ -825,7 +825,7 @@ int ApplicationBinder::setFps(lua_State* L)
     if (fps != 30 && fps != 60 && fps != -30 && fps != -60)
     {
         GStatus status(2008, "fps");	// Parameter %s must be one of the accepted values.
-        luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
     }
 
     g_setFps(fps);

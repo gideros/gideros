@@ -8,7 +8,7 @@ qtapp.install: qtlibs.install qtplugins.install qt.install
 qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
 
-vpath %.dylib libgideros:libgvfs:libgid:lua
+vpath %.dylib libgideros:libgvfs:libgid:$(LUA_ENGINE)
 
 $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop

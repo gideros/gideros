@@ -87,7 +87,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 else
                 {
                     GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                    luaL_error(L, status.errorString());
+                    luaL_error(L, "%s", status.errorString());
                 }
             }
             lua_pop(L, 1);
@@ -150,7 +150,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
             }
             catch (const GiderosException& e)
             {
-                luaL_error(L, e.what());				// TODO: burada luaL_error dedigimiz icin longjmp yuzunden vectorlerin destructor'lari cagirilmiyor
+                luaL_error(L, "%s", e.what());				// TODO: burada luaL_error dedigimiz icin longjmp yuzunden vectorlerin destructor'lari cagirilmiyor
                 return 0;
             }
 
@@ -202,7 +202,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 else
                 {
                     GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                    luaL_error(L, status.errorString());
+                    luaL_error(L, "%s", status.errorString());
                 }
             }
             lua_pop(L, 1);
@@ -258,7 +258,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
             }
             catch (const GiderosException& e)
             {
-                luaL_error(L, e.what());
+                luaL_error(L, "%s", e.what());
                 return 0;
             }
 

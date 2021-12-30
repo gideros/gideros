@@ -14,7 +14,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE            := lua
-LOCAL_SRC_FILES         := ../../../lua/libs/$(TARGET_ARCH_ABI)/liblua.so
+LOCAL_SRC_FILES         := ../../../$(LUA_ENGINE)/libs/$(TARGET_ARCH_ABI)/liblua.so
 
 include $(PREBUILT_SHARED_LIBRARY)
 
@@ -189,7 +189,8 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../libnetwork \
 	$(LOCAL_PATH)/../../../external/glu \
 	$(LOCAL_PATH)/../../../libpvrt \
-	$(LOCAL_PATH)/../../../lua/src \
+	$(LOCAL_PATH)/../../../$(LUA_INCLUDE) \
+	$(LOCAL_PATH)/../../../$(LUA_INCLUDE_CORE) \
 	$(LOCAL_PATH)/../../../luabinding \
 	$(LOCAL_PATH)/../../../libgid/include \
 	$(LOCAL_PATH)/../../../libgid/include/private \
