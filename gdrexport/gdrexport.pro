@@ -15,6 +15,11 @@ CONFIG   += silent
 
 TEMPLATE = app
 
+LUA_ENGINE=$$(LUA_ENGINE)
+isEmpty(LUA_ENGINE): LUA_ENGINE=luau
+equals(LUA_ENGINE,luau): DEFINES+=USE_LUAU_ENGINE
+equals(LUA_ENGINE,lua): 
+
 
 SOURCES += main.cpp GAppFormat.cpp Utilities.cpp WinRTExport.cpp MacOSXExport.cpp \
 	ExportCommon.cpp ExportBuiltin.cpp ExportXml.cpp filedownloader.cpp ExportLua.cpp

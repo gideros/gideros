@@ -10,8 +10,7 @@ TARGET = gideros
 TEMPLATE = lib
 
 LUA_ENGINE=$$(LUA_ENGINE)
-LUA_ENGINE=luau
-isEmpty(LUA_ENGINE): LUA_ENGINE=lua
+isEmpty(LUA_ENGINE): LUA_ENGINE=luau
 equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include
 equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 

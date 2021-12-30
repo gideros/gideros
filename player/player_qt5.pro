@@ -6,8 +6,7 @@ equals(QT_VERSION, 6){
 }
 
 LUA_ENGINE=$$(LUA_ENGINE)
-LUA_ENGINE=luau
-isEmpty(LUA_ENGINE): LUA_ENGINE=lua
+isEmpty(LUA_ENGINE): LUA_ENGINE=luau
 equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src
 equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
@@ -72,8 +71,9 @@ macx {
         -L"../$$LUA_ENGINE" -llua\
         -L"../libgideros" -lgideros\
         -L"../libpystring" -lpystring\
-        -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx\
-        -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW\
+		-lz\
+#        -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx\
+#        -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW\
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
     QMAKE_CFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
@@ -86,10 +86,11 @@ unix:!macx {
     TARGET = GiderosPlayer
     DEFINES += STRICT_LINUX
     LIBS += \
-        -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx\
-        -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW\
+#        -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx\
+#        -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW\
 #        -lwsock32\
 #        -liphlpapi\
+		-lz\
         ../libgid/libgid.so \
         ../libgvfs/libgvfs.so \
         ../$$LUA_ENGINE/liblua.so \
