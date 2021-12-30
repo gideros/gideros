@@ -1,5 +1,5 @@
 QT += core gui opengl network multimedia
-CONFIG   += silent
+CONFIG   += silent qt
 
 LUA_ENGINE=$$(LUA_ENGINE)
 isEmpty(LUA_ENGINE): LUA_ENGINE=luau
@@ -40,7 +40,7 @@ macx {
         -L"../$$LUA_ENGINE" -llua \
         -L"../libgideros" -lgideros \
         -L"../libpystring" -lpystring \
-		-lz\
+	-lz \
 #        -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx \
 #        -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
 
@@ -58,9 +58,9 @@ unix:!macx {
     LIBS += \
 #        -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx\
 #        -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW\
-#        -lwsock32\
-#        -liphlpapi\
-		-lz\
+#        -lwsock32 \
+#        -liphlpapi \
+	-lz \
         ../libgid/libgid.so \
         ../libgvfs/libgvfs.so \
         ../$$LUA_ENGINE/liblua.so \
@@ -79,8 +79,8 @@ INCLUDEPATH += \
     headers \
     sources \
     forms \
-    ../libgid/external/zlib-1.2.8 \
-    ../libgid/external/glew-1.10.0/include \
+#    ../libgid/external/zlib-1.2.8 \
+#    ../libgid/external/glew-1.10.0/include \
     ../2dsg \
     ../2dsg/gfxbackends \
     ../2dsg/gfxbackends/gl2 \
