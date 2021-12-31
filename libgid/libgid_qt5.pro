@@ -127,10 +127,20 @@ DEFINES += OPT_GENERIC REAL_IS_FLOAT
 #LibXMP
 DEFINES+=_REENTRANT LIBXMP_CORE_PLAYER
 INCLUDEPATH += "./external/libxmp-4.3/include"
+win32 {
 CONFIG(debug, debug|release){
     LIBS += -L"./xmp/debug" -lxmp
 } else {
     LIBS += -L"./xmp/release" -lxmp
+}
+}
+
+macx {
+    LIBS += -L"./xmp" -lxmp -lz
+}
+
+unix:!macx {
+    LIBS += -L"./xmp" -lxmp -lz
 }
 
 INCLUDEPATH += "./external/libpng-1.6.2"

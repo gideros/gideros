@@ -85,9 +85,10 @@ qt.install: buildqt qt5.install qt.player html5.tools
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Resources/gideros_annot.api
 	cd $(ROOT)/ui/;tar cf - --exclude=Tools/lua --exclude Tools/luac --exclude Tools/make Tools | (cd ../$(RELEASE) && tar xvf - )
-	cp $(ROOT)/lua/src/lua.exe $(RELEASE)/Tools
-	cp $(ROOT)/lua/src/luac.exe $(RELEASE)/Tools
-	cp $(ROOT)/lua/src/lua51.dll $(RELEASE)/Tools
+	cp $(BUILDTOOLS)/lua.exe $(RELEASE)/Tools
+	cp $(BUILDTOOLS)/luac.exe $(RELEASE)/Tools
+	cp $(BUILDTOOLS)/luauc.exe $(RELEASE)/Tools
+	cp $(BUILDTOOLS)/lua51.dll $(RELEASE)/Tools
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates

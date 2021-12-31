@@ -22,9 +22,9 @@ sdk.qtlibs.dir:
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs libgid/xmp) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs libgid/xmp) libgid.qmake5.rel $(addsuffix .qmake.rel,$(LUA_ENGINE) libgideros) sdk.qtlibs
 
-qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid lua libgideros)
+qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid $(LUA_ENGINE) libgideros)
 
 
 qtlibs.install: buildqtlibs
@@ -48,8 +48,6 @@ qtlibs.install: buildqtlibs
 	cp *.dylib $$R/$(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins; \
 	cp *.dylib $$R/$(RELEASE)/All\ Plugins/$(notdir $*)/bin/MacOSX	
 
-qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
-
 buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
 
 qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
@@ -66,8 +64,9 @@ qt.install: buildqt qt.player tools html5.tools
 	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Gideros\ Studio.app/Contents/Resources/gideros_annot.api	
 	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/ui/Tools/crunchme
 	cp -R $(ROOT)/ui/Tools $(RELEASE)/Gideros\ Studio.app/Contents/Tools
-	cp $(ROOT)/lua/src/lua $(RELEASE)/Gideros\ Studio.app/Contents/Tools
-	cp $(ROOT)/lua/src/luac $(RELEASE)/Gideros\ Studio.app/Contents/Tools
+	cp $(BUILDTOOLS)/lua $(RELEASE)/Gideros\ Studio.app/Contents/Tools
+	cp $(BUILDTOOLS)/luac $(RELEASE)/Gideros\ Studio.app/Contents/Tools
+	cp $(BUILDTOOLS)/luauc $(RELEASE)/Gideros\ Studio.app/Contents/Tools
 	for t in gdrdeamon gdrbridge gdrexport; do \
 	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/$$t/$$t;\
 	cp $(ROOT)/$$t/$$t $(RELEASE)/Gideros\ Studio.app/Contents/Tools; done 
@@ -142,20 +141,30 @@ qtplugins.install: buildqtplugins
 	cd $(ROOT)/$*; git clean -dfx .
 
 %.qmake.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*).pro
 	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS)
 
 %.qmake5.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*)_qt5.pro
 	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS) 
 
 tools:
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+	mkdir -p $(BUILDTOOLS)
+	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
+		$(addprefix CLI/,Coverage FileUtils Profiler Repl) \
+		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
+    	lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
+        ludata lutf8lib lvmexecute lvmload lvmutils) \
+		$(addprefix Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
+		$(addprefix Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace))
+
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
+	gcc -I. -DDESKTOP_TOOLS -o$(BUILDTOOLS)/bin2c scripts/bin2c.c
 
 bundle:
 	rm -rf $(RELEASE).Tmp
