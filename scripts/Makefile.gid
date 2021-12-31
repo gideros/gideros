@@ -75,7 +75,7 @@ TARGET_PLF+=ios
 endif
 endif
 
-all: $(addsuffix .install,$(TARGET_PLF) $(TARGET_EXT))
+all: versioning $(addsuffix .install,$(TARGET_PLF) $(TARGET_EXT))
 
 clean: $(addsuffix .clean,$(TARGET_PLF) $(TARGET_EXT))
 	rm -rf $(RELEASE)

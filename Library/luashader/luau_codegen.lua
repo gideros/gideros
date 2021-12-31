@@ -102,6 +102,14 @@ function OPS:ETIE(name)
 	return { value=expr.value.."["..index.value.."]", vtype="hF1" }
 end
 
+function OPS:EIFE(name)
+	if self.skipping then return self:skipOp(3) end
+	local cond=self:genOp()
+	local etrue=self:genOp()
+	local efalse=self:genOp()
+	return { value="(("..cond.value..")?("..etrue.value.."):("..efalse.value.."))", vtype=etrue.type }
+end
+
 function OPS:EUNA(op)
 	if self.skipping then return self:skipOp() end
 	local expr=self:genOp()
@@ -255,6 +263,20 @@ function OPS:SIF_(hasElse)
 		ss=ss..self:indent().."else\n"..elseB
 	end
 	return ss
+end
+
+function OPS:SWHL()
+	if self.skipping then return self:skipOp(2) end
+	local cond=self:genOp()
+	local body=self:genOp()
+	return self:indent().."while ("..cond.value..")\n"..body
+end
+
+function OPS:SRPT()
+	if self.skipping then return self:skipOp(2) end
+	local body=self:genOp()
+	local cond=self:genOp()
+	return self:indent().."do\n"..body..self:indent().."while (!("..cond.value.."));\n"
 end
 
 function OPS:SFOR(var,hasInc)
