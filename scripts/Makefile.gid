@@ -1,7 +1,7 @@
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/Makefile.def
 
 QT=$(QTBASEDIR)/$(QTVER)/$(QT_ARCH)
-LUA_ENGINE?=lua
+LUA_ENGINE?=luau
 export LUA_ENGINE
 ifeq ($(LUA_ENGINE),luau)
 LUAC=$(BUILDTOOLS)/luauc --compile=binary $(1) >$(2)
