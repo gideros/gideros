@@ -160,7 +160,7 @@
 					../../../libgideros,
 					../../../libgid/include,
 					../../../luabinding,
-					../../../lua/src,
+					$(LUA_INCLUDES:default=../../../lua/src),
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -191,7 +191,7 @@
 					../../../libgideros,
 					../../../libgid/include,
 					../../../luabinding,
-					../../../lua/src,
+					$(LUA_INCLUDES:default=../../../lua/src),
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
