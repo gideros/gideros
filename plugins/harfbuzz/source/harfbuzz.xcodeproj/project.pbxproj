@@ -909,7 +909,7 @@
 					../../../libgideros,
 					../../../libgid/include,
 					../../../luabinding,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					"libogg-1.3.2/include",
 					"libtheora-1.1.1/include",
 					"libtheora-1.1.1/lib",
@@ -948,7 +948,7 @@
 					../../../libgideros,
 					../../../libgid/include,
 					../../../luabinding,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					"libogg-1.3.2/include",
 					"libtheora-1.1.1/include",
 					"libtheora-1.1.1/lib",
@@ -977,7 +977,7 @@
 					../../../libgid/include,
 					../../../luabinding,
 					"../spine-runtimes/spine-c/spine-c/include",
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -999,7 +999,7 @@
 					../../../libgid/include,
 					../../../luabinding,
 					"../spine-runtimes/spine-c/spine-c/include",
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";

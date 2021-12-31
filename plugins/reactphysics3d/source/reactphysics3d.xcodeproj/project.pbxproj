@@ -515,7 +515,7 @@
 					../../../libgid/include,
 					../../../luabinding,
 					../../../Sdk/include/gideros,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					../reactphysics3d/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -549,7 +549,7 @@
 					../../../libgid/include,
 					../../../luabinding,
 					../../../Sdk/include/gideros,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					../reactphysics3d/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -572,7 +572,7 @@
 					../../../libgideros,
 					../../../libgid/include,
 					../../../luabinding,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					../../../Sdk/include/gideros,
 					../reactphysics3d/include,
 				);
@@ -596,7 +596,7 @@
 					../../../libgideros,
 					../../../libgid/include,
 					../../../luabinding,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					../../../Sdk/include/gideros,
 					../reactphysics3d/include,
 				);

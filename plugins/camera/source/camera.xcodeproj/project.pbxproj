@@ -215,7 +215,7 @@
 					../../../libgid/include,
 					../../../luabinding,
 					../../../libgideros,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					../../../2dsg/gfxbackends,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -248,7 +248,7 @@
 					../../../libgid/include,
 					../../../luabinding,
 					../../../libgideros,
-					$(LUA_INCLUDES:default=../../../lua/src),
+					"$(LUA_INCLUDES:default=../../../lua/src)",
 					../../../2dsg/gfxbackends,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
