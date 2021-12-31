@@ -41,9 +41,9 @@ PLUGINS_HTML5+=bitop
 endif
 
 #Precompiled plugins only below
-PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d imgui
-PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d imgui
-PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d imgui
+PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
+PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
+PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
 PLUGINS_WINRT=luasocket ogg liquidfun gsfxr harfbuzz reactphysics3d imgui
 
 ADDONS=GSFXREditor Player TAME
