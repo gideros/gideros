@@ -218,7 +218,6 @@
   <ItemGroup>
     <Image Include="Assets\LargeTile.scale-100.png" />
     <Image Include="Assets\LargeTile.scale-200.png" />
-    <Image Include="Assets\LargeTile.scale-400.png" />
     <Image Include="Assets\Logo.scale-100.png" />
     <Image Include="Assets\Logo.scale-200.png" />
     <Image Include="Assets\Logo.scale-400.png" />

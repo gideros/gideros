@@ -104,6 +104,7 @@ qt.install: buildqt qt5.install qt.player html5.tools
 	cp $(ROOT)/gdrdeamon/release/gdrdeamon.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrbridge/release/gdrbridge.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
+	-cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
 	
 QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \

@@ -106,6 +106,7 @@ qt.install: buildqt qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
 	cp -R $(ROOT)/Library $(RELEASE)/
+	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 	
 
 QTDLLEXT?=

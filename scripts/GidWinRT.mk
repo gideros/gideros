@@ -132,6 +132,7 @@ winrt.template: winrt.core winrt.plugins
 	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj"
 	sed -e 's/ Version="[^"]*"/ Version="1.0.0.0"/' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest"
 	cp winrt/gideros/gideros.Shared/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/"
+	cp $(SDK)/include/*.h "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/"
 	
 	#X86 Release version for Windows
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
@@ -150,6 +151,19 @@ winrt.template: winrt.core winrt.plugins
 
 winrt.player: winrt.template
 	@echo "VERSION" $(GIDEROS_VERSION)
+	mkdir -p $(RELEASE)/Players
+	cd $(RELEASE); Tools/gdrexport.exe -platform winrt -organization "Gideros Mobile" -package "com.giderosmobile.player" Examples/Misc/GiderosPlayer/GiderosPlayer.gproj Players
+	rm -f $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Assets/LargeTile.scale-400.png
+	cp $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
+	sed -e 's/ Version="[^"]*"/ Version="$(WINRT_APPX_GIDVERSION)"/'	$(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak >$(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest
+	$(MSBUILD) $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=Release //p:AppxBundlePlatforms="x86|ARM|x64" //p:AppxBundle=Always //v:m
+	mkdir -p $(RELEASE)/Players
+	rm -rf $(RELEASE)/Players/WinRT
+	mkdir -p $(RELEASE)/Players/WinRT
+	cp -r $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/AppPackages/$(WINRT_PLAYERSUBDIR).Windows/* $(RELEASE)/Players/WinRT
+	rm -rf cp -r $(RELEASE)/Players/GiderosPlayer
+	
+winrt.player_old: winrt.template
 	cp winrt/gideros/gideros.Shared/giderosapi.h $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/
 	rm -rf /c/winrt_player
 	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
