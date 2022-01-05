@@ -76,7 +76,7 @@ RC_FILE = ui.rc
 
 macx {
 ICON = "gideros.icns"
-QT += macextras
+#QT += macextras
 }
 
 win32 {
@@ -240,7 +240,6 @@ macx {
 	LIBS += -framework IOKit
     INCLUDEPATH += $$[QT_INSTALL_HEADERS]
     LIBS += -L$$[QT_INSTALL_LIBS]
-	CONFIG += c++11
 }
 
 win32 {
