@@ -86,6 +86,7 @@ public:
 protected:
 	virtual void paintEvent(QPaintEvent* event)
 	{
+        Q_UNUSED(event);
 		QPainter painter(this);
 		painter.setBackground(brush_);
 		painter.eraseRect(0, 0, width(), height());
@@ -138,7 +139,7 @@ PreviewWidget::PreviewWidget(QWidget *parent) : QWidget(parent)
 {
 	setLayout(new QVBoxLayout);
 
-	layout()->setMargin(0);
+    layout()->setContentsMargins(0,0,0,0);
 	layout()->setSpacing(0);
 
 	widget_ = new ImageWidget(QString(), QString(), this);

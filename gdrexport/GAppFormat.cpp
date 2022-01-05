@@ -37,7 +37,7 @@ void GAppFormat::buildGApp(QString gappfile_, ExportContext *ctx) {
 					break;
 				size += rd;
 				file.write(cpbuf, rd);
-				if (rd < sizeof(cpbuf))
+                if (rd < (int)sizeof(cpbuf))
 					break;
 			}
 			src.close();

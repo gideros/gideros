@@ -14,7 +14,7 @@ void WinRTExport::updateWinRTProject(QString projfile,ExportContext *ctx)
     // ----------------------------------------------------------------------
    	ctx->outputDir.cdUp();
 
-      QByteArray replacement;
+      QString replacement;
       for (int i = 0; i < ctx->allfiles.size(); i++){
         QString assetfile=ctx->allfiles[i];
         QString suffix = QFileInfo(assetfile).suffix().toLower();
@@ -46,7 +46,7 @@ void WinRTExport::updateWinRTProject(QString projfile,ExportContext *ctx)
       data = in.readAll();
       in.close();
 
-      data.replace("<!--GIDEROS_INSERT_ASSETS_HERE-->",replacement);
+      data.replace("<!--GIDEROS_INSERT_ASSETS_HERE-->",replacement.toUtf8());
 
       QFile out(ctx->outputDir.absoluteFilePath(projfile));
       out.open(QFile::WriteOnly);

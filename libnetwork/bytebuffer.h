@@ -44,7 +44,7 @@ public:
 
 private:
 	std::vector<char> buffer_;
-	int pos_;
+    size_t pos_;
 };
 
 inline ByteBuffer& operator << (ByteBuffer& buffer, char c)

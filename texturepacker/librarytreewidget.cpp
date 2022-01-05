@@ -115,9 +115,9 @@ void LibraryTreeWidget::importToLibrary()
 
 void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 {
+    Q_UNUSED(pos);
 	QMenu menu(this);
 
-	bool file = false;
 	bool folder = false;
 	bool project = false;
 
@@ -135,8 +135,6 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 
 			if (fileName.isEmpty() == true)
 				folder = true;
-			else
-				file = true;
 		}
 	}
 

@@ -104,7 +104,7 @@ PluginSelector::PluginSelector(QSet<ProjectProperties::Plugin> selection,
 			QStringList targetList;
 			QDomNodeList targets = plugin.elementsByTagName("target");
 			for (int k = 0; k < targets.count(); k++)
-				targetList << targets.at(k).toElement().attribute("name").split(',', QString::SkipEmptyParts);
+                targetList << targets.at(k).toElement().attribute("name").split(',', Qt::SplitBehaviorFlags::SkipEmptyParts);
 			int tcount=0;
 			for (int k = 0; k < targetList.count(); k++)
 				if (iconMap.contains(targetList.at(k))) tcount++;

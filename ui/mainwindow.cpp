@@ -55,6 +55,7 @@
 #include <QKeySequence>
 #include "addons.h"
 #include <QToolTip>
+#include <QRegularExpression>
 #include "preferencesdialog.h"
 #include "profilerreport.h"
 
@@ -72,6 +73,7 @@ static int ltw_notifyClient(lua_State *L) {
 }
 
 static int ltw_saveAll(lua_State *L) {
+    Q_UNUSED(L);
     if (!MainWindow::lua_instance) return 0;
     MainWindow::lua_instance->saveAll();
     return 0;
@@ -264,7 +266,7 @@ MainWindow::MainWindow(QWidget *parent)
 	{
 		outputContainer = new QWidget;
 		outputContainer->setLayout(new QVBoxLayout);
-		outputContainer->layout()->setMargin(0);
+        outputContainer->layout()->setContentsMargins(0,0,0,0);
 		outputContainer->layout()->setSpacing(0);
 
         QLineEdit *edit = new QLineEdit();
@@ -1259,7 +1261,7 @@ void MainWindow::saveProject()
     }
 
     QTextStream out(&file);
-    out.setCodec("UTF-8");
+    out.setEncoding(QStringConverter::Utf8);
     out << libraryWidget_->toXml().toString();
     file.close();
     libraryWidget_->setModified(false);
@@ -1515,6 +1517,7 @@ void MainWindow::clearDebugHighlights() {
 
 void MainWindow::onOpenRequest(const QString& itemName, const QString& fileName)
 {
+    Q_UNUSED(itemName);
 	QString suffix = QFileInfo(fileName).suffix().toLower();
 
 	if (suffix == "txt" || suffix == "lua" || suffix == "glsl" || suffix=="hlsl")
@@ -1943,13 +1946,14 @@ static bool parseFileLineString(const QString& l, QString* fileName = 0, unsigne
 // check if string starts with [space]*[digit]+[:]
 static bool lineNumber(const QString& str, int* line = NULL)
 {
-	QRegExp regexp("^\\s*(\\d+)\\:");
+    QRegularExpression regexp("^\\s*(\\d+)\\:");
 
-	if (regexp.indexIn(str) == -1)
+    QRegularExpressionMatch match=regexp.match(str);
+    if (!match.hasMatch())
 		return false;
 
 	if (line)
-		*line = regexp.cap(1).toInt();
+        *line = match.captured(1).toInt();
 
 	return true;
 }
@@ -2360,7 +2364,7 @@ QVariant MainWindow::deserializeValue(ByteBuffer &buffer, QString &vtype) {
     buffer >> type;
     std::string value;
     QString stype;
-    QMap<QVariant,QVariant> table;
+    QMap<QString,QVariant> table;
     char b;
     vtype=(type==20)?"ref":QString(lua_typename(NULL,type));
     switch (type) {
@@ -2375,7 +2379,7 @@ QVariant MainWindow::deserializeValue(ByteBuffer &buffer, QString &vtype) {
                 QVariant key=deserializeValue(buffer,stype);
                 if (key.isNull()) break;
                 QVariant val=deserializeValue(buffer,stype);
-                table[key]=val;
+                table[key.toString()]=val;
             }
             return QVariant::fromValue(table);
         case LUA_TNUMBER:
@@ -2520,7 +2524,7 @@ void MainWindow::dataReceived(const QByteArray& d)
             if ((topologicalSort[i].second == false)&&((!mainluaOnly)||(localFileMapReverse[topologicalSort[i].first]=="main.lua")))
                 luaFiles << localFileMapReverse[topologicalSort[i].first];
 
-		if (luaFiles.empty() == false)
+        if (luaFiles.empty() == false)
 			fileQueue_.push_back(qMakePair(luaFiles.join("|"), QString("play")));
 	}
 	if (data[0]==23) //Breaked
@@ -2548,7 +2552,7 @@ void MainWindow::dataReceived(const QByteArray& d)
     {
         ByteBuffer buffer(d.constData(), d.size());
 
-        char chr,type;
+        char chr;
         buffer >> chr;
         QString vtype;
         QVariant value=deserializeValue(buffer,vtype);
@@ -2562,7 +2566,7 @@ void MainWindow::dataReceived(const QByteArray& d)
     if (data[0]==31) { //Profiling report
         ByteBuffer buffer(d.constData(), d.size());
 
-        char chr,type;
+        char chr;
         buffer >> chr;
         QString vtype;
         QVariant value=deserializeValue(buffer,vtype);
@@ -2586,6 +2590,7 @@ void MainWindow::lookupSymbol(QString sym,int x,int y)
 
 void MainWindow::ackReceived(unsigned int id)
 {
+    Q_UNUSED(id);
 /*	std::map<int, QString>::iterator iter = sentMap_.find(id);
 	if (iter != sentMap_.end())
 	{
@@ -2654,6 +2659,7 @@ bool MainWindow::maybeSave()
 
 void MainWindow::onPreviewRequest(const QString& itemName, const QString& fileName)
 {
+    Q_UNUSED(itemName);
 	QString title = QFileInfo(projectFileName_).dir().relativeFilePath(fileName);
 	previewWidget_->setFileName(fileName, title);
 }
@@ -2671,9 +2677,8 @@ static void fileCopy(	const QString& srcName,
 		bool submatch = false;
 		for (int i = 0; i < wildcards[j].size(); ++i)
 		{
-			QRegExp rx(wildcards[j][i]);
-			rx.setPatternSyntax(QRegExp::Wildcard);
-            if (rx.exactMatch(srcName2))
+            QRegularExpression rx(QRegularExpression::anchoredPattern(QRegularExpression::wildcardToRegularExpression(wildcards[j][i])));
+            if (rx.match(srcName2).hasMatch())
 			{
 				submatch = true;
 				break;
@@ -2718,9 +2723,8 @@ static bool shouldCopy(const QString &fileName, const QStringList &include, cons
 
     for (int i = 0; i < include.size(); ++i)
     {
-        QRegExp rx(include[i]);
-        rx.setPatternSyntax(QRegExp::Wildcard);
-        if (rx.exactMatch(fileName2))
+        QRegularExpression rx(QRegularExpression::anchoredPattern(QRegularExpression::wildcardToRegularExpression(include[i])));
+        if (rx.match(fileName2).hasMatch())
         {
             result = true;
             break;
@@ -2729,9 +2733,8 @@ static bool shouldCopy(const QString &fileName, const QStringList &include, cons
 
     for (int i = 0; i < exclude.size(); ++i)
     {
-        QRegExp rx(exclude[i]);
-        rx.setPatternSyntax(QRegExp::Wildcard);
-        if (rx.exactMatch(fileName2))
+        QRegularExpression rx(QRegularExpression::anchoredPattern(QRegularExpression::wildcardToRegularExpression(exclude[i])));
+        if (rx.match(fileName2).hasMatch())
         {
             result = false;
             break;
@@ -3048,13 +3051,12 @@ void MainWindow::findInFiles()
 		std::vector<std::pair<QString, QString> > fileListAll = libraryFileList();
 		std::vector<std::pair<QString, QString> > fileList;
 
-		QRegExp rx(findInFilesDialog_->filter());
-		rx.setPatternSyntax(QRegExp::Wildcard);
+        QRegularExpression rx(QRegularExpression::wildcardToRegularExpression(findInFilesDialog_->filter(),QRegularExpression::UnanchoredWildcardConversion));
 		for (std::size_t i = 0; i < fileListAll.size(); ++i)
 		{
 			QString filename = fileListAll[i].second;
 			
-			if (rx.exactMatch(filename))
+            if (rx.match(filename).hasMatch())
 				fileList.push_back(fileListAll[i]);
 		}
 
@@ -3075,7 +3077,7 @@ void MainWindow::findInFiles()
 
 				QsciScintilla sci;
 				QTextStream in(&file);
-                in.setCodec("UTF-8");
+                in.setEncoding(QStringConverter::Utf8);
                 sci.setUtf8(true);
 				sci.setText(in.readAll());
 
@@ -3187,7 +3189,7 @@ void MainWindow::openAboutDialog()
 void MainWindow::openPreferencesDialog()
 {
     PreferencesDialog dialog(this);
-    TextEdit* text_edit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+    //TextEdit* text_edit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
     dialog.setMdiArea(mdiArea_);
     dialog.exec();
 }
@@ -3268,9 +3270,9 @@ void MainWindow::downsize(const QString& filename)
 
 	for (size_t i = 0; i < imageScales.size(); ++i)
 	{
-		if (i != match)
+        if ((int)i != match)
 		{
-			if (imageScales[i].second == 0)
+            if (imageScales[i].second == 0)
 				continue;
 
 			double ratio = imageScales[i].second / scale;

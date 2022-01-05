@@ -73,15 +73,18 @@ class OutlineVisitor : public Luau::AstVisitor
 {
     virtual bool visit(class Luau::AstExprFunction* node)
     {
+        Q_UNUSED(node);
         return false;
     }
     virtual bool visit(class Luau::AstExprLocal* node)
     {
+        Q_UNUSED(node);
         //*ol << OutLineItem(node->local->name.value,OT_LOCAL|0,node->location.begin.line+1);
         return false;
     }
     virtual bool visit(class Luau::AstExprGlobal* node)
     {
+        Q_UNUSED(node);
         return false;
     }
     virtual bool visit(class Luau::AstStatLocal* node)
@@ -125,14 +128,17 @@ class OutlineVisitor : public Luau::AstVisitor
     }
     virtual bool visit(class Luau::AstStatDeclareFunction* node)
     {
+        Q_UNUSED(node);
         return false;
     }
     virtual bool visit(class Luau::AstStatDeclareGlobal* node)
     {
+        Q_UNUSED(node);
         return false;
     }
     virtual bool visit(class Luau::AstStatDeclareClass* node)
     {
+        Q_UNUSED(node);
         return false;
     }
 

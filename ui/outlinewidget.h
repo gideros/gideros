@@ -27,7 +27,7 @@ class OutlineWorkerThread : public QThread
     QByteArray btext;
     QString filename;
 public:
-    OutlineWorkerThread(QObject *parent = Q_NULLPTR,QString name=QString(),QByteArray file=QByteArray()) { btext=file; filename=name; }
+    OutlineWorkerThread(QObject *parent = Q_NULLPTR,QString name=QString(),QByteArray file=QByteArray()) : QThread(parent) { btext=file; filename=name; }
     virtual ~OutlineWorkerThread() { }
 signals:
     void updateOutline(QList<OutLineItem> s);
@@ -62,7 +62,7 @@ public:
     void saveSettings();
 private:
     TextEdit *doc_;
-    QTime refresh_;
+    QElapsedTimer refresh_;
     QListView *list_;
     QStandardItemModel *model_;
     bool working_;

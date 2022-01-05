@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QDebug>
 
-int ExampleProjectsWidget::page_ = 0;
+size_t ExampleProjectsWidget::page_ = 0;
 
 ExampleProjectsWidget::ExampleProjectsWidget(QWidget *parent) :
     QWidget(parent)
@@ -193,7 +193,7 @@ void ExampleProjectsWidget::paintEvent(QPaintEvent* event)
 		if (items[i].image.isNull())
 			items[i].image = QImage(items[i].imagePath);
 
-		if (i == selected_)
+        if ((int)i == selected_)
 		{
 			painter.setBrush(QBrush(0x3875D7));
 			painter.setPen(Qt::NoPen);
@@ -263,14 +263,14 @@ int ExampleProjectsWidget::itemAt(int mx, int my)
 
 void ExampleProjectsWidget::mousePressEvent(QMouseEvent* event)
 {
-	selected_ = itemAt(event->x(), event->y());
+    selected_ = itemAt(event->position().x(), event->position().y());
 	update();
 	emit selected(selected_);
 }
 
 void ExampleProjectsWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	int item = itemAt(event->x(), event->y());
+    int item = itemAt(event->position().x(), event->position().y());
 	if (item != -1)
 	{
 		const Category& category = categories_[page_];
@@ -280,12 +280,11 @@ void ExampleProjectsWidget::mouseDoubleClickEvent(QMouseEvent* event)
 
 void ExampleProjectsWidget::left()
 {
-	int oldpage = page_;
-	page_--;
-	if (page_ < 0)
-		page_ = 0;
+    size_t oldpage = page_;
+    if (page_ > 0)
+        page_--;
 
-	if (oldpage != page_)
+    if (oldpage != page_)
 	{
 		selected_ = -1;
 		update();
@@ -295,9 +294,9 @@ void ExampleProjectsWidget::left()
 
 void ExampleProjectsWidget::right()
 {
-	int oldpage = page_;
+    size_t oldpage = page_;
 	page_++;
-	if (page_ > categories_.size() - 1)
+    if (page_ >= categories_.size())
 		page_ = categories_.size() - 1;
 	if (oldpage != page_)
 	{

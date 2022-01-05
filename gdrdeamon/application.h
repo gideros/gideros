@@ -12,7 +12,7 @@
 #include <QByteArray>
 #include <dependencygraph.h>
 #include <QStringList>
-#include <QTime>
+#include <QElapsedTimer>
 #include <vector>
 
 class QTimer;
@@ -82,7 +82,7 @@ private:
     QString projectFileName_;
     DependencyGraph dependencyGraph_;
     QStringList log_;
-    QTime time_;
+    QElapsedTimer time_;
 };
 
 #endif // APPLICATION_H

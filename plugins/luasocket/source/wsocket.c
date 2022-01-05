@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "socket.h"
+#include "inet.h"
 
 /* WinSock doesn't have a strerror... */
 static const char *wstrerror(int err);
@@ -428,7 +429,7 @@ const char *socket_gaistrerror(int err) {
 #ifdef EAI_SYSTEM
         case EAI_SYSTEM: return strerror(errno); 
 #endif
-        default: return gai_strerror(err);
+        default: return tous(gai_strerror(err));
     }
 }
 

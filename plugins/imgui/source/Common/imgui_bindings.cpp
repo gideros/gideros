@@ -1853,7 +1853,7 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 			}
 			else
 			{
-				g_id textureId = (g_id)pcmd->GetTexID();
+				g_id textureId = (g_id)(uintptr_t)pcmd->GetTexID();
 				
 				engine->bindTexture(0, gtexture_getInternalTexture(textureId));
 				
@@ -1924,7 +1924,7 @@ int destroyImGui(void* p)
 	GidImGui* imgui = static_cast<GidImGui*>(static_cast<SpriteProxy *>(ptr)->getContext());
 	if (imgui->ctx->FontAtlasOwnedByContext && ImGui::GetCurrentContext()->FontAtlasOwnedByContext)
 	{
-		gtexture_delete((g_id)imgui->ctx->IO.Fonts->TexID);
+		gtexture_delete((g_id)(uintptr_t)imgui->ctx->IO.Fonts->TexID);
 		ImGui::DestroyContext(imgui->ctx);
 	}
 	imgui->eventListener->removeEventListeners();
@@ -11181,7 +11181,7 @@ int FontAtlas_Build(lua_State* L)
 	STACK_CHECKER(L, "build", 0);
 
 	ImFontAtlas* atlas = getPtr<ImFontAtlas>(L, "ImFontAtlas");
-	gtexture_delete((g_id)atlas->TexID);
+	gtexture_delete((g_id)(uintptr_t)atlas->TexID);
 	
 	atlas->Build();
 	

@@ -49,7 +49,7 @@ qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros
 
 buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
 
-qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
+qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) html5.tools.clean
 
 QT5DLLS=icudata icui18n icuuc \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \

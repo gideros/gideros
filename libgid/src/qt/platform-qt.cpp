@@ -194,6 +194,11 @@ void g_exit()
     QCoreApplication::quit();
 }
 
+#ifdef Q_OS_WIN
+#include <QtGui/private/qguiapplication_p.h>
+#include <QtGui/qpa/qplatformintegration.h>
+#endif
+
 
 bool g_checkStringProperty(bool isSet, const char* what){
     if (isSet){
@@ -365,6 +370,12 @@ void g_setProperty(const char* what, const char* arg){
             }else{
                 MainWindow::getInstance()->showNormal();
             }
+        }else if (strcmp(what, "wintabMode") == 0)
+        {
+#ifdef Q_OS_WIN
+            auto nativeWindowsApp = dynamic_cast<QNativeInterface::Private::QWindowsApplication *>(QGuiApplicationPrivate::platformIntegration());
+            nativeWindowsApp->setWinTabEnabled(arg1);
+#endif
 
         }else{
 

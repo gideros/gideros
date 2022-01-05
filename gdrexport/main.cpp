@@ -20,7 +20,7 @@
 #include "ExportXml.h"
 #include "ExportLua.h"
 #include <QCryptographicHash>
-
+#include <QRandomGenerator>
 
 static void addEntryToListIfNotInList(std::vector<QString>& list, const QString& entry)
 {
@@ -457,9 +457,8 @@ int main(int argc, char *argv[])
         }
         else
         {
-            qsrand(time(NULL));
             for (int i = 0; i < randomData.size(); ++i)
-                randomData[i] = qrand() % 256;
+                randomData[i] = QRandomGenerator::global()->generate() % 256;
             settings.setValue("randomData", randomData);
             settings.sync();
         }

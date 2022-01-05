@@ -50,7 +50,7 @@ qtlibs.install: buildqtlibs
 
 buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
 
-qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
+qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) html5.tools.clean
 
 QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
 qt.install: buildqt qt.player tools html5.tools

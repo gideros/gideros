@@ -18,6 +18,7 @@
 #include "settingskeys.h"
 
 QSet<QString> TextEdit::breakpoints;
+#ifdef Q_OS_MAC
 static void keysForMac(QsciScintilla* qscintilla)
 {
 	QsciCommandSet* commandSet = qscintilla->standardCommands();
@@ -115,7 +116,7 @@ static void keysForMac(QsciScintilla* qscintilla)
 								(SCMOD_META << 16) | QsciScintillaBase::SCK_BACK,
 								QsciScintillaBase::SCI_DELWORDLEFT);
 }
-
+#endif
 
 static QsciLexer* createLexerByExtension(QString ext)
 {
@@ -338,8 +339,7 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
 		{
 			QMessageBox::warning(0, tr("Warning"),
 				tr("Cannot read file %1:\n%2.")
-				.arg(fileName)
-				.arg(file.errorString()));
+                .arg(fileName,file.errorString()));
 		}
 		return false;
 	}
@@ -356,13 +356,13 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
 	setWindowTitle(fileInfo.fileName() + "[*]");
 
 	QTextStream in(&file);
-	in.setCodec("UTF-8");
+    in.setEncoding(QStringConverter::Utf8);
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	sciScintilla_->setUtf8(true);
 	QString txt=in.readAll();
     if ((lexer!=NULL)&&(lexer->lexer()!=NULL)&&(!strcmp(lexer->lexer(),"lua"))&&txt.startsWith("!")&&(txt.length()>3))
         setLuaLanguage(txt.mid(1,2).toUpper());
-	sciScintilla_->setText(txt);
+    sciScintilla_->setText(txt);
 	QApplication::restoreOverrideCursor();
 
 	sciScintilla_->setModified(false);
@@ -432,7 +432,7 @@ bool TextEdit::save()
 	}
 
 	QTextStream out(&file);
-	out.setCodec("UTF-8");
+    out.setEncoding(QStringConverter::Utf8);
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	out << sciScintilla_->text();
 	QApplication::restoreOverrideCursor();
@@ -583,6 +583,7 @@ int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re
 
 void TextEdit::setBookmark(int margin, int line, Qt::KeyboardModifiers state)
 {
+    Q_UNUSED(state);
     int marker=(margin==3)?1:2;
     if (sciScintilla_->markersAtLine(line) & (1 << marker))
     {
@@ -778,5 +779,6 @@ void TextEdit::dwellStart(int pos,int x,int y)
 
 void TextEdit::dwellEnd(int pos,int x,int y)
 {
+    Q_UNUSED(pos);
     QToolTip::showText(QPoint(x,y),QString(),this);
 }

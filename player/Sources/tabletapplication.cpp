@@ -2,7 +2,6 @@
 
 TabletApplication::TabletApplication(int& argv, char** argc): QApplication(argv,argc)
 {
-
 }
 
 bool TabletApplication::event(QEvent* event){

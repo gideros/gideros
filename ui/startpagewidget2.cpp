@@ -30,6 +30,7 @@ StartPageWidget2::~StartPageWidget2()
 
 void StartPageWidget2::closeEvent(QCloseEvent * event)
 {
+    Q_UNUSED(event);
 /*	event->ignore();
 
 	if (mdiArea())

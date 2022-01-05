@@ -146,8 +146,8 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 
     //Plugins
 	QDomElement plugins = doc.createElement("plugins");
-	QList<Plugin> pl=this->plugins.toList();
-	qSort(pl);
+    QList<Plugin> pl=this->plugins.values();
+    std::sort(pl.begin(),pl.end());
 	for (QList<Plugin>::const_iterator it=pl.begin();it!=pl.end(); it++)
 	{
 		QDomElement plugin = doc.createElement("plugin");
@@ -155,7 +155,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 		plugin.setAttribute("name", p.name);
 		plugin.setAttribute("enabled", QString(p.enabled?"1":"0"));
 		QList<QString> ml=p.properties.keys();
-		qSort(ml);
+        std::sort(ml.begin(),ml.end());
 		for (QList<QString>::const_iterator i=ml.begin();i!=ml.end();i++) {
 			QDomElement attr = doc.createElement("property");
 			attr.setAttribute("name",*i);
@@ -168,15 +168,15 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 
 	//Exports
 	QDomElement exports = doc.createElement("exports");
-	QList<Export> el=this->exports.toList();
-	qSort(el);
+    QList<Export> el=this->exports.values();
+    std::sort(el.begin(),el.end());
 	for (QList<Export>::const_iterator it=el.begin();it!=el.end(); it++)
 	{
 		QDomElement plugin = doc.createElement("export");
 		Export p=*it;
 		plugin.setAttribute("name", p.name);
 		QList<QString> ml=p.properties.keys();
-		qSort(ml);
+        std::sort(ml.begin(),ml.end());
 		for (QList<QString>::const_iterator i=ml.begin();i!=ml.end();i++) {
 			QDomElement attr = doc.createElement("property");
 			attr.setAttribute("name",*i);

@@ -46,7 +46,7 @@ private:
 
 	std::vector<Category> categories_;
 
-	static int page_;
+    static size_t page_;
 	int selected_;
 
 	int width_, height_;

@@ -246,20 +246,20 @@ macx {
 win32 {
     LIBS += -L$$[QT_INSTALL_LIBS]
         CONFIG(debug, debug|release) {
-          LIBS += -lqscintilla2_qt5d
+          LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}d
 	}
 	else
 	{
-   		LIBS += -lqscintilla2_qt5
+                LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
    	}
 }
 
 macx {
-   LIBS += -lqscintilla2_qt5
+   LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
 }
 
 unix:!macx {
-   LIBS += -lqscintilla2_qt5
+   LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
    #LIBS += -lqt5scintilla2 #For PI ?
    QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }

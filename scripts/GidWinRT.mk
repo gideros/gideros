@@ -9,6 +9,8 @@ BIN2C=$(ROOT)/scripts/bin2c
 WINRT_PLAYERDIR=winrt_xaml
 WINRT_PLAYERSUBDIR=giderosgame
 
+export MSBUILDDISABLENODEREUSE=1
+
 #Macros
 #$(call WINRT_PROJECT basepath name target)
 WINRT_PROJECT=$(1)/$(2)/$(2).$(3)/$(2).$(3).vcxproj

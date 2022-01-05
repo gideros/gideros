@@ -17,7 +17,7 @@ SOURCES += \
 
 HEADERS += 
 
-LIBS += -L"../../../../../Sdk/lib/desktop" -L../spoutplugin/spoutplugin/Release -llua -lgid -lgideros -lspoutplugin
+LIBS += -L"../../../../../Sdk/lib/desktop" -L../spoutplugin/spoutplugin/x64/Release -llua -lgid -lgideros -lspoutplugin
 
 DEFINES += GID_LIBRARY
 

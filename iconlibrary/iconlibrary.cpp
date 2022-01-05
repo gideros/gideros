@@ -2,7 +2,7 @@
 #include <QDebug>
 
 #define iconref(x,y) (((x)<<8)|y)
-#define icontag(x,y,dx,dy) (((x)<<8)|(y)|((dx)<<24)|((dy)<<16))
+#define icontag(x,y,dx,dy) (((x)<<8)|(y)|(((dx)+128)<<24)|(((dy)+128)<<16))
 IconLibrary::IconLibrary()
 {
 	image_=QPixmap("Resources/images.png");
@@ -131,6 +131,7 @@ IconLibrary& IconLibrary::instance()
 
 const QIcon& IconLibrary::icon(int category, const QString& name)
 {
+    Q_UNUSED(category);
 	static QIcon emptyIcon;
 
     std::map<QString, QIcon>::const_iterator iter = iconMap_.find(name);
@@ -186,8 +187,8 @@ const QIcon& IconLibrary::icon(const QString& name,const QStringList tags)
             int tr=tagMap_[t];
             int i1=(tr>>8)&0xFF;
             int j1=(tr&0xFF);
-            int dx=(int8_t)((tr>>24)&0xFF);
-            int dy=(int8_t)((tr>>16)&0xFF);
+            int dx=(int8_t)(((tr>>24)&0xFF)-128);
+            int dy=(int8_t)(((tr>>16)&0xFF)-128);
             QPixmap image1 = image_.copy(i1 * width, j1 * height, width, height);
             image=QPixmap::fromImage(blend(image.toImage(), image1.toImage(), dx, dy));
             image1 = imagex2_.copy(i1 * width*2, j1 * height*2, width*2, height*2);

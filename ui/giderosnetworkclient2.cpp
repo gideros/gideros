@@ -135,6 +135,7 @@ void GiderosNetworkClient2::onDisconnected()
 
 void GiderosNetworkClient2::error(QAbstractSocket::SocketError socketError)
 {
+    Q_UNUSED(socketError);
     //qDebug() << "error" << socketError;
 	if (status_ == eTrying)
 	{
@@ -144,7 +145,7 @@ void GiderosNetworkClient2::error(QAbstractSocket::SocketError socketError)
 
 void GiderosNetworkClient2::bytesWritten(qint64 bytes)
 {
-
+    Q_UNUSED(bytes);
 }
 
 void GiderosNetworkClient2::readyRead()
@@ -162,7 +163,7 @@ void GiderosNetworkClient2::readyRead()
 		const unsigned int* header = (const unsigned int*)readArray_.constData();
 
 		unsigned int size = header[0];
-		unsigned int id = header[1];
+        //unsigned int id = header[1];
 		unsigned int type = header[2];
 
 		if (readArray_.size() < size)

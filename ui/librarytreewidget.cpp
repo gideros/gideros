@@ -308,7 +308,7 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& /*pos*/)
     if (size == 1 && (nodetype&NODETYPE_PLUGINS))
         menu.addAction(addPluginAction_);
 
-	if (size == 1 && ((nodetype&NODETYPE_FOLDER) || (nodetype&NODETYPE_FILES)))
+    if (size == 1 && ((nodetype&NODETYPE_FOLDER) || (nodetype&NODETYPE_FILES)))
 	{
 		menu.addAction(addNewFileAction_);
 		menu.addAction(importToLibraryAction_);
@@ -554,7 +554,7 @@ void LibraryTreeWidget::addPlugin()
 {
     if (selectedItems().empty() == true)
         return;
-	QTreeWidgetItem* pluginFolder = selectedItems()[0];
+    QTreeWidgetItem* pluginFolder = selectedItems()[0];
     PluginSelector dialog(properties_.plugins, this);
 	if (dialog.exec() == QDialog::Accepted)
 	{
@@ -586,7 +586,7 @@ void LibraryTreeWidget::propPlugin()
 {
     if (selectedItems().empty() == true)
         return;
-	QMap<QString, QVariant> data=selectedItems()[0]->data(0, Qt::UserRole).toMap();
+    QMap<QString, QVariant> data=selectedItems()[0]->data(0, Qt::UserRole).toMap();
 	int nodetype = data ["nodetype"].toInt();
 	QString fileName = data["filename"].toString();
 
@@ -1149,8 +1149,8 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 	rootitem->addChild(filesFolder);
 
 	//Fill in plugins
-	QList<ProjectProperties::Plugin> pl=properties_.plugins.toList();
-	qSort(pl);
+    QList<ProjectProperties::Plugin> pl=properties_.plugins.values();
+    std::sort(pl.begin(),pl.end());
 	for (QList<ProjectProperties::Plugin>::const_iterator it=pl.begin();it!=pl.end(); it++)
 	{
 		ProjectProperties::Plugin p=*it;
@@ -1282,7 +1282,7 @@ QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool lin
     if (excludeFromPackage)
         data["excludeFromPackage"] = true;
 
-	item->setData(0, Qt::UserRole, data);
+    item->setData(0, Qt::UserRole, data);
 
 	if (ext == "lua")
         dependencyGraph_.addCode(file, excludeFromExecution);

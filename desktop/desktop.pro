@@ -1,5 +1,9 @@
-QT += core gui opengl network multimedia
+QT += core gui opengl network multimedia widgets
 CONFIG   += silent qt
+
+equals(QT_MAJOR_VERSION, 6){
+   QT += openglwidgets
+}
 
 LUA_ENGINE=$$(LUA_ENGINE)
 isEmpty(LUA_ENGINE): LUA_ENGINE=luau

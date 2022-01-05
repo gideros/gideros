@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("GiderosMobile");
 	QCoreApplication::setOrganizationDomain("giderosmobile.com");
 	QCoreApplication::setApplicationName("GiderosStudio");
-	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-	QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 

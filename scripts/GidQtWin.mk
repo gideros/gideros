@@ -6,6 +6,8 @@ qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
 QTDLLEXT?=
 
+QT_VER?=6
+
 ifneq ($(DEBUG),)
 QTTGT_EXT=dbg
 QTDLLEXT=d
@@ -75,7 +77,7 @@ qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid $(LUA_ENGINE) 
 
 buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
-qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) qtplugins.clean
+qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) qtplugins.clean html5.tools.clean
 
 qt.install: buildqt qt5.install qt.player html5.tools
 	cp $(ROOT)/ui/$(QTTGT_DIR)/GiderosStudio.exe $(RELEASE)
@@ -105,7 +107,8 @@ qt.install: buildqt qt5.install qt.player html5.tools
 	cp $(ROOT)/gdrbridge/release/gdrbridge.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
 	-cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
-	
+
+ifeq ($(QT_VER),5)	
 QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
 		Qt5Multimedia Qt5MultimediaQuick_p Qt5MultimediaWidgets Qt5WebSockets
@@ -113,6 +116,15 @@ QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1
 		Qt5Core Qt5Network Qt5Xml Qt5WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
 QT5PLUGINS=$(addprefix mediaservice/,dsengine qtmedia_audioengine) $(addprefix platforms/,$(QT5PLATFORM)) imageformats/qjpeg
+else
+QT5DLLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
+		Qt6Core Qt6Gui Qt6Network Qt6OpenGL Qt6OpenGLWidgets Qt6PrintSupport Qt6Widgets Qt6Xml \
+		Qt6Multimedia Qt6MultimediaQuick Qt6MultimediaWidgets Qt6WebSockets
+QT5DLLTOOLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
+		Qt6Core Qt6Network Qt6Xml Qt6WebSockets
+QT5PLATFORM=qminimal qoffscreen qwindows
+QT5PLUGINS=$(addprefix tls/,qopensslbackend) $(addprefix platforms/,$(QT5PLATFORM)) imageformats/qjpeg
+endif
 
 qt.player:
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
@@ -128,7 +140,7 @@ qt5.install:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done
 	mkdir -p $(addprefix $(RELEASE)/,$(dir $(QT5PLUGINS)))
 	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/$$a.dll$(QTDLLEXT); done
-	cp $(QT)/lib/qscintilla2_qt5.dll $(RELEASE)
+	cp $(QT)/lib/qscintilla2_qt$(QT_VER).dll $(RELEASE)
 	cp $(ROOT)/libgid/openal/release/openal.dll $(RELEASE)
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
