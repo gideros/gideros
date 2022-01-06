@@ -73,7 +73,6 @@ FREETYPE_VER=2.7.1
 INCLUDEPATHS_player = libgvfs libgideros $(LUA_INCLUDE) $(LUA_INCLUDE_CORE) libpystring libgid/include \
 	libnetwork libpvrt luabinding \
 	2dsg 2dsg/gfxbackends 2dsg/paths \
-	libgid/external/glew-1.10.0/include \
 	libgid/external/freetype-$(FREETYPE_VER)/src \
 	libgid/external/freetype-$(FREETYPE_VER)/include \
 	libgid/external/mpg123-1.15.3/src \

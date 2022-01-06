@@ -1,6 +1,7 @@
+WIN32_CHAIN=PATH=$(WIN32_BIN):$(PATH) $(WIN32_BIN)/
+WIN32_CC=$(WIN32_CHAIN)gcc
+WIN32_CXX=$(WIN32_CHAIN)g++
 
-CC=gcc
-CX=g++
 BUILD=Build
 
 
@@ -15,7 +16,7 @@ LFLGS+=-L$(ROOT)/Sdk/lib/win32 -llua -lgvfs -lgid -lgideros
 
 all: path $(OBJS)
 	@echo "LINK" $(TARGET)
-	@$(CX) -shared $(OBJS) $(LFLGS) -o $(BUILD)/$(TARGET).dll
+	@$(WIN32_CXX) -shared $(OBJS) $(LFLGS) -o $(BUILD)/$(TARGET).dll
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
@@ -25,25 +26,25 @@ clean:
 	
 $(BUILD)/%.o: ../%.cpp
 	@echo "C+ $<"
-	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS) $(CFLGS) -c $< -o $@
+	@$(WIN32_CXX) $(CXXFLGS) $(CINCS) $(CXXINCS) $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: ../%.cc
 	@echo "C+ $<"
-	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS) $(CFLGS) -c $< -o $@
+	@$(WIN32_CXX) $(CXXFLGS) $(CINCS) $(CXXINCS) $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: ../%.c
 	@echo "CC $<"
-	@$(CC) $(CINCS) $(CFLGS) -c $< -o $@
+	@$(WIN32_CC) $(CINCS) $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: %.cpp
 	@echo "C+ $<"
-	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS)  $(CFLGS) -c $< -o $@
+	@$(WIN32_CXX) $(CXXFLGS) $(CINCS) $(CXXINCS)  $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: %.cc
 	@echo "C+ $<"
-	@$(CX) $(CXXFLGS) $(CINCS) $(CXXINCS)  $(CFLGS) -c $< -o $@
+	@$(WIN32_CXX) $(CXXFLGS) $(CINCS) $(CXXINCS)  $(CFLGS) -c $< -o $@
 
 $(BUILD)/%.o: %.c
 	@echo "CC $<"
-	@$(CC) $(CINCS) $(CFLGS) -c $< -o $@
+	@$(WIN32_CC) $(CINCS) $(CFLGS) -c $< -o $@
 		

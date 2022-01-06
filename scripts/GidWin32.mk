@@ -1,4 +1,7 @@
 SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
+WIN32_CHAIN=PATH=$(WIN32_BIN):$(PATH) $(WIN32_BIN)/
+WIN32_CC=$(WIN32_CHAIN)gcc
+WIN32_CXX=$(WIN32_CHAIN)g++
 
 win32.install: win32.libs.install win32.plugins.install
 
@@ -27,7 +30,7 @@ LIBS_gid+= \
  libgid/external/openal-soft-1.13/build/mingw48_32/libOpenAL32.dll.a \
  libgid/external/zlib-1.2.8/build/mingw48_32/libzlibx.a \
  libgid/external/curl-7.40.0-devel-mingw32/lib/libcurldll.a \
- -L"libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 -lopengl32 \
+ -lglew32 -lopengl32 \
  $(WIN32_BUILDDIR)/gvfs.dll
 #LIBS_gid+=libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/lib/x86/libpthreadGC2.a \
 
@@ -44,7 +47,7 @@ INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
 DEFINES_player+=WIN32=1
 LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.dll gideros.dll) \
 	libgid/external/zlib-1.2.8/build/mingw48_32/libzlibx.a \
-	-L"libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
+	-lglew32 \
 	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm
 
 ##RULES
@@ -56,7 +59,7 @@ LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.d
 win32.libs.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#LINK $(LIBNAME).dll
-	@$(CXX) -g -o $(WIN32_BUILDDIR)/$(LIBNAME).dll -shared $^ $(LIBS)
+	@$(WIN32_CXX) -g -o $(WIN32_BUILDDIR)/$(LIBNAME).dll -shared $^ $(LIBS) 
 	cp $(WIN32_BUILDDIR)/$(LIBNAME).dll $(SDK)/lib/win32
 
 %.win32.app: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
@@ -68,16 +71,16 @@ win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 win32.app.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 win32.app.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#EXE $(APPNAME) $(LIBS)
-	@$(CXX) -g -o $(WIN32_BUILDDIR)/$(APPNAME) $^ $(LIBS)
+	@$(WIN32_CXX) -g -o $(WIN32_BUILDDIR)/$(APPNAME) $^ $(LIBS)
 
 
 $(WIN32_BUILDDIR)/%.o : %.cpp
 	#C+ $(basename $(notdir $@))
-	@$(CXX) -g -std=c++17 $(CXXFLAGS) -c $< -o $@
+	@$(WIN32_CXX) -g -std=gnu++17 $(CXXFLAGS) -c $< -o $@
 
 $(WIN32_BUILDDIR)/%.o : %.c
 	#CC $(basename $(notdir $@))
-	@$(CC) -g $(CXXFLAGS) -c $< -o $@
+	@$(WIN32_CC) -g $(CXXFLAGS) -c $< -o $@
 
 	
 #-include libgvfs.dep
@@ -88,7 +91,7 @@ depend:
 			
 win32.libs: sdk.win32libs.dir gvfs.win32.libs pystring.win32.libs lua.win32.libs gid.win32.libs gideros.win32.libs
 
-win32.app: versioning player.win32.app
+win32.app: player.win32.app
 
 win32.libs.install: win32.libs
 	mkdir -p $(WIN32_RELEASE)
@@ -117,10 +120,10 @@ win32.libs.install: win32.libs
 win32.install: win32.libs.install win32.plugins.install win32.app
 	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/WindowsDesktopTemplate.exe
 	cp $(WIN32_BUILDDIR)/player-console.exe $(WIN32_RELEASE)/WindowsDesktopTemplate-Console.exe
-	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(WIN32_RELEASE)
+	cp $(WIN32_BIN)/glew32.dll $(WIN32_RELEASE)
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
 	cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
-	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(WIN32_RELEASE); done
+	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(WIN32_BIN)/$$f.dll $(WIN32_RELEASE); done
 	strip $(addprefix $(WIN32_RELEASE)/,WindowsDesktopTemplate.exe WindowsDesktopTemplate-Console.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
 
 win32.clean: win32.plugins.clean
