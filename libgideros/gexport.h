@@ -34,4 +34,8 @@
 #define G_KEEP
 #endif
 
+#ifndef G_UNUSED
+#define G_UNUSED(x) (void)(x)
+#endif
+
 #endif

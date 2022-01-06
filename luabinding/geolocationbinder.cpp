@@ -255,9 +255,9 @@ int GeolocationBinder::create(lua_State* L)
     return 1;
 }
 
-int GeolocationBinder::destruct(lua_State* L)
+int GeolocationBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
     GGGeolocation *geolocation = static_cast<GGGeolocation*>(ptr);
     geolocation->unref();
 

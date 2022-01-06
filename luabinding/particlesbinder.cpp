@@ -52,9 +52,9 @@ int ParticlesBinder::create(lua_State *L)
     return 1;
 }
 
-int ParticlesBinder::destruct(lua_State *L)
+int ParticlesBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     Particles* mesh = static_cast<Particles*>(ptr);
     mesh->unref();
 
@@ -100,7 +100,7 @@ int ParticlesBinder::setParticleSpeed(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float vx=luaL_optnumber(L,3,0);
     float vy=luaL_optnumber(L,4,0);
@@ -120,7 +120,7 @@ int ParticlesBinder::setParticleDecay(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float ivp,ivc,ivs,iva;
     mesh->getDecay(i,&ivp,&ivc,&ivs,&iva);
@@ -143,7 +143,7 @@ int ParticlesBinder::setParticlePosition(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float x=luaL_optnumber(L,3,0);
     float y=luaL_optnumber(L,4,0);
@@ -161,7 +161,7 @@ int ParticlesBinder::setParticleSize(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float size=luaL_optnumber(L,3,0);
 
@@ -191,7 +191,7 @@ int ParticlesBinder::setParticleAngle(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float angle=luaL_optnumber(L,3,0);
 
@@ -208,7 +208,7 @@ int ParticlesBinder::setParticleTtl(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     int ttl=luaL_optinteger(L,3,0);
 
@@ -225,7 +225,7 @@ int ParticlesBinder::setParticleColor(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
     unsigned int color = luaL_checkinteger(L, 3);
     float alpha = luaL_optnumber(L, 4, 1.0);
 
@@ -247,7 +247,7 @@ int ParticlesBinder::addParticles(lua_State *L)
         {
         	lua_rawgeti(L, 2, k + 1);
         	if (lua_type(L,-1) != LUA_TTABLE)
-        		return luaL_error(L,"Particle definition must be a table.");
+                luaL_error(L,"Particle definition must be a table.");
         	lua_getfield(L,-1,"x");
             float x = luaL_checknumber(L, -1) ;
             lua_pop(L, 1);
@@ -338,7 +338,7 @@ int ParticlesBinder::getParticleSpeed(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float vx,vy,va,vs;
     mesh->getSpeed(i, &vx,&vy,&vs,&va);
@@ -357,7 +357,7 @@ int ParticlesBinder::getParticleDecay(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float vp,vc,vs,va;
     mesh->getDecay(i, &vp,&vc,&vs,&va);
@@ -376,7 +376,7 @@ int ParticlesBinder::getParticlePosition(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float x,y;
     mesh->getPosition(i, &x,&y);
@@ -393,7 +393,7 @@ int ParticlesBinder::getParticleSize(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     lua_pushnumber(L, mesh->getSize(i));
 
@@ -407,7 +407,7 @@ int ParticlesBinder::getParticleAngle(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     lua_pushnumber(L, mesh->getAngle(i));
 
@@ -421,7 +421,7 @@ int ParticlesBinder::getParticleTtl(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     lua_pushinteger(L, mesh->getTtl(i));
 
@@ -437,7 +437,7 @@ int ParticlesBinder::getParticleColor(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     unsigned int color;
     float alpha;
@@ -456,7 +456,7 @@ int ParticlesBinder::setParticleTag(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     mesh->setTag(i,luaL_optstring(L,3,NULL));
 
@@ -471,7 +471,7 @@ int ParticlesBinder::getParticleTag(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getParticleCount())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     const char *tag=mesh->getTag(i);
     if (tag)

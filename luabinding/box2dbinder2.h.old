@@ -17,7 +17,7 @@ private:
 	static int b2SetScale(lua_State* L);
 
 	static int b2World_create(lua_State* L);
-	static int b2World_destruct(lua_State* L);
+	static int b2World_destruct(void *p);
 	static int b2World_CreateBody(lua_State* L);
 	static int b2World_Step(lua_State* L);
 	static int b2World_DestroyBody(lua_State* L);
@@ -30,7 +30,7 @@ private:
 	static int b2World_setGravity(lua_State* L);
 	static int b2World_setDebugDraw(lua_State* L);
 
-	static int b2Body_destruct(lua_State* L);
+	static int b2Body_destruct(void *p);
 	//static int b2Body_CreateShape(lua_State* L);
 	static int b2Body_CreateFixture(lua_State* L);
 	static int b2Body_DestroyFixture(lua_State* L);
@@ -81,36 +81,36 @@ private:
     static int b2Body_setTransform(lua_State* L);
     static int b2Body_getTransform(lua_State* L);
 
-	static int b2Fixture_destruct(lua_State* L);
+	static int b2Fixture_destruct(void *p);
 	static int b2Fixture_GetBody(lua_State* L);
 	static int b2Fixture_SetSensor(lua_State* L);
 	static int b2Fixture_IsSensor(lua_State* L);
 	static int b2Fixture_SetFilterData(lua_State* L);
 	static int b2Fixture_GetFilterData(lua_State* L);
 
-	static int b2Shape_destruct(lua_State* L);// TODO: buna gerek yok gibi
+	static int b2Shape_destruct(void *p);// TODO: buna gerek yok gibi
 
 	static int b2CircleShape_create(lua_State* L);
-	static int b2CircleShape_destruct(lua_State* L);
+	static int b2CircleShape_destruct(void *p);
 	static int b2CircleShape_set(lua_State* L);
 
 	static int b2PolygonShape_create(lua_State* L);
-	static int b2PolygonShape_destruct(lua_State* L);
+	static int b2PolygonShape_destruct(void *p);
 	static int b2PolygonShape_SetAsBox(lua_State* L);
 //	static int b2PolygonShape_SetAsEdge(lua_State* L);
 	static int b2PolygonShape_Set(lua_State* L);
 
 	static int b2EdgeShape_create(lua_State* L);
-	static int b2EdgeShape_destruct(lua_State* L);
+	static int b2EdgeShape_destruct(void *p);
 	static int b2EdgeShape_set(lua_State* L);
 
     static int b2ChainShape_create(lua_State* L);
-    static int b2ChainShape_destruct(lua_State* L);
+    static int b2ChainShape_destruct(void *p);
     static int b2ChainShape_createLoop(lua_State* L);
     static int b2ChainShape_createChain(lua_State* L);
 
 /*	static int b2AABB_create(lua_State* L);
-	static int b2AABB_destruct(lua_State* L);
+	static int b2AABB_destruct(void *p);
 	static int b2AABB_GetLowerBound(lua_State* L);
 	static int b2AABB_GetUpperBound(lua_State* L);
 	static int b2AABB_SetLowerBound(lua_State* L);
@@ -125,7 +125,7 @@ private:
     static int b2Joint_getReactionForce(lua_State* L);
     static int b2Joint_getReactionTorque(lua_State* L);
 
-	static int b2Joint_destruct(lua_State* L);
+	static int b2Joint_destruct(void *p);
 
 	static int getRevoluteJointDef(lua_State* L);
 	static int getPrismaticJointDef(lua_State* L);
@@ -217,7 +217,7 @@ private:
     static int b2RopeJoint_getMaxLength(lua_State* L);
 
 	static int b2DebugDraw_create(lua_State* L);
-	static int b2DebugDraw_destruct(lua_State* L);
+	static int b2DebugDraw_destruct(void *p);
 	static int b2DebugDraw_setFlags(lua_State* L);
 	static int b2DebugDraw_getFlags(lua_State* L);
 	static int b2DebugDraw_appendFlags(lua_State* L);

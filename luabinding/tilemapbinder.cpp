@@ -62,9 +62,9 @@ int TileMapBinder::create(lua_State* L)
 	return 1;
 }
 
-int TileMapBinder::destruct(lua_State* L)
+int TileMapBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	TileMap* tilemap = static_cast<TileMap*>(ptr);
 	tilemap->unref();
 	
@@ -90,7 +90,7 @@ int TileMapBinder::getTile(lua_State* L)
     tilemap->get(x, y, &tx, &ty, &flip, &tint, &status);
 	if (status.error() == true)
 	{
-		luaL_error(L, status.errorString());
+		luaL_error(L, "%s", status.errorString());
 		return 0;
 	}
 
@@ -135,7 +135,7 @@ int TileMapBinder::setTile(lua_State* L)
     tilemap->set(x, y, tx, ty, flip&(~TileMap::FLIP_EMPTY), tint, &status);
 	if (status.error() == true)
 	{
-		luaL_error(L, status.errorString());
+		luaL_error(L, "%s", status.errorString());
 		return 0;
 	}	
 	
@@ -172,7 +172,7 @@ int TileMapBinder::clearTile(lua_State* L)
     tilemap->set(x, y, 0,0,TileMap::FLIP_EMPTY, 0xFFFFFFFF, &status);
 	if (status.error() == true)
 	{
-		luaL_error(L, status.errorString());
+		luaL_error(L, "%s", status.errorString());
 		return 0;
 	}
 

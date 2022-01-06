@@ -6,7 +6,7 @@ INCS += ../../../2dsg/gfxbackends
 INCS += ../../../libgideros
 INCS += ../../../libgid/include
 INCS += ../../../luabinding
-INCS += ../../../lua/src
+INCS += ../../../$(LUA_INCLUDE)
 
 XIPH_OGG=libogg-1.3.2
 XIPH_THEORA=libtheora-1.1.1

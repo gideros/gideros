@@ -260,7 +260,7 @@ static int get_dir (lua_State *L) {
 ** Check if the given element on the stack is a file and returns it.
 */
 static FILE *check_file (lua_State *L, int idx, const char *funcname) {
-#if LUA_VERSION_NUM == 501
+#if (LUA_VERSION_NUM == 501) || defined(LUA_IS_LUAU)
 	FILE **fh = (FILE **)luaL_checkudata (L, idx, "FILE*");
         if (*fh == NULL) {
 		luaL_error (L, "%s: closed file", funcname);
@@ -302,7 +302,7 @@ static int _file_lock (lua_State *L, FILE *fh, const char *mode, const long star
                 case 'r': lkmode = LK_NBLCK; break;
                 case 'w': lkmode = LK_NBLCK; break;
                 case 'u': lkmode = LK_UNLCK; break;
-                default : return luaL_error (L, "%s: invalid mode", funcname);
+                default : luaL_error (L, "%s: invalid mode", funcname);
         }
         if (!len) {
                 fseek (fh, 0L, SEEK_END);
@@ -320,7 +320,7 @@ static int _file_lock (lua_State *L, FILE *fh, const char *mode, const long star
                 case 'w': f.l_type = F_WRLCK; break;
                 case 'r': f.l_type = F_RDLCK; break;
                 case 'u': f.l_type = F_UNLCK; break;
-                default : return luaL_error (L, "%s: invalid mode", funcname);
+                default : luaL_error (L, "%s: invalid mode", funcname);
         }
         f.l_whence = SEEK_SET;
         f.l_start = (off_t)start;
@@ -939,7 +939,7 @@ static int _file_info_ (lua_State *L, int (*st)(const CHARTYPE*, STAT_STRUCT*)) 
                         }
                 }
                 /* member not found */
-                return luaL_error(L, "invalid attribute name '%s'", member);
+                luaL_error(L, "invalid attribute name '%s'", member);
         }
         /* creates a table if none is given, removes extra arguments */
         lua_settop(L, 2);

@@ -81,8 +81,7 @@ void Application::disconnected()
 {
     fileQueue_.clear();
     isTransferring_ = false;
-    time_.setHMS(0, 0, 0);
-    time_.start();
+    time_.restart();
 }
 
 void Application::dataReceived(const QByteArray& d)
@@ -204,12 +203,13 @@ void Application::dataReceived(const QByteArray& d)
 
 void Application::ackReceived(unsigned int id)
 {
+    Q_UNUSED(id);
 }
 
 void Application::timer()
 {
     if (!client_->isConnected() && time_.elapsed() > 30000)
-        QCoreApplication:exit(0);
+        QCoreApplication::exit(0);
 
     QDir path(QFileInfo(projectFileName_).path());
 
@@ -296,7 +296,7 @@ void Application::newConnection()
     {
         in.append(socket->readAll());
 
-        if (in.size() >= sizeof(qint32))
+        if (in.size() >= (qsizetype)sizeof(qint32))
         {
             qint32 size = *(qint32*)in.data();
             if (in.size() >= size)
@@ -375,8 +375,7 @@ void Application::newConnection()
     socket->disconnectFromHost();
 #endif
 
-    time_.setHMS(0, 0, 0);
-    time_.start();
+    time_.restart();
 }
 
 void Application::play(const QString &fileName)

@@ -28,7 +28,7 @@ static g_id mygid;
 
 // ######################################################################
 
-BOOL CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
   static char buffer[1024];
   gui_TextInputDialogCompleteEvent *event;
@@ -132,7 +132,7 @@ BOOL CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lP
 
 // ######################################################################
 
-BOOL CALLBACK AlertDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK AlertDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
   gui_AlertDialogCompleteEvent *event;
 

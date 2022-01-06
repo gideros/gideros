@@ -75,6 +75,10 @@ void setfield(lua_State *L, int index, const char *value)
 	lua_settable(L, -3);
 }
 
+static int MidiIn_gc(lua_State *L);
+static int MidiOut_gc(lua_State *L);
+static int __gc(lua_State *L);
+
 // some helper methods for accessing RtMidiOut:
 static RtMidiOut* toMidiOut(lua_State *L, int index)
 {
@@ -100,7 +104,11 @@ static RtMidiOut* checkMidiOut(lua_State* L, int index)
 
 static RtMidiOut** pushMidiOut(lua_State* L, RtMidiOut* mo)
 {
+#ifdef LUA_IS_LUAU
+	RtMidiOut** midiout = (RtMidiOut**)lua_newuserdatadtor(L, sizeof(RtMidiOut*),(void (*)(void*))MidiOut_gc);
+#else
 	RtMidiOut** midiout = (RtMidiOut**)lua_newuserdata(L, sizeof(RtMidiOut*));
+#endif
 	*midiout = mo;
 	luaL_getmetatable(L, MIDIOUT);
 	lua_setmetatable(L, -2);
@@ -183,7 +191,11 @@ static RtMidiIn* checkMidiIn(lua_State* L, int index)
 
 static RtMidiIn** pushMidiIn(lua_State* L, RtMidiIn* mi)
 {
+#ifdef LUA_IS_LUAU
+	RtMidiIn **midiin = (RtMidiIn**)lua_newuserdatadtor(L, sizeof(RtMidiIn*),(void (*)(void*))MidiIn_gc);
+#else
 	RtMidiIn** midiin = (RtMidiIn**)lua_newuserdata(L, sizeof(RtMidiIn*));
+#endif
 	*midiin = mi;
 	luaL_getmetatable(L, MIDIIN);
 	lua_setmetatable(L, -2);
@@ -595,7 +607,7 @@ static void set_info (lua_State *L)
 }
 
 // these are methods that the library provides
-static const struct luaL_reg luamidi_methods [] =
+static const luaL_reg luamidi_methods [] =
 {
 	{"getoutportcount",	luamidi_getoutportcount},
 	{"getinportcount",	luamidi_getinportcount},
@@ -630,7 +642,7 @@ static int MidiOut_register(lua_State* L)
 	luaL_newmetatable(L, MIDIOUT);
 	lua_pushliteral(L, "__index");
 	lua_newtable(L);
-	luaL_openlib(L, 0, MidiOut_meta, 0);
+	luaL_register(L, 0, MidiOut_meta);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 	return 1;
@@ -648,7 +660,7 @@ static int MidiIn_register(lua_State* L)
 	luaL_newmetatable(L, MIDIIN);
 	lua_pushliteral(L, "__index");
 	lua_newtable(L);
-	luaL_openlib(L, 0, MidiIn_meta, 0);
+	luaL_register(L, 0, MidiIn_meta);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 	return 1;
@@ -662,7 +674,7 @@ int luaopen_luamidi (lua_State *L)
 	MidiOut_register(L);
 	MidiIn_register(L);
 
-	luaL_openlib (L, "luamidi", luamidi_methods, 0);
+	luaL_register (L, "luamidi", luamidi_methods);
 	set_info (L);
 
 	return 1;

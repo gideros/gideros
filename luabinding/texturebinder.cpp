@@ -50,7 +50,7 @@ int TextureBinder::create(lua_State* L)
 	if (!lua_isnoneornil(L, paramsIndex))
 	{
 		if (lua_type(L, paramsIndex) != LUA_TTABLE)
-			return luaL_typerror(L, paramsIndex, "table");
+            luaL_typerror(L, paramsIndex, "table");
 
 		lua_getfield(L, paramsIndex, "transparentColor");
 		if (!lua_isnil(L, -1))
@@ -71,7 +71,7 @@ int TextureBinder::create(lua_State* L)
             else
             {
                 GStatus status(2008, "wrap");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -99,7 +99,7 @@ int TextureBinder::create(lua_State* L)
             else
             {
                 GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -125,16 +125,16 @@ int TextureBinder::create(lua_State* L)
 	}
 	catch (const GiderosException& e)
 	{
-		return luaL_error(L, e.what());
+        luaL_error(L, "%s", e.what());
 	}
 
 	binder.pushInstance("Texture", texture);
 	return 1;
 }
 
-int TextureBinder::destruct(lua_State* L)
+int TextureBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Texture* texture = static_cast<Texture*>(ptr);
 	texture->unref();
 
@@ -159,7 +159,7 @@ int TextureBinder::loadAsync(lua_State* L)
     if (!lua_isnoneornil(L, 4))
     {
         if (lua_type(L, 4) != LUA_TTABLE)
-            return luaL_typerror(L, 4, "table");
+            luaL_typerror(L, 4, "table");
 
         lua_getfield(L, 4, "transparentColor");
         if (!lua_isnil(L, -1))
@@ -180,7 +180,7 @@ int TextureBinder::loadAsync(lua_State* L)
             else
             {
                 GStatus status(2008, "wrap");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -208,7 +208,7 @@ int TextureBinder::loadAsync(lua_State* L)
             else
             {
                 GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                luaL_error(L, status.errorString());
+                luaL_error(L, "%s", status.errorString());
             }
         }
         lua_pop(L, 1);
@@ -233,7 +233,7 @@ int TextureBinder::loadAsync(lua_State* L)
         }
         catch (const GiderosException& e)
         {
-            luaL_error(LL, e.what());
+            luaL_error(LL, "%s", e.what());
         }*/
 
         if (texture)

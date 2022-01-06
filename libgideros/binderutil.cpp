@@ -54,7 +54,7 @@ void g_createClass(lua_State* L,
 					 const char* classname,
 					 const char* basename,
 					 int (*constructor) (lua_State*),
-					 int (*destructor) (lua_State*),
+					 int (*destructor) (void*),
 					 const luaL_reg* functionlist)
 {
 	luaL_newmetatable(L, classname); // registry[classname] = {} and new empty metatable is now at top
@@ -64,8 +64,13 @@ void g_createClass(lua_State* L,
 
 	if (destructor)
 	{
+#ifdef LUA_IS_LUAU
+        void** userdata = (void**)lua_newuserdata(L,sizeof(void*)); // create userdata and push it onto the stack
+        *userdata = (void *)destructor;											// store adress in userdata
+#else
 		lua_pushcnfunction(L, destructor,"destructor");
-		lua_setfield(L, -2, "__gc"); // mt.__gc = destructor
+#endif
+        lua_setfield(L, -2, "__gc"); // mt.__gc = destructor
 	}
 
 	luaL_register(L, NULL, functionlist); // simply register all functions into the metatable (which is on top)
@@ -125,9 +130,22 @@ void g_pushInstance(lua_State* L, const char* classname, void* ptr)
 	lua_newtable(L);                 // create table to be the object
 
 	luaL_getmetatable(L, classname); // get metatable
+#ifdef LUA_IS_LUAU
+    lua_getfield(L, -1, "__gc"); // mt.__gc = destructor
+    void **destructor=(void **)lua_touserdata(L,-1);
+    lua_pop(L,1);
+    lua_setmetatable(L, -2);		 // set metatable for table and pop metatable
+    void** userdata;
+    if (destructor)
+        userdata= (void**)lua_newuserdatadtor(L,sizeof(void*),(void (*)(void *))(*destructor)); // create userdata and push it onto the stack
+    else
+        userdata= (void**)lua_newuserdata(L,sizeof(void*)); // create userdata and push it onto the stack
+#else
+
 	lua_setmetatable(L, -2);		 // set metatable for table and pop metatable
 
 	void** userdata = (void**)lua_newuserdata(L,sizeof(void*)); // create userdata and push it onto the stack
+#endif
 	*userdata = ptr;											// store adress in userdata
 
 	luaL_getmetatable(L, classname);  // get metatable

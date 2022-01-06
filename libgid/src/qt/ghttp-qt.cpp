@@ -181,11 +181,10 @@ void HTTPManager::finished(QNetworkReply *reply)
         QList<QNetworkReply::RawHeaderPair> headers=reply->rawHeaderPairs();
         int hdrCount=headers.count();
         int hdrSize=0;
-        QList<QNetworkReply::RawHeaderPair>::iterator h;
-        for (h = headers.begin(); h != headers.end(); ++h)
+        foreach (QNetworkReply::RawHeaderPair h, headers)
         {
-        	hdrSize+=h.i->t().first.size();
-           	hdrSize+=h.i->t().second.size();
+            hdrSize+=h.first.size();
+            hdrSize+=h.second.size();
            	hdrSize+=2;
         }
 
@@ -201,15 +200,15 @@ void HTTPManager::finished(QNetworkReply *reply)
 
 		int hdrn=0;
 		char *hdrData=(char *)(event->data)+bytes.size();
-        for (h = headers.begin(); h != headers.end(); ++h)
+        foreach (QNetworkReply::RawHeaderPair h, headers)
         {
-        	int ds=h.i->t().first.size();
-        	memcpy(hdrData,h.i->t().first.data(),ds);
+            int ds=h.first.size();
+            memcpy(hdrData,h.first.data(),ds);
 	 		event->headers[hdrn].name=hdrData;
         	hdrData+=ds;
         	*(hdrData++)=0;
-        	ds=h.i->t().second.size();
-        	memcpy(hdrData,h.i->t().second.data(),ds);
+            ds=h.second.size();
+            memcpy(hdrData,h.second.data(),ds);
 	 		event->headers[hdrn].value=hdrData;
         	hdrData+=ds;
         	*(hdrData++)=0;
@@ -244,11 +243,10 @@ void HTTPManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 			QList<QNetworkReply::RawHeaderPair> headers=reply->rawHeaderPairs();
 			int hdrCount=headers.count();
 			int hdrSize=0;
-			QList<QNetworkReply::RawHeaderPair>::iterator h;
-			for (h = headers.begin(); h != headers.end(); ++h)
-			{
-				hdrSize+=h.i->t().first.size();
-				hdrSize+=h.i->t().second.size();
+            foreach (QNetworkReply::RawHeaderPair h, headers)
+            {
+                hdrSize+=h.first.size();
+                hdrSize+=h.second.size();
 				hdrSize+=2;
 			}
 
@@ -261,15 +259,15 @@ void HTTPManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 
 			int hdrn=0;
 			char *hdrData=(char *)(event+1);
-			for (h = headers.begin(); h != headers.end(); ++h)
-			{
-				int ds=h.i->t().first.size();
-				memcpy(hdrData,h.i->t().first.data(),ds);
+            foreach (QNetworkReply::RawHeaderPair h, headers)
+            {
+                int ds=h.first.size();
+                memcpy(hdrData,h.first.data(),ds);
 				event->headers[hdrn].name=hdrData;
 				hdrData+=ds;
 				*(hdrData++)=0;
-				ds=h.i->t().second.size();
-				memcpy(hdrData,h.i->t().second.data(),ds);
+                ds=h.second.size();
+                memcpy(hdrData,h.second.data(),ds);
 				event->headers[hdrn].value=hdrData;
 				hdrData+=ds;
 				*(hdrData++)=0;

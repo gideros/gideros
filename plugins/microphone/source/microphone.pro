@@ -20,7 +20,7 @@ LIBS += -lpthread
 
 win32 {
 DEFINES += OPENAL_SUBDIR_AL
-LIBS += -L"../../../Sdk/lib/desktop" -lOpenAL32
+LIBS += -L"../../../Sdk/lib/desktop" -lopenal
 }
 
 macx {

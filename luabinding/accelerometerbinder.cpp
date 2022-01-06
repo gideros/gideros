@@ -70,9 +70,9 @@ int AccelerometerBinder::create(lua_State* L)
     return 1;
 }
 
-int AccelerometerBinder::destruct(lua_State* L)
+int AccelerometerBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     GGAccelerometer *accelerometer = static_cast<GGAccelerometer*>(ptr);
     accelerometer->unref();
 

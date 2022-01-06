@@ -97,9 +97,9 @@ int MatrixBinder::create(lua_State* L)
 	return 1;
 }
 
-int MatrixBinder::destruct(lua_State* L)
+int MatrixBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Transform* matrix = static_cast<Transform*>(ptr);
 	delete matrix;
 

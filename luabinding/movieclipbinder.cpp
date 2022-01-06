@@ -13,7 +13,7 @@ class MovieClipLua : public MovieClip
 {
 public:
     MovieClipLua(Type type, LuaApplication *lapplication, bool holdWhilePlaying);
-    void destruct(lua_State *L);
+    void destruct();
  	void addFrame(int start, int end, Sprite* sprite,int spref,  const std::vector<Parameter>& parameters, GStatus* status = NULL);
 	std::vector<int> spriteRefs;
 private:
@@ -28,12 +28,12 @@ MovieClipLua::MovieClipLua(Type type, LuaApplication *lapplication, bool holdWhi
 	lapplication_=lapplication;
 }
 
-void MovieClipLua::destruct(lua_State *L)
+void MovieClipLua::destruct()
 {
 	int n=spriteRefs.size();
 	for (int k=0;k<n;k++)
 		if (spriteRefs[k])
-			luaL_unref(L, LUA_REGISTRYINDEX, spriteRefs[k]);
+            luaL_unref(lapplication_->getLuaState(), LUA_REGISTRYINDEX, spriteRefs[k]);
 }
 
 void MovieClipLua::addFrame(int start, int end, Sprite* sprite,int spref,  const std::vector<Parameter>& parameters, GStatus* status)
@@ -171,7 +171,7 @@ int MovieClipBinder::create(lua_State* L)
     else if (lua_type(L, 1) == LUA_TSTRING)
     {
         if (lua_type(L, 2) != LUA_TTABLE)
-            return luaL_typerror(L, 2, "table");
+            luaL_typerror(L, 2, "table");
 
         const char *t = lua_tostring(L, 1);
 
@@ -182,7 +182,7 @@ int MovieClipBinder::create(lua_State* L)
         else
         {
             GStatus status(2008, "type");	// Parameter %s must be one of the accepted values.
-            return luaL_error(binder.L, status.errorString());
+            luaL_error(binder.L, "%s", status.errorString());
         }
 
         index = 2;
@@ -190,10 +190,10 @@ int MovieClipBinder::create(lua_State* L)
         stopped=lua_toboolean(L,4);
     }
     else
-        return luaL_typerror(L, 1, "string or table");
+        luaL_typerror(L, 1, "string or table");
 
     if (lua_objlen(L, index) == 0)
-        luaL_error(L, GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.
+        luaL_error(L, "%s", GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.
 
     MovieClipLua* movieclip = new MovieClipLua(type, application,holdWhilePlaying);	// box movieclip to unref
 
@@ -205,7 +205,7 @@ int MovieClipBinder::create(lua_State* L)
         lua_rawgeti(L, index, i);
 
         if (lua_type(L, -1) != LUA_TTABLE)
-            luaL_error(L, GStatus(2103).errorString());     // Error #2102 Timeline element is not a table
+            luaL_error(L, "%s", GStatus(2103).errorString());     // Error #2102 Timeline element is not a table
 
 		lua_rawgeti(L, -1, 1);
 		int start = luaL_checkinteger(L, -1);
@@ -276,7 +276,7 @@ int MovieClipBinder::create(lua_State* L)
 
 		int spRef=0;
 		if (needRef)
-			spRef = luaL_ref(L, LUA_REGISTRYINDEX);
+            spRef = luaL_ref(application->getLuaState(), LUA_REGISTRYINDEX);
 		else
 			lua_pop(L, 1);
 		movieclip->addFrame(start, end, sprite, spRef, parameters);
@@ -293,11 +293,11 @@ int MovieClipBinder::create(lua_State* L)
 	return 1;
 }
 
-int MovieClipBinder::destruct(lua_State* L)
+int MovieClipBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	MovieClipLua* movieclip = static_cast<MovieClipLua*>(ptr);
-	movieclip->destruct(L);
+    movieclip->destruct();
 	movieclip->unref();
 
 	return 0;

@@ -289,9 +289,9 @@ public:
     FN_DECIMAL getWhiteNoiseInt(int x, int y, int z, int w) const { return noise.GetWhiteNoiseInt(x,y,z,w); }
 };
 
-static int destructNoise(lua_State* L)
+static int destructNoise(void* p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GNoise *n = static_cast<GNoise*>(object->proxy());
 
@@ -974,7 +974,7 @@ static void g_initializePlugin(lua_State* L)
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
-    lua_pushcfunction(L, loader);
+    lua_pushcnfunction(L, loader,"plugin_init_fastnoise");
     lua_setfield(L, -2, "FastNoise");
 
     lua_pop(L, 2);

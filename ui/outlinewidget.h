@@ -9,6 +9,10 @@
 #include <QLabel>
 #include <QStyledItemDelegate>
 #include "textedit.h"
+#include "lua.hpp"
+#ifdef LUA_IS_LUAU
+#include "Luau/Frontend.h"
+#endif
 
 struct OutLineItem {
     OutLineItem() : name(""),type(0),line(0) { }
@@ -19,6 +23,19 @@ struct OutLineItem {
 };
 typedef QList<OutLineItem> OutLineItemList;
 Q_DECLARE_METATYPE(OutLineItem)
+struct OutlineLinterItem {
+    enum LinterType {
+        Note=0,
+        Warning=1,
+        Error=2,
+    };
+    OutlineLinterItem(QString m,LinterType t,QString f, int l) : message(m), type(t), file(f), line(l) {}
+    QString message;
+    LinterType type;
+    QString file;
+    int line;
+};
+Q_DECLARE_METATYPE(OutlineLinterItem)
 
 class OutlineWorkerThread : public QThread
 {
@@ -27,11 +44,11 @@ class OutlineWorkerThread : public QThread
     QByteArray btext;
     QString filename;
 public:
-    OutlineWorkerThread(QObject *parent = Q_NULLPTR,QString name=QString(),QByteArray file=QByteArray()) { btext=file; filename=name; }
+    OutlineWorkerThread(QObject *parent = Q_NULLPTR,QString name=QString(),QByteArray file=QByteArray()) : QThread(parent) { btext=file; filename=name; }
     virtual ~OutlineWorkerThread() { }
 signals:
     void updateOutline(QList<OutLineItem> s);
-    void reportError(const QString error);
+    void reportError(const QString error,QList<OutlineLinterItem>);
 };
 
 class OutlineWidgetItem : public QStyledItemDelegate
@@ -60,9 +77,10 @@ public:
 	~OutlineWidget();
 	void setDocument(TextEdit *doc,bool checkSyntax);
     void saveSettings();
-private:
+    friend class OutlineWorkerThread;
+protected:
     TextEdit *doc_;
-    QTime refresh_;
+    QElapsedTimer refresh_;
     QListView *list_;
     QStandardItemModel *model_;
     bool working_;
@@ -76,11 +94,17 @@ private:
     QAction *actLoc_;
     QAction *actTbl_;
     OutLineItemList currentOutline_;
+#ifdef LUA_IS_LUAU
+    friend class OutlineFileResolver;
+    Luau::Frontend *frontend;
+    Luau::FileResolver *fileResolver;
+    Luau::NullConfigResolver configResolver;
+#endif
 private slots:
     void checkParse();
     void onItemClicked(const QModelIndex &);
     void updateOutline(QList<OutLineItem> s);
-    void reportError(const QString error);
+    void reportError(const QString error,QList<OutlineLinterItem> lint);
 };
 
 #endif // OUTPUTWIDGET_H

@@ -9,6 +9,7 @@
 #include <QProcess>
 #include <QFile>
 #include "ExportCommon.h"
+#include <QRegularExpression>
 
 #ifdef Q_OS_MACX
 #include <unistd.h>
@@ -80,6 +81,7 @@ bool Utilities::bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char 
 
 int Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs)
 {
+    Q_UNUSED(rs);
  if (!memcmp(m,r,ms))
 	return 0; //No actual replacement needed
  int rcount=0;
@@ -132,9 +134,8 @@ int Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,
         bool submatch = false;
         for (int i = 0; i < wildcards[j].size(); ++i)
         {
-            QRegExp rx(wildcards[j][i]);
-            rx.setPatternSyntax(QRegExp::Wildcard);
-            if (rx.exactMatch(srcName2))
+            QRegularExpression rx(QRegularExpression::anchoredPattern(QRegularExpression::wildcardToRegularExpression(wildcards[j][i])));
+            if (rx.match(srcName2).hasMatch())
             {
                 submatch = true;
                 break;
@@ -191,9 +192,8 @@ bool Utilities::shouldCopy(const QString &fileName, const QStringList &include, 
 
     for (int i = 0; i < include.size(); ++i)
     {
-        QRegExp rx(include[i]);
-        rx.setPatternSyntax(QRegExp::Wildcard);
-        if (rx.exactMatch(fileName2))
+        QRegularExpression rx(QRegularExpression::anchoredPattern(QRegularExpression::wildcardToRegularExpression(include[i])));
+        if (rx.match(fileName2).hasMatch())
         {
             result = true;
             break;
@@ -202,9 +202,8 @@ bool Utilities::shouldCopy(const QString &fileName, const QStringList &include, 
 
     for (int i = 0; i < exclude.size(); ++i)
     {
-        QRegExp rx(exclude[i]);
-        rx.setPatternSyntax(QRegExp::Wildcard);
-        if (rx.exactMatch(fileName2))
+        QRegularExpression rx(QRegularExpression::anchoredPattern(QRegularExpression::wildcardToRegularExpression(exclude[i])));
+        if (rx.match(fileName2).hasMatch())
         {
             result = false;
             break;
@@ -303,11 +302,18 @@ void Utilities::copyFolder(	const QDir& sourceDir,
 
 }
 
-int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env, bool cmdlog){
+int Utilities::processOutput(QString command, QStringList args, QString dir, QProcessEnvironment env, bool cmdlog){
     QProcess process;
     if (!dir.isEmpty())
     	process.setWorkingDirectory(dir);
     process.setProcessEnvironment(env);
+#ifdef Q_OS_WIN
+    if (command=="cmd.exe") //Special case for cmd.exe
+        process.setNativeArguments(args.join(' '));
+    else
+        process.setArguments(args);
+#endif
+    process.setArguments(args);
     process.start(command);
     bool commandOut = !cmdlog;
     while (true)
@@ -325,8 +331,9 @@ int Utilities::processOutput(QString command, QString dir, QProcessEnvironment e
         QString error = process.readAllStandardError();
         if(error.length() > 0){
             if(!commandOut)
-            	ExportCommon::exportInfo("%s",command.toStdString().c_str());
-        	ExportCommon::exportError("%s",error.toStdString().c_str());
+                ExportCommon::exportInfo("%s",command.toStdString().c_str());
+
+            ExportCommon::exportError("%s",error.toStdString().c_str());
         }
     	if ((process.error()!=QProcess::Timedout)||end)
     		break;

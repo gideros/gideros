@@ -619,7 +619,7 @@ local function processFunction(f)
 	tcount+=1
 end
 
-function codegen(f,argsmap,globalmap,typemap,optypemap,ophandlers)
+function codegen_l(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 	pcount=0
 	tcount=0
 	if type(f)=="function" then

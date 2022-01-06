@@ -2,7 +2,7 @@ do
 	local c = Object
 	c.__index = c
 
-	c.__new = function(...)
+	function c.__new(...)
 		local s1 = {}
 
 		setmetatable(s1, c)
@@ -15,7 +15,7 @@ do
 		return s1		
 	end
 
-	c.new = function(...)
+	function c.new(...)
 		local s1 = c.__new(...)
 
 		local postInit = s1.postInit
@@ -42,7 +42,7 @@ local function callDestructors(s)
     k=getmetatable(k)
   end
 end
-Core.class = function (b,a,d)
+function Core.class(b,a,d)
   if a then
       assert(type(a)=="function","Second argument to Core.class() should be a function or null")
   end
@@ -59,12 +59,12 @@ Core.class = function (b,a,d)
 
 	c.super = b
 
-	c.__new = function(...)
+	function c.__new(...)
 		local b = getmetatable(c)
 		local s1
-    if a then
-      s1 = b.__new(a(...))      
-    else
+	    if a then
+	      s1 = b.__new(a(...))      
+	    else
 		  s1 = b.__new(...)
 		end
 
@@ -78,14 +78,14 @@ Core.class = function (b,a,d)
 		return s1
 	end
 
-	c.new = function(...)
+	function c.new(...)
 		local s1 = c.__new(...)
 
-    if c.__gid_destructor then
-      local prox = newproxy(true)
-      getmetatable(prox).__gc = function() callDestructors(s1) end
-      s1.__gid_destructor = prox
-    end
+	    if c.__gid_destructor then
+	      local prox = newproxy(true)
+	      getmetatable(prox).__gc = function() callDestructors(s1) end
+	      s1.__gid_destructor = prox
+	    end
 
 		local postInit = s1.postInit
 		if type(postInit) == "function" then

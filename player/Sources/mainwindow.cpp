@@ -490,7 +490,7 @@ void MainWindow::actionFps(){
 }
 
 void MainWindow::actionScreenshot(){
-	QPixmap qPixMap = QPixmap::grabWidget(ui.glCanvas);
+    QPixmap qPixMap = ui.glCanvas->grab();
 	QString dir=getWorkingDirectory();
 	QString time=QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
 	int w=width();

@@ -11,7 +11,7 @@ static void g_initializePlugin(lua_State *L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 
-	lua_pushcfunction(L, luaopen_bit);
+	lua_pushcnfunction(L, luaopen_bit,"plugin_init_bitop");
 	lua_setfield(L, -2, "bit");
 
 	lua_pop(L, 2);

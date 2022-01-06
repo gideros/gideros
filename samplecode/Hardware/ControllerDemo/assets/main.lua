@@ -72,37 +72,6 @@ stage:addChild(joypad)
 
 local udlr,debouncedUdlr,oldUdlr=0,0,0
 
--- simulate joypad with keyboard
-stage:addEventListener(Event.KEY_DOWN,function(e)
-	local k=e.keyCode
-	if k==KeyCode.ESC then			udlr=udlr|0b00001000000000
-	elseif k==KeyCode.ENTER then	udlr=udlr|0b00000100000000
-	elseif k==KeyCode.Q then		udlr=udlr|0b00000010000000
-	elseif k==KeyCode.W then		udlr=udlr|0b00000001000000
-	elseif k==KeyCode.E then		udlr=udlr|0b00000000100000
-	elseif k==KeyCode.SPACE then	udlr=udlr|0b00000000010000
-	elseif k==KeyCode.UP then		udlr=udlr|0b00000000001000
-	elseif k==KeyCode.DOWN then		udlr=udlr|0b00000000000100
-	elseif k==KeyCode.LEFT then		udlr=udlr|0b00000000000010
-	elseif k==KeyCode.RIGHT then	udlr=udlr|0b00000000000001
-	end
-end)
-
-stage:addEventListener(Event.KEY_UP,function(e)
-	local k=e.keyCode
-	if k==KeyCode.ESC then			udlr=udlr&0b11110111111111
-	elseif k==KeyCode.ENTER then	udlr=udlr&0b11111011111111
-	elseif k==KeyCode.Q then		udlr=udlr&0b11111101111111
-	elseif k==KeyCode.W then		udlr=udlr&0b11111110111111
-	elseif k==KeyCode.E then		udlr=udlr&0b11111111011111
-	elseif k==KeyCode.SPACE then	udlr=udlr&0b11111111101111
-	elseif k==KeyCode.UP then		udlr=udlr&0b11111111110111
-	elseif k==KeyCode.DOWN then		udlr=udlr&0b11111111111011
-	elseif k==KeyCode.LEFT then		udlr=udlr&0b11111111111101
-	elseif k==KeyCode.RIGHT then	udlr=udlr&0b11111111111110
-	end
-end)
-
 function findKeyCode(code)
 	for i, val in pairs(KeyCode) do
 		if val == code then
@@ -110,6 +79,63 @@ function findKeyCode(code)
 		end
 	end
 	return "unknown"
+end
+
+-- simulate joypad with keyboard
+function processKeys(e)
+	local k=e.keyCode
+	print(e.type)
+	local bit=-1
+	if k==KeyCode.ESC then			bit=9
+	elseif k==KeyCode.ENTER then	bit=8
+	elseif k==KeyCode.Q then		bit=7
+	elseif k==KeyCode.W then		bit=6
+	elseif k==KeyCode.E then		bit=5
+	elseif k==KeyCode.SPACE then	bit=4
+	elseif k==KeyCode.UP then		bit=3
+	elseif k==KeyCode.DOWN then		bit=2
+	elseif k==KeyCode.LEFT then		bit=1
+	elseif k==KeyCode.RIGHT then	bit=0
+	end
+	if bit>=0 then
+		if e.type=="keyDown" then
+			udlr=udlr|(1<<bit)
+		else
+			udlr=udlr&~(1<<bit)
+		end
+	end
+end
+
+stage:addEventListener(Event.KEY_DOWN,processKeys)
+stage:addEventListener(Event.KEY_UP,processKeys)
+
+function processController(e)
+	local k=e.keyCode
+	local bit=-1
+	if k==KeyCode.BUTTON_BACK then 		bit=9
+	elseif k==KeyCode.BUTTON_MENU then 	bit=8
+	elseif k==KeyCode.BUTTON_Y then		bit=7
+	elseif k==KeyCode.BUTTON_A then		bit=6
+	elseif k==KeyCode.BUTTON_X then		bit=5
+	elseif k==KeyCode.BUTTON_B then		bit=4
+	elseif k==KeyCode.DPAD_UP then		bit=3
+	elseif k==KeyCode.DPAD_DOWN then	bit=2
+	elseif k==KeyCode.DPAD_LEFT then	bit=1
+	elseif k==KeyCode.DPAD_RIGHT then	bit=0
+	elseif k==KeyCode.BUTTON_L3 then	bit=11 -- thumbs
+	elseif k==KeyCode.BUTTON_R3 then	bit=10
+	elseif k==KeyCode.BUTTON_L1 then	bit=13 -- shoulders
+	elseif k==KeyCode.BUTTON_R1 then	bit=12
+	end
+	if bit>=0 then
+		if e.type=="keyDown" then
+			udlr=udlr|(1<<bit)
+		else
+			udlr=udlr&~(1<<bit)
+		end
+	else
+		print("Button Up/Down ", k, findKeyCode(k))
+	end
 end
 
 print("Probing")
@@ -123,45 +149,8 @@ if controller then
 --print("players", controller:getPlayers()[1])
 --print("controller 1 vibrate", controller:vibrate(1, 1000))
 
-	controller:addEventListener(Event.KEY_DOWN, function(e)
-		local k=e.keyCode
-		if k==KeyCode.BUTTON_BACK then 		udlr=udlr|0b00001000000000
-		elseif k==KeyCode.BUTTON_MENU then 	udlr=udlr|0b00000100000000
-		elseif k==KeyCode.BUTTON_Y then		udlr=udlr|0b00000010000000
-		elseif k==KeyCode.BUTTON_A then		udlr=udlr|0b00000001000000
-		elseif k==KeyCode.BUTTON_X then		udlr=udlr|0b00000000100000
-		elseif k==KeyCode.BUTTON_B then		udlr=udlr|0b00000000010000
-		elseif k==KeyCode.DPAD_UP then		udlr=udlr|0b00000000001000
-		elseif k==KeyCode.DPAD_DOWN then	udlr=udlr|0b00000000000100
-		elseif k==KeyCode.DPAD_LEFT then	udlr=udlr|0b00000000000010
-		elseif k==KeyCode.DPAD_RIGHT then	udlr=udlr|0b00000000000001
-		elseif k==KeyCode.BUTTON_L3 then	udlr=udlr|0b00100000000000 -- thumbs
-		elseif k==KeyCode.BUTTON_R3 then	udlr=udlr|0b00010000000000
-		elseif k==KeyCode.BUTTON_L1 then	udlr=udlr|0b10000000000000 -- shoulders
-		elseif k==KeyCode.BUTTON_R1 then	udlr=udlr|0b01000000000000
-		else
-		print("Button Down ", k, findKeyCode(k))
-		end
-	end)
-	
-	controller:addEventListener(Event.KEY_UP, function(e)
-		local k=e.keyCode
-		if k==KeyCode.BUTTON_BACK then 		udlr=udlr&0b11110111111111
-		elseif k==KeyCode.BUTTON_MENU then 	udlr=udlr&0b11111011111111
-		elseif k==KeyCode.BUTTON_Y then		udlr=udlr&0b11111101111111
-		elseif k==KeyCode.BUTTON_A then		udlr=udlr&0b11111110111111
-		elseif k==KeyCode.BUTTON_X then		udlr=udlr&0b11111111011111
-		elseif k==KeyCode.BUTTON_B then		udlr=udlr&0b11111111101111
-		elseif k==KeyCode.DPAD_UP then		udlr=udlr&0b11111111110111
-		elseif k==KeyCode.DPAD_DOWN then	udlr=udlr&0b11111111111011
-		elseif k==KeyCode.DPAD_LEFT then	udlr=udlr&0b11111111111101
-		elseif k==KeyCode.DPAD_RIGHT then	udlr=udlr&0b11111111111110
-		elseif k==KeyCode.BUTTON_L3 then	udlr=udlr&0b11011111111111 -- thumbs
-		elseif k==KeyCode.BUTTON_R3 then	udlr=udlr&0b11101111111111
-		elseif k==KeyCode.BUTTON_L1 then	udlr=udlr&0b01111111111111 -- shoulders
-		elseif k==KeyCode.BUTTON_R1 then	udlr=udlr&0b10111111111111
-		end
-	end)
+	controller:addEventListener(Event.KEY_DOWN,processController)
+	controller:addEventListener(Event.KEY_UP,processController)
 	
 	controller:addEventListener(Event.LEFT_JOYSTICK, function(e)
 		buttons[12]:setPosition(30*e.x,30*e.y)

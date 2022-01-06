@@ -1,5 +1,23 @@
-QT += core gui opengl network multimedia
-CONFIG   += silent
+QT += core gui opengl network multimedia widgets
+CONFIG   += silent qt
+
+equals(QT_MAJOR_VERSION, 6){
+   QT += openglwidgets
+   win32 {
+       #This is ugly, but needed for wintab mode
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]/QtCore
+   }
+}
+
+LUA_ENGINE=$$(LUA_ENGINE)
+isEmpty(LUA_ENGINE): LUA_ENGINE=luau
+equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src
+equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
+
+INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 
 win32{
     RC_FILE = other_files/desktop.rc
@@ -7,11 +25,11 @@ win32{
     TARGET = WindowsDesktopTemplate
 
     LIBS += -lopengl32 \
-        -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx \
-        -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
+#        -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx \
+#        -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
         -L"../libgid/release" -lgid \
         -L"../libgvfs/release" -lgvfs \
-        -L"../lua/release" -llua \
+        -L"../$$LUA_ENGINE/release" -llua \
         -L"../libgideros/release" -lgideros \
         -L"../libpystring/release" -lpystring \
         -lws2_32 \
@@ -30,11 +48,12 @@ macx {
         -framework IOKit\
         -L"../libgid" -lgid \
         -L"../libgvfs" -lgvfs \
-        -L"../lua" -llua \
+        -L"../$$LUA_ENGINE" -llua \
         -L"../libgideros" -lgideros \
         -L"../libpystring" -lpystring \
-        -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx \
-        -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
+	-lz \
+#        -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx \
+#        -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
     QMAKE_CFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
@@ -48,13 +67,14 @@ unix:!macx {
 
     DEFINES += STRICT_LINUX
     LIBS += \
-        -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx\
-        -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW\
-#        -lwsock32\
-#        -liphlpapi\
+#        -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx\
+#        -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW\
+#        -lwsock32 \
+#        -liphlpapi \
+	-lz \
         ../libgid/libgid.so \
         ../libgvfs/libgvfs.so \
-        ../lua/liblua.so \
+        ../$$LUA_ENGINE/liblua.so \
         ../libgideros/libgideros.so \
         ../libpystring/libpystring.so
     LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
@@ -70,8 +90,8 @@ INCLUDEPATH += \
     headers \
     sources \
     forms \
-    ../libgid/external/zlib-1.2.8 \
-    ../libgid/external/glew-1.10.0/include \
+#    ../libgid/external/zlib-1.2.8 \
+#    ../libgid/external/glew-1.10.0/include \
     ../2dsg \
     ../2dsg/gfxbackends \
     ../2dsg/gfxbackends/gl2 \
@@ -79,7 +99,7 @@ INCLUDEPATH += \
     ../libsound \
     ../libnetwork \
     ../luabinding \
-    ../lua/src \
+    $$LUA_INCLUDE \
     ../libpvrt \
     ../libgvfs \
     ../libgid/include \

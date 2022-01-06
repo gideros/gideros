@@ -8,33 +8,34 @@ IOS_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template
 ATV_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/AppleTV
 MAC_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/Mac
 
-lua.ios.libs: IOSLIBPATH=$(ROOT)/lua
+iosplayer.%.libs: IOSLUA_INCLUDES=$(addprefix ../../,$(LUA_INCLUDE) $(LUA_INCLUDE_CORE))
+lua.ios.libs: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.ios.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.ios.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
-lua.ios.libs.clean: IOSLIBPATH=$(ROOT)/lua
+lua.ios.libs.clean: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.ios.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.ios.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
-lua.atv.libs: IOSLIBPATH=$(ROOT)/lua
+lua.atv.libs: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.atv.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
-lua.atv.libs.clean: IOSLIBPATH=$(ROOT)/lua
+lua.atv.libs.clean: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.atv.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.atv.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
-lua.mac.libs: IOSLIBPATH=$(ROOT)/lua
+lua.mac.libs: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.mac.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.mac.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 iosplayer.mac.dbg.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
-lua.mac.libs.clean: IOSLIBPATH=$(ROOT)/lua
+lua.mac.libs.clean: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.mac.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
 ##RULES
 %.ios.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj $(PRETTY)
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" $(PRETTY)
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
 	@cd $(IOSLIBPATH); $(LIPO) build/$(XCODE_CONFIG)-iphoneos/lib$*.a build/$(XCODE_CONFIG)-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
 %.ios.libs.clean:
@@ -42,21 +43,21 @@ iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
 %.atv.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
 	@cd $(IOSLIBPATH); $(LIPO) build/$(XCODE_CONFIG)-appletvos/lib$*.a build/$(XCODE_CONFIG)-appletvsimulator/lib$*.a -create -output lib$*.atv.a
 
 %.mac.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
 	@cd $(IOSLIBPATH); cp build/$(XCODE_CONFIG)/lib$*.a lib$*.mac.a
 
 
-ios.libs: versioning  gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
+ios.libs: gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
 ios.libs.clean : gvfs.ios.libs.clean lua.ios.libs.clean iosplayer.ios.libs.clean
-atv.libs: versioning gvfs.atv.libs lua.atv.libs iosplayer.atv.libs
+atv.libs: gvfs.atv.libs lua.atv.libs iosplayer.atv.libs
 atv.libs.clean : gvfs.atv.libs.clean lua.atv.libs.clean iosplayer.atv.libs.clean
-mac.libs: versioning gvfs.mac.libs lua.mac.libs iosplayer.mac.libs
+mac.libs: gvfs.mac.libs lua.mac.libs iosplayer.mac.libs
 mac.libs.clean : gvfs.mac.libs.clean lua.mac.libs.clean iosplayer.mac.libs.clean
 
 
@@ -65,7 +66,7 @@ ios.app: player.ios.app
 ios.libs.install: ios.libs
 	mkdir -p $(IOS_TEMPLATE)
 	cp -R $(ROOT)/ui/Templates/Xcode4/iOS\ Template/* $(IOS_TEMPLATE)/..
-	cp $(ROOT)/lua/liblua.ios.a $(IOS_TEMPLATE)/liblua.a
+	cp $(ROOT)/$(LUA_ENGINE)/liblua.ios.a $(IOS_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.ios.a $(IOS_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.ios.a $(IOS_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/build/Release-iphoneos/default.metallib $(IOS_TEMPLATE)
@@ -74,7 +75,7 @@ ios.libs.install: ios.libs
 
 atv.libs.install: atv.libs
 	mkdir -p $(ATV_TEMPLATE)
-	cp $(ROOT)/lua/liblua.atv.a $(ATV_TEMPLATE)/liblua.a
+	cp $(ROOT)/$(LUA_ENGINE)/liblua.atv.a $(ATV_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.atv.a $(ATV_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/build/Release-appletvos/default.metallib $(ATV_TEMPLATE)
@@ -83,7 +84,7 @@ atv.libs.install: atv.libs
 
 mac.libs.install: mac.libs
 	mkdir -p $(MAC_TEMPLATE)
-	cp $(ROOT)/lua/liblua.mac.a $(MAC_TEMPLATE)/liblua.a
+	cp $(ROOT)/$(LUA_ENGINE)/liblua.mac.a $(MAC_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.mac.a $(MAC_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.mac.a $(MAC_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/build/Release/default.metallib $(MAC_TEMPLATE)
@@ -96,8 +97,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.ios.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 LUA_INCLUDES="$(LUA_INCLUDE)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) LUA_INCLUDES="$(LUA_INCLUDE)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
 	@cd $(PLUGINPATH); $(LIPO) build/$(XCODE_CONFIG)-iphoneos/lib$(notdir $*).a build/$(XCODE_CONFIG)-iphonesimulator/lib$(notdir $*).a -create -output lib$(notdir $*).ios.a
 
 
@@ -111,8 +112,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.atv.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $(notdir $*).xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $(notdir $*).xcodeproj LUA_INCLUDES="$(LUA_INCLUDE)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $(notdir $*).xcodeproj LUA_INCLUDES="$(LUA_INCLUDE)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
 	@cd $(PLUGINPATH); $(LIPO) build/$(XCODE_CONFIG)-appletvos/lib$(notdir $*).a build/$(XCODE_CONFIG)-appletvsimulator/lib$(notdir $*).a -create -output lib$(notdir $*).atv.a
 
 %.atv.clean.iosplugin:
@@ -125,7 +126,7 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.mac.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) LUA_INCLUDES="$(LUA_INCLUDE)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
 	@cd $(PLUGINPATH); cp build/$(XCODE_CONFIG)/lib$(notdir $*).a lib$(notdir $*).mac.a
 
 

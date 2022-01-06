@@ -15,7 +15,6 @@ FileDownloader::FileDownloader(QUrl url, bool check, quint64 expectedSize, QObje
     tsteps=0;
     dsteps=0;
  QNetworkRequest request(url);
- request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,QVariant(true));
  netRet=check?m_WebCtrl.head(request):m_WebCtrl.get(request);
  if (expectedSize)
      m_DownloadedData.reserve(expectedSize);

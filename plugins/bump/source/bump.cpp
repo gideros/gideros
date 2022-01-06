@@ -973,8 +973,8 @@ static int worldCreate(lua_State *L) {
 	return 1;
 }
 
-static int worldDestruct(lua_State *L) {
-	World *w = *(World **)lua_touserdata(L, 1);
+static int worldDestruct(void *p) {
+	World *w = *(World **)GIDEROS_DTOR_UDATA(p);
 	w->responses.erase("touch");
 	w->responses.erase("cross");
 	w->responses.erase("bounce");
@@ -1860,7 +1860,7 @@ static void g_initializePlugin(lua_State *L) {
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 
-	lua_pushcfunction(L, loader);
+	lua_pushcnfunction(L, loader,"plugin_init_cbump");
 	lua_setfield(L, -2, "cbump");
 
 	lua_pop(L, 2);

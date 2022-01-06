@@ -30,7 +30,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define LUA_LIB
+//#define LUA_LIB
 #include "lua.h"
 #include "lauxlib.h"
 
@@ -1748,7 +1748,7 @@ static int dbvm_do_rows(lua_State *L, int(*f)(lua_State *)) {
     /* sdb_vm *svm =  */
     lsqlite_checkvm(L, 1);
     lua_pushvalue(L,1);
-    lua_pushcfunction(L, f);
+    lua_pushcnfunction(L, f, "rowfunction");
     lua_insert(L, -2);
     return 2;
 }
@@ -1780,7 +1780,7 @@ static int db_do_rows(lua_State *L, int(*f)(lua_State *)) {
         lua_error(L);
     }
 
-    lua_pushcfunction(L, f);
+    lua_pushcnfunction(L, f, "rowfunction");
     lua_insert(L, -2);
     return 2;
 }
@@ -2117,7 +2117,7 @@ static void create_meta(lua_State *L, const char *name, const luaL_Reg *lib) {
     lua_rawset(L, -3);                  /* metatable.__index = metatable */
 
     /* register metatable functions */
-    luaL_openlib(L, NULL, lib, 0);
+    luaL_register(L, NULL, lib);
 
     /* remove metatable from stack */
     lua_pop(L, 1);

@@ -5,13 +5,13 @@ SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 export JAVA_HOME
 
 android.clean: androidlibs.clean androidso.clean androidplugins.clean
-	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew clean; rm -f local.properties *.aar *.jar
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew --console=plain clean; rm -f local.properties *.aar *.jar
 	
 
 android: androidlibs androidso androidplugins android.aar
 
 android.aar: 
-	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew assembleRelease
+	cd $(ROOT)/android/GiderosAndroidPlayer; echo "sdk.dir=$(ANDROID_HOME)" >local.properties; ./gradlew --console=plain assembleRelease
 	mv $(ROOT)/android/GiderosAndroidPlayer/app/build/outputs/aar/app-release.aar $(ROOT)/android/GiderosAndroidPlayer/gideros.aar
 
 android.install: android androidlibs.install androidso.install oculusso.install androidplugins.install
@@ -21,17 +21,17 @@ android.install: android androidlibs.install androidso.install oculusso.install 
 	mv $(RELEASE)/Players/GiderosPlayer/GiderosPlayer-debug.apk $(RELEASE)/Players/GiderosAndroidPlayer.apk
 	rm -rf $(RELEASE)/Players/GiderosPlayer
 
-androidlibs: libgvfs.androidlib lua.androidlib
+androidlibs: libgvfs.androidlib $(LUA_ENGINE).androidlib
 
-androidlibs.clean: libgvfs.androidlib.clean lua.androidlib.clean
+androidlibs.clean: libgvfs.androidlib.clean $(LUA_ENGINE).androidlib.clean
 
-androidso: versioning androidso.prep
+androidso: androidso.prep
 	cd $(ROOT)/android/lib;$(NDKBUILD) $(MAKEJOBS)
 	rm -rf $(ROOT)/Sdk/lib/android
 	mkdir -p $(ROOT)/Sdk/lib/android
 	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 
 
-oculusso: versioning androidso.prep
+oculusso: androidso.prep
 	cd $(ROOT)/android/lib;OCULUS=y $(NDKBUILD) $(MAKEJOBS)
 	mkdir -p $(ROOT)/Sdk/lib/android
 	cp -R $(ROOT)/android/lib/libs/* $(ROOT)/Sdk/lib/android 

@@ -11,10 +11,6 @@
   </plugins>
   <exports>
    <export name="APK">
-    <property value="" name="androidPath"/>
-    <property value="23" name="androidSdk"/>
-    <property value="26" name="androidTarget"/>
-    <property value="23.0.1" name="androidTools"/>
     <property value="1" name="buildApk"/>
     <property value="0" name="deployApk"/>
     <property value="" name="javaPath"/>

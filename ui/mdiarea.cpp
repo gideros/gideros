@@ -123,8 +123,8 @@ void MyMdiArea::addSubWindow(MyMdiSubWindow* window)
 	tabBar_->setCurrentIndex(tabBar_->count() - 1);
 	tabBar_->blockSignals(blocked);
 
-	QWidget* left = tabBar_->tabButton(tabBar_->count() - 1, QTabBar::LeftSide);
-	QWidget* right = tabBar_->tabButton(tabBar_->count() - 1, QTabBar::RightSide);
+    //QWidget* left = tabBar_->tabButton(tabBar_->count() - 1, QTabBar::LeftSide);
+    //QWidget* right = tabBar_->tabButton(tabBar_->count() - 1, QTabBar::RightSide);
 
 	subWindows_.append(window);
 

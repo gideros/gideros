@@ -192,6 +192,7 @@ hkey_queryvalue(lua_State *L)
 	k = *checkkey(L, 1);
 	vnam = ws(luaL_checkstring(L, 2));
 	data=NULL;
+    void *allocated_data=NULL;
 	if (lua_isnoneornil(L, 3)) {
 		data=autobuf;
 		datalen=1020; //Leave out four bytes for String terminator
@@ -200,6 +201,8 @@ hkey_queryvalue(lua_State *L)
 		DBUG_PRINT("W", ("RegQueryValueEx(%p,\"%s\",...)", k, vnam));
 		ret = RegQueryValueEx(k, vnam.c_str(), 0, &type, (LPBYTE) data, &datalen);
 	} while (ret == ERROR_MORE_DATA && data && (data = smalloc(datalen+4)));
+    if (data!=autobuf)
+        allocated_data=data;
 	if (data) {
 		if (ret == ERROR_SUCCESS) {
 			switch (type) {
@@ -220,8 +223,8 @@ hkey_queryvalue(lua_State *L)
 				break;
 			}
 		}
-		if (data != autobuf)
-			free(data);
+        if (allocated_data)
+            free(allocated_data);
 	}
 	lua_pushnumber(L, type);
 	DBUG_T_RETURN(int, windows_pusherror(L, ret, 2));

@@ -99,13 +99,13 @@ static int loader(lua_State* L)
 {
 	lua_newtable(L);
     
-	lua_pushcfunction(L, isAvailable);
+	lua_pushcnfunction(L, isAvailable, "isAvailable");
 	lua_setfield(L, -2, "isAvailable");
-	lua_pushcfunction(L, startSession);
+	lua_pushcnfunction(L, startSession, "startSession");
 	lua_setfield(L, -2, "startSession");
-	lua_pushcfunction(L, logEvent);
+	lua_pushcnfunction(L, logEvent, "logEvent");
 	lua_setfield(L, -2, "logEvent");
-	lua_pushcfunction(L, endTimedEvent);
+	lua_pushcnfunction(L, endTimedEvent, "endTimedEvent");
 	lua_setfield(L, -2, "endTimedEvent");
     
 	lua_pushvalue(L, -1);
@@ -119,7 +119,7 @@ static void g_initializePlugin(lua_State *L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
     
-	lua_pushcfunction(L, loader);
+	lua_pushcnfunction(L, loader, "plugin_init_flurry");
 	lua_setfield(L, -2, "flurry");
     
 	lua_pop(L, 2);

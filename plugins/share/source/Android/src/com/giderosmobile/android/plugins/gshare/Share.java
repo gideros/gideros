@@ -28,7 +28,7 @@ class Share
 	public static boolean share(Map<String,byte[]> map){
 		Activity activity=sActivity.get();
 		if (map.isEmpty()) return true;
-		String mimeType=map.keySet().get(0);
+		String mimeType=map.keySet().iterator().next();
 		byte[] data=map.get(mimeType);
 		
 		Intent shareIntent = new Intent();

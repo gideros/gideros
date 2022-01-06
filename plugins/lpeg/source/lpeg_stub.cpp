@@ -11,7 +11,7 @@ static void g_initializePlugin(lua_State *L)
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
-    lua_pushcfunction(L, luaopen_lpeg);
+    lua_pushcnfunction(L, luaopen_lpeg,"plugin_init_lpeg");
     lua_setfield(L, -2, "lpeg");
 
     lua_pop(L, 2);

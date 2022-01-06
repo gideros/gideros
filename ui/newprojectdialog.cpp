@@ -57,17 +57,20 @@ void NewProjectDialog::on_cancel_clicked()
 
 void NewProjectDialog::on_name_textChanged(const QString& text)
 {
+    Q_UNUSED(text);
 	updateWillCreateLabel();
 }
 
 void NewProjectDialog::on_location_textChanged(const QString& text)
 {
-	updateWillCreateLabel();
+    Q_UNUSED(text);
+    updateWillCreateLabel();
 }
 
 void NewProjectDialog::on_createDirectory_stateChanged(int state)
 {
-	updateWillCreateLabel();
+    Q_UNUSED(state);
+    updateWillCreateLabel();
 }
 
 void NewProjectDialog::updateWillCreateLabel()

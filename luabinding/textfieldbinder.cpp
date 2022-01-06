@@ -128,9 +128,9 @@ int TextFieldBinder::create(lua_State* L)
 	return 1;
 }
 
-int TextFieldBinder::destruct(lua_State* L)
+int TextFieldBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	TextFieldBase* textField = static_cast<TextFieldBase*>(ptr);
 	textField->unref();
 

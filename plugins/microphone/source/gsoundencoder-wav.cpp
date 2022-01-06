@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <gpath.h>
+#include <map>
 
 namespace {
 
@@ -65,10 +66,13 @@ static inline uint32_t to_le32(uint32_t num)
 
 }
 
+static std::map<g_id, GWavHandle *> ctxmap;
+
 extern "C" {
 
 g_id gsoundencoder_WavCreate(const char *fileName, int numChannels, int sampleRate, int bitsPerSample, float quality)
 {
+	G_UNUSED(quality);
     FILE *fos = fopen(gpath_transform(fileName), "wb");
     if (fos == NULL)
         return 0;
@@ -114,12 +118,15 @@ g_id gsoundencoder_WavCreate(const char *fileName, int numChannels, int sampleRa
     handle->dataSize = 0;
     handle->bytesPerSample = ((bitsPerSample + 7) / 8) * numChannels;
 
-    return (g_id)handle;
+	g_id gid = g_NextId();
+	ctxmap[gid] = handle;
+
+    return gid;
 }
 
 void gsoundencoder_WavClose(g_id id)
 {
-    GWavHandle *handle = (GWavHandle*)id;
+    GWavHandle *handle = ctxmap[id];
 
     if (handle->dataSize == 0)
     {
@@ -148,13 +155,14 @@ void gsoundencoder_WavClose(g_id id)
     }
 
     fclose(handle->fos);
+	ctxmap.erase(id);
 
     delete handle;
 }
 
 size_t gsoundencoder_WavWrite(g_id id, size_t size, void *data)
 {
-    GWavHandle *handle = (GWavHandle*)id;
+    GWavHandle *handle = ctxmap[id];
     fwrite(data, size, 1, handle->fos);
     handle->dataSize += size;
     return size;

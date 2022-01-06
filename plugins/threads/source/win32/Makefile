@@ -7,7 +7,7 @@ vpath %.c ../../../json/source
 
 INCS += ../../../luabinding ../../../libgid/external/zlib-1.2.8
 
-CXXINCS += -I../../../../lua/src -I"../../../../libgid/external/zlib-1.2.8"
+CXXINCS += -I../../../../$(LUA_INCLUDE) -I"../../../../libgid/external/zlib-1.2.8"
 
 CFLGS += -DWIN32 -DLUASOCKET_INET_PTON -DLUA_NOCOMPAT_MODULE -DUNICODE -D_UNICODE
 

@@ -11,7 +11,7 @@ public:
 	StageBinder(lua_State* L, Application* application);
 
 private:
-	static int destruct(lua_State* L);
+	static int destruct(void *p);
 
 	static int getOrientation(lua_State* L);
 	static int setOrientation(lua_State* L);

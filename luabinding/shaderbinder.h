@@ -10,7 +10,7 @@ public:
 	
 private:
 	static int create(lua_State* L);
-	static int destruct(lua_State* L);
+	static int destruct(void *p);
 
 	static int setConstant(lua_State* L);
 	static int isValid(lua_State* L);

@@ -259,10 +259,10 @@ static int create(lua_State *L)
         return 1;
     case GMICROPHONE_UNSUPPORTED_FORMAT:
         delete microphone;
-        return luaL_error(L, "Unsupported microphone format.");
+        luaL_error(L, "Unsupported microphone format.");
     case GMICROPHONE_PROMPTING_PERMISSION:
         delete microphone;
-        return luaL_error(L, "Permission requested.");
+        luaL_error(L, "Permission requested.");
     }
 
     g_pushInstance(L, "Microphone", microphone->object());
@@ -286,9 +286,9 @@ static int create(lua_State *L)
     return 1;
 }
 
-static int destruct(lua_State *L)
+static int destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* object = static_cast<GReferenced*>(ptr);
     GReferenced* proxy = object->proxy();
     proxy->unref();
@@ -311,7 +311,7 @@ static int start(lua_State *L)
     std::string error;
     microphone->start(&error);
     if (!error.empty())
-        return luaL_error(L, error.c_str());
+        luaL_error(L, "%s", error.c_str());
 
     luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyStrong);
     lua_pushvalue(L, -2);
@@ -337,7 +337,7 @@ static int stop(lua_State *L)
 static int lua_toboolean2(lua_State *L, int idx)
 {
     if (lua_isnone(L, idx))
-        return luaL_typerror(L, idx, "boolean");
+        luaL_typerror(L, idx, "boolean");
 
     return lua_toboolean(L, idx);
 }
@@ -357,7 +357,7 @@ static int setOutputFile(lua_State *L)
     const char *fileName = luaL_checkstring(L, 2);
 
     if (microphone->isStarted())
-        return luaL_error(L, "Cannot set output file while recording.");
+        luaL_error(L, "Cannot set output file while recording.");
 
     microphone->setOutputFile(fileName);
 
@@ -417,7 +417,7 @@ static void g_initializePlugin(lua_State *L)
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
-    lua_pushcfunction(L, loader);
+    lua_pushcnfunction(L, loader,"plugin_init_microphone");
     lua_setfield(L, -2, "microphone");
 
     lua_pop(L, 2);

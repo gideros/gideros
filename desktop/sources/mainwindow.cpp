@@ -8,7 +8,6 @@
 #include <QTextStream>
 #include <QFileDialog>
 #include <algorithm>
-#include <QDesktopWidget>
 #include <QPalette>
 #include <QWindowStateChangeEvent>
 #include "libnetwork.h"
@@ -153,6 +152,7 @@ void MainWindow::resizeWindow(int width, int height){
 }
 
 void MainWindow::setOrientation(Orientation orientation){
+    Q_UNUSED(orientation);
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){
@@ -205,6 +205,7 @@ void MainWindow::updateResolution(bool event){
     ui.glCanvas->setScale(canvasScaleFactor);
 
     switch (ui.glCanvas->getHardwareOrientation()){
+        case eFixed:
         case ePortrait:
         case ePortraitUpsideDown:
             ui.glCanvas->setFixedSize(width / widgetScaleFactor, height / widgetScaleFactor);
@@ -311,5 +312,5 @@ bool MainWindow::fullScreen(){
 }
 
 void MainWindow::printToOutput(const char* text){
-
+    Q_UNUSED(text);
 }

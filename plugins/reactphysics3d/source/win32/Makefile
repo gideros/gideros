@@ -6,7 +6,7 @@ INCS += ../../../2dsg/gfxbackends
 INCS += ../../../libgideros
 INCS += ../../../libgid/include
 INCS += ../../../luabinding
-INCS += ../../../lua/src
+INCS += ../../../$(LUA_INCLUDE)
 
 INCS += ../reactphysics3d/include
 

@@ -88,7 +88,7 @@ int TTFontBinder::create(lua_State* L)
     if (status.error())
     {
         delete font;
-        return luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
     }
 
     binder.pushInstance("TTFont", font);
@@ -96,9 +96,9 @@ int TTFontBinder::create(lua_State* L)
 }
 
 
-int TTFontBinder::destruct(lua_State* L)
+int TTFontBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
     FontBase *font = static_cast<FontBase*>(ptr);
     font->unref();
 

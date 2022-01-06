@@ -90,12 +90,12 @@ int luaopen_socket_unix(lua_State *L) {
     auxiliar_add2group(L, "unix{client}", "unix{any}");
     auxiliar_add2group(L, "unix{server}", "unix{any}");
 #if LUA_VERSION_NUM > 501 && !defined(LUA_COMPAT_MODULE)
-    lua_pushcfunction(L, global_create);
+    lua_pushcnfunction(L, global_create,"luaopen_socket");
     (void) func;
 #else
     /* set function into socket namespace */
     luaL_openlib(L, "socket", func, 0);
-    lua_pushcfunction(L, global_create);
+    lua_pushcnfunction(L, global_create,"luaopen_socket");
 #endif
     /* return the function instead of the 'socket' table */
     return 1;

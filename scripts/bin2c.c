@@ -11,6 +11,9 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <unistd.h>
+#ifndef O_BINARY
+#define O_BINARY	0
+#endif
 
 /* Replace . with _ */
 char*

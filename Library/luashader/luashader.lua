@@ -1,4 +1,9 @@
 --!NEEDS:luac_codegen.lua
+--!NEEDS:luau_codegen.lua
+
+local codegen=codegen_l
+if not string.dump then codegen=codegen_u end
+
 local OPTYPE_MAP={
 	["hF44*hF4"]="hF4",
 	["hF33*hF3"]="hF3",
@@ -154,7 +159,9 @@ local function genFunction(fg,gmap,tmap,omap,ophandler)
 	for k,v in pairs(ophandler) do oh[k]=v end
 	oh.RETURN=GEN_RETURN
 		local ff=gmap[fg.name]._fcode
-		if ff then
+	local fccode=gmap[fg.name].fccode
+	assert(ff or fccode,"Function "..fg.name.." not defined")
+	if ff or fccode then
 			if fg.rtype then 
 				_code=_code..tmap[fg.rtype]
 			else
@@ -167,7 +174,8 @@ local function genFunction(fg,gmap,tmap,omap,ophandler)
 				amap[k]={type="var",value=v.name,vtype=v.type}
 				_args=_args..","..tmap[v.type].." "..v.name
 			end
-		local fcode=codegen(ff,amap,gmap,tmap,omap,oh)
+		local fcode=fccode or codegen(ff,amap,gmap,tmap,omap,oh)
+		if ff then
 		local callarg=""
 		if ff.extra_args then
 			for k,v in ipairs(ff.extra_args or {}) do 
@@ -175,6 +183,7 @@ local function genFunction(fg,gmap,tmap,omap,ophandler)
 				if #callarg>0 then callarg=callarg.."," end
 				callarg=callarg..v.use
 			end
+		end
 		end
 			if #_args then _args=_args:sub(2) end
 			_code=_code.._args..") {\n"

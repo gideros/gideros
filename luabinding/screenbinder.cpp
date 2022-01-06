@@ -62,9 +62,9 @@ int ScreenBinder::create(lua_State *L)
     return 1;
 }
 
-int ScreenBinder::destruct(lua_State *L)
+int ScreenBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* refptr = static_cast<GReferenced*>(ptr);
     refptr->unref();
     if (ScreenManager::manager)

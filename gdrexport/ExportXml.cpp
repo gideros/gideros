@@ -21,6 +21,7 @@ static bool IsSecret(QString key)
 
 static QString SecretVal(QString val)
 {
+    Q_UNUSED(val);
 	return "******";
 }
 
@@ -141,7 +142,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 		QStringList targetList;
 		for (int k = 0; k < targets.count(); k++) {
 			QString tname=targets.at(k).toElement().attribute("name");
-			QStringList tlist=tname.split(',', QString::SkipEmptyParts);
+            QStringList tlist=tname.split(',', Qt::SkipEmptyParts);
 			if (tlist.contains(ctx->platform))
 				rules = targets.at(k).toElement();
 		}
@@ -233,7 +234,7 @@ bool ExportXml::ProcessRuleString(const char *xml)
 bool ExportXml::ProcessRule(QDomElement rule) {
 	QString ruleName = rule.tagName();
 	if (ruleName == "exec")
-		return RuleExec(ReplaceAttributes(rule.text()).trimmed(), rule);
+        return RuleExec(ReplaceAttributes(rule.attribute("cmd")).trimmed(), rule);
 	else if (ruleName == "set")
 		return RuleSet(ReplaceAttributes(rule.attribute("key")),
 				ReplaceAttributes(rule.attribute("value")));
@@ -267,10 +268,10 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		return RuleTemplate(rule.attribute("name"),
                 ReplaceAttributes(rule.attribute("path")).trimmed(), ReplaceAttributes(rule.attribute("dest")).trimmed(), rule);
 	else if (ruleName == "exportAssets") {
-		QStringList jets=rule.attribute("jet").split(";",QString::SkipEmptyParts);
+        QStringList jets=rule.attribute("jet").split(";",Qt::SkipEmptyParts);
 		for (int i=0;i<jets.count();i++)
 			ctx->jetset << jets[i];
-		QStringList noencExt=rule.attribute("dontEncryptExts").split(";",QString::SkipEmptyParts);
+        QStringList noencExt=rule.attribute("dontEncryptExts").split(";",Qt::SkipEmptyParts);
 		for (int i=0;i<noencExt.count();i++)
 			ctx->noEncryptionExt.insert(noencExt[i]);
 		ExportCommon::exportAssets(ctx, rule.attribute("compile").toInt() != 0);
@@ -392,7 +393,7 @@ QString ExportXml::ReplaceAttributes(QString text) {
 			break;
 		QString key = text.mid(spos + 3, epos - spos - 3);
 		secret|=IsSecret(key);
-		QStringList args = key.split(":", QString::KeepEmptyParts);
+        QStringList args = key.split(":", Qt::KeepEmptyParts);
 		int ac = args.count();
 		QString rep;
 		if (ac == 1)
@@ -410,15 +411,18 @@ QString ExportXml::ReplaceAttributes(QString text) {
 
 bool ExportXml::RuleExec(QString cmd, QDomElement rule) {
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QStringList args;
 	for (QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling()) {
 		QDomElement rl = n.toElement();
 		if ((!rl.isNull()) && (rl.tagName() == "env"))
 			env.insert(rl.attribute("key"),
 					ReplaceAttributes(rl.attribute("value")));
-	}
-	ExportCommon::exportInfo("Exec: %s into %s\n", cmd.toStdString().c_str(),
+        else if ((!rl.isNull()) && (rl.tagName() == "arg"))
+            args << ReplaceAttributes(rl.text().trimmed());
+    }
+    ExportCommon::exportInfo("Exec: %s [%s] into %s\n", cmd.toStdString().c_str(),args.join(' ').toStdString().c_str(),
 			ctx->outputDir.path().toStdString().c_str());
-	int err = Utilities::processOutput(cmd, ctx->outputDir.path(), env,false);
+    int err = Utilities::processOutput(cmd, args, ctx->outputDir.path(), env,false);
 	ExportCommon::exportInfo("Exec returned: %d\n", err);
 	return (err == 0);
 }
@@ -530,13 +534,13 @@ QString ExportXml::XmlAttributeOrElement(QDomElement elm,QString name)
 }
 
 bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomElement rule) {
-	QStringList include= ReplaceAttributes(rule.attribute("include")).split(";",QString::SkipEmptyParts);
-	QStringList exclude= ReplaceAttributes(rule.attribute("exclude")).split(";",QString::SkipEmptyParts);
+    QStringList include= ReplaceAttributes(rule.attribute("include")).split(";",Qt::SkipEmptyParts);
+    QStringList exclude= ReplaceAttributes(rule.attribute("exclude")).split(";",Qt::SkipEmptyParts);
 	for (QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling()) {
 		QDomElement rl = n.toElement();
 		if ((!rl.isNull()) && (rl.tagName() == "replacelist")) {
             QStringList wildcards1 = ReplaceAttributes(rl.attribute("wildcards")).split(";",
-					QString::SkipEmptyParts);
+                    Qt::SkipEmptyParts);
 			QList < QPair<QByteArray, QByteArray> > replaceList1;
 			for (QDomNode n1 = rl.firstChild(); !n1.isNull();
 					n1 = n1.nextSibling()) {

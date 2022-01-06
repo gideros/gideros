@@ -14,6 +14,15 @@
 #ifdef WINSTORE
 #define sscanf sscanf_s
 #endif
+#ifdef _UNICODE
+static char gaibuf[256];
+char *str_tous(WCHAR *str)
+{
+    if (!str) return NULL;
+    WideCharToMultiByte(CP_UTF8, 0, str, wcslen(str), gaibuf, sizeof(gaibuf),NULL,NULL);
+    return gaibuf;
+}
+#endif
 
 /*=========================================================================*\
 * Internal function prototypes.
@@ -255,7 +264,7 @@ int inet_meth_getpeername(lua_State *L, p_socket ps, int family)
         port, sizeof(port), NI_NUMERICHOST | NI_NUMERICSERV);
     if (err) {
         lua_pushnil(L);
-        lua_pushstring(L, gai_strerror(err));
+        lua_pushstring(L, tous(gai_strerror(err)));
         return 2;
     }
     lua_pushstring(L, name);
@@ -289,7 +298,7 @@ int inet_meth_getsockname(lua_State *L, p_socket ps, int family)
 		name, INET6_ADDRSTRLEN, port, 6, NI_NUMERICHOST | NI_NUMERICSERV);
     if (err) {
         lua_pushnil(L);
-        lua_pushstring(L, gai_strerror(err));
+        lua_pushstring(L, tous(gai_strerror(err)));
         return 2;
     }
     lua_pushstring(L, name);

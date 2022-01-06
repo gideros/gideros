@@ -7,9 +7,9 @@
 
 static QMap<QString,QString> responseCache;
 ExportProgress::ExportProgress(QProcess *exportProcess_, QString& out, QWidget *parent) :
-    _out(out),
     QDialog(parent),
-    ui(new Ui::ExportProgress)
+    ui(new Ui::ExportProgress),
+    _out(out)
 {
 	ui->setupUi(this);
 	connect(ui->btEnd, SIGNAL(clicked()), this, SLOT(onEnd()));

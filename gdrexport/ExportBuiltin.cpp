@@ -20,9 +20,9 @@
 void ExportBuiltin::exportAllAssetsFiles(ExportContext *ctx)
 {
     if (ctx->deviceFamily == e_Android) //Configure Jet files
-    	ctx->jetset << "mp3" << "mp4" << "png" << "jpg" << "jpeg" << "wav";
+        ctx->jetset << "mp3" << "mp4" << "png" << "jpg" << "jpeg" << "wav";
 
-	ExportCommon::exportAssets(ctx,true);
+    ExportCommon::exportAssets(ctx,true);
     if(ctx->deviceFamily == e_MacOSXDesktop || ctx->deviceFamily == e_WindowsDesktop)
         ctx->outputDir.cd("..");
 
@@ -141,7 +141,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     		winver=winver+".0.0";
     	if (winver.startsWith("."))
     		winver="1"+winver;
-    	QStringList wvparts=winver.split(".", QString::SkipEmptyParts);
+        QStringList wvparts=winver.split(".", Qt::SkipEmptyParts);
     	winver=QString("%1.%2.%3.0").arg(wvparts[0].toInt())
 				.arg(wvparts[1].toInt())
 				.arg(wvparts[2].toInt());
@@ -175,8 +175,8 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 			pext="."+pext;
         }
         if (!ctx->player)
-        	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp"+pext+"\"").toUtf8());
-		replaceList1 << qMakePair(QString("/*GIDEROS_DYNLIB_PLUGIN*/").toUtf8(),QString("\"EP_Mp3.%1\", \"EP_Xmp.%1\", /*GIDEROS_DYNLIB_PLUGIN*/").arg(ext).toUtf8());
+            replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp"+pext+"\"").toUtf8());
+        replaceList1 << qMakePair(QString("/*GIDEROS_DYNLIB_PLUGIN*/").toUtf8(),QString("\"EP_Mp3.%1\", \"EP_Xmp.%1\", /*GIDEROS_DYNLIB_PLUGIN*/").arg(ext).toUtf8());
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-END").toUtf8(),QString("<!-- GIDEROS-FBINSTANT-END").toUtf8());
@@ -339,6 +339,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         underscore = false;
         needGApp = true;
         break;
+    default:
+        ;
     }
 
     ctx->basews=Utilities::RemoveSpaces(ctx->base,underscore);

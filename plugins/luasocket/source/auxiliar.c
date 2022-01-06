@@ -153,6 +153,7 @@ void *auxiliar_getclassudata(lua_State *L, const char *classname, int objidx) {
 int auxiliar_typeerror (lua_State *L, int narg, const char *tname) {
   const char *msg = lua_pushfstring(L, "%s expected, got %s", tname, 
       luaL_typename(L, narg));
-  return luaL_argerror(L, narg, msg);
+  luaL_argerror(L, narg, msg);
+  return 0;
 }
 

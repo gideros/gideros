@@ -10,7 +10,7 @@ public:
 
 private:
 	static int create(lua_State* L);
-	static int destruct(lua_State* L);
+	static int destruct(void *p);
 
 	static int start(lua_State* L);
 	static int stop(lua_State* L);

@@ -42,6 +42,7 @@
 #include <limits.h>
 #include <lua.h>
 #include <lauxlib.h>
+#include <stdio.h>
 
 #include "strbuf.h"
 #include "fpconv.h"
@@ -356,11 +357,10 @@ static int json_cfg_decode_invalid_numbers(lua_State *l)
     return 1;
 }
 
-static int json_destroy_config(lua_State *l)
+static int json_destroy_config(void *p)
 {
-    json_config_t *cfg;
+    json_config_t *cfg=LUA_DTOR_UDATA(p);
 
-    cfg = lua_touserdata(l, 1);
     if (cfg)
         strbuf_free(&cfg->encode_buf);
     cfg = NULL;
@@ -373,6 +373,9 @@ static void json_create_config(lua_State *l)
     json_config_t *cfg;
     int i;
 
+#ifdef LUA_IS_LUAU
+    cfg = lua_newuserdatadtor(l, sizeof(*cfg), (void (*)(void *))json_destroy_config);
+#else
     cfg = lua_newuserdata(l, sizeof(*cfg));
 
     /* Create GC method to clean up strbuf */
@@ -380,6 +383,7 @@ static void json_create_config(lua_State *l)
     lua_pushcfunction(l, json_destroy_config);
     lua_setfield(l, -2, "__gc");
     lua_setmetatable(l, -2);
+#endif
 
     cfg->encode_sparse_convert = DEFAULT_SPARSE_CONVERT;
     cfg->encode_sparse_ratio = DEFAULT_SPARSE_RATIO;
@@ -1335,7 +1339,7 @@ static int json_protect_conversion(lua_State *l)
 
     /* Since we are not using a custom error handler, the only remaining
      * errors are memory related */
-    return luaL_error(l, "Memory allocation error in CJSON protected call");
+    luaL_error(l, "Memory allocation error in CJSON protected call");
 }
 
 /* Return cjson module table */
@@ -1387,7 +1391,7 @@ static int lua_cjson_safe_new(lua_State *l)
     lua_cjson_new(l);
 
     /* Fix new() method */
-    lua_pushcfunction(l, lua_cjson_safe_new);
+    lua_pushcnfunction(l, lua_cjson_safe_new, "cjson_safe_new");
     lua_setfield(l, -2, "new");
 
     for (i = 0; func[i]; i++) {

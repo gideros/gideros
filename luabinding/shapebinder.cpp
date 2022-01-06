@@ -65,9 +65,9 @@ int ShapeBinder::create(lua_State* L)
 	return 1;
 }
 
-int ShapeBinder::destruct(lua_State* L)
+int ShapeBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Shape* shape = static_cast<Shape*>(ptr);
 	shape->unref();
 
@@ -102,7 +102,7 @@ int ShapeBinder::setFillStyle(lua_State* L)
 	else
 	{
 		GStatus status(2008, "fillStyle");		// Error #2008: Parameter %s must be one of the accepted values.
-		luaL_error(L, status.errorString());
+		luaL_error(L, "%s", status.errorString());
 		return 0;
 	}
 
@@ -145,7 +145,7 @@ int ShapeBinder::beginPath(lua_State* L)
 		else
 		{
 			GStatus status(2008, "winding");		// Error #2008: Parameter %s must be one of the accepted values.
-			luaL_error(L, status.errorString());
+			luaL_error(L, "%s", status.errorString());
 			return 0;
 		}
 	}

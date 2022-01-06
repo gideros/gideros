@@ -54,7 +54,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         if (!lua_isnoneornil(L, argn+3))
         {
             if (lua_type(L, argn+3) != LUA_TTABLE)
-                return luaL_typerror(L, argn+3, "table");
+                luaL_typerror(L, argn+3, "table");
 
             lua_getfield(L, argn+3, "transparentColor");
             if (!lua_isnil(L, -1))
@@ -87,7 +87,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 else
                 {
                     GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                    luaL_error(L, status.errorString());
+                    luaL_error(L, "%s", status.errorString());
                 }
             }
             lua_pop(L, 1);
@@ -150,7 +150,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
             }
             catch (const GiderosException& e)
             {
-                luaL_error(L, e.what());				// TODO: burada luaL_error dedigimiz icin longjmp yuzunden vectorlerin destructor'lari cagirilmiyor
+                luaL_error(L, "%s", e.what());				// TODO: burada luaL_error dedigimiz icin longjmp yuzunden vectorlerin destructor'lari cagirilmiyor
                 return 0;
             }
 
@@ -169,7 +169,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         if (!lua_isnoneornil(L, argn+3))
         {
             if (lua_type(L, argn+3) != LUA_TTABLE)
-                return luaL_typerror(L, argn+3, "table");
+                luaL_typerror(L, argn+3, "table");
 
             lua_getfield(L, argn+3, "transparentColor");
             if (!lua_isnil(L, -1))
@@ -202,7 +202,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 else
                 {
                     GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-                    luaL_error(L, status.errorString());
+                    luaL_error(L, "%s", status.errorString());
                 }
             }
             lua_pop(L, 1);
@@ -258,7 +258,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
             }
             catch (const GiderosException& e)
             {
-                luaL_error(L, e.what());
+                luaL_error(L, "%s", e.what());
                 return 0;
             }
 
@@ -267,7 +267,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
     }
     else
     {
-        return luaL_error(L, "Bad argument to 'TexturePack.new'. Candidates are TexturePack.new(table) and TexturePack.new(string, string).");
+        luaL_error(L, "Bad argument to 'TexturePack.new'. Candidates are TexturePack.new(table) and TexturePack.new(string, string).");
     }
 
     return 1;
@@ -286,9 +286,9 @@ int TexturePackBinder::loadAsync(lua_State* L)
 }
 
 
-int TexturePackBinder::destruct(lua_State* L)
+int TexturePackBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	TexturePack* texturePack = static_cast<TexturePack*>(ptr);
 	texturePack->unref();
 
@@ -416,9 +416,9 @@ int TexturePackFontBinder::create(lua_State* L)
 }
 
 
-int TexturePackFontBinder::destruct(lua_State* L)
+int TexturePackFontBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
     TexturePackFont* texturePack = static_cast<TexturePackFont*>(ptr);
     texturePack->unref();
 

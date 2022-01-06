@@ -9,7 +9,7 @@ INCLUDEPATH += ../../../2dsg/gfxbackends
 INCLUDEPATH += ../../../libgideros
 INCLUDEPATH += ../../../libgid/include
 INCLUDEPATH += ../../../luabinding
-INCLUDEPATH += ../../../lua/src
+#INCLUDEPATH += ../../../lua/src
 
 XIPH_OGG=libogg-1.3.2
 XIPH_THEORA=libtheora-1.1.1

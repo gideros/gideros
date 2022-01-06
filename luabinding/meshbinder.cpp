@@ -219,9 +219,9 @@ int MeshBinder::create(lua_State *L)
     return 1;
 }
 
-int MeshBinder::destruct(lua_State *L)
+int MeshBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     GMesh* mesh = static_cast<GMesh*>(ptr);
     mesh->unref();
 
@@ -465,7 +465,7 @@ int MeshBinder::setGenericArray(lua_State *L)
     int count=luaL_checkinteger(L,5);
     luaL_checktype(L, 6, LUA_TTABLE);
 
-    int n = luaL_getn(L, 6);  /* get size of table */
+    int n = lua_objlen(L, 6);  /* get size of table */
     if (n!=(mult*count))
     {
     	lua_pushstring(L,"Actual array length doesn't match size multiple and count values");
@@ -816,7 +816,7 @@ int MeshBinder::getVertex(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getVertexArraySize())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     int order=mesh->is3d()?3:2;
     float x, y, z;
@@ -836,7 +836,7 @@ int MeshBinder::getIndex(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getIndexArraySize())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     unsigned int index;
     mesh->getIndex(i, &index);
@@ -852,7 +852,7 @@ int MeshBinder::getColor(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getColorArraySize())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     unsigned int color;
     float alpha;
@@ -870,7 +870,7 @@ int MeshBinder::getTextureCoordinate(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
 
     if (i < 0 || i >= mesh->getTextureCoordinateArraySize())
-        return luaL_error(L, "The supplied index is out of bounds.");
+        luaL_error(L, "The supplied index is out of bounds.");
 
     float u, v;
     mesh->getTextureCoordinate(i, &u, &v);

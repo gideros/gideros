@@ -30,7 +30,16 @@ LGID_SRCS+=$(addprefix libgideros/,event eventdispatcher eventvisitor refptr str
 
 LGVFS_SRCS=$(addprefix libgvfs/,$(notdir $(basename $(wildcard ../libgvfs/*.c))))
 LGVFS_SRCS+=$(addprefix libgvfs/,$(notdir $(basename $(wildcard ../libgvfs/*.cpp))))
+ifeq ($(LUA_ENGINE),luau)
+LUA_INCLUDE_ALL= $(addprefix luau/,VM/src VM/include Compiler/include Ast/include)
+LSUP_SRCS+= \
+        $(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib \
+         ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils) \
+        $(addprefix luau/Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
+        $(addprefix luau/Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)
+else
 LSUP_SRCS+=lua/etc/all_lua
+endif
 LSUP_SRCS+=libpystring/pystring
 
 FREETYPE_VER=2.7.1
@@ -86,7 +95,7 @@ INCS+=libgid/external/zlib-1.2.8 libgid/external/libpng-1.6.2 \
 	libgid/external/libxmp-4.3/include \
 	libgid/external/libxmp-4.3/src \
 	libgid/external/libxmp-4.3/src/loaders 
-INCS+=lua/src
+INCS+=$(LUA_INCLUDE) $(LUA_INCLUDE_CORE) $(LUA_INCLUDE_ALL)
 INCS+=libgvfs/private
 INCS+=emscripten
 
@@ -273,7 +282,7 @@ init:
 
 $(BUILD)/%.emw.o: ../%.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -std=c++17 -c $< --default-obj-ext .emw.o -o $@
 
 $(BUILD)/%.emw.o: ../%.c
 	@echo "EMWCC $<"
@@ -281,7 +290,7 @@ $(BUILD)/%.emw.o: ../%.c
 
 $(BUILD)/%.emwp.o: ../%.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -std=c++17 -c $< --default-obj-ext .emw.o -o $@
 
 $(BUILD)/%.emwp.o: ../%.c
 	@echo "EMWCC $<"

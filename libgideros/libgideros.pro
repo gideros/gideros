@@ -9,6 +9,11 @@ QT       -= core gui
 TARGET = gideros
 TEMPLATE = lib
 
+LUA_ENGINE=$$(LUA_ENGINE)
+isEmpty(LUA_ENGINE): LUA_ENGINE=luau
+equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include
+equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
+
 DEFINES += GIDEROS_LIBRARY
 
 SOURCES += \
@@ -39,23 +44,23 @@ HEADERS += \
 
 INCLUDEPATH += \
 	. \
-	../lua/src \
+        $$LUA_INCLUDE \
 	../libpystring
 
 win32 {
 LIBS += -L"../libgid/release" -lgid
-LIBS += -L"../lua/release" -llua
+LIBS += -L"../$$LUA_ENGINE/release" -llua
 LIBS += -L"../libpystring/release" -lpystring
 }
 
 macx {
 LIBS += -L"../libgid" -lgid
-LIBS += -L"../lua" -llua
+LIBS += -L"../$$LUA_ENGINE" -llua
 LIBS += -L"../libpystring" -lpystring
 } else {
 unix:!macx {
 LIBS += ../libgid/libgid.so
-LIBS += ../lua/liblua.so
+LIBS += ../$$LUA_ENGINE/liblua.so
 LIBS += ../libpystring/libpystring.so
 }
 }

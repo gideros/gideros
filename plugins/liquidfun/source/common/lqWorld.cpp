@@ -511,9 +511,9 @@ int Box2DBinder2::b2World_create(lua_State* L)
 	return 1;
 }
 
-int Box2DBinder2::b2World_destruct(lua_State* L)
+int Box2DBinder2::b2World_destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	b2WorldED* world = static_cast<b2WorldED*>(ptr);
 	world->unref();
 

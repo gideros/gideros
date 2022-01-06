@@ -12,10 +12,10 @@ static void g_initializePlugin(lua_State *L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
-	lua_pushcfunction(L, luaopen_cjson);
+	lua_pushcnfunction(L, luaopen_cjson,"plugin_init_cjson");
 	lua_setfield(L, -2, "json");
 	
-	lua_pushcfunction(L, luaopen_cjson_safe);
+	lua_pushcnfunction(L, luaopen_cjson_safe,"plugin_init_cjsonsafe");
 	lua_setfield(L, -2, "json.safe");
 	
 	lua_pop(L, 2);

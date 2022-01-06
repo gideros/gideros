@@ -188,9 +188,9 @@ int TextInputDialogBinder::create(lua_State *L)
     return 1;
 }
 
-int TextInputDialogBinder::destruct(lua_State *L)
+int TextInputDialogBinder::destruct(void *p)
 {
-    void *ptr = *(void**)lua_touserdata(L, 1);
+    void *ptr = GIDEROS_DTOR_UDATA(p);
     GGTextInputDialog *textInputDialog = static_cast<GGTextInputDialog*>(ptr);
     textInputDialog->unref();
 
@@ -279,7 +279,7 @@ int TextInputDialogBinder::setInputType(lua_State *L)
     else
     {
         GStatus status(2008, "inputType"); // Error #2008: Parameter '%s' must be one of the accepted values.
-        return luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
     }
 
     textInputDialog->setInputType(inputType);

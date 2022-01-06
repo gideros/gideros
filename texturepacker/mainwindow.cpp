@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
 	{
 		libraryContainer = new QWidget;
 		libraryContainer->setLayout(new QVBoxLayout);
-		libraryContainer->layout()->setMargin(0);
+        libraryContainer->layout()->setContentsMargins(0,0,0,0);
 		libraryContainer->layout()->setSpacing(0);
 
 		libraryLabel_ = new QLabel("Project");

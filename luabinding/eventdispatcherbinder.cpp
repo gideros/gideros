@@ -45,9 +45,9 @@ int EventDispatcherBinder::create(lua_State* L)
 	return 1;
 }
 
-int EventDispatcherBinder::destruct(lua_State* L)
+int EventDispatcherBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	EventDispatcher* eventDispatcher = static_cast<EventDispatcher*>(ptr);
 	eventDispatcher->unref();
 

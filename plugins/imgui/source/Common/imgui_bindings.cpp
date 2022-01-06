@@ -26,6 +26,7 @@
 #include "bitmapdata.h"
 #include "bitmap.h"
 
+#define luaL_getn lua_objlen
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -473,10 +474,12 @@ static void setApplicationCursor(lua_State* L, const char* name)
 	lua_pop(L, 2);
 }
 
+#ifndef LUA_IS_LUAU
 static int luaL_optboolean(lua_State* L, int narg, int def)
 {
 	return lua_isboolean(L, narg) ? lua_toboolean(L, narg) : def;
 }
+#endif
 
 static lua_Number getfield(lua_State* L, const char* key)
 {
@@ -1850,7 +1853,7 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 			}
 			else
 			{
-				g_id textureId = (g_id)pcmd->GetTexID();
+				g_id textureId = (g_id)(uintptr_t)pcmd->GetTexID();
 				
 				engine->bindTexture(0, gtexture_getInternalTexture(textureId));
 				
@@ -1915,13 +1918,13 @@ int initImGui(lua_State* L) // ImGui.new() call
 	return 1;
 }
 
-int destroyImGui(lua_State* L)
+int destroyImGui(void* p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void* ptr = GIDEROS_DTOR_UDATA(p);
 	GidImGui* imgui = static_cast<GidImGui*>(static_cast<SpriteProxy *>(ptr)->getContext());
 	if (imgui->ctx->FontAtlasOwnedByContext && ImGui::GetCurrentContext()->FontAtlasOwnedByContext)
 	{
-		gtexture_delete((g_id)imgui->ctx->IO.Fonts->TexID);
+		gtexture_delete((g_id)(uintptr_t)imgui->ctx->IO.Fonts->TexID);
 		ImGui::DestroyContext(imgui->ctx);
 	}
 	imgui->eventListener->removeEventListeners();
@@ -11178,7 +11181,7 @@ int FontAtlas_Build(lua_State* L)
 	STACK_CHECKER(L, "build", 0);
 
 	ImFontAtlas* atlas = getPtr<ImFontAtlas>(L, "ImFontAtlas");
-	gtexture_delete((g_id)atlas->TexID);
+	gtexture_delete((g_id)(uintptr_t)atlas->TexID);
 	
 	atlas->Build();
 	
@@ -14752,7 +14755,7 @@ static void g_initializePlugin(lua_State* L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
-	lua_pushcfunction(L, ImGui_impl::loader);
+	lua_pushcnfunction(L, ImGui_impl::loader,"plugin_init_imgui");
 	lua_setfield(L, -2, PLUGIN_NAME);
 	
 	lua_pop(L, 2);

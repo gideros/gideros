@@ -56,7 +56,7 @@ public:
 		QFont f("Courier New", 8);
 #endif
 		QFontMetrics fm(f);
-		setTabStopWidth(fm.width("1234"));
+        setTabStopDistance(fm.horizontalAdvance("1234"));
 		df_.setFont(f);
 
         found = false;

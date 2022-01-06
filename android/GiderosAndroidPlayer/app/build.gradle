@@ -24,11 +24,13 @@ android.libraryVariants.all { variant ->
     String taskName = String.format("remove%sBuildConfig", variantCap)
     task "${taskName}"  {
         doLast {
-            String gpath="${buildDir}/intermediates/javac/${variant.name}/compile${variantCap}JavaWithJavac/classes/com/giderosmobile/android";
+            String gpath="${buildDir}/intermediates/javac/${variant.name}/classes/com/giderosmobile/android";
             file("${gpath}/GiderosSettings.class").delete()
             file("${gpath}/player/BuildConfig.class").delete()
             file("${gpath}/player/R.class").delete()
         }
     }
-    variant.processJavaResources.dependsOn(taskName)
+    variant.processJavaResourcesProvider.configure {
+    	it.dependsOn(taskName)
+    } 
 }

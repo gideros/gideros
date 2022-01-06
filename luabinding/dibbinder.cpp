@@ -33,9 +33,9 @@ int DibBinder::create(lua_State* L)
 	return 1;
 }
 
-int DibBinder::destruct(lua_State* L)
+int DibBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Dib* dib = static_cast<Dib*>(ptr);
 	delete dib;
 

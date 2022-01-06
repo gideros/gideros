@@ -49,5 +49,11 @@ int inet_pton(int af, const char *src, void *dst);
 #ifdef WINSTORE
 int luasock_inet_pton(int af, const char *src, void *dst);
 #endif
+#ifdef _UNICODE
+char *str_tous(WCHAR *str);
+#define tous(str) str_tous(str)
+#else
+#define tous(str) str
+#endif
 
 #endif /* INET_H */

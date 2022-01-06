@@ -56,7 +56,7 @@ int RenderTargetBinder::create(lua_State *L)
     else
     {
         GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
-        luaL_error(L, status.errorString());
+        luaL_error(L, "%s", status.errorString());
     }
 
 
@@ -69,9 +69,9 @@ int RenderTargetBinder::create(lua_State *L)
     return 1;
 }
 
-int RenderTargetBinder::destruct(lua_State *L)
+int RenderTargetBinder::destruct(void *p)
 {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     GReferenced* refptr = static_cast<GReferenced*>(ptr);
     refptr->unref();
 

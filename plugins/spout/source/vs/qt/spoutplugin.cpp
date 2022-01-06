@@ -41,8 +41,8 @@ static int sender_create(lua_State *L) {
 	return 1;
 }
 
-static int sender_destruct(lua_State *L) {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+static int sender_destruct(void *p) {
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     if (ptr)
     	GidDestroySender(ptr);
 	return 0;
@@ -79,8 +79,8 @@ static int bindRec(lua_State *L) {
 	return 4;
 }
 
-static int receiver_destruct(lua_State *L) {
-    void* ptr = *(void**)lua_touserdata(L, 1);
+static int receiver_destruct(void *p) {
+    void* ptr = GIDEROS_DTOR_UDATA(p);
     if (ptr)
     	GidDestroyReceiver(ptr);
 	return 0;
@@ -147,7 +147,7 @@ static void g_initializePlugin(lua_State* L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 
-	lua_pushcfunction(L, loader);
+	lua_pushcnfunction(L, loader,"plugin_init_spout");
 	lua_setfield(L, -2, "spout");
 
 	lua_pop(L, 2);

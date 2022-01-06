@@ -38,7 +38,7 @@ void RecentProjectsWidget::paintEvent(QPaintEvent* event)
 	QFont bold("Tahoma", 10+1, QFont::Bold, false);
 	QFont normal("Tahoma", 8+1);
 #else
-	QFont title("Tahoma", 12, QFont::Bold, false);
+    //QFont title("Tahoma", 12, QFont::Bold, false);
 	QFont bold("Tahoma", 10, QFont::Bold, false);
 	QFont normal("Tahoma", 8);
 #endif
@@ -63,7 +63,7 @@ void RecentProjectsWidget::paintEvent(QPaintEvent* event)
 		int y = i * 40;
 		int x = 0;
 
-		if (i == selected_)
+        if ((int)i == selected_)
 		{
 			painter.setBrush(QBrush(0x3875D7));
 			painter.setPen(Qt::NoPen);
@@ -100,7 +100,7 @@ void RecentProjectsWidget::paintEvent(QPaintEvent* event)
 
 void RecentProjectsWidget::mousePressEvent(QMouseEvent* event)
 {
-	selected_ = itemAt(event->x(), event->y());
+    selected_ = itemAt(event->position().x(), event->position().y());
 	update();
 	emit selected(selected_);
 }
@@ -123,7 +123,7 @@ int RecentProjectsWidget::itemAt(int mx, int my)
 
 void RecentProjectsWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	int item = itemAt(event->x(), event->y());
+    int item = itemAt(event->position().x(), event->position().y());
 	if (item != -1)
 		emit openProject(items_[item].path);
 }

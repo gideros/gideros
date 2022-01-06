@@ -1,11 +1,11 @@
 #include <media.h>
 #include <QApplication>
-#include <QDesktopWidget>
-#include <QCameraInfo>
+#include <QMediaDevices>
+#include <QMediaCaptureSession>
 #include <QMediaPlayer>
-#include <QMediaPlaylist>
+#include <QScreen>
 #include <QVideoWidget>
-#include <QCameraImageCapture>
+#include <QImageCapture>
 #include <QString>
 #include <QFileDialog>
 #include <QPixmap>
@@ -26,7 +26,7 @@
 	
 	bool GMEDIA::isCameraAvailable()
 	{
-        if (QCameraInfo::availableCameras().count() > 0)
+        if (QMediaDevices::videoInputs().count() > 0)
             return true;
         else
             return false;
@@ -36,41 +36,43 @@
 	{
 		if (!camera)
 		{
-        QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
-        foreach (const QCameraInfo &cameraInfo, cameras) {
-            camera = new QCamera(cameraInfo);
-            break;
-        }
+            const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+            for (const QCameraDevice &cameraDevice : cameras) {
+               camera = new QCamera(cameraDevice);
+               break;
+            }
 		}
+        if (!camera) return;
 
-        QCameraImageCapture* imageCapture = new QCameraImageCapture(camera);
+        QMediaCaptureSession captureSession;
+        captureSession.setCamera(camera);
+        QImageCapture imageCapture;
+        captureSession.setImageCapture(&imageCapture);
 
-        camera->setCaptureMode(QCamera::CaptureStillImage);
-        camera->start(); // Viewfinder frames start flowing
-
-        //on half pressed shutter button
-        camera->searchAndLock();
+        camera->start();
 
         //on shutter button pressed
+        imageCapture.capture();
+
+
         QDateTime createdDate = QDateTime::currentDateTime();
         QString format = "jpg";
         QString fileName = getAppPath() + "/" + createdDate.toString("yyyyMMdd_HHmmss") + "_gideros." + format;
 
-        connect(imageCapture, SIGNAL(imageSaved(int, const QString &)),
+        connect(&imageCapture, SIGNAL(imageSaved(int, const QString &)),
                          this,  SLOT(pictureSaved(int, const QString &)));
-        imageCapture->capture(fileName);
+        imageCapture.setFileFormat(QImageCapture::JPEG);
+        imageCapture.captureToFile(fileName);
 	}
 
     void GMEDIA::takeScreenshot()
     {
         QDateTime createdDate = QDateTime::currentDateTime();
-        //QPixmap originalPixmap = QPixmap::grabWindow(QApplication::activeWindow()->winId());
         QWidget *widget = QApplication::activeWindow();
-        QPixmap originalPixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
-        QPixmap windowPixmap = originalPixmap.copy(widget->geometry().x(), widget->geometry().y(), widget->width(), widget->height());
+        QPixmap originalPixmap = widget->screen()->grabWindow(widget->winId());
         QString format = "png";
         QString fileName = getAppPath() + "/" + createdDate.toString("yyyyMMdd_HHmmss") + "_gideros." + format;
-        windowPixmap.save(fileName, format.toStdString().c_str());
+        originalPixmap.save(fileName, format.toStdString().c_str());
         onMediaReceived(fileName.toStdString().c_str());
     }
 	
@@ -163,16 +165,15 @@ void GMEDIA::saveFile(const char* path, const char* initialPath)
 							
     void GMEDIA::playVideo(const char* path, bool force)
     {
+        G_UNUSED(force);
         QMediaPlayer* player = new QMediaPlayer;
 
-        QMediaPlaylist* playlist = new QMediaPlaylist(player);
-        playlist->addMedia(QUrl(path));
+        player->setSource(QUrl(path));
 
         QVideoWidget* videoWidget = new QVideoWidget;
         player->setVideoOutput(videoWidget);
 
         videoWidget->show();
-        playlist->setCurrentIndex(1);
         player->play();
     }
 
@@ -230,7 +231,7 @@ void GMEDIA::saveFile(const char* path, const char* initialPath)
     void GMEDIA::pictureSaved(int id, const QString & fileName)
     {
         //on shutter button released
-        camera->unlock();
+        G_UNUSED(id);
         camera->stop();
         onMediaReceived(fileName.toStdString().c_str());
     }

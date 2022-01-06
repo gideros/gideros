@@ -37,7 +37,7 @@ void TimerContainer::removeTimer(Timer* timer)
 			std::remove_if(
 				timers.begin(),
 				timers.end(),
-				std::bind2nd(std::equal_to<Timer*>(), timer)),
+				std::bind(std::equal_to<Timer*>(), std::placeholders::_1, timer)),
 			timers.end());
 	}
 	timer->unref();

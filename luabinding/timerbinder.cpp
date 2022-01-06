@@ -88,9 +88,9 @@ int TimerBinder::create(lua_State* L)
 	return 1;
 }
 
-int TimerBinder::destruct(lua_State* L)
+int TimerBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Timer* timer = static_cast<Timer*>(ptr);
 	timer->unref();
 

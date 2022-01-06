@@ -39,9 +39,9 @@ int ViewportBinder::create(lua_State* L)
 	return 1;
 }
 
-int ViewportBinder::destruct(lua_State* L)
+int ViewportBinder::destruct(void *p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Viewport* shape = static_cast<Viewport*>(ptr);
 	shape->unref();
 

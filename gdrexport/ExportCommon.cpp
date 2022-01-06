@@ -345,18 +345,29 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 				if (compileLua) {
 					QDir toolsDir = QDir(
 							QCoreApplication::applicationDirPath());
-#if defined(Q_OS_WIN)
-					QString luac = toolsDir.filePath("luac.exe");
-#else
-					QString luac = toolsDir.filePath("luac");
-#endif
 					QDir old = QDir::current();
 					QDir::setCurrent(ctx->outputDir.path());
 					QString dfile = "\"" + dst + "\"";
 					QString sfile = "\"" + rdst + "\"";
 					QFile::copy(src, rdst);
+#ifdef USE_LUAU_ENGINE
+#if defined(Q_OS_WIN)
+					QString luac = toolsDir.filePath("luauc.exe");
+#else
+					QString luac = toolsDir.filePath("luauc");
+#endif
+					QProcess procWrite;
+					procWrite.setStandardOutputFile(dfile);
+					procWrite.start(luac, QStringList() << "--compile=binary" << sfile);
+#else
+#if defined(Q_OS_WIN)
+					QString luac = toolsDir.filePath("luac.exe");
+#else
+					QString luac = toolsDir.filePath("luac");
+#endif
 					QProcess::execute(
 							quote(luac) + " -o " + dfile + " " + sfile);
+#endif
 					if (isJet)
 						QFile::remove(rdst);
 					QDir::setCurrent(old.path());

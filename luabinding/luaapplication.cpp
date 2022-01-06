@@ -313,6 +313,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
 	return 1;
 }
 
+#include "luabindings.luac.c"
 static int bindAll(lua_State* L)
 {
 	Application* application = static_cast<Application*>(lua_touserdata(L, 1));
@@ -394,6 +395,15 @@ static int bindAll(lua_State* L)
     ScreenBinder screenbinder(L);
     BufferBinder bufferbinder(L);
 
+    int lres=luaL_loadbuffer(L,(const char *)luabinding_luabindings_luac,sizeof(luabinding_luabindings_luac),"internals");
+#ifdef LUA_IS_LUAU
+    while (lres++<0)
+        lua_call(L, 0, 0);
+#else
+    if (lres==0)
+        lua_call(L, 0, 0);
+#endif
+
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
         pluginManager.plugins[i].main(L, 0);
@@ -447,10 +457,6 @@ static int bindAll(lua_State* L)
     lua_call(L, 1, 1);
     lua_remove(L, -2);
     luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_CompleteEvent);
-
-#include "property.c.in"
-#include "texturepack.c.in"
-#include "compatibility.c.in"
 
 	lua_newtable(L);
 
@@ -1070,7 +1076,8 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
     if ((filenamesz>suffixlen)&&(!strcmp(suffix,filename+filenamesz-suffixlen)))
     	chunkname.resize(filenamesz-suffixlen);
 
-    if (luaL_loadfilenamed(L, filename, chunkname.c_str()))
+    int lres=luaL_loadfilenamed(L, filename, chunkname.c_str());
+    if (lres>0)
 	{
 		if (exceptionsEnabled_ == true)
 		{
@@ -1081,18 +1088,23 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
         application_->deleteAutounrefPool(pool);
         return;
 	}
-
-    if (lua_pcall_traceback(L, 1, 0, 0))
-	{
-		if (exceptionsEnabled_ == true)
-		{
-            if (status)
-                *status = GStatus(1, lua_tostring(L, -1));
-		}
-        lua_pop(L, 1);
-        application_->deleteAutounrefPool(pool);
-        return;
+#ifdef LUA_IS_LUAU
+    while ((lres++)<0) {
+#endif
+        if (lua_pcall_traceback(L, 1, 0, 0))
+        {
+            if (exceptionsEnabled_ == true)
+            {
+                if (status)
+                    *status = GStatus(1, lua_tostring(L, -1));
+            }
+            lua_pop(L, 1);
+            application_->deleteAutounrefPool(pool);
+            return;
+        }
+#ifdef LUA_IS_LUAU
     }
+#endif
     application_->deleteAutounrefPool(pool);
 }
 
@@ -1207,7 +1219,13 @@ void LuaApplication::tick(GStatus *status)
 }
 
 static double yieldHookLimit;
-
+#ifdef LUA_IS_LUAU
+static void yieldHook(lua_State* L, int gc) {
+    if (lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {
+        lua_yield(L,0);
+    }
+}
+#else
 static void yieldHook(lua_State *L,lua_Debug *ar)
 {
 	//glog_i("YieldHook:%f %f\n",iclock(),yieldHookLimit);
@@ -1258,6 +1276,7 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 		}
 	}
 }
+#endif
 
 void LuaApplication::enterFrame(GStatus *status)
 {
@@ -1289,8 +1308,8 @@ void LuaApplication::enterFrame(GStatus *status)
 		double taskStart = iclock();
 		double timeLimit = taskStart + meanFreeTime_*0.9; //Limit ourselves t 90% of free time
 		yieldHookLimit = timeLimit;
-		int loops = 0;
-		int ntasks=tasks_.size();
+        size_t loops = 0;
+        size_t ntasks=tasks_.size();
 		while ((!tasks_.empty())&&(!status->error()))
 		{
             AsyncLuaTask t = tasks_.front();
@@ -1308,15 +1327,25 @@ void LuaApplication::enterFrame(GStatus *status)
 			loops = 0;
 			int res = 0;
 			if (t.autoYield)
-			{
+			{                
+#ifdef LUA_IS_LUAU
+                lua_callbacks(t.L)->interrupt=yieldHook;
+                res = lua_resume(t.L,NULL,t.nargs);
+                lua_callbacks(t.L)->interrupt=NULL;
+#else
                 LuaDebugging::yieldHookMask=LUA_MASKRET| LUA_MASKCOUNT;
                 lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);
                 res = lua_resume(t.L,t.nargs);
                 LuaDebugging::yieldHookMask=0;
                 lua_sethook(t.L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);
+#endif
 			}
 			else
-                res = lua_resume(t.L, t.nargs);
+#ifdef LUA_IS_LUAU
+                res = lua_resume(t.L,NULL,t.nargs);
+#else
+                res = lua_resume(t.L,t.nargs);
+#endif
 			//Reload task data after task has yielded/ended
             t = tasks_.front();
             tasks_.pop_front();
@@ -1563,10 +1592,14 @@ void LuaApplication::initialize()
 #define ARCH_X64 0
 #endif
 
+#ifdef LUA_IS_LUAU
+    L = luaL_newstate();
+#else
     if (ARCH_X64 && lua_isjit())
         L = luaL_newstate();
     else
         L = lua_newstate(l_alloc, NULL);
+#endif
 
     lua_pushlightuserdata(L, &key_tickFunction);
     lua_pushcnfunction(L, ::tick, "gideros_tick");
@@ -1603,8 +1636,10 @@ void LuaApplication::initialize()
 	Rnd::Initialize(iclock()*0xFFFF);
     LuaDebugging::L=L;
     LuaDebugging::yieldHookMask=0;
+#ifndef LUA_IS_LUAU
     LuaDebugging::hook=yieldHook;
     lua_sethook(L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1);
+#endif
     globalLuaState=L;
 
     Core_profilerReset(L);
@@ -1729,7 +1764,7 @@ struct ProfileInfo {
 	int count;
 	double entered;
 	int enterCount;
-	std::string callret;
+    std::string callret;
 	std::map<std::string,double> cTime;
 	std::map<std::string,int> cCount;
 };
@@ -1742,15 +1777,28 @@ static ProfileInfo *profilerGetInfo(Closure *cl)
 	{
 		std::string fid;
 		char fmt[255];
-		if (cl->c.isC)
+#ifdef LUA_IS_LUAU
+        if (cl->isC)
+#else
+        if (cl->c.isC)
+#endif
 		{
-			if (cl->c.name)
+#ifdef LUA_IS_LUAU
+            if (cl->c.debugname)
+                sprintf(fmt,"=[C] %p(%s)",cl->c.f,cl->c.debugname);
+#else
+            if (cl->c.name)
 				sprintf(fmt,"=[C] %p(%s)",cl->c.f,cl->c.name);
-			else
+#endif
+            else
 				sprintf(fmt,"=[C] %p",cl->c.f);
 		}
 		else
-			sprintf(fmt,"%s:%d:%p",getstr(cl->l.p->source),cl->l.p->linedefined,cl->l.p);
+#ifdef LUA_IS_LUAU
+            sprintf(fmt,"%s:%d:%p",getstr(cl->l.p->source),cl->l.p->abslineinfo?cl->l.p->abslineinfo[0]:0,cl->l.p);
+#else
+            sprintf(fmt,"%s:%d:%p",getstr(cl->l.p->source),cl->l.p->linedefined,cl->l.p);
+#endif
 		fid=fmt;
 		p=proFuncs[fid];
 		if (!p) {
@@ -1778,8 +1826,19 @@ static void profilerHook(lua_State *L,int enter)
 			p->entered=time;
 			if (p->name.empty())
 			{
-				lua_Debug ar;
+				lua_Debug ar;                
 				ar.name=NULL;
+#ifdef LUA_IS_LUAU
+                lua_getinfo(L,0,"n",&ar); //Check the '1' value
+                if ((cl->isC)&&(cl->c.debugname))
+                    p->name=cl->c.debugname;
+                else {
+                    if (ar.name)
+                        p->name=ar.name;
+                    else
+                        p->name="Unknown";
+                }
+#else
 				ar.i_ci = cast_int(L->ci - L->base_ci);
 				lua_getinfo(L,"n",&ar);
 				if ((cl->c.isC)&&(cl->c.name))
@@ -1789,7 +1848,8 @@ static void profilerHook(lua_State *L,int enter)
 						p->name=ar.name;
 					else
 						p->name="Unknown";
-				}
+                }
+#endif
 			}
 			if (L->ci>L->base_ci)
 			{
@@ -1799,7 +1859,7 @@ static void profilerHook(lua_State *L,int enter)
 			    {
 			    	Closure *ccl=ci_func(ci);
 			    	ProfileInfo *cp=profilerGetInfo(ccl);
-			    	p->callret=cp->fid;
+                    p->callret=cp->fid;
 			    }
 			}
 		}
@@ -1807,26 +1867,28 @@ static void profilerHook(lua_State *L,int enter)
 	else
 	{
 		int rcalls=1;
+#ifndef LUA_IS_LUAU
 		if (f_isLua(L->ci)) {  /* Lua function? */
 		    rcalls+=L->ci->tailcalls;
 		}
-
+#endif
 		while (p&&(rcalls--)) {
 			if (p->enterCount)
 			{
 				double ctime=0;
-				if (!(--p->enterCount))
+                if (!(--p->enterCount))
 					ctime=time-p->entered;
 				p->time+=ctime;
 				p->count++;
-				ProfileInfo *np=NULL;
+                ProfileInfo *np=NULL;
 				if (!(p->callret.empty()))
-				{
-					p->cCount[p->callret]=p->cCount[p->callret]+1;
-					p->cTime[p->callret]=p->cTime[p->callret]+ctime;
-					np=proFuncs[p->callret];
-					p->callret.clear();
-				}
+                {
+                    p->cCount[p->callret]=p->cCount[p->callret]+1;
+                    p->cTime[p->callret]=p->cTime[p->callret]+ctime;
+                    np=proFuncs[p->callret];
+                    if (!(p->enterCount))
+                        p->callret.clear();
+                }
 				p=np;
 			}
 		}
@@ -1835,13 +1897,13 @@ static void profilerHook(lua_State *L,int enter)
 
 int LuaApplication::Core_profilerStart(lua_State *L)
 {
-	L->profilerHook=profilerHook;
+    L->profilerHook=profilerHook;
 	return 0;
 }
 
 int LuaApplication::Core_profilerStop(lua_State *L)
 {
-	L->profilerHook=NULL;
+    L->profilerHook=NULL;
 	return 0;
 }
 
@@ -1878,6 +1940,7 @@ int LuaApplication::Core_profilerReport(lua_State *L)
 
 int LuaApplication::Core_profilerReset(lua_State *L)
 {
+    G_UNUSED(L);
 	proLookup.clear();
 	for (std::map<std::string,ProfileInfo*>::iterator it=proFuncs.begin();it!=proFuncs.end();it++)
 		delete it->second;

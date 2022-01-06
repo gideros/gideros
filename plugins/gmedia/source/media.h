@@ -3,7 +3,7 @@
 
 #include "gideros.h"
 #include <QObject>
-#include <QCameraInfo>
+#include <QCamera>
 
 
 typedef struct gmedia_ReceivedEvent

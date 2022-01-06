@@ -30,6 +30,7 @@
 \*=========================================================================*/
 
 #ifdef WINSTORE
+#include <stdio.h>
 #define sprintf sprintf_s
 #endif
 

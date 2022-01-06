@@ -11,7 +11,7 @@ INCLUDEPATH += ../../../../2dsg/gfxbackends
 INCLUDEPATH += ../../../../libgideros
 INCLUDEPATH += ../../../../libgid/include
 INCLUDEPATH += ../../../../luabinding
-INCLUDEPATH += ../../../../lua/src
+#INCLUDEPATH += ../../../../lua/src
 INCLUDEPATH += ../Common/imgui_src
 INCLUDEPATH += ../Common
 

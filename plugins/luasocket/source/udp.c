@@ -123,7 +123,7 @@ int udp_open(lua_State *L)
 #if LUA_VERSION_NUM > 501 && !defined(LUA_COMPAT_MODULE)
     luaL_setfuncs(L, func, 0);
 #else
-    luaL_openlib(L, NULL, func, 0);
+    luaL_register(L, NULL, func);
 #endif
     return 0;
 }
@@ -178,7 +178,7 @@ static int meth_sendto(lua_State *L) {
     err = getaddrinfo(ip, port, &aihint, &ai);
 	if (err) {
         lua_pushnil(L);
-        lua_pushstring(L, gai_strerror(err));
+        lua_pushstring(L, tous(gai_strerror(err)));
         return 2;
     }
     timeout_markstart(tm);
@@ -248,7 +248,7 @@ static int meth_receivefrom(lua_State *L)
         INET6_ADDRSTRLEN, portstr, 6, NI_NUMERICHOST | NI_NUMERICSERV);
 	if (err) {
         lua_pushnil(L);
-        lua_pushstring(L, gai_strerror(err));
+        lua_pushstring(L, tous(gai_strerror(err)));
         return 2;
     }
     lua_pushlstring(L, buffer, got);

@@ -38,7 +38,7 @@ static int share(lua_State *L)
 static int loader(lua_State* L)
 {
     lua_newtable(L);
-    lua_pushcfunction(L, share);
+    lua_pushcnfunction(L, share, "share");
     lua_setfield(L, -2, "share");
 
     return 1;
@@ -50,7 +50,7 @@ static void g_initializePlugin(lua_State *L)
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
     
-    lua_pushcfunction(L, loader);
+	lua_pushcnfunction(L, loader, "plugin_init_share");
     lua_setfield(L, -2, "Share");
     
     lua_pop(L, 2);

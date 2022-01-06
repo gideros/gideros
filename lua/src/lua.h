@@ -370,6 +370,8 @@ LUA_API void lua_setprintfunc(lua_State* L, lua_PrintFunc printfunc, void* data)
 
 LUA_API int lua_isjit();
 
+#define LUA_DTOR_UDATA(p) (lua_touserdata((lua_State *)p, 1))
+
 /* }====================================================================== */
 
 

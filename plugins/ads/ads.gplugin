@@ -264,8 +264,8 @@
             	<prepend>
             		<orig><![CDATA[</resources>]]></orig>
             		<by><![CDATA[    <!-- AdMob ad unit IDs -->
-    <string name="banner_home_footer">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobBanner]]]",
-    <string name="interstitial_full_screen">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobInterstitial]]]",            		
+    <string name="banner_home_footer">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobBanner]]]</string>
+    <string name="interstitial_full_screen">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobInterstitial]]]</string>            		
             		]]></by>
     	        </prepend>   
         	</replacelist>

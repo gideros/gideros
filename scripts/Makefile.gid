@@ -1,26 +1,49 @@
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/Makefile.def
 
 QT=$(QTBASEDIR)/$(QTVER)/$(QT_ARCH)
+LUA_ENGINE?=luau
+export LUA_ENGINE
+ifeq ($(LUA_ENGINE),luau)
+LUAC=$(BUILDTOOLS)/luauc --compile=binary $(1) >$(2)
+LUA_INCLUDE=luau/VM/include
+LUA_INCLUDE_CORE=luau/VM/src
+else
+LUAC=$(BUILDTOOLS)/luac -o $(2) $(1)
+LUA_INCLUDE=lua/src
+LUA_INCLUDE_CORE=lua/src
+endif
+export LUA_INCLUDE
+export LUA_INCLUDE_CORE
 
 #Used in plugin bundle recipes
 CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 #DEFS
 PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun reactphysics3d fastnoise
-PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui
+PLUGINS_ALL=lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui
+ifneq ($(LUA_ENGINE),luau)
+PLUGINS_ALL+=bitop
+endif
 
-PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera threads
+PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera 
 PLUGINS_WINONLY=spout steam luamidi
 PLUGINS_MACONLY=steam luamidi
-PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine threads luamidi harfbuzz reactphysics3d fastnoise imgui
-PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
+PLUGINS_WIN32=lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui
+PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct camera tts threads megacool map share storereview
-PLUGINS_HTML5=bitop controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui
+				struct camera tts megacool map share storereview
+PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui
+ifneq ($(LUA_ENGINE),luau)
+PLUGINS_WIN+=threads
+PLUGINS_ANDROID+=threads
+PLUGINS_WIN32+=bitop threads
+PLUGINS_HTML5+=bitop
+endif
+
 #Precompiled plugins only below
-PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d imgui
-PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d imgui
-PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine threads harfbuzz reactphysics3d imgui
+PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
+PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
+PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
 PLUGINS_WINRT=luasocket ogg liquidfun gsfxr harfbuzz reactphysics3d imgui
 
 ADDONS=GSFXREditor Player TAME
@@ -31,6 +54,7 @@ GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | gre
 
 #TOOLS
 TARGET_PLF=qtapp
+BUILDTOOLS=$(ROOT)/Build.Tools
 ifeq ($(OS),Windows_NT)
 PATH:=$(QT)/bin:$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin:$(PATH):
 QMAKE=qmake
@@ -51,16 +75,19 @@ TARGET_PLF+=ios
 endif
 endif
 
-all: $(addsuffix .install,$(TARGET_PLF) $(TARGET_EXT))
+all: versioning $(addsuffix .install,$(TARGET_PLF) $(TARGET_EXT))
 
 clean: $(addsuffix .clean,$(TARGET_PLF) $(TARGET_EXT))
 	rm -rf $(RELEASE)
 
-versioning:
-	A=`git rev-parse HEAD`; if grep -Fq $$A $(ROOT)/libgideros/gid*.h; then echo "VERSION OK"; else echo "#define GIDEROS_GIT_HASH \"$$A\"" >$(ROOT)/libgideros/gideros_build.h; fi 
+versioning: tools
+	A=`git rev-parse HEAD`; if grep -Fq $$A $(ROOT)/libgideros/gid*.h; then echo "VERSION OK"; else echo "#define GIDEROS_GIT_HASH \"$$A\"" >$(ROOT)/libgideros/gideros_build.h; fi
+	$(call LUAC,$(addprefix luabinding/,property.lua texturepack.lua compatibility.lua),luabinding/luabindings.luac)
+	$(BUILDTOOLS)/bin2c luabinding/luabindings.luac >luabinding/luabindings.luac.c
 
 #SDK includes
-vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/external/openal-soft-1.13/include/AL
+vpath %.h libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.13/include/AL
+vpath %.hpp libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.13/include/AL
 $(SDK)/include/%: %
 	cp $^ $(SDK)/include
 
@@ -70,7 +97,7 @@ $(SDK)/include/AL/%: %
 SDK_INCS=$(addsuffix .h,gideros gplugin gproxy greferenced gexport) \
 			$(addsuffix .h,gfile gpath gstdio) \
 			$(addsuffix .h,gglobal glog gapplication gevent) \
-			$(addsuffix .h,lua luaconf lualib lauxlib) \
+			$(addsuffix .h,lua luaconf lualib lauxlib) lua.hpp \
 			$(addprefix AL/,$(addsuffix .h,al alc alext efx efx-creative))
 
 sdk.headers.dir:
@@ -100,6 +127,11 @@ prep.repo:
 		git submodule add https://github.com/gideros/reactphysics3d.git  plugins/reactphysics3d/reactphysics3d; \
 		git reset HEAD .gitmodules; \
 		git reset HEAD plugins/reactphysics3d/reactphysics3d; \
+	fi
+	if [ ! -d $(ROOT)/luau ]; then \
+		git submodule add https://github.com/gideros/luau.git  luau; \
+		git reset HEAD .gitmodules; \
+		git reset HEAD luau; \
 	fi
 	git submodule update --recursive	
 

@@ -283,9 +283,9 @@ private:
     const char* iab_;
 };
 
-static int destruct(lua_State* L)
+static int destruct(void *p)
 {
-	void *ptr = *(void**)lua_touserdata(L, 1);
+	void *ptr = GIDEROS_DTOR_UDATA(p);
 	GReferenced* object = static_cast<GReferenced*>(ptr);
 	IAB *iab = static_cast<IAB*>(object->proxy());
 	

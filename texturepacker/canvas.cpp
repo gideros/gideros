@@ -31,6 +31,7 @@ Canvas::~Canvas()
 
 void Canvas::paintEvent(QPaintEvent* event)
 {
+    Q_UNUSED(event);
 	QPainter painter(this);
 	painter.setBackground(brush_);
 	painter.eraseRect(0, 0, width(), height());
@@ -78,7 +79,7 @@ inline void copyPixel(QImage& image, int sx, int sy, int dx, int dy, bool transp
 	QRgb rgba = image.pixel(sx, sy);
     if (transparent)
         rgba &= 0x00ffffff;
-	image.setPixel(dx, dy, rgba);
+    image.setPixel(dx, dy, rgba);
 }
 
 QString Canvas::packTextures(const QStringList& textureFileNames, const QStringList& names, int padding, int extrude, bool removeAlphaBorder, float alphaThreshold, bool forceSquare, bool showUnusedAreas)
