@@ -237,7 +237,7 @@ function OPS:SRTN(rcount)
 end
 
 function OPS:SIF_(hasElse)
-	local hasElse=tonumber(hasElse)>0	
+	hasElse=tonumber(hasElse)>0	
 	if self.skipping then 
 		local ac=2
 		if hasElse then ac=3 end

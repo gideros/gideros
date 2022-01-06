@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 LUA_ENGINE=$$(LUA_ENGINE)
 LUA_ENGINE=luau
 isEmpty(LUA_ENGINE): LUA_ENGINE=lua
-equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src ../luau/Ast/include ../luau/Compiler/include
+equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src ../luau/Ast/include ../luau/Compiler/include ../luau/Analysis/include
 equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
 defineReplace(expand) {
@@ -31,6 +31,8 @@ equals(LUA_ENGINE,luau): LUA_SOURCES =\
          $$expand(lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib \
          ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils,../luau/VM/src/,.cpp) \
          $$expand(lcode Compiler BytecodeBuilder PseudoCode,../luau/Compiler/src/,.cpp) \
+         $$expand(AstQuery Autocomplete BuiltinDefinitions Config EmbeddedBuiltinDefinitions Error Frontend IostreamHelpers JsonEncoder Linter Module Predicate Quantify RequireTracer \
+         Scope Substitution Symbol ToDot TopoSortStatements Tostring Transpiler TxnLog TypeAttach TypedAllocator TypeInfer TypePack TypeUtils TypeVar Unifiable Unifier,../luau/Analysis/src/,.cpp) \
          $$expand(Ast Confusables Lexer Location Parser StringUtils TimeTrace,../luau/Ast/src/,.cpp)
 equals(LUA_ENGINE,lua): LUA_SOURCES =\
 	../lua/src/lapi.c \

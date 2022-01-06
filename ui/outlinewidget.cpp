@@ -33,6 +33,8 @@ extern "C" {
 #else
 #include "Luau/Compiler.h"
 #include "Luau/Ast.h"
+#include "Luau/Frontend.h"
+#include "Luau/BuiltinDefinitions.h"
 #endif
 
 #define TYPING_DELAY 1000
@@ -69,6 +71,41 @@ static QString getLuaString(TValue *v,bool field=false)
         return field?".?":"?";
 }
 #else
+class OutlineFileResolver : public Luau::FileResolver
+{
+public:
+    OutlineFileResolver(OutlineWidget *ow) : _ow(ow) { };
+    OutlineWidget *_ow;
+    std::optional<Luau::SourceCode> readSource(const Luau::ModuleName& name) override
+    {
+        TextEdit *doc=_ow->doc_;
+        if (QString(name.c_str())==doc->fileName())
+        {
+            QsciScintilla *s=doc->sciScintilla();
+            QString text=s->text();
+            return Luau::SourceCode{text.toStdString(), Luau::SourceCode::Module};
+        }
+        std::optional<std::string> source = std::nullopt;//readFile(name);
+        if (!source)
+            return std::nullopt;
+
+        return Luau::SourceCode{*source, Luau::SourceCode::Module};
+    }
+
+    std::optional<Luau::ModuleInfo> resolveModule(const Luau::ModuleInfo* context, Luau::AstExpr* node) override
+    {
+        Q_UNUSED(context);
+        if (Luau::AstExprConstantString* expr = node->as<Luau::AstExprConstantString>())
+        {
+            Luau::ModuleName name = std::string(expr->value.data, expr->value.size) + ".lua";
+            return {{name}};
+        }
+
+        return std::nullopt;
+    }
+};
+
+
 class OutlineVisitor : public Luau::AstVisitor
 {
     virtual bool visit(class Luau::AstExprFunction* node)
@@ -290,15 +327,24 @@ void OutlineWorkerThread::run()
       Luau::Allocator allocator;
       Luau::AstNameTable names(allocator);
       result = Luau::Parser::parse(btext.constData(),btext.size(), names, allocator, popts);
+
+      Luau::LintResult lr = ((OutlineWidget *)this->parent())->frontend->lint(filename.toStdString().c_str());
+      QList<OutlineLinterItem> li;
+      for (const Luau::LintWarning &e: lr.warnings)
+          li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Warning,filename,e.location.begin.line));
+      for (const Luau::LintWarning &e: lr.errors)
+          li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Error,filename,e.location.begin.line));
+
+      //COMPILER
       std::string error = Luau::compile(std::string(btext.constData(),btext.size()), opts,popts,nullptr,&result);
       if (error.at(0)==0) {
           QString qerror=QString(error.substr(1).c_str());
-          emit reportError("[string "+filename+"]"+qerror);
+          emit reportError("[string "+filename+"]"+qerror,li);
       }
       else  {
           OutlineVisitor visitor(&outline);
           result.root->visit(&visitor);
-          emit reportError("");
+          emit reportError("",li);
       }
 #endif
   lua_close(L);
@@ -364,8 +410,8 @@ OutlineWidget::OutlineWidget(QWidget *parent)
 {
     qRegisterMetaType<OutLineItemList>("OutLineItemList");
     list_=new QListView();
-    connect(list_, SIGNAL(clicked(const QModelIndex &)),
-            this, SLOT  (onItemClicked(const QModelIndex &)));
+    connect(list_, SIGNAL(clicked(QModelIndex)),
+            this, SLOT  (onItemClicked( QModelIndex)));
     working_=false;
     QVBoxLayout *layout=new QVBoxLayout();
     layout->setContentsMargins(0,0,0,0);
@@ -388,7 +434,23 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     setLayout(layout);
     model_=new QStandardItemModel();
     list_->setModel(model_);
-    list_->setItemDelegate(new OutlineWidgetItem());
+    list_->setItemDelegate(new OutlineWidgetItem());    
+#ifdef LUA_IS_LUAU
+    //LINTER
+    Luau::FrontendOptions frontendOptions;
+    frontendOptions.retainFullTypeGraphs = true; //Annotate
+    fileResolver=new OutlineFileResolver(this);
+    configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_UnknownGlobal);
+    configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_ImplicitReturn);
+    configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_FunctionUnused);
+    configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_SameLineStatement);
+    configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_MultiLineStatement);
+
+    frontend=new Luau::Frontend(fileResolver, &configResolver, frontendOptions);
+
+    Luau::registerBuiltinTypes(frontend->typeChecker);
+    Luau::freeze(frontend->typeChecker.globalTypes);
+#endif
 }
 
 OutlineWidget::~OutlineWidget()
@@ -463,22 +525,33 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
         parse();
 }
 
-void OutlineWidget::reportError(const QString error)
+void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> lint)
 {
     if (!doc_) return;
     QsciScintilla *s=doc_->sciScintilla();
     s->clearAnnotations();
-    if (error.isEmpty()||(!checkSyntax_)) return;
+    if ((error.isEmpty()&&lint.isEmpty())||(!checkSyntax_)) return;
+    int stylenum=QsciScintilla::STYLE_LASTPREDEFINED+10;
+    //Error
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETFORE,stylenum,QColor("white"));
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum,QColor(0x80,0x00,0x00));
+    //Linter Note
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETFORE,stylenum+1+OutlineLinterItem::Note,QColor("white"));
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum+1+OutlineLinterItem::Note,QColor(0x80,0x80,0x80));
+    //Linter Warning
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETFORE,stylenum+1+OutlineLinterItem::Warning,QColor("white"));
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum+1+OutlineLinterItem::Warning,QColor(0x80,0x80,0x00));
+    //Linter Error
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETFORE,stylenum+1+OutlineLinterItem::Error,QColor("white"));
+    s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum+1+OutlineLinterItem::Error,QColor(0x80,0x40,0x00));
+    s->setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
+
     QRegularExpression re("\\[string [^\\]]+\\]:(\\d+):(.*)");
     QRegularExpressionMatch match = re.match(error);
     if (match.hasMatch()) {
         QString line = match.captured(1);
         QString err = match.captured(2);
         int lineNum=line.toInt();
-        int stylenum=QsciScintilla::STYLE_LASTPREDEFINED+10;
-        s->SendScintilla(QsciScintillaBase::SCI_STYLESETFORE,stylenum,QColor("white"));
-        s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum,QColor("darkred"));
-        s->setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
         s->annotate(lineNum-1,err,stylenum);
         if (s->SendScintilla(QsciScintillaBase::SCI_AUTOCACTIVE))
         		return;
@@ -488,6 +561,12 @@ void OutlineWidget::reportError(const QString error)
             s->getCursorPosition(&cline,&cindex);
             if ((lineNum-cline)<4) //Faulty line is around editing point, so scroll
                 s->SendScintilla(QsciScintillaBase::SCI_SCROLLTOEND,0,0L);
+        }
+    }
+    for (const auto &e:lint) {
+        if (e.file==doc_->fileName()) {
+            s->setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
+            s->annotate(e.line,e.message,stylenum+1+e.type);
         }
     }
 

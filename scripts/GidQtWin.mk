@@ -175,7 +175,7 @@ qtplugins.install: buildqtplugins
 
 tools:
 	mkdir -p $(BUILDTOOLS)
-	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(BUILDTOOLS); done
+	for f in libgcc_s_seh-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(BUILDTOOLS); done
 	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
 		$(addprefix CLI/,Coverage FileUtils Profiler Repl) \
 		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\

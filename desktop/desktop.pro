@@ -3,6 +3,13 @@ CONFIG   += silent qt
 
 equals(QT_MAJOR_VERSION, 6){
    QT += openglwidgets
+   win32 {
+       #This is ugly, but needed for wintab mode
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtGui/$$[QT_VERSION]/QtGui
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]
+       INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtCore/$$[QT_VERSION]/QtCore
+   }
 }
 
 LUA_ENGINE=$$(LUA_ENGINE)
