@@ -302,11 +302,18 @@ void Utilities::copyFolder(	const QDir& sourceDir,
 
 }
 
-int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env, bool cmdlog){
+int Utilities::processOutput(QString command, QStringList args, QString dir, QProcessEnvironment env, bool cmdlog){
     QProcess process;
     if (!dir.isEmpty())
     	process.setWorkingDirectory(dir);
     process.setProcessEnvironment(env);
+#ifdef Q_OS_WIN
+    if (command=="cmd.exe") //Special case for cmd.exe
+        process.setNativeArguments(args.join(' '));
+    else
+        process.setArguments(args);
+#endif
+    process.setArguments(args);
     process.start(command);
     bool commandOut = !cmdlog;
     while (true)

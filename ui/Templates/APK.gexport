@@ -294,15 +294,26 @@ local ap=require("Tools/export_android")
 				Export.setProperty("local.install",apkInstall)
 				Export.setProperty("local.gradleExtra",ap.gradleExtraTarget or "")
 			]]></lua> 
-			<set key="local.gradleCmd" value="&quot;cmd.exe&quot; /c gradlew.bat"/>
     	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
-        	    <set key="local.gradleCmd" value="bash gradlew"/>
+				<exec>
+					<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
+					<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
+					bash 
+					<arg>gradlew</arg>
+					<arg>[[[local.gradleTarget]]]</arg>
+					<arg>[[[local.gradleExtra]]]</arg>
+				</exec>			
         	</if>
-			<exec>
-				<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
-				<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
-				[[[local.gradleCmd]]] [[[local.gradleTarget]]] [[[local.gradleExtra]]]
-			</exec>			
+    	    <if condition="[[[eq:[[[sys.exeExtension]]]:.exe]]]">
+				<exec cmd="cmd.exe">
+					<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
+					<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>					
+					<arg>/c</arg>
+					<arg>gradlew.bat</arg> 
+					<arg>[[[local.gradleTarget]]]</arg>
+					<arg>[[[local.gradleExtra]]]</arg>
+				</exec>			
+        	</if>
 			<cp src="app/build/outputs/[[[local.apkbuilt]]]" dst="../[[[local.apkname]]][[[local.isUnsigned]]].[[[local.apkext]]]"/>
 			<cd>..</cd>
 			<rmdir>tmp</rmdir>
@@ -311,8 +322,10 @@ local ap=require("Tools/export_android")
 	    	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
 					<set key="local.adbCmd" value="[[[export.androidPath]]]/platform-tools/adb"/>
         		</if>
-				<exec>
-					[[[local.adbCmd]]] install -r [[[local.apkname]]][[[local.isUnsigned]]].[[[local.apkext]]]
+				<exec cmd="[[[local.adbCmd]]]">					
+					<arg>install</arg>
+					<arg>-r</arg>
+					<arg>[[[local.apkname]]][[[local.isUnsigned]]].[[[local.apkext]]]</arg>
 				</exec>
 			</if>
 		</if>

@@ -234,7 +234,7 @@ bool ExportXml::ProcessRuleString(const char *xml)
 bool ExportXml::ProcessRule(QDomElement rule) {
 	QString ruleName = rule.tagName();
 	if (ruleName == "exec")
-		return RuleExec(ReplaceAttributes(rule.text()).trimmed(), rule);
+        return RuleExec(ReplaceAttributes(rule.attribute("cmd")).trimmed(), rule);
 	else if (ruleName == "set")
 		return RuleSet(ReplaceAttributes(rule.attribute("key")),
 				ReplaceAttributes(rule.attribute("value")));
@@ -411,15 +411,18 @@ QString ExportXml::ReplaceAttributes(QString text) {
 
 bool ExportXml::RuleExec(QString cmd, QDomElement rule) {
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QStringList args;
 	for (QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling()) {
 		QDomElement rl = n.toElement();
 		if ((!rl.isNull()) && (rl.tagName() == "env"))
 			env.insert(rl.attribute("key"),
 					ReplaceAttributes(rl.attribute("value")));
-	}
-	ExportCommon::exportInfo("Exec: %s into %s\n", cmd.toStdString().c_str(),
+        else if ((!rl.isNull()) && (rl.tagName() == "arg"))
+            args << ReplaceAttributes(rl.text().trimmed());
+    }
+    ExportCommon::exportInfo("Exec: %s [%s] into %s\n", cmd.toStdString().c_str(),args.join(' ').toStdString().c_str(),
 			ctx->outputDir.path().toStdString().c_str());
-	int err = Utilities::processOutput(cmd, ctx->outputDir.path(), env,false);
+    int err = Utilities::processOutput(cmd, args, ctx->outputDir.path(), env,false);
 	ExportCommon::exportInfo("Exec returned: %d\n", err);
 	return (err == 0);
 }
