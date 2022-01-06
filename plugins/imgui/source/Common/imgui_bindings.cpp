@@ -39,9 +39,9 @@
 #include "imgui_src/imgui_internal.h"
 #include "TextEditor.h" // https://github.com/BalazsJako/ImGuiColorTextEdit
 
-#ifdef IS_BETA_BUILD
+#ifdef IS_DOCKING_BUILD
 #define PLUGIN_NAME "ImGui_beta"
-#elif defined(IS_PRE_BUILD)
+#elif defined(IS_BETA_BUILD)
 #include "stackchecker.h"
 #define STACK_CHECKER(L, pre, delta) StackChecker checker(L, pre, delta);
 #define PLUGIN_NAME "ImGui_pre_build"
@@ -66,6 +66,7 @@
 static lua_State* L;
 static Application* application;
 static char keyWeak = ' ';
+static const char* touchTypes[4]{"finger","pen","mouse","penTablet"};
 
 namespace ImGui_impl
 {
@@ -179,6 +180,15 @@ T* getTableValues(lua_State* L, int idx)
 	T* values = getTableValues<T>(L, idx, len);
 	return values;
 }
+
+template<typename T>
+inline void destroyObject(void* p)
+{
+	void* data = GIDEROS_DTOR_UDATA(p);
+	T* ptr = static_cast<T*>(data);
+	delete ptr;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// TEXTURES / COLORS
@@ -416,15 +426,13 @@ static void localToGlobal(SpriteProxy* proxy, float x, float y, float* tx, float
 		*ty = y;
 }
 
-static int convertGiderosMouseButton(const int button)
+static int convertMouseButton(const int button)
 {
-	LUA_ASSERTF(button >= 0, "Button index must be >= 0, but was: %d", button);
 	switch (button)
 	{
-	case GINPUT_NO_BUTTON:
-		return 4; // unused by ImGui itself
 	case GINPUT_LEFT_BUTTON:
 		return 0;
+	case GINPUT_NO_BUTTON:
 	case GINPUT_RIGHT_BUTTON:
 		return 1;
 	case GINPUT_MIDDLE_BUTTON:
@@ -434,7 +442,6 @@ static int convertGiderosMouseButton(const int button)
 	case 16:
 		return 4;
 	default:
-		LUA_THROW_ERRORF("Incorrect button index. Expected 0, 1, 2, 4, 8 or 16, but got: %d", button);
 		return -1;
 	}
 }
@@ -474,6 +481,7 @@ static void setApplicationCursor(lua_State* L, const char* name)
 	lua_pop(L, 2);
 }
 
+
 #ifndef LUA_IS_LUAU
 static int luaL_optboolean(lua_State* L, int narg, int def)
 {
@@ -481,38 +489,73 @@ static int luaL_optboolean(lua_State* L, int narg, int def)
 }
 #endif
 
-static lua_Number getfield(lua_State* L, const char* key)
+static ginput_Touch getTouchInfo(lua_State* L)
 {
-	lua_getfield(L, -1, key);
-	lua_Number result = lua_tonumber(L, -1);
+	ginput_Touch info;
+	
+	lua_getfield(L, -1, "touch");
+	
+	lua_getfield(L, -1, "x");
+	info.x = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	return result;
-}
-
-static int getfieldi(lua_State* L, const char* key)
-{
-	lua_getfield(L, -1, key);
-	int result = lua_tointeger(L, -1);
+	
+	lua_getfield(L, -1, "y");
+	info.y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	return result;
+	
+	lua_getfield(L, -1, "modifiers");
+	info.modifiers = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "mouseButton");
+	info.mouseButton = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "pressure");
+	info.pressure = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "type");
+	const char* luaTouchType = lua_tostring(L, -1);
+	for (int i = 0; i < 4; i++) {
+		if (!strcmp(luaTouchType, touchTypes[i]))
+		{
+			info.touchType = i;
+			break;
+		}
+	}	
+	lua_pop(L, 1);
+	
+	lua_pop(L, 1); // pop "touch" table
+	
+	return info;
 }
 
-static lua_Number getsubfield(lua_State* L, const char* field, const char* key)
+static ginput_MouseEvent getMouseInfo(lua_State* L)
 {
-	lua_getfield(L, -1, field);
-	lua_getfield(L, -1, key);
-	lua_Number result = lua_tonumber(L, -1);
-	lua_pop(L, 2);
-	return result;
-}
-
-static int getsubfieldi(lua_State* L, const char* field, const char* key)
-{
-	lua_getfield(L, -1, field);
-	lua_getfield(L, -1, key);
-	int result = lua_tointeger(L, -1);
-	lua_pop(L, 2);
-	return result;
+	ginput_MouseEvent info;
+	
+	lua_getfield(L, -1, "x");
+	info.x = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "y");
+	info.y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "button");
+	info.button = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "wheel");
+	info.wheel = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+	
+	lua_getfield(L, -1, "modifiers");
+	info.modifiers = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+	
+	return info;
 }
 
 ImGuiID checkID(lua_State* L, int idx = 2)
@@ -644,6 +687,7 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiFocusedFlags_RootWindow, "FocusedFlags_RootWindow");
 	BIND_IENUM(L, ImGuiFocusedFlags_RootAndChildWindows, "FocusedFlags_RootAndChildWindows");
 	BIND_IENUM(L, ImGuiFocusedFlags_None, "FocusedFlags_None");
+	BIND_IENUM(L, ImGuiFocusedFlags_NoPopupHierarchy, "FocusedFlags_NoPopupHierarchy");
 	
 	//ImGuiPopupFlags
 	BIND_IENUM(L, ImGuiPopupFlags_NoOpenOverExistingPopup, "PopupFlags_NoOpenOverExistingPopup");
@@ -808,7 +852,7 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiCol_TableRowBg, "Col_TableRowBg");
 	BIND_IENUM(L, ImGuiCol_TableRowBgAlt, "Col_TableRowBgAlt");
 	
-#ifdef IS_BETA_BUILD
+#ifdef IS_DOCKING_BUILD
 	BIND_IENUM(L, ImGuiCol_DockingPreview, "Col_DockingPreview");
 	BIND_IENUM(L, ImGuiCol_DockingEmptyBg, "Col_DockingEmptyBg");
 #endif
@@ -880,7 +924,7 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiWindowFlags_MenuBar, "WindowFlags_MenuBar");
 	BIND_IENUM(L, ImGuiWindowFlags_NoBackground, "WindowFlags_NoBackground");
 	BIND_IENUM(L, ImGuiWindowFlags_AlwaysAutoResize, "WindowFlags_AlwaysAutoResize");
-#ifdef IS_BETA_BUILD
+#ifdef IS_DOCKING_BUILD
 	BIND_IENUM(L, ImGuiWindowFlags_NoDocking, "WindowFlags_NoDocking");
 #endif
 	//@MultiPain
@@ -1007,7 +1051,7 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiConfigFlags_NoMouseCursorChange, "ConfigFlags_NoMouseCursorChange");
 	BIND_IENUM(L, ImGuiConfigFlags_IsSRGB, "ConfigFlags_IsSRGB");
 	BIND_IENUM(L, ImGuiConfigFlags_IsTouchScreen, "ConfigFlags_IsTouchScreen");
-#ifdef IS_BETA_BUILD
+#ifdef IS_DOCKING_BUILD
 	BIND_IENUM(L, ImGuiConfigFlags_DockingEnable, "ConfigFlags_DockingEnable");
 	
 	//ImGuiDockNodeFlags
@@ -1401,33 +1445,16 @@ private:
 			io.KeyCtrl = state;
 		if (keyCode == GINPUT_KEY_ALT)
 			io.KeyAlt = state;
-		/*
-			int mod = getKeyboardModifiers(L);
-			
-			if (!mod)
-			{
-				if (keyCode == GINPUT_KEY_SHIFT)
-					io.KeyShift = state;
-				if (keyCode == GINPUT_KEY_CTRL)
-					io.KeyCtrl = state;
-				if (keyCode == GINPUT_KEY_ALT)
-					io.KeyAlt = state;
-			}
-			else
-			{
-				io.KeyAlt = mod & GINPUT_ALT_MODIFIER;
-				io.KeyCtrl = mod & GINPUT_CTRL_MODIFIER;
-				io.KeyShift = mod & GINPUT_SHIFT_MODIFIER;
-				io.KeySuper = mod & GINPUT_META_MODIFIER;
-			}
-			*/
 	}
 
-	void mouseUpOrDown(float x, float y, int button, bool state, int modifiers)
+	void mouseUpOrDown(float x, float y, int giderosButton, bool state, int modifiers, float pressure = 0.0f)
 	{
+		int imguiButton = convertMouseButton(giderosButton);
 		ImGuiIO& io = gidImGui->ctx->IO;
-		io.MouseDown[button] = state;
 		io.MousePos = translateMousePos(gidImGui->proxy, x, y);
+		io.PenPressure = pressure;
+		if (giderosButton)
+			io.MouseDown[imguiButton] = state;
 		updateModifiers(modifiers);
 	}
 
@@ -1469,6 +1496,17 @@ public:
 		return ImVec2(x, y);
 	}
 
+	void mouseUpOrDown(ginput_Touch touch, bool state)
+	{
+		//LUA_PRINTF("POS: (%f; %f)\nBTN:%d\nSTATE: %d\nMODS: %d\nPRESSURE: %f\n=================", touch.x, touch.y, touch.mouseButton, state?1:0, touch.modifiers, touch.pressure);
+		mouseUpOrDown(touch.x, touch.y, touch.mouseButton, state, touch.modifiers, touch.pressure);
+	}
+	
+	void mouseUpOrDown(ginput_MouseEvent mouse, bool state)
+	{
+		mouseUpOrDown(mouse.x, mouse.y, mouse.button, state, mouse.modifiers);
+	}
+	
 	///////////////////////////////////////////////////
 	///
 	/// MOUSE
@@ -1480,12 +1518,7 @@ public:
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, convertGiderosMouseButton(event->button), true, event->modifiers);
-	}
-
-	void mouseDown(float x, float y, int button, int modifiers)
-	{
-		mouseUpOrDown(x, y, convertGiderosMouseButton(button), true, modifiers);
+		mouseUpOrDown(x, y, event->button, true, event->modifiers);
 	}
 
 	void mouseUp(MouseEvent* event)
@@ -1493,17 +1526,12 @@ public:
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, convertGiderosMouseButton(event->button), false, event->modifiers);
-	}
-
-	void mouseUp(float x, float y, int button, int modifiers)
-	{
-		mouseUpOrDown(x, y, convertGiderosMouseButton(button), false, modifiers);
+		mouseUpOrDown(x, y, event->button, false, event->modifiers);
 	}
 
 	void mouseMove(float x, float y, int button, int modifiers)
 	{
-		mouseUpOrDown(x, y, convertGiderosMouseButton(button), true, modifiers);
+		mouseUpOrDown(x, y, button, true, modifiers);
 	}
 
 	void mouseHover(float x, float y, int modifiers)
@@ -1545,19 +1573,16 @@ public:
 
 	void touchesBegin(TouchEvent* event)
 	{
-		float x = event->event->touch.x;
-		float y = event->event->touch.y;
+		ginput_Touch touch = event->event->touch;
+		float x = touch.x;
+		float y = touch.y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, 0, true, event->event->touch.modifiers);
-	}
-
-	void touchesBegin(float x, float y, int modifiers)
-	{
-		mouseUpOrDown(x, y, 0, true, modifiers);
+		mouseUpOrDown(x, y, touch.mouseButton, true, event->event->touch.modifiers, touch.pressure);
 	}
 
 	void touchesEnd(TouchEvent* event)
 	{
+		ginput_Touch touch = event->event->touch;
 		float x;
 		float y;
 		if (gidImGui->resetTouchPosOnEnd)
@@ -1567,33 +1592,25 @@ public:
 		}
 		else
 		{
-			x = event->event->touch.x;
-			y = event->event->touch.y;
+			x = touch.x;
+			y = touch.y;
 		}
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, 0, false, event->event->touch.modifiers);
-	}
-
-	void touchesEnd(float x, float y, int modifiers)
-	{
-		mouseUpOrDown(x, y, 0, false, modifiers);
+		mouseUpOrDown(x, y, touch.mouseButton, false, touch.modifiers, touch.pressure);
 	}
 
 	void touchesMove(TouchEvent* event)
 	{
-		float x = event->event->touch.x;
-		float y = event->event->touch.y;
+		ginput_Touch touch = event->event->touch;
+		float x = touch.x;
+		float y = touch.y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, 0, true, event->event->touch.modifiers);
-	}
-
-	void touchesMove(float x, float y, int modifiers)
-	{
-		mouseUpOrDown(x, y, 0, true, modifiers);
+		mouseUpOrDown(x, y, touch.mouseButton, true, touch.modifiers, touch.pressure);		
 	}
 
 	void touchesCancel(TouchEvent* event)
 	{
+		ginput_Touch touch = event->event->touch;
 		float x;
 		float y;
 		if (gidImGui->resetTouchPosOnEnd)
@@ -1603,16 +1620,11 @@ public:
 		}
 		else
 		{
-			x = event->event->touch.x;
-			y = event->event->touch.y;
+			x = touch.x;
+			y = touch.y;
 		}
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, 0, false, event->event->touch.modifiers);
-	}
-
-	void touchesCancel(float x, float y, int modifiers)
-	{
-		mouseUpOrDown(x, y, 0, false, modifiers);
+		mouseUpOrDown(x, y, touch.mouseButton, false, touch.modifiers, touch.pressure);
 	}
 
 	///////////////////////////////////////////////////
@@ -1713,9 +1725,8 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 {
 	
 	ctx = ImGui::CreateContext(atlas);
-
-	resetTouchPosOnEnd = false;
-	
+	ImGui::SetLuaState(L);
+	resetTouchPosOnEnd = false;	
 	ImGuiIO& io = ctx->IO;
 	
 	// Setup display size
@@ -1759,6 +1770,7 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 	}
 	
 	proxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
+		
 	eventListener = new EventListener(this);
 	
 	if (addMouseListeners)
@@ -1791,8 +1803,9 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 GidImGui::~GidImGui()
 {
 	emptyCallbacksList();
-	ImGui::DestroyContext(this->ctx);
+	ImGui::DestroyContext(ctx);
 	delete proxy;
+	delete eventListener;
 }
 
 void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey))
@@ -1863,10 +1876,9 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 							(int)(pcmd->ClipRect.z - pcmd->ClipRect.x),
 							(int)(pcmd->ClipRect.w - pcmd->ClipRect.y)
 							);
-				shp->drawElements(ShaderProgram::Triangles, pcmd->ElemCount,ShaderProgram::DUSHORT, idx_buffer, true, NULL);
+				shp->drawElements(ShaderProgram::Triangles, pcmd->ElemCount, ShaderProgram::DUSHORT, idx_buffer + pcmd->IdxOffset, true, NULL);
 				engine->popClip();
 			}
-			idx_buffer += pcmd->ElemCount;
 		}
 		
 	}
@@ -1927,6 +1939,7 @@ int destroyImGui(void* p)
 		gtexture_delete((g_id)(uintptr_t)imgui->ctx->IO.Fonts->TexID);
 		ImGui::DestroyContext(imgui->ctx);
 	}
+	
 	imgui->eventListener->removeEventListeners();
 	delete imgui->eventListener;
 	return 0;
@@ -1967,11 +1980,9 @@ int initImPlot(lua_State* L)
 	return 1;
 }
 
-int destroyImPlot(lua_State* L)
+int destroyImPlot(void* p)
 {
-	void* ptr = *(void**)lua_touserdata(L, 1);
-	GImPlot* plot = static_cast<GImPlot*>(ptr);
-	delete plot;
+	destroyObject<GImPlot>(p);
 	return 0;
 }
 
@@ -2047,9 +2058,13 @@ int ImPlot_PlotLine(lua_State* L)
 	float* values = getTableValues<float>(L, 3);
 	if (lua_type(L, 4) == LUA_TTABLE)
 	{
+		int x_len = luaL_getn(L, 3);
+		int y_len = luaL_getn(L, 4);
+		
 		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_checkinteger(L, 5);
-		int offset = luaL_optinteger(L, 6, 0);
+		int count = luaL_optinteger(L, 5, y_len);
+		count = ImMin(y_len, ImMin(count, x_len));
+		int offset = luaL_optinteger(L, 6, 0);		
 		ImPlot::PlotLine<float>(label, values, y_values, count, offset);
 		delete y_values;
 	}
@@ -2073,8 +2088,12 @@ int ImPlot_PlotScatter(lua_State* L)
 	float* values = getTableValues<float>(L, 3);
 	if (lua_type(L, 4) == LUA_TTABLE)
 	{
+		int x_len = luaL_getn(L, 3);
+		int y_len = luaL_getn(L, 4);
+		
 		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_checkinteger(L, 5);
+		int count = luaL_optinteger(L, 5, y_len);
+		count = ImMin(y_len, ImMin(count, x_len));
 		int offset = luaL_optinteger(L, 6, 0);
 		ImPlot::PlotScatter<float>(label, values, y_values, count, offset);
 		delete y_values;
@@ -2797,13 +2816,8 @@ int MouseHover(lua_State* L)
 	STACK_CHECKER(L, "onMouseHover", 0);
 
 	GidImGui* imgui = getImgui(L);
-	
-	float event_x = getfield(L, "x");
-	float event_y = getfield(L, "y");
-	int modifiers = getfieldi(L, "modifiers");
-	
-	imgui->eventListener->mouseHover(event_x, event_y, modifiers);
-	
+	ginput_MouseEvent mouse = getMouseInfo(L);		
+	imgui->eventListener->mouseHover(mouse.x, mouse.y, mouse.modifiers);
 	return 0;
 }
 
@@ -2812,14 +2826,8 @@ int MouseMove(lua_State* L)
 	STACK_CHECKER(L, "onMouseMove", 0);
 
 	GidImGui* imgui = getImgui(L);
-	
-	float event_x = getfield(L, "x");
-	float event_y = getfield(L, "y");
-	int button = getfield(L, "button");
-	int modifiers = getfieldi(L, "modifiers");
-	
-	imgui->eventListener->mouseMove(event_x, event_y, button, modifiers);
-	
+	ginput_MouseEvent mouse = getMouseInfo(L);	
+	imgui->eventListener->mouseUpOrDown(mouse, true);	
 	return 0;
 }
 
@@ -2828,14 +2836,8 @@ int MouseDown(lua_State* L)
 	STACK_CHECKER(L, "onMouseDown", 0);
 
 	GidImGui* imgui = getImgui(L);
-	
-	float event_x = getfield(L, "x");
-	float event_y = getfield(L, "y");
-	int button = getfieldi(L, "button");
-	int modifiers = getfieldi(L, "modifiers");
-	
-	imgui->eventListener->mouseDown(event_x, event_y, button, modifiers);
-	
+	ginput_MouseEvent mouse = getMouseInfo(L);	
+	imgui->eventListener->mouseUpOrDown(mouse, true);
 	return 0;
 }
 
@@ -2844,14 +2846,8 @@ int MouseUp(lua_State* L)
 	STACK_CHECKER(L, "onMouseUp", 0);
 
 	GidImGui* imgui = getImgui(L);
-	
-	float event_x = getfield(L, "x");
-	float event_y = getfield(L, "y");
-	int button = getfieldi(L, "button");
-	int modifiers = getfieldi(L, "modifiers");
-	
-	imgui->eventListener->mouseUp(event_x, event_y, button, modifiers);
-	
+	ginput_MouseEvent mouse = getMouseInfo(L);	
+	imgui->eventListener->mouseUpOrDown(mouse, false);
 	return 0;
 }
 
@@ -2860,14 +2856,8 @@ int MouseWheel(lua_State* L)
 	STACK_CHECKER(L, "onMouseWheel", 0);
 
 	GidImGui* imgui = getImgui(L);
-	
-	float event_x = getfield(L, "x");
-	float event_y = getfield(L, "y");
-	int wheel = getfieldi(L, "wheel");
-	int modifiers = getfieldi(L, "modifiers");
-	
-	imgui->eventListener->mouseWheel(event_x, event_y, wheel, modifiers);
-	
+	ginput_MouseEvent mouse = getMouseInfo(L);		
+	imgui->eventListener->mouseWheel(mouse.x, mouse.y, mouse.wheel, mouse.modifiers);
 	return 0;
 }
 
@@ -2878,10 +2868,8 @@ int TouchCancel(lua_State* L)
 	STACK_CHECKER(L, "onTouchCancel", 0);
 
 	GidImGui* imgui = getImgui(L);
-	float x = getsubfield(L, "touch", "x");
-	float y = getsubfield(L, "touch", "y");
-	int modifiers = getsubfieldi(L, "touch", "modifiers");
-	imgui->eventListener->touchesCancel(x, y, modifiers);
+	ginput_Touch touch = getTouchInfo(L);
+	imgui->eventListener->mouseUpOrDown(touch, false);
 	return 0;
 }
 
@@ -2890,10 +2878,8 @@ int TouchMove(lua_State* L)
 	STACK_CHECKER(L, "onTouchMove", 0);
 
 	GidImGui* imgui = getImgui(L);
-	float x = getsubfield(L, "touch", "x");
-	float y = getsubfield(L, "touch", "y");
-	int modifiers = getsubfieldi(L, "touch", "modifiers");
-	imgui->eventListener->touchesMove(x, y, modifiers);
+	ginput_Touch touch = getTouchInfo(L);
+	imgui->eventListener->mouseUpOrDown(touch, true);
 	return 0;
 }
 
@@ -2902,10 +2888,8 @@ int TouchBegin(lua_State* L)
 	STACK_CHECKER(L, "onTouchBegin", 0);
 
 	GidImGui* imgui = getImgui(L);
-	float x = getsubfield(L, "touch", "x");
-	float y = getsubfield(L, "touch", "y");
-	int modifiers = getsubfieldi(L, "touch", "modifiers");
-	imgui->eventListener->touchesBegin(x, y, modifiers);
+	ginput_Touch touch = getTouchInfo(L);
+	imgui->eventListener->mouseUpOrDown(touch, true);
 	return 0;
 }
 
@@ -2914,10 +2898,8 @@ int TouchEnd(lua_State* L)
 	STACK_CHECKER(L, "onTouchEnd", 0);
 
 	GidImGui* imgui = getImgui(L);
-	float x = getsubfield(L, "touch", "x");
-	float y = getsubfield(L, "touch", "y");
-	int modifiers = getsubfieldi(L, "touch", "modifiers");
-	imgui->eventListener->touchesEnd(x, y, modifiers);
+	ginput_Touch touch = getTouchInfo(L);
+	imgui->eventListener->mouseUpOrDown(touch, false);
 	return 0;
 }
 
@@ -2929,7 +2911,9 @@ int KeyUp(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	
-	int keyCode = getfield(L, "keyCode");
+	lua_getfield(L, -1, "keyCode");
+	int keyCode = lua_tointeger(L, -1);
+	lua_pop(L, 1);
 	
 	imgui->eventListener->keyUp(keyCode);
 	
@@ -2942,7 +2926,9 @@ int KeyDown(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	
-	int keyCode = getfield(L, "keyCode");
+	lua_getfield(L, -1, "keyCode");
+	int keyCode = lua_tointeger(L, -1);
+	lua_pop(L, 1);
 	
 	imgui->eventListener->keyDown(keyCode);
 	
@@ -3465,14 +3451,6 @@ int GetWindowContentRegionMax(lua_State* L)
 	lua_pushnumber(L, max.x);
 	lua_pushnumber(L, max.y);
 	return 2;
-}
-
-int GetWindowContentRegionWidth(lua_State* L)
-{
-	STACK_CHECKER(L, "getWindowContentRegionWidth", 1);
-
-	lua_pushnumber(L, ImGui::GetWindowContentRegionWidth());
-	return 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -5954,6 +5932,17 @@ int BeginMenu(lua_State* L)
 	return 1;
 }
 
+int BeginMenuEx(lua_State* L)
+{
+	STACK_CHECKER(L, "beginMenuEx", 1);
+	
+	const char* label = luaL_checkstring(L, 2);
+	const char* icon = luaL_optstring(L, 3, NULL);
+	bool enabled = luaL_optboolean(L, 4, 1);
+	lua_pushboolean(L, ImGui::BeginMenuEx(label, icon, enabled));
+	return 1;
+}
+
 int EndMenu(lua_State* _UNUSED(L))
 {
 	STACK_CHECKER(L, "endMenu", 0);
@@ -5977,21 +5966,20 @@ int MenuItem(lua_State* L)
 	return 1;
 }
 
-int MenuItemWithShortcut(lua_State* L)
+int MenuItemEx(lua_State* L)
 {
-	STACK_CHECKER(L, "menuItemWithShortcut", 2);
+	STACK_CHECKER(L, "menuItemEx", 1);
 
 	const char* label = luaL_checkstring(L, 2);
-	const char* shortcut = luaL_checkstring(L, 3);
-	bool p_selected = luaL_optboolean(L, 4, 0);
-	bool enabled = luaL_optboolean(L, 5, 1);
+	const char* icon = luaL_optstring(L, 3, NULL);
+	const char* shortcut = luaL_optstring(L, 4, NULL);
+	int selected = luaL_optboolean(L, 5, 0);
+	int enabled = luaL_optboolean(L, 6, 1);
 	
-	bool result = ImGui::MenuItem(label, shortcut, &p_selected, enabled);
+	bool flag = ImGui::MenuItemEx(label, icon, shortcut, selected, enabled);
+	lua_pushboolean(L, flag);
 	
-	lua_pushboolean(L, p_selected);
-	lua_pushboolean(L, result);
-	
-	return 2;
+	return 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -6692,6 +6680,12 @@ int initImGuiListClipper(lua_State* L)
 	return 1;
 }
 
+int destroyImGuiListClipper(void* p)
+{
+	destroyObject<ImGuiListClipper>(p);
+	return 0;
+}
+
 int Clipper_Begin(lua_State* L)
 {
 	STACK_CHECKER(L, "beginClip", 0);
@@ -6717,8 +6711,7 @@ int Clipper_Step(lua_State* L)
 	STACK_CHECKER(L, "step", 1);
 
 	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
-	bool flag = clipper->Step();
-	lua_pushboolean(L, flag);
+	lua_pushboolean(L, clipper->Step());
 	return 1;
 }
 
@@ -6727,7 +6720,7 @@ int Clipper_GetDisplayStart(lua_State* L)
 	STACK_CHECKER(L, "getDisplayStart", 1);
 
 	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
-	lua_pushinteger(L, clipper->DisplayStart);
+	lua_pushinteger(L, clipper->DisplayStart + 1);
 	return 1;
 }
 
@@ -6739,6 +6732,45 @@ int Clipper_GetDisplayEnd(lua_State* L)
 	lua_pushinteger(L, clipper->DisplayEnd);
 	return 1;
 }
+
+int Clipper_GetStartPosY(lua_State* L)
+{
+	STACK_CHECKER(L, "getStartPosY", 1);
+
+	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
+	lua_pushnumber(L, clipper->StartPosY);
+	return 1;
+}
+
+int Clipper_GetItemsCount(lua_State* L)
+{
+	STACK_CHECKER(L, "getItemsCount", 1);
+
+	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
+	lua_pushinteger(L, clipper->ItemsCount);
+	return 1;
+}
+
+int Clipper_GetItemsHeight(lua_State* L)
+{
+	STACK_CHECKER(L, "getItemsHeight", 1);
+
+	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
+	lua_pushnumber(L, clipper->ItemsHeight);
+	return 1;
+}
+
+int Clipper_ForceDisplayRangeByIndices(lua_State* L)
+{
+	STACK_CHECKER(L, "forceDisplayRangeByIndices", 0);
+
+	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
+	int item_min = luaL_checkinteger(L, 2);
+	int item_max = luaL_checkinteger(L, 3);
+	clipper->ForceDisplayRangeByIndices(item_min, item_max);
+	return 0;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -6893,7 +6925,7 @@ int SetTabItemClosed(lua_State* L)
 	return 0;
 }
 
-#ifdef IS_BETA_BUILD
+#ifdef IS_DOCKING_BUILD
 
 /// TODO list:
 /// windows api?
@@ -8046,7 +8078,7 @@ int TabBar_GetTabName(lua_State* L)
 
 /// TabBar -
 
-#endif // IS_BETA_BUILD
+#endif // IS_DOCKING_BUILD
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -8392,7 +8424,7 @@ int IsItemClicked(lua_State* L)
 {
 	STACK_CHECKER(L, "isItemClicked", 1);
 
-	ImGuiMouseButton mouse_button = convertGiderosMouseButton(luaL_optinteger(L, 2, GINPUT_LEFT_BUTTON));
+	ImGuiMouseButton mouse_button = convertMouseButton(luaL_optinteger(L, 2, GINPUT_LEFT_BUTTON));
 	lua_pushboolean(L, ImGui::IsItemClicked(mouse_button));
 	return 1;
 }
@@ -8566,21 +8598,6 @@ int GetStyleColor(lua_State* L)
 	return 2;
 }
 
-int CalcListClipping(lua_State* L)
-{
-	STACK_CHECKER(L, "calcListClipping", 2);
-
-	int items_count = luaL_checkinteger(L, 2);
-	float items_height = luaL_checknumber(L, 3);
-	int out_items_display_start = luaL_checkinteger(L, 4);
-	int out_items_display_end = luaL_checkinteger(L, 5);
-	
-	ImGui::CalcListClipping(items_count, items_height, &out_items_display_start, &out_items_display_end);
-	lua_pushinteger(L, out_items_display_start);
-	lua_pushinteger(L, out_items_display_end);
-	return 2;
-}
-
 int BeginChildFrame(lua_State* L)
 {
 	STACK_CHECKER(L, "beginChildFrame", 1);
@@ -8698,7 +8715,7 @@ int IsMouseDown(lua_State* L)
 {
 	STACK_CHECKER(L, "isMouseDown", 1);
 
-	ImGuiMouseButton button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
 	lua_pushboolean(L, ImGui::IsMouseDown(button));
 	return 1;
 }
@@ -8707,7 +8724,7 @@ int IsMouseClicked(lua_State* L)
 {
 	STACK_CHECKER(L, "isMouseClicked", 1);
 
-	ImGuiMouseButton button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
 	bool repeat = luaL_optboolean(L, 3, 0);
 	lua_pushboolean(L, ImGui::IsMouseClicked(button, repeat));
 	return 1;
@@ -8717,7 +8734,7 @@ int IsMouseReleased(lua_State* L)
 {
 	STACK_CHECKER(L, "isMouseReleased", 1);
 
-	ImGuiMouseButton button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
 	lua_pushboolean(L, ImGui::IsMouseReleased(button));
 	return 1;
 }
@@ -8726,8 +8743,17 @@ int IsMouseDoubleClicked(lua_State* L)
 {
 	STACK_CHECKER(L, "isMouseDoubleClicked", 1);
 
-	ImGuiMouseButton button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
 	lua_pushboolean(L, ImGui::IsMouseDoubleClicked(button));
+	return 1;
+}
+
+int GetMouseClickedCount(lua_State* L)
+{
+	STACK_CHECKER(L, "getMouseClickedCount", 1);
+	
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
+	lua_pushnumber(L, ImGui::GetMouseClickedCount(button));
 	return 1;
 }
 
@@ -8783,7 +8809,7 @@ int IsMouseDragging(lua_State* L)
 {
 	STACK_CHECKER(L, "isMouseDragging", 1);
 
-	ImGuiMouseButton button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
 	float lock_threshold = luaL_optnumber(L, 3, -1.0f);
 	lua_pushboolean(L, ImGui::IsMouseDragging(button, lock_threshold));
 	return 1;
@@ -8793,7 +8819,7 @@ int GetMouseDragDelta(lua_State* L)
 {
 	STACK_CHECKER(L, "getMouseDragDelta", 2);
 
-	ImGuiMouseButton button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
 	float lock_threshold = luaL_optnumber(L, 3, -1.0f);
 	ImVec2 pos = ImGui::GetMouseDragDelta(button, lock_threshold);
 	lua_pushnumber(L, pos.x);
@@ -8805,7 +8831,7 @@ int ResetMouseDragDelta(lua_State* L)
 {
 	STACK_CHECKER(L, "resetMouseDragDelta", 0);
 
-	ImGuiMouseButton button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	ImGuiMouseButton button = convertMouseButton(lua_tointeger(L, 2));
 	ImGui::ResetMouseDragDelta(button);
 	return 0;
 }
@@ -9077,6 +9103,21 @@ int ShowStyleSelector(lua_State* L)
 	const char* label = luaL_checkstring(L, 2);
 	bool open = ImGui::ShowStyleSelector(label);
 	lua_pushboolean(L, open);
+	return 1;
+}
+
+int ShowStackToolWindow(lua_State* L)
+{
+	if (lua_isnoneornil(L, 2))
+	{
+		STACK_CHECKER(L, "showMetricsWindow", 0);
+		ImGui::ShowStackToolWindow();
+		return 0;
+	}
+	STACK_CHECKER(L, "showMetricsWindow", 1);
+	bool p_open = lua_toboolean(L, 2);
+	ImGui::ShowStackToolWindow(&p_open);
+	lua_pushboolean(L, p_open);
 	return 1;
 }
 
@@ -9609,6 +9650,43 @@ int Style_GetFramePadding(lua_State* L)
 	return 2;
 }
 
+int Style_SetCellPadding(lua_State* L)
+{
+	STACK_CHECKER(L, "setCellPadding", 0);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	style.CellPadding = ImVec2(luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+	return 0;
+}
+
+int Style_GetCellPadding(lua_State* L)
+{
+	STACK_CHECKER(L, "getCellPadding", 2);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	lua_pushnumber(L, style.CellPadding.x);
+	lua_pushnumber(L, style.CellPadding.y);
+	return 2;
+}
+
+int Style_SetDisabledAlpha(lua_State* L)
+{
+	STACK_CHECKER(L, "setDisabledAlpha", 0);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	style.DisabledAlpha = luaL_checknumber(L, 2);
+	return 0;
+}
+
+int Style_GetDisabledAlpha(lua_State* L)
+{
+	STACK_CHECKER(L, "getDisabledAlpha", 1);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	lua_pushnumber(L, style.DisabledAlpha);
+	return 1;
+}
+
 int Style_SetItemSpacing(lua_State* L)
 {
 	STACK_CHECKER(L, "setItemSpacing", 0);
@@ -9832,24 +9910,6 @@ int Style_GetAntiAliasedFill(lua_State* L)
 	return 1;
 }
 
-int Style_SetDisabledAlpha(lua_State* L)
-{
-	STACK_CHECKER(L, "setDisabledAlpha", 0);
-
-	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
-	style.DisabledAlpha = luaL_checknumber(L, 2);
-	return 0;
-}
-
-int Style_GetDisabledAlpha(lua_State* L)
-{
-	STACK_CHECKER(L, "getDisabledAlpha", 1);
-
-	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
-	lua_pushnumber(L, style.DisabledAlpha);
-	return 1;
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -9863,7 +9923,7 @@ int GetIO(lua_State* L)
 	return 1;
 }
 
-#ifdef IS_BETA_BUILD
+#ifdef IS_DOCKING_BUILD
 int IO_GetConfigDockingNoSplit(lua_State* L)
 {
 	STACK_CHECKER(L, "setConfigDockingNoSplit", 0);
@@ -9998,7 +10058,7 @@ int IO_isMouseDown(lua_State* L)
 {
 	STACK_CHECKER(L, "isMouseDown", 1);
 
-	int button = convertGiderosMouseButton(luaL_checkinteger(L, 2));
+	int button = convertMouseButton(luaL_checkinteger(L, 2));
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	lua_pushboolean(L, io.MouseDown[button]);
 	return  1;
@@ -10056,8 +10116,18 @@ int IO_WantCaptureMouse(lua_State* L)
 	STACK_CHECKER(L, "wantCaptureMouse", 1);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
-	
+
 	lua_pushboolean(L, io.WantCaptureMouse);
+	return 1;
+}
+
+int IO_WantCaptureMouseUnlessPopupClose(lua_State* L)
+{
+	STACK_CHECKER(L, "wantCaptureMouse", 1);
+
+	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
+
+	lua_pushboolean(L, io.WantCaptureMouseUnlessPopupClose);
 	return 1;
 }
 
@@ -10150,7 +10220,7 @@ int IO_IsNavVisible(lua_State* L)
 
 int IO_SetNavInputsDownDuration(lua_State *L)
 {
-	STACK_CHECKER(L, "setNavNavInputsDownDuration", 0);
+	STACK_CHECKER(L, "setNavInputsDownDuration", 0);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	int index = getNavButtonIndex(L);
@@ -10160,7 +10230,7 @@ int IO_SetNavInputsDownDuration(lua_State *L)
 
 int IO_GetNavInputsDownDuration(lua_State *L)
 {
-	STACK_CHECKER(L, "getNavNavInputsDownDuration", 1);
+	STACK_CHECKER(L, "getNavInputsDownDuration", 1);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	int index = getNavButtonIndex(L);
@@ -10170,7 +10240,7 @@ int IO_GetNavInputsDownDuration(lua_State *L)
 
 int IO_SetNavInputsDownDurationPrev(lua_State *L)
 {
-	STACK_CHECKER(L, "setNavNavInputsDownDurationPrev", 0);
+	STACK_CHECKER(L, "setNavInputsDownDurationPrev", 0);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	int index = getNavButtonIndex(L);
@@ -10180,7 +10250,7 @@ int IO_SetNavInputsDownDurationPrev(lua_State *L)
 
 int IO_GetNavInputsDownDurationPrev(lua_State *L)
 {
-	STACK_CHECKER(L, "getNavNavInputsDownDurationPrev", 1);
+	STACK_CHECKER(L, "getNavInputsDownDurationPrev", 1);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	int index = getNavButtonIndex(L);
@@ -10263,7 +10333,7 @@ int IO_GetMouseDownSec(lua_State* L)
 	STACK_CHECKER(L, "getMouseDownSec", 1);
 
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
-	int button = convertGiderosMouseButton(lua_tointeger(L, 2));
+	int button = convertMouseButton(lua_tointeger(L, 2));
 	
 	lua_pushnumber(L, io.MouseDownDuration[button]);
 	return 1;
@@ -10769,7 +10839,7 @@ int IO_GetBackendRendererName(lua_State* L)
 
 int IO_SetMouseDown(lua_State* L)
 {
-	STACK_CHECKER(L, "setMouseDown", 0);
+	STACK_CHECKER(L, "IO:setMouseDown", 0);
 
 	int buttonIndex = luaL_checkinteger(L, 2);
 	LUA_ASSERTF(buttonIndex >= 0 && buttonIndex < ImGuiMouseButton_COUNT,
@@ -10795,11 +10865,10 @@ int IO_SetMousePos(lua_State* L)
 {
 	STACK_CHECKER(L, "setMousePos", 0);
 
-	GidImGui* imgui = getImgui(L);
+	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
 	float x = luaL_checknumber(L, 2);
 	float y = luaL_checknumber(L, 3);
-	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
-	io.MousePos = EventListener::translateMousePos(imgui->proxy, x, y);
+	io.MousePos = ImVec2(x, y);
 	return 0;
 }
 
@@ -10874,6 +10943,27 @@ int IO_ResetKeysDown(lua_State* L)
 	for (int i = 0; i < 512; ++i) {
 		io.KeysDown[i] = false;
 	}
+	return 0;
+}
+
+int IO_GetPenPressure(lua_State* L)
+{
+	STACK_CHECKER(L, "getPenPressure", 1);
+	
+	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
+	lua_pushnumber(L, io.PenPressure);
+	return 1;
+}
+
+int SetMousePos(lua_State* L)
+{
+	STACK_CHECKER(L, "setMousePos", 0);
+
+	GidImGui* imgui = getImgui(L);
+	float x = luaL_checknumber(L, 2);
+	float y = luaL_checknumber(L, 3);
+	
+	imgui->ctx->IO.MousePos = imgui->eventListener->translateMousePos(imgui->proxy, x, y);
 	return 0;
 }
 
@@ -12428,6 +12518,13 @@ int initTextEditor(lua_State* L)
 	return 1;
 }
 
+
+int destroyTextEditor(void* p)
+{
+	destroyObject<TextEditor>(p);
+	return 0;
+}
+
 int TE_LoadPalette(lua_State* L)
 {
 	STACK_CHECKER(L, "loadPalette", 0);
@@ -13160,6 +13257,12 @@ int initErrorMarkers(lua_State* L)
 	return 1;
 }
 
+int destroyErrorMarkers(void* p)
+{
+	destroyObject<TextEditor::ErrorMarkers>(p);
+	return 0;
+}
+
 int EM_MAdd(lua_State* L)
 {
 	STACK_CHECKER(L, "add", 0);
@@ -13222,6 +13325,12 @@ int initBreakpoints(lua_State* L)
 	lua_pop(L, 1);
 	
 	return 1;
+}
+
+int destroyBreakpoints(void* p)
+{
+	destroyObject<TextEditor::Breakpoints>(p);
+	return 0;
 }
 
 int EM_BAdd(lua_State* L)
@@ -13663,6 +13772,8 @@ int loader(lua_State* L)
 		{"getAntiAliasedFill", Style_GetAntiAliasedFill},
 		{"setDisabledAlpha", Style_SetDisabledAlpha},
 		{"getDisabledAlpha", Style_GetDisabledAlpha},
+		{"setCellPadding", Style_SetCellPadding},
+		{"getCellPadding", Style_GetCellPadding},
 		
 		{NULL, NULL},
 	};
@@ -13744,6 +13855,7 @@ int loader(lua_State* L)
 		{"resetKeysDown", IO_ResetKeysDown},
 		
 		{"wantCaptureMouse", IO_WantCaptureMouse},
+		{"wantCaptureMouseUnlessPopupClose", IO_WantCaptureMouseUnlessPopupClose},
 		{"wantCaptureKeyboard", IO_WantCaptureKeyboard},
 		{"wantTextInput", IO_WantTextInput},
 		{"wantSetMousePos", IO_WantSetMousePos},
@@ -13751,10 +13863,10 @@ int loader(lua_State* L)
 		/// NAVIGATION +
 		{"setNavInput", IO_SetNavInput},
 		{"getNavInput", IO_GetNavInput},
-		{"setNavNavInputsDownDuration", IO_SetNavInputsDownDuration},
-		{"getNavNavInputsDownDuration", IO_GetNavInputsDownDuration},
-		{"setNavNavInputsDownDurationPrev", IO_SetNavInputsDownDurationPrev},
-		{"getNavNavInputsDownDurationPrev", IO_GetNavInputsDownDurationPrev},
+		{"setNavInputsDownDuration", IO_SetNavInputsDownDuration},
+		{"getNavInputsDownDuration", IO_GetNavInputsDownDuration},
+		{"setNavInputsDownDurationPrev", IO_SetNavInputsDownDurationPrev},
+		{"getNavInputsDownDurationPrev", IO_GetNavInputsDownDurationPrev},
 		{"isNavActive", IO_IsNavActive},
 		{"isNavVisible", IO_IsNavVisible},
 		/// NAVIGATION -
@@ -13769,7 +13881,7 @@ int loader(lua_State* L)
 		{"setDisplaySize", IO_SetDisplaySize},
 		{"getDisplaySize", IO_GetDisplaySize},
 		
-	#ifdef IS_BETA_BUILD
+	#ifdef IS_DOCKING_BUILD
 		{"setConfigDockingNoSplit", IO_GetConfigDockingNoSplit},
 		{"setConfigDockingNoSplit", IO_SetConfigDockingNoSplit},
 		{"setConfigDockingWithShift", IO_GetConfigDockingWithShift},
@@ -13835,6 +13947,8 @@ int loader(lua_State* L)
 		{"getBackendPlatformName", IO_GetBackendPlatformName},
 		{"getBackendRendererName", IO_GetBackendRendererName},
 		
+		{"getPenPressure", IO_GetPenPressure},
+		
 		{NULL, NULL}
 	};
 	g_createClass(L, "ImGuiIO", NULL, NULL, NULL, imguiIoFunctionList);
@@ -13877,7 +13991,7 @@ int loader(lua_State* L)
 	};
 	g_createClass(L, "ImFont", NULL, NULL, NULL, imguiFontFunctionsList);
 	
-#ifdef IS_BETA_BUILD
+#ifdef IS_DOCKING_BUILD
 	
 	const luaL_Reg imguiDockNodeFunctionList[] = {
 		{"getID", DockBuilder_Node_GetID},
@@ -14089,7 +14203,7 @@ int loader(lua_State* L)
 		
 		{NULL, NULL}
 	};
-	g_createClass(L, "ImGuiTextEditor", 0, initTextEditor, NULL, imguiTextEditorFunctionsList);
+	g_createClass(L, "ImGuiTextEditor", 0, initTextEditor, destroyTextEditor, imguiTextEditorFunctionsList);
 	
 	g_createClass(L, "ImGuiTextEditorPalette", 0, NULL, NULL, imguiEmptyFunctionsList);
 	
@@ -14106,7 +14220,7 @@ int loader(lua_State* L)
 		{"getSize", EM_MSize},
 		{NULL, NULL}
 	};
-	g_createClass(L, "ImGuiErrorMarkers", 0, initErrorMarkers, NULL, imguiErrorMarkersFunctionsList);
+	g_createClass(L, "ImGuiErrorMarkers", 0, initErrorMarkers, destroyErrorMarkers, imguiErrorMarkersFunctionsList);
 	
 	const luaL_Reg imguiBreakpointsFunctionsList[] = {
 		{"add", EM_BAdd},
@@ -14116,7 +14230,7 @@ int loader(lua_State* L)
 		
 		{NULL, NULL}
 	};
-	g_createClass(L, "ImGuiBreakpoints", 0, initBreakpoints, NULL, imguiBreakpointsFunctionsList);
+	g_createClass(L, "ImGuiBreakpoints", 0, initBreakpoints, destroyBreakpoints, imguiBreakpointsFunctionsList);
 	
 	const luaL_Reg imguiPayloadFunctionsList[] = {
 		{"getNumData", Payload_GetNumberData},
@@ -14138,9 +14252,13 @@ int loader(lua_State* L)
 		{"step", Clipper_Step},
 		{"getDisplayStart", Clipper_GetDisplayStart},
 		{"getDisplayEnd", Clipper_GetDisplayEnd},
+		{"forceDisplayRangeByIndices", Clipper_ForceDisplayRangeByIndices},
+		{"getStartPosY", Clipper_GetStartPosY},
+		{"getItemsCount", Clipper_GetItemsCount},
+		{"getItemsHeight", Clipper_GetItemsHeight},
 		{NULL, NULL}
 	};
-	g_createClass(L, "ImGuiListClipper", 0, initImGuiListClipper, NULL, clipperFunctionList);
+	g_createClass(L, "ImGuiListClipper", 0, initImGuiListClipper, destroyImGuiListClipper, clipperFunctionList);
 	
 	const luaL_Reg imguiTableSortSpecsFunctionList[] = {
 		{"getColumnSortSpecs", TableSortSpecs_GetColumnSortSpecs},
@@ -14287,8 +14405,7 @@ int loader(lua_State* L)
 		{"getContentRegionAvail", GetContentRegionAvail},
 		{"getWindowContentRegionMin", GetWindowContentRegionMin},
 		{"getWindowContentRegionMax", GetWindowContentRegionMax},
-		{"getWindowContentRegionWidth", GetWindowContentRegionWidth},
-		
+
 		{"getScrollX", GetScrollX},
 		{"getScrollY", GetScrollY},
 		{"getScrollMaxX", GetScrollMaxX},
@@ -14467,9 +14584,10 @@ int loader(lua_State* L)
 		{"beginMainMenuBar", BeginMainMenuBar },
 		{"endMainMenuBar", EndMainMenuBar },
 		{"beginMenu", BeginMenu },
+		{"beginMenuEx", BeginMenuEx },
 		{"endMenu", EndMenu },
 		{"menuItem", MenuItem },
-		{"menuItemWithShortcut", MenuItemWithShortcut },
+		{"menuItemEx", MenuItemEx },
 		{"beginTooltip", BeginTooltip },
 		{"endTooltip", EndTooltip },
 		{"setTooltip", SetTooltip },
@@ -14538,7 +14656,6 @@ int loader(lua_State* L)
 		{"getFrameCount", GetFrameCount},
 		{"getStyleColorName", GetStyleColorName},
 		{"getStyleColor", GetStyleColor},
-		{"calcListClipping", CalcListClipping},
 		{"beginChildFrame", BeginChildFrame},
 		{"endChildFrame", EndChildFrame},
 		
@@ -14558,6 +14675,7 @@ int loader(lua_State* L)
 		{"isMouseClicked", IsMouseClicked},
 		{"isMouseReleased", IsMouseReleased},
 		{"isMouseDoubleClicked", IsMouseDoubleClicked},
+		{"getMouseClickedCount", GetMouseClickedCount},
 		{"isMouseHoveringRect", IsMouseHoveringRect},
 		{"isMousePosValid", IsMousePosValid},
 		{"isAnyMouseDown", IsAnyMouseDown},
@@ -14589,6 +14707,7 @@ int loader(lua_State* L)
 		{"showMetricsWindow", ShowMetricsWindow},
 		{"showStyleSelector", ShowStyleSelector},
 		{"showLuaStyleEditor", ShowLuaStyleEditor},
+		{"showStackToolWindow", ShowStackToolWindow},
 		
 		// Logs
 		{"showLog", ShowLog},
@@ -14646,7 +14765,10 @@ int loader(lua_State* L)
 		{"getDragDropPayloadDataType", CTX_GetDragDropPayloadDataType},
 		{"getDragDropPayloadDataSize", CTX_GetDragDropPayloadDataSize},
 		
-	#ifdef IS_BETA_BUILD
+		
+		{"setMousePos", SetMousePos},
+		
+	#ifdef IS_DOCKING_BUILD
 		{"dockSpace", DockSpace},
 		{"dockSpaceOverViewport", DockSpaceOverViewport},
 		{"setNextWindowDockID", SetNextWindowDockID},
@@ -14763,7 +14885,7 @@ static void g_initializePlugin(lua_State* L)
 
 static void g_deinitializePlugin(lua_State* _UNUSED(L)) { }
 
-#ifdef IS_BETA_BUILD
+#if defined(IS_DOCKING_BUILD) || defined(IS_BETA_BUILD)
 REGISTER_PLUGIN_NAMED(PLUGIN_NAME, "1.0.0", imgui_beta)
 #else
 #ifdef QT_NO_DEBUG
