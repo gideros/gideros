@@ -386,11 +386,6 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	// compile building lua files
 	if (compileLua) {
 		QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
-#if defined(Q_OS_WIN)
-		QString luac = toolsDir.filePath("luac.exe");
-#else
-		QString luac = toolsDir.filePath("luac");
-#endif
 		QDir old = QDir::current();
 		QDir::setCurrent(ctx->outputDir.path());
 
@@ -406,7 +401,25 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			QFile::copy(luafiles_src[i], rdst);
 		}
 		QFileInfo di(dfile);
-		QProcess::execute(quote(luac) + " -o \"" + dfile + "\" " + sfile);
+
+#ifdef USE_LUAU_ENGINE
+#if defined(Q_OS_WIN)
+					QString luac = toolsDir.filePath("luauc.exe");
+#else
+					QString luac = toolsDir.filePath("luauc");
+#endif
+					QProcess procWrite;
+					procWrite.setStandardOutputFile(dfile);
+					procWrite.start(luac, QStringList() << "--compile=binary" << sfile);
+#else
+#if defined(Q_OS_WIN)
+					QString luac = toolsDir.filePath("luac.exe");
+#else
+					QString luac = toolsDir.filePath("luac");
+#endif
+					QProcess::execute(quote(luac) + " -o \"" + dfile + "\" " + sfile);
+#endif
+
 		for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
 			QString rdst = QDir::cleanPath(
 					ctx->outputDir.relativeFilePath(ctx->luafiles[i]));

@@ -323,7 +323,7 @@ MainWindow::MainWindow(QWidget *parent)
 	players_ = new QComboBox;
 	players_->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 	ui.mainToolBar->insertWidget(ui.actionStart_Player,players_);
-	connect(players_,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(playerChanged(const QString &)));
+    connect(players_,SIGNAL(currentIndexChanged(int)),this,SLOT(playerChanged(int)));
 
     //QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
@@ -637,12 +637,14 @@ void MainWindow::advertisement(const QString& host,unsigned short port,unsigned 
 	players_->addItem(QString("%1 (%2:%3)").arg(name).arg(host).arg(port),nfull);
 }
 
-void MainWindow::playerChanged(const QString & text)
+void MainWindow::playerChanged(int)
 {
-	QString hostData=text;
+    QString hostData;
 	if (players_->currentData().isValid())
-		hostData=players_->currentData().toString();
-	QStringList parts=hostData.split('|');
+        hostData=players_->currentData().toString();
+    else
+        return;
+    QStringList parts=hostData.split('|');
 	if (parts.count()==1)
 		client_->connectToHost(parts[0],15000);
 	else

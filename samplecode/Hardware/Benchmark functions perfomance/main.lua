@@ -2,8 +2,8 @@
 	https://blog.giderosmobile.com/2018/04/how-much-faster-is-gideros-rad-operator.html
 ]]
 
-max@1000000
-calls@10
+max=1000000
+calls=10
 local randomSeed,random=Core.randomSeed,Core.random
 local rad=math.rad
 randomSeed(0,1) -- just in case the first call takes longer

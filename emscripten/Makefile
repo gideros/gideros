@@ -33,7 +33,7 @@ LGVFS_SRCS+=$(addprefix libgvfs/,$(notdir $(basename $(wildcard ../libgvfs/*.cpp
 ifeq ($(LUA_ENGINE),luau)
 LUA_INCLUDE_ALL= $(addprefix luau/,VM/src VM/include Compiler/include Ast/include)
 LSUP_SRCS+= \
-        $(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib \
+        $(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
          ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils) \
         $(addprefix luau/Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
         $(addprefix luau/Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)

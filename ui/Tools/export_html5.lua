@@ -26,8 +26,11 @@ function Html5Project.export(m,flavour)
   ]=]):format(m,zext))
   if pack then
   Export.callXml(([=[
-        <exec>
-          "[[[sys.toolsDir]]]/crunchme[[[sys.exeExtension]]]" -nostrip -i %s.%s %s.gidz
+        <exec cmd="[[[sys.toolsDir]]]/crunchme[[[sys.exeExtension]]]">
+           <arg>-nostrip</arg>
+           <arg>-i</arg>
+           <arg>%s.%s</arg>
+           <arg>%s.gidz</arg>
         </exec>
   ]=]):format(m,ext,m))
   Export.callXml(([=[

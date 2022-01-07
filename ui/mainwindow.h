@@ -370,7 +370,7 @@ private slots:
 #endif
 
 private slots:
-	void playerChanged(const QString & text);
+    void playerChanged(int);
 	void showOutputPanel();
 	void showLibraryManager();
 

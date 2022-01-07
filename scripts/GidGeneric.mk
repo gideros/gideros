@@ -14,7 +14,7 @@ DEFINES_pystring=PYSTRING_LIBRARY
 DEFINES_lua=LUA_BUILD_AS_DLL LUA_CORE
 ifeq ($(LUA_ENGINE),luau)
 INCLUDEPATHS_lua=luau/VM/src luau/VM/include luau/Compiler/include luau/Ast/include libgvfs
-OBJFILES_lua=$(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib \
+OBJFILES_lua=$(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
          ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils) \
         $(addprefix luau/Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
         $(addprefix luau/Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)

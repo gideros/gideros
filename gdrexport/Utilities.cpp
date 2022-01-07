@@ -307,14 +307,16 @@ int Utilities::processOutput(QString command, QStringList args, QString dir, QPr
     if (!dir.isEmpty())
     	process.setWorkingDirectory(dir);
     process.setProcessEnvironment(env);
+    process.setProgram(command);
 #ifdef Q_OS_WIN
     if (command=="cmd.exe") //Special case for cmd.exe
         process.setNativeArguments(args.join(' '));
     else
         process.setArguments(args);
-#endif
+#else
     process.setArguments(args);
-    process.start(command);
+#endif
+    process.start();
     bool commandOut = !cmdlog;
     while (true)
     {
