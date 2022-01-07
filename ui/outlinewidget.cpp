@@ -336,7 +336,7 @@ void OutlineWorkerThread::run()
           li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Error,filename,e.location.begin.line));
 
       //COMPILER
-      std::string error = Luau::compile(std::string(btext.constData(),btext.size()), opts,popts,nullptr,&result);
+      std::string error = Luau::compile(std::string(btext.constData(),btext.size()), filename.toStdString(), opts,popts,nullptr,&result);
       if (error.at(0)==0) {
           QString qerror=QString(error.substr(1).c_str());
           emit reportError("[string "+filename+"]"+qerror,li);

@@ -157,7 +157,7 @@ function OPS:ECAL(acount)
 		rtype=args[tonumber(rtype)].vtype
 	end
 	if var.evaluate then
-		return { vtype=var.rtype, value=var.evaluate(self,unpack(args)) }
+		return { vtype=var.rtype, value=var.evaluate(self,var.value,unpack(args)) }
 	end
 	
 	if var.callargs and #var.callargs>0 then

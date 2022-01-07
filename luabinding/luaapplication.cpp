@@ -1098,7 +1098,7 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
                 if (status)
                     *status = GStatus(1, lua_tostring(L, -1));
             }
-            lua_pop(L, 1);
+            lua_pop(L, 1-lres);
             application_->deleteAutounrefPool(pool);
             return;
         }
