@@ -1,6 +1,5 @@
 
 
-
 local OPS={}
 local function numvalue(n)
 	n=tostring(n)
@@ -63,7 +62,9 @@ end
 
 function OPS:VLOC(name)
 	if self.skipping then return end
-	return { value=name, vtype=self.locals[name] or "hF1" }
+	local loc=self.locals[name]
+	assert(loc and loc.vtype,"Local '"..name.."' undefined at this point")
+	return { value=loc.value, vtype=loc.vtype or "hF1" }
 end
 
 function OPS:EFCT(acount)
@@ -160,11 +161,12 @@ function OPS:ECAL(acount)
 		return { vtype=var.rtype, value=var.evaluate(self,var.value,unpack(args)) }
 	end
 	
-	if var.callargs and #var.callargs>0 then
-		sargs=sargs..var.callargs
+	if #sargs>0 then sargs=sargs:sub(1,#sargs-1) end
+	
+	if var.callarg and #var.callarg>0 then
+		sargs=sargs..","..var.callarg
 	end
 
-	if #sargs>0 then sargs=sargs:sub(1,#sargs-1) end
 	return { value=var.value.."("..sargs..")", vtype=rtype }
 end
 
@@ -185,11 +187,12 @@ function OPS:SFCT()
 	local stable={}
 	for i=spc,self.pc do table.insert(stable,self.ctable[i]) end
 	
-	glf._fcode=stable
+	glf._fcode={ ctable=stable }
 	
 	if self._handlers.SUBFUNC then
 		self._handlers.SUBFUNC(self,glf)
 	end
+		
 	return ""
 end
 
@@ -286,7 +289,6 @@ function OPS:SFOR(var,hasInc)
 		if hasInc then ac=3 end
 		return self:skipOp(ac) 
 	end
-	local ss=""
 	local from=self:genOp()
 	local to=self:genOp()
 	local step={ value="1.0" }
@@ -301,6 +303,11 @@ function OPS:SFOR(var,hasInc)
 		promote(step,type)
 	end
 	type=self._t[type] or type
+	
+	local vname=(self.locals[var] and self.locals[var].value) or var
+	self.locals[var]={ vtype=type, value=vname }
+	var=vname
+
 	return self:indent()..(("for (%s %s=%s;%s<=%s;%s+=%s)\n"):format(type,var,from.value,var,to.value,var,step.value))..self:genOp()
 end
 
@@ -321,8 +328,9 @@ function OPS:SLCL(vcount)
 		local veq=""
 		if vd.val then veq="=" end
 		local ltype=self._t[vd.type] or vd.type
-		ss=ss..self:indent()..ltype.." "..vd.name..veq..(vd.val or "")..";\n"
-		self.locals[vd.name]=vd.type
+		local vname=(self.locals[vd.name] and self.locals[vd.name].value) or vd.name
+		ss=ss..self:indent()..ltype.." "..vname..veq..(vd.val or "")..";\n"
+		self.locals[vd.name]={ vtype=vd.type, value=vname }
 	end
 	return ss
 end
@@ -360,22 +368,28 @@ end
 function codegen_u(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 	--print(pcode)
 	local ctable={}
+	local ctx={ pc=1, indentc=0, localFunctions={}, locals={} }
 	if type(f)=="function" then
 		local pcode=string.dumpPseudocode(f)
 		for code,a1,a2 in pcode:gmatch("(....):?([^:\n]*):?([^\n]*)\n") do
 			table.insert(ctable,{ op=code, a1=a1, a2=a2 })
 		end
+		ctx.ctable=ctable
 	else
-		ctable=f
+		for k,v in pairs(ctx) do
+			f[k]=v
+		end
+		ctx=f
+		ctable=ctx.ctable
 	end
 	assert(#ctable>0,"No code found")
-	local ctx={ ctable=ctable, pc=1, indentc=0, localFunctions={}, locals={} }
 	ctx._g=globalmap or {}
 	ctx._l={}
 	ctx._t=typemap
 	ctx._ot=optypemap
 	ctx._handlers=ophandlers or {}
-	for k,v in ipairs(argsmap or {}) do  if v.value then ctx.locals[v.value]=v.vtype  end end
+	for k,v in ipairs(argsmap or {}) do if v.name then ctx.locals[v.name]=v  end end
+	ctx.locals["vertex"]={ value="_RSV_vertex" } --in MSL, vertex is a reserved word
 
 	setmetatable(ctx, { __index=OPS })
 	assert(ctable[1].op=="EFCT","Not a function definition")
