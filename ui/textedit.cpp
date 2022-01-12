@@ -4,18 +4,14 @@
 #include <QTextStream>
 #include <QApplication>
 #include <QFileInfo>
-#include <Qsci/qscilexercpp.h>
-#include <Qsci/qscilexerlua.h>
-#include <Qsci/qscilexerxml.h>
-#include <Qsci/qscilexer.h>
 #include <QCloseEvent>
-#include <Qsci/qsciapis.h>
-#include <Qsci/qscicommand.h>
-#include <Qsci/qscicommandset.h>
 #include <QSettings>
 #include <QToolTip>
 #include "iconlibrary.h"
 #include "settingskeys.h"
+#include <ScintillaEdit/ILexer.h>
+#include <Lexillia/Lexilla.h>
+#include <Lexillia/SciLexer.h>
 
 QSet<QString> TextEdit::breakpoints;
 #ifdef Q_OS_MAC
@@ -118,26 +114,24 @@ static void keysForMac(QsciScintilla* qscintilla)
 }
 #endif
 
-static QsciLexer* createLexerByExtension(QString ext)
+static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
 {
 	ext = ext.toLower();
 
-	QsciLexer* lexer = 0;
+    ILexer5 *lexer = NULL;
 
     QSettings settings;
     QString themePath = settings.value(Keys::Editor::theme).toString();
 
 	if (ext == "lua")
 	{
-		QsciLexerLua* lexerlua = new QsciLexerLua;
-		lexer = lexerlua;
-
+        lexer = CreateLexer(LexerNameFromID(SCLEX_LUA));
+#if 0
 		QsciAPIs* api = new QsciAPIs(lexer);
 //		api->add(QString("addEventListener(type, listener, [data]) Registers a listener function and an optional data value"));
 		api->load("Resources/gideros_annot.api");
 		api->prepare();
 		lexer->setAPIs(api);
-
         if (themePath != "")
         {
         QSettings editorTheme(themePath, QSettings::IniFormat);
@@ -145,34 +139,95 @@ static QsciLexer* createLexerByExtension(QString ext)
         }
         else
         {
-            lexer->setColor(Qt::blue, QsciLexerLua::Keyword);
-            lexer->setColor(QColor(0xff, 0x80, 0x00), QsciLexerLua::Number);
+        }
+#endif
+        editor->setILexer((sptr_t)lexer);
+
+        editor->setKeyWords(0,"and break continue do else elseif end false for function if "
+                                           "in local nil not or repeat return then true until "
+                                           "while");
+        editor->setKeyWords(1,"_ALERT _ERRORMESSAGE _INPUT _PROMPT _OUTPUT _STDERR "
+                                            "_STDIN _STDOUT call dostring foreach foreachi getn "
+                                            "globals newtype rawget rawset require sort tinsert "
+                                            "tremove "
+
+                                            "G getfenv getmetatable ipairs loadlib next pairs "
+                                            "pcall rawegal rawget rawset require setfenv "
+                                            "setmetatable xpcall string table math coroutine io "
+                                            "os debug");
+        editor->setKeyWords(2,"abs acos asin atan atan2 ceil cos deg exp floor "
+                                            "format frexp gsub ldexp log log10 max min mod rad "
+                                            "random randomseed sin sqrt strbyte strchar strfind "
+                                            "strlen strlower strrep strsub strupper tan "
+
+                                            "string.byte string.char string.dump string.find "
+                                            "string.len string.lower string.rep string.sub "
+                                            "string.upper string.format string.gfind string.gsub "
+                                            "table.concat table.foreach table.foreachi table.getn "
+                                            "table.sort table.insert table.remove table.setn "
+                                            "math.abs math.acos math.asin math.atan math.atan2 "
+                                            "math.ceil math.cos math.deg math.exp math.floor "
+                                            "math.frexp math.ldexp math.log math.log10 math.max "
+                                            "math.min math.mod math.pi math.rad math.random "
+                                            "math.randomseed math.sin math.sqrt math.tan");
+        editor->setKeyWords(3,"openfile closefile readfrom writeto appendto remove "
+                                            "rename flush seek tmpfile tmpname read write clock "
+                                            "date difftime execute exit getenv setlocale time "
+
+                                            "coroutine.create coroutine.resume coroutine.status "
+                                            "coroutine.wrap coroutine.yield io.close io.flush "
+                                            "io.input io.lines io.open io.output io.read "
+                                            "io.tmpfile io.type io.write io.stdin io.stdout "
+                                            "io.stderr os.clock os.date os.difftime os.execute "
+                                            "os.exit os.getenv os.remove os.rename os.setlocale "
+                                            "os.time os.tmpname");
+
+        editor->setProperty("fold","1");
+        if (themePath == "")
+        {
+            editor->styleSetFore(SCE_LUA_COMMENT,0x007F00);
+            editor->styleSetFore(SCE_LUA_COMMENTLINE,0x007F00);
+            editor->styleSetFore(SCE_LUA_NUMBER,0x0080FF);
+            editor->styleSetFore(SCE_LUA_WORD,0xFF0000);
+            editor->styleSetFore(SCE_LUA_WORD2,0x7F0000);
+            editor->styleSetFore(SCE_LUA_WORD3,0x7F0000);
+            editor->styleSetFore(SCE_LUA_WORD4,0x7F0000);
+
+            editor->styleSetFore(SCE_LUA_STRING,0x7F007F);
+            editor->styleSetFore(SCE_LUA_CHARACTER,0x7F007F);
+            editor->styleSetFore(SCE_LUA_LITERALSTRING,0x7F007F);
+            editor->styleSetFore(SCE_LUA_PREPROCESSOR,0x007F7F);
+            editor->styleSetFore(SCE_LUA_LABEL,0x007F7F);
         }
     }
     else if (ext == "xml")
     {
-        lexer = new QsciLexerXML;
+        lexer = CreateLexer(LexerNameFromID(SCLEX_XML));
+        editor->setILexer((sptr_t)lexer);
     }
     else if ((ext == "hlsl") || (ext == "glsl") )
     {
-        lexer = new QsciLexerCPP;
-
-        if (themePath != "")
-        {
-        QSettings editorTheme(themePath, QSettings::IniFormat);
-        lexer->readSettings(editorTheme);
-        }
+        lexer = CreateLexer(LexerNameFromID(SCLEX_CPP));
+        editor->setILexer((sptr_t)lexer);
     }
 
     if (lexer && themePath == "")
 	{ 
 #ifdef Q_OS_MAC
-		lexer->setFont(QFont("Monaco", 12));
+        editor->styleSetFont(STYLE_DEFAULT,"Monaco");
+        editor->styleSetSize(STYLE_DEFAULT,12);
 #else
-		lexer->setFont(QFont("Courier New", 10));
+        editor->styleSetFont(STYLE_DEFAULT,"Courier New");
+        editor->styleSetSize(STYLE_DEFAULT,10);
 #endif
-		lexer->setPaper(QColor(255, 255, 255));
+        editor->styleSetBack(STYLE_DEFAULT,0xFFFFFF);
 	}
+    else if (lexer) {
+#if 0
+        QSettings editorTheme(themePath, QSettings::IniFormat);
+        lexer->readSettings(editorTheme);
+#endif
+    }
 
 	return lexer;
 }
@@ -182,7 +237,7 @@ TextEdit::TextEdit(QWidget* parent)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 
-	sciScintilla_ = new QsciScintilla(this);
+    sciScintilla_ = new ScintillaEdit(this);
 	setWidget(sciScintilla_);
 
 #ifdef Q_OS_MAC
@@ -198,52 +253,69 @@ QString theme = settings.value(Keys::Editor::theme).toString();
 QSettings lls(theme, QSettings::IniFormat);
 
 #ifdef Q_OS_MAC
-    sciScintilla_->setFont(QFont(
-        lls.value("FontFamily", "Monaco").toString(),
-        lls.value("FontSize", 12).toInt()));
+    sciScintilla_->styleSetFont(STYLE_DEFAULT,lls.value("FontFamily", "Monaco").toString().toUtf8());
+    sciScintilla_->styleSetSize(STYLE_DEFAULT,lls.value("FontSize", 12).toInt());
 #else
-    sciScintilla_->setFont(QFont(
-        lls.value("FontFamily", "Lucida Console").toString(),
-        lls.value("FontSize", 12).toInt()));
+    sciScintilla_->styleSetFont(STYLE_DEFAULT,lls.value("FontFamily", "Lucida Console").toString().toUtf8());
+    sciScintilla_->styleSetSize(STYLE_DEFAULT,lls.value("FontSize", 12).toInt());
 #endif
 
-	sciScintilla_->setFolding(QsciScintilla::BoxedTreeFoldStyle, 4);
-	sciScintilla_->setAutoIndent(true);
+    sciScintilla_->setMarginTypeN(4, SC_MARGIN_SYMBOL);
+    sciScintilla_->setMarginWidthN(4, 16);
+    sciScintilla_->setMarginMaskN(4, SC_MASK_FOLDERS);
+    sciScintilla_->markerDefine(SC_MARKNUM_FOLDER,SC_MARK_BOXPLUS);
+    sciScintilla_->markerDefine(SC_MARKNUM_FOLDEROPEN,SC_MARK_BOXMINUS);
+    sciScintilla_->markerDefine(SC_MARKNUM_FOLDERSUB,SC_MARK_VLINE);
+    sciScintilla_->markerDefine(SC_MARKNUM_FOLDERTAIL,SC_MARK_LCORNER);
+    sciScintilla_->markerDefine(SC_MARKNUM_FOLDEREND,SC_MARK_BOXPLUSCONNECTED);
+    sciScintilla_->markerDefine(SC_MARKNUM_FOLDEROPENMID,SC_MARK_BOXMINUSCONNECTED);
+    sciScintilla_->markerDefine(SC_MARKNUM_FOLDERMIDTAIL,SC_MARK_TCORNER);
+    sciScintilla_->setAutomaticFold(SC_AUTOMATICFOLD_CHANGE|SC_AUTOMATICFOLD_CLICK|SC_AUTOMATICFOLD_SHOW);
 
+/*    sciScintilla_->setFoldMarginColors(
+                lls.value("FoldMarginFirstColor", 16777215).toInt(),
+                lls.value("FoldMarginSecondColor", 10066329).toInt()
+    );*/
+
+#if 0
+    sciScintilla_-> setAutoIndent(true);
+#endif
     sciScintilla_->setTabWidth(settings.value(Keys::Prefs::tabSize, 4).toInt());
-    sciScintilla_->setIndentationsUseTabs(!settings.value(Keys::Prefs::tabsVsSpaces, 0).toBool());
+    sciScintilla_->setUseTabs(!settings.value(Keys::Prefs::tabsVsSpaces, 0).toBool());
     sciScintilla_->setIndentationGuides(settings.value(Keys::Prefs::indentGuides, true).toBool());
-    sciScintilla_->setBackspaceUnindents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
+    sciScintilla_->setBackSpaceUnIndents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
 
-    sciScintilla_->setWhitespaceVisibility(static_cast<QsciScintilla::WhitespaceVisibility>
-                                           (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
+    sciScintilla_->setViewWS((sptr_t) (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
 
-    sciScintilla_->setMarginLineNumbers(2, settings.value(Keys::Prefs::showLineNumbers, true).toBool());
-	sciScintilla_->setMarginWidth(2, QString("10000"));
-	sciScintilla_->setMarginMarkerMask(2, 0);		// we dont want any markers at line number margin
 
-	sciScintilla_->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+    if (settings.value(Keys::Prefs::showLineNumbers, true).toBool()) {
+        sciScintilla_->setMarginTypeN(2, SC_MARGIN_NUMBER);
+        sciScintilla_->setMarginWidthN(2, sciScintilla_->textWidth(STYLE_LINENUMBER,"10000"));
+        sciScintilla_->setMarginMaskN(2, 0);		// we dont want any markers at line number margin
+    }
+    else
+        sciScintilla_->setMarginWidthN(2, 0);
 
-	sciScintilla_->setUtf8(true);
+    sciScintilla_->braceHighlightIndicator(true,INDIC_STRAIGHTBOX);
 
 	sciScintilla_->setCaretLineVisible(true);
 
-    sciScintilla_->setCaretForegroundColor (
+    sciScintilla_->setCaretFore(
         lls.value("CaretForegroundColor", 0).toInt());
 
-    sciScintilla_->setCaretLineBackgroundColor(
+    sciScintilla_->setCaretLineBack(
         lls.value("CaretLineBackgroundColor", 15658734).toInt());
 
-    sciScintilla_->setMatchedBraceForegroundColor(
+
+    sciScintilla_->styleSetFore(STYLE_BRACELIGHT,
         lls.value("MatchedBraceForegroundColor", 0).toInt());
-    sciScintilla_->setMatchedBraceBackgroundColor(
+    sciScintilla_->styleSetBack(STYLE_BRACELIGHT,
         lls.value("MatchedBraceBackgroundColor", 15658734).toInt());
 
-    sciScintilla_->setUnmatchedBraceForegroundColor(
+    sciScintilla_->styleSetFore(STYLE_BRACEBAD,
         lls.value("UnmatchedBraceForegroundColor", 0).toInt());
-    sciScintilla_->setUnmatchedBraceBackgroundColor(
+    sciScintilla_->styleSetBack(STYLE_BRACEBAD,
         lls.value("UnmatchedBraceBackgroundColor", 10085887).toInt());
-
 
 	connect(sciScintilla_, SIGNAL(modificationChanged(bool)), this, SLOT(onModificationChanged(bool)));
 	connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
@@ -252,58 +324,52 @@ QSettings lls(theme, QSettings::IniFormat);
             this, SLOT(setBookmark(int, int, Qt::KeyboardModifiers)));
 
 
-	sciScintilla_->setMarginWidth(1, 14);			// margin 1 is breakpoint
-    sciScintilla_->markerDefine(QsciScintilla::Circle, 2); //Marker 2 is breakpoint
-	sciScintilla_->setMarginMarkerMask(1, 1 << 2);
-    sciScintilla_->setMarginSensitivity(1, true);
+    sciScintilla_->setMarginWidthN(1, 14);			// margin 1 is breakpoint
+    sciScintilla_->markerDefine(2,SC_MARK_CIRCLE); //Marker 2 is breakpoint
+    sciScintilla_->setMarginMaskN(1, 1 << 2);
+    sciScintilla_->setMarginSensitiveN(1, true);
 
-	sciScintilla_->setMarginWidth(3, 14);			// margin 3 is bookmark margin
-    sciScintilla_->markerDefine(QsciScintilla::RightTriangle, 1); // Marker 1 is bookmark
-    sciScintilla_->setMarginMarkerMask(3, 1 << 1);
-    sciScintilla_->setMarginSensitivity(3, true);
+    sciScintilla_->setMarginWidthN(3, 14);			// margin 3 is bookmark margin
+    sciScintilla_->markerDefine(1, SC_MARK_BOOKMARK); // Marker 1 is bookmark
+    sciScintilla_->setMarginMaskN(3, 1 << 1);
+    sciScintilla_->setMarginSensitiveN(3, true);
 
-    sciScintilla_->markerDefine(QsciScintilla::Background, 3); //Marker 3 is current debug line
+    sciScintilla_->markerDefine(3, SC_MARK_BACKGROUND); //Marker 3 is current debug line
 
-	sciScintilla_->registerImage(1,IconLibrary::instance().icon(0,"method").pixmap(16));
-	sciScintilla_->registerImage(2,IconLibrary::instance().icon(0,"constant").pixmap(16));
-	sciScintilla_->registerImage(3,IconLibrary::instance().icon(0,"event").pixmap(16));
-	sciScintilla_->registerImage(4,IconLibrary::instance().icon(0,"class").pixmap(16));
+    sciScintilla_->registerRGBAImage(1,(const char*)IconLibrary::instance().icon(0,"method").pixmap(16).toImage().convertToFormat(QImage::Format_RGB888).bits());
+    sciScintilla_->registerRGBAImage(2,(const char*)IconLibrary::instance().icon(0,"constant").pixmap(16).toImage().convertToFormat(QImage::Format_RGB888).bits());
+    sciScintilla_->registerRGBAImage(3,(const char*)IconLibrary::instance().icon(0,"event").pixmap(16).toImage().convertToFormat(QImage::Format_RGB888).bits());
+    sciScintilla_->registerRGBAImage(4,(const char*)IconLibrary::instance().icon(0,"class").pixmap(16).toImage().convertToFormat(QImage::Format_RGB888).bits());
 
-    sciScintilla_->setMarkerForegroundColor(
+    sciScintilla_->markerSetFore(
                 lls.value("MarkerForegroundColor", 2566178).toInt(), 1);
-    sciScintilla_->setMarkerBackgroundColor(
+    sciScintilla_->markerSetBack(
                 lls.value("MarkerBackgroundColor", 5348047).toInt(), 1);
-    sciScintilla_->setMarkerForegroundColor(
+    sciScintilla_->markerSetFore(
                 lls.value("MarkerForegroundColor", 2566178).toInt(), 2);
-    sciScintilla_->setMarkerBackgroundColor(
+    sciScintilla_->markerSetBack(
                 lls.value("MarkerBackgroundColor", 5348047).toInt(), 2);
-    sciScintilla_->setMarkerBackgroundColor(
+    sciScintilla_->markerSetBack(
                 lls.value("DebuggedLineColor", 0x3030FF).toInt(), 3);
 
-	sciScintilla_->setEolMode(QsciScintilla::EolUnix);
+    sciScintilla_->setEOLMode(SC_EOL_LF);
 
-    sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETMULTIPLESELECTION, true);
+    sciScintilla_->setMultipleSelection(true);
     // multi-line typing with Alt+drag/Alt_shift+cursor multi-line selections
-    sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETADDITIONALSELECTIONTYPING, true);
+    sciScintilla_->setAdditionalSelectionTyping(true);
 
+#if 0
     sciScintilla_->setAutoCompletionThreshold(settings.value(Keys::Prefs::autoCompleteChars, 2).toInt());
 	sciScintilla_->setAutoCompletionSource(QsciScintilla::AcsAll);
+#endif
 
-    sciScintilla_->setFoldMarginColors(
-                lls.value("FoldMarginFirstColor", 16777215).toInt(),
-                lls.value("FoldMarginSecondColor", 10066329).toInt()
-    );
+    sciScintilla_->styleSetFore(STYLE_INDENTGUIDE,lls.value("IndentationGuidesForegroundColor", 0).toInt());
+    sciScintilla_->styleSetBack(STYLE_INDENTGUIDE,lls.value("IndentationGuidesBackgroundColor", 8421504).toInt());
 
-    sciScintilla_->setIndentationGuidesForegroundColor(lls.value("IndentationGuidesForegroundColor", 0).toInt());
-    sciScintilla_->setIndentationGuidesBackgroundColor(lls.value("IndentationGuidesBackgroundColor", 8421504).toInt());
+    sciScintilla_->styleSetFore(STYLE_LINENUMBER, lls.value("MarginsForegroundColor", 2566178).toInt());
+    sciScintilla_->styleSetBack(STYLE_LINENUMBER, lls.value("MarginsBackgroundColor", 15658734).toInt());
 
-    sciScintilla_->setIndicatorForegroundColor(lls.value("IndicatorForegroundColor", 0).toInt());
-    sciScintilla_->setIndicatorOutlineColor(lls.value("IndicatorOutlineColor", 8421504).toInt());
-
-    sciScintilla_->setMarginsForegroundColor(lls.value("MarginsForegroundColor", 2566178).toInt());
-    sciScintilla_->setMarginsBackgroundColor(lls.value("MarginsBackgroundColor", 15658734).toInt());
-
-    sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETMOUSEDWELLTIME,500);
+    sciScintilla_->setMouseDwellTime(500);
     connect(sciScintilla_, SIGNAL(SCN_DWELLSTART(int,int,int)), this, SLOT(dwellStart(int,int,int)));
     connect(sciScintilla_, SIGNAL(SCN_DWELLEND(int,int,int)), this, SLOT(dwellEnd(int,int,int)));
 }
@@ -323,10 +389,12 @@ void TextEdit::newFile()
 
 void TextEdit::setLuaLanguage(QString lang) {
     if (lang=="FR") {
+#if 0
         sciScintilla_->SendScintilla(QsciScintillaBase::SCI_SETKEYWORDS, (int) 0, (const char *)
                                      "et arreter faire sinon fin faux pour si "
                                      "dans local rien non ou repeter retourne alors vrai jusqua tantque"
                                      );
+#endif
     }
 }
 
@@ -350,22 +418,20 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
 
 	QFileInfo fileInfo(fileName_);
 
-	QsciLexer* lexer = createLexerByExtension(fileInfo.suffix());
-	sciScintilla_->setLexer(lexer);
+    ILexer5 *lexer = createLexerByExtension(fileInfo.suffix(),sciScintilla_);
 
 	setWindowTitle(fileInfo.fileName() + "[*]");
 
 	QTextStream in(&file);
     in.setEncoding(QStringConverter::Utf8);
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	sciScintilla_->setUtf8(true);
 	QString txt=in.readAll();
-    if ((lexer!=NULL)&&(lexer->lexer()!=NULL)&&(!strcmp(lexer->lexer(),"lua"))&&txt.startsWith("!")&&(txt.length()>3))
+    if ((lexer!=NULL)&&(!strcmp(fileInfo.suffix().toUtf8(),"lua"))&&txt.startsWith("!")&&(txt.length()>3))
         setLuaLanguage(txt.mid(1,2).toUpper());
-    sciScintilla_->setText(txt);
+    sciScintilla_->setText(txt.toUtf8());
 	QApplication::restoreOverrideCursor();
 
-	sciScintilla_->setModified(false);
+    modified=false;
 	setWindowModified(false);
 
     foreach(QString bp, breakpoints) {
@@ -391,17 +457,17 @@ void TextEdit::onModificationChanged(bool m)
 
 bool TextEdit::hasSelectedText() const
 {
-	return sciScintilla_->hasSelectedText();
+    return !sciScintilla_->selectionEmpty();
 }
 
 bool TextEdit::isRedoAvailable() const
 {
-	return sciScintilla_->isRedoAvailable();
+    return sciScintilla_->canRedo();
 }
 
 bool TextEdit::isUndoAvailable() const
 {
-	return sciScintilla_->isUndoAvailable();
+    return sciScintilla_->canUndo();
 }
 
 bool TextEdit::save()
@@ -415,10 +481,10 @@ bool TextEdit::save()
     }
     foreach(QString bp, bpRemove)
         breakpoints.remove(bp);
-    while ((line = sciScintilla_->markerFindNext(line+1, (1 << 2)))>=0)
+    while ((line = sciScintilla_->markerNext(line+1, (1 << 2)))>=0)
         breakpoints.insert(itemName_+":"+QString::number(line));
 
-    if (sciScintilla_->isModified() == false)
+    if (modified == false)
 		return false;
 
 	QFile file(fileName_);
@@ -434,10 +500,10 @@ bool TextEdit::save()
 	QTextStream out(&file);
     out.setEncoding(QStringConverter::Utf8);
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	out << sciScintilla_->text();
+    out << sciScintilla_->getText(sciScintilla_->textLength());
 	QApplication::restoreOverrideCursor();
 
-	sciScintilla_->setModified(false);
+    modified=false;
 	setWindowModified(false);
 
 	return true;
@@ -445,18 +511,18 @@ bool TextEdit::save()
 
 void TextEdit::setCursorPosition(int line, int index)
 {
-	sciScintilla_->setCursorPosition(line, index);
+    sciScintilla_->setCurrentPos(sciScintilla_->findColumn(line, index));
 }
 
 bool TextEdit::isModified() const
 {
-	return sciScintilla_->isModified();
+    return modified;
 }
 
 bool TextEdit::findFirst(	const QString &expr, bool re, bool cs, bool wo,
 							bool wrap, bool forward/* = true*/)
 {
-
+#if 0
 	int lineFrom, indexFrom, lineTo, indexTo;
 	sciScintilla_->getSelection (&lineFrom, &indexFrom, &lineTo, &indexTo);
 
@@ -480,13 +546,15 @@ bool TextEdit::findFirst(	const QString &expr, bool re, bool cs, bool wo,
 	}
 
 	return sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, line, index);
+#endif
+    return false;
 }
 
 bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 						 bool wrap)
 {
 	bool forward = true;
-
+#if 0
 	int lineFrom, indexFrom, lineTo, indexTo;
 	sciScintilla_->getSelection (&lineFrom, &indexFrom, &lineTo, &indexTo);
 
@@ -523,22 +591,25 @@ bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re,
 		sciScintilla_->setSelection(lineFrom, indexFrom, lineTo, indexTo);
 		found = sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, lineTo, indexTo);
 	}
-
-	return found;
+    return found;
+#endif
+    return false;
 }
 
 int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 				bool wrap)
 {
 	sciScintilla_->beginUndoAction();
-
+#if 0
 	bool forward = true;
 
 	int line, index;
-	sciScintilla_->getCursorPosition(&line, &index);
+    int pos=sciScintilla_->currentPos();
+    sciScintilla_->lineFromPosition(pos);
+    sciScintilla_->column(pos);
 
 	int lineFrom, indexFrom, lineTo, indexTo;
-	sciScintilla_->getSelection (&lineFrom, &indexFrom, &lineTo, &indexTo);
+    sciScintilla_->selection (&lineFrom, &indexFrom, &lineTo, &indexTo);
 
 	int replaceline, replaceindex;
 
@@ -556,7 +627,7 @@ int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re
 	int replaced = 0;
 	while (true)
 	{
-		bool found = sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, replaceline, replaceindex);
+        bool found = sciScintilla_->find (expr, re, cs, wo, wrap, forward, replaceline, replaceindex);
 		if (found == false)
 			break;
 		
@@ -575,17 +646,17 @@ int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re
 
 	// restore old cursor position
 	sciScintilla_->setCursorPosition(line, index);
-
+#endif
 	sciScintilla_->endUndoAction();
 
-	return replaced;
+    return 0;//replaced;
 }
 
 void TextEdit::setBookmark(int margin, int line, Qt::KeyboardModifiers state)
 {
     Q_UNUSED(state);
     int marker=(margin==3)?1:2;
-    if (sciScintilla_->markersAtLine(line) & (1 << marker))
+    if (sciScintilla_->markerGet(line) & (1 << marker))
     {
         sciScintilla_->markerDelete(line, marker);
         if (marker==2)
@@ -600,10 +671,9 @@ void TextEdit::setBookmark(int margin, int line, Qt::KeyboardModifiers state)
 
 void TextEdit::toogleBookmark()
 {
-	int line, index;
-	sciScintilla_->getCursorPosition(&line, &index);
+    int line=sciScintilla_->lineFromPosition(sciScintilla_->currentPos());
 
-    if (sciScintilla_->markersAtLine(line) & (1 << 1))
+    if (sciScintilla_->markerGet(line) & (1 << 1))
 		sciScintilla_->markerDelete(line, 1);
 	else
 		sciScintilla_->markerAdd(line, 1);
@@ -611,35 +681,33 @@ void TextEdit::toogleBookmark()
 
 void TextEdit::nextBookmark()
 {
-	int line, index;
-	sciScintilla_->getCursorPosition(&line, &index);
+    int line=sciScintilla_->lineFromPosition(sciScintilla_->currentPos());
 
 	int next = -1;
 	
-	next = sciScintilla_->markerFindNext(line + 1, (1 << 1));
+    next = sciScintilla_->markerNext(line + 1, (1 << 1));
 
 	if (next < 0)
-		next = sciScintilla_->markerFindNext(0, (1 << 1));
+        next = sciScintilla_->markerNext(0, (1 << 1));
 
 	if (next >= 0)
-		sciScintilla_->setCursorPosition(next, 0);
+        sciScintilla_->setCurrentPos(sciScintilla_->positionFromLine(next));
 }
 
 void TextEdit::previousBookmark()
 {
-	int line, index;
-	sciScintilla_->getCursorPosition(&line, &index);
+    int line=sciScintilla_->lineFromPosition(sciScintilla_->currentPos());
 
 	int prev = -1;
 	
 	if (line > 0)
-		prev = sciScintilla_->markerFindPrevious(line - 1, (1 << 1));
+        prev = sciScintilla_->markerPrevious(line - 1, (1 << 1));
 
 	if (prev < 0)
-		prev = sciScintilla_->markerFindPrevious(sciScintilla_->lines(), (1 << 1));
+        prev = sciScintilla_->markerPrevious(sciScintilla_->lineFromPosition(sciScintilla_->textLength()), (1 << 1));
 
 	if (prev >= 0)
-		sciScintilla_->setCursorPosition(prev, 0);
+        sciScintilla_->setCurrentPos(sciScintilla_->positionFromLine(prev));
 }
 
 void TextEdit::clearBookmarks()
@@ -655,7 +723,7 @@ void TextEdit::setTabWidth(int size)
 
 void TextEdit::setUseTabs(bool use_tabs)
 {
-    sciScintilla_->setIndentationsUseTabs(use_tabs);
+    sciScintilla_->setTabIndents(use_tabs);
 }
 
 void TextEdit::setIndentGuide(bool index)
@@ -665,17 +733,23 @@ void TextEdit::setIndentGuide(bool index)
 
 void TextEdit::setShowLineNumbers(bool show)
 {
-    sciScintilla_->setMarginLineNumbers(2, show);
+    if (show) {
+        sciScintilla_->setMarginTypeN(2, SC_MARGIN_NUMBER);
+        sciScintilla_->setMarginWidthN(2, sciScintilla_->textWidth(STYLE_LINENUMBER,"10000"));
+        sciScintilla_->setMarginMaskN(2, 0);		// we dont want any markers at line number margin
+    }
+    else
+        sciScintilla_->setMarginWidthN(2, 0);
 }
 
 void TextEdit::setBackspaceUnindents(bool use)
 {
-    sciScintilla_->setBackspaceUnindents(use);
+    sciScintilla_->setBackSpaceUnIndents(use);
 }
 
 void TextEdit::setWhitespaceVisibility(int mode)
 {
-    sciScintilla_->setWhitespaceVisibility(static_cast<QsciScintilla::WhitespaceVisibility>(mode));
+    sciScintilla_->setViewWS(mode);
 }
 
 
@@ -690,7 +764,7 @@ void TextEdit::redo()
 }
 
 void TextEdit::background() {
-	sciScintilla_->cancelList();
+    sciScintilla_->autoCCancel();
 }
 
 bool TextEdit::maybeSave()
@@ -733,14 +807,14 @@ void TextEdit::closeEvent(QCloseEvent* event)
 
 void TextEdit::setFocusToEdit()
 {
-    sciScintilla_->setFocus();
+    sciScintilla_->setFocus(true);
 }
 
 void TextEdit::highlightDebugLine(int line) {
     sciScintilla_->markerDeleteAll(3);
     if (line>=0)
     {
-        sciScintilla_->setCursorPosition(line, 0);
+        sciScintilla_->setCurrentPos(sciScintilla_->positionFromLine(line));
         sciScintilla_->markerAdd(line, 3);
         sciScintilla_->setReadOnly(true);
         sciScintilla_->setCaretLineVisible(false);
@@ -755,7 +829,7 @@ void TextEdit::dwellStart(int pos,int x,int y)
 {
     if (pos<0) return;
     int ipos=pos;
-    QString text=sciScintilla_->text();
+    QString text=sciScintilla_->getText(sciScintilla_->textLength());
     QByteArray bu=text.toUtf8();
     pos=QString::fromUtf8(bu.mid(0,pos)).length();
     while ((pos>0)&&(

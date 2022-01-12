@@ -2,7 +2,11 @@
 #define MDICHILD_H
 
 #include <QMdiSubWindow>
+#ifdef USE_SCINTILLAEDIT
+#include <ScintillaEdit/ScintillaEdit.h>
+#else
 #include <Qsci/qsciscintilla.h>
+#endif
 #include "mdisubwindow.h"
 
 class TextEdit : public MdiSubWindow
@@ -18,12 +22,17 @@ public:
 	const QString& fileName() const;
 	bool save();
 	virtual void background();
-
+#ifdef SCINTILLAEDIT_H
+    ScintillaEdit* sciScintilla() const
+    {
+        return sciScintilla_;
+    }
+#else
 	QsciScintilla* sciScintilla() const
 	{
 		return sciScintilla_;
 	}
-
+#endif
 	bool hasSelectedText() const;
 	bool isRedoAvailable() const;
 	bool isUndoAvailable() const;
@@ -83,7 +92,12 @@ private:
 	bool maybeSave();
 
 private:
-	QsciScintilla* sciScintilla_;
+#ifdef SCINTILLAEDIT_H
+    ScintillaEdit* sciScintilla_;
+    bool modified;
+#else
+    QsciScintilla* sciScintilla_;
+#endif
 	bool isUntitled_;
     QString fileName_;
     QString itemName_;

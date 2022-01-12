@@ -1427,11 +1427,21 @@ void MainWindow::reloadProject()
     if (textEdit)
     {
         int line, index;
+#ifdef SCINTILLAEDIT_H
+        sptr_t pos=textEdit->sciScintilla()->currentPos();
+        index=textEdit->sciScintilla()->column(pos);
+        line=textEdit->sciScintilla()->lineFromPosition(pos);
+#else
         textEdit->sciScintilla()->getCursorPosition(&line, &index);
+#endif
         QString rp = projectFileName_;
         closeProject();
         openProject(rp);
+#ifdef SCINTILLAEDIT_H
+        textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->findColumn(line, index));
+#else
         textEdit->sciScintilla()->setCursorPosition(line, index);
+#endif
     }
 }
 
@@ -2312,9 +2322,17 @@ void MainWindow::goToLine()
 	if (textEdit)
 	{
 		int line, index;
-        textEdit->sciScintilla()->getCursorPosition(&line, &index);
 
-		int lines = textEdit->sciScintilla()->lines();
+#ifdef SCINTILLAEDIT_H
+        sptr_t pos=textEdit->sciScintilla()->currentPos();
+        index=textEdit->sciScintilla()->column(pos);
+        line=textEdit->sciScintilla()->lineFromPosition(pos);
+        int lines = textEdit->sciScintilla()->lineFromPosition(textEdit->sciScintilla()->textLength());
+#else
+        textEdit->sciScintilla()->getCursorPosition(&line, &index);
+        int lines = textEdit->sciScintilla()->lines();
+#endif
+
 
 		GoToLineDialog dialog(this);
 		dialog.setLineNumbers(line + 1, lines);
@@ -2323,7 +2341,11 @@ void MainWindow::goToLine()
 			int lineNumber = dialog.lineNumber();
 			lineNumber = qMin(qMax(lineNumber, 1), lines);
 
-			textEdit->sciScintilla()->setCursorPosition(lineNumber - 1, 0);
+#ifdef SCINTILLAEDIT_H
+        textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->findColumn(lineNumber - 1, index));
+#else
+        textEdit->sciScintilla()->setCursorPosition(lineNumber - 1, 0);
+#endif
 		}
 	}
 }
@@ -3076,7 +3098,8 @@ void MainWindow::findInFiles()
 			if (file.open(QIODevice::ReadOnly | QIODevice::Text))
 			{
 				QMap<int, QList<QPair<int, int> > > found;
-
+#ifdef SCINTILLAEDIT_H
+#else
 				QsciScintilla sci;
 				QTextStream in(&file);
                 in.setEncoding(QStringConverter::Utf8);
@@ -3111,6 +3134,7 @@ void MainWindow::findInFiles()
 						outputWidget_->append(sci.text(line), iter.value());
 					}
 				}
+#endif
 			}
 		}
 
@@ -3203,8 +3227,14 @@ void MainWindow::onInsertIntoDocument(const QString& text)
 
 	if (textEdit != 0)
 	{
-		textEdit->sciScintilla()->replaceSelectedText(text);
-		textEdit->sciScintilla()->setFocus();
+#ifdef SCINTILLAEDIT_H
+        textEdit->sciScintilla()->replaceSel(text.toUtf8());
+        textEdit->sciScintilla()->setFocus(true);
+#else
+        textEdit->sciScintilla()->replaceSelectedText(text);
+        textEdit->sciScintilla()->setFocus();
+#endif
+
 		textEdit->setFocus();
 	}
 }
@@ -3350,8 +3380,14 @@ void MainWindow::storeOpenFiles()
 		{
 			fileNames << textEdit->fileName();
 
-			int line, index;
-			textEdit->sciScintilla()->getCursorPosition(&line, &index);
+            int line, index;
+#ifdef SCINTILLAEDIT_H
+            sptr_t pos=textEdit->sciScintilla()->currentPos();
+            index=textEdit->sciScintilla()->column(pos);
+            line=textEdit->sciScintilla()->lineFromPosition(pos);
+#else
+            textEdit->sciScintilla()->getCursorPosition(&line, &index);
+#endif
 			cursorPositions << QPoint(line, index);
 
 			if (textEdit == mdiArea_->activeSubWindow())
@@ -3410,7 +3446,11 @@ void MainWindow::restoreOpenFiles()
 				if (textEdit)
 				{
 					QPoint p = cursorPositions[i].toPoint();
-					textEdit->sciScintilla()->setCursorPosition(p.x(), p.y());
+#ifdef SCINTILLAEDIT_H
+                    textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->positionFromPoint(p.x(),p.y()));
+#else
+                    textEdit->sciScintilla()->setCursorPosition(p.x(), p.y());
+#endif
 
 					if (fileNames[i] == activeSubWindow)
 						active = textEdit;

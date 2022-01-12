@@ -1,5 +1,7 @@
 #include "outlinewidget.h"
 #include <QDebug>
+#ifdef SCINTILLAEDIT_H
+#else
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexerlua.h>
 #include <Qsci/qscilexerxml.h>
@@ -7,6 +9,8 @@
 #include <Qsci/qsciapis.h>
 #include <Qsci/qscicommand.h>
 #include <Qsci/qscicommandset.h>
+#endif
+#include <QTimer>
 #include <QFileInfo>
 #include <QLabel>
 #include <QHBoxLayout>
@@ -81,8 +85,13 @@ public:
         TextEdit *doc=_ow->doc_;
         if (QString(name.c_str())==doc->fileName())
         {
+#ifdef SCINTILLAEDIT_H
+            ScintillaEdit *s=doc->sciScintilla();
+            QString text=s->getText(s->textLength());
+#else
             QsciScintilla *s=doc->sciScintilla();
             QString text=s->text();
+#endif
             return Luau::SourceCode{text.toStdString(), Luau::SourceCode::Module};
         }
         std::optional<std::string> source = std::nullopt;//readFile(name);
@@ -476,7 +485,11 @@ void OutlineWidget::onItemClicked(const QModelIndex &idx)
     {
         int ml=line-1;
         int bl=std::max(ml-5,0);
+#ifdef SCINTILLAEDIT_H
+        int hl=std::min(ml+5,(int)(doc_->sciScintilla()->lineFromPosition(doc_->sciScintilla()->textLength())-1));
+#else
         int hl=std::min(ml+5,doc_->sciScintilla()->lines()-1);
+#endif
         doc_->setCursorPosition(bl,0);
         doc_->setCursorPosition(hl,0);
         doc_->setCursorPosition(ml,0);
@@ -528,6 +541,43 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
 void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> lint)
 {
     if (!doc_) return;
+#ifdef SCINTILLAEDIT_H
+    ScintillaEdit *s=doc_->sciScintilla();
+    QString text=s->getText(s->textLength());
+    s->eOLAnnotationClearAll();
+    if ((error.isEmpty()&&lint.isEmpty())||(!checkSyntax_)) return;
+    int stylenum=STYLE_LASTPREDEFINED+10;
+    //Error
+    s->styleSetFore(stylenum,0xFFFFFF);
+    s->styleSetBack(stylenum,0x000080);
+    //Linter Note
+    s->styleSetFore(stylenum+1+OutlineLinterItem::Note,0xFFFFFF);
+    s->styleSetBack(stylenum+1+OutlineLinterItem::Note,0x808080);
+    //Linter Warning
+    s->styleSetFore(stylenum+1+OutlineLinterItem::Warning,0xFFFFFF);
+    s->styleSetBack(stylenum+1+OutlineLinterItem::Warning,0x008080);
+    //Linter Error
+    s->styleSetFore(stylenum+1+OutlineLinterItem::Error,0xFFFFFF);
+    s->styleSetBack(stylenum+1+OutlineLinterItem::Error,0x004080);
+
+    s->eOLAnnotationSetVisible(EOLANNOTATION_STADIUM);
+
+    QRegularExpression re("\\[string [^\\]]+\\]:(\\d+):(.*)");
+    QRegularExpressionMatch match = re.match(error);
+    if (match.hasMatch()) {
+        QString line = match.captured(1);
+        QString err = match.captured(2);
+        int lineNum=line.toInt();
+        s->eOLAnnotationSetText(lineNum-1,err.toUtf8());
+        s->eOLAnnotationSetStyle(lineNum-1,stylenum);
+    }
+    for (const auto &e:lint) {
+        if (e.file==doc_->fileName()) {
+            s->eOLAnnotationSetText(e.line,e.message.toUtf8());
+            s->eOLAnnotationSetStyle(e.line,stylenum+1+e.type);
+        }
+    }
+#else
     QsciScintilla *s=doc_->sciScintilla();
     s->clearAnnotations();
     if ((error.isEmpty()&&lint.isEmpty())||(!checkSyntax_)) return;
@@ -569,7 +619,7 @@ void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> li
             s->annotate(e.line,e.message,stylenum+1+e.type);
         }
     }
-
+#endif
 }
 
 void OutlineWidget::parse() {
@@ -582,8 +632,13 @@ void OutlineWidget::parse() {
         if (!fileInfo.suffix().compare(QString("lua"),Qt::CaseInsensitive))
         {
             noContent=false;
+#ifdef SCINTILLAEDIT_H
+            ScintillaEdit *s=doc_->sciScintilla();
+            QString text=s->getText(s->textLength());
+#else
             QsciScintilla *s=doc_->sciScintilla();
             QString text=s->text();
+#endif
             QByteArray btext=text.toUtf8();
 
             OutlineWorkerThread *workerThread = new OutlineWorkerThread(this,doc_->fileName(),btext);

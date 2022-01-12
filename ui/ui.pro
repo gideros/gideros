@@ -9,6 +9,8 @@ CONFIG   += silent c++17
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+USE_SCINTILLAEDIT=n
+
 LUA_ENGINE=$$(LUA_ENGINE)
 LUA_ENGINE=luau
 isEmpty(LUA_ENGINE): LUA_ENGINE=lua
@@ -125,7 +127,6 @@ SOURCES += \
     fileassociationeditdialog.cpp\
     pluginselector.cpp \
     plugineditor.cpp \
-    textedit.cpp\
     playersettingsdialog.cpp\
     gotolinedialog.cpp\
     savechangesdialog.cpp\
@@ -151,6 +152,10 @@ SOURCES += \
     qtutils.cpp \
     preferencesdialog.cpp \
     profilerreport.cpp
+
+equals(USE_SCINTILLAEDIT,y): SOURCES+= textedit.cpp
+equals(USE_SCINTILLAEDIT,y): DEFINES+= USE_SCINTILLAEDIT
+equals(USE_SCINTILLAEDIT,n): SOURCES+= textedit_qs.cpp
 
 SOURCES += $$files(../libpvrt/*.cpp)
 
@@ -247,20 +252,24 @@ macx {
 win32 {
     LIBS += -L$$[QT_INSTALL_LIBS]
         CONFIG(debug, debug|release) {
-          LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}d
-	}
+			equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5d -lLexilla5d
+			equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}d        
+        }
 	else
 	{
-                LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
-   	}
+        equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+        equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
+    }
 }
 
 macx {
-   LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
 }
 
 unix:!macx {
-   LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
    #LIBS += -lqt5scintilla2 #For PI ?
    QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }
