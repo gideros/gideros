@@ -1229,7 +1229,7 @@ void LuaApplication::tick(GStatus *status)
 static double yieldHookLimit;
 #ifdef LUA_IS_LUAU
 static void yieldHook(lua_State* L, int gc) {
-    if (lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {
+    if ((gc==-1)&&lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {
         lua_yield(L,0);
     }
 }
@@ -1338,7 +1338,7 @@ void LuaApplication::enterFrame(GStatus *status)
 			{                
 #ifdef LUA_IS_LUAU
                 lua_callbacks(t.L)->interrupt=yieldHook;
-                res = lua_resume(t.L,NULL,t.nargs);
+                res = lua_resume(t.L,L,t.nargs);
                 lua_callbacks(t.L)->interrupt=NULL;
 #else
                 LuaDebugging::yieldHookMask=LUA_MASKRET| LUA_MASKCOUNT;

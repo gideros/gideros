@@ -511,7 +511,7 @@ bool TextEdit::save()
 
 void TextEdit::setCursorPosition(int line, int index)
 {
-    sciScintilla_->setCurrentPos(sciScintilla_->findColumn(line, index));
+    sciScintilla_->gotoPos(sciScintilla_->findColumn(line, index));
 }
 
 bool TextEdit::isModified() const
@@ -522,134 +522,162 @@ bool TextEdit::isModified() const
 bool TextEdit::findFirst(	const QString &expr, bool re, bool cs, bool wo,
 							bool wrap, bool forward/* = true*/)
 {
-#if 0
-	int lineFrom, indexFrom, lineTo, indexTo;
-	sciScintilla_->getSelection (&lineFrom, &indexFrom, &lineTo, &indexTo);
+    sciScintilla_->setSearchFlags((cs?SCFIND_MATCHCASE:0)|(wo?SCFIND_WHOLEWORD:0)|(re?SCFIND_REGEXP:0));
 
-	if (lineFrom == -1 || indexFrom == -1 || lineTo == -1 || indexTo == -1)
-	{
-		sciScintilla_->getCursorPosition(&lineFrom, &indexFrom);
-		lineTo = lineFrom;
-		indexTo = indexFrom;
-	}
+    int from,to;
+    int sf,st;
+    from=sciScintilla_->selectionStart();
+    to=sciScintilla_->selectionEnd();
 
-	int line, index;
-	if (forward == true)
+    if (forward)
 	{
-		line = lineTo;
-		index = indexTo;
-	}
+        sf=sciScintilla_->positionAfter(to);
+        st=sciScintilla_->textLength();
+    }
 	else
 	{
-		line = lineFrom;
-		index = indexFrom;
+        sf=sciScintilla_->positionBefore(from);
+        st=0;
 	}
 
-	return sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, line, index);
-#endif
+    sciScintilla_->setTargetRange(sf,st);
+    if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
+        sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+        return true;
+    }
+    if (!wrap) return false;
+
+    if (forward)
+    {
+        sf=0;
+        st=sciScintilla_->positionBefore(from);
+    }
+    else
+    {
+        sf=sciScintilla_->textLength();
+        st=sciScintilla_->positionAfter(to);
+    }
+
+    sciScintilla_->setTargetRange(sf,st);
+    if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
+        sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+        return true;
+    }
+
     return false;
 }
 
 bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 						 bool wrap)
 {
-	bool forward = true;
-#if 0
-	int lineFrom, indexFrom, lineTo, indexTo;
-	sciScintilla_->getSelection (&lineFrom, &indexFrom, &lineTo, &indexTo);
+    sciScintilla_->setSearchFlags((cs?SCFIND_MATCHCASE:0)|(wo?SCFIND_WHOLEWORD:0)|(re?SCFIND_REGEXP:0));
 
-	if (lineFrom == -1 || indexFrom == -1 || lineTo == -1 || indexTo == -1)
-	{
-		// if there is no selected text, do find and return
-		int line, index;
-		sciScintilla_->getCursorPosition(&line, &index);
-		return sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, line, index);
-	}
+    int from=sciScintilla_->selectionStart();
+    int to=sciScintilla_->selectionEnd();
+    int sf=sciScintilla_->positionAfter(to);
+    int st=sciScintilla_->textLength();
+
+    if (from==to)
+    {
+        // if there is no selected text, do find and return
+        sciScintilla_->setTargetRange(from,st);
+        if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
+            sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+            return true;
+        }
+        if (wrap) {
+            sf=0;
+            st=sciScintilla_->positionBefore(from);
+            sciScintilla_->setTargetRange(sf,st);
+            if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0) {
+                sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+                return true;
+            }
+        }
+        return false;
+    }
 
 	// if there is selected text, first do find from the *beginning* of selection
 	bool found;
-	
-	found = sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, lineFrom, indexFrom);
+    sciScintilla_->setTargetRange(from,st);
+    found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
 
-	if (found == false)
-		return false;
+    if (found == false) {
+        if (wrap&&sf) {
+            sf=0;
+            st=sciScintilla_->positionBefore(from);
+            sciScintilla_->setTargetRange(sf,st);
+            found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
+        }
+        if (found == false)
+            return false;
+    }
 
-	int newlineFrom, newindexFrom, newlineTo, newindexTo;
-	sciScintilla_->getSelection(&newlineFrom, &newindexFrom, &newlineTo, &newindexTo);
+    int nfrom=sciScintilla_->targetStart();
+    int nto=sciScintilla_->targetEnd();
 
 	// check if new selection is between old selection
-	if (lineFrom <= newlineFrom && indexFrom <= newindexFrom && lineTo >= newlineTo && indexTo >= newindexTo)
+    if (from <= nfrom && to >= nto)
 	{
 		// replace text and find again
-		sciScintilla_->replace(replaceStr);
-		sciScintilla_->getSelection(&newlineFrom, &newindexFrom, &newlineTo, &newindexTo);
-		sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, newlineTo, newindexTo);
+        sciScintilla_->replaceTarget(replaceStr.size(),replaceStr.toUtf8());
+        sciScintilla_->setTargetRange(nto,st);
+        if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
+            sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+        else {
+            if (wrap&&sf) {
+                sf=0;
+                st=sciScintilla_->positionBefore(nfrom);
+                sciScintilla_->setTargetRange(sf,st);
+                if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
+                    sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+            }
+        }
 	}
 	else
 	{
-		// if not, restore the selection and find from the *end* of selection
-		sciScintilla_->setSelection(lineFrom, indexFrom, lineTo, indexTo);
-		found = sciScintilla_->findFirst(expr, re, cs, wo, wrap, forward, lineTo, indexTo);
+        // if not, select the found item
+        sciScintilla_->setSel(nfrom,nto);
 	}
+
     return found;
-#endif
-    return false;
 }
 
 int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 				bool wrap)
 {
-	sciScintilla_->beginUndoAction();
-#if 0
-	bool forward = true;
+    sciScintilla_->setSearchFlags((cs?SCFIND_MATCHCASE:0)|(wo?SCFIND_WHOLEWORD:0)|(re?SCFIND_REGEXP:0));
+    sciScintilla_->beginUndoAction();
 
-	int line, index;
     int pos=sciScintilla_->currentPos();
-    sciScintilla_->lineFromPosition(pos);
-    sciScintilla_->column(pos);
-
-	int lineFrom, indexFrom, lineTo, indexTo;
-    sciScintilla_->selection (&lineFrom, &indexFrom, &lineTo, &indexTo);
-
-	int replaceline, replaceindex;
-
-	if (lineFrom == -1 || indexFrom == -1 || lineTo == -1 || indexTo == -1)
-	{
-		replaceline = line;
-		replaceindex = index;
-	}
-	else
-	{
-		replaceline = lineFrom;		// replaceAll starts from *beginning* of selection
-		replaceindex = indexFrom;
-	}
+    int sf=pos;
+    int st=sciScintilla_->textLength();
 
 	int replaced = 0;
 	while (true)
 	{
-        bool found = sciScintilla_->find (expr, re, cs, wo, wrap, forward, replaceline, replaceindex);
-		if (found == false)
-			break;
-		
-		sciScintilla_->replace(replaceStr);
+        bool found;
+        sciScintilla_->setTargetRange(pos,st);
+        found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
+        if (found==false) {
+            if (wrap&&sf) {
+                sf=0;
+                st=sciScintilla_->positionBefore(pos);
+                pos=0;
+                sciScintilla_->setTargetRange(pos,st);
+                found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
+            }
+            if (!found) break;
+        }
+
+        sciScintilla_->replaceTarget(replaceStr.size(),replaceStr.toUtf8());
 		replaced++;
-
-		int newlineFrom, newindexFrom, newlineTo, newindexTo;
-		sciScintilla_->getSelection(&newlineFrom, &newindexFrom, &newlineTo, &newindexTo);
-
-		replaceline = newlineTo;
-		replaceindex = newindexTo;
+        pos=sciScintilla_->targetEnd();
 	}
 
-	// restore old selection
-	sciScintilla_->setSelection(lineFrom, indexFrom, lineTo, indexTo);
-
-	// restore old cursor position
-	sciScintilla_->setCursorPosition(line, index);
-#endif
 	sciScintilla_->endUndoAction();
 
-    return 0;//replaced;
+    return replaced;
 }
 
 void TextEdit::setBookmark(int margin, int line, Qt::KeyboardModifiers state)
@@ -691,7 +719,7 @@ void TextEdit::nextBookmark()
         next = sciScintilla_->markerNext(0, (1 << 1));
 
 	if (next >= 0)
-        sciScintilla_->setCurrentPos(sciScintilla_->positionFromLine(next));
+        sciScintilla_->gotoLine(next);
 }
 
 void TextEdit::previousBookmark()
@@ -707,7 +735,7 @@ void TextEdit::previousBookmark()
         prev = sciScintilla_->markerPrevious(sciScintilla_->lineFromPosition(sciScintilla_->textLength()), (1 << 1));
 
 	if (prev >= 0)
-        sciScintilla_->setCurrentPos(sciScintilla_->positionFromLine(prev));
+        sciScintilla_->gotoLine(prev);
 }
 
 void TextEdit::clearBookmarks()
@@ -814,7 +842,7 @@ void TextEdit::highlightDebugLine(int line) {
     sciScintilla_->markerDeleteAll(3);
     if (line>=0)
     {
-        sciScintilla_->setCurrentPos(sciScintilla_->positionFromLine(line));
+        sciScintilla_->gotoLine(line);
         sciScintilla_->markerAdd(line, 3);
         sciScintilla_->setReadOnly(true);
         sciScintilla_->setCaretLineVisible(false);

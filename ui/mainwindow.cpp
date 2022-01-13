@@ -3098,11 +3098,29 @@ void MainWindow::findInFiles()
 			if (file.open(QIODevice::ReadOnly | QIODevice::Text))
 			{
 				QMap<int, QList<QPair<int, int> > > found;
+                QTextStream in(&file);
+                in.setEncoding(QStringConverter::Utf8);
 #ifdef SCINTILLAEDIT_H
+                ScintillaEdit sci;
+                sci.setText(in.readAll().toUtf8());
+
+                int start=0;
+                int end=sci.textLength();
+                sci.setSearchFlags((matchCase?SCFIND_MATCHCASE:0)|(wholeWord?SCFIND_WHOLEWORD:0)|(regexp?SCFIND_REGEXP:0));
+                while (true)
+                {
+                    sci.setTargetRange(start,end);
+                    if (sci.searchInTarget(findWhat.size(),findWhat.toUtf8())<0) break;
+                    start=sci.targetEnd()+1;
+                    int line=sci.lineFromPosition(sci.targetStart());
+                    int lineStart=sci.positionFromLine(line);
+
+                    found[line].push_back(qMakePair(sci.targetStart()-lineStart, sci.targetEnd()-lineStart));
+
+                    nfound++;
+                }
 #else
 				QsciScintilla sci;
-				QTextStream in(&file);
-                in.setEncoding(QStringConverter::Utf8);
                 sci.setUtf8(true);
 				sci.setText(in.readAll());
 
@@ -3120,22 +3138,27 @@ void MainWindow::findInFiles()
 					nfound++;
 				}
 
-				if (!found.isEmpty())
-				{
-					outputWidget_->append("\n");
-					outputWidget_->append(absfilename + ":\n");
-
-					QMap<int, QList<QPair<int, int> > >::iterator iter, e = found.end();
-					for (iter = found.begin(); iter != e; ++iter)
-					{
-						int line = iter.key();
-						
-						outputWidget_->append(QString::number(line + 1).rightJustified(5) + ": ");
-						outputWidget_->append(sci.text(line), iter.value());
-					}
-				}
 #endif
-			}
+                if (!found.isEmpty())
+                {
+                    outputWidget_->append("\n");
+                    outputWidget_->append(absfilename + ":\n");
+
+                    QMap<int, QList<QPair<int, int> > >::iterator iter, e = found.end();
+                    for (iter = found.begin(); iter != e; ++iter)
+                    {
+                        int line = iter.key();
+
+                        outputWidget_->append(QString::number(line + 1).rightJustified(5) + ": ");
+#ifdef SCINTILLAEDIT_H
+                        outputWidget_->append(sci.textRange(sci.positionFromLine(line),sci.lineEndPosition(line)), iter.value());
+                        outputWidget_->append("\n");
+#else
+                        outputWidget_->append(sci.text(line), iter.value());
+#endif
+                    }
+                }
+            }
 		}
 
 		outputWidget_->append("\n" + tr("%1 matches found.").arg(nfound) + "\n");
