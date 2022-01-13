@@ -208,14 +208,21 @@ int lua_pcall_traceback(lua_State* L, int nargs, int nresults, int unused)
 	return status;
 }
 
-void lua_traceback(lua_State* L)
+void lua_traceback(lua_State* L,lua_State *from)
 {
 	if (!lua_isstring(L, -1))  /* 'message' not a string? */
 		return;  /* keep it intact */
-    lua_pushcnfunction(L, db_errorfb, "db_errorfb");
-	lua_pushvalue(L, -2);  /* pass error message */
-	lua_pushinteger(L, 1);  /* skip this function */
-	lua_call(L, 2, 1);  /* call debug.traceback */
+    lua_pushcnfunction(from?from:L, db_errorfb, "db_errorfb");
+    if (from) {
+        lua_checkstack(L, 1);
+        lua_pushthread(L);
+        lua_xmove(L,from,1); //Thread
+        lua_xmove(L,from,1); //Error
+    }
+    else
+        lua_pushvalue(from?from:L, -2);  /* pass error message */
+	lua_pushinteger(from?from:L, from?0:1);  /* skip this function */
+	lua_call(from?from:L, from?3:2, 1);  /* call debug.traceback */
 }
 
 

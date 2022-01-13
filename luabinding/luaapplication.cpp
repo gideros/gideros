@@ -1227,10 +1227,11 @@ void LuaApplication::tick(GStatus *status)
 }
 
 static double yieldHookLimit;
+#include "lstate.h"
 #ifdef LUA_IS_LUAU
 static void yieldHook(lua_State* L, int gc) {
     if ((gc==-1)&&lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {
-        lua_yield(L,0);
+        L->status=LUA_YIELD;
     }
 }
 #else
@@ -1366,7 +1367,7 @@ void LuaApplication::enterFrame(GStatus *status)
 			{
 				if (exceptionsEnabled_ == true)
 				{
-					lua_traceback(t.L);
+					lua_traceback(t.L,L);
 					if (status)
 						*status = GStatus(1, lua_tostring(t.L, -1));
 				}
@@ -1764,7 +1765,6 @@ lua_State *LuaApplication::getLuaState() const
 }
 
 //PROFILER
-#include "lstate.h"
 struct ProfileInfo {
 	std::string fid;
 	std::string name;
