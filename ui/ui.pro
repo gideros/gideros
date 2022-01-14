@@ -265,12 +265,12 @@ win32 {
 
 macx {
    equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
-   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
+   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit -lLexilla
 }
 
 unix:!macx {
    equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
-   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
+   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit -lLexilla
    #LIBS += -lqt5scintilla2 #For PI ?
    QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }
