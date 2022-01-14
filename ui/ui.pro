@@ -8,8 +8,9 @@ QT       += core gui xml network websockets
 CONFIG   += silent c++17
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
 
-USE_SCINTILLAEDIT=n
+USE_SCINTILLAEDIT=y
 
 LUA_ENGINE=$$(LUA_ENGINE)
 LUA_ENGINE=luau

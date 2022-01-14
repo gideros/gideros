@@ -67,7 +67,11 @@ protected:
 
 public slots:
 	// bookmarks
+#ifdef SCINTILLAEDIT_H
+    void setBookmark(Scintilla::Position position, Scintilla::KeyMod modifiers, int margin);
+#else
     void setBookmark(int margin, int line, Qt::KeyboardModifiers state);
+#endif
 	void toogleBookmark();
 	void nextBookmark();
 	void previousBookmark();
@@ -84,9 +88,16 @@ signals:
     void lookupSymbol(QString,int,int);
 
 private slots:
-	void onModificationChanged(bool m);
+    void onModificationChanged(bool m);
+#ifdef SCINTILLAEDIT_H
+    void updateUi(Scintilla::Update updated);
+    void charAdded(int ch);
+    void dwellStart(int x, int y);
+    void dwellEnd(int x, int y);
+#else
     void dwellStart(int pos, int x, int y);
     void dwellEnd(int pos, int x, int y);
+#endif
 
 private:
 	bool maybeSave();
@@ -95,6 +106,9 @@ private:
 #ifdef SCINTILLAEDIT_H
     ScintillaEdit* sciScintilla_;
     bool modified;
+    int autoCompleteThreshold;
+    QStringList api;
+    void registerIcon(int num,QIcon icon);
 #else
     QsciScintilla* sciScintilla_;
 #endif

@@ -3608,7 +3608,23 @@ void MainWindow::on_actionFold_Unfold_All_triggered()
 
     if (textEdit)
     {
+#ifdef SCINTILLAEDIT_H
+        int lineCount = textEdit->sciScintilla()->lineCount();
+        bool expanding = true;
+
+        for (int line = 0; line < lineCount; line++)
+        {
+           if (textEdit->sciScintilla()->foldLevel(line) & SC_FOLDLEVELHEADERFLAG)
+           {
+               expanding = !textEdit->sciScintilla()->foldExpanded(line);
+               break;
+           }
+        }
+        textEdit->sciScintilla()->foldAll(expanding?SC_FOLDACTION_EXPAND:SC_FOLDACTION_CONTRACT);
+#else
+
         textEdit->sciScintilla()->foldAll(true);
+#endif
     }
 }
 
@@ -3618,7 +3634,30 @@ void MainWindow::on_actionFold_Unfold_Top_triggered()
 
     if (textEdit)
     {
+#ifdef SCINTILLAEDIT_H
+        int lineCount = textEdit->sciScintilla()->lineCount();
+        bool expanding = true;
+
+        for (int line = 0; line < lineCount; line++)
+        {
+           if (textEdit->sciScintilla()->foldLevel(line) & SC_FOLDLEVELHEADERFLAG)
+           {
+               expanding = !textEdit->sciScintilla()->foldExpanded(line);
+               break;
+           }
+        }
+        for (int line = 0; line < lineCount; line++)
+        {
+            int level = textEdit->sciScintilla()->foldLevel(line);
+            if (!(level & SC_FOLDLEVELHEADERFLAG)) //Not foldable
+                continue;
+
+            if (SC_FOLDLEVELBASE == (level & SC_FOLDLEVELNUMBERMASK))
+                textEdit->sciScintilla()->foldLine(line, expanding?SC_FOLDACTION_EXPAND:SC_FOLDACTION_CONTRACT);
+        }
+#else
         textEdit->sciScintilla()->foldAll(false);
+#endif
     }
 }
 

@@ -87,7 +87,10 @@ public:
         {
 #ifdef SCINTILLAEDIT_H
             ScintillaEdit *s=doc->sciScintilla();
-            QString text=s->getText(s->textLength());
+            QString text;
+            int size=s->textLength();
+            if (size>0)
+                text=s->getText(size);
 #else
             QsciScintilla *s=doc->sciScintilla();
             QString text=s->text();
@@ -543,7 +546,10 @@ void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> li
     if (!doc_) return;
 #ifdef SCINTILLAEDIT_H
     ScintillaEdit *s=doc_->sciScintilla();
-    QString text=s->getText(s->textLength());
+    QString text;
+    int size=s->textLength();
+    if (size>0)
+        text=s->getText(size);
     s->eOLAnnotationClearAll();
     if ((error.isEmpty()&&lint.isEmpty())||(!checkSyntax_)) return;
     int stylenum=STYLE_LASTPREDEFINED+10;
@@ -552,7 +558,7 @@ void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> li
     s->styleSetBack(stylenum,0x000080);
     //Linter Note
     s->styleSetFore(stylenum+1+OutlineLinterItem::Note,0xFFFFFF);
-    s->styleSetBack(stylenum+1+OutlineLinterItem::Note,0x808080);
+    s->styleSetBack(stylenum+1+OutlineLinterItem::Note,0x804040);
     //Linter Warning
     s->styleSetFore(stylenum+1+OutlineLinterItem::Warning,0xFFFFFF);
     s->styleSetBack(stylenum+1+OutlineLinterItem::Warning,0x008080);
@@ -631,22 +637,27 @@ void OutlineWidget::parse() {
         QFileInfo fileInfo(doc_->fileName());
         if (!fileInfo.suffix().compare(QString("lua"),Qt::CaseInsensitive))
         {
-            noContent=false;
 #ifdef SCINTILLAEDIT_H
             ScintillaEdit *s=doc_->sciScintilla();
-            QString text=s->getText(s->textLength());
+            int size=s->textLength();
+            if (size>0) {
+                QString text=s->getText(size);
 #else
-            QsciScintilla *s=doc_->sciScintilla();
-            QString text=s->text();
+                QsciScintilla *s=doc_->sciScintilla();
+                QString text=s->text();
 #endif
-            QByteArray btext=text.toUtf8();
+                QByteArray btext=text.toUtf8();
+                noContent=false;
 
-            OutlineWorkerThread *workerThread = new OutlineWorkerThread(this,doc_->fileName(),btext);
-            connect(workerThread, &OutlineWorkerThread::updateOutline, this, &OutlineWidget::updateOutline);
-            connect(workerThread, &OutlineWorkerThread::reportError, this, &OutlineWidget::reportError);
-            connect(workerThread, &OutlineWorkerThread::finished, workerThread, &QObject::deleteLater);
-            workerThread->start();
-            working_=true;
+                OutlineWorkerThread *workerThread = new OutlineWorkerThread(this,doc_->fileName(),btext);
+                connect(workerThread, &OutlineWorkerThread::updateOutline, this, &OutlineWidget::updateOutline);
+                connect(workerThread, &OutlineWorkerThread::reportError, this, &OutlineWidget::reportError);
+                connect(workerThread, &OutlineWorkerThread::finished, workerThread, &QObject::deleteLater);
+                workerThread->start();
+                working_=true;
+#ifdef SCINTILLAEDIT_H
+            }
+#endif
         }
     }
     if (noContent)

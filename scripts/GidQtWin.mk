@@ -119,7 +119,7 @@ QT5PLUGINS=$(addprefix mediaservice/,dsengine qtmedia_audioengine) $(addprefix p
 else
 QT5DLLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
 		Qt6Core Qt6Gui Qt6Network Qt6OpenGL Qt6OpenGLWidgets Qt6PrintSupport Qt6Widgets Qt6Xml \
-		Qt6Multimedia Qt6MultimediaQuick Qt6MultimediaWidgets Qt6WebSockets
+		Qt6Multimedia Qt6MultimediaQuick Qt6MultimediaWidgets Qt6WebSockets Qt6Core5Compat
 QT5DLLTOOLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
 		Qt6Core Qt6Network Qt6Xml Qt6WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
@@ -140,7 +140,9 @@ qt5.install:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done
 	mkdir -p $(addprefix $(RELEASE)/,$(dir $(QT5PLUGINS)))
 	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/$$a.dll$(QTDLLEXT); done
-	cp $(QT)/lib/qscintilla2_qt$(QT_VER).dll $(RELEASE)
+	#cp $(QT)/lib/qscintilla2_qt$(QT_VER).dll $(RELEASE)
+	cp $(QT)/lib/ScintillaEdit5.dll $(RELEASE)
+	cp $(QT)/lib/Lexilla5.dll $(RELEASE)
 	cp $(ROOT)/libgid/openal/release/openal.dll $(RELEASE)
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
