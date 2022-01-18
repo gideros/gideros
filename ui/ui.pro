@@ -18,6 +18,13 @@ isEmpty(LUA_ENGINE): LUA_ENGINE=lua
 equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src ../luau/Ast/include ../luau/Compiler/include ../luau/Analysis/include
 equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
+DEFINES+= LUAU_ENABLE_ASSERT
+CONFIG(debug, debug|release){
+    _CONFIG_ = debug
+} else {
+    _CONFIG_ = release
+}
+
 defineReplace(expand) {
     names = $$1
     prefix=$$2
@@ -250,10 +257,12 @@ macx {
     LIBS += -L$$[QT_INSTALL_LIBS]
 }
 
+equals(USE_SCINTILLAEDIT,y): LIBS += -L"../scintilla/qt/ScintillaEdit/$$_CONFIG_" -L"../lexilla/src/$$_CONFIG_"
+
 win32 {
     LIBS += -L$$[QT_INSTALL_LIBS]
         CONFIG(debug, debug|release) {
-			equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5d -lLexilla5d
+                        equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
 			equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}d        
         }
 	else

@@ -58,6 +58,7 @@
 #include <QRegularExpression>
 #include "preferencesdialog.h"
 #include "profilerreport.h"
+#include <QStandardPaths>
 
 MainWindow *MainWindow::lua_instance=NULL;
 QTemporaryDir *MainWindow::tempDir=NULL;
@@ -83,6 +84,7 @@ void MainWindow::notifyAddon(QString clientId,const char *data) {
     if (addonsServer_)
         addonsServer_->notify(clientId,data);
 }
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -329,6 +331,7 @@ MainWindow::MainWindow(QWidget *parent)
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
     ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
     ui.actionLive_syntax_checking->setChecked(settings.value("syntaxcheck_live",true).toBool());
+    ui.actionType_checking->setChecked(settings.value("typecheck_live",false).toBool());
 
 #ifndef NEW_CLIENT
 	client_ = new Client(qPrintable(playerip), 15000);
@@ -392,6 +395,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
     connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
     connect(ui.actionLive_syntax_checking, SIGNAL(triggered(bool)), this, SLOT(actionLiveSyntaxChecking(bool)));
+    connect(ui.actionType_checking, SIGNAL(triggered(bool)), this, SLOT(actionLiveTypeChecking(bool)));
     connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui.actionPreferences, SIGNAL(triggered()), this, SLOT(openPreferencesDialog()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
@@ -502,7 +506,7 @@ MainWindow::MainWindow(QWidget *parent)
     };
     luaL_register(L,"Studio",reg);
     lua_pop(L,1);
-
+ui.actionAbout_Gideros_Studio;
     addonsServer_=new AddonsServer(this);
     std::vector<Addon> addons=AddonsManager::loadAddons(true);
     for (std::vector<Addon>::iterator it=addons.begin();it!=addons.end();it++) {
@@ -513,6 +517,111 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
         isBreaked_=false;
+
+#define ACTION(n) { #n, ui.n }
+        struct {
+            QString n;
+            QAction *a;
+        }
+        ActionList[]={
+            ACTION(actionNew_Project),
+               ACTION(actionOpen_Project),
+               ACTION(actionClose_Project),
+               ACTION(actionSave_Project),
+               ACTION(actionFile_Associations),
+               ACTION(actionStart),
+               ACTION(actionStop),
+               ACTION(actionStart_Player),
+               ACTION(actionNew),
+               ACTION(actionOpen),
+               ACTION(actionSave),
+               ACTION(actionSave_All),
+               ACTION(actionUndo),
+               ACTION(actionRedo),
+               ACTION(actionCut),
+               ACTION(actionCopy),
+               ACTION(actionPaste),
+               ACTION(actionToggle_Bookmark),
+               ACTION(actionNext_Bookmark),
+               ACTION(actionPrevious_Bookmark),
+               ACTION(actionClear_Bookmarks),
+               ACTION(actionCheck_Syntax),
+               ACTION(actionCheck_Syntax_All),
+               ACTION(actionCancel),
+               ACTION(actionExit),
+               ACTION(actionProject1),
+               ACTION(actionProject2),
+               ACTION(actionProject3),
+               ACTION(actionProject4),
+               ACTION(actionProject5),
+               ACTION(actionPlayer_Settings),
+               ACTION(actionFind),
+               ACTION(actionReplace),
+               ACTION(actionFind_Next),
+               ACTION(actionFind_Previous),
+               ACTION(actionGo_To_Line),
+               ACTION(actionOutput_Panel),
+               ACTION(actionLibrary_Manager),
+               ACTION(actionExport_Project),
+               ACTION(actionFind_in_Files),
+               ACTION(actionPreview),
+               ACTION(actionStart_Page),
+               ACTION(actionAbout_Gideros_Studio),
+               ACTION(actionExport_Pack),
+               ACTION(actionHelp_Support),
+               ACTION(actionProject6),
+               ACTION(actionProject7),
+               ACTION(actionProject8),
+               ACTION(actionProject9),
+               ACTION(actionProject10),
+               ACTION(actionProject11),
+               ACTION(actionProject12),
+               ACTION(actionProject13),
+               ACTION(actionProject14),
+               ACTION(actionProject15),
+               ACTION(actionLocalhostToggle),
+               ACTION(actionClear_Output),
+               ACTION(actionDocumentation),
+               ACTION(actionStartAll),
+               ACTION(actionUI_Theme),
+               ACTION(actionEditor_Theme),
+               ACTION(actionUI_and_Editor_Theme),
+               ACTION(actionReset_UI_and_Editor_Theme),
+               ACTION(actionFold_Unfold_All),
+               ACTION(actionFold_Unfold_Top),
+               ACTION(actionMacro_Support),
+               ACTION(actionAuto_indent),
+               ACTION(actionLive_syntax_checking),
+               ACTION(actionFullscreen),
+               ACTION(actionDebug),
+               ACTION(actionStepOver),
+               ACTION(actionStepInto),
+               ACTION(actionStepReturn),
+               ACTION(actionResume),
+               ACTION(actionPreferences),
+               ACTION(actionProfile),
+               ACTION(actionClone_Project),
+               ACTION(actionConsolidate_Project),
+               ACTION(actionType_checking),
+               ACTION(actionBlock_un_comment),
+               { QString(),nullptr },
+        };
+#undef ACTION
+        QDir shared(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
+        shared.mkpath("Gideros");
+        bool sharedOk = shared.cd("Gideros");
+        if (sharedOk) {
+            QSettings kmap(shared.absoluteFilePath("keymap.ini"), QSettings::IniFormat);
+            kmap.beginGroup("main");
+            auto alist=ActionList;
+            while (!alist->n.isEmpty()) {
+                auto v=kmap.value(alist->n);
+                if ((!v.isNull())&&alist->a)
+                    alist->a->setShortcut(v.toString());
+                alist++;
+            }
+            kmap.endGroup();
+        }
 }
 
 MainWindow::~MainWindow()
@@ -1581,7 +1690,7 @@ void MainWindow::updateUI()
 	ui.actionFind_Previous->setEnabled(hasMdiChild);
 	ui.actionGo_To_Line->setEnabled(hasMdiChild);
 
-    outlineWidget_->setDocument(textEdit,ui.actionLive_syntax_checking->isChecked());
+    outlineWidget_->setDocument(textEdit,ui.actionLive_syntax_checking->isChecked(),ui.actionType_checking->isChecked());
     outlineDock_->setVisible(isProjectOpen);
 }
 
@@ -2171,6 +2280,11 @@ void MainWindow::actionLocalhostToggle(bool checked){
 void MainWindow::actionLiveSyntaxChecking(bool checked){
     QSettings settings;
     settings.setValue("syntaxcheck_live", checked);
+}
+
+void MainWindow::actionLiveTypeChecking(bool checked){
+    QSettings settings;
+    settings.setValue("typecheck_live", checked);
 }
 
 void MainWindow::playerSettings()
@@ -3659,6 +3773,14 @@ void MainWindow::on_actionFold_Unfold_Top_triggered()
         textEdit->sciScintilla()->foldAll(false);
 #endif
     }
+}
+
+void MainWindow::on_actionBlock_un_comment_triggered()
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+    if (textEdit)
+        textEdit->BlockComment();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event)

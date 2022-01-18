@@ -340,6 +340,7 @@ private slots:
 
     void actionLocalhostToggle(bool checked);
     void actionLiveSyntaxChecking(bool checked);
+    void actionLiveTypeChecking(bool checked);
     void clearOutput();
     void searchOutput( const QString &text);
 
@@ -414,6 +415,7 @@ private slots:
     void on_actionReset_UI_and_Editor_Theme_triggered();
     void on_actionFold_Unfold_All_triggered();
     void on_actionFold_Unfold_Top_triggered();
+    void on_actionBlock_un_comment_triggered();
 
 public:
     static MainWindow *lua_instance;

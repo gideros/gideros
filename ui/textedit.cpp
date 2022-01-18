@@ -13,6 +13,8 @@
 #include <ScintillaEdit/ILexer.h>
 #include <Lexillia/Lexilla.h>
 #include <Lexillia/SciLexer.h>
+#include <QStandardPaths>
+#include <QDir>
 
 QSet<QString> TextEdit::breakpoints;
 #ifdef Q_OS_MAC
@@ -296,7 +298,42 @@ TextEdit::TextEdit(QWidget* parent)
 #ifdef Q_OS_MAC
 	keysForMac(sciScintilla_);
 #endif
-
+    //KeyMaps
+    QDir shared(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
+    shared.mkpath("Gideros");
+    bool sharedOk = shared.cd("Gideros");
+    if (sharedOk) {
+        QSettings kmap(shared.absoluteFilePath("keymap.ini"), QSettings::IniFormat);
+        kmap.beginGroup("scintilla");
+        for (auto k:kmap.childKeys()) {
+            auto v=kmap.value(k).toUInt();
+            int kmod=0;
+            while (true) {
+                k=k.trimmed();
+                if (k.startsWith("Shift+",Qt::CaseInsensitive)) {
+                    k=k.mid(6);
+                    kmod|=SCMOD_SHIFT;
+                    continue;
+                }
+                if (k.startsWith("Alt+",Qt::CaseInsensitive)) {
+                    k=k.mid(4);
+                    kmod|=SCMOD_ALT;
+                    continue;
+                }
+                if (k.startsWith("Ctrl+",Qt::CaseInsensitive)) {
+                    k=k.mid(5);
+                    kmod|=SCMOD_CTRL;
+                    continue;
+                }
+                break;
+            }
+            kmod=(kmod<<16)|(k.toUpper().at(0).unicode()&0xFFFF);
+            sciScintilla_->clearCmdKey(kmod);
+            if (v>0)
+                sciScintilla_->assignCmdKey(kmod,v);
+        }
+        kmap.endGroup();
+    }
 	isUntitled_ = true;
 
 // settings
@@ -425,6 +462,7 @@ QSettings lls(theme, QSettings::IniFormat);
     connect(sciScintilla_, SIGNAL(dwellEnd(int,int)), this, SLOT(dwellEnd(int,int)));
     connect(sciScintilla_, SIGNAL(updateUi(Scintilla::Update)), this, SLOT(updateUi(Scintilla::Update)));
     connect(sciScintilla_, SIGNAL(charAdded(int)), this, SLOT(charAdded(int)));
+    connect(sciScintilla_, SIGNAL(callTipClick(Scintilla::Position)), this, SLOT(callTipClick(Scintilla::Position)));
 }
 
 TextEdit::~TextEdit()
@@ -503,6 +541,7 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
 	QApplication::restoreOverrideCursor();
 
     sciScintilla_->clearSelections();
+    sciScintilla_->colourise(0,-1);
 
     modified=false;
     sciScintilla_->emptyUndoBuffer();
@@ -517,6 +556,23 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
     }
 
 	return true;
+}
+
+void TextEdit::BlockComment() {
+    int from=sciScintilla_->lineFromPosition(sciScintilla_->selectionStart());
+    int to=sciScintilla_->lineFromPosition(sciScintilla_->selectionEnd());
+    if (from<0) return;
+    sciScintilla_->setTargetRange(sciScintilla_->positionFromLine(from),sciScintilla_->positionBefore(sciScintilla_->positionFromLine(from+1)));
+    bool uncomment=sciScintilla_->searchInTarget(2,"--")>=0;
+    for (int l=from;l<=to;l++) {
+        if (uncomment) {
+            sciScintilla_->setTargetRange(sciScintilla_->positionFromLine(l),sciScintilla_->positionBefore(sciScintilla_->positionFromLine(l+1)));
+            if (sciScintilla_->searchInTarget(2,"--")>=0)
+                sciScintilla_->replaceTarget(0,"");
+        }
+        else
+            sciScintilla_->insertText(sciScintilla_->positionFromLine(l),"--");
+    }
 }
 
 const QString& TextEdit::fileName() const
@@ -917,7 +973,8 @@ void TextEdit::closeEvent(QCloseEvent* event)
 
 void TextEdit::setFocusToEdit()
 {
-    sciScintilla_->setFocus(true);
+    //sciScintilla_->setFocus(true);
+    sciScintilla_->grabFocus();
 }
 
 void TextEdit::highlightDebugLine(int line) {
@@ -1002,9 +1059,21 @@ void TextEdit::charAdded(int ch)
                     }
                 }
                 if (!ctip.isEmpty()) {
+                    currentCallTipList.clear();
+                    currentCallTipIndex=0;
                     ctip.sort();
                     ctip.removeDuplicates();
-                    sciScintilla_->callTipShow(ws,ctip.join('\n').toUtf8());
+                    if (ctip.size()>4) {
+                        size_t n=1;
+                        size_t l=ctip.size();
+                        for (const QString &c:ctip) {
+                            currentCallTipList << QString("\001 %1 of %2 \002%3").arg(n++).arg(l).arg(c);
+                        }
+                        currentCallTipPos=ws;
+                        sciScintilla_->callTipShow(currentCallTipPos,currentCallTipList[currentCallTipIndex].toUtf8());
+                    }
+                    else
+                        sciScintilla_->callTipShow(ws,ctip.join('\n').toUtf8());
                 }
             }
         }
@@ -1035,6 +1104,23 @@ void TextEdit::charAdded(int ch)
                 }
             }
         }
+    }
+}
+
+void TextEdit::callTipClick(Scintilla::Position position) {
+    if (position==1) {
+        if (currentCallTipIndex==0)
+            currentCallTipIndex=currentCallTipList.size()-1;
+        else
+            currentCallTipIndex--;
+        sciScintilla_->callTipShow(currentCallTipPos,currentCallTipList[currentCallTipIndex].toUtf8());
+    }
+    if (position==2) {
+        if (currentCallTipIndex==(size_t)(currentCallTipList.size()-1))
+            currentCallTipIndex=0;
+        else
+            currentCallTipIndex++;
+        sciScintilla_->callTipShow(currentCallTipPos,currentCallTipList[currentCallTipIndex].toUtf8());
     }
 }
 

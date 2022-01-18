@@ -412,7 +412,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 					QString luac = toolsDir.filePath("luauc");
 #endif
 					QProcess procWrite;
-					procWrite.setStandardOutputFile(dfile);
+                    procWrite.setStandardOutputFile(dfile+".tmp");
 					procWrite.start(luac, QStringList() << "--compile=binary" << sfilelst);
 					procWrite.waitForFinished();
 #else
@@ -421,16 +421,16 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 #else
 					QString luac = toolsDir.filePath("luac");
 #endif
-					QProcess::execute(quote(luac) + " -o \"" + dfile + "\" " + sfile);
+                    QProcess::execute(quote(luac) + " -o \"" + dfile + ".tmp\" " + sfile);
 #endif
 
-		for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
+        for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
 			QString rdst = QDir::cleanPath(
 					ctx->outputDir.relativeFilePath(ctx->luafiles[i]));
-			QFileInfo ri(rdst);
-			if (ri != di)
-				QFile::remove(rdst);
+            QFile::remove(rdst);
 		}
+
+        QFile::rename(di.absoluteFilePath()+".tmp",di.absoluteFilePath());
 		ctx->luafiles.clear();
 		ctx->luafiles_abs.clear();
 		ctx->luafiles.push_back(difile);

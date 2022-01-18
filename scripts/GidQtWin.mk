@@ -75,6 +75,28 @@ qtlibs.install: buildqtlibs
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid $(LUA_ENGINE) libgideros)
 
+qscintilla:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MINGWMAKE) $(MAKEJOBS) release
+	mkdir -p $(QT)/include/ScintillaEdit
+	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(QT)/include/ScintillaEdit
+
+qlexilla:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MINGWMAKE) $(MAKEJOBS) release
+	mkdir -p $(QT)/include/Lexilla
+	cp lexilla/include/*.h $(QT)/include/Lexilla
+
+qscintilla.debug:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MINGWMAKE) $(MAKEJOBS) debug
+
+qlexilla.debug:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MINGWMAKE) $(MAKEJOBS) debug
+	
+	
+
 buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
 qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) qtplugins.clean html5.tools.clean
@@ -141,8 +163,8 @@ qt5.install:
 	mkdir -p $(addprefix $(RELEASE)/,$(dir $(QT5PLUGINS)))
 	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/$$a.dll$(QTDLLEXT); done
 	#cp $(QT)/lib/qscintilla2_qt$(QT_VER).dll $(RELEASE)
-	cp $(QT)/lib/ScintillaEdit5.dll $(RELEASE)
-	cp $(QT)/lib/Lexilla5.dll $(RELEASE)
+	cp $(ROOT)/scintilla/qt/ScintillaEdit/release/ScintillaEdit5.dll $(RELEASE)
+	cp $(ROOT)/lexilla/src/release/Lexilla5.dll $(RELEASE)
 	cp $(ROOT)/libgid/openal/release/openal.dll $(RELEASE)
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done

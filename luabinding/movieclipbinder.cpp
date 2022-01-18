@@ -275,8 +275,10 @@ int MovieClipBinder::create(lua_State* L)
 		lua_pop(L, 1);
 
 		int spRef=0;
-		if (needRef)
+        if (needRef) {
+            lua_xmove(L,application->getLuaState(),1);
             spRef = luaL_ref(application->getLuaState(), LUA_REGISTRYINDEX);
+        }
 		else
 			lua_pop(L, 1);
 		movieclip->addFrame(start, end, sprite, spRef, parameters);

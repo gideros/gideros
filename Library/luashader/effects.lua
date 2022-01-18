@@ -60,7 +60,7 @@ makeEffect("Blur",
 	 local dir=fTextureInfo.zw*fDirection
 	 local tc=fTexCoord-dir*frad
 	 for v=0,19 do
-		if v<ext then
+		if v<hI1(ext) then
 			frag=frag+texture2D(fTexture, tc)
 		end
 		tc+=dir

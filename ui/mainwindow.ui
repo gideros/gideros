@@ -33,7 +33,7 @@ QMainWindow::separator {
      <x>0</x>
      <y>0</y>
      <width>1370</width>
-     <height>21</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -98,6 +98,7 @@ QMainWindow::separator {
     <addaction name="actionFold_Unfold_All"/>
     <addaction name="actionFold_Unfold_Top"/>
     <addaction name="actionAuto_indent"/>
+    <addaction name="actionBlock_un_comment"/>
    </widget>
    <widget class="QMenu" name="menuCompile">
     <property name="title">
@@ -107,6 +108,7 @@ QMainWindow::separator {
     <addaction name="actionCheck_Syntax_All"/>
     <addaction name="actionClear_Output"/>
     <addaction name="actionLive_syntax_checking"/>
+    <addaction name="actionType_checking"/>
    </widget>
    <widget class="QMenu" name="menuPlayer">
     <property name="title">
@@ -737,6 +739,22 @@ Gideros Player, Play button is enabled.</string>
   <action name="actionConsolidate_Project">
    <property name="text">
     <string>Consolidate Project</string>
+   </property>
+  </action>
+  <action name="actionType_checking">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Type checking</string>
+   </property>
+  </action>
+  <action name="actionBlock_un_comment">
+   <property name="text">
+    <string>Block (un)comment</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
    </property>
   </action>
  </widget>

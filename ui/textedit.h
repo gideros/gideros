@@ -50,6 +50,8 @@ public:
 	int replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 					bool wrap);
 
+    void BlockComment();
+
     void setFocusToEdit();
     void highlightDebugLine(int line);
 
@@ -94,6 +96,7 @@ private slots:
     void charAdded(int ch);
     void dwellStart(int x, int y);
     void dwellEnd(int x, int y);
+    void callTipClick(Scintilla::Position);
 #else
     void dwellStart(int pos, int x, int y);
     void dwellEnd(int pos, int x, int y);
@@ -108,6 +111,9 @@ private:
     bool modified;
     int autoCompleteThreshold;
     QStringList api;
+    QStringList currentCallTipList;
+    size_t currentCallTipIndex;
+    size_t currentCallTipPos;
     void registerIcon(int num,QIcon icon);
 #else
     QsciScintilla* sciScintilla_;

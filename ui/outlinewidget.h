@@ -28,6 +28,7 @@ struct OutlineLinterItem {
         Note=0,
         Warning=1,
         Error=2,
+        TypeError=3,
     };
     OutlineLinterItem(QString m,LinterType t,QString f, int l) : message(m), type(t), file(f), line(l) {}
     QString message;
@@ -44,6 +45,7 @@ class OutlineWorkerThread : public QThread
     QByteArray btext;
     QString filename;
 public:
+    static bool typeCheck;
     OutlineWorkerThread(QObject *parent = Q_NULLPTR,QString name=QString(),QByteArray file=QByteArray()) : QThread(parent) { btext=file; filename=name; }
     virtual ~OutlineWorkerThread() { }
 signals:
@@ -75,7 +77,7 @@ class OutlineWidget : public QWidget
 public:
 	OutlineWidget(QWidget *parent=0);
 	~OutlineWidget();
-	void setDocument(TextEdit *doc,bool checkSyntax);
+    void setDocument(TextEdit *doc,bool checkSyntax,bool typeCheck);
     void saveSettings();
     friend class OutlineWorkerThread;
 protected:
@@ -86,6 +88,7 @@ protected:
     bool working_;
     bool needParse_;
     bool checkSyntax_;
+    bool typeCheck_;
     void parse();
     void sort();
     QAction *actType_;

@@ -200,6 +200,8 @@ public:
 
 #endif
 
+bool OutlineWorkerThread::typeCheck=false;
+
 void OutlineWorkerThread::run()
 {
   QList<OutLineItem> outline;
@@ -347,6 +349,14 @@ void OutlineWorkerThread::run()
       for (const Luau::LintWarning &e: lr.errors)
           li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Error,filename,e.location.begin.line));
 
+      if (typeCheck) {
+          Luau::CheckResult cr = ((OutlineWidget *)this->parent())->frontend->check(filename.toStdString().c_str());
+          for (const Luau::TypeError &e: cr.errors) {
+              const Luau::UnknownSymbol *uk=e.data.get_if<Luau::UnknownSymbol>();
+              if ((!uk)||(uk->context!=Luau::UnknownSymbol::Binding))
+                li.append(OutlineLinterItem(QString(Luau::toString(e).c_str()),OutlineLinterItem::LinterType::TypeError,filename,e.location.begin.line));
+          }
+      }
       //COMPILER
       std::string error = Luau::compile(std::string(btext.constData(),btext.size()), filename.toStdString(), opts,popts,nullptr,&result);
       if (error.at(0)==0) {
@@ -452,6 +462,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     Luau::FrontendOptions frontendOptions;
     frontendOptions.retainFullTypeGraphs = true; //Annotate
     fileResolver=new OutlineFileResolver(this);
+    configResolver.defaultConfig.mode=Luau::Mode::NoCheck;
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_UnknownGlobal);
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_ImplicitReturn);
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_FunctionUnused);
@@ -565,6 +576,9 @@ void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> li
     //Linter Error
     s->styleSetFore(stylenum+1+OutlineLinterItem::Error,0xFFFFFF);
     s->styleSetBack(stylenum+1+OutlineLinterItem::Error,0x004080);
+    //Typer Error
+    s->styleSetFore(stylenum+1+OutlineLinterItem::TypeError,0xFFFFFF);
+    s->styleSetBack(stylenum+1+OutlineLinterItem::TypeError,0x400040);
 
     s->eOLAnnotationSetVisible(EOLANNOTATION_STADIUM);
 
@@ -631,6 +645,7 @@ void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> li
 void OutlineWidget::parse() {
     bool noContent=true;
     needParse_=working_;
+    OutlineWorkerThread::typeCheck=typeCheck_;
     if (working_)
         return;
     if (doc_) {
@@ -648,6 +663,8 @@ void OutlineWidget::parse() {
 #endif
                 QByteArray btext=text.toUtf8();
                 noContent=false;
+
+                frontend->markDirty(doc_->fileName().toStdString());
 
                 OutlineWorkerThread *workerThread = new OutlineWorkerThread(this,doc_->fileName(),btext);
                 connect(workerThread, &OutlineWorkerThread::updateOutline, this, &OutlineWidget::updateOutline);
@@ -669,11 +686,12 @@ void OutlineWidget::checkParse() {
         parse();
 }
 
-void OutlineWidget::setDocument(TextEdit *doc,bool checkSyntax)
+void OutlineWidget::setDocument(TextEdit *doc,bool checkSyntax,bool typeCheck)
 {
     bool docChanged=(doc_!=doc);
     doc_=doc;
     checkSyntax_=checkSyntax;
+    typeCheck_=typeCheck;
     if (docChanged)
         parse();
     else
