@@ -744,6 +744,8 @@ void MainWindow::advertisement(const QString& host,unsigned short port,unsigned 
  	}
 
 	players_->addItem(QString("%1 (%2:%3)").arg(name).arg(host).arg(port),nfull);
+    if (!client_->isConnected())
+        playerChanged(0);
 }
 
 void MainWindow::playerChanged(int)
