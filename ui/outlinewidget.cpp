@@ -462,7 +462,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     Luau::FrontendOptions frontendOptions;
     frontendOptions.retainFullTypeGraphs = true; //Annotate
     fileResolver=new OutlineFileResolver(this);
-    configResolver.defaultConfig.mode=Luau::Mode::NoCheck;
+    configResolver.defaultConfig.mode=Luau::Mode::Nonstrict;
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_UnknownGlobal);
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_ImplicitReturn);
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_FunctionUnused);

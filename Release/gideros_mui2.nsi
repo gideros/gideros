@@ -3,6 +3,7 @@
 
   !include "MUI2.nsh"
   !include "FileAssociation.nsh"
+  !include x64.nsh
   
 !macro CreateInternetShortcut FILEPATH URL
 WriteINIStr "${FILEPATH}" "InternetShortcut" "URL" "${URL}"
