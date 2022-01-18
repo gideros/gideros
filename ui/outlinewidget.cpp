@@ -83,7 +83,7 @@ public:
     std::optional<Luau::SourceCode> readSource(const Luau::ModuleName& name) override
     {
         TextEdit *doc=_ow->doc_;
-        if (QString(name.c_str())==doc->fileName())
+        if (doc&&(QString(name.c_str())==doc->fileName()))
         {
 #ifdef SCINTILLAEDIT_H
             ScintillaEdit *s=doc->sciScintilla();

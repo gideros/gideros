@@ -1369,7 +1369,15 @@ void MainWindow::saveProject()
 
     if (file.open(QIODevice::WriteOnly | QIODevice::Text) == false)
     {
-        QMessageBox::information(this, "Information", "Could not save the project file: " + projectFileName_);
+#if defined(Q_OS_MAC)
+        QString ex = "../../Examples/";
+#else
+        QString ex = "Examples/";
+#endif
+        if (!projectFileName_.startsWith(ex))
+            QMessageBox::information(this, "Information", "Could not save the project file: " + projectFileName_);
+        else
+            outputWidget_->append("Could not save the example project file: " + projectFileName_+"\n");
         return;
     }
 
