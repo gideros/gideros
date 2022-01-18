@@ -34,23 +34,23 @@ qtlibs.install: buildqtlibs
 	
 qscintilla:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
-	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MINGWMAKE) $(MAKEJOBS) release
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS)
 	mkdir -p $(QT)/include/ScintillaEdit
 	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(QT)/include/ScintillaEdit
 
 qlexilla:
 	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
-	cd $(ROOT)/lexilla/src; $(MINGWMAKE) $(MAKEJOBS) release
+	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS)
 	mkdir -p $(QT)/include/Lexilla
 	cp lexilla/include/*.h $(QT)/include/Lexilla
 
 qscintilla.debug:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
-	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MINGWMAKE) $(MAKEJOBS) debug
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS) debug
 
 qlexilla.debug:
 	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
-	cd $(ROOT)/lexilla/src; $(MINGWMAKE) $(MAKEJOBS) debug
+	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS) debug
 
 
 %.qtplugin:
@@ -82,8 +82,8 @@ qt.install: buildqt qt.player tools html5.tools
 	cp -R $(ROOT)/ui/Gideros\ Studio.app $(RELEASE)
 	$(DEPLOYQT) $(RELEASE)/Gideros\ Studio.app
 	#cp $(QT)/lib/libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
-	cp $(ROOT)/scintilla/qt/ScintillaEdit/release/libScintillaEdit.5.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
-	cp $(ROOT)/lexilla/src/release/libLexilla.5.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	cp $(ROOT)/scintilla/qt/ScintillaEdit/libScintillaEdit.5.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	cp $(ROOT)/lexilla/src/libLexilla.5.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
 	#install_name_tool -change libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
 	install_name_tool -change libScintillaEdit.5.dylib @rpath/libScintillaEdit.5.dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
 	install_name_tool -change libLexilla.5.dylib @rpath/libLexilla.5.dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
