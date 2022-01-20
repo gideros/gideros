@@ -285,7 +285,7 @@ local ap=require("Tools/export_android")
 				if Export.isSet("export.buildAab") then
 					gradleTarget="bundleRelease"
 					apkExt="aab"
-					apkBuilt="bundle/release/app.aab"
+					apkBuilt="bundle/release/app-release.aab"
 					apkInstall=0
 				end				
 				Export.setProperty("local.gradleTarget",gradleTarget)

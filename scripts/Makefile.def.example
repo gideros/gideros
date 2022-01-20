@@ -1,19 +1,36 @@
-QTBASEDIR=/c/Applications/Qt54
-NDKBUILD=cmd /c C:\\android-ndk-r10d\\ndk-build.cmd
-JAVA_HOME=C:/Program\ Files/Java/jdk1.7.0_21
-ANT_HOME=C:\\Applications\\apache-ant-1.9.4
-ANDROID_HOME=C:/Program\ Files/Android/android-sdk
-FXC="/c/Program Files (x86)/Windows Kits/8.1/bin/x86/fxc.exe"
-MSBUILD="/c/Program Files (x86)/MSBuild/14.0/bin/msbuild.exe"
+QTBASEDIR=/c/Applications/Qt
+MAKEJOBS=-j8
+NDKBUILD=cmd //c /c/Applications/android-ndk-r17b/ndk-build.cmd
+JAVA_HOME=C:\Program Files\Android\Android Studio\jre
+ANDROID_HOME=C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Android\\\\Sdk
+FXC="/c/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x86/fxc.exe"
+MSBUILD="/c/Program Files/Microsoft Visual Studio/2022/Community/MSbuild/Current/Bin/MSBuild.exe"
+
+EMSDK=/c/Applications/emscripten
+EMSDKPATH=$(EMSDK):$(EMSDK)/node/14.15.5_64bit/bin:$(EMSDK)/python/3.9.2-1_64bit:$(EMSDK)/upstream/emscripten:$(EMSDK)/upstream/bin
+EMSDK_PREFIX=PATH=$(EMSDKPATH):$$$$PATH
 EMSDK_PREFIX=cmd //c
-CRUNCHME=crunchme-win32.exe
+
+STEAMSDK=/c/Applications/steamworks_sdk_142
+export STEAMSDK
+
+WIN32_BIN=/mingw32/bin
+export WIN32_BIN
+
+CRUNCHME=crunchme-qt-win.exe
+NSIS=cmd //c "/c/Program Files (x86)/NSIS/makensis.exe"
+WIN_SIGN="/c/Program Files (x86)/Windows Kits/10/bin/x86/signtool.exe"
+#WIN_KEYSTORE=/path/to/cert.p12
+#WIN_KEYPASS=KeyPassword
+#WIN_KEYTSS="http://timestamp.comodoca.com"
+
 
 MAC_HOST=user@host
 MAC_PATH=gideros/gideros
 OSX_SIGNING_IDENTITY="ID"
 OSX_SIGNING_PASSWORD="keychain password"
 
-QT_ARCH=mingw491_32
-QT_TOOLSARCH=mingw491_32
-QTVER=5.4
-QT5ICUVER=53
+QT_ARCH=mingw_64
+QT_TOOLSARCH=mingw900_64
+QTVER=6.2.2
+QT5ICUVER=54
