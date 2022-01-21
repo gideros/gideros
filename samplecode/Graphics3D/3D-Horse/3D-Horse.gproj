@@ -1,21 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties architecture="0" html5_host="" osx_domain="giderosmobile.com" packageName="com.yourdomain.yourapp" backgroundColor="#ffffff" encryptAssets="0" winrt_package="com.yourdomain.yourapp" disableSplash="0" autorotation="0" html5_mem="256" osx_org="GiderosMobile" mouseToTouch="1" touchToMouse="1" osx_category="5" exportMode="0" osx_bundle="com.yourdomain." windowWidth="0" iosDevice="0" win_domain="giderosmobile.com" scaleMode="0" version_code="1" fps="60" splash_h_image="" orientation="0" mouseTouchOrder="0" android_template="0" logicalHeight="480" win_org="GiderosMobile" version="1.0" splash_v_image="" winrt_org="GiderosMobile" tv_icon="" logicalWidth="320" encryptCode="0" ios_bundle="com.yourdomain." windowHeight="0" retinaDisplay="0" app_icon="">
+ <properties vsync="0" html5_crash="" osx_installerId="" html5_fbinstant="0" macos_category="5" fps="60" atv_bundle="com.yourdomain.yourapp-atv" mainluaOnly="0" win_domain="giderosmobile.com" app_icon="" mouseToTouch="1" scaleMode="0" splash_v_image="" html5_mem="256" html5_host="" architecture="0" splashScaleMode="0" osx_domain="giderosmobile.com" logicalWidth="320" windowWidth="0" version="1.0" html5_wasm="0" winrt_org="GiderosMobile" backgroundColor="#ffffff" build_number="1" orientation="0" html5_pwa="0" tv_icon="" logicalHeight="480" html5_fbload="100" winrt_package="com.yourdomain.yourapp" osx_bundle="com.yourdomain." version_code="1" disableSplash="0" osx_org="GiderosMobile" html5_pack="0" touchToMouse="1" encryptCode="0" retinaDisplay="0" iosDevice="0" encryptAssets="0" windowHeight="0" app_name="" exportMode="0" win_org="GiderosMobile" mouseTouchOrder="0" splash_h_image="" osx_signingId="" osx_category="5" ios_bundle="com.yourdomain." html5_symbols="0" autorotation="0" macos_bundle="com.yourdomain.yourapp-macos">
   <imageScales/>
   <plugins/>
   <exports/>
  </properties>
- <file source="lighting.lua"/>
  <folder name="horse">
   <folder name="LD_HorseRtime02.blend">
-   <file source="horse/HorseMain2k00Norm00.jpg"/>
+   <file source="horse/Hair12Main2k.jpg"/>
    <file source="horse/Hair12Main2kNorm.jpg"/>
    <file source="horse/HorseMain2k00.jpg"/>
-   <file source="horse/Hair12Main2k.jpg"/>
+   <file source="horse/HorseMain2k00Norm00.jpg"/>
    <file source="horse/eye_texture.jpg"/>
   </folder>
   <file source="horse/LD_HorseRtime02.mtl"/>
   <file source="horse/LD_HorseRtime02.obj"/>
  </folder>
+ <file source="lighting.lua"/>
  <file source="main.lua"/>
  <file source="objloader.lua"/>
 </project>

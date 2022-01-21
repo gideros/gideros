@@ -506,7 +506,7 @@ MainWindow::MainWindow(QWidget *parent)
     };
     luaL_register(L,"Studio",reg);
     lua_pop(L,1);
-ui.actionAbout_Gideros_Studio;
+
     addonsServer_=new AddonsServer(this);
     std::vector<Addon> addons=AddonsManager::loadAddons(true);
     for (std::vector<Addon>::iterator it=addons.begin();it!=addons.end();it++) {
@@ -739,7 +739,9 @@ void MainWindow::advertisement(const QString& host,unsigned short port,unsigned 
 		if (QString("%1|%2|%3").arg(parts[0]).arg(parts[1]).arg(parts[2])==nitem)
 		{
 			players_->setItemData(k,nfull);
-			return;
+            if (!client_->isConnected())
+                playerChanged(0);
+            return;
 		}
  	}
 

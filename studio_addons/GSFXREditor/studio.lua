@@ -6,8 +6,9 @@ local STUDIO_SRV=socket.tcp()
 local STUDIO_SRV_ID=0
 
 local function doRequest(mtd,...)
+	local arg={...}
 	local params={}
-	for k=1,arg.n do
+	for k=1,#arg do
 		local a=arg[k] or json.null
 		table.insert(params,a)
 	end
