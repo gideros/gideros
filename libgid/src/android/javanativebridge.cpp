@@ -33,10 +33,12 @@ std::vector<std::string> jnb_getLocalIPs()
 	jmethodID javamethod = env->GetStaticMethodID(clazz, "getLocalIPs", "()Ljava/lang/String;");
 	jstring jstr = (jstring)env->CallStaticObjectMethod(clazz, javamethod);
 
-    jboolean isCopy;
-    const char* str = env->GetStringUTFChars(jstr, &isCopy);
-	pystring::split(str, result, "|");
-    env->ReleaseStringUTFChars(jstr, str);
+	if (jstr) {
+		jboolean isCopy;
+		const char* str = env->GetStringUTFChars(jstr, &isCopy);
+		pystring::split(str, result, "|");
+		env->ReleaseStringUTFChars(jstr, str);
+	}
 
 	return result;
 }
