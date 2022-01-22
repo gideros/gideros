@@ -58,6 +58,7 @@
 #include <QRegularExpression>
 #include "preferencesdialog.h"
 #include "profilerreport.h"
+#include <QStandardPaths>
 
 MainWindow *MainWindow::lua_instance=NULL;
 QTemporaryDir *MainWindow::tempDir=NULL;
@@ -83,6 +84,7 @@ void MainWindow::notifyAddon(QString clientId,const char *data) {
     if (addonsServer_)
         addonsServer_->notify(clientId,data);
 }
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -323,12 +325,13 @@ MainWindow::MainWindow(QWidget *parent)
 	players_ = new QComboBox;
 	players_->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 	ui.mainToolBar->insertWidget(ui.actionStart_Player,players_);
-	connect(players_,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(playerChanged(const QString &)));
+    connect(players_,SIGNAL(currentIndexChanged(int)),this,SLOT(playerChanged(int)));
 
     //QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
     ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
     ui.actionLive_syntax_checking->setChecked(settings.value("syntaxcheck_live",true).toBool());
+    ui.actionType_checking->setChecked(settings.value("typecheck_live",false).toBool());
 
 #ifndef NEW_CLIENT
 	client_ = new Client(qPrintable(playerip), 15000);
@@ -392,6 +395,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
     connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
     connect(ui.actionLive_syntax_checking, SIGNAL(triggered(bool)), this, SLOT(actionLiveSyntaxChecking(bool)));
+    connect(ui.actionType_checking, SIGNAL(triggered(bool)), this, SLOT(actionLiveTypeChecking(bool)));
     connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui.actionPreferences, SIGNAL(triggered()), this, SLOT(openPreferencesDialog()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
@@ -502,7 +506,7 @@ MainWindow::MainWindow(QWidget *parent)
     };
     luaL_register(L,"Studio",reg);
     lua_pop(L,1);
-
+ui.actionAbout_Gideros_Studio;
     addonsServer_=new AddonsServer(this);
     std::vector<Addon> addons=AddonsManager::loadAddons(true);
     for (std::vector<Addon>::iterator it=addons.begin();it!=addons.end();it++) {
@@ -513,6 +517,111 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
         isBreaked_=false;
+
+#define ACTION(n) { #n, ui.n }
+        struct {
+            QString n;
+            QAction *a;
+        }
+        ActionList[]={
+            ACTION(actionNew_Project),
+               ACTION(actionOpen_Project),
+               ACTION(actionClose_Project),
+               ACTION(actionSave_Project),
+               ACTION(actionFile_Associations),
+               ACTION(actionStart),
+               ACTION(actionStop),
+               ACTION(actionStart_Player),
+               ACTION(actionNew),
+               ACTION(actionOpen),
+               ACTION(actionSave),
+               ACTION(actionSave_All),
+               ACTION(actionUndo),
+               ACTION(actionRedo),
+               ACTION(actionCut),
+               ACTION(actionCopy),
+               ACTION(actionPaste),
+               ACTION(actionToggle_Bookmark),
+               ACTION(actionNext_Bookmark),
+               ACTION(actionPrevious_Bookmark),
+               ACTION(actionClear_Bookmarks),
+               ACTION(actionCheck_Syntax),
+               ACTION(actionCheck_Syntax_All),
+               ACTION(actionCancel),
+               ACTION(actionExit),
+               ACTION(actionProject1),
+               ACTION(actionProject2),
+               ACTION(actionProject3),
+               ACTION(actionProject4),
+               ACTION(actionProject5),
+               ACTION(actionPlayer_Settings),
+               ACTION(actionFind),
+               ACTION(actionReplace),
+               ACTION(actionFind_Next),
+               ACTION(actionFind_Previous),
+               ACTION(actionGo_To_Line),
+               ACTION(actionOutput_Panel),
+               ACTION(actionLibrary_Manager),
+               ACTION(actionExport_Project),
+               ACTION(actionFind_in_Files),
+               ACTION(actionPreview),
+               ACTION(actionStart_Page),
+               ACTION(actionAbout_Gideros_Studio),
+               ACTION(actionExport_Pack),
+               ACTION(actionHelp_Support),
+               ACTION(actionProject6),
+               ACTION(actionProject7),
+               ACTION(actionProject8),
+               ACTION(actionProject9),
+               ACTION(actionProject10),
+               ACTION(actionProject11),
+               ACTION(actionProject12),
+               ACTION(actionProject13),
+               ACTION(actionProject14),
+               ACTION(actionProject15),
+               ACTION(actionLocalhostToggle),
+               ACTION(actionClear_Output),
+               ACTION(actionDocumentation),
+               ACTION(actionStartAll),
+               ACTION(actionUI_Theme),
+               ACTION(actionEditor_Theme),
+               ACTION(actionUI_and_Editor_Theme),
+               ACTION(actionReset_UI_and_Editor_Theme),
+               ACTION(actionFold_Unfold_All),
+               ACTION(actionFold_Unfold_Top),
+               ACTION(actionMacro_Support),
+               ACTION(actionAuto_indent),
+               ACTION(actionLive_syntax_checking),
+               ACTION(actionFullscreen),
+               ACTION(actionDebug),
+               ACTION(actionStepOver),
+               ACTION(actionStepInto),
+               ACTION(actionStepReturn),
+               ACTION(actionResume),
+               ACTION(actionPreferences),
+               ACTION(actionProfile),
+               ACTION(actionClone_Project),
+               ACTION(actionConsolidate_Project),
+               ACTION(actionType_checking),
+               ACTION(actionBlock_un_comment),
+               { QString(),nullptr },
+        };
+#undef ACTION
+        QDir shared(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
+        shared.mkpath("Gideros");
+        bool sharedOk = shared.cd("Gideros");
+        if (sharedOk) {
+            QSettings kmap(shared.absoluteFilePath("keymap.ini"), QSettings::IniFormat);
+            kmap.beginGroup("main");
+            auto alist=ActionList;
+            while (!alist->n.isEmpty()) {
+                auto v=kmap.value(alist->n);
+                if ((!v.isNull())&&alist->a)
+                    alist->a->setShortcut(v.toString());
+                alist++;
+            }
+            kmap.endGroup();
+        }
 }
 
 MainWindow::~MainWindow()
@@ -635,14 +744,18 @@ void MainWindow::advertisement(const QString& host,unsigned short port,unsigned 
  	}
 
 	players_->addItem(QString("%1 (%2:%3)").arg(name).arg(host).arg(port),nfull);
+    if (!client_->isConnected())
+        playerChanged(0);
 }
 
-void MainWindow::playerChanged(const QString & text)
+void MainWindow::playerChanged(int)
 {
-	QString hostData=text;
+    QString hostData;
 	if (players_->currentData().isValid())
-		hostData=players_->currentData().toString();
-	QStringList parts=hostData.split('|');
+        hostData=players_->currentData().toString();
+    else
+        return;
+    QStringList parts=hostData.split('|');
 	if (parts.count()==1)
 		client_->connectToHost(parts[0],15000);
 	else
@@ -1256,7 +1369,15 @@ void MainWindow::saveProject()
 
     if (file.open(QIODevice::WriteOnly | QIODevice::Text) == false)
     {
-        QMessageBox::information(this, "Information", "Could not save the project file: " + projectFileName_);
+#if defined(Q_OS_MAC)
+        QString ex = "../../Examples/";
+#else
+        QString ex = "Examples/";
+#endif
+        if (!projectFileName_.startsWith(ex))
+            QMessageBox::information(this, "Information", "Could not save the project file: " + projectFileName_);
+        else
+            outputWidget_->append("Could not save the example project file: " + projectFileName_+"\n");
         return;
     }
 
@@ -1425,11 +1546,21 @@ void MainWindow::reloadProject()
     if (textEdit)
     {
         int line, index;
+#ifdef SCINTILLAEDIT_H
+        sptr_t pos=textEdit->sciScintilla()->currentPos();
+        index=textEdit->sciScintilla()->column(pos);
+        line=textEdit->sciScintilla()->lineFromPosition(pos);
+#else
         textEdit->sciScintilla()->getCursorPosition(&line, &index);
+#endif
         QString rp = projectFileName_;
         closeProject();
         openProject(rp);
+#ifdef SCINTILLAEDIT_H
+        textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->findColumn(line, index));
+#else
         textEdit->sciScintilla()->setCursorPosition(line, index);
+#endif
     }
 }
 
@@ -1569,7 +1700,7 @@ void MainWindow::updateUI()
 	ui.actionFind_Previous->setEnabled(hasMdiChild);
 	ui.actionGo_To_Line->setEnabled(hasMdiChild);
 
-    outlineWidget_->setDocument(textEdit,ui.actionLive_syntax_checking->isChecked());
+    outlineWidget_->setDocument(textEdit,ui.actionLive_syntax_checking->isChecked(),ui.actionType_checking->isChecked());
     outlineDock_->setVisible(isProjectOpen);
 }
 
@@ -2161,6 +2292,11 @@ void MainWindow::actionLiveSyntaxChecking(bool checked){
     settings.setValue("syntaxcheck_live", checked);
 }
 
+void MainWindow::actionLiveTypeChecking(bool checked){
+    QSettings settings;
+    settings.setValue("typecheck_live", checked);
+}
+
 void MainWindow::playerSettings()
 {
 	PlayerSettingsDialog dialog(this);
@@ -2310,9 +2446,17 @@ void MainWindow::goToLine()
 	if (textEdit)
 	{
 		int line, index;
-        textEdit->sciScintilla()->getCursorPosition(&line, &index);
 
-		int lines = textEdit->sciScintilla()->lines();
+#ifdef SCINTILLAEDIT_H
+        sptr_t pos=textEdit->sciScintilla()->currentPos();
+        index=textEdit->sciScintilla()->column(pos);
+        line=textEdit->sciScintilla()->lineFromPosition(pos);
+        int lines = textEdit->sciScintilla()->lineFromPosition(textEdit->sciScintilla()->textLength());
+#else
+        textEdit->sciScintilla()->getCursorPosition(&line, &index);
+        int lines = textEdit->sciScintilla()->lines();
+#endif
+
 
 		GoToLineDialog dialog(this);
 		dialog.setLineNumbers(line + 1, lines);
@@ -2321,7 +2465,11 @@ void MainWindow::goToLine()
 			int lineNumber = dialog.lineNumber();
 			lineNumber = qMin(qMax(lineNumber, 1), lines);
 
-			textEdit->sciScintilla()->setCursorPosition(lineNumber - 1, 0);
+#ifdef SCINTILLAEDIT_H
+        textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->findColumn(lineNumber - 1, index));
+#else
+        textEdit->sciScintilla()->setCursorPosition(lineNumber - 1, 0);
+#endif
 		}
 	}
 }
@@ -3074,10 +3222,29 @@ void MainWindow::findInFiles()
 			if (file.open(QIODevice::ReadOnly | QIODevice::Text))
 			{
 				QMap<int, QList<QPair<int, int> > > found;
-
-				QsciScintilla sci;
-				QTextStream in(&file);
+                QTextStream in(&file);
                 in.setEncoding(QStringConverter::Utf8);
+#ifdef SCINTILLAEDIT_H
+                ScintillaEdit sci;
+                sci.setText(in.readAll().toUtf8());
+
+                int start=0;
+                int end=sci.textLength();
+                sci.setSearchFlags((matchCase?SCFIND_MATCHCASE:0)|(wholeWord?SCFIND_WHOLEWORD:0)|(regexp?SCFIND_REGEXP:0));
+                while (true)
+                {
+                    sci.setTargetRange(start,end);
+                    if (sci.searchInTarget(findWhat.size(),findWhat.toUtf8())<0) break;
+                    start=sci.targetEnd()+1;
+                    int line=sci.lineFromPosition(sci.targetStart());
+                    int lineStart=sci.positionFromLine(line);
+
+                    found[line].push_back(qMakePair(sci.targetStart()-lineStart, sci.targetEnd()-lineStart));
+
+                    nfound++;
+                }
+#else
+				QsciScintilla sci;
                 sci.setUtf8(true);
 				sci.setText(in.readAll());
 
@@ -3095,21 +3262,27 @@ void MainWindow::findInFiles()
 					nfound++;
 				}
 
-				if (!found.isEmpty())
-				{
-					outputWidget_->append("\n");
-					outputWidget_->append(absfilename + ":\n");
+#endif
+                if (!found.isEmpty())
+                {
+                    outputWidget_->append("\n");
+                    outputWidget_->append(absfilename + ":\n");
 
-					QMap<int, QList<QPair<int, int> > >::iterator iter, e = found.end();
-					for (iter = found.begin(); iter != e; ++iter)
-					{
-						int line = iter.key();
-						
-						outputWidget_->append(QString::number(line + 1).rightJustified(5) + ": ");
-						outputWidget_->append(sci.text(line), iter.value());
-					}
-				}
-			}
+                    QMap<int, QList<QPair<int, int> > >::iterator iter, e = found.end();
+                    for (iter = found.begin(); iter != e; ++iter)
+                    {
+                        int line = iter.key();
+
+                        outputWidget_->append(QString::number(line + 1).rightJustified(5) + ": ");
+#ifdef SCINTILLAEDIT_H
+                        outputWidget_->append(sci.textRange(sci.positionFromLine(line),sci.lineEndPosition(line)), iter.value());
+                        outputWidget_->append("\n");
+#else
+                        outputWidget_->append(sci.text(line), iter.value());
+#endif
+                    }
+                }
+            }
 		}
 
 		outputWidget_->append("\n" + tr("%1 matches found.").arg(nfound) + "\n");
@@ -3201,8 +3374,14 @@ void MainWindow::onInsertIntoDocument(const QString& text)
 
 	if (textEdit != 0)
 	{
-		textEdit->sciScintilla()->replaceSelectedText(text);
-		textEdit->sciScintilla()->setFocus();
+#ifdef SCINTILLAEDIT_H
+        textEdit->sciScintilla()->replaceSel(text.toUtf8());
+        textEdit->sciScintilla()->setFocus(true);
+#else
+        textEdit->sciScintilla()->replaceSelectedText(text);
+        textEdit->sciScintilla()->setFocus();
+#endif
+
 		textEdit->setFocus();
 	}
 }
@@ -3348,8 +3527,14 @@ void MainWindow::storeOpenFiles()
 		{
 			fileNames << textEdit->fileName();
 
-			int line, index;
-			textEdit->sciScintilla()->getCursorPosition(&line, &index);
+            int line, index;
+#ifdef SCINTILLAEDIT_H
+            sptr_t pos=textEdit->sciScintilla()->currentPos();
+            index=textEdit->sciScintilla()->column(pos);
+            line=textEdit->sciScintilla()->lineFromPosition(pos);
+#else
+            textEdit->sciScintilla()->getCursorPosition(&line, &index);
+#endif
 			cursorPositions << QPoint(line, index);
 
 			if (textEdit == mdiArea_->activeSubWindow())
@@ -3408,7 +3593,11 @@ void MainWindow::restoreOpenFiles()
 				if (textEdit)
 				{
 					QPoint p = cursorPositions[i].toPoint();
-					textEdit->sciScintilla()->setCursorPosition(p.x(), p.y());
+#ifdef SCINTILLAEDIT_H
+                    textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->positionFromPoint(p.x(),p.y()));
+#else
+                    textEdit->sciScintilla()->setCursorPosition(p.x(), p.y());
+#endif
 
 					if (fileNames[i] == activeSubWindow)
 						active = textEdit;
@@ -3543,7 +3732,23 @@ void MainWindow::on_actionFold_Unfold_All_triggered()
 
     if (textEdit)
     {
+#ifdef SCINTILLAEDIT_H
+        int lineCount = textEdit->sciScintilla()->lineCount();
+        bool expanding = true;
+
+        for (int line = 0; line < lineCount; line++)
+        {
+           if (textEdit->sciScintilla()->foldLevel(line) & SC_FOLDLEVELHEADERFLAG)
+           {
+               expanding = !textEdit->sciScintilla()->foldExpanded(line);
+               break;
+           }
+        }
+        textEdit->sciScintilla()->foldAll(expanding?SC_FOLDACTION_EXPAND:SC_FOLDACTION_CONTRACT);
+#else
+
         textEdit->sciScintilla()->foldAll(true);
+#endif
     }
 }
 
@@ -3553,8 +3758,39 @@ void MainWindow::on_actionFold_Unfold_Top_triggered()
 
     if (textEdit)
     {
+#ifdef SCINTILLAEDIT_H
+        int lineCount = textEdit->sciScintilla()->lineCount();
+        bool expanding = true;
+
+        for (int line = 0; line < lineCount; line++)
+        {
+           if (textEdit->sciScintilla()->foldLevel(line) & SC_FOLDLEVELHEADERFLAG)
+           {
+               expanding = !textEdit->sciScintilla()->foldExpanded(line);
+               break;
+           }
+        }
+        for (int line = 0; line < lineCount; line++)
+        {
+            int level = textEdit->sciScintilla()->foldLevel(line);
+            if (!(level & SC_FOLDLEVELHEADERFLAG)) //Not foldable
+                continue;
+
+            if (SC_FOLDLEVELBASE == (level & SC_FOLDLEVELNUMBERMASK))
+                textEdit->sciScintilla()->foldLine(line, expanding?SC_FOLDACTION_EXPAND:SC_FOLDACTION_CONTRACT);
+        }
+#else
         textEdit->sciScintilla()->foldAll(false);
+#endif
     }
+}
+
+void MainWindow::on_actionBlock_un_comment_triggered()
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+    if (textEdit)
+        textEdit->BlockComment();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event)

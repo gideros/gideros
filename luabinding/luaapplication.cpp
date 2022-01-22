@@ -397,8 +397,13 @@ static int bindAll(lua_State* L)
 
     int lres=luaL_loadbuffer(L,(const char *)luabinding_luabindings_luac,sizeof(luabinding_luabindings_luac),"internals");
 #ifdef LUA_IS_LUAU
-    while (lres++<0)
-        lua_call(L, 0, 0);
+    if (lres<0) {
+    	for (int k=1;k<=-lres;k++) {
+			lua_rawgeti(L,-1,k);
+	        lua_call(L, 0, 0);
+    	}
+    	lua_pop(L,1);
+    }
 #else
     if (lres==0)
         lua_call(L, 0, 0);
@@ -1089,7 +1094,9 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
         return;
 	}
 #ifdef LUA_IS_LUAU
-    while ((lres++)<0) {
+	for (int k=1;k<=-lres;k++) {
+        lua_pushvalue(L,-2);
+        lua_rawgeti(L,-2,k);
 #endif
         if (lua_pcall_traceback(L, 1, 0, 0))
         {
@@ -1098,12 +1105,13 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
                 if (status)
                     *status = GStatus(1, lua_tostring(L, -1));
             }
-            lua_pop(L, 1);
+            lua_pop(L, 1-lres);
             application_->deleteAutounrefPool(pool);
             return;
         }
 #ifdef LUA_IS_LUAU
-    }
+	}
+    lua_pop(L,2);
 #endif
     application_->deleteAutounrefPool(pool);
 }
@@ -1219,10 +1227,11 @@ void LuaApplication::tick(GStatus *status)
 }
 
 static double yieldHookLimit;
+#include "lstate.h"
 #ifdef LUA_IS_LUAU
 static void yieldHook(lua_State* L, int gc) {
-    if (lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {
-        lua_yield(L,0);
+    if ((gc==-1)&&lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {
+        L->status=LUA_YIELD;
     }
 }
 #else
@@ -1330,7 +1339,7 @@ void LuaApplication::enterFrame(GStatus *status)
 			{                
 #ifdef LUA_IS_LUAU
                 lua_callbacks(t.L)->interrupt=yieldHook;
-                res = lua_resume(t.L,NULL,t.nargs);
+                res = lua_resume(t.L,L,t.nargs);
                 lua_callbacks(t.L)->interrupt=NULL;
 #else
                 LuaDebugging::yieldHookMask=LUA_MASKRET| LUA_MASKCOUNT;
@@ -1358,7 +1367,7 @@ void LuaApplication::enterFrame(GStatus *status)
 			{
 				if (exceptionsEnabled_ == true)
 				{
-					lua_traceback(t.L);
+					lua_traceback(t.L,L);
 					if (status)
 						*status = GStatus(1, lua_tostring(t.L, -1));
 				}
@@ -1756,7 +1765,6 @@ lua_State *LuaApplication::getLuaState() const
 }
 
 //PROFILER
-#include "lstate.h"
 struct ProfileInfo {
 	std::string fid;
 	std::string name;

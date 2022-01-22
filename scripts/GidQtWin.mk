@@ -75,6 +75,28 @@ qtlibs.install: buildqtlibs
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid $(LUA_ENGINE) libgideros)
 
+qscintilla:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MINGWMAKE) $(MAKEJOBS) release
+	mkdir -p $(QT)/include/ScintillaEdit
+	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(QT)/include/ScintillaEdit
+
+qlexilla:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MINGWMAKE) $(MAKEJOBS) release
+	mkdir -p $(QT)/include/Lexilla
+	cp lexilla/include/*.h $(QT)/include/Lexilla
+
+qscintilla.debug:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MINGWMAKE) $(MAKEJOBS) debug
+
+qlexilla.debug:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MINGWMAKE) $(MAKEJOBS) debug
+	
+	
+
 buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
 qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) qtplugins.clean html5.tools.clean
@@ -119,7 +141,7 @@ QT5PLUGINS=$(addprefix mediaservice/,dsengine qtmedia_audioengine) $(addprefix p
 else
 QT5DLLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
 		Qt6Core Qt6Gui Qt6Network Qt6OpenGL Qt6OpenGLWidgets Qt6PrintSupport Qt6Widgets Qt6Xml \
-		Qt6Multimedia Qt6MultimediaQuick Qt6MultimediaWidgets Qt6WebSockets
+		Qt6Multimedia Qt6MultimediaQuick Qt6MultimediaWidgets Qt6WebSockets Qt6Core5Compat
 QT5DLLTOOLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
 		Qt6Core Qt6Network Qt6Xml Qt6WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
@@ -140,7 +162,9 @@ qt5.install:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done
 	mkdir -p $(addprefix $(RELEASE)/,$(dir $(QT5PLUGINS)))
 	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/$$a.dll$(QTDLLEXT); done
-	cp $(QT)/lib/qscintilla2_qt$(QT_VER).dll $(RELEASE)
+	#cp $(QT)/lib/qscintilla2_qt$(QT_VER).dll $(RELEASE)
+	cp $(ROOT)/scintilla/qt/ScintillaEdit/release/ScintillaEdit5.dll $(RELEASE)
+	cp $(ROOT)/lexilla/src/release/Lexilla5.dll $(RELEASE)
 	cp $(ROOT)/libgid/openal/release/openal.dll $(RELEASE)
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
@@ -179,7 +203,7 @@ tools:
 	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
 		$(addprefix CLI/,Coverage FileUtils Profiler Repl) \
 		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
-    	lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
+    	lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
         ludata lutf8lib lvmexecute lvmload lvmutils) \
 		$(addprefix Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
 		$(addprefix Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace))

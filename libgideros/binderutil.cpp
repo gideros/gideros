@@ -131,7 +131,7 @@ void g_pushInstance(lua_State* L, const char* classname, void* ptr)
 
 	luaL_getmetatable(L, classname); // get metatable
 #ifdef LUA_IS_LUAU
-    lua_getfield(L, -1, "__gc"); // mt.__gc = destructor
+    lua_rawgetfield(L, -1, "__gc"); // mt.__gc = destructor
     void **destructor=(void **)lua_touserdata(L,-1);
     lua_pop(L,1);
     lua_setmetatable(L, -2);		 // set metatable for table and pop metatable

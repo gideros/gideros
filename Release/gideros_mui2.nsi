@@ -3,7 +3,18 @@
 
   !include "MUI2.nsh"
   !include "FileAssociation.nsh"
-  
+  !include x64.nsh
+
+SetCompressor lzma
+Function .onInit
+        ${If} ${RunningX64}
+        ${DisableX64FSRedirection}
+        ${else}
+        MessageBox MB_OK "Sorry this application runs only on x64 machines"
+        Abort
+        ${EndIf}
+FunctionEnd
+
 !macro CreateInternetShortcut FILEPATH URL
 WriteINIStr "${FILEPATH}" "InternetShortcut" "URL" "${URL}"
 !macroend
@@ -16,7 +27,7 @@ WriteINIStr "${FILEPATH}" "InternetShortcut" "URL" "${URL}"
   OutFile "gideros.exe"
 
   ;Default installation folder
-  InstallDir $PROGRAMFILES\Gideros
+  InstallDir $PROGRAMFILES64\Gideros
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKCU "Software\Gideros" ""

@@ -2,7 +2,11 @@
 #define MDICHILD_H
 
 #include <QMdiSubWindow>
+#ifdef USE_SCINTILLAEDIT
+#include <ScintillaEdit/ScintillaEdit.h>
+#else
 #include <Qsci/qsciscintilla.h>
+#endif
 #include "mdisubwindow.h"
 
 class TextEdit : public MdiSubWindow
@@ -18,12 +22,17 @@ public:
 	const QString& fileName() const;
 	bool save();
 	virtual void background();
-
+#ifdef SCINTILLAEDIT_H
+    ScintillaEdit* sciScintilla() const
+    {
+        return sciScintilla_;
+    }
+#else
 	QsciScintilla* sciScintilla() const
 	{
 		return sciScintilla_;
 	}
-
+#endif
 	bool hasSelectedText() const;
 	bool isRedoAvailable() const;
 	bool isUndoAvailable() const;
@@ -40,6 +49,8 @@ public:
 
 	int replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 					bool wrap);
+
+    void BlockComment();
 
     void setFocusToEdit();
     void highlightDebugLine(int line);
@@ -58,7 +69,11 @@ protected:
 
 public slots:
 	// bookmarks
+#ifdef SCINTILLAEDIT_H
+    void setBookmark(Scintilla::Position position, Scintilla::KeyMod modifiers, int margin);
+#else
     void setBookmark(int margin, int line, Qt::KeyboardModifiers state);
+#endif
 	void toogleBookmark();
 	void nextBookmark();
 	void previousBookmark();
@@ -75,15 +90,34 @@ signals:
     void lookupSymbol(QString,int,int);
 
 private slots:
-	void onModificationChanged(bool m);
+    void onModificationChanged(bool m);
+#ifdef SCINTILLAEDIT_H
+    void updateUi(Scintilla::Update updated);
+    void charAdded(int ch);
+    void dwellStart(int x, int y);
+    void dwellEnd(int x, int y);
+    void callTipClick(Scintilla::Position);
+#else
     void dwellStart(int pos, int x, int y);
     void dwellEnd(int pos, int x, int y);
+#endif
 
 private:
 	bool maybeSave();
 
 private:
-	QsciScintilla* sciScintilla_;
+#ifdef SCINTILLAEDIT_H
+    ScintillaEdit* sciScintilla_;
+    bool modified;
+    int autoCompleteThreshold;
+    QStringList api;
+    QStringList currentCallTipList;
+    size_t currentCallTipIndex;
+    size_t currentCallTipPos;
+    void registerIcon(int num,QIcon icon);
+#else
+    QsciScintilla* sciScintilla_;
+#endif
 	bool isUntitled_;
     QString fileName_;
     QString itemName_;

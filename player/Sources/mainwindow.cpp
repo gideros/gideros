@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     projectName_ = QString ();
     setupUiActions();
     setupUiProperties();
+    ui.centralWidget->setMinimumSize(1, 1);
 
     createUiGroups();
 
@@ -654,12 +655,7 @@ void MainWindow::updateResolution(bool event){
 }
 
 void MainWindow::updateAutoScale(){
-    if(autoScale()){
-        ui.centralWidget->setMinimumSize(1, 1);
-
-    }else{
-        ui.centralWidget->setMinimumSize(0, 0);
-
+    if(!autoScale()){
         QAction *action = resolutionGroup_->checkedAction();
         if(action){
             setWidth(action->property("width").toInt());

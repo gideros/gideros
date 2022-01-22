@@ -83,6 +83,7 @@ public:
 		// 1. there is no need
 		// 2. the EventDispatcher that registers this CppLuaBridge is currently in destruction state
 
+        lua_checkstack(L,5);
 		luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
 		if (!lua_isnil(L, -1))	// bu destruct'in envtable'in set'lenmedigi bir fonksiyondan cagirilma ihtimal var. (bi hata sonrasi olabilior)
 		{

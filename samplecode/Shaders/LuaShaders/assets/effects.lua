@@ -25,24 +25,24 @@ end
 Effect={}
 
 Effect.none=makeEffect("None",
-	function (vVertex,vColor,vTexCoord)
+	function (vVertex,vColor,vTexCoord) : Shader
 		local vertex = hF4(vVertex,0.0,1.0)
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local frag=lF4(fColor)*texture2D(fTexture, fTexCoord)
 	 if (frag.a==0.0) then discard() end
 	 return frag
 	end)	
 	
 Effect.blur=makeEffect("Blur",
-	function (vVertex,vColor,vTexCoord)
+	function (vVertex,vColor,vTexCoord) : Shader
 		local vertex = hF4(vVertex,0.0,1.0)
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local frag=lF4(0,0,0,0)
 	 local frad=floor((1+sin(fTime))*4)%9 --For the demo use time for rad
 	 local ext=2*frad+1
@@ -59,12 +59,12 @@ Effect.blur=makeEffect("Blur",
 	end)
 
 Effect.grayscale=makeEffect("Grayscale",
-	function (vVertex,vColor,vTexCoord)
+	function (vVertex,vColor,vTexCoord) : Shader
 		local vertex = hF4(vVertex,0.0,1.0)
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local frag=lF4(fColor)*texture2D(fTexture, fTexCoord)
 	 local coef=lF3(0.2125, 0.7154, 0.0721)
 	 local gray=dot(frag.rgb,coef)
@@ -73,12 +73,12 @@ Effect.grayscale=makeEffect("Grayscale",
 	 return frag
 	end)
 Effect.saturate=makeEffect("Saturate",
-	function (vVertex,vColor,vTexCoord)
+	function (vVertex,vColor,vTexCoord) : Shader
 		local vertex = hF4(vVertex,0.0,1.0)
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local frad=(1+sin(fTime))*0.5
 	 local frag=lF4(fColor)*texture2D(fTexture, fTexCoord)
 	 local coef=lF3(0.2125, 0.7154, 0.0721)
@@ -89,12 +89,12 @@ Effect.saturate=makeEffect("Saturate",
 	end)
 
 Effect.emphasize=makeEffect("Emphasize",
-	function (vVertex,vColor,vTexCoord)
+	function (vVertex,vColor,vTexCoord) : Shader
 		local vertex = hF4(vVertex,0.0,1.0)
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local frag=lF4(fColor)*texture2D(fTexture, fTexCoord)
 	 local e=lF1(2+sin(fTime))
 	 frag.rgb=lF3(frag.r^e,frag.g^e,frag.b^e)
@@ -103,12 +103,12 @@ Effect.emphasize=makeEffect("Emphasize",
 	end)
 
 Effect.waves=makeEffect("Waves",
-	function (vVertex,vColor,vTexCoord)
+	function (vVertex,vColor,vTexCoord) : Shader
 		local vertex = hF4(vVertex,0.0,1.0)
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local tc=hF2(fTexCoord.x+(1+sin(fTexCoord.x*10+fTime*2))*0.05,fTexCoord.y)*0.9
 	 local frag=lF4(fColor)*texture2D(fTexture, tc)
 	 if (frag.a==0.0) then discard() end
@@ -116,12 +116,12 @@ Effect.waves=makeEffect("Waves",
 	end)
 
 Effect.bloom=makeEffect("Bloom",
-	function (vVertex,vColor,vTexCoord)
+	function (vVertex,vColor,vTexCoord) : Shader
 		local vertex = hF4(vVertex,0.0,1.0)
 		fTexCoord=vTexCoord
 		return vMatrix*vertex
 	end,
-	function ()
+	function () : Shader
 	 local frag=lF4(0,0,0,0)
 	 local amount=0.5*(1+sin(fTime))
 	 local frad=floor(amount*8)%9 --For the demo use time for rad

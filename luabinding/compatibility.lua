@@ -80,9 +80,19 @@ if not package then
 		package.loaded[module]=m or true
 		return m
 	end
-	function module(name)
-		_G[name]={}
-		package.loaded[name]=_G[name]
+	function module(name,...)
+		local opts={...}
+		local t=package.loaded[name] or _G[name]
+		if not t then
+			t={}
+			_G[name]={}
+			package.loaded[name]=t
+		end
+		t._NAME=name
+		t._M=t
+		t._PACKAGE=t
+		for _,v in ipairs(opts) do v(t) end
+		setfenv(2,t)
 	end
 end
 

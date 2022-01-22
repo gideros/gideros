@@ -322,16 +322,16 @@ namespace ImGui
         bool temp_input_is_active = temp_input_allowed && TempInputIsActive(id);
         if (!temp_input_is_active)
         {
-            bool focused = (GetItemStatusFlags() & ImGuiItemStatusFlags_Focused) != 0;
+            bool focused = (GetItemStatusFlags() & ImGuiItemStatusFlags_FocusedByTabbing) != 0;
             const bool focus_requested = temp_input_allowed && focused;
             const bool clicked = (hovered && g.IO.MouseClicked[0]);
-            if (focus_requested || clicked || g.NavActivateId == id || g.NavInputId == id)
+            if (focus_requested || clicked || g.NavActivateId == id || g.NavActivateInputId == id)
             {
                 SetActiveID(id, window);
                 SetFocusID(id, window);
                 FocusWindow(window);
                 g.ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
-                if (temp_input_allowed && (focus_requested || (clicked && g.IO.KeyCtrl) || g.NavInputId == id))
+                if (temp_input_allowed && (focus_requested || (clicked && g.IO.KeyCtrl) || g.NavActivateInputId == id))
                 {
                     temp_input_is_active = true;
                 }
@@ -491,7 +491,7 @@ namespace ImGui
             format = PatchFormatStringFloatToInt(format);
 
         const bool hovered = ItemHoverable(frame_bb, id);
-        if ((hovered && g.IO.MouseClicked[0]) || g.NavActivateId == id || g.NavInputId == id)
+        if ((hovered && g.IO.MouseClicked[0]) || g.NavActivateId == id || g.NavActivateInputId == id)
         {
             SetActiveID(id, window);
             SetFocusID(id, window);

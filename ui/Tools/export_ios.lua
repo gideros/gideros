@@ -343,7 +343,7 @@ OTHER_LDFLAGS = "-ObjC";</by>
         </append>
         </replacelist>
         </template>]])
-        Export.callXml([[<exec>sh -c "source /etc/profile;pod install"</exec>]])
+        Export.callXml([[<exec cmd="sh"><arg>-c</arg><arg>source /etc/profile;pod install</arg></exec>]])
     end
 
     if #iOSProject._plugins.ios>0 or #iOSProject._plugins.atv>0 or #iOSProject._plugins.mac>0 then

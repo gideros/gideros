@@ -359,6 +359,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 					QProcess procWrite;
 					procWrite.setStandardOutputFile(dfile);
 					procWrite.start(luac, QStringList() << "--compile=binary" << sfile);
+					procWrite.waitForFinished();
 #else
 #if defined(Q_OS_WIN)
 					QString luac = toolsDir.filePath("luac.exe");
@@ -386,34 +387,50 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	// compile building lua files
 	if (compileLua) {
 		QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
-#if defined(Q_OS_WIN)
-		QString luac = toolsDir.filePath("luac.exe");
-#else
-		QString luac = toolsDir.filePath("luac");
-#endif
 		QDir old = QDir::current();
 		QDir::setCurrent(ctx->outputDir.path());
 
 		QString dfile = "";
 		QString difile = "";
 		QString sfile = "";
+		QStringList sfilelst;
 		for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
 			dfile = ctx->luafiles_abs[i];
 			difile = ctx->luafiles[i];
 			QString rdst = QDir::cleanPath(
 					ctx->outputDir.relativeFilePath(difile));
 			sfile = sfile + " \"" + rdst + "\"";
+			sfilelst << rdst;
 			QFile::copy(luafiles_src[i], rdst);
 		}
 		QFileInfo di(dfile);
-		QProcess::execute(quote(luac) + " -o \"" + dfile + "\" " + sfile);
-		for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
+
+#ifdef USE_LUAU_ENGINE
+#if defined(Q_OS_WIN)
+					QString luac = toolsDir.filePath("luauc.exe");
+#else
+					QString luac = toolsDir.filePath("luauc");
+#endif
+					QProcess procWrite;
+                    procWrite.setStandardOutputFile(dfile+".tmp");
+					procWrite.start(luac, QStringList() << "--compile=binary" << sfilelst);
+					procWrite.waitForFinished();
+#else
+#if defined(Q_OS_WIN)
+					QString luac = toolsDir.filePath("luac.exe");
+#else
+					QString luac = toolsDir.filePath("luac");
+#endif
+                    QProcess::execute(quote(luac) + " -o \"" + dfile + ".tmp\" " + sfile);
+#endif
+
+        for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
 			QString rdst = QDir::cleanPath(
 					ctx->outputDir.relativeFilePath(ctx->luafiles[i]));
-			QFileInfo ri(rdst);
-			if (ri != di)
-				QFile::remove(rdst);
+            QFile::remove(rdst);
 		}
+
+        QFile::rename(di.absoluteFilePath()+".tmp",di.absoluteFilePath());
 		ctx->luafiles.clear();
 		ctx->luafiles_abs.clear();
 		ctx->luafiles.push_back(difile);

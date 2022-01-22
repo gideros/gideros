@@ -168,22 +168,23 @@ local function genFunction(fg,gmap,tmap,omap,ophandler)
 				_code=_code.."void"
 			end
 			_code=_code.." "..fg.name.."("
-			_args=""
+		local _args=""
 			local amap={}
 			for k,v in ipairs(fg.args or {}) do 
-				amap[k]={type="var",value=v.name,vtype=v.type}
+			amap[k]={type="var",name=v.name,value=v.name,vtype=v.type}
 				_args=_args..","..tmap[v.type].." "..v.name
 			end
-		local fcode=fccode or codegen(ff,amap,gmap,tmap,omap,oh)
-		if ff then
+		local fcode=fccode
+		if not fcode then
+			fcode=codegen(ff,amap,gmap,tmap,omap,oh)
+		end
 		local callarg=""
-		if ff.extra_args then
+		if ff and ff.extra_args then
 			for k,v in ipairs(ff.extra_args or {}) do 
 				_args=_args..v.decl
 				if #callarg>0 then callarg=callarg.."," end
 				callarg=callarg..v.use
 			end
-		end
 		end
 			if #_args then _args=_args:sub(2) end
 			_code=_code.._args..") {\n"
@@ -275,7 +276,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
 		if atype then
-		amap[k]={type="cvar", value=v.name, vtype=atype} 
+		amap[k]={type="cvar", name=v.name, value=v.name, vtype=atype} 
 		assert(tmap[atype],"Attribute type not handled :"..atype)
 			if isGLSL300 then
 				_code=_code..("in %s %s;\n"):format(tmap[atype],v.name)
@@ -422,7 +423,7 @@ function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 			ff.extra_args=ff.extra_args or { }
 			table.insert(ff.extra_args,ff._MSL_spec[tex.value])
 		end
-		return ("_tex_%s.sample_compare(_smp_%s, (%s).xy,((%s).z-0.5)*2.0)"):format(tex.value,tex.value,sp.value,sp.value)
+		return ("float4(_tex_%s.sample_compare(_smp_%s, (%s).xy,((%s).z-0.5)*2.0),0.0,0.0,0.0)"):format(tex.value,tex.value,sp.value,sp.value)
 	end, rtype="hF4"}
 	gmap["mod"]={type="func", value="fmod", rtype="1", acount=2}
 	gmap["dFdx"]={type="func", value="dfdx", rtype="1", acount=1}
@@ -439,7 +440,7 @@ using namespace metal;
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
 		if atype then
-		amap[k]={type="cvar", value="inVertex."..v.name, vtype=atype} 
+		amap[k]={type="cvar", name=v.name, value="inVertex."..v.name, vtype=atype} 
 		assert(tmap[atype],"Attribute type not handled :"..atype)
 		_code=_code..("%s %s [[attribute(%d)]];\n"):format(tmap[atype],v.name,v.slot)
 		else 
@@ -521,8 +522,7 @@ using namespace metal;
 		GENOP=_MSL_GENOP,
 		GENOPEQ=_MSL_GENOPEQ,
 		SUBFUNC=function(f,fg)
-			local ff=fg._fcode
-			ff._MSL_spec=_msl_spec
+			fg._fcode._MSL_spec=_msl_spec
 			genFunction(fg.fdef,gmap,tmap,omap,{	GENOP=_MSL_GENOP,GENOPEQ=_MSL_GENOPEQ,})
 		end
 	})
@@ -621,7 +621,7 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
 		if atype then
-		amap[k]={type="cvar", value=v.name, vtype=atype} 
+		amap[k]={type="cvar", name=v.name, value=v.name, vtype=atype} 
 		assert(tmap[atype],"Attribute type not handled :"..atype)
 		_vargs=_vargs..(",%s %s : %s"):format(tmap[atype],v.name,v.name)
 		else 

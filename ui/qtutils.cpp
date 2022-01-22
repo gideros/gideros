@@ -6,13 +6,14 @@
 
 void doShowInFinder(const QString& path){
 #if defined(Q_OS_WIN)
-    const QString explorer = "explorer";
         QString param;
         if (!QFileInfo(path).isDir())
             param = QLatin1String("/select,");
         param += QDir::toNativeSeparators(path);
-        QString command = explorer + " " + param;
-        QProcess::startDetached(command);
+        QProcess process;
+        process.setProgram("explorer.exe");
+        process.setNativeArguments(param);
+        process.startDetached();
 
 #elif defined(Q_OS_MAC)
     QStringList scriptArgs;

@@ -31,6 +31,27 @@ qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid $(L
 
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
+	
+qscintilla:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS)
+	mkdir -p $(QT)/include/ScintillaEdit
+	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(QT)/include/ScintillaEdit
+
+qlexilla:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS)
+	mkdir -p $(QT)/include/Lexilla
+	cp lexilla/include/*.h $(QT)/include/Lexilla
+
+qscintilla.debug:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS) debug
+
+qlexilla.debug:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS) debug
+
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; $(MAKE) $(MAKEJOBS); \
@@ -60,8 +81,12 @@ qt.install: buildqt qt.player tools html5.tools
 	rm -rf $(RELEASE)/Gideros\ Studio.app
 	cp -R $(ROOT)/ui/Gideros\ Studio.app $(RELEASE)
 	$(DEPLOYQT) $(RELEASE)/Gideros\ Studio.app
-	cp $(QT)/lib/libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
-	install_name_tool -change libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
+	#cp $(QT)/lib/libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	cp $(ROOT)/scintilla/qt/ScintillaEdit/libScintillaEdit.5.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	cp $(ROOT)/lexilla/src/libLexilla.5.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	#install_name_tool -change libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2_qt$(QT_VER).$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
+	install_name_tool -change libScintillaEdit.5.dylib @rpath/libScintillaEdit.5.dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
+	install_name_tool -change libLexilla.5.dylib @rpath/libLexilla.5.dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
 	cp -R $(ROOT)/ui/Resources $(RELEASE)/Gideros\ Studio.app/Contents/
 	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Gideros\ Studio.app/Contents/Resources/gideros_annot.api	
 	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/ui/Tools/crunchme
@@ -156,7 +181,7 @@ tools:
 	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
 		$(addprefix CLI/,Coverage FileUtils Profiler Repl) \
 		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
-    	lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
+    	lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
         ludata lutf8lib lvmexecute lvmload lvmutils) \
 		$(addprefix Compiler/src/,lcode Compiler BytecodeBuilder PseudoCode) \
 		$(addprefix Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace))
@@ -195,7 +220,7 @@ bundle.installer: bundle
 	mkdir  -p $(ROOT)/ROOTMAC/Applications
 	mv $(RELEASE).Final $(ROOT)/ROOTMAC/Applications/Gideros\ Studio
 	rm -f $(ROOT)/Gideros.pkg
-	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --version $(GIDEROS_VERSION) --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros-App.pkg
+	pkgbuild --compression latest --min-os-version 10.12 --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --version $(GIDEROS_VERSION) --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros-App.pkg
 	security -v unlock-keychain -p $(OSX_SIGNING_PASSWORD) "$$HOME/Library/Keychains/login.keychain" && productbuild --distribution Release/GiderosDist.plist --package-path $(ROOT)/Gideros-App.pkg --sign $(OSX_SIGNING_IDENTITY) $(ROOT)/Gideros.pkg
 	rm -rf $(ROOT)/ROOTMAC
 	cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins

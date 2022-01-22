@@ -370,12 +370,6 @@ void g_setProperty(const char* what, const char* arg){
             }else{
                 MainWindow::getInstance()->showNormal();
             }
-        }else if (strcmp(what, "wintabMode") == 0)
-        {
-#ifdef Q_OS_WIN
-            auto nativeWindowsApp = dynamic_cast<QNativeInterface::Private::QWindowsApplication *>(QGuiApplicationPrivate::platformIntegration());
-            nativeWindowsApp->setWinTabEnabled(arg1);
-#endif
 
         }else{
 
@@ -389,6 +383,12 @@ void g_setProperty(const char* what, const char* arg){
         }
 
         /*------------------------------------------------------------------*/
+    }else if (strcmp(what, "wintabMode") == 0)
+    {
+#ifdef Q_OS_WIN
+        auto nativeWindowsApp = dynamic_cast<QNativeInterface::Private::QWindowsApplication *>(QGuiApplicationPrivate::platformIntegration());
+        nativeWindowsApp->setWinTabEnabled(arg1);
+#endif
     }else if (strcmp(what, "cursorPosition") == 0)
     {
         QCursor::setPos(arg1,arg2);
@@ -433,6 +433,7 @@ void g_setProperty(const char* what, const char* arg){
 	    acceptedWhat << "maximumSize(w,h)";
 	    acceptedWhat << "windowColor(r,g,b)";
 	    acceptedWhat << "windowTitle(text)";
+	    acceptedWhat << "wintabMode(enable)";
         acceptedWhat << "windowModel(type//help)";
         acceptedWhat << "cursor(type//help)";
 	    acceptedWhat << "cursorPosition(x,y)";

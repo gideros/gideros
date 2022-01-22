@@ -8,12 +8,22 @@ QT       += core gui xml network websockets
 CONFIG   += silent c++17
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
+
+USE_SCINTILLAEDIT=y
 
 LUA_ENGINE=$$(LUA_ENGINE)
 LUA_ENGINE=luau
 isEmpty(LUA_ENGINE): LUA_ENGINE=lua
 equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src ../luau/Ast/include ../luau/Compiler/include ../luau/Analysis/include
 equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
+
+DEFINES+= LUAU_ENABLE_ASSERT
+CONFIG(debug, debug|release){
+    _CONFIG_ = debug
+} else {
+    _CONFIG_ = release
+}
 
 defineReplace(expand) {
     names = $$1
@@ -28,10 +38,10 @@ defineReplace(expand) {
 }
 
 equals(LUA_ENGINE,luau): LUA_SOURCES =\
-         $$expand(lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lobject loslib lperf lstate lstring lstrlib \
+         $$expand(lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
          ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils,../luau/VM/src/,.cpp) \
          $$expand(lcode Compiler BytecodeBuilder PseudoCode,../luau/Compiler/src/,.cpp) \
-         $$expand(AstQuery Autocomplete BuiltinDefinitions Config EmbeddedBuiltinDefinitions Error Frontend IostreamHelpers JsonEncoder Linter Module Predicate Quantify RequireTracer \
+         $$expand(AstQuery Autocomplete BuiltinDefinitions Config EmbeddedBuiltinDefinitions Error Frontend IostreamHelpers JsonEncoder Linter LValue Module Quantify RequireTracer \
          Scope Substitution Symbol ToDot TopoSortStatements Tostring Transpiler TxnLog TypeAttach TypedAllocator TypeInfer TypePack TypeUtils TypeVar Unifiable Unifier,../luau/Analysis/src/,.cpp) \
          $$expand(Ast Confusables Lexer Location Parser StringUtils TimeTrace,../luau/Ast/src/,.cpp)
 equals(LUA_ENGINE,lua): LUA_SOURCES =\
@@ -125,7 +135,6 @@ SOURCES += \
     fileassociationeditdialog.cpp\
     pluginselector.cpp \
     plugineditor.cpp \
-    textedit.cpp\
     playersettingsdialog.cpp\
     gotolinedialog.cpp\
     savechangesdialog.cpp\
@@ -151,6 +160,10 @@ SOURCES += \
     qtutils.cpp \
     preferencesdialog.cpp \
     profilerreport.cpp
+
+equals(USE_SCINTILLAEDIT,y): SOURCES+= textedit.cpp
+equals(USE_SCINTILLAEDIT,y): DEFINES+= USE_SCINTILLAEDIT
+equals(USE_SCINTILLAEDIT,n): SOURCES+= textedit_qs.cpp
 
 SOURCES += $$files(../libpvrt/*.cpp)
 
@@ -244,23 +257,29 @@ macx {
     LIBS += -L$$[QT_INSTALL_LIBS]
 }
 
+equals(USE_SCINTILLAEDIT,y): LIBS += -L"../scintilla/qt/ScintillaEdit/$$_CONFIG_" -L"../lexilla/src/$$_CONFIG_"
+
 win32 {
     LIBS += -L$$[QT_INSTALL_LIBS]
         CONFIG(debug, debug|release) {
-          LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}d
-	}
+                        equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
+			equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}d        
+        }
 	else
 	{
-                LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
-   	}
+        equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+        equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
+    }
 }
 
 macx {
-   LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit -lLexilla
 }
 
 unix:!macx {
-   LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
+   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit -lLexilla
    #LIBS += -lqt5scintilla2 #For PI ?
    QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }
