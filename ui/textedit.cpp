@@ -200,8 +200,8 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
         lexer = CreateLexer(LexerNameFromID(SCLEX_LUA));
         editor->setILexer((sptr_t)lexer);
 
-        editor->setKeyWords(0,"and break continue do else elseif end false for function if "
-                                           "in local nil not or repeat return then true until "
+        editor->setKeyWords(0,"and break const continue declare do else elseif end export false for function if "
+                                           "in local nil not or repeat return then true type until "
                                            "while");
         editor->setKeyWords(1,"_ALERT _ERRORMESSAGE _INPUT _PROMPT _OUTPUT _STDERR "
                                             "_STDIN _STDOUT call dostring foreach foreachi getn "

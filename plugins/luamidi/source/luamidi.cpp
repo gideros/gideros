@@ -224,6 +224,7 @@ static RtMidiIn* getGenericInput()
 	}
 }
 
+static int QUEUE_SIZE_LIMIT=1000;
 static RtMidiIn* OpenIn(lua_State *L, int port)
 {
 	int portcount = getGenericInput()->getPortCount();
@@ -233,7 +234,7 @@ static RtMidiIn* OpenIn(lua_State *L, int port)
 	if(ins.find(port) != ins.end())
 		return ins[port];
 	else if(!nextin)
-		nextin = new RtMidiIn();
+		nextin = new RtMidiIn(RtMidi::UNSPECIFIED,"RtMidi Input Client",QUEUE_SIZE_LIMIT);
 
 	// if there is not a nextin make one.
 	if(port < 0)
@@ -557,6 +558,12 @@ static int luamidi_getOutPortName(lua_State *L)
 	return 1;
 }
 
+static int luamidi_setQueueSizeLimit(lua_State *L)
+{
+	QUEUE_SIZE_LIMIT = luaL_optinteger(L, 1, 1000);
+	return 0;
+}
+
 //
 // Called when the module is cleaned up.
 //
@@ -623,6 +630,7 @@ static const luaL_reg luamidi_methods [] =
 	{"getMessage",		luamidi_getMessage},
 	{"base0",		luamidi_base0},
 	{"base1",		luamidi_base1},
+	{"setQueueSizeLimit",		luamidi_setQueueSizeLimit},
 	{"__gc",		__gc},
 	{NULL, 			NULL}
 };

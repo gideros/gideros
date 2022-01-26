@@ -433,7 +433,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     qRegisterMetaType<OutLineItemList>("OutLineItemList");
     list_=new QListView();
     connect(list_, SIGNAL(clicked(QModelIndex)),
-            this, SLOT  (onItemClicked( QModelIndex)));
+            this, SLOT  (onItemClicked(QModelIndex)));
     working_=false;
     QVBoxLayout *layout=new QVBoxLayout();
     layout->setContentsMargins(0,0,0,0);
@@ -470,9 +470,60 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_MultiLineStatement);
 
     frontend=new Luau::Frontend(fileResolver, &configResolver, frontendOptions);
-
     Luau::registerBuiltinTypes(frontend->typeChecker);
-    Luau::freeze(frontend->typeChecker.globalTypes);
+
+    std::stringstream gid_api;
+    gid_api << "export type Shader = any\n";
+    //load API
+    QFile file("Resources/gideros_annot.api");
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream textStream(&file);
+        QRegularExpression re("^([^.:]*)[.:]?([^?.:]*)\\?\\d(\\([^)]*\\))?(.*)");
+        QMap<QString,QStringList> methods;
+        while (!textStream.atEnd()) {
+            auto m=re.match(textStream.readLine());
+            if (m.hasMatch()) {
+                QString cl=m.captured(1);
+                QString mtd=m.captured(2);
+                if (mtd.isEmpty()) {
+                    mtd=cl;
+                    cl="";
+                }
+                if (cl.isEmpty()) {
+                    cl="(globals)";
+                    if (m.captured(3).isEmpty())
+                        methods[cl] << "declare "+mtd+": any";
+                    else
+                        methods[cl] << "declare function "+mtd+"<A...,R...>(...:A...): R...";
+                }
+                else {
+                    if (m.captured(3).isEmpty())
+                        methods[cl] << mtd+": any";
+                    else
+                        methods[cl] << mtd+": <A...,R...>(A...) -> R...";
+                }
+            }
+        }
+        for (auto &m:methods.keys()) {
+            if (m!="(globals)") {
+                gid_api << "declare " << m.toStdString() << ": {\n";
+                for (auto &mm:methods[m]) {
+                    gid_api << mm.toStdString() << ",\n";
+                }
+                gid_api << ",}\n";
+            }
+            else {
+                for (auto &mm:methods[m]) {
+                    gid_api << mm.toStdString() << "\n";
+                }
+            }
+        }
+        file.close();
+    }
+
+    Luau::loadDefinitionFile(frontend->typeChecker, frontend->typeChecker.globalScope, gid_api.str(), "@gideros");
+
+    //Luau::freeze(frontend->typeChecker.globalTypes);
 #endif
 }
 

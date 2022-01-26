@@ -37,6 +37,7 @@ local GFUNC_MAP={
 	["asin"]={type="func", value="asin", rtype="1", acount=1},
 	["acos"]={type="func", value="acos", rtype="1", acount=1},
 	["atan"]={type="func", value="atan", rtype="1", acount=1},
+	["atan2"]={type="func", value="atan2", rtype="1", acount=2},
 	["abs"]={type="func", value="abs", rtype="1", acount=1},
 	["sign"]={type="func", value="sign", rtype="1", acount=1},
 	["ceil"]={type="func", value="ceil", rtype="1", acount=1},
@@ -241,6 +242,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	local omap=OPTYPE_MAP
 	populateGMap(gmap,tmap,funcs,const)
 	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
+	gmap["atan2"]={type="func", value="atan",rtype="1", acount=2}
 	
 	local _headers = nil
 	local _eheaders = ""
@@ -606,6 +608,10 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 		return ("_tex_%s.SampleCmp(_smp_%s, (%s).xy,((%s).z-0.5)*2.0)"):format(tex.value,tex.value,sp.value,sp.value)
 	end, rtype="hF4"}
 	gmap["mix"]={type="func", value="lerp", rtype="1", acount=3}
+	gmap["atan2"]={type="func", value="atan2", 
+		evaluate=function (ff,fn,y,x)
+			return ("atan2(%s,%s)"):format(x.value,y.value)
+		end,rtype="1", acount=2}
 	gmap["fract"]={type="func", value="frac", rtype="1", acount=1}
 	gmap["dFdx"]={type="func", value="ddx", rtype="1", acount=1}
 	gmap["dFdy"]={type="func", value="ddy", rtype="1", acount=1}

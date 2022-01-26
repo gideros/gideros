@@ -246,14 +246,20 @@ class AdsApplovinListener implements AppLovinAdLoadListener, AppLovinAdVideoPlay
 			Ads.adFailed(AdsApplovin.me, state.getType(), "No network");
 		else if(errorCode == AppLovinErrorCodes.FETCH_AD_TIMEOUT)
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Fetch ad timeout");
+		else if(errorCode == AppLovinErrorCodes.INVALID_AD_TOKEN)
+			Ads.adFailed(AdsApplovin.me, state.getType(), "Invalid ad token");
+		else if(errorCode == AppLovinErrorCodes.INVALID_RESPONSE)
+			Ads.adFailed(AdsApplovin.me, state.getType(), "Invalid response");
+		else if(errorCode == AppLovinErrorCodes.INVALID_URL)
+			Ads.adFailed(AdsApplovin.me, state.getType(), "Invalid Url");
+		else if(errorCode == AppLovinErrorCodes.INVALID_ZONE)
+			Ads.adFailed(AdsApplovin.me, state.getType(), "Invalid zone");
 		else if(errorCode == AppLovinErrorCodes.UNABLE_TO_PRECACHE_IMAGE_RESOURCES)
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Unable to precache image resources");
 		else if(errorCode == AppLovinErrorCodes.UNABLE_TO_PRECACHE_RESOURCES)
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Unable to precache resources");
 		else if(errorCode == AppLovinErrorCodes.UNABLE_TO_PRECACHE_VIDEO_RESOURCES)
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Unable to precache video resources");
-		else if(errorCode == AppLovinErrorCodes.UNSPECIFIED_ERROR)
-			Ads.adFailed(AdsApplovin.me, state.getType(), "Unspecified error");
 		else if(errorCode == AppLovinErrorCodes.UNABLE_TO_RENDER_AD)
 			Ads.adFailed(AdsApplovin.me, state.getType(), "Unable to render ad");
 		else if(errorCode == AppLovinErrorCodes.UNSPECIFIED_ERROR)
@@ -278,11 +284,6 @@ class AdsApplovinListener implements AppLovinAdLoadListener, AppLovinAdVideoPlay
 		if(!state.getType().equals("v4vc")){
 			Ads.adActionEnd(AdsApplovin.me, state.getType());
 		}
-	}
-
-	@Override
-	public void userDeclinedToViewAd(AppLovinAd arg0) {
-		Ads.adFailed(AdsApplovin.me, state.getType(), "User declined");
 	}
 
 	@Override
