@@ -59,6 +59,7 @@
 #include "preferencesdialog.h"
 #include "profilerreport.h"
 #include <QStandardPaths>
+#include <QTimer>
 
 MainWindow *MainWindow::lua_instance=NULL;
 QTemporaryDir *MainWindow::tempDir=NULL;

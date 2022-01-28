@@ -50,7 +50,7 @@ public:
     virtual ~OutlineWorkerThread() { }
 signals:
     void updateOutline(QList<OutLineItem> s);
-    void reportError(const QString error,QList<OutlineLinterItem>);
+    void reportError(const QString error,QList<OutlineLinterItem>,QSet<QString>);
 };
 
 class OutlineWidgetItem : public QStyledItemDelegate
@@ -107,7 +107,7 @@ private slots:
     void checkParse();
     void onItemClicked(const QModelIndex &);
     void updateOutline(QList<OutLineItem> s);
-    void reportError(const QString error,QList<OutlineLinterItem> lint);
+    void reportError(const QString error,QList<OutlineLinterItem> lint,QSet<QString> autocomplete);
 };
 
 #endif // OUTPUTWIDGET_H

@@ -11,8 +11,8 @@
 #include "iconlibrary.h"
 #include "settingskeys.h"
 #include <ScintillaEdit/ILexer.h>
-#include <Lexillia/Lexilla.h>
-#include <Lexillia/SciLexer.h>
+#include <Lexilla/Lexilla.h>
+#include <Lexilla/SciLexer.h>
 #include <QStandardPaths>
 #include <QDir>
 
@@ -1026,6 +1026,12 @@ void TextEdit::dwellEnd(int x,int y)
     QToolTip::showText(QPoint(x,y),QString(),this);
 }
 
+void TextEdit::setIdentifiers(const QStringList &ilist)
+{
+    if (!ilist.empty())
+        autocIdentifiers=ilist;
+};
+
 void TextEdit::charAdded(int ch)
 {
     if (ch=='\n') {
@@ -1097,6 +1103,10 @@ void TextEdit::charAdded(int ch)
                     if (m.hasMatch())
                         autoc << m.captured(2);
                 }
+                //Add from current identifier set
+                for (const QString &c:autocIdentifiers)
+                    if (c.startsWith(word))
+                        autoc << c;
                 if (!autoc.isEmpty()) {
                     autoc.sort();
                     autoc.removeDuplicates();

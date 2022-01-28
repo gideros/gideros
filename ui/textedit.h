@@ -27,6 +27,7 @@ public:
     {
         return sciScintilla_;
     }
+    void setIdentifiers(const QStringList &ilist);
 #else
 	QsciScintilla* sciScintilla() const
 	{
@@ -111,6 +112,7 @@ private:
     bool modified;
     int autoCompleteThreshold;
     QStringList api;
+    QStringList autocIdentifiers;
     QStringList currentCallTipList;
     size_t currentCallTipIndex;
     size_t currentCallTipPos;

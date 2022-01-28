@@ -9,7 +9,6 @@
 #endif
 #include <QList>
 #include <deque>
-#include <Qsci/qsciscintilla.h>
 #include <QFontMetrics>
 #include <QListWidget>
 #include "addons.h"

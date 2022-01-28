@@ -152,7 +152,7 @@ class OutlineVisitor : public Luau::AstVisitor
         else if (expr->is<Luau::AstExprLocal>())
             return expr->as<Luau::AstExprLocal>()->local->name.value;
         else if (expr->is<Luau::AstExprIndexName>())
-            return toExprName(expr->as<Luau::AstExprIndexName>()->expr,glb) + "." + expr->as<Luau::AstExprIndexName>()->index.value;
+            return toExprName(expr->as<Luau::AstExprIndexName>()->expr,glb) + expr->as<Luau::AstExprIndexName>()->op + expr->as<Luau::AstExprIndexName>()->index.value;
         return "Undef";
     }
     virtual bool visit(class Luau::AstStatAssign* node)
@@ -197,6 +197,80 @@ public:
         ol=outline;
     }
 };
+
+class AutocompleteVisitor : public Luau::AstVisitor
+{
+    QString toExprName(Luau::AstExpr *expr) {
+        if (expr->is<Luau::AstExprGlobal>()) {
+            return expr->as<Luau::AstExprGlobal>()->name.value;
+        }
+        else if (expr->is<Luau::AstExprLocal>())
+            return expr->as<Luau::AstExprLocal>()->local->name.value;
+        else if (expr->is<Luau::AstExprIndexName>())
+            return toExprName(expr->as<Luau::AstExprIndexName>()->expr) + QString(expr->as<Luau::AstExprIndexName>()->op) + expr->as<Luau::AstExprIndexName>()->index.value;
+        return "_";
+    }
+    virtual bool visit(class Luau::AstExprLocal* node)
+    {
+        autocomplete << toExprName(node);
+        return true;
+    }
+    virtual bool visit(class Luau::AstExprGlobal* node)
+    {
+        autocomplete << toExprName(node);
+        return true;
+    }
+    virtual bool visit(class Luau::AstExprIndexName* node)
+    {
+        autocomplete << toExprName(node);
+        return true;
+    }
+    virtual bool visit(class Luau::AstStatLocal* node)
+    {
+        for (Luau::AstLocal* var : node->vars)
+        {
+            autocomplete << var->name.value;
+        }
+        return true;
+    }
+    virtual bool visit(class Luau::AstStatAssign* node)
+    {
+        for (Luau::AstExpr* var : node->vars)
+            autocomplete << toExprName(var);
+        return true;
+    }
+    virtual bool visit(class Luau::AstStatFunction* node)
+    {
+        autocomplete << toExprName(node->name);
+        return true;
+    }
+    virtual bool visit(class Luau::AstStatLocalFunction* node)
+    {
+        autocomplete << node->name->name.value;
+         return true;
+    }
+    virtual bool visit(class Luau::AstStatDeclareFunction* node)
+    {
+        Q_UNUSED(node);
+        return true;
+    }
+    virtual bool visit(class Luau::AstStatDeclareGlobal* node)
+    {
+        Q_UNUSED(node);
+        return true;
+    }
+    virtual bool visit(class Luau::AstStatDeclareClass* node)
+    {
+        Q_UNUSED(node);
+        return true;
+    }
+
+public:
+    QSet<QString> autocomplete;
+    AutocompleteVisitor() {
+    }
+};
+
 
 #endif
 
@@ -361,12 +435,15 @@ void OutlineWorkerThread::run()
       std::string error = Luau::compile(std::string(btext.constData(),btext.size()), filename.toStdString(), opts,popts,nullptr,&result);
       if (error.at(0)==0) {
           QString qerror=QString(error.substr(1).c_str());
-          emit reportError("[string "+filename+"]"+qerror,li);
+          emit reportError("[string "+filename+"]"+qerror,li,QSet<QString>());
       }
       else  {
           OutlineVisitor visitor(&outline);
           result.root->visit(&visitor);
-          emit reportError("",li);
+          AutocompleteVisitor autocv;
+          result.root->visit(&autocv);
+          autocv.autocomplete << "_"; //Non empty
+          emit reportError("",li,autocv.autocomplete);
       }
 #endif
   lua_close(L);
@@ -510,7 +587,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
                 for (auto &mm:methods[m]) {
                     gid_api << mm.toStdString() << ",\n";
                 }
-                gid_api << ",}\n";
+                gid_api << "}\n";
             }
             else {
                 for (auto &mm:methods[m]) {
@@ -603,10 +680,11 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
         parse();
 }
 
-void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> lint)
+void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> lint,QSet<QString> autocomplete)
 {
     if (!doc_) return;
 #ifdef SCINTILLAEDIT_H
+    doc_->setIdentifiers(autocomplete.values());
     ScintillaEdit *s=doc_->sciScintilla();
     QString text;
     int size=s->textLength();
