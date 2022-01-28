@@ -71,7 +71,7 @@ if not package then
 			while not m and paths[tp] do
 				local luafile,err=loadfile(paths[tp]:format(module))		
 				if luafile and type(luafile)=="function" then 
-					m=luafile() or true
+					m=luafile(module) or true
 				end		
 				tp+=1
 			end
