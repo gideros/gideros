@@ -55,8 +55,9 @@ void Viewport::doDraw(const CurrentTransform&t, float sx, float sy, float ex, fl
 			ShaderEngine::Engine->setDepthStencil(dp);
 			Matrix4 oldProj=ShaderEngine::Engine->getProjection();
 			Matrix4 oldView=ShaderEngine::Engine->getView();
-            oldProj.scale(1,1,-1); //Defeat ortho projection
-            Matrix4 np=(oldProj*t)*projection_;
+            Matrix4 np=oldProj;
+            np.scale(1,1,-1); //Defeat ortho projection
+            np=(np*t)*projection_;
 			ShaderEngine::Engine->setProjection(np);
 			ShaderEngine::Engine->setView(matrix_);
 			Matrix4 id;
