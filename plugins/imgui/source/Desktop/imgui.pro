@@ -1,6 +1,7 @@
 QT -= gui
 QT -= core
 
+TARGET = imgui
 TEMPLATE = lib
 
 INCLUDEPATH += ../../../../Sdk/include
@@ -40,21 +41,6 @@ HEADERS += \
 
 
 LIBS += -L"../../../../Sdk/lib/desktop" -llua -lgideros -lgid -lgvfs
-
-
-CONFIG(release, debug|release) {
-	TARGET = imgui
-} else {
-	TARGET = imgui_beta
-    
-    HEADERS += \
-        ../../../../luabinding/binder.h \
-        ../../../../luabinding/stackchecker.h
-        
-	SOURCES += \
-        ../../../../luabinding/binder.cpp \
-        ../../../../luabinding/stackchecker.cpp
-}
 
 macx {
 QMAKE_POST_LINK += install_name_tool -change liblua.1.dylib "@executable_path/../Frameworks/liblua.1.dylib" $(TARGET);

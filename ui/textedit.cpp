@@ -184,15 +184,6 @@ static void readLexerSettings(QSettings &qs,const char *language,ScintillaEdit *
             editor->styleSetUnderline(STYLE_DEFAULT, fdesc[4].toInt());
         }
     }
-		
-	full_key = key + "fold.compact";
-	ok = qs.contains(full_key);
-	
-	if (ok)
-	{
-		flag = qs.value(full_key, true).toBool();
-		editor->setProperty("fold.compact", flag ? "1" : "0");
-	}
 }
 
 static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
@@ -235,15 +226,7 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
                                             "math.ceil math.cos math.deg math.exp math.floor "
                                             "math.frexp math.ldexp math.log math.log10 math.max "
                                             "math.min math.mod math.pi math.rad math.random "
-                                            "math.randomseed math.sin math.sqrt math.tan "
-											"math.inside math.dot math.cosh math.round "
-											"math.tanh math.modf math.huge math.cross math.pow "
-											"math.edge math.raycast math.normalize math.nearest math.distances "
-											"math.clamp math.length math.noise math.sign math.distance "
-											"math.sinh math.fmod string.split string.match string.gmatch "
-											"string.pack string.dumpPseudocode string.decodeValue string.packsize string.reverse "
-											"string.unpack string.encodeValue table.clear table.pack table.move "
-											"table.isfrozen table.maxn table.unpack table.find table.create");
+                                            "math.randomseed math.sin math.sqrt math.tan");
         editor->setKeyWords(3,"openfile closefile readfrom writeto appendto remove "
                                             "rename flush seek tmpfile tmpname read write clock "
                                             "date difftime execute exit getenv setlocale time "
@@ -254,11 +237,9 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
                                             "io.tmpfile io.type io.write io.stdin io.stdout "
                                             "io.stderr os.clock os.date os.difftime os.execute "
                                             "os.exit os.getenv os.remove os.rename os.setlocale "
-                                            "os.time os.tmpname coroutine.running coroutine.close "
-											"coroutine.isyieldable os.timer");
-		
-		editor->setProperty("fold","1");
-		editor->setProperty("fold.compact", settings.value(Keys::Prefs::foldCompact).toBool() ? "1" : "0");
+                                            "os.time os.tmpname");
+
+        editor->setProperty("fold","1");
         if (themePath == "")
         {
             editor->styleSetFore(SCE_LUA_COMMENT,0x007F00);
@@ -397,8 +378,8 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setBackSpaceUnIndents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
 
     sciScintilla_->setViewWS((sptr_t) (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
-	setCompactFolding(settings.value(Keys::Prefs::foldCompact, 1).toInt());
-	
+
+
     if (settings.value(Keys::Prefs::showLineNumbers, true).toBool()) {
         sciScintilla_->setMarginTypeN(2, SC_MARGIN_NUMBER);
         sciScintilla_->setMarginWidthN(2, sciScintilla_->textWidth(STYLE_LINENUMBER,"10000"));
@@ -573,14 +554,6 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
             sciScintilla_->markerAdd(line, 2);
         }
     }
-	
-	qDebug("-- Begin info dump --------------");
-	sciScintilla()->dumpObjectInfo();
-	qDebug("-- End of info dump -------------");
-	qDebug("---------------------------------\n---------------------------------");	
-	qDebug("-- Begin tree dump --------------");
-	sciScintilla()->dumpObjectTree();
-	qDebug("-- End tree dump --------------");
 
 	return true;
 }
@@ -944,10 +917,6 @@ void TextEdit::setWhitespaceVisibility(int mode)
     sciScintilla_->setViewWS(mode);
 }
 
-void TextEdit::setCompactFolding(int mode)
-{
-	sciScintilla_->setProperty("fold.compact", mode ? "1" : "0");
-}
 
 void TextEdit::undo()
 {

@@ -63,7 +63,6 @@ public:
     void setShowLineNumbers(bool show);
     void setBackspaceUnindents(bool use);
     void setWhitespaceVisibility(int mode);
-	void setCompactFolding(int mode);
 
 protected:
 	virtual void closeEvent(QCloseEvent* event);

@@ -107,7 +107,7 @@
         <x>30</x>
         <y>20</y>
         <width>251</width>
-        <height>147</height>
+        <height>111</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout">
@@ -215,34 +215,13 @@
          </item>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QComboBox" name="compactFoldComboBox">
-         <item>
-          <property name="text">
-           <string>False</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>True</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="compactFoldLabel">
-         <property name="text">
-          <string>Compact folding:</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="formLayoutWidget_2">
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>180</y>
+        <y>170</y>
         <width>251</width>
         <height>61</height>
        </rect>
