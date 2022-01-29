@@ -574,14 +574,6 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
         }
     }
 	
-	qDebug("-- Begin info dump --------------");
-	sciScintilla()->dumpObjectInfo();
-	qDebug("-- End of info dump -------------");
-	qDebug("---------------------------------\n---------------------------------");	
-	qDebug("-- Begin tree dump --------------");
-	sciScintilla()->dumpObjectTree();
-	qDebug("-- End tree dump --------------");
-
 	return true;
 }
 
