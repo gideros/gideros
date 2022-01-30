@@ -466,6 +466,7 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setMultipleSelection(true);
     // multi-line typing with Alt+drag/Alt_shift+cursor multi-line selections
     sciScintilla_->setAdditionalSelectionTyping(true);
+    sciScintilla_->setMultiPaste(SC_MULTIPASTE_EACH);
 
     autoCompleteThreshold=settings.value(Keys::Prefs::autoCompleteChars, 2).toInt();
 
