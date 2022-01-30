@@ -116,12 +116,7 @@ void PreferencesDialog::setupEditorPrefs()
 	connect(ui->compactFoldComboBox, QOverload<int>::of(&QComboBox::activated), this,
             [this](int use) {
                 this->settings.setValue(Keys::Prefs::foldCompact, use);
-                this->updateEditors([use](TextEdit* te) { 
-					ScintillaEdit* sciScintilla = te->sciScintilla();
-					sciScintilla->clearDocumentStyle(); 
-					sciScintilla->colourise(0, -1);
-					te->setCompactFolding(use); 
-				});
+                this->updateEditors([use](TextEdit* te) { te->setCompactFolding(use); });
             }
     );
 }

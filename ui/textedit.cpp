@@ -397,7 +397,6 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setBackSpaceUnIndents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
 
     sciScintilla_->setViewWS((sptr_t) (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
-	setCompactFolding(settings.value(Keys::Prefs::foldCompact, 1).toInt());
 	
     if (settings.value(Keys::Prefs::showLineNumbers, true).toBool()) {
         sciScintilla_->setMarginTypeN(2, SC_MARGIN_NUMBER);
@@ -939,6 +938,8 @@ void TextEdit::setWhitespaceVisibility(int mode)
 void TextEdit::setCompactFolding(int mode)
 {
 	sciScintilla_->setProperty("fold.compact", mode ? "1" : "0");
+	sciScintilla_->clearDocumentStyle(); 
+	sciScintilla_->colourise(0, -1);
 }
 
 void TextEdit::undo()

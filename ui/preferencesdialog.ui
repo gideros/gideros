@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>637</width>
-    <height>322</height>
+    <width>621</width>
+    <height>306</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -107,7 +107,7 @@
         <x>30</x>
         <y>20</y>
         <width>251</width>
-        <height>147</height>
+        <height>216</height>
        </rect>
       </property>
       <layout class="QFormLayout" name="formLayout">
@@ -128,6 +128,27 @@
          <item>
           <property name="text">
            <string>Spaces</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="showIndentGuideLabel">
+         <property name="text">
+          <string>Indent guide lines:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="showIndentGuideComboBox">
+         <item>
+          <property name="text">
+           <string>Hide</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Show</string>
           </property>
          </item>
         </widget>
@@ -173,27 +194,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="showIndentGuideLabel">
-         <property name="text">
-          <string>Indent guide lines:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="showIndentGuideComboBox">
-         <item>
-          <property name="text">
-           <string>Hide</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Show</string>
-          </property>
-         </item>
-        </widget>
-       </item>
        <item row="3" column="0">
         <widget class="QLabel" name="backspaceUnindentsLabel">
          <property name="text">
@@ -215,6 +215,13 @@
          </item>
         </widget>
        </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="compactFoldLabel">
+         <property name="text">
+          <string>Compact folding:</string>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="1">
         <widget class="QComboBox" name="compactFoldComboBox">
          <item>
@@ -229,26 +236,14 @@
          </item>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="compactFoldLabel">
-         <property name="text">
-          <string>Compact folding:</string>
+       <item row="5" column="0" colspan="2">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="formLayoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>180</y>
-        <width>251</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <layout class="QFormLayout" name="formLayout_2">
-       <item row="0" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="lineNumberingLabel">
          <property name="toolTip">
           <string/>
@@ -261,7 +256,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="6" column="1">
         <widget class="QComboBox" name="lineNumberingComboBox">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;lt;html&amp;gt;&amp;lt;head/&amp;gt;&amp;lt;body&amp;gt;&amp;lt;p&amp;gt;Takes effect with first file opened after a restart or all files have been closed.&amp;lt;/p&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -278,14 +273,14 @@
          </item>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="whitespaceVisibilityLabel">
          <property name="text">
           <string>Whitespace visibility</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="7" column="1">
         <widget class="QComboBox" name="whitespaceVisibilityComboBox">
          <item>
           <property name="text">
