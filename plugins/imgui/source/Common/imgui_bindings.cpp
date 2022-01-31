@@ -45,7 +45,9 @@
 #include "stackchecker.h"
 #define STACK_CHECKER(L, pre, delta) StackChecker checker(L, pre, delta);
 #define PLUGIN_NAME "ImGui_pre_build"
+#ifdef INCLUDE_PLOT
 #include "implot_src/implot.h" // WIP
+#endif
 #else
 #define STACK_CHECKER(L, pre, delta) ((void)0)
 #define PLUGIN_NAME "ImGui"
@@ -1470,7 +1472,7 @@ public:
 
 	EventListener(GidImGui* p_gidImGui)
 	{
-		this->gidImGui = p_gidImGui;
+		gidImGui = p_gidImGui;
 		applicationResize(nullptr);
 	}
 
