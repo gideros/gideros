@@ -286,6 +286,11 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
         lexer = CreateLexer(LexerNameFromID(SCLEX_CPP));
         editor->setILexer((sptr_t)lexer);
     }
+    else if (ext == "json")
+    {
+        lexer = CreateLexer(LexerNameFromID(SCLEX_JSON));
+        editor->setILexer((sptr_t)lexer);
+    }
 
     if (lexer)
 	{ 
@@ -436,7 +441,8 @@ QSettings lls(theme, QSettings::IniFormat);
 
     sciScintilla_->setMarginWidthN(1, 14);			// margin 1 is breakpoint
     sciScintilla_->markerDefine(2,SC_MARK_CIRCLE); //Marker 2 is breakpoint
-    sciScintilla_->setMarginMaskN(1, 1 << 2);
+    sciScintilla_->markerDefine(3, SC_MARK_SHORTARROW); //Marker 3 is current debug line
+    sciScintilla_->setMarginMaskN(1, 3 << 2);
     sciScintilla_->setMarginSensitiveN(1, true);
 
     sciScintilla_->setMarginWidthN(3, 14);			// margin 3 is bookmark margin
@@ -444,7 +450,6 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setMarginMaskN(3, 1 << 1);
     sciScintilla_->setMarginSensitiveN(3, true);
 
-    sciScintilla_->markerDefine(3, SC_MARK_BACKGROUND); //Marker 3 is current debug line
 
     registerIcon(1,IconLibrary::instance().icon(0,"method"));
     registerIcon(2,IconLibrary::instance().icon(0,"constant"));
@@ -453,9 +458,10 @@ QSettings lls(theme, QSettings::IniFormat);
 
     sciScintilla_->markerSetFore(1,rcolor(lls.value("MarkerForegroundColor", 0x272822).toInt()));
     sciScintilla_->markerSetBack(1,rcolor(lls.value("MarkerBackgroundColor", 0x519ACF).toInt()));
-    sciScintilla_->markerSetFore(2,rcolor(lls.value("MarkerForegroundColor", 0x272822).toInt()));
-    sciScintilla_->markerSetBack(2,rcolor(lls.value("MarkerBackgroundColor", 0x519ACF).toInt()));
-    sciScintilla_->markerSetBack(3,rcolor(lls.value("DebuggedLineColor", 0x3030FF).toInt()));
+    sciScintilla_->markerSetFore(2,rcolor(lls.value("DebugDotForeground", 0x000000).toInt()));
+    sciScintilla_->markerSetBack(2,rcolor(lls.value("DebugDotBackground", 0xFF3030).toInt()));
+    sciScintilla_->markerSetFore(3,rcolor(lls.value("DebugArrowForeground", 0x000000).toInt()));
+    sciScintilla_->markerSetBack(3,rcolor(lls.value("DebugArrowBackgroundr", 0xFFFF30).toInt()));
     for (int k=SC_MARKNUM_FOLDEREND;k<=SC_MARKNUM_FOLDEROPEN;k++) {
         sciScintilla_->markerSetFore(k,rcolor(lls.value("MarkerForegroundColor", 0xFFFFFF).toInt()));
         sciScintilla_->markerSetBack(k,rcolor(lls.value("MarkerBackgroundColor", 0).toInt()));
@@ -1008,12 +1014,6 @@ void TextEdit::highlightDebugLine(int line) {
     {
         sciScintilla_->gotoLine(line);
         sciScintilla_->markerAdd(line, 3);
-        sciScintilla_->setReadOnly(true);
-        sciScintilla_->setCaretLineVisible(false);
-    }
-    else {
-        sciScintilla_->setReadOnly(false);
-        sciScintilla_->setCaretLineVisible(true);
     }
 }
 
