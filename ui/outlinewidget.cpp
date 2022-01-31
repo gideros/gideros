@@ -533,7 +533,11 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     setLayout(layout);
     model_=new QStandardItemModel();
     list_->setModel(model_);
-    list_->setItemDelegate(new OutlineWidgetItem());    
+    list_->setItemDelegate(new OutlineWidgetItem());
+
+    parseTimer_=new QTimer();
+    connect(parseTimer_,&QTimer::timeout, this, &OutlineWidget::checkParse);
+    parseTimer_->start(1000);
 #ifdef LUA_IS_LUAU
     //LINTER
     Luau::FrontendOptions frontendOptions;
@@ -606,6 +610,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
 
 OutlineWidget::~OutlineWidget()
 {
+    delete parseTimer_;
 }
 
 void OutlineWidget::saveSettings()
@@ -790,17 +795,20 @@ void OutlineWidget::parse() {
                 QsciScintilla *s=doc_->sciScintilla();
                 QString text=s->text();
 #endif
-                QByteArray btext=text.toUtf8();
                 noContent=false;
+                if (cachedText_!=text) {
+                    cachedText_=text;
+                    QByteArray btext=text.toUtf8();
 
-                frontend->markDirty(doc_->fileName().toStdString());
+                    frontend->markDirty(doc_->fileName().toStdString());
 
-                OutlineWorkerThread *workerThread = new OutlineWorkerThread(this,doc_->fileName(),btext);
-                connect(workerThread, &OutlineWorkerThread::updateOutline, this, &OutlineWidget::updateOutline);
-                connect(workerThread, &OutlineWorkerThread::reportError, this, &OutlineWidget::reportError);
-                connect(workerThread, &OutlineWorkerThread::finished, workerThread, &QObject::deleteLater);
-                workerThread->start();
-                working_=true;
+                    OutlineWorkerThread *workerThread = new OutlineWorkerThread(this,doc_->fileName(),btext);
+                    connect(workerThread, &OutlineWorkerThread::updateOutline, this, &OutlineWidget::updateOutline);
+                    connect(workerThread, &OutlineWorkerThread::reportError, this, &OutlineWidget::reportError);
+                    connect(workerThread, &OutlineWorkerThread::finished, workerThread, &QObject::deleteLater);
+                    workerThread->start();
+                    working_=true;
+                }
 #ifdef SCINTILLAEDIT_H
             }
 #endif
@@ -811,8 +819,10 @@ void OutlineWidget::parse() {
 }
 
 void OutlineWidget::checkParse() {
-    if (refresh_.elapsed()>(TYPING_DELAY-100))
+    if (refresh_.isValid()&&refresh_.elapsed()>TYPING_DELAY) {
+        refresh_.invalidate();
         parse();
+    }
 }
 
 void OutlineWidget::setDocument(TextEdit *doc,bool checkSyntax,bool typeCheck)
@@ -821,11 +831,10 @@ void OutlineWidget::setDocument(TextEdit *doc,bool checkSyntax,bool typeCheck)
     doc_=doc;
     checkSyntax_=checkSyntax;
     typeCheck_=typeCheck;
-    if (docChanged)
+    if (docChanged) {
+        cachedText_="";
         parse();
-    else
-    {
-        refresh_.start();
-        QTimer::singleShot(TYPING_DELAY, this, SLOT(checkParse()));
     }
+    else
+        refresh_.start();
 }

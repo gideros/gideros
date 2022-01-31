@@ -131,10 +131,15 @@ function OPS:EBIN(op)
 	local right=self:genOp()
 	local terms=self._handlers.GENOP and self._handlers.GENOP(op,left,right)
 	if not terms then 
+		if op=="and" then 
+			op="&&"
+		elseif op=="or" then
+			op="||"
+		end
 		if op=="^" then
 			terms="pow("..left.value..","..right.value..")"
 		else
-			terms=left.value..op..right.value 
+			terms="("..left.value..op..right.value..")"
 		end
 	end
 	local rtype=self._ot[left.vtype..op..right.vtype] or left.vtype
@@ -285,8 +290,8 @@ end
 function OPS:SFOR(var,hasInc)
 	hasInc=tonumber(hasInc)>0
 	if self.skipping then 
-		local ac=2
-		if hasInc then ac=3 end
+		local ac=3
+		if hasInc then ac=4 end
 		return self:skipOp(ac) 
 	end
 	local from=self:genOp()

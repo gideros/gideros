@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QStandardItemModel>
 #include <QTime>
+#include <QTimer>
 #include <QThread>
 #include <QLabel>
 #include <QStyledItemDelegate>
@@ -85,6 +86,8 @@ protected:
     QElapsedTimer refresh_;
     QListView *list_;
     QStandardItemModel *model_;
+    QTimer *parseTimer_;
+    QString cachedText_;
     bool working_;
     bool needParse_;
     bool checkSyntax_;
