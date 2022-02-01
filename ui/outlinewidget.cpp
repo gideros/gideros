@@ -82,21 +82,8 @@ public:
     OutlineWidget *_ow;
     std::optional<Luau::SourceCode> readSource(const Luau::ModuleName& name) override
     {
-        TextEdit *doc=_ow->doc_;
-        if (doc&&(QString(name.c_str())==doc->fileName()))
-        {
-#ifdef SCINTILLAEDIT_H
-            ScintillaEdit *s=doc->sciScintilla();
-            QString text;
-            int size=s->textLength();
-            if (size>0)
-                text=s->getText(size);
-#else
-            QsciScintilla *s=doc->sciScintilla();
-            QString text=s->text();
-#endif
-            return Luau::SourceCode{text.toStdString(), Luau::SourceCode::Module};
-        }
+        if (QString(name.c_str())==_ow->cachedFilename_)
+            return Luau::SourceCode{_ow->cachedText_.toStdString(), Luau::SourceCode::Module};
         std::optional<std::string> source = std::nullopt;//readFile(name);
         if (!source)
             return std::nullopt;
@@ -410,13 +397,10 @@ void OutlineWorkerThread::run()
   }
 #else
       Luau::CompileOptions opts;
-      Luau::ParseOptions popts;
-      Luau::ParseResult result;
-      Luau::Allocator allocator;
-      Luau::AstNameTable names(allocator);
-      result = Luau::Parser::parse(btext.constData(),btext.size(), names, allocator, popts);
 
-      Luau::LintResult lr = ((OutlineWidget *)this->parent())->frontend->lint(filename.toStdString().c_str());
+      Luau::Frontend *frontend=((OutlineWidget *)this->parent())->frontend;
+      frontend->markDirty(filename.toStdString());
+      Luau::LintResult lr = frontend->lint(filename.toStdString().c_str());
       QList<OutlineLinterItem> li;
       for (const Luau::LintWarning &e: lr.warnings)
           li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Warning,filename,e.location.begin.line));
@@ -424,7 +408,7 @@ void OutlineWorkerThread::run()
           li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Error,filename,e.location.begin.line));
 
       if (typeCheck) {
-          Luau::CheckResult cr = ((OutlineWidget *)this->parent())->frontend->check(filename.toStdString().c_str());
+          Luau::CheckResult cr = frontend->check(filename.toStdString().c_str());
           for (const Luau::TypeError &e: cr.errors) {
               const Luau::UnknownSymbol *uk=e.data.get_if<Luau::UnknownSymbol>();
               if ((!uk)||(uk->context!=Luau::UnknownSymbol::Binding))
@@ -432,16 +416,19 @@ void OutlineWorkerThread::run()
           }
       }
       //COMPILER
-      std::string error = Luau::compile(std::string(btext.constData(),btext.size()), filename.toStdString(), opts,popts,nullptr,&result);
+      std::string error = Luau::compile(std::string(btext.constData(),btext.size()), filename.toStdString(), opts);
       if (error.at(0)==0) {
           QString qerror=QString(error.substr(1).c_str());
           emit reportError("[string "+filename+"]"+qerror,li,QSet<QString>());
       }
       else  {
           OutlineVisitor visitor(&outline);
-          result.root->visit(&visitor);
           AutocompleteVisitor autocv;
-          result.root->visit(&autocv);
+          Luau::SourceModule *sm=frontend->getSourceModule(filename.toStdString());
+          if (sm&&sm->root) {
+            sm->root->visit(&visitor);
+            sm->root->visit(&autocv);
+          }
           autocv.autocomplete << "_"; //Non empty
           emit reportError("",li,autocv.autocomplete);
       }
@@ -604,7 +591,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
 
     Luau::loadDefinitionFile(frontend->typeChecker, frontend->typeChecker.globalScope, gid_api.str(), "@gideros");
 
-    //Luau::freeze(frontend->typeChecker.globalTypes);
+    Luau::freeze(frontend->typeChecker.globalTypes);
 #endif
 }
 
@@ -651,6 +638,7 @@ void OutlineWidget::sort()
 
 void OutlineWidget::updateOutline(QList<OutLineItem> s)
 {
+    checkerMutex_.lock();
     currentOutline_=s;
     bool sAlpha=actSort_->isChecked();
     bool sGroup=actType_->isChecked();
@@ -683,6 +671,7 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
     working_=false;
     if (needParse_)
         parse();
+    checkerMutex_.unlock();
 }
 
 void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> lint,QSet<QString> autocomplete)
@@ -777,12 +766,11 @@ void OutlineWidget::reportError(const QString error, QList<OutlineLinterItem> li
 }
 
 void OutlineWidget::parse() {
+    checkerMutex_.lock();
     bool noContent=true;
     needParse_=working_;
     OutlineWorkerThread::typeCheck=typeCheck_;
-    if (working_)
-        return;
-    if (doc_) {
+    if (doc_&&(!working_)) {
         QFileInfo fileInfo(doc_->fileName());
         if (!fileInfo.suffix().compare(QString("lua"),Qt::CaseInsensitive))
         {
@@ -796,11 +784,10 @@ void OutlineWidget::parse() {
                 QString text=s->text();
 #endif
                 noContent=false;
-                if (cachedText_!=text) {
+                if ((cachedText_!=text)||(cachedFilename_!=doc_->fileName())) {
                     cachedText_=text;
+                    cachedFilename_=doc_->fileName();
                     QByteArray btext=text.toUtf8();
-
-                    frontend->markDirty(doc_->fileName().toStdString());
 
                     OutlineWorkerThread *workerThread = new OutlineWorkerThread(this,doc_->fileName(),btext);
                     connect(workerThread, &OutlineWorkerThread::updateOutline, this, &OutlineWidget::updateOutline);
@@ -816,6 +803,7 @@ void OutlineWidget::parse() {
     }
     if (noContent)
         updateOutline(OutLineItemList());
+    checkerMutex_.unlock();
 }
 
 void OutlineWidget::checkParse() {
@@ -831,10 +819,8 @@ void OutlineWidget::setDocument(TextEdit *doc,bool checkSyntax,bool typeCheck)
     doc_=doc;
     checkSyntax_=checkSyntax;
     typeCheck_=typeCheck;
-    if (docChanged) {
-        cachedText_="";
+    if (docChanged)
         parse();
-    }
     else
         refresh_.start();
 }

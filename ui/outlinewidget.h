@@ -9,6 +9,7 @@
 #include <QThread>
 #include <QLabel>
 #include <QStyledItemDelegate>
+#include <QMutex>
 #include "textedit.h"
 #include "lua.hpp"
 #ifdef LUA_IS_LUAU
@@ -88,6 +89,8 @@ protected:
     QStandardItemModel *model_;
     QTimer *parseTimer_;
     QString cachedText_;
+    QString cachedFilename_;
+    QRecursiveMutex checkerMutex_;
     bool working_;
     bool needParse_;
     bool checkSyntax_;

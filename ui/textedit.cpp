@@ -203,6 +203,7 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
 
     QSettings settings;
     QString themePath = settings.value(Keys::Editor::theme).toString();
+    QString themeLanguage;
 
 	if (ext == "lua")
 	{
@@ -285,6 +286,7 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
     {
         lexer = CreateLexer(LexerNameFromID(SCLEX_CPP));
         editor->setILexer((sptr_t)lexer);
+        themeLanguage="c++";
     }
     else if (ext == "json")
     {
@@ -304,7 +306,9 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
         editor->styleSetBack(STYLE_DEFAULT,0xFFFFFF);
         if (themePath != "") {
             QSettings editorTheme(themePath, QSettings::IniFormat);
-            readLexerSettings(editorTheme,lexer->GetName(),editor);
+            if (themeLanguage.isEmpty())
+                themeLanguage=lexer->GetName();
+            readLexerSettings(editorTheme,themeLanguage.toUtf8(),editor);
         }
 	}
 
@@ -433,7 +437,7 @@ QSettings lls(theme, QSettings::IniFormat);
         rcolor(lls.value("UnmatchedBraceBackgroundColor", 10085887).toInt()));
 
     connect(sciScintilla_, SIGNAL(savePointChanged(bool)), this, SLOT(onModificationChanged(bool)));
-	connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
+    //connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
     connect(sciScintilla_, SIGNAL(notifyChange()), this, SIGNAL(textChanged()));
     connect(sciScintilla_, SIGNAL(marginClicked(Scintilla::Position,Scintilla::KeyMod,int)),
             this, SLOT(setBookmark(Scintilla::Position,Scintilla::KeyMod,int)));
