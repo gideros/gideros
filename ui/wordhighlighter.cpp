@@ -7,13 +7,10 @@ static int rcolor(int c)
 }
 
 WordHighlighter::WordHighlighter(ScintillaEdit* editor, QSettings& settings):
-	cachedPos(0),    
-	cachedSelectionStart(0),
-	cachedSelectionEnd(0),
-	enabled(true),
-	simpleMode(true)
+	editor_(editor),
+	enabled_(true),
+	simpleMode_(true)
 {
-	editor_ = editor;
 	updateTimer = new QTimer(this);
 	
 	editor_->indicSetStyle(IND_HIGHLIGHT_STYLE, 
@@ -30,15 +27,12 @@ WordHighlighter::WordHighlighter(ScintillaEdit* editor, QSettings& settings):
 	
 	connect(editor_, SIGNAL(textAreaClicked(Scintilla::Position, int)), this, SLOT(textAreaClicked(Scintilla::Position, int)));
 	connect(updateTimer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
-	
-	updateTimer->start(UPDATE_DELAY);
 }
 
 WordHighlighter::~WordHighlighter()
 {
 	delete updateTimer;
 }
-
 
 void WordHighlighter::textAreaClicked(Scintilla::Position line, int modifiers)
 {
@@ -50,20 +44,21 @@ void WordHighlighter::textAreaClicked(Scintilla::Position line, int modifiers)
 
 void WordHighlighter::timerTimeout()
 {
-	run();
+	update();
+	updateTimer->stop();
 }
 
 void WordHighlighter::setSimpleMode(bool mode)
 {
-	simpleMode = mode;
+	simpleMode_ = mode;
 	reset();
-	resetCache();
-	updateTimer->start();
+	updateTimer->start(UPDATE_DELAY);
 }
 
 void WordHighlighter::setEnabled(bool state)
 {
-	enabled = state;
+	enabled_ = state;
+	
 	if (!state)
 	{
 		reset();
@@ -71,7 +66,7 @@ void WordHighlighter::setEnabled(bool state)
 	}
 	else
 	{
-		updateTimer->start();
+		updateTimer->start(UPDATE_DELAY);
 	}
 }
 
@@ -82,11 +77,9 @@ void WordHighlighter::reset()
 	editor_->indicatorClearRange(0, textLength);
 }
 
-void WordHighlighter::resetCache()
+void WordHighlighter::resetUpdate()
 {
-	cachedPos = 0;
-	cachedSelectionStart = 0;
-	cachedSelectionEnd = 0;
+	updateTimer->start(UPDATE_DELAY);
 }
 
 bool WordHighlighter::extendBounds(sptr_t& selStart, sptr_t& selEnd)
@@ -171,45 +164,26 @@ bool WordHighlighter::filterWord(int style)
 	}
 }
 
-void WordHighlighter::run()
-{   
-	if (!enabled)
+void WordHighlighter::update()
+{   	
+	if (!enabled_)
 		return;
 	
-	updateTimer->start(UPDATE_DELAY);
 	
-	sptr_t currentPos = editor_->currentPos();    
 	sptr_t selStart = editor_->selectionStart();
 	sptr_t selEnd = editor_->selectionEnd();
-	
-	// Do not update if cursor not moved?
-	if (simpleMode)
-	{
-		if (cachedPos == currentPos) 
-			return;
-		
-	}
-	else if (cachedSelectionStart == selStart && cachedSelectionEnd == selEnd)
-	{
-		return;
-	}
-	
-	cachedPos = currentPos;
-	cachedSelectionStart = selStart;
-	cachedSelectionEnd = selEnd;
-	
-	reset();
 	
 	const sptr_t textLength = editor_->textLength();
 	
 	// Allow hightlight when using multiple cursors only in simple mode 
-	if (editor_->selections() > 1 && !simpleMode)
+	if (editor_->selections() > 1 && !simpleMode_)
 	{
+		reset();
 		return;
 	}
 	
 	// Find symbol under the cursor
-	if (simpleMode)
+	if (simpleMode_)
 	{
 		sptr_t lastCursorPos = editor_->selectionNCaret(editor_->selections() - 1);
 		selStart = editor_->wordStartPosition(lastCursorPos, true);
@@ -220,16 +194,36 @@ void WordHighlighter::run()
 		// Extend to left & right to find a word
 		if (!extendBounds(selStart, selEnd))
 		{
+			reset();
 			return;
 		}
 	}
 	
+	int selectedStyle = editor_->styleAt(selStart);
+	if (!filterWord(selectedStyle))
+	{
+		reset();
+		cachedWord = NULL;
+		return;
+	}
+	
 	QByteArray wordToFind = editor_->textRange(selStart, selEnd);
+	if (cachedWord == wordToFind)
+	{
+		return;
+	}
+	else
+	{
+		reset();
+		cachedWord = wordToFind;
+	}
+	
 	auto wordLength = wordToFind.length();
 	
 	// No highlight when no selection or multi-lines selection.
 	if (wordLength == 0 || wordToFind.contains('\n') || wordToFind.contains('\r'))
 	{
+		reset();
 		return;
 	}
 	
@@ -240,13 +234,11 @@ void WordHighlighter::run()
 	editor_->setTargetRange(0, textLength);
 	const char* cstr = wordToFind.constData();
 	
-	qDebug("Update highlighter, style: %lld", editor_->styleAt(selStart));
-	
 	sptr_t index = editor_->searchInTarget(wordLength, cstr);
 	while (index != -1)
 	{
 		sptr_t tEnd = editor_->targetEnd();
-		if (filterWord(editor_->styleAt(index)))
+		if (selectedStyle == editor_->styleAt(index))
 		{
 			sptr_t tStart = editor_->targetStart();
 			editor_->indicatorFillRange(tStart, tEnd - tStart);

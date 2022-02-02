@@ -19,23 +19,30 @@ public:
 	WordHighlighter(ScintillaEdit* editor, QSettings& settings);
 	~WordHighlighter();
 	
+	bool simpleMode()
+	{
+		return simpleMode_;
+	}
+	
+	bool enabled()
+	{
+		return enabled_;
+	}
+	
 	void setSimpleMode(bool mode);
 	void setEnabled(bool state);
 	void reset();
-	void run();
+	void resetUpdate();
+	void update();
 private:
 	ScintillaEdit* editor_;
-	
-	sptr_t cachedPos;
-	sptr_t cachedSelectionStart;
-	sptr_t cachedSelectionEnd;
+	QByteArray cachedWord;
 	
 	QTimer* updateTimer;
-	bool enabled;
-	bool simpleMode; // detect words ONLY at current cursor position
+	bool enabled_;
+	bool simpleMode_; // detect words ONLY at current cursor position
 	bool filterWord(int style);
 	bool extendBounds(sptr_t& selStart, sptr_t& selEnd);
-	inline void resetCache();
 private slots:
 	void textAreaClicked(Scintilla::Position line, int modifiers);
 	void timerTimeout();

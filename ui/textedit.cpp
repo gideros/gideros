@@ -1187,8 +1187,6 @@ bool TextEdit::isBrace(char ch)
 
 void TextEdit::updateUi(Scintilla::Update updated)
 {
-    Q_UNUSED(updated);
-	
     int brace_position = sciScintilla_->positionBefore(sciScintilla_->currentPos());
 	int chStyle = sciScintilla_->styleAt(brace_position);
 	// Disable highligh in comments
@@ -1222,6 +1220,10 @@ void TextEdit::updateUi(Scintilla::Update updated)
          else
          {
             sciScintilla_->braceHighlight(-1,-1);
+			if (updated == Scintilla::Update::Selection)
+			{
+				wordHighlighter_->resetUpdate();
+			}
          }
      }
 }
