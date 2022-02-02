@@ -108,4 +108,15 @@ void PreferencesDialog::setupEditorPrefs()
                 this->updateEditors([mode](TextEdit* te) { te->setWhitespaceVisibility(mode);});
             }
     );
+	
+	// 0 - no, 1 - yes, use
+	
+	ui->compactFoldComboBox->setCurrentIndex(settings.value(Keys::Prefs::foldCompact, 1).toInt());
+	
+	connect(ui->compactFoldComboBox, QOverload<int>::of(&QComboBox::activated), this,
+            [this](int use) {
+                this->settings.setValue(Keys::Prefs::foldCompact, use);
+                this->updateEditors([use](TextEdit* te) { te->setCompactFolding(use); });
+            }
+    );
 }

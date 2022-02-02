@@ -136,12 +136,12 @@ prep.repo:
 	if [ ! -d $(ROOT)/scintilla ]; then \
 		git submodule add https://github.com/gideros/scintilla.git  scintilla; \
 		git reset HEAD .gitmodules; \
-		git reset HEAD lexilla; \
+		git reset HEAD scintilla; \
 	fi
 	if [ ! -d $(ROOT)/lexilla ]; then \
 		git submodule add https://github.com/gideros/lexilla.git  lexilla; \
 		git reset HEAD .gitmodules; \
-		git reset HEAD scintilla; \
+		git reset HEAD lexilla; \
 	fi
 	git submodule update --recursive	
 

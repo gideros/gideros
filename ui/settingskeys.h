@@ -20,6 +20,7 @@ namespace Keys {
         static Key showLineNumbers = "prefs:showLineNumbers";
         static Key backspaceUnindents = "prefs:backspaceUnindents";
         static Key whitespaceVisibility = "prefs:whitespacevisibility";
+		static Key foldCompact = "prefs:foldCompact";
     }
     namespace Editor {
         static Key theme = "editorTheme";

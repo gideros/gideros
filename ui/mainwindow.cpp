@@ -59,6 +59,7 @@
 #include "preferencesdialog.h"
 #include "profilerreport.h"
 #include <QStandardPaths>
+#include <QTimer>
 
 MainWindow *MainWindow::lua_instance=NULL;
 QTemporaryDir *MainWindow::tempDir=NULL;
@@ -2535,9 +2536,12 @@ QVariant MainWindow::deserializeValue(ByteBuffer &buffer, QString &vtype) {
         case LUA_TNUMBER:
             buffer >> value;
             return QVariant::fromValue(QString::fromStdString(value).toDouble());
-        default:
+        case LUA_TSTRING:
             buffer >> value;
             return QVariant::fromValue(QString::fromStdString(value));
+        default:
+            buffer >> value;
+            return QVariant::fromValue(QPair<QString,QString>(vtype,QString::fromStdString(value)));
     }
 
 }
@@ -2710,7 +2714,36 @@ void MainWindow::dataReceived(const QByteArray& d)
         TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
 
         if (textEdit==lookupSymbolWidget) {
-            QToolTip::showText(textEdit->mapToGlobal(lookupSymbolPoint),QString("<i>%1</i> <b>%2</b>").arg(vtype).arg(value.toString().toHtmlEscaped()),textEdit);
+            QString tipInfo;
+            if (vtype=="table")
+            {
+                tipInfo="<table>";
+                QMap<QString,QVariant> tmap=value.value<QMap<QString,QVariant>>();
+                QMap<QString,QString> smap;
+                QStringList klst;
+                for (const auto &sk : tmap.keys()) {
+                    klst << sk;
+                    auto val=tmap[sk];
+                    QString vi=val.toString().toHtmlEscaped();
+                    if (val.canConvert<QMap<QString,QVariant>>()) {
+                        vi="<i>table</i>";
+                    }
+                    else if (val.canConvert<QPair<QString,QString>>()) {
+                        vi="<i>"+val.value<QPair<QString,QString>>().first+"</i>";
+                    }
+                    else if (val.isNull())
+                        vi="<i>nil</i>";
+                    smap[sk]=QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(sk.toHtmlEscaped()).arg(vi);
+                }
+                klst.sort();
+                for (const auto &sk:klst)
+                    tipInfo+=smap[sk];
+                tipInfo+="</table>";
+            }
+            else {
+                tipInfo=QString("<i>%1</i> <b>%2</b>").arg(vtype).arg(value.toString().toHtmlEscaped());
+            }
+            QToolTip::showText(textEdit->mapToGlobal(lookupSymbolPoint),tipInfo,textEdit);
         }
     }
     if (data[0]==31) { //Profiling report

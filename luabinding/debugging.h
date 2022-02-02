@@ -31,7 +31,12 @@ public:
     static lua_Hook hook;
     static void studioLink(NetworkLink *server);
 	static void studioCommand(const std::vector<char> &data);
+#ifdef LUA_IS_LUAU
+	static void debuggerHook(lua_State *L,lua_Debug *ar);
+	static void profilerHook(lua_State *L,int enter);
+#else
 	static void debuggerHook(void *context,lua_State *L,lua_Debug *ar);
+#endif
 };
 
 #endif /* LUABINDING_DEBUGGING_H_ */

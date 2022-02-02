@@ -5,9 +5,11 @@
 #include <QListWidget>
 #include <QStandardItemModel>
 #include <QTime>
+#include <QTimer>
 #include <QThread>
 #include <QLabel>
 #include <QStyledItemDelegate>
+#include <QMutex>
 #include "textedit.h"
 #include "lua.hpp"
 #ifdef LUA_IS_LUAU
@@ -50,7 +52,7 @@ public:
     virtual ~OutlineWorkerThread() { }
 signals:
     void updateOutline(QList<OutLineItem> s);
-    void reportError(const QString error,QList<OutlineLinterItem>);
+    void reportError(const QString error,QList<OutlineLinterItem>,QSet<QString>);
 };
 
 class OutlineWidgetItem : public QStyledItemDelegate
@@ -85,6 +87,10 @@ protected:
     QElapsedTimer refresh_;
     QListView *list_;
     QStandardItemModel *model_;
+    QTimer *parseTimer_;
+    QString cachedText_;
+    QString cachedFilename_;
+    QRecursiveMutex checkerMutex_;
     bool working_;
     bool needParse_;
     bool checkSyntax_;
@@ -107,7 +113,7 @@ private slots:
     void checkParse();
     void onItemClicked(const QModelIndex &);
     void updateOutline(QList<OutLineItem> s);
-    void reportError(const QString error,QList<OutlineLinterItem> lint);
+    void reportError(const QString error,QList<OutlineLinterItem> lint,QSet<QString> autocomplete);
 };
 
 #endif // OUTPUTWIDGET_H

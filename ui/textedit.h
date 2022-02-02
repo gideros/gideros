@@ -27,6 +27,7 @@ public:
     {
         return sciScintilla_;
     }
+    void setIdentifiers(const QStringList &ilist);
 #else
 	QsciScintilla* sciScintilla() const
 	{
@@ -62,6 +63,7 @@ public:
     void setShowLineNumbers(bool show);
     void setBackspaceUnindents(bool use);
     void setWhitespaceVisibility(int mode);
+	void setCompactFolding(int mode);
 
 protected:
 	virtual void closeEvent(QCloseEvent* event);
@@ -111,6 +113,7 @@ private:
     bool modified;
     int autoCompleteThreshold;
     QStringList api;
+    QStringList autocIdentifiers;
     QStringList currentCallTipList;
     size_t currentCallTipIndex;
     size_t currentCallTipPos;

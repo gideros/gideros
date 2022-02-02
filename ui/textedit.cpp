@@ -11,8 +11,8 @@
 #include "iconlibrary.h"
 #include "settingskeys.h"
 #include <ScintillaEdit/ILexer.h>
-#include <Lexillia/Lexilla.h>
-#include <Lexillia/SciLexer.h>
+#include <Lexilla/Lexilla.h>
+#include <Lexilla/SciLexer.h>
 #include <QStandardPaths>
 #include <QDir>
 
@@ -184,6 +184,15 @@ static void readLexerSettings(QSettings &qs,const char *language,ScintillaEdit *
             editor->styleSetUnderline(STYLE_DEFAULT, fdesc[4].toInt());
         }
     }
+		
+	full_key = key + "fold.compact";
+	ok = qs.contains(full_key);
+	
+	if (ok)
+	{
+		flag = qs.value(full_key, true).toBool();
+		editor->setProperty("fold.compact", flag ? "1" : "0");
+	}
 }
 
 static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
@@ -194,6 +203,7 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
 
     QSettings settings;
     QString themePath = settings.value(Keys::Editor::theme).toString();
+    QString themeLanguage;
 
 	if (ext == "lua")
 	{
@@ -226,7 +236,15 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
                                             "math.ceil math.cos math.deg math.exp math.floor "
                                             "math.frexp math.ldexp math.log math.log10 math.max "
                                             "math.min math.mod math.pi math.rad math.random "
-                                            "math.randomseed math.sin math.sqrt math.tan");
+                                            "math.randomseed math.sin math.sqrt math.tan "
+											"math.inside math.dot math.cosh math.round "
+											"math.tanh math.modf math.huge math.cross math.pow "
+											"math.edge math.raycast math.normalize math.nearest math.distances "
+											"math.clamp math.length math.noise math.sign math.distance "
+											"math.sinh math.fmod string.split string.match string.gmatch "
+											"string.pack string.dumpPseudocode string.decodeValue string.packsize string.reverse "
+											"string.unpack string.encodeValue table.clear table.pack table.move "
+											"table.isfrozen table.maxn table.unpack table.find table.create");
         editor->setKeyWords(3,"openfile closefile readfrom writeto appendto remove "
                                             "rename flush seek tmpfile tmpname read write clock "
                                             "date difftime execute exit getenv setlocale time "
@@ -237,9 +255,11 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
                                             "io.tmpfile io.type io.write io.stdin io.stdout "
                                             "io.stderr os.clock os.date os.difftime os.execute "
                                             "os.exit os.getenv os.remove os.rename os.setlocale "
-                                            "os.time os.tmpname");
-
-        editor->setProperty("fold","1");
+                                            "os.time os.tmpname coroutine.running coroutine.close "
+											"coroutine.isyieldable os.timer");
+		
+		editor->setProperty("fold","1");
+		editor->setProperty("fold.compact", settings.value(Keys::Prefs::foldCompact).toBool() ? "1" : "0");
         if (themePath == "")
         {
             editor->styleSetFore(SCE_LUA_COMMENT,0x007F00);
@@ -266,6 +286,12 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
     {
         lexer = CreateLexer(LexerNameFromID(SCLEX_CPP));
         editor->setILexer((sptr_t)lexer);
+        themeLanguage="c++";
+    }
+    else if (ext == "json")
+    {
+        lexer = CreateLexer(LexerNameFromID(SCLEX_JSON));
+        editor->setILexer((sptr_t)lexer);
     }
 
     if (lexer)
@@ -280,7 +306,9 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
         editor->styleSetBack(STYLE_DEFAULT,0xFFFFFF);
         if (themePath != "") {
             QSettings editorTheme(themePath, QSettings::IniFormat);
-            readLexerSettings(editorTheme,lexer->GetName(),editor);
+            if (themeLanguage.isEmpty())
+                themeLanguage=lexer->GetName();
+            readLexerSettings(editorTheme,themeLanguage.toUtf8(),editor);
         }
 	}
 
@@ -378,8 +406,7 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setBackSpaceUnIndents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
 
     sciScintilla_->setViewWS((sptr_t) (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
-
-
+	
     if (settings.value(Keys::Prefs::showLineNumbers, true).toBool()) {
         sciScintilla_->setMarginTypeN(2, SC_MARGIN_NUMBER);
         sciScintilla_->setMarginWidthN(2, sciScintilla_->textWidth(STYLE_LINENUMBER,"10000"));
@@ -410,7 +437,7 @@ QSettings lls(theme, QSettings::IniFormat);
         rcolor(lls.value("UnmatchedBraceBackgroundColor", 10085887).toInt()));
 
     connect(sciScintilla_, SIGNAL(savePointChanged(bool)), this, SLOT(onModificationChanged(bool)));
-	connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
+    //connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
     connect(sciScintilla_, SIGNAL(notifyChange()), this, SIGNAL(textChanged()));
     connect(sciScintilla_, SIGNAL(marginClicked(Scintilla::Position,Scintilla::KeyMod,int)),
             this, SLOT(setBookmark(Scintilla::Position,Scintilla::KeyMod,int)));
@@ -418,7 +445,8 @@ QSettings lls(theme, QSettings::IniFormat);
 
     sciScintilla_->setMarginWidthN(1, 14);			// margin 1 is breakpoint
     sciScintilla_->markerDefine(2,SC_MARK_CIRCLE); //Marker 2 is breakpoint
-    sciScintilla_->setMarginMaskN(1, 1 << 2);
+    sciScintilla_->markerDefine(3, SC_MARK_SHORTARROW); //Marker 3 is current debug line
+    sciScintilla_->setMarginMaskN(1, 3 << 2);
     sciScintilla_->setMarginSensitiveN(1, true);
 
     sciScintilla_->setMarginWidthN(3, 14);			// margin 3 is bookmark margin
@@ -426,7 +454,6 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setMarginMaskN(3, 1 << 1);
     sciScintilla_->setMarginSensitiveN(3, true);
 
-    sciScintilla_->markerDefine(3, SC_MARK_BACKGROUND); //Marker 3 is current debug line
 
     registerIcon(1,IconLibrary::instance().icon(0,"method"));
     registerIcon(2,IconLibrary::instance().icon(0,"constant"));
@@ -435,9 +462,10 @@ QSettings lls(theme, QSettings::IniFormat);
 
     sciScintilla_->markerSetFore(1,rcolor(lls.value("MarkerForegroundColor", 0x272822).toInt()));
     sciScintilla_->markerSetBack(1,rcolor(lls.value("MarkerBackgroundColor", 0x519ACF).toInt()));
-    sciScintilla_->markerSetFore(2,rcolor(lls.value("MarkerForegroundColor", 0x272822).toInt()));
-    sciScintilla_->markerSetBack(2,rcolor(lls.value("MarkerBackgroundColor", 0x519ACF).toInt()));
-    sciScintilla_->markerSetBack(3,rcolor(lls.value("DebuggedLineColor", 0x3030FF).toInt()));
+    sciScintilla_->markerSetFore(2,rcolor(lls.value("DebugDotForeground", 0x000000).toInt()));
+    sciScintilla_->markerSetBack(2,rcolor(lls.value("DebugDotBackground", 0xFF3030).toInt()));
+    sciScintilla_->markerSetFore(3,rcolor(lls.value("DebugArrowForeground", 0x000000).toInt()));
+    sciScintilla_->markerSetBack(3,rcolor(lls.value("DebugArrowBackgroundr", 0xFFFF30).toInt()));
     for (int k=SC_MARKNUM_FOLDEREND;k<=SC_MARKNUM_FOLDEROPEN;k++) {
         sciScintilla_->markerSetFore(k,rcolor(lls.value("MarkerForegroundColor", 0xFFFFFF).toInt()));
         sciScintilla_->markerSetBack(k,rcolor(lls.value("MarkerBackgroundColor", 0).toInt()));
@@ -448,6 +476,7 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setMultipleSelection(true);
     // multi-line typing with Alt+drag/Alt_shift+cursor multi-line selections
     sciScintilla_->setAdditionalSelectionTyping(true);
+    sciScintilla_->setMultiPaste(SC_MULTIPASTE_EACH);
 
     autoCompleteThreshold=settings.value(Keys::Prefs::autoCompleteChars, 2).toInt();
 
@@ -554,7 +583,7 @@ bool TextEdit::loadFile(const QString& fileName, const QString& itemName, bool s
             sciScintilla_->markerAdd(line, 2);
         }
     }
-
+	
 	return true;
 }
 
@@ -917,6 +946,12 @@ void TextEdit::setWhitespaceVisibility(int mode)
     sciScintilla_->setViewWS(mode);
 }
 
+void TextEdit::setCompactFolding(int mode)
+{
+	sciScintilla_->setProperty("fold.compact", mode ? "1" : "0");
+	sciScintilla_->clearDocumentStyle(); 
+	sciScintilla_->colourise(0, -1);
+}
 
 void TextEdit::undo()
 {
@@ -983,12 +1018,6 @@ void TextEdit::highlightDebugLine(int line) {
     {
         sciScintilla_->gotoLine(line);
         sciScintilla_->markerAdd(line, 3);
-        sciScintilla_->setReadOnly(true);
-        sciScintilla_->setCaretLineVisible(false);
-    }
-    else {
-        sciScintilla_->setReadOnly(false);
-        sciScintilla_->setCaretLineVisible(true);
     }
 }
 
@@ -1025,6 +1054,12 @@ void TextEdit::dwellEnd(int x,int y)
 {
     QToolTip::showText(QPoint(x,y),QString(),this);
 }
+
+void TextEdit::setIdentifiers(const QStringList &ilist)
+{
+    if (!ilist.empty())
+        autocIdentifiers=ilist;
+};
 
 void TextEdit::charAdded(int ch)
 {
@@ -1097,6 +1132,10 @@ void TextEdit::charAdded(int ch)
                     if (m.hasMatch())
                         autoc << m.captured(2);
                 }
+                //Add from current identifier set
+                for (const QString &c:autocIdentifiers)
+                    if (c.startsWith(word))
+                        autoc << c;
                 if (!autoc.isEmpty()) {
                     autoc.sort();
                     autoc.removeDuplicates();

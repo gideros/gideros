@@ -1905,7 +1905,8 @@ static void profilerHook(lua_State *L,int enter)
 
 int LuaApplication::Core_profilerStart(lua_State *L)
 {
-    L->profilerHook=profilerHook;
+	if (!L->profilerHook) //Don't set if already set, since it could be used by the debugger
+		L->profilerHook=profilerHook;
 	return 0;
 }
 
