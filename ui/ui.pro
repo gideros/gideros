@@ -159,7 +159,8 @@ SOURCES += \
     addons.cpp \
     qtutils.cpp \
     preferencesdialog.cpp \
-    profilerreport.cpp
+    profilerreport.cpp \
+    wordhighlighter.cpp
 
 equals(USE_SCINTILLAEDIT,y): SOURCES+= textedit.cpp
 equals(USE_SCINTILLAEDIT,y): DEFINES+= USE_SCINTILLAEDIT
@@ -208,7 +209,8 @@ HEADERS  += \
     qtutils.h \
     preferencesdialog.h \
     settingskeys.h \
-    profilerreport.h
+    profilerreport.h \
+    wordhighlighter.h
 
 FORMS    += mainwindow.ui \
     savechangesdialog.ui \

@@ -259,7 +259,6 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
 											"coroutine.isyieldable os.timer");
 		
 		editor->setProperty("fold","1");
-		editor->setProperty("fold.compact", settings.value(Keys::Prefs::foldCompact).toBool() ? "1" : "0");
         if (themePath == "")
         {
             editor->styleSetFore(SCE_LUA_COMMENT,0x007F00);
@@ -269,6 +268,7 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
             editor->styleSetFore(SCE_LUA_WORD2,0x7F0000);
             editor->styleSetFore(SCE_LUA_WORD3,0x7F0000);
             editor->styleSetFore(SCE_LUA_WORD4,0x7F0000);
+            editor->styleSetFore(SCE_LUA_WORD5,0x007F7F);
 
             editor->styleSetFore(SCE_LUA_STRING,0x7F007F);
             editor->styleSetFore(SCE_LUA_CHARACTER,0x7F007F);
@@ -304,6 +304,7 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
         editor->styleSetSize(STYLE_DEFAULT,10);
 #endif
         editor->styleSetBack(STYLE_DEFAULT,0xFFFFFF);
+		editor->setProperty("fold.compact", settings.value(Keys::Prefs::foldCompact).toBool() ? "1" : "0"); // apply to all languages
         if (themePath != "") {
             QSettings editorTheme(themePath, QSettings::IniFormat);
             if (themeLanguage.isEmpty())
@@ -415,27 +416,34 @@ QSettings lls(theme, QSettings::IniFormat);
     else
         sciScintilla_->setMarginWidthN(2, 0);
 
-    sciScintilla_->braceHighlightIndicator(true,INDIC_STRAIGHTBOX);
-
-	sciScintilla_->setCaretLineVisible(true);
+    sciScintilla_->setCaretLineVisible(true);
 
     sciScintilla_->setCaretFore(
         rcolor(lls.value("CaretForegroundColor", 0).toInt()));
 
     sciScintilla_->setCaretLineBack(
         rcolor(lls.value("CaretLineBackgroundColor", 15658734).toInt()));
-
-
-    sciScintilla_->styleSetFore(STYLE_BRACELIGHT,
-        rcolor(lls.value("MatchedBraceForegroundColor", 0).toInt()));
-    sciScintilla_->styleSetBack(STYLE_BRACELIGHT,
-        rcolor(lls.value("MatchedBraceBackgroundColor", 15658734).toInt()));
-
-    sciScintilla_->styleSetFore(STYLE_BRACEBAD,
-        rcolor(lls.value("UnmatchedBraceForegroundColor", 0).toInt()));
-    sciScintilla_->styleSetBack(STYLE_BRACEBAD,
-        rcolor(lls.value("UnmatchedBraceBackgroundColor", 10085887).toInt()));
-
+	
+	
+	// Braces styling
+	sciScintilla_->braceHighlightIndicator(true, STYLE_BRACELIGHT);
+	sciScintilla_->indicSetStyle(STYLE_BRACELIGHT, INDIC_FULLBOX);
+    sciScintilla_->indicSetAlpha(STYLE_BRACELIGHT, 
+		lls.value("MatchedBraceAlpha", 50).toInt());
+    sciScintilla_->indicSetOutlineAlpha(STYLE_BRACELIGHT, 
+		lls.value("MatchedBraceOutlineAlpha", 200).toInt());
+	sciScintilla_->indicSetFore(STYLE_BRACELIGHT,
+		rcolor(lls.value("MatchedBraceColor", 1269).toInt()));
+	
+	sciScintilla_->braceBadLightIndicator(true, STYLE_BRACEBAD);
+	sciScintilla_->indicSetStyle(STYLE_BRACEBAD, INDIC_FULLBOX);
+    sciScintilla_->indicSetAlpha(STYLE_BRACEBAD, 
+		lls.value("UnmatchedBraceAlpha", 50).toInt());
+    sciScintilla_->indicSetOutlineAlpha(STYLE_BRACEBAD, 
+		lls.value("UnmatchedBraceOutlineAlpha", 200).toInt());
+	sciScintilla_->indicSetFore(STYLE_BRACEBAD,
+		rcolor(lls.value("UnmatchedBraceColor", 16057344).toInt()));
+	
     connect(sciScintilla_, SIGNAL(savePointChanged(bool)), this, SLOT(onModificationChanged(bool)));
     //connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
     connect(sciScintilla_, SIGNAL(notifyChange()), this, SIGNAL(textChanged()));
@@ -492,11 +500,15 @@ QSettings lls(theme, QSettings::IniFormat);
     connect(sciScintilla_, SIGNAL(updateUi(Scintilla::Update)), this, SLOT(updateUi(Scintilla::Update)));
     connect(sciScintilla_, SIGNAL(charAdded(int)), this, SLOT(charAdded(int)));
     connect(sciScintilla_, SIGNAL(callTipClick(Scintilla::Position)), this, SLOT(callTipClick(Scintilla::Position)));
+    
+    wordHighlighter_ = new WordHighlighter(sciScintilla_, lls);
+	wordHighlighter_->setEnabled(settings.value(Keys::Prefs::wordHightlighter).toBool());
+	wordHighlighter_->setSimpleMode(settings.value(Keys::Prefs::wordHightlighterSimple).toBool());
 }
 
 TextEdit::~TextEdit()
 {
-
+    delete wordHighlighter_;
 }
 
 void TextEdit::registerIcon(int num,QIcon icon)
@@ -1063,15 +1075,20 @@ void TextEdit::setIdentifiers(const QStringList &ilist)
 
 void TextEdit::charAdded(int ch)
 {
+    wordHighlighter_->reset();
+    
     if (ch=='\n') {
         //AUTOINDENT
         int cline=sciScintilla_->lineFromPosition(sciScintilla_->currentPos());
         int pIndent=sciScintilla_->lineIndentation(cline-1);
         int level=sciScintilla_->foldLevel(cline-1);
-        if (level & SC_FOLDLEVELHEADERFLAG) //Foldable: Indent
-            pIndent+=sciScintilla_->tabWidth();
-        sciScintilla_->setLineIndentation(cline,pIndent);
-        sciScintilla_->gotoPos(sciScintilla_->lineIndentPosition(cline));
+		if (level != SC_FOLDLEVELBASE)
+		{
+			if (level & SC_FOLDLEVELHEADERFLAG) //Foldable: Indent
+				pIndent+=sciScintilla_->tabWidth();
+			sciScintilla_->setLineIndentation(cline,pIndent);
+			sciScintilla_->gotoPos(sciScintilla_->lineIndentPosition(cline));
+		}
     }
     else if (ch=='(') {
         //CALL-TIP
@@ -1163,13 +1180,25 @@ void TextEdit::callTipClick(Scintilla::Position position) {
     }
 }
 
+bool TextEdit::isBrace(char ch)
+{
+    return (ch == ']' || ch == '[' || ch == '{' || ch == '}' || ch == '(' || ch == ')' || ch == '<' || ch == '>');
+}
+
 void TextEdit::updateUi(Scintilla::Update updated)
 {
-    Q_UNUSED(updated);
     int brace_position = sciScintilla_->positionBefore(sciScintilla_->currentPos());
+	int chStyle = sciScintilla_->styleAt(brace_position);
+	// Disable highligh in comments
+	if (chStyle == SCE_LUA_COMMENT || chStyle == SCE_LUA_COMMENTDOC || chStyle == SCE_LUA_COMMENTLINE)
+	{
+		sciScintilla_->braceHighlight(-1,-1);
+		return;
+	}
     int character_before = sciScintilla_->charAt(brace_position);
     char ch = (char) character_before;
-    if(ch == ']' || ch == '[' || ch == '{' || ch == '}' || ch == '(' || ch == ')' || ch == '<' || ch == '>')
+	
+    if(isBrace(ch))
     {
          int has_match = sciScintilla_->braceMatch(brace_position,0);
          if(has_match > -1)
@@ -1180,7 +1209,7 @@ void TextEdit::updateUi(Scintilla::Update updated)
      else
      {
         char ch = (char) sciScintilla_->charAt(brace_position);
-        if(ch == ']' || ch == '[' || ch == '{' || ch == '}' || ch == '(' || ch == ')' || ch == '<' || ch == '>')
+        if(isBrace(ch))
         {
              int has_match = sciScintilla_->braceMatch(brace_position,0);
              if(has_match > -1)
@@ -1191,6 +1220,10 @@ void TextEdit::updateUi(Scintilla::Update updated)
          else
          {
             sciScintilla_->braceHighlight(-1,-1);
+			if (updated == Scintilla::Update::Selection)
+			{
+				wordHighlighter_->resetUpdate();
+			}
          }
      }
 }

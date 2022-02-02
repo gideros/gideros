@@ -99,7 +99,9 @@ MainWindow::MainWindow(QWidget *parent)
     tempDir=new QTemporaryDir();
 
 	mdiArea_ = new MdiArea(this);
-
+	
+	setTabPosition(Qt::AllDockWidgetAreas, QTabWidget::North);
+	
     // Load the theme at startup
     QSettings settings;
 

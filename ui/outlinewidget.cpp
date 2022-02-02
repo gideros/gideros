@@ -592,7 +592,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
 
     Luau::loadDefinitionFile(frontend->typeChecker, frontend->typeChecker.globalScope, gid_api.str(), "@gideros");
 
-    Luau::freeze(frontend->typeChecker.globalTypes);
+    //Luau::freeze(frontend->typeChecker.globalTypes);
 #endif
 }
 
