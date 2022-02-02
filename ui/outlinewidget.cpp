@@ -21,6 +21,7 @@
 #include <QAction>
 #include <QPainter>
 #include <QSettings>
+#include <sstream>
 
 #include "iconlibrary.h"
 #include "lua.hpp"
