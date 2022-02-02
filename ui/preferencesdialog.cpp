@@ -70,32 +70,32 @@ void PreferencesDialog::setupEditorPrefs()
     );
 
     // 0 - hide, 1 - show
-    ui->showIndentGuideComboBox->setCurrentIndex(settings.value(Keys::Prefs::indentGuides, 1).toInt());
-
-    connect(ui->showIndentGuideComboBox, QOverload<int>::of(&QComboBox::activated), this,
-            [this](int index) {
-                this->settings.setValue(Keys::Prefs::indentGuides, index);
-                this->updateEditors([index](TextEdit* te) { te->setIndentGuide(index);});
+    ui->showIndentGuideCheckBox->setChecked(settings.value(Keys::Prefs::indentGuides, 1).toBool());
+    
+    connect(ui->showIndentGuideCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+                this->settings.setValue(Keys::Prefs::indentGuides, state);
+                this->updateEditors([state](TextEdit* te) { te->setIndentGuide(state);});
             }
     );
 
     // 0 - hide, 1 - show
-    ui->lineNumberingComboBox->setCurrentIndex(settings.value(Keys::Prefs::showLineNumbers, 1).toInt());
+    ui->lineNumberingCheckBox->setChecked(settings.value(Keys::Prefs::showLineNumbers, 1).toBool());
 
-    connect(ui->lineNumberingComboBox, QOverload<int>::of(&QComboBox::activated), this,
-            [this](int show) {
-                this->settings.setValue(Keys::Prefs::showLineNumbers, show);
-                this->updateEditors([show](TextEdit* te) { te->setShowLineNumbers(show);});
+    connect(ui->lineNumberingCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+                this->settings.setValue(Keys::Prefs::showLineNumbers, state);
+                this->updateEditors([state](TextEdit* te) { te->setShowLineNumbers(state);});
             }
     );
 
     // 0 - no, 1 - yes, use
-    ui->backspaceUnindentsComboBox->setCurrentIndex(settings.value(Keys::Prefs::backspaceUnindents, 1).toInt());
+    ui->backspaceUnindentsCheckBox->setChecked(settings.value(Keys::Prefs::backspaceUnindents, 1).toBool());
 
-    connect(ui->backspaceUnindentsComboBox, QOverload<int>::of(&QComboBox::activated), this,
-            [this](int use) {
-                this->settings.setValue(Keys::Prefs::backspaceUnindents, use);
-                this->updateEditors([use](TextEdit* te) { te->setBackspaceUnindents(use);});
+    connect(ui->backspaceUnindentsCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+                this->settings.setValue(Keys::Prefs::backspaceUnindents, state);
+                this->updateEditors([state](TextEdit* te) { te->setBackspaceUnindents(state);});
             }
     );
 
@@ -111,12 +111,32 @@ void PreferencesDialog::setupEditorPrefs()
 	
 	// 0 - no, 1 - yes, use
 	
-	ui->compactFoldComboBox->setCurrentIndex(settings.value(Keys::Prefs::foldCompact, 1).toInt());
+	ui->compactFoldCheckBox->setChecked(settings.value(Keys::Prefs::foldCompact, 1).toBool());
 	
-	connect(ui->compactFoldComboBox, QOverload<int>::of(&QComboBox::activated), this,
-            [this](int use) {
-                this->settings.setValue(Keys::Prefs::foldCompact, use);
-                this->updateEditors([use](TextEdit* te) { te->setCompactFolding(use); });
+	connect(ui->compactFoldCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+                this->settings.setValue(Keys::Prefs::foldCompact, state);
+                this->updateEditors([state](TextEdit* te) { te->setCompactFolding(state); });
+            }
+    );
+    
+    ui->wordHighlighterCheckBox->setChecked(settings.value(Keys::Prefs::wordHightlighter, 1).toBool());
+    
+    connect(ui->wordHighlighterCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+                this->settings.setValue(Keys::Prefs::wordHightlighter, state);
+                this->ui->wordHightlighterSimpleCheckBox->setEnabled(state);
+                this->updateEditors([state](TextEdit* te) { te->wordHighlighter()->setEnabled(state); });
+            }
+    );
+    
+    ui->wordHightlighterSimpleCheckBox->setEnabled(ui->wordHighlighterCheckBox->isChecked());
+    ui->wordHightlighterSimpleCheckBox->setChecked(settings.value(Keys::Prefs::wordHightlighterSimple, 1).toBool());
+    
+    connect(ui->wordHightlighterSimpleCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+                this->settings.setValue(Keys::Prefs::wordHightlighterSimple, state);
+                this->updateEditors([state](TextEdit* te) { te->wordHighlighter()->setSimpleMode(state); });
             }
     );
 }

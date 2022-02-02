@@ -4,6 +4,7 @@
 #include <QMdiSubWindow>
 #ifdef USE_SCINTILLAEDIT
 #include <ScintillaEdit/ScintillaEdit.h>
+#include "wordhighlighter.h"
 #else
 #include <Qsci/qsciscintilla.h>
 #endif
@@ -27,7 +28,13 @@ public:
     {
         return sciScintilla_;
     }
+    WordHighlighter* wordHighlighter() const
+    {
+        return wordHighlighter_;
+    }
+    
     void setIdentifiers(const QStringList &ilist);
+    
 #else
 	QsciScintilla* sciScintilla() const
 	{
@@ -117,7 +124,10 @@ private:
     QStringList currentCallTipList;
     size_t currentCallTipIndex;
     size_t currentCallTipPos;
+    WordHighlighter* wordHighlighter_;
+    
     void registerIcon(int num,QIcon icon);
+    inline bool isBrace(char chr);
 #else
     QsciScintilla* sciScintilla_;
 #endif

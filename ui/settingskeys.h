@@ -21,6 +21,8 @@ namespace Keys {
         static Key backspaceUnindents = "prefs:backspaceUnindents";
         static Key whitespaceVisibility = "prefs:whitespacevisibility";
 		static Key foldCompact = "prefs:foldCompact";
+        static Key wordHightlighter = "prefs:wordHighlighter";
+        static Key wordHightlighterSimple = "prefs:wordHighlighterSimple";
     }
     namespace Editor {
         static Key theme = "editorTheme";
