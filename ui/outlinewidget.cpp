@@ -21,6 +21,7 @@
 #include <QAction>
 #include <QPainter>
 #include <QSettings>
+#include <sstream>
 
 #include "iconlibrary.h"
 #include "lua.hpp"
@@ -591,7 +592,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
 
     Luau::loadDefinitionFile(frontend->typeChecker, frontend->typeChecker.globalScope, gid_api.str(), "@gideros");
 
-    Luau::freeze(frontend->typeChecker.globalTypes);
+    //Luau::freeze(frontend->typeChecker.globalTypes);
 #endif
 }
 
