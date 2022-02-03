@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cfloat>
 #include <algorithm>
+#include <string.h>
 
 struct VEC {
 	double x;
@@ -16,7 +17,9 @@ enum VECTYPE {
 	VT_ARRAY,
 	VT_ARRAY3,
 	VT_TABLE,
-	VT_TABLE3
+	VT_TABLE3,
+	VT_VECTOR,
+	VT_VECTOR3,
 };
 
 namespace GidMath {
@@ -244,6 +247,9 @@ public:
 
 static VECTYPE probeVec(lua_State *L,int idx,int d3) {
     idx=abs_index(L,idx);
+	const float *vf=lua_tovector(L,idx);
+	if (vf)
+		return std::isnan(vf[2])?VT_VECTOR:VT_VECTOR3;
 	if (lua_type(L,idx)==LUA_TTABLE) {
 	  	  lua_getfield(L,idx,"x");
 	  	  bool arr=lua_isnil(L,-1);
@@ -266,21 +272,29 @@ static int getVec(lua_State *L,int idx,VECTYPE vt,VEC &v) {
 		return idx+((vt==VT_ARGS3)?3:2);
 	}
 	else {
-		luaL_checktype(L,idx,LUA_TTABLE);
-		if ((vt==VT_ARRAY)||(vt==VT_ARRAY3)) {
-			lua_rawgeti(L,idx,1);
-			lua_rawgeti(L,idx,2);
-			lua_rawgeti(L,idx,3);
+		const float *vf=lua_tovector(L,idx);
+		if (vf) {
+			v.x=vf[0];
+			v.y=vf[1];
+			v.z=vf[2];
 		}
 		else {
-			lua_getfield(L,idx,"x");
-			lua_getfield(L,idx,"y");
-			lua_getfield(L,idx,"z");
+			luaL_checktype(L,idx,LUA_TTABLE);
+			if ((vt==VT_ARRAY)||(vt==VT_ARRAY3)) {
+				lua_rawgeti(L,idx,1);
+				lua_rawgeti(L,idx,2);
+				lua_rawgeti(L,idx,3);
+			}
+			else {
+				lua_getfield(L,idx,"x");
+				lua_getfield(L,idx,"y");
+				lua_getfield(L,idx,"z");
+			}
+			v.x=luaL_optnumber(L,-3,0);
+			v.y=luaL_optnumber(L,-2,0);
+			v.z=luaL_optnumber(L,-1,0);
+			lua_pop(L,3);
 		}
-        v.x=luaL_optnumber(L,-3,0);
-        v.y=luaL_optnumber(L,-2,0);
-		v.z=luaL_optnumber(L,-1,0);
-		lua_pop(L,3);
 		return idx+1;
 	}
 }
@@ -294,7 +308,11 @@ static int pushVec(lua_State *L,VECTYPE vt,VEC v) {
 		return 3;
 	}
 	else {
-		if ((vt==VT_ARRAY)||(vt==VT_ARRAY3)) {
+		if (vt==VT_VECTOR)
+			lua_pushvector(L,v.x,v.y,nan(""),nan(""));
+		else if (vt==VT_VECTOR3)
+			lua_pushvector(L,v.x,v.y,v.z,nan(""));
+		else if ((vt==VT_ARRAY)||(vt==VT_ARRAY3)) {
 			lua_createtable(L,3,0);
 			lua_pushnumber(L,v.x);
 			lua_rawseti(L,-2,1);
@@ -433,6 +451,7 @@ static int math_cross (lua_State *L) {
     if (vt==VT_ARGS) vt=VT_ARGS3;
     if (vt==VT_ARRAY) vt=VT_ARRAY3;
     if (vt==VT_TABLE) vt=VT_TABLE3;
+    if (vt==VT_VECTOR) vt=VT_VECTOR3;
     return pushVec(L,vt,c);
 }
 
@@ -587,6 +606,63 @@ static int math_edge (lua_State *L) {
 	return rs;
 }
 
+//LUAU vector
+static int lua_vector(lua_State* L)
+{
+    double x = luaL_checknumber(L, 1);
+    double y = luaL_checknumber(L, 2);
+    double z = luaL_optnumber(L, 3, nan(""));
+
+#if LUA_VECTOR_SIZE == 4
+    double w = luaL_optnumber(L, 4, nan(""));
+    lua_pushvector(L, float(x), float(y), float(z), float(w));
+#else
+    lua_pushvector(L, float(x), float(y), float(z));
+#endif
+    return 1;
+}
+
+static int lua_vector_dot(lua_State* L)
+{
+    const float* a = luaL_checkvector(L, 1);
+    const float* b = luaL_checkvector(L, 2);
+
+    lua_pushnumber(L, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]);
+    return 1;
+}
+
+static int lua_vector_index(lua_State* L)
+{
+    const float* v = luaL_checkvector(L, 1);
+    const char* name = luaL_checkstring(L, 2);
+
+    if (strcmp(name, "Magnitude") == 0)
+    {
+        lua_pushnumber(L, sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
+        return 1;
+    }
+
+    if (strcmp(name, "Dot") == 0)
+    {
+        lua_pushcfunction(L, lua_vector_dot, "Dot");
+        return 1;
+    }
+
+    luaL_error(L, "%s is not a valid member of vector", name);
+}
+
+static int lua_vector_namecall(lua_State* L)
+{
+    if (const char* str = lua_namecallatom(L, nullptr))
+    {
+        if (strcmp(str, "Dot") == 0)
+            return lua_vector_dot(L);
+    }
+
+    luaL_error(L, "%s is not a valid method of vector", luaL_checkstring(L, 1));
+}
+
+
 void register_gideros_math(lua_State *L) {
 	// Register math helpers
 	static const luaL_Reg mathlib[] = {
@@ -600,8 +676,30 @@ void register_gideros_math(lua_State *L) {
 	  {"raycast", math_raycast},
 	  {"inside", math_inside},
 	  {"edge", math_edge},
+	  {"vector", lua_vector},
 	  {NULL, NULL}
 	};
 	luaL_register(L, LUA_MATHLIBNAME, mathlib);
 	lua_pop(L,1);
+
+    lua_pushcfunction(L, lua_vector, "vector");
+    lua_setglobal(L, "vector");
+
+#if LUA_VECTOR_SIZE == 4
+    lua_pushvector(L, 0.0f, 0.0f, 0.0f, 0.0f);
+#else
+    lua_pushvector(L, 0.0f, 0.0f, 0.0f);
+#endif
+    luaL_newmetatable(L, "vector");
+
+    lua_pushstring(L, "__index");
+    lua_pushcfunction(L, lua_vector_index, "vector__index");
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "__namecall");
+    lua_pushcfunction(L, lua_vector_namecall, "vector__namecall");
+    lua_settable(L, -3);
+
+    lua_setmetatable(L, -2);
+    lua_pop(L, 1);
 }

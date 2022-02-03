@@ -82,6 +82,8 @@ private:
 	static int isVisible(lua_State* L);
 	static int setVisible(lua_State* L);
 
+	static int isOnStage(lua_State* L);
+
 	static int getColorTransform(lua_State* L);
 	static int setColorTransform(lua_State* L);
 

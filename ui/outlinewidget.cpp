@@ -770,8 +770,13 @@ void OutlineWidget::parse() {
     checkerMutex_.lock();
     bool noContent=true;
     needParse_=working_;
+    if (working_)
+    {
+        checkerMutex_.unlock();
+        return;
+    }
     OutlineWorkerThread::typeCheck=typeCheck_;
-    if (doc_&&(!working_)) {
+    if (doc_) {
         QFileInfo fileInfo(doc_->fileName());
         if (!fileInfo.suffix().compare(QString("lua"),Qt::CaseInsensitive))
         {
