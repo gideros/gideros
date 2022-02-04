@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties splash_v_image="../Choari.png" build_number="1" html5_pwa="0" fps="60" osx_signingId="" windowHeight="0" mouseTouchOrder="0" retinaDisplay="3" html5_wasm="0" osx_category="5" autorotation="0" win_org="GiderosMobile" html5_mem="256" osx_bundle="com.yourdomain." app_icon="Gfx/Icone.png" mouseToTouch="1" splash_h_image="../Choari.png" mainluaOnly="0" html5_fbinstant="0" tv_icon="" macos_bundle="net.hieroglyphe.catporspo-macos" osx_installerId="" disableSplash="0" html5_pack="0" html5_symbols="0" winrt_org="GiderosMobile" version_code="110" version="1.1" win_domain="giderosmobile.com" backgroundColor="#e8f4ff" html5_host="" macos_category="11" html5_crash="" encryptCode="1" osx_domain="giderosmobile.com" windowWidth="0" logicalHeight="1825" exportMode="0" orientation="3" splashScaleMode="0" vsync="0" winrt_package="com.yourdomain.yourapp" app_name="Porspoder: la piste du reporter" atv_bundle="net.hieroglyphe.catporspo-atv" ios_bundle="net.hieroglyphe.catporspo" logicalWidth="1024" iosDevice="0" osx_org="GiderosMobile" architecture="0" scaleMode="5" touchToMouse="1" encryptAssets="1" html5_fbload="100">
+ <properties macos_category="11" splash_h_image="../Choari.png" retinaDisplay="3" mainluaOnly="0" orientation="3" atv_bundle="net.hieroglyphe.catporspo-atv" html5_fbinstant="0" scaleMode="5" mouseTouchOrder="0" osx_domain="giderosmobile.com" disableSplash="0" html5_pwa="0" osx_installerId="" encryptAssets="1" windowWidth="0" splashScaleMode="0" fps="60" version_code="110" vsync="0" architecture="0" html5_host="" html5_pack="0" tv_icon="" win_org="GiderosMobile" html5_symbols="0" html5_wasm="0" osx_bundle="com.yourdomain." html5_crash="" winrt_package="com.yourdomain.yourapp" autorotation="0" ios_bundle="net.hieroglyphe.catporspo" mouseToTouch="1" app_name="Porspoder: la piste du reporter" macos_bundle="net.hieroglyphe.catporspo-macos" winrt_org="GiderosMobile" iosDevice="0" osx_signingId="" logicalWidth="1024" app_icon="Gfx/Icone.png" splash_v_image="../Choari.png" exportMode="0" html5_mem="256" logicalHeight="1825" touchToMouse="1" build_number="1" html5_fbload="100" backgroundColor="#e8f4ff" encryptCode="1" win_domain="giderosmobile.com" osx_category="5" version="1.1" windowHeight="0" osx_org="GiderosMobile">
   <imageScales/>
   <plugins>
    <plugin enabled="0" name="Camera">
@@ -93,6 +93,7 @@
   <file name="../../../Library/luashader/luac_codegen.lua"/>
   <file name="../../../Library/luashader/luac_loader.lua"/>
   <file name="../../../Library/luashader/luashader.lua"/>
+  <file name="../../../Library/luashader/luau_codegen.lua"/>
  </folder>
  <folder path="../../../Library/oculus" name="oculus">
   <folder name="jedi">
