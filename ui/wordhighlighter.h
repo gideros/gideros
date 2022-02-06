@@ -2,7 +2,7 @@
 #define WORDHIGHLIGHTER_H
 
 #define IND_HIGHLIGHT_STYLE 9
-#define UPDATE_DELAY 1000
+#define UPDATE_DELAY 800
 
 #ifdef USE_SCINTILLAEDIT
 #include <ScintillaEdit/ScintillaEdit.h>
