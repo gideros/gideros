@@ -696,10 +696,10 @@ bool TextEdit::isModified() const
     return modified;
 }
 
-void TextEdit::expandRegionAt(size_t position)
+void TextEdit::expandRegionAt(sptr_t position)
 {
 #ifdef SCINTILLAEDIT_H
-    size_t line = sciScintilla_->lineFromPosition(position);
+    sptr_t line = sciScintilla_->lineFromPosition(position);
     int level = sciScintilla_->foldLevel(line);
     if (level & SC_FOLDLEVELNUMBERMASK && (level & SC_FOLDLEVELNUMBERMASK) != SC_FOLDLEVELBASE)
         sciScintilla_->foldLine(line, SC_FOLDACTION_EXPAND);
