@@ -40,7 +40,7 @@ defineReplace(expand) {
 equals(LUA_ENGINE,luau): LUA_SOURCES =\
          $$expand(lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
          ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils,../luau/VM/src/,.cpp) \
-         $$expand(lcode Compiler BytecodeBuilder PseudoCode,../luau/Compiler/src/,.cpp) \
+         $$expand(Builtins BytecodeBuilder ConstantFolding Compiler lcode PseudoCode TableShape ValueTracking,../luau/Compiler/src/,.cpp) \
          $$expand(AstQuery Autocomplete BuiltinDefinitions Config EmbeddedBuiltinDefinitions Error Frontend IostreamHelpers JsonEncoder Linter LValue Module Quantify RequireTracer \
          Scope Substitution Symbol ToDot TopoSortStatements Tostring Transpiler TxnLog TypeAttach TypedAllocator TypeInfer TypePack TypeUtils TypeVar Unifiable Unifier,../luau/Analysis/src/,.cpp) \
          $$expand(Ast Confusables Lexer Location Parser StringUtils TimeTrace,../luau/Ast/src/,.cpp)

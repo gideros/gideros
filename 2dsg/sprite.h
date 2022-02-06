@@ -435,6 +435,7 @@ public:
     bool hasLayoutConstraints() { return layoutConstraints!=NULL; };
     int getStopPropagationMask() { return stopPropagationMask_; }
     void setStopPropagationMask(int mask);
+    Stage *getStage() const;
     enum EffectUpdateMode {
     	CONTINUOUS=0,
 		AUTOMATIC,
@@ -486,7 +487,6 @@ protected:
 	void recursiveDispatchEvent(Event* event, bool canBeStopped, bool reverse);
 
 private:
-    Stage *getStage() const;
     void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::stack<Matrix> parentXform,bool visible=false, bool nosubs=false) const;
 
 protected:

@@ -67,6 +67,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"globalToLocal", SpriteBinder::globalToLocal},
 		{"isVisible", SpriteBinder::isVisible},
 		{"setVisible", SpriteBinder::setVisible},
+		{"isOnStage", SpriteBinder::isOnStage},
 		{"getColorTransform", SpriteBinder::getColorTransform},
 		{"setColorTransform", SpriteBinder::setColorTransform},
 		{"hitTestPoint", SpriteBinder::hitTestPoint},
@@ -1346,6 +1347,18 @@ int SpriteBinder::setVisible(lua_State* L)
 	sprite->setVisible(visible);
 
 	return 0;
+}
+
+int SpriteBinder::isOnStage(lua_State* L)
+{
+	StackChecker checker(L, "isOnStage", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	lua_pushboolean(L,sprite->getStage()!=NULL);
+
+	return 1;
 }
 
 int SpriteBinder::getColorTransform(lua_State* L)

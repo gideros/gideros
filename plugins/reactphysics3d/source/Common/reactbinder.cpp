@@ -585,6 +585,7 @@ static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
 
 static int r3dBody_destruct(void *p) {
     void* ptr = GIDEROS_DTOR_UDATA(p);
+    lua_checkstack(L,16);
     getb2(L,ptr);
     if (lua_isnil(L,-1)) {
       //Body has been GC'ed, check if still live in the world
