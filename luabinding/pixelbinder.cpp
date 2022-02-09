@@ -288,10 +288,36 @@ int PixelBinder::setTextureMatrix(lua_State *L)
 int PixelBinder::setColor(lua_State* L)
 {
 	Binder binder(L);
-
+#define COLVEC(var,idx) const float *var=luaL_checkvector(L,idx);
+#define COLARG(var) (((int)(var[0]*0xFF0000))&0xFF0000)|(((int)(var[1]*0xFF00))&0xFF00)|((int)((var[2]*0xFF))&0xFF),var[3]
 	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+	if (lua_tovector(L,2)) { //Vector colors
+		if (lua_gettop(L) == 5) {
+			COLVEC(c1,2);
+			COLVEC(c2,3);
+			COLVEC(c3,4);
+			COLVEC(c4,5);
+			bitmap->setGradient(COLARG(c1),COLARG(c2),COLARG(c3),COLARG(c4));
+		}
+	    else if (lua_gettop(L) == 3) {
+			COLVEC(c1,2);
+			COLVEC(c2,3);
+	    	bitmap->setGradient(COLARG(c1),COLARG(c2),COLARG(c1),COLARG(c2));
+	    }
+	    else if (lua_gettop(L) == 4) {
+			COLVEC(c1,2);
+			COLVEC(c2,3);
+	    	bitmap->setGradientWithAngle(COLARG(c1),COLARG(c2),
+	                luaL_checknumber(L, 4));
+	    }
+	    else {
+			COLVEC(color,2);
+	        bitmap->setColor(color[0],color[1],color[2],color[3]);
+	        bitmap->clearGradient();
+	    }
 
-    if (lua_gettop(L) == 9) bitmap->setGradient(
+	}
+	else if (lua_gettop(L) == 9) bitmap->setGradient(
                 luaL_checknumber(L, 2), luaL_checknumber(L, 3),
                 luaL_checknumber(L, 4), luaL_checknumber(L, 5),
                 luaL_checknumber(L, 6), luaL_checknumber(L, 7),

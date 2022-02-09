@@ -22,9 +22,7 @@ struct GridBagConstraints {
     enum _Anchor {
       CENTER=0, NORTH, NORTHEAST,EAST,SOUTHEAST,SOUTH,SOUTHWEST,WEST,NORTHWEST
     } anchor;
-    enum _FillMode {
-    	NONE=0,BOTH,HORIZONTAL,VERTICAL
-    } fill;
+    float fillX,fillY;
     GridInsets insets;
     float ipadx;
     float ipady;
@@ -39,6 +37,7 @@ struct GridBagConstraints {
     float anchorX,anchorY;
     float offsetX,offsetY;
     float originX,originY;
+    float aspectRatio;
     bool optimizeSize;
 
 
@@ -53,7 +52,9 @@ struct GridBagConstraints {
         anchor = CENTER;
         anchorX=0.5;
         anchorY=0.5;
-        fill = NONE;
+        fillX = 0;
+        fillY = 0;
+        aspectRatio = 0;
 
         insets = GridInsets(0, 0, 0, 0);
         ipadx = 0;
@@ -69,16 +70,18 @@ struct GridBagConstraints {
     GridBagConstraints(size_t gridx, size_t gridy,
                               size_t gridwidth, size_t gridheight,
                               double weightx, double weighty,
-							  _Anchor anchor, _FillMode fill,
+                              _Anchor anchor, float fillX, float fillY,
                               GridInsets insets, float ipadx, float ipady,
                               float anchorX,float anchorY,
 							  float offsetX,float offsetY,
-							  float originX,float originY) {
+                              float originX,float originY,
+                              float aspectRatio) {
         this->gridx = gridx;
         this->gridy = gridy;
         this->gridwidth = gridwidth;
         this->gridheight = gridheight;
-        this->fill = fill;
+        this->fillX = fillX;
+        this->fillY = fillY;
         this->ipadx = ipadx;
         this->ipady = ipady;
         this->insets = insets;
@@ -91,14 +94,11 @@ struct GridBagConstraints {
         this->offsetY = offsetY;
         this->originX = originX;
         this->originY = originY;
+        this->aspectRatio = aspectRatio;
 
         prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
         tempHeight=tempWidth=tempX=tempY=0;
         optimizeSize=false;
-    }
-
-    bool isVerticallyResizable() {
-        return (fill == BOTH || fill == VERTICAL);
     }
 };
 

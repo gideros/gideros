@@ -148,7 +148,7 @@ void Pixel::extraBounds(float* minx, float* miny, float* maxx, float* maxy) cons
 void Pixel::updateVertices() {
 	float dx=-width_*anchorx_;
 	float dy=-height_*anchory_;
-	if (isNinePatch_) {
+    if (isNinePatch_) {
 		float vt=insetv_t_;
 		float vb=insetv_b_;
 		float vr=insetv_r_;
@@ -187,7 +187,7 @@ void Pixel::updateVertices() {
 		vertices[1] = Point2f(width_+dx,0+dy);
 		vertices[2] = Point2f(width_+dx,height_+dy);
 		vertices[3] = Point2f(0+dx,height_+dy);
-	}
+    }
 	vertices.Update();
 }
 
@@ -296,10 +296,12 @@ void Pixel::updateTexture()
     if (x2 > width_) x2 = width_;
     if (y2 > height_) y2 = height_;
 
-    vertices[0] = Point2f(x1,y1);
-    vertices[1] = Point2f(x2,y1);
-    vertices[2] = Point2f(x2,y2);
-    vertices[3] = Point2f(x1,y2);
+    float dx=-width_*anchorx_;
+    float dy=-height_*anchory_;
+    vertices[0] = Point2f(x1+dx,y1+dy);
+    vertices[1] = Point2f(x2+dx,y1+dy);
+    vertices[2] = Point2f(x2+dx,y2+dy);
+    vertices[3] = Point2f(x1+dx,y2+dy);
     vertices.Update();
 
     float tx1, ty1, tx2, ty2;

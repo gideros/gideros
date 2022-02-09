@@ -182,12 +182,12 @@ SpriteBinder::SpriteBinder(lua_State* L)
     lua_pushstring(L, "screen");
     lua_setfield(L, -2, "SCREEN");
 
-#define FCONSTANT(name)	lua_pushinteger(L, GridBagConstraints::name); lua_setfield(L, -2, "LAYOUT_FILL_"#name);
+#define FCONSTANT(name,v)	lua_pushinteger(L, v); lua_setfield(L, -2, "LAYOUT_FILL_"#name);
 #define ACONSTANT(name)	lua_pushinteger(L, GridBagConstraints::name); lua_setfield(L, -2, "LAYOUT_ANCHOR_"#name);
-    FCONSTANT(NONE);
-    FCONSTANT(BOTH);
-    FCONSTANT(HORIZONTAL);
-    FCONSTANT(VERTICAL);
+    FCONSTANT(NONE,0);
+    FCONSTANT(BOTH,1);
+    FCONSTANT(HORIZONTAL,2);
+    FCONSTANT(VERTICAL,3);
     ACONSTANT(NORTHWEST);
     ACONSTANT(NORTH);
     ACONSTANT(NORTHEAST);
@@ -604,12 +604,33 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		FILL_INT("gridx",gridx); FILL_INT("gridy",gridy);
 		FILL_INT("gridwidth",gridwidth); FILL_INT("gridheight",gridheight);
 		FILL_NUM("weightx",weightx); FILL_NUM("weighty",weighty);
-		FILL_INTT("anchor",anchor,GridBagConstraints::_Anchor); FILL_INTT("fill",fill,GridBagConstraints::_FillMode);
+        FILL_INTT("anchor",anchor,GridBagConstraints::_Anchor);
+        lua_getfield(L,2,"fill");
+        if (!lua_isnoneornil(L,-1)) {
+            int fill=luaL_checkinteger(L,-1);
+            p->fillX=(fill==1)||(fill==2)?1:0;
+            p->fillY=(fill==1)||(fill==3)?1:0;
+        }
+        lua_pop(L,1);
+        FILL_NUM("fillx",fillX); FILL_NUM("filly",fillY);
+        FILL_NUM("aspectRatio",aspectRatio);
         FILL_NUM("anchorx",anchorX); FILL_NUM("anchory",anchorY);
         FILL_NUM("offsetx",offsetX); FILL_NUM("offsety",offsetY);
         FILL_NUM("originx",originX); FILL_NUM("originy",originY);
         FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
-		FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
+        lua_getfield(L,2,"width");
+        if (!lua_isnoneornil(L,-1)) {
+            float width=luaL_checknumber(L,-1);
+            p->aminWidth=width; p->prefWidth=width;
+        }
+        lua_pop(L,1);
+        lua_getfield(L,2,"height");
+        if (!lua_isnoneornil(L,-1)) {
+            float height=luaL_checknumber(L,-1);
+            p->aminHeight=height; p->prefHeight=height;
+        }
+        lua_pop(L,1);
+        FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
 		FILL_BOOL("shrink",optimizeSize);
 
@@ -663,7 +684,9 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 		STOR_INT("gridx",gridx); STOR_INT("gridy",gridy);
 		STOR_INT("gridwidth",gridwidth); STOR_INT("gridheight",gridheight);
 		STOR_NUM("weightx",weightx); STOR_NUM("weighty",weighty);
-		STOR_INTT("anchor",anchor,GridBagConstraints::_Anchor); STOR_INTT("fill",fill,GridBagConstraints::_FillMode);
+        STOR_INTT("anchor",anchor,GridBagConstraints::_Anchor);
+        STOR_NUM("fillx",fillX); STOR_NUM("filly",fillY);
+        STOR_NUM("aspectRatio",aspectRatio);
         STOR_NUM("anchorx",anchorX); STOR_NUM("anchory",anchorY);
         STOR_NUM("ipadx",ipadx); STOR_NUM("ipady",ipady);
 		STOR_NUM("minWidth",aminWidth); STOR_NUM("minHeight",aminHeight);

@@ -438,6 +438,8 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constraints,
 		Rectangle &r) {
     float diffx, diffy;
+    float fillx, filly;
+    float minx, miny;
 
     r.x += constraints->insets.left;
 	r.width -= (constraints->insets.left + constraints->insets.right);
@@ -466,21 +468,46 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 		}
 	}
 
+    //Fill, but keep track of filled space
 	diffx = 0;
-	if ((constraints->fill != GridBagConstraints::HORIZONTAL
-			&& constraints->fill != GridBagConstraints::BOTH)
-			&& (r.width > (constraints->minWidth + constraints->ipadx))) {
-		diffx = r.width - (constraints->minWidth + constraints->ipadx);
-		r.width = constraints->minWidth + constraints->ipadx;
+    minx = constraints->minWidth + constraints->ipadx;
+    fillx = r.width - minx;
+    if ((constraints->fillX<1) && (fillx>0)) {
+        diffx=fillx*(1-constraints->fillX);
+        fillx-=diffx;
+        r.width = minx + fillx;
 	}
 
 	diffy = 0;
-	if ((constraints->fill != GridBagConstraints::VERTICAL
-			&& constraints->fill != GridBagConstraints::BOTH)
-			&& (r.height > (constraints->minHeight + constraints->ipady))) {
-		diffy = r.height - (constraints->minHeight + constraints->ipady);
-		r.height = constraints->minHeight + constraints->ipady;
-	}
+    miny = constraints->minHeight + constraints->ipady;
+    filly = r.height - miny;
+    if ((constraints->fillY<1) && (filly>0)) {
+        diffy=filly*(1-constraints->fillY);
+        filly-=diffy;
+        r.height = miny + filly;
+    }
+
+    if ((constraints->aspectRatio>0)&&(r.height>0)) {
+        //Reduce filled space to fit aspect ratio as much as possible
+        float cr=r.width/r.height;
+        if (cr>constraints->aspectRatio) //Too large, reduce width
+        {
+            float mw=constraints->aspectRatio*r.height-minx;
+            if (mw<0) mw=0;
+            if (mw>fillx) mw=fillx;
+            diffx+=(fillx-mw);
+            fillx=mw;
+            r.width = minx + fillx;
+        }
+        else { //Too tall, reduce height
+            float mh=r.width/constraints->aspectRatio-miny;
+            if (mh<0) mh=0;
+            if (mh>filly) mh=filly;
+            diffy+=(filly-mh);
+            filly=mh;
+            r.height = miny + filly;
+        }
+    }
 
 	switch (constraints->anchor) {
 	case GridBagConstraints::CENTER:
