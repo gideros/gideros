@@ -180,6 +180,7 @@ void TTTextField::setFont(FontBase* font)
     font_ = static_cast<TTFont*>(font);;
     font_->ref();
 
+    prefWidth_=prefHeight_=-1;
     createGraphics();
 }
 
@@ -190,7 +191,8 @@ void TTTextField::setText(const char* text)
 
 	text_ = text;
 
-	createGraphics();
+    prefWidth_=prefHeight_=-1;
+    createGraphics();
 }
 
 const char* TTTextField::text() const
@@ -223,6 +225,7 @@ void TTTextField::setLetterSpacing(float letterSpacing)
 		return;
 
 	layout_.letterSpacing = letterSpacing;
+    prefWidth_=prefHeight_=-1;
 
 	createGraphics();
 }
@@ -272,7 +275,8 @@ void TTTextField::setLayout(FontBase::TextLayoutParameters *l)
 {
 	if (l)
 	{
-		layout_=*l;
+        prefWidth_=prefHeight_=-1;
+        layout_=*l;
 		createGraphics();
 	}
 }

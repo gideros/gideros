@@ -10,6 +10,7 @@ bool TextFieldBase::scaleChanged() {
 	lscalex_=scalex;
 	lscaley_=scaley;
 	lfontCacheVersion_=fontver;
+    prefWidth_=prefHeight_=-1;
 	return changed;
 }
 
@@ -20,7 +21,13 @@ bool TextFieldBase::setDimensions(float w,float h,bool forLayout)
     if (changed) {
 		layout_.w=w;
 		layout_.h=h;
-		setLayout(&layout_);
+        float pwidth=prefWidth_;
+        float pheight=prefHeight_;
+        setLayout(&layout_);
+        if (forLayout) {
+            prefWidth_=pwidth;
+            prefHeight_=pheight;
+        }
     }
     return changed;
 }
@@ -33,8 +40,20 @@ void TextFieldBase::getDimensions(float &w,float &h)
 
 void TextFieldBase::getMinimumSize(float &w,float &h,bool preferred)
 {
-	w=preferred?textlayout_.w:textlayout_.mw;
-	h=textlayout_.bh;
+    /* For wrappable texts we are in trouble here, since height will depend on width
+     * Minimum case is easy: we give th minimum on both axis
+     * But what should be an ideal/preferred size ?
+     * It could help to have an aspect ratio here, that we could try to reach. Use 16/9 for now */
+
+    float tgtar=16.0/9;
+    float ar=fabs((prefWidth_/(prefHeight_+0.001))-tgtar);
+    float ar2=fabs((textlayout_.w/(textlayout_.bh+0.001))-tgtar);
+    if ((prefHeight_==-1)||(ar2<ar)) {
+        prefHeight_=textlayout_.bh;
+        prefWidth_=textlayout_.w;
+    }
+    w=(preferred&&(prefHeight_>0))?prefWidth_:textlayout_.mw;
+    h=(preferred&&(prefHeight_>0))?prefHeight_:textlayout_.bh;
 }
 
 bool TextFieldBase::optimizeSize(float &w,float &h)

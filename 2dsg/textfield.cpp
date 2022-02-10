@@ -43,6 +43,7 @@ void TextField::setFont(FontBase *font)
 	if (font_ != 0)
 		font_->unref();
     font_ = static_cast<BMFontBase*>(font);
+    prefWidth_=prefHeight_=-1;
 
 	createGraphics();
 }
@@ -53,6 +54,7 @@ void TextField::setText(const char* text)
 		return;
 
 	text_ = text;
+    prefWidth_=prefHeight_=-1;
 
 	createGraphics();
 }
@@ -102,7 +104,8 @@ unsigned int TextField::textColor() const
 void TextField::setLetterSpacing(float letterSpacing)
 {
 	layout_.letterSpacing = letterSpacing;
-	
+    prefWidth_=prefHeight_=-1;
+
 	createGraphics();
 }
 
@@ -203,7 +206,8 @@ void TextField::setLayout(FontBase::TextLayoutParameters *l)
 {
 	if (l)
 	{
-		layout_=*l;
+        prefWidth_=prefHeight_=-1;
+        layout_=*l;
 		createGraphics();
 	}
 }

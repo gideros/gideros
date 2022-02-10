@@ -13,7 +13,7 @@ class TextFieldBase : public Sprite
 {
 public:
     TextFieldBase(Application *application) : Sprite(application), layout_(),
-		lscalex_(0),lscaley_(0),lfontCacheVersion_(-1),textlayout_() {}
+        lscalex_(0),lscaley_(0),lfontCacheVersion_(-1),textlayout_(), prefWidth_(-1), prefHeight_(-1) {}
     virtual ~TextFieldBase() {}
 
     virtual void setFont(FontBase* font) = 0;
@@ -51,6 +51,7 @@ protected:
     float lscalex_,lscaley_;
     int lfontCacheVersion_;
     FontBase::TextLayout textlayout_; //Currently displayed text layout
+    float prefWidth_,prefHeight_;
 };
 
 #endif
