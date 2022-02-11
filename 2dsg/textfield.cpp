@@ -22,7 +22,7 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
 	if (params)
         layout_=*params;
 
-    setTextColor(0xFF000000);
+    setTextColor(0,0,0,1);
 }
 
 /*
@@ -79,26 +79,20 @@ void TextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy) 
         *maxy = maxy_;
 }
 
-void TextField::setTextColor(unsigned int color)
+void TextField::setTextColor(float r,float g,float b,float a)
 {
-	textColor_ = color;
 
-	int a = (color >> 24) & 0xff;
-	int r = (color >> 16) & 0xff;
-	int g = (color >> 8) & 0xff;
-	int b = color & 0xff;
-
-	a_ = a / 255.f;
-	r_ = r / 255.f;
-	g_ = g / 255.f;
-	b_ = b / 255.f;
+    a_ = a;
+    r_ = r;
+    g_ = g;
+    b_ = b;
 
 	createGraphics();
 }
 
-unsigned int TextField::textColor() const
+void TextField::textColor(float &r,float &g,float &b,float &a)
 {
-	return textColor_;
+    r=r_; g=g_; b=b_; a=a_;
 }
 
 void TextField::setLetterSpacing(float letterSpacing)

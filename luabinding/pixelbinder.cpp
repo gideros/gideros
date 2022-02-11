@@ -43,7 +43,7 @@ int PixelBinder::create(lua_State* L)
 
     Pixel* bitmap = new Pixel(application->getApplication());
 
-    if (lua_type(L, 3) == LUA_TTABLE) {
+     if (lua_type(L, 3) == LUA_TTABLE) {
          bitmap->setStretching(true);
          int tw,th;
 
@@ -54,7 +54,7 @@ int PixelBinder::create(lua_State* L)
          }
          else {
 			TextureBase *textureBase = NULL;
-			textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 3));
+            textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 3));
 			bitmap->setTexture(textureBase, 0, NULL);
 			tw=textureBase->data->width;
 			th=textureBase->data->height;
@@ -102,15 +102,23 @@ int PixelBinder::create(lua_State* L)
         return 1;
     }
 
-    unsigned int color = luaL_optinteger(L, 1, 0xffffff);
-	lua_Number alpha = luaL_optnumber(L, 2, 1.0);
-	int r = (color >> 16) & 0xff;
-	int g = (color >> 8) & 0xff;
-	int b = color & 0xff;
-	bitmap->setColor(r/255.f,g/255.f,b/255.f,alpha);
+    int postCol=3;
+    const float *cvec=lua_tovector(L,1);
+    if (cvec) {
+        postCol=2;
+        bitmap->setColor(cvec[0],cvec[1],cvec[2],cvec[3]);
+    }
+    else {
+        unsigned int color = luaL_optinteger(L, 1, 0xffffff);
+        lua_Number alpha = luaL_optnumber(L, 2, 1.0);
+        int r = (color >> 16) & 0xff;
+        int g = (color >> 8) & 0xff;
+        int b = color & 0xff;
+        bitmap->setColor(r/255.f,g/255.f,b/255.f,alpha);
+    }
 
-    lua_Number w = luaL_optnumber(L, 3, 1.0);
-    lua_Number h = luaL_optnumber(L, 4, w);
+    lua_Number w = luaL_optnumber(L, postCol, 1.0);
+    lua_Number h = luaL_optnumber(L, postCol+1, w);
 	bitmap->setDimensions(w,h);
 
 	binder.pushInstance("Pixel", bitmap);
@@ -315,7 +323,8 @@ int PixelBinder::setColor(lua_State* L)
 	        bitmap->setColor(color[0],color[1],color[2],color[3]);
 	        bitmap->clearGradient();
 	    }
-
+#undef COLVEC
+#undef COLARG
 	}
 	else if (lua_gettop(L) == 9) bitmap->setGradient(
                 luaL_checknumber(L, 2), luaL_checknumber(L, 3),

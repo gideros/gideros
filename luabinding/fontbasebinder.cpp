@@ -157,6 +157,7 @@ int FontBaseBinder::layoutText(lua_State *L)
     tp.breakchar=luaL_optstring(L,9,"");
     tp.alignx=luaL_optnumber(L,10,0);
     tp.aligny=luaL_optnumber(L,11,0);
+    tp.aspect=luaL_optnumber(L,12,100000);
 
     FontBase::TextLayout tl=font->layoutText(luaL_checkstring(L,2),&tp);
     lua_createtable(L,0,6);

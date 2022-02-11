@@ -43,11 +43,13 @@ void TextFieldBase::getMinimumSize(float &w,float &h,bool preferred)
     /* For wrappable texts we are in trouble here, since height will depend on width
      * Minimum case is easy: we give th minimum on both axis
      * But what should be an ideal/preferred size ?
-     * It could help to have an aspect ratio here, that we could try to reach. Use 16/9 for now */
+     * Use aspect ratio hint and try to reach it */
 
-    float tgtar=16.0/9;
-    float ar=fabs((prefWidth_/(prefHeight_+0.001))-tgtar);
-    float ar2=fabs((textlayout_.w/(textlayout_.bh+0.001))-tgtar);
+    float tgtar=layout_.aspect;
+    float ar=(((prefWidth_+0.001)/tgtar)/(prefHeight_+0.001));
+    if (ar<1) ar=1/ar;
+    float ar2=(((textlayout_.w+0.001)/tgtar)/(textlayout_.bh+0.001));
+    if (ar2<1) ar2=1/ar2;
     if ((prefHeight_==-1)||(ar2<ar)) {
         prefHeight_=textlayout_.bh;
         prefWidth_=textlayout_.w;

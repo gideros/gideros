@@ -22,8 +22,8 @@ public:
 	virtual void setText(const char* text) = 0;
 	virtual const char* text() const = 0;
 
-	virtual void setTextColor(unsigned int color) = 0;
-	virtual unsigned int textColor() const = 0;
+    virtual void setTextColor(float r,float g,float b,float a) = 0;
+    virtual void textColor(float &r,float &g,float &b,float &a) = 0;
 
     virtual void setLetterSpacing(float letterSpacing) = 0;
     virtual float letterSpacing() const = 0;

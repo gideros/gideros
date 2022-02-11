@@ -27,8 +27,8 @@ public:
 	virtual void setText(const char* text);
 	virtual const char* text() const;
 
-	virtual void setTextColor(unsigned int color);
-	virtual unsigned int textColor() const;
+    virtual void setTextColor(float r,float g,float b,float a);
+    virtual void textColor(float &r,float &g,float &b,float &a);
 
     virtual void setLetterSpacing(float letterSpacing);
     virtual float letterSpacing() const;
@@ -48,7 +48,6 @@ private:
     BMFontBase* font_;
 
 	float a_, r_, g_, b_;
-	unsigned int textColor_;
 
 private:
 	std::vector<GraphicsBase> graphicsBase_;

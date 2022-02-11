@@ -134,7 +134,7 @@ public:
 	};
 
 	struct TextLayoutParameters {
-        TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar(""),alignx(0),aligny(0) {};
+        TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar(""),alignx(0),aligny(0),aspect(100000) {}; //Very big aspect ratio
 		float w,h;
 		int flags;
 		float letterSpacing;
@@ -142,6 +142,7 @@ public:
 		float tabSpace;
 		std::string breakchar;
 		float alignx,aligny;
+        float aspect;
 	};
 	virtual TextLayout layoutText(const char *text, TextLayoutParameters *params);
 protected:
