@@ -465,8 +465,10 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
                 sprite->worldTransform_ = sprite->parent_->worldTransform_
 					* sprite->localTransform_.matrix();
 
-			for (size_t i = 0; i < sprite->children_.size(); ++i)
-				stack.push(sprite->children_[i]);
+            size_t sc=sprite->skipSet_.size();
+            for (size_t i = 0; i < sprite->children_.size(); ++i)
+                if ((i>=sc)||(!sprite->skipSet_[i]))
+                    stack.push(sprite->children_[i]);
 		}
 
 		stackPool.destroy(&stack);
@@ -506,7 +508,19 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			continue;
 		}
 
+        int clipState=ShaderEngine::Engine->hasClip();
+        if (clipState>1)
+            continue;
+
         ShaderEngine::Engine->setModel(sprite->worldTransform_);
+
+        if (clipState==0) {
+            float minx,miny,maxx,maxy;
+            sprite->extraBounds(&minx, &miny, &maxx, &maxy);
+            if ((maxx>=minx)&&(maxy>miny)&&ShaderEngine::Engine->checkClip(minx,miny,maxx-minx,maxy-miny))
+                    continue;
+        }
+
 
 		if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1) {
 			glPushColor();
@@ -576,9 +590,15 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 
 		stack.push(std::make_pair(sprite, true));
 
-		if (!lastEffect) //Don't draw subs if rendering last effect
-		for (int i = (int) sprite->children_.size() - 1; i >= 0; --i)
-			stack.push(std::make_pair(sprite->children_[i], false));
+        if (!lastEffect) //Don't draw subs if rendering last effect
+        {
+            int sc=sprite->skipSet_.size();
+            for (int i = (int) sprite->children_.size() - 1; i >= 0; --i)
+            {
+                if ((i>=sc)||(!sprite->skipSet_[i]))
+                    stack.push(std::make_pair(sprite->children_[i], false));
+            }
+        }
 	}
 
 	stackPool.destroy(&stack);
@@ -659,13 +679,13 @@ bool Sprite::canChildBeAddedAt(Sprite* sprite, int index, GStatus* status) {
 	return true;
 }
 
-void Sprite::addChild(Sprite* sprite, GStatus* status) {
-	addChildAt(sprite, childCount(), status);
+int Sprite::addChild(Sprite* sprite, GStatus* status) {
+    return addChildAt(sprite, childCount(), status);
 }
 
-void Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
+int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 	if (canChildBeAddedAt(sprite, index, status) == false)
-		return;
+        return -1;
 
 	Stage* stage1 = sprite->getStage();
 
@@ -673,11 +693,12 @@ void Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 		stage1->setSpritesWithListenersDirty();
 
 	if (sprite->parent_ == this) {
-		*std::find(children_.begin(), children_.end(), sprite) = NULL;
-		children_.insert(children_.begin() + index, sprite);
-		children_.erase(
-				std::find(children_.begin(), children_.end(), (Sprite*) NULL));
-		return;
+        auto it=std::find(children_.begin(), children_.end(), sprite);
+        size_t cindex=it-children_.begin();
+        children_.erase(it);
+        if (cindex<(size_t)index) index--;
+        children_.insert(children_.begin() + index, sprite);
+        return index;
 	}
 
 	bool connected1 = stage1 != NULL;
@@ -719,6 +740,7 @@ void Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 		Event event(Event::ADDED_TO_STAGE);
 		sprite->recursiveDispatchEvent(&event, false, false);
 	}
+    return index;
 }
 
 /**

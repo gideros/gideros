@@ -101,7 +101,12 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         fileNamePointers.push_back(0);
 
         Binder binder(L);
-
+        TextureParameters parameters;
+        parameters.filter=smoothing ? eLinear : eNearest;
+        parameters.wrap=eClamp;
+        parameters.format=format;
+        parameters.maketransparent=maketransparent;
+        parameters.transparentcolor=transparentcolor;
         if (async) {
             lua_State *LL=luaapplication->getLuaState();
             lua_pushvalue(L,1);
@@ -109,11 +114,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
             TexturePack::loadAsync(application,
                                    &fileNamePointers[0],
                                    padding,
-                                   smoothing ? eLinear : eNearest,
-                                   eClamp,
-                                   format,
-                                   maketransparent,
-                                   transparentcolor,
+                                   parameters,
                                           [=](TexturePack *texturePack,std::exception_ptr e) {
                 Binder binder(LL);
                 lua_rawgeti(LL, LUA_REGISTRYINDEX, func);
@@ -142,11 +143,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 texturePack = new TexturePack(application,
                                               &fileNamePointers[0],
                                               padding,
-                                              smoothing ? eLinear : eNearest,
-                                              eClamp,
-                                              format,
-                                              maketransparent,
-                                              transparentcolor);
+                                              parameters);
             }
             catch (const GiderosException& e)
             {
@@ -209,6 +206,12 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         }
 
         Binder binder(L);
+        TextureParameters parameters;
+        parameters.filter=smoothing ? eLinear : eNearest;
+        parameters.wrap=eClamp;
+        parameters.format=format;
+        parameters.maketransparent=maketransparent;
+        parameters.transparentcolor=transparentcolor;
 
         if (async) {
             lua_State *LL=luaapplication->getLuaState();
@@ -217,11 +220,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
             TexturePack::loadAsync(application,
                                    texturelistfile,
                                    imagefile,
-                                   smoothing ? eLinear : eNearest,
-                                   eClamp,
-                                   format,
-                                   maketransparent,
-                                   transparentcolor,
+                                   parameters,
                                           [=](TexturePack *texturePack,std::exception_ptr e) {
                 Binder binder(LL);
                 lua_rawgeti(LL, LUA_REGISTRYINDEX, func);
@@ -250,11 +249,7 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 texturePack = new TexturePack(application,
                                               texturelistfile,
                                               imagefile,
-                                              smoothing ? eLinear : eNearest,
-                                              eClamp,
-                                              format,
-                                              maketransparent,
-                                              transparentcolor);
+                                              parameters);
             }
             catch (const GiderosException& e)
             {

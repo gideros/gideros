@@ -113,6 +113,7 @@ private:
 
 	static int setStopEventPropagation(lua_State *L);
     static int getDrawCount(lua_State* L);
+    static int setHiddenChildren(lua_State* L);
 };
 
 #endif

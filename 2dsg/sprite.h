@@ -34,13 +34,13 @@ public:
     void draw(const CurrentTransform&, float sx, float sy, float ex, float ey);
     void computeLayout();
 
-	void addChild(Sprite* sprite, GStatus* status = 0);
+    int addChild(Sprite* sprite, GStatus* status = 0);
 	void removeChild(Sprite* child, GStatus* status = 0);
 	void removeChild(int index, GStatus* status = 0);
 	bool contains(Sprite* sprite) const;
 	void replaceChild(Sprite* oldChild, Sprite* newChild);
 	bool canChildBeAdded(Sprite* sprite, GStatus* status = 0);
-	void addChildAt(Sprite* sprite, int index, GStatus* status = 0);
+    int addChildAt(Sprite* sprite, int index, GStatus* status = 0);
 	bool canChildBeAddedAt(Sprite* sprite, int index, GStatus* status = 0);
 	int getChildIndex(Sprite* sprite, GStatus* status = 0);
 	void setChildIndex(Sprite* child, int index, GStatus* status = 0);
@@ -458,11 +458,13 @@ public:
 	void redrawEffects();
     void updateEffects();
     void logicalTransformChanged();
+    void setSkipSet(const std::vector<bool>& skip) { skipSet_=skip; };
 protected:
 	EffectUpdateMode effectsMode_;
     bool effectsDirty_;
     bool effectsDrawing_;
     std::vector<Effect> effectStack_;
+    std::vector<bool> skipSet_;
 public:
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;

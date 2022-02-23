@@ -289,6 +289,37 @@ void ShaderEngine::popClip()
 	}
 }
 
+int ShaderEngine::hasClip()
+{
+    if (scissorStack.empty()) return -1; //No clip
+    Scissor &s=scissorStack.top();
+    return ((s.w<=0)&&(s.h<=0))?1:0; //Fully clipped or some part visible
+}
+
+bool ShaderEngine::checkClip(float x,float y,float w,float h)
+{
+	if (scissorStack.empty()) return false; //Not clipped out
+    Scissor &st=scissorStack.top();
+    if ((st.w<=0)&&(st.h<=0)) return true; //Fully clipped
+    Vector4 v1(x,y,0,1);
+	Vector4 v2(x+w,y+h,0,1);
+	Vector4 v3(x+w,y,0,1);
+	Vector4 v4(x,y+h,0,1);
+	Matrix4 xform=oglVPProjection*oglView*oglModel;
+	v1=xform*v1;
+	v2=xform*v2;
+	v3=xform*v3;
+	v4=xform*v4;
+	x=(std::min)((std::min)(v1.x,v2.x),(std::min)(v3.x,v4.x));
+	y=(std::min)((std::min)(v1.y,v2.y),(std::min)(v3.y,v4.y));
+	float x2=(std::max)((std::max)(v1.x,v2.x),(std::max)(v3.x,v4.x));
+	float y2=(std::max)((std::max)(v1.y,v2.y),(std::max)(v3.y,v4.y));
+	w=x2-x;
+	h=y2-y;
+    Scissor s(st,x,y,w,h);
+	return (s.h<=0)||(s.w<=0);
+}
+
 void ShaderEngine::setColor(float r,float g,float b,float a)
 {
     constCol[0]=r;

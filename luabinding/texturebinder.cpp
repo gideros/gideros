@@ -46,6 +46,7 @@ int TextureBinder::create(lua_State* L)
     Format format = eRGBA8888;
     int paramsIndex=isFromPixels?5:3;
     bool pow2=true;
+    bool rawalpha=false;
     float scale=1.0;
 	if (!lua_isnoneornil(L, paramsIndex))
 	{
@@ -110,18 +111,30 @@ int TextureBinder::create(lua_State* L)
         lua_getfield(L, paramsIndex, "scale");
         scale=luaL_optnumber(L,-1,1.0);
         lua_pop(L, 1);
+        lua_getfield(L, paramsIndex, "rawalpha");
+        if (!lua_isnil(L, -1))
+          rawalpha=lua_toboolean(L,-1);
+        lua_pop(L, 1);
     }
 
 	
 	Binder binder(L);
 
+	TextureParameters parameters;
+	parameters.filter = smoothing ? eLinear : eNearest;
+	parameters.wrap = wrap;
+    parameters.format = format;
+	parameters.maketransparent = maketransparent;
+	parameters.transparentcolor = transparentcolor;
+	parameters.rawalpha = rawalpha;
+
 	Texture* texture = 0;
 	try
 	{
 		if (isFromPixels)
-	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2, scale);
+	        texture = new Texture(application, (unsigned char *) filename, width, height, parameters, pow2, scale);
 		else
-			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
+			texture = new Texture(application, filename, parameters, pow2);
 	}
 	catch (const GiderosException& e)
 	{
@@ -156,6 +169,7 @@ int TextureBinder::loadAsync(lua_State* L)
     Wrap wrap = eClamp;
     Format format = eRGBA8888;
     bool pow2=true;
+    bool rawalpha=false;
     if (!lua_isnoneornil(L, 4))
     {
         if (lua_type(L, 4) != LUA_TTABLE)
@@ -216,13 +230,26 @@ int TextureBinder::loadAsync(lua_State* L)
         if (!lua_isnil(L, -1))
           pow2=lua_toboolean(L,-1);
         lua_pop(L, 1);
+        lua_getfield(L, 4, "rawalpha");
+        if (!lua_isnil(L, -1))
+          rawalpha=lua_toboolean(L,-1);
+        lua_pop(L, 1);
     }
 
 
     lua_State *LL=luaapplication->getLuaState();
     lua_pushvalue(L,1);
     int func=luaL_ref(L, LUA_REGISTRYINDEX);
-    Texture::loadAsync(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2,
+
+	TextureParameters parameters;
+	parameters.filter = smoothing ? eLinear : eNearest;
+	parameters.wrap = wrap;
+    parameters.format = format;
+	parameters.maketransparent = maketransparent;
+	parameters.transparentcolor = transparentcolor;
+	parameters.rawalpha=rawalpha;
+
+    Texture::loadAsync(application, filename, parameters, pow2,
                                   [=](Texture *texture,std::exception_ptr e) {
         Binder binder(LL);
         lua_rawgeti(LL, LUA_REGISTRYINDEX, func);

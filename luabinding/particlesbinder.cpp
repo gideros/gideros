@@ -226,10 +226,18 @@ int ParticlesBinder::setParticleColor(lua_State *L)
 
     if (i < 0 || i >= mesh->getParticleCount())
         luaL_error(L, "The supplied index is out of bounds.");
-    unsigned int color = luaL_checkinteger(L, 3);
-    float alpha = luaL_optnumber(L, 4, 1.0);
 
-    mesh->setColor(i, color, alpha);
+    const float *cvec=lua_tovector(L,3);
+    if (cvec) {
+        unsigned int col = ((((int)(cvec[0]*255))&0xFF)<<16)|((((int)(cvec[1]*255))&0xFF)<<8)|((((int)(cvec[2]*255))&0xFF)<<0);
+        mesh->setColor(i, col, cvec[3]);
+    }
+    else {
+        unsigned int color = luaL_checkinteger(L, 3);
+        float alpha = luaL_optnumber(L, 4, 1.0);
+
+        mesh->setColor(i, color, alpha);
+    }
 
     return 0;
 }
@@ -297,10 +305,19 @@ int ParticlesBinder::addParticles(lua_State *L)
             mesh->setSpeed(pnum,vx,vy,vs,va);
 
         	lua_getfield(L,-1,"color");
-            unsigned int color = luaL_optinteger(L, -1,0xFFFFFF);
-            lua_pop(L, 1);
-        	lua_getfield(L,-1,"alpha");
-            float alpha = luaL_optnumber(L, -1, 1.0);
+            const float *cvec=lua_tovector(L,-1);
+            unsigned int color;
+            float alpha;
+            if (cvec) {
+                color = ((((int)(cvec[0]*255))&0xFF)<<16)|((((int)(cvec[1]*255))&0xFF)<<8)|((((int)(cvec[2]*255))&0xFF)<<0);
+                alpha=cvec[3];
+            }
+            else {
+                color = luaL_optinteger(L, -1,0xFFFFFF);
+                lua_pop(L, 1);
+            	lua_getfield(L,-1,"alpha");
+                float alpha = luaL_optnumber(L, -1, 1.0);
+            }
             lua_pop(L, 1);
         	lua_getfield(L,-1,"decayAlpha");
             float decayC = luaL_optnumber(L, -1,1.0) ;

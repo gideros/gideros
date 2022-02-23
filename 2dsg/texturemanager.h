@@ -42,6 +42,8 @@ struct TextureParameters
         maketransparent = false;
         transparentcolor = 0x00000000;
         grayscale = false;
+        rawalpha=true;
+        bpp=8;
     }
 
     Filter filter;
@@ -50,6 +52,7 @@ struct TextureParameters
     bool maketransparent;
     unsigned int transparentcolor;
     bool grayscale;
+    bool rawalpha;
     unsigned char bpp;
 };
 

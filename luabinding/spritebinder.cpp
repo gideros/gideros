@@ -89,6 +89,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setEffectStack", SpriteBinder::setEffectStack},
 		{"setEffectConstant", SpriteBinder::setEffectConstant},
 		{"redrawEffects", SpriteBinder::redrawEffects},
+        {"setHiddenChildren", SpriteBinder::setHiddenChildren},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -284,7 +285,7 @@ static void createChildrenTable(lua_State* L)
 
 int SpriteBinder::addChild(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::addChild", 0);
+    StackChecker checker(L, "SpriteBinder::addChild", 1);
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
@@ -296,8 +297,8 @@ int SpriteBinder::addChild(lua_State* L)
 
 	if (child->parent() == sprite)
 	{
-		sprite->addChild(child);
-		return 0;
+        lua_pushinteger(L,1+sprite->addChild(child));
+        return 1;
 	}
 
 	if (child->parent())
@@ -326,9 +327,9 @@ int SpriteBinder::addChild(lua_State* L)
 	lua_rawset(L, -3);							// sprite.__children[child] = child
 	lua_pop(L, 1);								// pop sprite.__children
 
-	sprite->addChild(child);
+    lua_pushinteger(L,1+sprite->addChild(child));
 
-	return 0;
+    return 1;
 }
 
 
@@ -347,8 +348,8 @@ int SpriteBinder::addChildAt(lua_State* L)
 
 	if (child->parent() == sprite)
 	{
-        sprite->addChildAt(child, index - 1);
-		return 0;
+        lua_pushinteger(L,1+sprite->addChildAt(child, index - 1));
+        return 1;
 	}
 
 	if (child->parent())
@@ -377,9 +378,9 @@ int SpriteBinder::addChildAt(lua_State* L)
 	lua_rawset(L, -3);							// sprite.__children[child] = child
 	lua_pop(L, 1);								// pop sprite.__children
 
-    sprite->addChildAt(child, index - 1);
+    lua_pushinteger(L,1+sprite->addChildAt(child, index - 1));
 
-	return 0;
+    return 1;
 }
 
 
@@ -2007,6 +2008,56 @@ int SpriteBinder::getDrawCount(lua_State* L)
     lua_pushinteger(L, sprite->drawCount());
 
     return 1;
+}
+
+int SpriteBinder::setHiddenChildren(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setHiddenChildren", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    std::vector<bool> hset;
+    if (lua_type(L,2)==LUA_TTABLE) {
+        size_t tl=lua_objlen(L,2);
+        for (size_t n=1;n<=tl;n++) {
+            lua_rawgeti(L,2,n);
+            if (lua_type(L,-1)==LUA_TTABLE) {
+                lua_rawgeti(L,-1,1);
+                lua_rawgeti(L,-2,2);
+                int hf=luaL_optinteger(L,-2,0);
+                int hl=luaL_optinteger(L,-1,hf);
+                lua_pop(L,2);
+                if (hl>0) {
+                    if (hset.size()<(size_t)hl)
+                        hset.resize(hl);
+                    for (int k=hf;k<=hl;k++)
+                        hset[k-1]=true;
+                }
+            }
+            else {
+                int hf=luaL_checkinteger(L,-1);
+                if (hf>0) {
+                    if (hset.size()<(size_t)hf)
+                        hset.resize(hf);
+                    hset[hf-1]=true;
+                }
+            }
+            lua_pop(L,1);
+        }
+    }
+    else {
+        int hf=luaL_optinteger(L,2,0);
+        int hl=luaL_optinteger(L,3,hf);
+        if (hl>0) {
+            hset.resize(hl);
+            for (int k=hf;k<=hl;k++)
+                hset[k-1]=true;
+        }
+    }
+    sprite->setSkipSet(hset);
+
+    return 0;
 }
 
 int SpriteBinder::set(lua_State* L)

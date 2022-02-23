@@ -12,18 +12,9 @@ TextureBase::TextureBase(Application* application) : application_(application)
 }
 
 TextureBase::TextureBase(	Application* application,
-                            const char* filename, Filter filter, Wrap wrap, Format format,
-							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/, bool pow2) :
+                            const char* filename, TextureParameters parameters, bool pow2) :
 	application_(application)
 {
-
-	TextureParameters parameters;
-	parameters.filter = filter;
-	parameters.wrap = wrap;
-    parameters.format = format;
-	parameters.maketransparent = maketransparent;
-	parameters.transparentcolor = transparentcolor;
-
     data = application_->getTextureManager()->createTextureFromFile(filename, parameters,pow2).get();
 	sizescalex = 1;
 	sizescaley = 1;
@@ -32,17 +23,9 @@ TextureBase::TextureBase(	Application* application,
 }
 
 TextureBase::TextureBase(	Application* application,
-                            const unsigned char* pixels,unsigned int width,unsigned int height, Filter filter, Wrap wrap, Format format,
-							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/, bool pow2, float scale) :
+                            const unsigned char* pixels,unsigned int width,unsigned int height, TextureParameters parameters, bool pow2, float scale) :
 	application_(application)
 {
-
-	TextureParameters parameters;
-	parameters.filter = filter;
-	parameters.wrap = wrap;
-    parameters.format = format;
-	parameters.maketransparent = maketransparent;
-	parameters.transparentcolor = transparentcolor;
 
 	Dib dib(application, width, height, pow2, scale);
 	if (pixels)

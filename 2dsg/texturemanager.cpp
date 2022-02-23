@@ -30,6 +30,7 @@ static void append(std::vector<char>& buffer, const TextureParameters& parameter
     append(buffer, &parameters.maketransparent, sizeof(parameters.maketransparent));
     append(buffer, &parameters.transparentcolor, sizeof(parameters.transparentcolor));
     append(buffer, &parameters.grayscale, sizeof(parameters.grayscale));
+    append(buffer, &parameters.rawalpha, sizeof(parameters.rawalpha));
 }
 
 TextureManager::TextureManager(Application* application) :
@@ -179,7 +180,8 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
             dib->convertGrayscale();
 
 #if PREMULTIPLIED_ALPHA
-        dib->premultiplyAlpha();
+        if (!parameters.rawalpha)
+        	dib->premultiplyAlpha();
 #endif
         g_id gid = 0;
         unsigned char bpp=1;
@@ -356,7 +358,8 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         dib2.convertGrayscale();
 
 #if PREMULTIPLIED_ALPHA
-    dib2.premultiplyAlpha();
+    if (!parameters.rawalpha)
+    	dib2.premultiplyAlpha();
 #endif
 
 
@@ -509,7 +512,8 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
         dib2.convertGrayscale();
 
 #if PREMULTIPLIED_ALPHA
-    dib2.premultiplyAlpha();
+    if (!data->parameters.rawalpha)
+    	dib2.premultiplyAlpha();
 #endif
 
 

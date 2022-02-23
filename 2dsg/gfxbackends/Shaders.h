@@ -343,8 +343,10 @@ public:
 	//Clipping
 	virtual void pushClip(float x,float y,float w,float h);
 	virtual void popClip();
+	virtual bool checkClip(float x,float y,float w,float h);
 	virtual void setClip(int x,int y,int w,int h)=0;
-	//Internal
+    virtual int hasClip();
+    //Internal
 	virtual void prepareDraw(ShaderProgram *program);
 	//Parameters
 	virtual void setVBOThreshold(int freeze,int unfreeze) { G_UNUSED(freeze); G_UNUSED(unfreeze); };
