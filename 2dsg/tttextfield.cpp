@@ -56,6 +56,7 @@ TTTextField::~TTTextField()
 #define FDIF(a,b) (((a>b)?(a-b):(b-a))>FDIF_EPSILON)
 void TTTextField::createGraphics()
 {
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 	scaleChanged(); //Mark current scale as graphics scale
 	if (data_)
 	{
@@ -209,6 +210,7 @@ void TTTextField::setTextColor(float r,float g,float b,float a)
         createGraphics();
     else
         graphicsBase_.setColor(r,g,b,a);
+	invalidate(INV_GRAPHICS);
 }
 
 void TTTextField::textColor(float &r,float &g,float &b,float &a)

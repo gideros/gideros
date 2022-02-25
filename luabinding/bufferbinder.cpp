@@ -200,6 +200,7 @@ BufferBinder::BufferBinder(lua_State* L)
         {"size", size},
         {"seek", seek},
         {"tell", tell},
+		{"exists", exists},
         {NULL, NULL},
     };
 
@@ -219,10 +220,12 @@ int BufferBinder::create(lua_State* L)
 	const char *id=luaL_checkstring(L,1);
 	std::string sid(id);
 	Buffer *b=bufferMap[sid];
-	if (b==NULL) {
-		b=new Buffer(sid,lua_toboolean(L,2));
-		bufferMap[sid]=b;
+	if (b == NULL) {
+		b = new Buffer(sid, lua_toboolean(L, 2));
+		bufferMap[sid] = b;
 	}
+	else
+		b->ref();
 	binder.pushInstance("Buffer", b);
 	return 1;
 }
@@ -236,6 +239,21 @@ int BufferBinder::destruct(void *p)
 	buffer->unref();
 	return 0;
 }
+
+int BufferBinder::exists(lua_State* L)
+{
+	Binder binder(L);
+
+	const char* id = luaL_checkstring(L, 1);
+	std::string sid(id);
+	Buffer* b = bufferMap[sid];
+	if (b == NULL)
+		return 0;
+	b->ref();
+	binder.pushInstance("Buffer", b);
+	return 1;
+}
+
 
 int BufferBinder::append(lua_State *L)
 {

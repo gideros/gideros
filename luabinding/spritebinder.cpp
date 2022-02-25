@@ -90,6 +90,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setEffectConstant", SpriteBinder::setEffectConstant},
 		{"redrawEffects", SpriteBinder::redrawEffects},
         {"setHiddenChildren", SpriteBinder::setHiddenChildren},
+		{"setCheckClip", SpriteBinder::setCheckClip},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -335,7 +336,7 @@ int SpriteBinder::addChild(lua_State* L)
 
 int SpriteBinder::addChildAt(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::addChildAt", 0);
+	StackChecker checker(L, "SpriteBinder::addChildAt", 1);
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
@@ -2010,6 +2011,16 @@ int SpriteBinder::getDrawCount(lua_State* L)
     return 1;
 }
 
+int SpriteBinder::setCheckClip(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setCheckClip", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    sprite->setCheckClip(lua_toboolean(L,2));
+    return 0;
+}
+
 int SpriteBinder::setHiddenChildren(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::setHiddenChildren", 0);
@@ -2017,7 +2028,7 @@ int SpriteBinder::setHiddenChildren(lua_State* L)
     Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
-    std::vector<bool> hset;
+    std::vector<char> hset;
     if (lua_type(L,2)==LUA_TTABLE) {
         size_t tl=lua_objlen(L,2);
         for (size_t n=1;n<=tl;n++) {

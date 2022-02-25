@@ -183,7 +183,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		elmSize = 4;
 		break;
 	}
-	DataDesc dd = attributes[index];
+	const DataDesc &dd = attributes[index];
 	if (!dd.mult) return;
 	unsigned int bcount = (flags&ShaderProgram::Flag_PointShader) ? count * 4 : count;
 	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,bcount):getGenericVBO(index + 1, elmSize, dd.mult, bcount);

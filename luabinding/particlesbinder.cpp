@@ -316,7 +316,7 @@ int ParticlesBinder::addParticles(lua_State *L)
                 color = luaL_optinteger(L, -1,0xFFFFFF);
                 lua_pop(L, 1);
             	lua_getfield(L,-1,"alpha");
-                float alpha = luaL_optnumber(L, -1, 1.0);
+                alpha = luaL_optnumber(L, -1, 1.0);
             }
             lua_pop(L, 1);
         	lua_getfield(L,-1,"decayAlpha");

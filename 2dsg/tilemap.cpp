@@ -45,6 +45,7 @@ void TileMap::setTexture(TextureBase* texture,
 	spacingy_ = spacingy;
 	marginx_ = marginx;
 	marginy_ = marginy;
+	invalidate(INV_GRAPHICS);
 }
 
 TileMap::~TileMap()
@@ -70,6 +71,7 @@ void TileMap::set(int x, int y, uint16_t tx, uint16_t ty, int flip, uint32_t tin
     tileids_[index].y = ty;
     tileids_[index].flip = flip;
     tileids_[index].tint = tint;
+	invalidate(INV_GRAPHICS);
 }
 
 void TileMap::get(int x, int y, uint16_t* tx, uint16_t* ty, int *flip, uint32_t *tint, GStatus *status/* = NULL*/) const
@@ -96,6 +98,7 @@ void TileMap::get(int x, int y, uint16_t* tx, uint16_t* ty, int *flip, uint32_t 
 
 void TileMap::shift(int dx, int dy)
 {
+	invalidate(INV_GRAPHICS);
 	while (dx < 0)
 	{
 		shiftleft();

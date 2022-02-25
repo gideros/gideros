@@ -78,9 +78,9 @@ luasocket.plugin.winrt:
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64
-	cp $(WINRT_CONF)/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/ARM/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM/
-	cp $(WINRT_CONF)/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/x64/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64/
-	cp $(WINRT_CONF)/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/ARM/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/x64/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32/
 
 %.plugin.winrt.clean:
 	$(call WINRT_CLEAN,plugins/$*/source/winrt,$*)

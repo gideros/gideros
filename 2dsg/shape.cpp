@@ -306,6 +306,7 @@ void Shape::setTextureFillStyle(TextureBase* texture, const Matrix4* matrix)
 
 	if (matrix)
 		matrix_ = matrix->inverse();
+	invalidate(INV_GRAPHICS);
 }
 
 void Shape::clear()
@@ -335,6 +336,7 @@ void Shape::clear()
 
 	min_ = Point2f( 1e30f,  1e30f);
 	max_ = Point2f(-1e30f, -1e30f);
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Shape::setLineStyle(float thickness, unsigned int color, float alpha)
@@ -442,6 +444,7 @@ void Shape::endPath()
 					graphicsBases_.pop_back();;
 			}
 		}
+		invalidate(INV_GRAPHICS|INV_BOUNDS);
 	}
 
 	paths_.clear();

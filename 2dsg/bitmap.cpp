@@ -138,6 +138,7 @@ void Bitmap::setAnchorPoint(float x, float y)
 
 	setCoords();
     updateBounds();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Bitmap::getAnchorPoint(float* x, float* y) const

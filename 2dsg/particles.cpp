@@ -31,6 +31,7 @@ Particles::~Particles() {
 
 void Particles::clearParticles() {
 	particleCount=0;
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
@@ -102,12 +103,14 @@ int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 	texcoords_.Update();
 	indices_.Update();
 	boundsDirty_ = true;
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 	return s;
 }
 
 void Particles::removeParticle(int i) {
 	setSize(i, 0);
 	boundsDirty_ = true;
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Particles::setPosition(int i, float x, float y) {
@@ -122,6 +125,7 @@ void Particles::setPosition(int i, float x, float y) {
 	points_[i * 16 + 12] = x;
 	points_[i * 16 + 13] = y;
 	points_.Update();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Particles::getPosition(int i, float *x, float *y) {
@@ -142,6 +146,7 @@ void Particles::setSize(int i, float size) {
 	points_[i * 16 + 8 + 2] = size;
 	points_[i * 16 + 12 + 2] = size;
 	points_.Update();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Particles::scaleParticles(float size,bool absolute) {
@@ -154,6 +159,7 @@ void Particles::scaleParticles(float size,bool absolute) {
 		}
 	}
 	points_.Update();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 float Particles::getSize(int i) {
@@ -171,6 +177,7 @@ void Particles::setAngle(int i, float angle) {
 	points_[i * 16 + 8 + 3] = angle;
 	points_[i * 16 + 12 + 3] = angle;
 	points_.Update();
+	invalidate(INV_GRAPHICS);
 }
 
 float Particles::getAngle(int i) {
@@ -211,6 +218,7 @@ void Particles::setColor(int i, unsigned int color, float alpha) {
 		colors_[i * 16 + k + 3] = a;
 	}
 	colors_.Update();
+	invalidate(INV_GRAPHICS);
 }
 
 void Particles::setSpeed(int i, float vx, float vy, float vs, float va) {
@@ -309,9 +317,11 @@ void Particles::tick() {
 	}
 	lastTickTime_=iclk;
 	if (paused_) return;
+	int changes=INV_GRAPHICS;
 	for (size_t i = 0; i < particleCount; i++) {
 		if (points_[i * 16 + 2] != 0) {
 			bool remove=false;
+			if (nframes&&(speeds_[i * 4]||speeds_[i * 4 + 1])) changes|=INV_BOUNDS;
 			float nx = points_[i * 16] + speeds_[i * 4]*nframes;
 			float ny = points_[i * 16 + 1] + speeds_[i * 4 + 1]*nframes;
 			float ns = points_[i * 16 + 2] + speeds_[i * 4 + 2]*nframes;
@@ -362,6 +372,7 @@ void Particles::tick() {
 				removeParticle(i);
 		}
 	}
+	invalidate(changes);
 }
 
 void Particles::getColor(int i, unsigned int *color, float *alpha) const {
@@ -386,10 +397,12 @@ void Particles::setTexture(TextureBase *texture) {
 		sx_ = 1;
 		sy_ = 1;
 	}
+	invalidate(INV_GRAPHICS);
 }
 
 void Particles::clearTexture() {
 	setTexture(NULL);
+	invalidate(INV_GRAPHICS);
 }
 
 void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,

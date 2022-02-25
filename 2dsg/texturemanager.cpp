@@ -157,7 +157,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
 
     if (!sig.empty())
     {
-        g_id gid = gtexture_reuse(format, type, wrap, filter, &sig[0], sig.size());
+        g_id gid = gtexture_reuse(format, type, wrap, filter, sig.data(), sig.size());
         if (gid != 0)
         {
             TextureData* internal = (TextureData*)gtexture_getUserData(gid);
@@ -188,13 +188,13 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         switch (parameters.format)
         {
         case eRGBA8888:
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, dib->data(), &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, dib->data(), sig.data(), sig.size());
             bpp=4;
             break;
         case eRGB888:
         {
             unsigned char *data = dib->to888();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=3;
             break;
@@ -202,7 +202,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         case eRGB565:
         {
             unsigned short *data = dib->to565();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=2;
             break;
@@ -210,7 +210,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         case eRGBA4444:
         {
             unsigned short *data = dib->to4444();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=2;
             break;
@@ -218,7 +218,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         case eRGBA5551:
         {
             unsigned short *data = dib->to5551();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=2;
             break;

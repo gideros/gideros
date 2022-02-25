@@ -189,6 +189,7 @@ void Pixel::updateVertices() {
 		vertices[3] = Point2f(0+dx,height_+dy);
     }
 	vertices.Update();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Pixel::updateTexture()
@@ -270,6 +271,7 @@ void Pixel::updateTexture()
         for (size_t tc=0;tc<texcoords.size();tc++)
 			tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
  		texcoords.Update();
+ 		invalidate(INV_GRAPHICS);
         return;
     }
 
@@ -327,6 +329,7 @@ void Pixel::updateTexture()
     for (size_t tc=0;tc<texcoords.size();tc++)
 		tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
     texcoords.Update();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Pixel::setAnchorPoint(float x, float y)
@@ -335,6 +338,7 @@ void Pixel::setAnchorPoint(float x, float y)
 	anchory_ = y;
 
 	updateVertices();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Pixel::getAnchorPoint(float* x, float* y) const
@@ -354,6 +358,7 @@ bool Pixel::setDimensions(float width,float height,bool forLayout)
 		minh_=height;
 	}
 	updateVertices();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 	if ((!(isStretching_|| isNinePatch_))&&texture_[0]) updateTexture();
     return Sprite::setDimensions(width, height);
 }
@@ -372,6 +377,7 @@ void Pixel::setTextureRegion(BitmapData *bitmapdata,int slot)
         th_=height;
         updateTexture();
  	}
+	invalidate(INV_GRAPHICS);
 }
 
 void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
@@ -393,6 +399,7 @@ void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
         	updateTexture();
         }
  	}
+	invalidate(INV_GRAPHICS);
 }
 
 void Pixel::setNinePatch(float vl,float vr,float vt,float vb,float tl,float tr,float tt,float tb)
@@ -453,6 +460,7 @@ void Pixel::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, in
     colors_[14] = (c4 & 0xff) * a4;
     colors_[15] = 255 * a4;
     colors_.Update();
+	invalidate(INV_GRAPHICS);
 }
 
 int Pixel::getMixedColor(int c1, int c2, float a1,float a2,float a,float &am)

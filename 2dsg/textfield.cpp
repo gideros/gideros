@@ -87,7 +87,10 @@ void TextField::setTextColor(float r,float g,float b,float a)
     g_ = g;
     b_ = b;
 
+	int oflags = textlayout_.styleFlags;
+	textlayout_.styleFlags |= TEXTSTYLEFLAG_SKIPLAYOUT; //Don't relayout when color changed
 	createGraphics();
+	textlayout_.styleFlags = oflags;
 }
 
 void TextField::textColor(float &r,float &g,float &b,float &a)
@@ -159,6 +162,7 @@ void TextField::createGraphics()
 {
 	scaleChanged(); //Mark current scale as graphics scale
     graphicsBase_.clear();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
     bool layoutSizeChanged=false;
 	float lmw=textlayout_.mw;
 	float lbh=textlayout_.bh;

@@ -1688,7 +1688,7 @@ extern "C" {
 
 #ifdef WINSTORE
 extern "C"{
-	char *getenv(const char *string){ return NULL; }
+//	char *getenv(const char *string){ return NULL; }
 	int system(const char *string){ return 0; }
 }
 #endif
