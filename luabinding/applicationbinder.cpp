@@ -86,6 +86,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"setTextInput", ApplicationBinder::setTextInput},
 		{"setClipboard", ApplicationBinder::setClipboard},
 		{"getClipboard", ApplicationBinder::getClipboard},
+		{"enableDrawInfo", ApplicationBinder::enableDrawInfo},
         {NULL, NULL},
 	};
 
@@ -1098,4 +1099,20 @@ int ApplicationBinder::requestPermissions(lua_State *L)
     ::gapplication_requestPermissions(perms);
 #endif
     return 0;
+}
+
+int ApplicationBinder::enableDrawInfo(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+
+    const float *cvec=lua_tovector(L,2);
+    if (cvec)
+        application->setDrawInfo(true,cvec[0],cvec[1],cvec[2],cvec[3]);
+    else
+        application->setDrawInfo(false,0,0,0,0);
+
+	return 0;
 }

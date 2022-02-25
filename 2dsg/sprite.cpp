@@ -128,7 +128,8 @@ Sprite::Sprite(Application* application) :
 	layoutState=NULL;
 	layoutConstraints=NULL;
 	checkClip_=false;
-	changes_=(ChangeSet)0x7F; //All invalid
+	changes_=(ChangeSet)0xFF; //All invalid
+	hasCustomShader_=false;
 }
 
 Sprite::~Sprite() {
@@ -197,7 +198,7 @@ void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,in
 		sp.inherit=inherit;
 		shaders_[sid]=sp;
 	}
-	invalidate(INV_GRAPHICS);
+	invalidate(INV_GRAPHICS|INV_SHADER);
 }
 
 bool Sprite::setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id,int variant)
@@ -215,33 +216,39 @@ bool Sprite::setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id,in
 
 ShaderProgram *Sprite::getShader(ShaderEngine::StandardProgram id,int variant)
 {
-	int sid=(id<<8)|variant;
-	std::map<int, struct _ShaderSpec>::iterator it;
-	if (!shaders_.empty()) {
-		it = shaders_.find(sid);
-		if (it != shaders_.end()) {
-			setupShader(it->second);
-			return it->second.shader;
-		}
-		it = shaders_.find(0);
-		if (it != shaders_.end()) {
-			setupShader(it->second);
-			return it->second.shader;
-		}
-	}
-	Sprite *p=parent();
-	while (p) {
-		if (!p->shaders_.empty()) {
-			it = p->shaders_.find(sid);
-			if (it != p->shaders_.end()) {
-				if (it->second.inherit) {
-					setupShader(it->second);
-					return it->second.shader;
-				}
+	if (hasCustomShader_||(changes_&INV_SHADER)) {
+		hasCustomShader_=false;
+		revalidate(INV_SHADER);
+		int sid=(id<<8)|variant;
+		std::map<int, struct _ShaderSpec>::iterator it;
+		if (!shaders_.empty()) {
+			hasCustomShader_=true;
+			it = shaders_.find(sid);
+			if (it != shaders_.end()) {
+				setupShader(it->second);
+				return it->second.shader;
+			}
+			it = shaders_.find(0);
+			if (it != shaders_.end()) {
+				setupShader(it->second);
+				return it->second.shader;
 			}
 		}
-        p=p->parent();
-    }
+		Sprite *p=parent();
+		while (p) {
+			if (!p->shaders_.empty()) {
+				hasCustomShader_=true;
+				it = p->shaders_.find(sid);
+				if (it != p->shaders_.end()) {
+					if (it->second.inherit) {
+						setupShader(it->second);
+						return it->second.shader;
+					}
+				}
+			}
+			p=p->parent();
+		}
+	}
 	return ShaderEngine::Engine->getDefault(id, variant);
 }
 
@@ -491,33 +498,6 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		float ex, float ey) {
 	static GGPool<faststack<Sprite> > stackPool;
 	faststack<Sprite>& stack = *stackPool.create();
-	{
-		this->worldTransform_ = transform * this->localTransform_.matrix();
-
-
-        stack.push(this);
-
-		while (true) {
-			Sprite *sprite = stack.pop();
-			if (sprite == nullptr) break;
-
-			if (sprite->isVisible_ == false) {
-				continue;
-			}
-
-            if ((sprite!=this)&&(sprite->parent_))
-                sprite->worldTransform_ = sprite->parent_->worldTransform_
-					* sprite->localTransform_.matrix();
-
-            size_t sc=sprite->skipSet_.size();
-            char *sd=sprite->skipSet_.data();
-            size_t cc=sprite->children_.size();
-            for (size_t i = 0; i < cc; ++i)
-                if ((i>=sc)||(!sd[i]))
-                    stack.push(sprite->children_[i]);
-		}
-
-	}
 
 	stack.push(this);
 
@@ -558,6 +538,11 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
         int clipState=checkClip_?ShaderEngine::Engine->hasClip():-1;
         if (clipState>1)
             continue;
+
+		if ((sprite != this) && (sprite->parent_))
+			sprite->worldTransform_ = sprite->parent_->worldTransform_ * sprite->localTransform_.matrix();
+		else
+			sprite->worldTransform_ = transform * localTransform_.matrix();
 
         ShaderEngine::Engine->setModel(sprite->worldTransform_);
 
@@ -1188,7 +1173,7 @@ void Sprite::invalidate(int changes) {
 	if (changes&(INV_CLIP|INV_TRANSFORM|INV_VISIBILITY))
 		changes|=INV_BOUNDS;
 
-	int downchanges=changes&(INV_TRANSFORM|INV_BOUNDS); //Bound changes and transfrom changes impact children
+	int downchanges=changes&(INV_TRANSFORM|INV_BOUNDS|INV_SHADER); //Bound, transfrom and shader changes impact children
 	if (downchanges) {
 		faststack<Sprite> stack;
 		stack.push_all(children_.data(),children_.size());
@@ -1205,7 +1190,7 @@ void Sprite::invalidate(int changes) {
 
 	changes_=(ChangeSet)(changes_|changes);
 
-	changes=(ChangeSet)(changes&~(INV_VISIBILITY|INV_CLIP|INV_TRANSFORM|INV_GRAPHICS));
+	changes=(ChangeSet)(changes&~(INV_VISIBILITY|INV_CLIP|INV_TRANSFORM|INV_GRAPHICS|INV_SHADER));
 
 	//Propagate to parents
     Sprite *h=parent_;

@@ -96,6 +96,7 @@ public:
 
 	void setHardwareOrientation(Orientation orientation);
 	void setResolution(int width, int height,bool keepBuffers=false);
+	void setDrawInfo(bool enable,float r,float g,float b,float a);
 
 //	void broadcastApplicationDidFinishLaunching();
 //	void broadcastApplicationWillTerminate();
@@ -191,6 +192,8 @@ public:
     static void *debuggerContext;
 private:
 	float physicsScale_;
+	bool drawInfo_;
+	float infoColor_[4];
 
 	static const char* fileNameFunc_s(const char* filename, void* data);
 	const char* fileNameFunc(const char* filename);

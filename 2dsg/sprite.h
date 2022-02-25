@@ -484,6 +484,7 @@ public:
 protected:
 	EffectUpdateMode effectsMode_;
     bool effectsDrawing_;
+    bool hasCustomShader_;
     std::vector<Effect> effectStack_;
     std::vector<char> skipSet_;
     bool checkClip_;
@@ -495,6 +496,7 @@ protected:
 		INV_LAYOUT=16,
 		INV_TRANSFORM=32,
 		INV_VISIBILITY=64,
+		INV_SHADER=128,
     } changes_;
     enum BoundsMode {
         BOUNDS_UNSPEC=0,

@@ -1403,6 +1403,19 @@ void LuaApplication::clearBuffers()
 	application_->clearBuffers();
 }
 
+void drawInfoResolution(int width, int height, int scale, int lWidth,
+		int lHeight, bool drawRunning, float canvasColor[3],
+		float infoColor[3],int ho, int ao, float fps, float cpu);
+
+void LuaApplication::setDrawInfo(bool enable,float r,float g,float b,float a)
+{
+	drawInfo_=enable;
+	infoColor_[0]=r;
+	infoColor_[1]=g;
+	infoColor_[2]=b;
+	infoColor_[3]=a;
+}
+
 void LuaApplication::renderScene(int deltaFrameCount,float *vmat,float *pmat,const std::function<void(ShaderEngine *,Matrix4 &)> &preStage)
 {
 	application_->renderScene(-1,vmat,pmat,preStage);
@@ -1420,6 +1433,12 @@ void LuaApplication::renderScene(int deltaFrameCount,float *vmat,float *pmat,con
 	//glog_i("FrameTimes:last:%f mean:%f task:%f free:%f\n",frmLasted,meanFrameTime_,taskFrameTime_,meanFreeTime_);
 
 	frameStartTime_=0;
+
+	float canvasColor[3]={1,1,1}; //Dummy, not used anyway
+	if (drawInfo_)
+		drawInfoResolution(getHardwareWidth(), getHardwareHeight(), 100, getLogicalWidth(), getLogicalHeight(),
+				true, canvasColor, infoColor_, (int) hardwareOrientation(), (int) orientation(),
+				1.0/meanFrameTime_,1-(meanFreeTime_/meanFrameTime_));
 }
 
 void LuaApplication::setPlayerMode(bool isPlayer)
