@@ -1424,12 +1424,12 @@ void LuaApplication::renderScene(int deltaFrameCount,float *vmat,float *pmat,con
     double frmEnd=iclock();
     double frmLasted=frmEnd-lastFrameTime_;
     if ((frmLasted>=0.01)&&(frmLasted<0.1)) //If frame rate is between 10Hz and 100Hz
-    	meanFrameTime_=meanFrameTime_*0.8+frmLasted*0.2; //Average on 5 frames
+    	meanFrameTime_=meanFrameTime_*0.95+frmLasted*0.05; //Average on 20 frames
     lastFrameTime_=frmEnd;
 
     double freeTime=meanFrameTime_-(frmEnd-frameStartTime_-taskFrameTime_);
     if (freeTime>=0)
-    	meanFreeTime_=meanFreeTime_*0.8+freeTime*0.2; //Average on 5 frames
+    	meanFreeTime_=meanFreeTime_*0.95+freeTime*0.05; //Average on 20 frames
 	//glog_i("FrameTimes:last:%f mean:%f task:%f free:%f\n",frmLasted,meanFrameTime_,taskFrameTime_,meanFreeTime_);
 
 	frameStartTime_=0;
@@ -1613,6 +1613,7 @@ void LuaApplication::initialize()
 	meanFrameTime_=0;
 	meanFreeTime_=0;
 	frameCounter_=0;
+	drawInfo_=false;
 
 #if defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
 #define ARCH_X64 1
