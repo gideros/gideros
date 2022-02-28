@@ -128,7 +128,7 @@ Sprite::Sprite(Application* application) :
 	layoutState=NULL;
 	layoutConstraints=NULL;
 	checkClip_=false;
-	changes_=(ChangeSet)0xFF; //All invalid
+    changes_=(ChangeSet)0x0FF; //All invalid, except constraints which is never actually revalidated
 	hasCustomShader_=false;
 }
 
@@ -411,7 +411,8 @@ GridBagLayout *Sprite::getLayoutState()
 			p=p->parent();
 		}
 	}
-	return layoutState;
+    invalidate(INV_LAYOUT);
+    return layoutState;
 }
 
 void Sprite::clearLayoutState() {
@@ -430,7 +431,7 @@ GridBagConstraints *Sprite::getLayoutConstraints()
 {
 	if (!layoutConstraints)
 		layoutConstraints=new GridBagConstraints();
-	invalidate(INV_LAYOUT);
+    invalidate(INV_CONSTRAINTS);
     return layoutConstraints;
 }
 
@@ -439,24 +440,18 @@ void Sprite::clearLayoutConstraints()
 	if (layoutConstraints)
 		delete layoutConstraints;
 	layoutConstraints=NULL;
-	invalidate(INV_LAYOUT);
 }
 
-void Sprite::layoutSizesChanged() { //TODO
+void Sprite::layoutSizesChanged() {
     if (layoutConstraints) {
-		if ((layoutConstraints->prefWidth==-1)
-				||(layoutConstraints->aminWidth==-1)
-				||(layoutConstraints->prefHeight==-1)
-				||(layoutConstraints->aminHeight==-1)
-				) {
-	        Sprite *p=parent_;
-            while (p&&(p->layoutState)&&(!p->layoutState->optimizing))
-	        {
-	        	p->layoutState->dirty=true;
-	        	p=p->parent_;
-	        }
-		}
-	}
+        if ((layoutConstraints->prefWidth==-1)
+                ||(layoutConstraints->aminWidth==-1)
+                ||(layoutConstraints->prefHeight==-1)
+                ||(layoutConstraints->aminHeight==-1)
+                ) {
+            invalidate(INV_CONSTRAINTS);
+        }
+    }
 }
 
 
@@ -536,7 +531,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		}
 
         int clipState=checkClip_?ShaderEngine::Engine->hasClip():-1;
-        if (clipState>1)
+        if (clipState>0)
             continue;
 
 		if ((sprite != this) && (sprite->parent_))
@@ -627,7 +622,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
         {
             int sc=sprite->skipSet_.size();
             char *sd=sprite->skipSet_.data();
-            for (int i = (int) sprite->children_.size() - 1; i >= 0; --i)
+			int sz = sprite->children_.size();
+            for (int i = sz - 1; i >= 0; --i)
             {
                 if ((i>=sc)||(!sd[i]))
                     stack.push(sprite->children_[i]);
@@ -855,16 +851,20 @@ Sprite* Sprite::getChildAt(int index, GStatus* status) const {
 void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform) const {
     float minx, miny, maxx, maxy;
     int parentidx=children.size();
+    size_t sc=skipSet_.size();
+    const char *sd=skipSet_.data();
     for (size_t i = 0; i < children_.size(); ++i) {
-        Sprite *c=children_[i];
-        Matrix transform=pxform.top() * c->localTransform_.matrix();
-        c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, visible, nosubs, BOUNDS_GLOBAL);
-        if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
-            children.push_back(std::pair<int,Sprite *>(parentidx,c));
-            if (!nosubs) {
-                pxform.push(transform);
-                c->checkInside(x,y,visible,nosubs,children,pxform);
-                pxform.pop();
+        if ((i>=sc)||(!sd[i])) {
+            Sprite *c=children_[i];
+            Matrix transform=pxform.top() * c->localTransform_.matrix();
+            c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, visible, nosubs, BOUNDS_GLOBAL);
+            if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
+                children.push_back(std::pair<int,Sprite *>(parentidx,c));
+                if (!nosubs) {
+                    pxform.push(transform);
+                    c->checkInside(x,y,visible,nosubs,children,pxform);
+                    pxform.pop();
+                }
             }
         }
     }
@@ -1188,19 +1188,29 @@ void Sprite::invalidate(int changes) {
 	if (changes&(INV_GRAPHICS))
 		changes|=INV_EFFECTS;
 
-	changes_=(ChangeSet)(changes_|changes);
+    changes_=(ChangeSet)(changes_|(changes&(~INV_CONSTRAINTS)));
 
 	changes=(ChangeSet)(changes&~(INV_VISIBILITY|INV_CLIP|INV_TRANSFORM|INV_GRAPHICS|INV_SHADER));
+    if (changes&(INV_CONSTRAINTS))
+        changes|=INV_LAYOUT;
 
 	//Propagate to parents
     Sprite *h=parent_;
 	while (changes&&h) {
-		if ((h->layoutState)&&(changes&INV_LAYOUT))
-			h->layoutState->dirty=true;
+        if (h->layoutState)
+        {
+            if (changes&(INV_LAYOUT|INV_CONSTRAINTS))
+                if (!h->layoutState->optimizing)
+                    h->layoutState->dirty=true;
+            if (changes&INV_CONSTRAINTS) {
+                h->layoutState->layoutInfoCache[0].valid=false;
+                h->layoutState->layoutInfoCache[1].valid=false;
+            }
+        }
 		else
-			changes=(ChangeSet)(changes&(~INV_LAYOUT));
+            changes=(ChangeSet)(changes&(~(INV_LAYOUT|INV_CONSTRAINTS)));
 
-		h->changes_=(ChangeSet)(h->changes_|changes);
+        h->changes_=(ChangeSet)(h->changes_|(changes&(~INV_CONSTRAINTS)));
 		h=h->parent_;
 	}
 }
@@ -1492,6 +1502,7 @@ bool Sprite::setDimensions(float w,float h, bool forLayout)
         reqHeight_=h;
         if (layoutState)
             layoutState->dirty=true;
+        invalidate(INV_CONSTRAINTS);
         layoutSizesChanged();
         redrawEffects();
 

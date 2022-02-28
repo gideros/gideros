@@ -488,16 +488,6 @@ protected:
     std::vector<Effect> effectStack_;
     std::vector<char> skipSet_;
     bool checkClip_;
-    enum ChangeSet {
-    	INV_BOUNDS=1,
-		INV_GRAPHICS=2,
-		INV_EFFECTS=4,
-		INV_CLIP=8,
-		INV_LAYOUT=16,
-		INV_TRANSFORM=32,
-		INV_VISIBILITY=64,
-		INV_SHADER=128,
-    } changes_;
     enum BoundsMode {
         BOUNDS_UNSPEC=0,
         BOUNDS_OBJECT=1,
@@ -513,9 +503,20 @@ protected:
         bool valid;
     } boundsCache[4*BOUNDS_MAX];
 
-    void invalidate(int changes);
     void revalidate(int changes) { 	changes_=(ChangeSet)(changes_&(~changes));  };
 public:
+    enum ChangeSet {
+        INV_BOUNDS=1,
+        INV_GRAPHICS=2,
+        INV_EFFECTS=4,
+        INV_CLIP=8,
+        INV_LAYOUT=16,
+        INV_TRANSFORM=32,
+        INV_VISIBILITY=64,
+        INV_SHADER=128,
+        INV_CONSTRAINTS=256,
+    } changes_;
+    void invalidate(int changes);
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;
     int spriteWithLayoutCount;

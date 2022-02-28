@@ -13,32 +13,46 @@ struct GridInsets {
 };
 
 struct GridBagConstraints {
+    //Placement in grid
     size_t gridx;
     size_t gridy;
     size_t gridwidth;
     size_t gridheight;
+    //Relative weight
     double weightx;
     double weighty;
+    //Anchor direction
     enum _Anchor {
       CENTER=0, NORTH, NORTHEAST,EAST,SOUTHEAST,SOUTH,SOUTHWEST,WEST,NORTHWEST
     } anchor;
+    //Fill factors
     float fillX,fillY;
+    //insets in cell
     GridInsets insets;
     float ipadx;
     float ipady;
+    //Temporary placement
     size_t tempX;
     size_t tempY;
     size_t tempWidth;
     size_t tempHeight;
     float minWidth;
     float minHeight;
+    //Minimum and prefered sizes
     float aminWidth,aminHeight;
     float prefWidth,prefHeight;
+    //Anchor placement
     float anchorX,anchorY;
+    //Absolute offset
     float offsetX,offsetY;
+    //Source anchor point/relative offset
     float originX,originY;
+    //Target aspect ratio
     float aspectRatio;
+    //Pack
     bool optimizeSize;
+    //Object group
+    bool group;
 
 
     GridBagConstraints() {
@@ -65,6 +79,7 @@ struct GridBagConstraints {
         offsetX=offsetY=originX=originY=0;
 
         optimizeSize=false;
+        group=false;
     }
 
     GridBagConstraints(size_t gridx, size_t gridy,
@@ -110,11 +125,12 @@ struct GridBagLayoutInfo {
     std::vector<float> minHeight;            /* largest minHeight in each row */
     std::vector<double> weightX;           /* largest weight in each column */
     std::vector<double> weightY;           /* largest weight in each row */
-    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY() {
+    bool valid;
+    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),valid(false) {
         this->width = width;
         this->height = height;
     }
-    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY()
+    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(), valid(false)
     {
     }
 };
@@ -135,12 +151,13 @@ protected:
     void preInitMaximumArraySizes(Sprite *parent,size_t &a0,size_t &a1);
     void AdjustForGravity(Sprite *comp,GridBagConstraints *constraints, Rectangle &r);
 public:
-    bool optimizing;
+    GridBagLayoutInfo layoutInfoCache[2];
     std::vector<float> columnWidths;
     std::vector<float> rowHeights;
     std::vector<double> columnWeights;
     std::vector<double> rowWeights;
     GridInsets pInsets;
+    bool optimizing;
     bool equalizeCells;
     bool dirty;
     bool resizeContainer;
@@ -155,7 +172,7 @@ public:
 
     }
     GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag);
-    void getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,float &h, GridInsets &insets);
+    void getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);
     GridBagLayoutInfo *getCurrentLayoutInfo() { return &layoutInfo; }
 };

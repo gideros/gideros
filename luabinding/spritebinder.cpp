@@ -587,7 +587,10 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
         FILL_NUM("zOffset",zOffset);
         p->dirty=true;
-	}
+        p->layoutInfoCache[0].valid=false;
+        p->layoutInfoCache[1].valid=false;
+        sprite->invalidate(Sprite::INV_CONSTRAINTS);
+    }
 	return 0;
 }
 
@@ -634,7 +637,8 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         lua_pop(L,1);
         FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
-		FILL_BOOL("shrink",optimizeSize);
+        FILL_BOOL("shrink",optimizeSize);
+        FILL_BOOL("group",group);
 
 		lua_getfield(L,2,"insets");
 		if (!lua_isnoneornil(L,-1))
@@ -642,6 +646,7 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		lua_pop(L,1);
 		FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
 		FILL_NUM("insetBottom",insets.bottom); FILL_NUM("insetRight",insets.right);
+        sprite->invalidate(Sprite::INV_CONSTRAINTS);
 	}
 	return 0;
 }
