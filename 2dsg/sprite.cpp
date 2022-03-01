@@ -747,8 +747,11 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 
 	children_.insert(children_.begin() + index, sprite);
 	sprite->ref();
-    if (layoutState&&sprite->layoutConstraints)
+    if (layoutState&&sprite->layoutConstraints) {
         layoutState->dirty=true;
+        layoutState->layoutInfoCache[0].valid=false;
+        layoutState->layoutInfoCache[1].valid=false;
+    }
 
     sprite->unref();	// unguard
 
@@ -904,6 +907,7 @@ void Sprite::removeChildAt(int index, GStatus* status) {
 	void *pool = application_->createAutounrefPool();
 
 	Sprite* child = children_[index];
+    child->invalidate(INV_CONSTRAINTS);
 
 	Stage *stage = child->getStage();
 
@@ -981,7 +985,8 @@ void Sprite::replaceChild(Sprite* oldChild, Sprite* newChild) {
 	if (oldChild == newChild)
 		return;
 
-	oldChild->parent_ = 0;
+    oldChild->invalidate(INV_CONSTRAINTS);
+    oldChild->parent_ = 0;
 
 	newChild->ref();
 	oldChild->unref();
@@ -1165,7 +1170,6 @@ float Sprite::alpha() const {
 }
 
 void Sprite::invalidate(int changes) {
-	if ((changes_&changes)==changes) return; //Already invalid
 
 	if (changes&(INV_VISIBILITY))
 		changes|=INV_LAYOUT;
@@ -1173,7 +1177,9 @@ void Sprite::invalidate(int changes) {
 	if (changes&(INV_CLIP|INV_TRANSFORM|INV_VISIBILITY))
 		changes|=INV_BOUNDS;
 
-	int downchanges=changes&(INV_TRANSFORM|INV_BOUNDS|INV_SHADER); //Bound, transfrom and shader changes impact children
+    if ((changes_&changes)==changes) return; //Already invalid
+
+    int downchanges=changes&(INV_TRANSFORM|INV_BOUNDS|INV_SHADER); //Bound, transfrom and shader changes impact children
 	if (downchanges) {
 		faststack<Sprite> stack;
 		stack.push_all(children_.data(),children_.size());
@@ -1187,6 +1193,7 @@ void Sprite::invalidate(int changes) {
 
 	if (changes&(INV_GRAPHICS))
 		changes|=INV_EFFECTS;
+
 
     changes_=(ChangeSet)(changes_|(changes&(~INV_CONSTRAINTS)));
 
