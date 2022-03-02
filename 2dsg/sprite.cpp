@@ -719,7 +719,7 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 		return -1;
 	*/
 
-	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    invalidate(INV_GRAPHICS|INV_BOUNDS|INV_LAYOUT);
 	Stage* stage1 = sprite->getStage();
 
 	if (stage1)
@@ -902,7 +902,7 @@ void Sprite::removeChildAt(int index, GStatus* status) {
 			*status = GStatus(2006); // Error #2006: The supplied index is out of bounds.
 		return;
 	}
-	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    invalidate(INV_GRAPHICS|INV_BOUNDS|INV_LAYOUT);
 
 	void *pool = application_->createAutounrefPool();
 
@@ -1172,7 +1172,7 @@ float Sprite::alpha() const {
 void Sprite::invalidate(int changes) {
 
 	if (changes&(INV_VISIBILITY))
-		changes|=INV_LAYOUT;
+        changes|=INV_LAYOUT|INV_CONSTRAINTS;
 
 	if (changes&(INV_CLIP|INV_TRANSFORM|INV_VISIBILITY))
 		changes|=INV_BOUNDS;

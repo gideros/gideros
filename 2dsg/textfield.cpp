@@ -23,6 +23,7 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
         layout_=*params;
 
     setTextColor(0,0,0,1);
+    createGraphics();
 }
 
 /*
