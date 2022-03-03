@@ -851,7 +851,7 @@ Sprite* Sprite::getChildAt(int index, GStatus* status) const {
 	return children_[index];
 }
 
-void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform) const {
+void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform, bool xformValid) const {
     float minx, miny, maxx, maxy;
     int parentidx=children.size();
     size_t sc=skipSet_.size();
@@ -859,14 +859,16 @@ void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<s
     for (size_t i = 0; i < children_.size(); ++i) {
         if ((i>=sc)||(!sd[i])) {
             Sprite *c=children_[i];
-            Matrix transform=pxform.top() * c->localTransform_.matrix();
-            c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, visible, nosubs, BOUNDS_GLOBAL);
-            if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
-                children.push_back(std::pair<int,Sprite *>(parentidx,c));
-                if (!nosubs) {
-                    pxform.push(transform);
-                    c->checkInside(x,y,visible,nosubs,children,pxform);
-                    pxform.pop();
+            if (c->isVisible_) {
+                Matrix transform=pxform.top() * c->localTransform_.matrix();
+                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, visible, nosubs, BOUNDS_GLOBAL, &xformValid);
+                if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
+                    children.push_back(std::pair<int,Sprite *>(parentidx,c));
+                    if ((!nosubs)&&(!c->children_.empty())) {
+                        pxform.push(transform);
+                        c->checkInside(x,y,visible,nosubs,children,pxform,xformValid); //We are recursing so matrix must have been set already
+                        pxform.pop();
+                    }
                 }
             }
         }
@@ -1231,7 +1233,7 @@ struct _cliprect {
 
 void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 		float* maxx, float* maxy, std::stack<Matrix> parentXform,
-        bool visible, bool nosubs, BoundsMode mode) {
+        bool visible, bool nosubs, BoundsMode mode, bool *xformValid) {
     if (changes_&INV_BOUNDS) {
         for (size_t i=0;i<BOUNDS_MAX*4;i++)
             boundsCache[i].valid=false;
@@ -1253,7 +1255,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 
     if ((!visible) || isVisible_) {
 		this->worldTransform_ = transform;
-		if (!nosubs) {
+        if (!(nosubs||(xformValid&&(*xformValid)))) {
 			faststack<Sprite> stack;
 			stack.push_all((Sprite **) (children_.data()), children_.size());
 
@@ -1261,11 +1263,14 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 				Sprite *sprite = stack.pop();
 				if (sprite == nullptr) break;
 
-				sprite->worldTransform_ = sprite->parent_->worldTransform_
-						* sprite->localTransform_.matrix();
+                if ((!visible) || sprite->isVisible_) {
+                    sprite->worldTransform_ = sprite->parent_->worldTransform_
+                            * sprite->localTransform_.matrix();
 
-				stack.push_all(sprite->children_.data(),sprite->children_.size());
+                    stack.push_all(sprite->children_.data(),sprite->children_.size());
+                }
 			}
+            if (xformValid) *xformValid=true;
 		}
 	}
 

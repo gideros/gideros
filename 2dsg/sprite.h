@@ -523,7 +523,7 @@ public:
 
 protected:
     void layoutSizesChanged();
-    void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform) const;
+    void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform, bool xformValid=false) const;
     virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
 	{
 		if (minx)
@@ -540,7 +540,7 @@ protected:
 	void recursiveDispatchEvent(Event* event, bool canBeStopped, bool reverse);
 
 private:
-    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::stack<Matrix> parentXform,bool visible=false, bool nosubs=false, BoundsMode mode=BOUNDS_UNSPEC);
+    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::stack<Matrix> parentXform,bool visible=false, bool nosubs=false, BoundsMode mode=BOUNDS_UNSPEC, bool *xformValid=nullptr);
 
 protected:
     Application *application_;
