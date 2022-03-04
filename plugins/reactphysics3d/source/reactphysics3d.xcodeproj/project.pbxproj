@@ -20,11 +20,8 @@
 		0317E76A25397490003FEDE5 /* TriangleVertexArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E76025397490003FEDE5 /* TriangleVertexArray.cpp */; };
 		0317E76B25397490003FEDE5 /* TriangleMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E76125397490003FEDE5 /* TriangleMesh.cpp */; };
 		0317E76E253974BC003FEDE5 /* DynamicAABBTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E76D253974BC003FEDE5 /* DynamicAABBTree.cpp */; };
-		0317E77C253974CE003FEDE5 /* SphereVsSphereNarrowPhaseInfoBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E770253974CE003FEDE5 /* SphereVsSphereNarrowPhaseInfoBatch.cpp */; };
 		0317E77D253974CE003FEDE5 /* CollisionDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E771253974CE003FEDE5 /* CollisionDispatch.cpp */; };
 		0317E77E253974CE003FEDE5 /* CapsuleVsConvexPolyhedronAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E772253974CE003FEDE5 /* CapsuleVsConvexPolyhedronAlgorithm.cpp */; };
-		0317E77F253974CE003FEDE5 /* SphereVsCapsuleNarrowPhaseInfoBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E773253974CE003FEDE5 /* SphereVsCapsuleNarrowPhaseInfoBatch.cpp */; };
-		0317E780253974CE003FEDE5 /* CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E774253974CE003FEDE5 /* CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp */; };
 		0317E781253974CE003FEDE5 /* CapsuleVsCapsuleAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E775253974CE003FEDE5 /* CapsuleVsCapsuleAlgorithm.cpp */; };
 		0317E782253974CE003FEDE5 /* ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E776253974CE003FEDE5 /* ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp */; };
 		0317E783253974CE003FEDE5 /* NarrowPhaseInfoBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E777253974CE003FEDE5 /* NarrowPhaseInfoBatch.cpp */; };
@@ -81,14 +78,12 @@
 		0317E7F725397527003FEDE5 /* ContactSolverSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7C825397527003FEDE5 /* ContactSolverSystem.cpp */; };
 		0317E7F825397527003FEDE5 /* Island.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7C925397527003FEDE5 /* Island.cpp */; };
 		0317E7F925397527003FEDE5 /* HingeJointComponents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7CA25397527003FEDE5 /* HingeJointComponents.cpp */; };
-		0317E7FA25397527003FEDE5 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7CB25397527003FEDE5 /* Timer.cpp */; };
 		0317E7FB25397527003FEDE5 /* HeapAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7CC25397527003FEDE5 /* HeapAllocator.cpp */; };
 		0317E7FC25397527003FEDE5 /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7CD25397527003FEDE5 /* MemoryManager.cpp */; };
 		0317E7FD25397527003FEDE5 /* PoolAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7CE25397527003FEDE5 /* PoolAllocator.cpp */; };
 		0317E7FE25397527003FEDE5 /* CollisionDetectionSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7CF25397527003FEDE5 /* CollisionDetectionSystem.cpp */; };
 		0317E7FF25397527003FEDE5 /* PhysicsCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D025397527003FEDE5 /* PhysicsCommon.cpp */; };
 		0317E80025397527003FEDE5 /* HingeJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D125397527003FEDE5 /* HingeJoint.cpp */; };
-		0317E80125397527003FEDE5 /* mathematics_functions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D225397527003FEDE5 /* mathematics_functions.cpp */; };
 		0317E80225397527003FEDE5 /* Vector3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D325397527003FEDE5 /* Vector3.cpp */; };
 		0317E80325397527003FEDE5 /* DebugRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D425397527003FEDE5 /* DebugRenderer.cpp */; };
 		0317E80425397527003FEDE5 /* RigidBodyComponents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D525397527003FEDE5 /* RigidBodyComponents.cpp */; };
@@ -113,11 +108,8 @@
 		0317E76025397490003FEDE5 /* TriangleVertexArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleVertexArray.cpp; path = ../reactphysics3d/src/collision/TriangleVertexArray.cpp; sourceTree = "<group>"; };
 		0317E76125397490003FEDE5 /* TriangleMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleMesh.cpp; path = ../reactphysics3d/src/collision/TriangleMesh.cpp; sourceTree = "<group>"; };
 		0317E76D253974BC003FEDE5 /* DynamicAABBTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DynamicAABBTree.cpp; path = ../reactphysics3d/src/collision/broadphase/DynamicAABBTree.cpp; sourceTree = "<group>"; };
-		0317E770253974CE003FEDE5 /* SphereVsSphereNarrowPhaseInfoBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SphereVsSphereNarrowPhaseInfoBatch.cpp; path = ../reactphysics3d/src/collision/narrowphase/SphereVsSphereNarrowPhaseInfoBatch.cpp; sourceTree = "<group>"; };
 		0317E771253974CE003FEDE5 /* CollisionDispatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionDispatch.cpp; path = ../reactphysics3d/src/collision/narrowphase/CollisionDispatch.cpp; sourceTree = "<group>"; };
 		0317E772253974CE003FEDE5 /* CapsuleVsConvexPolyhedronAlgorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CapsuleVsConvexPolyhedronAlgorithm.cpp; path = ../reactphysics3d/src/collision/narrowphase/CapsuleVsConvexPolyhedronAlgorithm.cpp; sourceTree = "<group>"; };
-		0317E773253974CE003FEDE5 /* SphereVsCapsuleNarrowPhaseInfoBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SphereVsCapsuleNarrowPhaseInfoBatch.cpp; path = ../reactphysics3d/src/collision/narrowphase/SphereVsCapsuleNarrowPhaseInfoBatch.cpp; sourceTree = "<group>"; };
-		0317E774253974CE003FEDE5 /* CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp; path = ../reactphysics3d/src/collision/narrowphase/CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp; sourceTree = "<group>"; };
 		0317E775253974CE003FEDE5 /* CapsuleVsCapsuleAlgorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CapsuleVsCapsuleAlgorithm.cpp; path = ../reactphysics3d/src/collision/narrowphase/CapsuleVsCapsuleAlgorithm.cpp; sourceTree = "<group>"; };
 		0317E776253974CE003FEDE5 /* ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp; path = ../reactphysics3d/src/collision/narrowphase/ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp; sourceTree = "<group>"; };
 		0317E777253974CE003FEDE5 /* NarrowPhaseInfoBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NarrowPhaseInfoBatch.cpp; path = ../reactphysics3d/src/collision/narrowphase/NarrowPhaseInfoBatch.cpp; sourceTree = "<group>"; };
@@ -174,14 +166,12 @@
 		0317E7C825397527003FEDE5 /* ContactSolverSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ContactSolverSystem.cpp; path = ../reactphysics3d/src/systems/ContactSolverSystem.cpp; sourceTree = "<group>"; };
 		0317E7C925397527003FEDE5 /* Island.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Island.cpp; path = ../reactphysics3d/src/engine/Island.cpp; sourceTree = "<group>"; };
 		0317E7CA25397527003FEDE5 /* HingeJointComponents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HingeJointComponents.cpp; path = ../reactphysics3d/src/components/HingeJointComponents.cpp; sourceTree = "<group>"; };
-		0317E7CB25397527003FEDE5 /* Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Timer.cpp; path = ../reactphysics3d/src/engine/Timer.cpp; sourceTree = "<group>"; };
 		0317E7CC25397527003FEDE5 /* HeapAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeapAllocator.cpp; path = ../reactphysics3d/src/memory/HeapAllocator.cpp; sourceTree = "<group>"; };
 		0317E7CD25397527003FEDE5 /* MemoryManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryManager.cpp; path = ../reactphysics3d/src/memory/MemoryManager.cpp; sourceTree = "<group>"; };
 		0317E7CE25397527003FEDE5 /* PoolAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PoolAllocator.cpp; path = ../reactphysics3d/src/memory/PoolAllocator.cpp; sourceTree = "<group>"; };
 		0317E7CF25397527003FEDE5 /* CollisionDetectionSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionDetectionSystem.cpp; path = ../reactphysics3d/src/systems/CollisionDetectionSystem.cpp; sourceTree = "<group>"; };
 		0317E7D025397527003FEDE5 /* PhysicsCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicsCommon.cpp; path = ../reactphysics3d/src/engine/PhysicsCommon.cpp; sourceTree = "<group>"; };
 		0317E7D125397527003FEDE5 /* HingeJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HingeJoint.cpp; path = ../reactphysics3d/src/constraint/HingeJoint.cpp; sourceTree = "<group>"; };
-		0317E7D225397527003FEDE5 /* mathematics_functions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mathematics_functions.cpp; path = ../reactphysics3d/src/mathematics/mathematics_functions.cpp; sourceTree = "<group>"; };
 		0317E7D325397527003FEDE5 /* Vector3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector3.cpp; path = ../reactphysics3d/src/mathematics/Vector3.cpp; sourceTree = "<group>"; };
 		0317E7D425397527003FEDE5 /* DebugRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugRenderer.cpp; path = ../reactphysics3d/src/utils/DebugRenderer.cpp; sourceTree = "<group>"; };
 		0317E7D525397527003FEDE5 /* RigidBodyComponents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RigidBodyComponents.cpp; path = ../reactphysics3d/src/components/RigidBodyComponents.cpp; sourceTree = "<group>"; };
@@ -222,17 +212,14 @@
 				0317E76025397490003FEDE5 /* TriangleVertexArray.cpp */,
 				0317E76D253974BC003FEDE5 /* DynamicAABBTree.cpp */,
 				0317E775253974CE003FEDE5 /* CapsuleVsCapsuleAlgorithm.cpp */,
-				0317E774253974CE003FEDE5 /* CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp */,
 				0317E772253974CE003FEDE5 /* CapsuleVsConvexPolyhedronAlgorithm.cpp */,
 				0317E771253974CE003FEDE5 /* CollisionDispatch.cpp */,
 				0317E776253974CE003FEDE5 /* ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp */,
 				0317E777253974CE003FEDE5 /* NarrowPhaseInfoBatch.cpp */,
 				0317E779253974CE003FEDE5 /* NarrowPhaseInput.cpp */,
 				0317E778253974CE003FEDE5 /* SphereVsCapsuleAlgorithm.cpp */,
-				0317E773253974CE003FEDE5 /* SphereVsCapsuleNarrowPhaseInfoBatch.cpp */,
 				0317E77A253974CE003FEDE5 /* SphereVsConvexPolyhedronAlgorithm.cpp */,
 				0317E77B253974CE003FEDE5 /* SphereVsSphereAlgorithm.cpp */,
-				0317E770253974CE003FEDE5 /* SphereVsSphereNarrowPhaseInfoBatch.cpp */,
 				0317E789253974E1003FEDE5 /* GJKAlgorithm.cpp */,
 				0317E78A253974E1003FEDE5 /* VoronoiSimplex.cpp */,
 				0317E78B253974E1003FEDE5 /* SATAlgorithm.cpp */,
@@ -271,8 +258,6 @@
 				0317E7C325397527003FEDE5 /* OverlappingPairs.cpp */,
 				0317E7D025397527003FEDE5 /* PhysicsCommon.cpp */,
 				0317E7C025397527003FEDE5 /* PhysicsWorld.cpp */,
-				0317E7CB25397527003FEDE5 /* Timer.cpp */,
-				0317E7D225397527003FEDE5 /* mathematics_functions.cpp */,
 				0317E7B325397526003FEDE5 /* Matrix2x2.cpp */,
 				0317E7B425397526003FEDE5 /* Matrix3x3.cpp */,
 				0317E7BD25397527003FEDE5 /* Quaternion.cpp */,
@@ -393,10 +378,8 @@
 				0317E7A4253974F7003FEDE5 /* ConcaveMeshShape.cpp in Sources */,
 				0317E7A2253974F7003FEDE5 /* ConcaveShape.cpp in Sources */,
 				0317E7E125397527003FEDE5 /* SingleFrameAllocator.cpp in Sources */,
-				0317E7FA25397527003FEDE5 /* Timer.cpp in Sources */,
 				0317E80225397527003FEDE5 /* Vector3.cpp in Sources */,
 				0317E7D825397527003FEDE5 /* JointComponents.cpp in Sources */,
-				0317E780253974CE003FEDE5 /* CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp in Sources */,
 				0317E7F525397527003FEDE5 /* SolveHingeJointSystem.cpp in Sources */,
 				0317E7DF25397527003FEDE5 /* DefaultLogger.cpp in Sources */,
 				0317E78E253974E1003FEDE5 /* SATAlgorithm.cpp in Sources */,
@@ -420,15 +403,12 @@
 				0317E7F225397527003FEDE5 /* OverlappingPairs.cpp in Sources */,
 				0317E784253974CE003FEDE5 /* SphereVsCapsuleAlgorithm.cpp in Sources */,
 				0317E7A5253974F7003FEDE5 /* SphereShape.cpp in Sources */,
-				0317E80125397527003FEDE5 /* mathematics_functions.cpp in Sources */,
-				0317E77F253974CE003FEDE5 /* SphereVsCapsuleNarrowPhaseInfoBatch.cpp in Sources */,
 				0317E7DC25397527003FEDE5 /* BroadPhaseSystem.cpp in Sources */,
 				0317E7DA25397527003FEDE5 /* FixedJoint.cpp in Sources */,
 				0317E7A6253974F7003FEDE5 /* CapsuleShape.cpp in Sources */,
 				0317E7FE25397527003FEDE5 /* CollisionDetectionSystem.cpp in Sources */,
 				0317E7E625397527003FEDE5 /* BallAndSocketJointComponents.cpp in Sources */,
 				0317E7F725397527003FEDE5 /* ContactSolverSystem.cpp in Sources */,
-				0317E77C253974CE003FEDE5 /* SphereVsSphereNarrowPhaseInfoBatch.cpp in Sources */,
 				0317E786253974CE003FEDE5 /* SphereVsConvexPolyhedronAlgorithm.cpp in Sources */,
 				0317E7FC25397527003FEDE5 /* MemoryManager.cpp in Sources */,
 				0317E76725397490003FEDE5 /* PolygonVertexArray.cpp in Sources */,

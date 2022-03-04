@@ -10,3 +10,6 @@
 [submodule "scintilla"]
 	path = scintilla
 	url = https://github.com/gideros/scintilla.git
+[submodule "lexilla"]
+	path = lexilla
+	url = https://github.com/gideros/lexilla.git
