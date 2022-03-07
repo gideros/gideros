@@ -1,4 +1,3 @@
-DEPLOYQT=$(QT)/bin/macdeployqt
 
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
@@ -7,26 +6,46 @@ qtapp.install: qtlibs.install qtplugins.install qt.install
 qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
 
-vpath %.so libgideros:libgvfs:libgid:lua
+vpath %.so libgideros:libgvfs:libgid:$(LUA_ENGINE)
 
 $(SDK)/lib/desktop/%: %
 	cp -P $^* $(SDK)/lib/desktop
 	
 
 SDK_LIBS_QTLIST=libgideros liblua libgid libgvfs
-SDK_LIBS_QT=$(addsuffix .so,$(SDK_LIBS_QTLIST)) $(addsuffix .so,$(SDK_LIBS_QTLIST))
+SDK_LIBS_QT=$(addsuffix .so,$(SDK_LIBS_QTLIST))
 
 sdk.qtlibs.dir:
 	mkdir -p $(SDK)/lib/desktop	
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs libgid/xmp) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs libgid/xmp) libgid.qmake5.rel $(addsuffix .qmake.rel,$(LUA_ENGINE) libgideros) sdk.qtlibs
 
-qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid lua libgideros)
+qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid $(LUA_ENGINE) libgideros)
 
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
+
+qscintilla:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS)
+	mkdir -p $(QT)/include/ScintillaEdit
+	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(QT)/include/ScintillaEdit
+
+qlexilla:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS)
+	mkdir -p $(QT)/include/Lexilla
+	cp lexilla/include/*.h $(QT)/include/Lexilla
+
+qscintilla.debug:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS) debug
+
+qlexilla.debug:
+	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS) debug
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; $(MAKE) $(MAKEJOBS); \
@@ -52,15 +71,15 @@ buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.
 qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) html5.tools.clean
 
 QT5DLLS=icudata icui18n icuuc \
-		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
-		Qt5XcbQpa Qt5DBus \
-		Qt5Multimedia Qt5MultimediaWidgets Qt5WebSockets
+		Qt6Core Qt6Gui Qt6Network Qt6OpenGL Qt6OpenGLWidgets Qt6PrintSupport Qt6Widgets Qt6Xml \
+		Qt6XcbQpa Qt6DBus \
+		Qt6Multimedia Qt6MultimediaQuick Qt6MultimediaWidgets Qt6WebSockets Qt6Core5Compat
 QT5DLLTOOLS=icudata icui18n icuuc \
-		Qt5Core Qt5Network Qt5Xml Qt5WebSockets
+		Qt6Core Qt6Network Qt6Xml Qt6WebSockets
 QT5PLATFORM=qminimal qoffscreen qxcb
 QT5PLUGINS= \
 	$(addprefix platforms/,$(QT5PLATFORM)) \
-	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-ogl-integration) \
+	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-glx-integration) \
 	imageformats/qjpeg \
 	#$(addprefix mediaservice/,dsengine qtmedia_audioengine) \
 
@@ -68,7 +87,9 @@ QT5PLUGINS= \
 qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
 	cp -R $(ROOT)/ui/GiderosStudio $(RELEASE)
-	cp -P $(QT)/lib/libqscintilla2_qt5.so* $(RELEASE)
+	cp -P $(ROOT)/scintilla/qt/ScintillaEdit/libScintillaEdit.so* $(RELEASE)
+	cp -P $(ROOT)/lexilla/src/libLexilla.so* $(RELEASE)
+
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Resources/gideros_annot.api	
 	cp -R $(ROOT)/ui/Tools $(RELEASE)/Tools
@@ -120,20 +141,30 @@ qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MAKE) clean; fi
 
 %.qmake.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*).pro
 	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS)
 
 %.qmake5.rel:
-	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	cd $(ROOT)/$*; $(QMAKE) $(notdir $*)_qt5.pro
 	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS) 
 
 tools:
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+	mkdir -p $(BUILDTOOLS)
+	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
+		$(addprefix CLI/,Coverage FileUtils Profiler Repl ReplEntry) \
+		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
+    	lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
+        ludata lutf8lib lvmexecute lvmload lvmutils) \
+		$(addprefix Compiler/src/,Builtins BytecodeBuilder ConstantFolding Compiler lcode PseudoCode TableShape ValueTracking) \
+		$(addprefix Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)) -lpthread -lm
+
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64) -lm
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64) -lm
+	gcc -I. -DDESKTOP_TOOLS -o$(BUILDTOOLS)/bin2c scripts/bin2c.c
 
 bundle:
 	rm -rf $(RELEASE).Tmp

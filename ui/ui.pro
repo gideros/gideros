@@ -281,7 +281,7 @@ macx {
 
 unix:!macx {
    equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
-   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit -lLexilla
+   equals(USE_SCINTILLAEDIT,y): LIBS += -L"../scintilla/qt/ScintillaEdit" -L"../lexilla/src" -lScintillaEdit -lLexilla
    #LIBS += -lqt5scintilla2 #For PI ?
    QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }

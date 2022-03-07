@@ -301,5 +301,5 @@ temp
 
 #GIT: ignore gitmodules as it may conflict with private repos
 /.gitmodules
-
+lexilla
 
