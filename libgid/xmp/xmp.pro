@@ -3,7 +3,7 @@ CONFIG -= qt
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+CONFIG += c++17
 
 defineReplace(expand) {
     variable = $$1
