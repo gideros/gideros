@@ -104,7 +104,7 @@ unix:!macx {
         ../libgideros/libgideros.so \
         ../libpystring/libpystring.so
     LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
-    QMAKE_CXXFLAGS += -std=gnu++11
+    QMAKE_CXXFLAGS += -std=gnu++17
     QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 }
 

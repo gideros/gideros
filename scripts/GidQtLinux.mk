@@ -1,10 +1,18 @@
-
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
 qtapp.install: qtlibs.install qtplugins.install qt.install
 
 qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
+ifneq ($(DEBUG),)
+QTTGT_EXT=dbg
+QTDLLEXT=d
+QTTGT_DIR=debug
+else
+QTTGT_EXT=rel
+endif
+
+SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
 vpath %.so libgideros:libgvfs:libgid:$(LUA_ENGINE)
 
@@ -26,6 +34,11 @@ qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid $(L
 
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
+	cp $(ROOT)/libgid/libgid.so* $(RELEASE)
+	cp $(ROOT)/libgvfs/libgvfs.so* $(RELEASE)
+	cp $(ROOT)/$(LUA_ENGINE)/liblua.so* $(RELEASE)
+	cp $(ROOT)/libgideros/libgideros.so* $(RELEASE)
+	cp $(ROOT)/libpystring/libpystring.so* $(RELEASE)
 
 qscintilla:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
@@ -49,7 +62,7 @@ qlexilla.debug:
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; $(MAKE) $(MAKEJOBS); \
-		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE) $(MAKEJOBS); fi 
+		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE) $(MAKEJOBS) $(QTTGT_DIR); fi 
 
 %.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; elif [ -d "Desktop" ]; then cd Desktop; fi; if [ -f Makefile ]; then $(MAKE) clean; fi
@@ -66,7 +79,7 @@ qlexilla.debug:
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
-buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
+buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
 qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) html5.tools.clean
 
@@ -76,9 +89,10 @@ QT5DLLS=icudata icui18n icuuc \
 		Qt6Multimedia Qt6MultimediaQuick Qt6MultimediaWidgets Qt6WebSockets Qt6Core5Compat
 QT5DLLTOOLS=icudata icui18n icuuc \
 		Qt6Core Qt6Network Qt6Xml Qt6WebSockets
-QT5PLATFORM=qminimal qoffscreen qxcb
+QT5PLATFORM=qminimal qoffscreen qxcb qlinuxfb
 QT5PLUGINS= \
 	$(addprefix platforms/,$(QT5PLATFORM)) \
+	$(addprefix tls/lib,qopensslbackend) \
 	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-glx-integration) \
 	imageformats/qjpeg \
 	#$(addprefix mediaservice/,dsengine qtmedia_audioengine) \
@@ -131,11 +145,14 @@ qt.player:
 	cp -P libpystring/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
 	for f in $(QT5DLLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate; done
 	
-buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN))
+buildqtplugins: 
+	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN))
 
-qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN))
+qtplugins.clean: 
+	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_WIN)) 
 
-qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
+qtplugins.install: buildqtplugins 
+	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MAKE) clean; fi

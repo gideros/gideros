@@ -1,3 +1,9 @@
-<library>
- <file name="main.lua" file="main.lua"/>
-</library>
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+ <properties autorotation="0" mouseTouchOrder="0" osx_domain="giderosmobile.com" orientation="0" macos_category="5" winrt_package="com.yourdomain.yourapp" mouseToTouch="1" macos_bundle="com.yourdomain.yourapp-macos" osx_signingId="" fps="60" vsync="0" app_name="" windowWidth="0" splash_h_image="" version_code="1" scaleMode="0" html5_pwa="0" retinaDisplay="0" atv_bundle="com.yourdomain.yourapp-atv" osx_org="GiderosMobile" osx_category="5" html5_fbload="100" html5_wasm="0" winrt_org="GiderosMobile" html5_fbinstant="0" build_number="1" osx_bundle="com.yourdomain." encryptAssets="0" html5_pack="0" exportMode="0" app_icon="" tv_icon="" version="1.0" windowHeight="0" html5_symbols="0" win_org="GiderosMobile" mainluaOnly="0" backgroundColor="#ffffff" osx_installerId="" iosDevice="0" disableSplash="0" win_domain="giderosmobile.com" html5_host="" splashScaleMode="0" ios_bundle="com.yourdomain.yourapp-ios" logicalWidth="320" touchToMouse="1" logicalHeight="480" architecture="0" html5_crash="" encryptCode="0" splash_v_image="" html5_mem="256">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="main.lua"/>
+</project>

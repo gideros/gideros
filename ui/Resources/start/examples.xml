@@ -326,9 +326,9 @@
 </category>
 
 <category name="Physics 2">
-	<example 	name="Sleeping bodies"
+	<example 	name="Sleeping Bodies"
 				description="Using isSleeping() function"
-				path="Physics/Sleeping bodies/Sleeping bodies.gproj"
+				path="Physics/Sleeping Bodies/Sleeping Bodies.gproj"
 				image = "sleeping bodies.png"
 				/>
 				
