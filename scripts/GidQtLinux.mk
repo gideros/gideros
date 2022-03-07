@@ -92,7 +92,7 @@ QT5DLLTOOLS=icudata icui18n icuuc \
 QT5PLATFORM=qminimal qoffscreen qxcb qlinuxfb
 QT5PLUGINS= \
 	$(addprefix platforms/,$(QT5PLATFORM)) \
-	$(addprefix tls/lib,qopensslbackend) \
+	$(addprefix tls/,qopensslbackend) \
 	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-glx-integration) \
 	imageformats/qjpeg \
 	#$(addprefix mediaservice/,dsengine qtmedia_audioengine) \
@@ -107,8 +107,11 @@ qt.install: buildqt qt.player tools html5.tools
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	-wget -nv "http://wiki.giderosmobile.com/gidapi.php" -O $(RELEASE)/Resources/gideros_annot.api	
 	cp -R $(ROOT)/ui/Tools $(RELEASE)/Tools
-	cp $(ROOT)/lua/src/lua $(RELEASE)/Tools
-	cp $(ROOT)/lua/src/luac $(RELEASE)/Tools
+	#cp $(ROOT)/lua/src/lua $(RELEASE)/Tools
+	#cp $(ROOT)/lua/src/luac $(RELEASE)/Tools
+	cp $(BUILDTOOLS)/lua $(RELEASE)/Tools
+	cp $(BUILDTOOLS)/luac $(RELEASE)/Tools
+	cp $(BUILDTOOLS)/luauc $(RELEASE)/Tools
 	for t in gdrdeamon gdrbridge gdrexport; do \
 	cp $(ROOT)/$$t/$$t $(RELEASE)/Tools; done 
 	for f in $(QT5DLLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE); done
@@ -134,6 +137,7 @@ qt.install: buildqt qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
 	cp -R $(ROOT)/Library $(RELEASE)/
+	-cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
 	
 
 QTDLLEXT?=
