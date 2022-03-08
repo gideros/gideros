@@ -696,6 +696,16 @@ bool TextEdit::isModified() const
     return modified;
 }
 
+void TextEdit::expandRegionAt(sptr_t position)
+{
+#ifdef SCINTILLAEDIT_H
+    sptr_t line = sciScintilla_->lineFromPosition(position);
+    int level = sciScintilla_->foldLevel(line);
+    if (level & SC_FOLDLEVELNUMBERMASK && (level & SC_FOLDLEVELNUMBERMASK) != SC_FOLDLEVELBASE)
+        sciScintilla_->foldLine(line, SC_FOLDACTION_EXPAND);
+#endif
+}
+
 bool TextEdit::findFirst(	const QString &expr, bool re, bool cs, bool wo,
 							bool wrap, bool forward/* = true*/)
 {
@@ -719,6 +729,7 @@ bool TextEdit::findFirst(	const QString &expr, bool re, bool cs, bool wo,
 
     sciScintilla_->setTargetRange(sf,st);
     if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
+        expandRegionAt(sciScintilla_->targetStart());
         sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
         return true;
     }
@@ -737,6 +748,7 @@ bool TextEdit::findFirst(	const QString &expr, bool re, bool cs, bool wo,
 
     sciScintilla_->setTargetRange(sf,st);
     if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
+        expandRegionAt(sciScintilla_->targetStart());
         sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
         return true;
     }
@@ -759,6 +771,7 @@ bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re,
         // if there is no selected text, do find and return
         sciScintilla_->setTargetRange(from,st);
         if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
+            expandRegionAt(sciScintilla_->targetStart());
             sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
             return true;
         }
@@ -767,6 +780,7 @@ bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re,
             st=sciScintilla_->positionBefore(from);
             sciScintilla_->setTargetRange(sf,st);
             if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0) {
+                expandRegionAt(sciScintilla_->targetStart());
                 sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
                 return true;
             }
@@ -800,20 +814,27 @@ bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re,
         sciScintilla_->replaceTarget(replaceStr.size(),replaceStr.toUtf8());
         sciScintilla_->setTargetRange(nto,st);
         if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
-            sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+        {
+        	expandRegionAt(sciScintilla_->targetStart());
+        	sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+        }
         else {
             if (wrap&&sf) {
                 sf=0;
                 st=sciScintilla_->positionBefore(nfrom);
                 sciScintilla_->setTargetRange(sf,st);
                 if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
+                {
+                    expandRegionAt(sciScintilla_->targetStart());
                     sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+                }
             }
         }
 	}
 	else
 	{
         // if not, select the found item
+        expandRegionAt(nfrom);
         sciScintilla_->setSel(nfrom,nto);
 	}
 
@@ -1187,7 +1208,11 @@ bool TextEdit::isBrace(char ch)
 
 void TextEdit::updateUi(Scintilla::Update updated)
 {
-    int brace_position = sciScintilla_->positionBefore(sciScintilla_->currentPos());
+	Q_UNUSED(updated);
+	
+	wordHighlighter_->reset();
+	
+	int brace_position = sciScintilla_->positionBefore(sciScintilla_->currentPos());
 	int chStyle = sciScintilla_->styleAt(brace_position);
 	// Disable highligh in comments
 	if (chStyle == SCE_LUA_COMMENT || chStyle == SCE_LUA_COMMENTDOC || chStyle == SCE_LUA_COMMENTLINE)
@@ -1195,35 +1220,31 @@ void TextEdit::updateUi(Scintilla::Update updated)
 		sciScintilla_->braceHighlight(-1,-1);
 		return;
 	}
-    int character_before = sciScintilla_->charAt(brace_position);
-    char ch = (char) character_before;
+	int character_before = sciScintilla_->charAt(brace_position);
+	char ch = (char) character_before;
 	
-    if(isBrace(ch))
-    {
-         int has_match = sciScintilla_->braceMatch(brace_position,0);
-         if(has_match > -1)
-             sciScintilla_->braceHighlight(has_match, brace_position);
-         else
-             sciScintilla_->braceBadLight(brace_position);
-     }
-     else
-     {
-        char ch = (char) sciScintilla_->charAt(brace_position);
-        if(isBrace(ch))
-        {
-             int has_match = sciScintilla_->braceMatch(brace_position,0);
-             if(has_match > -1)
-                 sciScintilla_->braceHighlight(has_match, brace_position);
-             else
-                 sciScintilla_->braceBadLight(brace_position);
-         }
-         else
-         {
-            sciScintilla_->braceHighlight(-1,-1);
-			if (updated == Scintilla::Update::Selection)
-			{
-				wordHighlighter_->resetUpdate();
-			}
-         }
-     }
+	if(isBrace(ch))
+	{
+		int has_match = sciScintilla_->braceMatch(brace_position,0);
+		if(has_match > -1)
+			sciScintilla_->braceHighlight(has_match, brace_position);
+		else
+			sciScintilla_->braceBadLight(brace_position);
+	}
+	else
+	{
+		char ch = (char) sciScintilla_->charAt(brace_position);
+		if(isBrace(ch))
+		{
+			int has_match = sciScintilla_->braceMatch(brace_position,0);
+			if(has_match > -1)
+				sciScintilla_->braceHighlight(has_match, brace_position);
+			else
+				sciScintilla_->braceBadLight(brace_position);
+		}
+		else
+		{
+			sciScintilla_->braceHighlight(-1,-1);
+		}
+	}
 }
