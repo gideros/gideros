@@ -1656,7 +1656,7 @@ void MainWindow::onOpenRequest(const QString& itemName, const QString& fileName)
     Q_UNUSED(itemName);
 	QString suffix = QFileInfo(fileName).suffix().toLower();
 
-	if (suffix == "txt" || suffix == "lua" || suffix == "glsl" || suffix=="hlsl")
+    if (suffix == "txt" || suffix == "lua" || suffix == "glsl" || suffix=="hlsl" || suffix=="xml" || suffix=="json")
 		openFile(fileName);
 	else {
 		std::string aname=AddonsManager::addonForExtension(suffix.toStdString());

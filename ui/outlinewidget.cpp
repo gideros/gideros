@@ -537,6 +537,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_FunctionUnused);
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_SameLineStatement);
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_MultiLineStatement);
+    configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_CommentDirective);
 
     frontend=new Luau::Frontend(fileResolver, &configResolver, frontendOptions);
     Luau::registerBuiltinTypes(frontend->typeChecker);
