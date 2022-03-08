@@ -113,6 +113,7 @@ private slots:
 
 private:
 	bool maybeSave();
+	void expandRegionAt(sptr_t position);
 
 private:
 #ifdef SCINTILLAEDIT_H
