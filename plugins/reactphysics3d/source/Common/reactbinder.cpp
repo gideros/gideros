@@ -167,7 +167,8 @@ static int r3dWorld_destruct(void *p) {
 	rp3d::PhysicsWorld* world = static_cast<rp3d::PhysicsWorld*>(ptr);
 	GidEventListener *e = events[world];
 	if (e) {
-		lua_unref(L, e->cbn);
+		if (!lua_isclosing(L))
+			lua_unref(L, e->cbn);
 		delete e;
 		events[world] = NULL;
 	}
@@ -581,9 +582,11 @@ static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
 
 static int r3dBody_destruct(void *p) {
     void* ptr = GIDEROS_DTOR_UDATA(p);
-    lua_checkstack(L,16);
-    getb2(L,ptr);
-    if (lua_isnil(L,-1)) {
+	if (!lua_isclosing(L)) {
+	    lua_checkstack(L,16);
+	    getb2(L,ptr);
+	}
+    if (lua_isclosing(L)||lua_isnil(L,-1)) {
       //Body has been GC'ed, check if still live in the world
       rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(ptr);
       rp3d::PhysicsWorld* world = static_cast<rp3d::PhysicsWorld*>(body->getUserData());
@@ -602,7 +605,8 @@ static int r3dBody_destruct(void *p) {
             lua_call(L,2,0);
         }
     }
-    lua_pop(L,1);    
+    if (!lua_isclosing(L))
+        lua_pop(L,1);
     return 0;
 }
 

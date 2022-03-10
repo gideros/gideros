@@ -99,7 +99,7 @@ public:
 
     ~GGSound()
     {
-        if (!sig_.empty())
+        if ((!sig_.empty())&&(!lua_isclosing(L)))
         {
             luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keySound);
             lua_pushlstring(L, &sig_[0], sig_.size());
