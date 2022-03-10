@@ -1253,6 +1253,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
         return;
     }
 
+    //Validate transform
     if ((!visible) || isVisible_) {
 		this->worldTransform_ = transform;
         if (!(nosubs||(xformValid&&(*xformValid)))) {
@@ -1267,13 +1268,25 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
                     sprite->worldTransform_ = sprite->parent_->worldTransform_
                             * sprite->localTransform_.matrix();
 
-                    stack.push_all(sprite->children_.data(),sprite->children_.size());
+                    if (!visible)
+                        stack.push_all(sprite->children_.data(),sprite->children_.size());
+                    else {
+						int sc=sprite->skipSet_.size();
+						const char *sd=sprite->skipSet_.data();
+						int sz = sprite->children_.size();
+						for (int i = 0; i <sz; i++)
+						{
+							if ((i>=sc)||(!sd[i]))
+								stack.push(sprite->children_[i]);
+						}
+                    }
                 }
 			}
             if (xformValid) *xformValid=true;
 		}
 	}
 
+    //Compute bounds
 	{
 		float gminx = 1e30, gminy = 1e30, gmaxx = -1e30, gmaxy = -1e30;
 
@@ -1284,6 +1297,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 		if (visible)
 			cstack.push(noclip);
 
+		//Gather children bounds
 		while (true) {
 			const Sprite *sprite = stack.pop();
 			if (sprite == nullptr) break;
@@ -1364,12 +1378,21 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 				gmaxy = std::max(lgmaxy, gmaxy);
 			}
 
-			if (!nosubs)
-			for (size_t i = 0; i < sprite->children_.size(); ++i)
-			{
-				stack.push(sprite->children_[i]);
-				if (visible)
-					cstack.push(clip);
+			if (!nosubs) {
+				int sc=sprite->skipSet_.size();
+				const char *sd=sprite->skipSet_.data();
+				int sz = sprite->children_.size();
+				for (int i = 0; i <sz; i++)
+				{
+					if (visible) {
+						if ((i>=sc)||(!sd[i]))
+							stack.push(sprite->children_[i]);
+						cstack.push(clip);
+					}
+					else {
+						stack.push(sprite->children_[i]);
+					}
+				}
 			}
 		}
 
