@@ -64,6 +64,9 @@ void *ShaderProgram::LoadShaderFile(const char *fname, const char *ext, long *le
 bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type, int mult,const void *ptr)
 {
 	char *b=(char *)(uniforms[index]._localPtr);
+    if ((mult>uniforms[index].mult)||(type!=uniforms[index].type)) {
+        return false; //Format mismatch
+    }
 	int sl=0;
 	switch (type)
 	{
