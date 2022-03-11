@@ -174,6 +174,7 @@ static void callback_s(int type, void *data, void *udata) {
 	}
 	gspine_Event *event = (gspine_Event *) data;
 
+    lua_checkstack(L,16);
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
 	luaL_rawgetptr(L, -1, udata);
 

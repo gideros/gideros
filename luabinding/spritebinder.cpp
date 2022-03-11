@@ -1953,7 +1953,6 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	ShaderEngine::DepthStencil ds;
-	ds.cullMode=ShaderEngine::CULL_NONE;
 
 	if (lua_isnoneornil(L,2))
 		ds.dTest=false;

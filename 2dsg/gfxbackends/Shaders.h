@@ -196,6 +196,9 @@ public:
 		StencilOp dPass;
 		bool sClear;
 		CullMode cullMode;
+        DepthStencil() : dTest(false), dClear(false), sFunc(STENCIL_DISABLE), sRef(0), sMask(0xFF), sWMask(0xFF),
+            sFail(STENCIL_KEEP), dFail(STENCIL_KEEP), dPass(STENCIL_KEEP), sClear(false), cullMode(CULL_NONE)
+        {};
         bool operator==(const DepthStencil &o) const {
             return dTest==o.dTest && dClear==o.dClear;
         }
