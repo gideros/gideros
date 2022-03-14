@@ -42,7 +42,7 @@ struct TextureParameters
         maketransparent = false;
         transparentcolor = 0x00000000;
         grayscale = false;
-        rawalpha=true;
+        rawalpha=false;
         bpp=8;
     }
 
