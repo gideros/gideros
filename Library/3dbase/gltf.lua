@@ -15,9 +15,7 @@ function Gltf:getScene(i)
 	local root={}
 	root.type="group"
 	root.parts={}
-	for ni,n in ipairs(ns.nodes) do
-		root.parts["n"..ni]=self:getNode(n+1)
-	end
+	for ni,n in ipairs(ns.nodes) do root.parts["n"..ni]=self:getNode(n+1) end
 	return root
 end
 
@@ -36,14 +34,14 @@ function Gltf:getNode(i)
 				end
 				return 0
 			end
-			local m={ 
-					vertices=self:getBuffer(bufferIndex("POSITION")), 
-					texcoords=self:getBuffer(bufferIndex("TEXCOORD")), 
-					normals=self:getBuffer(bufferIndex("NORMAL")), 
-					indices=self:getBuffer(prim.indices+1,true), 
-					type="mesh",
-					material=self:getMaterial((prim.material or -1)+1),
-					}
+			local m={
+				vertices=self:getBuffer(bufferIndex("POSITION")), 
+				texcoords=self:getBuffer(bufferIndex("TEXCOORD")), 
+				normals=self:getBuffer(bufferIndex("NORMAL")), 
+				indices=self:getBuffer(prim.indices+1,true), 
+				type="mesh",
+				material=self:getMaterial((prim.material or -1)+1),
+			}
 			root.parts["p"..pi]=m
 		end
 	end
@@ -89,14 +87,10 @@ GL_UNSIGNED_INT64_AMD (35778)
 GL_UNSIGNED_SHORT (5123)
 ]]
 	local cl=0
-	if bd.componentType==5126 then
-		cl=4
-	elseif bd.componentType==5123 then
-		cl=2
-	elseif bd.componentType==5125 then
-		cl=4
-	else
-		assert(false,"Unhandled componentType:"..bd.componentType)
+	if bd.componentType==5126 then cl=4
+	elseif bd.componentType==5123 then cl=2
+	elseif bd.componentType==5125 then cl=4
+	else assert(false,"Unhandled componentType:"..bd.componentType)
 	end
 	if stride>0 then stride=stride-cl*bm end
 	local br=bd.byteOffset or 0
@@ -122,7 +116,7 @@ GL_UNSIGNED_SHORT (5123)
 		end
 		br+=stride
 	end
-	
+
 	--[[if (os:clock()-tm)>.1 then
 		print(i,json.encode(bd)," in ",os:clock()-tm)
 	end]]
@@ -141,9 +135,7 @@ function Gltf:getBufferView(n,ext)
 				buf.data=Cryptography.unb64(buf.uri:sub(38))
 			end
 		end
-		if not buf.data then
-			buf.data=self:loadBuffer(bd.buffer+1,buf)
-		end
+		if not buf.data then buf.data=self:loadBuffer(bd.buffer+1,buf) end
 	end
 	gltfNum+=1
 	local bname="_gltf_"..gltfNum..(ext or "")
@@ -155,9 +147,7 @@ end
 function Gltf:getImage(n)
 	local bd=self.desc.images[n]
 	if not bd then return nil end
-	if bd.uri then
-		return self.path.."/"..bd.uri
-	end
+	if bd.uri then return self.path.."/"..bd.uri end
 	if bd.bufferView then
 		local iext=nil
 		if bd.mimeType=="image/jpeg" then iext=".jpg"
@@ -184,7 +174,7 @@ function Gltf:getMaterial(i)
 	if bd.pbrMetallicRoughness then
 		mat.kd=bd.pbrMetallicRoughness.baseColorFactor
 		if mat.kd then
-			for i=1,4 do mat.kd[i]=mat.kd[i]^.3 end		
+			for i=1,4 do mat.kd[i]=mat.kd[i]^.3 end
 		end
 		local td=bd.pbrMetallicRoughness.baseColorTexture
 		if td and td.index then
@@ -195,23 +185,22 @@ function Gltf:getMaterial(i)
 	return mat
 end
 
+-- **********************************************************
 Glb=Core.class(Gltf,function (path,name) return path,nil end)
 
 function Glb:init(path,name)
 	local fn=name
-	if path then
-		fn=path.."/"..name
-	end
+	if path then fn=path.."/"..name end
 	local f=io.open(fn)
 	assert(f,"File not found:"..fn)
 	self.binData=f:read("*a")
 	f:close()
-	
+
 	local hdr=self.binData:decodeValue("iii")
 	assert(hdr[1]==0x46546c67,"Not a glb file"..name)
 	local length=hdr[3]-12
 	local l=13
-	
+
 	local chunks={}
 	while length>=8 do
 		local chdr=self.binData:sub(l,l+7):decodeValue("ii")

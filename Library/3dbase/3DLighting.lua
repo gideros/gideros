@@ -17,8 +17,7 @@ if slang=="glsl" then
 	if debug then print(json.encode(Shader.extensions)) end
 end
 
-local LightingShaderAttrs=
-{
+local LightingShaderAttrs={
 {name="POSITION",type=Shader.DFLOAT,amult=3,slot=0,offset=0},
 {name="vColor",type=Shader.DUBYTE,amult=0,slot=1,offset=0}, --Placeholder: mult=0
 {name="TEXCOORD",type=Shader.DFLOAT,amult=2,slot=2,offset=0,code="t"},
@@ -52,6 +51,7 @@ LightingShaderConstants[#LightingShaderConstants+1]=
 {name="bones",type=Shader.CMATRIX,mult=32,vertex=true,code="a"},
 {name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
 }
+
 local LightingShaderVarying={
 	{name="position",type=Shader.CFLOAT3},
 	{name="texCoord",type=Shader.CFLOAT2,code="t"},
@@ -109,7 +109,7 @@ Lighting.getShader=function(code)
 				LightingShaderConstants,LightingShaderAttrs)
 			]]
 			local csts=ShaderFilter(LightingShaderConstants,acode)
-			v=Shader.lua(
+			local v=Shader.lua(
 				D3._VLUA_Shader,
 				D3._FLUA_Shader,
 				0,
@@ -118,7 +118,7 @@ Lighting.getShader=function(code)
 				ShaderFilter(LightingShaderVarying,acode),
 				D3._FLUA_Shader_FDEF,
 				lconst
-				)
+			)
 
 			v:setConstant("lightPos",Shader.CFLOAT4,1,Lighting.light[1],Lighting.light[2],Lighting.light[3],1)
 			v:setConstant("ambient",Shader.CFLOAT,1,Lighting.light[4])
@@ -140,15 +140,15 @@ Lighting.getShader=function(code)
 end
 
 Lighting.prepareShader=function(v)
-  if D3._V_Shader then
-    if not Lighting._shaders[v] then
-      v:setConstant("lightPos",Shader.CFLOAT4,1,Lighting.light[1],Lighting.light[2],Lighting.light[3],1)
-      v:setConstant("ambient",Shader.CFLOAT,1,Lighting.light[4])
-      v:setConstant("cameraPos",Shader.CFLOAT4,1,Lighting.camera[1],Lighting.camera[2],Lighting.camera[3],1)
-      Lighting._shaders[v]=v
-    end
-  end
-  return Lighting._shaders[v],v
+	if D3._V_Shader then
+		if not Lighting._shaders[v] then
+			v:setConstant("lightPos",Shader.CFLOAT4,1,Lighting.light[1],Lighting.light[2],Lighting.light[3],1)
+			v:setConstant("ambient",Shader.CFLOAT,1,Lighting.light[4])
+			v:setConstant("cameraPos",Shader.CFLOAT4,1,Lighting.camera[1],Lighting.camera[2],Lighting.camera[3],1)
+			Lighting._shaders[v]=v
+		end
+	end
+	return Lighting._shaders[v],v
 end
 
 function Lighting.setLight(x,y,z,a)
@@ -158,6 +158,7 @@ function Lighting.setLight(x,y,z,a)
 		v:setConstant("ambient",Shader.CFLOAT,1,a)
 	end
 end
+
 function Lighting.setLightTarget(x,y,z,d,f)
 	Lighting.lightTarget={x,y,z,d or 50,f or 120}
 end

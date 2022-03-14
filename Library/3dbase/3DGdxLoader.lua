@@ -42,13 +42,14 @@ local function buildNode(gdx,mparts,bones,all)
 end
 
 function loadGdx(file,imtls)
-	local mtls=imtls or {}
 	local fd=io.open(file,"rb")
 	assert(fd,"Can't open file:"..file)
 	local js=fd:read("*all")
 	fd:close()
-	gdx=json.decode(js)
-	
+	local gdx=json.decode(js)
+
+	local mtls=imtls or {}
+
 	local root={}
 	root.type="group"
 	root.parts={}
@@ -58,11 +59,12 @@ function loadGdx(file,imtls)
 		--Compute attrs info
 		local attrs={}
 		local ds=0
-		for _,a in ipairs(gm.attributes) do		
+		local as, an = 0, ""
+		for _,a in ipairs(gm.attributes) do	
 			if a=="POSITION" then as=3 an="v"
 			elseif a=="NORMAL" then as=3 an="n"
 			elseif a=="COLOR" then as=4 an="c"
-			elseif a=="TEXCOORD0" then as=2 an="t"
+			elseif a:sub(1,8)=="TEXCOORD" then as=2 an="t"
 			elseif a:sub(1,11)=="BLENDWEIGHT" then as=2 an="bw"..a:sub(12,12)
 			else assert(false, "Attribute not handled:"..a) end
 			attrs[an]={ ab=ds, al=as, d={} }
@@ -73,9 +75,7 @@ function loadGdx(file,imtls)
 		-- Parse attributes data
 		for _,a in pairs(attrs) do
 			for i=0,dc-1 do
-				for j=1,a.al do
-					a.d[i*a.al+j]=gm.vertices[i*ds+a.ab+j]
-				end			
+				for j=1,a.al do a.d[i*a.al+j]=gm.vertices[i*ds+a.ab+j] end
 			end
 		end
 		-- Reformulate anim (bw)
@@ -87,19 +87,19 @@ function loadGdx(file,imtls)
 				di[i*4-3]=bd[i*2-1]
 				dw[i*4-3]=bd[i*2]
 				if attrs.bw1 then
-					local bd=attrs.bw1.d
+					bd=attrs.bw1.d
 					di[i*4-2]=bd[i*2-1]
 					dw[i*4-2]=bd[i*2]
 				else di[i*4-2]=0 dw[i*4-2]=0
 				end
 				if attrs.bw2 then
-					local bd=attrs.bw2.d
+					bd=attrs.bw2.d
 					di[i*4-1]=bd[i*2-1]
 					dw[i*4-1]=bd[i*2]
 				else di[i*4-1]=0 dw[i*4-1]=0
 				end
 				if attrs.bw3 then
-					local bd=attrs.bw3.d
+					bd=attrs.bw3.d
 					di[i*4]=bd[i*2-1]
 					dw[i*4]=bd[i*2]
 				else di[i*4]=0 dw[i*4]=0
@@ -126,17 +126,25 @@ function loadGdx(file,imtls)
 	if #bones==0 then bones=all end
 	root.bones=bones
 	root.animations=gdx.animations
-    for _,mat in ipairs(gdx.materials or {}) do
-	   local md=mtls[mat.id] or {}
-	   md.kd=mat.diffuse
-	   mtls[mat.id]=md
-    end
-
+	-- materials (texture id, tex path, color, ...)
+	for _,mat in ipairs(gdx.materials or {}) do
+		local md=mtls[mat.id] or {}
+		md.kd=mat.diffuse
+		-- the image textures
+		md.modelpath = mtls.modelpath
+		for _, tex in ipairs(mat.textures or {}) do
+			if tex.type == "DIFFUSE" then md.diffusetexfile = tex.filename
+			elseif tex.type == "NORMAL" then md.normaltexfile = tex.filename
+			end
+		end
+		mtls[mat.id]=md
+	end
 	G3DFormat.computeG3DSizes(root)
+
 	return root,mtls
 end
 
 function buildGdx(file,imtls)
- local root,mtls=loadGdx(file,imtls)
- return G3DFormat.buildG3D(root,mtls)
+	local root,mtls=loadGdx(file,imtls)
+	return G3DFormat.buildG3D(root,mtls)
 end

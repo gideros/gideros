@@ -1,14 +1,15 @@
 D3Anim={}
 D3Anim._animated={}
 D3Anim._animatedModel={}
+
 function D3Anim.updateBones()
-	for k,a in pairs(D3Anim._animated) do	
-		if D3Anim._animatedModel[k.bonesTop].dirty then 
+	for k,a in pairs(D3Anim._animated) do
+		if D3Anim._animatedModel[k.bonesTop].dirty then
 			local bt={}
 			local bn=1
 			for n,bd in ipairs(k.animBones) do
 				local b=bd.bone
-				local name=b.name
+--				local name=b.name
 
 				local m=Matrix.new()
 				m:setMatrix(b.poseIMat:getMatrix())
@@ -37,10 +38,7 @@ function D3Anim.animate(m,a)
 	for _,b in ipairs(a.anim.bones) do
 		local cf=1
 		while cf<#b.keyframes and b.keyframes[cf].keytime<dtm do cf+=1 end
-		if cf<#b.keyframes then
-			hasNext=true
-		else
-		end
+		if cf<#b.keyframes then hasNext=true end
 		local f=b.keyframes[cf]
 		if type(m.bones[b.boneId])=="table" then
 			local nf=m.bones[b.boneId]
@@ -56,8 +54,7 @@ function D3Anim.animate(m,a)
 end
 
 function D3Anim.tick()
-
-	for k,a in pairs(D3Anim._animatedModel) do	
+	for k,a in pairs(D3Anim._animatedModel) do
 		local ares={}
 		local aend={}
 		for slot,anim in pairs(a.animations) do
@@ -67,32 +64,23 @@ function D3Anim.tick()
 					table.insert(ares[bone],{ratio=ratio,mat={G3DFormat.srtToMatrix(srt):getMatrix()}})
 				end
 			end
-			local ao,ac,aor=nil,nil,1
+			local ao,al,ac,aor=nil,nil,nil,1
 			if anim.oldAnim then
 				local aratio=(os:timer()-anim.oldStart)/anim.oldLen
 				if aratio>=1 then aratio=1 end
 				if aratio<0 then aratio=0 end
 				ao,al=D3Anim.animate(k,anim.oldAnim)
 				aor=1-aratio
-				if al or aratio>=1 then 
-					anim.oldAnim=nil
-				end
+				if al or aratio>=1 then anim.oldAnim=nil end
 			end
 			ac=D3Anim.animate(k,anim)
-			if ao and ac then
-				animateIns(ao,aor)
-				animateIns(ac,1-aor)
-			elseif ao then
-				animateIns(ao,1)
-			elseif ac then
-				animateIns(ac,1)
-			else
-				aend[slot]=true
+			if ao and ac then animateIns(ao,aor) animateIns(ac,1-aor)
+			elseif ao then animateIns(ao,1)
+			elseif ac then animateIns(ac,1)
+			else aend[slot]=true
 			end
 		end
-		for slot,_ in pairs(aend) do
-			a.animations[slot]=nil
-		end
+		for slot,_ in pairs(aend) do a.animations[slot]=nil end
 		for bone,srtl in pairs(ares) do
 			if #srtl>0 then
 				local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -113,7 +101,7 @@ function D3Anim.tick()
 end
 
 function D3Anim.setBonesPose(m,poses)
-	local m=m.bonesTop
+	m=m.bonesTop
 	local a=D3Anim._animatedModel[m]
 	for bone,srtl in pairs(poses) do
 		if #srtl>0 then

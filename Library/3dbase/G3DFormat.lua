@@ -68,28 +68,28 @@ function G3DFormat.srtToMatrix(v,rev)
 		X/=L Y/=L Z/=L W/=L
 		local xx,xy,xz,xw,yy,yz,yw,zz,zw
 		local m00,m01,m02,m10,m11,m12,m20,m21,m22
-		xx      = X * X
-		xy      = X * Y
-		xz      = X * Z
-		xw      = X * W
+		xx   = X * X
+		xy   = X * Y
+		xz   = X * Z
+		xw   = X * W
 
-		yy      = Y * Y
-		yz      = Y * Z
-		yw      = Y * W
+		yy   = Y * Y
+		yz   = Y * Z
+		yw   = Y * W
 
-		zz      = Z * Z
-		zw      = Z * W
+		zz   = Z * Z
+		zw   = Z * W
 
 		m00  = 1 - 2 * ( yy + zz )
 		m01  =     2 * ( xy - zw )
-		m02 =     2 * ( xz + yw )
+		m02  =     2 * ( xz + yw )
 		m10  =     2 * ( xy + zw )
 		m11  = 1 - 2 * ( xx + zz )
 		m12  =     2 * ( yz - xw )
 		m20  =     2 * ( xz - yw )
 		m21  =     2 * ( yz + xw )
-		m22 = 1 - 2 * ( xx + yy )
-		local tx,ty,tz=0
+		m22  = 1 - 2 * ( xx + yy )
+		local tx,ty,tz=0,0,0
 		if v.tr then
 			tx=v.t[1]
 			ty=v.t[2]
@@ -103,45 +103,43 @@ function G3DFormat.srtToMatrix(v,rev)
 	if rev and v.s then
 		mt:scale(v.s[1],v.s[2],v.s[3])
 	else
-		if v.t then
-			mt:translate(v.t[1],v.t[2],v.t[3])
-		end
+		if v.t then mt:translate(v.t[1],v.t[2],v.t[3]) end
 	end
 	return mt
 end
 
 function G3DFormat.quaternionToEuler(w,x,y,z)
-   -- roll (x-axis rotation)
-   local sinr_cosp = 2 * (w * x + y * z)
-   local cosr_cosp = 1 - 2 * (x * x + y * y)
-   local rx = math.atan2(sinr_cosp, cosr_cosp)
+	-- roll (x-axis rotation)
+	local sinr_cosp = 2 * (w * x + y * z)
+	local cosr_cosp = 1 - 2 * (x * x + y * y)
+	local rx = math.atan2(sinr_cosp, cosr_cosp)
 
-   -- pitch (y-axis rotation)
-    local sinp = 2 * (w * y - z * x)
+	-- pitch (y-axis rotation)
+	local sinp = 2 * (w * y - z * x)
 	local ry
-    if (math.abs(sinp) >= 1) then
-        ry= 3.141592654 / 2
+	if (math.abs(sinp) >= 1) then
+		ry= 3.141592654 / 2
 		if sinp<0 then ry=-ry end
-    else
-        ry = math.asin(sinp)
+	else
+		ry = math.asin(sinp)
 	end
 
-    -- yaw (z-axis rotation)
-    local siny_cosp = 2 * (w * z + x * y)
-    local cosy_cosp = 1 - 2 * (y * y + z * z)
-    local rz = math.atan2(siny_cosp, cosy_cosp)
-	
+	-- yaw (z-axis rotation)
+	local siny_cosp = 2 * (w * z + x * y)
+	local cosy_cosp = 1 - 2 * (y * y + z * z)
+	local rz = math.atan2(siny_cosp, cosy_cosp)
+
 	return ^>rx,^>ry,^>rz
 end
 
 function G3DFormat.buildG3DObject(obj,mtls,top)
 	mtls=mtls or {}
-	m=D3.Mesh.new()
+	local m=D3.Mesh.new()
 	m.name=obj.name
 	m:setVertexArray(obj.vertices)
 	m:setIndexArray(obj.indices)
-	mtl={}
-	if obj.material then 
+	local mtl={}
+	if obj.material then
 		if type(obj.material)=="table" then
 			mtl=obj.material
 		else
@@ -149,18 +147,16 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 			assert(mtl,"No such material: "..obj.material)
 		end
 	end
-	if obj.color then
-		m:setColorTransform(obj.color[1],obj.color[2],obj.color[3],obj.color[4])
-	end
-	--m:setColorArray(c)
 	local smode=0
-	if mtl.textureFile and not mtl.texture then
-		mtl.texture=Texture.new(mtl.textureFile,true,{ wrap=Texture.REPEAT, extend=false})
-		mtl.texturew=mtl.texture:getWidth()
-		mtl.textureh=mtl.texture:getHeight()
+	-- DIFFUSE
+	if mtl.diffusetexfile and not mtl.diffusetex then
+		local path = mtl.modelpath
+		mtl.diffusetex=Texture.new(path..mtl.diffusetexfile,true,{ wrap=Texture.REPEAT, extend=false })
+		mtl.texturew=mtl.diffusetex:getWidth()
+		mtl.textureh=mtl.diffusetex:getHeight()
 	end
-	if (mtl.texture~=nil) then
-		m:setTexture(mtl.texture)
+	if mtl.diffusetex~=nil then
+		m:setTexture(mtl.diffusetex)
 		local tc={}
 		for i=1,#obj.texcoords,2 do
 			tc[i]=obj.texcoords[i]*mtl.texturew
@@ -170,18 +166,23 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		m.hasTexture=true
 		smode=smode|D3.Mesh.MODE_TEXTURE
 	end
-	if mtl.normalMapFile and not mtl.normalMap then
-		mtl.normalMap=Texture.new(mtl.normalMapFile,true)
-		mtl.normalMapW=mtl.normalMap:getWidth()
-		mtl.normalMapH=mtl.normalMap:getHeight()
+	-- NORMAL
+	if mtl.normaltexfile and not mtl.normaltex then
+		local path = mtl.modelpath
+		mtl.normaltex=Texture.new(path..mtl.normaltexfile,true,{ wrap=Texture.REPEAT, extend=false })
 	end
-	if (mtl.normalMap~=nil) then
-		m:setTexture(mtl.normalMap,1)
+	if mtl.normaltex~=nil then
+		m:setTexture(mtl.normaltex,1)
 		m.hasNormalMap=true
 		smode=smode|D3.Mesh.MODE_BUMP
 	end
+	-- COLOR
 	if mtl.kd then
 		m:setColorTransform(mtl.kd[1],mtl.kd[2],mtl.kd[3],mtl.kd[4])
+	end
+	-- obj
+	if obj.color then
+		m:setColorTransform(obj.color[1],obj.color[2],obj.color[3],obj.color[4])
 	end
 	if obj.normals then
 		m.hasNormals=true
@@ -203,6 +204,7 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		end
 		smode=smode|D3.Mesh.MODE_ANIMATED
 	end
+	-- the shadow
 	m:updateMode(smode|D3.Mesh.MODE_SHADOW,0)
 	return m
 end
@@ -216,9 +218,7 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 		spr.objs={}
 		if g3d.bones then
 			spr.bones={}
-			for k,v in pairs(g3d.bones) do
-				spr.bones[k]=v
-			end
+			for k,v in pairs(g3d.bones) do spr.bones[k]=v end
 		end
 		spr.animations=g3d.animations
 		for k,v in pairs(g3d.parts) do
@@ -226,9 +226,7 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 			spr:addChild(m)
 			spr.objs[k]=m
 			if ltop and ltop.bones then
-				if ltop.bones[k] then 
-					ltop.bones[k]=m 
-				end
+				if ltop.bones[k] then ltop.bones[k]=m end
 			end
 		end
 	elseif g3d.type=="mesh" then
@@ -281,13 +279,12 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 			end
 		end
 	end
-
 	return spr
 end
 
 function G3DFormat.mapCoords(v,t,n,faces)
-	imap={}
-	vmap={}
+	local imap={}
+	local vmap={}
 	imap.alloc=function(self,facenm,i)
 		 local iv=i.v or 0
 		 if (iv<0) then
@@ -295,18 +292,14 @@ function G3DFormat.mapCoords(v,t,n,faces)
 		 end
 		 iv=iv-1
 		 local it=i.t or 0
-		 if (it==nil) then																																														
-		  it=-1
+		 if (it==nil) then
+			it=-1
 		 else
-		  if (it<0) then
-			it=(#t/2)+it+1
-		  end
-		  it=it-1
+			if (it<0) then it=(#t/2)+it+1 end
+			it=it-1
 		 end
 		 local inm=i.n or 0
-		 if (inm<0) then
-		  inm=(#n/3)+inm+1
-		 end
+		 if (inm<0) then inm=(#n/3)+inm+1 end
 		 inm=inm-1
 		 if inm==-1 then inm=facenm.code end
 		 local ms=iv..":"..it..":"..inm
@@ -350,7 +343,7 @@ function G3DFormat.mapCoords(v,t,n,faces)
 	imap.vmap={}
 	imap.vngmap={}
 	imap.gnorm=-2
-	
+
 	for _,face in ipairs(faces) do
 	local itab={}
 	local normtab={ code=imap.gnorm, lvi={}, lvni={} }
