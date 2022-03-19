@@ -1,61 +1,61 @@
 --!NEEDS:luac_loader.lua
 local debug=false
 local codeName={
-  "MOVE",
-  "LOADK",
-  "LOADBOOL",
-  "LOADNIL",
-  "GETUPVAL",
-  "GETGLOBAL",
-  "GETTABLE",
-  "SETGLOBAL",
-  "SETUPVAL",
-  "SETTABLE",
-  "NEWTABLE",
-  "SELF",
-  "ADD",
-  "SUB",
-  "MUL",
-  "DIV",
-  "MOD",
-  "POW",
-  "BOR",
-  "BAND",
-  "OP_BXOR",
-  "BLSHFT",
-  "BRSHFT",
-  "BNOT",
-  "INTDIV",
-  "UNM",
-  "NOT",
-  "LEN",
-  "CONCAT",
-  "JMP",
-  "EQ",
-  "LT",
-  "LE",
-  "TEST",
-  "TESTSET",
-  "CALL",
-  "TAILCALL",
-  "RETURN",
-  "FORLOOP",
-  "FORPREP",
-  "TFORLOOP",
-  "SETLIST",
-  "CLOSE",
-  "CLOSURE",
-  "VARARG",
-  "MAX",
-  "MIN",
-  "DEG",
-  "RAD",
-  "ADD_EQ",
-  "SUB_EQ",
-  "MUL_EQ",
-  "DIV_EQ",
-  "MOD_EQ",
-  "POW_EQ",
+	"MOVE",
+	"LOADK",
+	"LOADBOOL",
+	"LOADNIL",
+	"GETUPVAL",
+	"GETGLOBAL",
+	"GETTABLE",
+	"SETGLOBAL",
+	"SETUPVAL",
+	"SETTABLE",
+	"NEWTABLE",
+	"SELF",
+	"ADD",
+	"SUB",
+	"MUL",
+	"DIV",
+	"MOD",
+	"POW",
+	"BOR",
+	"BAND",
+	"OP_BXOR",
+	"BLSHFT",
+	"BRSHFT",
+	"BNOT",
+	"INTDIV",
+	"UNM",
+	"NOT",
+	"LEN",
+	"CONCAT",
+	"JMP",
+	"EQ",
+	"LT",
+	"LE",
+	"TEST",
+	"TESTSET",
+	"CALL",
+	"TAILCALL",
+	"RETURN",
+	"FORLOOP",
+	"FORPREP",
+	"TFORLOOP",
+	"SETLIST",
+	"CLOSE",
+	"CLOSURE",
+	"VARARG",
+	"MAX",
+	"MIN",
+	"DEG",
+	"RAD",
+	"ADD_EQ",
+	"SUB_EQ",
+	"MUL_EQ",
+	"DIV_EQ",
+	"MOD_EQ",
+	"POW_EQ",
 }
 
 --UNSUPPORTED: GETUPVAL,SETUPVAL,NEWTABLE,SETTABLE,SELF
@@ -65,18 +65,14 @@ end
 
 local function KStr(k)
 	if type(k)=="table" then
-		if k[1]=="double" then
-			return k[2]
-		end
+		if k[1]=="double" then return k[2] end
 	end
 	return tostring(k)
 end
 
 local function RKStr(f,i)
-	if (i&0x100)>0 then
-		return KStr(f.k[i&0xFF+1])
-	else	
-		return "$"..i
+	if (i&0x100)>0 then return KStr(f.k[i&0xFF+1])
+	else return "$"..i
 	end
 end
 
@@ -102,15 +98,16 @@ local function KRVal(f,i)
 	end		
 end
 
-
 local function outcode(f,s)
 	--print("C:",s)
 	f._c=f._c..s
 end
+
 local function mapGlobal(f,sym)
 	assert(f._g[sym],"Unknown global "..sym)
 	return f._g[sym]
 end
+
 local ivar=1
 local ccvar=1
 local function ensureLocalVar(f,v,r)
@@ -129,6 +126,7 @@ end
 function gen_GETUPVAL(is,f,a,b,c,bc)
 	assert(false,"Upvalues aren't supported")
 end
+
 function gen_SETUPVAL(is,f,a,b,c,bc)
 	assert(false,"Upvalues aren't supported")
 end
@@ -179,7 +177,7 @@ function gen_GETTABLE(is,f,a,b,c,bc)
 	local bv,newType
 	if (c&0x100)>0 then
 		newType=checkSwizzling(f._l[b],idx)
-	--UGLY, this only handle swizzling, shader specific, and don't do any checks
+		--UGLY, this only handle swizzling, shader specific, and don't do any checks
 		bv=f._l[b].value.."."..idx
 	else
 		-- Assume integer lookup
@@ -189,7 +187,7 @@ function gen_GETTABLE(is,f,a,b,c,bc)
 	ensureLocalVar(f,a,newType)
 	outcode(f,f._l[a].value.."="..bv..";\n")
 	--f._l[a]={type=f._l[b].type,value=f._l[b].value.."."..idx,vtype=newType}
---outcode(f,mapGlobal(f,KStr(f.k[bc+1])).value.."="..f._l[a].value..";\n")
+	--outcode(f,mapGlobal(f,KStr(f.k[bc+1])).value.."="..f._l[a].value..";\n")
 end
 
 function gen_SETTABLE(is,f,a,b,c,bc)
@@ -200,8 +198,8 @@ function gen_SETTABLE(is,f,a,b,c,bc)
 	if (b&0x100)>0 then
 		--UGLY, this only handle swizzling, shader specific, and don't do any checks
 		newType=checkSwizzling(f._l[a],idx)
-	--assert(f._l[a].vtype==newType,"Cannot set value of ("..f._l[a].value.."), type mismatch '"..f._l[a].vtype.."'!='"..newType.."'")
-	outcode(f,f._l[a].value.."."..idx.."="..KRVal(f,c).value..";\n")
+		--assert(f._l[a].vtype==newType,"Cannot set value of ("..f._l[a].value.."), type mismatch '"..f._l[a].vtype.."'!='"..newType.."'")
+		outcode(f,f._l[a].value.."."..idx.."="..KRVal(f,c).value..";\n")
 	else
 		--Assume integer index
 		outcode(f,f._l[a].value.."["..f._l[b].value.."]="..KRVal(f,c).value..";\n")
@@ -235,9 +233,7 @@ function gen_opun(is,f,a,b,op,rtype)
 	mprint("$"..a.."="..op..RKStr(f,b))
 	local vb=KRVal(f,b)
 	local terms=f._handlers.GENOPUN and f._handlers.GENOPUN(op,vb.value)
-	if not terms then 
-		terms=op.."("..vb.value..")" 
-	end
+	if not terms then terms=op.."("..vb.value..")" end
 	rtype=rtype or f._ot[op..vb.vtype] or vb.vtype
 	ensureLocalVar(f,a,rtype)
 	outcode(f,f._l[a].value.."="..terms..";\n")
@@ -253,10 +249,8 @@ function gen_op(is,f,a,b,c,op,rtype)
 	local vc=KRVal(f,c)
 	local terms=f._handlers.GENOP and f._handlers.GENOP(op,vb,vc)
 	if not terms then 
-		if op=="^^" then
-			terms="pow("..vb.value..","..vc.value..")"
-		else
-			terms="("..vb.value..op..vc.value..")" 
+		if op=="^^" then terms="pow("..vb.value..","..vc.value..")"
+		else terms="("..vb.value..op..vc.value..")"
 		end
 	end
 	rtype=rtype or f._ot[vb.vtype..op..vc.vtype] or vb.vtype
@@ -295,13 +289,10 @@ function gen_opeq(is,f,a,b,op,rtype)
 	ensureLocalVar(f,a,rtype)
 	local terms=f._handlers.GENOPEQ and f._handlers.GENOPEQ(op,f._l[a],vb)
 	if not terms then 
-		if op=="^^=" then
-			terms=f._l[a].value.."=pow("..f._l[a].value..","..vb.value..")"
-		else
-			terms=f._l[a].value..op..vb.value 
+		if op=="^^=" then terms=f._l[a].value.."=pow("..f._l[a].value..","..vb.value..")"
+		else terms=f._l[a].value..op..vb.value
 		end
 	end
-
 	outcode(f,terms..";\n")
 end
 
@@ -376,7 +367,7 @@ local function  cond_end(f,lc,lcs)
 	end
 	local cb=endblock
 	f._breaks[lc]=f._breaks[lc] or {}
-	local condvar=false
+	local condVar=false
 	if joff then
 		local jtst=(f.code[lc-2]&0x3F)()
 		local lce=lc-2
@@ -401,7 +392,7 @@ local function  cond_end(f,lc,lcs)
 			if f._elsetgt[lc] then
 				cb=function(c,f) outcode(f,"} else "..f._elsetgt[lc].."=true;\n") end
 			else
-		cb=elseblock
+				cb=elseblock
 				f._jignore[lc-1]=true
 				insBreak(f,lc+joff,{ callback=endblock })
 			end
@@ -423,9 +414,9 @@ function gen_compop(is,f,a,b,c,op,lc)
 	f._lc=f._lc+1
 	local vb=KRVal(f,b)
 	local vc=KRVal(f,c)
-			
+
 	local cj=cond_end(f,lc+2+joff,lc+2)
-			
+
 	local terms="("..vb.value..op..vc.value..")"
 	local abool="false" if (a>0) then abool="true" end
 	outcode(f,"if (("..terms..")!="..abool..") ")
@@ -435,7 +426,6 @@ function gen_compop(is,f,a,b,c,op,lc)
 	else
 		outcode(f,"{\n")
 	end
-	
 end
 
 function gen_EQ(is,f,a,b,c,bc,sbc,lc)
@@ -471,9 +461,9 @@ function gen_TEST(is,f,a,b,c,bc,sbc,lc)
 		end
 	else
 		local cj=cond_end(f,lc+2+joff,lc+2)
-			
+
 		local terms="("..vb.value..")"
-		
+
 		outcode(f,"if (("..terms..")!="..abool..") ")
 		if f._elsetgt[lc+2] then
 			outcode(f,f._elsetgt[lc+2].."=true;\n")
@@ -484,9 +474,8 @@ function gen_TEST(is,f,a,b,c,bc,sbc,lc)
 	end
 end
 
-
 function gen_LOADK(is,f,a,b,c,bc)
-mprint("$"..a.."="..KStr(f.k[bc+1]))
+	mprint("$"..a.."="..KStr(f.k[bc+1]))
 	local v=KVal(f,bc)
 	--f._l[a]={type="val",value=v.value, vtype="hF1"}	
 	ensureLocalVar(f,a,"hF1")
@@ -509,12 +498,12 @@ end
 
 function gen_JMP(is,f,a,b,c,bc,sbc,lc)
 	if f._jignore[lc] then return end
-assert(false,"Standalone JMP aren't supported")
- --Generate if context
+	assert(false,"Standalone JMP aren't supported")
+	--Generate if context
 --	outcode(f,"if ("..f._l[a].value..") {\n")
 	f._breaks[lc+1+sbc]=f._breaks[lc+1+sbc] or {}
 	table.insert(f._breaks[lc+1+sbc],{ callback=endblock })
---TODO: handle subpart
+	--TODO: handle subpart
 end
 
 function gen_CALL(is,f,a,b,c)
@@ -532,18 +521,14 @@ function gen_CALL(is,f,a,b,c)
 	local fnca=f._l[a].callarg
 	if c==2 then -- Return
 		assert(fnr,"Function '"..fn.."' return type not specified")
-		if tonumber(fnr) then 
-			fnr=f._l[a+fnr].vtype
-		end
+		if tonumber(fnr) then fnr=f._l[a+fnr].vtype end
 		ensureLocalVar(f,a,fnr)
 		outcode(f,f._l[a].value.."=")
 	end		
 	if fne then
 		--INLINE
 		local args={}
-		for p=1,b-1 do
-			args[p]=f._l[a+p]
-		end
+		for p=1,b-1 do args[p]=f._l[a+p] end
 		outcode(f,fne(f,f._l[a],unpack(args))..";\n")
 	else
 		outcode(f,fn.."(")
@@ -560,24 +545,17 @@ function gen_CALL(is,f,a,b,c)
 end
 
 function gen_RETURN(is,f,a,b)
-assert(b<=2,"Multiple returns aren't allowed")
+	assert(b<=2,"Multiple returns aren't allowed")
 	mprint("return $"..a.." (#"..(b-1)..")")
 	if (f._handlers.RETURN) then
 		local gcode=nil
-		if (b<2) then 
-			gcode=f._handlers.RETURN()
-		else
-			gcode=f._handlers.RETURN(f._l[a].value)			
+		if (b<2) then gcode=f._handlers.RETURN()
+		else gcode=f._handlers.RETURN(f._l[a].value)
 		end
-		if gcode then
-			outcode(f,gcode)
-			return
-		end
+		if gcode then outcode(f,gcode) return end
 	end
-	if (b<2) then 
-		outcode(f,"return;\n")
-	else
-		outcode(f,"return "..f._l[a].value..";\n");
+	if (b<2) then outcode(f,"return;\n")
+	else outcode(f,"return "..f._l[a].value..";\n");
 	end
 end
 
@@ -597,9 +575,7 @@ local function processFunction(f)
 		f._breaks={}
 		while lc<=f.codeSize do
 			if f._breaks[lc] then 
-				for _,c in ipairs(f._breaks[lc])
-					do c:callback(f,lc) 
-				end 
+				for _,c in ipairs(f._breaks[lc]) do c:callback(f,lc) end 
 			end
 			local is=f.code[lc]
 			local a=((is>>6)&0xFF)()
@@ -622,9 +598,7 @@ end
 function codegen_l(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 	pcount=0
 	tcount=0
-	if type(f)=="function" then
-		f=luacLoad(string.dump(f))
-	end
+	if type(f)=="function" then f=luacLoad(string.dump(f)) end
 	f._c=""
 	f._hc=""
 	f._g=globalmap or {}

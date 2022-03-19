@@ -8,17 +8,13 @@ end
 
 local function loadInt()
 	local a,b,c,d=lc:byte(lcp,lcp+3) lcp+=4
-	if endian then 
-		return d|(c<<8)|(b<<16)|(a<<24)
-	end
+	if endian then return d|(c<<8)|(b<<16)|(a<<24) end
 	return a|(b<<8)|(c<<16)|(d<<24)
 end
 
 local function loadIntX()
 	local a,b,c,d=lc:byte(lcp,lcp+3) lcp+=4
-	if endian then 
-		return #d|(#c<<8)|(#b<<16)|(#a<<24)
-	end
+	if endian then return #d|(#c<<8)|(#b<<16)|(#a<<24) end
 	return #a|(#b<<8)|(#c<<16)|(#d<<24)
 end
 
@@ -58,14 +54,10 @@ local function loadConstants(f)
 	for i=1,n do
 		local t=loadByte()
 		local v
-		if t==1 then
-			v=(loadByte()~=0)
-		elseif t==3 then
-			v=loadNumber()
-		elseif t==4 then
-			v=loadString()
-		else
-			assert(false,"Unsupported constant type in lua bytecode:"..t)
+		if t==1 then v=(loadByte()~=0)
+		elseif t==3 then v=loadNumber()
+		elseif t==4 then v=loadString()
+		else assert(false,"Unsupported constant type in lua bytecode:"..t)
 		end
 		k[i]=v
 	end
@@ -82,12 +74,14 @@ local function loadDebug(f)
 	local n=loadInt()
 	f.sizelineinfo=n
 	f.lineinfo=loadVector(n,loadInt)
-	local n=loadInt()
+--	local n=loadInt()
+	n=loadInt()
 	f.sizelocvars=n
 	local t={}
 	for i=1,n do t[i]={ varname=loadString(), startpc=loadInt(), endpc=loadInt()} end
 	f.locvars=t
-	local n=loadInt()
+--	local n=loadInt()
+	n=loadInt()
 	f.sizeupvalues=n
 	f.locvars=loadVector(n,loadString)
 end

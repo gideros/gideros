@@ -11,6 +11,7 @@ local slang=Shader.getShaderLanguage()
 
 if debug then print(glversion) end
 if debug then print(Shader.getProperties().version) end
+
 Shader.extensions={}
 if slang=="glsl" then
 	for ex in Shader.getProperties().extensions:gmatch("%S+") do Shader.extensions[ex]=true end
@@ -42,29 +43,28 @@ local LightingShaderConstants={
 {name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false},
 {name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="n"},
 {name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false,code="s"},
---[[	
+{name="bones",type=Shader.CMATRIX,mult=32,vertex=true,code="a"},
+{name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
+}
+--[[
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="g_InstanceMap",type=Shader.CTEXTURE,mult=1,vertex=true}
 LightingShaderConstants[#LightingShaderConstants+1]=
 	{name="InstanceMapWidth",type=Shader.CFLOAT,mult=1,vertex=true}
-	]]
-{name="bones",type=Shader.CMATRIX,mult=32,vertex=true,code="a"},
-{name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
-}
+]]
 
 local LightingShaderVarying={
-	{name="position",type=Shader.CFLOAT3},
-	{name="texCoord",type=Shader.CFLOAT2,code="t"},
-	{name="normalCoord",type=Shader.CFLOAT3},
-	{name="lightSpace",type=Shader.CFLOAT4,code="s"},
+{name="position",type=Shader.CFLOAT3},
+{name="texCoord",type=Shader.CFLOAT2,code="t"},
+{name="normalCoord",type=Shader.CFLOAT3},
+{name="lightSpace",type=Shader.CFLOAT4,code="s"},
 }
+
 -- Shaders defs
 local function ShaderFilter(t,code)
 	local o={}
 	for _,l in ipairs(t) do
-		if l.code==nil or code:find(l.code) then
-			o[#o+1]=l
-		end
+		if l.code==nil or code:find(l.code) then o[#o+1]=l end
 	end
 	return o
 end
@@ -73,14 +73,14 @@ Lighting._shaders={}
 Lighting.getShader=function(code)
 	local cmap={
 		{"t","TEXTURED",true},
-		{"s","SHADOWS",isES3Level and ((slang~="glsl") or 
+		{"s","SHADOWS",isES3Level and ((slang~="glsl") or
 --			isES3 or
-			Shader.extensions.GL_EXT_shadow_samplers or 
+			Shader.extensions.GL_EXT_shadow_samplers or
 			Shader.extensions.GL_EXT_shadow_funcs)},
 		{"n","NORMMAP",true},
 		{"i","INSTANCED",true},
 		{"a","ANIMATED",true},
-	}	
+	}
 	local lcode,ccode,acode="","",""
 	local lconst={}
 	for _,k in ipairs(cmap) do
@@ -99,7 +99,7 @@ Lighting.getShader=function(code)
 	if D3._V_Shader then
 		if not Lighting._shaders[lcode] then
 			for _,a in ipairs(LightingShaderAttrs) do
-				if not a.code or code:find(a.code) then a.mult=a.amult else a.mult=0 end	
+				if not a.code or code:find(a.code) then a.mult=a.amult else a.mult=0 end
 			end
 			--[[
 			v=Shader.new(
@@ -193,9 +193,7 @@ function Lighting.setSpriteMode(sprite,mode)
 			end
 			Lighting._shadowed[sprite]=sprite
 		end
-		if sc:find("a") then
-			D3Anim._addMesh(sprite)
-		end
+		if sc:find("a") then D3Anim._addMesh(sprite) end
 	end
 end
 
@@ -232,7 +230,10 @@ function Lighting.computeShadows(scene)
 	local view=Lighting.shadowview
 	view:setContent(scene)
 	view:setProjection(p)
-	view:lookAt(Lighting.light[1],Lighting.light[2],Lighting.light[3],Lighting.lightTarget[1],Lighting.lightTarget[2],Lighting.lightTarget[3],0,1,0)
+	view:lookAt(
+		Lighting.light[1],Lighting.light[2],Lighting.light[3],
+		Lighting.lightTarget[1],Lighting.lightTarget[2],Lighting.lightTarget[3],
+		0,1,0)
 	p:multiply(view:getTransform())
 	for k,v in pairs(Lighting._shaders) do
 		v:setConstant("g_LMatrix",Shader.CMATRIX,1,p:getMatrix())

@@ -1,4 +1,5 @@
 D3View=Core.class(Sprite)
+
 function D3View:init(sw,sh,fov,near,far)
 	self.view=Viewport.new()
 	self.projection=Matrix.new()
@@ -8,7 +9,7 @@ function D3View:init(sw,sh,fov,near,far)
 	self:setSize(sw or 1,sh or 1)
 	self.scene=Sprite.new()
 	self.view:setContent(self.scene)
-	self:addChild(self.view)
+	self:addChild(self.view)	
 end
 
 function D3View:setSize(w,h)

@@ -20,14 +20,14 @@ function G3DFormat.computeG3DSizes(g3d)
 		local minx,miny,minz=100000,100000,100000
 		local maxx,maxy,maxz=-100000,-100000,-100000
 		for id=1,#g3d.indices do
-		 local i=g3d.indices[id]*3-2
-		 local x,y,z=g3d.vertices[i],g3d.vertices[i+1],g3d.vertices[i+2]
-		 minx=math.min(minx,x)
-		 miny=math.min(miny,y)
-		 minz=math.min(minz,z)
-		 maxx=math.max(maxx,x)
-		 maxy=math.max(maxy,y)
-		 maxz=math.max(maxz,z)
+			local i=g3d.indices[id]*3-2
+			local x,y,z=g3d.vertices[i],g3d.vertices[i+1],g3d.vertices[i+2]
+			minx=math.min(minx,x)
+			miny=math.min(miny,y)
+			minz=math.min(minz,z)
+			maxx=math.max(maxx,x)
+			maxy=math.max(maxy,y)
+			maxz=math.max(maxz,z)
 		end
 		g3d.min={minx,miny,minz}
 		g3d.max={maxx,maxy,maxz}
@@ -53,18 +53,14 @@ end
 function G3DFormat.srtToMatrix(v,rev)
 	local mt=Matrix.new()
 	if rev and v.t then
-		if v.t then
-			mt:translate(v.t[1],v.t[2],v.t[3])
-		end
+		if v.t then mt:translate(v.t[1],v.t[2],v.t[3]) end
 	else
-		if v.s then
-			mt:scale(v.s[1],v.s[2],v.s[3])
-		end
+		if v.s then mt:scale(v.s[1],v.s[2],v.s[3]) end
 	end
 	if v.r then 
 		local X,Y,Z,W=v.r[1],v.r[2],v.r[3],v.r[4]
 		local L=(X*X+Y*Y+Z*Z+W*W)^0.5
-		--print(X,Y,Z,W,L)
+--		print(X,Y,Z,W,L)
 		X/=L Y/=L Z/=L W/=L
 		local xx,xy,xz,xw,yy,yz,yw,zz,zw
 		local m00,m01,m02,m10,m11,m12,m20,m21,m22
@@ -128,18 +124,19 @@ function G3DFormat.quaternionToEuler(w,x,y,z)
 	local siny_cosp = 2 * (w * z + x * y)
 	local cosy_cosp = 1 - 2 * (y * y + z * z)
 	local rz = math.atan2(siny_cosp, cosy_cosp)
-
 	return ^>rx,^>ry,^>rz
 end
 
 function G3DFormat.buildG3DObject(obj,mtls,top)
-	mtls=mtls or {}
 	local m=D3.Mesh.new()
 	m.name=obj.name
 	m:setVertexArray(obj.vertices)
 	m:setIndexArray(obj.indices)
+
+	-- the 'naked' object
+	mtls=mtls or {}
 	local mtl={}
-	if obj.material then
+	if obj.material then 
 		if type(obj.material)=="table" then
 			mtl=obj.material
 		else
@@ -147,16 +144,22 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 			assert(mtl,"No such material: "..obj.material)
 		end
 	end
+
 	local smode=0
-	-- DIFFUSE
-	if mtl.diffusetexfile and not mtl.diffusetex then
-		local path = mtl.modelpath
-		mtl.diffusetex=Texture.new(path..mtl.diffusetexfile,true,{ wrap=Texture.REPEAT, extend=false })
-		mtl.texturew=mtl.diffusetex:getWidth()
-		mtl.textureh=mtl.diffusetex:getHeight()
+	-- COLOR?
+	if obj.color then
+		m:setColorTransform(obj.color[1],obj.color[2],obj.color[3],obj.color[4])
 	end
-	if mtl.diffusetex~=nil then
-		m:setTexture(mtl.diffusetex)
+	-- DIFFUSE
+	if mtl.textureFile and not mtl.texture then
+		local path = mtl.modelpath or ""
+--		print("*path", path, "*diffuse", mtl.textureFile)
+		mtl.texture=Texture.new(path..mtl.textureFile,true,{ wrap=TextureBase.REPEAT, extend=false})
+		mtl.texturew=mtl.texture:getWidth()
+		mtl.textureh=mtl.texture:getHeight()
+	end
+	if (mtl.texture~=nil) then
+		m:setTexture(mtl.texture)
 		local tc={}
 		for i=1,#obj.texcoords,2 do
 			tc[i]=obj.texcoords[i]*mtl.texturew
@@ -167,22 +170,20 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		smode=smode|D3.Mesh.MODE_TEXTURE
 	end
 	-- NORMAL
-	if mtl.normaltexfile and not mtl.normaltex then
-		local path = mtl.modelpath
-		mtl.normaltex=Texture.new(path..mtl.normaltexfile,true,{ wrap=Texture.REPEAT, extend=false })
+	if mtl.normalMapFile and not mtl.normalMap then
+		local path = mtl.modelpath or ""
+--		print("*path", path, "*normal", mtl.normalMapFile)
+		mtl.normalMap=Texture.new(path..mtl.normalMapFile,true,{ wrap=TextureBase.REPEAT, extend=false})
+--		mtl.normalMapW=mtl.normalMap:getWidth()
+--		mtl.normalMapH=mtl.normalMap:getHeight()
 	end
-	if mtl.normaltex~=nil then
-		m:setTexture(mtl.normaltex,1)
+	if (mtl.normalMap~=nil) then
+		m:setTexture(mtl.normalMap,1)
 		m.hasNormalMap=true
 		smode=smode|D3.Mesh.MODE_BUMP
 	end
-	-- COLOR
 	if mtl.kd then
 		m:setColorTransform(mtl.kd[1],mtl.kd[2],mtl.kd[3],mtl.kd[4])
-	end
-	-- obj
-	if obj.color then
-		m:setColorTransform(obj.color[1],obj.color[2],obj.color[3],obj.color[4])
 	end
 	if obj.normals then
 		m.hasNormals=true
@@ -204,7 +205,6 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		end
 		smode=smode|D3.Mesh.MODE_ANIMATED
 	end
-	-- the shadow
 	m:updateMode(smode|D3.Mesh.MODE_SHADOW,0)
 	return m
 end
@@ -286,24 +286,22 @@ function G3DFormat.mapCoords(v,t,n,faces)
 	local imap={}
 	local vmap={}
 	imap.alloc=function(self,facenm,i)
-		 local iv=i.v or 0
-		 if (iv<0) then
-			iv=(#v/3+1+iv)
-		 end
-		 iv=iv-1
-		 local it=i.t or 0
-		 if (it==nil) then
+		local iv=i.v or 0
+		if (iv<0) then iv=(#v/3+1+iv) end
+		iv=iv-1
+		local it=i.t or 0
+		if (it==nil) then
 			it=-1
-		 else
+		else
 			if (it<0) then it=(#t/2)+it+1 end
 			it=it-1
-		 end
-		 local inm=i.n or 0
-		 if (inm<0) then inm=(#n/3)+inm+1 end
-		 inm=inm-1
-		 if inm==-1 then inm=facenm.code end
-		 local ms=iv..":"..it..":"..inm
-		 if vmap[ms]==nil then
+		end
+		local inm=i.n or 0
+		if (inm<0) then inm=(#n/3)+inm+1 end
+		inm=inm-1
+		if inm==-1 then inm=facenm.code end
+		local ms=iv..":"..it..":"..inm
+		if vmap[ms]==nil then
 			local ni=self.ni+1
 			self.ni=ni
 			table.insert(facenm.lvi,#self.lv)
@@ -332,8 +330,8 @@ function G3DFormat.mapCoords(v,t,n,faces)
 				table.insert(self.lvn,0)
 			end
 			self.vmap[ms]=ni
-		 end
-		 return self.vmap[ms]
+		end
+		return self.vmap[ms]
 	end		
 	imap.i={}
 	imap.ni=0
@@ -343,60 +341,58 @@ function G3DFormat.mapCoords(v,t,n,faces)
 	imap.vmap={}
 	imap.vngmap={}
 	imap.gnorm=-2
-
+	
 	for _,face in ipairs(faces) do
-	local itab={}
-	local normtab={ code=imap.gnorm, lvi={}, lvni={} }
-	for _,i in ipairs(face) do
-		table.insert(itab,imap:alloc(normtab,i))
-	end
-	imap.gnorm=imap.gnorm-1
-	if (#itab>=3) then
-		if #normtab.lvni>0 then -- Gen normals
-			local ux=imap.lv[normtab.lvi[2]+1]-imap.lv[normtab.lvi[1]+1]
-			local uy=imap.lv[normtab.lvi[2]+2]-imap.lv[normtab.lvi[1]+2]
-			local uz=imap.lv[normtab.lvi[2]+3]-imap.lv[normtab.lvi[1]+3]
-			local vx=imap.lv[normtab.lvi[3]+1]-imap.lv[normtab.lvi[1]+1]
-			local vy=imap.lv[normtab.lvi[3]+2]-imap.lv[normtab.lvi[1]+2]
-			local vz=imap.lv[normtab.lvi[3]+3]-imap.lv[normtab.lvi[1]+3]
-			local nx=uy*vz-uz*vy
-			local ny=uz*vx-ux*vz
-			local nz=ux*vy-uy*vx
-			local nl=math.sqrt(nx*nx+ny*ny+nz*nz)
-			if nl==0 then nl=1 end
-			nx=nx/nl
-			ny=ny/nl
-			nz=nz/nl
-			for _,vni in ipairs(normtab.lvni) do
-				imap.lvn[vni+1]=nx
-				imap.lvn[vni+2]=ny
-				imap.lvn[vni+3]=nz
+		local itab={}
+		local normtab={ code=imap.gnorm, lvi={}, lvni={} }
+		for _,i in ipairs(face) do table.insert(itab,imap:alloc(normtab,i)) end
+		imap.gnorm=imap.gnorm-1
+		if (#itab>=3) then
+			if #normtab.lvni>0 then -- Gen normals
+				local ux=imap.lv[normtab.lvi[2]+1]-imap.lv[normtab.lvi[1]+1]
+				local uy=imap.lv[normtab.lvi[2]+2]-imap.lv[normtab.lvi[1]+2]
+				local uz=imap.lv[normtab.lvi[2]+3]-imap.lv[normtab.lvi[1]+3]
+				local vx=imap.lv[normtab.lvi[3]+1]-imap.lv[normtab.lvi[1]+1]
+				local vy=imap.lv[normtab.lvi[3]+2]-imap.lv[normtab.lvi[1]+2]
+				local vz=imap.lv[normtab.lvi[3]+3]-imap.lv[normtab.lvi[1]+3]
+				local nx=uy*vz-uz*vy
+				local ny=uz*vx-ux*vz
+				local nz=ux*vy-uy*vx
+				local nl=math.sqrt(nx*nx+ny*ny+nz*nz)
+				if nl==0 then nl=1 end
+				nx=nx/nl
+				ny=ny/nl
+				nz=nz/nl
+				for _,vni in ipairs(normtab.lvni) do
+					imap.lvn[vni+1]=nx
+					imap.lvn[vni+2]=ny
+					imap.lvn[vni+3]=nz
+				end
+			end
+			for ii=3,#itab,1 do
+				table.insert(imap.i,itab[1])
+				table.insert(imap.i,itab[ii-1])
+				table.insert(imap.i,itab[ii])
 			end
 		end
-		for ii=3,#itab,1 do
-			table.insert(imap.i,itab[1])
-			table.insert(imap.i,itab[ii-1])
-			table.insert(imap.i,itab[ii])
-		end
 	end
-	end
-		for _,vm in pairs(imap.vngmap) do
-			local nx,ny,nz=0,0,0
-			for _,vn in ipairs(vm) do
-				nx=nx+imap.lvn[vn+1]
-				ny=ny+imap.lvn[vn+2]
-				nz=nz+imap.lvn[vn+3]
-			end
-			local nl=math.sqrt(nx*nx+ny*ny+nz*nz)
-			if nl==0 then nl=1 end
-			nx=nx/nl
-			ny=ny/nl
-			nz=nz/nl
-			for _,vn in ipairs(vm) do
-				imap.lvn[vn+1]=nx
-				imap.lvn[vn+2]=ny
-				imap.lvn[vn+3]=nz
-			end	
+	for _,vm in pairs(imap.vngmap) do
+		local nx,ny,nz=0,0,0
+		for _,vn in ipairs(vm) do
+			nx=nx+imap.lvn[vn+1]
+			ny=ny+imap.lvn[vn+2]
+			nz=nz+imap.lvn[vn+3]
 		end
+		local nl=math.sqrt(nx*nx+ny*ny+nz*nz)
+		if nl==0 then nl=1 end
+		nx=nx/nl
+		ny=ny/nl
+		nz=nz/nl
+		for _,vn in ipairs(vm) do
+			imap.lvn[vn+1]=nx
+			imap.lvn[vn+2]=ny
+			imap.lvn[vn+3]=nz
+		end	
+	end
 	return { vertices=imap.lv, texcoords=imap.lvt, normals=imap.lvn, indices=imap.i }
 end
