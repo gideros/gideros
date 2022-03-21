@@ -308,6 +308,7 @@ static int r3dWorld_DestroyBody(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
+	if (!body) return 0; //Sanity check in case we try to destroy it twice
 	//Clear joints for world table
 	lua_getfield(L, 1, "__joints");
 	lua_getfield(L, 2, "__joints");
