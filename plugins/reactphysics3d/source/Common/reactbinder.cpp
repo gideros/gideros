@@ -583,6 +583,7 @@ static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
 static int r3dBody_destruct(void *p) {
 	if (lua_isclosing(L)) return 0; //Worlds and all their bodies are going to be destroyed anyway
     void* ptr = GIDEROS_DTOR_UDATA(p);
+    if (!ptr) return 0; //Was already destroyed
 	lua_checkstack(L,16);
 	getb2(L,ptr);
     if (lua_isnil(L,-1)) {
