@@ -308,6 +308,7 @@ static int r3dWorld_DestroyBody(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
+	if (!body) return 0; //Sanity check in case we try to destroy it twice
 	//Clear joints for world table
 	lua_getfield(L, 1, "__joints");
 	lua_getfield(L, 2, "__joints");
@@ -583,6 +584,7 @@ static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
 static int r3dBody_destruct(void *p) {
 	if (lua_isclosing(L)) return 0; //Worlds and all their bodies are going to be destroyed anyway
     void* ptr = GIDEROS_DTOR_UDATA(p);
+    if (!ptr) return 0; //Was already destroyed
 	lua_checkstack(L,16);
 	getb2(L,ptr);
     if (lua_isnil(L,-1)) {
