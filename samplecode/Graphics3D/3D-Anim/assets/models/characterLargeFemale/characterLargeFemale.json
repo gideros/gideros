@@ -1680,7 +1680,7 @@
 			"shininess":  9.607843,
 			"textures": [
 				{
-					"id": "base_color_texture", 
+					"id": "xxx", 
 					"filename": "fantasyFemaleB.png", 
 					"type": "DIFFUSE"
 				}

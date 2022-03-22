@@ -64,6 +64,30 @@
    <file name="assets/models/characterLargeFemale/idle.json"/>
    <file name="assets/models/characterLargeFemale/walk.json"/>
   </folder>
+  <folder name="glbs">
+   <file name="assets/models/glbs/_please_read.txt"/>
+   <file name="assets/models/glbs/grass.glb"/>
+   <file name="assets/models/glbs/shrooms.glb"/>
+  </folder>
+  <folder name="objs">
+   <folder name="bench">
+    <folder name="textures">
+     <file name="assets/models/objs/bench/textures/branch_Base_Color.png"/>
+     <file name="assets/models/objs/bench/textures/branch_Metallic.png"/>
+     <file name="assets/models/objs/bench/textures/branch_Normal_OpenGL.png"/>
+     <file name="assets/models/objs/bench/textures/branch_Roughness.png"/>
+    </folder>
+    <file name="assets/models/objs/bench/bench.mtl"/>
+    <file name="assets/models/objs/bench/bench.obj"/>
+   </folder>
+   <folder name="tree">
+    <folder name="tex">
+     <file name="assets/models/objs/tree/tex/CT_Pallete.png"/>
+    </folder>
+    <file name="assets/models/objs/tree/trees02.mtl"/>
+    <file name="assets/models/objs/tree/trees02.obj"/>
+   </folder>
+  </folder>
   <folder name="theBoss">
    <file name="assets/models/theBoss/Boss_diffuse.png"/>
    <file name="assets/models/theBoss/Boss_normal.png"/>
@@ -72,6 +96,9 @@
    <file name="assets/models/theBoss/theBoss_old_man_anim.json"/>
   </folder>
  </folder>
- <file name="assets/grass.png"/>
+ <folder name="textures">
+  <file name="assets/textures/envbox.jpg"/>
+  <file name="assets/textures/grass.png"/>
+ </folder>
  <file name="assets/main.lua"/>
 </project>

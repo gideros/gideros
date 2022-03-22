@@ -15,7 +15,9 @@ function Gltf:getScene(i)
 	local root={}
 	root.type="group"
 	root.parts={}
-	for ni,n in ipairs(ns.nodes) do root.parts["n"..ni]=self:getNode(n+1) end
+	for ni,n in ipairs(ns.nodes) do
+		root.parts["n"..ni]=self:getNode(n+1)
+	end
 	return root
 end
 
@@ -34,11 +36,11 @@ function Gltf:getNode(i)
 				end
 				return 0
 			end
-			local m={
-				vertices=self:getBuffer(bufferIndex("POSITION")), 
-				texcoords=self:getBuffer(bufferIndex("TEXCOORD")), 
-				normals=self:getBuffer(bufferIndex("NORMAL")), 
-				indices=self:getBuffer(prim.indices+1,true), 
+			local m={ 
+				vertices=self:getBuffer(bufferIndex("POSITION")),
+				texcoords=self:getBuffer(bufferIndex("TEXCOORD")),
+				normals=self:getBuffer(bufferIndex("NORMAL")),
+				indices=self:getBuffer(prim.indices+1,true),
 				type="mesh",
 				material=self:getMaterial((prim.material or -1)+1),
 			}
@@ -62,30 +64,28 @@ function Gltf:getBuffer(i,indices)
 	local buf,stride=self:getBufferView(bd.bufferView+1)
 	local bc=bd.count
 	local bm=1
-	if bd.type=="SCALAR" then
+	if bd.type=="SCALAR" then --
 	elseif bd.type=="VEC2" then bm=2
 	elseif bd.type=="VEC3" then bm=3
 	elseif bd.type=="VEC4" then bm=4
-	else
-		assert(false,"Unhandled type:"..bd.type)
+	else assert(false,"Unhandled type:"..bd.type)
 	end
-	local tm=os:clock()
-	
-	--print("ACC:",i,buf:size(),bd.count,bc,bd.componentType)
+--	local tm=os:clock()
+--	print("ACC:",i,buf:size(),bd.count,bc,bd.componentType)
 	--[[
-	 GL_BYTE (5120)
-GL_DOUBLE (5130)
-GL_FALSE (0)
-GL_FLOAT (5126)
-GL_HALF_NV (5121)
-GL_INT (5124)
-GL_SHORT (5122)
-GL_TRUE (1)
-GL_UNSIGNED_BYTE (5121)
-GL_UNSIGNED_INT (5125)
-GL_UNSIGNED_INT64_AMD (35778)
-GL_UNSIGNED_SHORT (5123)
-]]
+	GL_BYTE (5120)
+	GL_DOUBLE (5130)
+	GL_FALSE (0)
+	GL_FLOAT (5126)
+	GL_HALF_NV (5121)
+	GL_INT (5124)
+	GL_SHORT (5122)
+	GL_TRUE (1)
+	GL_UNSIGNED_BYTE (5121)
+	GL_UNSIGNED_INT (5125)
+	GL_UNSIGNED_INT64_AMD (35778)
+	GL_UNSIGNED_SHORT (5123)
+	]]
 	local cl=0
 	if bd.componentType==5126 then cl=4
 	elseif bd.componentType==5123 then cl=2
@@ -94,15 +94,13 @@ GL_UNSIGNED_SHORT (5123)
 	end
 	if stride>0 then stride=stride-cl*bm end
 	local br=bd.byteOffset or 0
-	--print(br,bm,bc,stride)
+--	print(br,bm,bc,stride)
 	local ii=1
 	for ci=1,bc do
 		for mi=1,bm do
 			if bd.componentType==5126 then
-				t[ii]=buf:get(br,4):decodeValue("f")
-				br+=4
-			elseif bd.componentType==5123 then
-				t[ii]=buf:get(br,2):decodeValue("s")
+				t[ii]=buf:get(br,4):decodeValue("f") br+=4
+			elseif bd.componentType==5123 then t[ii]=buf:get(br,2):decodeValue("s")
 				if indices then t[ii]+=1 end
 				br+=2
 			elseif bd.componentType==5125 then
@@ -116,10 +114,11 @@ GL_UNSIGNED_SHORT (5123)
 		end
 		br+=stride
 	end
-
-	--[[if (os:clock()-tm)>.1 then
+	--[[
+	if (os:clock()-tm)>.1 then
 		print(i,json.encode(bd)," in ",os:clock()-tm)
-	end]]
+	end
+	]]
 	bd._array=t
 	return t
 end
@@ -185,7 +184,7 @@ function Gltf:getMaterial(i)
 	return mat
 end
 
--- **********************************************************
+-- ***********************************************************
 Glb=Core.class(Gltf,function (path,name) return path,nil end)
 
 function Glb:init(path,name)
@@ -204,8 +203,8 @@ function Glb:init(path,name)
 	local chunks={}
 	while length>=8 do
 		local chdr=self.binData:sub(l,l+7):decodeValue("ii")
-		local cl,ct=chdr[1],chdr[2]
-		--print("CHUNK",("%08x:%08x"):format(cl,ct))
+		local cl,_ct=chdr[1],chdr[2]
+--		print("CHUNK",("%08x:%08x"):format(cl,ct))
 		table.insert(chunks,{type=chdr[2],length=chdr[1],start=l+8})
 		l+=8+cl
 		length-=(8+cl)
@@ -213,7 +212,7 @@ function Glb:init(path,name)
 	assert(chunks[1].type==0x4E4F534A,"GLB: first buffer should be JSON")
 	self.binChunks=chunks
 	self.desc=json.decode(self.binData:sub(chunks[1].start,chunks[1].start+chunks[1].length-1))
-	--print(json.encode(self.desc))
+--	print(json.encode(self.desc))
 end
 
 function Glb:loadBuffer(i,buf)
