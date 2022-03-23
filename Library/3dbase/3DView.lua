@@ -1,4 +1,5 @@
 D3View=Core.class(Sprite)
+
 function D3View:init(sw,sh,fov,near,far)
 	self.view=Viewport.new()
 	self.projection=Matrix.new()

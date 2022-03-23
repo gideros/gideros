@@ -1,5 +1,3 @@
-
-
 local OPS={}
 local function numvalue(n)
 	n=tostring(n)
@@ -28,9 +26,7 @@ end
 
 function OPS:skipOp(n)
 	self.skipping=(self.skipping or 0)+1
-	for i=1,n or 1 do
-		self:genOp()
-	end
+	for i=1,n or 1 do self:genOp() end
 	self.skipping-=1
 	if self.skipping==0 then self.skipping=nil end
 end
@@ -92,7 +88,6 @@ end
 function OPS:ETIN(name)
 	if self.skipping then return self:skipOp() end
 	local expr=self:genOp()
-	
 	return { value=expr.value.."."..name, vtype=checkSwizzling(expr,name) }
 end
 
@@ -131,15 +126,11 @@ function OPS:EBIN(op)
 	local right=self:genOp()
 	local terms=self._handlers.GENOP and self._handlers.GENOP(op,left,right)
 	if not terms then 
-		if op=="and" then 
-			op="&&"
-		elseif op=="or" then
-			op="||"
+		if op=="and" then op="&&"
+		elseif op=="or" then op="||"
 		end
-		if op=="^" then
-			terms="pow("..left.value..","..right.value..")"
-		else
-			terms="("..left.value..op..right.value..")"
+		if op=="^" then terms="pow("..left.value..","..right.value..")"
+		else terms="("..left.value..op..right.value..")"
 		end
 	end
 	local rtype=self._ot[left.vtype..op..right.vtype] or left.vtype
@@ -159,18 +150,14 @@ function OPS:ECAL(acount)
 	end
 
 	local rtype=var.rtype or "hF1"
-	if tonumber(rtype) then 
-		rtype=args[tonumber(rtype)].vtype
-	end
+	if tonumber(rtype) then rtype=args[tonumber(rtype)].vtype end
 	if var.evaluate then
 		return { vtype=var.rtype, value=var.evaluate(self,var.value,unpack(args)) }
 	end
 	
 	if #sargs>0 then sargs=sargs:sub(1,#sargs-1) end
 	
-	if var.callarg and #var.callarg>0 then
-		sargs=sargs..","..var.callarg
-	end
+	if var.callarg and #var.callarg>0 then sargs=sargs..","..var.callarg end
 
 	return { value=var.value.."("..sargs..")", vtype=rtype }
 end
@@ -194,10 +181,8 @@ function OPS:SFCT()
 	
 	glf._fcode={ ctable=stable }
 	
-	if self._handlers.SUBFUNC then
-		self._handlers.SUBFUNC(self,glf)
-	end
-		
+	if self._handlers.SUBFUNC then self._handlers.SUBFUNC(self,glf) end
+
 	return ""
 end
 
@@ -208,10 +193,8 @@ function OPS:SCAG(op)
 	local cop=op.."="
 	local terms=self._handlers.GENOPEQ and self._handlers.GENOPEQ(cop,var,exp)
 	if not terms then 
-		if cop=="^=" then
-			terms=var.value.."=pow("..var.value..","..exp.value..")"
-		else
-			terms=var.value..cop..exp.value 
+		if cop=="^=" then terms=var.value.."=pow("..var.value..","..exp.value..")"
+		else terms=var.value..cop..exp.value
 		end
 	end
 	return self:indent()..terms..";\n"
@@ -231,9 +214,7 @@ function OPS:SRTN(rcount)
 	rcount=tonumber(rcount)
 	assert(rcount<2,"Can't return more than one value")
 	local rval={}
-	if rcount==1 then
-		rval=self:genOp()
-	end
+	if rcount==1 then rval=self:genOp() end
 	local ret=""
 	if self._handlers.RETURN then
 		--print("RetVal:",rval)
@@ -318,9 +299,7 @@ end
 
 function OPS:SLCL(vcount)
 	local vn={}
-	while self:nextOp()=="SLNM" do 
-		table.insert(vn,{ name=self:genOp(), type="hF1" })
-	end
+	while self:nextOp()=="SLNM" do table.insert(vn,{ name=self:genOp(), type="hF1" }) end
 	if self.skipping then return self:skipOp(vcount) end
 	for i=1,vcount do
 		local exp=self:genOp()
@@ -381,9 +360,7 @@ function codegen_u(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 		end
 		ctx.ctable=ctable
 	else
-		for k,v in pairs(ctx) do
-			f[k]=v
-		end
+		for k,v in pairs(ctx) do f[k]=v end
 		ctx=f
 		ctable=ctx.ctable
 	end

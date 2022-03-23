@@ -1,0 +1,13 @@
+# Blender 3.1.0 MTL File: 'trees02.blend'
+# www.blender.org
+
+newmtl Base_Material
+Ns 204.362000
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.163636 0.163636 0.163636
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd  tex\CT_Pallete.png

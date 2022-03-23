@@ -15,7 +15,9 @@ function Gltf:getScene(i)
 	local root={}
 	root.type="group"
 	root.parts={}
-	for ni,n in ipairs(ns.nodes) do root.parts["n"..ni]=self:getNode(n+1) end
+	for ni,n in ipairs(ns.nodes) do
+		root.parts["n"..ni]=self:getNode(n+1)
+	end
 	return root
 end
 
@@ -35,10 +37,10 @@ function Gltf:getNode(i)
 				return 0
 			end
 			local m={
-				vertices=self:getBuffer(bufferIndex("POSITION")), 
-				texcoords=self:getBuffer(bufferIndex("TEXCOORD")), 
-				normals=self:getBuffer(bufferIndex("NORMAL")), 
-				indices=self:getBuffer(prim.indices+1,true), 
+				vertices=self:getBuffer(bufferIndex("POSITION")),
+				texcoords=self:getBuffer(bufferIndex("TEXCOORD")),
+				normals=self:getBuffer(bufferIndex("NORMAL")),
+				indices=self:getBuffer(prim.indices+1,true),
 				type="mesh",
 				material=self:getMaterial((prim.material or -1)+1),
 			}
@@ -62,30 +64,28 @@ function Gltf:getBuffer(i,indices)
 	local buf,stride=self:getBufferView(bd.bufferView+1)
 	local bc=bd.count
 	local bm=1
-	if bd.type=="SCALAR" then
+	if bd.type=="SCALAR" then --
 	elseif bd.type=="VEC2" then bm=2
 	elseif bd.type=="VEC3" then bm=3
 	elseif bd.type=="VEC4" then bm=4
-	else
-		assert(false,"Unhandled type:"..bd.type)
+	else assert(false,"Unhandled type:"..bd.type)
 	end
-	local tm=os:clock()
-	
-	--print("ACC:",i,buf:size(),bd.count,bc,bd.componentType)
+--	local tm=os:clock()
+--	print("ACC:",i,buf:size(),bd.count,bc,bd.componentType)
 	--[[
-	 GL_BYTE (5120)
-GL_DOUBLE (5130)
-GL_FALSE (0)
-GL_FLOAT (5126)
-GL_HALF_NV (5121)
-GL_INT (5124)
-GL_SHORT (5122)
-GL_TRUE (1)
-GL_UNSIGNED_BYTE (5121)
-GL_UNSIGNED_INT (5125)
-GL_UNSIGNED_INT64_AMD (35778)
-GL_UNSIGNED_SHORT (5123)
-]]
+	GL_BYTE (5120)
+	GL_DOUBLE (5130)
+	GL_FALSE (0)
+	GL_FLOAT (5126)
+	GL_HALF_NV (5121)
+	GL_INT (5124)
+	GL_SHORT (5122)
+	GL_TRUE (1)
+	GL_UNSIGNED_BYTE (5121)
+	GL_UNSIGNED_INT (5125)
+	GL_UNSIGNED_INT64_AMD (35778)
+	GL_UNSIGNED_SHORT (5123)
+	]]
 	local cl=0
 	if bd.componentType==5126 then cl=4
 	elseif bd.componentType==5123 then cl=2
@@ -94,15 +94,13 @@ GL_UNSIGNED_SHORT (5123)
 	end
 	if stride>0 then stride=stride-cl*bm end
 	local br=bd.byteOffset or 0
-	--print(br,bm,bc,stride)
+--	print(br,bm,bc,stride)
 	local ii=1
 	for ci=1,bc do
 		for mi=1,bm do
 			if bd.componentType==5126 then
-				t[ii]=buf:get(br,4):decodeValue("f")
-				br+=4
-			elseif bd.componentType==5123 then
-				t[ii]=buf:get(br,2):decodeValue("s")
+				t[ii]=buf:get(br,4):decodeValue("f") br+=4
+			elseif bd.componentType==5123 then t[ii]=buf:get(br,2):decodeValue("s")
 				if indices then t[ii]+=1 end
 				br+=2
 			elseif bd.componentType==5125 then
@@ -116,10 +114,11 @@ GL_UNSIGNED_SHORT (5123)
 		end
 		br+=stride
 	end
-
-	--[[if (os:clock()-tm)>.1 then
+	--[[
+	if (os:clock()-tm)>.1 then
 		print(i,json.encode(bd)," in ",os:clock()-tm)
-	end]]
+	end
+	]]
 	bd._array=t
 	return t
 end
@@ -128,18 +127,18 @@ local gltfNum=0
 function Gltf:getBufferView(n,ext)
 	local bd=self.desc.bufferViews[n]
 	local buf=self.desc.buffers[bd.buffer+1]
-	if not buf.data then
+	if not buf.data then -- gideros buffer
 		if buf.uri then
 			local d=buf.uri:sub(1,37)
 			if d=="data:application/octet-stream;base64," then
 				buf.data=Cryptography.unb64(buf.uri:sub(38))
 			end
 		end
-		if not buf.data then buf.data=self:loadBuffer(bd.buffer+1,buf) end
+		if not buf.data then buf.data=self:loadBuffer(bd.buffer+1,buf) end -- gideros buffer
 	end
 	gltfNum+=1
 	local bname="_gltf_"..gltfNum..(ext or "")
-	local bb=Buffer.new(bname)
+	local bb=Buffer.new(bname) -- embedded texture buffer
 	bb:set(buf.data:sub((bd.byteOffset or 0)+1,(bd.byteOffset or 0)+bd.byteLength))
 	return bb,bd.byteStride or 0,bname
 end
@@ -147,7 +146,9 @@ end
 function Gltf:getImage(n)
 	local bd=self.desc.images[n]
 	if not bd then return nil end
-	if bd.uri then return self.path.."/"..bd.uri end
+	if bd.uri then
+		return self.path.."/"..bd.uri
+	end
 	if bd.bufferView then
 		local iext=nil
 		if bd.mimeType=="image/jpeg" then iext=".jpg"
@@ -155,7 +156,7 @@ function Gltf:getImage(n)
 		end
 		assert(iext,"Unsupported image type:"..bd.mimeType)
 		local _,_,bname=self:getBufferView(bd.bufferView+1,iext)
-		return "|B|"..bname
+		return "|B|"..bname -- |B| Gideros embedded texture buffer
 	end
 end
 
@@ -176,16 +177,18 @@ function Gltf:getMaterial(i)
 		if mat.kd then
 			for i=1,4 do mat.kd[i]=mat.kd[i]^.3 end
 		end
-		local td=bd.pbrMetallicRoughness.baseColorTexture
+		local td=bd.pbrMetallicRoughness.baseColorTexture -- the embedded image texture data
 		if td and td.index then
-			mat.textureFile=self:getImage(td.index+1)
+			local embedded=self:getImage(td.index+1) -- embedded = Gideros Buffer holding the image texture data
+			mat.embeddedtexture = Texture.new(embedded,true,{ wrap=TextureBase.REPEAT, extend=false})
 		end
+		-- TO DO NORMAL MAP TEXTURE?
 	end
 	bd._mat=mat
 	return mat
 end
 
--- **********************************************************
+-- ***********************************************************
 Glb=Core.class(Gltf,function (path,name) return path,nil end)
 
 function Glb:init(path,name)
@@ -204,8 +207,8 @@ function Glb:init(path,name)
 	local chunks={}
 	while length>=8 do
 		local chdr=self.binData:sub(l,l+7):decodeValue("ii")
-		local cl,ct=chdr[1],chdr[2]
-		--print("CHUNK",("%08x:%08x"):format(cl,ct))
+		local cl,_ct=chdr[1],chdr[2]
+--		print("CHUNK",("%08x:%08x"):format(cl,ct))
 		table.insert(chunks,{type=chdr[2],length=chdr[1],start=l+8})
 		l+=8+cl
 		length-=(8+cl)
@@ -213,7 +216,7 @@ function Glb:init(path,name)
 	assert(chunks[1].type==0x4E4F534A,"GLB: first buffer should be JSON")
 	self.binChunks=chunks
 	self.desc=json.decode(self.binData:sub(chunks[1].start,chunks[1].start+chunks[1].length-1))
-	--print(json.encode(self.desc))
+--	print(json.encode(self.desc))
 end
 
 function Glb:loadBuffer(i,buf)

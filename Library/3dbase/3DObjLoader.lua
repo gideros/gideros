@@ -8,16 +8,17 @@ Returned sprite has a few specific attributes:
 ]]
 
 local function Split(str, delim, maxNb)
-	-- Eliminate bad cases...
-	if string.find(str, delim) == nil then return { str } end
+    -- Eliminate bad cases...
+    if string.find(str, delim) == nil then return { str } end
 	if maxNb == nil or maxNb < 1 then
-		maxNb = 0    -- No limit
+		maxNb = 0 -- No limit
 	end
 	local result = {}
 	local pat = "(.-)" .. delim .. "()"
 	local nb = 0
 	local lastPos
-	for part, pos in string.gfind(str, pat) do
+--	for part, pos in string.gfind(str, pat) do -- doesn't work for me!
+	for part, pos in string.gmatch(str, pat) do
 		if #part>0 then
 			nb = nb + 1
 			result[nb] = part
@@ -37,19 +38,16 @@ local function parsemtl(mtls,path,file,prefix,textureFolder,textureMap)
 	end
 	local mtl={ texturew=0, textureh=0 }
 	for line in io.lines(path.."/"..file) do
+		line=line:gsub("  ", " ") -- fix for new blender 3.1 inserting 2 spaces instead of 1
 		fld=Split(line," ",10)
 		for i=1,#fld,1 do fld[i]=string.gsub(fld[i], "\r", "") end
 		if (fld[2]~=nil) then fld[2]=string.gsub(fld[2], "\r", "") end
-		if fld[1]=="newmtl" then
-			--print("DM",fld[2])
-			mtl={}
-			mtls[prefix..fld[2]]=mtl
-		elseif fld[1]=="Kd" then
-			mtl.kd={fld[2],fld[3],fld[4],1.0}
+		if fld[1]=="newmtl" then mtl={} mtls[prefix..fld[2]]=mtl
+		elseif fld[1]=="Kd" then mtl.kd={fld[2],fld[3],fld[4],1.0}
+		elseif fld[1]=="d" then mtl.kd[4]=fld[2] -- alpha XXX
 		elseif fld[1]=="map_Kd" then
 			table.remove(fld,1)
 			local f=table.concat(fld," ")
-			--print("Texture:.. ["..path.."/"..f.."]")
 			if textureMap then f=textureMap[f] or f end
 			mtl.textureFile=(textureFolder or path).."/"..f
 		elseif fld[1]=="map_Bump" then
@@ -59,7 +57,6 @@ local function parsemtl(mtls,path,file,prefix,textureFolder,textureMap)
 				table.remove(fld,1)
 			end
 			local f=table.concat(fld," ")
-			--print("Texture:.. ["..path.."/"..f.."]")
 			if textureMap then f=textureMap[f] or f end
 			mtl.normalMapFile=(textureFolder or path).."/"..f
 		end
@@ -83,7 +80,6 @@ function importObj(path,file,imtls,matpfx,textureFolder,textureMap)
 	local oname=nil
 	local function buildObject()
 		if (imap~=nil) then
-			--print(#v/3,#vt/2,#vn/3)
 			local treeDesc=G3DFormat.mapCoords(v,vt,vn,imap)
 			treeDesc.type="mesh"
 			treeDesc.material=mtl
@@ -122,7 +118,6 @@ function importObj(path,file,imtls,matpfx,textureFolder,textureMap)
 			table.insert(imap,itab)
 		elseif fld[1]=="o" or fld[1]=="g" then
 			buildObject()
-			--print(line)
 			oname=fld[2]
 		elseif fld[1]=="mtllib" then
 			table.remove(fld,1)
@@ -132,7 +127,6 @@ function importObj(path,file,imtls,matpfx,textureFolder,textureMap)
 			mtl=matpfx..fld[2]
 		end
 	end
-	--spr:setColorTransform(1.0,0,0,1.0)
 	buildObject() --If any in progress
 	G3DFormat.computeG3DSizes(root)
 	return root,mtls

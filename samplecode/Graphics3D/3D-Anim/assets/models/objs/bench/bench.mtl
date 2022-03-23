@@ -1,0 +1,16 @@
+# Blender 3.1.0 MTL File: 'cottage_vgood_gideros.blend'
+# www.blender.org
+
+newmtl brench
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Kd 0.588235 0.588235 0.588235
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd  textures\branch_Base_Color.png
+map_Ns  textures\branch_Roughness.png
+map_refl  textures\branch_Metallic.png
+map_Bump  -bm 1.000000 textures\branch_Normal_OpenGL.png

@@ -1,61 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties macos_bundle="com.yourdomain.yourapp-macos" logicalWidth="320" html5_fbinstant="0" winrt_org="GiderosMobile" html5_host="" architecture="7" mainluaOnly="0" mouseToTouch="1" html5_fbload="100" windowHeight="0" app_name="" vsync="1" touchToMouse="1" winrt_package="com.yourdomain.yourapp" splash_h_image="" iosDevice="0" backgroundColor="#ffffff" mouseTouchOrder="0" splashScaleMode="0" version="1.0" atv_bundle="com.yourdomain.yourapp-atv" osx_signingId="" windowWidth="0" html5_wasm="1" tv_icon="" osx_org="GiderosMobile" osx_installerId="" html5_mem="256" autorotation="0" osx_bundle="com.yourdomain." orientation="0" build_number="1" fps="60" app_icon="" osx_category="5" ios_bundle="com.yourdomain." encryptAssets="0" retinaDisplay="3" html5_pack="1" version_code="1" splash_v_image="" html5_crash="" html5_pwa="0" win_domain="giderosmobile.com" osx_domain="giderosmobile.com" html5_symbols="0" logicalHeight="480" win_org="GiderosMobile" macos_category="5" scaleMode="3" exportMode="0" encryptCode="0" disableSplash="0">
+ <properties build_number="1" macos_category="5" architecture="7" osx_installerId="" html5_host="" splash_v_image="" osx_signingId="" app_icon="" mouseToTouch="1" fps="60" win_org="GiderosMobile" win_domain="giderosmobile.com" mouseTouchOrder="0" html5_symbols="0" html5_wasm="1" disableSplash="0" logicalWidth="320" version="1.0" winrt_package="com.yourdomain.yourapp" scaleMode="3" osx_category="5" logicalHeight="480" mainluaOnly="0" html5_fbload="100" osx_org="GiderosMobile" ios_bundle="com.yourdomain." html5_crash="" encryptCode="0" backgroundColor="#ffffff" retinaDisplay="3" tv_icon="" windowHeight="0" osx_bundle="com.yourdomain." app_name="" splashScaleMode="0" osx_domain="giderosmobile.com" version_code="1" orientation="0" autorotation="0" iosDevice="0" vsync="0" encryptAssets="0" atv_bundle="com.yourdomain.yourapp-atv" macos_bundle="com.yourdomain.yourapp-macos" html5_mem="256" html5_fbinstant="0" html5_pack="1" splash_h_image="" windowWidth="0" html5_pwa="0" touchToMouse="1" exportMode="0" winrt_org="GiderosMobile">
   <imageScales/>
   <plugins>
    <plugin name="JSON" enabled="1"/>
   </plugins>
   <exports>
    <export name="APK">
-    <property name="androidPath" value=""/>
-    <property name="androidSdk" value=""/>
-    <property name="androidTarget" value="26"/>
-    <property name="androidTools" value=""/>
-    <property name="buildAab" value="1"/>
-    <property name="buildApk" value="0"/>
-    <property name="deployApk" value="0"/>
-    <property name="javaPath" value=""/>
-    <property name="keyAlias" value=""/>
-    <property name="keyStore" value=""/>
-    <property name="packageName" value="com.yourdomain.yourapp"/>
-    <property name="timestampApk" value="0"/>
+    <property value="" name="androidPath"/>
+    <property value="" name="androidSdk"/>
+    <property value="26" name="androidTarget"/>
+    <property value="" name="androidTools"/>
+    <property value="1" name="buildAab"/>
+    <property value="0" name="buildApk"/>
+    <property value="0" name="deployApk"/>
+    <property value="" name="javaPath"/>
+    <property value="" name="keyAlias"/>
+    <property value="" name="keyStore"/>
+    <property value="com.yourdomain.yourapp" name="packageName"/>
+    <property value="0" name="timestampApk"/>
    </export>
   </exports>
  </properties>
- <folder path="../../../Library" name="Library">
-  <folder name="3dbase">
-   <file name="../../../Library/3dbase/3DAnimation.lua"/>
-   <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
-   <file name="../../../Library/3dbase/3DLighting.lua"/>
-   <file name="../../../Library/3dbase/3DObjLoader.lua"/>
-   <file name="../../../Library/3dbase/3DShaders.lua"/>
-   <file name="../../../Library/3dbase/3DShapes.lua"/>
-   <file name="../../../Library/3dbase/3DView.lua"/>
-   <file name="../../../Library/3dbase/G3DFormat.lua"/>
-   <file name="../../../Library/3dbase/gltf.lua"/>
-  </folder>
-  <folder name="luashader">
-   <file name="../../../Library/luashader/effects.lua"/>
-   <file name="../../../Library/luashader/luac_codegen.lua"/>
-   <file name="../../../Library/luashader/luac_loader.lua"/>
-   <file name="../../../Library/luashader/luashader.lua"/>
-   <file name="../../../Library/luashader/luau_codegen.lua"/>
-  </folder>
-  <folder name="oculus">
-   <folder name="jedi">
-    <file name="../../../Library/oculus/jedi/BC_L.png"/>
-    <file name="../../../Library/oculus/jedi/BC_R.png"/>
-    <file name="../../../Library/oculus/jedi/LICENSE.txt"/>
-    <file name="../../../Library/oculus/jedi/controllergui.txt"/>
-    <file name="../../../Library/oculus/jedi/jedi_left.bin"/>
-    <file name="../../../Library/oculus/jedi/jedi_left.gltf"/>
-    <file name="../../../Library/oculus/jedi/jedi_right.bin"/>
-    <file name="../../../Library/oculus/jedi/jedi_right.gltf"/>
-   </folder>
-   <file name="../../../Library/oculus/lhand.json"/>
-   <file name="../../../Library/oculus/oculus.lua"/>
-   <file name="../../../Library/oculus/rhand.json"/>
-  </folder>
+ <folder name="3dbase" path="../../../Library/3dbase">
+  <file name="../../../Library/3dbase/3DAnimation.lua"/>
+  <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
+  <file name="../../../Library/3dbase/3DLighting.lua"/>
+  <file name="../../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../../Library/3dbase/3DShaders.lua"/>
+  <file name="../../../Library/3dbase/3DShapes.lua"/>
+  <file name="../../../Library/3dbase/3DView.lua"/>
+  <file name="../../../Library/3dbase/G3DFormat.lua"/>
+  <file name="../../../Library/3dbase/gltf.lua"/>
+ </folder>
+ <folder name="luashader" path="../../../Library/luashader">
+  <file name="../../../Library/luashader/effects.lua"/>
+  <file name="../../../Library/luashader/luac_codegen.lua"/>
+  <file name="../../../Library/luashader/luac_loader.lua"/>
+  <file name="../../../Library/luashader/luashader.lua"/>
+  <file name="../../../Library/luashader/luau_codegen.lua"/>
  </folder>
  <folder name="models">
   <folder name="characterLargeFemale">
@@ -63,6 +46,30 @@
    <file name="assets/models/characterLargeFemale/fantasyFemaleB.png"/>
    <file name="assets/models/characterLargeFemale/idle.json"/>
    <file name="assets/models/characterLargeFemale/walk.json"/>
+  </folder>
+  <folder name="glbs">
+   <file name="assets/models/glbs/_please_read.txt"/>
+   <file name="assets/models/glbs/grass.glb"/>
+   <file name="assets/models/glbs/shrooms.glb"/>
+  </folder>
+  <folder name="objs">
+   <folder name="bench">
+    <folder name="textures">
+     <file name="assets/models/objs/bench/textures/branch_Base_Color.png"/>
+     <file name="assets/models/objs/bench/textures/branch_Metallic.png"/>
+     <file name="assets/models/objs/bench/textures/branch_Normal_OpenGL.png"/>
+     <file name="assets/models/objs/bench/textures/branch_Roughness.png"/>
+    </folder>
+    <file name="assets/models/objs/bench/bench.mtl"/>
+    <file name="assets/models/objs/bench/bench.obj"/>
+   </folder>
+   <folder name="tree">
+    <folder name="tex">
+     <file name="assets/models/objs/tree/tex/CT_Pallete.png"/>
+    </folder>
+    <file name="assets/models/objs/tree/trees02.mtl"/>
+    <file name="assets/models/objs/tree/trees02.obj"/>
+   </folder>
   </folder>
   <folder name="theBoss">
    <file name="assets/models/theBoss/Boss_diffuse.png"/>
@@ -72,6 +79,9 @@
    <file name="assets/models/theBoss/theBoss_old_man_anim.json"/>
   </folder>
  </folder>
- <file name="assets/grass.png"/>
+ <folder name="textures">
+  <file name="assets/textures/envbox.jpg"/>
+  <file name="assets/textures/grass.png"/>
+ </folder>
  <file name="assets/main.lua"/>
 </project>
