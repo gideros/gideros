@@ -101,6 +101,7 @@ public:
     {
         if ((!sig_.empty())&&(!lua_isclosing(L)))
         {
+        	lua_checkstack(L,16);
             luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keySound);
             lua_pushlstring(L, &sig_[0], sig_.size());
             lua_pushnil(L);

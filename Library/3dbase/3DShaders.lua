@@ -78,15 +78,9 @@ function D3._FLUA_Shader() : Shader
 			local projCoords = fragPosLightSpace / fragPosLightSpace.w;
 			--// transform to [0,1] range
 			projCoords = projCoords * 0.5 + 0.5;
-			local outside= false
-			if (projCoords.x<0.0) then outside=true end
-			if (projCoords.y<0.0) then outside=true end
-			if (projCoords.x>=1.0) then outside=true end
-			if (projCoords.y>=1.0) then outside=true end
-			if outside then
-				shadow=1.0 --TODO 'or' is not well supported in lua shaders
-			end
-			if not outside then
+			if (projCoords.x<0.0) or (projCoords.y<0.0) or (projCoords.x>=1.0) or (projCoords.y>=1.0) then 
+				shadow=1.0
+			else
 				projCoords.z-=0.001; --BIAS
 				--[[ TODO
 			#ifdef GLES2	

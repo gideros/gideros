@@ -332,7 +332,7 @@ void Sprite::updateEffects()
 	if (!effectStack_.empty()) {
 		float minx, miny, maxx, maxy;
 
-		objectBounds(&minx, &miny, &maxx, &maxy);
+        objectBounds(&minx, &miny, &maxx, &maxy,true);
 
 		if (minx > maxx || miny > maxy)
 			return; //Empty Sprite, do nothing
@@ -355,10 +355,14 @@ void Sprite::updateEffects()
 						maxx = std::max(maxx, tx); maxy = std::max(maxy, ty);
 						maxx = std::max(maxx, .0F); maxy = std::max(maxy, .0F);
 						swidth = maxx; sheight = maxy;
-						swidth *= application_->getLogicalScaleX();
-						sheight *= application_->getLogicalScaleY();
-						effectStack_[i].buffer->resize(ceilf(swidth), ceilf(sheight), application_->getLogicalScaleX(), application_->getLogicalScaleY());
-						xform.scale(application_->getLogicalScaleX(), application_->getLogicalScaleY(), 1);
+                        float sx = application_->getLogicalScaleX()/application_->getScale();
+                        float sy = application_->getLogicalScaleY()/application_->getScale();
+                        swidth *= sx;
+                        sheight *= sy;
+                        int bw=ceil(swidth);
+                        int bh=ceil(sheight);
+                        effectStack_[i].buffer->resize(bw, bh, sx, sy);
+                       // xform.scale(1.0/sx, 1.0/sy, 1);
 					}
 					if (effectStack_[i].clearBuffer)
 						effectStack_[i].buffer->clear(0, 0, 0, 0, -1, -1);
@@ -456,7 +460,6 @@ void Sprite::layoutSizesChanged() {
 
 
 void Sprite::childrenDrawn() {
-
 }
 
 template<typename T>
@@ -513,7 +516,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
             for (size_t i = 0;i< sprite->children_.size();i++)
                 sprite->drawCount_+=sprite->children_[i]->drawCount_;
             sprite->childrenDrawn();
-			if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
+            sprite->revalidate(INV_GRAPHICS);
+            if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 				glPopColor();
 			if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1)
 				glPopBlendFunc();
@@ -1178,6 +1182,9 @@ void Sprite::invalidate(int changes) {
 
 	if (changes&(INV_CLIP|INV_TRANSFORM|INV_VISIBILITY))
 		changes|=INV_BOUNDS;
+
+    if (changes&(INV_BOUNDS))
+        changes|=INV_GRAPHICS;
 
     if ((changes_&changes)==changes) return; //Already invalid
 
