@@ -66,7 +66,7 @@ function loadGdx(file,imtls)
 		local attrs={}
 		local ds=0
 		local as, an = 0, ""
-		for _,a in ipairs(gm.attributes) do		
+		for _,a in ipairs(gm.attributes) do
 			if a=="POSITION" then as=3 an="v"
 			elseif a=="NORMAL" then as=3 an="n"
 			elseif a=="COLOR" then as=4 an="c"
@@ -77,13 +77,14 @@ function loadGdx(file,imtls)
 			ds+=as
 		end
 		local dc=#gm.vertices//ds
-		assert(dc*ds==#gm.vertices,"Vertice array size "..dc*ds.." mismatch with attributes desc "..ds.." ("..#gm.vertices..")")
+		assert(dc*ds==#gm.vertices,
+			"Vertice array size "..dc*ds.." mismatch with attributes desc "..ds.." ("..#gm.vertices..")")
 		-- Parse attributes data
 		for _,a in pairs(attrs) do
 			for i=0,dc-1 do
 				for j=1,a.al do
 					a.d[i*a.al+j]=gm.vertices[i*ds+a.ab+j]
-				end			
+				end
 			end
 		end
 		-- Reformulate anim (bw)

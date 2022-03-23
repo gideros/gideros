@@ -127,15 +127,16 @@ end
 -- ***************************************
 --Unit Sphere
 local Sphere=Core.class(Mesh3D)
-function Sphere:init(steps,rad)
+function Sphere:init(steps,radius)
 	local va,ia={},{}
-	local rs=(2*3.141592654)/steps
+--	local rs=(2*3.141592654)/steps
+	local rs=(2*math.pi)/steps
 	local idx,ni=4,1
 	--Vertices
-	va[1]=0 va[2]=rad va[3]=0
+	va[1]=0 va[2]=radius va[3]=0
 	for iy=1,(steps//2)-1 do
-		local y=math.cos(iy*rs)*rad
-		local r=math.sin(iy*rs)*rad
+		local y=math.cos(iy*rs)*radius
+		local r=math.sin(iy*rs)*radius
 		for ix=0,steps do
 			local x=r*math.cos(ix*rs)
 			local z=r*math.sin(ix*rs)
@@ -144,7 +145,7 @@ function Sphere:init(steps,rad)
 			va[idx]=z idx+=1
 		end
 	end
-	va[idx]=0 va[idx+1]=-rad va[idx+2]=0
+	va[idx]=0 va[idx+1]=-radius va[idx+2]=0
 	local lvi=idx//3+1
 	--Indices
 	--a) top and bottom fans
@@ -164,7 +165,7 @@ function Sphere:init(steps,rad)
 	self:setVertexArray(va)
 	self:setIndexArray(ia)
 	self._steps=steps
-	self.rad=rad
+	self.radius=radius
 	self._va=va self._ia=ia
 end
 function Sphere:mapTexture(texture)
@@ -192,7 +193,7 @@ function Sphere:mapTexture(texture)
 end
 function Sphere:getCollisionShape()
 	if not self._r3dshape then
-		self._r3dshape=r3d.SphereShape.new(self.rad)
+		self._r3dshape=r3d.SphereShape.new(self.radius)
 	end
 	return self._r3dshape
 end
@@ -202,7 +203,8 @@ end
 local Cylinder=Core.class(Mesh3D)
 function Cylinder:init(steps,r,h)
 	local va,ia,na={},{},{}
-	local rs=(2*3.141592654)/steps
+--	local rs=(2*3.141592654)/steps
+	local rs=(2*math.pi)/steps
 	local idx,ni=7,1
 	r=r or 1
 	h=h or 1
@@ -319,7 +321,7 @@ D3.checkCCW=function(v,i,f)
 		local s=""
 		for l=fi,fi+f[fn]-1 do
 			local ii=i[l]*3-2
-			local ax,ay,az=v[ii],v[ii+1],v[ii+2]		
+			local ax,ay,az=v[ii],v[ii+1],v[ii+2]
 			s=s..string.format("%d:[%f,%f,%f] ",i[l],ax,ay,az)
 		end
 		fi+=f[fn]
