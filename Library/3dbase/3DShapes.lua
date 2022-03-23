@@ -127,9 +127,10 @@ end
 -- ***************************************
 --Unit Sphere
 local Sphere=Core.class(Mesh3D)
-function Sphere:init(radius,steps)
+function Sphere:init(steps,radius)
 	local va,ia={},{}
-	local rs=(2*3.141592654)/steps
+--	local rs=(2*3.141592654)/steps
+	local rs=(2*math.pi)/steps
 	local idx,ni=4,1
 	--Vertices
 	va[1]=0 va[2]=radius va[3]=0
@@ -202,7 +203,8 @@ end
 local Cylinder=Core.class(Mesh3D)
 function Cylinder:init(steps,r,h)
 	local va,ia,na={},{},{}
-	local rs=(2*3.141592654)/steps
+--	local rs=(2*3.141592654)/steps
+	local rs=(2*math.pi)/steps
 	local idx,ni=7,1
 	r=r or 1
 	h=h or 1
