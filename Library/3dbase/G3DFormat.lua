@@ -57,7 +57,7 @@ function G3DFormat.srtToMatrix(v,rev)
 	else
 		if v.s then mt:scale(v.s[1],v.s[2],v.s[3]) end
 	end
-	if v.r then 
+	if v.r then
 		local X,Y,Z,W=v.r[1],v.r[2],v.r[3],v.r[4]
 		local L=(X*X+Y*Y+Z*Z+W*W)^0.5
 --		print(X,Y,Z,W,L)
@@ -151,9 +151,14 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		m:setColorTransform(obj.color[1],obj.color[2],obj.color[3],obj.color[4])
 	end
 	-- DIFFUSE
-	if mtl.textureFile and not mtl.texture then
+	if mtl.embeddedtexture and not mtl.texture then -- .glb embedded texture (buffer)
+		mtl.texture=mtl.embeddedtexture
+		mtl.texturew=mtl.texture:getWidth()
+		mtl.textureh=mtl.texture:getHeight()
+	end
+	if mtl.textureFile and not mtl.texture then -- .fbx texture (file path)
 		local path = mtl.modelpath or ""
---		print("*path", path, "*diffuse", mtl.textureFile)
+		mtl.textureFile = string.gsub(mtl.textureFile, "\\", "/") -- fix for android (and linux?)
 		mtl.texture=Texture.new(path..mtl.textureFile,true,{ wrap=TextureBase.REPEAT, extend=false})
 		mtl.texturew=mtl.texture:getWidth()
 		mtl.textureh=mtl.texture:getHeight()
@@ -170,12 +175,11 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		smode=smode|D3.Mesh.MODE_TEXTURE
 	end
 	-- NORMAL
-	if mtl.normalMapFile and not mtl.normalMap then
+	-- TO DO: .glb embedded normal map texture (buffer)
+	if mtl.normalMapFile and not mtl.normalMap then -- .fbx normal map texture (file path)
 		local path = mtl.modelpath or ""
---		print("*path", path, "*normal", mtl.normalMapFile)
+		mtl.normalMapFile = string.gsub(mtl.normalMapFile, "\\", "/") -- fix for android (and linux?)
 		mtl.normalMap=Texture.new(path..mtl.normalMapFile,true,{ wrap=TextureBase.REPEAT, extend=false})
---		mtl.normalMapW=mtl.normalMap:getWidth()
---		mtl.normalMapH=mtl.normalMap:getHeight()
 	end
 	if (mtl.normalMap~=nil) then
 		m:setTexture(mtl.normalMap,1)

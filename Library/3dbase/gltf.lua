@@ -36,7 +36,7 @@ function Gltf:getNode(i)
 				end
 				return 0
 			end
-			local m={ 
+			local m={
 				vertices=self:getBuffer(bufferIndex("POSITION")),
 				texcoords=self:getBuffer(bufferIndex("TEXCOORD")),
 				normals=self:getBuffer(bufferIndex("NORMAL")),
@@ -127,18 +127,18 @@ local gltfNum=0
 function Gltf:getBufferView(n,ext)
 	local bd=self.desc.bufferViews[n]
 	local buf=self.desc.buffers[bd.buffer+1]
-	if not buf.data then
+	if not buf.data then -- gideros buffer
 		if buf.uri then
 			local d=buf.uri:sub(1,37)
 			if d=="data:application/octet-stream;base64," then
 				buf.data=Cryptography.unb64(buf.uri:sub(38))
 			end
 		end
-		if not buf.data then buf.data=self:loadBuffer(bd.buffer+1,buf) end
+		if not buf.data then buf.data=self:loadBuffer(bd.buffer+1,buf) end -- gideros buffer
 	end
 	gltfNum+=1
 	local bname="_gltf_"..gltfNum..(ext or "")
-	local bb=Buffer.new(bname)
+	local bb=Buffer.new(bname) -- embedded texture buffer
 	bb:set(buf.data:sub((bd.byteOffset or 0)+1,(bd.byteOffset or 0)+bd.byteLength))
 	return bb,bd.byteStride or 0,bname
 end
@@ -146,7 +146,9 @@ end
 function Gltf:getImage(n)
 	local bd=self.desc.images[n]
 	if not bd then return nil end
-	if bd.uri then return self.path.."/"..bd.uri end
+	if bd.uri then
+		return self.path.."/"..bd.uri
+	end
 	if bd.bufferView then
 		local iext=nil
 		if bd.mimeType=="image/jpeg" then iext=".jpg"
@@ -154,7 +156,7 @@ function Gltf:getImage(n)
 		end
 		assert(iext,"Unsupported image type:"..bd.mimeType)
 		local _,_,bname=self:getBufferView(bd.bufferView+1,iext)
-		return "|B|"..bname
+		return "|B|"..bname -- |B| Gideros embedded texture buffer
 	end
 end
 
@@ -175,10 +177,12 @@ function Gltf:getMaterial(i)
 		if mat.kd then
 			for i=1,4 do mat.kd[i]=mat.kd[i]^.3 end
 		end
-		local td=bd.pbrMetallicRoughness.baseColorTexture
+		local td=bd.pbrMetallicRoughness.baseColorTexture -- the embedded image texture data
 		if td and td.index then
-			mat.textureFile=self:getImage(td.index+1)
+			local embedded=self:getImage(td.index+1) -- embedded = Gideros Buffer holding the image texture data
+			mat.embeddedtexture = Texture.new(embedded,true,{ wrap=TextureBase.REPEAT, extend=false})
 		end
+		-- TO DO NORMAL MAP TEXTURE?
 	end
 	bd._mat=mat
 	return mat

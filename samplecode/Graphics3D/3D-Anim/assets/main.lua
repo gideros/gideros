@@ -22,7 +22,7 @@ gplane:setIndexArray{1,2,3,1,3,4}
 gplane:setTexture(Texture.new("textures/grass.png",true,{wrap=TextureBase.REPEAT}))
 gplane:updateMode(D3.Mesh.MODE_TEXTURE|D3.Mesh.MODE_LIGHTING|D3.Mesh.MODE_SHADOW,0)
 
--- some 3D .obj models
+---- some 3D .obj models
 local tree = loadObj("models/objs/tree", "trees02.obj") -- model folder, model name
 local bench = loadObj("models/objs/bench", "bench.obj")
 -- some glb models too

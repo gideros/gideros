@@ -34,7 +34,7 @@ end
 local function parsemtl(mtls,path,file,prefix,textureFolder,textureMap)
 	if not io.open(path.."/"..file) then
 		print("Material file not found:"..path.."/"..file)
-		return 
+		return
 	end
 	local mtl={ texturew=0, textureh=0 }
 	for line in io.lines(path.."/"..file) do
