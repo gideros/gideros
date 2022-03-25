@@ -484,7 +484,6 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 	if (updateTexture) {
 		application_->getTextureManager()->updateTextureFromDib(
 				textureData_[textureData_.size() - 1], *currentDib_);
-		updateTexture = false;
 	}
 }
 
@@ -700,6 +699,14 @@ bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext
     FontshaperBuilder_t builder=(FontshaperBuilder_t) g_getGlobalHook(GID_GLOBALHOOK_FONTSHAPER);
     if (!builder)
         return false;
+    if (!(part.style.styleFlags&TEXTSTYLEFLAG_FORCESHAPING)) {
+        wchar32_t cset=0;
+        size_t tCount=wtext.size();
+        for (size_t ti=0;ti<tCount;ti++)
+            cset|=wtext[ti];
+        if ((cset&0xFFFFFF00)==0) //ASCII/Latin only
+            return false;
+    }
     size_t fNum=0;
     size_t fCount=fontFaces_.size();
     if (fCount!=1)
@@ -887,19 +894,18 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 }
 
 void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
-		const char* text, float r, float g, float b, float a,
-        TextLayoutParameters *layout, bool /*hasSample*/, float minx, float miny,TextLayout &l) {
+                        const char* text, float r, float g, float b, float a,
+                        TextLayoutParameters *layout, bool /*hasSample*/, float minx, float miny,TextLayout &l) {
 
     if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
-        l = layoutText(text, layout);
+        layoutText(text, layout, l);
 
-	if (strlen(text) == 0) {
-		return;
-	}
+    if (strlen(text) == 0)
+        return;
 
-	std::map<int, int> layerMap;
-	std::map<int, int> gfxMap;
-	std::map<int, int> gfxMap2;
+    std::map<int, int> layerMap;
+    std::map<int, int> gfxMap;
+    std::map<int, int> gfxMap2;
     int gfx = vGraphicsBase->size();
 
 	for (size_t pn = 0; pn < l.parts.size(); pn++) {

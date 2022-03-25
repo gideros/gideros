@@ -54,6 +54,7 @@ public:
 #define TEXTSTYLEFLAG_RTL			4
 #define TEXTSTYLEFLAG_LTR			8
 #define TEXTSTYLEFLAG_SKIPSHAPING	16
+#define TEXTSTYLEFLAG_FORCESHAPING	32
     struct ChunkStyle {
         int styleFlags;
         unsigned int color;
@@ -86,9 +87,12 @@ public:
 		int lines;
 		int styleFlags;
 		std::vector<struct ChunkLayout> parts;
-		void clear() {
+        std::map<std::string,struct ChunkLayout> metricsCache;
+        float letterSpacingCache;
+        void clear() {
 			x=y=w=h=bh=mw=lines=styleFlags=0;
 			parts.clear();
+            metricsCache.clear();
 		};
 	};
 	struct ChunkClass {
@@ -130,8 +134,9 @@ public:
 		TLF_LTR=(1<<12),
 		TLF_NOSHAPING=(1<<13),
 		TLF_NOBIDI=(1<<14),
-		TLF_SINGLELINE=(1<<15)
-	};
+        TLF_SINGLELINE=(1<<15),
+        TLF_FORCESHAPING=(1<<16),
+    };
 
 	struct TextLayoutParameters {
         TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar(""),alignx(0),aligny(0),aspect(100000) {}; //Very big aspect ratio
@@ -144,9 +149,10 @@ public:
 		float alignx,aligny;
         float aspect;
 	};
-	virtual TextLayout layoutText(const char *text, TextLayoutParameters *params);
+    virtual void layoutText(const char *text, TextLayoutParameters *params, TextLayout &tl);
 protected:
-	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, float align, bool wrapped=false, int end=-1);
+    void layoutHorizontal(FontBase::TextLayout &tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, float align, bool wrapped=false, int end=-1);
+    void chunkMetricsCache(FontBase::TextLayout &tl,struct ChunkLayout &part, float letterSpacing);
     Application *application_;
 	int cacheVersion_;
     FontShaper *shaper_;

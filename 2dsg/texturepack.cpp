@@ -324,7 +324,7 @@ void TexturePackFont::drawText(std::vector<GraphicsBase> * vGraphicsBase, const 
     size_t size = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 
     if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
-        l = layoutText(text, layout);
+        layoutText(text, layout, l);
 
     if (size == 0) {
         return;
