@@ -19,7 +19,7 @@ PropertyEditingTable::PropertyEditingTable(QDir projectDir, QWidget *parent) :
 	mapper = new QSignalMapper(this);
     projectDir_=projectDir;
 
-connect(mapper, SIGNAL(mapped(int)),
+    connect(mapper, SIGNAL(mappedInt(int)),
 		this, SLOT(onBrowse(int)));
 }
 
