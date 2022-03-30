@@ -291,7 +291,6 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	
 	local _vshader=_code
 	
---	outVariable="gl_FragColor" -- XXX
 	local outVariable="gl_FragColor"
 	if isGLSL300 then outVariable="_gl_FragColor" end
 	
@@ -389,7 +388,7 @@ function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	gmap["inversesqrt"]={type="func", value="rsqrt", rtype="1", acount=1}
 	gmap["FragCoord"]={type="cvar", value="vert.gl_Position", vtype="hF4"}
 
-	local _code=[=[
+	_code=[=[
 #include <metal_stdlib>
 using namespace metal;
 ]=]
@@ -467,8 +466,7 @@ vertex PVertex vmain(InVertex inVertex [[stage_in]],
 		gmap[v.name]={type="cvar", value="vert."..v.name, vtype=atype}
 	end
 	
---	local _code=[=[
-	_code=[=[
+	local _code=[=[
 #include <metal_stdlib>
 using namespace metal;
 ]=]
@@ -497,7 +495,7 @@ fragment half4 fmain(PVertex vert [[stage_in]],
 end
 
 local function ismatrix(v)
-	return (tonumber(v.vtype:sub(3))>=22)
+	return ((tonumber(v.vtype:sub(3)) or 0)>=22)
 end
 
 local function _HLSL_GENOP(o,a,b)
@@ -521,6 +519,10 @@ local function _HLSL_GENOPEQ(o,a,b)
 end
 
 local function _HLSL_ARGSWIZZLE(func,...)
+end
+
+local function _HLSL_SWIZZLE(p)
+	return p:gsub(".",{ s="x",t="y",p="z", q="w" })
 end
 
 function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
@@ -635,12 +637,12 @@ PVertex VShader(%s)
 		end,
 		GENOP=_HLSL_GENOP,
 		GENOPEQ=_HLSL_GENOPEQ,
+		SWIZZLE=_HLSL_SWIZZLE,
 	})
 	_code=_code.."}"
 	
 	local _vshader=_code
 	
---	local _ucode="cbuffer cbp : register(b1) {\n"
 	_ucode="cbuffer cbp : register(b1) {\n"
 	for k,v in ipairs(uniforms) do 
 		local atype=shType(v)
@@ -666,6 +668,7 @@ PVertex VShader(%s)
 		RETURN=GEN_RETURN,
 		GENOP=_HLSL_GENOP,
 		GENOPEQ=_HLSL_GENOPEQ,
+		SWIZZLE=_HLSL_SWIZZLE,
 	})
 	_code=_code.._dcode.._ucode.._pcode
 	..genFunctions(gmap,tmap,omap,{	GENOP=_HLSL_GENOP,GENOPEQ=_HLSL_GENOPEQ,},funcs)

@@ -132,6 +132,51 @@ Sprite::Sprite(Application* application) :
 	hasCustomShader_=false;
 }
 
+void Sprite::cloneFrom(Sprite *s) {
+    effectsMode_=s->effectsMode_;
+    hasCustomShader_=s->hasCustomShader_;
+    hasCustomShader_=s->hasCustomShader_;
+    effectStack_=s->effectStack_;
+    skipSet_=s->skipSet_;
+    checkClip_=s->checkClip_;
+    memcpy(boundsCache,s->boundsCache,sizeof(boundsCache));
+    changes_=s->changes_;
+    if (s->layoutConstraints)
+    {
+        layoutConstraints=getLayoutConstraints();
+        *layoutConstraints=*s->layoutConstraints;
+    }
+    if (s->layoutState)
+    {
+        layoutState=getLayoutState();
+        *layoutState=*s->layoutState;
+    }
+    spriteWithLayoutCount=s->spriteWithLayoutCount;
+    isVisible_=s->isVisible_;
+    localTransform_=s->localTransform_;
+    worldTransform_=s->worldTransform_;
+    sfactor_=s->sfactor_;
+    dfactor_=s->dfactor_;
+    for (auto ss=s->children_.cbegin();ss!=s->children_.cend();ss++) {
+        Sprite *sc=(*ss)->clone();
+        sc->parent_=this;
+        children_.push_back(sc);
+    }
+    colorTransform_=s->colorTransform_;
+    alpha_=s->alpha_;
+    clipx_=s->clipx_;
+    clipy_=s->clipy_;
+    clipw_=s->clipw_;
+    cliph_=s->cliph_;
+    reqWidth_=s->reqWidth_;
+    reqHeight_=s->reqHeight_;
+    stopPropagationMask_=s->stopPropagationMask_;
+    shaders_=s->shaders_;
+    for (auto ss=shaders_.cbegin();ss!=shaders_.cend();ss++)
+        if (ss->second.shader) ss->second.shader->Retain();
+    stencil_=s->stencil_;
+}
+
 Sprite::~Sprite() {
 	delete colorTransform_;
 //	delete graphics_;

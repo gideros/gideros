@@ -88,7 +88,8 @@ end
 function OPS:ETIN(name)
 	if self.skipping then return self:skipOp() end
 	local expr=self:genOp()
-	return { value=expr.value.."."..name, vtype=checkSwizzling(expr,name) }
+	local swz=if self._handlers.SWIZZLE then self._handlers.SWIZZLE(name) else name
+	return { value=expr.value.."."..swz, vtype=checkSwizzling(expr,name) }
 end
 
 function OPS:ETIE(name)
@@ -120,17 +121,28 @@ function OPS:EGRP(op)
 	return { vtype=expr.vtype, value="("..expr.value..")" }
 end
 
+local binops_1={
+	["and"]="&&",
+	["or"]="||",
+	["~="]="!=",
+	["~"]="^",
+}
+local binops_2={
+	["^"]="pow",
+	["<>"]="max",
+	["><"]="min",
+	["//"]="trunc",
+}
 function OPS:EBIN(op)
 	if self.skipping then return self:skipOp(2) end
 	local left=self:genOp()
 	local right=self:genOp()
 	local terms=self._handlers.GENOP and self._handlers.GENOP(op,left,right)
 	if not terms then 
-		if op=="and" then op="&&"
-		elseif op=="or" then op="||"
-		end
-		if op=="^" then terms="pow("..left.value..","..right.value..")"
-		else terms="("..left.value..op..right.value..")"
+		if binops_2[op] then
+			terms=binops_2[op].."("..left.value..","..right.value..")"
+		else
+			terms="("..left.value..(binops_1[op] or op)..right.value..")"
 		end
 	end
 	local rtype=self._ot[left.vtype..op..right.vtype] or left.vtype

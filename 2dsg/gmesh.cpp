@@ -29,6 +29,63 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
     cullMode_=ShaderEngine::CULL_NONE;
 }
 
+void GMesh::cloneFrom(GMesh *s) {
+    Sprite::cloneFrom(s);
+    r_ = s->r_, g_ = s->g_, b_ = s->b_, a_ = s->a_;
+    minx_ = s->minx_;
+    miny_ = s->miny_;
+    maxx_ = s->maxx_;
+    maxy_ = s->maxy_;
+    meshtype_=s->meshtype_;
+    instanceCount_=s->instanceCount_;
+    cullMode_=s->cullMode_;
+
+    for (int t=0;t<MESH_MAX_TEXTURES;t++) {
+        if ((texture_[t]=s->texture_[t])!=NULL)
+                texture_[t]->ref();
+        sx_[t]=s->sx_[t];
+        sy_[t]=s->sy_[t];
+    }
+
+    for (int k=3;k<MESH_MAX_ARRAYS;k++)
+    {
+        genericArray[k-3].type=s->genericArray[k-3].type;
+        genericArray[k-3].mult=s->genericArray[k-3].mult;
+        genericArray[k-3].count=s->genericArray[k-3].count;
+        int ps=4;
+        switch (genericArray[k-3].type)
+        {
+        case ShaderProgram::DBYTE:
+        case ShaderProgram::DUBYTE:
+            ps=1;
+            break;
+        case ShaderProgram::DSHORT:
+        case ShaderProgram::DUSHORT:
+            ps=2;
+            break;
+        case ShaderProgram::DINT:
+        case ShaderProgram::DFLOAT:
+            ps=4;
+            break;
+        }
+        genericArray[k-3].ptr=malloc(ps*genericArray[k-3].mult*genericArray[k-3].count);
+        memcpy(genericArray[k-3].ptr,s->genericArray[k-3].ptr,ps*genericArray[k-3].mult*genericArray[k-3].count);
+        genericArray[k-3].cache=NULL;
+        genericArray[k-3].modified=true;
+    }
+
+    originalTextureCoordinates_.assign(s->originalTextureCoordinates_.cbegin(),s->originalTextureCoordinates_.cend());
+    textureCoordinates_.assign(s->textureCoordinates_.cbegin(),s->textureCoordinates_.cend());
+    textureCoordinates_.Update();
+    vertices_.assign(s->vertices_.cbegin(),s->vertices_.cend());
+    vertices_.Update();
+    indices_.assign(s->indices_.cbegin(),s->indices_.cend());
+    indices_.Update();
+    originalColors_.assign(s->originalColors_.cbegin(),s->originalColors_.cend());
+    colors_.assign(s->colors_.cbegin(),s->colors_.cend());
+    colors_.Update();
+}
+
 GMesh::~GMesh()
 {
 	for (int t=0;t<MESH_MAX_TEXTURES;t++)

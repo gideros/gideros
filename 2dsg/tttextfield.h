@@ -11,7 +11,9 @@ class TTTextField : public TextFieldBase
 {
 public:
     TTTextField(Application* application, TTFont* font=NULL, const char* text=NULL, const char *sample=NULL, FontBase::TextLayoutParameters *layout=NULL);
-	virtual ~TTTextField();
+    virtual Sprite *clone() { TTTextField *clone=new TTTextField(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(TTTextField *);
+    virtual ~TTTextField();
 
     virtual void setFont(FontBase *font);
     FontBase *getFont() { return font_; };

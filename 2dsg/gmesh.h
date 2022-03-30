@@ -15,6 +15,8 @@ class GMesh: public Sprite
 {
 public:
     GMesh(Application *application, bool is3d);
+    virtual Sprite *clone() { GMesh *clone=new GMesh(application_,mesh3d_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(GMesh *);
     virtual ~GMesh();
     bool is3d();
 

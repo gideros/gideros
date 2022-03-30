@@ -13,6 +13,8 @@ class Pixel : public Sprite
 	static VertexBuffer<unsigned short> ninepatch;
 public:
     Pixel(Application *application);
+    virtual Sprite *clone() { Pixel *clone=new Pixel(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(Pixel *);
 
 	void setColor(float r, float g, float b, float a)
 	{
@@ -50,7 +52,7 @@ public:
         width = width_;
         height = height_;
     }
-    void getMinimumSize(float &w,float &h,bool preferred) { w=minw_; h=minh_; }
+    void getMinimumSize(float &w,float &h,bool preferred) { G_UNUSED(preferred); w=minw_; h=minh_; }
 
 	void setAnchorPoint(float x, float y);
 	void getAnchorPoint(float* x, float* y) const;

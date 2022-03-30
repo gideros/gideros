@@ -17,6 +17,30 @@ void Bitmap::doDraw(const CurrentTransform&, float sx, float sy, float ex, float
 	graphicsBase_.draw(getShader(graphicsBase_.getShaderType()),&quad);
 }
 
+void Bitmap::cloneFrom(Bitmap *s) {
+    Sprite::cloneFrom(s);
+
+    bitmapdata_ = s->bitmapdata_;
+    if (bitmapdata_ != NULL)
+        bitmapdata_->ref();
+
+    texturebase_ = s->texturebase_;
+    if (texturebase_)
+        texturebase_->ref();
+
+    anchorx_ = s->anchorx_;
+    anchory_ = s->anchory_;
+    dx_ = s->dx_;
+    dy_ = s->dy_;
+    minx_ = s->minx_;
+    miny_ = s->miny_;
+    maxx_ = s->maxx_;
+    maxy_ = s->maxy_;
+
+    graphicsBase_=s->graphicsBase_;
+    graphicsBase_.clearCaches();
+}
+
 void Bitmap::updateBounds()
 {
     if (bitmapdata_ != NULL)

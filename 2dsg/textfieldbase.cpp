@@ -1,6 +1,20 @@
 #include "textfieldbase.h"
 #include "application.h"
 
+void TextFieldBase::cloneFrom(TextFieldBase *s)
+{
+    Sprite::cloneFrom(s);
+    text_=s->text_;
+    sample_=s->sample_;
+    layout_=s->layout_;
+    lscalex_=s->lscalex_;
+    lscaley_=s->lscaley_;
+    lfontCacheVersion_=s->lfontCacheVersion_;
+    textlayout_=s->textlayout_;
+    prefWidth_=s->prefWidth_;
+    prefHeight_=s->prefHeight_;
+}
+
 bool TextFieldBase::scaleChanged() {
 	float scalex = application_->getLogicalScaleX();
 	float scaley = application_->getLogicalScaleY();

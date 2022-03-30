@@ -14,6 +14,8 @@ class Particles: public Sprite, Ticker
 {
 public:
     Particles(Application *application);
+    virtual Sprite *clone() { Particles *clone=new Particles(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(Particles *);
     virtual ~Particles();
 
     int addParticle(float x, float y, float size, float angle, int ttl);

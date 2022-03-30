@@ -14,6 +14,7 @@ class TextFieldBase : public Sprite
 public:
     TextFieldBase(Application *application) : Sprite(application), layout_(),
         lscalex_(0),lscaley_(0),lfontCacheVersion_(-1),textlayout_(), prefWidth_(-1), prefHeight_(-1) {}
+    void cloneFrom(TextFieldBase *);
     virtual ~TextFieldBase() {}
 
     virtual void setFont(FontBase* font) = 0;

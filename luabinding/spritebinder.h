@@ -11,6 +11,7 @@ public:
 private:
 	static int create(lua_State* L);
 	static int destruct(void *p);
+    static int clone(lua_State *L);
 
 	static int addChild(lua_State* L);
 	static int addChildAt(lua_State* L);

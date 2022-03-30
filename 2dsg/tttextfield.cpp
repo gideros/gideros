@@ -41,6 +41,33 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
     createGraphics();
 }
 
+void TTTextField::cloneFrom(TTTextField *s)
+{
+    TextFieldBase::cloneFrom(s);
+    font_ = s->font_;
+    if (font_ != 0)
+        font_->ref();
+    a_=s->a_;
+    r_=s->r_;
+    g_=s->g_;
+    b_=s->b_;
+    minx_=s->minx_;
+    miny_=s->miny_;
+    maxx_=s->maxx_;
+    maxy_=s->maxy_;
+    sminx=s->sminx;
+    sminy=s->sminy;
+    smaxx=s->smaxx;
+    smaxy=s->smaxy;
+
+    styleFlags_=s->styleFlags_;
+
+    //data_=s->data_;
+    //graphicsBase_=s->graphicsBase_;
+
+    createGraphics();
+}
+
 TTTextField::~TTTextField()
 {
 	if (data_)

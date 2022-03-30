@@ -9,12 +9,10 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
 		text_ = text;
 	}
 
-	font_ = font;
-	if (font_ != 0)
-		font_->ref();
-
+    font_ = NULL;
 
     sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
+    minx_ = 0, miny_ = 0, maxx_ = 0, maxy_ = 0;
 
 	if (sample)
 		setSample(sample);
@@ -23,7 +21,31 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
         layout_=*params;
 
     setTextColor(0,0,0,1);
-    createGraphics();
+
+    setFont(font);
+}
+
+void TextField::cloneFrom(TextField *s)
+{
+    TextFieldBase::cloneFrom(s);
+    font_ = s->font_;
+    if (font_ != 0)
+        font_->ref();
+    a_=s->a_;
+    r_=s->r_;
+    g_=s->g_;
+    b_=s->b_;
+    graphicsBase_=s->graphicsBase_;
+    for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+        it->clearCaches();
+    minx_=s->minx_;
+    miny_=s->miny_;
+    maxx_=s->maxx_;
+    maxy_=s->maxy_;
+    sminx=s->sminx;
+    sminy=s->sminy;
+    smaxx=s->smaxx;
+    smaxy=s->smaxy;
 }
 
 /*
@@ -35,7 +57,7 @@ Font* TextField::font()
 
 void TextField::setFont(FontBase *font)
 {
-    if (font->getType() == FontBase::eTTFont) return;
+    if (font&&(font->getType() == FontBase::eTTFont)) return;
 
     if (font_ == font) return;
 
@@ -161,7 +183,9 @@ const char* TextField::sample() const
 #define FDIF(a,b) (((a>b)?(a-b):(b-a))>FDIF_EPSILON)
 void TextField::createGraphics()
 {
-	scaleChanged(); //Mark current scale as graphics scale
+    if (font_ == NULL) return;
+
+    scaleChanged(); //Mark current scale as graphics scale
     graphicsBase_.clear();
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
     bool layoutSizeChanged=false;
@@ -169,8 +193,7 @@ void TextField::createGraphics()
 	float lbh=textlayout_.bh;
 	float lw=textlayout_.w;
 	float lh=textlayout_.h;
-    if (font_ != NULL)
-        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, textlayout_);
+    font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, textlayout_);
     layoutSizeChanged=FDIF(textlayout_.mw,lmw)||FDIF(textlayout_.bh,lbh)||FDIF(textlayout_.h,lh)||FDIF(textlayout_.w,lw);
 
     minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;
@@ -183,7 +206,7 @@ void TextField::createGraphics()
 		maxx_ = std::max(maxx_, lmaxx_);
 		maxy_ = std::max(maxy_, lmaxy_);
 	}
-	if (layoutSizeChanged) layoutSizesChanged();
+    if (layoutSizeChanged) layoutSizesChanged();
 }
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
@@ -195,8 +218,8 @@ void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, fl
     if (scaleChanged()) createGraphics();
     if (font_ != NULL)
         font_->preDraw();
-	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
-		(*it).draw(getShader((*it).getShaderType()));
+    for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+        (*it).draw(getShader((*it).getShaderType()));
 }
 
 void TextField::setLayout(FontBase::TextLayoutParameters *l)

@@ -74,6 +74,32 @@ Pixel::Pixel(Application *application) : Sprite(application)
     vertices.resize(4);
 }
 
+void Pixel::cloneFrom(Pixel *s) {
+    Sprite::cloneFrom(s);
+    r_ = s->r_, g_ = s->g_, b_ = s->b_, a_ = s->a_;
+    width_ = s->width_, height_ = s->height_;
+    sx_ = s->sx_, sy_ = s->sy_;
+    x_ = s->x_, y_ = s->y_;
+    anchorx_ = s->anchorx_, anchory_ = s->anchory_;
+    tx_=s->tx_, ty_=s->ty_, tw_=s->tw_, th_=s->th_;
+    isStretching_ = s->isStretching_;
+    isNinePatch_=s->isNinePatch_;
+    tmatrix_=s->tmatrix_;
+    insetv_t_=s->insetv_t_; insetv_b_=s->insetv_b_; insetv_l_=s->insetv_l_; insetv_r_=s->insetv_r_;
+    insett_t_=s->insett_t_; insett_b_=s->insett_b_; insett_l_=s->insett_l_; insett_r_=s->insett_r_;
+    c1_=s->c1_; c2_=s->c2_; c3_=s->c3_; c4_=s->c4_;
+    a1_=s->a1_; a2_=s->a2_; a3_=s->a3_; a4_=s->a4_;
+    isWhite_=s->isWhite_;
+    minw_=s->minw_; minh_=s->minh_;
+    for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
+        if ((texture_[t]=s->texture_[t])!=NULL)
+                texture_[t]->ref();
+    texcoords.assign(s->texcoords.cbegin(),s->texcoords.cend());
+    texcoords.Update();
+    vertices.assign(s->vertices.cbegin(),s->vertices.cend());
+    vertices.Update();
+}
+
 Pixel::~Pixel()
 {
     for (int t=0;t<PIXEL_MAX_TEXTURES;t++)

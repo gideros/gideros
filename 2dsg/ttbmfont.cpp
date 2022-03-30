@@ -381,7 +381,7 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 		return;
 	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
 			fontInfo_.kernings;
-	bool updateTexture = false;
+    bool updateTexture = dibDirty_;
 	wchar32_t lchar = 0;
 	for (const wchar32_t *t = text; size; size--, t++) {
 		wchar32_t chr = *t;
@@ -481,10 +481,7 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 			updateTexture = true;
 		}
 	}
-	if (updateTexture) {
-		application_->getTextureManager()->updateTextureFromDib(
-				textureData_[textureData_.size() - 1], *currentDib_);
-	}
+    dibDirty_=updateTexture;
 }
 
 void TTBMFont::ensureGlyphs(int facenum,const wchar32_t *text, int size) {

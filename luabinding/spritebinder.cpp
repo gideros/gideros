@@ -91,6 +91,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"redrawEffects", SpriteBinder::redrawEffects},
         {"setHiddenChildren", SpriteBinder::setHiddenChildren},
 		{"setCheckClip", SpriteBinder::setCheckClip},
+        {"clone", SpriteBinder::clone},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -247,6 +248,83 @@ int SpriteBinder::create(lua_State* L)
 	*/
 
 	return 1;
+}
+
+static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fidx) {
+    Binder binder(L);
+    lua_checkstack(L,8);
+    lua_getfield(L, oidx, "__userdata");
+    lua_getfield(L, cidx-1, "__userdata");
+    if (lua_getmetatable(L,-2))
+        lua_setmetatable(L,-2);
+    lua_pop(L,2);
+    if (lua_getmetatable(L,oidx))
+        lua_setmetatable(L,cidx-1);
+
+    int cc=c->childCount();
+    if (cc>0) {
+        lua_getfield(L,oidx,"__children");
+        lua_createtable(L,cc,0);
+        for(int k=0;k<cc;k++) {
+            Sprite *sl=o->child(k);
+            Sprite *cl=c->child(k);
+            lua_pushlightuserdata(L, sl);
+            lua_rawget(L,-3);
+            cl->ref();
+            binder.pushInstance("Sprite", cl);
+            fixupClone(L,sl,cl,-2,-1,fidx-4);
+            lua_pushvalue(L,cidx-4);
+            lua_setfield(L, -2, "__parent");
+            lua_pushlightuserdata(L, cl);
+            lua_pushvalue(L,-2);
+            lua_rawset(L,-5);
+            lua_rawset(L,fidx-4);
+        }
+        lua_setfield(L, cidx-2, "__children");
+        lua_pop(L,1);
+    }
+
+    //Last step, clone/map original data to cloned table
+    lua_getfield(L, cidx, "__children"); //-1:Save __children
+    lua_getfield(L, cidx-1, "__userdata"); //-2:Save __userdata
+    lua_pushnil(L); //-3: Pairs key
+    while (lua_next(L,oidx-3)) { //-4: K,V
+        lua_pushvalue(L,-2); //-5:K,V,K
+        lua_insert(L,-2); //-5:K,K,V
+        lua_pushvalue(L,-1); //-6:K,K,V,V
+        lua_rawget(L,fidx-6); //-6:K,K,V,M(V)
+        if (lua_isnil(L,-1))
+            lua_pop(L,1); //-5:K,K,V
+        else
+            lua_remove(L,-2); //-5:K,K,M(V)
+        lua_rawset(L,cidx-5); //-3:K
+    }
+    lua_setfield(L, cidx-2, "__userdata"); //-1:Restore __userdata
+    lua_setfield(L, cidx-1, "__children"); //0:Restore __children
+    lua_getfield(L,cidx,"newClone");
+    if (!lua_isfunction(L,-1))
+        lua_pop(L,1);
+    else {
+        lua_pushvalue(L,cidx-1);
+        lua_call(L,1,0);
+    }
+
+}
+
+int SpriteBinder::clone(lua_State *L)
+{
+    StackChecker checker(L, "SpriteBinder::clone", 1);
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* clone = sprite->clone();
+
+    binder.pushInstance("Sprite", clone);
+    lua_newtable(L);
+    lua_pushvalue(L,1);
+    fixupClone(L,sprite, clone,-1,-3,-2);
+    lua_pop(L,2);
+
+    return 1;
 }
 
 int SpriteBinder::destruct(void *p)

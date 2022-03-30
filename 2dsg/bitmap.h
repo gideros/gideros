@@ -9,11 +9,23 @@ class Bitmap : public Sprite
 {
 	static VertexBuffer<unsigned short> quad;
 public:
+    Bitmap(Application *application) : Sprite(application)
+    {
+        bitmapdata_ = NULL;
+        texturebase_ = NULL;
+
+        anchorx_ = 0;
+        anchory_ = 0;
+        dx_ = 0;
+        dy_ = 0;
+        minx_=miny_=maxx_=maxy_=0;
+    }
+
     Bitmap(Application *application, BitmapData* bitmapdata) : Sprite(application)
 	{
-		//printf("Bitmap()\n");
 		bitmapdata_ = bitmapdata;
-		bitmapdata_->ref();
+        if (bitmapdata_ != NULL)
+            bitmapdata_->ref();
 
 		texturebase_ = NULL;
 
@@ -41,10 +53,11 @@ public:
 		setCoords();
         updateBounds();
     }
+    virtual Sprite *clone() { Bitmap *clone=new Bitmap(application_,bitmapdata_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(Bitmap *);
 
 	virtual ~Bitmap()
 	{
-		//printf("~Bitmap()\n");
 		if (bitmapdata_ != NULL)
 			bitmapdata_->unref();
 

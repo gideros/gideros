@@ -17,7 +17,9 @@ public:
 	};
 
     Shape(Application *application);
-	virtual ~Shape();
+    virtual Sprite *clone() { Shape *clone=new Shape(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(Shape *);
+    virtual ~Shape();
 
 	void setLineStyle(float thickness, unsigned int color, float alpha = 1.f);
 

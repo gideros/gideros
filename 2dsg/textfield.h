@@ -14,6 +14,8 @@ class TextField : public TextFieldBase
 {
 public:
     TextField(Application *application, BMFontBase* font=NULL, const char* text=NULL, const char *sample=NULL, FontBase::TextLayoutParameters *params=NULL);
+    virtual Sprite *clone() { TextField *clone=new TextField(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(TextField *);
 
 	virtual ~TextField()
 	{

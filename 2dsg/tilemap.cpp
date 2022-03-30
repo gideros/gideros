@@ -29,6 +29,18 @@ TileMap::TileMap(Application* application,
 	repeaty_ = false;
 }
 
+void TileMap::cloneFrom(TileMap *s)
+{
+    Sprite::cloneFrom(s);
+
+    repeatx_=s->repeatx_;
+    repeaty_=s->repeaty_;
+    tileids_=s->tileids_;
+    vertices=s->vertices;
+    texcoords=s->texcoords;
+    colors=s->colors;
+}
+
 void TileMap::setTexture(TextureBase* texture,
 		int tilewidth, int tileheight,
 		int spacingx, int spacingy,

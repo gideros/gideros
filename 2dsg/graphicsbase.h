@@ -14,6 +14,12 @@ public:
 	{
 		modified=true;
 	}
+    void ClearCache() {
+        if (bufferCache)
+            delete bufferCache;
+        bufferCache=NULL;
+        modified=true;
+    }
 	VertexBuffer()
 	{
 		bufferCache=NULL;
@@ -38,6 +44,12 @@ public:
 	void draw(ShaderProgram *shader = NULL, VertexBuffer<unsigned short> *commonIndices=NULL);
 
 	void clear();
+    void clearCaches() {
+        indices.ClearCache();
+        vertices.ClearCache();
+        texcoords.ClearCache();
+        colors.ClearCache();
+    }
 
 	void setColor(float r, float g, float b, float a)
 	{

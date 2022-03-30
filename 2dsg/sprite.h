@@ -27,9 +27,13 @@ class Stage;
 #define SPRITE_EVENTMASK_KEY	4
 class Sprite : public EventDispatcher
 {
+protected:
 public:
     Sprite(Application* application);
-	virtual ~Sprite();
+    virtual ~Sprite();
+
+    virtual Sprite *clone() { Sprite *clone=new Sprite(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(Sprite *);
 
     void draw(const CurrentTransform&, float sx, float sy, float ex, float ey);
     void computeLayout();
