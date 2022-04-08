@@ -76,8 +76,9 @@ public:
 	static ShaderProgram *stdTextureColor;
 	static ShaderProgram *stdTextureAlphaColor;
 	static ShaderProgram *stdParticle;
-	static ShaderProgram *stdParticles;
-	static ShaderProgram *pathShaderFillC;
+    static ShaderProgram *stdParticles;
+    static ShaderProgram *stdParticles3;
+    static ShaderProgram *pathShaderFillC;
 	static ShaderProgram *pathShaderStrokeC;
 	static ShaderProgram *pathShaderStrokeLC;
 	enum StdData {

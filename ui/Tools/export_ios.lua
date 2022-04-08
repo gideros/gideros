@@ -315,7 +315,18 @@ OTHER_LDFLAGS = "-ObjC";</by>
    dic=dic.."<key>"..k.."</key>\n"..plistValue(v).."\n"
   end
   Export.callXml([[<template name="Project" path="">
-    <replacelist wildcards="]]..Export.getProperty("project.name")..[[_Mac.entitlements">
+    <replacelist wildcards="]]..Export.getProperty("project.name")..[[ Mac.entitlements">
+      <prepend>
+        <orig>]].."<![CDATA[<key>com.apple.security.app-sandbox</key>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
+      </prepend>
+    </replacelist>
+  </template>]])
+  local dic=""
+  for k,v in pairs(iOSProject.Entitlements.ios) do
+   dic=dic.."<key>"..k.."</key>\n"..plistValue(v).."\n"
+  end
+  Export.callXml([[<template name="Project" path="">
+    <replacelist wildcards="]]..Export.getProperty("project.name")..[[ iOS.entitlements">
       <prepend>
         <orig>]].."<![CDATA[<key>com.apple.security.app-sandbox</key>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
       </prepend>

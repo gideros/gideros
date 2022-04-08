@@ -19,6 +19,7 @@ ShaderProgram *ShaderProgram::stdTextureColor=NULL;
 ShaderProgram *ShaderProgram::stdTextureAlphaColor=NULL;
 ShaderProgram *ShaderProgram::stdParticle=NULL;
 ShaderProgram *ShaderProgram::stdParticles=NULL;
+ShaderProgram *ShaderProgram::stdParticles3=NULL;
 ShaderProgram *ShaderProgram::pathShaderFillC=NULL;
 ShaderProgram *ShaderProgram::pathShaderStrokeC = NULL;
 ShaderProgram *ShaderProgram::pathShaderStrokeLC = NULL;
@@ -349,7 +350,7 @@ ShaderProgram *ShaderEngine::getDefault(StandardProgram id,int variant)
 	case STDP_TEXTURECOLOR: return ShaderProgram::stdTextureColor;
 	case STDP_TEXTUREALPHACOLOR: return ShaderProgram::stdTextureAlphaColor;
 	case STDP_PARTICLE: return ShaderProgram::stdParticle;
-	case STDP_PARTICLES: return ShaderProgram::stdParticles;
+    case STDP_PARTICLES: return (variant&STDPV_3D)?ShaderProgram::stdParticles3:ShaderProgram::stdParticles;
 	case STDP_PATHFILLCURVE: return ShaderProgram::pathShaderFillC;
 	case STDP_PATHSTROKECURVE: return ShaderProgram::pathShaderStrokeC;
 	case STDP_PATHSTROKELINE: return ShaderProgram::pathShaderStrokeLC;

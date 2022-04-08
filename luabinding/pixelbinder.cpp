@@ -198,9 +198,11 @@ int PixelBinder::setNinePatch(lua_State *L) {
 	int argc=lua_gettop(L);
 
 	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
-	if (argc==2) {
-		lua_Number i = luaL_checknumber(L, 2);
-		bitmap->setNinePatch(i,i,i,i,i,i,i,i);
+	if ((argc==1)||(argc==2)) {
+		lua_Number i = luaL_optnumber(L, 2,-1);
+		if (i>=0)
+			bitmap->setNinePatch(i,i,i,i,i,i,i,i);
+		bitmap->setStretching(i==0);
 	} else if (argc==3) {
 		lua_Number iv = luaL_checknumber(L, 2);
 		lua_Number it = luaL_checknumber(L, 3);
