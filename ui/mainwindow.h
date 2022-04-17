@@ -15,6 +15,8 @@
 #include "bytebuffer.h"
 #include <QTemporaryDir>
 
+#include <QColorDialog>
+
 #define NEW_CLIENT
 
 class QAction;
@@ -190,6 +192,10 @@ private slots:
     void reloadProject();
 //	void onModified();
 	void startPlayer();
+	void startTexturePacker();
+	void startFontCreator();
+	void setWrap();
+	void insertColorInCode();
 	void fileAssociations();
 	void exportProject();
 	void exportPack();
@@ -308,14 +314,14 @@ private slots:
 	void openRecentProject();
 
 private:
-	FindDialog* findDialog_;
-	ReplaceDialog* replaceDialog_;
-	FindInFilesDialog* findInFilesDialog_;
-	QString findWhat_;
-	bool wholeWord_;
-	bool matchCase_;
-    bool wrapSearch_;
-    bool regexp_;
+	//~ FindDialog* findDialog_;
+	//~ ReplaceDialog* replaceDialog_;
+	//~ FindInFilesDialog* findInFilesDialog_;
+	//~ QString findWhat_;
+	//~ bool wholeWord_;
+	//~ bool matchCase_;
+    //~ bool wrapSearch_;
+    //~ bool regexp_;
 
     bool inChooseTab_;
     int changeTabKeyPressState_;
@@ -419,7 +425,17 @@ private slots:
 public:
     static MainWindow *lua_instance;
     void notifyAddon(QString clientId,const char *data);
-
+	void toggleToolBar(bool append);
+	
+	FindDialog* findDialog_;
+	ReplaceDialog* replaceDialog_;
+	FindInFilesDialog* findInFilesDialog_;
+	QString findWhat_;
+	bool wholeWord_;
+	bool matchCase_;
+	bool wrapSearch_;
+	bool regexp_;
+	
 public slots:
     void saveAll();
 };

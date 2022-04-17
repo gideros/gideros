@@ -33,6 +33,15 @@ void PreferencesDialog::updateEditors(const std::function<void (TextEdit*)> lamb
         }
 }
 
+MainWindow* PreferencesDialog::getMainWindow()
+{
+    foreach (QWidget *w, qApp->topLevelWidgets())
+        if (MainWindow* mainWin = qobject_cast<MainWindow*>(w))
+            return mainWin;
+    return nullptr;
+}
+
+
 void PreferencesDialog::setupEditorPrefs()
 {
     QSettings settings;
@@ -137,6 +146,15 @@ void PreferencesDialog::setupEditorPrefs()
             [this](int state) {
                 this->settings.setValue(Keys::Prefs::wordHightlighterSimple, state);
                 this->updateEditors([state](TextEdit* te) { te->wordHighlighter()->setSimpleMode(state); });
+            }
+    );
+    
+	// append toolbar to menu checkbox
+    ui->appendToolbarCheckBox->setChecked(settings.value("toggleToolBar", 0).toBool());
+    connect(ui->appendToolbarCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+				auto mw = getMainWindow();
+				mw->toggleToolBar(state);
             }
     );
 }

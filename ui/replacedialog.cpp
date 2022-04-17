@@ -21,6 +21,12 @@ QString ReplaceDialog::findWhat() const
 	return ui.findWhat->text();
 }
 
+void ReplaceDialog::setSelectedText(QString s) const
+{
+	ui.findWhat->setText(s);
+}
+
+
 QString ReplaceDialog::replaceWith() const
 {
 	return ui.replaceWith->text();
