@@ -16,6 +16,7 @@ private:
     static int removeParticles(lua_State *L);
     static int setParticleSpeed(lua_State *L);
     static int setParticleDecay(lua_State *L);
+    static int setParticleAcceleration(lua_State *L);
     static int setParticleColor(lua_State *L);
     static int setParticlePosition(lua_State *L);
     static int setParticleSize(lua_State *L);
@@ -23,6 +24,7 @@ private:
     static int setParticleTtl(lua_State *L);
     static int getParticleSpeed(lua_State *L);
     static int getParticleDecay(lua_State *L);
+    static int getParticleAcceleration(lua_State *L);
     static int getParticleColor(lua_State *L);
     static int getParticlePosition(lua_State *L);
     static int getParticleSize(lua_State *L);

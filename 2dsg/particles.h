@@ -34,8 +34,10 @@ public:
     void getColor(int i, unsigned int *color, float *alpha) const;
     void setSpeed(int i, float vx, float vy, float vz, float va, float decay);
     void getSpeed(int i, float *vx, float *vy, float *vz, float *va, float *decay) const;
-    void setDecay(int i, float vp, float vc, float vs, float va);
-    void getDecay(int i, float *vp, float *vc, float *vs,float *va) const;
+    void setDecay(int i, float vx, float vy, float vz, float vc, float vs, float va);
+    void getDecay(int i, float *vx, float *vy, float *vz, float *vc, float *vs,float *va) const;
+    void setAcceleration(int i, float vx, float vy, float vz, float vc, float vs, float va);
+    void getAcceleration(int i, float *vx, float *vy, float *vz, float *vc, float *vs,float *va) const;
     void setTag(int i, const char *tag);
     const char *getTag(int i) const;
     void setExtra(int i, float type);
@@ -63,8 +65,9 @@ private:
     std::vector<Color> originalColors_;
     VertexBuffer<unsigned char> colors_; //r,g,b,a
     VertexBuffer<float> points_; //x,y,z,extra
-    std::vector<float> speeds_; //vx,vy,vzvs,va
-    std::vector<float> decay_; //dp,dc,ds,da pos(speed), color(alpha), size (grow speed), angle (angular speed)
+    std::vector<float> speeds_; //vx,vy,vz,vs,va
+    std::vector<float> decay_; //dx,dy,dz,dc,ds,da pos(speed), color(alpha), size (grow speed), angle (angular speed)
+    std::vector<float> acceleration_; //dx,dy,dz,dc,ds,da pos(speed), color(alpha), size (grow speed), angle (angular speed)
     std::vector<float> ttl_; //time to live
     std::vector<std::string> tag_; //user tag
     VertexBuffer<float> texcoords_; //x,y,size,angle

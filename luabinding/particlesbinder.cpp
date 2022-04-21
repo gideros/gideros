@@ -17,9 +17,11 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
         {"setParticleSize", setParticleSize},
         {"setParticleAngle", setParticleAngle},
         {"setParticleDecay", setParticleDecay},
+        {"setParticleAcceleration", setParticleAcceleration},
         {"setParticleTtl", setParticleTtl},
         {"getParticleDecay", getParticleDecay},
         {"getParticleSpeed", getParticleSpeed},
+        {"getParticleSpeed", getParticleAcceleration},
         {"getParticleColor", getParticleColor},
         {"getParticlePosition", getParticlePosition},
         {"getParticleSize", getParticleSize},
@@ -130,15 +132,60 @@ int ParticlesBinder::setParticleDecay(lua_State *L)
     if (i < 0 || i >= mesh->getParticleCount())
         luaL_error(L, "The supplied index is out of bounds.");
 
-    float ivp,ivc,ivs,iva;
-    mesh->getDecay(i,&ivp,&ivc,&ivs,&iva);
+    float ivx,ivy,ivz,ivc,ivs,iva;
+    mesh->getDecay(i,&ivx,&ivy,&ivz,&ivc,&ivs,&iva);
 
-    float vp=luaL_optnumber(L,3,ivp);
+    const float *vvec=lua_tovector(L,3);
+    if (vvec) {
+        ivx=vvec[0];
+        ivy=vvec[1];
+        ivz=vvec[2];
+    }
+    else if (lua_isnumber(L,3)) {
+        ivx=luaL_optnumber(L,3,ivx);
+        ivy=ivx;
+        ivz=ivx;
+    }
+
     float vc=luaL_optnumber(L,4,ivc);
     float vs=luaL_optnumber(L,5,ivs);
     float va=luaL_optnumber(L,6,iva);
 
-    mesh->setDecay(i, vp,vc,vs,va);
+    mesh->setDecay(i, ivx,ivy,ivz,vc,vs,va);
+
+    return 0;
+}
+
+int ParticlesBinder::setParticleAcceleration(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        luaL_error(L, "The supplied index is out of bounds.");
+
+    float ivx,ivy,ivz,ivc,ivs,iva;
+    mesh->getAcceleration(i,&ivx,&ivy,&ivz,&ivc,&ivs,&iva);
+
+    const float *vvec=lua_tovector(L,3);
+    if (vvec) {
+        ivx=vvec[0];
+        ivy=vvec[1];
+        ivz=vvec[2];
+    }
+    else if (lua_isnumber(L,3)) {
+        ivx=luaL_optnumber(L,3,ivx);
+        ivy=ivx;
+        ivz=ivx;
+    }
+
+    float vc=luaL_optnumber(L,4,ivc);
+    float vs=luaL_optnumber(L,5,ivs);
+    float va=luaL_optnumber(L,6,iva);
+
+    mesh->setAcceleration(i, ivx,ivy,ivz,vc,vs,va);
 
     return 0;
 }
@@ -330,13 +377,47 @@ int ParticlesBinder::addParticles(lua_State *L)
             float vs = luaL_optnumber(L, -1,0) ;
             lua_pop(L, 1);
         	lua_getfield(L,-1,"decay");
-            float decay = luaL_optnumber(L, -1,1.0) ;
+            const float *vvec=lua_tovector(L,-1);
+            float decayX=1;
+            float decayY=1;
+            float decayZ=1;
+            if (vvec) {
+                decayX=vvec[0];
+                decayY=vvec[1];
+                decayZ=vvec[2];
+            }
+            else if (lua_isnumber(L,-1)) {
+                decayX=luaL_optnumber(L,-1,decayX);
+                decayY=decayX;
+                decayZ=decayX;
+            }
             lua_pop(L, 1);
         	lua_getfield(L,-1,"decayAngular");
-            float decayA = luaL_optnumber(L, -1,decay) ;
+            float decayA = luaL_optnumber(L, -1,decayX) ;
             lua_pop(L, 1);
         	lua_getfield(L,-1,"decayGrowth");
             float decayS = luaL_optnumber(L, -1,1.0) ;
+            lua_pop(L, 1);
+
+            lua_getfield(L,-1,"acceleration");
+            vvec=lua_tovector(L,-1);
+            float accX=0;
+            float accY=0;
+            float accZ=0;
+            if (vvec) {
+                accX=vvec[0];
+                accY=vvec[1];
+                accZ=vvec[2];
+            }
+            lua_pop(L, 1);
+            lua_getfield(L,-1,"accelerationAngular");
+            float accA = luaL_optnumber(L, -1,0) ;
+            lua_pop(L, 1);
+            lua_getfield(L,-1,"accelerationGrowth");
+            float accS = luaL_optnumber(L, -1,0) ;
+            lua_pop(L, 1);
+            lua_getfield(L,-1,"accelerationAlpha");
+            float accC = luaL_optnumber(L, -1,0) ;
             lua_pop(L, 1);
 
             mesh->setSpeed(pnum,vx,vy,vz,vs,va);
@@ -361,7 +442,8 @@ int ParticlesBinder::addParticles(lua_State *L)
             lua_pop(L, 1);
 
             mesh->setColor(pnum, color, alpha);
-            mesh->setDecay(pnum, decay,decayC,decayS,decayA);
+            mesh->setDecay(pnum, decayX,decayY,decayZ,decayC,decayS,decayA);
+            mesh->setAcceleration(pnum, accX,accY,accZ,accC,accS,accA);
 
         	lua_getfield(L,-1,"tag");
             const char *tag=luaL_optstring(L,-1,NULL);
@@ -422,9 +504,29 @@ int ParticlesBinder::getParticleDecay(lua_State *L)
     if (i < 0 || i >= mesh->getParticleCount())
         luaL_error(L, "The supplied index is out of bounds.");
 
-    float vp,vc,vs,va;
-    mesh->getDecay(i, &vp,&vc,&vs,&va);
-    lua_pushnumber(L, vp);
+    float vx,vy,vz,vc,vs,va;
+    mesh->getDecay(i, &vx,&vy,&vz,&vc,&vs,&va);
+    lua_pushnumber(L, vx);
+    lua_pushnumber(L, vc);
+    lua_pushnumber(L, vs);
+    lua_pushnumber(L, va);
+    lua_pushvector(L, vx,vy,vz,0);
+
+    return 5;
+}
+
+int ParticlesBinder::getParticleAcceleration(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        luaL_error(L, "The supplied index is out of bounds.");
+
+    float vx,vy,vz,vc,vs,va;
+    mesh->getAcceleration(i, &vx,&vy,&vz,&vc,&vs,&va);
+    lua_pushvector(L, vx,vy,vz,0);
     lua_pushnumber(L, vc);
     lua_pushnumber(L, vs);
     lua_pushnumber(L, va);
@@ -585,9 +687,11 @@ static void buildParticleTable(lua_State *L,Particles *mesh,int i)
     float vx,vy,vz,va,vs,extra;
     mesh->getSpeed(i,&vx,&vy,&vz,&vs,&va);
     extra=mesh->getExtra(i);
-	float dp,dc,da,ds;
-	mesh->getDecay(i,&dp,&dc,&ds,&da);
-	unsigned int col;
+    float dx,dy,dz,dc,da,ds;
+    mesh->getDecay(i,&dx,&dy,&dz,&dc,&ds,&da);
+    float ax,ay,az,ac,aa,as;
+    mesh->getAcceleration(i,&ax,&ay,&az,&ac,&as,&aa);
+    unsigned int col;
 	float alpha;
 	mesh->getColor(i,&col,&alpha);
 	const char *tag=mesh->getTag(i);
@@ -622,14 +726,25 @@ static void buildParticleTable(lua_State *L,Particles *mesh,int i)
 	lua_pushnumber(L,vs);
 	lua_setfield(L,-2,"speedGrowth");
 
-	lua_pushnumber(L,dp);
-	lua_setfield(L,-2,"decay");
-	lua_pushnumber(L,dc);
+    lua_pushnumber(L,dx);
+    lua_setfield(L,-2,"decay");
+    lua_pushvector(L,dx,dy,dz,0);
+    lua_setfield(L,-2,"decayVector");
+    lua_pushnumber(L,dc);
 	lua_setfield(L,-2,"decayAlpha");
 	lua_pushnumber(L,da);
 	lua_setfield(L,-2,"decayAngular");
 	lua_pushnumber(L,ds);
 	lua_setfield(L,-2,"decayGrowth");
+
+    lua_pushvector(L,ax,ay,az,0);
+    lua_setfield(L,-2,"accelerationVector");
+    lua_pushnumber(L,ac);
+    lua_setfield(L,-2,"accelerationAlpha");
+    lua_pushnumber(L,aa);
+    lua_setfield(L,-2,"accelerationAngular");
+    lua_pushnumber(L,as);
+    lua_setfield(L,-2,"accelerationGrowth");
 
 	lua_pushinteger(L,col);
 	lua_setfield(L,-2,"color");

@@ -9,10 +9,10 @@ Particles::Particles(Application *application, bool is3d) :
 		Sprite(application) {
     for (int t=0;t<PARTICLES_MAX_TEXTURES;t++)
         texture_[t]=NULL;
-	sx_ = 1;
-	sy_ = 1;
-	r_ = 1;
-	g_ = 1;
+    sx_ = 1;
+    sy_ = 1;
+    r_ = 1;
+    g_ = 1;
 	b_ = 1;
 	a_ = 1;
 	boundsDirty_ = false;
@@ -50,6 +50,7 @@ void Particles::cloneFrom(Particles *s)
     points_.Update();
     speeds_=s->speeds_;
     decay_=s->decay_;
+    acceleration_=s->acceleration_;
     ttl_=s->ttl_;
     tag_=s->tag_;
     texcoords_.assign(s->texcoords_.cbegin(),s->texcoords_.cend());
@@ -92,8 +93,9 @@ int Particles::addParticle(float x, float y, float z, float size, float angle, i
 			colors_.resize(tsize * 16);
             texcoords_.resize(tsize * 16);
             speeds_.resize(tsize * 5);
-			decay_.resize(tsize * 4);
-			originalColors_.resize(tsize);
+            decay_.resize(tsize * 6);
+            acceleration_.resize(tsize * 6);
+            originalColors_.resize(tsize);
 			indices_.resize(tsize * 6);
 			tag_.resize(tsize);
 		}
@@ -131,11 +133,19 @@ int Particles::addParticle(float x, float y, float z, float size, float angle, i
     speeds_[s * 5 + 2] = 0;
     speeds_[s * 5 + 3] = 0;
     speeds_[s * 5 + 4] = 0;
-    decay_[s * 4 + 0] = 1;
-	decay_[s * 4 + 1] = 1;
-	decay_[s * 4 + 2] = 1;
-	decay_[s * 4 + 3] = 1;
-	originalColors_[s].color = 0xFFFFFF;
+    decay_[s * 6 + 0] = 1;
+    decay_[s * 6 + 1] = 1;
+    decay_[s * 6 + 2] = 1;
+    decay_[s * 6 + 3] = 1;
+    decay_[s * 6 + 4] = 1;
+    decay_[s * 6 + 5] = 1;
+    acceleration_[s * 6 + 0] = 0;
+    acceleration_[s * 6 + 1] = 0;
+    acceleration_[s * 6 + 2] = 0;
+    acceleration_[s * 6 + 3] = 0;
+    acceleration_[s * 6 + 4] = 0;
+    acceleration_[s * 6 + 5] = 0;
+    originalColors_[s].color = 0xFFFFFF;
 	originalColors_[s].alpha = 1;
 	tag_[s]="";
 	points_.Update();
@@ -304,36 +314,88 @@ void Particles::getSpeed(int i, float *vx, float *vy, float *vz, float *vs,
         *va = speeds_[i * 5 + 4];
 }
 
-void Particles::setDecay(int i, float vp, float vc, float vs, float va) {
+void Particles::setDecay(int i, float vx, float vy, float vz, float vc, float vs, float va) {
     if (i >= (int)particleCount)
-		return;
-	decay_[i * 4] = vp;
-	decay_[i * 4 + 1] = vc;
-	decay_[i * 4 + 2] = vs;
-	decay_[i * 4 + 3] = va;
+        return;
+    decay_[i * 6] = vx;
+    decay_[i * 6 + 1] = vy;
+    decay_[i * 6 + 2] = vz;
+    decay_[i * 6 + 3] = vc;
+    decay_[i * 6 + 4] = vs;
+    decay_[i * 6 + 5] = va;
 }
 
-void Particles::getDecay(int i, float *vp, float *vc, float *vs,
-		float *va) const {
+void Particles::getDecay(int i, float *vx, float *vy, float *vz, float *vc, float *vs,
+        float *va) const {
     if (i >= (int)particleCount) {
-		if (vp)
-			*vp = 0;
-		if (vc)
-			*vc = 0;
-		if (vs)
-			*vs = 0;
-		if (va)
-			*va = 0;
-		return;
-	}
-	if (vp)
-		*vp = decay_[i * 4];
-	if (vc)
-		*vc = decay_[i * 4 + 1];
-	if (vs)
-		*vs = decay_[i * 4 + 2];
-	if (va)
-		*va = decay_[i * 4 + 3];
+        if (vx)
+            *vx = 0;
+        if (vy)
+            *vy = 0;
+        if (vz)
+            *vz = 0;
+        if (vc)
+            *vc = 0;
+        if (vs)
+            *vs = 0;
+        if (va)
+            *va = 0;
+        return;
+    }
+    if (vy)
+        *vx = decay_[i * 6];
+    if (vy)
+        *vy = decay_[i * 6 + 1];
+    if (vz)
+        *vz = decay_[i * 6 + 2];
+    if (vc)
+        *vc = decay_[i * 6 + 3];
+    if (vs)
+        *vs = decay_[i * 6 + 4];
+    if (va)
+        *va = decay_[i * 6 + 5];
+}
+
+void Particles::setAcceleration(int i, float vx, float vy, float vz, float vc, float vs, float va) {
+    if (i >= (int)particleCount)
+        return;
+    acceleration_[i * 6] = vx;
+    acceleration_[i * 6 + 1] = vy;
+    acceleration_[i * 6 + 2] = vz;
+    acceleration_[i * 6 + 3] = vc;
+    acceleration_[i * 6 + 4] = vs;
+    acceleration_[i * 6 + 5] = va;
+}
+
+void Particles::getAcceleration(int i, float *vx, float *vy, float *vz, float *vc, float *vs,
+        float *va) const {
+    if (i >= (int)particleCount) {
+        if (vx)
+            *vx = 0;
+        if (vy)
+            *vy = 0;
+        if (vz)
+            *vz = 0;
+        if (vc)
+            *vc = 0;
+        if (vs)
+            *vs = 0;
+        if (va)
+            *va = 0;
+        return;
+    }
+    if (vy)
+        *vx = acceleration_[i * 6];
+    if (vy)
+        *vy = acceleration_[i * 6 + 1];
+    if (vz)
+        *vz = acceleration_[i * 6 + 2];
+    if (vc)
+        *vc = acceleration_[i * 6 + 3];
+    if (vs)
+        *vs = acceleration_[i * 6 + 4];
+    if (va)
+        *va = acceleration_[i * 6 + 5];
 }
 
 void Particles::setTag(int i, const char *tag)
@@ -408,17 +470,23 @@ void Particles::tick() {
 			}
             points_.Update();
             texcoords_.Update();
-            speeds_[i * 5] *= pow(decay_[i * 4 + 0],nframes);
-            speeds_[i * 5 + 1] *= pow(decay_[i * 4 + 0],nframes);
-            speeds_[i * 5 + 2] *= pow(decay_[i * 4 + 0],nframes);
-            speeds_[i * 5 + 3] *= pow(decay_[i * 4 + 2],nframes);
-            speeds_[i * 5 + 4] *= pow(decay_[i * 4 + 3],nframes);
-			if (decay_[i * 4 + 1]!=1) //alpha decay
+            speeds_[i * 5] *= pow(decay_[i * 6 + 0],nframes);
+            speeds_[i * 5 + 1] *= pow(decay_[i * 6 + 1],nframes);
+            speeds_[i * 5 + 2] *= pow(decay_[i * 6 + 2],nframes);
+            speeds_[i * 5 + 3] *= pow(decay_[i * 6 + 4],nframes);
+            speeds_[i * 5 + 4] *= pow(decay_[i * 6 + 5],nframes);
+            speeds_[i * 5] += acceleration_[i * 6 + 0]*nframes;
+            speeds_[i * 5 + 1] += acceleration_[i * 6 + 1]*nframes;
+            speeds_[i * 5 + 2] += acceleration_[i * 6 + 2]*nframes;
+            speeds_[i * 5 + 3] += acceleration_[i * 6 + 4]*nframes;
+            speeds_[i * 5 + 4] += acceleration_[i * 6 + 5]*nframes;
+            if ((decay_[i * 6 + 3]!=1)||(acceleration_[i * 6 + 3])) //alpha decay
 			{
 				int color=originalColors_[i].color;
 				float alpha=originalColors_[i].alpha;
-				alpha=alpha*pow(decay_[i * 4 + 1],nframes);
-				originalColors_[i].alpha=alpha;
+                alpha=alpha*pow(decay_[i * 6 + 3],nframes);
+                alpha += acceleration_[i * 6 + 3]*nframes;
+                originalColors_[i].alpha=alpha;
 				alpha = std::min(std::max(alpha, 0.f), 1.f);
 
 				unsigned int r = ((color >> 16) & 0xff) * alpha;
