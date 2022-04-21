@@ -49,11 +49,9 @@ public:
 
 	bool isModified() const;
 
-    bool findFirst(	const QString &expr, bool re, bool cs, bool wo,
-					bool wrap, bool forward = true);
+    bool findFirst(const QString& findText,bool re, bool cs, bool wo, bool wrap, bool forward=true);
 
-	bool replace(	const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
-					bool wrap);
+	bool replace(const QString& findText, const QString& replaceText, bool re, bool cs, bool wo, bool wrap);
 
 	int replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 					bool wrap);
@@ -71,6 +69,7 @@ public:
     void setBackspaceUnindents(bool use);
     void setWhitespaceVisibility(int mode);
 	void setCompactFolding(int mode);
+	void setVisibleLines();
 
 protected:
 	virtual void closeEvent(QCloseEvent* event);
@@ -138,6 +137,7 @@ private:
 
 public:
     static QSet<QString> breakpoints;
+    QString getSelectedText();
 };
 
 #endif // MDICHILD_H

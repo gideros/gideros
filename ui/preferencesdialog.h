@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <mdiarea.h>
 #include <textedit.h>
+#include "mainwindow.h"
 
 
 namespace Ui {
@@ -20,6 +21,7 @@ public:
 
     void setMdiArea(MdiArea* ma) { mdi_area = ma; }
     void updateEditors(const std::function< void(TextEdit*) > lambda);
+    MainWindow* getMainWindow();
 
 private:
     // get init values for controls from settings and setup lambda slot callbacks

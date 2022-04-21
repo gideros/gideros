@@ -42,6 +42,7 @@
 	<example 	name="GTween"
 				description="Tweening example"
 				path="Graphics/GTween/GTween.gproj"
+				image = "gtween.png"
 				/>
 
 	<example 	name="Hierarchy"
