@@ -32,6 +32,11 @@ QString FindReplaceDialog::findWhat() const
 	return ui.findWhat->text();
 }
 
+void FindReplaceDialog::setSelectedText(QString s) const
+{
+	ui.findWhat->setText(s);
+}
+
 bool FindReplaceDialog::wholeWord() const
 {
 	return ui.wholeWord->isChecked();

@@ -39,6 +39,9 @@ IconLibrary::IconLibrary()
     iconRef_["cut"] = iconref(5, 34);
     iconRef_["copy"] = iconref(6, 34);
     iconRef_["paste"] = iconref(7, 34);
+    iconRef_["wrap"] = iconref(15, 432 / 16);
+    iconRef_["unwrap"] = iconref(7, 416 / 16);
+    iconRef_["color picker"] = iconref(1, 8);
 
     iconRef_["toggle bookmark"] = iconref(8, 34);
     iconRef_["next bookmark"] = iconref(9, 34);

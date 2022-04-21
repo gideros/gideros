@@ -19,12 +19,13 @@ public:
 	bool matchCase() const;
     bool regexp() const;
     bool wrap() const;
-	bool forward() const;
 
 	void focusToFindWhat();
+	void setSelectedText(QString s) const;
 
 signals:
 	void findNext();
+	void findPrevious();
 
 private:
 	Ui::FindDialogClass ui;

@@ -205,6 +205,14 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
     QString themePath = settings.value(Keys::Editor::theme).toString();
     QString themeLanguage;
 
+	// fix style for .txt files
+	#ifdef Q_OS_MAC
+			editor->styleSetFont(STYLE_DEFAULT,"Monaco");
+			editor->styleSetSize(STYLE_DEFAULT,12);
+	#else
+			editor->styleSetFont(STYLE_DEFAULT,"Courier New");
+			editor->styleSetSize(STYLE_DEFAULT,10);
+	#endif
 	if (ext == "lua")
 	{
         lexer = CreateLexer(LexerNameFromID(SCLEX_LUA));
@@ -380,8 +388,9 @@ QSettings lls(theme, QSettings::IniFormat);
 #endif
 
     sciScintilla_->setElementColour(SC_ELEMENT_SELECTION_TEXT,rcolor(QApplication::palette().highlightedText().color().rgba()));
-    sciScintilla_->setElementColour(SC_ELEMENT_SELECTION_BACK,rcolor(QApplication::palette().highlight().color().rgba()));
-
+    //sciScintilla_->setElementColour(SC_ELEMENT_SELECTION_BACK,rcolor(QApplication::palette().highlight().color().rgba()));
+    sciScintilla_->setElementColour(SC_ELEMENT_SELECTION_BACK, rcolor(QColor(0xB5B5B5).rgba()));
+    sciScintilla_->setCaretLineVisibleAlways(true);
 
     sciScintilla_->setMarginTypeN(4, SC_MARGIN_SYMBOL);
     sciScintilla_->setMarginWidthN(4, 16);
@@ -407,6 +416,7 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->setBackSpaceUnIndents(settings.value(Keys::Prefs::backspaceUnindents, false).toBool());
 
     sciScintilla_->setViewWS((sptr_t) (settings.value(Keys::Prefs::whitespaceVisibility, 0).toInt()));
+    sciScintilla_->setElementColour(SC_ELEMENT_WHITE_SPACE , 0x33000000);
 	
     if (settings.value(Keys::Prefs::showLineNumbers, true).toBool()) {
         sciScintilla_->setMarginTypeN(2, SC_MARGIN_NUMBER);
@@ -431,12 +441,12 @@ QSettings lls(theme, QSettings::IniFormat);
     sciScintilla_->indicSetAlpha(STYLE_BRACELIGHT, 
 		lls.value("MatchedBraceAlpha", 50).toInt());
     sciScintilla_->indicSetOutlineAlpha(STYLE_BRACELIGHT, 
-		lls.value("MatchedBraceOutlineAlpha", 200).toInt());
+		lls.value("MatchedBraceOutlineAlpha", 20).toInt());
 	sciScintilla_->indicSetFore(STYLE_BRACELIGHT,
 		rcolor(lls.value("MatchedBraceColor", 1269).toInt()));
 	
 	sciScintilla_->braceBadLightIndicator(true, STYLE_BRACEBAD);
-	sciScintilla_->indicSetStyle(STYLE_BRACEBAD, INDIC_FULLBOX);
+	sciScintilla_->indicSetStyle(STYLE_BRACEBAD, INDIC_COMPOSITIONTHICK);
     sciScintilla_->indicSetAlpha(STYLE_BRACEBAD, 
 		lls.value("UnmatchedBraceAlpha", 50).toInt());
     sciScintilla_->indicSetOutlineAlpha(STYLE_BRACEBAD, 
@@ -488,8 +498,9 @@ QSettings lls(theme, QSettings::IniFormat);
 
     autoCompleteThreshold=settings.value(Keys::Prefs::autoCompleteChars, 2).toInt();
 
-    sciScintilla_->styleSetFore(STYLE_INDENTGUIDE,rcolor(lls.value("IndentationGuidesForegroundColor", 0).toInt()));
-    sciScintilla_->styleSetBack(STYLE_INDENTGUIDE,rcolor(lls.value("IndentationGuidesBackgroundColor", 8421504).toInt()));
+    //sciScintilla_->styleSetFore(STYLE_INDENTGUIDE,rcolor(lls.value("IndentationGuidesForegroundColor", 0).toInt()));
+    //sciScintilla_->styleSetBack(STYLE_INDENTGUIDE,rcolor(lls.value("IndentationGuidesBackgroundColor", 8421504).toInt()));
+    sciScintilla_->styleSetFore(STYLE_INDENTGUIDE, 0x33000000);
 
     sciScintilla_->styleSetFore(STYLE_LINENUMBER, rcolor(lls.value("MarginsForegroundColor", 2566178).toInt()));
     sciScintilla_->styleSetBack(STYLE_LINENUMBER, rcolor(lls.value("MarginsBackgroundColor", 15658734).toInt()));
@@ -706,164 +717,116 @@ void TextEdit::expandRegionAt(sptr_t position)
 #endif
 }
 
-bool TextEdit::findFirst(	const QString &expr, bool re, bool cs, bool wo,
-							bool wrap, bool forward/* = true*/)
+QString TextEdit::getSelectedText()
 {
-    sciScintilla_->setSearchFlags((cs?SCFIND_MATCHCASE:0)|(wo?SCFIND_WHOLEWORD:0)|(re?SCFIND_REGEXP:0));
+	QString sel = sciScintilla_->getSelText();
 
-    int from,to;
-    int sf,st;
-    from=sciScintilla_->selectionStart();
-    to=sciScintilla_->selectionEnd();
-
-    if (forward)
+	if (!sel.isEmpty())
 	{
-        sf=sciScintilla_->positionAfter(to);
-        st=sciScintilla_->textLength();
-    }
-	else
-	{
-        sf=sciScintilla_->positionBefore(from);
-        st=0;
+		return sel;
 	}
-
-    sciScintilla_->setTargetRange(sf,st);
-    if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
-        expandRegionAt(sciScintilla_->targetStart());
-        sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
-        return true;
-    }
-    if (!wrap) return false;
-
-    if (forward)
-    {
-        sf=0;
-        st=sciScintilla_->positionBefore(from);
-    }
-    else
-    {
-        sf=sciScintilla_->textLength();
-        st=sciScintilla_->positionAfter(to);
-    }
-
-    sciScintilla_->setTargetRange(sf,st);
-    if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
-        expandRegionAt(sciScintilla_->targetStart());
-        sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
-        return true;
-    }
-
-    return false;
+}
+void TextEdit::setVisibleLines()
+	{
+	int pos = sciScintilla_->currentPos();
+	int line = sciScintilla_->lineFromPosition(pos);
+	sciScintilla_->setFirstVisibleLine(line - 12);
 }
 
-bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
-						 bool wrap)
-{
+bool TextEdit::findFirst(const QString& findText,bool re, bool cs, bool wo, bool wrap, bool forward) {
     sciScintilla_->setSearchFlags((cs?SCFIND_MATCHCASE:0)|(wo?SCFIND_WHOLEWORD:0)|(re?SCFIND_REGEXP:0));
 
-    int from=sciScintilla_->selectionStart();
-    int to=sciScintilla_->selectionEnd();
-    int sf=sciScintilla_->positionAfter(to);
-    int st=sciScintilla_->textLength();
+	bool searchWrapped;
 
-    if (from==to)
-    {
-        // if there is no selected text, do find and return
-        sciScintilla_->setTargetRange(from,st);
-        if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
-            expandRegionAt(sciScintilla_->targetStart());
-            sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
-            return true;
+    if (findText.isEmpty()) {
+        return false;
+    }
+    if (searchWrapped) {
+        searchWrapped = false;
+    }
+    // Perform the search
+    //sciScintilla_->setSearchFlags(flags);
+    sciScintilla_->setTargetStart(forward ? sciScintilla_->currentPos() : sciScintilla_->currentPos() - 1);
+    sciScintilla_->setTargetEnd(forward ? sciScintilla_->textLength() : 0);
+    QByteArray findArray = findText.toUtf8();
+    int findPos = sciScintilla_->searchInTarget(findArray.length(), findArray);
+    // If the search should wrap, perform the search again.
+    if (findPos == -1 && wrap) {
+        sciScintilla_->setTargetStart(forward ? 0 : sciScintilla_->textLength());
+        sciScintilla_->setTargetEnd(forward ? sciScintilla_->currentPos() : sciScintilla_->currentPos() - 1);
+        findPos = sciScintilla_->searchInTarget(findArray.length(), findArray);
+		expandRegionAt(sciScintilla_->targetStart());
+        setVisibleLines();
+        if (searchWrapped) {
+            searchWrapped = true;
         }
-        if (wrap) {
-            sf=0;
-            st=sciScintilla_->positionBefore(from);
-            sciScintilla_->setTargetRange(sf,st);
-            if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0) {
-                expandRegionAt(sciScintilla_->targetStart());
-                sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
-                return true;
-            }
-        }
+    }
+    if (findPos != -1)  {
+        sciScintilla_->setSel(sciScintilla_->targetStart(), sciScintilla_->targetEnd());
+        sciScintilla_->scrollRange(sciScintilla_->targetStart(), sciScintilla_->targetEnd());
+		expandRegionAt(sciScintilla_->targetStart());
+        setVisibleLines();
+    }
+    return findPos != -1;
+}
+
+bool TextEdit::replace(const QString& findText, const QString& replaceText, bool re, bool cs, bool wo, bool wrap) {
+    sciScintilla_->setSearchFlags((cs ? SCFIND_MATCHCASE : 0)|(wo ? SCFIND_WHOLEWORD : 0)|(re ? SCFIND_REGEXP : 0));
+    
+    if (findText.isEmpty()) {
         return false;
     }
 
-	// if there is selected text, first do find from the *beginning* of selection
-	bool found;
-    sciScintilla_->setTargetRange(from,st);
-    found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
-
-    if (found == false) {
-        if (wrap&&sf) {
-            sf=0;
-            st=sciScintilla_->positionBefore(from);
-            sciScintilla_->setTargetRange(sf,st);
-            found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
+    // Only replace if there is selected text
+    if (sciScintilla_->selectionStart() != sciScintilla_->selectionEnd()) {
+        QByteArray replaceArray = replaceText.toUtf8();
+        if (re) {
+            sciScintilla_->replaceTargetRE(replaceArray.length(), replaceArray.constData());
+        } else {
+            sciScintilla_->replaceTarget(replaceArray.length(), replaceArray.constData());
         }
-        if (found == false)
-            return false;
     }
 
-    int nfrom=sciScintilla_->targetStart();
-    int nto=sciScintilla_->targetEnd();
+	// Search again to select the next match
+    bool found = findFirst(findText, re, cs, wo, true, true);
 
-	// check if new selection is between old selection
-    if (from <= nfrom && to >= nto)
-	{
-		// replace text and find again
-        sciScintilla_->replaceTarget(replaceStr.size(),replaceStr.toUtf8());
-        sciScintilla_->setTargetRange(nto,st);
-        if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
-        {
-        	expandRegionAt(sciScintilla_->targetStart());
-        	sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
-        }
-        else {
-            if (wrap&&sf) {
-                sf=0;
-                st=sciScintilla_->positionBefore(nfrom);
-                sciScintilla_->setTargetRange(sf,st);
-                if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
-                {
-                    expandRegionAt(sciScintilla_->targetStart());
-                    sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
-                }
-            }
-        }
+    if (found)
+    {
+		return true;
 	}
 	else
 	{
-        // if not, select the found item
-        expandRegionAt(nfrom);
-        sciScintilla_->setSel(nfrom,nto);
+		return false;
 	}
 
-    return found;
 }
+
 
 int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 				bool wrap)
 {
     sciScintilla_->setSearchFlags((cs?SCFIND_MATCHCASE:0)|(wo?SCFIND_WHOLEWORD:0)|(re?SCFIND_REGEXP:0));
     sciScintilla_->beginUndoAction();
-
-    int pos=sciScintilla_->currentPos();
+    int pos=0;
     int sf=pos;
     int st=sciScintilla_->textLength();
+    
+    const QByteArray textData = expr.toUtf8();
 
 	int replaced = 0;
+	sciScintilla_->setTargetRange(0,st);
 	while (true)
 	{
         bool found;
         sciScintilla_->setTargetRange(pos,st);
-        found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
+        found=(sciScintilla_->searchInTarget(textData.length(), textData.constData()) != -1)>0;
         if (found==false) {
             if (wrap&&sf) {
                 sf=0;
                 st=sciScintilla_->positionBefore(pos);
                 pos=0;
                 sciScintilla_->setTargetRange(pos,st);
-                found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
+                found=(sciScintilla_->searchInTarget(textData.length(), textData.constData()) != -1)>0;
             }
             if (!found) break;
         }
@@ -919,6 +882,8 @@ void TextEdit::nextBookmark()
 
 	if (next >= 0)
         sciScintilla_->gotoLine(next);
+        
+    setVisibleLines();
 }
 
 void TextEdit::previousBookmark()
@@ -935,6 +900,8 @@ void TextEdit::previousBookmark()
 
 	if (prev >= 0)
         sciScintilla_->gotoLine(prev);
+        
+    setVisibleLines();
 }
 
 void TextEdit::clearBookmarks()
