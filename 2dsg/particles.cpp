@@ -5,7 +5,7 @@
 #include <glog.h>
 #include <ogl.h>
 
-Particles::Particles(Application *application, bool is3d) :
+Particles::Particles(Application *application, bool is3d, bool autosort) :
 		Sprite(application) {
     for (int t=0;t<PARTICLES_MAX_TEXTURES;t++)
         texture_[t]=NULL;
@@ -23,6 +23,7 @@ Particles::Particles(Application *application, bool is3d) :
 	particleCount=0;
 	application->addTicker(this);
     this->is3d=is3d;
+    autoSort=autosort;
 }
 
 void Particles::cloneFrom(Particles *s)
@@ -58,6 +59,7 @@ void Particles::cloneFrom(Particles *s)
     indices_.assign(s->indices_.cbegin(),s->indices_.cend());
     indices_.Update();
     is3d=s->is3d;
+    autoSort=s->autoSort;
 }
 
 Particles::~Particles() {
@@ -459,7 +461,7 @@ void Particles::tick() {
             float nz = points_[i * 16 + 2] + speeds_[i * 5 + 2]*nframes;
             float ns = texcoords_[i * 16 + 2] + speeds_[i * 5 + 3]*nframes;
             float na = texcoords_[i * 16 + 3] + speeds_[i * 5 + 4]*nframes;
-			if (fabs(ns)<0.1)
+            if ((ttl_[i]<=0)&&(fabs(ns)<0.1))
 				remove=true;
 			for (int k = 0; k < 16; k += 4) {
 				points_[i * 16 + k] = nx;
@@ -558,6 +560,41 @@ void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
         if (texture_[t])
             ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
     ShaderProgram *p = getShader(ShaderEngine::STDP_PARTICLES,(texture_[0]?ShaderEngine::STDPV_TEXTURED:0)|(is3d?ShaderEngine::STDPV_3D:0));
+    if (is3d&&autoSort) {
+        //Sort particles according to distance (nearest last)
+        Matrix4 vm=ShaderEngine::Engine->getView();
+        Matrix4 mm=ShaderEngine::Engine->getModel();
+        Matrix4 tv=vm*mm;
+        float cx=0,cy=0,cz=0;
+        tv.inverseTransformPoint(cx,cy,cz,&cx,&cy,&cz);
+        size_t ss=ttl_.size();
+        int *idx=new int[ss];
+        float *dist=new float[ss];
+        for (size_t s=0;s<ss;s++) {
+            idx[s]=s;
+            float dx=points_[s * 16 + 0]-cx;
+            float dy=points_[s * 16 + 1]-cy;
+            float dz=points_[s * 16 + 2]-cz;
+            dist[s]=sqrtf(dx*dx+dy*dy+dz*dz);
+        }
+        std::sort(idx,idx+ss,[&](const int & a, const int & b) -> bool
+        {
+            return dist[a] > dist[b];
+        });
+
+        for (size_t s=0;s<ss;s++) {
+            int sd=idx[s];
+            indices_[s * 6 + 0] = sd * 4;
+            indices_[s * 6 + 1] = sd * 4 + 1;
+            indices_[s * 6 + 2] = sd * 4 + 2;
+            indices_[s * 6 + 3] = sd * 4 + 0;
+            indices_[s * 6 + 4] = sd * 4 + 2;
+            indices_[s * 6 + 5] = sd * 4 + 3;
+        }
+        indices_.Update();
+        delete[] idx;
+        delete[] dist;
+    }
 
 	float textureInfo[4] = { 0, 0, 0, 0 };
     if (texture_[0]) {
@@ -583,7 +620,7 @@ void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
 			colors_.size() / 4, colors_.modified, &colors_.bufferCache);
 	colors_.modified = false;
 
-    p->drawElements(ShaderProgram::Triangles, particleCount*6, ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache);
+    p->drawElements(ShaderProgram::Triangles, ttl_.size()*6, ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache);
     indices_.modified=false;
 }
 

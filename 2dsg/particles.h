@@ -14,8 +14,8 @@ class Application;
 class Particles: public Sprite, Ticker
 {
 public:
-    Particles(Application *application, bool is3d);
-    virtual Sprite *clone() { Particles *clone=new Particles(application_,is3d); clone->cloneFrom(this); return clone; }
+    Particles(Application *application, bool is3d, bool autoSort);
+    virtual Sprite *clone() { Particles *clone=new Particles(application_,is3d,autoSort); clone->cloneFrom(this); return clone; }
     void cloneFrom(Particles *);
     virtual ~Particles();
 
@@ -82,6 +82,7 @@ private:
     mutable float minx_, miny_, maxx_, maxy_;
     bool boundsDirty_;
     bool paused_;
+    bool autoSort;
 };
 
 #endif

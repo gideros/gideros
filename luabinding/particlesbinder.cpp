@@ -51,7 +51,7 @@ int ParticlesBinder::create(lua_State *L)
 
     Binder binder(L);
 
-    binder.pushInstance("Particles", new Particles(application->getApplication(),lua_toboolean(L,1)));
+    binder.pushInstance("Particles", new Particles(application->getApplication(),lua_toboolean(L,1),lua_toboolean(L,2)));
 
     return 1;
 }
