@@ -33,7 +33,7 @@ struct InVertexTC
 struct InVertexPS
 {
     float4 vVertex [[attribute(0)]];
-    float2 vTexcoord [[attribute(2)]];
+    float4 vTexcoord [[attribute(2)]];
     uchar4 vColor [[attribute(1)]];
 };
 struct InVertex3
@@ -112,6 +112,15 @@ struct UniformsPS
 {
     float4x4 vMatrix;
     float4x4 vWorldMatrix;
+    float4 fColor;
+    float4 fTexInfo;
+};
+
+struct UniformsPS3
+{
+    float4x4 vWorldMatrix;
+    float4x4 vViewMatrix;
+    float4x4 vProjMatrix;
     float4 fColor;
     float4 fTexInfo;
 };
@@ -281,19 +290,41 @@ vertex PVertexPS gidPSV(InVertexPS inVertex [[stage_in]],
                       constant UniformsPS &uniforms [[buffer(0)]])
 {
     PVertexPS outVert;
-    float2 rad=(float2(-0.5,-0.5)+inVertex.vTexcoord)*inVertex.vVertex.z;
-    float angle=inVertex.vVertex.w*3.141592654/180.0;
+    float2 rad=(float2(-0.5,-0.5)+inVertex.vTexcoord.xy)*inVertex.vTexcoord.z;
+    float angle=inVertex.vTexcoord.w*3.141592654/180.0;
     float ca=cos(angle);
     float sa=sin(angle);
     float2x2 rot=float2x2(float2(ca,sa),float2(-sa,ca));
     rad=rad*rot;
-    outVert.position = uniforms.vMatrix * float4(inVertex.vVertex.xy+rad,0.0,1.0);
+    outVert.position = uniforms.vMatrix * float4(inVertex.vVertex.xy+rad,inVertex.vVertex.z,1.0);
     outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
-    outVert.texcoord = inVertex.vTexcoord;
+    outVert.texcoord = inVertex.vTexcoord.xy;
     float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vVertex.z,0.0,0.0,0.0);
     float xpl=length(xpsize.xyz);
     if (xpl==0.0) xpl=1.0;
-    outVert.steprot=float2(sign(inVertex.vVertex.z)/xpl,inVertex.vVertex.w);
+    outVert.steprot=float2(sign(inVertex.vTexcoord.z)/xpl,inVertex.vTexcoord.w);
+    return outVert;
+}
+
+vertex PVertexPS gidPS3V(InVertexPS inVertex [[stage_in]],
+                      constant UniformsPS &uniforms [[buffer(0)]])
+{
+    PVertexPS outVert;
+    float2 rad=(float2(-0.5,-0.5)+inVertex.vTexcoord.xy);
+    float angle=inVertex.vTexcoord.w*3.141592654/180.0;
+    float ca=cos(angle);
+    float sa=sin(angle);
+    float2x2 rot=float2x2(float2(ca,sa),float2(-sa,ca));
+    rad=rad*rot;
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.texcoord = inVertex.vTexcoord.xy;
+    float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vVertex.z,0.0,0.0,0.0);
+    float xpl=length(xpsize.xyz);
+    if (xpl==0.0) xpl=1.0;
+    outVert.steprot=float2(sign(inVertex.vTexcoord.z)/100.0,inVertex.vTexcoord.w);
+    float4 vertex = uniforms.vViewMatrix*(uniforms.vWorldMatrix*float4(vVertex.xyz,1.0));
+    vertex.xy+=rad*xpl;
+    outVert.position = uniforms.vProjMatrix *vertex;
     return outVert;
 }
 

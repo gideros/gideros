@@ -8,8 +8,9 @@ struct VOut
 
 cbuffer cbv : register(b0)
 {
-	float4x4 vMatrix;
 	float4x4 vWorldMatrix;
+	float4x4 vViewMatrix;
+	float4x4 vProjMatrix;
 	float4 vfColor;
 };
 
@@ -20,14 +21,16 @@ VOut VShader(float4 position : vVertex, float4 color : vColor, float4 texcoord :
 	float psizen = texcoord.z;
 	float psize = length(mul(vWorldMatrix, float4(texcoord.z, 0.0, 0.0, 0.0)));
 	float angle = texcoord.w*3.141592654 / 180.0;
-	output.steprot = float2(sign(psizen) / psize, texcoord.w);
+	output.steprot = float2(sign(psizen) / 100.0, texcoord.w);
 	position.w = 1.0f;
-	float2 rad = (texcoord.xy - float2(0.5, 0.5))*psizen;
+	float2 rad = (texcoord.xy - float2(0.5, 0.5));
 	float ca=cos(angle);
 	float sa=sin(angle);
 	float2x2 rot=float2x2(ca,sa,-sa,ca);
 	rad=mul(rad,rot);
-	output.position = mul(vMatrix, position + float4(rad, 0.0, 0.0));
+	float4 vertex=mul(vViewMatrix,mul(vWorldMatrix,position));
+	vertex.xy+=rad*psize;
+	output.position = mul(vProjMatrix, vertex);
 	output.color = color*vfColor;
 	output.texcoord = texcoord.xy;
 
