@@ -469,7 +469,7 @@ void ogl2SetupShaders(bool isGLES) {
         { "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
         { "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
         { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
-        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, false, 0, NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
         { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
     };
     const ShaderProgram::ConstantDesc stdPS3Constants[] = {
@@ -478,7 +478,7 @@ void ogl2SetupShaders(bool isGLES) {
         { "vProjMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ProjectionMatrix,true,0,NULL },
         { "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
         { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
-        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, false, 0, NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
         { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
     };
     const ShaderProgram::DataDesc stdPSAttributes[] = {

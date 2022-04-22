@@ -122,7 +122,7 @@ void metalSetupShaders() {
 	const ShaderProgram::ConstantDesc stdPSConstants[] = {
 		{ "vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL },
 		{ "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
-        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, false, 0, NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
         { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
 		{ "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
 		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
@@ -133,7 +133,7 @@ void metalSetupShaders() {
         { "vProjMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ProjectionMatrix,true,0,NULL },
         { "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
         { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
-        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, false, 0, NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
         { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
     };
 	const ShaderProgram::DataDesc stdPSAttributes[] = {
