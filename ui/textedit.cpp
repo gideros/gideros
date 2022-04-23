@@ -770,37 +770,94 @@ bool TextEdit::findFirst(const QString& findText,bool re, bool cs, bool wo, bool
     return findPos != -1;
 }
 
-bool TextEdit::replace(const QString& findText, const QString& replaceText, bool re, bool cs, bool wo, bool wrap) {
+bool TextEdit::replace(	const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo, bool wrap)
+{
     sciScintilla_->setSearchFlags((cs ? SCFIND_MATCHCASE : 0)|(wo ? SCFIND_WHOLEWORD : 0)|(re ? SCFIND_REGEXP : 0));
-    
-    if (findText.isEmpty()) {
+
+    int from=sciScintilla_->selectionStart();
+    int to=sciScintilla_->selectionEnd();
+    int sf=sciScintilla_->positionAfter(to);
+    int st=sciScintilla_->textLength();
+
+    if (from==to)
+    {
+        // if there is no selected text, do find and return
+        sciScintilla_->setTargetRange(from,st);
+        if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>=0) {
+            expandRegionAt(sciScintilla_->targetStart());
+            sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+			setVisibleLines();
+            return true;
+        }
+        if (wrap) {
+            sf=0;
+            st=sciScintilla_->positionBefore(from);
+            sciScintilla_->setTargetRange(sf,st);
+            if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0) {
+                expandRegionAt(sciScintilla_->targetStart());
+                sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+				setVisibleLines();
+                return true;
+            }
+        }
         return false;
     }
 
-    // Only replace if there is selected text
-    if (sciScintilla_->selectionStart() != sciScintilla_->selectionEnd()) {
-        QByteArray replaceArray = replaceText.toUtf8();
-        if (re) {
-            sciScintilla_->replaceTargetRE(replaceArray.length(), replaceArray.constData());
-        } else {
-            sciScintilla_->replaceTarget(replaceArray.length(), replaceArray.constData());
+	// if there is selected text, first do find from the *beginning* of selection
+	bool found;
+    sciScintilla_->setTargetRange(from,st);
+    //  searchInTarget() returns position not boolean, the first line find problem
+    found = sciScintilla_->searchInTarget(expr.size(),expr.toUtf8()) >= 0;
+
+    if (found == false) {
+        if (wrap&&sf) {
+            sf=0;
+            st=sciScintilla_->positionBefore(from);
+            sciScintilla_->setTargetRange(sf,st);
+            found=sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0;
         }
+        if (found == false)
+            return false;
     }
 
-	// Search again to select the next match
-    bool found = findFirst(findText, re, cs, wo, true, true);
+    int nfrom=sciScintilla_->targetStart();
+    int nto=sciScintilla_->targetEnd();
 
-    if (found)
-    {
-		return true;
+	// check if new selection is between old selection
+    if (from <= nfrom && to >= nto)
+	{
+		// replace text and find again
+        sciScintilla_->replaceTarget(replaceStr.size(),replaceStr.toUtf8());
+        sciScintilla_->setTargetRange(nto,st);
+        if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
+        {
+        	expandRegionAt(sciScintilla_->targetStart());
+        	sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+			setVisibleLines();
+        }
+        else {
+            if (wrap&&sf) {
+                sf=0;
+                st=sciScintilla_->positionBefore(nfrom);
+                sciScintilla_->setTargetRange(sf,st);
+                if (sciScintilla_->searchInTarget(expr.size(),expr.toUtf8())>0)
+                {
+                    expandRegionAt(sciScintilla_->targetStart());
+                    sciScintilla_->setSel(sciScintilla_->targetStart(),sciScintilla_->targetEnd());
+					setVisibleLines();
+                }
+            }
+        }
 	}
 	else
 	{
-		return false;
+        // if not, select the found item
+        expandRegionAt(nfrom);
+        sciScintilla_->setSel(nfrom,nto);
 	}
 
+    return found;
 }
-
 
 int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 				bool wrap)
