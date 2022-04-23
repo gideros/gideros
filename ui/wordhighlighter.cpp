@@ -40,6 +40,8 @@ void WordHighlighter::textAreaClicked(Scintilla::Position line, int modifiers)
 	Q_UNUSED(modifiers);
 	
 	updateTimer->start(UPDATE_DELAY);
+	
+	editor_->indicatorClearRange(0, editor_->textLength());
 }
 
 void WordHighlighter::timerTimeout()
@@ -73,8 +75,8 @@ void WordHighlighter::setEnabled(bool state)
 void WordHighlighter::reset()
 {
 	editor_->setIndicatorCurrent(IND_HIGHLIGHT_STYLE);
-	const sptr_t textLength = editor_->textLength();
-	editor_->indicatorClearRange(0, textLength);
+	//const sptr_t textLength = editor_->textLength();
+	//editor_->indicatorClearRange(0, textLength);
 }
 
 void WordHighlighter::resetUpdate()
@@ -164,6 +166,14 @@ bool WordHighlighter::filterWord(int style)
 	}
 }
 
+MainWindow* WordHighlighter::getMainWindow()
+{
+    foreach (QWidget *w, qApp->topLevelWidgets())
+        if (MainWindow* mainWin = qobject_cast<MainWindow*>(w))
+            return mainWin;
+    return nullptr;
+}
+
 void WordHighlighter::update()
 {   	
 	if (!enabled_)
@@ -235,9 +245,14 @@ void WordHighlighter::update()
 	const char* cstr = wordToFind.constData();
 	
 	sptr_t index = editor_->searchInTarget(wordLength, cstr);
+	
+	int words_number = 0;
+	
 	while (index != -1)
 	{
 		sptr_t tEnd = editor_->targetEnd();
+		words_number += 1;
+
 		if (selectedStyle == editor_->styleAt(index))
 		{
 			sptr_t tStart = editor_->targetStart();
@@ -246,5 +261,11 @@ void WordHighlighter::update()
 		editor_->setTargetRange(tEnd, textLength);
 		
 		index = editor_->searchInTarget(wordLength, cstr);
+	}
+	
+	if (words_number >= 1)
+	{
+		auto mw = getMainWindow();
+		mw->showStatusbarMessage(QString("%1 word(s) found!").arg(words_number), 3500);
 	}
 }

@@ -511,10 +511,10 @@ QSettings lls(theme, QSettings::IniFormat);
     connect(sciScintilla_, SIGNAL(updateUi(Scintilla::Update)), this, SLOT(updateUi(Scintilla::Update)));
     connect(sciScintilla_, SIGNAL(charAdded(int)), this, SLOT(charAdded(int)));
     connect(sciScintilla_, SIGNAL(callTipClick(Scintilla::Position)), this, SLOT(callTipClick(Scintilla::Position)));
-    
+
     wordHighlighter_ = new WordHighlighter(sciScintilla_, lls);
-	wordHighlighter_->setEnabled(settings.value(Keys::Prefs::wordHightlighter).toBool());
-	wordHighlighter_->setSimpleMode(settings.value(Keys::Prefs::wordHightlighterSimple).toBool());
+	wordHighlighter_->setEnabled(settings.value(Keys::Prefs::wordHighlighter, 2).toBool());
+	wordHighlighter_->setSimpleMode(settings.value(Keys::Prefs::wordHighlighterSimple, 2).toBool());
 }
 
 TextEdit::~TextEdit()

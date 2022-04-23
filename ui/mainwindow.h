@@ -436,6 +436,8 @@ public:
 	bool wrapSearch_;
 	bool regexp_;
 	
+	void showStatusbarMessage(QString message, int timeout);
+	
 public slots:
     void saveAll();
 };

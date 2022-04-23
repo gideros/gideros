@@ -10,6 +10,7 @@
 
 #include <QSettings>
 #include <QTimer>
+#include "mainwindow.h"
 
 class WordHighlighter : public QObject
 {
@@ -34,6 +35,8 @@ public:
 	void reset();
 	void resetUpdate();
 	void update();
+    MainWindow* getMainWindow();
+
 private:
 	ScintillaEdit* editor_;
 	QByteArray cachedWord;

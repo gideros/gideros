@@ -301,7 +301,10 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QCheckBox" name="wordHightlighterSimpleCheckBox">
+           <widget class="QCheckBox" name="wordHighlighterSimpleCheckBox">
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ignores all selections. Finds a word at last cursor position (in case of using multiple cursors).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -309,7 +312,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="text">
-             <string>Simple hightlighter</string>
+             <string>Simple highlighter</string>
             </property>
            </widget>
           </item>
