@@ -1890,6 +1890,12 @@ void MainWindow::saveAll()
 		statusBar()->showMessage(tr("Items(s) Saved"), 2000);
 }
 
+
+void MainWindow::showStatusbarMessage(QString message, int timeout)
+{
+	statusBar()->showMessage(message, timeout);
+}
+
 #if 0
 void MainWindow::compile()
 {
