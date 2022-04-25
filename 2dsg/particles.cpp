@@ -54,6 +54,7 @@ void Particles::cloneFrom(Particles *s)
     acceleration_=s->acceleration_;
     ttl_=s->ttl_;
     tag_=s->tag_;
+    dead_=s->dead_;
     texcoords_.assign(s->texcoords_.cbegin(),s->texcoords_.cend());
     texcoords_.Update();
     indices_.assign(s->indices_.cbegin(),s->indices_.cend());
@@ -71,6 +72,7 @@ Particles::~Particles() {
 
 void Particles::clearParticles() {
 	particleCount=0;
+    dead_.clear();
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
@@ -451,6 +453,11 @@ void Particles::tick() {
 	}
 	lastTickTime_=iclk;
 	if (paused_) return;
+
+    for (auto it=dead_.begin();it!=dead_.cend();it++)
+        removeParticle(*it);
+    dead_.clear();
+
 	int changes=INV_GRAPHICS;
 	for (size_t i = 0; i < particleCount; i++) {
         if (texcoords_[i * 16 + 2] != 0) {
@@ -513,10 +520,14 @@ void Particles::tick() {
 				}
 			}
 			if (remove)
-				removeParticle(i);
+                dead_.insert(i);
 		}
 	}
 	invalidate(changes);
+}
+
+std::set<int> Particles::getDead() {
+    return dead_;
 }
 
 void Particles::getColor(int i, unsigned int *color, float *alpha) const {

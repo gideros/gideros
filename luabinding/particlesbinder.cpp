@@ -34,8 +34,9 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
         {"setPaused",setPaused},
 		{"isPaused",isPaused},
 		{"scaleParticles",scaleParticles},
-		{"getParticles",getParticles},
-		{"getNearestParticle",getNearestParticle},
+        {"getParticles",getParticles},
+        {"getDeadParticles",getDeadParticles},
+        {"getNearestParticle",getNearestParticle},
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
 
@@ -789,6 +790,19 @@ int ParticlesBinder::getNearestParticle(lua_State *L)
     return 0;
 }
 
+int ParticlesBinder::getDeadParticles(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    std::set<int> dead=mesh->getDead();
+    lua_createtable(L,dead.size(),0);
+    int ii=1;
+    for (auto it=dead.cbegin();it!=dead.cend();it++) {
+        lua_pushinteger(L,*it);
+        lua_rawseti(L,-2,ii++);
+    }
+    return 1;
+}
 
 int ParticlesBinder::getParticles(lua_State *L)
 {

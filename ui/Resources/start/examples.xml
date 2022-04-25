@@ -112,32 +112,19 @@
 				path="Graphics/PixelsClown/PixelsClown.gproj"
 				image="clown.png"
 				/>
-    <example 	name="Bird Animation 3D"
-				description="Demonstrates viewport transformations for VR purposes"
-				path="Graphics/Bird Animation 3D/Bird Animation 3D.gproj"
-				image="bird animation.png"
-				/>
     <example 	name="Map Clown"
 				description="Demonstrates building of a tilemap from a texture"
 				path="Graphics/MapClown/MapClown.gproj"
 				image="clown.png"
 				/>
-</category>
-	
-<category name="Graphics 5">
 	<example 	name="Spine animation"
 				description="Procedural skeletal animation using SpineC plugin"
 				path="Graphics/SpineC example/SpineC example.gproj"
 				image="spine.png"
 				/>
-	<example 	name="VR Dungeon"
-				description="Oculus Quest support demonstration"
-				path="Graphics/VR Oculus/VR Oculus.gproj"
-				image="dungeon.png"
-				/>
 </category>
-
-<category name="Graphics 3D">
+	
+<category name="Graphics 3D 1">
 	<example 	name="3D Cube"
 				description="Drawing and rotating 3D cube using Shape and Mesh"
 				path="Graphics3D/3D-Cube/3D-Cube.gproj"
@@ -168,6 +155,24 @@
 				image="3dinstancing.png"
 				/>
 	
+</category>
+
+<category name="Graphics 3D 2">
+	<example 	name="VR Dungeon"
+				description="Oculus Quest support demonstration"
+				path="Graphics/VR Oculus/VR Oculus.gproj"
+				image="dungeon.png"
+				/>
+    <example 	name="Bird Animation 3D"
+				description="Demonstrates viewport transformations for VR purposes"
+				path="Graphics/Bird Animation 3D/Bird Animation 3D.gproj"
+				image="bird animation.png"
+				/>
+	<example 	name="3D Particles"
+				description="Demonstrate 3D particles"
+				path="Graphics3D/3D-Particles/3D-Particles.gproj"
+				image="3d-fire.png"
+				/>
 </category>
 
 <category name="Shaders">

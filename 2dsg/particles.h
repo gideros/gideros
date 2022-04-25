@@ -50,6 +50,7 @@ public:
     int getParticleCount() const { return ttl_.size(); };
     void setPaused(bool paused) { paused_=paused; };
     bool isPaused() { return paused_; };
+    std::set<int> getDead();
 
     bool is3d;
 private:
@@ -62,6 +63,7 @@ private:
         unsigned int color;
         float alpha;
     };
+    std::set<int> dead_;
     std::vector<Color> originalColors_;
     VertexBuffer<unsigned char> colors_; //r,g,b,a
     VertexBuffer<float> points_; //x,y,z,extra

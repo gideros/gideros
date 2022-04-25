@@ -34,6 +34,7 @@ private:
     static int getParticleTag(lua_State *L);
     static int setParticleExtra(lua_State *L);
     static int getParticleExtra(lua_State *L);
+    static int getDeadParticles(lua_State *L);
     static int setPaused(lua_State *L);
     static int isPaused(lua_State *L);
     static int getParticles(lua_State *L);
