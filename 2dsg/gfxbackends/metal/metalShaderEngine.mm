@@ -545,7 +545,6 @@ ShaderProgram *metalShaderEngine::getDefault(StandardProgram id,int variant)
         }
     if (variant==(STDPV_TEXTURED|STDPV_3D))
         switch (id) {
-            case STDP_PARTICLE: return metalShaderProgram::stdParticle3T;
             case STDP_PARTICLES: return metalShaderProgram::stdParticles3T;
             default: break;
         }
