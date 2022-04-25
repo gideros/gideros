@@ -194,8 +194,7 @@ static int r3dWorld_SetEventListener(lua_State* L) {
 		if (!e)
 			e = new GidEventListener();
 		luaL_checktype(L, 2, LUA_TFUNCTION);
-		lua_pushvalue(L, 2);
-		e->cbn = lua_ref(L,1);
+        e->cbn = lua_ref(L,2);
 		events[world] = e;
 		world->setEventListener(e);
 	}
@@ -349,7 +348,9 @@ static int r3dWorld_Step(lua_State* L) {
 		if (step==0) step=0.001; //Step cannot be 0, use a dummy tiny step instead
 		world->update(step);
 #ifndef _NO_THROW
-	} catch (std::runtime_error &e) {
+    } catch (std::exception &e) {
+        throw;
+    } catch (std::runtime_error &e) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");
 	} catch (...) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");
