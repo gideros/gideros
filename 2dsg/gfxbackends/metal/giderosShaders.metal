@@ -307,7 +307,7 @@ vertex PVertexPS gidPSV(InVertexPS inVertex [[stage_in]],
 }
 
 vertex PVertexPS gidPS3V(InVertexPS inVertex [[stage_in]],
-                      constant UniformsPS &uniforms [[buffer(0)]])
+                      constant UniformsPS3 &uniforms [[buffer(0)]])
 {
     PVertexPS outVert;
     float2 rad=(float2(-0.5,-0.5)+inVertex.vTexcoord.xy);
@@ -322,9 +322,9 @@ vertex PVertexPS gidPS3V(InVertexPS inVertex [[stage_in]],
     float xpl=length(xpsize.xyz);
     if (xpl==0.0) xpl=1.0;
     outVert.steprot=float2(sign(inVertex.vTexcoord.z)/100.0,inVertex.vTexcoord.w);
-    float4 vertex = uniforms.vViewMatrix*(uniforms.vWorldMatrix*float4(vVertex.xyz,1.0));
-    vertex.xy+=rad*xpl;
-    outVert.position = uniforms.vProjMatrix *vertex;
+    float4 vpos = uniforms.vViewMatrix*(uniforms.vWorldMatrix*float4(inVertex.vVertex.xyz,1.0));
+    vpos.xy+=rad*xpl;
+    outVert.position = uniforms.vProjMatrix *vpos;
     return outVert;
 }
 
