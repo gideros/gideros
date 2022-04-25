@@ -328,7 +328,7 @@ OTHER_LDFLAGS = "-ObjC";</by>
   Export.callXml([[<template name="Project" path="">
     <replacelist wildcards="]]..Export.getProperty("project.name")..[[ iOS.entitlements">
       <prepend>
-        <orig>]].."<![CDATA[<key>com.apple.security.app-sandbox</key>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
+        <orig>]].."<![CDATA[</dict>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
       </prepend>
     </replacelist>
   </template>]])

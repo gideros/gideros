@@ -59,6 +59,7 @@ ShaderProgram *metalShaderProgram::stdTexture3=NULL;
 ShaderProgram *metalShaderProgram::stdTextureColor3=NULL;
 ShaderProgram *metalShaderProgram::stdParticleT=NULL;
 ShaderProgram *metalShaderProgram::stdParticlesT=NULL;
+ShaderProgram *metalShaderProgram::stdParticles3T=NULL;
 
 MTLBlendFactor metalShaderProgram::blendFactor2metal(ShaderEngine::BlendFactor blendFactor) {
     switch (blendFactor) {
