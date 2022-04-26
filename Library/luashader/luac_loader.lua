@@ -74,13 +74,11 @@ local function loadDebug(f)
 	local n=loadInt()
 	f.sizelineinfo=n
 	f.lineinfo=loadVector(n,loadInt)
---	local n=loadInt()
 	n=loadInt()
 	f.sizelocvars=n
 	local t={}
 	for i=1,n do t[i]={ varname=loadString(), startpc=loadInt(), endpc=loadInt()} end
 	f.locvars=t
---	local n=loadInt()
 	n=loadInt()
 	f.sizeupvalues=n
 	f.locvars=loadVector(n,loadString)
