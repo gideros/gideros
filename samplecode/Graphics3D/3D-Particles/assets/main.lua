@@ -20,14 +20,18 @@ gplane:setGenericArray(3,Shader.DFLOAT,3,4,{
 })
 gplane:setIndexArray{1,2,3,1,3,4}
 gplane:setTexture(Texture.new("grass.png",true,{wrap=TextureBase.REPEAT}))
-gplane:updateMode(D3.Mesh.MODE_TEXTURE|D3.Mesh.MODE_LIGHTING|D3.Mesh.MODE_SHADOW,0)
+gplane:updateMode(D3.Mesh.MODE_TEXTURE|D3.Mesh.MODE_LIGHTING,0)
+
+--Configure light
+Lighting.setLight(15,30,0,0.3)
+Lighting.setLightTarget(0,0,0,40,120)
 
 local scene=view:getScene()
 scene:addChild(gplane)
 
 local props=Glb.new(nil,"props.glb")
 local propss=G3DFormat.buildG3D(props:getScene())
-propss:updateMode(D3.Mesh.MODE_LIGHTING)
+propss:updateMode(D3.Mesh.MODE_LIGHTING,D3.Mesh.MODE_SHADOW)
 propss:setScale(1,1,1)
 scene:addChild(propss)
 
@@ -82,6 +86,7 @@ stage:addEventListener(Event.ENTER_FRAME,function(e)
 	--Look at it
 	r+=.1
 	view:lookAt(math.cos(^<r)*5,3,math.sin(^<r)*5,0,2,0)
+	--Lighting.computeShadows(scene)
 end) 
 
 -- Lua definition for Gideros standard 3D particle shader
@@ -93,7 +98,7 @@ local function stdPS3VShader(vVertex,vColor,vTexCoord) : Shader
     local sa=sin(angle)
     local rot=hF22(ca,sa,-sa,ca)
     rad=rad*rot
-    fInColor=vColor*fColor
+    fInColor=hF4(vColor)*fColor
     local xpsize=vWorldMatrix*hF4(vTexCoord.z,0.0,0.0,0.0)
     local xpl=length(xpsize.xyz)
     if (xpl==0.0) then xpl=1.0 end
@@ -111,15 +116,15 @@ local function stdPSFShader() : Shader
 		local rad=hF2(-0.5,-0.5)+fTexCoord
 		if fTexInfo.x<=0.0 then
 			local alpha=lF1(1.0-smoothstep(0.5-fStepRot.x,0.5+fStepRot.x,length(rad)))
-			return fInColor*alpha
+			return lF4(fInColor*alpha)
 		else
 			if (rad.x<-0.5) or (rad.y<-0.5) or (rad.x>0.5) or (rad.y>0.5) then
 				discard()
 			end		
-			return fInColor*texture2D(fTexture, (rad+hF2(0.5,0.5))*fTexInfo.xy)
+			return lF4(fInColor)*texture2D(fTexture, (rad+hF2(0.5,0.5))*fTexInfo.xy)
 		end
 	end
-	return fInColor
+	return lF4(fInColor)
 end
 
 local pshader=Shader.lua(stdPS3VShader,stdPSFShader,0,
