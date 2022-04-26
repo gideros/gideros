@@ -412,10 +412,10 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
                 case DUBYTE: {
                     sstep=1;
                     switch (attributes->mult) {
-                        case 1: vad.format=MTLVertexFormatUChar; break;
-                        case 2: vad.format=MTLVertexFormatUChar2; break;
-                        case 3: vad.format=MTLVertexFormatUChar3; break;
-                        case 4: vad.format=MTLVertexFormatUChar4; break;
+                        case 1: vad.format=MTLVertexFormatUCharNormalized; break;
+                        case 2: vad.format=MTLVertexFormatUChar2Normalized; break;
+                        case 3: vad.format=MTLVertexFormatUChar3Normalized; break;
+                        case 4: vad.format=MTLVertexFormatUChar4Normalized; break;
                         default: break;
                     }
                     break;

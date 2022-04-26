@@ -22,19 +22,19 @@ struct InVertexT
 struct InVertexC
 {
     float2 vVertex [[attribute(0)]];
-    uchar4 vColor [[attribute(1)]];
+    half4 vColor [[attribute(1)]];
 };
 struct InVertexTC
 {
     float2 vVertex [[attribute(0)]];
     float2 vTexcoord [[attribute(2)]];
-    uchar4 vColor [[attribute(1)]];
+    half4 vColor [[attribute(1)]];
 };
 struct InVertexPS
 {
     float4 vVertex [[attribute(0)]];
     float4 vTexcoord [[attribute(2)]];
-    uchar4 vColor [[attribute(1)]];
+    half4 vColor [[attribute(1)]];
 };
 struct InVertex3
 {
@@ -48,13 +48,13 @@ struct InVertexT3
 struct InVertexC3
 {
     float3 vVertex [[attribute(0)]];
-    uchar4 vColor [[attribute(1)]];
+    half4 vColor [[attribute(1)]];
 };
 struct InVertexTC3
 {
     float3 vVertex [[attribute(0)]];
     float2 vTexcoord [[attribute(2)]];
-    uchar4 vColor [[attribute(1)]];
+    half4 vColor [[attribute(1)]];
 };
 
 struct PVertex
@@ -154,7 +154,7 @@ vertex PVertexC gidCV(InVertexC inVertex [[stage_in]],
 {
     PVertexC outVert;
     outVert.position = uniforms.vMatrix * float4(inVertex.vVertex,0.0,1.0);
-    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor));
     return outVert;
 }
 
@@ -163,7 +163,7 @@ vertex PVertexC gidCV3(InVertexC3 inVertex [[stage_in]],
 {
     PVertexC outVert;
     outVert.position = uniforms.vMatrix * float4(inVertex.vVertex,1.0);
-    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor));
     return outVert;
 }
 
@@ -220,7 +220,7 @@ vertex PVertexTC gidCTV(InVertexTC inVertex [[stage_in]],
     PVertexTC outVert;
     outVert.position = uniforms.vMatrix * float4(inVertex.vVertex,0.0,1.0);
     outVert.texcoord = inVertex.vTexcoord;
-    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor));
     return outVert;
 }
 
@@ -230,7 +230,7 @@ vertex PVertexTC gidCTV3(InVertexTC3 inVertex [[stage_in]],
     PVertexTC outVert;
     outVert.position = uniforms.vMatrix * float4(inVertex.vVertex,1.0);
     outVert.texcoord = inVertex.vTexcoord;
-    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor));
     return outVert;
 }
 
@@ -261,7 +261,7 @@ vertex PVertexP gidPV(InVertexC inVertex [[stage_in]],
 {
     PVertexP outVert;
     outVert.position = uniforms.vMatrix * float4(inVertex.vVertex,0.0,1.0);
-    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor));
     float4 xpsize=(uniforms.vWorldMatrix*float4(uniforms.vPSize,0.0,0.0,1.0))-(uniforms.vWorldMatrix*float4(0.0,0.0,0.0,1.0));
     outVert.pointsize=length(xpsize.xyz);
     return outVert;
@@ -297,9 +297,9 @@ vertex PVertexPS gidPSV(InVertexPS inVertex [[stage_in]],
     float2x2 rot=float2x2(float2(ca,sa),float2(-sa,ca));
     rad=rad*rot;
     outVert.position = uniforms.vMatrix * float4(inVertex.vVertex.xy+rad,inVertex.vVertex.z,1.0);
-    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor));
     outVert.texcoord = inVertex.vTexcoord.xy;
-    float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vVertex.z,0.0,0.0,0.0);
+    float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vTexcoord.z,0.0,0.0,0.0);
     float xpl=length(xpsize.xyz);
     if (xpl==0.0) xpl=1.0;
     outVert.steprot=float2(sign(inVertex.vTexcoord.z)/xpl,inVertex.vTexcoord.w);
@@ -316,9 +316,9 @@ vertex PVertexPS gidPS3V(InVertexPS inVertex [[stage_in]],
     float sa=sin(angle);
     float2x2 rot=float2x2(float2(ca,sa),float2(-sa,ca));
     rad=rad*rot;
-    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor)/255.0);
+    outVert.color = half4(uniforms.fColor*float4(inVertex.vColor));
     outVert.texcoord = inVertex.vTexcoord.xy;
-    float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vVertex.z,0.0,0.0,0.0);
+    float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vTexcoord.z,0.0,0.0,0.0);
     float xpl=length(xpsize.xyz);
     if (xpl==0.0) xpl=1.0;
     outVert.steprot=float2(sign(inVertex.vTexcoord.z)/100.0,inVertex.vTexcoord.w);
@@ -339,8 +339,32 @@ fragment half4 gidPSF(PVertexPS vert [[stage_in]],
     return half4(vert.color*alpha);
 }
 
+fragment half4 gidPS3F(PVertexPS vert [[stage_in]],
+                     constant UniformsPS3 &uniforms [[buffer(0)]])
+{
+    if (vert.steprot.x==0.0) discard_fragment();
+    if (vert.steprot.x<=0.0) return half4(vert.color);
+
+    float2 rad=vert.texcoord+float2(-0.5,-0.5);
+    float alpha=1.0-smoothstep(0.5-vert.steprot.x,0.5+vert.steprot.x,length(rad));
+    return half4(vert.color*alpha);
+}
+
 fragment half4 gidPSTF(PVertexPS vert [[stage_in]],
                       constant UniformsPS &uniforms [[buffer(0)]],
+                      texture2d<half> tex [[texture(0)]],
+                      sampler smp [[sampler(0)]])
+{
+    if (vert.steprot.x==0.0) discard_fragment();
+    if (vert.steprot.x<=0.0) return half4(vert.color);
+    
+    float2 rad=vert.texcoord+float2(-0.5,-0.5);
+    if ((rad.x<-0.5)||(rad.y<-0.5)||(rad.x>0.5)||(rad.y>0.5)) discard_fragment();
+    return vert.color*tex.sample(smp,vert.texcoord*uniforms.fTexInfo.xy);
+}
+
+fragment half4 gidPS3TF(PVertexPS vert [[stage_in]],
+                      constant UniformsPS3 &uniforms [[buffer(0)]],
                       texture2d<half> tex [[texture(0)]],
                       sampler smp [[sampler(0)]])
 {
