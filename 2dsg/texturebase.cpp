@@ -12,10 +12,10 @@ TextureBase::TextureBase(Application* application) : application_(application)
 }
 
 TextureBase::TextureBase(	Application* application,
-                            const char* filename, TextureParameters parameters, bool pow2) :
+                            const char* filename, TextureParameters parameters) :
 	application_(application)
 {
-    data = application_->getTextureManager()->createTextureFromFile(filename, parameters,pow2).get();
+    data = application_->getTextureManager()->createTextureFromFile(filename, parameters).get();
 	sizescalex = 1;
 	sizescaley = 1;
     uvscalex = (float)data->width / (float)data->baseWidth;
@@ -23,11 +23,11 @@ TextureBase::TextureBase(	Application* application,
 }
 
 TextureBase::TextureBase(	Application* application,
-                            const unsigned char* pixels,unsigned int width,unsigned int height, TextureParameters parameters, bool pow2, float scale) :
+                            const unsigned char* pixels,unsigned int width,unsigned int height, TextureParameters parameters, float scale) :
 	application_(application)
 {
 
-	Dib dib(application, width, height, pow2, scale);
+    Dib dib(application, width, height, parameters.pow2, scale);
 	if (pixels)
 	for (unsigned int y=0;y<height;y++)
 		memcpy(dib.dataArray()+y*dib.width()*4,pixels+y*width*4,width*4);

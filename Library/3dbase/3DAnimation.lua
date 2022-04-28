@@ -9,7 +9,6 @@ function D3Anim.updateBones()
 			local bn=1
 			for n,bd in ipairs(k.animBones) do
 				local b=bd.bone
---				local name=b.name
 				local m=Matrix.new()
 				m:setMatrix(b.poseIMat:getMatrix())
 				while true do
@@ -100,7 +99,6 @@ function D3Anim.tick()
 end
 
 function D3Anim.setBonesPose(m,poses)
---	local m=m.bonesTop
 	m=m.bonesTop
 	local a=D3Anim._animatedModel[m]
 	for bone,srtl in pairs(poses) do

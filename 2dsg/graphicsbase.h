@@ -14,9 +14,7 @@ public:
 	{
 		modified=true;
 	}
-    void ClearCache() {
-        if (bufferCache)
-            delete bufferCache;
+    void Cloned() {
         bufferCache=NULL;
         modified=true;
     }
@@ -44,11 +42,11 @@ public:
 	void draw(ShaderProgram *shader = NULL, VertexBuffer<unsigned short> *commonIndices=NULL);
 
 	void clear();
-    void clearCaches() {
-        indices.ClearCache();
-        vertices.ClearCache();
-        texcoords.ClearCache();
-        colors.ClearCache();
+    void cloned() {
+        indices.Cloned();
+        vertices.Cloned();
+        texcoords.Cloned();
+        colors.Cloned();
     }
 
 	void setColor(float r, float g, float b, float a)

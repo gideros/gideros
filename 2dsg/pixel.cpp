@@ -98,6 +98,8 @@ void Pixel::cloneFrom(Pixel *s) {
     texcoords.Update();
     vertices.assign(s->vertices.cbegin(),s->vertices.cend());
     vertices.Update();
+    colors_.assign(s->colors_.cbegin(),s->colors_.cend());
+    colors_.Update();
 }
 
 Pixel::~Pixel()

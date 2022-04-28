@@ -289,7 +289,7 @@ void Shape::cloneFrom(Shape *s) {
     texture_=s->texture_;
     graphicsBases_=s->graphicsBases_;
     for (GraphicsBaseList::iterator iter = graphicsBases_.begin(), e = graphicsBases_.end(); iter != e; ++iter)
-        iter->clearCaches();
+        iter->cloned();
 }
 
 Shape::~Shape()

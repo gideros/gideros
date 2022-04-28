@@ -37,7 +37,7 @@ void TextField::cloneFrom(TextField *s)
     b_=s->b_;
     graphicsBase_=s->graphicsBase_;
     for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
-        it->clearCaches();
+        it->cloned();
     minx_=s->minx_;
     miny_=s->miny_;
     maxx_=s->maxx_;

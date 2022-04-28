@@ -127,14 +127,15 @@ int TextureBinder::create(lua_State* L)
 	parameters.maketransparent = maketransparent;
 	parameters.transparentcolor = transparentcolor;
 	parameters.rawalpha = rawalpha;
+    parameters.pow2 = pow2;
 
 	Texture* texture = 0;
 	try
 	{
 		if (isFromPixels)
-	        texture = new Texture(application, (unsigned char *) filename, width, height, parameters, pow2, scale);
+            texture = new Texture(application, (unsigned char *) filename, width, height, parameters, scale);
 		else
-			texture = new Texture(application, filename, parameters, pow2);
+            texture = new Texture(application, filename, parameters);
 	}
 	catch (const GiderosException& e)
 	{
@@ -248,8 +249,9 @@ int TextureBinder::loadAsync(lua_State* L)
 	parameters.maketransparent = maketransparent;
 	parameters.transparentcolor = transparentcolor;
 	parameters.rawalpha=rawalpha;
+    parameters.pow2 = pow2;
 
-    Texture::loadAsync(application, filename, parameters, pow2,
+    Texture::loadAsync(application, filename, parameters,
                                   [=](Texture *texture,std::exception_ptr e) {
         Binder binder(LL);
         lua_rawgeti(LL, LUA_REGISTRYINDEX, func);
