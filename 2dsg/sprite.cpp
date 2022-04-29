@@ -135,7 +135,6 @@ Sprite::Sprite(Application* application) :
 void Sprite::cloneFrom(Sprite *s) {
     effectsMode_=s->effectsMode_;
     hasCustomShader_=s->hasCustomShader_;
-    hasCustomShader_=s->hasCustomShader_;
     effectStack_=s->effectStack_;
     skipSet_=s->skipSet_;
     checkClip_=s->checkClip_;

@@ -253,6 +253,10 @@ int SpriteBinder::create(lua_State* L)
 static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fidx) {
     Binder binder(L);
     lua_checkstack(L,8);
+    lua_pushvalue(L,oidx);
+    lua_pushvalue(L,cidx-1);
+    lua_rawset(L,fidx-2);
+
     lua_getfield(L, oidx, "__userdata");
     lua_getfield(L, cidx-1, "__userdata");
     if (lua_getmetatable(L,-2))
@@ -264,23 +268,23 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
     int cc=c->childCount();
     if (cc>0) {
         lua_getfield(L,oidx,"__children");
-        lua_createtable(L,cc,0);
+        lua_createtable(L,0,cc);
         for(int k=0;k<cc;k++) {
             Sprite *sl=o->child(k);
             Sprite *cl=c->child(k);
             lua_pushlightuserdata(L, sl);
             lua_rawget(L,-3);
             cl->ref();
-            binder.pushInstance("Sprite", cl);
+            binder.pushInstance("Sprite", cl); //OCL,CCL,OCO,CCO
             fixupClone(L,sl,cl,-2,-1,fidx-4);
             lua_pushvalue(L,cidx-4);
             lua_setfield(L, -2, "__parent");
             lua_pushlightuserdata(L, cl);
-            lua_pushvalue(L,-2);
-            lua_rawset(L,-5);
-            lua_rawset(L,fidx-4);
+            lua_pushvalue(L,-2); //OCL,CCL,OCO,CCO,CLK,CCO
+            lua_rawset(L,-5); //OCL,CCL,OCO,CCO
+            lua_rawset(L,fidx-4); //OCL,CCL [fidx[oco]=cco]
         }
-        lua_setfield(L, cidx-2, "__children");
+        lua_setfield(L, cidx-2, "__children"); //OCL
         lua_pop(L,1);
     }
 
