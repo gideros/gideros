@@ -154,7 +154,11 @@ public:
 
     bool SoundHasEffect(const char *effect)
     {
+#ifdef AL_EFFECT_TYPE
     	return (effect&&!strcmp(effect,"equalizer"));
+#else
+    	return false;
+#endif
     }
 
     void ChannelStop(g_id channel)
@@ -170,10 +174,12 @@ public:
             alSourceStop(channel2->source);
             alDeleteSources(1, &channel2->source);
         }
+#ifdef AL_EFFECT_TYPE
         if (channel2->slot)
             alDeleteAuxiliaryEffectSlots(1,&channel2->slot);
         if (channel2->effect)
             alDeleteEffects(1,&channel2->effect);
+#endif
 
         channel2->sound->channels.erase(channel2);
 
@@ -283,7 +289,9 @@ public:
 
         if (channel2->source != 0) {
             alSourcef(channel2->source, AL_GAIN, volume);
+#ifdef AL_BALANCE
             alSourcef(channel2->source, AL_BALANCE, balance);
+#endif
         }
     }
 

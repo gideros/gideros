@@ -197,7 +197,11 @@ public:
 
     bool SoundHasEffect(const char *effect)
     {
+#ifdef AL_EFFECT_TYPE
     	return (effect&&!strcmp(effect,"equalizer"));
+#else
+    	return false;
+#endif
     }
 
     void ChannelStop(g_id channel)
@@ -212,11 +216,12 @@ public:
 
         if (channel2->source != 0)
             deleteSourceAndBuffers(channel2);
+#ifdef AL_EFFECT_TYPE
         if (channel2->slot)
             alDeleteAuxiliaryEffectSlots(1,&channel2->slot);
         if (channel2->effect)
             alDeleteEffects(1,&channel2->effect);
-
+#endif
         channel2->sound->loader.close(channel2->file);
 
         channel2->sound->channels.erase(channel2);
@@ -356,7 +361,9 @@ public:
 
         if (channel2->source != 0) {
             alSourcef(channel2->source, AL_GAIN, volume);
+#ifdef AL_BALANCE
             alSourcef(channel2->source, AL_BALANCE, balance);
+#endif
         }
     }
 
@@ -455,6 +462,7 @@ public:
 
     void ChannelSetEffect(g_id channel, const char *effect, float *params)
     {
+#ifdef AL_EFFECT_TYPE
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return;
@@ -494,6 +502,7 @@ public:
             channel2->slot=0;
 	   		channel2->effect=0;
     	}
+#endif
     }
 
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)
