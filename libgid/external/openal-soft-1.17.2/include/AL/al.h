@@ -194,6 +194,9 @@ typedef void ALvoid;
  * silent.
  */
 #define AL_GAIN                                  0x100A
+/** Same for direct channel gain (as opposed to effect gains) **/
+#define AL_DIRECT_GAIN                           0x100B
+#define AL_BALANCE                               0x100C
 
 /**
  * Minimum source gain.

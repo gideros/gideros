@@ -360,7 +360,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #ifdef GL_VERTEX_PROGRAM_POINT_SIZE
 		GLCALL glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #endif
-		ogl2ShaderProgram::resetAll();
+        ogl2ShaderProgram::resetAll();
 	}
    /* glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);*/

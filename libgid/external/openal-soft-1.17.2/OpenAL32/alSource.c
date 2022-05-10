@@ -51,6 +51,8 @@ static ALboolean GetSampleOffset(ALsource *Source, ALuint *offset, ALuint *frac)
 typedef enum SourceProp {
     srcPitch = AL_PITCH,
     srcGain = AL_GAIN,
+    srcDirectGain = AL_DIRECT_GAIN,
+    srcBalance = AL_BALANCE,
     srcMinGain = AL_MIN_GAIN,
     srcMaxGain = AL_MAX_GAIN,
     srcMaxDistance = AL_MAX_DISTANCE,
@@ -124,6 +126,8 @@ static ALint FloatValsByProp(ALenum prop)
     {
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_MAX_DISTANCE:
@@ -187,6 +191,8 @@ static ALint DoubleValsByProp(ALenum prop)
     {
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_MAX_DISTANCE:
@@ -249,6 +255,8 @@ static ALint IntValsByProp(ALenum prop)
     {
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_MAX_DISTANCE:
@@ -310,6 +318,8 @@ static ALint Int64ValsByProp(ALenum prop)
     {
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_MAX_DISTANCE:
@@ -409,6 +419,20 @@ static ALboolean SetSourcefv(ALsource *Source, ALCcontext *Context, SourceProp p
             CHECKVAL(*values >= 0.0f);
 
             Source->Gain = *values;
+            ATOMIC_STORE(&Source->NeedsUpdate, AL_TRUE);
+            return AL_TRUE;
+
+        case AL_BALANCE:
+            CHECKVAL(*values >= -1.0f && *values <= 1.0f);
+
+            Source->Balance = *values;
+            ATOMIC_STORE(&Source->NeedsUpdate, AL_TRUE);
+            return AL_TRUE;
+
+        case AL_DIRECT_GAIN:
+            CHECKVAL(*values >= 0.0f);
+
+            Source->Direct.Gain = *values;
             ATOMIC_STORE(&Source->NeedsUpdate, AL_TRUE);
             return AL_TRUE;
 
@@ -797,6 +821,8 @@ static ALboolean SetSourceiv(ALsource *Source, ALCcontext *Context, SourceProp p
         case AL_CONE_OUTER_ANGLE:
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_REFERENCE_DISTANCE:
@@ -899,6 +925,8 @@ static ALboolean SetSourcei64v(ALsource *Source, ALCcontext *Context, SourceProp
         case AL_CONE_OUTER_ANGLE:
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_REFERENCE_DISTANCE:
@@ -955,6 +983,14 @@ static ALboolean GetSourcedv(ALsource *Source, ALCcontext *Context, SourceProp p
     {
         case AL_GAIN:
             *values = Source->Gain;
+            return AL_TRUE;
+
+        case AL_DIRECT_GAIN:
+            *values = Source->Direct.Gain;
+            return AL_TRUE;
+
+        case AL_BALANCE:
+            *values = Source->Balance;
             return AL_TRUE;
 
         case AL_PITCH:
@@ -1269,6 +1305,8 @@ static ALboolean GetSourceiv(ALsource *Source, ALCcontext *Context, SourceProp p
         case AL_CONE_OUTER_ANGLE:
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_REFERENCE_DISTANCE:
@@ -1357,6 +1395,8 @@ static ALboolean GetSourcei64v(ALsource *Source, ALCcontext *Context, SourceProp
         case AL_CONE_OUTER_ANGLE:
         case AL_PITCH:
         case AL_GAIN:
+        case AL_DIRECT_GAIN:
+        case AL_BALANCE:
         case AL_MIN_GAIN:
         case AL_MAX_GAIN:
         case AL_REFERENCE_DISTANCE:
@@ -2524,6 +2564,7 @@ static ALvoid InitSourceParams(ALsource *Source)
     Source->MaxGain = 1.0f;
     Source->OuterGain = 0.0f;
     Source->OuterGainHF = 1.0f;
+    Source->Balance = 0.0f;
 
     Source->DryGainHFAuto = AL_TRUE;
     Source->WetGainAuto = AL_TRUE;

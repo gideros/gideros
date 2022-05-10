@@ -92,6 +92,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"setHiddenChildren", SpriteBinder::setHiddenChildren},
 		{"setCheckClip", SpriteBinder::setCheckClip},
         {"clone", SpriteBinder::clone},
+        {"setWorldAlign", SpriteBinder::setWorldAlign},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -2154,6 +2155,16 @@ int SpriteBinder::setHiddenChildren(lua_State* L)
     }
     sprite->setSkipSet(hset);
 
+    return 0;
+}
+
+int SpriteBinder::setWorldAlign(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setWorldAlign", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    sprite->setWorldAlign(lua_toboolean(L,2));
     return 0;
 }
 

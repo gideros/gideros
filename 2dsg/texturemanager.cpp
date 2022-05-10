@@ -115,6 +115,9 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
     }
 
     int format = 0;
@@ -311,6 +314,9 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
     }
 
     int format = 0;
@@ -466,6 +472,9 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
     }
 
     int format = 0;
@@ -616,7 +625,10 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
-    }
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
+   }
 
     int format = 0;
     int type = 0;

@@ -12,6 +12,7 @@ enum Filter
 {
     eNearest,
     eLinear,
+	eLinearMipmap,
 };
 
 enum Wrap

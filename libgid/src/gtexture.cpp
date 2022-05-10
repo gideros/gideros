@@ -250,6 +250,8 @@ public:
     	        ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
     	        if (element->filter==GTEXTURE_NEAREST)
     	        	filtering=ShaderTexture::FILT_NEAREST;
+    	        if (element->filter==GTEXTURE_LINEAR_MIPMAP)
+    	        	filtering=ShaderTexture::FILT_LINEAR_MIPMAP;
              element->width=width;
              element->height=height;
     	     element->_texture->updateData(format,type,element->width, element->height,pixels,wrap,filtering);
@@ -690,6 +692,8 @@ private:
         ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
         if (element->filter==GTEXTURE_NEAREST)
         	filtering=ShaderTexture::FILT_NEAREST;
+        if (element->filter==GTEXTURE_LINEAR_MIPMAP)
+        	filtering=ShaderTexture::FILT_LINEAR_MIPMAP;
         element->_texture=engine->createTexture(format,type,element->width, element->height,pixels,wrap,filtering,element->renderTarget);
     }
 

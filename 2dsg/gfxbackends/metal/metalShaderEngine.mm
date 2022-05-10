@@ -480,7 +480,7 @@ void metalShaderEngine::bindTexture(int num, ShaderTexture *texture) {
     metalShaderTexture *mt=((metalShaderTexture *)texture);
     if ((mt->format==ShaderTexture::FMT_DEPTH)&&(mt->filter==ShaderTexture::FILT_LINEAR))
         smp=tsDC;
-    else if (mt->filter==ShaderTexture::FILT_LINEAR) {
+    else if ((mt->filter==ShaderTexture::FILT_LINEAR)||(mt->filter==ShaderTexture::FILT_LINEAR_MIPMAP)) {
         smp=(mt->wrap==ShaderTexture::WRAP_REPEAT)?tsFR:tsFC;
     }
     else if (mt->wrap==ShaderTexture::WRAP_REPEAT)

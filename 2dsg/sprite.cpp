@@ -130,6 +130,7 @@ Sprite::Sprite(Application* application) :
 	checkClip_=false;
     changes_=(ChangeSet)0x0FF; //All invalid, except constraints which is never actually revalidated
 	hasCustomShader_=false;
+    worldAlign_=false;
 }
 
 void Sprite::cloneFrom(Sprite *s) {
@@ -174,6 +175,7 @@ void Sprite::cloneFrom(Sprite *s) {
     for (auto ss=shaders_.cbegin();ss!=shaders_.cend();ss++)
         if (ss->second.shader) ss->second.shader->Retain();
     stencil_=s->stencil_;
+    worldAlign_=s->worldAlign_;
 }
 
 Sprite::~Sprite() {
@@ -587,6 +589,22 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		else
 			sprite->worldTransform_ = transform * localTransform_.matrix();
 
+        if (sprite->worldAlign_) { //Adjust to integer world coordinates
+            float dx,dy;
+            /*sprite->getDimensions(dx,dy);
+            sprite->worldTransform_.transformPoint(dx,dy,&dx,&dy);
+            if ((dx>0)&&(dy>0)) {
+                dx=roundf(dx)/dx;
+                dy=roundf(dy)/dy;
+                if ((dx!=1)||(dy!=1))
+                    sprite->worldTransform_.scale(dx,dy,1);
+            }*/
+            sprite->worldTransform_.transformPoint(0,0,&dx,&dy);
+            dx=roundf(dx)-dx;
+            dy=roundf(dy)-dy;
+            if (dx||dy)
+                sprite->worldTransform_.translate(dx,dy,0);
+        }
         ShaderEngine::Engine->setModel(sprite->worldTransform_);
 
         if (clipState==0) {

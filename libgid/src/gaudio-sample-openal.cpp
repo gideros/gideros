@@ -6,8 +6,10 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #elif defined(OPENAL_SUBDIR_AL)
+#define AL_ALEXT_PROTOTYPES
 #include <AL/al.h>
 #include <AL/alc.h>
+#include <AL/alext.h>
 #else
 #include <al.h>
 #include <alc.h>
@@ -150,6 +152,11 @@ public:
         return gid;
     }
 
+    bool SoundHasEffect(const char *effect)
+    {
+    	return (effect&&!strcmp(effect,"equalizer"));
+    }
+
     void ChannelStop(g_id channel)
     {
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
@@ -163,6 +170,10 @@ public:
             alSourceStop(channel2->source);
             alDeleteSources(1, &channel2->source);
         }
+        if (channel2->slot)
+            alDeleteAuxiliaryEffectSlots(1,&channel2->slot);
+        if (channel2->effect)
+            alDeleteEffects(1,&channel2->effect);
 
         channel2->sound->channels.erase(channel2);
 
@@ -260,7 +271,7 @@ public:
         return state == AL_PLAYING;
     }
 
-    void ChannelSetVolume(g_id channel, float volume)
+    void ChannelSetVolume(g_id channel, float volume, float balance)
     {
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
@@ -270,8 +281,10 @@ public:
 
         channel2->volume = volume;
 
-        if (channel2->source != 0)
+        if (channel2->source != 0) {
             alSourcef(channel2->source, AL_GAIN, volume);
+            alSourcef(channel2->source, AL_BALANCE, balance);
+        }
     }
 
     float ChannelGetVolume(g_id channel)
@@ -452,6 +465,8 @@ private:
             gid(gid),
             sound(sound),
             source(source),
+			effect(0),
+			slot(0),
             paused(true),
             volume(1.f),
             pitch(1.f),
@@ -464,6 +479,8 @@ private:
         g_id gid;
         Sound *sound;
         ALuint source;
+        ALuint effect;
+        ALuint slot;
         bool paused;
         float volume;
         float pitch;
