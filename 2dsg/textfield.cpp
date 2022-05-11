@@ -14,15 +14,15 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
     sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
     minx_ = 0, miny_ = 0, maxx_ = 0, maxy_ = 0;
 
-	if (sample)
-		setSample(sample);
-
 	if (params)
         layout_=*params;
 
     setTextColor(0,0,0,1);
 
     setFont(font);
+
+    if (sample)
+        setSample(sample);
 }
 
 void TextField::cloneFrom(TextField *s)
