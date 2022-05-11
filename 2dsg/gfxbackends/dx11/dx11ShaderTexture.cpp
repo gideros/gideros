@@ -81,7 +81,7 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     g_dev->CreateShaderResourceView(tex,(format==FMT_DEPTH)?&sr_desc:NULL,&rsv);
 
     if (filtering==FILT_LINEAR_MIPMAP)
-    	g_dev->GenerateMips(rsv);
+    	g_devcon->GenerateMips(rsv);
 
 //    g_devcon->PSSetShaderResources(0,1,&g_RSV[g_curr_texind]);
 }
@@ -141,7 +141,7 @@ void dx11ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     g_dev->CreateTexture2D(&tdesc,&tbsd,&tex);
     g_dev->CreateShaderResourceView(tex,NULL,&rsv);
     if (filtering==FILT_LINEAR_MIPMAP)
-    	g_dev->GenerateMips(rsv);
+    	g_devcon->GenerateMips(rsv);
 }
 
 dx11ShaderTexture::~dx11ShaderTexture()

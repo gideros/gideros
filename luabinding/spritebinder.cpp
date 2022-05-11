@@ -304,6 +304,7 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
             lua_remove(L,-2); //-5:K,K,M(V)
         lua_rawset(L,cidx-5); //-3:K
     }
+
     lua_setfield(L, cidx-2, "__userdata"); //-1:Restore __userdata
     lua_setfield(L, cidx-1, "__children"); //0:Restore __children
     lua_getfield(L,cidx,"newClone");
