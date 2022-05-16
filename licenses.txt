@@ -16,6 +16,10 @@ mpg123 (Desktop) - Michael Hipp http://www.mpg123.org/
 Pthreads-win32 (Desktop) - http://sources.redhat.com/pthreads-win32/
 Qt (Desktop) - http://qt.nokia.com/
 
+QT License
+-----------
+https://www.qt.io/licensing/
+
 FreeType License
 ----------------
 FreeType (Desktop) - http://www.freetype.org/
@@ -350,7 +354,7 @@ David Turner, Robert Wilhelm, and Werner Lemberg
   encourage you to use the following text:
 
    """  
-    Portions of this software are copyright © <year> The FreeType
+    Portions of this software are copyright Â© <year> The FreeType
     Project (www.freetype.org).  All rights reserved.
    """
 
@@ -491,7 +495,7 @@ TERMS OF USE - EASING EQUATIONS
 
 Open source under the BSD License.
 
-Copyright © 2001 Robert Penner
+Copyright Â© 2001 Robert Penner
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
