@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+ <properties orientation="0" fps="60" mainluaOnly="0" windowHeight="0" osx_domain="giderosmobile.com" windowWidth="0" mouseTouchOrder="0" ios_bundle="com.yourdomain.yourapp-ios" osx_installerId="" html5_host="" build_number="1" osx_bundle="com.yourdomain." logicalHeight="480" exportMode="0" app_icon="" html5_fbinstant="0" html5_mem="256" osx_category="5" backgroundColor="#ffffff" osx_org="GiderosMobile" winrt_package="com.yourdomain.yourapp" html5_pack="0" html5_wasm="0" atv_bundle="com.yourdomain.yourapp-atv" win_domain="giderosmobile.com" html5_crash="" logicalWidth="320" splashScaleMode="0" html5_symbols="0" version="1.0" splash_v_image="" app_name="" autorotation="0" version_code="1" architecture="0" iosDevice="0" win_org="GiderosMobile" vsync="0" retinaDisplay="0" mouseToTouch="1" macos_bundle="com.yourdomain.yourapp-macos" disableSplash="0" splash_h_image="" encryptAssets="0" html5_fbload="100" osx_signingId="" touchToMouse="1" scaleMode="0" macos_category="5" encryptCode="0" html5_pwa="0" winrt_org="GiderosMobile" tv_icon="">
+  <imageScales/>
+  <plugins>
+   <plugin enabled="1" name="SceneManager"/>
+  </plugins>
+  <exports/>
+ </properties>
+ <folder name="Scenes">
+  <file name="assets/Scenes/BaseScene.lua"/>
+  <file name="assets/Scenes/Collisions.lua"/>
+  <file name="assets/Scenes/GJK.lua"/>
+  <file name="assets/Scenes/Rays.lua"/>
+  <file name="assets/Scenes/TOI.lua"/>
+ </folder>
+ <folder name="Shapes">
+  <file name="assets/Shapes/Capsule.lua"/>
+  <file name="assets/Shapes/Circle.lua"/>
+  <file name="assets/Shapes/CollisionShape.lua"/>
+  <file name="assets/Shapes/Poly.lua"/>
+  <file name="assets/Shapes/Ray.lua"/>
+  <file name="assets/Shapes/RayCone.lua"/>
+  <file name="assets/Shapes/Rect.lua"/>
+  <file name="assets/Shapes/init.lua"/>
+ </folder>
+ <file name="assets/init.lua"/>
+ <file name="assets/main.lua"/>
+ <dependency to="assets/Scenes/BaseScene.lua" from="assets/Scenes/Collisions.lua"/>
+ <dependency to="assets/Scenes/BaseScene.lua" from="assets/Scenes/GJK.lua"/>
+ <dependency to="assets/Scenes/BaseScene.lua" from="assets/Scenes/TOI.lua"/>
+</project>
