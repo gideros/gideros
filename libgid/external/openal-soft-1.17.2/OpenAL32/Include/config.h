@@ -14,6 +14,9 @@
 #ifdef __ANDROID__
 #define HAVE_OPENSL
 #endif
+#ifdef __ANDROID__
+#define HAVE_COREAUDIO
+#endif
 
 /* Define if we have the stat function */
 #define HAVE_STAT
@@ -86,8 +89,10 @@
 #define HAVE_ALLOCA_H
 #endif
 
+#ifndef __APPLE__
 /* Define if we have malloc.h */
 #define HAVE_MALLOC_H
+#endif
 
 /* Define if we have dirent.h */
 #define HAVE_DIRENT_H
