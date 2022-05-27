@@ -41,25 +41,28 @@
     <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <ConvergedProjectType>CodeSharingStaticLibrary</ConvergedProjectType>
-    <Lua_Engine Condition="'$(LUA_ENGINE)' == ''">lua</Lua_Engine>
-    <LuaIncludes Condition="'$(LUA_ENGINE)' == 'lua'">..\..\..\lua\src</LuaIncludes>
-    <LuaIncludes Condition="'$(LUA_ENGINE)' == 'luau'">..\..\..\luau\VM\src;..\..\..\luau\VM\include</LuaIncludes>
+    <Lua_Engine Condition="'$(LUA_ENGINE)' == ''">luau</Lua_Engine>
+    <LuaIncludes Condition="'$(Lua_Engine)' == 'lua'">..\..\..\lua\src</LuaIncludes>
+    <LuaIncludes Condition="'$(Lua_Engine)' == 'luau'">..\..\..\luau\VM\src;..\..\..\luau\VM\include</LuaIncludes>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>

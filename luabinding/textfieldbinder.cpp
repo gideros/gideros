@@ -40,6 +40,7 @@ static void populateLayout(lua_State* L,int index,FontBase::TextLayoutParameters
     lua_getfield(L,index,"h"); tp->h=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"alignX"); tp->alignx=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"alignY"); tp->aligny=luaL_optnumber(L,-1,0); lua_pop(L,1);
+    lua_getfield(L,index,"aspect"); tp->aspect=luaL_optnumber(L,-1,100000); lua_pop(L,1);
     lua_getfield(L,index,"flags"); tp->flags=luaL_optinteger(L,-1,(int)FontBase::TLF_NOWRAP); lua_pop(L,1);
     lua_getfield(L,index,"letterSpacing");  tp->letterSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"lineSpacing"); tp->lineSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);
@@ -183,10 +184,12 @@ int TextFieldBinder::getTextColor(lua_State* L)
 
 	Binder binder(L);
 	TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+    float r,g,b,a;
+    textField->textColor(r,g,b,a);
+    unsigned long col=((unsigned long)(r*0xFF0000)&0xFF0000)|((unsigned long)(g*0xFF00)&0xFF00)|((unsigned long)(b*0xFF)&0xFF);
 
-	float alpha=(textField->textColor()>>24)/255.f;
-	lua_pushinteger(L, textField->textColor()&0xFFFFFF);
-	lua_pushnumber(L, alpha);
+    lua_pushinteger(L, col);
+    lua_pushnumber(L, a);
 
 	return 2;
 }
@@ -198,10 +201,18 @@ int TextFieldBinder::setTextColor(lua_State* L)
 	Binder binder(L);
 	TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
 
-	unsigned int color = luaL_checkinteger(L, 2);
-	float alpha=luaL_optnumber(L, 3,1.0);
-	color=(color&0xFFFFFF)|((((int)(255*alpha))&0xFF)<<24);
-	textField->setTextColor(color);
+    const float *cvec=lua_tovector(L,2);
+    if (cvec) {
+        textField->setTextColor(cvec[0],cvec[1],cvec[2],cvec[3]);
+    }
+    else {
+        unsigned int color = luaL_optinteger(L, 2, 0xffffff);
+        lua_Number alpha = luaL_optnumber(L, 3, 1.0);
+        int r = (color >> 16) & 0xff;
+        int g = (color >> 8) & 0xff;
+        int b = color & 0xff;
+        textField->setTextColor(r/255.f,g/255.f,b/255.f,alpha);
+    }
 
 	return 0;
 }

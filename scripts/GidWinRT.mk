@@ -1,7 +1,7 @@
 #MSBuild has issues with parallel uses, stick to single thread
 SUBMAKE=$(MAKE) -f scripts/Makefile.gid 
 
-WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor TextureAlphaColor Particle Particles PathFillC PathStrokeC PathStrokeLC
+WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor TextureAlphaColor Particle Particles Particles3 PathFillC PathStrokeC PathStrokeLC
 WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11
 WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
@@ -10,6 +10,11 @@ WINRT_PLAYERDIR=winrt_xaml
 WINRT_PLAYERSUBDIR=giderosgame
 
 export MSBUILDDISABLENODEREUSE=1
+ifneq ($(DEBUG),)
+WINRT_CONF=Debug
+else
+WINRT_CONF=Release
+endif
 
 #Macros
 #$(call WINRT_PROJECT basepath name target)
@@ -18,9 +23,9 @@ WINRT_PROJECT=$(1)/$(2)/$(2).$(3)/$(2).$(3).vcxproj
 WINRT_MANIFEST=$(1)/$(2)/$(2).$(3)/$(2).$(3).Package.appxmanifest
 #$(call WINRT_BUILD_WIN basepath name)
 WINRT_BUILD_WIN=\
-	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=Release //p:Platform=Win32 //v:m;\
-	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=Release //p:Platform=ARM //v:m;\
-	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=Release //p:Platform=x64 //v:m;\
+	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=$(WINRT_CONF) //p:Platform=Win32 //v:m;\
+	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=$(WINRT_CONF) //p:Platform=ARM //v:m;\
+	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=$(WINRT_CONF) //p:Platform=x64 //v:m;\
 
 WINRT_CLEAN=\
  	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Release //p:Platform=Win32 //v:m;\
@@ -64,18 +69,18 @@ winrt.libs.clean: winrt.lua.clean winrt.gvfs.clean
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT/Win32
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT/ARM
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT/x64
-	cp plugins/$*/source/winrt/$*/$*.Windows/ARM/Release/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/ARM/
-	cp plugins/$*/source/winrt/$*/$*.Windows/Release/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/Win32/
-	cp plugins/$*/source/winrt/$*/$*.Windows/x64/Release/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/x64
+	cp plugins/$*/source/winrt/$*/$*.Windows/ARM/$(WINRT_CONF)/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/ARM/
+	cp plugins/$*/source/winrt/$*/$*.Windows/$(WINRT_CONF)/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/Win32/
+	cp plugins/$*/source/winrt/$*/$*.Windows/x64/$(WINRT_CONF)/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/x64
 
 luasocket.plugin.winrt:
 	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64
-	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM/
-	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/x64/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64/
-	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/ARM/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/x64/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32/
 
 %.plugin.winrt.clean:
 	$(call WINRT_CLEAN,plugins/$*/source/winrt,$*)
@@ -92,26 +97,26 @@ winrt.plugins.clean:
 winrt.core: winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)
 	#X86 Release version for Windows
-	mkdir -p winrt/Release/gideros.Windows
-	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib winrt/Release/gideros.Windows
-	mkdir -p winrt/Release/luawinrt.Windows
-	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/Release/luawinrt.Windows
-	mkdir -p winrt/Release/libgvfswinrt.Windows
-	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/Release/libgvfswinrt.Windows
+	mkdir -p winrt/$(WINRT_CONF)/gideros.Windows
+	cp winrt/gideros/gideros.Windows/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib winrt/$(WINRT_CONF)/gideros.Windows
+	mkdir -p winrt/$(WINRT_CONF)/luawinrt.Windows
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib winrt/$(WINRT_CONF)/luawinrt.Windows
+	mkdir -p winrt/$(WINRT_CONF)/libgvfswinrt.Windows
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/$(WINRT_CONF)/libgvfswinrt.Windows
 	#ARM release version for WinPhone
-	mkdir -p winrt/ARM/Release/gideros.Windows
-	cp winrt/gideros/gideros.Windows/ARM/Release/gideros.Windows/gideros.Windows.lib winrt/ARM/Release/gideros.Windows
-	mkdir -p winrt/ARM/Release/luawinrt.Windows
-	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/ARM/Release/luawinrt.Windows
-	mkdir -p winrt/ARM/Release/libgvfswinrt.Windows
-	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/ARM/Release/libgvfswinrt.Windows
+	mkdir -p winrt/ARM/$(WINRT_CONF)/gideros.Windows
+	cp winrt/gideros/gideros.Windows/ARM/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib winrt/ARM/$(WINRT_CONF)/gideros.Windows
+	mkdir -p winrt/ARM/$(WINRT_CONF)/luawinrt.Windows
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib winrt/ARM/$(WINRT_CONF)/luawinrt.Windows
+	mkdir -p winrt/ARM/$(WINRT_CONF)/libgvfswinrt.Windows
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/ARM/$(WINRT_CONF)/libgvfswinrt.Windows
 	#x64 release version for Windows
-	mkdir -p winrt/x64/Release/gideros.Windows
-	cp winrt/gideros/gideros.Windows/x64/Release/gideros.Windows/gideros.Windows.lib winrt/x64/Release/gideros.Windows
-	mkdir -p winrt/x64/Release/luawinrt.Windows
-	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/x64/Release/luawinrt.Windows
-	mkdir -p winrt/x64/Release/libgvfswinrt.Windows
-	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/x64/Release/libgvfswinrt.Windows
+	mkdir -p winrt/x64/$(WINRT_CONF)/gideros.Windows
+	cp winrt/gideros/gideros.Windows/x64/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib winrt/x64/$(WINRT_CONF)/gideros.Windows
+	mkdir -p winrt/x64/$(WINRT_CONF)/luawinrt.Windows
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib winrt/x64/$(WINRT_CONF)/luawinrt.Windows
+	mkdir -p winrt/x64/$(WINRT_CONF)/libgvfswinrt.Windows
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/x64/$(WINRT_CONF)/libgvfswinrt.Windows
 
 winrt.core.clean: winrt.libs.clean
 	$(call WINRT_CLEAN,winrt,gideros) 
@@ -137,17 +142,17 @@ winrt.template: winrt.core winrt.plugins
 	cp $(SDK)/include/*.h "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/"
 	
 	#X86 Release version for Windows
-	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
-	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
-	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
+	cp winrt/gideros/gideros.Windows/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
 	#ARM release version for WinPhone
-	cp winrt/gideros/gideros.Windows/ARM/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
-	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
-	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
+	cp winrt/gideros/gideros.Windows/ARM/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
 	#x64 Release version for Windows
-	cp winrt/gideros/gideros.Windows/x64/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
-	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
-	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
+	cp winrt/gideros/gideros.Windows/x64/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
+	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
 	#Plugins libs
 	#cp $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/*.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 
@@ -158,7 +163,7 @@ winrt.player: winrt.template
 	rm -f $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Assets/LargeTile.scale-400.png
 	cp $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
 	sed -e 's/ Version="[^"]*"/ Version="$(WINRT_APPX_GIDVERSION)"/'	$(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak >$(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest
-	$(MSBUILD) $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=Release //p:AppxBundlePlatforms="x86|ARM|x64" //p:AppxBundle=Always //v:m
+	$(MSBUILD) $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=$(WINRT_CONF) //p:AppxBundlePlatforms="x86|ARM|x64" //p:AppxBundle=Always //v:m
 	mkdir -p $(RELEASE)/Players
 	rm -rf $(RELEASE)/Players/WinRT
 	mkdir -p $(RELEASE)/Players/WinRT
@@ -170,7 +175,7 @@ winrt.player_old: winrt.template
 	rm -rf /c/winrt_player
 	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
 	sed -e 's/ Version="[^"]*"/ Version="$(WINRT_APPX_GIDVERSION)"/'	$(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak >$(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest
-	$(MSBUILD) $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=Release //p:AppxBundlePlatforms="x86|ARM|x64" //p:AppxBundle=Always //v:m
+	$(MSBUILD) $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=$(WINRT_CONF) //p:AppxBundlePlatforms="x86|ARM|x64" //p:AppxBundle=Always //v:m
 	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest
 	rm $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
 	mkdir -p $(RELEASE)/Players

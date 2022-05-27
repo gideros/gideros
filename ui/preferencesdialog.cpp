@@ -33,6 +33,15 @@ void PreferencesDialog::updateEditors(const std::function<void (TextEdit*)> lamb
         }
 }
 
+MainWindow* PreferencesDialog::getMainWindow()
+{
+    foreach (QWidget *w, qApp->topLevelWidgets())
+        if (MainWindow* mainWin = qobject_cast<MainWindow*>(w))
+            return mainWin;
+    return nullptr;
+}
+
+
 void PreferencesDialog::setupEditorPrefs()
 {
     QSettings settings;
@@ -120,23 +129,32 @@ void PreferencesDialog::setupEditorPrefs()
             }
     );
     
-    ui->wordHighlighterCheckBox->setChecked(settings.value(Keys::Prefs::wordHightlighter, 1).toBool());
+    ui->wordHighlighterCheckBox->setChecked(settings.value(Keys::Prefs::wordHighlighter, 1).toBool());
     
     connect(ui->wordHighlighterCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
             [this](int state) {
-                this->settings.setValue(Keys::Prefs::wordHightlighter, state);
-                this->ui->wordHightlighterSimpleCheckBox->setEnabled(state);
+                this->settings.setValue(Keys::Prefs::wordHighlighter, state);
+                this->ui->wordHighlighterSimpleCheckBox->setEnabled(state);
                 this->updateEditors([state](TextEdit* te) { te->wordHighlighter()->setEnabled(state); });
             }
     );
     
-    ui->wordHightlighterSimpleCheckBox->setEnabled(ui->wordHighlighterCheckBox->isChecked());
-    ui->wordHightlighterSimpleCheckBox->setChecked(settings.value(Keys::Prefs::wordHightlighterSimple, 1).toBool());
+    ui->wordHighlighterSimpleCheckBox->setEnabled(ui->wordHighlighterCheckBox->isChecked());
+    ui->wordHighlighterSimpleCheckBox->setChecked(settings.value(Keys::Prefs::wordHighlighterSimple, 1).toBool());
     
-    connect(ui->wordHightlighterSimpleCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+    connect(ui->wordHighlighterSimpleCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
             [this](int state) {
-                this->settings.setValue(Keys::Prefs::wordHightlighterSimple, state);
+                this->settings.setValue(Keys::Prefs::wordHighlighterSimple, state);
                 this->updateEditors([state](TextEdit* te) { te->wordHighlighter()->setSimpleMode(state); });
+            }
+    );
+    
+	// append toolbar to menu checkbox
+    ui->appendToolbarCheckBox->setChecked(settings.value("toggleToolBar", 0).toBool());
+    connect(ui->appendToolbarCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
+            [this](int state) {
+				auto mw = getMainWindow();
+				mw->toggleToolBar(state);
             }
     );
 }

@@ -44,6 +44,7 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
     lua_pushinteger(L,FontBase::TLF_NOSHAPING); lua_setfield(L,-2,"TLF_NOSHAPING");
     lua_pushinteger(L,FontBase::TLF_NOBIDI); lua_setfield(L,-2,"TLF_NOBIDI");
     lua_pushinteger(L,FontBase::TLF_SINGLELINE); lua_setfield(L,-2,"TLF_SINGLELINE");
+    lua_pushinteger(L,FontBase::TLF_FORCESHAPING); lua_setfield(L,-2,"TLF_FORCESHAPING");
     lua_pop(L,1);
 }
 
@@ -157,8 +158,10 @@ int FontBaseBinder::layoutText(lua_State *L)
     tp.breakchar=luaL_optstring(L,9,"");
     tp.alignx=luaL_optnumber(L,10,0);
     tp.aligny=luaL_optnumber(L,11,0);
+    tp.aspect=luaL_optnumber(L,12,100000);
 
-    FontBase::TextLayout tl=font->layoutText(luaL_checkstring(L,2),&tp);
+    FontBase::TextLayout tl;
+    font->layoutText(luaL_checkstring(L,2),&tp,tl);
     lua_createtable(L,0,6);
     lua_pushnumber(L,tl.x);
     lua_setfield(L,-2,"x");

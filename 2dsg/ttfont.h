@@ -34,7 +34,7 @@ public:
     virtual float getDescender();
     virtual float getLineHeight();
     virtual bool shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext);
-    virtual void chunkMetrics(struct ChunkLayout &part, float letterSpacing);
+    virtual void chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params);
 
     float getSmoothing() const
     {

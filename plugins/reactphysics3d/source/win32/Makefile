@@ -20,7 +20,6 @@ FSRCS += Common/reactbinder.cpp \
 		../reactphysics3d/src/collision/ContactManifold.cpp \
 		../reactphysics3d/src/collision/HalfEdgeStructure.cpp \
 		../reactphysics3d/src/collision/narrowphase/CapsuleVsCapsuleAlgorithm.cpp \
-		../reactphysics3d/src/collision/narrowphase/CapsuleVsCapsuleNarrowPhaseInfoBatch.cpp \
 		../reactphysics3d/src/collision/narrowphase/CapsuleVsConvexPolyhedronAlgorithm.cpp \
 		../reactphysics3d/src/collision/narrowphase/CollisionDispatch.cpp \
 		../reactphysics3d/src/collision/narrowphase/ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp \
@@ -30,10 +29,8 @@ FSRCS += Common/reactbinder.cpp \
 		../reactphysics3d/src/collision/narrowphase/NarrowPhaseInput.cpp \
 		../reactphysics3d/src/collision/narrowphase/SAT/SATAlgorithm.cpp \
 		../reactphysics3d/src/collision/narrowphase/SphereVsCapsuleAlgorithm.cpp \
-		../reactphysics3d/src/collision/narrowphase/SphereVsCapsuleNarrowPhaseInfoBatch.cpp \
 		../reactphysics3d/src/collision/narrowphase/SphereVsConvexPolyhedronAlgorithm.cpp \
 		../reactphysics3d/src/collision/narrowphase/SphereVsSphereAlgorithm.cpp \
-		../reactphysics3d/src/collision/narrowphase/SphereVsSphereNarrowPhaseInfoBatch.cpp \
 		../reactphysics3d/src/collision/OverlapCallback.cpp \
 		../reactphysics3d/src/collision/PolygonVertexArray.cpp \
 		../reactphysics3d/src/collision/PolyhedronMesh.cpp \
@@ -75,8 +72,6 @@ FSRCS += Common/reactbinder.cpp \
 		../reactphysics3d/src/engine/OverlappingPairs.cpp \
 		../reactphysics3d/src/engine/PhysicsCommon.cpp \
 		../reactphysics3d/src/engine/PhysicsWorld.cpp \
-		../reactphysics3d/src/engine/Timer.cpp \
-		../reactphysics3d/src/mathematics/mathematics_functions.cpp \
 		../reactphysics3d/src/mathematics/Matrix2x2.cpp \
 		../reactphysics3d/src/mathematics/Matrix3x3.cpp \
 		../reactphysics3d/src/mathematics/Quaternion.cpp \

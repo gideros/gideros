@@ -9,20 +9,43 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
 		text_ = text;
 	}
 
-	font_ = font;
-	if (font_ != 0)
-		font_->ref();
-
+    font_ = NULL;
 
     sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
-
-	if (sample)
-		setSample(sample);
+    minx_ = 0, miny_ = 0, maxx_ = 0, maxy_ = 0;
 
 	if (params)
         layout_=*params;
 
-    setTextColor(0xFF000000);
+    setTextColor(0,0,0,1);
+
+    setFont(font);
+
+    if (sample)
+        setSample(sample);
+}
+
+void TextField::cloneFrom(TextField *s)
+{
+    TextFieldBase::cloneFrom(s);
+    font_ = s->font_;
+    if (font_ != 0)
+        font_->ref();
+    a_=s->a_;
+    r_=s->r_;
+    g_=s->g_;
+    b_=s->b_;
+    graphicsBase_=s->graphicsBase_;
+    for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+        it->cloned();
+    minx_=s->minx_;
+    miny_=s->miny_;
+    maxx_=s->maxx_;
+    maxy_=s->maxy_;
+    sminx=s->sminx;
+    sminy=s->sminy;
+    smaxx=s->smaxx;
+    smaxy=s->smaxy;
 }
 
 /*
@@ -34,7 +57,7 @@ Font* TextField::font()
 
 void TextField::setFont(FontBase *font)
 {
-    if (font->getType() == FontBase::eTTFont) return;
+    if (font&&(font->getType() == FontBase::eTTFont)) return;
 
     if (font_ == font) return;
 
@@ -43,6 +66,7 @@ void TextField::setFont(FontBase *font)
 	if (font_ != 0)
 		font_->unref();
     font_ = static_cast<BMFontBase*>(font);
+    prefWidth_=prefHeight_=-1;
 
 	createGraphics();
 }
@@ -53,6 +77,7 @@ void TextField::setText(const char* text)
 		return;
 
 	text_ = text;
+    prefWidth_=prefHeight_=-1;
 
 	createGraphics();
 }
@@ -77,32 +102,30 @@ void TextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy) 
         *maxy = maxy_;
 }
 
-void TextField::setTextColor(unsigned int color)
+void TextField::setTextColor(float r,float g,float b,float a)
 {
-	textColor_ = color;
 
-	int a = (color >> 24) & 0xff;
-	int r = (color >> 16) & 0xff;
-	int g = (color >> 8) & 0xff;
-	int b = color & 0xff;
+    a_ = a;
+    r_ = r;
+    g_ = g;
+    b_ = b;
 
-	a_ = a / 255.f;
-	r_ = r / 255.f;
-	g_ = g / 255.f;
-	b_ = b / 255.f;
-
+	int oflags = textlayout_.styleFlags;
+	textlayout_.styleFlags |= TEXTSTYLEFLAG_SKIPLAYOUT; //Don't relayout when color changed
 	createGraphics();
+	textlayout_.styleFlags = oflags;
 }
 
-unsigned int TextField::textColor() const
+void TextField::textColor(float &r,float &g,float &b,float &a)
 {
-	return textColor_;
+    r=r_; g=g_; b=b_; a=a_;
 }
 
 void TextField::setLetterSpacing(float letterSpacing)
 {
 	layout_.letterSpacing = letterSpacing;
-	
+    prefWidth_=prefHeight_=-1;
+
 	createGraphics();
 }
 
@@ -160,17 +183,17 @@ const char* TextField::sample() const
 #define FDIF(a,b) (((a>b)?(a-b):(b-a))>FDIF_EPSILON)
 void TextField::createGraphics()
 {
-	scaleChanged(); //Mark current scale as graphics scale
+    if (font_ == NULL) return;
+
+    scaleChanged(); //Mark current scale as graphics scale
     graphicsBase_.clear();
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
     bool layoutSizeChanged=false;
 	float lmw=textlayout_.mw;
 	float lbh=textlayout_.bh;
 	float lw=textlayout_.w;
 	float lh=textlayout_.h;
-    if (font_ != NULL)
-        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, textlayout_);
-    else
-    	textlayout_=font_->layoutText("", &layout_);
+    font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, a_, &layout_, !sample_.empty(), sminx, sminy, textlayout_);
     layoutSizeChanged=FDIF(textlayout_.mw,lmw)||FDIF(textlayout_.bh,lbh)||FDIF(textlayout_.h,lh)||FDIF(textlayout_.w,lw);
 
     minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;
@@ -183,7 +206,7 @@ void TextField::createGraphics()
 		maxx_ = std::max(maxx_, lmaxx_);
 		maxy_ = std::max(maxy_, lmaxy_);
 	}
-	if (layoutSizeChanged) layoutSizesChanged();
+    if (layoutSizeChanged) layoutSizesChanged();
 }
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
@@ -195,15 +218,16 @@ void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, fl
     if (scaleChanged()) createGraphics();
     if (font_ != NULL)
         font_->preDraw();
-	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
-		(*it).draw(getShader((*it).getShaderType()));
+    for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+        (*it).draw(getShader((*it).getShaderType()));
 }
 
 void TextField::setLayout(FontBase::TextLayoutParameters *l)
 {
 	if (l)
 	{
-		layout_=*l;
+        prefWidth_=prefHeight_=-1;
+        layout_=*l;
 		createGraphics();
 	}
 }

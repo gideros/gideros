@@ -83,8 +83,36 @@ int Path2DBinder::setFillColor(lua_State* L)
 {
 	Binder binder(L);
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
-	
-    if (lua_gettop(L) == 9) shape->setGradient(
+#define COLVEC(var,idx) const float *var=luaL_checkvector(L,idx);
+#define COLARG(var) (((int)(var[0]*0xFF0000))&0xFF0000)|(((int)(var[1]*0xFF00))&0xFF00)|((int)((var[2]*0xFF))&0xFF),var[3]
+    if (lua_tovector(L,2)) { //Vector colors
+        if (lua_gettop(L) == 5) {
+            COLVEC(c1,2);
+            COLVEC(c2,3);
+            COLVEC(c3,4);
+            COLVEC(c4,5);
+            shape->setGradient(COLARG(c1),COLARG(c2),COLARG(c3),COLARG(c4));
+        }
+        else if (lua_gettop(L) == 3) {
+            COLVEC(c1,2);
+            COLVEC(c2,3);
+            shape->setGradient(COLARG(c1),COLARG(c2),COLARG(c1),COLARG(c2));
+        }
+        else if (lua_gettop(L) == 4) {
+            COLVEC(c1,2);
+            COLVEC(c2,3);
+            shape->setGradientWithAngle(COLARG(c1),COLARG(c2),
+                    luaL_checknumber(L, 4));
+        }
+        else {
+            COLVEC(color,2);
+            shape->setFillColor(COLARG(color));
+            shape->clearGradient();
+        }
+#undef COLVEC
+#undef COLARG
+    }
+    else if (lua_gettop(L) == 9) shape->setGradient(
                 luaL_checknumber(L, 2), luaL_checknumber(L, 3),
                 luaL_checknumber(L, 4), luaL_checknumber(L, 5),
                 luaL_checknumber(L, 6), luaL_checknumber(L, 7),
@@ -115,10 +143,17 @@ int Path2DBinder::setLineColor(lua_State* L)
 	Binder binder(L);
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D"));
 
-	unsigned int color = luaL_optinteger(L, 2, 0);
-	lua_Number alpha = luaL_optnumber(L, 3, 1.0);
+    const float *cvec=lua_tovector(L,2);
+    if (cvec) {
+        unsigned int col = ((((int)(cvec[0]*255))&0xFF)<<16)|((((int)(cvec[1]*255))&0xFF)<<8)|((((int)(cvec[2]*255))&0xFF)<<0);
+        shape->setLineColor(col, cvec[3]);
+    }
+    else {
+        unsigned int color = luaL_optinteger(L, 2, 0);
+        lua_Number alpha = luaL_optnumber(L, 3, 1.0);
 
-	shape->setLineColor(color, alpha);
+        shape->setLineColor(color, alpha);
+    }
 
 	return 0;
 }

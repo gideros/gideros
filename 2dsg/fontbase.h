@@ -54,6 +54,7 @@ public:
 #define TEXTSTYLEFLAG_RTL			4
 #define TEXTSTYLEFLAG_LTR			8
 #define TEXTSTYLEFLAG_SKIPSHAPING	16
+#define TEXTSTYLEFLAG_FORCESHAPING	32
     struct ChunkStyle {
         int styleFlags;
         unsigned int color;
@@ -86,9 +87,12 @@ public:
 		int lines;
 		int styleFlags;
 		std::vector<struct ChunkLayout> parts;
-		void clear() {
+        std::map<std::string,struct ChunkLayout> metricsCache;
+        float letterSpacingCache;
+        void clear() {
 			x=y=w=h=bh=mw=lines=styleFlags=0;
 			parts.clear();
+            metricsCache.clear();
 		};
 	};
 	struct ChunkClass {
@@ -103,21 +107,18 @@ public:
 		uint8_t sepFlags;
 		uint16_t script;
 	};
-    virtual void chunkMetrics(struct ChunkLayout &part, float letterSpacing);
-    size_t getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing, bool notFirst);
-
-	enum TextLayoutFlags {
-		TLF_LEFT=0,
-		TLF_RIGHT=1,
-		TLF_CENTER=2,
-		TLF_JUSTIFIED=4,
-		TLF_TOP=0,
-		TLF_BOTTOM=8,
-		TLF_VCENTER=16,
-		TLF_NOWRAP=32,
-		TLF_RTL=64,
-		TLF_BREAKWORDS=128,
-		TLF_REF_MASK=0xF00,
+    enum TextLayoutFlags {
+        TLF_LEFT=0,
+        TLF_RIGHT=1,
+        TLF_CENTER=2,
+        TLF_JUSTIFIED=4,
+        TLF_TOP=0,
+        TLF_BOTTOM=8,
+        TLF_VCENTER=16,
+        TLF_NOWRAP=32,
+        TLF_RTL=64,
+        TLF_BREAKWORDS=128,
+        TLF_REF_MASK=0xF00,
         TLF_REF_BASELINE=0x000,
         TLF_REF_TOP=0x100,
         TLF_REF_MIDDLE=0x200,
@@ -127,25 +128,30 @@ public:
         TLF_REF_ASCENT=0x600,
         TLF_REF_DESCENT=0x700,
         TLF_REF_MEDIAN=0x800,
-		TLF_LTR=(1<<12),
-		TLF_NOSHAPING=(1<<13),
-		TLF_NOBIDI=(1<<14),
-		TLF_SINGLELINE=(1<<15)
-	};
+        TLF_LTR=(1<<12),
+        TLF_NOSHAPING=(1<<13),
+        TLF_NOBIDI=(1<<14),
+        TLF_SINGLELINE=(1<<15),
+        TLF_FORCESHAPING=(1<<16),
+    };
 
-	struct TextLayoutParameters {
-        TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar(""),alignx(0),aligny(0) {};
-		float w,h;
-		int flags;
-		float letterSpacing;
-		float lineSpacing;
-		float tabSpace;
-		std::string breakchar;
-		float alignx,aligny;
-	};
-	virtual TextLayout layoutText(const char *text, TextLayoutParameters *params);
+    struct TextLayoutParameters {
+        TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar(""),alignx(0),aligny(0),aspect(100000) {}; //Very big aspect ratio
+        float w,h;
+        int flags;
+        float letterSpacing;
+        float lineSpacing;
+        float tabSpace;
+        std::string breakchar;
+        float alignx,aligny;
+        float aspect;
+    };
+    virtual void chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params);
+    size_t getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing, bool notFirst);
+    virtual void layoutText(const char *text, TextLayoutParameters *params, TextLayout &tl);
 protected:
-	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, float align, bool wrapped=false, int end=-1);
+    void layoutHorizontal(FontBase::TextLayout &tl,int start, float w, float cw, float sw, float tabSpace, FontBase::TextLayoutParameters *params, bool wrapped=false, int end=-1);
+    void chunkMetricsCache(FontBase::TextLayout &tl,struct ChunkLayout &part, FontBase::TextLayoutParameters *params);
     Application *application_;
 	int cacheVersion_;
     FontShaper *shaper_;

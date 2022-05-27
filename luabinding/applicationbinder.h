@@ -58,6 +58,7 @@ private:
     static int checkPermission(lua_State *L);
     static int setClipboard(lua_State *L);
     static int getClipboard(lua_State *L);
+    static int enableDrawInfo(lua_State *L);
 };
 
 #endif

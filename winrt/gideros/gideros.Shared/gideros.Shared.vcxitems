@@ -439,9 +439,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\meshbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\movieclipbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\particlesbinder.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\path2dbinder.cpp">
-      <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\libnetwork;..\..\..\luabinding;..\..\..\libgid\external\freetype-2.7.1\src;..\..\..\libgid\external\freetype-2.7.1\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libplatform;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include;..\..\..\2dsg\paths</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\path2dbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\pixelbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\screenbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\registermodules.cpp" />

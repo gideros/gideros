@@ -30,6 +30,7 @@ static void append(std::vector<char>& buffer, const TextureParameters& parameter
     append(buffer, &parameters.maketransparent, sizeof(parameters.maketransparent));
     append(buffer, &parameters.transparentcolor, sizeof(parameters.transparentcolor));
     append(buffer, &parameters.grayscale, sizeof(parameters.grayscale));
+    append(buffer, &parameters.rawalpha, sizeof(parameters.rawalpha));
 }
 
 TextureManager::TextureManager(Application* application) :
@@ -71,7 +72,7 @@ static void callback_s(int type, void *event, void *udata)
 
 static g_id gid_evt=g_NextId();
 
-std::future<TextureData*> TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters,bool pow2, std::function<void(TextureData *,std::exception_ptr)> async)
+std::future<TextureData*> TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters, std::function<void(TextureData *,std::exception_ptr)> async)
 {
     int flags = gpath_getDriveFlags(gpath_getPathDrive(filename));
 
@@ -113,6 +114,9 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         break;
     case eLinear:
         filter = GTEXTURE_LINEAR;
+        break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
         break;
     }
 
@@ -156,7 +160,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
 
     if (!sig.empty())
     {
-        g_id gid = gtexture_reuse(format, type, wrap, filter, &sig[0], sig.size());
+        g_id gid = gtexture_reuse(format, type, wrap, filter, sig.data(), sig.size());
         if (gid != 0)
         {
             TextureData* internal = (TextureData*)gtexture_getUserData(gid);
@@ -173,26 +177,27 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
 
     if (!async)
     {
-        Dib *dib=new Dib(application_, filename, true, pow2, parameters.maketransparent, parameters.transparentcolor);
+        Dib *dib=new Dib(application_, filename, true, parameters.pow2, parameters.maketransparent, parameters.transparentcolor);
 
         if (parameters.grayscale)
             dib->convertGrayscale();
 
 #if PREMULTIPLIED_ALPHA
-        dib->premultiplyAlpha();
+        if (!parameters.rawalpha)
+        	dib->premultiplyAlpha();
 #endif
         g_id gid = 0;
         unsigned char bpp=1;
         switch (parameters.format)
         {
         case eRGBA8888:
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, dib->data(), &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, dib->data(), sig.data(), sig.size());
             bpp=4;
             break;
         case eRGB888:
         {
             unsigned char *data = dib->to888();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=3;
             break;
@@ -200,7 +205,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         case eRGB565:
         {
             unsigned short *data = dib->to565();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=2;
             break;
@@ -208,7 +213,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         case eRGBA4444:
         {
             unsigned short *data = dib->to4444();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=2;
             break;
@@ -216,7 +221,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         case eRGBA5551:
         {
             unsigned short *data = dib->to5551();
-            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, &sig[0], sig.size());
+            gid = gtexture_create(dib->width(), dib->height(), format, type, wrap, filter, data, sig.data(), sig.size());
             delete[] data;
             bpp=2;
             break;
@@ -277,7 +282,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
     _async.enqueue([=]{
         //Safe:  this (should never be destroyed, unless application exits ?)
         try {
-            evt->dib=new Dib(application_, evt->file.c_str(), true, pow2, evt->parameters.maketransparent, evt->parameters.transparentcolor);
+            evt->dib=new Dib(application_, evt->file.c_str(), true, evt->parameters.pow2, evt->parameters.maketransparent, evt->parameters.transparentcolor);
         } catch (const std::exception &e) {
             evt->exception=std::current_exception();
         }
@@ -308,6 +313,9 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         break;
     case eLinear:
         filter = GTEXTURE_LINEAR;
+        break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
         break;
     }
 
@@ -356,7 +364,8 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         dib2.convertGrayscale();
 
 #if PREMULTIPLIED_ALPHA
-    dib2.premultiplyAlpha();
+    if (!parameters.rawalpha)
+    	dib2.premultiplyAlpha();
 #endif
 
 
@@ -463,6 +472,9 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
     }
 
     int format = 0;
@@ -509,7 +521,8 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
         dib2.convertGrayscale();
 
 #if PREMULTIPLIED_ALPHA
-    dib2.premultiplyAlpha();
+    if (!data->parameters.rawalpha)
+    	dib2.premultiplyAlpha();
 #endif
 
 
@@ -612,7 +625,10 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
-    }
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
+   }
 
     int format = 0;
     int type = 0;

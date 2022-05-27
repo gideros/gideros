@@ -19,7 +19,8 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
 	if (sample)
 		sample_ = sample;
 
-	textColor_ = 0xFF000000;
+    r_=g_=b_=0;
+    a_=1;
 
     float scalex = application_->getLogicalScaleX();
     float scaley = application_->getLogicalScaleY();
@@ -30,12 +31,39 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
     FontBase::TextLayoutParameters empty;
     FontBase::TextLayout l;
     bool isRGB;
-    font_->renderFont(sample_.c_str(), &empty, &sminx, &sminy, &smaxx, &smaxy, textColor_, isRGB, l);
+    font_->renderFont(sample_.c_str(), &empty, &sminx, &sminy, &smaxx, &smaxy, 0, isRGB, l);
     sminx = sminx/scalex;
     sminy = sminy/scaley;
     smaxx = smaxx/scalex;
     smaxy = smaxy/scaley;
 
+
+    createGraphics();
+}
+
+void TTTextField::cloneFrom(TTTextField *s)
+{
+    TextFieldBase::cloneFrom(s);
+    font_ = s->font_;
+    if (font_ != 0)
+        font_->ref();
+    a_=s->a_;
+    r_=s->r_;
+    g_=s->g_;
+    b_=s->b_;
+    minx_=s->minx_;
+    miny_=s->miny_;
+    maxx_=s->maxx_;
+    maxy_=s->maxy_;
+    sminx=s->sminx;
+    sminy=s->sminy;
+    smaxx=s->smaxx;
+    smaxy=s->smaxy;
+
+    styleFlags_=s->styleFlags_;
+
+    //data_=s->data_;
+    //graphicsBase_=s->graphicsBase_;
 
     createGraphics();
 }
@@ -55,6 +83,7 @@ TTTextField::~TTTextField()
 #define FDIF(a,b) (((a>b)?(a-b):(b-a))>FDIF_EPSILON)
 void TTTextField::createGraphics()
 {
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 	scaleChanged(); //Mark current scale as graphics scale
 	if (data_)
 	{
@@ -70,7 +99,7 @@ void TTTextField::createGraphics()
 	{
 		graphicsBase_.clear();
 		graphicsBase_.getBounds(&minx_, &miny_, &maxx_, &maxy_);
-    	textlayout_=font_->layoutText("", &layout_);
+        font_->layoutText("", &layout_,textlayout_);
 	}
 	else {
 		float scalex = application_->getLogicalScaleX();
@@ -87,7 +116,8 @@ void TTTextField::createGraphics()
 
 		int minx, miny, maxx, maxy;
 		bool isRGB;
-		Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB,textlayout_);
+        unsigned long col=((unsigned long)(r_*0xFF0000)&0xFF0000)|((unsigned long)(g_*0xFF00)&0xFF00)|((unsigned long)(b_*0xFF)&0xFF)|((unsigned long)(a_*0xFF000000)&0xFF000000);
+        Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,col,isRGB,textlayout_);
 		parameters.format=isRGB?eRGBA8888:eA8;
 
 		if (!sample_.empty())
@@ -133,11 +163,7 @@ void TTTextField::createGraphics()
 
 		if (!isRGB)
 		{
-			int a = (textColor_ >> 24) & 0xff;
-			int r = (textColor_ >> 16) & 0xff;
-			int g = (textColor_ >> 8) & 0xff;
-			int b = textColor_ & 0xff;
-			graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
+            graphicsBase_.setColor(r_,g_,b_,a_);
 		}
 
 		minx_ = minx/scalex;
@@ -180,6 +206,7 @@ void TTTextField::setFont(FontBase* font)
     font_ = static_cast<TTFont*>(font);;
     font_->ref();
 
+    prefWidth_=prefHeight_=-1;
     createGraphics();
 }
 
@@ -190,7 +217,8 @@ void TTTextField::setText(const char* text)
 
 	text_ = text;
 
-	createGraphics();
+    prefWidth_=prefHeight_=-1;
+    createGraphics();
 }
 
 const char* TTTextField::text() const
@@ -198,23 +226,23 @@ const char* TTTextField::text() const
 	return text_.c_str();
 }
 
-void TTTextField::setTextColor(unsigned int color)
+void TTTextField::setTextColor(float r,float g,float b,float a)
 {
-	textColor_ = color;
+    a_ = a;
+    r_ = r;
+    g_ = g;
+    b_ = b;
 
-	int a = (textColor_ >> 24) & 0xff;
-	int r = (textColor_ >> 16) & 0xff;
-	int g = (textColor_ >> 8) & 0xff;
-	int b = textColor_ & 0xff;
     if (styleFlags_&TEXTSTYLEFLAG_COLOR)
         createGraphics();
     else
-    	graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
+        graphicsBase_.setColor(r,g,b,a);
+	invalidate(INV_GRAPHICS);
 }
 
-unsigned int TTTextField::textColor() const
+void TTTextField::textColor(float &r,float &g,float &b,float &a)
 {
-	return textColor_;
+    r=r_; g=g_; b=b_; a=a_;
 }
 
 void TTTextField::setLetterSpacing(float letterSpacing)
@@ -223,6 +251,7 @@ void TTTextField::setLetterSpacing(float letterSpacing)
 		return;
 
 	layout_.letterSpacing = letterSpacing;
+    prefWidth_=prefHeight_=-1;
 
 	createGraphics();
 }
@@ -254,7 +283,7 @@ void TTTextField::setSample(const char* sample)
     FontBase::TextLayoutParameters empty;
     FontBase::TextLayout l;
     bool isRGB;
-    font_->renderFont(sample, &empty, &sminx, &sminy, &smaxx, &smaxy,textColor_,isRGB,l);
+    font_->renderFont(sample, &empty, &sminx, &sminy, &smaxx, &smaxy,0,isRGB,l);
     sminx = sminx/scalex;
     sminy = sminy/scaley;
     smaxx = smaxx/scalex;
@@ -272,7 +301,8 @@ void TTTextField::setLayout(FontBase::TextLayoutParameters *l)
 {
 	if (l)
 	{
-		layout_=*l;
+        prefWidth_=prefHeight_=-1;
+        layout_=*l;
 		createGraphics();
 	}
 }

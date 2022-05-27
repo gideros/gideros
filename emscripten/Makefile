@@ -113,14 +113,20 @@ ifneq ($(PROFILING),)
 POPTS+=--profiling
 endif
 
-OPTS+=-Os $(POPTS)
+OPTS+=-O2 $(POPTS)
 LOPTS=-disable-inlining
-LOPTS_WASM=$(LOPTS)
+LOPTS_WASM=$(LOPTS) -fwasm-exceptions
 LOPTS_JS=$(LOPTS) #--separate-asm
 
 export POPTS
 
 $(BUILD)/emscripten/plugin_support.em.o: CFLGS+=-disable-inlining -fno-rtti -fno-exceptions 
+
+NO_EXCEPTIONS?=0
+$(BUILD)/2dsg/%.emw.o: NO_EXCEPTIONS=1
+$(BUILD)/libgvfs/%.emw.o: NO_EXCEPTIONS=1
+$(BUILD)/libpystring/%.emw.o: NO_EXCEPTIONS=1
+$(BUILD)/libgid/external/%.emw.o: NO_EXCEPTIONS=1
 
 #LINE BELOW FOR WASM
 EOPTS_WASM+= TOTAL_MEMORY=256MB ALLOW_MEMORY_GROWTH=1 #BINARYEN_TRAP_MODE="clamp" #BINARYEN_METHOD="native-wasm" 
@@ -130,7 +136,8 @@ EOPTS+=EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccal
 EOPTS+=MAIN_MODULE=2  
 EOPTS+=ASSERTIONS=0
 #EOPTS+=GL_STATE_CACHE=1
-EOPTS+=DISABLE_EXCEPTION_CATCHING=0 PROXY_POSIX_SOCKETS=0
+#EOPTS+=DISABLE_EXCEPTION_CATCHING=0
+EOPTS+=PROXY_POSIX_SOCKETS=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
 #EOPTS+=USE_WEBGL2=1 WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
 EOPTS+=MAX_WEBGL_VERSION=2
@@ -154,8 +161,9 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-D_REENTRANT -DLIBXMP_CORE_PLAYER \
 	$(OPTS)
 CFLGS+=	-fno-rtti -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
-PCFLGS+= -s MAIN_MODULE=2 -fno-exceptions
-MCFLGS+= -s SIDE_MODULE=2 -s DISABLE_EXCEPTION_CATCHING=0 
+PCFLGS+= -s SIDE_MODULE=2 -fno-exceptions
+MCFLGS+= -s MAIN_MODULE=2 -fwasm-exceptions
+#MCFLGS+= -s MAIN_MODULE=2 -s DISABLE_EXCEPTION_CATCHING=$(NO_EXCEPTIONS)
 
 #OBJS=$(addprefix $(BUILD)/,$(addsuffix .emw.o,$(MAIN_SRCS)))
 
@@ -228,7 +236,7 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
 EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//;s/fp\$$/')))
-EXP_FUNCS=["_main","_gapplication_clipboardCallback",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
+EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
 
 $(BUILD)/lib%.w.a:
 	@echo "EMAR" $@
@@ -249,6 +257,7 @@ $(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(addprefix $(BUILD)/,$(addsuffix .wa
 	@echo "EMLINK gideros WASM"
 	@$(EMCC) $(OBJS) $(LIBS) --minify 0  $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_ARW) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 	@echo "SYMGEN gideros"
+	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/gideros-wasm.wasm >$(BUILD)/gideros.wdis
 	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/gideros-wasm.wasm | grep '(export ' | grep '(func'| cut -d' ' -f4 >$(BUILD)/gideros.esyms
 	
 

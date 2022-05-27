@@ -1,0 +1,1 @@
+for the glb format, since the textures are embedded in the file, you shouldn't rename the file itself, instead you should export your glb model with the new name.

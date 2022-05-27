@@ -393,7 +393,8 @@ void GLCanvas::initializeGL() {
 	qDebug() << "GLFMT:DEPTH:" << f.depthBufferSize();
 	qDebug() << "GLFMT:BUFFER:" << f.swapBehavior();
     qDebug() << "GLFMT:COLORSPACE:" << f.colorSpace();
-	if (QOpenGLContext::currentContext()->hasExtension("WGL_EXT_swap_control")) {
+    qDebug() << "GLFMT:SAMPLES:" << f.samples();
+    if (QOpenGLContext::currentContext()->hasExtension("WGL_EXT_swap_control")) {
 		QFunctionPointer getSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglGetSwapIntervalEXT");
 		QFunctionPointer setSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglSwapIntervalEXT");
 		qDebug() << "GLFMT:FSWAP:" << ((void *)getSwapInterval) << ((void *)setSwapInterval);

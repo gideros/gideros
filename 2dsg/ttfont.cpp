@@ -278,6 +278,14 @@ bool TTFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
         return false;
     if (fontFaces_.size()!=1) //Multi font not supported (yet ?)
         return false;
+    if (!(part.style.styleFlags&TEXTSTYLEFLAG_FORCESHAPING)) {
+        wchar32_t cset=0;
+        size_t tCount=wtext.size();
+        for (size_t ti=0;ti<tCount;ti++)
+            cset|=wtext[ti];
+        if ((cset&0xFFFFFF00)==0) //ASCII/Latin only
+            return false;
+    }
     if (!shaper_) {
         float scalex = application_->getLogicalScaleX();
         float scaley = application_->getLogicalScaleY();
@@ -300,7 +308,7 @@ bool TTFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
     return true;
 }
 
-void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
+void TTFont::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
 {
 	std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(part.text.c_str(), part.text.size(), NULL, 0, 0);
@@ -364,7 +372,7 @@ void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
             maxx = std::max(maxx, xo + width);
             maxy = std::max(maxy, yo + height);
 
-    		gl.advX+=(letterSpacing*scalex);
+            gl.advX+=(params->letterSpacing*scalex);
             x += gl.advX;
         }
     }
@@ -419,11 +427,11 @@ void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 
             x += kx+(face->glyph->advance.x >> 6);
 
-            x += (int) (letterSpacing * scalex);
+            x += (int) (params->letterSpacing * scalex);
 
             shape.srcIndex=i;
             shape.glyph=glyphIndex;
-            shape.advX=(face->glyph->advance.x >> 6)+kx+(letterSpacing * scalex);
+            shape.advX=(face->glyph->advance.x >> 6)+kx+(params->letterSpacing * scalex);
             shape.advY=face->glyph->advance.y >> 6;
             shape.offX=left;
             shape.offY=-top;
@@ -452,7 +460,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
     float scalex = currentLogicalScaleX_;
     float scaley = currentLogicalScaleY_;
 
-    l = layoutText(text, layout);
+    layoutText(text, layout, l);
 
     Dib dib(application_, (l.w+2*outlineSize_)*scalex + 2, (l.h+2*outlineSize_)*scaley + 2, true);
 	unsigned char rgba[] = { 255, 255, 255, 0 };
@@ -659,12 +667,12 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size, std::
 		x += face->glyph->advance.x >> 6;
 
 		x += (letterSpacing * scalex);
-	}
+    }
 
     if (prevFace)
         x += kerning(prevFace, prev, FT_Get_Char_Index(prevFace, wtext[size])) >> 6;
 
-	return x / scalex;
+    return x / scalex;
 }
 
 float TTFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size, std::string name)

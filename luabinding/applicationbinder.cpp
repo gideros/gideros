@@ -86,6 +86,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"setTextInput", ApplicationBinder::setTextInput},
 		{"setClipboard", ApplicationBinder::setClipboard},
 		{"getClipboard", ApplicationBinder::getClipboard},
+		{"enableDrawInfo", ApplicationBinder::enableDrawInfo},
         {NULL, NULL},
 	};
 
@@ -599,15 +600,18 @@ int ApplicationBinder::setBackgroundColor(lua_State* L)
 
 	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-	unsigned int color = luaL_checkinteger(L, 2);
-
-	int r = (color >> 16) & 0xff;
-	int g = (color >> 8) & 0xff;
-	int b = color& 0xff;
-
-	float alpha=luaL_optnumber(L,3,1.0);
-
-	application->getApplication()->setBackgroundColor(r/255.f, g/255.f, b/255.f,alpha);
+    const float *cvec=lua_tovector(L,2);
+    if (cvec) {
+        application->getApplication()->setBackgroundColor(cvec[0],cvec[1],cvec[2],cvec[3]);
+    }
+    else {
+        unsigned int color = luaL_optinteger(L, 2, 0xffffff);
+        lua_Number alpha = luaL_optnumber(L, 3, 1.0);
+        int r = (color >> 16) & 0xff;
+        int g = (color >> 8) & 0xff;
+        int b = color & 0xff;
+        application->getApplication()->setBackgroundColor(r/255.f, g/255.f, b/255.f,alpha);
+    }
 
 	return 0;
 }
@@ -1095,4 +1099,20 @@ int ApplicationBinder::requestPermissions(lua_State *L)
     ::gapplication_requestPermissions(perms);
 #endif
     return 0;
+}
+
+int ApplicationBinder::enableDrawInfo(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+
+    const float *cvec=lua_tovector(L,2);
+    if (cvec)
+        application->setDrawInfo(true,cvec[0],cvec[1],cvec[2],cvec[3]);
+    else
+        application->setDrawInfo(false,0,0,0,0);
+
+	return 0;
 }

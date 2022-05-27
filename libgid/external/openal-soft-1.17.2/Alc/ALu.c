@@ -551,6 +551,16 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcont
         WetGainLF[i] = ALSource->Send[i].GainLF;
     }
 
+    ALfloat Balance[8];
+    Balance[0]=1-((ALSource->Balance>0)?ALSource->Balance:0);
+    Balance[1]=1+((ALSource->Balance<0)?ALSource->Balance:0);
+    Balance[2]=1;
+    Balance[3]=1;
+    Balance[4]=1;
+    Balance[5]=1;
+    Balance[6]=1;
+    Balance[7]=1;
+
     switch(Channels)
     {
     case FmtMono:
@@ -649,7 +659,7 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcont
 
             ComputeBFormatGains(Device, matrix.m[c], DryGain, Target);
             for(i = 0;i < MAX_OUTPUT_CHANNELS;i++)
-                gains[i].Target = Target[i];
+                gains[i].Target = Target[i]*Balance[c];
         }
         UpdateDryStepping(&voice->Direct, num_channels, (voice->Direct.Moving ? 64 : 0));
         voice->Direct.Moving = AL_TRUE;
@@ -689,9 +699,9 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcont
                         gains[j].Target = 0.0f;
 
                     if(chans[c].channel == FrontLeft)
-                        gains[0].Target = DryGain;
+                        gains[0].Target = DryGain*Balance[c];
                     else if(chans[c].channel == FrontRight)
-                        gains[1].Target = DryGain;
+                        gains[1].Target = DryGain*Balance[c];
                 }
             }
             else for(c = 0;c < num_channels;c++)
@@ -702,7 +712,7 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcont
                 for(j = 0;j < MAX_OUTPUT_CHANNELS;j++)
                     gains[j].Target = 0.0f;
                 if((idx=GetChannelIdxByName(Device, chans[c].channel)) != -1)
-                    gains[idx].Target = DryGain;
+                    gains[idx].Target = DryGain*Balance[c];
             }
             UpdateDryStepping(&voice->Direct, num_channels, (voice->Direct.Moving ? 64 : 0));
             voice->Direct.Moving = AL_TRUE;
@@ -734,7 +744,7 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcont
                     /* Get the static HRIR coefficients and delays for this
                      * channel. */
                     GetLerpedHrtfCoeffs(Device->Hrtf,
-                        chans[c].elevation, chans[c].angle, 1.0f, DryGain,
+                        chans[c].elevation, chans[c].angle, 1.0f, DryGain*Balance[c],
                         voice->Direct.Hrtf[c].Params.Coeffs,
                         voice->Direct.Hrtf[c].Params.Delay
                     );
@@ -760,11 +770,11 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcont
                     for(i = 0;i < MAX_OUTPUT_CHANNELS;i++)
                         gains[i].Target = 0.0f;
                     if((idx=GetChannelIdxByName(Device, chans[c].channel)) != -1)
-                        gains[idx].Target = DryGain;
+                        gains[idx].Target = DryGain*Balance[c];
                     continue;
                 }
 
-                ComputeAngleGains(Device, chans[c].angle, chans[c].elevation, DryGain, Target);
+                ComputeAngleGains(Device, chans[c].angle, chans[c].elevation, DryGain*Balance[c], Target);
                 for(i = 0;i < MAX_OUTPUT_CHANNELS;i++)
                     gains[i].Target = Target[i];
             }
@@ -776,7 +786,7 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcont
         for(i = 0;i < NumSends;i++)
         {
             for(c = 0;c < num_channels;c++)
-                voice->Send[i].Gains[c].Target = WetGain[i];
+                voice->Send[i].Gains[c].Target = WetGain[i]*Balance[c];
             UpdateWetStepping(&voice->Send[i], num_channels, (voice->Send[i].Moving ? 64 : 0));
             voice->Send[i].Moving = AL_TRUE;
         }

@@ -9,7 +9,9 @@ class Viewport : public Sprite
 {
 public:
 	Viewport(Application* application);
-	virtual ~Viewport();
+    virtual Sprite *clone() { Viewport *clone=new Viewport(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(Viewport *);
+    virtual ~Viewport();
 	void setContent(Sprite *s);
 	void setTransform(const Matrix4* matrix = NULL);
 	void setProjection(const Matrix4* matrix = NULL);

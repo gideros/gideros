@@ -48,6 +48,9 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	Sprite *comp;
 	GridBagConstraints *constraints;
 
+    assert((sizeflag>=1)&&(sizeflag<=2));
+    if (parent->layoutState->layoutInfoCache[sizeflag-1].valid) return parent->layoutState->layoutInfoCache[sizeflag-1];
+
 	// Code below will address index curX+curWidth in the case of yMaxArray, weightY
 	// ( respectively curY+curHeight for xMaxArray, weightX ) where
 	//  curX in 0 to preInitMaximumArraySizes.y
@@ -67,6 +70,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
     size_t maximumArrayXIndex = 0;
     size_t maximumArrayYIndex = 0;
 	float dw = 0, dh = 0;
+    std::stack<Sprite *> stack;
 
 	/*
 	 * Pass #1
@@ -98,78 +102,86 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
     std::vector<size_t> xMaxArray(maximumArrayXIndex);
     std::vector<size_t> yMaxArray(maximumArrayYIndex);
 
-    for (compindex = 0; compindex < (size_t)(parent->childCount()); compindex++) {
-		comp = parent->child(compindex);
-		if ((!comp->visible())||(!comp->layoutConstraints))
-			continue;
-		constraints = lookupConstraints(comp);
+    stack.push(parent);
+    while (!stack.empty()) {
+        Sprite *p=stack.top();
+        stack.pop();
+        size_t psize=p->childCount();
+        for (compindex = 0; compindex < psize; compindex++) {
+            comp = p->child(compindex);
+            if ((!comp->visible())||(!comp->layoutConstraints))
+                continue;
+            constraints = lookupConstraints(comp);
 
-		curX = constraints->gridx;
-		curY = constraints->gridy;
-		curWidth = constraints->gridwidth;
-		if (curWidth <= 0)
-			curWidth = 1;
-		curHeight = constraints->gridheight;
-		if (curHeight <= 0)
-			curHeight = 1;
+            curX = constraints->gridx;
+            curY = constraints->gridy;
+            curWidth = constraints->gridwidth;
+            if (curWidth <= 0)
+                curWidth = 1;
+            curHeight = constraints->gridheight;
+            if (curHeight <= 0)
+                curHeight = 1;
 
-		/* Adjust the grid width and height
-		 */
-		px = curX + curWidth;
-		if (layoutWidth < px) {
-			layoutWidth = px;
-		}
-		py = curY + curHeight;
-		if (layoutHeight < py) {
-			layoutHeight = py;
-		}
+            /* Adjust the grid width and height
+             */
+            px = curX + curWidth;
+            if (layoutWidth < px) {
+                layoutWidth = px;
+            }
+            py = curY + curHeight;
+            if (layoutHeight < py) {
+                layoutHeight = py;
+            }
 
-		/* Adjust xMaxArray and yMaxArray */
-		for (i = curX; i < (curX + curWidth); i++) {
-			yMaxArray[i] = py;
-		}
-		for (i = curY; i < (curY + curHeight); i++) {
-			xMaxArray[i] = px;
-		}
+            /* Adjust xMaxArray and yMaxArray */
+            for (i = curX; i < (curX + curWidth); i++) {
+                yMaxArray[i] = py;
+            }
+            for (i = curY; i < (curY + curHeight); i++) {
+                xMaxArray[i] = px;
+            }
 
-		/* Cache the current slave's size. */
-		if (comp->layoutConstraints) {
-			dw = (sizeflag == PREFERREDSIZE) ?
-				comp->layoutConstraints->prefWidth :
-				comp->layoutConstraints->aminWidth;
-			dh = (sizeflag == PREFERREDSIZE) ?
-				comp->layoutConstraints->prefHeight :
-				comp->layoutConstraints->aminHeight;
-			if (sizeflag==PREFERREDSIZE) {
-				// If preferred size is unspecified, use minimum size spec first as a fallback
-				if (dw==-1) dw=comp->layoutConstraints->aminWidth;
-				if (dh==-1) dh=comp->layoutConstraints->aminHeight;
-			}
-			if ((dw==-1)||(dh==-1)) {
-				float diw,dih;
-				if (comp->layoutState) {
-					GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
-							sizeflag);
-					comp->layoutState->getMinSize(comp, info, diw, dih,comp->layoutState->pInsets);
-				}
-				else
-					comp->getMinimumSize(diw,dih,sizeflag==PREFERREDSIZE);
-				if (dw==-1) dw=diw;
-				if (dh==-1) dh=dih;
-			}
-		}
-		else {
-			if (comp->layoutState) {
-				GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
-						sizeflag);
-				comp->layoutState->getMinSize(comp, info, dw, dh,comp->layoutState->pInsets);
-			}
-			else
-				comp->getMinimumSize(dw,dh,sizeflag==PREFERREDSIZE);
-		}
-		constraints->minWidth = dw;
-		constraints->minHeight = dh;
-	} //for (components) loop
+            /* Cache the current slave's size. */
+            if (comp->layoutConstraints) {
+                dw = (sizeflag == PREFERREDSIZE) ?
+                    comp->layoutConstraints->prefWidth :
+                    comp->layoutConstraints->aminWidth;
+                dh = (sizeflag == PREFERREDSIZE) ?
+                    comp->layoutConstraints->prefHeight :
+                    comp->layoutConstraints->aminHeight;
+                if (sizeflag==PREFERREDSIZE) {
+                    // If preferred size is unspecified, use minimum size spec first as a fallback
+                    if (dw==-1) dw=comp->layoutConstraints->aminWidth;
+                    if (dh==-1) dh=comp->layoutConstraints->aminHeight;
+                }
+                if ((dw==-1)||(dh==-1)) {
+                    float diw,dih;
+                    if (comp->layoutState) {
+                        GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
+                                sizeflag);
+                        comp->layoutState->getMinSize(comp, info, diw, dih,comp->layoutState->pInsets);
+                    }
+                    else
+                        comp->getMinimumSize(diw,dih,sizeflag==PREFERREDSIZE);
+                    if (dw==-1) dw=diw;
+                    if (dh==-1) dh=dih;
+                }
+            }
+            else {
+                if (comp->layoutState) {
+                    GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
+                            sizeflag);
+                    comp->layoutState->getMinSize(comp, info, dw, dh,comp->layoutState->pInsets);
+                }
+                else
+                    comp->getMinimumSize(dw,dh,sizeflag==PREFERREDSIZE);
+            }
+            constraints->minWidth = dw;
+            constraints->minHeight = dh;
+            if (constraints->group)
+                stack.push(comp);
+        } //for (components) loop
+    }
 
 	/*
 	 * Apply minimum row/column dimensions
@@ -183,7 +195,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
     if (layoutHeight < rowWeights.size())
         layoutHeight = rowWeights.size();
 
-	GridBagLayoutInfo r = GridBagLayoutInfo(layoutWidth, layoutHeight);
+    GridBagLayoutInfo r = GridBagLayoutInfo(layoutWidth, layoutHeight);
 
 	/*
 	 * Pass #2
@@ -201,45 +213,53 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 			yMaxArray.end(); it != end; ++it)
 		*it = 0;
 
-    for (compindex = 0; compindex < (size_t)parent->childCount(); compindex++) {
-        comp = parent->child((int)compindex);
-        if ((!comp->visible())||(!comp->layoutConstraints))
-            continue;
-		constraints = lookupConstraints(comp);
+    stack.push(parent);
+    while (!stack.empty()) {
+        Sprite *p=stack.top();
+        stack.pop();
+        size_t psize=p->childCount();
+        for (compindex = 0; compindex < psize; compindex++) {
+            comp = p->child((int)compindex);
+            if ((!comp->visible())||(!comp->layoutConstraints))
+                continue;
+            constraints = lookupConstraints(comp);
 
-		curX = constraints->gridx;
-		curY = constraints->gridy;
-		curWidth = constraints->gridwidth;
-		curHeight = constraints->gridheight;
+            curX = constraints->gridx;
+            curY = constraints->gridy;
+            curWidth = constraints->gridwidth;
+            curHeight = constraints->gridheight;
 
-		if (curWidth <= 0) {
-			curWidth += r.width - curX;
-			if (curWidth < 1)
-				curWidth = 1;
-		}
+            if (curWidth <= 0) {
+                curWidth += r.width - curX;
+                if (curWidth < 1)
+                    curWidth = 1;
+            }
 
-		if (curHeight <= 0) {
-			curHeight += r.height - curY;
-			if (curHeight < 1)
-				curHeight = 1;
-		}
+            if (curHeight <= 0) {
+                curHeight += r.height - curY;
+                if (curHeight < 1)
+                    curHeight = 1;
+            }
 
-		px = curX + curWidth;
-		py = curY + curHeight;
+            px = curX + curWidth;
+            py = curY + curHeight;
 
-		for (i = curX; i < (curX + curWidth); i++) {
-			yMaxArray[i] = py;
-		}
-		for (i = curY; i < (curY + curHeight); i++) {
-			xMaxArray[i] = px;
-		}
+            for (i = curX; i < (curX + curWidth); i++) {
+                yMaxArray[i] = py;
+            }
+            for (i = curY; i < (curY + curHeight); i++) {
+                xMaxArray[i] = px;
+            }
 
-		/* Assign the new values to the gridbag slave */
-		constraints->tempX = curX;
-		constraints->tempY = curY;
-		constraints->tempWidth = curWidth;
-		constraints->tempHeight = curHeight;
-	}
+            /* Assign the new values to the gridbag slave */
+            constraints->tempX = curX;
+            constraints->tempY = curY;
+            constraints->tempWidth = curWidth;
+            constraints->tempHeight = curHeight;
+            if (constraints->group)
+                stack.push(comp);
+        } //for (components) loop
+    }
 
 	r.weightX.clear();
 	r.weightX.resize(maximumArrayYIndex);
@@ -276,129 +296,137 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	nextSize = INT_MAX;
 
 	for (i = 1; i != INT_MAX; i = nextSize, nextSize = INT_MAX) {
-        for (compindex = 0; compindex < (size_t)parent->childCount(); compindex++) {
-            comp = parent->child((int)compindex);
-            if ((!comp->visible())||(!comp->layoutConstraints))
-                continue;
-			constraints = lookupConstraints(comp);
+        stack.push(parent);
+        while (!stack.empty()) {
+            Sprite *p=stack.top();
+            stack.pop();
+            size_t psize=p->childCount();
+            for (compindex = 0; compindex < psize; compindex++) {
+                comp = p->child((int)compindex);
+                if ((!comp->visible())||(!comp->layoutConstraints))
+                    continue;
+                constraints = lookupConstraints(comp);
 
-			if (constraints->tempWidth == i) {
-				px = constraints->tempX + constraints->tempWidth; /* right column */
+                if (constraints->tempWidth == i) {
+                    px = constraints->tempX + constraints->tempWidth; /* right column */
 
-				/*
-				 * Figure out if we should use this slave\'s weight.  If the weight
-				 * is less than the total weight spanned by the width of the cell,
-				 * then discard the weight.  Otherwise split the difference
-				 * according to the existing weights.
-				 */
+                    /*
+                     * Figure out if we should use this slave\'s weight.  If the weight
+                     * is less than the total weight spanned by the width of the cell,
+                     * then discard the weight.  Otherwise split the difference
+                     * according to the existing weights.
+                     */
 
-				weight_diff = constraints->weightx;
-				for (k = constraints->tempX; k < px; k++)
-					weight_diff -= r.weightX[k];
-				if (weight_diff > 0.0) {
-					weight = 0.0;
-					for (k = constraints->tempX; k < px; k++)
-						weight += r.weightX[k];
-					for (k = constraints->tempX; weight > 0.0 && k < px; k++) {
-						double wt = r.weightX[k];
-						double dx = (wt * weight_diff) / weight;
-						r.weightX[k] += dx;
-						weight_diff -= dx;
-						weight -= wt;
-					}
-					/* Assign the remainder to the rightmost cell */
-					r.weightX[px - 1] += weight_diff;
-				}
+                    weight_diff = constraints->weightx;
+                    for (k = constraints->tempX; k < px; k++)
+                        weight_diff -= r.weightX[k];
+                    if (weight_diff > 0.0) {
+                        weight = 0.0;
+                        for (k = constraints->tempX; k < px; k++)
+                            weight += r.weightX[k];
+                        for (k = constraints->tempX; weight > 0.0 && k < px; k++) {
+                            double wt = r.weightX[k];
+                            double dx = (wt * weight_diff) / weight;
+                            r.weightX[k] += dx;
+                            weight_diff -= dx;
+                            weight -= wt;
+                        }
+                        /* Assign the remainder to the rightmost cell */
+                        r.weightX[px - 1] += weight_diff;
+                    }
 
-				/*
-				 * Calculate the minWidth array values.
-				 * First, figure out how wide the current slave needs to be.
-				 * Then, see if it will fit within the current minWidth values.
-				 * If it will not fit, add the difference according to the
-				 * weightX array.
-				 */
+                    /*
+                     * Calculate the minWidth array values.
+                     * First, figure out how wide the current slave needs to be.
+                     * Then, see if it will fit within the current minWidth values.
+                     * If it will not fit, add the difference according to the
+                     * weightX array.
+                     */
 
-				pixels_diff = constraints->minWidth + constraints->ipadx
-						+ constraints->insets.left + constraints->insets.right;
+                    pixels_diff = constraints->minWidth + constraints->ipadx
+                            + constraints->insets.left + constraints->insets.right;
 
-				for (k = constraints->tempX; k < px; k++)
-					pixels_diff -= r.minWidth[k];
-				if (pixels_diff > 0) {
-					weight = 0.0;
-					for (k = constraints->tempX; k < px; k++)
-						weight += r.weightX[k];
-					for (k = constraints->tempX; weight > 0.0 && k < px; k++) {
-						double wt = r.weightX[k];
-						double dx = ((wt * ((double) pixels_diff)) / weight);
-						r.minWidth[k] += dx;
-						pixels_diff -= dx;
-						weight -= wt;
-					}
-					/* Any leftovers go into the rightmost cell */
-					r.minWidth[px - 1] += pixels_diff;
-				}
-			} else if (constraints->tempWidth > i
-					&& constraints->tempWidth < nextSize)
-				nextSize = constraints->tempWidth;
+                    for (k = constraints->tempX; k < px; k++)
+                        pixels_diff -= r.minWidth[k];
+                    if (pixels_diff > 0) {
+                        weight = 0.0;
+                        for (k = constraints->tempX; k < px; k++)
+                            weight += r.weightX[k];
+                        for (k = constraints->tempX; weight > 0.0 && k < px; k++) {
+                            double wt = r.weightX[k];
+                            double dx = ((wt * ((double) pixels_diff)) / weight);
+                            r.minWidth[k] += dx;
+                            pixels_diff -= dx;
+                            weight -= wt;
+                        }
+                        /* Any leftovers go into the rightmost cell */
+                        r.minWidth[px - 1] += pixels_diff;
+                    }
+                } else if (constraints->tempWidth > i
+                        && constraints->tempWidth < nextSize)
+                    nextSize = constraints->tempWidth;
 
-			if (constraints->tempHeight == i) {
-				py = constraints->tempY + constraints->tempHeight; /* bottom row */
+                if (constraints->tempHeight == i) {
+                    py = constraints->tempY + constraints->tempHeight; /* bottom row */
 
-				/*
-				 * Figure out if we should use this slave's weight.  If the weight
-				 * is less than the total weight spanned by the height of the cell,
-				 * then discard the weight.  Otherwise split it the difference
-				 * according to the existing weights.
-				 */
+                    /*
+                     * Figure out if we should use this slave's weight.  If the weight
+                     * is less than the total weight spanned by the height of the cell,
+                     * then discard the weight.  Otherwise split it the difference
+                     * according to the existing weights.
+                     */
 
-				weight_diff = constraints->weighty;
-				for (k = constraints->tempY; k < py; k++)
-					weight_diff -= r.weightY[k];
-				if (weight_diff > 0.0) {
-					weight = 0.0;
-					for (k = constraints->tempY; k < py; k++)
-						weight += r.weightY[k];
-					for (k = constraints->tempY; weight > 0.0 && k < py; k++) {
-						double wt = r.weightY[k];
-						double dy = (wt * weight_diff) / weight;
-						r.weightY[k] += dy;
-						weight_diff -= dy;
-						weight -= wt;
-					}
-					/* Assign the remainder to the bottom cell */
-					r.weightY[py - 1] += weight_diff;
-				}
+                    weight_diff = constraints->weighty;
+                    for (k = constraints->tempY; k < py; k++)
+                        weight_diff -= r.weightY[k];
+                    if (weight_diff > 0.0) {
+                        weight = 0.0;
+                        for (k = constraints->tempY; k < py; k++)
+                            weight += r.weightY[k];
+                        for (k = constraints->tempY; weight > 0.0 && k < py; k++) {
+                            double wt = r.weightY[k];
+                            double dy = (wt * weight_diff) / weight;
+                            r.weightY[k] += dy;
+                            weight_diff -= dy;
+                            weight -= wt;
+                        }
+                        /* Assign the remainder to the bottom cell */
+                        r.weightY[py - 1] += weight_diff;
+                    }
 
-				/*
-				 * Calculate the minHeight array values.
-				 * First, figure out how tall the current slave needs to be.
-				 * Then, see if it will fit within the current minHeight values.
-				 * If it will not fit, add the difference according to the
-				 * weightY array.
-				 */
+                    /*
+                     * Calculate the minHeight array values.
+                     * First, figure out how tall the current slave needs to be.
+                     * Then, see if it will fit within the current minHeight values.
+                     * If it will not fit, add the difference according to the
+                     * weightY array.
+                     */
 
-				pixels_diff = constraints->minHeight + constraints->ipady
-						+ constraints->insets.top + constraints->insets.bottom;
-				for (k = constraints->tempY; k < py; k++)
-					pixels_diff -= r.minHeight[k];
-				if (pixels_diff > 0) {
-					weight = 0.0;
-					for (k = constraints->tempY; k < py; k++)
-						weight += r.weightY[k];
-					for (k = constraints->tempY; weight > 0.0 && k < py; k++) {
-						double wt = r.weightY[k];
-						double dy = ((wt * ((double) pixels_diff)) / weight);
-						r.minHeight[k] += dy;
-						pixels_diff -= dy;
-						weight -= wt;
-					}
-					/* Any leftovers go into the bottom cell */
-					r.minHeight[py - 1] += pixels_diff;
-				}
-			} else if (constraints->tempHeight > i
-					&& constraints->tempHeight < nextSize)
-				nextSize = constraints->tempHeight;
-		}
+                    pixels_diff = constraints->minHeight + constraints->ipady
+                            + constraints->insets.top + constraints->insets.bottom;
+                    for (k = constraints->tempY; k < py; k++)
+                        pixels_diff -= r.minHeight[k];
+                    if (pixels_diff > 0) {
+                        weight = 0.0;
+                        for (k = constraints->tempY; k < py; k++)
+                            weight += r.weightY[k];
+                        for (k = constraints->tempY; weight > 0.0 && k < py; k++) {
+                            double wt = r.weightY[k];
+                            double dy = ((wt * ((double) pixels_diff)) / weight);
+                            r.minHeight[k] += dy;
+                            pixels_diff -= dy;
+                            weight -= wt;
+                        }
+                        /* Any leftovers go into the bottom cell */
+                        r.minHeight[py - 1] += pixels_diff;
+                    }
+                } else if (constraints->tempHeight > i
+                        && constraints->tempHeight < nextSize)
+                    nextSize = constraints->tempHeight;
+                if (constraints->group)
+                    stack.push(comp);
+            } //for (components) loop
+        }
 	}
 	
     //PASS 4: equalize cells if needed
@@ -432,12 +460,17 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
             }
         }
     }
+    r.valid=true;
+    parent->layoutState->layoutInfoCache[sizeflag-1]=r;
+
 	return r;
 } //getLayoutInfo()
 
 void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constraints,
 		Rectangle &r) {
     float diffx, diffy;
+    float fillx, filly;
+    float minx, miny;
 
     r.x += constraints->insets.left;
 	r.width -= (constraints->insets.left + constraints->insets.right);
@@ -466,21 +499,46 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 		}
 	}
 
+    //Fill, but keep track of filled space
 	diffx = 0;
-	if ((constraints->fill != GridBagConstraints::HORIZONTAL
-			&& constraints->fill != GridBagConstraints::BOTH)
-			&& (r.width > (constraints->minWidth + constraints->ipadx))) {
-		diffx = r.width - (constraints->minWidth + constraints->ipadx);
-		r.width = constraints->minWidth + constraints->ipadx;
+    minx = constraints->minWidth + constraints->ipadx;
+    fillx = r.width - minx;
+    if ((constraints->fillX<1) && (fillx>0)) {
+        diffx=fillx*(1-constraints->fillX);
+        fillx-=diffx;
+        r.width = minx + fillx;
 	}
 
 	diffy = 0;
-	if ((constraints->fill != GridBagConstraints::VERTICAL
-			&& constraints->fill != GridBagConstraints::BOTH)
-			&& (r.height > (constraints->minHeight + constraints->ipady))) {
-		diffy = r.height - (constraints->minHeight + constraints->ipady);
-		r.height = constraints->minHeight + constraints->ipady;
-	}
+    miny = constraints->minHeight + constraints->ipady;
+    filly = r.height - miny;
+    if ((constraints->fillY<1) && (filly>0)) {
+        diffy=filly*(1-constraints->fillY);
+        filly-=diffy;
+        r.height = miny + filly;
+    }
+
+    if ((constraints->aspectRatio>0)&&(r.height>0)) {
+        //Reduce filled space to fit aspect ratio as much as possible
+        float cr=r.width/r.height;
+        if (cr>constraints->aspectRatio) //Too large, reduce width
+        {
+            float mw=constraints->aspectRatio*r.height-minx;
+            if (mw<0) mw=0;
+            if (mw>fillx) mw=fillx;
+            diffx+=(fillx-mw);
+            fillx=mw;
+            r.width = minx + fillx;
+        }
+        else { //Too tall, reduce height
+            float mh=r.width/constraints->aspectRatio-miny;
+            if (mh<0) mh=0;
+            if (mh>filly) mh=filly;
+            diffy+=(filly-mh);
+            filly=mh;
+            r.height = miny + filly;
+        }
+    }
 
 	switch (constraints->anchor) {
 	case GridBagConstraints::CENTER:
@@ -516,7 +574,7 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 	}
 }
 
-void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,
+void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w,
         float &h, GridInsets &insets) {
     size_t i;
     float t;
@@ -535,7 +593,7 @@ void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,
 
 void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	Sprite *comp;
-	int compindex;
+    size_t compindex;
 	GridBagConstraints *constraints;
     GridInsets insets = pInsets;
 	Rectangle r;
@@ -724,61 +782,79 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	info.starty = diffh*gridAnchorY + insets.top;
 
     layoutInfo = info;
-    for (compindex = 0; compindex < parent->childCount(); compindex++) {
-		comp = parent->child(compindex);
-		if ((!comp->visible())||(!comp->layoutConstraints))
-			continue;
-		constraints = lookupConstraints(comp);
+    std::stack<Sprite *> stack;
+    stack.push(parent);
+    while (!stack.empty()) {
+        Sprite *p=stack.top();
+        stack.pop();
+        size_t psize=p->childCount();
+        for (compindex = 0; compindex < psize; compindex++) {
+            comp = p->child((int)compindex);
+            if ((!comp->visible())||(!comp->layoutConstraints))
+                continue;
+            constraints = lookupConstraints(comp);
 
-		r.x = info.startx;
-		for (i = 0; i < constraints->tempX; i++)
-			r.x += info.minWidth[i] + cellSpacingX;
+            r.x = info.startx;
+            for (i = 0; i < constraints->tempX; i++)
+                r.x += info.minWidth[i] + cellSpacingX;
 
-		r.y = info.starty;
-		for (i = 0; i < constraints->tempY; i++)
-			r.y += info.minHeight[i] + cellSpacingY;
+            r.y = info.starty;
+            for (i = 0; i < constraints->tempY; i++)
+                r.y += info.minHeight[i] + cellSpacingY;
 
-		r.width = 0;
-		for (i = constraints->tempX;
-				i < (constraints->tempX + constraints->tempWidth); i++) {
-			r.width += info.minWidth[i] + cellSpacingX;
-		}
-		if (constraints->tempWidth>0) r.width-=cellSpacingX;
+            r.width = 0;
+            for (i = constraints->tempX;
+                    i < (constraints->tempX + constraints->tempWidth); i++) {
+                r.width += info.minWidth[i] + cellSpacingX;
+            }
+            if (constraints->tempWidth>0) r.width-=cellSpacingX;
 
-		r.height = 0;
-		for (i = constraints->tempY;
-				i < (constraints->tempY + constraints->tempHeight); i++) {
-			r.height += info.minHeight[i] + cellSpacingY;
-		}
-		if (constraints->tempHeight>0) r.height-=cellSpacingY;
+            r.height = 0;
+            for (i = constraints->tempY;
+                    i < (constraints->tempY + constraints->tempHeight); i++) {
+                r.height += info.minHeight[i] + cellSpacingY;
+            }
+            if (constraints->tempHeight>0) r.height-=cellSpacingY;
 
-		AdjustForGravity(comp, constraints, r);
+            AdjustForGravity(comp, constraints, r);
 
-		if (r.x < 0) {
-			r.width += r.x;
-			r.x = 0;
-		}
+            if (r.x < 0) {
+                r.width += r.x;
+                r.x = 0;
+            }
 
-		if (r.y < 0) {
-			r.height += r.y;
-			r.y = 0;
-		}
+            if (r.y < 0) {
+                r.height += r.y;
+                r.y = 0;
+            }
 
-		//Last step: displace the component according to its origin/offset
-		r.x+=constraints->offsetX+constraints->originX*r.width;
-		r.y+=constraints->offsetY+constraints->originY*r.height;
+            //Last step: displace the component according to its origin/offset
+            r.x+=constraints->offsetX+constraints->originX*r.width;
+            r.y+=constraints->offsetY+constraints->originY*r.height;
 
-        if (comp->layoutState)
-            comp->layoutState->optimizing=constraints->optimizeSize;
-        comp->setBounds(r.x, r.y, r.width, r.height,true);
-        if (zOffset!=0)
-        	comp->setZ(zOffset);
-        if (comp->layoutState&&comp->layoutState->dirty)
-        {
-            comp->layoutState->dirty=false;
-            comp->layoutState->ArrangeGrid(comp,r.width,r.height);
-        }
-        if (comp->layoutState)
-            comp->layoutState->optimizing=false;
-	}
+            if (comp->layoutState)
+                comp->layoutState->optimizing=constraints->optimizeSize;
+            //In case of groups, correct placement
+            float px=0,py=0;
+            Sprite *pp=comp->parent();
+            while (pp!=parent) {
+                px+=pp->x();
+                py+=pp->y();
+                pp=pp->parent();
+            }
+            //Apply placement
+            comp->setBounds(r.x-px, r.y-py, r.width, r.height,true);
+            if (zOffset!=0)
+                comp->setZ(zOffset);
+            if (comp->layoutState&&comp->layoutState->dirty)
+            {
+                comp->layoutState->dirty=false;
+                comp->layoutState->ArrangeGrid(comp,r.width,r.height);
+            }
+            if (comp->layoutState)
+                comp->layoutState->optimizing=false;
+            if (constraints->group)
+                stack.push(comp);
+        } //for (components) loop
+    }
 }

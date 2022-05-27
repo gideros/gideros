@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <string.h>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <set>
 #include <string>
@@ -219,7 +220,7 @@ public:
     	G_UNUSED(type);
     	G_UNUSED(wrap);
     	G_UNUSED(filter);
-    	std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(gid);
+    	std::unordered_map<g_id, TextureElement*>::iterator iter = textureElements_.find(gid);
 
     	if (iter != textureElements_.end())
     	{
@@ -249,6 +250,8 @@ public:
     	        ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
     	        if (element->filter==GTEXTURE_NEAREST)
     	        	filtering=ShaderTexture::FILT_NEAREST;
+    	        if (element->filter==GTEXTURE_LINEAR_MIPMAP)
+    	        	filtering=ShaderTexture::FILT_LINEAR_MIPMAP;
              element->width=width;
              element->height=height;
     	     element->_texture->updateData(format,type,element->width, element->height,pixels,wrap,filtering);
@@ -276,7 +279,7 @@ public:
     g_bool deleteTexture(g_id id)
     {
         {
-            std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
+            std::unordered_map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
 
             if (iter != textureElements_.end())
             {
@@ -313,7 +316,7 @@ public:
         }
 
         {
-            std::map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
+            std::unordered_map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
 
             if (iter != renderTargetElements_.end())
             {
@@ -347,14 +350,14 @@ public:
     ShaderTexture *getInternalTexture(g_id id)
     {
         {
-            std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
+            std::unordered_map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
 
             if (iter != textureElements_.end())
                 return iter->second->_texture;
         }
 
         {
-            std::map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
+            std::unordered_map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
 
             if (iter != renderTargetElements_.end())
                 return iter->second->_texture;
@@ -366,14 +369,14 @@ public:
     void setUserData(g_id id, void *udata)
     {
         {
-            std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
+            std::unordered_map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
 
             if (iter != textureElements_.end())
                 iter->second->udata = udata;
         }
 
         {
-            std::map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
+            std::unordered_map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
 
             if (iter != renderTargetElements_.end())
                 iter->second->udata = udata;
@@ -384,14 +387,14 @@ public:
     void *getUserData(g_id id)
     {
         {
-            std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
+            std::unordered_map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
 
             if (iter != textureElements_.end())
                 return iter->second->udata;
         }
 
         {
-            std::map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
+            std::unordered_map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
 
             if (iter != renderTargetElements_.end())
                 return iter->second->udata;
@@ -408,7 +411,7 @@ public:
     void reloadTextures()
     {
         std::set<TextureElement*> textureElements;
-        std::map<g_id, TextureElement*>::iterator iter2, e2 = textureElements_.end();
+        std::unordered_map<g_id, TextureElement*>::iterator iter2, e2 = textureElements_.end();
         for (iter2 = textureElements_.begin(); iter2 != e2; ++iter2)
             textureElements.insert(iter2->second);
 
@@ -431,7 +434,7 @@ public:
         if (renderTargetElements_.empty())
             return;
 
-        std::map<g_id, RenderTargetElement*>::iterator iter, e = renderTargetElements_.end();
+        std::unordered_map<g_id, RenderTargetElement*>::iterator iter, e = renderTargetElements_.end();
         for (iter = renderTargetElements_.begin(); iter != e; ++iter)
         {
             RenderTargetElement *element = iter->second;
@@ -554,7 +557,7 @@ public:
 
     ShaderBuffer *RenderTargetGetFBO(g_id renderTarget)
     {
-        std::map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(renderTarget);
+        std::unordered_map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(renderTarget);
 
         if (iter == renderTargetElements_.end())
             return 0;
@@ -567,7 +570,7 @@ public:
         if (renderTargetElements_.empty())
             return;
 
-        std::map<g_id, RenderTargetElement*>::iterator iter, e = renderTargetElements_.end();
+        std::unordered_map<g_id, RenderTargetElement*>::iterator iter, e = renderTargetElements_.end();
         for (iter = renderTargetElements_.begin(); iter != e; ++iter)
         {
             RenderTargetElement *element = iter->second;
@@ -592,7 +595,7 @@ public:
 
     g_id TempTextureCreate(int width, int height)
     {
-        std::map<g_id, TempTextureElement*>::iterator iter, e = tempTextureElements_.end();
+        std::unordered_map<g_id, TempTextureElement*>::iterator iter, e = tempTextureElements_.end();
 
         for (iter = tempTextureElements_.begin(); iter != e; ++iter)
             if (iter->second->width == width && iter->second->height == height)
@@ -624,7 +627,7 @@ public:
 
     void TempTextureDelete(g_id id)
     {
-        std::map<g_id, TempTextureElement*>::iterator iter = tempTextureElements_.find(id);
+        std::unordered_map<g_id, TempTextureElement*>::iterator iter = tempTextureElements_.find(id);
         if (iter == tempTextureElements_.end())
             return;
 
@@ -641,7 +644,7 @@ public:
 
     ShaderTexture *TempTextureGetName(g_id id)
     {
-        std::map<g_id, TempTextureElement*>::iterator iter = tempTextureElements_.find(id);
+        std::unordered_map<g_id, TempTextureElement*>::iterator iter = tempTextureElements_.find(id);
         if (iter == tempTextureElements_.end())
             return 0;
 
@@ -659,7 +662,7 @@ public:
     void RestoreTempTextures()
     {
         std::set<TempTextureElement*> tempTextureElements;
-        std::map<g_id, TempTextureElement*>::iterator iter2, e2 = tempTextureElements_.end();
+        std::unordered_map<g_id, TempTextureElement*>::iterator iter2, e2 = tempTextureElements_.end();
         for (iter2 = tempTextureElements_.begin(); iter2 != e2; ++iter2)
             tempTextureElements.insert(iter2->second);
 
@@ -675,7 +678,7 @@ public:
     }
 
 private:
-    std::map<g_id, TempTextureElement*> tempTextureElements_;
+    std::unordered_map<g_id, TempTextureElement*> tempTextureElements_;
 
 private:
     void genAndUploadTexture(CommonElement *element, const void *pixels)
@@ -689,15 +692,17 @@ private:
         ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
         if (element->filter==GTEXTURE_NEAREST)
         	filtering=ShaderTexture::FILT_NEAREST;
+        if (element->filter==GTEXTURE_LINEAR_MIPMAP)
+        	filtering=ShaderTexture::FILT_LINEAR_MIPMAP;
         element->_texture=engine->createTexture(format,type,element->width, element->height,pixels,wrap,filtering,element->renderTarget);
     }
 
 private:
     bool caching_;
     g_id nextid_;
-    std::map<g_id, TextureElement*> textureElements_;
+    std::unordered_map<g_id, TextureElement*> textureElements_;
     std::map<std::vector<char>, TextureElement*> signatureMap_;
-    std::map<g_id, RenderTargetElement*> renderTargetElements_;
+    std::unordered_map<g_id, RenderTargetElement*> renderTargetElements_;
     size_t textureMemory_;
     size_t bufferMemory_;
 };

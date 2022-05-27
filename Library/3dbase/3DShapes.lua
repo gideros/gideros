@@ -5,42 +5,33 @@ Mesh3D.MODE_BUMP=4
 Mesh3D.MODE_SHADOW=8
 Mesh3D.MODE_ANIMATED=16
 Mesh3D.MODE_INSTANCED=32
+
 function Mesh3D:init()
 	self.mode=0
 end
+
 function Mesh3D:updateMode(set,clear)
 	local nm=(self.mode|(set or 0))&~(clear or 0)
 	if nm~=self.mode then
 		self.mode=nm
 		if (nm&Mesh3D.MODE_LIGHTING)>0 then
 			local tc=""
-			if (nm&Mesh3D.MODE_TEXTURE)>0 then
-				tc=tc.."t"
-			end
-			if (nm&Mesh3D.MODE_SHADOW)>0 then
-				tc=tc.."s"
-			end
-			if (nm&Mesh3D.MODE_BUMP)>0 then
-				tc=tc.."n"
-			end
-			if (nm&Mesh3D.MODE_ANIMATED)>0 then
-				tc=tc.."a"
-			end
-			if (nm&Mesh3D.MODE_INSTANCED)>0 then
-				tc=tc.."i"
-			end
+			if (nm&Mesh3D.MODE_TEXTURE)>0 then tc=tc.."t" end
+			if (nm&Mesh3D.MODE_SHADOW)>0 then tc=tc.."s" end
+			if (nm&Mesh3D.MODE_BUMP)>0 then tc=tc.."n" end
+			if (nm&Mesh3D.MODE_ANIMATED)>0 then tc=tc.."a" end
+			if (nm&Mesh3D.MODE_INSTANCED)>0 then tc=tc.."i" end
 			Lighting.setSpriteMode(self,tc)
 		end
 	end
 end
 
 function Mesh3D:setInstanceCount(n)
-	self._im1,self._im2,self._im3,self._im4=self._im1 or {}, self._im2 or {},self._im3 or {},self._im4 or {}
+	self._im1,self._im2,self._im3,self._im4=
+		self._im1 or {}, self._im2 or {},self._im3 or {},self._im4 or {}
 	self._icount=n
-	if n==0 then
-		self:updateMode(0,Mesh3D.MODE_INSTANCED)
-	else
-		self:updateMode(Mesh3D.MODE_INSTANCED,0)
+	if n==0 then self:updateMode(0,Mesh3D.MODE_INSTANCED)
+	else self:updateMode(Mesh3D.MODE_INSTANCED,0)
 	end
 	Mesh.setInstanceCount(self,n)
 end
@@ -67,9 +58,12 @@ function Mesh3D:updateInstances()
 	self:setGenericArray(8,Shader.DFLOAT,4,self._icount,self._im3)
 	self:setGenericArray(9,Shader.DFLOAT,4,self._icount,self._im4)
 end
+
 function Mesh3D:setLocalMatrix(m)
 	self:setShaderConstant("InstanceMatrix",Shader.CMATRIX,1,m:getMatrix())
 end
+
+-- ***************************************
 --Unit Cube
 local Box=Core.class(Mesh3D)
 function Box:init(w,h,d)
@@ -81,7 +75,8 @@ function Box:init(w,h,d)
 			9,10,11,9,11,12,
 			13,14,15,13,15,16,
 			17,18,19,17,19,20,
-			21,22,23,21,23,24}
+			21,22,23,21,23,24
+		}
 		Box.na={
 			0,0,-1,0,0,-1,0,0,-1,0,0,-1,
 			0,0,1,0,0,1,0,0,1,0,0,1,
@@ -89,16 +84,16 @@ function Box:init(w,h,d)
 			0,1,0,0,1,0,0,1,0,0,1,0,
 			-1,0,0,-1,0,0,-1,0,0,-1,0,0,
 			1,0,0,1,0,0,1,0,0,1,0,0,
-			}
+		}
 	end
 	self._va={
-			-w,-h,-d, w,-h,-d, w,h,-d, -w,h,-d,
-			-w,-h,d, w,-h,d, w,h,d, -w,h,d,
-			-w,-h,-d, w,-h,-d, w,-h,d, -w,-h,d,
-			-w,h,-d, w,h,-d, w,h,d, -w,h,d,
-			-w,-h,-d, -w,h,-d, -w,h,d, -w,-h,d,
-			w,-h,-d, w,h,-d, w,h,d, w,-h,d,
-		}
+		-w,-h,-d, w,-h,-d, w,h,-d, -w,h,-d,
+		-w,-h,d, w,-h,d, w,h,d, -w,h,d,
+		-w,-h,-d, w,-h,-d, w,-h,d, -w,-h,d,
+		-w,h,-d, w,h,-d, w,h,d, -w,h,d,
+		-w,-h,-d, -w,h,-d, -w,h,d, -w,-h,d,
+		w,-h,-d, w,h,-d, w,h,d, w,-h,d,
+	}
 	self:setGenericArray(3,Shader.DFLOAT,3,24,Box.na)
 	self:setVertexArray(self._va)
 	self:setIndexArray(Box.ia)
@@ -110,13 +105,13 @@ function Box:mapTexture(texture,sw,sh)
 	if texture then
 		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
 		self:setTextureCoordinateArray{
-				0,0,tw,0,tw,th,0,th,
-				0,0,tw,0,tw,th,0,th,
-				0,0,tw,0,tw,th,0,th,
-				0,0,tw,0,tw,th,0,th,
-				0,0,tw,0,tw,th,0,th,
-				0,0,tw,0,tw,th,0,th,
-			}
+			0,0,tw,0,tw,th,0,th,
+			0,0,tw,0,tw,th,0,th,
+			0,0,tw,0,tw,th,0,th,
+			0,0,tw,0,tw,th,0,th,
+			0,0,tw,0,tw,th,0,th,
+			0,0,tw,0,tw,th,0,th,
+		}
 		self:updateMode(Mesh3D.MODE_TEXTURE,0)
 	else
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
@@ -129,27 +124,29 @@ function Box:getCollisionShape()
 	return self._r3dshape
 end
 
+-- ***************************************
 --Unit Sphere
 local Sphere=Core.class(Mesh3D)
-function Sphere:init(steps,rad)
+function Sphere:init(steps,radius)
 	local va,ia={},{}
-	local rs=(2*3.141592654)/steps
-	local i,ni=4,1
+--	local rs=(2*3.141592654)/steps
+	local rs=(2*math.pi)/steps
+	local idx,ni=4,1
 	--Vertices
-	va[1]=0 va[2]=rad va[3]=0
+	va[1]=0 va[2]=radius va[3]=0
 	for iy=1,(steps//2)-1 do
-		local y=math.cos(iy*rs)*rad
-		local r=math.sin(iy*rs)*rad
+		local y=math.cos(iy*rs)*radius
+		local r=math.sin(iy*rs)*radius
 		for ix=0,steps do
 			local x=r*math.cos(ix*rs)
 			local z=r*math.sin(ix*rs)
-			va[i]=x i+=1
-			va[i]=y i+=1
-			va[i]=z i+=1
+			va[idx]=x idx+=1
+			va[idx]=y idx+=1
+			va[idx]=z idx+=1
 		end
 	end
-	va[i]=0	va[i+1]=-rad va[i+2]=0
-	local lvi=i//3+1
+	va[idx]=0 va[idx+1]=-radius va[idx+2]=0
+	local lvi=idx//3+1
 	--Indices
 	--a) top and bottom fans
 	for i=1,steps do
@@ -168,7 +165,7 @@ function Sphere:init(steps,rad)
 	self:setVertexArray(va)
 	self:setIndexArray(ia)
 	self._steps=steps
-	self.rad=rad
+	self.radius=radius
 	self._va=va self._ia=ia
 end
 function Sphere:mapTexture(texture)
@@ -196,19 +193,21 @@ function Sphere:mapTexture(texture)
 end
 function Sphere:getCollisionShape()
 	if not self._r3dshape then
-		self._r3dshape=r3d.SphereShape.new(self.rad)
+		self._r3dshape=r3d.SphereShape.new(self.radius)
 	end
 	return self._r3dshape
 end
 
+-- ***************************************
 --Unit Cylinder along Y axis
 local Cylinder=Core.class(Mesh3D)
 function Cylinder:init(steps,r,h)
 	local va,ia,na={},{},{}
-	local rs=(2*3.141592654)/steps
-	local i,ni=7,1
-	local r=r or 1
-	local h=h or 1
+--	local rs=(2*3.141592654)/steps
+	local rs=(2*math.pi)/steps
+	local idx,ni=7,1
+	r=r or 1
+	h=h or 1
 	self.radius=r
 	self.height=h
 	--Vertices/Normals
@@ -220,21 +219,21 @@ function Cylinder:init(steps,r,h)
 		local x=math.cos(ix*rs)*r
 		local z=-math.sin(ix*rs)*r
 		--EDGE-TOP
-		va[i]=x na[i]=0 i+=1
-		va[i]=h na[i]=1 i+=1
-		va[i]=z na[i]=0 i+=1
+		va[idx]=x na[idx]=0 idx+=1
+		va[idx]=h na[idx]=1 idx+=1
+		va[idx]=z na[idx]=0 idx+=1
 		--EDGE-TOPEXT
-		va[i]=x na[i]=x i+=1
-		va[i]=h na[i]=0 i+=1
-		va[i]=z na[i]=z i+=1
+		va[idx]=x na[idx]=x idx+=1
+		va[idx]=h na[idx]=0 idx+=1
+		va[idx]=z na[idx]=z idx+=1
 		--EDGE-BOTTOMEXT
-		va[i]=x na[i]=x i+=1
-		va[i]=-h na[i]=0 i+=1
-		va[i]=z na[i]=z i+=1
+		va[idx]=x na[idx]=x idx+=1
+		va[idx]=-h na[idx]=0 idx+=1
+		va[idx]=z na[idx]=z idx+=1
 		--EDGE-BOTTOM
-		va[i]=x na[i]=0 i+=1
-		va[i]=-h na[i]=-1 i+=1
-		va[i]=z na[i]=0 i+=1
+		va[idx]=x na[idx]=0 idx+=1
+		va[idx]=-h na[idx]=-1 idx+=1
+		va[idx]=z na[idx]=0 idx+=1
 	end
 	--Indices
 	for i=3,steps*4-1,4 do
@@ -244,7 +243,6 @@ function Cylinder:init(steps,r,h)
 		ia[ni]=i+1 ni+=1 ia[ni]=i+2 ni+=1 ia[ni]=i+5 ni+=1 --EDGE-TRI1
 		ia[ni]=i+2 ni+=1 ia[ni]=i+6 ni+=1 ia[ni]=i+5 ni+=1 --EDFE-TRI2
 	end
-	
 	self:setGenericArray(3,Shader.DFLOAT,3,#na//3,na)
 	self:setVertexArray(va)
 	self:setIndexArray(ia)
@@ -300,6 +298,7 @@ function Cylinder:getCollisionShape()
 	return self._r3dshape
 end
 
+-- ***************************************
 local Group3D=Core.class(Sprite)
 function Group3D:updateMode(set,clear)
       for _,v in pairs(self.objs) do
@@ -307,6 +306,7 @@ function Group3D:updateMode(set,clear)
       end
 end
 
+-- ***************************************
 D3=D3 or {}
 D3.Group=Group3D
 D3.Mesh=Mesh3D
@@ -314,13 +314,14 @@ D3.Cube=Box
 D3.Sphere=Sphere
 D3.Cylinder=Cylinder
 
+-- ***************************************
 D3.checkCCW=function(v,i,f)
 	local fi=1
 	for fn=1,#f do
 		local s=""
 		for l=fi,fi+f[fn]-1 do
 			local ii=i[l]*3-2
-			local ax,ay,az=v[ii],v[ii+1],v[ii+2]		
+			local ax,ay,az=v[ii],v[ii+1],v[ii+2]
 			s=s..string.format("%d:[%f,%f,%f] ",i[l],ax,ay,az)
 		end
 		fi+=f[fn]

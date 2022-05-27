@@ -13,7 +13,8 @@ class TextFieldBase : public Sprite
 {
 public:
     TextFieldBase(Application *application) : Sprite(application), layout_(),
-		lscalex_(0),lscaley_(0),lfontCacheVersion_(-1),textlayout_() {}
+        lscalex_(0),lscaley_(0),lfontCacheVersion_(-1),textlayout_(), prefWidth_(-1), prefHeight_(-1) {}
+    void cloneFrom(TextFieldBase *);
     virtual ~TextFieldBase() {}
 
     virtual void setFont(FontBase* font) = 0;
@@ -22,8 +23,8 @@ public:
 	virtual void setText(const char* text) = 0;
 	virtual const char* text() const = 0;
 
-	virtual void setTextColor(unsigned int color) = 0;
-	virtual unsigned int textColor() const = 0;
+    virtual void setTextColor(float r,float g,float b,float a) = 0;
+    virtual void textColor(float &r,float &g,float &b,float &a) = 0;
 
     virtual void setLetterSpacing(float letterSpacing) = 0;
     virtual float letterSpacing() const = 0;
@@ -51,6 +52,7 @@ protected:
     float lscalex_,lscaley_;
     int lfontCacheVersion_;
     FontBase::TextLayout textlayout_; //Currently displayed text layout
+    float prefWidth_,prefHeight_;
 };
 
 #endif

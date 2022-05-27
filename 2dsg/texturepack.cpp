@@ -18,9 +18,8 @@ TexturePack::TexturePack(Application* application) : TextureBase(application)
 }
 
 TexturePack::TexturePack(Application* application,
-                         const char* texturelistfile, const char* imagefile, Filter filter, Wrap wrap, Format format,
-						 bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
-    TextureBase(application, imagefile, filter, wrap, format, maketransparent, transparentcolor)
+                         const char* texturelistfile, const char* imagefile, TextureParameters parameters) :
+    TextureBase(application, imagefile, parameters)
 {
     float scale;
     const char *suffix = application->getImageSuffix(imagefile, &scale);
@@ -51,8 +50,7 @@ TexturePack::TexturePack(Application* application,
 }
 
 TexturePack::TexturePack(Application* application,
-                         const char** filenames, int padding, Filter filter, Wrap wrap, Format format,
-						 bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
+                         const char** filenames, int padding, TextureParameters parameters) :
 	TextureBase(application)
 {
 	std::vector<Dib> dibs;
@@ -60,7 +58,7 @@ TexturePack::TexturePack(Application* application,
 	int count = 0;
 	while (*filenames)
 	{
-		dibs.push_back(Dib(application, *filenames, true, false, maketransparent, transparentcolor));
+		dibs.push_back(Dib(application, *filenames, true, false, parameters.maketransparent, parameters.transparentcolor));
 		filenameMap_[*filenames] = count++;
 		filenames++;
 	}
@@ -99,12 +97,6 @@ TexturePack::TexturePack(Application* application,
 
 			textures_.push_back(Rect(xo, yo, width, height));
 		}
-
-		TextureParameters parameters;
-		parameters.filter = filter;
-		parameters.wrap = wrap;
-        parameters.format = format;
-
 		data = application->getTextureManager()->createTextureFromDib(texture, parameters);
 
 		releaseTexturePacker(tp);
@@ -115,24 +107,17 @@ TexturePack::~TexturePack()
 {
 }
 
-void TexturePack::loadAsync(Application* application, const char** filenames, int padding, Filter filter, Wrap wrap, Format format, bool maketransparent, unsigned int transparentcolor,
+void TexturePack::loadAsync(Application* application, const char** filenames, int padding, TextureParameters parameters,
                             std::function<void(TexturePack *,std::exception_ptr)> callback)
 {
-    TexturePack *pack=new TexturePack(application,filenames,padding,filter,wrap,format,maketransparent,transparentcolor);
+    TexturePack *pack=new TexturePack(application,filenames,padding,parameters);
     callback(pack,NULL); //Still synchronous, is it worth making an async version of this one ?
 }
 
-void TexturePack::loadAsync(Application* application, const char* texturelistfile, const char* imagefile, Filter filter, Wrap wrap, Format format, bool maketransparent, unsigned int transparentcolor,
+void TexturePack::loadAsync(Application* application, const char* texturelistfile, const char* imagefile, TextureParameters parameters,
                       std::function<void(TexturePack *,std::exception_ptr)> callback)
 {
-    TextureParameters parameters;
-    parameters.filter = filter;
-    parameters.wrap = wrap;
-    parameters.format = format;
-    parameters.maketransparent = maketransparent;
-    parameters.transparentcolor = transparentcolor;
-
-    auto future = application->getTextureManager()->createTextureFromFile(imagefile, parameters,true,
+    auto future = application->getTextureManager()->createTextureFromFile(imagefile, parameters,
                   [=](TextureData *data, std::exception_ptr e){
         if (e) {
             callback(NULL,e);
@@ -339,7 +324,7 @@ void TexturePackFont::drawText(std::vector<GraphicsBase> * vGraphicsBase, const 
     size_t size = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 
     if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
-        l = layoutText(text, layout);
+        layoutText(text, layout, l);
 
     if (size == 0) {
         return;

@@ -29,6 +29,18 @@ TileMap::TileMap(Application* application,
 	repeaty_ = false;
 }
 
+void TileMap::cloneFrom(TileMap *s)
+{
+    Sprite::cloneFrom(s);
+
+    repeatx_=s->repeatx_;
+    repeaty_=s->repeaty_;
+    tileids_=s->tileids_;
+    vertices=s->vertices;
+    texcoords=s->texcoords;
+    colors=s->colors;
+}
+
 void TileMap::setTexture(TextureBase* texture,
 		int tilewidth, int tileheight,
 		int spacingx, int spacingy,
@@ -45,6 +57,7 @@ void TileMap::setTexture(TextureBase* texture,
 	spacingy_ = spacingy;
 	marginx_ = marginx;
 	marginy_ = marginy;
+	invalidate(INV_GRAPHICS);
 }
 
 TileMap::~TileMap()
@@ -70,6 +83,7 @@ void TileMap::set(int x, int y, uint16_t tx, uint16_t ty, int flip, uint32_t tin
     tileids_[index].y = ty;
     tileids_[index].flip = flip;
     tileids_[index].tint = tint;
+	invalidate(INV_GRAPHICS);
 }
 
 void TileMap::get(int x, int y, uint16_t* tx, uint16_t* ty, int *flip, uint32_t *tint, GStatus *status/* = NULL*/) const
@@ -96,6 +110,7 @@ void TileMap::get(int x, int y, uint16_t* tx, uint16_t* ty, int *flip, uint32_t 
 
 void TileMap::shift(int dx, int dy)
 {
+	invalidate(INV_GRAPHICS);
 	while (dx < 0)
 	{
 		shiftleft();

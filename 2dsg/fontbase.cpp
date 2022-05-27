@@ -14,13 +14,13 @@ FontBase::~FontBase()
         delete shaper_;
 }
 
-void FontBase::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
+void FontBase::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
 {
-    getBounds(part.text.c_str(),letterSpacing,&part.x,&part.y,&part.w,&part.h,part.style.font);
+    getBounds(part.text.c_str(),params->letterSpacing,&part.x,&part.y,&part.w,&part.h,part.style.font);
     part.w=part.w-part.x+1;
     part.h=part.h-part.y+1;
     part.y+=part.dy;
-    part.advX=getAdvanceX(part.text.c_str(),letterSpacing,-1,part.style.font);
+    part.advX=getAdvanceX(part.text.c_str(),params->letterSpacing,-1,part.style.font);
     part.advY=0;
 }
 
@@ -61,35 +61,58 @@ size_t FontBase::getCharIndexAtOffset(struct ChunkLayout &c, float offset, float
     return n;
 }
 
-
-void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, float align, bool wrapped, int end)
+void FontBase::chunkMetricsCache(FontBase::TextLayout &tl,struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
 {
-	size_t cur=(end>=0)?end+1:tl->parts.size();
+    if (tl.letterSpacingCache==params->letterSpacing) {
+        auto cache=tl.metricsCache.find(part.text);
+        if (cache!=tl.metricsCache.end()) {
+            if (cache->second.style.styleFlags==part.style.styleFlags) {
+                //Cached, get results
+                part.shaped=cache->second.shaped;
+                part.x = cache->second.x;
+                part.y = cache->second.y-cache->second.dy+part.dy;
+                part.w = cache->second.w;
+                part.h = cache->second.h;
+                part.advX=cache->second.advX;
+                part.advY=cache->second.advY;
+                part.shapeScaleX=cache->second.shapeScaleX;
+                part.shapeScaleY=cache->second.shapeScaleY;
+
+                return;
+            }
+        }
+    }
+    chunkMetrics(part,params);
+}
+
+void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, float cw, float sw, float tabSpace, FontBase::TextLayoutParameters *params, bool wrapped, int end)
+{
+    size_t cur=(end>=0)?end+1:tl.parts.size();
 	size_t cnt=cur-start;
 	float ox=0;
     float rx=0;
 	bool justified=false;
-	if ((flags&FontBase::TLF_JUSTIFIED)&&wrapped)
+    if ((params->flags&FontBase::TLF_JUSTIFIED)&&wrapped)
 	{
         sw+=(cnt>1)?((w-cw)/(cnt-1)):0;
         justified=true;
 	}
 	else
-		ox=(w-cw)*align;
+        ox=(w-cw)*params->alignx;
 	if (!justified) //Not justified, try to merge space separated chunks together
 	{
 		bool merged=false;
 		for (size_t i=start;i<(cur-1);i++)
 		{
-			if ((tl->parts[i].sepflags&CHUNKCLASS_FLAG_BREAKABLE)&&
-                    (tl->parts[i].sep!='\t')&& //Don't merge on tab separator
-                    (tl->parts[i].style==tl->parts[i+1].style)) //Don't merge if styles differs
+            if ((tl.parts[i].sepflags&CHUNKCLASS_FLAG_BREAKABLE)&&
+                    (tl.parts[i].sep!='\t')&& //Don't merge on tab separator
+                    (tl.parts[i].style==tl.parts[i+1].style)) //Don't merge if styles differs
 			{
-				tl->parts[i].text=tl->parts[i].text+" "+tl->parts[i+1].text;
-                tl->parts[i].sep=tl->parts[i+1].sep;
-                tl->parts[i].sepflags=tl->parts[i+1].sepflags;
-                tl->parts[i].extrasize+=tl->parts[i+1].extrasize;
-                tl->parts.erase(tl->parts.begin()+i+1);
+                tl.parts[i].text=tl.parts[i].text+" "+tl.parts[i+1].text;
+                tl.parts[i].sep=tl.parts[i+1].sep;
+                tl.parts[i].sepflags=tl.parts[i+1].sepflags;
+                tl.parts[i].extrasize+=tl.parts[i+1].extrasize;
+                tl.parts.erase(tl.parts.begin()+i+1);
 				cur--;
 				merged=true;
                 i--;
@@ -97,31 +120,30 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 			}
             if (merged)
 			{
-            	chunkMetrics(tl->parts[i],letterSpacing);
+                chunkMetricsCache(tl, tl.parts[i],params);
 				merged=false;
 			}
 		}
 		if (merged)
 		{
 			size_t i=cur-1;
-        	chunkMetrics(tl->parts[i],letterSpacing);
+            chunkMetricsCache(tl, tl.parts[i],params);
 		}
 	}
 	for (size_t i=start;i<cur;i++)
 	{
-        tl->parts[i].x+=ox+rx;
-        tl->parts[i].dx=ox+rx;
-        char sep=tl->parts[i].sep;
-        rx+=tl->parts[i].advX;
+        tl.parts[i].x+=ox+rx;
+        tl.parts[i].dx=ox+rx;
+        char sep=tl.parts[i].sep;
+        rx+=tl.parts[i].advX;
         float ns=(sep=='\t')?(tabSpace*(1+floor(rx/tabSpace))-rx):sw;
         if (sep==ESC) ns=0;
         rx+=ns;
     }
 }
 
-FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *params)
+void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *params,FontBase::TextLayout &tl)
 {
-	TextLayout tl;
 	float lh=getLineHeight()+params->lineSpacing;
 	float sw=getAdvanceX(" ",params->letterSpacing,-1);
     float as=getAscender();
@@ -145,11 +167,17 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
         styles.styleFlags|=TEXTSTYLEFLAG_LTR;
     if (params->flags&TLF_NOSHAPING)
         styles.styleFlags|=TEXTSTYLEFLAG_SKIPSHAPING;
+    if (params->flags&TLF_FORCESHAPING)
+        styles.styleFlags|=TEXTSTYLEFLAG_FORCESHAPING;
     bool singleline=(params->flags&TLF_SINGLELINE);
 	float y=0;
 	float cw=0;
 	float mcw=0; //Minimal current width
-	tl.mw=0;
+
+    for (size_t k=0;k<tl.parts.size();k++)
+        tl.metricsCache[tl.parts[k].text]=tl.parts[k];
+    tl.parts.clear();
+    tl.mw=0;
     float lastNs=0;
     size_t st=0;
     size_t lines=0;
@@ -161,7 +189,14 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	std::vector<ChunkClass> chunks;
     TextClassifier_t analyzer=(params->flags&TLF_NOBIDI)?NULL:(TextClassifier_t) g_getGlobalHook(GID_GLOBALHOOK_TEXTCLASSIFIER);
     if (analyzer) {
-    	if (!analyzer(chunks,std::string(text)))
+        if (!(params->flags&TLF_FORCESHAPING)) {
+            char cset=0;
+            const char *tt=text;
+            while (*tt) cset|=(*(tt++));
+            if ((cset&0x80)==0) //ASCII/Latin only
+                analyzer=NULL;
+        }
+        if ((analyzer)&&(!analyzer(chunks,std::string(text))))
     		analyzer=NULL;
     }
     if (!analyzer)
@@ -206,6 +241,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
     	}
 	}
 
+    tl.parts.clear();
     uint8_t lsepflags=CHUNKCLASS_FLAG_BREAKABLE;
 	for (std::vector<ChunkClass>::const_iterator it=chunks.cbegin();it!=chunks.cend();it++)
 	{
@@ -293,7 +329,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		cl.sepl=ns;
         cl.extrasize=0;
         if (cl.text.size())
-        	chunkMetrics(cl,params->letterSpacing);
+            chunkMetricsCache(tl,cl,params);
         else {
             cl.advX=0;
             cl.advY=0;
@@ -312,7 +348,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
             {
                 //The current line will exceed max width (and is not empty): wrap
     			if (singleline) break;
-                layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx,true);
+                layoutHorizontal(tl,st, params->w, cw, sw, tabSpace, params,true);
                 st=tl.parts.size();
                 y+=lh;
                 cl.y+=lh;
@@ -361,12 +397,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
                     tl.parts[cur].extrasize=breakcharsz;
 					tl.parts[cur].sepl=0;
 					tl.parts[cur].sep=0;
-		        	chunkMetrics(tl.parts[cur],params->letterSpacing);
+                    chunkMetricsCache(tl,tl.parts[cur],params);
                     ccw+=tl.parts[cur].advX;
                     bsize=breaksize;
 		            //Compute second part
 					cl.text=cl.text.substr(cpos);
-		        	chunkMetrics(cl,params->letterSpacing);
+                    chunkMetricsCache(tl,cl,params);
 		            //Insert second part
 					brk++;
                     if ((cpos>0)&&!singleline) {
@@ -378,7 +414,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
                 if (singleline||(cpos==0)) { cw=ccw; break; }
                 if ((brk<pmax)&&(brk>st)) {
                     int ln=pmax-brk;
-                    layoutHorizontal(&tl,st, params->w, ccw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx,true,brk-1);
+                    layoutHorizontal(tl,st, params->w, ccw, sw, tabSpace, params,true,brk-1);
                     pmax=tl.parts.size();
                     brk=pmax-ln;
 					st=brk;
@@ -410,7 +446,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
             if (mcw>tl.mw) tl.mw=mcw;
             mcw=0;
 			//Line break
-			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx);
+            layoutHorizontal(tl,st, params->w, cw, sw, tabSpace, params);
 			st=tl.parts.size();
 			y+=lh;
 			cw=0;
@@ -441,7 +477,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	//Layout final line
 	if (tl.parts.size()>st)
 	{
-		layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,params->alignx);
+        layoutHorizontal(tl,st, params->w, cw, sw, tabSpace, params);
 		st=tl.parts.size();
 		y+=lh;
 		cw=0;
@@ -495,11 +531,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	{
 		tl.parts[k].y+=yo;
 		tl.parts[k].dy+=yo;
-	}
+    }
     if (tl.parts.size()!=0)
         tl.y+=yo;
 
-	return tl;
+    tl.metricsCache.clear();
+    tl.letterSpacingCache=params->letterSpacing;
 }
 
 
@@ -545,7 +582,7 @@ void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char
 {
     std::vector<CompositeFontSpec>::iterator bit = fonts_.begin();
     if (bit==fonts_.end()) return;
-    l=layoutText(text, layout);
+    layoutText(text, layout, l);
     l.styleFlags|=TEXTSTYLEFLAG_SKIPLAYOUT;
     int colorFlag=l.styleFlags&(TEXTSTYLEFLAG_COLOR);
     TextLayout l2=l;
@@ -557,7 +594,7 @@ void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char
             if (c.style.font==it->name) {
                 l2.parts.push_back(c);
                 ChunkLayout &c2 = l2.parts[p2];
-                it->font->chunkMetrics(c2,layout->letterSpacing);
+                it->font->chunkMetrics(c2,layout);
                 p2++;
             }
         }

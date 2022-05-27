@@ -19,11 +19,11 @@ class TexturePack : public TextureBase
 public:
     TexturePack(Application* application);
     // can throw GiderosException
-    TexturePack(Application* application, const char** filenames, int padding, Filter filter, Wrap wrap, Format format, bool maketransparent = false, unsigned int transparentcolor = 0x00000000);
-    TexturePack(Application* application, const char* texturelistfile, const char* imagefile, Filter filter, Wrap wrap, Format format, bool maketransparent = false, unsigned int transparentcolor = 0x00000000);
+    TexturePack(Application* application, const char** filenames, int padding, TextureParameters parameters);
+    TexturePack(Application* application, const char* texturelistfile, const char* imagefile, TextureParameters parameters);
 	virtual ~TexturePack();
-    static void loadAsync(Application* application, const char** filenames, int padding, Filter filter, Wrap wrap, Format format, bool maketransparent, unsigned int transparentcolor,std::function<void(TexturePack *,std::exception_ptr)> callback);
-    static void loadAsync(Application* application, const char* texturelistfile, const char* imagefile, Filter filter, Wrap wrap, Format format, bool maketransparent, unsigned int transparentcolor,std::function<void(TexturePack *,std::exception_ptr)> callback);
+    static void loadAsync(Application* application, const char** filenames, int padding, TextureParameters parameters,std::function<void(TexturePack *,std::exception_ptr)> callback);
+    static void loadAsync(Application* application, const char* texturelistfile, const char* imagefile, TextureParameters parameters,std::function<void(TexturePack *,std::exception_ptr)> callback);
 
     std::vector<std::string> getRegionsNames();
 	bool location(int index, int* x, int* y, int* width, int* height, int* dx1, int* dy1, int* dx2, int* dy2) const;

@@ -96,6 +96,7 @@ public:
 
 	void setHardwareOrientation(Orientation orientation);
 	void setResolution(int width, int height,bool keepBuffers=false);
+	void setDrawInfo(bool enable,float r,float g,float b,float a);
 
 //	void broadcastApplicationDidFinishLaunching();
 //	void broadcastApplicationWillTerminate();
@@ -181,6 +182,8 @@ public:
     static int Core_profilerReport(lua_State *L);
     static int Core_random(lua_State *L);
     static int Core_randomSeed(lua_State *L);
+    static int resolveStyle(lua_State *L,const char *key);
+    static void resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache);
     //Debugger support
 #define DBG_MASKBREAK	(1<<7) //Check breakpoints: Not a lua debug flag
 #define DBG_MASKSUB		(1<<6) //Ignore subcalls: Not a lua debug flag
@@ -191,6 +194,8 @@ public:
     static void *debuggerContext;
 private:
 	float physicsScale_;
+	bool drawInfo_;
+	float infoColor_[4];
 
 	static const char* fileNameFunc_s(const char* filename, void* data);
 	const char* fileNameFunc(const char* filename);

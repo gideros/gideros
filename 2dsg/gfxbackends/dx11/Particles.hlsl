@@ -13,27 +13,27 @@ cbuffer cbv : register(b0)
 	float4 vfColor;
 };
 
-VOut VShader(float4 position : vVertex, float4 color : vColor, float2 texcoord : vTexCoord)
+VOut VShader(float4 position : vVertex, float4 color : vColor, float4 texcoord : vTexCoord)
 {
 	VOut output;
 
-	float psizen = position.z;
-	float psize = length(mul(vWorldMatrix, float4(position.z, 0.0, 0.0, 0.0)));
-	float angle = position.w*3.141592654 / 180.0;
-	output.steprot = float2(sign(psizen) / psize, position.w);
+	float psizen = texcoord.z;
+	float psize = length(mul(vWorldMatrix, float4(texcoord.z, 0.0, 0.0, 0.0)));
+	float angle = texcoord.w*3.141592654 / 180.0;
+	output.steprot = float2(sign(psizen) / psize, texcoord.w);
 	position.w = 1.0f;
-	position.z = 0.0f;
-	float2 rad = (texcoord - float2(0.5, 0.5))*psizen;
+	float2 rad = (texcoord.xy - float2(0.5, 0.5))*psizen;
 	float ca=cos(angle);
 	float sa=sin(angle);
 	float2x2 rot=float2x2(ca,sa,-sa,ca);
 	rad=mul(rad,rot);
 	output.position = mul(vMatrix, position + float4(rad, 0.0, 0.0));
 	output.color = color*vfColor;
-	output.texcoord = texcoord;
+	output.texcoord = texcoord.xy;
 
 	return output;
 }
+
 
 Texture2D myTexture : register(t0);
 SamplerState samLinear : register(s0);

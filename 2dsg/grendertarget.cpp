@@ -6,13 +6,9 @@
 #include "blendfunc.h"
 #include <gimage.h>
 
-GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap, Format format, bool selectScale, bool depth) :
+GRenderTarget::GRenderTarget(Application *application, int width, int height, TextureParameters &parameters, bool selectScale, bool depth) :
     TextureBase(application)
 {
-    TextureParameters parameters;
-    parameters.filter = filter;
-    parameters.wrap = wrap;
-    parameters.format = format;
     data = application->getTextureManager()->createRenderTarget(width, height, parameters, selectScale, depth);
 
     sizescalex = 1;

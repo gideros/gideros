@@ -8,6 +8,15 @@ Viewport::Viewport(Application* application) : Sprite(application)
 	hasProjection_=false;
 }
 
+void Viewport::cloneFrom(Viewport *s) {
+    Sprite::cloneFrom(s);
+
+    matrix_=s->matrix_;
+    projection_=s->projection_;
+    hasProjection_=s->hasProjection_;
+    setContent(s->content_);
+}
+
 Viewport::~Viewport()
 {
 	setContent(NULL);

@@ -2,6 +2,8 @@
 #include "collection.h"
 #include <ppltasks.h>
 #include <map>
+#include <mutex>
+
 using namespace concurrency;
 using namespace Windows::Web::Http;
 using namespace Windows::Web::Http::Headers;
@@ -20,6 +22,7 @@ static HttpClient^ httpClient;
 static cancellation_token_source cancellationTokenSource;
 static bool sslErrorsIgnore = false;
 static std::map<g_id, std::vector<unsigned char> > map;
+static std::mutex mapm;
 //static std::vector<unsigned char> dataRead;
 task<IBuffer^> readData(IInputStream^ stream, g_id id, bool streaming, gevent_Callback callback, void* udata)
 {
@@ -48,8 +51,11 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id, bool streaming, gevent_Ca
 
 			gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, event, 1, udata);
 		}
-		else
+		else {
+			mapm.lock();
 			map[id].insert(map[id].end(), first, end);
+			mapm.unlock();
+		}
 
 		// Continue reading until the response is complete.  When done, return previousTask that is complete.
 		bool more = buffer->Length;
@@ -66,7 +72,9 @@ void handleException(Exception^ ex, g_id id, gevent_Callback callback, void* uda
 	//std::string strerror(werror.begin(), werror.end());
 	//strerror.c_str();
 	gevent_EnqueueEvent(id, callback, GHTTP_ERROR_EVENT, event, 1, udata);
+	mapm.lock();
 	map.erase(id);
+	mapm.unlock();
 }
 
 void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation, g_id id, gevent_Callback callback, void* udata, bool streaming){
@@ -180,7 +188,9 @@ void responseEvent(HttpResponseMessage^ response, g_id id, gevent_Callback callb
 }
 
 void handleTask(HttpResponseMessage^ response, g_id id, boolean streaming, gevent_Callback callback, void* udata){
+	mapm.lock();
 	map[id] = std::vector<unsigned char>();
+	mapm.unlock();
 	create_task(response->Content->ReadAsInputStreamAsync(), cancellationTokenSource.get_token()).then([=](task<IInputStream^> previousTask)
 	{
 		if (streaming) {
@@ -204,15 +214,18 @@ void handleTask(HttpResponseMessage^ response, g_id id, boolean streaming, geven
 			eventp->bytesTotal = map[id].size();
 
 			gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, eventp, 1, udata);
-			
-			map.erase(id);
 
+			mapm.lock();
+			map.erase(id);
+			mapm.unlock();
 		}
 		catch (const task_canceled&)
 		{
 			ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
 			gevent_EnqueueEvent(id, callback, GHTTP_ERROR_EVENT, event, 1, udata);
+			mapm.lock();
 			map.erase(id);
+			mapm.unlock();
 		}
 		catch (Exception^ ex)
 		{

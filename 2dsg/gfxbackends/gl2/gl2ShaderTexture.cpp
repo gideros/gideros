@@ -41,6 +41,10 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         break;
+    case FILT_LINEAR_MIPMAP:
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        break;
     }
 
     GLuint glformat=GL_RGBA;
@@ -72,8 +76,11 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     		idata=NULL; //Don't supply data for depth component
     	}
     }
-    if (data)
+    if (data) {
     	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, iformat, width, height, 0, glformat, gltype, idata);
+        if (filtering==FILT_LINEAR_MIPMAP)
+            GLCALL glGenerateMipmap(GL_TEXTURE_2D);
+    }
 
     if (((!ogl2ShaderEngine::isGLES)||(ogl2ShaderEngine::version>=3))&&(format==FMT_DEPTH)) {
     	if (filtering==FILT_LINEAR) {
@@ -81,7 +88,7 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     		GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE , GL_COMPARE_REF_TO_TEXTURE);
     		GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC , GL_LEQUAL);
     	}
-    	else {
+        else {
     		GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE , GL_NONE);
     	}
     }
@@ -121,6 +128,10 @@ void ogl2ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         break;
+    case FILT_LINEAR_MIPMAP:
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        break;
     }
 
     GLuint glformat=GL_RGBA;
@@ -152,8 +163,11 @@ void ogl2ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     		idata=NULL; //Don't supply data for depth component
     	}
     }
-    if (data)
+    if (data) {
     	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, iformat, width, height, 0, glformat, gltype, idata);
+        if (filtering==FILT_LINEAR_MIPMAP)
+            GLCALL glGenerateMipmap(GL_TEXTURE_2D);
+    }
 
     GLCALL glBindTexture(GL_TEXTURE_2D, oldTex);
 }

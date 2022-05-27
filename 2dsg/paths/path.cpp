@@ -2775,6 +2775,64 @@ Path2D::Path2D(Application* application) :
 	setLineColor(0x0, 1);
 }
 
+void Path2D::cloneFrom(Path2D *s)
+{
+    Sprite::cloneFrom(s);
+    path = gen_paths(1);
+
+    texturebase_ = s->texturebase_;
+    if (texturebase_)
+        texturebase_->ref();
+    textureMatrix_=s->textureMatrix_;
+
+    minx_ = s->minx_;
+    miny_ = s->miny_;
+    maxx_ = s->maxx_;
+    maxy_ = s->maxy_;
+
+    fillr_ = s->fillr_, fillg_ = s->fillg_, fillb_ = s->fillb_, filla_ = s->filla_;
+    liner_ = s->liner_, lineg_ = s->lineg_, lineb_ = s->lineb_, linea_ = s->linea_;
+    convex_=s->convex_,
+    c1_=s->c1_; c2_=s->c2_; c3_=s->c3_; c4_=s->c4_;
+    a1_=s->a1_; a2_=s->a2_; a3_=s->a3_; a4_=s->a4_;
+    colors_.assign(s->colors_.cbegin(),s->colors_.cend());
+    colors_.Update();
+
+    struct path *sp = get_path(s->path);
+    if (sp) {
+        struct path *p = (struct path*) malloc(sizeof(struct path));
+        kh_value(paths, kh_end(paths)) = p;
+        *p=*sp;
+
+
+        for (int i = 0; i < 2; ++i) {
+            p->stroke_geoms[i].vertex_buffer = new VertexBuffer<float>();
+            p->stroke_geoms[i].vertex_buffer->assign(sp->stroke_geoms[i].vertex_buffer->cbegin(),sp->stroke_geoms[i].vertex_buffer->cend());
+            p->stroke_geoms[i].vertex_buffer->Update();
+            p->stroke_geoms[i].index_buffer = new VertexBuffer<unsigned short>();
+            p->stroke_geoms[i].index_buffer->assign(sp->stroke_geoms[i].index_buffer->cbegin(),sp->stroke_geoms[i].index_buffer->cend());
+            p->stroke_geoms[i].index_buffer->Update();
+        }
+
+        p->fill_vertex_buffer = new VertexBuffer<vector4f>();
+        p->fill_vertex_buffer->assign(sp->fill_vertex_buffer->cbegin(),sp->fill_vertex_buffer->cend());
+        p->fill_vertex_buffer->Update();
+        p->fill_index_buffer = new VertexBuffer<unsigned short>();
+        p->fill_index_buffer->assign(sp->fill_index_buffer->cbegin(),sp->fill_index_buffer->cend());
+        p->fill_index_buffer->Update();
+        p->fill_bounds_vbo = new VertexBuffer<float>();
+        p->fill_bounds_vbo->assign(sp->fill_bounds_vbo->cbegin(),sp->fill_bounds_vbo->cend());
+        p->fill_bounds_vbo->Update();
+
+        p->commands = (unsigned char*) malloc(p->num_commands * sizeof(unsigned char));
+        memcpy(p->commands, sp->commands, p->num_commands * sizeof(unsigned char));
+        p->coords = (float *) malloc(p->num_coords * sizeof(float));
+        memcpy(p->coords, sp->coords, p->num_coords * sizeof(float));
+
+        set_path(path);
+    }
+}
+
 Path2D::~Path2D() {
 	if (texturebase_ != NULL)
 		texturebase_->unref();

@@ -26,13 +26,14 @@ struct GGSoundInterface
     void (*ChannelSetPaused)(g_id channel, g_bool paused);
     g_bool (*ChannelIsPaused)(g_id channel);
     g_bool (*ChannelIsPlaying)(g_id channel, int *bufferSize, float *bufferSeconds);
-    void (*ChannelSetVolume)(g_id channel, float volume);
+    void (*ChannelSetVolume)(g_id channel, float volume, float balance);
     float (*ChannelGetVolume)(g_id channel);
     void (*ChannelSetPitch)(g_id channel, float pitch);
     float (*ChannelGetPitch)(g_id channel);
     void (*ChannelSetLooping)(g_id channel, g_bool looping);
     g_bool (*ChannelIsLooping)(g_id channel);
     void (*ChannelSetWorldPosition)(g_id channel,float x,float y,float z,float vx,float vy,float vz);
+    void (*ChannelSetEffect)(g_id channel,const char *effect, float *params);
     g_id (*ChannelAddCallback)(g_id channel, gevent_Callback callback, void *udata);
     void (*ChannelRemoveCallback)(g_id channel, gevent_Callback callback, void *udata);
     void (*ChannelRemoveCallbackWithGid)(g_id channel, g_id gid);
@@ -99,8 +100,9 @@ public:
 
     ~GGSound()
     {
-        if (!sig_.empty())
+        if ((!sig_.empty())&&(!lua_isclosing(L)))
         {
+        	lua_checkstack(L,16);
             luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keySound);
             lua_pushlstring(L, &sig_[0], sig_.size());
             lua_pushnil(L);
@@ -143,6 +145,7 @@ private:
         interface.ChannelSetLooping = gaudio_ChannelSetLooping;
         interface.ChannelIsLooping = gaudio_ChannelIsLooping;
         interface.ChannelSetWorldPosition = gaudio_ChannelSetWorldPosition;
+        interface.ChannelSetEffect = gaudio_ChannelSetEffect;
         interface.ChannelAddCallback = gaudio_ChannelAddCallback;
         interface.ChannelRemoveCallback = gaudio_ChannelRemoveCallback;
         interface.ChannelRemoveCallbackWithGid = gaudio_ChannelRemoveCallbackWithGid;
@@ -167,6 +170,7 @@ private:
         interface.ChannelSetLooping = gaudio_BackgroundChannelSetLooping;
         interface.ChannelIsLooping = gaudio_BackgroundChannelIsLooping;
         interface.ChannelSetWorldPosition = NULL;
+        interface.ChannelSetEffect = NULL;
         interface.ChannelAddCallback = gaudio_BackgroundChannelAddCallback;
         interface.ChannelRemoveCallback = gaudio_BackgroundChannelRemoveCallback;
         interface.ChannelRemoveCallbackWithGid = gaudio_BackgroundChannelRemoveCallbackWithGid;
@@ -245,12 +249,12 @@ public:
             interface.ChannelSetPosition(gid, position);
     }
 
-    void setVolume(float volume)
+    void setVolume(float volume, float balance)
     {
         volume_ = volume;
 
         if (gid)
-            interface.ChannelSetVolume(gid, volume);
+            interface.ChannelSetVolume(gid, volume, balance);
     }
 
     float getVolume()
@@ -318,9 +322,14 @@ public:
     void setWorldPosition(float x,float y,float z,float vx,float vy,float vz)
     {
         if (gid&&interface.ChannelSetWorldPosition)
-        	interface.ChannelSetWorldPosition(gid,x,y,z,vx,vy,vz);
+            interface.ChannelSetWorldPosition(gid,x,y,z,vx,vy,vz);
     }
 
+    void setEffect(const char *effect,float *params)
+    {
+        if (gid&&interface.ChannelSetEffect)
+            interface.ChannelSetEffect(gid,effect,params);
+    }
 
 
     lua_State *L;
@@ -389,6 +398,7 @@ AudioBinder::AudioBinder(lua_State *L)
         {"play", Sound_play},
         {"getLength", Sound_getLength},
         {"setListenerPosition", Sound_setListenerPosition},
+        {"hasEffect", Sound_hasEffect},
         {NULL, NULL},
     };
 
@@ -408,6 +418,7 @@ AudioBinder::AudioBinder(lua_State *L)
         {"setLooping", SoundChannel_setLooping},
         {"isLooping", SoundChannel_isLooping},
         {"setWorldPosition", SoundChannel_setWorldPosition},
+        {"setEffect", SoundChannel_setEffect},
         {"getStreamId", SoundChannel_getStreamId},
         {NULL, NULL},
     };
@@ -526,6 +537,15 @@ int AudioBinder::Sound_destruct(void *p)
 {
     void *ptr = GIDEROS_DTOR_UDATA(p);
     GGSound *sound = static_cast<GGSound*>(ptr);
+    lua_postgc(sound->L,Sound_destruct_real,ptr);
+
+    return 0;
+}
+
+int AudioBinder::Sound_destruct_real(lua_State *L, void *ptr)
+{
+    G_UNUSED(L);
+    GGSound *sound = static_cast<GGSound*>(ptr);
     sound->unref();
 
     return 0;
@@ -548,6 +568,12 @@ int AudioBinder::Sound_setListenerPosition(lua_State *L)
 			luaL_optnumber(L, 7,0.0),luaL_optnumber(L, 8,0.0),luaL_optnumber(L, 9,0.0),
 			luaL_optnumber(L, 10,0.0),luaL_optnumber(L, 11,0.0),luaL_optnumber(L, 12,0.0));
     return 0;
+}
+
+int AudioBinder::Sound_hasEffect(lua_State *L)
+{
+    lua_pushboolean(L,gaudio_SoundHasEffect(luaL_checkstring(L,1)));
+    return 1;
 }
 
 int AudioBinder::Sound_play(lua_State *L)
@@ -648,7 +674,7 @@ int AudioBinder::SoundChannel_setVolume(lua_State *L)
 
     GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(binder.getInstance("SoundChannel", 1));
 
-    soundChannel->setVolume(luaL_checknumber(L, 2));
+    soundChannel->setVolume(luaL_checknumber(L, 2),luaL_optnumber(L, 3, 0));
 
     return 0;
 }
@@ -771,5 +797,25 @@ int AudioBinder::SoundChannel_setWorldPosition(lua_State *L)
     soundChannel->setWorldPosition(luaL_optnumber(L, 2,0.0),luaL_optnumber(L, 3,0.0),luaL_optnumber(L, 4,0.0),
     		luaL_optnumber(L, 5,0.0),luaL_optnumber(L, 6,0.0),luaL_optnumber(L, 7,0.0));
 
+    return 0;
+}
+
+int AudioBinder::SoundChannel_setEffect(lua_State *L)
+{
+    Binder binder(L);
+
+    GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(binder.getInstance("SoundChannel", 1));
+
+    float params[32];
+    if (lua_istable(L,3)) {
+        int tsize=lua_objlen(L,3);
+        if (tsize>32) tsize=32;
+        for (int k=1;k<=tsize;k++) {
+            lua_rawgeti(L,3,k);
+            params[k-1]=luaL_checknumber(L,-1);
+            lua_pop(L,1);
+        }
+    }
+    soundChannel->setEffect(luaL_optstring(L,2,NULL),params);
     return 0;
 }

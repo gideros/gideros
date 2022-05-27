@@ -17,12 +17,14 @@ notes:
 
 #include "ggaudiomanager.h"
 
+#define AL_ALEXT_PROTOTYPES
 #if defined(OPENAL_SUBDIR_OPENAL)
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #elif defined(OPENAL_SUBDIR_AL)
 #include <AL/al.h>
 #include <AL/alc.h>
+#include <AL/alext.h>
 #else
 #include <al.h>
 #include <alc.h>
@@ -147,7 +149,15 @@ public:
         return sound2->length;
     }
 
-    g_id SoundPlay(g_id sound, bool paused, bool streaming)
+    void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz)
+    {
+    	   alListener3f( AL_POSITION, x,y,z );
+    	   alListener3f( AL_VELOCITY, vx,vy,vz );
+    	   float orient[6] = { dx,dy,dz,ux,uy,uz };
+    	   alListenerfv( AL_ORIENTATION, orient );
+    }
+
+   g_id SoundPlay(g_id sound, bool paused, bool streaming)
     {
         GGLock lock(mutex_);
 
@@ -185,6 +195,15 @@ public:
         return gid;
     }
 
+    bool SoundHasEffect(const char *effect)
+    {
+#ifdef AL_EFFECT_TYPE
+    	return (effect&&!strcmp(effect,"equalizer"));
+#else
+    	return false;
+#endif
+    }
+
     void ChannelStop(g_id channel)
     {
         GGLock lock(mutex_);
@@ -197,7 +216,12 @@ public:
 
         if (channel2->source != 0)
             deleteSourceAndBuffers(channel2);
-
+#ifdef AL_EFFECT_TYPE
+        if (channel2->slot)
+            alDeleteAuxiliaryEffectSlots(1,&channel2->slot);
+        if (channel2->effect)
+            alDeleteEffects(1,&channel2->effect);
+#endif
         channel2->sound->loader.close(channel2->file);
 
         channel2->sound->channels.erase(channel2);
@@ -323,7 +347,7 @@ public:
         return state == AL_PLAYING;
     }
 
-    void ChannelSetVolume(g_id channel, float volume)
+    void ChannelSetVolume(g_id channel, float volume, float balance)
     {
         GGLock lock(mutex_);
 
@@ -335,8 +359,12 @@ public:
 
         channel2->volume = volume;
 
-        if (channel2->source != 0)
+        if (channel2->source != 0) {
             alSourcef(channel2->source, AL_GAIN, volume);
+#ifdef AL_BALANCE
+            alSourcef(channel2->source, AL_BALANCE, balance);
+#endif
+        }
     }
 
     float ChannelGetVolume(g_id channel)
@@ -415,6 +443,66 @@ public:
         Channel *channel2 = iter->second;
 
         return channel2->looping;
+    }
+
+    void ChannelSetWorldPosition(g_id channel, float x, float y, float z, float vx,float vy,float vz)
+    {
+         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+         if (iter == channels_.end())
+             return;
+
+         Channel *channel2 = iter->second;
+
+         if (channel2->source != 0)
+         {
+         	alSource3f( channel2->source, AL_POSITION, x,y,z );
+         	alSource3f( channel2->source, AL_VELOCITY, vx,vy,vz );
+         }
+    }
+
+    void ChannelSetEffect(g_id channel, const char *effect, float *params)
+    {
+#ifdef AL_EFFECT_TYPE
+        std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+        if (iter == channels_.end())
+            return;
+
+        Channel *channel2 = iter->second;
+        int etype=0;
+        if (!strcmp(effect,"equalizer"))
+            etype=AL_EFFECT_EQUALIZER;
+    	if (etype) {
+    		if (!channel2->slot)
+    			alGenAuxiliaryEffectSlots(1, &channel2->slot);
+    		if (!channel2->effect) {
+                alGenEffects(1, &channel2->effect);
+        		alEffecti(channel2->effect, AL_EFFECT_TYPE, etype);
+    		}
+            if (params) {
+                switch (etype) {
+                    case AL_EFFECT_EQUALIZER:
+                    {
+                        //Set params
+                        for (int p=AL_EQUALIZER_LOW_GAIN;p<=AL_EQUALIZER_HIGH_CUTOFF;p++)
+                            alEffectf(channel2->effect,p,params[p]);
+                    }
+                    break;
+                }
+                alSourcef(channel2->source, AL_DIRECT_GAIN,params[0]);
+            }
+            alAuxiliaryEffectSloti(channel2->slot, AL_EFFECTSLOT_EFFECT, (ALint)channel2->effect);
+            alSource3i(channel2->source, AL_AUXILIARY_SEND_FILTER, (ALint)channel2->slot, 0, AL_FILTER_NULL);
+        }
+        else {
+            if (channel2->slot)
+                alDeleteAuxiliaryEffectSlots(1,&channel2->slot);
+            if (channel2->effect)
+                alDeleteEffects(1,&channel2->effect);
+            alSourcef(channel2->source, AL_DIRECT_GAIN,1);
+            channel2->slot=0;
+	   		channel2->effect=0;
+    	}
+#endif
     }
 
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)
@@ -584,6 +672,8 @@ private:
             file(file),
             sound(sound),
             source(source),
+			effect(0),
+			slot(0),
             paused(true),
             volume(1.f),
             pitch(1.f),
@@ -600,6 +690,8 @@ private:
         g_id file;
         Sound *sound;
         ALuint source;
+        ALuint effect;
+        ALuint slot;
         bool paused;
         float volume;
         float pitch;

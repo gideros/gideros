@@ -24,7 +24,7 @@ endif
 
 all: path $(WOBJS)
 	@echo "EMLINK WASM" $(TARGET)
-	@$(EMCC) -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) $(LOPTS) -o $(BUILD)/Html/$(TARGET).wasm $(WOBJS)
+	@$(EMCC) -s DISABLE_EXCEPTION_CATCHING=1 $(OPTS) $(LOPTS) -o $(BUILD)/Html/$(TARGET).wasm $(WOBJS)
 	@echo "SYMGEN" $(TARGET)
 	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/Html/$(TARGET).wasm >$(BUILD)/$(TARGET).dis
 	@grep '(import ' $(BUILD)/$(TARGET).dis | grep -v '(table ' | grep -v '(memory ' | sed 's/^[ \t]*//' | cut -d' ' -f3 >$(BUILD)/$(TARGET).isyms

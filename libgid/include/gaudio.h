@@ -60,6 +60,7 @@ G_API void gaudio_SoundDelete(g_id sound);
 G_API unsigned int gaudio_SoundGetLength(g_id sound);
 G_API g_id gaudio_SoundPlay(g_id sound, g_bool paused, g_bool streaming);
 G_API void gaudio_SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
+G_API bool gaudio_SoundHasEffect(const char *effect);
 
 G_API void gaudio_ChannelStop(g_id channel);
 G_API void gaudio_ChannelSetPosition(g_id channel, unsigned int position);
@@ -68,7 +69,7 @@ G_API g_id gaudio_ChannelGetStreamId(g_id channel);
 G_API void gaudio_ChannelSetPaused(g_id channel, g_bool paused);
 G_API g_bool gaudio_ChannelIsPaused(g_id channel);
 G_API g_bool gaudio_ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds);
-G_API void gaudio_ChannelSetVolume(g_id channel, float volume);
+G_API void gaudio_ChannelSetVolume(g_id channel, float volume, float balance);
 G_API float gaudio_ChannelGetVolume(g_id channel);
 G_API void gaudio_ChannelSetPitch(g_id channel, float pitch);
 G_API float gaudio_ChannelGetPitch(g_id channel);
@@ -80,6 +81,7 @@ G_API void gaudio_ChannelRemoveCallbackWithGid(g_id channel, g_id gid);
 G_API g_id gaudio_ChannelAddSyncPoint(g_id channel, unsigned int position, void *udata);
 G_API void gaudio_ChannelDeleteSyncPoint(g_id channel, g_id syncPoint);
 G_API void gaudio_ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz);
+G_API void gaudio_ChannelSetEffect(g_id channel, const char *effect, float *params);
 
 // background music & background channel
 
@@ -96,7 +98,7 @@ G_API unsigned int gaudio_BackgroundChannelGetPosition(g_id backgroundChannel);
 G_API void gaudio_BackgroundChannelSetPaused(g_id backgroundChannel, g_bool paused);
 G_API g_bool gaudio_BackgroundChannelIsPaused(g_id backgroundChannel);
 G_API g_bool gaudio_BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize, float *bufferSeconds);
-G_API void gaudio_BackgroundChannelSetVolume(g_id backgroundChannel, float volume);
+G_API void gaudio_BackgroundChannelSetVolume(g_id backgroundChannel, float volume, float balance);
 G_API float gaudio_BackgroundChannelGetVolume(g_id backgroundChannel);
 G_API void gaudio_BackgroundChannelSetLooping(g_id backgroundChannel, g_bool looping);
 G_API g_bool gaudio_BackgroundChannelIsLooping(g_id backgroundChannel);

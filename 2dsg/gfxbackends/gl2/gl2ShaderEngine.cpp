@@ -122,7 +122,7 @@ static const char *stdPVShaderCode = "attribute lowp vec4 vColor;\n"
 		"  gl_PointSize=length(xpsize.xyz);\n"
 		"}\n";
 
-static const char *stdPSVShaderCode = "attribute mediump vec2 vTexCoord;\n"
+static const char *stdPSVShaderCode = "attribute highp vec4 vTexCoord;\n"
 		"attribute lowp vec4 vColor;\n"
 		"uniform lowp vec4 fColor;\n"
 		"uniform highp mat4 vMatrix;\n"
@@ -131,8 +131,8 @@ static const char *stdPSVShaderCode = "attribute mediump vec2 vTexCoord;\n"
 		"varying mediump vec2 fStepRot;\n"
 		"varying mediump vec2 fTexCoord;\n"
 		"void main() {\n"
-		"  mediump vec2 rad=(vec2(-0.5,-0.5)+vTexCoord)*vVertex.z;\n"
-		"  mediump float angle=vVertex.w*3.141592654/180.0;\n"
+        "  mediump vec2 rad=(vec2(-0.5,-0.5)+vTexCoord.xy)*vTexCoord.z;\n"
+        "  mediump float angle=vTexCoord.w*3.141592654/180.0;\n"
 		"  mediump float ca=cos(angle);\n"
 		"  mediump float sa=sin(angle);\n"
 		"  mediump mat2 rot=mat2(ca,sa,-sa,ca);\n"
@@ -140,12 +140,39 @@ static const char *stdPSVShaderCode = "attribute mediump vec2 vTexCoord;\n"
 		"  highp vec4 vertex = vec4(vVertex.xy+rad,0.0,1.0);\n"
 		"  gl_Position = vMatrix*vertex;\n"
 		"  fInColor=vColor*fColor;\n"
-		"  mediump vec4 xpsize=vWorldMatrix*vec4(vVertex.z,0.0,0.0,0.0);\n"
+        "  mediump vec4 xpsize=vWorldMatrix*vec4(vTexCoord.z,0.0,0.0,0.0);\n"
 		"  highp float xpl=length(xpsize.xyz);\n"
 		"  if (xpl==0.0) xpl=1.0;\n"
-		"  fStepRot=vec2(sign(vVertex.z)/xpl,vVertex.w);\n"
-		"  fTexCoord=vTexCoord;\n"
+        "  fStepRot=vec2(sign(vTexCoord.z)/xpl,vTexCoord.w);\n"
+        "  fTexCoord=vTexCoord.xy;\n"
 		"}\n";
+
+static const char *stdPS3VShaderCode = "attribute highp vec4 vTexCoord;\n"
+        "attribute lowp vec4 vColor;\n"
+        "uniform lowp vec4 fColor;\n"
+        "uniform highp mat4 vWorldMatrix;\n"
+        "uniform highp mat4 vViewMatrix;\n"
+        "uniform highp mat4 vProjMatrix;\n"
+        "varying lowp vec4 fInColor;\n"
+        "varying mediump vec2 fStepRot;\n"
+        "varying mediump vec2 fTexCoord;\n"
+        "void main() {\n"
+        "  mediump vec2 rad=(vec2(-0.5,-0.5)+vTexCoord.xy);\n"
+        "  mediump float angle=vTexCoord.w*3.141592654/180.0;\n"
+        "  mediump float ca=cos(angle);\n"
+        "  mediump float sa=sin(angle);\n"
+        "  mediump mat2 rot=mat2(ca,sa,-sa,ca);\n"
+        "  rad=rad*rot;\n"
+        "  fInColor=vColor*fColor;\n"
+        "  mediump vec4 xpsize=vWorldMatrix*vec4(vTexCoord.z,0.0,0.0,0.0);\n"
+        "  highp float xpl=length(xpsize.xyz);\n"
+        "  if (xpl==0.0) xpl=1.0;\n"
+        "  highp vec4 vertex = vViewMatrix*(vWorldMatrix*vec4(vVertex.xyz,1.0));\n"
+        "  vertex.xy+=rad*xpl;\n"
+        "  gl_Position = vProjMatrix*vertex;\n"
+        "  fStepRot=vec2(sign(vTexCoord.z)/100.0,vTexCoord.w);\n"
+        "  fTexCoord=vTexCoord.xy;\n"
+        "}\n";
 
 /* Fragment shader*/
 static const char *hdrFShaderCode_DK =
@@ -235,7 +262,7 @@ static const char *stdPSFShaderCode =
 	"	  lowp vec4 frag;\n"
 	"	  frag=fInColor;\n"
 	"	  lowp float alpha=1.0-smoothstep(0.5-fStepRot.x,0.5+fStepRot.x,length(rad));\n"
-	"	  frag*=alpha;\n"
+    "	  frag*=alpha;\n"
 	"	  gl_FragColor=frag;\n"
 	"	 }\n"
 	"	 else\n"
@@ -333,7 +360,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #ifdef GL_VERTEX_PROGRAM_POINT_SIZE
 		GLCALL glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #endif
-		ogl2ShaderProgram::resetAll();
+        ogl2ShaderProgram::resetAll();
 	}
    /* glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);*/
@@ -437,23 +464,34 @@ void ogl2SetupShaders(bool isGLES) {
 			stdPVShaderCode, hdrFShaderCode, stdPFShaderCode, stdPUniforms,
 			stdAttributes);
 
-	const ShaderProgram::ConstantDesc stdPSConstants[] = {
-		{ "vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL },
-		{ "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
-		{ "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
-		{ "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
-		{ "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, false, 0, NULL },
-		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
-	};
-	const ShaderProgram::DataDesc stdPSAttributes[] = {
+    const ShaderProgram::ConstantDesc stdPSConstants[] = {
+        { "vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL },
+        { "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
+        { "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
+        { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
+        { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
+    };
+    const ShaderProgram::ConstantDesc stdPS3Constants[] = {
+        { "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
+        { "vViewMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ViewMatrix,true,0,NULL },
+        { "vProjMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ProjectionMatrix,true,0,NULL },
+        { "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
+        { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
+        { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
+    };
+    const ShaderProgram::DataDesc stdPSAttributes[] = {
 		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0,0 },
 		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0,0 },
-		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 },
+        { "vTexCoord", ShaderProgram::DFLOAT, 4, 2, 0,0 },
 		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
 	};
 
-	ShaderProgram::stdParticles = new ogl2ShaderProgram(
-			hdrPSVShaderCode,	stdPSVShaderCode, hdrFShaderCode, stdPSFShaderCode, stdPSConstants, stdPSAttributes);
+    ShaderProgram::stdParticles = new ogl2ShaderProgram(
+            hdrPSVShaderCode,	stdPSVShaderCode, hdrFShaderCode, stdPSFShaderCode, stdPSConstants, stdPSAttributes);
+    ShaderProgram::stdParticles3 = new ogl2ShaderProgram(
+            hdrPSVShaderCode,	stdPS3VShaderCode, hdrFShaderCode, stdPSFShaderCode, stdPS3Constants, stdPSAttributes);
 
 }
 
@@ -513,8 +551,10 @@ ogl2ShaderEngine::~ogl2ShaderEngine() {
 	delete ShaderProgram::stdTexture;
 	delete ShaderProgram::stdTextureAlpha;
 	delete ShaderProgram::stdTextureColor;
-	delete ShaderProgram::stdParticle;
-	pathShadersRelease();
+    delete ShaderProgram::stdParticle;
+    delete ShaderProgram::stdParticles;
+    delete ShaderProgram::stdParticles3;
+    pathShadersRelease();
 #ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
     glDeleteRenderbuffers(1,&_depthRenderBuffer);

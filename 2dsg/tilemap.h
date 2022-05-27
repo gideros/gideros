@@ -21,6 +21,8 @@ public:
 			int spacingx, int spacingy,
 			int marginx, int marginy,
 			int displaywidth, int displayheight);
+    virtual Sprite *clone() { TileMap *clone=new TileMap(application_,width_,height_,texture_,tilewidth_,tileheight_,spacingx_,spacingy_,marginx_,marginy_,displaywidth_,displayheight_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(TileMap *);
 
 	virtual ~TileMap();
 	

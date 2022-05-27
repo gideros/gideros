@@ -147,6 +147,10 @@ public:
         return sound2->length;
     }
 
+    void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz)
+    {
+    }
+
     g_id SoundPlay(g_id sound, bool paused, bool streaming)
     {
         GGLock lock(mutex_);
@@ -200,6 +204,11 @@ public:
 	//            alSourcePlay(channel->source);
 
         return gid;
+    }
+
+    bool SoundHasEffect(const char *effect)
+    {
+    	return false;
     }
 
     void ChannelStop(g_id channel)
@@ -366,7 +375,7 @@ public:
 			return false;
     }
 
-    void ChannelSetVolume(g_id channel, float volume)
+    void ChannelSetVolume(g_id channel, float volume, float balance)
     {
         GGLock lock(mutex_);
 
@@ -459,6 +468,14 @@ public:
         Channel *channel2 = iter->second;
 
         return channel2->looping;
+    }
+
+    void ChannelSetWorldPosition(g_id channel, float x, float y, float z, float vx,float vy,float vz)
+    {
+     }
+
+    void ChannelSetEffect(g_id channel, const char *effect, float *params)
+    {
     }
 
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)

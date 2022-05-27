@@ -17,11 +17,9 @@ public:
 protected:
 	TextureBase(Application* application);
 	TextureBase(Application* application,
-                const char* filename, Filter filter, Wrap wrap, Format format,
-				bool maketransparent = false, unsigned int transparentcolor = 0x00000000, bool pow2=true);
+                const char* filename, TextureParameters parameters);
 	TextureBase(Application* application,
-                const unsigned char* pixels, unsigned int width, unsigned int height, Filter filter, Wrap wrap, Format format,
-				bool maketransparent = false, unsigned int transparentcolor = 0x00000000, bool pow2=true, float scale=1);
+                const unsigned char* pixels, unsigned int width, unsigned int height, TextureParameters parameters, float scale=1);
 
 	virtual ~TextureBase();
 

@@ -43,6 +43,7 @@ public:
     virtual unsigned int SoundGetLength(g_id sound) = 0;
     virtual void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz) { };
     virtual g_id SoundPlay(g_id sound, bool paused, bool streaming) = 0;
+    virtual bool SoundHasEffect(const char *effect) { return false; };
 
     virtual void ChannelStop(g_id channel) = 0;
     virtual void ChannelSetPosition(g_id channel, unsigned int position) = 0;
@@ -50,7 +51,7 @@ public:
     virtual void ChannelSetPaused(g_id channel, bool paused) = 0;
     virtual bool ChannelIsPaused(g_id channel) = 0;
     virtual bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds) = 0;
-    virtual void ChannelSetVolume(g_id channel, float volume) = 0;
+    virtual void ChannelSetVolume(g_id channel, float volume, float balance) = 0;
     virtual float ChannelGetVolume(g_id channel) = 0;
     virtual g_id ChannelGetStreamId(g_id channel) { return 0;};
     virtual void ChannelSetPitch(g_id channel, float pitch) = 0;
@@ -62,6 +63,7 @@ public:
     virtual void ChannelRemoveCallbackWithGid(g_id channel, g_id gid) = 0;
     virtual g_bool ChannelIsValid(g_id channel) = 0;
     virtual void ChannelSetWorldPosition(g_id channel, float x, float y, float z, float vx,float vy,float vz) { };
+    virtual void ChannelSetEffect(g_id channel, const char *effect, float *params) { };
 
     virtual void preTick() = 0;
     virtual void postTick() = 0;
@@ -153,6 +155,7 @@ public:
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
     g_id SoundPlay(g_id sound, bool paused, bool streaming);
+    bool SoundHasEffect(const char *effect);
 
     void ChannelStop(g_id channel);
     void ChannelSetPosition(g_id channel, unsigned int position);
@@ -160,7 +163,7 @@ public:
     void ChannelSetPaused(g_id channel, bool paused);
     bool ChannelIsPaused(g_id channel);
     bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds);
-    void ChannelSetVolume(g_id channel, float volume);
+    void ChannelSetVolume(g_id channel, float volume, float balance);
     float ChannelGetVolume(g_id channel);
     g_id ChannelGetStreamId(g_id channel);
     void ChannelSetPitch(g_id channel, float pitch);
@@ -168,6 +171,7 @@ public:
     void ChannelSetLooping(g_id channel, bool looping);
     bool ChannelIsLooping(g_id channel);
     void ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz);
+    void ChannelSetEffect(g_id channel, const char *effect, float *params);
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallbackWithGid(g_id channel, g_id gid);
@@ -241,6 +245,7 @@ public:
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
     g_id SoundPlay(g_id sound, bool paused, bool streaming);
+    bool SoundHasEffect(const char *effect);
 
     void ChannelStop(g_id channel);
     void ChannelSetPosition(g_id channel, unsigned int position);
@@ -248,7 +253,7 @@ public:
     void ChannelSetPaused(g_id channel, bool paused);
     bool ChannelIsPaused(g_id channel);
     bool ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSeconds);
-    void ChannelSetVolume(g_id channel, float volume);
+    void ChannelSetVolume(g_id channel, float volume, float balance);
     float ChannelGetVolume(g_id channel);
     g_id ChannelGetStreamId(g_id channel);
     void ChannelSetPitch(g_id channel, float pitch);
@@ -256,6 +261,7 @@ public:
     void ChannelSetLooping(g_id channel, bool looping);
     bool ChannelIsLooping(g_id channel);
     void ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz);
+    void ChannelSetEffect(g_id channel, const char *effect, float *params);
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallbackWithGid(g_id channel, g_id gid);

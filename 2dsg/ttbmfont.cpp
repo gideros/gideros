@@ -381,7 +381,7 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 		return;
 	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
 			fontInfo_.kernings;
-	bool updateTexture = false;
+    bool updateTexture = dibDirty_;
 	wchar32_t lchar = 0;
 	for (const wchar32_t *t = text; size; size--, t++) {
 		wchar32_t chr = *t;
@@ -481,11 +481,7 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 			updateTexture = true;
 		}
 	}
-	if (updateTexture) {
-		application_->getTextureManager()->updateTextureFromDib(
-				textureData_[textureData_.size() - 1], *currentDib_);
-		updateTexture = false;
-	}
+    dibDirty_=updateTexture;
 }
 
 void TTBMFont::ensureGlyphs(int facenum,const wchar32_t *text, int size) {
@@ -693,13 +689,24 @@ void TTBMFont::checkLogicalScale() {
 	}
 }
 
-bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
+bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext, FontBase::TextLayoutParameters *params)
 {
     if (part.style.styleFlags&TEXTSTYLEFLAG_SKIPSHAPING)
 		return false;
     FontshaperBuilder_t builder=(FontshaperBuilder_t) g_getGlobalHook(GID_GLOBALHOOK_FONTSHAPER);
     if (!builder)
         return false;
+    if (!(part.style.styleFlags&TEXTSTYLEFLAG_FORCESHAPING)) {
+        wchar32_t cset=0;
+        wchar32_t bchar=0;
+        size_t tCount=wtext.size();
+        utf8_to_wchar(params->breakchar.c_str(),params->breakchar.size(),&bchar,1,0);
+        for (size_t ti=0;ti<tCount;ti++)
+            if (wtext[ti]!=bchar)
+                cset|=wtext[ti];
+        if ((cset&0xFFFFFF00)==0) //ASCII/Latin only
+            return false;
+    }
     size_t fNum=0;
     size_t fCount=fontFaces_.size();
     if (fCount!=1)
@@ -755,7 +762,7 @@ TTBMFont::TextureGlyph *TTBMFont::getCharGlyph(wchar32_t chr,int &facenum,FT_UIn
 	return &fontFaces_[facenum].textureGlyphs[glyph];
 }
 
-void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
+void TTBMFont::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
 {
     std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(part.text.c_str(), part.text.size(), NULL, 0, 0);
@@ -774,7 +781,7 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 
     float x = 0, y = 0;
 	part.shaped.clear();
-    if (shapeChunk(part,wtext)) {
+    if (shapeChunk(part,wtext,params)) {
         //Shaping has been done externally, iterate over glyphs instead
         len=part.shaped.size();
     	std::vector<wchar32_t> wtext1;
@@ -821,7 +828,7 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     		maxy = std::max(maxy, sizescaley_ * y0);
     		maxy = std::max(maxy, sizescaley_ * y1);
 
-    		gl.advX+=(letterSpacing/sizescalex_);
+            gl.advX+=(params->letterSpacing/sizescalex_);
             x += gl.advX;
         }
     }
@@ -861,11 +868,11 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     		maxy = std::max(maxy, sizescaley_ * y1);
 
             x += textureGlyph->advancex >> 6;
-    		x += (int) (letterSpacing / sizescalex_);
+            x += (int) (params->letterSpacing / sizescalex_);
 
             shape.srcIndex=i;
             shape.glyph=glyph;
-            shape.advX=(textureGlyph->advancex >> 6)+kx+(letterSpacing/sizescalex_);
+            shape.advX=(textureGlyph->advancex >> 6)+kx+(params->letterSpacing/sizescalex_);
             shape.advY=0;
             shape.offX=left;
             shape.offY=-top;
@@ -887,19 +894,18 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 }
 
 void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
-		const char* text, float r, float g, float b, float a,
-        TextLayoutParameters *layout, bool /*hasSample*/, float minx, float miny,TextLayout &l) {
+                        const char* text, float r, float g, float b, float a,
+                        TextLayoutParameters *layout, bool /*hasSample*/, float minx, float miny,TextLayout &l) {
 
     if (!(l.styleFlags&TEXTSTYLEFLAG_SKIPLAYOUT))
-        l = layoutText(text, layout);
+        layoutText(text, layout, l);
 
-	if (strlen(text) == 0) {
-		return;
-	}
+    if (strlen(text) == 0)
+        return;
 
-	std::map<int, int> layerMap;
-	std::map<int, int> gfxMap;
-	std::map<int, int> gfxMap2;
+    std::map<int, int> layerMap;
+    std::map<int, int> gfxMap;
+    std::map<int, int> gfxMap2;
     int gfx = vGraphicsBase->size();
 
 	for (size_t pn = 0; pn < l.parts.size(); pn++) {

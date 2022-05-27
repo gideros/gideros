@@ -13,7 +13,6 @@ SOURCES += \
 
 HEADERS += \
     controller.h \
-    hidapi.h \
     gamepad/Gamepad.h \
     gamepad/Gamepad_private.h \
     gcontroller.h
@@ -35,4 +34,8 @@ LIBS += -framework IOKit
 QMAKE_POST_LINK += install_name_tool -change liblua.1.dylib "@executable_path/../Frameworks/liblua.1.dylib" $(TARGET);
 QMAKE_POST_LINK += install_name_tool -change libgid.1.dylib "@executable_path/../Frameworks/libgid.1.dylib" $(TARGET);
 QMAKE_POST_LINK += install_name_tool -change libgideros.1.dylib "@executable_path/../Frameworks/libgideros.1.dylib" $(TARGET);
+}
+
+unix:!macx {
+SOURCES += gamepad/Gamepad_linux.c
 }

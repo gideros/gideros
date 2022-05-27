@@ -18,7 +18,8 @@ private:
     static int get(lua_State *L);
     static int size(lua_State *L);
     static int seek(lua_State *L);
-    static int tell(lua_State *L);
+	static int tell(lua_State* L);
+	static int exists(lua_State* L);
 };
 
 #endif

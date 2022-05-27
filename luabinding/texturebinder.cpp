@@ -39,6 +39,7 @@ int TextureBinder::create(lua_State* L)
 	}
 
 	bool smoothing = lua_toboolean(L, isFromPixels?4:2);
+    bool mipmap = false;
 
 	bool maketransparent = false;
 	unsigned int transparentcolor = 0x00000000;
@@ -46,6 +47,7 @@ int TextureBinder::create(lua_State* L)
     Format format = eRGBA8888;
     int paramsIndex=isFromPixels?5:3;
     bool pow2=true;
+    bool rawalpha=false;
     float scale=1.0;
 	if (!lua_isnoneornil(L, paramsIndex))
 	{
@@ -110,18 +112,35 @@ int TextureBinder::create(lua_State* L)
         lua_getfield(L, paramsIndex, "scale");
         scale=luaL_optnumber(L,-1,1.0);
         lua_pop(L, 1);
+        lua_getfield(L, paramsIndex, "rawalpha");
+        if (!lua_isnil(L, -1))
+          rawalpha=lua_toboolean(L,-1);
+        lua_pop(L, 1);
+        lua_getfield(L, paramsIndex, "mipmap");
+        if (!lua_isnil(L, -1))
+          mipmap=lua_toboolean(L,-1);
+        lua_pop(L, 1);
     }
 
 	
 	Binder binder(L);
 
+	TextureParameters parameters;
+	parameters.filter = smoothing ? (mipmap? eLinearMipmap:eLinear) : eNearest;
+	parameters.wrap = wrap;
+    parameters.format = format;
+	parameters.maketransparent = maketransparent;
+	parameters.transparentcolor = transparentcolor;
+	parameters.rawalpha = rawalpha;
+    parameters.pow2 = pow2;
+
 	Texture* texture = 0;
 	try
 	{
 		if (isFromPixels)
-	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2, scale);
+            texture = new Texture(application, (unsigned char *) filename, width, height, parameters, scale);
 		else
-			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
+            texture = new Texture(application, filename, parameters);
 	}
 	catch (const GiderosException& e)
 	{
@@ -151,11 +170,13 @@ int TextureBinder::loadAsync(lua_State* L)
     luaL_checktype(L,1,LUA_TFUNCTION);
     const char* filename = luaL_checkstring(L, 2);
     bool smoothing = lua_toboolean(L, 3);
+    bool mipmap = false;
     bool maketransparent = false;
     unsigned int transparentcolor = 0x00000000;
     Wrap wrap = eClamp;
     Format format = eRGBA8888;
     bool pow2=true;
+    bool rawalpha=false;
     if (!lua_isnoneornil(L, 4))
     {
         if (lua_type(L, 4) != LUA_TTABLE)
@@ -216,13 +237,31 @@ int TextureBinder::loadAsync(lua_State* L)
         if (!lua_isnil(L, -1))
           pow2=lua_toboolean(L,-1);
         lua_pop(L, 1);
+        lua_getfield(L, 4, "rawalpha");
+        if (!lua_isnil(L, -1))
+          rawalpha=lua_toboolean(L,-1);
+        lua_pop(L, 1);
+        lua_getfield(L, 4, "mipmap");
+        if (!lua_isnil(L, -1))
+          mipmap=lua_toboolean(L,-1);
+        lua_pop(L, 1);
     }
 
 
     lua_State *LL=luaapplication->getLuaState();
     lua_pushvalue(L,1);
     int func=luaL_ref(L, LUA_REGISTRYINDEX);
-    Texture::loadAsync(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2,
+
+	TextureParameters parameters;
+	parameters.filter = smoothing ? (mipmap? eLinearMipmap:eLinear) : eNearest;
+	parameters.wrap = wrap;
+    parameters.format = format;
+	parameters.maketransparent = maketransparent;
+	parameters.transparentcolor = transparentcolor;
+	parameters.rawalpha=rawalpha;
+    parameters.pow2 = pow2;
+
+    Texture::loadAsync(application, filename, parameters,
                                   [=](Texture *texture,std::exception_ptr e) {
         Binder binder(LL);
         lua_rawgeti(LL, LUA_REGISTRYINDEX, func);

@@ -243,3 +243,8 @@ LUA_API int lua_isjit()
 {
   return 0;
 }
+
+LUA_API int lua_isclosing(lua_State *L)
+{
+	return 0;
+}

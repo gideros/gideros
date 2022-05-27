@@ -33,6 +33,7 @@ class metalShaderProgram : public ShaderProgram
 public:
     static ShaderProgram *stdParticleT;
     static ShaderProgram *stdParticlesT;
+    static ShaderProgram *stdParticles3T;
     static ShaderProgram *stdBasic3;
     static ShaderProgram *stdColor3;
     static ShaderProgram *stdTexture3;

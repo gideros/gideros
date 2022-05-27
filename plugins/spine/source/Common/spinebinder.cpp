@@ -47,9 +47,10 @@ void _spAtlasPage_createTexture(spAtlasPage* self, const char* path) {
 	parameters.filter = filter(self->minFilter);
 	parameters.wrap = wrap(self->uWrap);
 	parameters.format = eRGBA8888;
+	parameters.pow2 = false;
 
 	TextureData *tex = application->getTextureManager()->createTextureFromFile(
-			path, parameters, false).get();
+			path, parameters).get();
 	self->rendererObject = tex;
 	self->width = tex->baseWidth;
 	self->height = tex->baseHeight;
@@ -174,6 +175,7 @@ static void callback_s(int type, void *data, void *udata) {
 	}
 	gspine_Event *event = (gspine_Event *) data;
 
+    lua_checkstack(L,16);
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
 	luaL_rawgetptr(L, -1, udata);
 

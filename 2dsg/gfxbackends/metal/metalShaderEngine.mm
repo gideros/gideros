@@ -122,22 +122,35 @@ void metalSetupShaders() {
 	const ShaderProgram::ConstantDesc stdPSConstants[] = {
 		{ "vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL },
 		{ "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
-        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, false, 0, NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
         { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
 		{ "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
 		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
 	};
+    const ShaderProgram::ConstantDesc stdPS3Constants[] = {
+        { "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
+        { "vViewMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ViewMatrix,true,0,NULL },
+        { "vProjMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ProjectionMatrix,true,0,NULL },
+        { "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
+        { "fColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
+        { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
+        { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
+    };
 	const ShaderProgram::DataDesc stdPSAttributes[] = {
 		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0,0 },
 		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0,0 },
-		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{ "vTexCoord", ShaderProgram::DFLOAT, 4, 2, 0,0 },
 		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
 	};
 
     ShaderProgram::stdParticles = new metalShaderProgram(
                                                          "gidPSV","gidPSF",stdPSConstants, stdPSAttributes,7,0);
+    ShaderProgram::stdParticles3 = new metalShaderProgram(
+                                                         "gidPS3V","gidPS3F",stdPS3Constants, stdPSAttributes,7,0);
     metalShaderProgram::stdParticlesT = new metalShaderProgram(
                                                          "gidPSV","gidPSTF",stdPSConstants, stdPSAttributes,7,0);
+    metalShaderProgram::stdParticles3T = new metalShaderProgram(
+                                                         "gidPS3V","gidPS3TF",stdPS3Constants, stdPSAttributes,7,0);
 }
 
 ShaderProgram *metalShaderEngine::createShaderProgram(const char *vshader,
@@ -467,7 +480,7 @@ void metalShaderEngine::bindTexture(int num, ShaderTexture *texture) {
     metalShaderTexture *mt=((metalShaderTexture *)texture);
     if ((mt->format==ShaderTexture::FMT_DEPTH)&&(mt->filter==ShaderTexture::FILT_LINEAR))
         smp=tsDC;
-    else if (mt->filter==ShaderTexture::FILT_LINEAR) {
+    else if ((mt->filter==ShaderTexture::FILT_LINEAR)||(mt->filter==ShaderTexture::FILT_LINEAR_MIPMAP)) {
         smp=(mt->wrap==ShaderTexture::WRAP_REPEAT)?tsFR:tsFC;
     }
     else if (mt->wrap==ShaderTexture::WRAP_REPEAT)
@@ -528,6 +541,11 @@ ShaderProgram *metalShaderEngine::getDefault(StandardProgram id,int variant)
         switch (id) {
             case STDP_PARTICLE: return metalShaderProgram::stdParticleT;
             case STDP_PARTICLES: return metalShaderProgram::stdParticlesT;
+            default: break;
+        }
+    if (variant==(STDPV_TEXTURED|STDPV_3D))
+        switch (id) {
+            case STDP_PARTICLES: return metalShaderProgram::stdParticles3T;
             default: break;
         }
     if (variant==STDPV_3D)

@@ -129,8 +129,6 @@ static int r3dWorld_create(lua_State* L) {
 		PNUM(defaultBounciness);
         /// Velocity threshold for contact velocity restitution
 		PNUM(restitutionVelocityThreshold);
-        /// Default rolling resistance
-		PNUM(defaultRollingRestistance);
         /// True if the sleeping technique is enabled
 		PBOOL(isSleepingEnabled);
         /// Number of iterations when solving the velocity constraints of the Sequential Impulse technique
@@ -145,8 +143,6 @@ static int r3dWorld_create(lua_State* L) {
         /// A body with angular velocity smaller than the sleep angular velocity (in rad/s)
         /// might enter sleeping mode
         PNUM(defaultSleepAngularVelocity);
-        /// Maximum number of contact manifolds in an overlapping pair
-        PUINT(nbMaxContactManifolds);
         /// This is used to test if two contact manifold are similar (same contact normal) in order to
         /// merge them. If the cosine of the angle between the normals of the two manifold are larger
         /// than the value bellow, the manifold are considered to be similar.
@@ -171,7 +167,8 @@ static int r3dWorld_destruct(void *p) {
 	rp3d::PhysicsWorld* world = static_cast<rp3d::PhysicsWorld*>(ptr);
 	GidEventListener *e = events[world];
 	if (e) {
-		lua_unref(L, e->cbn);
+		if (!lua_isclosing(L))
+			lua_unref(L, e->cbn);
 		delete e;
 		events[world] = NULL;
 	}
@@ -197,8 +194,7 @@ static int r3dWorld_SetEventListener(lua_State* L) {
 		if (!e)
 			e = new GidEventListener();
 		luaL_checktype(L, 2, LUA_TFUNCTION);
-		lua_pushvalue(L, 2);
-		e->cbn = lua_ref(L,1);
+        e->cbn = lua_ref(L,2);
 		events[world] = e;
 		world->setEventListener(e);
 	}
@@ -280,6 +276,7 @@ static void toTransform(lua_State *L, int n, rp3d::Transform &transform) {
 		lua_pop(L,1);
 }
 
+#define CHECK_BODY(body,argNum) if (!body) luaL_errorL(L,"Body at argument %d as been destroyed",argNum);
 static int r3dWorld_CreateBody(lua_State* L) {
 	Binder binder(L);
 	rp3d::PhysicsWorld* world =
@@ -311,6 +308,7 @@ static int r3dWorld_DestroyBody(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
+	if (!body) return 0; //Sanity check in case we try to destroy it twice
 	//Clear joints for world table
 	lua_getfield(L, 1, "__joints");
 	lua_getfield(L, 2, "__joints");
@@ -351,7 +349,9 @@ static int r3dWorld_Step(lua_State* L) {
 		if (step==0) step=0.001; //Step cannot be 0, use a dummy tiny step instead
 		world->update(step);
 #ifndef _NO_THROW
-	} catch (std::runtime_error &e) {
+    } catch (std::exception &e) {
+        throw;
+    } catch (std::runtime_error &e) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");
 	} catch (...) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");
@@ -392,9 +392,11 @@ static int r3dWorld_TestOverlap(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
+    CHECK_BODY(body1,2);
 	rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 3));
-	lua_pushboolean(L,world->testOverlap(body1, body2));
+    CHECK_BODY(body2,3);
+    lua_pushboolean(L,world->testOverlap(body1, body2));
 
 	return 1;
 }
@@ -410,14 +412,16 @@ static int r3dWorld_TestCollision(lua_State* L) {
 	else {
 		rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 				"r3dBody", 2));
-		if (lua_type(L,3)==LUA_TFUNCTION) {
+        CHECK_BODY(body1,2);
+        if (lua_type(L,3)==LUA_TFUNCTION) {
 			GidCollisionCallback gcb(L,3);
 			world->testCollision(body1, gcb);
 		}
 		else {
 			rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 					"r3dBody", 3));
-			luaL_checktype(L,4,LUA_TFUNCTION);
+            CHECK_BODY(body2,3);
+            luaL_checktype(L,4,LUA_TFUNCTION);
 			GidCollisionCallback gcb(L,4);
 			world->testCollision(body1, body2, gcb);
 
@@ -517,7 +521,8 @@ static int r3dBody_DestroyFixture(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	rp3d::Collider* shape = static_cast<rp3d::Collider*>(binder.getInstance(
+    CHECK_BODY(body,1);
+    rp3d::Collider* shape = static_cast<rp3d::Collider*>(binder.getInstance(
 			"r3dFixture", 2));
 	body->removeCollider(shape);
 
@@ -541,7 +546,8 @@ static int r3dBody_GetTransform(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	const rp3d::Transform t = body->getTransform();
+    CHECK_BODY(body,1);
+    const rp3d::Transform t = body->getTransform();
 	float mat[16];
 	t.getOpenGLMatrix(mat);
 
@@ -561,7 +567,8 @@ static int r3dBody_SetTransform(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	rp3d::Transform transform;
+    CHECK_BODY(body,1);
+    rp3d::Transform transform;
 	toTransform(L, 2, transform);
 	body->setTransform(transform);
 	return 0;
@@ -571,7 +578,8 @@ static int r3dBody_SetType(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	body->setType((BodyType) luaL_checkinteger(L, 2));
+    CHECK_BODY(body,1);
+    body->setType((BodyType) luaL_checkinteger(L, 2));
 	return 0;
 }
 
@@ -579,14 +587,17 @@ static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	body->updateMassPropertiesFromColliders();
+    CHECK_BODY(body,1);
+    body->updateMassPropertiesFromColliders();
 	return 0;
 }
 
 static int r3dBody_destruct(void *p) {
+	if (lua_isclosing(L)) return 0; //Worlds and all their bodies are going to be destroyed anyway
     void* ptr = GIDEROS_DTOR_UDATA(p);
-    lua_checkstack(L,16);
-    getb2(L,ptr);
+    if (!ptr) return 0; //Was already destroyed
+	lua_checkstack(L,16);
+	getb2(L,ptr);
     if (lua_isnil(L,-1)) {
       //Body has been GC'ed, check if still live in the world
       rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(ptr);
@@ -606,7 +617,7 @@ static int r3dBody_destruct(void *p) {
             lua_call(L,2,0);
         }
     }
-    lua_pop(L,1);    
+    lua_pop(L,1);
     return 0;
 }
 
@@ -620,8 +631,6 @@ static int r3dFixture_GetMaterial(lua_State* L) {
 	lua_setfield(L, -2, "bounciness");
 	lua_pushnumber(L, mat.getFrictionCoefficient());
 	lua_setfield(L, -2, "frictionCoefficient");
-	lua_pushnumber(L, mat.getRollingResistance());
-	lua_setfield(L, -2, "rollingResistance");
 	lua_pushnumber(L, mat.getMassDensity());
 	lua_setfield(L, -2, "massDensity");
 	return 1;
@@ -639,10 +648,6 @@ static int r3dFixture_SetMaterial(lua_State* L) {
 	lua_getfield(L, 2, "frictionCoefficient");
 	if (!lua_isnil(L,-1))
 		mat.setFrictionCoefficient(luaL_checknumber(L, -1));
-	lua_pop(L, 1);
-	lua_getfield(L, 2, "rollingResistance");
-	if (!lua_isnil(L,-1))
-		mat.setRollingResistance(luaL_checknumber(L, -1));
 	lua_pop(L, 1);
 	lua_getfield(L, 2, "massDensity");
 	if (!lua_isnil(L,-1))
@@ -663,24 +668,31 @@ static int r3dBody_EnableGravity(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	body->enableGravity(lua_toboolean(L, 2));
+    CHECK_BODY(body,1);
+    body->enableGravity(lua_toboolean(L, 2));
 	return 0;
 }
 
 #define BODY_SETGETVEC3(fct) OBJ_SETGETVEC3(Body,RigidBody,fct)
 #define BODY_SETGETNUM(fct) OBJ_SETGETNUM(Body,RigidBody,fct)
+#define BODY_GETVEC3(fct) OBJ_GETVEC3(Body,RigidBody,fct)
 
 BODY_SETGETNUM(LinearDamping)
 BODY_SETGETNUM(AngularDamping)
 BODY_SETGETNUM(Mass)
 BODY_SETGETVEC3(LinearVelocity)
 BODY_SETGETVEC3(AngularVelocity)
+BODY_GETVEC3(Force)
+BODY_GETVEC3(Torque)
+BODY_SETGETVEC3(LinearLockAxisFactor)
+BODY_SETGETVEC3(AngularLockAxisFactor)
 
 static int r3dBody_SetIsAllowedToSleep(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	body->setIsAllowedToSleep((bool)lua_toboolean(L, 2));
+    CHECK_BODY(body,1);
+    body->setIsAllowedToSleep((bool)lua_toboolean(L, 2));
 	return 0;
 }
 
@@ -688,39 +700,105 @@ static int r3dBody_SetIsActive(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	body->setIsActive((bool)lua_toboolean(L, 2));
+    CHECK_BODY(body,1);
+    body->setIsActive((bool)lua_toboolean(L, 2));
 	return 0;
 }
 
-static int r3dBody_ApplyForce(lua_State* L) {
+static int r3dBody_SetIsSleeping(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	rp3d::Vector3 force, point;
-	bool center = lua_isnoneornil(L,5);
-	TO_VECTOR(L, 2, force);
-	if (center)
-		body->applyForceToCenterOfMass(force);
-	else {
-		TO_VECTOR(L, 5, point);
-		body->applyForceAtWorldPosition(force, point);
-	}
+    CHECK_BODY(body,1);
+    body->setIsSleeping((bool)lua_toboolean(L, 2));
 	return 0;
 }
 
-static int r3dBody_ApplyLocalForce(lua_State* L) {
+static int r3dBody_ApplyWorldForceAtWorldPosition(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	rp3d::Vector3 force, point;
-	bool center = lua_isnoneornil(L,5);
+    CHECK_BODY(body,1);
+    rp3d::Vector3 force, point;
 	TO_VECTOR(L, 2, force);
-	if (center)
-		body->applyForceToCenterOfMass(force);
-	else {
-		TO_VECTOR(L, 5, point);
-		body->applyForceAtLocalPosition(force, point);
-	}
+	TO_VECTOR(L, 5, point);
+	body->applyWorldForceAtWorldPosition(force, point);
+	return 0;
+}
+
+static int r3dBody_ApplyWorldForceAtLocalPosition(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    rp3d::Vector3 force, point;
+	TO_VECTOR(L, 2, force);
+	TO_VECTOR(L, 5, point);
+	body->applyWorldForceAtLocalPosition(force, point);
+	return 0;
+}
+
+static int r3dBody_ApplyWorldForceAtCenterOfMass(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    rp3d::Vector3 force, point;
+	TO_VECTOR(L, 2, force);
+	body->applyWorldForceAtCenterOfMass(force);
+	return 0;
+}
+
+static int r3dBody_ApplyLocalForceAtWorldPosition(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    rp3d::Vector3 force, point;
+	TO_VECTOR(L, 2, force);
+	TO_VECTOR(L, 5, point);
+	body->applyLocalForceAtWorldPosition(force, point);
+	return 0;
+}
+
+static int r3dBody_ApplyLocalForceAtLocalPosition(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    rp3d::Vector3 force, point;
+	TO_VECTOR(L, 2, force);
+	TO_VECTOR(L, 5, point);
+	body->applyLocalForceAtLocalPosition(force, point);
+	return 0;
+}
+
+static int r3dBody_ApplyLocalForceAtCenterOfMass(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    rp3d::Vector3 force, point;
+	TO_VECTOR(L, 2, force);
+	body->applyLocalForceAtCenterOfMass(force);
+	return 0;
+}
+
+static int r3dBody_ResetForce(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    body->resetForce();
+	return 0;
+}
+
+static int r3dBody_ResetTorque(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    body->resetForce();
 	return 0;
 }
 
@@ -728,7 +806,8 @@ static int r3dBody_RayCast(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	rp3d::Vector3 rs, re;
+    CHECK_BODY(body,1);
+    rp3d::Vector3 rs, re;
 	TO_VECTOR(L, 2, rs);
 	TO_VECTOR(L, 5, re);
 	Ray ray(rs, re);
@@ -744,20 +823,33 @@ static int r3dBody_TestPointInside(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	rp3d::Vector3 pt;
+    CHECK_BODY(body,1);
+    rp3d::Vector3 pt;
 	TO_VECTOR(L, 2, pt);
 	lua_pushboolean(L,body->testPointInside(pt));
 
 	return 1;
 }
 
-static int r3dBody_ApplyTorque(lua_State* L) {
+static int r3dBody_ApplyWorldTorque(lua_State* L) {
 	Binder binder(L);
 	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 1));
-	rp3d::Vector3 torque;
+    CHECK_BODY(body,1);
+    rp3d::Vector3 torque;
 	TO_VECTOR(L, 2, torque);
-	body->applyTorque(torque);
+	body->applyWorldTorque(torque);
+	return 0;
+}
+
+static int r3dBody_ApplyLocalTorque(lua_State* L) {
+	Binder binder(L);
+	rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+			"r3dBody", 1));
+    CHECK_BODY(body,1);
+    rp3d::Vector3 torque;
+    TO_VECTOR(L, 2, torque);
+	body->applyLocalTorque(torque);
 	return 0;
 }
 
@@ -879,7 +971,7 @@ public:
 			int ik = luaL_optinteger(L, -1, 0);
 			lua_pop(L, 1);
 			if ((ik <= 0)||(ik > vc)) {
-				delete indices;
+                delete[] indices;
 				if (facesn) delete facesn;
 				luaL_error(L,
 						"Index array contains an invalid vertice index: %d, max:%d",
@@ -1112,6 +1204,34 @@ static int r3dFixture_RayCast(lua_State* L) {
 	return 1;
 }
 
+#define JOINT_GETVEC3(fct) OBJ_GETVEC3(Joint,Joint,fct)
+
+static int r3dJoint_GetReactionForce(lua_State* L) {
+	Binder binder(L);
+	rp3d::Joint* joint = static_cast<rp3d::Joint*>(binder.getInstance(
+			"r3dJoint", 1));
+
+	rp3d::Vector3 v=joint->getReactionForce(luaL_checknumber(L,2));
+	lua_pushnumber(L,v.x);
+	lua_pushnumber(L,v.y);
+	lua_pushnumber(L,v.z);
+	return 3;
+}
+
+static int r3dJoint_GetReactionTorque(lua_State* L) {
+	Binder binder(L);
+	rp3d::Joint* joint = static_cast<rp3d::Joint*>(binder.getInstance(
+			"r3dJoint", 1));
+
+	rp3d::Vector3 v=joint->getReactionTorque(luaL_checknumber(L,2));
+	lua_pushnumber(L,v.x);
+	lua_pushnumber(L,v.y);
+	lua_pushnumber(L,v.z);
+	return 3;
+}
+
+OBJ_GETNUM(HingeJoint,HingeJoint,Angle)
+
 static int r3dFixture_TestPointInside(lua_State* L) {
 	Binder binder(L);
 	rp3d::Collider* shape = static_cast<rp3d::Collider*>(binder.getInstance(
@@ -1168,9 +1288,11 @@ static int r3dWorld_CreateBallAndSocketJoint(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
-	rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+    CHECK_BODY(body1,2);
+    rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 3));
-	bool hasParams = false;
+    CHECK_BODY(body2,3);
+    bool hasParams = false;
 	if (!lua_isnoneornil(L,7)) {
 		luaL_checktype(L, 7, LUA_TTABLE);
 		hasParams = true;
@@ -1200,9 +1322,11 @@ static int r3dWorld_CreateHingeJoint(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
-	rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+    CHECK_BODY(body1,2);
+    rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 3));
-	bool hasParams = false;
+    CHECK_BODY(body2,3);
+    bool hasParams = false;
 	if (!lua_isnoneornil(L,10)) {
 		luaL_checktype(L, 10, LUA_TTABLE);
 		hasParams = true;
@@ -1248,9 +1372,11 @@ static int r3dWorld_CreateSliderJoint(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
-	rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+    CHECK_BODY(body1,2);
+    rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 3));
-	bool hasParams = false;
+    CHECK_BODY(body2,3);
+    bool hasParams = false;
 	if (!lua_isnoneornil(L,10)) {
 		luaL_checktype(L, 10, LUA_TTABLE);
 		hasParams = true;
@@ -1296,9 +1422,11 @@ static int r3dWorld_CreateFixedJoint(lua_State* L) {
 			static_cast<rp3d::PhysicsWorld*>(binder.getInstance("r3dWorld", 1));
 	rp3d::RigidBody* body1 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 2));
-	rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
+    CHECK_BODY(body1,2);
+    rp3d::RigidBody* body2 = static_cast<rp3d::RigidBody*>(binder.getInstance(
 			"r3dBody", 3));
-	bool hasParams = false;
+    CHECK_BODY(body2,3);
+    bool hasParams = false;
 	if (!lua_isnoneornil(L,7)) {
 		luaL_checktype(L, 7, LUA_TTABLE);
 		hasParams = true;
@@ -1336,7 +1464,6 @@ private:
     	float x,y,z;
     };
 	rp3d::PhysicsWorld* world_;
-	LuaApplication* application_;
     VertexBuffer<VPos> vertices;
     VertexBuffer<VColor> colors;
 };
@@ -1418,8 +1545,7 @@ static void r3dDG_Destroy(void *c)
 
 
 r3dDebugDraw::r3dDebugDraw(LuaApplication* application,rp3d::PhysicsWorld *world1) :
-    world_(world1),
-    application_(application)
+    world_(world1)
 {
 	proxy_=gtexture_get_spritefactory()->createProxy(application->getApplication(), this, r3dDG_Draw, r3dDG_Destroy);
 
@@ -1506,10 +1632,24 @@ static int loader(lua_State *L) {
 			{ "setType", r3dBody_SetType },
 			{ "enableGravity", r3dBody_EnableGravity },
 			{ "setIsAllowedToSleep", r3dBody_SetIsAllowedToSleep },
+			{ "setIsSleeping", r3dBody_SetIsSleeping },
 			{ "setIsActive", r3dBody_SetIsActive },
-			{ "applyForce", r3dBody_ApplyForce },
-			{ "applyTorque", r3dBody_ApplyTorque },
-			{ "applyLocalForce", r3dBody_ApplyLocalForce },
+			{ "applyWorldForceAtWorldPosition", r3dBody_ApplyWorldForceAtWorldPosition },
+			{ "applyWorldForceAtLocalPosition", r3dBody_ApplyWorldForceAtLocalPosition },
+			{ "applyWorldForceAtCenterOfMass", r3dBody_ApplyWorldForceAtCenterOfMass },
+			{ "applyWorldTorque", r3dBody_ApplyWorldTorque },
+			{ "applyLocalForceAtWorldPosition", r3dBody_ApplyLocalForceAtWorldPosition },
+			{ "applyLocalForceAtLocalPosition", r3dBody_ApplyLocalForceAtLocalPosition },
+			{ "applyLocalForceAtCenterOfMass", r3dBody_ApplyLocalForceAtCenterOfMass },
+			{ "applyLocalTorque", r3dBody_ApplyLocalTorque },
+			{ "resetForce", r3dBody_ResetForce },
+			{ "resetTorque", r3dBody_ResetTorque },
+			{ "getForce", r3dBody_GetForce },
+			{ "getTorque", r3dBody_GetTorque },
+			{ "setLinearLockAxisFactor", r3dBody_SetLinearLockAxisFactor },
+			{ "setAngularLockAxisFactor", r3dBody_SetAngularLockAxisFactor },
+			{ "getLinearLockAxisFactor", r3dBody_GetLinearLockAxisFactor },
+			{ "getAngularLockAxisFactor", r3dBody_GetAngularLockAxisFactor },
 			{ "raycast", r3dBody_RayCast },
 			{ "testPointInside", r3dBody_TestPointInside },
 			{ "updateMassPropertiesFromColliders", r3dBody_UpdateMassPropertiesFromColliders },
@@ -1566,13 +1706,18 @@ static int loader(lua_State *L) {
 	binder.createClass("r3dHeightFieldShape", "r3dShape", r3dHeightFieldShape_create,
 				NULL, r3dHeightFieldShape_functionList);
 
-	const luaL_Reg r3dJoint_functionList[] = { { NULL, NULL }, };
+	const luaL_Reg r3dJoint_functionList[] = {
+			{ "getReactionForce", r3dJoint_GetReactionForce },
+			{ "getReactionTorque", r3dJoint_GetReactionTorque },
+			{ NULL, NULL }, };
 	binder.createClass("r3dJoint", NULL/*"EventDispatcher"*/, NULL, NULL,
 			r3dJoint_functionList);
 	const luaL_Reg r3dBallAndSocketJoint_functionList[] = { { NULL, NULL }, };
 	binder.createClass("r3dBoxAndSocketJoint", "r3dJoint", NULL, NULL,
 			r3dBallAndSocketJoint_functionList);
-	const luaL_Reg r3dHingeJoint_functionList[] = { { NULL, NULL }, };
+	const luaL_Reg r3dHingeJoint_functionList[] = {
+			{ "getAngle", r3dHingeJoint_GetAngle },
+			{ NULL, NULL }, };
 	binder.createClass("r3dHingeJoint", "r3dJoint", NULL, NULL,
 			r3dHingeJoint_functionList);
 	const luaL_Reg r3dSlider_functionList[] = { { NULL, NULL }, };
@@ -1638,9 +1783,9 @@ static void g_deinitializePlugin(lua_State *_UNUSED(L)) {
 }
 
 #ifdef QT_NO_DEBUG
-REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.8.0", reactphysics3d)
+REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.9.0", reactphysics3d)
 #elif defined(TARGET_OS_MAC) || defined(_MSC_VER)
-REGISTER_PLUGIN_STATICNAMED_CPP("ReactPhysics3D", "0.8.0", reactphysics3d)
+REGISTER_PLUGIN_STATICNAMED_CPP("ReactPhysics3D", "0.9.0", reactphysics3d)
 #else
-REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.8.0", reactphysics3d)
+REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.9.0", reactphysics3d)
 #endif

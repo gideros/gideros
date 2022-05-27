@@ -124,6 +124,7 @@ typedef struct ALsource {
         ALfloat GainLF;
         ALfloat LFReference;
     } Send[MAX_SENDS];
+    ALfloat Balance;
 
     /** Source needs to update its mixing parameters. */
     ATOMIC(ALenum) NeedsUpdate;

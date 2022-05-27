@@ -271,6 +271,27 @@ Shape::Shape(Application *application) : Sprite(application)
 	clear();
 }
 
+void Shape::cloneFrom(Shape *s) {
+    Sprite::cloneFrom(s);
+
+    matrix_=s->matrix_;
+    fillr_=s->fillr_, fillg_=s->fillg_, fillb_=s->fillb_, filla_=s->filla_;
+    fillType_=s->fillType_;
+    liner_=s->liner_, lineg_=s->lineg_, lineb_=s->lineb_, linea_=s->linea_;
+    thickness_=s->thickness_;
+    min_=s->min_, max_=s->max_;
+    Point2f min_, max_;
+    windingRule_=s->windingRule_;
+    paths_=s->paths_;
+    textures_=s->textures_;
+    for (std::size_t i = 0; i < textures_.size(); ++i)
+        textures_[i]->ref();
+    texture_=s->texture_;
+    graphicsBases_=s->graphicsBases_;
+    for (GraphicsBaseList::iterator iter = graphicsBases_.begin(), e = graphicsBases_.end(); iter != e; ++iter)
+        iter->cloned();
+}
+
 Shape::~Shape()
 {
 	clear();
@@ -306,6 +327,7 @@ void Shape::setTextureFillStyle(TextureBase* texture, const Matrix4* matrix)
 
 	if (matrix)
 		matrix_ = matrix->inverse();
+	invalidate(INV_GRAPHICS);
 }
 
 void Shape::clear()
@@ -335,6 +357,7 @@ void Shape::clear()
 
 	min_ = Point2f( 1e30f,  1e30f);
 	max_ = Point2f(-1e30f, -1e30f);
+	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
 void Shape::setLineStyle(float thickness, unsigned int color, float alpha)
@@ -442,6 +465,7 @@ void Shape::endPath()
 					graphicsBases_.pop_back();;
 			}
 		}
+		invalidate(INV_GRAPHICS|INV_BOUNDS);
 	}
 
 	paths_.clear();

@@ -14,6 +14,10 @@ public:
 	{
 		modified=true;
 	}
+    void Cloned() {
+        bufferCache=NULL;
+        modified=true;
+    }
 	VertexBuffer()
 	{
 		bufferCache=NULL;
@@ -38,6 +42,12 @@ public:
 	void draw(ShaderProgram *shader = NULL, VertexBuffer<unsigned short> *commonIndices=NULL);
 
 	void clear();
+    void cloned() {
+        indices.Cloned();
+        vertices.Cloned();
+        texcoords.Cloned();
+        colors.Cloned();
+    }
 
 	void setColor(float r, float g, float b, float a)
 	{

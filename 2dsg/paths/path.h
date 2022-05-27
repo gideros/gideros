@@ -33,7 +33,9 @@ public:
     	float offset;
     };
 	Path2D(Application* application);
-	virtual ~Path2D();
+    virtual Sprite *clone() { Path2D *clone=new Path2D(application_); clone->cloneFrom(this); return clone; }
+    void cloneFrom(Path2D *);
+    virtual ~Path2D();
     void setTexture(TextureBase *texturebase, const Matrix4* matrix = NULL);
 	void setPath(int num_commands, const unsigned char *commands, int num_coords, const float *coords);
 	void setPath(const PrPath *path);

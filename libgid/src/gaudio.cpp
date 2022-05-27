@@ -149,6 +149,11 @@ void GGSoundManager::SoundListener(float x,float y,float z,float vx,float vy,flo
 	  streamInterface_->SoundListener(x,y,z,vx,vy,vz,dx,dy,dz,ux,uy,uz);
 }
 
+bool GGSoundManager::SoundHasEffect(const char *effect)
+{
+    return streamInterface_->SoundHasEffect(effect); //Assume both iinterfaces support effects
+}
+
 
 void GGSoundManager::ChannelStop(g_id channel)
 {
@@ -222,7 +227,7 @@ bool GGSoundManager::ChannelIsPlaying(g_id channel, int *bufferSize, float *buff
     return channel2->interface->ChannelIsPlaying(channel, bufferSize, bufferSeconds);
 }
 
-void GGSoundManager::ChannelSetVolume(g_id channel, float volume)
+void GGSoundManager::ChannelSetVolume(g_id channel, float volume, float balance)
 {
     std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
     if (iter == channels_.end())
@@ -230,7 +235,7 @@ void GGSoundManager::ChannelSetVolume(g_id channel, float volume)
 
     Channel *channel2 = iter->second;
 
-    channel2->interface->ChannelSetVolume(channel, volume);
+    channel2->interface->ChannelSetVolume(channel, volume, balance);
 }
 
 float GGSoundManager::ChannelGetVolume(g_id channel)
@@ -308,6 +313,17 @@ void GGSoundManager::ChannelSetWorldPosition(g_id channel, float x,float y,float
     Channel *channel2 = iter->second;
 
     channel2->interface->ChannelSetWorldPosition(channel, x,y,z,vx,vy,vz);
+}
+
+void GGSoundManager::ChannelSetEffect(g_id channel, const char *effect, float *params)
+{
+    std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+    if (iter == channels_.end())
+        return ;
+
+    Channel *channel2 = iter->second;
+
+    channel2->interface->ChannelSetEffect(channel, effect, params);
 }
 
 g_id GGSoundManager::ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)
@@ -458,6 +474,11 @@ g_id GGAudioManager::SoundPlay(g_id sound, bool paused, bool streaming)
     return soundManager_->SoundPlay(sound, paused, streaming);
 }
 
+bool GGAudioManager::SoundHasEffect(const char *effect)
+{
+    return soundManager_->SoundHasEffect(effect);
+}
+
 void GGAudioManager::ChannelStop(g_id channel)
 {
     soundManager_->ChannelStop(channel);
@@ -488,9 +509,9 @@ bool GGAudioManager::ChannelIsPlaying(g_id channel, int *bufferSize, float *buff
     return soundManager_->ChannelIsPlaying(channel, bufferSize, bufferSeconds);
 }
 
-void GGAudioManager::ChannelSetVolume(g_id channel, float volume)
+void GGAudioManager::ChannelSetVolume(g_id channel, float volume, float balance)
 {
-    soundManager_->ChannelSetVolume(channel, volume);
+    soundManager_->ChannelSetVolume(channel, volume, balance);
 }
 
 float GGAudioManager::ChannelGetVolume(g_id channel)
@@ -526,6 +547,11 @@ bool GGAudioManager::ChannelIsLooping(g_id channel)
 void GGAudioManager::ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz)
 {
     return soundManager_->ChannelSetWorldPosition(channel,x,y,z,vx,vy,vz);
+}
+
+void GGAudioManager::ChannelSetEffect(g_id channel, const char *effect, float *params)
+{
+    return soundManager_->ChannelSetEffect(channel, effect, params);
 }
 
 g_id GGAudioManager::ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)
@@ -775,6 +801,11 @@ void gaudio_SoundListener(float x,float y,float z,float vx,float vy,float vz,flo
 	s_manager->SoundListener(x,y,z,vx,vy,vz,dx,dy,dz,ux,uy,uz);
 }
 
+bool gaudio_SoundHasEffect(const char *effect)
+{
+	return s_manager->SoundHasEffect(effect);
+}
+
 void gaudio_ChannelStop(g_id channel)
 {
     s_manager->ChannelStop(channel);
@@ -805,9 +836,9 @@ g_bool gaudio_ChannelIsPlaying(g_id channel, int *bufferSize, float *bufferSecon
     return s_manager->ChannelIsPlaying(channel, bufferSize, bufferSeconds);
 }
 
-void gaudio_ChannelSetVolume(g_id channel, float volume)
+void gaudio_ChannelSetVolume(g_id channel, float volume, float balance)
 {
-    s_manager->ChannelSetVolume(channel, volume);
+    s_manager->ChannelSetVolume(channel, volume, balance);
 }
 
 float gaudio_ChannelGetVolume(g_id channel)
@@ -843,6 +874,11 @@ g_bool gaudio_ChannelIsLooping(g_id channel)
 void gaudio_ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz)
 {
 	s_manager->ChannelSetWorldPosition(channel, x,y,z,vx,vy,vz);
+}
+
+void gaudio_ChannelSetEffect(g_id channel, const char *effect, float *params)
+{
+	s_manager->ChannelSetEffect(channel, effect, params);
 }
 
 g_id gaudio_ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)
@@ -915,7 +951,7 @@ g_bool gaudio_BackgroundChannelIsPlaying(g_id backgroundChannel, int *bufferSize
     return s_manager->BackgroundChannelIsPlaying(backgroundChannel, bufferSize, bufferSeconds);
 }
 
-void gaudio_BackgroundChannelSetVolume(g_id backgroundChannel, float volume)
+void gaudio_BackgroundChannelSetVolume(g_id backgroundChannel, float volume, float balance)
 {
     s_manager->BackgroundChannelSetVolume(backgroundChannel, volume);
 }
