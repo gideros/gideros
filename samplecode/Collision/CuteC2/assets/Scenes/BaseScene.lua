@@ -1,8 +1,5 @@
 if (not ImGui) then 
-	require "ImGui_pre_build"
-	if (not ImGui) then 
-		require "ImGui"
-	end
+	require "ImGui"
 end
 
 require "Shapes"
