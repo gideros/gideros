@@ -862,6 +862,192 @@ void LuaApplication::callback(int type, void *event)
     }
 }
 
+int LuaApplication::resolveStyle(lua_State *L,const char *key)
+{
+    //Style table is expected to be at top of stack
+    if (!lua_istable(L,-1))
+    {
+        lua_pushfstringL(L,"Style table doesn't exist, while looking for key: %s",key);
+        lua_error(L);
+    }
+    lua_checkstack(L,8);
+    lua_pushvalue(L,-1);
+    size_t limit=1000;
+    while (limit>0) {
+        int klen=strlen(key);
+        if (((*key)=='|')||((klen>3)&&((key[klen-4]=='.')&&(
+                                           ((key[klen-3]=='p')&&(key[klen-3]=='n')&&(key[klen-3]=='g'))||
+                                           ((key[klen-3]=='j')&&(key[klen-3]=='p')&&(key[klen-3]=='g'))
+                                           ))))
+        {
+            //File, return as is
+            lua_pop(L,2);
+            lua_pushlstring(L,key,klen);
+            return LUA_TSTRING;
+        }
+        const char *kk=key;
+        while ((((*kk)>='0')&&((*kk)<='9'))||((*kk)=='-')||((*kk)=='.')) kk++;
+        if (kk>key) {
+            //Number-String: check for a unit
+            if (kk[0]==0) {
+                //Not suffix, just convert to number
+                lua_pop(L,2);
+                lua_pushnumber(L,strtod(key,NULL));
+                return LUA_TNUMBER;
+            }
+            else if ((kk[0]=='e')&&(kk[1]=='m')&&(kk[2]==0)) {
+                if (resolveStyle(L,"font")==LUA_TNIL)
+                {
+                    lua_pushfstringL(L,"Font not found for computing: %s",key);
+                    lua_error(L);
+                }
+                lua_getfield(L,-1,"getLineHeight");
+                if (lua_isnil(L,-1))
+                {
+                    lua_pushfstringL(L,"Resolved font is invalid for computing: %s",key);
+                    lua_error(L);
+                }
+                lua_insert(L,-2);
+                lua_call(L,1,1);
+                lua_Number num=lua_tonumber(L,-1);
+                lua_pop(L,2);
+                lua_pushnumber(L,num*strtod(key,NULL));
+                return LUA_TNUMBER;
+            }
+            else {
+                char unitName[32+6]="unit.";
+                strncpy(unitName+5,kk,32);
+                unitName[32+5]=0;
+                if (resolveStyle(L,unitName)==LUA_TNIL)
+                {
+                    lua_pushfstringL(L,"Unit not recognized: %s",kk);
+                    lua_error(L);
+                }
+                lua_Number num=lua_tonumber(L,-1);
+                lua_pop(L,2);
+                lua_pushnumber(L,num*strtod(key,NULL));
+                return LUA_TNUMBER;
+            }
+        }
+        //Check if current table is a reference
+        bool inherit=true;
+        while (inherit&&(limit>0)) {
+            int rtype;
+            if (lua_rawgetfield(L,-1,"__Reference")==LUA_TSTRING) {
+                const char *kref=lua_tolstring(L,-1,NULL);
+                lua_pop(L,1);
+                rtype=lua_rawgetfield(L,-1,"__Parent");
+                if (rtype==LUA_TTABLE)
+                    rtype=resolveStyle(L,kref);
+                if (rtype!=LUA_TTABLE)
+                {
+                    lua_pushfstringL(L,"Reference doesn't resolve to a table: %s",kref);
+                    lua_error(L);
+                }
+                //Lookup in reference
+                rtype=lua_getfield(L,-1,key);
+                lua_remove(L,-2);
+            }
+            else {
+                lua_pop(L,1);
+                rtype=lua_getfield(L,-1,key); //Lookup in table
+            }
+            if (rtype==LUA_TNIL) {
+                lua_pop(L,1);
+                rtype=lua_rawgetfield(L,-1,"__Parent");
+                if (rtype==LUA_TSTRING) {
+                    //Parent is a string, look it up
+                    const char *kref=lua_tolstring(L,-1,NULL);
+                    lua_pop(L,1);
+                    rtype=resolveStyle(L,kref);
+                    lua_remove(L,-2);
+                }
+                if (rtype==LUA_TNIL) {
+                    //Nothing, return nil
+                    lua_remove(L,-2);
+                    lua_remove(L,-2);
+                    return rtype;
+                }
+                if (rtype!=LUA_TTABLE)
+                {
+                    lua_pushfstringL(L,"Parent style isn't a table while resolving: %s",key);
+                    lua_error(L);
+                }
+                lua_remove(L,-2);
+            }
+            else if (rtype!=LUA_TSTRING) {
+                //Not a string, return it
+                lua_remove(L,-2);
+                lua_remove(L,-2);
+                return rtype;
+            }
+            else {
+                //Got a string, re-run full key processing
+                key=lua_tolstring(L,-1,NULL);
+                lua_pop(L,2);
+                lua_pushvalue(L,-1);
+                inherit=false;
+            }
+            limit-=1;
+        }
+    }
+    lua_pushfstringL(L,"Recursion while resolving style: %s",key);
+    lua_error(L);
+    return LUA_TNIL;
+}
+
+void LuaApplication::resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache)
+{
+    int idx=colIdx;
+    if (colIdx&&(lua_type(L,colIdx)==LUA_TSTRING)) {
+        cache=lua_tolstring(L,colIdx,NULL);
+        colIdx=0;
+    }
+    if (!colIdx) {
+        lua_getfield(L,spriteIdx,"__style");
+        resolveStyle(L,cache.c_str());
+        idx=-1;
+    }
+    switch (lua_type(L,idx)) {
+    case LUA_TVECTOR:
+    {
+        const float *c=lua_tovector(L,idx);
+        color[0]=c[0];
+        color[1]=c[1];
+        color[2]=c[2];
+        color[3]=c[3];
+        break;
+    }
+    case LUA_TNUMBER:
+    {
+        unsigned int c = lua_tounsigned(L,idx);
+
+        color[0]= (1.0/255)*((c >> 16) & 0xff);
+        color[1]= (1.0/255)*((c >> 8) & 0xff);
+        color[2]= (1.0/255)*((c >> 0) & 0xff);
+        color[3]=1;
+        break;
+    }
+    case LUA_TUSERDATA:
+    {
+        int64_t c=luaL_checkint64(L,idx);
+
+        color[0]= (1.0/255)*((c >> 16) & 0xff);
+        color[1]= (1.0/255)*((c >> 8) & 0xff);
+        color[2]= (1.0/255)*((c >> 0) & 0xff);
+        color[3]= (1.0/255)*((c >> 24) & 0xff);
+        break;
+    }
+    default:
+        lua_pushfstringL(L,"Cannot turn %s into a color at index %d with name '%s'",lua_typename(L,lua_type(L,idx)),colIdx,cache.c_str());
+        lua_error(L);
+    }
+
+    //luaL_checkvector(L,idx);
+    if (!colIdx)
+        lua_pop(L,1);
+}
+
 /*
 static std::map<std::pair<std::string, int>, double> memmap;
 static double lastmem = 0;
@@ -1202,6 +1388,22 @@ static int enterFrame(lua_State* L)
             pluginManager.plugins[i].enterFrame(L);
 
     application->enterFrame();
+    /* perform style updating */
+    lua_getglobal(L,"application");
+    lua_getfield(L,-1,"__styleUpdates");
+    if (!lua_isnil(L,-1))
+    {
+        lua_pushnil(L);
+        lua_setfield(L,-3,"__styleUpdates");
+        lua_pushnil(L);
+        while (lua_next(L,-2)) {
+            lua_pop(L,1); //No need for sprite itself
+            lua_getfield(L,-1,"updateStyle");
+            lua_pushvalue(L,-2);
+            lua_call(L,1,0);
+        }
+    }
+    lua_pop(L,2);
 
 	return 0;
 }

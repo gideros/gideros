@@ -36,8 +36,8 @@ public:
     virtual float getAscender();
     virtual float getDescender();
     virtual float getLineHeight();
-    virtual bool shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext);
-    virtual void chunkMetrics(struct ChunkLayout &part, float letterSpacing);
+    virtual bool shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext, FontBase::TextLayoutParameters *params);
+    virtual void chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params);
     virtual void preDraw();
 
 private:

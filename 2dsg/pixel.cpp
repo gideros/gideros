@@ -89,6 +89,11 @@ void Pixel::cloneFrom(Pixel *s) {
     insett_t_=s->insett_t_; insett_b_=s->insett_b_; insett_l_=s->insett_l_; insett_r_=s->insett_r_;
     c1_=s->c1_; c2_=s->c2_; c3_=s->c3_; c4_=s->c4_;
     a1_=s->a1_; a2_=s->a2_; a3_=s->a3_; a4_=s->a4_;
+    styCache_color=s->styCache_color;
+    styCache_c1=s->styCache_c1;
+    styCache_c2=s->styCache_c2;
+    styCache_c3=s->styCache_c3;
+    styCache_c4=s->styCache_c4;
     isWhite_=s->isWhite_;
     minw_=s->minw_; minh_=s->minh_;
     for (int t=0;t<PIXEL_MAX_TEXTURES;t++)

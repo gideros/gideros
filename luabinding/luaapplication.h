@@ -182,6 +182,8 @@ public:
     static int Core_profilerReport(lua_State *L);
     static int Core_random(lua_State *L);
     static int Core_randomSeed(lua_State *L);
+    static int resolveStyle(lua_State *L,const char *key);
+    static void resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache);
     //Debugger support
 #define DBG_MASKBREAK	(1<<7) //Check breakpoints: Not a lua debug flag
 #define DBG_MASKSUB		(1<<6) //Ignore subcalls: Not a lua debug flag

@@ -123,6 +123,13 @@ private:
     float minw_,minh_;
 	float tx_,ty_,tw_,th_; //Texture coordinates in texels
 	float anchorx_, anchory_;
+
+public:
+    std::string styCache_c1;
+    std::string styCache_c2;
+    std::string styCache_c3;
+    std::string styCache_c4;
+    std::string styCache_color;
 };
 
 #endif

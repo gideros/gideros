@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 #include <vector>
+#include <map>
+#include <string>
 struct GridInsets {
 	float top;
 	float left;
@@ -54,6 +56,7 @@ struct GridBagConstraints {
     //Object group
     bool group;
 
+    std::map<std::string,std::string> resolved;
 
     GridBagConstraints() {
         gridx = 0;
@@ -164,6 +167,8 @@ public:
     float cellSpacingX,cellSpacingY;
     float gridAnchorX,gridAnchorY;
     float zOffset;
+    std::map<std::string,std::string> resolved;
+    std::map<std::string,std::map<int,std::string>> resolvedArray;
     GridBagLayout() :
             optimizing(false),equalizeCells(false),dirty(false),resizeContainer(false),
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
