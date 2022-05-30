@@ -151,11 +151,10 @@ static ALCenum ca_open_playback(ALCdevice *device, const ALCchar *deviceName)
     desc.componentType = kAudioUnitType_Output;
 #if !(TARGET_OS_IOS || TARGET_OS_TV)
     desc.componentSubType = kAudioUnitSubType_DefaultOutput;
-    desc.componentManufacturer = kAudioUnitManufacturer_Apple;
 #else
-    desc.componentSubType = 0;
-    desc.componentManufacturer = 0;
+    desc.componentSubType = kAudioUnitSubType_RemoteIO;
 #endif
+    desc.componentManufacturer = kAudioUnitManufacturer_Apple;
     desc.componentFlags = 0;
     desc.componentFlagsMask = 0;
 

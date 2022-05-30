@@ -14,7 +14,7 @@
 #ifdef __ANDROID__
 #define HAVE_OPENSL
 #endif
-#ifdef __ANDROID__
+#ifdef __APPLE__
 #define HAVE_COREAUDIO
 #endif
 
