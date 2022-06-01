@@ -12,24 +12,30 @@ iosplayer.%.libs: IOSLUA_INCLUDES=$(addprefix ../../,$(LUA_INCLUDE) $(LUA_INCLUD
 lua.ios.libs: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.ios.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.ios.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
+openal.ios.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 lua.ios.libs.clean: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.ios.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.ios.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
+open.ios.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
 lua.atv.libs: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.atv.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
+openal.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 lua.atv.libs.clean: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.atv.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.atv.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
+openal.atv.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
 lua.mac.libs: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.mac.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.mac.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
+openal.mac.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 iosplayer.mac.dbg.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 lua.mac.libs.clean: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.mac.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
+openal.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
 ##RULES
 %.ios.libs: 
@@ -53,12 +59,12 @@ iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 	@cd $(IOSLIBPATH); cp build/$(XCODE_CONFIG)/lib$*.a lib$*.mac.a
 
 
-ios.libs: gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
-ios.libs.clean : gvfs.ios.libs.clean lua.ios.libs.clean iosplayer.ios.libs.clean
-atv.libs: gvfs.atv.libs lua.atv.libs iosplayer.atv.libs
-atv.libs.clean : gvfs.atv.libs.clean lua.atv.libs.clean iosplayer.atv.libs.clean
-mac.libs: gvfs.mac.libs lua.mac.libs iosplayer.mac.libs
-mac.libs.clean : gvfs.mac.libs.clean lua.mac.libs.clean iosplayer.mac.libs.clean
+ios.libs: gvfs.ios.libs lua.ios.libs iosplayer.ios.libs openal.ios.libs
+ios.libs.clean : gvfs.ios.libs.clean lua.ios.libs.clean iosplayer.ios.libs.clean openal.ios.libs.clean
+atv.libs: gvfs.atv.libs lua.atv.libs iosplayer.atv.libs openal.atv.libs
+atv.libs.clean : gvfs.atv.libs.clean lua.atv.libs.clean iosplayer.atv.libs.clean openal.atv.libs.clean
+mac.libs: gvfs.mac.libs lua.mac.libs iosplayer.mac.libs openal.mac.libs
+mac.libs.clean : gvfs.mac.libs.clean lua.mac.libs.clean iosplayer.mac.libs.clean openal.mac.libs.clean
 
 
 ios.app: player.ios.app
@@ -69,6 +75,7 @@ ios.libs.install: ios.libs
 	cp $(ROOT)/$(LUA_ENGINE)/liblua.ios.a $(IOS_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.ios.a $(IOS_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.ios.a $(IOS_TEMPLATE)/libgideros.a
+	cp $(ROOT)/ios/iosplayer/libopenal.ios.a $(IOS_TEMPLATE)/libopenal.a
 	cp $(ROOT)/ios/iosplayer/build/Release-iphoneos/default.metallib $(IOS_TEMPLATE)
 	cp $(ROOT)/ios/iosplayer/build/Release-iphonesimulator/default.metallib $(IOS_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(IOS_TEMPLATE)
@@ -78,6 +85,7 @@ atv.libs.install: atv.libs
 	cp $(ROOT)/$(LUA_ENGINE)/liblua.atv.a $(ATV_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.atv.a $(ATV_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
+	cp $(ROOT)/ios/iosplayer/libopenal.atv.a $(ATV_TEMPLATE)/libopenal.a
 	cp $(ROOT)/ios/iosplayer/build/Release-appletvos/default.metallib $(ATV_TEMPLATE)
 	cp $(ROOT)/ios/iosplayer/build/Release-appletvsimulator/default.metallib $(ATV_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
@@ -87,6 +95,7 @@ mac.libs.install: mac.libs
 	cp $(ROOT)/$(LUA_ENGINE)/liblua.mac.a $(MAC_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.mac.a $(MAC_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.mac.a $(MAC_TEMPLATE)/libgideros.a
+	cp $(ROOT)/ios/iosplayer/libopenal.mac.a $(MAC_TEMPLATE)/libopenal.a
 	cp $(ROOT)/ios/iosplayer/build/Release/default.metallib $(MAC_TEMPLATE)
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(MAC_TEMPLATE)
 

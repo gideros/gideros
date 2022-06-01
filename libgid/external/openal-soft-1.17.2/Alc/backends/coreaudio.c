@@ -149,7 +149,11 @@ static ALCenum ca_open_playback(ALCdevice *device, const ALCchar *deviceName)
 
     /* open the default output unit */
     desc.componentType = kAudioUnitType_Output;
+#if !(TARGET_OS_IOS || TARGET_OS_TV)
     desc.componentSubType = kAudioUnitSubType_DefaultOutput;
+#else
+    desc.componentSubType = kAudioUnitSubType_RemoteIO;
+#endif
     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
     desc.componentFlags = 0;
     desc.componentFlagsMask = 0;
@@ -375,10 +379,14 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
     AudioStreamBasicDescription outputFormat;     // The AudioUnit output format
     AURenderCallbackStruct input;
     AudioComponentDescription desc;
+#if !(TARGET_OS_IOS || TARGET_OS_TV)
     AudioDeviceID inputDevice;
+#endif
     UInt32 outputFrameCount;
     UInt32 propertySize;
+#if !(TARGET_OS_IOS || TARGET_OS_TV)
     AudioObjectPropertyAddress propertyAddress;
+#endif
     UInt32 enableIO;
     AudioComponent comp;
     ca_data *data;
@@ -390,8 +398,13 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
         return ALC_INVALID_VALUE;
 
     desc.componentType = kAudioUnitType_Output;
+#if !(TARGET_OS_IOS || TARGET_OS_TV)
     desc.componentSubType = kAudioUnitSubType_HALOutput;
     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
+#else
+    desc.componentSubType = 0;
+    desc.componentManufacturer = 0;
+#endif
     desc.componentFlags = 0;
     desc.componentFlagsMask = 0;
 
@@ -432,6 +445,7 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
         goto error;
     }
 
+#if !(TARGET_OS_IOS || TARGET_OS_TV)
     // Get the default input device
 
     propertySize = sizeof(AudioDeviceID);
@@ -451,7 +465,6 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
         ERR("No input device found\n");
         goto error;
     }
-
     // Track the input device
     err = AudioUnitSetProperty(data->audioUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &inputDevice, sizeof(AudioDeviceID));
     if(err != noErr)
@@ -459,6 +472,7 @@ static ALCenum ca_open_capture(ALCdevice *device, const ALCchar *deviceName)
         ERR("AudioUnitSetProperty failed\n");
         goto error;
     }
+#endif
 
     // set capture callback
     input.inputProc = ca_capture_callback;

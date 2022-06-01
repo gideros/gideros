@@ -19,8 +19,8 @@ export LUA_INCLUDE_CORE
 CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 #DEFS
-PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun reactphysics3d fastnoise
-PLUGINS_ALL=lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui
+PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun reactphysics3d fastnoise cute_c2
+PLUGINS_ALL=lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_ALL+=bitop
 endif
@@ -28,11 +28,11 @@ endif
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera 
 PLUGINS_WINONLY=spout steam luamidi
 PLUGINS_MACONLY=steam luamidi
-PLUGINS_WIN32=lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui
+PLUGINS_WIN32=lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui cute_c2
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts megacool map share storereview
-PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui
+PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_WIN+=threads
 PLUGINS_ANDROID+=threads
@@ -41,10 +41,10 @@ PLUGINS_HTML5+=bitop
 endif
 
 #Precompiled plugins only below
-PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
-PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
-PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui
-PLUGINS_WINRT=luasocket ogg liquidfun gsfxr harfbuzz reactphysics3d imgui
+PLUGINS_IOS=luasocket camera ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui cute_c2
+PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui cute_c2
+PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui cute_c2
+PLUGINS_WINRT=luasocket ogg liquidfun gsfxr harfbuzz reactphysics3d imgui cute_c2
 
 ADDONS=GSFXREditor Player TAME
 
@@ -86,8 +86,8 @@ versioning: tools
 	$(BUILDTOOLS)/bin2c luabinding/luabindings.luac >luabinding/luabindings.luac.c
 
 #SDK includes
-vpath %.h libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.13/include/AL
-vpath %.hpp libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.13/include/AL
+vpath %.h libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.17.2/include/AL
+vpath %.hpp libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.17.2/include/AL
 $(SDK)/include/%: %
 	cp $^ $(SDK)/include
 
