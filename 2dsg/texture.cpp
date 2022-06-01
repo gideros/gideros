@@ -7,14 +7,14 @@ Texture::Texture(Application* application) : TextureBase(application)
 }
 
 Texture::Texture(Application* application,
-                 const char* filename, TextureParameters parameters, bool pow2) :
-    TextureBase(application, filename, parameters, pow2)
+                 const char* filename, TextureParameters parameters) :
+    TextureBase(application, filename, parameters)
 {
 }
 
 Texture::Texture(Application* application,
-				 const unsigned char* pixels, unsigned int width, unsigned int height, TextureParameters parameters, bool pow2, float scale) :
-    TextureBase(application, pixels, width, height, parameters, pow2, scale)
+                 const unsigned char* pixels, unsigned int width, unsigned int height, TextureParameters parameters, float scale) :
+    TextureBase(application, pixels, width, height, parameters, scale)
 {
 }
 
@@ -24,9 +24,9 @@ Texture::~Texture()
 }
 
 void Texture::loadAsync(Application* application,
-                const char* filename, TextureParameters parameters, bool pow2, std::function<void(Texture *,std::exception_ptr)> callback)
+                const char* filename, TextureParameters parameters, std::function<void(Texture *,std::exception_ptr)> callback)
 {
-    auto future = application->getTextureManager()->createTextureFromFile(filename, parameters,pow2,
+    auto future = application->getTextureManager()->createTextureFromFile(filename, parameters,
                   [=](TextureData *data, std::exception_ptr e){
         if (e) {
             callback(NULL,e);

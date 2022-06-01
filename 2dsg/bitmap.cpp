@@ -38,7 +38,7 @@ void Bitmap::cloneFrom(Bitmap *s) {
     maxy_ = s->maxy_;
 
     graphicsBase_=s->graphicsBase_;
-    graphicsBase_.clearCaches();
+    graphicsBase_.cloned();
 }
 
 void Bitmap::updateBounds()

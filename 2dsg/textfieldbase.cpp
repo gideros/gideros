@@ -25,6 +25,7 @@ bool TextFieldBase::scaleChanged() {
 	lscaley_=scaley;
 	lfontCacheVersion_=fontver;
     prefWidth_=prefHeight_=-1;
+    textlayout_.letterSpacingCache=-1;
 	return changed;
 }
 

@@ -101,10 +101,19 @@ void dx11SetupShaders()
 		{ "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
 		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
 	};
+    const ShaderProgram::ConstantDesc stdPS3Constants[] = {
+        { "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
+        { "vViewMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ViewMatrix,true,0,NULL },
+        { "vProjMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_ProjectionMatrix,true,0,NULL },
+        { "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
+        { "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
+        { "vfColor", ShaderProgram::CFLOAT4, 1,ShaderProgram::SysConst_Color, true, 0, NULL },
+        { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
+    };
 	const dx11ShaderProgram::DataDesc stdPSAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 4, 0, 0,0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0,0 },
-		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0,0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 4, 2, 0,0 },
 		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
 	};
 
@@ -115,6 +124,7 @@ void dx11SetupShaders()
 	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdCConstants, stdTCAttributes);
 	ShaderProgram::stdTextureAlphaColor = new dx11ShaderProgram(vTextureAlphaColor_cso, sizeof(vTextureAlphaColor_cso), pTextureAlphaColor_cso, sizeof(pTextureAlphaColor_cso), 0, stdCConstants, stdTCAttributes);
 	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), 0, stdPSConstants, stdPSAttributes);
+	ShaderProgram::stdParticles3 = new dx11ShaderProgram(vParticles3_cso, sizeof(vParticles3_cso), pParticles3_cso, sizeof(pParticles3_cso), 0, stdPS3Constants, stdPSAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},

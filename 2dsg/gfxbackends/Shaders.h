@@ -76,8 +76,9 @@ public:
 	static ShaderProgram *stdTextureColor;
 	static ShaderProgram *stdTextureAlphaColor;
 	static ShaderProgram *stdParticle;
-	static ShaderProgram *stdParticles;
-	static ShaderProgram *pathShaderFillC;
+    static ShaderProgram *stdParticles;
+    static ShaderProgram *stdParticles3;
+    static ShaderProgram *pathShaderFillC;
 	static ShaderProgram *pathShaderStrokeC;
 	static ShaderProgram *pathShaderStrokeLC;
 	enum StdData {
@@ -137,7 +138,8 @@ public:
 	};
 	enum Filtering {
 		FILT_LINEAR,
-		FILT_NEAREST
+        FILT_NEAREST,
+        FILT_LINEAR_MIPMAP,
 	};
 	virtual void updateData(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 };
@@ -330,11 +332,11 @@ public:
 	virtual void setViewportProjection(const Matrix4 vp, float width, float height);
 	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) { G_UNUSED(vp); G_UNUSED(width); G_UNUSED(height);};
 	virtual void setModel(const Matrix4 m);
-	virtual const Matrix4 getModel() { return oglModel; }
+    virtual const Matrix4 getModel() { return oglModel; }
 	virtual const Matrix4 getView() { return oglView; }
 	virtual const Matrix4 getProjection() { return oglProjection; }
 	virtual const Matrix4 getViewportProjection() { return oglVPProjectionUncorrected; }
-	//Attributes
+    //Attributes
 	virtual void setColor(float r,float g,float b,float a);
 	virtual void getColor(float &r,float &g,float &b,float &a);
 	virtual void clearColor(float r,float g,float b,float a)=0;

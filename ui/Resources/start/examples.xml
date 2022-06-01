@@ -42,6 +42,7 @@
 	<example 	name="GTween"
 				description="Tweening example"
 				path="Graphics/GTween/GTween.gproj"
+				image = "gtween.png"
 				/>
 
 	<example 	name="Hierarchy"
@@ -111,32 +112,19 @@
 				path="Graphics/PixelsClown/PixelsClown.gproj"
 				image="clown.png"
 				/>
-    <example 	name="Bird Animation 3D"
-				description="Demonstrates viewport transformations for VR purposes"
-				path="Graphics/Bird Animation 3D/Bird Animation 3D.gproj"
-				image="bird animation.png"
-				/>
     <example 	name="Map Clown"
 				description="Demonstrates building of a tilemap from a texture"
 				path="Graphics/MapClown/MapClown.gproj"
 				image="clown.png"
 				/>
-</category>
-	
-<category name="Graphics 5">
 	<example 	name="Spine animation"
 				description="Procedural skeletal animation using SpineC plugin"
 				path="Graphics/SpineC example/SpineC example.gproj"
 				image="spine.png"
 				/>
-	<example 	name="VR Dungeon"
-				description="Oculus Quest support demonstration"
-				path="Graphics/VR Oculus/VR Oculus.gproj"
-				image="dungeon.png"
-				/>
 </category>
-
-<category name="Graphics 3D">
+	
+<category name="Graphics 3D 1">
 	<example 	name="3D Cube"
 				description="Drawing and rotating 3D cube using Shape and Mesh"
 				path="Graphics3D/3D-Cube/3D-Cube.gproj"
@@ -167,6 +155,24 @@
 				image="3dinstancing.png"
 				/>
 	
+</category>
+
+<category name="Graphics 3D 2">
+	<example 	name="VR Dungeon"
+				description="Oculus Quest support demonstration"
+				path="Graphics/VR Oculus/VR Oculus.gproj"
+				image="dungeon.png"
+				/>
+    <example 	name="Bird Animation 3D"
+				description="Demonstrates viewport transformations for VR purposes"
+				path="Graphics/Bird Animation 3D/Bird Animation 3D.gproj"
+				image="bird animation.png"
+				/>
+	<example 	name="3D Particles"
+				description="Demonstrate 3D particles"
+				path="Graphics3D/3D-Particles/3D-Particles.gproj"
+				image="3d-fire.png"
+				/>
 </category>
 
 <category name="Shaders">
@@ -343,13 +349,17 @@
 				path="Physics/Particles/Particles.gproj"
 				image="particles.png"
 				/>
-</category>
-
-<category name="3D Physics">
+				
 	<example 	name="3D Collisions"
 				description="3D Collisions detection"
 				path="Physics3D/3D Collisions/3D Collisions.gproj"
 				image = "collision detection.png"
+				/>
+				
+	<example 	name="Cute C2"
+				description="Cute C2 plugin Demo"
+				path="Collision/CuteC2/CuteC2_demo.gproj"
+				image = "cute_c2.png"
 				/>
 </category>
 

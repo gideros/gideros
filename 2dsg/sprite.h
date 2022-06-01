@@ -492,6 +492,7 @@ protected:
     std::vector<Effect> effectStack_;
     std::vector<char> skipSet_;
     bool checkClip_;
+    bool worldAlign_;
     enum BoundsMode {
         BOUNDS_UNSPEC=0,
         BOUNDS_OBJECT=1,
@@ -521,6 +522,7 @@ public:
         INV_CONSTRAINTS=256,
     } changes_;
     void invalidate(int changes);
+    void setWorldAlign(bool align) { worldAlign_=align; }
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;
     int spriteWithLayoutCount;

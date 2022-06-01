@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>462</width>
-    <height>300</height>
+    <width>492</width>
+    <height>335</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -157,7 +157,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>140</y>
+           <y>150</y>
            <width>271</width>
            <height>101</height>
           </rect>
@@ -268,8 +268,8 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>30</y>
-           <width>271</width>
+           <y>60</y>
+           <width>299</width>
            <height>91</height>
           </rect>
          </property>
@@ -301,7 +301,10 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QCheckBox" name="wordHightlighterSimpleCheckBox">
+           <widget class="QCheckBox" name="wordHighlighterSimpleCheckBox">
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ignores all selections. Finds a word at last cursor position (in case of using multiple cursors).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -309,7 +312,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="text">
-             <string>Simple hightlighter</string>
+             <string>Simple highlighter</string>
             </property>
            </widget>
           </item>
@@ -338,6 +341,19 @@
            </widget>
           </item>
          </layout>
+        </widget>
+        <widget class="QCheckBox" name="appendToolbarCheckBox">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>191</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Append toolbar to menu</string>
+         </property>
         </widget>
        </widget>
        <widget class="QWidget" name="Keybindings"/>

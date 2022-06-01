@@ -92,6 +92,10 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"setHiddenChildren", SpriteBinder::setHiddenChildren},
 		{"setCheckClip", SpriteBinder::setCheckClip},
         {"clone", SpriteBinder::clone},
+        {"setWorldAlign", SpriteBinder::setWorldAlign},
+        {"setStyle", SpriteBinder::setStyle},
+        {"resolveStyle", SpriteBinder::resolveStyle},
+        {"updateStyle", SpriteBinder::updateStyle},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -253,6 +257,10 @@ int SpriteBinder::create(lua_State* L)
 static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fidx) {
     Binder binder(L);
     lua_checkstack(L,8);
+    lua_pushvalue(L,oidx);
+    lua_pushvalue(L,cidx-1);
+    lua_rawset(L,fidx-2);
+
     lua_getfield(L, oidx, "__userdata");
     lua_getfield(L, cidx-1, "__userdata");
     if (lua_getmetatable(L,-2))
@@ -264,23 +272,23 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
     int cc=c->childCount();
     if (cc>0) {
         lua_getfield(L,oidx,"__children");
-        lua_createtable(L,cc,0);
+        lua_createtable(L,0,cc);
         for(int k=0;k<cc;k++) {
             Sprite *sl=o->child(k);
             Sprite *cl=c->child(k);
             lua_pushlightuserdata(L, sl);
             lua_rawget(L,-3);
             cl->ref();
-            binder.pushInstance("Sprite", cl);
+            binder.pushInstance("Sprite", cl); //OCL,CCL,OCO,CCO
             fixupClone(L,sl,cl,-2,-1,fidx-4);
             lua_pushvalue(L,cidx-4);
             lua_setfield(L, -2, "__parent");
             lua_pushlightuserdata(L, cl);
-            lua_pushvalue(L,-2);
-            lua_rawset(L,-5);
-            lua_rawset(L,fidx-4);
+            lua_pushvalue(L,-2); //OCL,CCL,OCO,CCO,CLK,CCO
+            lua_rawset(L,-5); //OCL,CCL,OCO,CCO
+            lua_rawset(L,fidx-4); //OCL,CCL [fidx[oco]=cco]
         }
-        lua_setfield(L, cidx-2, "__children");
+        lua_setfield(L, cidx-2, "__children"); //OCL
         lua_pop(L,1);
     }
 
@@ -299,6 +307,7 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
             lua_remove(L,-2); //-5:K,K,M(V)
         lua_rawset(L,cidx-5); //-3:K
     }
+
     lua_setfield(L, cidx-2, "__userdata"); //-1:Restore __userdata
     lua_setfield(L, cidx-1, "__children"); //0:Restore __children
     lua_getfield(L,cidx,"newClone");
@@ -419,14 +428,14 @@ int SpriteBinder::addChildAt(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	Sprite* child = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
-	int index = luaL_checkinteger(L, 3);
+    int index = luaL_checkinteger(L, 3);
 
-	GStatus status;
+    GStatus status;
     if (sprite->canChildBeAddedAt(child, index - 1, &status) == false)
         luaL_error(L, "%s", status.errorString());
 
-	if (child->parent() == sprite)
-	{
+    if (child->parent() == sprite)
+    {
         lua_pushinteger(L,1+sprite->addChildAt(child, index - 1));
         return 1;
 	}
@@ -617,23 +626,29 @@ int SpriteBinder::getClip(lua_State* L)
     return 4;
 }
 
+#define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pop(L,1); p->resolved[n]=key; lua_pushvalue(L,t); LuaApplication::resolveStyle(L,key);
+#define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pop(L,1); lua_pushvalue(L,t); LuaApplication::resolveStyle(L,key); p->resolvedArray[n][i]=key; }
+#define RESOLVE(n) FRESOLVE(n,-1) }
+#define RESOLVED(n) if ((!raw)&&p->resolved.count(n)) lua_pushstring(L,p->resolved[n].c_str()); else
+#define ARESOLVED(n,i) if ((!raw)&&p->resolvedArray.count(n)&&p->resolvedArray[n].count(i)) lua_pushstring(L,p->resolvedArray[n][i].c_str()); else
 #define FILL_NUM_ARRAY(n,f) \
 		lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { \
 			luaL_checktype(L,-1, LUA_TTABLE); \
 			p->f.resize(lua_objlen(L,-1)); \
-			for (size_t k=1;k<=lua_objlen(L,-1);k++) { lua_rawgeti(L,-1,k); p->f[k-1]=luaL_checknumber(L,-1); lua_pop(L,1); } \
+            p->resolvedArray.erase(n); \
+            for (size_t k=1;k<=lua_objlen(L,-1);k++) { lua_rawgeti(L,-1,k); ARESOLVE(n,-2,k); p->f[k-1]=luaL_checknumber(L,-1); lua_pop(L,1); } \
 		} lua_pop(L,1);
-#define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checkinteger(L,-1); lua_pop(L,1);
-#define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=(t) luaL_checkinteger(L,-1); lua_pop(L,1);
-#define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checknumber(L,-1); lua_pop(L,1);
-#define FILL_BOOL(n,f) lua_getfield(L,2,n); p->f=lua_toboolean(L,-1); lua_pop(L,1);
+#define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=luaL_checkinteger(L,-1); } lua_pop(L,1);
+#define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) luaL_checkinteger(L,-1); } lua_pop(L,1);
+#define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=luaL_checknumber(L,-1); } lua_pop(L,1);
+#define FILL_BOOL(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
 #define STOR_NUM_ARRAY(n,f) \
 		lua_newtable(L); \
-		for (size_t k=0;k<p->f.size();k++) { lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
+        for (size_t k=0;k<p->f.size();k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
 		lua_setfield(L,-2,n);
-#define STOR_INT(n,f) lua_pushinteger(L,p->f); lua_setfield(L,-2,n);
-#define STOR_INTT(n,f,t) lua_pushinteger(L,(int)p->f); lua_setfield(L,-2,n);
-#define STOR_NUM(n,f) lua_pushnumber(L,p->f); lua_setfield(L,-2,n);
+#define STOR_INT(n,f) RESOLVED(n) lua_pushinteger(L,p->f); lua_setfield(L,-2,n);
+#define STOR_INTT(n,f,t) RESOLVED(n) lua_pushinteger(L,(int)p->f); lua_setfield(L,-2,n);
+#define STOR_NUM(n,f) RESOLVED(n) lua_pushnumber(L,p->f); lua_setfield(L,-2,n);
 #define STOR_BOOL(n,f) lua_pushboolean(L,p->f); lua_setfield(L,-2,n);
 
 int SpriteBinder::setLayoutParameters(lua_State *L)
@@ -645,7 +660,8 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 	if (lua_isnoneornil(L,2))
 		sprite->clearLayoutState();
 	else {
-		luaL_checktype(L, 2, LUA_TTABLE);
+        luaL_checktype(L, 2, LUA_TTABLE);
+        lua_getfield(L,1,"__style");
 		GridBagLayout *p=sprite->getLayoutState();
 		FILL_NUM_ARRAY("columnWidths",columnWidths);
 		FILL_NUM_ARRAY("rowHeights",rowHeights);
@@ -653,8 +669,14 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 		FILL_NUM_ARRAY("rowWeights",rowWeights);
 
 		lua_getfield(L,2,"insets");
-		if (!lua_isnoneornil(L,-1))
-			p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
+        if (!lua_isnoneornil(L,-1)) {
+            FRESOLVE("insetTop",-1)
+                p->resolved["insetLeft"]=p->resolved["insetTop"];
+                p->resolved["insetBottom"]=p->resolved["insetTop"];
+                p->resolved["insetRight"]=p->resolved["insetTop"];
+            }
+            p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
+        }
 		lua_pop(L,1);
         FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
         FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
@@ -664,6 +686,8 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
         FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
         FILL_NUM("zOffset",zOffset);
+
+        lua_pop(L,1);
         p->dirty=true;
         p->layoutInfoCache[0].valid=false;
         p->layoutInfoCache[1].valid=false;
@@ -681,8 +705,9 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 	if (lua_isnoneornil(L,2))
 		sprite->clearLayoutConstraints();
 	else {
-		luaL_checktype(L, 2, LUA_TTABLE);
-		GridBagConstraints *p=sprite->getLayoutConstraints();
+        luaL_checktype(L, 2, LUA_TTABLE);
+        lua_getfield(L,1,"__style");
+        GridBagConstraints *p=sprite->getLayoutConstraints();
 
 		FILL_INT("gridx",gridx); FILL_INT("gridy",gridy);
 		FILL_INT("gridwidth",gridwidth); FILL_INT("gridheight",gridheight);
@@ -703,12 +728,18 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
         lua_getfield(L,2,"width");
         if (!lua_isnoneornil(L,-1)) {
+            FRESOLVE("minWidth",-1)
+                p->resolved["prefWidth"]=p->resolved["minWidth"];
+            }
             float width=luaL_checknumber(L,-1);
             p->aminWidth=width; p->prefWidth=width;
         }
         lua_pop(L,1);
         lua_getfield(L,2,"height");
         if (!lua_isnoneornil(L,-1)) {
+            FRESOLVE("minHeight",-1)
+                p->resolved["prefHeight"]=p->resolved["minHeight"];
+            }
             float height=luaL_checknumber(L,-1);
             p->aminHeight=height; p->prefHeight=height;
         }
@@ -719,11 +750,18 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         FILL_BOOL("group",group);
 
 		lua_getfield(L,2,"insets");
-		if (!lua_isnoneornil(L,-1))
-			p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
+        if (!lua_isnoneornil(L,-1)) {
+            FRESOLVE("insetTop",-1)
+                p->resolved["insetLeft"]=p->resolved["insetTop"];
+                p->resolved["insetBottom"]=p->resolved["insetTop"];
+                p->resolved["insetRight"]=p->resolved["insetTop"];
+            }
+            p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
+        }
 		lua_pop(L,1);
 		FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
 		FILL_NUM("insetBottom",insets.bottom); FILL_NUM("insetRight",insets.right);
+        lua_pop(L,1);
         sprite->invalidate(Sprite::INV_CONSTRAINTS);
 	}
 	return 0;
@@ -738,6 +776,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
 	if (sprite->hasLayoutState())
 	{
 		GridBagLayout *p=sprite->getLayoutState();
+        bool raw=lua_toboolean(L,2);
 		lua_newtable(L);
 		STOR_NUM_ARRAY("columnWidths",columnWidths);
 		STOR_NUM_ARRAY("rowHeights",rowHeights);
@@ -765,7 +804,8 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 	if (sprite->hasLayoutConstraints())
 	{
 		GridBagConstraints *p=sprite->getLayoutConstraints();
-		lua_newtable(L);
+        bool raw=lua_toboolean(L,2);
+        lua_newtable(L);
 		STOR_INT("gridx",gridx); STOR_INT("gridy",gridy);
 		STOR_INT("gridwidth",gridwidth); STOR_INT("gridheight",gridheight);
 		STOR_NUM("weightx",weightx); STOR_NUM("weighty",weighty);
@@ -786,6 +826,11 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 		lua_pushnil(L);
 	return 1;
 }
+
+#undef RESOLVED
+#undef ARESOLVED
+#define RESOLVED(n)
+#define ARESOLVED(n,i)
 
 int SpriteBinder::getLayoutInfo(lua_State *L)
 {
@@ -847,6 +892,11 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 	return 1;
 }
 
+#undef FRESOLVE
+#undef RESOLVE
+#undef RESOLVED
+#undef ARESOLVE
+#undef ARESOLVED
 #undef FILL_INT
 #undef FILL_NUM
 #undef FILL_NUM_ARRAY
@@ -1303,9 +1353,6 @@ int SpriteBinder::getParent(lua_State* L)
 {
 	StackChecker checker(L, "getParent", 1);
 
-	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-
 	lua_getfield(L, 1, "__parent");
 
 	return 1;
@@ -1629,10 +1676,10 @@ int SpriteBinder::getChildrenAtPoint(lua_State* L)
 
 int SpriteBinder::getWidth(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::getWidth", 1);
-	
-	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    StackChecker checker(L, "SpriteBinder::getWidth", 1);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
     if (lua_isboolean(L, 2) && lua_toboolean(L, 2)) {
         float x1, y1, x2, y2;
@@ -1641,15 +1688,15 @@ int SpriteBinder::getWidth(lua_State* L)
     } else
         lua_pushnumber(L, sprite->width());
 
-	return 1;
+    return 1;
 }
 
 int SpriteBinder::getHeight(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::getHeight", 1);
-	
-	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    StackChecker checker(L, "SpriteBinder::getHeight", 1);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
     if (lua_isboolean(L, 2) && lua_toboolean(L, 2)) {
         float x1, y1, x2, y2;
@@ -1658,7 +1705,7 @@ int SpriteBinder::getHeight(lua_State* L)
     } else
         lua_pushnumber(L, sprite->height());
 
-	return 1;
+    return 1;
 }
 
 /*
@@ -2152,6 +2199,158 @@ int SpriteBinder::setHiddenChildren(lua_State* L)
 
     return 0;
 }
+
+int SpriteBinder::setWorldAlign(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setWorldAlign", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    sprite->setWorldAlign(lua_toboolean(L,2));
+    return 0;
+}
+
+static void gatherStyledChildren(lua_State *L,int idx,int tidx)
+{
+    if (lua_rawgetfield(L,idx,"__children")!=LUA_TNIL) {
+        lua_checkstack(L,8);
+        lua_pushnil(L);
+        while (lua_next(L,-2)) {
+            if (lua_rawgetfield(L,-1,"__style")==LUA_TTABLE) {
+                lua_pop(L,1);
+                gatherStyledChildren(L,-1,tidx-3);
+                lua_pushvalue(L,-2);
+                lua_rawset(L,tidx-4);
+            }
+            else
+                lua_pop(L,2);
+        }
+    }
+    lua_pop(L,1);
+}
+
+int SpriteBinder::setStyle(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setStyle", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    if (!lua_isnil(L,2))
+        luaL_checktype(L,2,LUA_TTABLE);
+    bool propagate=lua_toboolean(L,3);
+    lua_pushvalue(L,2);
+    lua_setfield(L,1,"__style");
+    lua_getglobal(L,"application");
+    lua_getfield(L,-1,"__styleUpdates");
+    if (lua_isnil(L,-1))
+    {
+        lua_pop(L,1);
+        lua_newtable(L);
+        lua_pushvalue(L,-1);
+        lua_setfield(L,-3,"__styleUpdates");
+    }
+    lua_pushvalue(L,1);
+    lua_pushlightuserdata(L,sprite);
+    lua_rawset(L,-3);
+    if (propagate)
+        gatherStyledChildren(L,1,-1);
+    lua_pop(L,2);
+    return 0;
+}
+
+int SpriteBinder::resolveStyle(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::resolveStyle", 2);
+
+    if (lua_type(L,2)!=LUA_TSTRING) {
+        lua_pushvalue(L,2);
+        lua_pushstring(L,lua_typename(L,lua_type(L,2)));
+        return 2;
+    }
+    if (!lua_isnoneornil(L,3))
+        lua_pushvalue(L,3);
+    else
+        lua_getfield(L,1,"__style");
+
+    const char *skey=luaL_checkstring(L,2);
+    int rtype=LuaApplication::resolveStyle(L,skey);
+    lua_pushstring(L,lua_typename(L,rtype));
+    return 2;
+}
+
+#define FILL_NUM_ARRAY(n,f) \
+        if (p->resolvedArray.count(n)) { \
+            for (size_t k=0;k<p->f.size();k++) { \
+                if (p->resolvedArray[n].count(k)) { \
+                    lua_pushvalue(L,-1); LuaApplication::resolveStyle(L,p->resolvedArray[n][k].c_str()); p->f[k]=luaL_checknumber(L,-1); lua_pop(L,1); dirty=true; \
+                } } }
+#define FILL_NUM(n,f) if (p->resolved.count(n)) { lua_pushvalue(L,-1); LuaApplication::resolveStyle(L,p->resolved[n].c_str()); p->f=luaL_checknumber(L,-1); lua_pop(L,1); dirty=true; }
+
+int SpriteBinder::updateStyle(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::updateStyle", 0);
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    lua_getfield(L,1,"__style");
+    {
+        GridBagLayout *p=sprite->layoutState;
+        if (p&&(!(p->resolved.empty()&&p->resolvedArray.empty()))) {
+            bool dirty=false;
+
+            FILL_NUM_ARRAY("columnWidths",columnWidths);
+            FILL_NUM_ARRAY("rowHeights",rowHeights);
+            FILL_NUM_ARRAY("columnWeights",columnWeights);
+            FILL_NUM_ARRAY("rowWeights",rowWeights);
+
+            FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
+            FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
+
+            FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
+            FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
+            FILL_NUM("zOffset",zOffset);
+
+            if (dirty) {
+                p->dirty=true;
+                p->layoutInfoCache[0].valid=false;
+                p->layoutInfoCache[1].valid=false;
+                sprite->invalidate(Sprite::INV_CONSTRAINTS);
+            }
+        }
+    }
+
+    //Constraints
+    {
+        GridBagConstraints *p=sprite->layoutConstraints;
+        if (p&&(!p->resolved.empty())) {
+            bool dirty=false;
+
+            FILL_NUM("weightx",weightx); FILL_NUM("weighty",weighty);
+            FILL_NUM("fillx",fillX); FILL_NUM("filly",fillY);
+            FILL_NUM("aspectRatio",aspectRatio);
+            FILL_NUM("anchorx",anchorX); FILL_NUM("anchory",anchorY);
+            FILL_NUM("offsetx",offsetX); FILL_NUM("offsety",offsetY);
+            FILL_NUM("originx",originX); FILL_NUM("originy",originY);
+            FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
+
+            FILL_NUM("prefWidth", prefWidth);
+            FILL_NUM("minWidth", aminWidth);
+            FILL_NUM("prefHeight", prefHeight);
+            FILL_NUM("minHeight", aminHeight);
+
+            FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
+            FILL_NUM("insetBottom",insets.bottom); FILL_NUM("insetRight",insets.right);
+
+            if (dirty)
+                sprite->invalidate(Sprite::INV_CONSTRAINTS);
+        }
+    }
+
+    lua_pop(L,1);
+    return 0;
+}
+#undef FILL_NUM_ARRAY
+#undef FILL_NUM
 
 int SpriteBinder::set(lua_State* L)
 {

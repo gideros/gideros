@@ -116,6 +116,13 @@ private:
     static int getDrawCount(lua_State* L);
     static int setHiddenChildren(lua_State* L);
     static int setCheckClip(lua_State* L);
+    static int setWorldAlign(lua_State* L);
+
+    static int setStyle(lua_State* L);
+    static int resolveStyle(lua_State* L);
+
+public:
+    static int updateStyle(lua_State* L);
 };
 
 #endif

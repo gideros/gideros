@@ -339,6 +339,10 @@ local function _MSL_GENOPEQ(o,a,b)
 	if o=="%" then return ("%s=fmod(%s,%s)"):format(a.value,a.value,b.value) end
 end
 
+local function _MSL_SWIZZLE(p)
+	return p:gsub(".",{ s="x",t="y",p="z", q="w" })
+end
+
 function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	local amap={}
 	local gmap={}
@@ -454,6 +458,7 @@ vertex PVertex vmain(InVertex inVertex [[stage_in]],
 			else return "return outVert;"
 			end
 		end,
+		SWIZZLE=_MSL_SWIZZLE,
 		GENOP=_MSL_GENOP,
 		GENOPEQ=_MSL_GENOPEQ,
 	})
@@ -475,6 +480,7 @@ using namespace metal;
 		RETURN=GEN_RETURN,
 		GENOP=_MSL_GENOP,
 		GENOPEQ=_MSL_GENOPEQ,
+		SWIZZLE=_MSL_SWIZZLE,
 		SUBFUNC=function(f,fg)
 			fg._fcode._MSL_spec=_msl_spec
 			genFunction(fg.fdef,gmap,tmap,omap,{	GENOP=_MSL_GENOP,GENOPEQ=_MSL_GENOPEQ,})

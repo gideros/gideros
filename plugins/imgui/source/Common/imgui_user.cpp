@@ -304,10 +304,11 @@ namespace ImGui
 
         const ImVec2 label_size = CalcTextSize(label, NULL, true);
         const ImRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y * 2.0f));
-        const ImRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+		const ImRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
 
+		const bool temp_input_allowed = (flags & ImGuiSliderFlags_NoInput) == 0;
         ItemSize(total_bb, style.FramePadding.y);
-        if (!ItemAdd(total_bb, id, &frame_bb))
+		if (!ItemAdd(total_bb, id, &frame_bb, temp_input_allowed ? ImGuiItemFlags_Inputable : 0))
             return false;
 
         // Default format string when passing NULL
@@ -318,32 +319,28 @@ namespace ImGui
 
         // Tabbing or CTRL-clicking on Slider turns it into an input box
         const bool hovered = ItemHoverable(frame_bb, id);
-        const bool temp_input_allowed = (flags & ImGuiSliderFlags_NoInput) == 0;
         bool temp_input_is_active = temp_input_allowed && TempInputIsActive(id);
         if (!temp_input_is_active)
         {
-            bool focused = (GetItemStatusFlags() & ImGuiItemStatusFlags_FocusedByTabbing) != 0;
-            const bool focus_requested = temp_input_allowed && focused;
-            const bool clicked = (hovered && g.IO.MouseClicked[0]);
-            if (focus_requested || clicked || g.NavActivateId == id || g.NavActivateInputId == id)
-            {
-                SetActiveID(id, window);
-                SetFocusID(id, window);
-                FocusWindow(window);
-                g.ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
-                if (temp_input_allowed && (focus_requested || (clicked && g.IO.KeyCtrl) || g.NavActivateInputId == id))
-                {
-                    temp_input_is_active = true;
-                }
+			const bool input_requested_by_tabbing = temp_input_allowed && (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_FocusedByTabbing) != 0;
+			const bool clicked = (hovered && g.IO.MouseClicked[0]);
+			if (input_requested_by_tabbing || clicked || g.NavActivateId == id || g.NavActivateInputId == id)
+			{
+				SetActiveID(id, window);
+				SetFocusID(id, window);
+				FocusWindow(window);
+				g.ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
+				if (temp_input_allowed && (input_requested_by_tabbing || (clicked && g.IO.KeyCtrl) || g.NavActivateInputId == id))
+					temp_input_is_active = true;
             }
         }
 
-        if (temp_input_is_active)
-        {
-            // Only clamp CTRL+Click input when ImGuiSliderFlags_ClampInput is set
-            const bool is_clamp_input = (flags & ImGuiSliderFlags_AlwaysClamp) != 0;
-            return TempInputScalar(frame_bb, id, label, data_type, p_data, format, is_clamp_input ? p_min : NULL, is_clamp_input ? p_max : NULL);
-        }
+		if (temp_input_is_active)
+		{
+			// Only clamp CTRL+Click input when ImGuiSliderFlags_AlwaysClamp is set
+			const bool is_clamp_input = (flags & ImGuiSliderFlags_AlwaysClamp) != 0;
+			return TempInputScalar(frame_bb, id, label, data_type, p_data, format, is_clamp_input ? p_min : NULL, is_clamp_input ? p_max : NULL);
+		}
 
         // Draw frame
         const ImU32 frame_col = GetColorU32(g.ActiveId == id ? ImGuiCol_FrameBgActive : g.HoveredId == id ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
@@ -369,10 +366,12 @@ namespace ImGui
             }
         }
 
-        // Display value using user-provided display format so user can add prefix/suffix/decorations to the value.
-        char value_buf[64];
-        const char* value_buf_end = value_buf + DataTypeFormatString(value_buf, IM_ARRAYSIZE(value_buf), data_type, p_data, format);
-        RenderTextClipped(frame_bb.Min, frame_bb.Max, value_buf, value_buf_end, NULL, ImVec2(0.5f, 0.5f));
+		// Display value using user-provided display format so user can add prefix/suffix/decorations to the value.
+		char value_buf[64];
+		const char* value_buf_end = value_buf + DataTypeFormatString(value_buf, IM_ARRAYSIZE(value_buf), data_type, p_data, format);
+		if (g.LogEnabled)
+			LogSetNextTextDecoration("{", "}");
+		RenderTextClipped(frame_bb.Min, frame_bb.Max, value_buf, value_buf_end, NULL, ImVec2(0.5f, 0.5f));
 
         if (label_size.x > 0.0f)
             RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
@@ -490,8 +489,8 @@ namespace ImGui
         else if (data_type == ImGuiDataType_S32 && strcmp(format, "%d") != 0) // (FIXME-LEGACY: Patch old "%.0f" format string to use "%d", read function more details.)
             format = PatchFormatStringFloatToInt(format);
 
-        const bool hovered = ItemHoverable(frame_bb, id);
-        if ((hovered && g.IO.MouseClicked[0]) || g.NavActivateId == id || g.NavActivateInputId == id)
+		const bool hovered = ItemHoverable(frame_bb, id);
+		if ((hovered && g.IO.MouseClicked[0]) || g.NavActivateId == id || g.NavActivateInputId == id)
         {
             SetActiveID(id, window);
             SetFocusID(id, window);

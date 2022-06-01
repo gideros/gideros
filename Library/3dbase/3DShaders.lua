@@ -65,8 +65,8 @@ function D3._FLUA_Shader() : Shader
 		--// V, le vecteur vue (vertex dirigé vers l'œil)
 		local ret=hF3(0,0,0)
 		if OPT_NORMMAP then
-			local map = texture2D(g_NormalMap, texcoord ).xyz;
-			map = hF3(hF3(map) * 255./127. - 128./127.)
+			local map = hF3(texture2D(g_NormalMap, texcoord ).xyz);
+			map = hF3(map * 255./127. - 128./127.)
 			local TBN = cotangent_frame(N, -V, texcoord);
 			ret=normalize(TBN * map);
 		end

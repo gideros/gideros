@@ -1,0 +1,14 @@
+# Made using Asset Forge (2.2.0)
+
+:materials
+
+[name:Rock;color:RGBA(0.631, 0.624, 0.612, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Wood_Dark;color:RGBA(0.518, 0.420, 0.333, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Wood_Light;color:RGBA(0.737, 0.631, 0.463, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Grey_-_40;color:RGBA(0.400, 0.400, 0.400, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+[name:Dirt;color:RGBA(0.769, 0.686, 0.561, 1.000);scale:(1.0, 1.0);shader:Default;valueA:0.5;valueB:0;]
+
+:models
+
+[name:;collection:modular_terrain_collection;type:Cave_Prop_Stalagmite_Tiny;position:(-1.0000, 0.0000, 0.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(1.0000, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Rock;]
+[name:;collection:modular_terrain_collection;type:Hilly_Prop_Camp_Campfire;position:(1.0000, 0.0000, 0.0000);rotation:(0.0000, 0.0000, 0.0000);scale:(1.0000, 1.0000, 1.0000);group:;locked:False;hidden:False;materials:Wood_Dark+Wood_Light+Grey_-_40+Dirt;]

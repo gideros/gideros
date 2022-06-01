@@ -22,7 +22,6 @@ void GoToLineDialog::setLineNumbers(int current, int max)
 	ui.lineNumberLabel->setText(tr("Line Number (1-%1):").arg(max));
 
 	ui.lineNumber->setText(QString::number(current));
-	ui.lineNumber->selectAll();
 }
 
 void GoToLineDialog::ok()

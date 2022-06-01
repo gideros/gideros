@@ -308,7 +308,7 @@ bool TTFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
     return true;
 }
 
-void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
+void TTFont::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
 {
 	std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(part.text.c_str(), part.text.size(), NULL, 0, 0);
@@ -372,7 +372,7 @@ void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
             maxx = std::max(maxx, xo + width);
             maxy = std::max(maxy, yo + height);
 
-    		gl.advX+=(letterSpacing*scalex);
+            gl.advX+=(params->letterSpacing*scalex);
             x += gl.advX;
         }
     }
@@ -427,11 +427,11 @@ void TTFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 
             x += kx+(face->glyph->advance.x >> 6);
 
-            x += (int) (letterSpacing * scalex);
+            x += (int) (params->letterSpacing * scalex);
 
             shape.srcIndex=i;
             shape.glyph=glyphIndex;
-            shape.advX=(face->glyph->advance.x >> 6)+kx+(letterSpacing * scalex);
+            shape.advX=(face->glyph->advance.x >> 6)+kx+(params->letterSpacing * scalex);
             shape.advY=face->glyph->advance.y >> 6;
             shape.offX=left;
             shape.offY=-top;

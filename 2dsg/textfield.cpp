@@ -14,15 +14,15 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
     sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
     minx_ = 0, miny_ = 0, maxx_ = 0, maxy_ = 0;
 
-	if (sample)
-		setSample(sample);
-
 	if (params)
         layout_=*params;
 
     setTextColor(0,0,0,1);
 
     setFont(font);
+
+    if (sample)
+        setSample(sample);
 }
 
 void TextField::cloneFrom(TextField *s)
@@ -37,7 +37,7 @@ void TextField::cloneFrom(TextField *s)
     b_=s->b_;
     graphicsBase_=s->graphicsBase_;
     for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
-        it->clearCaches();
+        it->cloned();
     minx_=s->minx_;
     miny_=s->miny_;
     maxx_=s->maxx_;

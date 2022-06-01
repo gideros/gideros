@@ -540,9 +540,12 @@ static int math_normalize (lua_State *L) {
 	VECTYPE vt=probeVec(L,1,3);
 	getVec(L,1,vt,v);
 	double l=sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
-	v.x/=l;
-	v.y/=l;
-	v.z/=l;
+	if (l > 0)
+	{
+		v.x/=l;
+		v.y/=l;
+		v.z/=l;
+	}
 	return pushVec(L,vt,v);
 }
 

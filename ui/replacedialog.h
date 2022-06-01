@@ -20,6 +20,8 @@ public:
 	bool forward() const;
 
 	void focusToFindWhat();
+	void setSelectedText(QString s) const;
+
 
 signals:
 	void findNext();

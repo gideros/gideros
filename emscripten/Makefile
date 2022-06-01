@@ -115,7 +115,7 @@ endif
 
 OPTS+=-O2 $(POPTS)
 LOPTS=-disable-inlining
-LOPTS_WASM=$(LOPTS)
+LOPTS_WASM=$(LOPTS) -fwasm-exceptions
 LOPTS_JS=$(LOPTS) #--separate-asm
 
 export POPTS
@@ -136,7 +136,8 @@ EOPTS+=EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccal
 EOPTS+=MAIN_MODULE=2  
 EOPTS+=ASSERTIONS=0
 #EOPTS+=GL_STATE_CACHE=1
-EOPTS+=DISABLE_EXCEPTION_CATCHING=0 PROXY_POSIX_SOCKETS=0
+#EOPTS+=DISABLE_EXCEPTION_CATCHING=0
+EOPTS+=PROXY_POSIX_SOCKETS=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
 #EOPTS+=USE_WEBGL2=1 WEBGL2_BACKWARDS_COMPATIBILITY_EMULATION=1
 EOPTS+=MAX_WEBGL_VERSION=2
@@ -161,7 +162,8 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	$(OPTS)
 CFLGS+=	-fno-rtti -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
 PCFLGS+= -s SIDE_MODULE=2 -fno-exceptions
-MCFLGS+= -s MAIN_MODULE=2 -s DISABLE_EXCEPTION_CATCHING=$(NO_EXCEPTIONS) 
+MCFLGS+= -s MAIN_MODULE=2 -fwasm-exceptions
+#MCFLGS+= -s MAIN_MODULE=2 -s DISABLE_EXCEPTION_CATCHING=$(NO_EXCEPTIONS)
 
 #OBJS=$(addprefix $(BUILD)/,$(addsuffix .emw.o,$(MAIN_SRCS)))
 
@@ -234,7 +236,7 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
 EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//;s/fp\$$/')))
-EXP_FUNCS=["_main","_gapplication_clipboardCallback",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
+EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
 
 $(BUILD)/lib%.w.a:
 	@echo "EMAR" $@

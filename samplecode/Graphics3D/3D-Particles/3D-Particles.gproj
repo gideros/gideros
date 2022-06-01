@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+ <properties osx_signingId="" html5_fbinstant="0" orientation="0" retinaDisplay="3" app_icon="" backgroundColor="#ffffff" macos_category="5" encryptCode="0" autorotation="0" tv_icon="" html5_fbload="100" iosDevice="0" osx_org="GiderosMobile" ios_bundle="com.yourdomain." mouseToTouch="1" html5_pack="1" splash_v_image="" logicalWidth="320" osx_bundle="com.yourdomain." osx_installerId="" fps="60" winrt_package="com.yourdomain.yourapp" windowHeight="0" winrt_org="GiderosMobile" html5_host="" disableSplash="0" html5_pwa="0" osx_domain="giderosmobile.com" html5_crash="" version="1.0" html5_mem="256" mouseTouchOrder="0" encryptAssets="0" html5_wasm="1" mainluaOnly="0" osx_category="5" windowWidth="0" macos_bundle="com.yourdomain.yourapp-macos" app_name="" architecture="7" logicalHeight="480" exportMode="0" win_domain="giderosmobile.com" splashScaleMode="0" touchToMouse="1" vsync="0" scaleMode="3" win_org="GiderosMobile" version_code="1" splash_h_image="" html5_symbols="0" build_number="1" atv_bundle="com.yourdomain.yourapp-atv">
+  <imageScales/>
+  <plugins>
+   <plugin name="JSON" enabled="1"/>
+  </plugins>
+  <exports>
+   <export name="APK">
+    <property name="androidPath" value=""/>
+    <property name="androidSdk" value=""/>
+    <property name="androidTarget" value="26"/>
+    <property name="androidTools" value=""/>
+    <property name="buildAab" value="1"/>
+    <property name="buildApk" value="0"/>
+    <property name="deployApk" value="0"/>
+    <property name="javaPath" value=""/>
+    <property name="keyAlias" value=""/>
+    <property name="keyStore" value=""/>
+    <property name="packageName" value="com.yourdomain.yourapp"/>
+    <property name="timestampApk" value="0"/>
+   </export>
+  </exports>
+ </properties>
+ <folder name="3dbase" path="../../../Library/3dbase">
+  <file name="../../../Library/3dbase/3DAnimation.lua"/>
+  <file name="../../../Library/3dbase/3DGdxLoader.lua"/>
+  <file name="../../../Library/3dbase/3DLighting.lua"/>
+  <file name="../../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../../Library/3dbase/3DShaders.lua"/>
+  <file name="../../../Library/3dbase/3DShapes.lua"/>
+  <file name="../../../Library/3dbase/3DView.lua"/>
+  <file name="../../../Library/3dbase/G3DFormat.lua"/>
+  <file name="../../../Library/3dbase/gltf.lua"/>
+ </folder>
+ <folder name="luashader" path="../../../Library/luashader">
+  <file name="../../../Library/luashader/effects.lua"/>
+  <file name="../../../Library/luashader/luac_codegen.lua"/>
+  <file name="../../../Library/luashader/luac_loader.lua"/>
+  <file name="../../../Library/luashader/luashader.lua"/>
+  <file name="../../../Library/luashader/luau_codegen.lua"/>
+ </folder>
+ <file source="../../Physics/Particles/Bubble.png"/>
+ <file name="assets/fire.png"/>
+ <file source="../3D-Anim/assets/textures/grass.png"/>
+ <file name="assets/main.lua"/>
+ <file name="assets/noise.png"/>
+ <file name="assets/props.glb"/>
+</project>

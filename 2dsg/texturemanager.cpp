@@ -72,7 +72,7 @@ static void callback_s(int type, void *event, void *udata)
 
 static g_id gid_evt=g_NextId();
 
-std::future<TextureData*> TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters,bool pow2, std::function<void(TextureData *,std::exception_ptr)> async)
+std::future<TextureData*> TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters, std::function<void(TextureData *,std::exception_ptr)> async)
 {
     int flags = gpath_getDriveFlags(gpath_getPathDrive(filename));
 
@@ -114,6 +114,9 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
         break;
     case eLinear:
         filter = GTEXTURE_LINEAR;
+        break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
         break;
     }
 
@@ -174,7 +177,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
 
     if (!async)
     {
-        Dib *dib=new Dib(application_, filename, true, pow2, parameters.maketransparent, parameters.transparentcolor);
+        Dib *dib=new Dib(application_, filename, true, parameters.pow2, parameters.maketransparent, parameters.transparentcolor);
 
         if (parameters.grayscale)
             dib->convertGrayscale();
@@ -279,7 +282,7 @@ std::future<TextureData*> TextureManager::createTextureFromFile(const char* file
     _async.enqueue([=]{
         //Safe:  this (should never be destroyed, unless application exits ?)
         try {
-            evt->dib=new Dib(application_, evt->file.c_str(), true, pow2, evt->parameters.maketransparent, evt->parameters.transparentcolor);
+            evt->dib=new Dib(application_, evt->file.c_str(), true, evt->parameters.pow2, evt->parameters.maketransparent, evt->parameters.transparentcolor);
         } catch (const std::exception &e) {
             evt->exception=std::current_exception();
         }
@@ -310,6 +313,9 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         break;
     case eLinear:
         filter = GTEXTURE_LINEAR;
+        break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
         break;
     }
 
@@ -466,6 +472,9 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
     }
 
     int format = 0;
@@ -616,7 +625,10 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     case eLinear:
         filter = GTEXTURE_LINEAR;
         break;
-    }
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
+   }
 
     int format = 0;
     int type = 0;

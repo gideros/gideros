@@ -67,8 +67,8 @@ int main(int argc, char *argv[]){
 	formatGL.setSwapInterval(vsync?(60/fps):0);
 	formatGL.setStencilBufferSize(8);
 	formatGL.setDepthBufferSize(16);
-	formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
-	//formatGL.setColorSpace(QSurfaceFormat::sRGBColorSpace);
+    formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    //formatGL.setColorSpace(QSurfaceFormat::sRGBColorSpace);
 	QSurfaceFormat::setDefaultFormat(formatGL);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);

@@ -689,7 +689,7 @@ void TTBMFont::checkLogicalScale() {
 	}
 }
 
-bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext)
+bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext, FontBase::TextLayoutParameters *params)
 {
     if (part.style.styleFlags&TEXTSTYLEFLAG_SKIPSHAPING)
 		return false;
@@ -698,9 +698,12 @@ bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext
         return false;
     if (!(part.style.styleFlags&TEXTSTYLEFLAG_FORCESHAPING)) {
         wchar32_t cset=0;
+        wchar32_t bchar=0;
         size_t tCount=wtext.size();
+        utf8_to_wchar(params->breakchar.c_str(),params->breakchar.size(),&bchar,1,0);
         for (size_t ti=0;ti<tCount;ti++)
-            cset|=wtext[ti];
+            if (wtext[ti]!=bchar)
+                cset|=wtext[ti];
         if ((cset&0xFFFFFF00)==0) //ASCII/Latin only
             return false;
     }
@@ -759,7 +762,7 @@ TTBMFont::TextureGlyph *TTBMFont::getCharGlyph(wchar32_t chr,int &facenum,FT_UIn
 	return &fontFaces_[facenum].textureGlyphs[glyph];
 }
 
-void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
+void TTBMFont::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
 {
     std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(part.text.c_str(), part.text.size(), NULL, 0, 0);
@@ -778,7 +781,7 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
 
     float x = 0, y = 0;
 	part.shaped.clear();
-    if (shapeChunk(part,wtext)) {
+    if (shapeChunk(part,wtext,params)) {
         //Shaping has been done externally, iterate over glyphs instead
         len=part.shaped.size();
     	std::vector<wchar32_t> wtext1;
@@ -825,7 +828,7 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     		maxy = std::max(maxy, sizescaley_ * y0);
     		maxy = std::max(maxy, sizescaley_ * y1);
 
-    		gl.advX+=(letterSpacing/sizescalex_);
+            gl.advX+=(params->letterSpacing/sizescalex_);
             x += gl.advX;
         }
     }
@@ -865,11 +868,11 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, float letterSpacing)
     		maxy = std::max(maxy, sizescaley_ * y1);
 
             x += textureGlyph->advancex >> 6;
-    		x += (int) (letterSpacing / sizescalex_);
+            x += (int) (params->letterSpacing / sizescalex_);
 
             shape.srcIndex=i;
             shape.glyph=glyph;
-            shape.advX=(textureGlyph->advancex >> 6)+kx+(letterSpacing/sizescalex_);
+            shape.advX=(textureGlyph->advancex >> 6)+kx+(params->letterSpacing/sizescalex_);
             shape.advY=0;
             shape.offX=left;
             shape.offY=-top;

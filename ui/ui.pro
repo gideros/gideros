@@ -259,9 +259,9 @@ macx {
     LIBS += -L$$[QT_INSTALL_LIBS]
 }
 
-equals(USE_SCINTILLAEDIT,y): LIBS += -L"../scintilla/qt/ScintillaEdit/$$_CONFIG_" -L"../lexilla/src/$$_CONFIG_"
 
 win32 {
+	equals(USE_SCINTILLAEDIT,y): LIBS += -L"../scintilla/qt/ScintillaEdit/$$_CONFIG_" -L"../lexilla/src/$$_CONFIG_"
     LIBS += -L$$[QT_INSTALL_LIBS]
         CONFIG(debug, debug|release) {
                         equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit5 -lLexilla5
@@ -276,7 +276,7 @@ win32 {
 
 macx {
    equals(USE_SCINTILLAEDIT,n): LIBS += -lqscintilla2_qt$${QT_MAJOR_VERSION}
-   equals(USE_SCINTILLAEDIT,y): LIBS += -lScintillaEdit -lLexilla
+   equals(USE_SCINTILLAEDIT,y): LIBS += -L"../scintilla/qt/ScintillaEdit" -L"../lexilla/src" -lScintillaEdit -lLexilla
 }
 
 unix:!macx {

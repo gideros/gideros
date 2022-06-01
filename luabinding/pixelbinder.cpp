@@ -3,6 +3,7 @@
 #include "bitmapdata.h"
 #include "stackchecker.h"
 #include "luaapplication.h"
+#include "spritebinder.h"
 #include <luautil.h>
 
 PixelBinder::PixelBinder(lua_State* L)
@@ -26,6 +27,7 @@ PixelBinder::PixelBinder(lua_State* L)
         {"setTextureScale", setTextureScale},
         {"getTextureScale", getTextureScale},
 		{"setNinePatch", setNinePatch},
+        {"updateStyle", updateStyle},
         {NULL, NULL},
 	};
 
@@ -198,9 +200,11 @@ int PixelBinder::setNinePatch(lua_State *L) {
 	int argc=lua_gettop(L);
 
 	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
-	if (argc==2) {
-		lua_Number i = luaL_checknumber(L, 2);
-		bitmap->setNinePatch(i,i,i,i,i,i,i,i);
+	if ((argc==1)||(argc==2)) {
+		lua_Number i = luaL_optnumber(L, 2,-1);
+		if (i>=0)
+			bitmap->setNinePatch(i,i,i,i,i,i,i,i);
+		bitmap->setStretching(i==0);
 	} else if (argc==3) {
 		lua_Number iv = luaL_checknumber(L, 2);
 		lua_Number it = luaL_checknumber(L, 3);
@@ -296,10 +300,16 @@ int PixelBinder::setTextureMatrix(lua_State *L)
 int PixelBinder::setColor(lua_State* L)
 {
 	Binder binder(L);
-#define COLVEC(var,idx) const float *var=luaL_checkvector(L,idx);
+#define COLVEC(var,idx) float var[4]; LuaApplication::resolveColor(L,1,idx,var,bitmap->styCache_##var);
 #define COLARG(var) (((int)(var[0]*0xFF0000))&0xFF0000)|(((int)(var[1]*0xFF00))&0xFF00)|((int)((var[2]*0xFF))&0xFF),var[3]
 	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
-	if (lua_tovector(L,2)) { //Vector colors
+    bitmap->styCache_color.clear();
+    bitmap->styCache_c1.clear();
+    bitmap->styCache_c2.clear();
+    bitmap->styCache_c3.clear();
+    bitmap->styCache_c4.clear();
+    int ctype=lua_type(L,2);
+    if ((ctype==LUA_TVECTOR)||(ctype==LUA_TSTRING)||(ctype==LUA_TUSERDATA)) { //Vector or resolvables colors
 		if (lua_gettop(L) == 5) {
 			COLVEC(c1,2);
 			COLVEC(c2,3);
@@ -439,3 +449,22 @@ int PixelBinder::getTextureScale(lua_State* L)
 
     return 2;
 }
+
+#define HASCOL(var) (!bitmap->styCache_##var.empty())
+#define COLVEC(var) float var[4]; LuaApplication::resolveColor(L,1,0,var,bitmap->styCache_##var);
+int PixelBinder::updateStyle(lua_State* L)
+{
+    StackChecker checker(L, "PixelBinder::updateStyle", 0);
+    Binder binder(L);
+    Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+    SpriteBinder::updateStyle(L);
+
+//TODO Handle gradient
+    if (HASCOL(color)) {
+        COLVEC(color);
+        bitmap->setColor(color[0],color[1],color[2],color[3]);
+    }
+    return 0;
+}
+#undef HASCOL
+#undef COLVEC

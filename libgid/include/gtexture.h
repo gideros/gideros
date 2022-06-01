@@ -33,6 +33,7 @@ extern "C" {
 /* filter */
 #define GTEXTURE_NEAREST 0
 #define GTEXTURE_LINEAR 1
+#define GTEXTURE_LINEAR_MIPMAP 2
 
 G_API void gtexture_init();
 G_API void gtexture_cleanup();

@@ -6,6 +6,7 @@ FindDialog::FindDialog(QWidget *parent)
 {
 	ui.setupUi(this);
 	connect(ui.findNext, SIGNAL(clicked()), this, SIGNAL(findNext()));
+	connect(ui.findPrevious, SIGNAL(clicked()), this, SIGNAL(findPrevious()));
 	connect(ui.cancel, SIGNAL(clicked()), this, SLOT(close()));
 	QSettings settings;
     ui.matchCase->setChecked(settings.value("finddialog matchcase", false).toBool());
@@ -30,6 +31,11 @@ QString FindDialog::findWhat() const
 	return ui.findWhat->text();
 }
 
+void FindDialog::setSelectedText(QString s) const
+{
+	ui.findWhat->setText(s);
+}
+
 bool FindDialog::wholeWord() const
 {
 	return ui.wholeWord->isChecked();
@@ -38,11 +44,6 @@ bool FindDialog::wholeWord() const
 bool FindDialog::matchCase() const
 {
 	return ui.matchCase->isChecked();
-}
-
-bool FindDialog::forward() const
-{
-	return ui.down->isChecked();
 }
 
 bool FindDialog::wrap() const

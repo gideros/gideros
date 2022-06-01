@@ -61,6 +61,8 @@
 #include <QStandardPaths>
 #include <QTimer>
 
+#include <QInputDialog>
+
 MainWindow *MainWindow::lua_instance=NULL;
 QTemporaryDir *MainWindow::tempDir=NULL;
 
@@ -146,7 +148,11 @@ MainWindow::MainWindow(QWidget *parent)
 		connect(tab, SIGNAL(tabCloseRequested(int)),
 				this, SLOT(closeMdiTab(int)));
 	}
-
+	
+	// set toolbar position by settings value
+	//qDebug() << "toggleToolBar value:" << settings.value("toggleToolBar").toBool();
+	toggleToolBar(settings.value("toggleToolBar").toBool());
+	
 	ui.mainToolBar->setIconSize(QSize(16, 16));
 
 	ui.actionNew->setIcon(IconLibrary::instance().icon(0, "new"));
@@ -177,6 +183,15 @@ MainWindow::MainWindow(QWidget *parent)
 
 	ui.actionStart_Player->setIcon(IconLibrary::instance().icon(0, "gamepad"));
 	connect(ui.actionStart_Player, SIGNAL(triggered()), this, SLOT(startPlayer()));
+	
+	connect(ui.actionTexture_Packer, SIGNAL(triggered()), this, SLOT(startTexturePacker()));
+	connect(ui.actionFont_Creator, SIGNAL(triggered()), this, SLOT(startFontCreator()));
+	
+	ui.actionWrap->setIcon(IconLibrary::instance().icon(0, "wrap"));
+	connect(ui.actionWrap, SIGNAL(triggered()), this, SLOT(setWrap()));
+	
+	ui.actionColorPicker->setIcon(IconLibrary::instance().icon(0, "color picker"));
+	connect(ui.actionColorPicker, SIGNAL(triggered()), this, SLOT(insertColorInCode()));
 
 	ui.actionStart->setIcon(IconLibrary::instance().icon(0, "start"));
 	ui.actionStart->setEnabled(false);
@@ -416,6 +431,7 @@ MainWindow::MainWindow(QWidget *parent)
 		findDialog_ = new FindDialog(this);
 		connect(ui.actionFind, SIGNAL(triggered()), this, SLOT(find()));
 		connect(findDialog_, SIGNAL(findNext()), this, SLOT(findFirst()));
+		connect(findDialog_, SIGNAL(findPrevious()), this, SLOT(findPrevious()));
 		connect(ui.actionFind_Next, SIGNAL(triggered()), this, SLOT(findNext()));
 		connect(ui.actionFind_Previous, SIGNAL(triggered()), this, SLOT(findPrevious()));
 
@@ -544,6 +560,8 @@ MainWindow::MainWindow(QWidget *parent)
                ACTION(actionCut),
                ACTION(actionCopy),
                ACTION(actionPaste),
+               ACTION(actionWrap),
+               ACTION(actionColorPicker),
                ACTION(actionToggle_Bookmark),
                ACTION(actionNext_Bookmark),
                ACTION(actionPrevious_Bookmark),
@@ -653,6 +671,32 @@ void MainWindow::launchAddon(QString name,QString forFile) {
         env=env+"editFile=\""+luaquote(forFile).toStdString()+"\",";
 	env+=" }";
     AddonsManager::launch(name.toStdString(),env);
+}
+
+
+void MainWindow::toggleToolBar(bool append)
+{
+    QSettings settings;
+    const char* key = "toggleToolBar";
+
+	QWidget* wrapper = new QWidget();
+	wrapper->setLayout(new QHBoxLayout());
+	wrapper->layout()->setContentsMargins(0,0,0,0);
+    if (append)
+    {
+		settings.setValue(key, true);
+
+		wrapper->layout()->addWidget(ui.menuBar);
+		wrapper->layout()->addWidget(ui.mainToolBar);
+		this->layout()->setMenuBar(wrapper);
+    } else {
+        settings.setValue(key, false);
+		
+		removeToolBar(ui.mainToolBar);
+		wrapper->layout()->update();
+		addToolBar(Qt::TopToolBarArea, ui.mainToolBar);
+		ui.mainToolBar->show();
+    }
 }
 
 void MainWindow::toggleFullscreen()
@@ -1604,6 +1648,28 @@ void MainWindow::startPlayer()
 #endif
 }
 
+void MainWindow::startTexturePacker()
+{
+#if defined(Q_OS_MAC)
+        QProcess::startDetached("open \"../../Gideros Texture Packer.app\"");
+#elif defined(Q_OS_WIN)
+	QProcess::startDetached("GiderosTexturePacker.exe");
+#else
+	QProcess::startDetached("GiderosTexturePacker");
+#endif
+}
+
+void MainWindow::startFontCreator()
+{
+#if defined(Q_OS_MAC)
+        QProcess::startDetached("open \"../../Gideros Font Creator.app\"");
+#elif defined(Q_OS_WIN)
+	QProcess::startDetached("GiderosFontCreator.exe");
+#else
+	QProcess::startDetached("GiderosFontCreator");
+#endif
+}
+
 void MainWindow::fileAssociations()
 {
 	FileAssociationsDialog dialog(fileAssociations_, this);
@@ -1640,6 +1706,96 @@ TextEdit* MainWindow::findTextEdit(const QString& fileName) const
 	}
 
 	return 0;
+}
+
+void MainWindow::insertColorInCode()
+{
+	
+#ifdef SCINTILLAEDIT_H
+	TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+	if(textEdit){
+	QColor c;
+
+	if (textEdit->hasSelectedText()){
+
+		QString sel = textEdit->getSelectedText();
+
+		if (!sel.isEmpty() && sel.startsWith("0x")){
+			c.setNamedColor(sel.replace("0x", "#"));
+		}else{
+			QMessageBox::information(this, "Information", "The selected text is not a valid color syntax!");
+			return;
+		}
+	}else{
+		c = QColor("#ffffff");
+	}
+
+	QColorDialog* CD = new QColorDialog(c);
+	CD->setWindowFlags(Qt::Widget);
+	CD->setOptions(QColorDialog::DontUseNativeDialog);
+	CD->layout()->setContentsMargins(8, 8, 8, 8);
+
+	connect(CD, &QColorDialog::currentColorChanged, [=](const QColor &color) {
+						textEdit->sciScintilla()->beginUndoAction();
+						
+						const QString& replaceText = color.name().replace("#", "0x");
+						
+						int from , to;
+						if (textEdit->hasSelectedText()){
+							from = textEdit->sciScintilla()->selectionStart();
+							to = textEdit->sciScintilla()->selectionEnd();
+							textEdit->sciScintilla()->setTargetRange(from,to);
+							textEdit->sciScintilla()->replaceTarget(replaceText.length(), replaceText.toUtf8());
+							textEdit->sciScintilla()->setSel(from, from + replaceText.length());
+							textEdit->sciScintilla()->setFocus(true);
+							return;
+						}else{
+							from = textEdit->sciScintilla()->currentPos();
+							textEdit->sciScintilla()->insertText(from, replaceText.toUtf8());
+							textEdit->sciScintilla()->setSel(from, from + replaceText.length());
+							textEdit->sciScintilla()->setFocus(true);
+							return;
+						}
+						
+						textEdit->sciScintilla()->endUndoAction();
+	});
+	CD->exec();
+#endif
+	}
+	//~ else
+	//~ {
+		//~ bool isProjectOpen = projectFileName_.isEmpty() == false;
+		//~ if (isProjectOpen){
+			//~ QMessageBox::information(this, "Information", "There is no selected color syntax!");
+		//~ }
+	//~ }
+}
+
+void MainWindow::setWrap()
+{
+	TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+	
+	if (textEdit == NULL)
+		return;
+		
+	bool wrap_mode;
+
+	if (textEdit)
+#ifdef SCINTILLAEDIT_H
+	wrap_mode = textEdit->sciScintilla()->wrapMode();
+	textEdit->sciScintilla()->setWrapMode(wrap_mode ? 0 : 1);
+	textEdit->sciScintilla()->setWrapVisualFlags(SC_WRAPVISUALFLAG_END);
+	
+	if (wrap_mode)
+	{
+		ui.actionWrap->setIcon(IconLibrary::instance().icon(0, "wrap"));
+	}
+	else
+	{
+		ui.actionWrap->setIcon(IconLibrary::instance().icon(0, "unwrap"));
+	}
+#endif
 }
 
 void MainWindow::clearDebugHighlights() {
@@ -1732,6 +1888,12 @@ void MainWindow::saveAll()
 
 	if (itemsSaved == true)
 		statusBar()->showMessage(tr("Items(s) Saved"), 2000);
+}
+
+
+void MainWindow::showStatusbarMessage(QString message, int timeout)
+{
+	statusBar()->showMessage(message, timeout);
 }
 
 #if 0
@@ -2335,11 +2497,30 @@ void MainWindow::cancelUpload()
 
 void MainWindow::find()
 {
+    QPoint od_Pos = this->outputDock_->mapToGlobal(this->outputDock_->rect().topRight());
+    QPoint fd_Pos = this->findDialog_->mapToGlobal(this->findDialog_->rect().topLeft());
+    this->findDialog_->move(od_Pos.x() - findDialog_->width(), od_Pos.y());
+    
 	replaceDialog_->hide();
 //	findInFilesDialog_->hide();
 	findDialog_->show();
+	
     findDialog_->raise();
     findDialog_->activateWindow();
+
+	TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+    if (textEdit->hasSelectedText())
+    {
+		QString sel = textEdit->getSelectedText();
+		if (!sel.isEmpty()){
+			findDialog_->setSelectedText(sel);
+		}
+
+	}
+	else
+	{
+		findDialog_->setSelectedText("");
+	}
 	findDialog_->focusToFindWhat();
 }
 
@@ -2354,7 +2535,7 @@ void MainWindow::findFirst()
 		wholeWord_ = findDialog_->wholeWord();
         regexp_ = findDialog_->regexp();
         wrapSearch_ = findDialog_->wrap();
-		bool forward = findDialog_->forward();
+		bool forward = true;
 
 		if (findWhat_.isEmpty() == false)
             if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, forward) == false)
@@ -2366,10 +2547,16 @@ void MainWindow::findNext()
 {
 	TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
 
-	if (textEdit)
+	if (textEdit && textEdit->hasSelectedText())
 	{
-		if (findWhat_.isEmpty() == false)
-            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, true) == false)
+		findWhat_ = findDialog_->findWhat();
+		matchCase_ = findDialog_->matchCase();
+		wholeWord_ = findDialog_->wholeWord();
+        	regexp_ = findDialog_->regexp();
+        	wrapSearch_ = findDialog_->wrap();
+        
+		findWhat_ = textEdit->getSelectedText();
+	            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, true) == false)
 				QMessageBox::information(findDialog_, tr("Gideros"), tr("The specified text could not be found."));
 	}
 }
@@ -2378,21 +2565,46 @@ void MainWindow::findPrevious()
 {
 	TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
 
-	if (textEdit)
+	if (textEdit && textEdit->hasSelectedText())
 	{
-		if (findWhat_.isEmpty() == false)
-            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, false) == false)
+		findWhat_ = findDialog_->findWhat();
+		matchCase_ = findDialog_->matchCase();
+		wholeWord_ = findDialog_->wholeWord();
+		regexp_ = findDialog_->regexp();
+		wrapSearch_ = findDialog_->wrap();
+        
+		findWhat_ = textEdit->getSelectedText();
+	            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, false) == false)
 				QMessageBox::information(findDialog_, tr("Gideros"), tr("The specified text could not be found."));
 	}
 }
 
 void MainWindow::replace()
 {
+    QPoint od_Pos = this->outputDock_->mapToGlobal(this->outputDock_->rect().topRight());
+    QPoint fd_Pos = this->replaceDialog_->mapToGlobal(this->replaceDialog_->rect().topLeft());
+    this->replaceDialog_->move(od_Pos.x() - replaceDialog_->width(), od_Pos.y());
+    
 	findDialog_->hide();
-//	findInFilesDialog_->hide();
 	replaceDialog_->show();
+	
     replaceDialog_->raise();
     replaceDialog_->activateWindow();
+    
+	TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+    if (textEdit->hasSelectedText())
+    {
+		QString sel = textEdit->getSelectedText();
+		if (!sel.isEmpty()){
+			replaceDialog_->setSelectedText(sel);
+		}
+
+	}
+	else
+	{
+		replaceDialog_->setSelectedText("");
+	}
+	
     replaceDialog_->focusToFindWhat();
 }
 
@@ -2450,32 +2662,16 @@ void MainWindow::goToLine()
 
 	if (textEdit)
 	{
-		int line, index;
-
-#ifdef SCINTILLAEDIT_H
-        sptr_t pos=textEdit->sciScintilla()->currentPos();
-        index=textEdit->sciScintilla()->column(pos);
-        line=textEdit->sciScintilla()->lineFromPosition(pos);
-        int lines = textEdit->sciScintilla()->lineFromPosition(textEdit->sciScintilla()->textLength());
-#else
-        textEdit->sciScintilla()->getCursorPosition(&line, &index);
-        int lines = textEdit->sciScintilla()->lines();
-#endif
-
-
-		GoToLineDialog dialog(this);
-		dialog.setLineNumbers(line + 1, lines);
-		if (dialog.exec() == QDialog::Accepted)
-		{
-			int lineNumber = dialog.lineNumber();
-			lineNumber = qMin(qMax(lineNumber, 1), lines);
-
-#ifdef SCINTILLAEDIT_H
-        textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->findColumn(lineNumber - 1, index));
-#else
-        textEdit->sciScintilla()->setCursorPosition(lineNumber - 1, 0);
-#endif
+		int lineCount = textEdit->sciScintilla()->lineCount();
+		bool ok;
+		int line = QInputDialog::getInt(this, tr("Line number"), tr("Go to line"),
+			1, 1, lineCount + 1, 1, &ok);
+		if (ok) {
+			textEdit->sciScintilla()->gotoLine(line - 1);
 		}
+		
+		textEdit->sciScintilla()->setFirstVisibleLine(line - 12);
+
 	}
 }
 

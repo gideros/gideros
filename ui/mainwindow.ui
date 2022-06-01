@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1370</width>
-    <height>750</height>
+    <width>1131</width>
+    <height>907</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,8 +32,8 @@ QMainWindow::separator {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1370</width>
-     <height>17</height>
+     <width>1131</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -87,6 +87,9 @@ QMainWindow::separator {
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="separator"/>
+    <addaction name="actionWrap"/>
+    <addaction name="actionColorPicker"/>
+    <addaction name="separator"/>
     <addaction name="actionFind"/>
     <addaction name="actionReplace"/>
     <addaction name="actionFind_Next"/>
@@ -109,6 +112,9 @@ QMainWindow::separator {
     <addaction name="actionClear_Output"/>
     <addaction name="actionLive_syntax_checking"/>
     <addaction name="actionType_checking"/>
+    <addaction name="separator"/>
+    <addaction name="actionTexture_Packer"/>
+    <addaction name="actionFont_Creator"/>
    </widget>
    <widget class="QMenu" name="menuPlayer">
     <property name="title">
@@ -184,6 +190,8 @@ QMainWindow::separator {
    <addaction name="actionCopy"/>
    <addaction name="actionPaste"/>
    <addaction name="separator"/>
+   <addaction name="actionWrap"/>
+   <addaction name="separator"/>
    <addaction name="actionToggle_Bookmark"/>
    <addaction name="actionNext_Bookmark"/>
    <addaction name="actionPrevious_Bookmark"/>
@@ -201,6 +209,8 @@ QMainWindow::separator {
    <addaction name="actionStepReturn"/>
    <addaction name="separator"/>
    <addaction name="actionProfile"/>
+   <addaction name="separator"/>
+   <addaction name="actionColorPicker"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew_Project">
@@ -755,6 +765,29 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+C</string>
+   </property>
+  </action>
+  <action name="actionWrap">
+   <property name="text">
+    <string>Wrap</string>
+   </property>
+   <property name="toolTip">
+    <string>Wrap/Unwrap lines</string>
+   </property>
+  </action>
+  <action name="actionTexture_Packer">
+   <property name="text">
+    <string>Texture Packer</string>
+   </property>
+  </action>
+  <action name="actionFont_Creator">
+   <property name="text">
+    <string>Font Creator</string>
+   </property>
+  </action>
+  <action name="actionColorPicker">
+   <property name="text">
+    <string>Color Picker</string>
    </property>
   </action>
  </widget>

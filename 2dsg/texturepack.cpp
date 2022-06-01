@@ -117,7 +117,7 @@ void TexturePack::loadAsync(Application* application, const char** filenames, in
 void TexturePack::loadAsync(Application* application, const char* texturelistfile, const char* imagefile, TextureParameters parameters,
                       std::function<void(TexturePack *,std::exception_ptr)> callback)
 {
-    auto future = application->getTextureManager()->createTextureFromFile(imagefile, parameters,true,
+    auto future = application->getTextureManager()->createTextureFromFile(imagefile, parameters,
                   [=](TextureData *data, std::exception_ptr e){
         if (e) {
             callback(NULL,e);

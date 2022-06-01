@@ -58,13 +58,21 @@ int RenderTargetBinder::create(lua_State *L)
         GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
         luaL_error(L, "%s", status.errorString());
     }
+    bool extend= true;
+    if (!lua_isnoneornil(L,8))
+        extend = lua_toboolean(L, 8);
 
+    //Ensure requested size is never negative
+    if (width <= 0) width = 0;
+    if (height <= 0) height = 0;
 
-	//Ensure requested size is never negative
-	if (width <= 0) width = 0;
-	if (height <= 0) height = 0;
+    TextureParameters parameters;
+    parameters.filter = smoothing ? eLinear : eNearest;
+    parameters.wrap = repeat ? eRepeat : eClamp;
+    parameters.format = format;
+    parameters.pow2 = extend;
 
-    binder.pushInstance("RenderTarget", new GRenderTarget(application->getApplication(), width, height, smoothing ? eLinear : eNearest, repeat ? eRepeat : eClamp,format,selectScale,depth));
+    binder.pushInstance("RenderTarget", new GRenderTarget(application->getApplication(), width, height, parameters ,selectScale,depth));
 
     return 1;
 }
