@@ -45,8 +45,8 @@ function Ray:redraw(list, isFilled, alpha)
 	local x2, y2 = self.collisionShape:getFacePosition()
 	
 	list:addLine(x1, y1, x2, y2, self.drawColor, alpha)
-	drawCircle(list, x1, y1, DRAG_POINT_RADIUS, isFilled, self.drawColor, alpha)
-	drawCircle(list, x2, y2, DRAG_POINT_RADIUS, isFilled, self.drawColor, alpha)
+	drawCircle(list, x1, y1, DRAG_POINT_RADIUS, self.drawColor)
+	drawCircle(list, x2, y2, DRAG_POINT_RADIUS, self.drawColor)
 end
 
 function Ray:updateDragAndDrop(ui)

@@ -36,59 +36,49 @@ Poly = Core.class(CollisionShape, function(...) return "Poly" end)
 
 function Poly:init(x, y, points)
 	self.collisionShape = CuteC2.poly(points)
-	self.transform = CuteC2.transform(x, y)
+	self.collisionShape:setPosition(x, y)
 	self.dragVertex = 0
 	self.drawNormals = false
 	self.drawBBOX = false
+	self.verticesInGlobalSpace = true
+	self.verticesRotationRelative = true
 	
 	-- used to test if mouse is clicked close to the shape
 	-- but not inside
 	self.mousePos = CuteC2.circle(0,0,4)
-	
-	self.ax = 0
-	self.ay = 0
-	self.bx = 0
-	self.by = 0
-	self.cx = 0
-	self.cy = 0
 end
 
 function Poly:pointHitTest(x, y)
-	local points = self.collisionShape:getRotatedPoints(self.transform)
-	local tx, ty = self.transform:getPosition()
+	local points = self.collisionShape:getRotatedPoints(true)
 	
 	for i, pt in ipairs(points) do
-		local px = tx + pt.x
-		local py = ty + pt.y
-		
-		if (circleHitTest(px, py, DRAG_POINT_RADIUS, x, y)) then
+		if (circleHitTest(pt.x, pt.y, DRAG_POINT_RADIUS, x, y)) then
 			return i, pt
 		end
 	end
-	
 end
 
 function Poly:onVertexStartMove(mx, my)
 end
 
 function Poly:onStartRotate(mx, my)
-	local x, y = self.transform:getPosition()
-	local ang = math.atan2(self.clickY - y, self.clickX - x)
+	local x, y = self.collisionShape:getPosition()
+	local ang = math.atan2(my - y, mx - x)
 	self.clickAng = ang
 	self.prevAng = ang
 end
 
 function Poly:onRotationChanged(dx, dy, mx, my)
-	local x, y = self.transform:getPosition()
+	local x, y = self.collisionShape:getPosition()
 	local currentAng = math.atan2(my - y, mx - x)
-	self.transform:rotate(currentAng - self.prevAng)
+	self.collisionShape:rotate(currentAng - self.prevAng)
 	self.prevAng = currentAng
 end
 
+-- update vertex position with respect to shape rotation
 function Poly:onVertexMove(ind, dx, dy, mx, my)
-	-- update vertex position with respect to shape rotation
 	local vx, vy = self.collisionShape:getVertex(ind)
-	local rot = self.transform:getRotation()
+	local rot = self.collisionShape:getRotation()
 	local len = math.length(dx, dy)
 	local ang = math.atan2(dy, dx)
 	
@@ -100,70 +90,123 @@ function Poly:onVertexMove(ind, dx, dy, mx, my)
 end
 
 function Poly:onMove(dx, dy, mx, my)
-	self.transform:move(dx, dy)
+	self.collisionShape:move(dx, dy)
+end
+
+function Poly:onStartResize(mx, my)
+	local x, y = self.collisionShape:getPosition()
+	self.dragDistance = math.distance(x, y, mx, my)
+end
+
+function Poly:onSizeChanged(dx, dy, mx, my)
+	local x, y = self.collisionShape:getPosition()
+	local d = math.distance(x, y, mx, my)
+	local delta = d - self.dragDistance
+	if (math.abs(delta) > 0) then 
+		self.collisionShape:inflate(self.dragDistance - d)
+	end
+	self.dragDistance = d
+end
+
+function Poly:isAllowedToDrag()
+	return not(self.dragSize or self.dragRotation or self.dragVertex > 0)
+end
+
+function Poly:isAllowedToDragVertex()
+	return not(self.dragSize or self.dragShape or self.dragRotation)
+end
+
+function Poly:isAllowedToResize()
+	return not(self.dragShape or self.dragRotation or self.dragVertex > 0)
+end
+
+function Poly:isAllowedToRotate()
+	return not(self.dragSize or self.dragShape or self.dragVertex > 0)
+end
+
+function Poly:isAllowedToDeleteVertex()
+	return not(self.dragSize or self.dragShape or self.dragRotation or self.dragVertex > 0)
 end
 
 function Poly:updateDragAndDrop(ui)	
 	local mx, my = ui:getMousePos()
-	local tx, ty = self.transform:getPosition()
+	local tx, ty = self.collisionShape:getPosition()
 	
+	-- Drag & drop shape OR vertex
 	if (ui:isMouseClicked(KeyCode.MOUSE_LEFT)) then 
 		local ind = self:pointHitTest(mx, my)
 		
 		-- clicked on vertex
-		if (ind) then
+		if (ind and self:isAllowedToDragVertex()) then
 			self:startDrag(mx, my)
 			self:onVertexStartMove(mx, my, ind)
 			self.dragVertex = ind
 		-- clicked on shape body OR its position origin point
-		elseif (self.collisionShape:hitTest(mx, my, self.transform) or circleHitTest(tx, ty, DRAG_POINT_RADIUS, mx, my)) then 
+		elseif (self:isAllowedToDrag() and (self.collisionShape:hitTest(mx, my) or circleHitTest(tx, ty, DRAG_POINT_RADIUS, mx, my))) then 
 			self:startDrag(mx, my)
 			self:onStartMove(mx, my)
 			self.dragShape = true
 		end
+	-- Scale the shape
 	elseif (ui:isMouseClicked(KeyCode.MOUSE_RIGHT)) then 
-		-- clicked on shape body
-		if (self.collisionShape:hitTest(mx, my, self.transform)) then 
+		if (self.collisionShape:hitTest(mx, my) and self:isAllowedToResize()) then 
 			self:startDrag(mx, my)
-			self:onStartRotate(mx, my)
-			self.dragRotation = true
+			self:onStartResize(mx, my)
+			self.dragSize = true
 		end
+	-- Rotate the shape OR add/remove vertex
 	elseif (ui:isMouseClicked(KeyCode.MOUSE_MIDDLE)) then 
 		local ind = self:pointHitTest(mx, my)
 		
 		-- clicked on vertex
-		if (ind) then
-			self.collisionShape:removeVertex(ind)
+		if (ind) then 
+			if (self:isAllowedToDeleteVertex()) then
+				self.collisionShape:removeVertex(ind)
+			end
+		elseif (self.collisionShape:hitTest(mx, my)) then 
+			if (self:isAllowedToRotate()) then 
+				self:startDrag(mx, my)
+				self:onStartRotate(mx, my)
+				self.dragRotation = true
+			end
 		else
-			-- using fake shape to use GJK
+			-- using fake shape to calculate closest point with GJK
 			self.mousePos:setPosition(mx, my)
 			
 			-- calculate distance to closest point
-			local d, ax, ay = CuteC2.GJK(self.collisionShape, self.mousePos, self.transform)
+			local d, ax, ay = CuteC2.GJK(self.collisionShape, self.mousePos)
 			
-			if (d < 50) then 
-				local points = self.collisionShape:getRotatedPoints(self.transform)
-				local count = #points
-				
-				-- find closest line segment
-				for i, pt in ipairs(points) do
-					-- if too close to vertex point, break
-					if (circleHitTest(tx + pt.x, ty + pt.y, DRAG_POINT_RADIUS, ax, ay)) then 
-						break
-					end
+			if (d < 100) then 
+				-- of there is more than 8 vertices the application will throw an error
+				-- so just shake the shape a little :D
+				if (self.collisionShape:getVertexCount() + 1 > CuteC2.MAX_POLYGON_VERTS) then 
+					self:shake()
+				else
+					-- get points in GLOBAL space, because of CuteC2.GJK
+					-- that retruns a point in GLOBAL space aswell
+					local points = self.collisionShape:getRotatedPoints(true)
+					local count = #points
 					
-					-- loop point index
-					local nextI = (i+1) % (count+1)
-					
-					if (nextI == 0) then 
-						nextI = 1
-					end
-					
-					local nextPoint = points[nextI]
-					-- check if current line segment "contains" closest point given by GJK algorithm
-					if (isBetween(pt.x, pt.y, nextPoint.x, nextPoint.y, ax - tx, ay - ty)) then 
-						self.collisionShape:insertVertex(mx - tx, my - ty, i, self.transform)
-						break
+					-- find closest line segment
+					for i, pt in ipairs(points) do
+						-- if too close to vertex point, break
+						if (circleHitTest(pt.x, pt.y, DRAG_POINT_RADIUS, ax, ay)) then 
+							break
+						end
+						
+						-- loop point index
+						local nextI = (i+1) % (count+1)
+						
+						if (nextI == 0) then 
+							nextI = 1
+						end
+						
+						local nextPoint = points[nextI]
+						-- check if current line segment "contains" closest point given by GJK algorithm
+						if (isBetween(pt.x, pt.y, nextPoint.x, nextPoint.y, ax, ay)) then 
+							self.collisionShape:insertVertex(mx - tx, my - ty, false, i)
+							break
+						end
 					end
 				end
 			end
@@ -190,8 +233,18 @@ function Poly:updateDragAndDrop(ui)
 		end
 	end
 	
-	if (self.dragRotation) then 
+	if (self.dragSize) then 
 		if (ui:isMouseReleased(KeyCode.MOUSE_RIGHT)) then
+			self.dragSize = false
+			self:stopDrag()
+		else
+			local dx, dy = self:updateDrag(mx, my)
+			self:onSizeChanged(dx, dy, mx, my)
+		end
+	end
+	
+	if (self.dragRotation) then 
+		if (ui:isMouseReleased(KeyCode.MOUSE_MIDDLE)) then
 			self.dragRotation = false
 			self:stopDrag()
 		else
@@ -202,64 +255,106 @@ function Poly:updateDragAndDrop(ui)
 end
 
 function Poly:onPropertiesDraw(ui)
+	local shape = self.collisionShape
 	
+	ui:sameLine()
 	self.drawNormals = ui:checkbox("Draw normals", self.drawNormals)
+	ui:sameLine()
 	self.drawBBOX = ui:checkbox("Draw BBOX", self.drawBBOX)
 	
-	if (ui:button("Upadte center position")) then 
-		self.collisionShape:updateCenter(self.transform)
+	if (ui:button("Update center position")) then 
+		shape:updateCenter()
 	end
 	
-	local x, y = self.transform:getPosition()
+	local x, y = shape:getPosition()
 	local changed = false
 	x, y, changed = ui:dragFloat2("Position", x, y)
 	
 	if (changed) then 
-		self.transform:setPosition(x, y)
+		shape:setPosition(x, y)
 	end
 	
-	local rot = self.transform:getRotation()
+	local rot = shape:getRotation()
 	
 	changed = false
 	rot, changed = ui:dragFloat("Rotation", rot, 0.01)
 	
 	if (changed) then 
-		self.transform:setRotation(rot)
+		shape:setRotation(rot)
+	end
+	
+	if (ui:treeNode("Vertices")) then 
+		self.verticesInGlobalSpace = ui:checkbox("Global space", self.verticesInGlobalSpace)
+		self.verticesRotationRelative = ui:checkbox("Rotation relative", self.verticesRotationRelative)
+		
+		local count = shape:getVertexCount()
+		local deleteIndex = 0
+		
+		for i = 1, count do 
+			if (ui:button("Delete##V"..i)) then 
+				if (count - 1 > 2) then
+					deleteIndex = i
+				else
+					self:shake()
+				end
+			end
+			
+			ui:sameLine()
+			
+			local vx, vy = shape:getVertex(i, self.verticesInGlobalSpace)
+			local newX, newY, moved = ui:dragFloat2("#"..i, vx, vy)
+			
+			if (moved) then 
+				if (self.verticesRotationRelative) then 
+					local deltaX = newX - vx
+					local deltaY = newY - vy
+					
+					self:onVertexMove(i, deltaX, deltaY)
+				else
+					shape:setVertex(i, newX, newY, self.verticesInGlobalSpace)
+				end
+			end
+		end
+		
+		if (deleteIndex > 0) then 
+			shape:removeVertex(deleteIndex)
+		end
+		
+		ui:treePop()
 	end
 end
 
-function Poly:redraw(list, isFilled, alpha)
+function Poly:redraw(list, alpha)
 	local shape = self.collisionShape
-	local points = shape:getRotatedPoints(self.transform)
-	local tx, ty = self.transform:getPosition()
+	local points = shape:getRotatedPoints(true)
+	local px, py = shape:getPosition()
 	
 	-- bounding box
 	if (self.drawBBOX) then 
-		local minX, minY, maxX, maxY = shape:getBoundingBox(self.transform)
-		minX += tx
-		minY += ty
-		maxX += tx
-		maxY += ty
-		drawRect(list, minX, minY, maxX, maxY, isFilled, self.drawColor, alpha)
+		local minX, minY, maxX, maxY = shape:getBoundingBox(true)
+		drawRect(list, minX, minY, maxX, maxY, self.drawColor, 0.2)
 	end
 	
-	drawPoly(list, points, self.transform, isFilled, self.drawColor, alpha)	
+	drawPoly(list, px, py, points, self.drawColor, alpha)
 	
 	-- dragable vertices
-	for i, pt in ipairs(points) do 
-		local x = tx + pt.x
-		local y = ty + pt.y
-		
-		list:addCircle(x, y, DRAG_POINT_RADIUS, 0x00ff00, 1)
-		list:addText(x, y, 0xffffff, 1, tostring(i - 1))
+	if (DRAG_POINT_VISIBLE) then
+		for i, pt in ipairs(points) do 
+			local x = pt.x
+			local y = pt.y
+			
+			list:addCircle(x, y, DRAG_POINT_RADIUS, 0x00ff00, 1)
+			list:addText(x, y, 0xffffff, 1, tostring(i))
+		end
 	end
 	
 	-- normals
 	if (self.drawNormals) then 
-		local normals = shape:getRotatedNormals(self.transform)
+		local normals = shape:getRotatedNormals()
+		
 		for i = 1, #points do 
-			local x1 = tx + points[i].x
-			local y1 = ty + points[i].y
+			local x1 = points[i].x
+			local y1 = points[i].y
 			local x2 = x1 + normals[i].x * 16
 			local y2 = y1 + normals[i].y * 16
 			

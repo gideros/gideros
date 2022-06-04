@@ -45,10 +45,10 @@ function Capsule:onPropertiesDraw(ui)
 	end
 end
 
-function Capsule:redraw(list, isFilled, alpha)
+function Capsule:redraw(list)
 	local shape = self.collisionShape
 	local x, y = shape:getPosition()
 	local r, h = shape:getSize()
 	
-	drawCapsule(list, x, y, h, r, isFilled, self.drawColor, alpha)
+	drawCapsule(list, x, y, h, r, self.drawColor)
 end

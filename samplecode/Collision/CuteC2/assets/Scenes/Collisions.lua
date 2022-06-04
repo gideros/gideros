@@ -1,46 +1,30 @@
 CollisionsScene = Core.class(BaseScene, function() return "Dark", true end)
 
 function CollisionsScene:init()
-	
 	self.objects = {}
-	self:createRandomShapes(self.objects, 4)
+	self:createRandomShapes(self.objects, 8)
 end
 
-function CollisionsScene:onDrawUI()
+function CollisionsScene:onDraw()
 	local ui = self.ui
-	local list = ui:getForegroundDrawList()
 	
 	for i,obj in ipairs(self.objects) do 
-		obj:onDraw(ui, self.filledShapes, self.drawAlpha)
+		obj:draw(ui)
 		
 		for j, other in ipairs(self.objects) do 
 			if (other ~= obj) then 
-				local t = other:getType()
 				
-				local mainfold = CuteC2.collide(obj.collisionShape, other.collisionShape, obj.transform, other.transform)
+				local mainfold = CuteC2.collide(obj.collisionShape, other.collisionShape)
 				
 				if (mainfold.count > 0) then 
 					local nx = mainfold.normal.x
 					local ny = mainfold.normal.y
 					local d = mainfold.depths[1]
-					local x = 0
-					local y = 0
-					
-					if (t == CuteC2.TYPE_POLY) then 
-						x, y = other.transform:getPosition()
-					else
-						x, y = other.collisionShape:getPosition()
-					end
+					local x, y = other.collisionShape:getPosition()
 					
 					local sx = x + nx * d
 					local sy = y + ny * d
-					local otherShape = other.collisionShape
-					
-					if (t == CuteC2.TYPE_POLY) then 
-						other.transform:setPosition(sx, sy)
-					else
-						otherShape:setPosition(sx, sy)
-					end
+					other.collisionShape:setPosition(sx, sy)
 				end
 			end
 		end
