@@ -14,6 +14,29 @@ function CollisionShape:init(name)
 	self.drawColor = math.random(0xffffff)
 end
 
+function CollisionShape:shake(x, y)
+	if (not self.timer) then 
+		self.timer = Timer.new(10, 10)
+		self.counter = 0.1
+		self.originalX, self.originalY = self.collisionShape:getPosition()
+		self.timer:start()
+		
+		self.timer:addEventListener(Event.TIMER, function()
+			local dx = math.noise(self.originalX, self.originalY, self.counter) * 10
+			local dy = math.noise(self.originalX, self.originalY, self.counter + 0.5) * 10
+			self.counter += 0.6
+			self.collisionShape:setPosition(self.originalX + dx, self.originalY + dy)
+		end)
+		
+		self.timer:addEventListener(Event.TIMER_COMPLETE, function()
+			self.collisionShape:setPosition(self.originalX, self.originalY)
+			self.originalX = nil
+			self.originalY = nil
+			self.timer = nil
+		end)
+	end
+end
+
 function CollisionShape:contains(x, y)
 	return false
 end
@@ -32,7 +55,7 @@ function CollisionShape:stopDrag()
 	self.clickY = nil
 end
 
-function CollisionShape:updateDrag(mx, my)
+function CollisionShape:updateDrag(mx, my)	
 	local dx = mx - self.px
 	local dy = my - self.py
 	
@@ -100,25 +123,34 @@ function CollisionShape:updateDragAndDrop(ui)
 	end
 end
 
-function CollisionShape:onDraw(ui, isFilled, alpha)
+function CollisionShape:drawProperties(ui)
+	ui:pushID(self.id)
+	self.show = ui:checkbox("##Visible", self.show)
+	ui:sameLine()
+	if (ui:treeNode(self.name)) then 
+		self.drawColor = ui:colorEdit3("Color", self.drawColor)
+		
+		self:onPropertiesDraw(ui)
+		ui:treePop()
+	end
+	ui:popID()
+	ui:separator()
+end
+
+function CollisionShape:draw(ui)
 	if (self.id < 0) then 
 		self.id = ui:getID(self)
 	end
 	
-	ui:pushID(self.id)
-	if (ui:collapsingHeader(self.name)) then 
-		self.drawColor = ui:colorEdit3("Color", self.drawColor)
-		self.show = ui:checkbox("Visible", self.show)
-		self:onPropertiesDraw(ui)
-	end
-	ui:popID()
-	
 	if (self.show) then 
-		local list = ui:getWindowDrawList()
+		local list = ui:getBackgroundDrawList()
 		
-		self:redraw(list, isFilled, alpha)
+		self:redraw(list)
 	end
-	self:updateDragAndDrop(ui)
+	
+	if (not ui:getIO():wantCaptureMouse()) then	
+		self:updateDragAndDrop(ui)
+	end
 end
 
 function CollisionShape:getType()
