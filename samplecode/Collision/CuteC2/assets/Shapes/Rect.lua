@@ -37,9 +37,9 @@ function Rect:onPropertiesDraw(ui)
 	end
 end
 
-function Rect:redraw(list, isFilled, alpha)
+function Rect:redraw(list)
 	local shape = self.collisionShape
 	local x1, y1, x2, y2 = shape:getBoundingBox()
 	
-	drawRect(list, x1, y1, x2, y2, isFilled, self.drawColor, alpha)
+	drawRect(list, x1, y1, x2, y2, self.drawColor)
 end

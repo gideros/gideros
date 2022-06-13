@@ -9,13 +9,16 @@ function GJKScene:init()
 end
 
 function GJKScene:onDrawUI()
+	self.minDistance = self.ui:dragFloat("Min distance", self.minDistance, nil, 0, 1000)
+	BaseScene.onDrawUI(self)
+end
+
+function GJKScene:onDraw()
 	local ui = self.ui
 	local list = ui:getForegroundDrawList()
 	
-	self.minDistance = ui:dragFloat("Min distance", self.minDistance, nil, 0, 1000)
-	
 	for i,shape in ipairs(self.objects) do 
-		shape:onDraw(ui, self.filledShapes, self.drawAlpha)
+		shape:draw(ui)
 		
 		for j, other in ipairs(self.objects) do 
 			if (shape ~= other) then 

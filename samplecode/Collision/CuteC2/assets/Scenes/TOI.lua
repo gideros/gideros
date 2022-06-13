@@ -12,12 +12,12 @@ function TOIScene:init()
 	self:createRandomShapes(self.objects, 8)
 end
 
-function TOIScene:onDrawUI()
+function TOIScene:onDraw()
 	local ui = self.ui	
 	local list = ui:getForegroundDrawList()
 	
-	self.mainPoint:onDraw(ui, self.filledShapes, self.drawAlpha)
-	self.dstPoint:onDraw(ui, self.filledShapes, self.drawAlpha)
+	self.mainPoint:draw(ui)
+	self.dstPoint:draw(ui)
 	
 	local mainShape = self.mainPoint.collisionShape
 	local dstShape = self.dstPoint.collisionShape
@@ -32,7 +32,7 @@ function TOIScene:onDrawUI()
 	local vy = y2 - y1
 	
 	for i, shape in ipairs(self.objects) do 
-		shape:onDraw(ui, self.filledShapes, self.drawAlpha)
+		shape:draw(ui)
 		local hit, toi, nx, ny, px, py, iterations = CuteC2.TOI(mainShape, vx, vy, shape.collisionShape, 0, 0, true, nil, shape.transform)
 		
 		if (hit) then 
