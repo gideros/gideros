@@ -52,17 +52,14 @@
 #include "TextEditor.h" // https://github.com/BalazsJako/ImGuiColorTextEdit
 
 #ifdef IS_DOCKING_BUILD
-#define PLUGIN_NAME "ImGui_beta"
+#define PLUGIN_NAME "ImGui_docking"
 #elif defined(IS_BETA_BUILD)
+#define PLUGIN_NAME "ImGui_beta"
 #include "stackchecker.h"
 #define STACK_CHECKER(L, pre, delta) StackChecker checker(L, pre, delta);
-#define PLUGIN_NAME "ImGui_pre_build"
-#ifdef INCLUDE_IMPLOT
-#include "implot_src/implot.h" // WIP
-#endif
 #else
-#define STACK_CHECKER(L, pre, delta) ((void)0)
 #define PLUGIN_NAME "ImGui"
+#define STACK_CHECKER(L, pre, delta) ((void)0)
 #endif
 
 #define LUA_ASSERT(EXP, MSG) if (!(EXP)) { lua_pushstring(L, MSG); lua_error(L); }
@@ -386,29 +383,30 @@ public:
 	int functionIndex = -1;
 	int argumentIndex = -1;
 
-	lua_State* _L;
+	lua_State* L;
 
-	CallbackData(lua_State* L, int index)
+	CallbackData(lua_State* p_L, int index)
 	{
-		_L = L;
+		L = p_L;
 
-		if (lua_gettop(_L) == index + 1)
+		if (lua_gettop(L) == index + 1)
 		{
-			argumentIndex = luaL_ref(_L, LUA_REGISTRYINDEX);
+			argumentIndex = luaL_ref(L, LUA_REGISTRYINDEX);
 		}
 
-		functionIndex = luaL_ref(_L, LUA_REGISTRYINDEX);
+		functionIndex = luaL_ref(L, LUA_REGISTRYINDEX);
 	}
 
 	~CallbackData()
 	{
 		if (functionIndex != -1)
 		{
-			luaL_unref(_L, LUA_REGISTRYINDEX, functionIndex);
+			luaL_unref(L, LUA_REGISTRYINDEX, functionIndex);
 		}
+
 		if (argumentIndex != -1)
 		{
-			luaL_unref(_L, LUA_REGISTRYINDEX, argumentIndex);
+			luaL_unref(L, LUA_REGISTRYINDEX, argumentIndex);
 		}
 	}
 };
@@ -468,72 +466,72 @@ static ImGuiKey giderosKeyToImGuiKey(const int key)
 		case GINPUT_KEY_ESC:		return ImGuiKey_Escape;
 		case GINPUT_KEY_SPACE:		return ImGuiKey_Space;
 		case GINPUT_KEY_LEFT:		return ImGuiKey_LeftArrow;
-		case GINPUT_KEY_UP:			return ImGuiKey_UpArrow;
+		case GINPUT_KEY_UP:		return ImGuiKey_UpArrow;
 		case GINPUT_KEY_RIGHT:		return ImGuiKey_RightArrow;
 		case GINPUT_KEY_DOWN:		return ImGuiKey_DownArrow;
-		case GINPUT_KEY_0:			return ImGuiKey_0;
-		case GINPUT_KEY_1:			return ImGuiKey_1;
-		case GINPUT_KEY_2:			return ImGuiKey_2;
-		case GINPUT_KEY_3:			return ImGuiKey_3;
-		case GINPUT_KEY_4:			return ImGuiKey_4;
-		case GINPUT_KEY_5:			return ImGuiKey_5;
-		case GINPUT_KEY_6:			return ImGuiKey_6;
-		case GINPUT_KEY_7:			return ImGuiKey_7;
-		case GINPUT_KEY_8:			return ImGuiKey_8;
-		case GINPUT_KEY_9:			return ImGuiKey_9;
-		case GINPUT_KEY_A:			return ImGuiKey_A;
-		case GINPUT_KEY_B:			return ImGuiKey_B;
-		case GINPUT_KEY_C:			return ImGuiKey_C;
-		case GINPUT_KEY_D:			return ImGuiKey_D;
-		case GINPUT_KEY_E:			return ImGuiKey_E;
-		case GINPUT_KEY_F:			return ImGuiKey_F;
-		case GINPUT_KEY_G:			return ImGuiKey_G;
-		case GINPUT_KEY_H:			return ImGuiKey_H;
-		case GINPUT_KEY_I:			return ImGuiKey_I;
-		case GINPUT_KEY_J:			return ImGuiKey_J;
-		case GINPUT_KEY_K:			return ImGuiKey_K;
-		case GINPUT_KEY_L:			return ImGuiKey_L;
-		case GINPUT_KEY_M:			return ImGuiKey_M;
-		case GINPUT_KEY_N:			return ImGuiKey_N;
-		case GINPUT_KEY_O:			return ImGuiKey_O;
-		case GINPUT_KEY_P:			return ImGuiKey_P;
-		case GINPUT_KEY_Q:			return ImGuiKey_Q;
-		case GINPUT_KEY_R:			return ImGuiKey_R;
-		case GINPUT_KEY_S:			return ImGuiKey_S;
-		case GINPUT_KEY_T:			return ImGuiKey_T;
-		case GINPUT_KEY_U:			return ImGuiKey_U;
-		case GINPUT_KEY_V:			return ImGuiKey_V;
-		case GINPUT_KEY_W:			return ImGuiKey_W;
-		case GINPUT_KEY_X:			return ImGuiKey_X;
-		case GINPUT_KEY_Y:			return ImGuiKey_Y;
-		case GINPUT_KEY_Z:			return ImGuiKey_Z;
-		case GINPUT_KEY_BACK:		return ImGuiKey_Backspace;
-		case GINPUT_KEY_SEARCH:		return ImGuiKey_None; // ???
-		case GINPUT_KEY_MENU:		return ImGuiKey_Menu;
-		case GINPUT_KEY_CENTER:		return ImGuiKey_None; // ???
-		case GINPUT_KEY_SELECT:		return ImGuiKey_GamepadBack;
-		case GINPUT_KEY_START:		return ImGuiKey_GamepadStart;
-		case GINPUT_KEY_L1:			return ImGuiKey_GamepadL1;
-		case GINPUT_KEY_R1:			return ImGuiKey_GamepadR1;
+		case GINPUT_KEY_0:		return ImGuiKey_0;
+		case GINPUT_KEY_1:		return ImGuiKey_1;
+		case GINPUT_KEY_2:		return ImGuiKey_2;
+		case GINPUT_KEY_3:		return ImGuiKey_3;
+		case GINPUT_KEY_4:		return ImGuiKey_4;
+		case GINPUT_KEY_5:		return ImGuiKey_5;
+		case GINPUT_KEY_6:		return ImGuiKey_6;
+		case GINPUT_KEY_7:		return ImGuiKey_7;
+		case GINPUT_KEY_8:		return ImGuiKey_8;
+		case GINPUT_KEY_9:		return ImGuiKey_9;
+		case GINPUT_KEY_A:		return ImGuiKey_A;
+		case GINPUT_KEY_B:		return ImGuiKey_B;
+		case GINPUT_KEY_C:		return ImGuiKey_C;
+		case GINPUT_KEY_D:		return ImGuiKey_D;
+		case GINPUT_KEY_E:		return ImGuiKey_E;
+		case GINPUT_KEY_F:		return ImGuiKey_F;
+		case GINPUT_KEY_G:		return ImGuiKey_G;
+		case GINPUT_KEY_H:		return ImGuiKey_H;
+		case GINPUT_KEY_I:		return ImGuiKey_I;
+		case GINPUT_KEY_J:		return ImGuiKey_J;
+		case GINPUT_KEY_K:		return ImGuiKey_K;
+		case GINPUT_KEY_L:		return ImGuiKey_L;
+		case GINPUT_KEY_M:		return ImGuiKey_M;
+		case GINPUT_KEY_N:		return ImGuiKey_N;
+		case GINPUT_KEY_O:		return ImGuiKey_O;
+		case GINPUT_KEY_P:		return ImGuiKey_P;
+		case GINPUT_KEY_Q:		return ImGuiKey_Q;
+		case GINPUT_KEY_R:		return ImGuiKey_R;
+		case GINPUT_KEY_S:		return ImGuiKey_S;
+		case GINPUT_KEY_T:		return ImGuiKey_T;
+		case GINPUT_KEY_U:		return ImGuiKey_U;
+		case GINPUT_KEY_V:		return ImGuiKey_V;
+		case GINPUT_KEY_W:		return ImGuiKey_W;
+		case GINPUT_KEY_X:		return ImGuiKey_X;
+		case GINPUT_KEY_Y:		return ImGuiKey_Y;
+		case GINPUT_KEY_Z:		return ImGuiKey_Z;
+//		case GINPUT_KEY_BACK:		return ImGuiKey_;
+//		case GINPUT_KEY_SEARCH:		return ImGuiKey_;
+//		case GINPUT_KEY_MENU:		return ImGuiKey_;
+//		case GINPUT_KEY_CENTER:		return ImGuiKey_;
+//		case GINPUT_KEY_SELECT:		return ImGuiKey_;
+//		case GINPUT_KEY_START:		return ImGuiKey_;
+//		case GINPUT_KEY_L1:		return ImGuiKey_;
+//		case GINPUT_KEY_R1:		return ImGuiKey_;
 		case GINPUT_KEY_HOME:		return ImGuiKey_Home;
 		case GINPUT_KEY_END:		return ImGuiKey_End;
 		case GINPUT_KEY_INSERT:		return ImGuiKey_Insert;
 		case GINPUT_KEY_DELETE:		return ImGuiKey_Delete;
 		case GINPUT_KEY_PAGEUP:		return ImGuiKey_PageUp;
 		case GINPUT_KEY_PAGEDOWN:	return ImGuiKey_PageDown;
-		case GINPUT_KEY_F1:			return ImGuiKey_F1;
-		case GINPUT_KEY_F2:			return ImGuiKey_F2;
-		case GINPUT_KEY_F3:			return ImGuiKey_F3;
-		case GINPUT_KEY_F4:			return ImGuiKey_F4;
-		case GINPUT_KEY_F5:			return ImGuiKey_F5;
-		case GINPUT_KEY_F6:			return ImGuiKey_F6;
-		case GINPUT_KEY_F7:			return ImGuiKey_F7;
-		case GINPUT_KEY_F8:			return ImGuiKey_F8;
-		case GINPUT_KEY_F9:			return ImGuiKey_F9;
+		case GINPUT_KEY_F1:		return ImGuiKey_F1;
+		case GINPUT_KEY_F2:		return ImGuiKey_F2;
+		case GINPUT_KEY_F3:		return ImGuiKey_F3;
+		case GINPUT_KEY_F4:		return ImGuiKey_F4;
+		case GINPUT_KEY_F5:		return ImGuiKey_F5;
+		case GINPUT_KEY_F6:		return ImGuiKey_F6;
+		case GINPUT_KEY_F7:		return ImGuiKey_F7;
+		case GINPUT_KEY_F8:		return ImGuiKey_F8;
+		case GINPUT_KEY_F9:		return ImGuiKey_F9;
 		case GINPUT_KEY_F10:		return ImGuiKey_F10;
 		case GINPUT_KEY_F11:		return ImGuiKey_F11;
 		case GINPUT_KEY_F12:		return ImGuiKey_F12;
-		default:					return ImGuiKey_None;
+		default:			return ImGuiKey_None;
 	}
 }
 
@@ -549,6 +547,87 @@ static ImGuiKey giderosModKeyToImGuiMod(const int key)
 	}
 }
 
+static int imGuiKeyToGideros(const int key)
+{
+	switch (key)
+	{
+		case ImGuiKey_ModShift:		return GINPUT_KEY_SHIFT;
+		case ImGuiKey_ModCtrl:		return GINPUT_KEY_CTRL;
+		case ImGuiKey_ModAlt:		return GINPUT_KEY_ALT;
+		case ImGuiKey_Backspace:	return GINPUT_KEY_BACKSPACE;
+		case ImGuiKey_Tab:		return GINPUT_KEY_TAB;
+		case ImGuiKey_Enter:		return GINPUT_KEY_ENTER;
+		case ImGuiKey_Escape:		return GINPUT_KEY_ESC;
+		case ImGuiKey_Space:		return GINPUT_KEY_SPACE;
+		case ImGuiKey_LeftArrow:	return GINPUT_KEY_LEFT;
+		case ImGuiKey_UpArrow:		return GINPUT_KEY_UP;
+		case ImGuiKey_RightArrow:	return GINPUT_KEY_RIGHT;
+		case ImGuiKey_DownArrow:	return GINPUT_KEY_DOWN;
+		case ImGuiKey_0:		return GINPUT_KEY_0;
+		case ImGuiKey_1:		return GINPUT_KEY_1;
+		case ImGuiKey_2:		return GINPUT_KEY_2;
+		case ImGuiKey_3:		return GINPUT_KEY_3;
+		case ImGuiKey_4:		return GINPUT_KEY_4;
+		case ImGuiKey_5:		return GINPUT_KEY_5;
+		case ImGuiKey_6:		return GINPUT_KEY_6;
+		case ImGuiKey_7:		return GINPUT_KEY_7;
+		case ImGuiKey_8:		return GINPUT_KEY_8;
+		case ImGuiKey_9:		return GINPUT_KEY_9;
+		case ImGuiKey_A:		return GINPUT_KEY_A;
+		case ImGuiKey_B:		return GINPUT_KEY_B;
+		case ImGuiKey_C:		return GINPUT_KEY_C;
+		case ImGuiKey_D:		return GINPUT_KEY_D;
+		case ImGuiKey_E:		return GINPUT_KEY_E;
+		case ImGuiKey_F:		return GINPUT_KEY_F;
+		case ImGuiKey_G:		return GINPUT_KEY_G;
+		case ImGuiKey_H:		return GINPUT_KEY_H;
+		case ImGuiKey_I:		return GINPUT_KEY_I;
+		case ImGuiKey_J:		return GINPUT_KEY_J;
+		case ImGuiKey_K:		return GINPUT_KEY_K;
+		case ImGuiKey_L:		return GINPUT_KEY_L;
+		case ImGuiKey_M:		return GINPUT_KEY_M;
+		case ImGuiKey_N:		return GINPUT_KEY_N;
+		case ImGuiKey_O:		return GINPUT_KEY_O;
+		case ImGuiKey_P:		return GINPUT_KEY_P;
+		case ImGuiKey_Q:		return GINPUT_KEY_Q;
+		case ImGuiKey_R:		return GINPUT_KEY_R;
+		case ImGuiKey_S:		return GINPUT_KEY_S;
+		case ImGuiKey_T:		return GINPUT_KEY_T;
+		case ImGuiKey_U:		return GINPUT_KEY_U;
+		case ImGuiKey_V:		return GINPUT_KEY_V;
+		case ImGuiKey_W:		return GINPUT_KEY_W;
+		case ImGuiKey_X:		return GINPUT_KEY_X;
+		case ImGuiKey_Y:		return GINPUT_KEY_Y;
+		case ImGuiKey_Z:		return GINPUT_KEY_Z;
+		//case ImGuiKey_:		return GINPUT_KEY_BACK;
+		//case ImGuiKey_:		return GINPUT_KEY_SEARCH;
+		//case ImGuiKey_:		return GINPUT_KEY_MENU;
+		//case ImGuiKey_:		return GINPUT_KEY_CENTER;
+		//case ImGuiKey_:		return GINPUT_KEY_SELECT;
+		//case ImGuiKey_:		return GINPUT_KEY_START;
+		//case ImGuiKey_:		return GINPUT_KEY_L1;
+		//case ImGuiKey_:		return GINPUT_KEY_R1;
+		case ImGuiKey_Home:		return GINPUT_KEY_HOME;
+		case ImGuiKey_End:		return GINPUT_KEY_END;
+		case ImGuiKey_Insert:		return GINPUT_KEY_INSERT;
+		case ImGuiKey_Delete:		return GINPUT_KEY_DELETE;
+		case ImGuiKey_PageUp:		return GINPUT_KEY_PAGEUP;
+		case ImGuiKey_PageDown:		return GINPUT_KEY_PAGEDOWN;
+		case ImGuiKey_F1:		return GINPUT_KEY_F1;
+		case ImGuiKey_F2:		return GINPUT_KEY_F2;
+		case ImGuiKey_F3:		return GINPUT_KEY_F3;
+		case ImGuiKey_F4:		return GINPUT_KEY_F4;
+		case ImGuiKey_F5:		return GINPUT_KEY_F5;
+		case ImGuiKey_F6:		return GINPUT_KEY_F6;
+		case ImGuiKey_F7:		return GINPUT_KEY_F7;
+		case ImGuiKey_F8:		return GINPUT_KEY_F8;
+		case ImGuiKey_F9:		return GINPUT_KEY_F9;
+		case ImGuiKey_F10:		return GINPUT_KEY_F10;
+		case ImGuiKey_F11:		return GINPUT_KEY_F11;
+		case ImGuiKey_F12:		return GINPUT_KEY_F12;
+		default: 			return 0;
+	}
+}
 
 static lua_Number getAppProperty(lua_State *L, const char* name)
 {
@@ -656,11 +735,10 @@ ImGuiID checkID(lua_State* L, int idx = 2)
 	return (ImGuiID)id;
 }
 
-// TODO
 static int InputTextCallback(ImGuiInputTextCallbackData* data)
 {
 	CallbackData* callbackData = (CallbackData*)data->UserData;
-	lua_State* L = callbackData->_L;
+	lua_State* L = callbackData->L;
 	STACK_CHECKER(L, "InputTextCallback", 0);
 	
 	lua_rawgeti(L, LUA_REGISTRYINDEX, callbackData->functionIndex);
@@ -678,11 +756,10 @@ static int InputTextCallback(ImGuiInputTextCallbackData* data)
 	return 0;
 }
 
-// TODO
 static void NextWindowSizeConstraintCallback(ImGuiSizeCallbackData* data)
 {
 	CallbackData* callbackData = static_cast<CallbackData*>(data->UserData);
-	lua_State* L = callbackData->_L;
+	lua_State* L = callbackData->L;
 	STACK_CHECKER(L, "NextWindowSizeConstraintCallback", 0);
 	
 	lua_rawgeti(L, LUA_REGISTRYINDEX, callbackData->functionIndex);
@@ -1462,175 +1539,7 @@ void bindEnums(lua_State* L)
 	BIND_FENUM(L, FLT_MAX, "FLT_MAX");
 	BIND_FENUM(L, DBL_MAX, "DBL_MAX");
 	
-	lua_pop(L, 1);
-	
-#ifdef IMPLOT_API
-	lua_getglobal(L, "ImPlot");
-	
-	// ImPlotStyleVar_
-	BIND_IENUM(L, ImPlotStyleVar_LineWeight, "StyleVar_LineWeight");
-	BIND_IENUM(L, ImPlotStyleVar_Marker, "StyleVar_Marker");
-	BIND_IENUM(L, ImPlotStyleVar_MarkerSize, "StyleVar_MarkerSize");
-	BIND_IENUM(L, ImPlotStyleVar_MarkerWeight, "StyleVar_MarkerWeight");
-	BIND_IENUM(L, ImPlotStyleVar_FillAlpha, "StyleVar_FillAlpha");
-	BIND_IENUM(L, ImPlotStyleVar_ErrorBarSize, "StyleVar_ErrorBarSize");
-	BIND_IENUM(L, ImPlotStyleVar_ErrorBarWeight, "StyleVar_ErrorBarWeight");
-	BIND_IENUM(L, ImPlotStyleVar_DigitalBitHeight, "StyleVar_DigitalBitHeight");
-	BIND_IENUM(L, ImPlotStyleVar_DigitalBitGap, "StyleVar_DigitalBitGap");
-	BIND_IENUM(L, ImPlotStyleVar_PlotBorderSize, "StyleVar_PlotBorderSize");
-	BIND_IENUM(L, ImPlotStyleVar_MinorAlpha, "StyleVar_MinorAlpha");
-	BIND_IENUM(L, ImPlotStyleVar_MajorTickLen, "StyleVar_MajorTickLen");
-	BIND_IENUM(L, ImPlotStyleVar_MinorTickLen, "StyleVar_MinorTickLen");
-	BIND_IENUM(L, ImPlotStyleVar_MajorTickSize, "StyleVar_MajorTickSize");
-	BIND_IENUM(L, ImPlotStyleVar_MinorTickSize, "StyleVar_MinorTickSize");
-	BIND_IENUM(L, ImPlotStyleVar_MajorGridSize, "StyleVar_MajorGridSize");
-	BIND_IENUM(L, ImPlotStyleVar_MinorGridSize, "StyleVar_MinorGridSize");
-	BIND_IENUM(L, ImPlotStyleVar_PlotPadding, "StyleVar_PlotPadding");
-	BIND_IENUM(L, ImPlotStyleVar_LabelPadding, "StyleVar_LabelPadding");
-	BIND_IENUM(L, ImPlotStyleVar_LegendPadding, "StyleVar_LegendPadding");
-	BIND_IENUM(L, ImPlotStyleVar_LegendInnerPadding, "StyleVar_LegendInnerPadding");
-	BIND_IENUM(L, ImPlotStyleVar_LegendSpacing, "StyleVar_LegendSpacing");
-	BIND_IENUM(L, ImPlotStyleVar_MousePosPadding, "StyleVar_MousePosPadding");
-	BIND_IENUM(L, ImPlotStyleVar_AnnotationPadding, "StyleVar_AnnotationPadding");
-	BIND_IENUM(L, ImPlotStyleVar_FitPadding, "StyleVar_FitPadding");
-	BIND_IENUM(L, ImPlotStyleVar_PlotDefaultSize, "StyleVar_PlotDefaultSize");
-	BIND_IENUM(L, ImPlotStyleVar_PlotMinSize, "StyleVar_PlotMinSize");
-	
-	// ImPlotAxisFlags_
-	BIND_IENUM(L, ImPlotAxisFlags_None, "AxisFlags_None");
-	BIND_IENUM(L, ImPlotAxisFlags_NoLabel, "AxisFlags_NoLabel");
-	BIND_IENUM(L, ImPlotAxisFlags_NoGridLines, "AxisFlags_NoGridLines");
-	BIND_IENUM(L, ImPlotAxisFlags_NoTickMarks, "AxisFlags_NoTickMarks");
-	BIND_IENUM(L, ImPlotAxisFlags_NoTickLabels, "AxisFlags_NoTickLabels");
-	BIND_IENUM(L, ImPlotAxisFlags_Foreground, "AxisFlags_Foreground");
-	BIND_IENUM(L, ImPlotAxisFlags_LogScale, "AxisFlags_LogScale");
-	BIND_IENUM(L, ImPlotAxisFlags_Time, "AxisFlags_Time");
-	BIND_IENUM(L, ImPlotAxisFlags_Invert, "AxisFlags_Invert");
-	BIND_IENUM(L, ImPlotAxisFlags_NoInitialFit, "AxisFlags_NoInitialFit");
-	BIND_IENUM(L, ImPlotAxisFlags_AutoFit, "AxisFlags_AutoFit");
-	BIND_IENUM(L, ImPlotAxisFlags_RangeFit, "AxisFlags_RangeFit");
-	BIND_IENUM(L, ImPlotAxisFlags_LockMin, "AxisFlags_LockMin");
-	BIND_IENUM(L, ImPlotAxisFlags_LockMax, "AxisFlags_LockMax");
-	BIND_IENUM(L, ImPlotAxisFlags_Lock, "AxisFlags_Lock");
-	BIND_IENUM(L, ImPlotAxisFlags_NoDecorations, "AxisFlags_NoDecorations");
-	
-	// ImPlotYAxis_
-	BIND_IENUM(L, ImPlotYAxis_1, "YAxis_1");
-	BIND_IENUM(L, ImPlotYAxis_2, "YAxis_2");
-	BIND_IENUM(L, ImPlotYAxis_3, "YAxis_3");
-	
-	// ImPlotSubplotFlags_
-	BIND_IENUM(L, ImPlotSubplotFlags_None, "SubplotFlags_None");
-	BIND_IENUM(L, ImPlotSubplotFlags_NoTitle, "SubplotFlags_NoTitle");
-	BIND_IENUM(L, ImPlotSubplotFlags_NoLegend, "SubplotFlags_NoLegend");
-	BIND_IENUM(L, ImPlotSubplotFlags_NoMenus, "SubplotFlags_NoMenus");
-	BIND_IENUM(L, ImPlotSubplotFlags_NoResize, "SubplotFlags_NoResize");
-	BIND_IENUM(L, ImPlotSubplotFlags_NoAlign, "SubplotFlags_NoAlign");
-	BIND_IENUM(L, ImPlotSubplotFlags_ShareItems, "SubplotFlags_ShareItems");
-	BIND_IENUM(L, ImPlotSubplotFlags_LinkRows, "SubplotFlags_LinkRows");
-	BIND_IENUM(L, ImPlotSubplotFlags_LinkCols, "SubplotFlags_LinkCols");
-	BIND_IENUM(L, ImPlotSubplotFlags_LinkAllX, "SubplotFlags_LinkAllX");
-	BIND_IENUM(L, ImPlotSubplotFlags_LinkAllY, "SubplotFlags_LinkAllY");
-	BIND_IENUM(L, ImPlotSubplotFlags_ColMajor, "SubplotFlags_ColMajor");
-	
-	// ImPlotFlags_
-	BIND_IENUM(L, ImPlotFlags_None, "Flags_None");
-	BIND_IENUM(L, ImPlotFlags_NoTitle, "Flags_NoTitle");
-	BIND_IENUM(L, ImPlotFlags_NoLegend, "Flags_NoLegend");
-	BIND_IENUM(L, ImPlotFlags_NoMenus, "Flags_NoMenus");
-	BIND_IENUM(L, ImPlotFlags_NoBoxSelect, "Flags_NoBoxSelect");
-	BIND_IENUM(L, ImPlotFlags_NoMousePos, "Flags_NoMousePos");
-	BIND_IENUM(L, ImPlotFlags_NoHighlight, "Flags_NoHighlight");
-	BIND_IENUM(L, ImPlotFlags_NoChild, "Flags_NoChild");
-	BIND_IENUM(L, ImPlotFlags_Equal, "Flags_Equal");
-	BIND_IENUM(L, ImPlotFlags_YAxis2, "Flags_YAxis2");
-	BIND_IENUM(L, ImPlotFlags_YAxis3, "Flags_YAxis3");
-	BIND_IENUM(L, ImPlotFlags_Query, "Flags_Query");
-	BIND_IENUM(L, ImPlotFlags_Crosshairs, "Flags_Crosshairs");
-	BIND_IENUM(L, ImPlotFlags_AntiAliased, "Flags_AntiAliased");
-	BIND_IENUM(L, ImPlotFlags_CanvasOnly, "Flags_CanvasOnly");
-	
-	// ImPlotMarker_
-	BIND_IENUM(L, ImPlotMarker_None, "Marker_None");
-	BIND_IENUM(L, ImPlotMarker_Circle, "Marker_Circle");
-	BIND_IENUM(L, ImPlotMarker_Square, "Marker_Square");
-	BIND_IENUM(L, ImPlotMarker_Diamond, "Marker_Diamond");
-	BIND_IENUM(L, ImPlotMarker_Up, "Marker_Up");
-	BIND_IENUM(L, ImPlotMarker_Down, "Marker_Down");
-	BIND_IENUM(L, ImPlotMarker_Left, "Marker_Left");
-	BIND_IENUM(L, ImPlotMarker_Right, "Marker_Right");
-	BIND_IENUM(L, ImPlotMarker_Cross, "Marker_Cross");
-	BIND_IENUM(L, ImPlotMarker_Plus, "Marker_Plus");
-	BIND_IENUM(L, ImPlotMarker_Asterisk, "Marker_Asterisk");
-	
-	// ImPlotBin_
-	BIND_IENUM(L, ImPlotBin_Sqrt, "Bin_Sqrt");
-	BIND_IENUM(L, ImPlotBin_Sturges, "Bin_Sturges");
-	BIND_IENUM(L, ImPlotBin_Rice, "Bin_Rice");
-	BIND_IENUM(L, ImPlotBin_Scott, "Bin_Scott");
-	
-	// ImPlotOrientation_
-	BIND_IENUM(L, ImPlotOrientation_Horizontal, "Orientation_Horizontal");
-	BIND_IENUM(L, ImPlotOrientation_Vertical, "Orientation_Vertical");
-	
-	// ImPlotLocation_
-	BIND_IENUM(L, ImPlotLocation_Center, "Location_Center");
-	BIND_IENUM(L, ImPlotLocation_North, "Location_North");
-	BIND_IENUM(L, ImPlotLocation_South, "Location_South");
-	BIND_IENUM(L, ImPlotLocation_West, "Location_West");
-	BIND_IENUM(L, ImPlotLocation_East, "Location_East");
-	BIND_IENUM(L, ImPlotLocation_NorthWest, "Location_NorthWest");
-	BIND_IENUM(L, ImPlotLocation_NorthEast, "Location_NorthEast");
-	BIND_IENUM(L, ImPlotLocation_SouthWest, "Location_SouthWest");
-	BIND_IENUM(L, ImPlotLocation_SouthEast, "Location_SouthEast");
-	
-	// ImPlotColormap_
-	BIND_IENUM(L, ImPlotColormap_Deep, "Colormap_Deep");
-	BIND_IENUM(L, ImPlotColormap_Dark, "Colormap_Dark");
-	BIND_IENUM(L, ImPlotColormap_Pastel, "Colormap_Pastel");
-	BIND_IENUM(L, ImPlotColormap_Paired, "Colormap_Paired");
-	BIND_IENUM(L, ImPlotColormap_Viridis, "Colormap_Viridis");
-	BIND_IENUM(L, ImPlotColormap_Plasma, "Colormap_Plasma");
-	BIND_IENUM(L, ImPlotColormap_Hot, "Colormap_Hot");
-	BIND_IENUM(L, ImPlotColormap_Cool, "Colormap_Cool");
-	BIND_IENUM(L, ImPlotColormap_Pink, "Colormap_Pink");
-	BIND_IENUM(L, ImPlotColormap_Jet, "Colormap_Jet");
-	BIND_IENUM(L, ImPlotColormap_Twilight, "Colormap_Twilight");
-	BIND_IENUM(L, ImPlotColormap_RdBu, "Colormap_RdBu");
-	BIND_IENUM(L, ImPlotColormap_BrBG, "Colormap_BrBG");
-	BIND_IENUM(L, ImPlotColormap_PiYG, "Colormap_PiYG");
-	BIND_IENUM(L, ImPlotColormap_Spectral, "Colormap_Spectral");
-	BIND_IENUM(L, ImPlotColormap_Greys, "Colormap_Greys");
-	
-	// ImPlotCol_
-	BIND_IENUM(L, ImPlotCol_Line, "Col_Line");
-	BIND_IENUM(L, ImPlotCol_Fill, "Col_Fill");
-	BIND_IENUM(L, ImPlotCol_MarkerOutline, "Col_MarkerOutline");
-	BIND_IENUM(L, ImPlotCol_MarkerFill, "Col_MarkerFill");
-	BIND_IENUM(L, ImPlotCol_ErrorBar, "Col_ErrorBar");
-	BIND_IENUM(L, ImPlotCol_FrameBg, "Col_FrameBg");
-	BIND_IENUM(L, ImPlotCol_PlotBg, "Col_PlotBg");
-	BIND_IENUM(L, ImPlotCol_PlotBorder, "Col_PlotBorder");
-	BIND_IENUM(L, ImPlotCol_LegendBg, "Col_LegendBg");
-	BIND_IENUM(L, ImPlotCol_LegendBorder, "Col_LegendBorder");
-	BIND_IENUM(L, ImPlotCol_LegendText, "Col_LegendText");
-	BIND_IENUM(L, ImPlotCol_TitleText, "Col_TitleText");
-	BIND_IENUM(L, ImPlotCol_InlayText, "Col_InlayText");
-	BIND_IENUM(L, ImPlotCol_XAxis, "Col_XAxis");
-	BIND_IENUM(L, ImPlotCol_XAxisGrid, "Col_XAxisGrid");
-	BIND_IENUM(L, ImPlotCol_YAxis, "Col_YAxis");
-	BIND_IENUM(L, ImPlotCol_YAxisGrid, "Col_YAxisGrid");
-	BIND_IENUM(L, ImPlotCol_YAxis2, "Col_YAxis2");
-	BIND_IENUM(L, ImPlotCol_YAxisGrid2, "Col_YAxisGrid2");
-	BIND_IENUM(L, ImPlotCol_YAxis3, "Col_YAxis3");
-	BIND_IENUM(L, ImPlotCol_YAxisGrid3, "Col_YAxisGrid3");
-	BIND_IENUM(L, ImPlotCol_Selection, "Col_Selection");
-	BIND_IENUM(L, ImPlotCol_Query, "Col_Query");
-	BIND_IENUM(L, ImPlotCol_Crosshairs, "Col_Crosshairs");
-	
-	lua_pop(L, 1);
-#endif
-	
+	lua_pop(L, 1);	
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1656,7 +1565,7 @@ public:
 	bool resetTouchPosOnEnd;
 
 	void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
-	void emptyCallbacksList();
+	void clearCallbacks();
 private:
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;
@@ -1994,19 +1903,15 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 	
 	io.BackendPlatformName = "Gideros Studio";
 	io.BackendRendererName = "Gideros Studio";
-	
-	// Create font atlas
-	if (!atlas)
-	{
-		unsigned char* pixels;
-		int width, height;
-		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-		g_id texture = gtexture_create(width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP, GTEXTURE_LINEAR, pixels, NULL, 0);
-		io.Fonts->TexID = (void*)texture;
-	}
+
+	unsigned char* pixels;
+	int width, height;
+	io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+	g_id tex = gtexture_create(width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP, GTEXTURE_LINEAR, pixels, NULL, 0);
+	io.Fonts->SetTexID((ImTextureID)(uintptr_t)tex);
 	
 	proxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
-		
+
 	eventListener = new EventListener(this);
 	
 	if (addMouseListeners)
@@ -2038,37 +1943,35 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 
 GidImGui::~GidImGui()
 {
-	//emptyCallbacksList();
-	//delete proxy;
-	//delete eventListener;
 }
 
 void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey))
 {
-	//ImGui::SetCurrentContext(this->ctx);
-	
-	//ImDrawData* draw_data = ImGui::GetDrawData();
 	ImGuiViewportP* viewport = ctx->Viewports[0];
 	if (!viewport->DrawDataP.Valid) return;
 	ImDrawData* draw_data = &viewport->DrawDataP;
 	
-	ShaderEngine* engine=gtexture_get_engine();
-	ShaderProgram* shp=engine->getDefault(ShaderEngine::STDP_TEXTURECOLOR);
+	ShaderEngine* engine = gtexture_get_engine();
+	ShaderProgram* shp = engine->getDefault(ShaderEngine::STDP_TEXTURECOLOR);
 	ImVec2 pos = draw_data->DisplayPos;
-	
+
+	int offset_pos = offsetof(ImDrawVert, pos);
+	int offset_uv = offsetof(ImDrawVert, uv);
+	int offset_col = offsetof(ImDrawVert, col);
+
 	for (int n = 0; n < draw_data->CmdListsCount; n++)
 	{
 		const ImDrawList* cmd_list = draw_data->CmdLists[n];
 		const ImDrawVert* vtx_buffer = cmd_list->VtxBuffer.Data;  // vertex buffer generated by Dear ImGui
 		const ImDrawIdx* idx_buffer = cmd_list->IdxBuffer.Data;   // index buffer generated by Dear ImGui
-		
-		size_t vtx_size=cmd_list->VtxBuffer.Size;
+
+		size_t vtx_size = cmd_list->VtxBuffer.Size;
 		
 		vertices.resize(vtx_size);
 		texcoords.resize(vtx_size);
 		colors.resize(vtx_size);
 		
-		for (size_t i=0;i<vtx_size;i++)
+		for (size_t i = 0; i < vtx_size; i++)
 		{
 			vertices[i].x = vtx_buffer[i].pos.x;
 			vertices[i].y = vtx_buffer[i].pos.y;
@@ -2090,6 +1993,7 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 		vertices.Update();
 		texcoords.Update();
 		colors.Update();
+
 		shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, &vertices[0], vtx_size, true, NULL);
 		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT,2, &texcoords[0], vtx_size, true, NULL);
 		shp->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE,4, &colors[0], vtx_size, true, NULL);
@@ -2122,13 +2026,13 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 	
 }
 
-void GidImGui::emptyCallbacksList()
+void GidImGui::clearCallbacks()
 {
-	for (int i = callbacks.size() - 1; i >= 0; i--)
+	for (CallbackData* data : callbacks)
 	{
-		delete callbacks[i];
-		callbacks.pop_back();
+		delete data;
 	}
+	callbacks.clear();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2158,7 +2062,7 @@ int initImGui(lua_State* L) // ImGui.new() call
 	
 	GidImGui* imgui = new GidImGui(application, atlas, luaL_optboolean(L, 2, 1), luaL_optboolean(L, 3, 1), luaL_optboolean(L, 4, 0));
 	g_pushInstance(L, "ImGui", imgui->proxy);
-	
+
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
 	lua_pushvalue(L, -2);
 	luaL_rawsetptr(L, -2, imgui);
@@ -2171,885 +2075,18 @@ int destroyImGui(LUA_STATE* p)
 {
 	void* ptr = GIDEROS_DTOR_UDATA(p);
 	GidImGui* imgui = static_cast<GidImGui*>(static_cast<SpriteProxy *>(ptr)->getContext());
-	
-	if (imgui->ctx != ImGui::GetCurrentContext())
-	{
-		gtexture_delete((g_id)(uintptr_t)imgui->ctx->IO.Fonts->TexID);
-		imgui->ctx->IO.Fonts->TexID = 0;
-		ImGui::DestroyContext(imgui->ctx);
-	}
-	
-	imgui->emptyCallbacksList();
+
+	gtexture_delete((g_id)(uintptr_t)imgui->ctx->IO.Fonts->TexID);
+
+	ImGui::DestroyContext(imgui->ctx);
+
 	imgui->proxy->removeEventListeners(imgui->eventListener);
 	imgui->eventListener->removeEventListeners();
+	imgui->clearCallbacks();
 	delete imgui->eventListener;
+
 	return 0;
 }
-
-int Shutdown(lua_State* L)
-{
-	GidImGui* imgui = getImgui(L);
-	imgui->proxy->removeEventListeners(imgui->eventListener);
-	return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-///
-/// ImPlot
-///
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef IMPLOT_API
-
-class GImPlot
-{
-public:
-	ImPlotContext* ctx;
-	GImPlot()
-	{
-		ctx = ImPlot::CreateContext();
-	}
-	~GImPlot()
-	{
-		ImPlot::DestroyContext(ctx);
-	}
-};
-
-int initImPlot(lua_State* L)
-{
-	GImPlot* plot = new GImPlot();
-	g_pushInstance(L, "ImPlot", plot);
-	
-	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
-	lua_pushvalue(L, -2);
-	luaL_rawsetptr(L, -2, plot);
-	lua_pop(L, 1);
-	
-	return 1;
-}
-
-int destroyImPlot(LUA_STATE* p)
-{
-	destroyObject<GImPlot>(p);
-	return 0;
-}
-
-void UpdatePlotContext(lua_State* L)
-{
-	GImPlot* plot = getPtr<GImPlot>(L, "ImPlot");
-	ImPlot::SetCurrentContext(plot->ctx);
-}
-
-// Plot
-
-int ImPlot_BeginPlot(lua_State* L)
-{
-	STACK_CHECKER(L, "beginPlot", 1);
-
-	const char* title_id = luaL_checkstring(L, 2);
-	const char* x_label = luaL_optstring(L, 3, NULL);
-	const char* y_label = luaL_optstring(L, 4, NULL);
-	const ImVec2& size = ImVec2(luaL_optnumber(L, 5, -1), luaL_optnumber(L, 6, 0));
-	ImPlotFlags flags = luaL_optinteger(L, 7, ImPlotFlags_None);
-	ImPlotAxisFlags x_flags  = luaL_optinteger(L,  8, ImPlotAxisFlags_None);
-	ImPlotAxisFlags y_flags  = luaL_optinteger(L,  9, ImPlotAxisFlags_None);
-	ImPlotAxisFlags y2_flags = luaL_optinteger(L, 10, ImPlotAxisFlags_NoGridLines);
-	ImPlotAxisFlags y3_flags = luaL_optinteger(L, 11, ImPlotAxisFlags_NoGridLines);
-	const char* y2_label = luaL_optstring(L, 12, NULL);
-	const char* y3_label = luaL_optstring(L, 13, NULL);
-	
-	UpdatePlotContext(L);
-	lua_pushboolean(L, ImPlot::BeginPlot(title_id, x_label, y_label, size, flags, x_flags, y_flags, y2_flags, y3_flags, y2_label, y3_label));
-	return 1;
-}
-
-int ImPlot_EndPlot(lua_State* L)
-{
-	STACK_CHECKER(L, "endPlot", 0);
-
-	UpdatePlotContext(L);
-	ImPlot::EndPlot();
-	return 0;
-}
-
-int ImPlot_BeginSubplots(lua_State* L)
-{
-	STACK_CHECKER(L, "beginSubplots", 1);
-
-	const char* title_id = luaL_checkstring(L, 2);
-	int rows = luaL_checkinteger(L, 3);
-	int cols = luaL_checkinteger(L, 4);
-	const ImVec2& size = ImVec2(luaL_checkinteger(L, 5), luaL_checkinteger(L, 6));
-	ImPlotSubplotFlags flags =luaL_optinteger(L, 7, ImPlotSubplotFlags_None);
-	float* row_ratios = NULL;
-	float* col_ratios = NULL;
-	
-	UpdatePlotContext(L);
-	lua_pushboolean(L, ImPlot::BeginSubplots(title_id, rows, cols, size, flags, row_ratios, col_ratios));
-	return 1;
-}
-
-int ImPlot_EndSubplots(lua_State* L)
-{
-	STACK_CHECKER(L, "endSubplots", 0);
-
-	UpdatePlotContext(L);
-	ImPlot::EndSubplots();
-	return 0;
-}
-
-int ImPlot_PlotLine(lua_State* L)
-{
-	STACK_CHECKER(L, "plotLine", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	if (lua_type(L, 4) == LUA_TTABLE)
-	{
-		int x_len = luaL_getn(L, 3);
-		int y_len = luaL_getn(L, 4);
-		
-		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_optinteger(L, 5, y_len);
-		count = ImMin(y_len, ImMin(count, x_len));
-		int offset = luaL_optinteger(L, 6, 0);		
-		ImPlot::PlotLine<float>(label, values, y_values, count, offset);
-		delete y_values;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 4);
-		double xscale = luaL_optnumber(L, 5, 1);
-		double x0 = luaL_optnumber(L, 6, 0);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotLine<float>(label, values, count, xscale, x0, offset);
-	}
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotScatter(lua_State* L)
-{
-	STACK_CHECKER(L, "plotScatter", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	if (lua_type(L, 4) == LUA_TTABLE)
-	{
-		int x_len = luaL_getn(L, 3);
-		int y_len = luaL_getn(L, 4);
-		
-		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_optinteger(L, 5, y_len);
-		count = ImMin(y_len, ImMin(count, x_len));
-		int offset = luaL_optinteger(L, 6, 0);
-		ImPlot::PlotScatter<float>(label, values, y_values, count, offset);
-		delete y_values;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 4);
-		double xscale = luaL_optnumber(L, 5, 1);
-		double x0 = luaL_optnumber(L, 6, 0);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotScatter<float>(label, values, count, xscale, x0, offset);
-	}
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotStairs(lua_State* L)
-{
-	STACK_CHECKER(L, "plotStairs", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	if (lua_type(L, 4) == LUA_TTABLE)
-	{
-		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_checkinteger(L, 5);
-		int offset = luaL_optinteger(L, 6, 0);
-		ImPlot::PlotStairs<float>(label, values, y_values, count, offset);
-		delete y_values;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 4);
-		double xscale = luaL_optnumber(L, 5, 1);
-		double x0 = luaL_optnumber(L, 6, 0);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotStairs<float>(label, values, count, xscale, x0, offset);
-	}
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotShaded(lua_State* L)
-{
-	STACK_CHECKER(L, "plotShaded", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	if (lua_type(L, 5) == LUA_TTABLE)
-	{
-		float* y_values = getTableValues<float>(L, 4);
-		float* y_values2 = getTableValues<float>(L, 5);
-		int count = luaL_checkinteger(L, 6);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotShaded<float>(label, values, y_values, y_values2, count, offset);
-		delete y_values;
-		delete y_values2;
-	}
-	else if (lua_type(L, 4) == LUA_TTABLE)
-	{
-		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_checkinteger(L, 5);
-		int offset = luaL_optinteger(L, 6, 0);
-		ImPlot::PlotShaded<float>(label, values, y_values, count, offset);
-		delete y_values;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 4);
-		double xscale = luaL_optnumber(L, 5, 1);
-		double x0 = luaL_optnumber(L, 6, 0);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotShaded<float>(label, values, count, xscale, x0, offset);
-	}
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotBars(lua_State* L)
-{
-	STACK_CHECKER(L, "plotBars", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	if (lua_type(L, 4) == LUA_TTABLE)
-	{
-		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_checkinteger(L, 5);
-		double width = luaL_checknumber(L, 6);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotBars<float>(label, values, y_values, count, width, offset);
-		delete y_values;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 4);
-		double width = luaL_optnumber(L, 5, 0.67);
-		double shift = luaL_optnumber(L, 6, 0);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotBars<float>(label, values, count, width, shift, offset);
-	}
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotBarsH(lua_State* L)
-{
-	STACK_CHECKER(L, "plotBarsH", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	if (lua_type(L, 4) == LUA_TTABLE)
-	{
-		float* y_values = getTableValues<float>(L, 4);
-		int count = luaL_checkinteger(L, 5);
-		double height = luaL_checknumber(L, 6);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotBarsH<float>(label, values, y_values, count, height, offset);
-		delete y_values;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 4);
-		double height = luaL_optnumber(L, 5, 0.67);
-		double shift = luaL_optnumber(L, 6, 0);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotBarsH<float>(label, values, count, height, shift, offset);
-	}
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotErrorBars(lua_State* L)
-{
-	STACK_CHECKER(L, "plotErrorBars", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* xs = getTableValues<float>(L, 3);
-	float* ys = getTableValues<float>(L, 4);
-	float* mv = getTableValues<float>(L, 5);
-	if (lua_type(L, 6) == LUA_TTABLE)
-	{
-		float* pos = getTableValues<float>(L, 6);
-		int count = luaL_checkinteger(L, 7);
-		int offset = luaL_optinteger(L, 8, 0);
-		ImPlot::PlotErrorBars<float>(label, xs, ys, mv, pos, count, offset);
-		delete pos;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 6);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotErrorBars<float>(label, xs, ys, mv, count, offset);
-	}
-	delete xs;
-	delete ys;
-	delete mv;
-	return 0;
-}
-
-int ImPlot_PlotErrorBarsH(lua_State* L)
-{
-	const char* label = luaL_checkstring(L, 2);
-	float* xs = getTableValues<float>(L, 3);
-	float* ys = getTableValues<float>(L, 4);
-	float* mv = getTableValues<float>(L, 5);
-	if (lua_type(L, 6) == LUA_TTABLE)
-	{
-		float* pos = getTableValues<float>(L, 6);
-		int count = luaL_checkinteger(L, 7);
-		int offset = luaL_optinteger(L, 8, 0);
-		ImPlot::PlotErrorBarsH<float>(label, xs, ys, mv, pos, count, offset);
-		delete pos;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 6);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotErrorBarsH<float>(label, xs, ys, mv, count, offset);
-	}
-	delete xs;
-	delete ys;
-	delete mv;
-	return 0;
-}
-
-int ImPlot_PlotStems(lua_State* L)
-{
-	STACK_CHECKER(L, "plotStems", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	if (lua_type(L, 4) == LUA_TTABLE)
-	{
-		float* ys = getTableValues<float>(L, 4);
-		int count = luaL_checkinteger(L, 5);
-		double y_ref = luaL_optnumber(L, 6, 0);
-		int offset = luaL_optinteger(L, 7, 0);
-		ImPlot::PlotStems<float>(label, values, ys, count, y_ref, offset);
-		delete ys;
-	}
-	else
-	{
-		int count = luaL_checkinteger(L, 4);
-		double y_ref = luaL_optnumber(L, 5, 0);
-		double xscale = luaL_optnumber(L, 6, 1);
-		double x0 = luaL_optnumber(L, 7, 0);
-		int offset = luaL_optinteger(L, 8, 0);
-		ImPlot::PlotStems<float>(label, values, count, y_ref, xscale, x0, offset);
-	}
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotVLines(lua_State* L)
-{
-	STACK_CHECKER(L, "plotVLines", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	int count = luaL_checkinteger(L, 4);
-	int offset = luaL_optinteger(L, 5, 0);
-	ImPlot::PlotVLines<float>(label, values, count, offset);
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotHLines(lua_State* L)
-{
-	STACK_CHECKER(L, "plotHLines", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	int count = luaL_checkinteger(L, 4);
-	int offset = luaL_optinteger(L, 5, 0);
-	ImPlot::PlotHLines<float>(label, values, count, offset);
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotPieChart(lua_State* L)
-{
-	STACK_CHECKER(L, "plotPieChart", 0);
-
-	int labels_len = luaL_getn(L, 2);
-	const char** label_ids = getTableValues<const char*>(L, 2, labels_len);
-	int values_len = luaL_getn(L, 3);
-	float* values = getTableValues<float>(L, 3);
-	int count = luaL_checkinteger(L, 4);
-	LUA_ASSERT(count <= labels_len && count <= values_len, "#3 must not be greater than labels or values list length");
-	double x = luaL_checknumber(L, 5);
-	double y = luaL_checknumber(L, 6);
-	double radius = luaL_checknumber(L, 7);
-	bool normalize = luaL_optboolean(L, 8, 0);
-	const char* label_fmt = luaL_optstring(L, 9, "%.1f");
-	double angle0 = luaL_optnumber(L, 10, 90);
-	
-	ImPlot::PlotPieChart<float>(label_ids, values, count, x, y, radius, normalize, label_fmt, angle0);
-	delete[] label_ids;
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotHeatmap(lua_State* L)
-{
-	STACK_CHECKER(L, "plotHeatmap", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	int rows = luaL_checkinteger(L, 4);
-	int cols = luaL_checkinteger(L, 5);
-	double scale_min = luaL_optnumber(L, 6, 0);
-	double scale_max = luaL_optnumber(L, 7, 0);
-	const char* format = luaL_optstring(L, 8, "%.1f");
-	const ImPlotPoint& bounds_min = ImPlotPoint(luaL_optnumber(L, 9, 0), luaL_optnumber(L, 10, 0));
-	const ImPlotPoint& bounds_max = ImPlotPoint(luaL_optnumber(L, 11, 1), luaL_optnumber(L, 12, 1));
-	ImPlot::PlotHeatmap<float>(label, values, rows, cols, scale_min, scale_max, format, bounds_min, bounds_max);
-	delete values;
-	return 0;
-}
-
-int ImPlot_PlotHistogram(lua_State* L)
-{
-	STACK_CHECKER(L, "plotHistogram", 1);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* values = getTableValues<float>(L, 3);
-	int count = luaL_checkinteger(L, 4);
-	int bins = luaL_optinteger(L, 5, ImPlotBin_Sturges);
-	bool cumulative = lua_toboolean(L, 6);
-	bool density = lua_toboolean(L, 7);
-	ImPlotRange range = ImPlotRange(luaL_optnumber(L, 8, 0), luaL_optnumber(L, 9, 0));
-	bool outliers = lua_toboolean(L, 10);
-	double bar_scale = luaL_optnumber(L, 11, 1);
-	
-	lua_pushnumber(L, ImPlot::PlotHistogram<float>(label, values, count, bins, cumulative, density, range, outliers, bar_scale));
-	delete values;
-	return 1;
-}
-
-int ImPlot_PlotHistogram2D(lua_State* L)
-{
-	STACK_CHECKER(L, "plotHistogram2D", 1);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* xs = getTableValues<float>(L, 3);
-	float* ys = getTableValues<float>(L, 4);
-	int count = luaL_checkinteger(L, 5);
-	int x_bins = luaL_optinteger(L, 6, ImPlotBin_Sturges);
-	int y_bins = luaL_optinteger(L, 7, ImPlotBin_Sturges);
-	bool density = lua_toboolean(L, 8);
-	ImPlotLimits range = ImPlotLimits(luaL_optnumber(L, 9, 0), luaL_optnumber(L, 10, 0), luaL_optnumber(L, 11, 0), luaL_optnumber(L, 12, 0));
-	bool outliers = lua_toboolean(L, 13);
-	lua_pushnumber(L, ImPlot::PlotHistogram2D<float>(label, xs, ys, count, x_bins, y_bins, density, range, outliers));
-	delete xs;
-	delete ys;
-	return 1;
-}
-
-int ImPlot_PlotDigital(lua_State* L)
-{
-	STACK_CHECKER(L, "plotDigital", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	float* xs = getTableValues<float>(L, 3);
-	float* ys = getTableValues<float>(L, 4);
-	int count = luaL_checkinteger(L, 5);
-	int offset = luaL_optinteger(L, 6, 0);
-	ImPlot::PlotDigital<float>(label, xs, ys, count, offset);
-	delete xs;
-	delete ys;
-	return 0;
-}
-
-int ImPlot_PlotImage(lua_State* L)
-{
-	STACK_CHECKER(L, "plotImage", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	GTextureData data(L, 3);
-	const ImPlotPoint& bounds_min = ImPlotPoint(luaL_optnumber(L, 4, 0), luaL_optnumber(L, 5, 0));
-	const ImPlotPoint& bounds_max = ImPlotPoint(luaL_optnumber(L, 6, 0), luaL_optnumber(L, 7, 0));
-	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 8, 0xffffff), luaL_optnumber(L, 9, 1));
-	ImPlot::PlotImage(label, data.texture, bounds_min, bounds_max, data.uv0, data.uv1, tint_col);
-	return 0;
-}
-
-int ImPlot_PlotText(lua_State* L)
-{
-	STACK_CHECKER(L, "plotText", 0);
-
-	const char* text = luaL_checkstring(L, 2);
-	double x = luaL_checknumber(L, 3);
-	double y = luaL_checknumber(L, 4);
-	bool vertical = lua_toboolean(L, 5);
-	const ImVec2& pix_offset = ImVec2(luaL_optinteger(L, 6, 0), luaL_optinteger(L, 7, 0));
-	ImPlot::PlotText(text, x, y, vertical, pix_offset);
-	return 0;
-}
-
-int ImPlot_PlotDummy(lua_State* L)
-{
-	STACK_CHECKER(L, "plotDummy", 0);
-
-	const char* label = luaL_checkstring(L, 2);
-	ImPlot::PlotDummy(label);
-	return 0;
-}
-
-// Utils
-
-int ImPlot_SetNextPlotLimits(lua_State* L)
-{
-	STACK_CHECKER(L, "setNextPlotLimits", 0);
-
-	double xmin = luaL_checknumber(L, 2);
-	double xmax = luaL_checknumber(L, 3);
-	double ymin = luaL_checknumber(L, 4);
-	double ymax = luaL_checknumber(L, 5);
-	ImGuiCond cond = luaL_optinteger(L, 6, ImGuiCond_Once);
-	
-	ImPlot::SetNextPlotLimits(xmin, xmax, ymin, ymax, cond);
-	return 0;
-}
-
-int ImPlot_SetNextPlotLimitsX(lua_State* L)
-{
-	STACK_CHECKER(L, "setNextPlotLimitsX", 0);
-
-	double xmin = luaL_checknumber(L, 2);
-	double xmax = luaL_checknumber(L, 3);
-	ImGuiCond cond = luaL_optinteger(L, 4, ImGuiCond_Once);
-	
-	ImPlot::SetNextPlotLimitsX(xmin, xmax, cond);
-	return 0;
-}
-
-int ImPlot_SetNextPlotLimitsY(lua_State* L)
-{
-	STACK_CHECKER(L, "setNextPlotLimitsY", 0);
-
-	double ymin = luaL_checknumber(L, 2);
-	double ymax = luaL_checknumber(L, 3);
-	ImGuiCond cond = luaL_optinteger(L, 4, ImGuiCond_Once);
-	ImPlotYAxis y_axis = luaL_optinteger(L, 5, ImPlotYAxis_1);
-	
-	ImPlot::SetNextPlotLimitsY(ymin, ymax, cond, y_axis);
-	return 0;
-}
-
-// TODO: return all the values?
-int ImPlot_LinkNextPlotLimits(lua_State* L)
-{
-	STACK_CHECKER(L, "linkNextPlotLimits", 0);
-
-	double xmin = luaL_checknumber(L, 2);
-	double xmax = luaL_checknumber(L, 3);
-	double ymin = luaL_checknumber(L, 4);
-	double ymax = luaL_checknumber(L, 5);
-	double ymin2 = luaL_optnumber(L, 6, 0);
-	double ymax2 = luaL_optnumber(L, 7, 0);
-	double ymin3 = luaL_optnumber(L, 8, 0);
-	double ymax3 = luaL_optnumber(L, 9, 0);
-	
-	ImPlot::LinkNextPlotLimits(&xmin, &xmax, &ymin, &ymax, &ymin2, &ymax2, &ymin3, &ymax3);
-	return 0;
-}
-
-int ImPlot_FitNextPlotAxes(lua_State* L)
-{
-	STACK_CHECKER(L, "fitNextPlotAxes", 0);
-
-	bool x  = luaL_optboolean(L, 2, 1);
-	bool y  = luaL_optboolean(L, 3, 1);
-	bool y2 = luaL_optboolean(L, 4, 1);
-	bool y3 = luaL_optboolean(L, 5, 1);
-	
-	ImPlot::FitNextPlotAxes(x, y, y2, y3);
-	return 0;
-}
-
-int ImPlot_SetNextPlotTicksX(lua_State* L)
-{
-	STACK_CHECKER(L, "setNextPlotTicksX", 0);
-
-	if (lua_type(L, 2) == LUA_TTABLE)
-	{
-		const double* values = getTableValues<double>(L, 2);
-		int n_ticks = luaL_checkinteger(L, 3);
-		const char** labels = getTableValues<const char*>(L, 4, luaL_getn(L, 4));
-		bool keep_default = lua_toboolean(L, 5);
-		
-		ImPlot::SetNextPlotTicksX(values, n_ticks, labels, keep_default);
-		delete values;
-		delete[] labels;
-	}
-	else
-	{
-		double x_min = luaL_checknumber(L, 2);
-		double x_max = luaL_checknumber(L, 3);
-		int n_ticks = luaL_checkinteger(L, 4);
-		const char** labels = getTableValues<const char*>(L, 5, luaL_getn(L, 5));
-		bool keep_default = lua_toboolean(L, 6);
-		
-		ImPlot::SetNextPlotTicksX(x_min, x_max, n_ticks, labels, keep_default);
-		delete[] labels;
-	}
-	return 0;
-}
-
-int ImPlot_SetNextPlotTicksY(lua_State* L)
-{
-	STACK_CHECKER(L, "setNextPlotTicksY", 0);
-
-	if (lua_type(L, 2) == LUA_TTABLE)
-	{
-		const double* values = getTableValues<double>(L, 2);
-		int n_ticks = luaL_checkinteger(L, 3);
-		const char** labels = getTableValues<const char*>(L, 4, luaL_getn(L, 4));
-		bool keep_default = lua_toboolean(L, 5);
-		ImPlotYAxis y_axis = luaL_optinteger(L, 6, ImPlotYAxis_1);
-		
-		ImPlot::SetNextPlotTicksY(values, n_ticks, labels, keep_default, y_axis);
-		delete values;
-		delete[] labels;
-	}
-	else
-	{
-		double y_min = luaL_checknumber(L, 2);
-		double y_max = luaL_checknumber(L, 3);
-		int n_ticks = luaL_checkinteger(L, 4);
-		const char** labels = getTableValues<const char*>(L, 5, luaL_getn(L, 5));
-		bool keep_default = lua_toboolean(L, 6);
-		ImPlotYAxis y_axis = luaL_optinteger(L, 7, ImPlotYAxis_1);
-		
-		ImPlot::SetNextPlotTicksY(y_min, y_max, n_ticks, labels, keep_default, y_axis);
-		delete[] labels;
-	}
-	return 0;
-}
-
-int ImPlot_SetNextPlotFormatX(lua_State* L)
-{
-	STACK_CHECKER(L, "setNextPlotFormatX", 0);
-
-	const char* fmt = luaL_checkstring(L, 2);
-	ImPlot::SetNextPlotFormatX(fmt);
-	return 0;
-}
-
-int ImPlot_SetNextPlotFormatY(lua_State* L)
-{
-	STACK_CHECKER(L, "setNextPlotFormatY", 0);
-
-	const char* fmt = luaL_checkstring(L, 2);
-	ImPlotYAxis y_axis = luaL_optinteger(L, 3, ImPlotYAxis_1);
-	
-	ImPlot::SetNextPlotFormatY(fmt, y_axis);
-	return 0;
-}
-
-int ImPlot_SetPlotYAxis(lua_State* L)
-{
-	STACK_CHECKER(L, "setPlotYAxis", 0);
-
-	ImPlotYAxis y_axis = luaL_checkinteger(L, 2);
-	
-	ImPlot::SetPlotYAxis(y_axis);
-	return 0;
-}
-
-int ImPlot_HideNextItem(lua_State* L)
-{
-	STACK_CHECKER(L, "hideNextItem", 0);
-
-	bool hidden = luaL_optboolean(L, 2, 1);
-	ImGuiCond cond = luaL_optinteger(L, 3, ImGuiCond_Once);
-	
-	ImPlot::HideNextItem(hidden, cond);
-	return 0;
-}
-
-int ImPlot_PixelsToPlot(lua_State* L)
-{
-	STACK_CHECKER(L, "pixelsToPlot", 2);
-
-	float x = luaL_checknumber(L, 2);
-	float y = luaL_checknumber(L, 3);
-	ImPlotYAxis y_axis = luaL_optinteger(L, 4, IMPLOT_AUTO);
-	
-	ImPlotPoint value = ImPlot::PixelsToPlot(x, y, y_axis);
-	lua_pushnumber(L, value.x);
-	lua_pushnumber(L, value.y);
-	return 2;
-}
-
-int ImPlot_PlotToPixels(lua_State* L)
-{
-	STACK_CHECKER(L, "plotToPixels", 2);
-
-	double x = luaL_checknumber(L, 2);
-	double y = luaL_checknumber(L, 3);
-	ImPlotYAxis y_axis = luaL_optinteger(L, 4, IMPLOT_AUTO);
-	
-	ImVec2 value = ImPlot::PlotToPixels(x, y, y_axis);
-	lua_pushnumber(L, value.x);
-	lua_pushnumber(L, value.y);
-	return 2;
-}
-
-int ImPlot_GetPlotPos(lua_State* L)
-{
-	STACK_CHECKER(L, "getPlotPos", 2);
-
-	ImVec2 value = ImPlot::GetPlotPos();
-	lua_pushnumber(L, value.x);
-	lua_pushnumber(L, value.y);
-	return 2;
-}
-
-int ImPlot_GetPlotSize(lua_State* L)
-{
-	STACK_CHECKER(L, "getPlotSize", 2);
-
-	
-	ImVec2 value = ImPlot::GetPlotSize();
-	lua_pushnumber(L, value.x);
-	lua_pushnumber(L, value.y);
-	return 2;
-}
-
-int ImPlot_IsPlotHovered(lua_State* L)
-{
-	STACK_CHECKER(L, "isPlotHovered", 1);
-
-	bool value = ImPlot::IsPlotHovered();
-	lua_pushboolean(L, value);
-	return 1;
-}
-
-int ImPlot_IsPlotXAxisHovered(lua_State* L)
-{
-	STACK_CHECKER(L, "isPlotXAxisHovered", 1);
-
-	bool value = ImPlot::IsPlotXAxisHovered();
-	lua_pushboolean(L, value);
-	return 1;
-}
-
-int ImPlot_IsPlotYAxisHovered(lua_State* L)
-{
-	STACK_CHECKER(L, "isPlotYAxisHovered", 1);
-
-	ImPlotYAxis y_axis = luaL_optinteger(L, 2, ImPlotYAxis_1);
-	
-	bool value = ImPlot::IsPlotYAxisHovered(y_axis);
-	lua_pushboolean(L, value);
-	return 1;
-}
-
-int ImPlot_GetPlotMousePos(lua_State* L)
-{
-	STACK_CHECKER(L, "getPlotMousePos", 2);
-
-	ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
-	
-	ImPlotPoint value = ImPlot::GetPlotMousePos(y_axis);
-	lua_pushnumber(L, value.x);
-	lua_pushnumber(L, value.y);
-	return 2;
-}
-
-int ImPlot_GetPlotLimits(lua_State* L)
-{
-	STACK_CHECKER(L, "getPlotLimits", 4);
-
-	ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
-	
-	ImPlotLimits value = ImPlot::GetPlotLimits(y_axis);
-	lua_pushnumber(L, value.X.Min);
-	lua_pushnumber(L, value.X.Max);
-	lua_pushnumber(L, value.Y.Min);
-	lua_pushnumber(L, value.Y.Max);
-	return 4;
-}
-
-int ImPlot_IsPlotSelected(lua_State* L)
-{
-	STACK_CHECKER(L, "isPlotSelected", 1);
-
-	bool value = ImPlot::IsPlotSelected();
-	lua_pushboolean(L, value);
-	return 1;
-}
-
-int ImPlot_GetPlotSelection(lua_State* L)
-{
-	STACK_CHECKER(L, "getPlotSelection", 4);
-
-	ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
-	
-	ImPlotLimits value = ImPlot::GetPlotSelection(y_axis);
-	lua_pushnumber(L, value.X.Min);
-	lua_pushnumber(L, value.X.Max);
-	lua_pushnumber(L, value.Y.Min);
-	lua_pushnumber(L, value.Y.Max);
-	return 4;
-}
-
-int ImPlot_IsPlotQueried(lua_State* L)
-{
-	STACK_CHECKER(L, "isPlotQueried", 1);
-
-	bool value = ImPlot::IsPlotQueried();
-	lua_pushboolean(L, value);
-	return 1;
-}
-
-int ImPlot_GetPlotQuery(lua_State* L)
-{
-	STACK_CHECKER(L, "getPlotQuery", 4);
-
-	ImPlotYAxis y_axis = luaL_optinteger(L, 2, IMPLOT_AUTO);
-	
-	ImPlotLimits value = ImPlot::GetPlotQuery(y_axis);
-	lua_pushnumber(L, value.X.Min);
-	lua_pushnumber(L, value.X.Max);
-	lua_pushnumber(L, value.Y.Min);
-	lua_pushnumber(L, value.Y.Max);
-	return 4;
-}
-
-int ImPlot_SetPlotQuery(lua_State* L)
-{
-	STACK_CHECKER(L, "setPlotQuery", 0);
-
-	double xmin = luaL_checknumber(L, 2);
-	double xmax = luaL_checknumber(L, 3);
-	double ymin = luaL_checknumber(L, 4);
-	double ymax = luaL_checknumber(L, 5);
-	const ImPlotLimits& query = ImPlotLimits(xmin, xmax, ymin, ymax);
-	ImPlotYAxis y_axis = luaL_optinteger(L, 6, IMPLOT_AUTO);
-	
-	ImPlot::SetPlotQuery(query, y_axis);
-	return 0;
-}
-
-#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -3231,7 +2268,7 @@ int EndFrame(lua_State* L)
 	STACK_CHECKER(L, "endFrame", 0);
 
 	GidImGui* imgui = getImgui(L);
-	imgui->emptyCallbacksList();
+	imgui->clearCallbacks();
 	ImGui::EndFrame();
 	return 0;
 }
@@ -3501,10 +2538,10 @@ int SetNextWindowSizeConstraints(lua_State* L)
 	
 	if (lua_type(L, 6) == LUA_TFUNCTION)
 	{
-		CallbackData* resizeCallback = new CallbackData(L, 6);
-		imgui->callbacks.push_back(resizeCallback);
+		CallbackData* callback = new CallbackData(L, 6);
+		imgui->callbacks.push_back(callback);
 
-		ImGui::SetNextWindowSizeConstraints(size_min, size_max, NextWindowSizeConstraintCallback, (void *)resizeCallback);
+		ImGui::SetNextWindowSizeConstraints(size_min, size_max, NextWindowSizeConstraintCallback, (void *)callback);
 	}
 	else
 	{
@@ -4726,7 +3763,7 @@ int DragFloatT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -4864,7 +3901,7 @@ int DragIntT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -5003,7 +4040,7 @@ int SliderFloatT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -5131,7 +4168,7 @@ int SliderIntT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -5291,7 +4328,7 @@ int FilledSliderFloatT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -5426,7 +4463,7 @@ int FilledSliderIntT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -5486,10 +4523,10 @@ int InputText(lua_State* L)
 	
 	if (lua_gettop(L) > 5)
 	{
-		CallbackData* inputCallback = new CallbackData(L, 6);
-		imgui->callbacks.push_back(inputCallback);
+		CallbackData* callback = new CallbackData(L, 6);
+		imgui->callbacks.push_back(callback);
 
-		result = ImGui::InputText(label, buffer, buffer_size, flags, InputTextCallback, (void*)inputCallback);
+		result = ImGui::InputText(label, buffer, buffer_size, flags, InputTextCallback, (void*)callback);
 	}
 	else
 	{
@@ -5517,8 +4554,11 @@ int InputTextMultiline(lua_State* L)
 	
 	if (lua_gettop(L) > 7)
 	{
-		CallbackData* data = new CallbackData(L, 8);
-		result = ImGui::InputTextMultiline(label, buffer, buffer_size, size, flags, InputTextCallback, (void*)data);
+		GidImGui* imgui = getImgui(L);
+		CallbackData* callback = new CallbackData(L, 8);
+		imgui->callbacks.push_back(callback);
+
+		result = ImGui::InputTextMultiline(label, buffer, buffer_size, size, flags, InputTextCallback, (void*)callback);
 	}
 	else
 	{
@@ -5548,8 +4588,11 @@ int InputTextWithHint(lua_State* L)
 	
 	if (lua_gettop(L) > 6)
 	{
-		CallbackData* data = new CallbackData(L, 7);
-		result = ImGui::InputTextWithHint(label, hint, buffer, buf_size, flags, InputTextCallback, (void *)data);
+		GidImGui* imgui = getImgui(L);
+		CallbackData* callback = new CallbackData(L, 7);
+		imgui->callbacks.push_back(callback);
+
+		result = ImGui::InputTextWithHint(label, hint, buffer, buf_size, flags, InputTextCallback, (void *)callback);
 	}
 	else
 	{
@@ -5656,7 +4699,7 @@ int InputFloatT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -5751,7 +4794,7 @@ int InputIntT(lua_State* L)
 		lua_rawseti(L, -2, i + 1);
 	}
 	lua_pop(L, 1);
-	delete data;
+	delete[] data;
 	lua_pushboolean(L, pressed);
 	return 1;
 }
@@ -6065,7 +5108,7 @@ int PlotLines(lua_State* L)
 	int stride = sizeof(float);
 	
 	ImGui::PlotLines(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
-	delete values;
+	delete[] values;
 	return 0;
 }
 
@@ -6086,7 +5129,7 @@ int PlotHistogram(lua_State* L)
 	int stride = sizeof(float);
 	
 	ImGui::PlotHistogram(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
-	delete values;
+	delete[] values;
 	return 0;
 }
 
@@ -6702,12 +5745,8 @@ int ITCD_GetEventKey(lua_State* L)
 	STACK_CHECKER(L, "getEventKey", 1);
 
 	ImGuiInputTextCallbackData* data = getPtr<ImGuiInputTextCallbackData>(L, "ImGuiInputTextCallbackData");
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-	lua_pushinteger(L, ImGui::GetIO().KeyMap[data->EventKey]);
-#else
-	ImGuiIO& io = ImGui::GetIO();
-	lua_pushinteger(L, io.KeysData[data->EventKey].Down);
-#endif
+	int giderosKeyCode = imGuiKeyToGideros(data->EventKey);
+	lua_pushinteger(L, giderosKeyCode);
 	return 1;
 }
 
@@ -6757,9 +5796,9 @@ int ITCD_GetBufSize(lua_State* L)
 	return 1;
 }
 
-int ITCD_GetBufDirty(lua_State* L)
+int ITCD_IsBufDirty(lua_State* L)
 {
-	STACK_CHECKER(L, "getBufDirty", 1);
+	STACK_CHECKER(L, "isBufDirty", 1);
 
 	ImGuiInputTextCallbackData* data = getPtr<ImGuiInputTextCallbackData>(L, "ImGuiInputTextCallbackData");
 	lua_pushboolean(L, data->BufDirty);
@@ -6829,6 +5868,27 @@ int ITCD_SetSelectionEnd(lua_State* L)
 	return 0;
 }
 
+int ITCD_GetSelection(lua_State* L)
+{
+	STACK_CHECKER(L, "getSelection", 1);
+
+	ImGuiInputTextCallbackData* data = getPtr<ImGuiInputTextCallbackData>(L, "ImGuiInputTextCallbackData");
+	lua_pushinteger(L, data->SelectionStart);
+	lua_pushinteger(L, data->SelectionEnd);
+	return 2;
+}
+
+int ITCD_SetSelection(lua_State* L)
+{
+	STACK_CHECKER(L, "setSelection", 0);
+
+	ImGuiInputTextCallbackData* data = getPtr<ImGuiInputTextCallbackData>(L, "ImGuiInputTextCallbackData");
+	data->SelectionStart = luaL_checkinteger(L, 2);
+	data->SelectionEnd = luaL_checkinteger(L, 3);
+	return 0;
+}
+
+
 int ITCD_DeleteChars(lua_State* L)
 {
 	STACK_CHECKER(L, "deleteChars", 0);
@@ -6894,6 +5954,24 @@ int SCD_GetPos(lua_State* L)
 	return 2;
 }
 
+int SCD_GetPosX(lua_State* L)
+{
+	STACK_CHECKER(L, "getPosX", 2);
+
+	ImGuiSizeCallbackData* data = getPtr<ImGuiSizeCallbackData>(L, "ImGuiSizeCallbackData");
+	lua_pushnumber(L, data->Pos.x);
+	return 1;
+}
+
+int SCD_GetPosY(lua_State* L)
+{
+	STACK_CHECKER(L, "getPosY", 2);
+
+	ImGuiSizeCallbackData* data = getPtr<ImGuiSizeCallbackData>(L, "ImGuiSizeCallbackData");
+	lua_pushnumber(L, data->Pos.y);
+	return 1;
+}
+
 int SCD_GetCurrentSize(lua_State* L)
 {
 	STACK_CHECKER(L, "getCurrentSize", 2);
@@ -6904,6 +5982,24 @@ int SCD_GetCurrentSize(lua_State* L)
 	return 2;
 }
 
+int SCD_GetCurrentWidth(lua_State* L)
+{
+	STACK_CHECKER(L, "getCurrentWidth", 2);
+
+	ImGuiSizeCallbackData* data = getPtr<ImGuiSizeCallbackData>(L, "ImGuiSizeCallbackData");
+	lua_pushnumber(L, data->CurrentSize.x);
+	return 1;
+}
+
+int SCD_GetCurrentHeight(lua_State* L)
+{
+	STACK_CHECKER(L, "getCurrentHeight", 2);
+
+	ImGuiSizeCallbackData* data = getPtr<ImGuiSizeCallbackData>(L, "ImGuiSizeCallbackData");
+	lua_pushnumber(L, data->CurrentSize.y);
+	return 1;
+}
+
 int SCD_GetDesiredSize(lua_State* L)
 {
 	STACK_CHECKER(L, "getDesiredSize", 2);
@@ -6912,6 +6008,24 @@ int SCD_GetDesiredSize(lua_State* L)
 	lua_pushnumber(L, data->DesiredSize.x);
 	lua_pushnumber(L, data->DesiredSize.y);
 	return 2;
+}
+
+int SCD_GetDesiredWidth(lua_State* L)
+{
+	STACK_CHECKER(L, "getDesiredWidth", 2);
+
+	ImGuiSizeCallbackData* data = getPtr<ImGuiSizeCallbackData>(L, "ImGuiSizeCallbackData");
+	lua_pushnumber(L, data->DesiredSize.x);
+	return 1;
+}
+
+int SCD_GetDesiredHeight(lua_State* L)
+{
+	STACK_CHECKER(L, "getDesiredHeight", 2);
+
+	ImGuiSizeCallbackData* data = getPtr<ImGuiSizeCallbackData>(L, "ImGuiSizeCallbackData");
+	lua_pushnumber(L, data->DesiredSize.y);
+	return 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -7027,7 +6141,7 @@ int Clipper_ForceDisplayRangeByIndices(lua_State* L)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
-/// Columns
+/// Columns (LEGACY API)
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -7044,7 +6158,7 @@ int Columns(lua_State* L)
 	return 0;
 }
 
-int NextColumn(lua_State* _UNUSED(L))
+int NextColumn(lua_State* L)
 {
 	STACK_CHECKER(L, "nextColumn", 0);
 
@@ -11204,7 +10318,7 @@ void loadRangesConf(lua_State* L, ImFontGlyphRangesBuilder &builder, ImFontAtlas
 	}
 }
 
-void loadFontConfig(lua_State* L, int index, ImFontConfig &config, ImFontAtlas* atlas)
+void loadFontConfig(lua_State* L, int index, ImFontConfig &config, ImFontAtlas* atlas, ImVector<ImWchar>& ranges)
 {
 	luaL_checktype(L, index, LUA_TTABLE);
 	
@@ -11290,10 +10404,8 @@ void loadFontConfig(lua_State* L, int index, ImFontConfig &config, ImFontAtlas* 
 		lua_getfield(L, -1, "chars");
 		if (!lua_isnil(L, -1)) loadCharsConf(L, builder);
 		lua_pop(L, 1);
-		
-		ImVector<ImWchar> ranges;
+
 		builder.BuildRanges(&ranges);
-		config.GlyphRanges = ranges.Data;
 	}
 	lua_pop(L, 1);
 }
@@ -11319,11 +10431,16 @@ int PopFont(lua_State* _UNUSED(L))
 ImFont* addFont(lua_State *L, ImFontAtlas* atlas, const char* file_name, double size_pixels, bool setupConfig = false, int idx = -1)
 {
 	ImFontConfig cfg = ImFontConfig();
+	ImVector<ImWchar> ranges;
+
 	if (setupConfig)
 	{
-		loadFontConfig(L, idx, cfg, atlas);
+		loadFontConfig(L, idx, cfg, atlas, ranges);
+		cfg.GlyphRanges = ranges.Data;
 	}
-	return atlas->AddFontFromFileTTF(file_name, size_pixels, &cfg);
+
+	ImFont* font = atlas->AddFontFromFileTTF(file_name, size_pixels, &cfg);
+	return font;
 }
 
 int FontAtlas_AddFont(lua_State *L)
@@ -11404,17 +10521,19 @@ int FontAtlas_Build(lua_State* L)
 	STACK_CHECKER(L, "build", 0);
 
 	ImFontAtlas* atlas = getPtr<ImFontAtlas>(L, "ImFontAtlas");
-	gtexture_delete((g_id)(uintptr_t)atlas->TexID);
-	
-	atlas->Build();
-	
+	// TexID will be cleared after "GetTexDataAsRGBA32" call, but we need it
+	// to updated already existing texture
+	void* id = atlas->TexID;
+
+	LUA_ASSERT(id != NULL, "No texture generated!");
+
 	unsigned char* pixels;
 	int width, height;
 	atlas->GetTexDataAsRGBA32(&pixels, &width, &height);
 	
-	g_id id = gtexture_create(width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP, GTEXTURE_LINEAR, pixels, nullptr, 0);
-	atlas->TexID = (void *)id;
-	
+	gtexture_update((g_id)(uintptr_t)id, width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP,  GTEXTURE_LINEAR, pixels);
+	atlas->SetTexID(id);
+
 	return 0;
 }
 
@@ -12041,7 +11160,7 @@ int DrawList_AddPolyline(lua_State* L)
 	luaL_checktype(L, 2, LUA_TTABLE);
 	int index = 0;
 	int num_points = luaL_getn(L, 2);
-	ImVec2* points=new ImVec2[num_points];
+	ImVec2* points = new ImVec2[num_points];
 	lua_pushvalue(L, 2);
 	for (int i = 0; i < num_points; i+=2)
 	{
@@ -13854,6 +12973,8 @@ int loader(lua_State* L)
 		{NULL, NULL}
 	};
 	
+	g_createClass(L, "ImGuiCallbackData", NULL, NULL, NULL, imguiEmptyFunctionsList);
+
 	const luaL_Reg imguiStylesFunctionList[] =
 	{
 		{"setColor", Style_SetColor},
@@ -14009,11 +13130,6 @@ int loader(lua_State* L)
 		{"isMouseDown", IO_isMouseDown},
 		{"getMouseWheel", IO_GetMouseWheel},
 		{"getMouseWheelH", IO_GetMouseWheelH},
-//		{"isKeyCtrl", IO_isKeyCtrl},
-//		{"isKeyShift", IO_isKeyShift},
-//		{"isKeyAlt", IO_isKeyAlt},
-//		{"isKeySuper", IO_isKeySuper},
-//		{"getKeysDown", IO_GetKeysDown},
 		{"setKeysDown", IO_SetKeysDown},
 		{"setModKeysDown", IO_SetModKeyDown},
 		{"resetKeysDown", IO_ResetKeysDown},
@@ -14147,7 +13263,7 @@ int loader(lua_State* L)
 	g_createClass(L, "ImFontAtlas", NULL, NULL, NULL, imguiFontAtlasFunctionList);
 	
 	const luaL_Reg imguiFontFunctionsList[] = {
-		{"getFontSize", ImFont_GetFontSize },
+		{"getSize", ImFont_GetFontSize },
 		{"getContainerAtlas", ImFont_GetContainerAtlas },
 		{"setScale", ImFont_SetScale },
 		{"getScale", ImFont_GetScale },
@@ -14459,7 +13575,7 @@ int loader(lua_State* L)
 		{"getBufTextLen", ITCD_GetBufTextLen},
 		{"setBufTextLen", ITCD_SetBufTextLen},
 		{"getBufSize", ITCD_GetBufSize},
-		{"getBufDirty", ITCD_GetBufDirty},
+		{"isBufDirty", ITCD_IsBufDirty},
 		{"setBufDirty", ITCD_SetBufDirty},
 		{"getCursorPos", ITCD_GetCursorPos},
 		{"setCursorPos", ITCD_SetCursorPos},
@@ -14467,6 +13583,8 @@ int loader(lua_State* L)
 		{"setSelectionStart", ITCD_SetSelectionStart},
 		{"getSelectionEnd", ITCD_GetSelectionEnd},
 		{"setSelectionEnd", ITCD_SetSelectionEnd},
+		{"setSelection", ITCD_SetSelection},
+		{"getSelection", ITCD_GetSelection},
 		{"deleteChars", ITCD_DeleteChars},
 		{"insertChars", ITCD_InsertChars},
 		{"selectAll", ITCD_SelectAll},
@@ -14478,8 +13596,15 @@ int loader(lua_State* L)
 	
 	const luaL_Reg imguiSizeCallbackDataFunctionList[] = {
 		{"getPos", SCD_GetPos},
+		{"getX", SCD_GetPosX},
+		{"getY", SCD_GetPosY},
 		{"getCurrentSize", SCD_GetCurrentSize},
+		{"getCurrentWidth", SCD_GetCurrentWidth},
+		{"getCurrentHeight", SCD_GetCurrentHeight},
+
 		{"getDesiredSize", SCD_GetDesiredSize},
+		{"getDesiredWidth", SCD_GetDesiredWidth},
+		{"getDesiredHeight", SCD_GetDesiredHeight},
 		{NULL, NULL}
 	};
 	g_createClass(L, "ImGuiSizeCallbackData", NULL, NULL, NULL, imguiSizeCallbackDataFunctionList);
@@ -14935,7 +14060,6 @@ int loader(lua_State* L)
 		{"getDragDropPayloadDataSize", CTX_GetDragDropPayloadDataSize},
 		
 		{"setMousePos", SetMousePos},
-		{"shutdown", Shutdown},
 		
 	#ifdef IS_DOCKING_BUILD
 		{"dockSpace", DockSpace},
@@ -14963,73 +14087,11 @@ int loader(lua_State* L)
 	};
 	g_createClass(L, "ImGui", "Sprite", initImGui, destroyImGui, imguiFunctionList);
 	
-#ifdef IMPLOT_API
-	const luaL_Reg implotFunctionList[] =
-	{
-		{"beginPlot", ImPlot_BeginPlot},
-		{"endPlot", ImPlot_EndPlot},
-		{"beginSubplots", ImPlot_BeginSubplots},
-		{"endSubplots", ImPlot_EndSubplots},
-		{"plotLine", ImPlot_PlotLine},
-		{"plotScatter", ImPlot_PlotScatter},
-		{"plotStairs", ImPlot_PlotStairs},
-		{"plotShaded", ImPlot_PlotShaded},
-		{"plotBars", ImPlot_PlotBars},
-		{"plotBarsH", ImPlot_PlotBarsH},
-		{"plotErrorBars", ImPlot_PlotErrorBars},
-		{"plotStems", ImPlot_PlotStems},
-		{"plotVLines", ImPlot_PlotVLines},
-		{"plotHLines", ImPlot_PlotHLines},
-		{"plotPieChart", ImPlot_PlotPieChart},
-		{"plotHeatmap", ImPlot_PlotHeatmap},
-		{"plotHistogram", ImPlot_PlotHistogram},
-		{"plotHistogram2D", ImPlot_PlotHistogram2D},
-		{"plotDigital", ImPlot_PlotDigital},
-		{"plotImage", ImPlot_PlotImage},
-		{"plotText", ImPlot_PlotText},
-		{"plotDummy", ImPlot_PlotDummy},
-		
-		{"setNextPlotLimits", ImPlot_SetNextPlotLimits},
-		{"setNextPlotLimitsX", ImPlot_SetNextPlotLimitsX},
-		{"setNextPlotLimitsY", ImPlot_SetNextPlotLimitsY},
-		{"linkNextPlotLimits", ImPlot_LinkNextPlotLimits},
-		{"fitNextPlotAxes", ImPlot_FitNextPlotAxes},
-		{"setNextPlotTicksX", ImPlot_SetNextPlotTicksX},
-		{"setNextPlotTicksX", ImPlot_SetNextPlotTicksX},
-		{"setNextPlotTicksY", ImPlot_SetNextPlotTicksY},
-		{"setNextPlotTicksY", ImPlot_SetNextPlotTicksY},
-		{"setNextPlotFormatX", ImPlot_SetNextPlotFormatX},
-		{"setNextPlotFormatY", ImPlot_SetNextPlotFormatY},
-		{"setPlotYAxis", ImPlot_SetPlotYAxis},
-		{"hideNextItem", ImPlot_HideNextItem},
-		{"pixelsToPlot", ImPlot_PixelsToPlot},
-		{"pixelsToPlot", ImPlot_PixelsToPlot},
-		{"plotToPixels", ImPlot_PlotToPixels},
-		{"plotToPixels", ImPlot_PlotToPixels},
-		{"getPlotPos", ImPlot_GetPlotPos},
-		{"getPlotSize", ImPlot_GetPlotSize},
-		{"isPlotHovered", ImPlot_IsPlotHovered},
-		{"isPlotXAxisHovered", ImPlot_IsPlotXAxisHovered},
-		{"isPlotYAxisHovered", ImPlot_IsPlotYAxisHovered},
-		{"getPlotMousePos", ImPlot_GetPlotMousePos},
-		{"getPlotLimits", ImPlot_GetPlotLimits},
-		{"isPlotSelected", ImPlot_IsPlotSelected},
-		{"getPlotSelection", ImPlot_GetPlotSelection},
-		{"isPlotQueried", ImPlot_IsPlotQueried},
-		{"getPlotQuery", ImPlot_GetPlotQuery},
-		{"setPlotQuery", ImPlot_SetPlotQuery},
-		
-		{NULL, NULL}
-	};
-	
-	g_createClass(L, "ImPlot", NULL, initImPlot, destroyImPlot, implotFunctionList);
-#endif
-	
 	luaL_newweaktable(L);
 	luaL_rawsetptr(L, LUA_REGISTRYINDEX, &keyWeak);
 	
 	bindEnums(L);
-	
+
 	lua_getglobal(L, "ImGui");
 	lua_pushstring(L, ImGui::GetVersion());
 	lua_setfield(L, -2, "_VERSION");
@@ -15046,7 +14108,7 @@ static void g_initializePlugin(lua_State* L)
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
-	lua_pushcnfunction(L, ImGui_impl::loader,"plugin_init_imgui");
+	lua_pushcnfunction(L, ImGui_impl::loader, "plugin_init_imgui");
 	lua_setfield(L, -2, PLUGIN_NAME);
 	
 	lua_pop(L, 2);
