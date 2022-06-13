@@ -2291,7 +2291,6 @@ int SpriteBinder::updateStyle(lua_State* L)
     StackChecker checker(L, "SpriteBinder::updateStyle", 0);
     Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-
     lua_getfield(L,1,"__style");
     {
         GridBagLayout *p=sprite->layoutState;

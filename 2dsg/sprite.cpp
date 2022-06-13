@@ -163,6 +163,8 @@ void Sprite::cloneFrom(Sprite *s) {
         children_.push_back(sc);
     }
     colorTransform_=s->colorTransform_;
+    if (colorTransform_)
+        colorTransform_=new ColorTransform(*(s->colorTransform_));
     alpha_=s->alpha_;
     clipx_=s->clipx_;
     clipy_=s->clipy_;
@@ -179,14 +181,15 @@ void Sprite::cloneFrom(Sprite *s) {
 }
 
 Sprite::~Sprite() {
-	delete colorTransform_;
-//	delete graphics_;
+    if (colorTransform_)
+        delete colorTransform_;
+    //	delete graphics_;
 
-	for (std::size_t i = 0; i < children_.size(); ++i){
-		children_[i]->parent_ = 0;
-		children_[i]->unref();
-	}
-	
+    for (std::size_t i = 0; i < children_.size(); ++i){
+        children_[i]->parent_ = 0;
+        children_[i]->unref();
+    }
+
 	allSprites_.erase(this);
 	allSpritesWithListeners_.erase(this);
 
