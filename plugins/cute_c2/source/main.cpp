@@ -13,7 +13,7 @@
 
 #define CUTE_C2_IMPLEMENTATION
 #include "cute_c2.h"
-
+#include <memory>
 #ifdef IS_BETA_BUILD
 #define PLUGIN_NAME "CuteC2_beta"
 #else
