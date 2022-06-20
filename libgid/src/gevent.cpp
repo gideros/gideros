@@ -23,7 +23,7 @@ public:
 
     void tick();
 
-    void enqueueEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata);
+    void enqueueEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata, bool merge);
     void removeEventsWithGid(g_id gid);
     void removeEventsWithType(int type);
 
@@ -36,6 +36,7 @@ private:
         void *event;
         int free;
         void *udata;
+        int merge;
     };
 
     template <typename T>
@@ -102,31 +103,52 @@ void EventManager::tick()
 {
     callbackList_.dispatchEvent(GEVENT_PRE_TICK_EVENT, NULL);
 
+    pthread_mutex_lock(&mutex_);
     while (true)
     {
-        pthread_mutex_lock(&mutex_);
 
-        if (eventQueue_.empty())
-        {
-            pthread_mutex_unlock(&mutex_);
-            break;
-        }
+        if (eventQueue_.empty()) break;
 
         EventQueueElement element = eventQueue_.front();
         eventQueue_.pop_front();
 
-        pthread_mutex_unlock(&mutex_);
+    	bool skip=false;
+        if (element.merge&&!eventQueue_.empty())
+        {
+        	size_t qs=eventQueue_.size();
+        	size_t i=0;
+        	while (i<qs) {
+        		if (!eventQueue_[i].merge) break;
+        		if ((eventQueue_[i].gid==element.gid)&&(eventQueue_[i].callback==element.callback)&&(eventQueue_[i].type==element.type))
+        		{
+        			skip=true;
+        			break;
+        		}
+        		i++;
+        	}
+        }
 
-        scope_exit_free f(element.free, element.event);
 
-        if (element.callback)
-            element.callback(element.type, element.event, element.udata);
+    	{
+            scope_exit_free f(element.free, element.event);
+    		if (!skip) {
+    			if (!element.merge)
+    				pthread_mutex_unlock(&mutex_);
+
+				if (element.callback)
+					element.callback(element.type, element.event, element.udata);
+
+    			if (!element.merge)
+    				pthread_mutex_lock(&mutex_);
+    		}
+    	}
     }
+    pthread_mutex_unlock(&mutex_);
 
     callbackList_.dispatchEvent(GEVENT_POST_TICK_EVENT, NULL);
 }
 
-void EventManager::enqueueEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata)
+void EventManager::enqueueEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata, bool merge)
 {
     EventQueueElement element;
     element.gid = gid;
@@ -135,6 +157,7 @@ void EventManager::enqueueEvent(g_id gid, gevent_Callback callback, int type, vo
     element.event = event;
     element.free = free;
     element.udata = udata;
+    element.merge = merge;
 
     pthread_mutex_lock(&mutex_);
     eventQueue_.push_back(element);
@@ -200,9 +223,15 @@ void gevent_Tick()
 }
 
 static void (*_flusher)()=NULL;
+static bool mergeEvents=false;
 void gevent_SetFlusher(void (*flusher)())
 {
 	_flusher=flusher;
+}
+
+void gevent_AllowEventMerge(int allow)
+{
+	mergeEvents=allow;
 }
 
 void gevent_Flush()
@@ -213,7 +242,12 @@ void gevent_Flush()
 
 void gevent_EnqueueEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata)
 {
-    s_manager->enqueueEvent(gid, callback, type, event, free, udata);
+    s_manager->enqueueEvent(gid, callback, type, event, free, udata, false);
+}
+
+void gevent_MergeEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata)
+{
+    s_manager->enqueueEvent(gid, callback, type, event, free, udata, mergeEvents);
 }
 
 void gevent_RemoveEventsWithGid(g_id gid)

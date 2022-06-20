@@ -85,11 +85,14 @@ extern "C" {
 G_API void gevent_Init();
 G_API void gevent_Cleanup();
 G_API void gevent_SetFlusher(void (*flusher)());
+G_API void gevent_AllowEventMerge(int allow);
+
 
 G_API void gevent_Tick();
 G_API void gevent_Flush();
 
 G_API void gevent_EnqueueEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata);
+G_API void gevent_MergeEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata);
 G_API void gevent_RemoveEventsWithGid(g_id gid);
 
 G_API g_id gevent_AddCallback(gevent_Callback callback, void *udata);
