@@ -17,6 +17,7 @@
 #include <cJSON.h>
 //
 static ApplicationManager *s_applicationManager = NULL;
+extern bool inWebXR;
 
 extern void linkCode();
 extern size_t GiderosUIShown;
@@ -119,6 +120,7 @@ void looptick(void *a)
 	dueTime=t+0.7/fps;
 
 	try {
+
 		// Check for size change in main loop, due to buggy iOS behavior
 		  int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
 		  int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
@@ -128,11 +130,13 @@ void looptick(void *a)
 			  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
 		  }
 		s_applicationManager->drawFrame();
+		if (!inWebXR) {
 #ifndef EGL
-    glfwSwapBuffers(glfw_win);
+			glfwSwapBuffers(glfw_win);
 #else
-    eglSwapInterval(display,1);
+			eglSwapInterval(display,1);
 #endif
+		}
 	}
 	catch(const luaException& e)
 	{
@@ -209,6 +213,12 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  return true;
 }
 
+extern void WebXR_EventTrigger();
+void checkEventTriggers() {
+    EM_ASM( Module.checkALMuted(); );
+    WebXR_EventTrigger();
+}
+
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
 	 if (GiderosUIShown) return false;
@@ -231,7 +241,10 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
 		 ginputp_mouseDown(x,y,bs,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
+	 {
+		 checkEventTriggers();
 		 ginputp_mouseUp(x,y,bs,m);
+	 }
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE)
 	 {
 		 if (b)
@@ -276,7 +289,7 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 		 ginputp_touchBegin(x,y,i,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHEND)
 	 {
-	     EM_ASM( Module.checkALMuted(); );
+		 checkEventTriggers();
 		 ginputp_touchEnd(x,y,i,m);
      }
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHMOVE)
@@ -300,6 +313,7 @@ EM_BOOL visibility_callback(int eventType, const EmscriptenVisibilityChangeEvent
 
 extern "C" EMSCRIPTEN_KEEPALIVE int main_registerPlugin(const char *pname,const char *psym);
 extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_JSNative(lua_State* L, int type);
+extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_WebXR(lua_State* L, int type);
 
 extern "C" EMSCRIPTEN_KEEPALIVE long _keep();
 
@@ -350,7 +364,9 @@ char *url=(char *) EM_ASM_INT_V({
 
   //PLUGINS Init
   g_registerPlugin(g_pluginMain_JSNative);
+  g_registerPlugin(g_pluginMain_WebXR);
   EM_ASM(Module.registerPlugins());
+
 
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
   int defHeight=EM_ASM_INT_V({ return window.innerHeight; });

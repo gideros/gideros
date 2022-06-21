@@ -64,7 +64,7 @@ void g_setFps(int fps);
 void drawInfo();
 void refreshLocalIPs();
 void g_exit();
-
+extern bool inWebXR;
 static void printJS(const char *str, int len, void *data) {
 	if (len >= 0) {
 		char *m = (char *) malloc(len + 1);
@@ -714,9 +714,11 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 			gaudio_AdvanceStreamBuffers();
 		}
 
-		application_->clearBuffers();
-		application_->renderScene(1);
-		drawIPs();
+		if (!inWebXR) {
+			application_->clearBuffers();
+			application_->renderScene(1);
+			drawIPs();
+		}
 
 		if (!canvasShown) {
 			canvasShown = true;

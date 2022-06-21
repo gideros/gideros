@@ -1,5 +1,5 @@
 <plugin
- name="ImGui"
+ name="CuteC2"
  description="Cute C2 for Gideros">
   <target name="AndroidStudio,APK">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>

@@ -64,7 +64,7 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 LMP3_SRCS=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES)) libgid/src/gaudio-loader-mp3
 CORE_SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
-	gui-js ggeolocation-js main jsnative cJSON netplayer plugin_support)   
+	gui-js ggeolocation-js main jsnative gwebxr cJSON netplayer plugin_support)   
 
 LOCAL_CFLAGS+=-D_REENTRANT -DLIBXMP_CORE_PLAYER
 XMP_SRC=virtual period player read_event dataio lfo envelope \
@@ -154,6 +154,7 @@ endif
 LOPTS+=-lwebsocket.js
 LOPTS+=-lidbfs.js
 LOPTS+=-lglfw.js
+LOPTS+=--js-library webxr/library_webxr.js
 
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
