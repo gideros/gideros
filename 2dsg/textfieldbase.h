@@ -53,6 +53,8 @@ protected:
     int lfontCacheVersion_;
     FontBase::TextLayout textlayout_; //Currently displayed text layout
     float prefWidth_,prefHeight_;
+public:
+    std::string styCache_color;
 };
 
 #endif

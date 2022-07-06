@@ -110,10 +110,12 @@ void TextField::setTextColor(float r,float g,float b,float a)
     g_ = g;
     b_ = b;
 
-	int oflags = textlayout_.styleFlags;
-	textlayout_.styleFlags |= TEXTSTYLEFLAG_SKIPLAYOUT; //Don't relayout when color changed
-	createGraphics();
-	textlayout_.styleFlags = oflags;
+    if (!text_.empty()) {
+        int oflags = textlayout_.styleFlags;
+        textlayout_.styleFlags |= TEXTSTYLEFLAG_SKIPLAYOUT; //Don't relayout when color changed
+        createGraphics();
+        textlayout_.styleFlags = oflags;
+    }
 }
 
 void TextField::textColor(float &r,float &g,float &b,float &a)

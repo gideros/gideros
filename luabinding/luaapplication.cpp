@@ -862,9 +862,36 @@ void LuaApplication::callback(int type, void *event)
     }
 }
 
-int LuaApplication::resolveStyle(lua_State *L,const char *key)
+void LuaApplication::resetStyleCache()
+{
+    styleCache.unitS=F_NAN;
+    styleCache.unitIs=F_NAN;
+}
+
+struct LuaApplication::_StyleCache LuaApplication::styleCache;
+
+int LuaApplication::resolveStyle(lua_State *L,const char *key,int luaIndex)
 {
     //Style table is expected to be at top of stack
+	lua_pushstring(L,"__Reference");
+	lua_insert(L,-2);
+	lua_pushstring(L,"__Parent");
+	lua_insert(L,-2);
+    int ret=resolveStyleInternal(L,key,luaIndex?luaIndex-2:0,-3);
+	lua_remove(L,-2);
+	lua_remove(L,-2);
+    return ret;
+}
+
+int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaIndex,int refIndex)
+{
+    //Expected callStack: refstring, parentstring, table
+	if (luaIndex>0) luaIndex=0;
+    if ((!key)&&luaIndex) key=lua_tolstring(L,luaIndex,NULL);
+    if (!key) {
+        lua_pushfstringL(L,"Key is nil in resolveStyle");
+        lua_error(L);
+    }
     if (!lua_istable(L,-1))
     {
         lua_pushfstringL(L,"Style table doesn't exist, while looking for key: %s",key);
@@ -882,7 +909,10 @@ int LuaApplication::resolveStyle(lua_State *L,const char *key)
         {
             //File, return as is
             lua_pop(L,2);
-            lua_pushlstring(L,key,klen);
+            if (luaIndex)
+            	lua_pushvalue(L,luaIndex+1);
+            else
+            	lua_pushlstring(L,key,klen);
             return LUA_TSTRING;
         }
         const char *kk=key;
@@ -896,7 +926,7 @@ int LuaApplication::resolveStyle(lua_State *L,const char *key)
                 return LUA_TNUMBER;
             }
             else if ((kk[0]=='e')&&(kk[1]=='m')&&(kk[2]==0)) {
-                if (resolveStyle(L,"font")==LUA_TNIL)
+                if (resolveStyleInternal(L,"font",0,refIndex-1)==LUA_TNIL)
                 {
                     lua_pushfstringL(L,"Font not found for computing: %s",key);
                     lua_error(L);
@@ -915,15 +945,26 @@ int LuaApplication::resolveStyle(lua_State *L,const char *key)
                 return LUA_TNUMBER;
             }
             else {
-                char unitName[32+6]="unit.";
-                strncpy(unitName+5,kk,32);
-                unitName[32+5]=0;
-                if (resolveStyle(L,unitName)==LUA_TNIL)
-                {
-                    lua_pushfstringL(L,"Unit not recognized: %s",kk);
-                    lua_error(L);
+                float num=F_NAN;
+                if ((kk[0]=='s')&&(kk[1]==0)) // Cached-'s'
+                    num=styleCache.unitS;
+                else if ((kk[0]=='i')&&(kk[1]=='s')&&(kk[2]==0)) // Cached-'is'
+                    num=styleCache.unitIs;
+                if (isnan(num)) {
+                    char unitName[32+6]="unit.";
+                    strncpy(unitName+5,kk,32);
+                    unitName[32+5]=0;
+                    if (resolveStyleInternal(L,unitName,0,refIndex-1)==LUA_TNIL)
+                    {
+                        lua_pushfstringL(L,"Unit not recognized: %s",kk);
+                        lua_error(L);
+                    }
+                    num=lua_tonumber(L,-1);
+                    if ((kk[0]=='s')&&(kk[1]==0)) // Cached-'s'
+                        styleCache.unitS=num;
+                    else if ((kk[0]=='i')&&(kk[1]=='s')&&(kk[2]==0)) // Cached-'is'
+                        styleCache.unitIs=num;
                 }
-                lua_Number num=lua_tonumber(L,-1);
                 lua_pop(L,2);
                 lua_pushnumber(L,num*strtod(key,NULL));
                 return LUA_TNUMBER;
@@ -931,41 +972,52 @@ int LuaApplication::resolveStyle(lua_State *L,const char *key)
         }
         //Check if current table is a reference
         bool inherit=true;
-        while (inherit&&(limit>0)) {
-            int rtype;
-            if (lua_rawgetfield(L,-1,"__Reference")==LUA_TSTRING) {
-                const char *kref=lua_tolstring(L,-1,NULL);
+        while (inherit&&(limit>0)) { //Tc
+            if (limit<200)
+            {
+                lua_pushnil(L);
                 lua_pop(L,1);
-                rtype=lua_rawgetfield(L,-1,"__Parent");
+            }
+            int rtype;
+            lua_pushvalue(L,refIndex-1); //Tc,Ref
+            if (lua_rawget(L,-2)==LUA_TSTRING) { //Tc,Tc[Ref]
+                lua_pushvalue(L,refIndex-2+1); //Tc,Key,Parent
+                rtype=lua_rawget(L,-3); //Tc,Key,Tc[Parent]
                 if (rtype==LUA_TTABLE)
-                    rtype=resolveStyle(L,kref);
+                    rtype=resolveStyleInternal(L,NULL,-2,refIndex-3); //Tc,Key,Tr
                 if (rtype!=LUA_TTABLE)
                 {
-                    lua_pushfstringL(L,"Reference doesn't resolve to a table: %s",kref);
+                    lua_pushfstringL(L,"Reference doesn't resolve to a table: %s",lua_tolstring(L,-2,NULL));
                     lua_error(L);
                 }
+                lua_remove(L,-2); //Tc,Tr
                 //Lookup in reference
-                rtype=lua_getfield(L,-1,key);
-                lua_remove(L,-2);
+                if (luaIndex) {
+                	lua_pushvalue(L,luaIndex-2); //Tc,Tr,key
+                	rtype=lua_gettable(L,-2); //Tc,Tr,Tr[key]
+                }
+                else
+                	rtype=lua_getfield(L,-1,key); //Tc,Tr,Tr[key]
+                lua_remove(L,-2); //Tc,Tr[key]
             }
             else {
-                lua_pop(L,1);
-                rtype=lua_getfield(L,-1,key); //Lookup in table
+                lua_pop(L,1); //Tc
+                rtype=lua_getfield(L,-1,key); //Tc,Tc[key]
             }
             if (rtype==LUA_TNIL) {
-                lua_pop(L,1);
-                rtype=lua_rawgetfield(L,-1,"__Parent");
+                lua_pop(L,1); //Tc
+                lua_pushvalue(L,refIndex-1+1); //Tc,Parent
+                rtype=lua_rawget(L,-2); //Tc,Tc[parent]
                 if (rtype==LUA_TSTRING) {
                     //Parent is a string, look it up
-                    const char *kref=lua_tolstring(L,-1,NULL);
-                    lua_pop(L,1);
-                    rtype=resolveStyle(L,kref);
-                    lua_remove(L,-2);
+                    lua_pushvalue(L,-2); //Tc,Key,Tc
+                    rtype=resolveStyleInternal(L,NULL,-2,refIndex-3); //Tc,Key,Tr
+                    lua_remove(L,-2); //Tc,Tr
                 }
                 if (rtype==LUA_TNIL) {
                     //Nothing, return nil
-                    lua_remove(L,-2);
-                    lua_remove(L,-2);
+                    lua_remove(L,-2); //nil
+                    lua_remove(L,-2); 
                     return rtype;
                 }
                 if (rtype!=LUA_TTABLE)
@@ -973,19 +1025,24 @@ int LuaApplication::resolveStyle(lua_State *L,const char *key)
                     lua_pushfstringL(L,"Parent style isn't a table while resolving: %s",key);
                     lua_error(L);
                 }
-                lua_remove(L,-2);
+                lua_remove(L,-2); //Tc[parent] or Tr
             }
             else if (rtype!=LUA_TSTRING) {
                 //Not a string, return it
-                lua_remove(L,-2);
+                lua_remove(L,-2); //Tc[key]
                 lua_remove(L,-2);
                 return rtype;
             }
             else {
                 //Got a string, re-run full key processing
                 key=lua_tolstring(L,-1,NULL);
-                lua_pop(L,2);
-                lua_pushvalue(L,-1);
+                if (luaIndex) {
+                    lua_replace(L,luaIndex-2); //Tc
+                    lua_pop(L,1); //
+                }
+                else
+                    lua_pop(L,2); //
+                lua_pushvalue(L,-1); //Tc
                 inherit=false;
             }
             limit-=1;
@@ -1005,7 +1062,7 @@ void LuaApplication::resolveColor(lua_State *L,int spriteIdx, int colIdx, float 
     }
     if (!colIdx) {
         lua_getfield(L,spriteIdx,"__style");
-        resolveStyle(L,cache.c_str());
+        resolveStyle(L,cache.c_str(),0);
         idx=-1;
     }
     switch (lua_type(L,idx)) {
@@ -1036,6 +1093,14 @@ void LuaApplication::resolveColor(lua_State *L,int spriteIdx, int colIdx, float 
         color[1]= (1.0/255)*((c >> 8) & 0xff);
         color[2]= (1.0/255)*((c >> 0) & 0xff);
         color[3]= (1.0/255)*((c >> 24) & 0xff);
+        break;
+    }
+    case LUA_TNIL:
+    {
+        color[0]=0;
+        color[1]=0;
+        color[2]=0;
+        color[3]=0;
         break;
     }
     default:
@@ -1388,6 +1453,9 @@ static int enterFrame(lua_State* L)
             pluginManager.plugins[i].enterFrame(L);
 
     application->enterFrame();
+
+    luaApplication->resetStyleCache();
+
     /* perform style updating */
     lua_getglobal(L,"application");
     lua_getfield(L,-1,"__styleUpdates");

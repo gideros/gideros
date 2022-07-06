@@ -37,9 +37,10 @@ function Gltf:getNode(i)
 				return 0
 			end
 			local m={
-				vertices=self:getBuffer(bufferIndex("POSITION")),
+				vertices=self:getBuffer(bufferIndex("POSITION"),false,3), 
 				texcoords=self:getBuffer(bufferIndex("TEXCOORD")),
 				normals=self:getBuffer(bufferIndex("NORMAL")),
+				colors=self:getBuffer(bufferIndex("COLOR_0"),false,4), 
 				indices=self:getBuffer(prim.indices+1,true),
 				type="mesh",
 				material=self:getMaterial((prim.material or -1)+1),
@@ -52,11 +53,15 @@ function Gltf:getNode(i)
 			root.parts["n"..ni]=self:getNode(n+1)
 		end
 	end
-	root.srt={ s=nd.scale, r=nd.rotation, t=nd.translation }
+	if nd.matrix then 
+		root.transform=nd.matrix
+	else
+		root.srt={ s=nd.scale, r=nd.rotation, t=nd.translation }
+	end
 	return root
 end
 
-function Gltf:getBuffer(i,indices)
+function Gltf:getBuffer(i,indices,vlen)
 	local bd=self.desc.accessors[i]
 	if bd==nil then return nil end
 	if bd._array then return bd._array end
@@ -86,11 +91,21 @@ function Gltf:getBuffer(i,indices)
 	GL_UNSIGNED_INT64_AMD (35778)
 	GL_UNSIGNED_SHORT (5123)
 	]]
-	local cl=0
-	if bd.componentType==5126 then cl=4
-	elseif bd.componentType==5123 then cl=2
-	elseif bd.componentType==5125 then cl=4
-	else assert(false,"Unhandled componentType:"..bd.componentType)
+	local cl,dv=0,""
+	if bd.componentType==5126 then
+		cl=4
+		dv="f"
+	elseif bd.componentType==5123 then
+		cl=2
+		dv=if bd.normalized then "S" else "s"
+	elseif bd.componentType==5121 then
+		cl=1
+		dv=if bd.normalized then "B" else "b"
+	elseif bd.componentType==5125 then
+		cl=4
+		dv=if bd.normalized then "I" else "i"
+	else
+		assert(false,"Unhandled componentType:"..bd.componentType)
 	end
 	if stride>0 then stride=stride-cl*bm end
 	local br=bd.byteOffset or 0
@@ -99,18 +114,52 @@ function Gltf:getBuffer(i,indices)
 	for ci=1,bc do
 		for mi=1,bm do
 			if bd.componentType==5126 then
-				t[ii]=buf:get(br,4):decodeValue("f") br+=4
-			elseif bd.componentType==5123 then t[ii]=buf:get(br,2):decodeValue("s")
-				if indices then t[ii]+=1 end
+				t[ii]=buf:get(br,4):decodeValue("f")
+				br+=4
+			elseif bd.componentType==5123 then
+				t[ii]=buf:get(br,2):decodeValue(dv)
+				if indices then 
+					t[ii]+=1 
+				elseif bd.normalized then
+					t[ii]/=65535
+				end
 				br+=2
+			elseif bd.componentType==5121 then
+				t[ii]=buf:get(br,1):decodeValue(dv)
+				if indices then 
+					t[ii]+=1 
+				elseif bd.normalized then
+					t[ii]/=255
+				end
+				br+=1
+--[[NVHalf				
+			elseif bd.componentType==5121 then
+				local n=buf:get(br,2):decodeValue("S")
+				local e=(n>>10)&0x1F
+				local m=(n&0x3FF)/1024
+				local v=if e==0 then m/16384 else (1+m)*(2^(e-15))
+				if n&0x8000 then v=-v end
+				t[ii]=v
+				if indices then 
+					t[ii]+=1 
+				elseif bd.normalized then
+					t[ii]/=65535
+				end
+				br+=2 ]]
 			elseif bd.componentType==5125 then
-				t[ii]=buf:get(br,4):decodeValue("i")
+				t[ii]=buf:get(br,4):decodeValue(dv)
 				if indices then t[ii]+=1 end
 				br+=4
 			else
 				assert(false,"Unhandled componentType:"..bd.componentType)
 			end
 			ii+=1
+		end
+		if vlen==4 and bm==3 then
+			t[ii]=1 ii+=1
+		elseif vlen==3 and bm==4 then
+			t[ii]=nil
+			ii-=1
 		end
 		br+=stride
 	end

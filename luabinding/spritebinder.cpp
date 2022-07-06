@@ -626,8 +626,8 @@ int SpriteBinder::getClip(lua_State* L)
     return 4;
 }
 
-#define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pop(L,1); p->resolved[n]=key; lua_pushvalue(L,t); LuaApplication::resolveStyle(L,key);
-#define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pop(L,1); lua_pushvalue(L,t); LuaApplication::resolveStyle(L,key); p->resolvedArray[n][i]=key; }
+#define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolved[n]=key; lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2);
+#define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2); p->resolvedArray[n][i]=key; }
 #define RESOLVE(n) FRESOLVE(n,-1) }
 #define RESOLVED(n) if ((!raw)&&p->resolved.count(n)) lua_pushstring(L,p->resolved[n].c_str()); else
 #define ARESOLVED(n,i) if ((!raw)&&p->resolvedArray.count(n)&&p->resolvedArray[n].count(i)) lua_pushstring(L,p->resolvedArray[n][i].c_str()); else
@@ -636,11 +636,14 @@ int SpriteBinder::getClip(lua_State* L)
 			luaL_checktype(L,-1, LUA_TTABLE); \
 			p->f.resize(lua_objlen(L,-1)); \
             p->resolvedArray.erase(n); \
-            for (size_t k=1;k<=lua_objlen(L,-1);k++) { lua_rawgeti(L,-1,k); ARESOLVE(n,-2,k); p->f[k-1]=luaL_checknumber(L,-1); lua_pop(L,1); } \
+            for (size_t k=1;k<=(size_t)lua_objlen(L,-1);k++) { \
+                lua_rawgeti(L,-1,k); ARESOLVE(n,-2,k-1); \
+                p->f[k-1]=lua_tonumber(L,-1); \
+                lua_pop(L,1); } \
 		} lua_pop(L,1);
-#define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=luaL_checkinteger(L,-1); } lua_pop(L,1);
-#define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) luaL_checkinteger(L,-1); } lua_pop(L,1);
-#define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=luaL_checknumber(L,-1); } lua_pop(L,1);
+#define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tointeger(L,-1); } lua_pop(L,1);
+#define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1);
+#define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1);
 #define FILL_BOOL(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
 #define STOR_NUM_ARRAY(n,f) \
 		lua_newtable(L); \
@@ -2261,19 +2264,20 @@ int SpriteBinder::setStyle(lua_State* L)
 int SpriteBinder::resolveStyle(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::resolveStyle", 2);
-
+    int hasTable=!lua_isnoneornil(L,3);
+    lua_pushvalue(L,2);
     if (lua_type(L,2)!=LUA_TSTRING) {
-        lua_pushvalue(L,2);
         lua_pushstring(L,lua_typename(L,lua_type(L,2)));
         return 2;
     }
-    if (!lua_isnoneornil(L,3))
+    if (hasTable)
         lua_pushvalue(L,3);
     else
         lua_getfield(L,1,"__style");
 
     const char *skey=luaL_checkstring(L,2);
-    int rtype=LuaApplication::resolveStyle(L,skey);
+    int rtype=LuaApplication::resolveStyle(L,skey,-2);
+    lua_remove(L,-2);
     lua_pushstring(L,lua_typename(L,rtype));
     return 2;
 }
@@ -2282,9 +2286,18 @@ int SpriteBinder::resolveStyle(lua_State* L)
         if (p->resolvedArray.count(n)) { \
             for (size_t k=0;k<p->f.size();k++) { \
                 if (p->resolvedArray[n].count(k)) { \
-                    lua_pushvalue(L,-1); LuaApplication::resolveStyle(L,p->resolvedArray[n][k].c_str()); p->f[k]=luaL_checknumber(L,-1); lua_pop(L,1); dirty=true; \
+                    lua_pushvalue(L,-1); \
+                    LuaApplication::resolveStyle(L,p->resolvedArray[n][k].c_str(),0); \
+                    p->f[k]=lua_tonumber(L,-1); \
+                    lua_pop(L,1); \
+                    dirty=true; \
                 } } }
-#define FILL_NUM(n,f) if (p->resolved.count(n)) { lua_pushvalue(L,-1); LuaApplication::resolveStyle(L,p->resolved[n].c_str()); p->f=luaL_checknumber(L,-1); lua_pop(L,1); dirty=true; }
+#define FILL_NUM(n,f) if (p->resolved.count(n)) { \
+    lua_pushvalue(L,-1); \
+    LuaApplication::resolveStyle(L,p->resolved[n].c_str(),0);\
+    p->f=lua_tonumber(L,-1);\
+    lua_pop(L,1);\
+    dirty=true; }
 
 int SpriteBinder::updateStyle(lua_State* L)
 {

@@ -13,6 +13,7 @@ void TextFieldBase::cloneFrom(TextFieldBase *s)
     textlayout_=s->textlayout_;
     prefWidth_=s->prefWidth_;
     prefHeight_=s->prefHeight_;
+    styCache_color=s->styCache_color;
 }
 
 bool TextFieldBase::scaleChanged() {

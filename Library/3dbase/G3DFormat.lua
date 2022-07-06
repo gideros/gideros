@@ -194,6 +194,19 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		m:setGenericArray(3,Shader.DFLOAT,3,#obj.normals/3,obj.normals)
 		smode=smode|D3.Mesh.MODE_LIGHTING
 	end
+	if obj.colors then
+		m.hasColors=true
+		local tc={}
+		local noAlpha=#obj.colors<#obj.vertices
+		local skip=if noAlpha then 3 else 4
+		for i=1,#obj.colors,skip do
+			local n=1+((i-1)/skip)*2
+			tc[n]=(((obj.colors[i]*255)&0xFF)<<16)|(((obj.colors[i+1]*255)&0xFF)<<8)|(((obj.colors[i+2]*255)&0xFF))
+			tc[n+1]=if noAlpha then 1 else obj.colors[i+3]
+		end
+		m:setColorArray(tc)
+		smode=smode|D3.Mesh.MODE_COLORED
+	end
 	if obj.animdata then
 		m:setGenericArray(4,Shader.DFLOAT,4,#obj.animdata.bi/4,obj.animdata.bi)
 		m:setGenericArray(5,Shader.DFLOAT,4,#obj.animdata.bw/4,obj.animdata.bw)

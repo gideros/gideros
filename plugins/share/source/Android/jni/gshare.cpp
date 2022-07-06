@@ -56,7 +56,7 @@ public:
 			env->DeleteLocalRef(jstr);
 		  }
 
-		jboolean result = env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "share", "(Ljava/lang/Map;)Z"),hashMap);
+		jboolean result = env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "share", "(Ljava/util/Map;)Z"),hashMap);
 		  env->DeleteLocalRef(hashMap);
 		  env->DeleteLocalRef(mapClass);
 

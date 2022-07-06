@@ -182,8 +182,10 @@ public:
     static int Core_profilerReport(lua_State *L);
     static int Core_random(lua_State *L);
     static int Core_randomSeed(lua_State *L);
-    static int resolveStyle(lua_State *L,const char *key);
+    static int resolveStyle(lua_State *L,const char *key,int luaIndex);
+    static int resolveStyleInternal(lua_State *L,const char *key,int luaIndex,int refIndex);
     static void resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache);
+    void resetStyleCache();
     //Debugger support
 #define DBG_MASKBREAK	(1<<7) //Check breakpoints: Not a lua debug flag
 #define DBG_MASKSUB		(1<<6) //Ignore subcalls: Not a lua debug flag
@@ -193,6 +195,10 @@ public:
     static void (*debuggerHook)(void *context,lua_State *L,lua_Debug *ar);
     static void *debuggerContext;
 private:
+    static struct _StyleCache {
+        float unitS;
+        float unitIs;
+    } styleCache;
 	float physicsScale_;
 	bool drawInfo_;
 	float infoColor_[4];

@@ -20,7 +20,7 @@ end
 
 local LightingShaderAttrs={
 {name="POSITION",type=Shader.DFLOAT,amult=3,slot=0,offset=0},
-{name="vColor",type=Shader.DUBYTE,amult=0,slot=1,offset=0}, --Placeholder: mult=0
+{name="COLOR",type=Shader.DUBYTE,amult=4,slot=1,offset=0,code="c"}, --Placeholder: mult=0
 {name="TEXCOORD",type=Shader.DFLOAT,amult=2,slot=2,offset=0,code="t"},
 {name="NORMAL",type=Shader.DFLOAT,amult=3,slot=3,offset=0},
 {name="ANIMIDX",type=Shader.DFLOAT,amult=4,slot=4,offset=0,code="a"},
@@ -58,6 +58,7 @@ local LightingShaderVarying={
 {name="texCoord",type=Shader.CFLOAT2,code="t"},
 {name="normalCoord",type=Shader.CFLOAT3},
 {name="lightSpace",type=Shader.CFLOAT4,code="s"},
+{name="vcolor",type=Shader.CFLOAT4,code="c"},
 }
 
 -- Shaders defs
@@ -73,6 +74,7 @@ Lighting._shaders={}
 Lighting.getShader=function(code)
 	local cmap={
 		{"t","TEXTURED",true},
+		{"c","COLORED",true},
 		{"s","SHADOWS",isES3Level and ((slang~="glsl") or
 --			isES3 or
 			Shader.extensions.GL_EXT_shadow_samplers or

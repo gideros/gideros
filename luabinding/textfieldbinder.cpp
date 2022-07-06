@@ -6,8 +6,8 @@
 #include "stackchecker.h"
 #include "luaapplication.h"
 #include "application.h"
+#include "spritebinder.h"
 #include <luautil.h>
-
 
 TextFieldBinder::TextFieldBinder(lua_State* L)
 {
@@ -28,6 +28,7 @@ TextFieldBinder::TextFieldBinder(lua_State* L)
         {"setLayout", setLayout},
 		{"getTextPositionFromPoint", getTextPositionFromPoint},
 		{"getPointFromTextPosition", getPointFromTextPosition},
+        {"updateStyle", updateStyle},
         {NULL, NULL},
 	};
 
@@ -194,6 +195,7 @@ int TextFieldBinder::getTextColor(lua_State* L)
 	return 2;
 }
 
+#define COLVEC(var,idx) float var[4]; LuaApplication::resolveColor(L,1,idx,var,textField->styCache_##var);
 int TextFieldBinder::setTextColor(lua_State* L)
 {
 	StackChecker checker(L, "TextFieldBinder::setTextColor", 0);
@@ -201,9 +203,11 @@ int TextFieldBinder::setTextColor(lua_State* L)
 	Binder binder(L);
 	TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
 
-    const float *cvec=lua_tovector(L,2);
-    if (cvec) {
-        textField->setTextColor(cvec[0],cvec[1],cvec[2],cvec[3]);
+    textField->styCache_color.clear();
+    int ctype=lua_type(L,2);
+    if ((ctype==LUA_TVECTOR)||(ctype==LUA_TSTRING)||(ctype==LUA_TUSERDATA)) { //Vector or resolvables colors
+        COLVEC(color,2);
+        textField->setTextColor(color[0],color[1],color[2],color[3]);
     }
     else {
         unsigned int color = luaL_optinteger(L, 2, 0xffffff);
@@ -216,6 +220,7 @@ int TextFieldBinder::setTextColor(lua_State* L)
 
 	return 0;
 }
+#undef COLVEC
 
 
 int TextFieldBinder::getLetterSpacing(lua_State* L)
@@ -331,5 +336,23 @@ int TextFieldBinder::getTextPositionFromPoint(lua_State *L)
 	lua_pushnumber(L,cy);
 	return 3;
 }
+
+#define HASCOL(var) (!textField->styCache_##var.empty())
+#define COLVEC(var) float var[4]; LuaApplication::resolveColor(L,1,0,var,textField->styCache_##var);
+int TextFieldBinder::updateStyle(lua_State* L)
+{
+    StackChecker checker(L, "TextFieldBinder::updateStyle", 0);
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+    SpriteBinder::updateStyle(L);
+
+    if (HASCOL(color)) {
+        COLVEC(color);
+        textField->setTextColor(color[0],color[1],color[2],color[3]);
+    }
+    return 0;
+}
+#undef HASCOL
+#undef COLVEC
 
 
