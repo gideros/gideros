@@ -470,19 +470,19 @@ public:
 			{
 				if (mouseEvent)
 				{
-					gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
+					gevent_MergeEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
 					deleteMouseEvent(mouseEvent);
 				}
-				gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
+				gevent_MergeEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
 				deleteTouchEvent(touchEvent);
 			}
 			else
 			{
-				gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
+				gevent_MergeEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
 				deleteTouchEvent(touchEvent);
 				if (mouseEvent)
 				{
-					gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
+					gevent_MergeEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
 					deleteMouseEvent(mouseEvent);
 				}
 			}

@@ -9,6 +9,7 @@
 #include <gapplication.h>
 #include <luautil.h>
 #include <gideros.h>
+#include <gevent.h>
 #include <algorithm>
 #include <sstream>
 
@@ -87,6 +88,8 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"setClipboard", ApplicationBinder::setClipboard},
 		{"getClipboard", ApplicationBinder::getClipboard},
 		{"enableDrawInfo", ApplicationBinder::enableDrawInfo},
+		{"setEventMerging", ApplicationBinder::setEventMerging},
+
         {NULL, NULL},
 	};
 
@@ -833,6 +836,13 @@ int ApplicationBinder::setFps(lua_State* L)
     }
 
     g_setFps(fps);
+
+    return 0;
+}
+
+int ApplicationBinder::setEventMerging(lua_State* L)
+{
+	gevent_AllowEventMerge(lua_toboolean(L,2));
 
     return 0;
 }
