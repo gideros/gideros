@@ -109,6 +109,7 @@ void ShaderEngine::reset(bool reinit)
     screenScaleX=1;
     screenScaleY=1;
     dsCurrent.dTest=false;
+    dsCurrent.dMask=true;
     dsCurrent.sRef=0;
     dsCurrent.sMask=0xFF;
     dsCurrent.sWMask=0xFF;

@@ -598,7 +598,7 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 		ZeroMemory(&dsDesc, sizeof(dsDesc));
 		// Depth test parameters
 		dsDesc.DepthEnable = state.dTest;
-		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		dsDesc.DepthWriteMask = state.dMask?D3D11_DEPTH_WRITE_MASK_ALL:D3D11_DEPTH_WRITE_MASK_ZERO;
 		dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 		// Stencil test parameters

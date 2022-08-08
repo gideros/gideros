@@ -1458,20 +1458,25 @@ static int enterFrame(lua_State* L)
 
     /* perform style updating */
     lua_getglobal(L,"application");
-    lua_getfield(L,-1,"__styleUpdates");
+    int npop=1;
     if (!lua_isnil(L,-1))
     {
-        lua_pushnil(L);
-        lua_setfield(L,-3,"__styleUpdates");
-        lua_pushnil(L);
-        while (lua_next(L,-2)) {
-            lua_pop(L,1); //No need for sprite itself
-            lua_getfield(L,-1,"updateStyle");
-            lua_pushvalue(L,-2);
-            lua_call(L,1,0);
-        }
+		lua_getfield(L,-1,"__styleUpdates");
+		npop++;
+		if (!lua_isnil(L,-1))
+		{
+			lua_pushnil(L);
+			lua_setfield(L,-3,"__styleUpdates");
+			lua_pushnil(L);
+			while (lua_next(L,-2)) {
+				lua_pop(L,1); //No need for sprite itself
+				lua_getfield(L,-1,"updateStyle");
+				lua_pushvalue(L,-2);
+				lua_call(L,1,0);
+			}
+		}
     }
-    lua_pop(L,2);
+    lua_pop(L,npop);
 
 	return 0;
 }

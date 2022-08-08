@@ -2123,7 +2123,11 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 		if (!lua_isnil(L,-1))
 			ds.cullMode=((ShaderEngine::CullMode)(luaL_checkinteger(L,-1)&3));
 		lua_pop(L,1);
-		ds.dTest=true;
+        lua_getfield(L,2,"depthMask");
+        if (!lua_isnil(L,-1))
+            ds.dMask=lua_toboolean(L,-1);
+        lua_pop(L,1);
+        ds.dTest=true;
 	}
 
 	sprite->setStencilOperation(ds);
@@ -2244,20 +2248,25 @@ int SpriteBinder::setStyle(lua_State* L)
     lua_pushvalue(L,2);
     lua_setfield(L,1,"__style");
     lua_getglobal(L,"application");
-    lua_getfield(L,-1,"__styleUpdates");
-    if (lua_isnil(L,-1))
+    int npop=1;
+    if (!lua_isnil(L,-1))
     {
-        lua_pop(L,1);
-        lua_newtable(L);
-        lua_pushvalue(L,-1);
-        lua_setfield(L,-3,"__styleUpdates");
+		lua_getfield(L,-1,"__styleUpdates");
+		if (lua_isnil(L,-1))
+		{
+			lua_pop(L,1);
+			lua_newtable(L);
+			lua_pushvalue(L,-1);
+			lua_setfield(L,-3,"__styleUpdates");
+		}
+		npop++;
+		lua_pushvalue(L,1);
+		lua_pushlightuserdata(L,sprite);
+		lua_rawset(L,-3);
+		if (propagate)
+			gatherStyledChildren(L,1,-1);
     }
-    lua_pushvalue(L,1);
-    lua_pushlightuserdata(L,sprite);
-    lua_rawset(L,-3);
-    if (propagate)
-        gatherStyledChildren(L,1,-1);
-    lua_pop(L,2);
+    lua_pop(L,npop);
     return 0;
 }
 

@@ -189,6 +189,7 @@ public:
 	struct DepthStencil {
 		bool dTest;
 		bool dClear;
+        bool dMask;
 		StencilFunc sFunc;
 		int sRef;
 		unsigned int sMask;
@@ -198,7 +199,7 @@ public:
 		StencilOp dPass;
 		bool sClear;
 		CullMode cullMode;
-        DepthStencil() : dTest(false), dClear(false), sFunc(STENCIL_DISABLE), sRef(0), sMask(0xFF), sWMask(0xFF),
+        DepthStencil() : dTest(false), dClear(false), dMask(true), sFunc(STENCIL_DISABLE), sRef(0), sMask(0xFF), sWMask(0xFF),
             sFail(STENCIL_KEEP), dFail(STENCIL_KEEP), dPass(STENCIL_KEEP), sClear(false), cullMode(CULL_NONE)
         {};
         bool operator==(const DepthStencil &o) const {
@@ -209,13 +210,13 @@ public:
             CHECK(sRef,o.sRef)
             CHECK(sMask,o.sMask)
             CHECK(sWMask,o.sWMask)
-            unsigned int d1=(dTest?1:0)|(dClear?2:0)|(sClear?4:0)
+            unsigned int d1=(dTest?1:0)|(dClear?2:0)|(sClear?4:0)|(dMask?8:0)
             |(((unsigned int)sFunc)<<4)
             |(((unsigned int)sFail)<<8)
             |(((unsigned int)dFail)<<12)
             |(((unsigned int)dPass)<<16)
             |(((unsigned int)cullMode)<<20);
-            unsigned int d2=(o.dTest?1:0)|(o.dClear?2:0)|(o.sClear?4:0)
+            unsigned int d2=(o.dTest?1:0)|(o.dClear?2:0)|(o.sClear?4:0)|(o.dMask?8:0)
             |(((unsigned int)o.sFunc)<<4)
             |(((unsigned int)o.sFail)<<8)
             |(((unsigned int)o.dFail)<<12)

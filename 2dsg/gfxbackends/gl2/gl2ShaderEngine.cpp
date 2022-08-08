@@ -695,6 +695,7 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 		state.sClear=false;
 	}
 	GLCALL glStencilOp(stencilopToGl(state.sFail),stencilopToGl(state.dFail),stencilopToGl(state.dPass));
+	GLCALL glDepthMask(state.dMask);
 	if (state.sFunc==STENCIL_DISABLE)
 		GLCALL glDisable(GL_STENCIL_TEST);
 	else

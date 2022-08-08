@@ -199,12 +199,14 @@ function getParameterByName(name, url) {
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g," "));
      }      
+  var GIDEROS_MEMORY_MB=128;
   var GAPP_URL=null;
   //GAPP_URL="gideros.GApp";
+/* GIDEROS-PLAYER-START */
   var uarg=getParameterByName("GIDEROS_GAPP");
   if ((uarg!=null) && (uarg!=""))
     GAPP_URL=uarg;
-  var GIDEROS_MEMORY_MB=128;
+/* GIDEROS-PLAYER-END */
   uarg=getParameterByName("GIDEROS_MEMORY");
   if ((uarg!=null) && (uarg!=""))
   	GIDEROS_MEMORY_MB=Number(uarg);

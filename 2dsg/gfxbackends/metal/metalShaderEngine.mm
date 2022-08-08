@@ -436,7 +436,7 @@ void metalShaderEngine::setDepthStencil(DepthStencil state)
     id<MTLDepthStencilState> mds=stateCache[state];
     if (mds==nil) {
         MTLDepthStencilDescriptor *mdsd=[MTLDepthStencilDescriptor new];
-        mdsd.depthWriteEnabled=state.dTest;
+        mdsd.depthWriteEnabled=state.dMask;
         mdsd.depthCompareFunction=state.dTest?MTLCompareFunctionLess:MTLCompareFunctionAlways;
         mdsd.frontFaceStencil.stencilCompareFunction=stencilfuncToMetal(state.sFunc);
         mdsd.backFaceStencil.stencilCompareFunction=stencilfuncToMetal(state.sFunc);

@@ -174,8 +174,11 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         	replaceList1 << qMakePair(QString("src=gideros-wasm.js>").toUtf8(),QString(">\nJPZLoad('gideros-wasm.wasm.%1',function(c) { Module.wasmBinary=c; JPZLoad('gideros-wasm.js.%1',eval); },\"array\");").arg(pext).toUtf8());
 			pext="."+pext;
         }
-        if (!ctx->player)
+        if (!ctx->player) {
             replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp"+pext+"\"").toUtf8());
+            replaceList1 << qMakePair(QString("GIDEROS-PLAYER-START */").toUtf8(),QString("GIDEROS-PLAYER-START").toUtf8());
+            replaceList1 << qMakePair(QString("/* GIDEROS-PLAYER-END").toUtf8(),QString("GIDEROS-PLAYER-END").toUtf8());
+        }
         replaceList1 << qMakePair(QString("/*GIDEROS_DYNLIB_PLUGIN*/").toUtf8(),QString("\"EP_Mp3.%1\", \"EP_Xmp.%1\", /*GIDEROS_DYNLIB_PLUGIN*/").arg(ext).toUtf8());
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
