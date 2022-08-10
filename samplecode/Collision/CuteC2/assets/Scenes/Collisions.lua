@@ -1,4 +1,4 @@
-CollisionsScene = Core.class(BaseScene, function() return "Dark", true end)
+CollisionsScene = Core.class(BaseScene, function() return true end)
 
 function CollisionsScene:init()
 	self.objects = {}

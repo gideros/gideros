@@ -1,11 +1,11 @@
-RayScene = Core.class(BaseScene, function() return "Dark", true end)
+RayScene = Core.class(BaseScene, function() return true end)
 
 function RayScene:init()
 	self.ray = Ray.new(100, 400, 1, 0)
 	self.rayCone = RayCone.new(4, 90, 100, 600)
 	
 	self.objects = {}
-	self:createRandomShapes(self.objects, 128)
+	self:createRandomShapes(self.objects, 16)
 end
 
 function RayScene:onDrawUI()

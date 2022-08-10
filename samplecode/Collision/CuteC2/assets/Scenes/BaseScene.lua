@@ -7,6 +7,7 @@ require "Shapes"
 assert(ImGui, "ImGui module not found!")
 
 BaseScene = Core.class(Sprite)
+BaseScene.currentThemeIndex = 0 -- Dark ImGui theme by default
 
 local helpText = [[
 Drag & drop with LMB, scale with RMB
@@ -17,12 +18,11 @@ POLYGONS:
 	Add vertex - MMB (click OUTSIDE near the edge)
 	Remove vertex - MMB (click DIRECTLY on vertex)]]
 
-function BaseScene:init(themeName, drawHeader)
+function BaseScene:init(drawHeader)
 	self.drawHeader = drawHeader
 	
 	self.allShown = true
 	self.showDemo = false
-	self.themeIndex = 0
 	self.scenesList = {}
 	self.scenesIndex = -1
 	
@@ -34,16 +34,7 @@ function BaseScene:init(themeName, drawHeader)
 	style:setItemSpacing(8, 3)
 	style:setFramePadding(4, 1)
 	
-	if (themeName == "Dark") then
-		self.ui:setDarkStyle()
-		self.themeIndex = 0
-	elseif (themeName == "Light") then
-		self.ui:setLightStyle()
-		self.themeIndex = 1
-	else
-		self.ui:setClassicStyle()
-		self.themeIndex = 2
-	end
+	self:updateTheme()
 	
 	if (sceneManager and sceneManager.scenes) then 
 		self.scenesIndex = 0
@@ -56,6 +47,16 @@ function BaseScene:init(themeName, drawHeader)
 	
 	self:addEventListener("enterFrame", self.onEnterFrame, self)
 	self:addEventListener("applicationResize", self.onResize, self)
+end
+
+function BaseScene:updateTheme()
+	if (BaseScene.currentThemeIndex == 0) then
+		self.ui:setDarkStyle()
+	elseif (BaseScene.currentThemeIndex == 1) then
+		self.ui:setLightStyle()
+	elseif (BaseScene.currentThemeIndex == 2) then
+		self.ui:setClassicStyle()
+	end
 end
 
 function BaseScene:onEnterFrame(e)
@@ -72,16 +73,10 @@ function BaseScene:onEnterFrame(e)
 			self.showDemo = ui:checkbox("Demo", self.showDemo)
 			
 			local themeIndexChanged = false
-			self.themeIndex, themeIndexChanged = ui:combo("Theme", self.themeIndex, "Dark\0Light\0Classic\0\0")
+			BaseScene.currentThemeIndex, themeIndexChanged = ui:combo("Theme", BaseScene.currentThemeIndex, "Dark\0Light\0Classic\0\0")
 			
 			if (themeIndexChanged) then
-				if (self.themeIndex == 0) then
-					ui:setDarkStyle()
-				elseif (self.themeIndex == 1) then
-					ui:setLightStyle()
-				elseif (self.themeIndex == 2) then
-					ui:setClassicStyle()
-				end
+				self:updateTheme()
 			end
 			
 			self.scenesIndex, sceneSelected = ui:combo("Scene", self.scenesIndex, self.scenesList)
@@ -122,7 +117,6 @@ function BaseScene:onEnterFrame(e)
 	
 	if (sceneSelected) then 
 		self:removeAllListeners()
-		ui:shutdown()
 		sceneManager:changeScene(self.scenesList[self.scenesIndex + 1], 1.0, SceneManager.crossFade)
 		sceneManager.scene2.scenesIndex = self.scenesIndex
 	end

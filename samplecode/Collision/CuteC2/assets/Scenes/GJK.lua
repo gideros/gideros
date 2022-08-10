@@ -1,4 +1,4 @@
-GJKScene = Core.class(BaseScene, function() return "Dark", true end)
+GJKScene = Core.class(BaseScene, function() return true end)
 
 function GJKScene:init()
 	
