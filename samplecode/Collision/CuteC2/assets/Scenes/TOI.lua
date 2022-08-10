@@ -1,6 +1,6 @@
 local PI = math.pi
 
-TOIScene = Core.class(BaseScene, function() return "Dark", true end)
+TOIScene = Core.class(BaseScene, function() return true end)
 
 function TOIScene:init()
 	self.mainPoint = Circle.new(100, 400, 16)

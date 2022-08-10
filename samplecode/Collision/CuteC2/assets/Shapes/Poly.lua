@@ -257,9 +257,7 @@ end
 function Poly:onPropertiesDraw(ui)
 	local shape = self.collisionShape
 	
-	ui:sameLine()
 	self.drawNormals = ui:checkbox("Draw normals", self.drawNormals)
-	ui:sameLine()
 	self.drawBBOX = ui:checkbox("Draw BBOX", self.drawBBOX)
 	
 	if (ui:button("Update center position")) then 

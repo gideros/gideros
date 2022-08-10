@@ -1,3 +1,5 @@
+application:setBackgroundColor(0x323232)
+
 require "CuteC2"
 require "SceneManager"
 
