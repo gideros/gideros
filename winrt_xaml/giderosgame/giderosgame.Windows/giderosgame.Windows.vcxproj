@@ -110,7 +110,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
+      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;openal-soft.lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
@@ -124,7 +124,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
+      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;openal-soft.lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
@@ -138,7 +138,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
+      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;openal-soft.lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
+      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;openal-soft.lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
@@ -167,7 +167,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
+      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;openal-soft.lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
@@ -181,7 +181,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
+      <AdditionalDependencies>gideros.$(GidProjectType).lib;libgvfswinrt.$(GidProjectType).lib;luawinrt.$(GidProjectType).lib;openal-soft.lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies);windowsapp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>

@@ -1,0 +1,3 @@
+[submodule "libgid/external/openal-soft"]
+	path = libgid/external/openal-soft
+	url = https://github.com/gideros/openal-soft.git

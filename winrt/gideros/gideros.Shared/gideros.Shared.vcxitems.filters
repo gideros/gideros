@@ -766,12 +766,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\optimize.c">
       <Filter>mpg</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-sample-xaudio2.cpp">
-      <Filter>libgid</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-stream-xaudio2.cpp">
-      <Filter>libgid</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\Matrices.cpp">
       <Filter>2dsg</Filter>
     </ClCompile>
@@ -957,6 +951,12 @@
       <Filter>luabinding</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\gmathbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-sample-openal.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-stream-openal.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1180,9 +1180,6 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\stringid.h">
       <Filter>libgideros</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\ggaudiomanager.h">
-      <Filter>libgid</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\accelerometerbinder.h">
       <Filter>luabinding</Filter>

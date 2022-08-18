@@ -2,22 +2,52 @@
 #include <mpg123.h>
 #include "../ggaudiomanager.h"
 
-extern "C" {
-GGSampleInterface *GGSampleXAudio2ManagerCreate();
-void GGSampleXAudio2ManagerDelete(GGSampleInterface *manager);
+#if defined(OPENAL_SUBDIR_OPENAL)
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+#elif defined(OPENAL_SUBDIR_AL)
+#include <AL/al.h>
+#include <AL/alc.h>
+#else
+#include <al.h>
+#include <alc.h>
+#endif
 
-GGStreamInterface *GGStreamXAudio2ManagerCreate();
-void GGStreamXAudio2ManagerDelete(GGStreamInterface *manager);
+extern "C" {
+GGSampleInterface *GGSampleOpenALManagerCreate();
+void GGSampleOpenALManagerDelete(GGSampleInterface *manager);
+
+GGStreamInterface *GGStreamOpenALManagerCreate();
+void GGStreamOpenALManagerDelete(GGStreamInterface *manager);
 }
+
+struct GGAudioSystemData
+{
+    ALCdevice *device;
+    ALCcontext *context;
+};
 
 void GGAudioManager::systemInit()
 {
+	systemData_ = (GGAudioSystemData*)malloc(sizeof(GGAudioSystemData));
+
+	systemData_->device = alcOpenDevice(NULL);
+
+	systemData_->context = alcCreateContext(systemData_->device, NULL);
+
+	alcMakeContextCurrent(systemData_->context);
     mpg123_init();
 }
 
 void GGAudioManager::systemCleanup()
 {
-    mpg123_exit();
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(systemData_->context);
+    alcCloseDevice(systemData_->device);
+
+	mpg123_exit();
+
+	free(systemData_);
 }
 
 void GGAudioManager::createBackgroundMusicInterface()
@@ -51,14 +81,14 @@ void GGSoundManager::interfacesInit()
 	loaders_["it"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
 	loaders_["s3m"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
 
-    sampleInterface_ = GGSampleXAudio2ManagerCreate();
-    streamInterface_ = GGStreamXAudio2ManagerCreate();
+    sampleInterface_ = GGSampleOpenALManagerCreate();
+    streamInterface_ = GGStreamOpenALManagerCreate();
 }
 
 void GGSoundManager::interfacesCleanup()
 {
-    GGSampleXAudio2ManagerDelete(sampleInterface_);
-    GGStreamXAudio2ManagerDelete(streamInterface_);
+    GGSampleOpenALManagerDelete(sampleInterface_);
+    GGStreamOpenALManagerDelete(streamInterface_);
 }
 
 void GGSoundManager::AdvanceStreamBuffers()

@@ -27,14 +27,14 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
 
     tdesc.Width = width;
     tdesc.Height = height;
-    tdesc.MipLevels = (filtering==FILT_LINEAR_MIPMAP)?0:1;
+    tdesc.MipLevels = (filtering==FILT_LINEAR_MIPMAP)?1:1;
     tdesc.ArraySize = 1;
     tdesc.SampleDesc.Count = 1;
     tdesc.SampleDesc.Quality = 0;
     tdesc.Usage = D3D11_USAGE_DEFAULT;
-    tdesc.BindFlags = ((format==FMT_DEPTH)? D3D11_BIND_DEPTH_STENCIL:D3D11_BIND_RENDER_TARGET) | ((filtering==FILT_LINEAR_MIPMAP)?D3D11_RESOURCE_MISC_GENERATE_MIPS:0) | D3D11_BIND_SHADER_RESOURCE;
+    tdesc.BindFlags = ((format==FMT_DEPTH)? D3D11_BIND_DEPTH_STENCIL:D3D11_BIND_RENDER_TARGET) | D3D11_BIND_SHADER_RESOURCE;
     tdesc.CPUAccessFlags = 0;
-    tdesc.MiscFlags = 0;
+	tdesc.MiscFlags = 0;// ((filtering == FILT_LINEAR_MIPMAP) ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0);
     tdesc.Format = DXGI_FORMAT_UNKNOWN;
     switch (format)
     {

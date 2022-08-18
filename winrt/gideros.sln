@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30104.148
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gideros", "gideros", "{70BD03CC-4DAE-41EB-B3C5-B50191C15C7E}"
 EndProject
@@ -25,15 +25,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgvfswinrt.Shared", "..\l
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgvfswinrt.Windows", "..\libgvfs\libgvfswinrt\libgvfswinrt\libgvfswinrt.Windows\libgvfswinrt.Windows.vcxproj", "{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openal-soft", "openal-soft\openal-soft.vcxproj", "{290C3E69-B196-4A02-9707-2CDD0F179A84}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luawinrt.Windows", "..\luau\luawinrt\luawinrt\luawinrt.Windows\luawinrt.Windows.vcxproj", "{5123635E-7CED-437C-8614-4252741E19A0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luawinrt.Shared", "..\luau\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems", "{8BF5325C-D170-4DA1-A823-ACCED6AB5E3F}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		gideros\gideros.Shared\gideros.Shared.vcxitems*{0f2d797e-beca-4b12-bbf9-3022083840e0}*SharedItemsImports = 4
-		..\lua\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{212298a0-62c1-48cb-85c0-00d2afd482cd}*SharedItemsImports = 9
-		gideros\gideros.Shared\gideros.Shared.vcxitems*{7e9098bd-4d17-4d07-86c3-2173966558c0}*SharedItemsImports = 9
-		..\libgvfs\libgvfswinrt\libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{8c3b6eef-51e1-4593-af79-3ef50e1b1bcc}*SharedItemsImports = 9
-		..\libgvfs\libgvfswinrt\libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{edfc73b9-ada1-4555-bee5-b82eaf8a1df7}*SharedItemsImports = 4
-		..\lua\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{f3a7dfcc-506a-4800-9df7-beb0541b21f2}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
 		Debug|Win32 = Debug|Win32
@@ -79,6 +77,30 @@ Global
 		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|Win32.Build.0 = Release|Win32
 		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|x64.ActiveCfg = Release|x64
 		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|x64.Build.0 = Release|x64
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Debug|ARM.ActiveCfg = Debug|ARM
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Debug|ARM.Build.0 = Debug|ARM
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Debug|Win32.ActiveCfg = Debug|Win32
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Debug|Win32.Build.0 = Debug|Win32
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Debug|x64.ActiveCfg = Debug|x64
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Debug|x64.Build.0 = Debug|x64
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Release|ARM.ActiveCfg = Release|ARM
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Release|ARM.Build.0 = Release|ARM
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Release|Win32.ActiveCfg = Release|Win32
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Release|Win32.Build.0 = Release|Win32
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Release|x64.ActiveCfg = Release|x64
+		{290C3E69-B196-4A02-9707-2CDD0F179A84}.Release|x64.Build.0 = Release|x64
+		{5123635E-7CED-437C-8614-4252741E19A0}.Debug|ARM.ActiveCfg = Debug|ARM
+		{5123635E-7CED-437C-8614-4252741E19A0}.Debug|ARM.Build.0 = Debug|ARM
+		{5123635E-7CED-437C-8614-4252741E19A0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5123635E-7CED-437C-8614-4252741E19A0}.Debug|Win32.Build.0 = Debug|Win32
+		{5123635E-7CED-437C-8614-4252741E19A0}.Debug|x64.ActiveCfg = Debug|x64
+		{5123635E-7CED-437C-8614-4252741E19A0}.Debug|x64.Build.0 = Debug|x64
+		{5123635E-7CED-437C-8614-4252741E19A0}.Release|ARM.ActiveCfg = Release|ARM
+		{5123635E-7CED-437C-8614-4252741E19A0}.Release|ARM.Build.0 = Release|ARM
+		{5123635E-7CED-437C-8614-4252741E19A0}.Release|Win32.ActiveCfg = Release|Win32
+		{5123635E-7CED-437C-8614-4252741E19A0}.Release|Win32.Build.0 = Release|Win32
+		{5123635E-7CED-437C-8614-4252741E19A0}.Release|x64.ActiveCfg = Release|x64
+		{5123635E-7CED-437C-8614-4252741E19A0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,8 +112,18 @@ Global
 		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2} = {AE8CDC17-3CD3-4003-BCD3-5A244AA6D2E3}
 		{8C3B6EEF-51E1-4593-AF79-3EF50E1B1BCC} = {59762D79-D485-48B2-9201-48EA580B4BFD}
 		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7} = {59762D79-D485-48B2-9201-48EA580B4BFD}
+		{290C3E69-B196-4A02-9707-2CDD0F179A84} = {70BD03CC-4DAE-41EB-B3C5-B50191C15C7E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {963C83D5-AD27-4EC4-97D5-E07CCDFFCFBD}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		gideros\gideros.Shared\gideros.Shared.vcxitems*{0f2d797e-beca-4b12-bbf9-3022083840e0}*SharedItemsImports = 4
+		..\lua\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{212298a0-62c1-48cb-85c0-00d2afd482cd}*SharedItemsImports = 9
+		..\luau\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{5123635e-7ced-437c-8614-4252741e19a0}*SharedItemsImports = 4
+		gideros\gideros.Shared\gideros.Shared.vcxitems*{7e9098bd-4d17-4d07-86c3-2173966558c0}*SharedItemsImports = 9
+		..\libgvfs\libgvfswinrt\libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{8c3b6eef-51e1-4593-af79-3ef50e1b1bcc}*SharedItemsImports = 9
+		..\libgvfs\libgvfswinrt\libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{edfc73b9-ada1-4555-bee5-b82eaf8a1df7}*SharedItemsImports = 4
+		..\lua\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{f3a7dfcc-506a-4800-9df7-beb0541b21f2}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

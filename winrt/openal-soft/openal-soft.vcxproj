@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{290c3e69-b196-4a02-9707-2cdd0f179a84}</ProjectGuid>
+    <Keyword>StaticLibrary</Keyword>
+    <RootNamespace>openal_soft</RootNamespace>
+    <DefaultLanguage>fr-FR</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories);..\..\libgid\external\openal-soft\include;..\..\libgid\external\openal-soft\common;..\..\libgid\external\openal-soft</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;OPENAL_SUBDIR_AL;HAVE_XAUDIO2;RESTRICT=__restrict;NOMINMAX;AL_LIBTYPE_STATIC</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)$(Platform)/$(Configuration)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories);..\..\libgid\external\openal-soft\include;..\..\libgid\external\openal-soft\common;..\..\libgid\external\openal-soft</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;OPENAL_SUBDIR_AL;HAVE_XAUDIO2;RESTRICT=__restrict;NOMINMAX;AL_LIBTYPE_STATIC</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)$(Platform)/$(Configuration)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories);..\..\libgid\external\openal-soft\include;..\..\libgid\external\openal-soft\common;..\..\libgid\external\openal-soft</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;OPENAL_SUBDIR_AL;HAVE_XAUDIO2;RESTRICT=__restrict;NOMINMAX;AL_LIBTYPE_STATIC</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)$(Platform)/$(Configuration)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories);..\..\libgid\external\openal-soft\include;..\..\libgid\external\openal-soft\common;..\..\libgid\external\openal-soft</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;OPENAL_SUBDIR_AL;HAVE_XAUDIO2;RESTRICT=__restrict;NOMINMAX;AL_LIBTYPE_STATIC</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)$(Platform)/$(Configuration)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories);..\..\libgid\external\openal-soft\include;..\..\libgid\external\openal-soft\common;..\..\libgid\external\openal-soft</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;OPENAL_SUBDIR_AL;HAVE_XAUDIO2;RESTRICT=__restrict;NOMINMAX;AL_LIBTYPE_STATIC</PreprocessorDefinitions>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ObjectFileName>$(IntDir)$(Platform)/$(Configuration)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories);..\..\libgid\external\openal-soft\include;..\..\libgid\external\openal-soft\common;..\..\libgid\external\openal-soft</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;AL_BUILD_LIBRARY;AL_ALEXT_PROTOTYPES;OPENAL_SUBDIR_AL;HAVE_XAUDIO2;RESTRICT=__restrict;NOMINMAX;AL_LIBTYPE_STATIC</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)$(Platform)/$(Configuration)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\alconfig.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\alu.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\base.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\loopback.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\null.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\xaudio2.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\context.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\device.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\effects\base.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\inprogext.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\auxeffectslot.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\buffer.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\effect.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\effects\effects.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\event.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\filter.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\listener.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\source.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\albit.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\albyte.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alcomplex.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\aldeque.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alfstream.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\almalloc.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alnumbers.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alnumeric.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\aloptional.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alspan.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alstring.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\atomic.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\comptr.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\dynload.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\intrusive_ptr.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\opthelpers.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\phase_shifter.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\polyphase_resampler.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\pragmadefs.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\ringbuffer.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\strutils.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\threads.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\vecmat.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\vector.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\win_main_utf8.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\config.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\ambdec.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\ambidefs.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\async_event.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bformatdec.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bs2b.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bsinc_defs.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bsinc_tables.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bufferline.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\buffer_storage.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\context.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\converter.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\cpu_caps.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\devformat.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\device.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\effectslot.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\except.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\filters\biquad.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\filters\nfc.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\filters\splitter.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\fmt_traits.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\fpu_ctrl.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\front_stablizer.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\helpers.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\hrtf.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\logging.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\mastering.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\mixer.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\resampler_limits.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\uhjfilter.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\voice.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\voice_change.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\version.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\alc.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\alconfig.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\alu.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\base.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\loopback.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\null.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\xaudio2.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\context.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\device.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\autowah.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\chorus.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\compressor.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\convolution.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\dedicated.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\distortion.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\echo.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\equalizer.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\fshifter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\modulator.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\null.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\pshifter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\reverb.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\vmorpher.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\panning.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\auxeffectslot.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\buffer.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effect.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\autowah.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\chorus.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\compressor.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\convolution.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\dedicated.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\distortion.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\echo.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\effects.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\equalizer.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\fshifter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\modulator.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\null.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\pshifter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\reverb.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\vmorpher.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\error.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\event.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\extension.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\filter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\listener.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\source.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\state.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\alcomplex.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\alfstream.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\almalloc.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\alstring.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\polyphase_resampler.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\ringbuffer.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\strutils.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\threads.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\ambdec.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\ambidefs.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\bformatdec.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\bs2b.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\bsinc_tables.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\buffer_storage.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\context.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\converter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\cpu_caps.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\devformat.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\device.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\effectslot.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\except.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\filters\biquad.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\filters\nfc.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\filters\splitter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\fmt_traits.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\fpu_ctrl.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\helpers.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\hrtf.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\logging.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\mastering.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\mixer.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\mixer\mixer_c.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\uhjfilter.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\uiddefs.cpp" />
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\voice.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

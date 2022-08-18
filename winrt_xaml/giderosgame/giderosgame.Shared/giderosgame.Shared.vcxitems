@@ -13,7 +13,7 @@
     <ItemsRootNamespace>giderosgame</ItemsRootNamespace>
     <ItemsProjectName>giderosgame.Shared</ItemsProjectName>
     <SharedGUID>9fd4af0a-93d0-4455-84eb-dcc2c7c76e36</SharedGUID>
-    <GidLibsPath>..\..\..\winrt\$(GidPlatformPath)$(Configuration)\gideros.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\libgvfswinrt.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\luawinrt.$(GidProjectType)</GidLibsPath>
+    <GidLibsPath>..\..\..\winrt\$(GidPlatformPath)$(Configuration)\gideros.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\libgvfswinrt.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\luawinrt.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\openal-soft</GidLibsPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -43,13 +43,6 @@
     <!--GIDEROS-PLUGIN-FILES-->
     <!--PLUGINS-START-->
     <ClCompile Include="$(ProjectDir)\..\..\..\Plugins\luasocket\source\luasocket_stub.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit.c">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <CompileAsWinRT>false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit_stub.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lua_cjson.c">

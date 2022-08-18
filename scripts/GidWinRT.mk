@@ -19,6 +19,7 @@ endif
 #Macros
 #$(call WINRT_PROJECT basepath name target)
 WINRT_PROJECT=$(1)/$(2)/$(2).$(3)/$(2).$(3).vcxproj
+WINRT_PROJECT_FIXED=$(1)/$(2).vcxproj
 #$(call WINRT_MANIFEST basepath name target)
 WINRT_MANIFEST=$(1)/$(2)/$(2).$(3)/$(2).$(3).Package.appxmanifest
 #$(call WINRT_BUILD_WIN basepath name)
@@ -27,6 +28,11 @@ WINRT_BUILD_WIN=\
 	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=$(WINRT_CONF) //p:Platform=ARM //v:m;\
 	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=$(WINRT_CONF) //p:Platform=x64 //v:m;\
 
+WINRT_BUILD_FIXED=\
+	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //p:Configuration=$(WINRT_CONF) //p:Platform=Win32 //v:m;\
+	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //p:Configuration=$(WINRT_CONF) //p:Platform=ARM //v:m;\
+	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //p:Configuration=$(WINRT_CONF) //p:Platform=x64 //v:m;\
+
 WINRT_CLEAN=\
  	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Release //p:Platform=Win32 //v:m;\
  	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Release //p:Platform=ARM //v:m;\
@@ -34,6 +40,14 @@ WINRT_CLEAN=\
  	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Debug //p:Platform=ARM //v:m;\
  	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Release //p:Platform=x64 //v:m;\
  	$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Debug //p:Platform=x64 //v:m;\
+
+WINRT_CLEAN_FIXED=\
+ 	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //t:Clean //p:Configuration=Release //p:Platform=Win32 //v:m;\
+ 	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //t:Clean //p:Configuration=Release //p:Platform=ARM //v:m;\
+ 	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //t:Clean //p:Configuration=Debug //p:Platform=Win32 //v:m;\
+ 	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //t:Clean //p:Configuration=Debug //p:Platform=ARM //v:m;\
+ 	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //t:Clean //p:Configuration=Release //p:Platform=x64 //v:m;\
+ 	$(MSBUILD) $(call WINRT_PROJECT_FIXED,$(1),$(2)) //t:Clean //p:Configuration=Debug //p:Platform=x64 //v:m;\
 
 
 WINRT_APPX_GIDVERSION_LIST:=$(subst ., ,$(GIDEROS_VERSION)) 0 0 0 0
@@ -54,13 +68,19 @@ winrt.lua:
 winrt.lua.clean:
 	$(call WINRT_CLEAN,$(LUA_ENGINE)/luawinrt,luawinrt)
 
+winrt.openal:
+	$(call WINRT_BUILD_FIXED,winrt/openal-soft,openal-soft)
+
+winrt.openal.clean:
+	$(call WINRT_CLEAN_FIXED,winrt/openal-soft,openal-soft)
+
 winrt.gvfs:
 	$(call WINRT_BUILD_WIN,libgvfs/libgvfswinrt,libgvfswinrt)
 
 winrt.gvfs.clean:
 	$(call WINRT_CLEAN,libgvfs/libgvfswinrt,libgvfswinrt)
 
-winrt.libs: winrt.lua winrt.gvfs
+winrt.libs: winrt.lua winrt.gvfs winrt.openal
 
 winrt.libs.clean: winrt.lua.clean winrt.gvfs.clean
 
@@ -103,6 +123,8 @@ winrt.core: winrt.libs winrt.shaders
 	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib winrt/$(WINRT_CONF)/luawinrt.Windows
 	mkdir -p winrt/$(WINRT_CONF)/libgvfswinrt.Windows
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/$(WINRT_CONF)/libgvfswinrt.Windows
+	mkdir -p winrt/$(WINRT_CONF)/openal-soft
+	cp winrt/openal-soft/$(WINRT_CONF)/openal-soft/openal-soft.lib winrt/$(WINRT_CONF)/openal-soft
 	#ARM release version for WinPhone
 	mkdir -p winrt/ARM/$(WINRT_CONF)/gideros.Windows
 	cp winrt/gideros/gideros.Windows/ARM/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib winrt/ARM/$(WINRT_CONF)/gideros.Windows
@@ -110,6 +132,8 @@ winrt.core: winrt.libs winrt.shaders
 	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib winrt/ARM/$(WINRT_CONF)/luawinrt.Windows
 	mkdir -p winrt/ARM/$(WINRT_CONF)/libgvfswinrt.Windows
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/ARM/$(WINRT_CONF)/libgvfswinrt.Windows
+	mkdir -p winrt/ARM/$(WINRT_CONF)/openal-soft
+	cp winrt/openal-soft/ARM/$(WINRT_CONF)/openal-soft/openal-soft.lib winrt/ARM/$(WINRT_CONF)/openal-soft
 	#x64 release version for Windows
 	mkdir -p winrt/x64/$(WINRT_CONF)/gideros.Windows
 	cp winrt/gideros/gideros.Windows/x64/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib winrt/x64/$(WINRT_CONF)/gideros.Windows
@@ -117,6 +141,8 @@ winrt.core: winrt.libs winrt.shaders
 	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib winrt/x64/$(WINRT_CONF)/luawinrt.Windows
 	mkdir -p winrt/x64/$(WINRT_CONF)/libgvfswinrt.Windows
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/x64/$(WINRT_CONF)/libgvfswinrt.Windows
+	mkdir -p winrt/x64/$(WINRT_CONF)/openal-soft
+	cp winrt/openal-soft/x64/$(WINRT_CONF)/openal-soft/openal-soft.lib winrt/x64/$(WINRT_CONF)/openal-soft
 
 winrt.core.clean: winrt.libs.clean
 	$(call WINRT_CLEAN,winrt,gideros) 
@@ -145,14 +171,17 @@ winrt.template: winrt.core winrt.plugins
 	cp winrt/gideros/gideros.Windows/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
 	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
+	cp winrt/openal-soft/$(WINRT_CONF)/openal-soft/openal-soft.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/Win32"
 	#ARM release version for WinPhone
 	cp winrt/gideros/gideros.Windows/ARM/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
 	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/ARM/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/ARM/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
+	cp winrt/openal-soft/ARM/$(WINRT_CONF)/openal-soft/openal-soft.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/ARM"
 	#x64 Release version for Windows
 	cp winrt/gideros/gideros.Windows/x64/$(WINRT_CONF)/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
 	cp $(LUA_ENGINE)/luawinrt/luawinrt/luawinrt.Windows/x64/$(WINRT_CONF)/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/x64/$(WINRT_CONF)/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
+	cp winrt/openal-soft/x64/$(WINRT_CONF)/openal-soft/openal-soft.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template/x64"
 	#Plugins libs
 	#cp $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/*.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 

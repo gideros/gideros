@@ -373,8 +373,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-mp3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-wav.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-xmp.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-sample-xaudio2.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-stream-xaudio2.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-sample-openal.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-stream-openal.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gevent.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gglobal.cpp" />
@@ -629,7 +629,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\platformutil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\wchar32.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\ggaudiomanager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\bytebuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\libnetwork.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTDecompress.h" />

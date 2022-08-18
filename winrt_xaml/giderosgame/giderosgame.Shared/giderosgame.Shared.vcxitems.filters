@@ -3,12 +3,6 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit.c">
-      <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit_stub.cpp">
-      <Filter>Plugins</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\fpconv.c">
       <Filter>Plugins</Filter>
     </ClCompile>

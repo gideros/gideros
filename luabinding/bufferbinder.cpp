@@ -38,6 +38,7 @@ public:
 	}
 	size_t append(const char *data,size_t size) {
 		size_t c=d.size();
+		if (!size) return c;
 		d.resize(c+size);
 		memcpy(&d[c],data,size);
 		return c+size;

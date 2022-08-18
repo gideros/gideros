@@ -1,0 +1,509 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="openal">
+      <UniqueIdentifier>{4d95ce46-0631-4cbe-8e41-b6e6a2bfca37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="openal\al">
+      <UniqueIdentifier>{990d429e-fb2a-4b3b-b157-ec35a68400d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="openal\alc">
+      <UniqueIdentifier>{665bf14b-31a1-4a5e-9365-a6cbc2ae824e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="openal\core">
+      <UniqueIdentifier>{fc16b39b-c55a-4336-bdec-cb22acc645b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="openal\common">
+      <UniqueIdentifier>{53d4ad0c-e176-4314-aba0-8dda9b5e7ae1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\auxeffectslot.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\buffer.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effect.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\error.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\event.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\extension.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\filter.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\listener.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\source.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\state.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\autowah.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\chorus.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\compressor.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\convolution.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\dedicated.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\distortion.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\echo.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\effects.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\equalizer.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\fshifter.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\modulator.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\null.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\pshifter.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\reverb.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\al\effects\vmorpher.cpp">
+      <Filter>openal\al</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\alc.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\alconfig.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\alu.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\context.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\device.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\panning.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\autowah.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\chorus.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\compressor.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\convolution.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\dedicated.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\distortion.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\echo.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\equalizer.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\fshifter.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\modulator.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\null.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\pshifter.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\reverb.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\effects\vmorpher.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\base.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\loopback.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\null.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\Alc\backends\xaudio2.cpp">
+      <Filter>openal\alc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\ambdec.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\ambidefs.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\bformatdec.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\bs2b.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\bsinc_tables.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\buffer_storage.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\context.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\converter.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\cpu_caps.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\devformat.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\device.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\effectslot.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\except.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\fmt_traits.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\fpu_ctrl.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\helpers.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\hrtf.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\logging.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\mastering.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\mixer.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\uhjfilter.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\uiddefs.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\voice.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\filters\biquad.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\filters\nfc.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\filters\splitter.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\core\mixer\mixer_c.cpp">
+      <Filter>openal\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\alcomplex.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\almalloc.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\alstring.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\polyphase_resampler.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\ringbuffer.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\strutils.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\threads.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libgid\external\openal-soft\common\alfstream.cpp">
+      <Filter>openal\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\auxeffectslot.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\buffer.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\effect.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\event.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\filter.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\listener.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\source.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\al\effects\effects.h">
+      <Filter>openal\al</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\alconfig.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\alu.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\context.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\device.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\inprogext.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\effects\base.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\base.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\loopback.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\null.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\Alc\backends\xaudio2.h">
+      <Filter>openal\alc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\ambdec.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\ambidefs.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\async_event.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bformatdec.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bs2b.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bsinc_defs.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bsinc_tables.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\buffer_storage.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\bufferline.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\context.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\converter.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\cpu_caps.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\devformat.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\device.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\effectslot.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\except.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\fmt_traits.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\fpu_ctrl.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\front_stablizer.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\helpers.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\hrtf.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\logging.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\mastering.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\mixer.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\resampler_limits.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\uhjfilter.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\voice.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\voice_change.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\filters\biquad.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\filters\nfc.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\core\filters\splitter.h">
+      <Filter>openal\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\albit.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\albyte.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alcomplex.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\aldeque.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\almalloc.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alnumbers.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alnumeric.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\aloptional.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alspan.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alstring.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\atomic.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\comptr.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\dynload.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\intrusive_ptr.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\opthelpers.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\phase_shifter.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\polyphase_resampler.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\pragmadefs.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\ringbuffer.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\strutils.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\threads.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\vecmat.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\vector.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\win_main_utf8.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\config.h">
+      <Filter>openal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\version.h">
+      <Filter>openal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libgid\external\openal-soft\common\alfstream.h">
+      <Filter>openal\common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

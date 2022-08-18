@@ -1748,7 +1748,7 @@ static int dbvm_do_rows(lua_State *L, int(*f)(lua_State *)) {
     /* sdb_vm *svm =  */
     lsqlite_checkvm(L, 1);
     lua_pushvalue(L,1);
-    lua_pushcfunction(L, f);
+    lua_pushcnfunction(L, f, "do_row_func");
     lua_insert(L, -2);
     return 2;
 }
@@ -1780,7 +1780,7 @@ static int db_do_rows(lua_State *L, int(*f)(lua_State *)) {
         lua_error(L);
     }
 
-    lua_pushcfunction(L, f);
+    lua_pushcnfunction(L, f,"do_row_func");
     lua_insert(L, -2);
     return 2;
 }

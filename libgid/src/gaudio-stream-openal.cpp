@@ -585,6 +585,17 @@ public:
             channels_.erase(*it);
     }
 
+	void AdvanceStreamBuffers()
+	{
+		std::map<g_id, Channel*>::iterator iter, e = channels_.end();
+
+		for (iter = channels_.begin(); iter != e; ++iter)
+		{
+			Channel *channel = iter->second;
+			tick(channel);
+		}
+	}
+
 private:
     static void *run_s(void *arg)
     {

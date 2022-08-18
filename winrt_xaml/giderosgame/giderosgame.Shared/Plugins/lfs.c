@@ -344,7 +344,7 @@ static int dir_close (lua_State *L) {
 static int dir_iter_factory (lua_State *L) {
 	const char *path = luaL_checkstring (L, 1);
 	dir_data *d;
-	lua_pushcfunction (L, dir_iter);
+	lua_pushcnfunction (L, dir_iter, "dir_iter");
 	d = (dir_data *) lua_newuserdata (L, sizeof(dir_data));
 	luaL_getmetatable (L, DIR_METATABLE);
 	lua_setmetatable (L, -2);
@@ -372,14 +372,14 @@ static int dir_create_meta (lua_State *L) {
 
         /* Method table */
 	lua_newtable(L);
-	lua_pushcfunction (L, dir_iter);
+	lua_pushcnfunction (L, dir_iter, "dir_next");
 	lua_setfield(L, -2, "next");
-	lua_pushcfunction (L, dir_close);
+	lua_pushcnfunction (L, dir_close, "dir_close");
 	lua_setfield(L, -2, "close");
 
         /* Metamethods */
 	lua_setfield(L, -2, "__index");
-	lua_pushcfunction (L, dir_close);
+	lua_pushcnfunction (L, dir_close, "dir_close");
 	lua_setfield (L, -2, "__gc");
 	return 1;
 }

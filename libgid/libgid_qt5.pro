@@ -152,7 +152,7 @@ INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 
 win32 {
 DEFINES += OPENAL_SUBDIR_AL
-INCLUDEPATH += "./external/openal-soft-1.17.2/include"
+INCLUDEPATH += "./external/openal-soft/include"
 CONFIG(debug, debug|release){
     LIBS += -L"./openal/debug" -lopenal
 } else {
