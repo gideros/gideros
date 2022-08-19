@@ -335,9 +335,12 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 }
 
 Module.checkALMuted = function() {
-	if (window.AL && window.AL.currentCtx && (!Module.GidAudioUnlocked)) {
-		window.AL.currentCtx.audioCtx.resume();
-		Module.GidAudioUnlocked = true;
+	var actx= _WebAudio_ALSoft
+	if ((actx==undefined) && window.AL && window.AL.currentCtx)
+		actx=window.AL.currentCtx.audioCtx;
+	if (actx && (!Module.GidAudioUnlocked)) {		
+		actx.resume();
+		Module.GidAudioUnlocked = true;		
 	}
 }
 

@@ -10,7 +10,7 @@
 
 #define HAVE_STRERROR
 #define HAVE_STRDUP
-#ifndef WINSTORE
+#if !defined(WINSTORE) && !defined(HAVE_UNISTD_H)
 #define HAVE_UNISTD_H
 #endif
 

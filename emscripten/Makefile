@@ -79,7 +79,18 @@ LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/,$(XMP_SRC))
 LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/loaders/,$(XMP_LOADERS))
 LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/lite/src/,format loaders/mod_load)
 LXMP_SRCS+=libgid/src/gaudio-loader-xmp 
-					
+
+LOAL_SRCS+=$(addprefix libgid/external/openal-soft/, \
+			$(addprefix al/,auxeffectslot buffer effect error event extension filter listener source state) \
+			$(addprefix al/effects/,autowah chorus compressor convolution dedicated distortion echo effects equalizer fshifter modulator null pshifter reverb vmorpher) \
+			$(addprefix alc/,alc alconfig alu context device panning) \
+			$(addprefix alc/effects/,autowah chorus compressor convolution dedicated distortion echo equalizer fshifter modulator null pshifter reverb vmorpher) \
+			$(addprefix alc/backends/,base null loopback webaudio) \
+			$(addprefix common/,alcomplex alfstream almalloc alstring polyphase_resampler ringbuffer strutils threads) \
+			$(addprefix core/,ambdec ambidefs bformatdec bs2b bsinc_tables buffer_storage context converter cpu_caps devformat device effectslot except fmt_traits fpu_ctrl helpers hrtf logging mastering mixer uhjfilter uiddefs voice) \
+			$(addprefix core/filters/,biquad nfc splitter) \
+			$(addprefix core/mixer/,mixer_c) \
+	)					
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
@@ -88,7 +99,7 @@ INCS+=luabinding libnetwork
 INCS+=$(addprefix libgid/external/freetype-$(FREETYPE_VER)/,include src)
 INCS+=$(LIQUIDFUN)/.. external/glu
 INCS+=libgid/external/zlib-1.2.8 libgid/external/libpng-1.6.2 \
-	$(addprefix libgid/external/openal-soft-1.13/,include/AL OpenAL32/Include) \
+	libgid/external/openal-soft/include \
 	libgid/external/snappy-1.1.0 libgid/external/jpeg-9 \
 	libgid/external/mpg123-1.15.3/src \
 	libgid/external/mpg123-1.15.3/src/libmpg123 \
@@ -160,6 +171,7 @@ CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	-D_REENTRANT -DLIBXMP_CORE_PLAYER \
+	-DAL_STATIC_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL -DHAVE_WEBAUDIO -DRESTRICT=__restrict \
 	$(OPTS)
 CFLGS+=	-fno-rtti -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
 PCFLGS+= -s SIDE_MODULE=2 -fno-exceptions
@@ -195,7 +207,7 @@ plugins.clean: $(addsuffix .plugin.clean,$(PLUGINS))
 %.plugin.clean:
 	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE) clean; cd -
 
-SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LFRT 
+SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LFRT LOAL
 SUBLIBS_ARW=$(addprefix $(BUILD)/lib,$(addsuffix .w.bc,$(SUBLIBS)))
 
 define SUB_template
@@ -209,12 +221,13 @@ $(1): $(2)
 endef
 
 define SUB_libopt
-$(foreach src,$($(1)),$(eval $(call SUB_fileopt,$(addprefix $(BUILD)/,$(addsuffix .em.o,$(src))),$(2))))
+$(foreach src,$($(1)),$(eval $(call SUB_fileopt,$(addprefix $(BUILD)/,$(addsuffix .emw.o,$(src))),$(2))))
 endef
 
 $(call SUB_libopt,B2D_SRCS,CFLGS+=-fno-rtti -fno-exceptions)
 $(call SUB_libopt,LGVFS_SRCS,CFLGS+=-DGIDEROS_LIBRARY)
 $(call SUB_libopt,LGID_SRCS,CFLGS+=-DGIDEROS_LIBRARY)
+$(call SUB_libopt,LOAL_SRCS,INCS+=$(addprefix libgid/external/openal-soft/,. core common alc))
  
 $(foreach sub,$(SUBLIBS),$(eval $(call SUB_template,$(sub))))
 

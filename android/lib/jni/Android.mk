@@ -23,76 +23,105 @@ include $(PREBUILT_SHARED_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_MODULE			:= openal
 
-LOCAL_OPENAL_VERSION=1.17.2
-LOCAL_OPENAL_PATH:=../../../libgid/external/openal-soft-$(LOCAL_OPENAL_VERSION)
+LOCAL_OPENAL_PATH:=../../../libgid/external/openal-soft
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/include \
-	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/OpenAL32/Include \
-	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/include \
-	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/Alc \
-	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/Alc/backends
+	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/core \
+	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/common \
+	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)/alc \
+	$(LOCAL_PATH)/$(LOCAL_OPENAL_PATH)
 
 # openal (24 files)
-LOCAL_CFLAGS += -DAL_BUILD_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL 
+LOCAL_CFLAGS += -DAL_BUILD_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL -DRESTRICT=__restrict -DHAVE_OPENSL 
+LOCAL_CPPFLAGS = -std=c++14
 #openal Common FILES
 LOCAL_SRC_FILES  := \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alAuxEffectSlot.c \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alBuffer.c        \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alEffect.c        \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alError.c         \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alExtension.c     \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alFilter.c        \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alListener.c      \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alSource.c        \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alState.c         \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/alThunk.c         \
-	$(LOCAL_OPENAL_PATH)/Alc/ALc.c                  \
-	$(LOCAL_OPENAL_PATH)/Alc/alcConfig.c            \
-	$(LOCAL_OPENAL_PATH)/Alc/alcRing.c              \
-	$(LOCAL_OPENAL_PATH)/Alc/ALu.c                  \
-	$(LOCAL_OPENAL_PATH)/Alc/bs2b.c                 \
-	$(LOCAL_OPENAL_PATH)/Alc/mixer.c                \
-	$(LOCAL_OPENAL_PATH)/Alc/panning.c              
-
-#1.13 files
-#LOCAL_SRC_FILES  += \ 
-#	$(LOCAL_OPENAL_PATH)/OpenAL32/alDatabuffer.c    \
-#	$(LOCAL_OPENAL_PATH)/Alc/alcEcho.c              \
-#	$(LOCAL_OPENAL_PATH)/Alc/alcModulator.c         \
-#	$(LOCAL_OPENAL_PATH)/Alc/alcReverb.c            \
-#	$(LOCAL_OPENAL_PATH)/Alc/alcThread.c            \
-#	$(LOCAL_OPENAL_PATH)/Alc/android.c              \
-#	$(LOCAL_OPENAL_PATH)/Alc/null.c
-#LOCAL_SRC_FILES += audiodevice.cpp
-
-#1.17 files
-LOCAL_SRC_FILES  += \
-	$(LOCAL_OPENAL_PATH)/Alc/bsinc.c                 \
-	$(LOCAL_OPENAL_PATH)/Alc/helpers.c                 \
-	$(LOCAL_OPENAL_PATH)/Alc/hrtf.c                 \
-	$(LOCAL_OPENAL_PATH)/Alc/mixer_c.c                 \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/autowah.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/chorus.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/compressor.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/dedicated.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/distortion.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/echo.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/equalizer.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/flanger.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/modulator.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/null.c       \
-	$(LOCAL_OPENAL_PATH)/Alc/effects/reverb.c        \
-	$(LOCAL_OPENAL_PATH)/Alc/backends/base.c        \
-	$(LOCAL_OPENAL_PATH)/Alc/backends/opensl.c        \
-	$(LOCAL_OPENAL_PATH)/Alc/backends/null.c        \
-	$(LOCAL_OPENAL_PATH)/Alc/backends/loopback.c        \
-	$(LOCAL_OPENAL_PATH)/OpenAL32/sample_cvt.c         \
-	$(LOCAL_OPENAL_PATH)/common/atomic.c        \
-	$(LOCAL_OPENAL_PATH)/common/rwlock.c        \
-	$(LOCAL_OPENAL_PATH)/common/threads.c        \
-	$(LOCAL_OPENAL_PATH)/common/uintmap.c        
-
+        $(LOCAL_OPENAL_PATH)/al/auxeffectslot.cpp \
+        $(LOCAL_OPENAL_PATH)/al/buffer.cpp        \
+        $(LOCAL_OPENAL_PATH)/al/effect.cpp        \
+        $(LOCAL_OPENAL_PATH)/al/error.cpp         \
+        $(LOCAL_OPENAL_PATH)/al/event.cpp      \
+        $(LOCAL_OPENAL_PATH)/al/extension.cpp     \
+        $(LOCAL_OPENAL_PATH)/al/filter.cpp        \
+        $(LOCAL_OPENAL_PATH)/al/listener.cpp      \
+        $(LOCAL_OPENAL_PATH)/al/source.cpp        \
+        $(LOCAL_OPENAL_PATH)/al/state.cpp         \
+        $(LOCAL_OPENAL_PATH)/al/effects/autowah.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/chorus.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/compressor.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/convolution.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/dedicated.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/distortion.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/echo.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/effects.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/equalizer.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/fshifter.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/modulator.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/null.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/pshifter.cpp       \
+        $(LOCAL_OPENAL_PATH)/al/effects/reverb.cpp        \
+        $(LOCAL_OPENAL_PATH)/al/effects/vmorpher.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/alc.cpp                  \
+        $(LOCAL_OPENAL_PATH)/alc/alconfig.cpp            \
+        $(LOCAL_OPENAL_PATH)/alc/alu.cpp                  \
+        $(LOCAL_OPENAL_PATH)/alc/context.cpp            \
+        $(LOCAL_OPENAL_PATH)/alc/device.cpp            \
+        $(LOCAL_OPENAL_PATH)/alc/panning.cpp            \
+        $(LOCAL_OPENAL_PATH)/alc/effects/autowah.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/chorus.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/compressor.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/convolution.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/dedicated.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/distortion.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/echo.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/equalizer.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/fshifter.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/modulator.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/null.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/pshifter.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/effects/reverb.cpp        \
+        $(LOCAL_OPENAL_PATH)/alc/effects/vmorpher.cpp       \
+        $(LOCAL_OPENAL_PATH)/alc/backends/base.cpp        \
+        $(LOCAL_OPENAL_PATH)/alc/backends/opensl.cpp        \
+        $(LOCAL_OPENAL_PATH)/alc/backends/null.cpp        \
+        $(LOCAL_OPENAL_PATH)/alc/backends/loopback.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/alcomplex.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/alfstream.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/almalloc.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/alstring.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/dynload.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/polyphase_resampler.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/ringbuffer.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/strutils.cpp        \
+        $(LOCAL_OPENAL_PATH)/common/threads.cpp    \
+        $(LOCAL_OPENAL_PATH)/core/ambdec.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/ambidefs.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/bformatdec.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/bs2b.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/bsinc_tables.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/buffer_storage.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/context.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/converter.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/cpu_caps.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/devformat.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/device.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/effectslot.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/except.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/fmt_traits.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/fpu_ctrl.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/helpers.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/hrtf.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/logging.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/mastering.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/mixer.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/uhjfilter.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/uiddefs.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/voice.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/filters/biquad.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/filters/nfc.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/filters/splitter.cpp                 \
+        $(LOCAL_OPENAL_PATH)/core/mixer/mixer_c.cpp
 
 include $(BUILD_STATIC_LIBRARY)
 

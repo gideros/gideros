@@ -19,7 +19,7 @@ INCLUDEPATH += \
 DEFINES += AL_BUILD_LIBRARY AL_ALEXT_PROTOTYPES OPENAL_SUBDIR_AL HAVE_DSOUND HAVE_WINMM "alc_API=__declspec(dllexport)" "AL_API=__declspec(dllexport)" RESTRICT=__restrict
 #openal Common FILES
 SOURCES  += \
-        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/al/auxEffectSlot.cpp \
+        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/al/auxeffectslot.cpp \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/al/buffer.cpp        \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/al/effect.cpp        \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/al/error.cpp         \

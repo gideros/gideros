@@ -6,6 +6,7 @@
 #include <OpenAL/alc.h>
 #elif defined(OPENAL_SUBDIR_AL)
 #include <AL/al.h>
+#include <AL/alext.h>
 #include <AL/alc.h>
 #else
 #include <al.h>
@@ -81,6 +82,7 @@ void GGSoundManager::interfacesCleanup()
 void GGAudioManager::AdvanceStreamBuffers()
 {
     soundManager_->AdvanceStreamBuffers();
+	alcDeviceTickSOFT(systemData_->device);
 }
 
 void GGSoundManager::AdvanceStreamBuffers()
