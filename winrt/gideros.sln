@@ -122,6 +122,7 @@ Global
 		..\lua\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{212298a0-62c1-48cb-85c0-00d2afd482cd}*SharedItemsImports = 9
 		..\luau\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{5123635e-7ced-437c-8614-4252741e19a0}*SharedItemsImports = 4
 		gideros\gideros.Shared\gideros.Shared.vcxitems*{7e9098bd-4d17-4d07-86c3-2173966558c0}*SharedItemsImports = 9
+		..\luau\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{8bf5325c-d170-4da1-a823-acced6ab5e3f}*SharedItemsImports = 9
 		..\libgvfs\libgvfswinrt\libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{8c3b6eef-51e1-4593-af79-3ef50e1b1bcc}*SharedItemsImports = 9
 		..\libgvfs\libgvfswinrt\libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{edfc73b9-ada1-4555-bee5-b82eaf8a1df7}*SharedItemsImports = 4
 		..\lua\luawinrt\luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{f3a7dfcc-506a-4800-9df7-beb0541b21f2}*SharedItemsImports = 4

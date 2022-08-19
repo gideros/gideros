@@ -10,7 +10,6 @@
 #include <string>
 #include <direct.h>
 #include <binder.h>
-#include <xaudio2.h>
 #include <libnetwork.h>
 #include "ginput-winrt.h"
 #include "luaapplication.h"
@@ -127,10 +126,6 @@ int PTW32_CDECL pthread_join(pthread_t thread,
 	return 0;
 }
 
-IXAudio2 *g_audioengine;
-IXAudio2MasteringVoice *g_masteringvoice;
-IXAudio2SourceVoice* g_source;
-
 static void printFunc(const char *str, int len, void *data)
 {
 	std::wstring wsTmp=utf8_ws(str);
@@ -239,19 +234,6 @@ void CleanD3D()
 	//  g_devcon->Release();
 }
 
-
-// ######################################################################
-void InitXAudio2()
-{
-	XAudio2Create(&g_audioengine);
-	HRESULT hr = g_audioengine->CreateMasteringVoice(&g_masteringvoice);
-}
-
-// ######################################################################
-void CleanXAudio2()
-{
-	g_audioengine->Release();
-}
 
 extern "C" {
 	void g_setFps(int);
@@ -753,7 +735,6 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 	tempPath_ = _wcsdup(tempPath);
 
 	InitD3D(useXaml, Window, swapChainPanel, width_, height_);
-	InitXAudio2();
 
 	// gpath & gvfs
 	gpath_init();
@@ -890,9 +871,6 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 ApplicationManager::~ApplicationManager()
 {
 	CleanD3D();
-	CleanXAudio2();
-
-	gaudio_Cleanup();
 
 	// application
 	application_->deinitialize();

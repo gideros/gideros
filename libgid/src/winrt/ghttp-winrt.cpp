@@ -24,6 +24,16 @@ static bool sslErrorsIgnore = false;
 static std::map<g_id, std::vector<unsigned char> > map;
 static std::mutex mapm;
 //static std::vector<unsigned char> dataRead;
+
+bool isRunning(g_id id)
+{
+	bool valid;
+	mapm.lock();
+	valid = (map.find(id) != map.end());
+	mapm.unlock();
+	return valid;
+}
+
 task<IBuffer^> readData(IInputStream^ stream, g_id id, bool streaming, gevent_Callback callback, void* udata)
 {
 	// Do an asynchronous read. We need to use use_current() with the continuations since the tasks are completed on
@@ -39,26 +49,30 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id, bool streaming, gevent_Ca
 		DataReader::FromBuffer(buffer)->ReadBytes(arr);
 		unsigned char* first = arr->Data;
 		unsigned char* end = first + arr->Length;
+		bool more = buffer->Length;
 
-		if (streaming)
-		{
-			ghttp_ProgressEvent* event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent)+arr->Length);
-			event->bytesLoaded = 0; //We could count them if really needed
-			event->bytesTotal = 0;
-			event->chunk = event+1;
-			event->chunkSize = arr->Length;
-			memcpy(event->chunk, first, arr->Length);
-
-			gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, event, 1, udata);
-		}
+		if (!isRunning(id))
+			more = false;
 		else {
-			mapm.lock();
-			map[id].insert(map[id].end(), first, end);
-			mapm.unlock();
+			if (streaming)
+			{
+				ghttp_ProgressEvent* event = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent) + arr->Length);
+				event->bytesLoaded = 0; //We could count them if really needed
+				event->bytesTotal = 0;
+				event->chunk = event + 1;
+				event->chunkSize = arr->Length;
+				memcpy(event->chunk, first, arr->Length);
+
+				gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, event, 1, udata);
+			}
+			else {
+				mapm.lock();
+				map[id].insert(map[id].end(), first, end);
+				mapm.unlock();
+			}
 		}
 
 		// Continue reading until the response is complete.  When done, return previousTask that is complete.
-		bool more = buffer->Length;
 		delete buffer;
 		return more ? readData(stream, id, streaming, callback, udata) : readTask;
 	});
@@ -78,12 +92,12 @@ void handleException(Exception^ ex, g_id id, gevent_Callback callback, void* uda
 }
 
 void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation, g_id id, gevent_Callback callback, void* udata, bool streaming){
-	if (streaming) return;
+	if (streaming||!isRunning(id)) return;
 	operation->Progress = ref new AsyncOperationProgressHandler<HttpResponseMessage^, HttpProgress>([=](
 		IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ asyncInfo,
 		HttpProgress progress)
 	{
-		if (progress.Stage == HttpProgressStage::ReceivingContent)
+		if ((progress.Stage == HttpProgressStage::ReceivingContent)&&isRunning(id))
 		{
 			unsigned long long totalBytesToReceive = 0;
 			if (progress.TotalBytesToReceive != nullptr)
@@ -193,7 +207,7 @@ void handleTask(HttpResponseMessage^ response, g_id id, boolean streaming, geven
 	mapm.unlock();
 	create_task(response->Content->ReadAsInputStreamAsync(), cancellationTokenSource.get_token()).then([=](task<IInputStream^> previousTask)
 	{
-		if (streaming) {
+		if (streaming&&isRunning(id)) {
 			responseEvent(response, id, callback, udata, true);
 		}
 
@@ -205,19 +219,20 @@ void handleTask(HttpResponseMessage^ response, g_id id, boolean streaming, geven
 		{
 			// Check if any previous task threw an exception.
 			previousTask.get();
+			if (isRunning(id)) {
+				responseEvent(response, id, callback, udata, false);
 
-			responseEvent(response, id, callback, udata, false);
+				//progress finished
+				ghttp_ProgressEvent* eventp = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
+				eventp->bytesLoaded = map[id].size();
+				eventp->bytesTotal = map[id].size();
 
-			//progress finished
-			ghttp_ProgressEvent* eventp = (ghttp_ProgressEvent*)malloc(sizeof(ghttp_ProgressEvent));
-			eventp->bytesLoaded = map[id].size();
-			eventp->bytesTotal = map[id].size();
+				gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, eventp, 1, udata);
 
-			gevent_EnqueueEvent(id, callback, GHTTP_PROGRESS_EVENT, eventp, 1, udata);
-
-			mapm.lock();
-			map.erase(id);
-			mapm.unlock();
+				mapm.lock();
+				map.erase(id);
+				mapm.unlock();
+			}
 		}
 		catch (const task_canceled&)
 		{
@@ -385,12 +400,16 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 
 void ghttp_Close(g_id id)
 {
-
+	mapm.lock();
+	map.erase(id);
+	mapm.unlock();
 }
 
 void ghttp_CloseAll()
 {
-
+	mapm.lock();
+	map.clear();
+	mapm.unlock();
 }
 
 void ghttp_IgnoreSSLErrors()
