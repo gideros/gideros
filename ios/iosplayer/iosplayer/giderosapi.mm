@@ -1049,16 +1049,23 @@ void ApplicationManager::drawFrame()
     if (status.error())
         luaError(status.errorString());
 
+    bool now=false;
+    if (!application_->onDemandDraw(now))
+        now=true;
+    if (now) {
 #if THREADED_RENDER_LOOP
-	renderTick_ = true;
-    [renderCond_ signal];
-    [renderCond_ unlock];
+        renderTick_ = true;
+        [renderCond_ signal];
 #endif
     
 #if !THREADED_RENDER_LOOP
-    application_->renderScene(1);
-    drawIPs();
-    [view_ presentFramebuffer];
+        application_->renderScene(1);
+        drawIPs();
+        [view_ presentFramebuffer];
+#endif
+    }
+#if THREADED_RENDER_LOOP
+    [renderCond_ unlock];
 #endif
 }
 	
