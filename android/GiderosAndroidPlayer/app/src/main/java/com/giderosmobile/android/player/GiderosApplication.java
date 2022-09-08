@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import dalvik.system.DexClassLoader;
 import android.app.Activity;
@@ -479,6 +481,40 @@ public class GiderosApplication
 	
 	
 	private static SurfaceView mGLView_;
+	private boolean needRender=false;
+	private Runnable onDemandRender=null;
+	
+	public void enableOnDemand(boolean en)
+	{
+		if (en&&(onDemandRender==null)) {
+			onDemandRender=new Runnable() {
+				@Override
+				public void run() {
+					onDrawFrame(true);
+					if (onDemandRender!=null) {
+						if (needRender) {
+							((GLSurfaceView)mGLView_).requestRender();
+							needRender=false;
+						}
+						else
+							((GLSurfaceView)mGLView_).queueEvent(this);
+					}
+				}
+			};
+			((GLSurfaceView)mGLView_).queueEvent(onDemandRender);
+			((GLSurfaceView)mGLView_).setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		}
+		else if ((!en)&&(onDemandRender!=null)) {
+			onDemandRender=null;
+			((GLSurfaceView)mGLView_).setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+		}				
+	}
+
+	public void requestDraw()
+	{
+		needRender=true;
+	}
+	
 	static public void onCreate(String[] externalClasses, SurfaceView mGLView)
 	{
 		mGLView_=mGLView;
@@ -671,19 +707,20 @@ public class GiderosApplication
 
 	private long startTime = System.nanoTime();
 
-	public void onDrawFrame()
+	public void onDrawFrame(boolean tick)
 	{		
 		long target = 1000000000L / (long)fps_;
-		
-		long currentTime = System.nanoTime();
-		long dt = currentTime - startTime;
-		startTime = currentTime;
-		if (dt < 0)
-			dt = 0;
-		if (dt < target)
-		{
-			sleep(target - dt);
-			startTime += target - dt;
+		if ((onDemandRender==null)||tick) {		
+			long currentTime = System.nanoTime();
+			long dt = currentTime - startTime;
+			startTime = currentTime;
+			if (dt < 0)
+				dt = 0;
+			if (dt < target)
+			{
+				sleep(target - dt);
+				startTime += target - dt;
+			}
 		}
 	    
 		synchronized (lock) {
@@ -708,8 +745,11 @@ public class GiderosApplication
 				eventQueue_.notify();
 			}
 
-			GiderosApplication.nativeDrawFrame();
+			GiderosApplication.nativeDrawFrame(tick);			
 		}
+		
+		if ((onDemandRender!=null)&&!tick)
+			((GLSurfaceView)mGLView_).queueEvent(onDemandRender);
 	}
 
 	public void onMouseWheel(int x,int y,int button,float amount)
@@ -832,7 +872,13 @@ public class GiderosApplication
 					if ((event.getKeyCode()==KeyEvent.KEYCODE_DEL)&&(event.getAction()==KeyEvent.ACTION_DOWN)) {
 						return super.deleteSurroundingText(1,0);
 					}
-				}
+		            if(event.getAction() == KeyEvent.ACTION_DOWN 
+		                     && event.getKeyCode() >= KeyEvent.KEYCODE_0 
+		                     && event.getKeyCode() <= KeyEvent.KEYCODE_9) {
+		                char c = event.getKeyCharacterMap().getNumber(event.getKeyCode());
+		                commitText(String.valueOf(c), 1);
+		            }
+		        }
 				return super.sendKeyEvent(event);
 			}
 			public ExtractedText getExtractedText(ExtractedTextRequest request, int flags) {
@@ -1221,6 +1267,16 @@ public class GiderosApplication
 		}
 	}	
 
+	static public void enableOnDemand_s(boolean en)
+	{
+		instance_.enableOnDemand(en);
+	}
+
+	static public void requestDraw_s()
+	{
+		instance_.requestDraw();
+	}
+
 	static public String getLocale()
 	{
 		Locale locale = Locale.getDefault();
@@ -1482,7 +1538,7 @@ public class GiderosApplication
 	static private native void nativeSurfaceCreated(Surface surface);
 	static private native void nativeSurfaceChanged(int w, int h, int rotation,Surface surface);
 	static private native void nativeSurfaceDestroyed();
-	static private native void nativeDrawFrame();
+	static private native void nativeDrawFrame(boolean tick);
 	static private native void nativeTick();
 	static private native void nativeMouseWheel(int x,int y,int button,float amount);
 	static private native void nativeTouchesBegin(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex);

@@ -46,6 +46,7 @@ public:
 	void enterFrame();
 	void clearBuffers();
 	void renderScene(int deltaFrameCount = -1,float *vmat=NULL,float *pmat=NULL,const std::function<void(ShaderEngine *,Matrix4 &)> &preStage=nullptr);
+    bool onDemandDraw(bool &now);
 
     void mouseDown(int x, int y, int button, int modifiers, int type);
     void mouseUp(int x, int y, int button, int modifiers, int type);
@@ -95,6 +96,11 @@ public:
 	int getLogicalHeight() const;
 	int getHardwareWidth() const;
 	int getHardwareHeight() const;
+
+    void enableOnDemandDraw(bool onDemand)
+    {
+        onDemandDraw_ = onDemand;
+    }
 
 	void setImageScales(const std::vector<std::pair<std::string, float> >& imageScales);
 	const std::vector<std::pair<std::string, float> >& getImageScales() const;
@@ -158,6 +164,7 @@ private:
 	int nframe_;
 	double time_;
 	double lastFrameRenderTime_;
+    bool onDemandDraw_;
 
 	bool clearColorBuffer_;
 

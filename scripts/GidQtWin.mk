@@ -200,12 +200,12 @@ qtplugins.install: buildqtplugins
 tools:
 	mkdir -p $(BUILDTOOLS)
 	for f in libgcc_s_seh-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(BUILDTOOLS); done
-	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -Iextern -Iextern/isocline/include -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
-		$(addprefix CLI/,Coverage FileUtils Profiler Repl ReplEntry) \
+	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -ICommon/include -Iextern -Iextern/isocline/include -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
+		$(addprefix CLI/,Coverage FileUtils Flags Profiler Repl ReplEntry) \
 		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
     	lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib ltable ltablib ltm\
         ludata lutf8lib lvmexecute lvmload lvmutils) \
-		$(addprefix Compiler/src/,Builtins BytecodeBuilder ConstantFolding Compiler lcode PseudoCode TableShape ValueTracking) \
+		$(addprefix Compiler/src/,Builtins BuiltinFolding BytecodeBuilder ConstantFolding Compiler CostModel lcode PseudoCode TableShape ValueTracking) \
 		$(addprefix Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)) extern/isocline/src/isocline.c
 	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc\

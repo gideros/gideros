@@ -14,7 +14,7 @@ equals(QT_MAJOR_VERSION, 6){
 
 LUA_ENGINE=$$(LUA_ENGINE)
 isEmpty(LUA_ENGINE): LUA_ENGINE=luau
-equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src
+equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src ../luau/Common/include
 equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib

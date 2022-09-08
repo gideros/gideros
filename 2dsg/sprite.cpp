@@ -691,7 +691,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
         {
             int sc=sprite->skipSet_.size();
             char *sd=sprite->skipSet_.data();
-			int sz = sprite->children_.size();
+            int sz = sprite->children_.size();
             for (int i = sz - 1; i >= 0; --i)
             {
                 if ((i>=sc)||(!sd[i]))
@@ -740,7 +740,7 @@ void Sprite::computeLayout() {
 		}
 
 		stack.push_all(sprite->children_.data(),sprite->children_.size());
-		if (!sprite->effectStack_.empty())
+        if (!sprite->effectStack_.empty())
 			sprite->updateEffects();
 	}
 
@@ -1281,8 +1281,7 @@ void Sprite::invalidate(int changes) {
         if (h->layoutState)
         {
             if (changes&(INV_LAYOUT|INV_CONSTRAINTS))
-                if (!h->layoutState->optimizing)
-                    h->layoutState->dirty=true;
+                h->layoutState->dirty=true;
             if (changes&INV_CONSTRAINTS) {
                 h->layoutState->layoutInfoCache[0].valid=false;
                 h->layoutState->layoutInfoCache[1].valid=false;

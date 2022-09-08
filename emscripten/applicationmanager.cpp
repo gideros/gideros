@@ -648,7 +648,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 	}
 
 	static bool canvasShown = false;
-	void ApplicationManager::drawFrame() {
+	bool ApplicationManager::drawFrame() {
 		if (networkManager_)
 			networkManager_->tick();
 
@@ -660,7 +660,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 				glClearColor(0, 0, 0, 1);
 				glClear (GL_COLOR_BUFFER_BIT);
 
-				return;
+				return true;
 			}
 		}
 
@@ -704,6 +704,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 			 }*/
 		}
 
+		bool drawn=false;
 		if (skipFirstEnterFrame_ == true) {
 			skipFirstEnterFrame_ = false;
 		} else {
@@ -715,15 +716,21 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 		}
 
 		if (!inWebXR) {
-			application_->clearBuffers();
-			application_->renderScene(1);
-			drawIPs();
+			bool drawn=false;
+		    if (!application_->onDemandDraw(drawn))
+		    	drawn=true;
+		    if (drawn) {
+				application_->clearBuffers();
+				application_->renderScene(1);
+				drawIPs();
+		    }
 		}
 
 		if (!canvasShown) {
 			canvasShown = true;
 			EM_ASM(Module.setStatus("Running"));
 		}
+		return drawn;
 	}
 
 	void ApplicationManager::loadProperties() {

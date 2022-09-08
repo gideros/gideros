@@ -214,7 +214,7 @@ public:
 	void surfaceCreated();
 	void surfaceChanged(int width, int height, int rotation);
 	void updateHardwareOrientation();
-	void drawFrame();
+	void drawFrame(bool tick);
 	LuaApplication *getApplication() { return application_;};
 
 	void setDirectories(const char *externalDir, const char *internalDir, const char *cacheDir);
@@ -271,6 +271,7 @@ private:
 	
 	bool running_;
 	bool paused_;
+	bool onDemand_;
 	
 	int width_, height_;
 
@@ -606,6 +607,7 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 
 	player_ = player;
 	paused_ = false;
+	onDemand_ = false;
 	
 	// gpath & gvfs
 	gpath_init();
@@ -1061,7 +1063,7 @@ void ApplicationManager::oculusInputEvent(oculus::Input &input) {
 }
 #endif
 
-void ApplicationManager::drawFrame()
+void ApplicationManager::drawFrame(bool tick)
 {
 	tickLock.Lock();
 	if (networkManager_)
@@ -1126,11 +1128,48 @@ void ApplicationManager::drawFrame()
 		}
 	}	
 
+	bool doDraw=false;
+    if (!application_->onDemandDraw(doDraw)) {
+    	if (onDemand_)
+    	{
+    		JNIEnv *env = g_getJNIEnv();
+    		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+    		jmethodID mtd = env->GetStaticMethodID(localRefCls, "enableOnDemand_s", "(Z)V");
+    		env->CallStaticVoidMethod(localRefCls, mtd, false);
+    		env->DeleteLocalRef(localRefCls);
+        	onDemand_=false;
+    	}
+    	doDraw=true;
+    	tick=true;
+    }
+    else {
+		if (!onDemand_)
+    	{
+			JNIEnv *env = g_getJNIEnv();
+			jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+			jmethodID mtd = env->GetStaticMethodID(localRefCls, "enableOnDemand_s", "(Z)V");
+			env->CallStaticVoidMethod(localRefCls, mtd, true);
+			env->DeleteLocalRef(localRefCls);
+			onDemand_=true;
+		}
+    	if (tick)
+    	{
+    		if (doDraw) {
+    			JNIEnv *env = g_getJNIEnv();
+    			jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+    			jmethodID mtd = env->GetStaticMethodID(localRefCls, "requestDraw_s", "()V");
+    			env->CallStaticVoidMethod(localRefCls, mtd);
+    			env->DeleteLocalRef(localRefCls);
+        		doDraw=false;
+    		}
+    	}
+    }
+
 	if (skipFirstEnterFrame_ == true)
 	{	
 		skipFirstEnterFrame_ = false;
 	}
-	else
+	else if (tick)
 	{
 		GStatus status;
 		application_->enterFrame(&status);
@@ -1138,9 +1177,11 @@ void ApplicationManager::drawFrame()
 			luaError(status.errorString());
 	}
 
-	application_->clearBuffers();
-	application_->renderScene(1);
-	drawIPs();
+	if (doDraw) {
+		application_->clearBuffers();
+		application_->renderScene(1);
+		drawIPs();
+	}
 	tickLock.Unlock();
 }
 
@@ -1727,9 +1768,9 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceDestr
 	_OCULUS(onSurfaceDestroyed);
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeDrawFrame(JNIEnv *env, jclass cls)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeDrawFrame(JNIEnv *env, jclass cls, jboolean tick)
 {
-	s_applicationManager->drawFrame();
+	s_applicationManager->drawFrame(tick);
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeTick(JNIEnv *env, jclass cls)

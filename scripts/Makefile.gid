@@ -6,7 +6,7 @@ export LUA_ENGINE
 ifeq ($(LUA_ENGINE),luau)
 LUAC=$(BUILDTOOLS)/luauc --compile=binary $(1) >$(2)
 LUA_INCLUDE=luau/VM/include
-LUA_INCLUDE_CORE=luau/VM/src
+LUA_INCLUDE_CORE=luau/VM/src luau/Common/include
 else
 LUAC=$(BUILDTOOLS)/luac -o $(2) $(1)
 LUA_INCLUDE=lua/src

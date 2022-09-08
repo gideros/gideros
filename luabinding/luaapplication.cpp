@@ -1561,6 +1561,14 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 	}
 }
 #endif
+bool LuaApplication::onDemandDraw(bool &now) {
+    bool onDemand=application_->onDemandDraw(now);
+    if (onDemand) {
+        meanFrameTime_=.016;
+        meanFreeTime_=.015;
+    }
+    return onDemand;
+}
 
 void LuaApplication::enterFrame(GStatus *status)
 {
@@ -1926,6 +1934,7 @@ void LuaApplication::initialize()
 	if (ShaderEngine::Engine)
 		ShaderEngine::Engine->reset();
 
+    resetStyleCache();
 
     lua_setprintfunc(L, printFunc_, printData_);
     luaL_setdata(L, this);
@@ -1933,7 +1942,6 @@ void LuaApplication::initialize()
 	luaL_openlibs(L);
 
 	//	lua_sethook(L, testHook, LUA_MASKLINE, 0);
-
 	lua_pushcnfunction(L, bindAll, "gideros_bindAll");
 	lua_pushlightuserdata(L, application_);
 	lua_call(L, 1, 0);

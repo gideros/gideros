@@ -445,10 +445,13 @@ bool GLCanvas::checkLuaError(GStatus status)
 
 void GLCanvas::paintGL() {
 
-	GStatus status;
-	application_->enterFrame(&status);
+    bool dnow;
+    if (!application_->onDemandDraw(dnow)) {
+        GStatus status;
+        application_->enterFrame(&status);
 
-	checkLuaError(status);
+        checkLuaError(status);
+    }
 
 	application_->clearBuffers();
 	application_->renderScene();
@@ -711,7 +714,17 @@ void GLCanvas::timerEvent(QTimerEvent *){
     }
 
     ScreenManager::manager->tick();
-    update();
+    bool dnow;
+    if (application_->onDemandDraw(dnow)) {
+        GStatus status;
+        application_->enterFrame(&status);
+
+        checkLuaError(status);
+    }
+    else
+        dnow=true;
+    if (dnow)
+        update();
 }
 
 void GLCanvas::play(QDir directory){

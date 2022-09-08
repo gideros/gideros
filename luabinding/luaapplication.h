@@ -85,7 +85,8 @@ public:
     void enterFrame(GStatus *status);
 	void clearBuffers();
 	void renderScene(int deltaFrameCount = -1,float *vmat=NULL, float *pmat=NULL,const std::function<void(ShaderEngine *,Matrix4 &)> &preStage=nullptr);
-	
+    bool onDemandDraw(bool &now);
+
     virtual void deinitialize();
 
 	bool isInitialized() const;

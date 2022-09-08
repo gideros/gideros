@@ -43,7 +43,7 @@
     <ConvergedProjectType>CodeSharingStaticLibrary</ConvergedProjectType>
     <Lua_Engine Condition="'$(LUA_ENGINE)' == ''">luau</Lua_Engine>
     <LuaIncludes Condition="'$(Lua_Engine)' == 'lua'">..\..\..\lua\src</LuaIncludes>
-    <LuaIncludes Condition="'$(Lua_Engine)' == 'luau'">..\..\..\luau\VM\src;..\..\..\luau\VM\include</LuaIncludes>
+    <LuaIncludes Condition="'$(Lua_Engine)' == 'luau'">..\..\..\luau\VM\src;..\..\..\luau\VM\include;..\..\..\luau\Common\include</LuaIncludes>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

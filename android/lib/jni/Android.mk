@@ -219,7 +219,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../external/glu \
 	$(LOCAL_PATH)/../../../libpvrt \
 	$(LOCAL_PATH)/../../../$(LUA_INCLUDE) \
-	$(LOCAL_PATH)/../../../$(LUA_INCLUDE_CORE) \
+	$(addprefix $(LOCAL_PATH)/../../../,$(LUA_INCLUDE_CORE)) \
 	$(LOCAL_PATH)/../../../luabinding \
 	$(LOCAL_PATH)/../../../libgid/include \
 	$(LOCAL_PATH)/../../../libgid/include/private \

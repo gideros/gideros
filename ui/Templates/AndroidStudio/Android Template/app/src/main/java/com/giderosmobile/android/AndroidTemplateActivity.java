@@ -227,7 +227,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		if (app != null)
 			app.onLowMemory();
 	}
-	 
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -485,7 +485,7 @@ class GiderosRenderer implements GLSurfaceView.Renderer
 		if (app != null)
 		{
 			//GIDEROS-ACTIVITY-PREDRAW//
-			app.onDrawFrame();
+			app.onDrawFrame(false);
 			//GIDEROS-ACTIVITY-POSTDRAW//
 			AndroidTemplateActivity.dismisSplash();
 		}

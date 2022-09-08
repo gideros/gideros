@@ -88,7 +88,8 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"setClipboard", ApplicationBinder::setClipboard},
 		{"getClipboard", ApplicationBinder::getClipboard},
 		{"enableDrawInfo", ApplicationBinder::enableDrawInfo},
-		{"setEventMerging", ApplicationBinder::setEventMerging},
+        {"setEventMerging", ApplicationBinder::setEventMerging},
+        {"enableOnDemandDraw", ApplicationBinder::enableOnDemandDraw},
 
         {NULL, NULL},
 	};
@@ -1113,10 +1114,10 @@ int ApplicationBinder::requestPermissions(lua_State *L)
 
 int ApplicationBinder::enableDrawInfo(lua_State* L)
 {
-	Binder binder(L);
-	(void)binder.getInstance("Application", 1);
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     const float *cvec=lua_tovector(L,2);
     if (cvec)
@@ -1124,5 +1125,16 @@ int ApplicationBinder::enableDrawInfo(lua_State* L)
     else
         application->setDrawInfo(false,0,0,0,0);
 
-	return 0;
+    return 0;
+}
+
+int ApplicationBinder::enableOnDemandDraw(lua_State* L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    application->getApplication()->enableOnDemandDraw(lua_toboolean(L,2));
+
+    return 0;
 }

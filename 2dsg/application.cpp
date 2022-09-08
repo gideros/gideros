@@ -62,6 +62,7 @@ Application::Application() :
 
 	nframe_ = -1;	// uninitialized yet
 	time_ = -1;
+    onDemandDraw_ = false;
 
 	clearColorBuffer_ = true;
 
@@ -123,6 +124,12 @@ void Application::releaseView() {
 	stage_ = NULL;
 
 //	Referenced::emptyPool();
+}
+
+bool Application::onDemandDraw(bool &now)
+{
+    now=(stage_->changes_&Sprite::INV_EFFECTS);
+    return onDemandDraw_;
 }
 
 void Application::enterFrame() {
@@ -367,6 +374,8 @@ void Application::renderScene(int deltaFrameCount, float *vmat, float *pmat, con
 
 //	Referenced::emptyPool();
 	lastFrameRenderTime_ = iclock() - time;
+    if (onDemandDraw_)
+        stage_->changes_=(Sprite::ChangeSet) (stage_->changes_&(~Sprite::INV_EFFECTS));
 }
 
 void Application::mouseDown(int x, int y, int button, int modifiers, int type) {

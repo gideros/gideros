@@ -431,7 +431,7 @@ void Particles::setExtra(int i, float extra)
 float Particles::getExtra(int i) const
 {
     if (i >= (int)particleCount)
-        return NULL;
+        return 0;
     return points_[i * 16 + 3];
 }
 

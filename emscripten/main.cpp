@@ -129,13 +129,14 @@ void looptick(void *a)
 			  initGL(defWidth,defHeight);
 			  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
 		  }
-		s_applicationManager->drawFrame();
-		if (!inWebXR) {
-#ifndef EGL
-			glfwSwapBuffers(glfw_win);
-#else
-			eglSwapInterval(display,1);
-#endif
+		if (s_applicationManager->drawFrame()) {
+			if (!inWebXR) {
+	#ifndef EGL
+				glfwSwapBuffers(glfw_win);
+	#else
+				eglSwapInterval(display,1);
+	#endif
+			}
 		}
 	}
 	catch(const luaException& e)
