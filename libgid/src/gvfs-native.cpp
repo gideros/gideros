@@ -58,6 +58,29 @@ static bool s_playerModeEnabled = false;
 static char s_codeKey[256] = { 0 };
 static char s_assetsKey[256] = { 0 };
 
+#ifdef WIN32
+#include <windows.h>
+static std::wstring ws(const char *str)
+{
+    if (!str) return std::wstring();
+    int sl=strlen(str);
+    int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+    std::wstring res(sz, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+    return res;
+}
+
+static std::string us(const wchar_t *str)
+{
+    if (!str) return std::string();
+    int sl=wcslen(str);
+    int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+    std::string res(sz, 0);
+    WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+    return res;
+}
+#endif
+
 static int s_open(const char *pathname, int flags) {
 	int drive = gpath_getPathDrive(pathname);
 
@@ -90,8 +113,14 @@ static int s_open(const char *pathname, int flags) {
 	if (drive != 0 || local || vfs) {
 		if (vfs && vfs->open)
 			fd = vfs->open(pathname, flags);
-		else
-			fd = ::open(gpath_transform(pathname), flags, 0755);
+        else {
+#ifdef WIN32
+            std::wstring w=ws(gpath_transform(pathname));
+            fd = ::_wopen(w.c_str(), flags, 0755);
+#else
+            fd = ::open(gpath_transform(pathname), flags, 0755);
+#endif
+        }
 		//glog_d("Opened %s(%s) at fd %d on drive %d\n",pathname,gpath_transform(pathname),fd,drive);
 	} else {
 #ifdef __ANDROID__
