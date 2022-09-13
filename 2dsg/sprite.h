@@ -36,7 +36,8 @@ public:
     void cloneFrom(Sprite *);
 
     void draw(const CurrentTransform&, float sx, float sy, float ex, float ey);
-    void computeLayout();
+    void computeLayout(Stage *stage);
+    void updateAllEffects();
 
     int addChild(Sprite* sprite, GStatus* status = 0);
 	void removeChild(Sprite* child, GStatus* status = 0);

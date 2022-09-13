@@ -19,6 +19,8 @@ class Ticker;
 #include <gideros_p.h>
 #include <deque>
 #include <map>
+#include <thread>
+#include <mutex>
 
 #include <gglobal.h>
 
@@ -167,15 +169,22 @@ public:
     	int taskRef;
     	double sleepTime;
     	bool skipFrame;
-    	bool autoYield;
+        bool autoYield;
+        bool inError;
+        bool terminated;
     	int nargs;
+        std::thread *th;
     };
     static std::deque<AsyncLuaTask> tasks_;
+    static std::mutex taskLock;
     static double meanFrameTime_; //Average frame duration
     static double meanFreeTime_; //Average time available for async tasks
     static unsigned long frameCounter_; //Global frame counter
+    static void runThread(lua_State *L);
     static int Core_asyncCall(lua_State *L);
+    static int Core_asyncThread(lua_State *L);
     static int Core_yield(lua_State *L);
+    static int Core_yieldable(lua_State *L);
     static int Core_frameStatistics(lua_State *L);
     static int Core_profilerStart(lua_State *L);
     static int Core_profilerStop(lua_State *L);

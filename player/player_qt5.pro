@@ -1,6 +1,8 @@
 QT += core gui opengl network multimedia widgets
 CONFIG   += silent qt
 
+//QMAKE_CXXFLAGS_DEBUG += -O2
+
 equals(QT_MAJOR_VERSION, 6){
    QT += openglwidgets
    win32 {

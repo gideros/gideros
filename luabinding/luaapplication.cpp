@@ -78,7 +78,7 @@ int LuaApplication::debuggerBreak=0;
 std::map<int,bool> LuaApplication::breakpoints;
 void (*LuaApplication::debuggerHook)(void *context,lua_State *L,lua_Debug *ar)=NULL;
 void *LuaApplication::debuggerContext=NULL;
-
+std::mutex LuaApplication::taskLock;
 static g_id luaCbGid=g_NextId();
 static lua_State *globalLuaState=NULL;
 
@@ -270,7 +270,20 @@ int LuaApplication::Core_frameStatistics(lua_State* L)
 
 int LuaApplication::Core_yield(lua_State* L)
 {
-	std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+    taskLock.lock();
+    std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+    while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
+
+    if ((it!=LuaApplication::tasks_.end())&&(it->th)) {
+        //AsyncThread, just sleep
+        taskLock.unlock();
+        long long sleep=1000*luaL_checknumber(L,1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
+        return 0;
+    }
+    taskLock.unlock();
+    //AsyncTask, must be the first of the list anyhow, and shouldn't change
+    it=LuaApplication::tasks_.begin();
 	if ((it==LuaApplication::tasks_.end())||(it->L!=L)) {
 		lua_pushstring(L,"Core.yield must be called from an async Call");
 		lua_error(L);
@@ -283,8 +296,11 @@ int LuaApplication::Core_yield(lua_State* L)
 	{
 		if (lua_toboolean(L,1))
 			it->skipFrame=true;
-		else
+        else {
 			it->autoYield=true;
+            if (lua_toboolean(L,2))
+                return 0;
+        }
 	}
 	else
 	{
@@ -294,6 +310,15 @@ int LuaApplication::Core_yield(lua_State* L)
 	return lua_yield(L,0);
 }
 
+int LuaApplication::Core_yieldable(lua_State* L)
+{
+    std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+    bool isThread=(it!=LuaApplication::tasks_.end())&&(it->L==L);
+    lua_pushboolean(L,lua_isyieldable(L));
+    lua_pushboolean(L,isThread);
+    lua_pushboolean(L,isThread&&(it->autoYield));
+    return 3;
+}
 
 int LuaApplication::Core_asyncCall(lua_State* L)
 {
@@ -302,15 +327,64 @@ int LuaApplication::Core_asyncCall(lua_State* L)
     int nargs=lua_gettop(L);
     lua_State *T=lua_newthread(L);
 	t.taskRef=luaL_ref(L,LUA_REGISTRYINDEX);
+    t.th=nullptr;
 	t.L=T;
 	t.sleepTime=0;
 	t.skipFrame=false;
 	t.autoYield=true;
     t.nargs=nargs-1;
+    t.terminated=false;
+    t.inError=false;
     lua_xmove(L,T,nargs);
+    taskLock.lock();
     LuaApplication::tasks_.push_back(t);
+    taskLock.unlock();
     lua_rawgeti(L, LUA_REGISTRYINDEX, t.taskRef);
 	return 1;
+}
+
+void LuaApplication::runThread(lua_State *L)
+{
+    int nargs=0;
+    taskLock.lock();
+    for(auto it=tasks_.begin();it!=tasks_.end();it++) {
+        if (it->L==L) nargs=it->nargs;
+    }
+    taskLock.unlock();
+    bool err=lua_pcall_traceback(L,nargs, 0, 0);
+    taskLock.lock();
+    for(auto it=tasks_.begin();it!=tasks_.end();it++) {
+        if (it->L==L) {
+            it->inError=err;
+            it->terminated=true;
+        }
+    }
+    taskLock.unlock();
+    lua_enableThreads(L,-1);
+}
+
+int LuaApplication::Core_asyncThread(lua_State* L)
+{
+    LuaApplication::AsyncLuaTask t;
+    luaL_checktype(L,1,LUA_TFUNCTION);
+    int nargs=lua_gettop(L);
+    lua_State *T=lua_newthread(L);
+    t.taskRef=luaL_ref(L,LUA_REGISTRYINDEX);
+    t.L=T;
+    t.sleepTime=0;
+    t.skipFrame=false;
+    t.autoYield=false;
+    t.nargs=nargs-1;
+    t.terminated=false;
+    t.inError=false;
+    lua_xmove(L,T,nargs);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, t.taskRef);
+    lua_enableThreads(L,1);
+    taskLock.lock();
+    t.th=new std::thread(runThread,T);
+    LuaApplication::tasks_.push_back(t);
+    taskLock.unlock();
+    return 1;
 }
 
 #include "luabindings.luac.c"
@@ -650,11 +724,19 @@ static int bindAll(lua_State* L)
 
 	//coroutines helpers
 	lua_getglobal(L, "Core");
-	lua_pushcnfunction(L, LuaApplication::Core_asyncCall,"Core.asyncCall");
-	lua_setfield(L, -2, "asyncCall");
-	lua_pushcnfunction(L, LuaApplication::Core_yield,"Core.yield");
-	lua_setfield(L, -2, "yield");
-	lua_pushcnfunction(L, LuaApplication::Core_frameStatistics,"Core.frameStatistics");
+    lua_pushcnfunction(L, LuaApplication::Core_asyncCall,"Core.asyncCall");
+    lua_setfield(L, -2, "asyncCall");
+#ifdef __EMSCRIPTEN__
+    lua_pushcnfunction(L, LuaApplication::Core_asyncCall,"Core.asyncCall");
+#else
+    lua_pushcnfunction(L, LuaApplication::Core_asyncThread,"Core.asyncThread");
+#endif
+    lua_setfield(L, -2, "asyncThread");
+    lua_pushcnfunction(L, LuaApplication::Core_yield,"Core.yield");
+    lua_setfield(L, -2, "yield");
+    lua_pushcnfunction(L, LuaApplication::Core_yieldable,"Core.yieldable");
+    lua_setfield(L, -2, "yieldable");
+    lua_pushcnfunction(L, LuaApplication::Core_frameStatistics,"Core.frameStatistics");
 	lua_setfield(L, -2, "frameStatistics");
 	lua_pushcnfunction(L, LuaApplication::Core_profilerStart, "Core.profilerStart");
 	lua_setfield(L, -2, "profilerStart");
@@ -1398,10 +1480,20 @@ void LuaApplication::deinitialize()
 	application_->releaseView();
 
 	//Release all async tasks
-	for (std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();it!=LuaApplication::tasks_.end();++it)
-		luaL_unref(L,LUA_REGISTRYINDEX,(*it).taskRef);
-	tasks_.clear();
+    taskLock.lock();
+    while (!tasks_.empty()) {
+        AsyncLuaTask t=tasks_.front();
+        if (t.th) {
+            taskLock.unlock();
+            t.th->join();
+            taskLock.lock();
+        }
+        tasks_.pop_front();
+        luaL_unref(L,LUA_REGISTRYINDEX,t.taskRef);
+    }
+    taskLock.unlock();
 
+    //Schedule Tasks, at least one task should be run no matter if there is enough time or not
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
         pluginManager.plugins[i].main(L, 1);
@@ -1595,7 +1687,8 @@ void LuaApplication::enterFrame(GStatus *status)
     }
 
     //Schedule Tasks, at least one task should be run no matter if there is enough time or not
-	if ((meanFrameTime_ >= 0.01)&&(meanFrameTime_<=0.1)) //If frame rate is between 10Hz and 100Hz
+    taskLock.lock();
+    if ((meanFrameTime_ >= 0.01)&&(meanFrameTime_<=0.1)) //If frame rate is between 10Hz and 100Hz
 	{
 		double taskStart = iclock();
 		double timeLimit = taskStart + meanFreeTime_*0.9; //Limit ourselves t 90% of free time
@@ -1605,6 +1698,35 @@ void LuaApplication::enterFrame(GStatus *status)
 		while ((!tasks_.empty())&&(!status->error()))
 		{
             AsyncLuaTask t = tasks_.front();
+            if (t.th) {
+                //This is a full thread task, don't consider it for resume
+                tasks_.pop_front();
+                if (!t.terminated) {
+                    //Not terminated, queue it again
+                    tasks_.push_back(t);
+                    loops++;
+                    if (loops > tasks_.size())
+                        break;
+                    if (ntasks) ntasks--;
+                    continue;
+                }
+                //Check termination
+                taskLock.unlock();
+                t.th->join();
+                if (t.inError)
+                {
+                    if (exceptionsEnabled_ == true)
+                    {
+                        if (status)
+                            *status = GStatus(1, lua_tostring(t.L, -1));
+                    }
+                }
+                //Drop any return args
+                lua_settop(t.L, 0);
+                luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
+                taskLock.lock();
+                continue;
+            }
 			if ((t.sleepTime > iclock()) || (t.skipFrame))
 			{
                 //Skip this task: push to it the back of the queue
@@ -1618,6 +1740,7 @@ void LuaApplication::enterFrame(GStatus *status)
 			}
 			loops = 0;
 			int res = 0;
+            taskLock.unlock();
 			if (t.autoYield)
 			{                
 #ifdef LUA_IS_LUAU
@@ -1638,7 +1761,8 @@ void LuaApplication::enterFrame(GStatus *status)
 #else
                 res = lua_resume(t.L,t.nargs);
 #endif
-			//Reload task data after task has yielded/ended
+            taskLock.lock();
+            //Reload task data after task has yielded/ended
             t = tasks_.front();
             tasks_.pop_front();
 			if (res == LUA_YIELD)
@@ -1676,6 +1800,7 @@ void LuaApplication::enterFrame(GStatus *status)
 	}
 	else
 		taskFrameTime_ = 0;
+    taskLock.unlock();
     application_->deleteAutounrefPool(pool);
 }
 

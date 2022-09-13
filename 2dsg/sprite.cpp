@@ -454,6 +454,23 @@ void Sprite::redrawEffects() {
 	invalidate(INV_EFFECTS);
 }
 
+void Sprite::updateAllEffects() {
+    faststack<Sprite> stack;
+
+    stack.push(this);
+    while (true) {
+        Sprite *sprite = stack.pop();
+        if (sprite == nullptr) break;
+
+        if (sprite->isVisible_ == false) {
+            continue;
+        }
+
+        stack.push_all(sprite->children_.data(),sprite->children_.size());
+        sprite->updateEffects();
+    }
+}
+
 GridBagLayout *Sprite::getLayoutState()
 {
 	if (!layoutState) {
@@ -710,39 +727,40 @@ void Sprite::logicalTransformChanged()
         children_[i]->logicalTransformChanged();
 }
 
-void Sprite::computeLayout() {
+void Sprite::computeLayout(Stage *stage) {
 	if (!spriteWithLayoutCount) return;
 	static GGPool<faststack<Sprite>> stackPool;
 	faststack<Sprite> &stack = *stackPool.create();
 
-	stack.push(this);
+    size_t outerLoops=10;
+    while ((outerLoops--)&&(stage->needLayout)) {
+        stage->needLayout=false;
+        stack.push(this);
+        while (true) {
+            Sprite *sprite = stack.pop();
+            if (sprite == nullptr) break;
 
-	while (true) {
-		Sprite *sprite = stack.pop();
-		if (sprite == nullptr) break;
+            if ((sprite->isVisible_ == false)||(!(sprite->spriteWithLayoutCount))) {
+                continue;
+            }
 
-		if ((sprite->isVisible_ == false)||(!(sprite->spriteWithLayoutCount))) {
-			continue;
-		}
+            if (sprite->layoutState&&sprite->layoutState->dirty)
+            {
+                int loops=100; //Detect endless loops
+                while(sprite->layoutState->dirty&&(loops--))
+                {
+                    sprite->layoutState->dirty=false;
+                    float pwidth,pheight;
+                    sprite->getDimensions(pwidth, pheight);
+                    sprite->layoutState->ArrangeGrid(sprite,pwidth,pheight);
+                }
+                if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
+                    sprite->layoutState->dirty=false;
+            }
 
-		if (sprite->layoutState&&sprite->layoutState->dirty)
-		{
-			int loops=100; //Detect endless loops
-			while(sprite->layoutState->dirty&&(loops--))
-			{
-				sprite->layoutState->dirty=false;
-				float pwidth,pheight;
-				sprite->getDimensions(pwidth, pheight);
-				sprite->layoutState->ArrangeGrid(sprite,pwidth,pheight);
-			}
-			if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
-				sprite->layoutState->dirty=false;
-		}
-
-		stack.push_all(sprite->children_.data(),sprite->children_.size());
-        if (!sprite->effectStack_.empty())
-			sprite->updateEffects();
-	}
+            stack.push_all(sprite->children_.data(),sprite->children_.size());
+        }
+    }
 
 	stackPool.destroy(&stack);
 }
@@ -1274,6 +1292,12 @@ void Sprite::invalidate(int changes) {
 	changes=(ChangeSet)(changes&~(INV_VISIBILITY|INV_CLIP|INV_TRANSFORM|INV_GRAPHICS|INV_SHADER));
     if (changes&(INV_CONSTRAINTS))
         changes|=INV_LAYOUT;
+
+    if (changes&(INV_LAYOUT|INV_CONSTRAINTS)) {
+        Stage *stage=getStage();
+        if (stage)
+            stage->needLayout=true;
+    }
 
 	//Propagate to parents
     Sprite *h=parent_;

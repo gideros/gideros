@@ -15,7 +15,9 @@ public:
 	{
 		startTime_ = -1;
         isSpritesWithListenersDirty_ = true;
+        needLayout=false;
 	}
+    bool needLayout;
 
 	void enterFrame(int deltaFrameCount = -1, double lastFrameRenderTime=0);
 

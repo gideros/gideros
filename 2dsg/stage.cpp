@@ -52,6 +52,24 @@ void Stage::mouseWheel(int x, int y, int modifiers, float sx, float sy, float tx
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
 }
 
+template<class T> class faststack {
+    std::stack<T *> s;
+public:
+    T* pop()
+    {
+        if (s.empty()) return nullptr;
+        T *r=s.top();
+        s.pop();
+        return r;
+    }
+    void push(T* v) { s.push(v); };
+    void push_all(T** vals, size_t count)
+    {
+        while ((count--) > 0)
+            s.push(*(vals++));
+    }
+};
+
 void Stage::enterFrame(int deltaFrameCount, double lastFrameRenderTime)
 {
     void *pool = application_->createAutounrefPool();
@@ -109,7 +127,11 @@ void Stage::enterFrame(int deltaFrameCount, double lastFrameRenderTime)
 
     application_->deleteAutounrefPool(pool);
 
-    computeLayout();
+    if (needLayout)
+        computeLayout(this);
+
+    if (true)
+        updateAllEffects();
 }
 
 void Stage::touchesBegin(ginput_TouchEvent *event, float sx, float sy, float tx, float ty)
