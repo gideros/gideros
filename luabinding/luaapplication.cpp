@@ -79,6 +79,9 @@ std::map<int,bool> LuaApplication::breakpoints;
 void (*LuaApplication::debuggerHook)(void *context,lua_State *L,lua_Debug *ar)=NULL;
 void *LuaApplication::debuggerContext=NULL;
 std::mutex LuaApplication::taskLock;
+std::condition_variable LuaApplication::frameWake;
+bool LuaApplication::taskStopping=false;
+
 static g_id luaCbGid=g_NextId();
 static lua_State *globalLuaState=NULL;
 
@@ -275,10 +278,26 @@ int LuaApplication::Core_yield(lua_State* L)
     while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
 
     if ((it!=LuaApplication::tasks_.end())&&(it->th)) {
-        //AsyncThread, just sleep
+        bool shouldStop=taskStopping;
         taskLock.unlock();
-        long long sleep=1000*luaL_checknumber(L,1);
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
+        if (shouldStop) {
+            lua_pushstring(L,"System stopping");
+            lua_error(L);
+        }
+        //AsyncThread, just sleep
+    	if (lua_isboolean(L,1))
+    	{
+    		if (lua_toboolean(L,1))
+    		{
+    			std::unique_lock lk(taskLock);
+                frameWake.wait(lk);
+    		}
+    	}
+    	else {
+            long long sleep=1000*luaL_checknumber(L,1);
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
+    	}
+
         return 0;
     }
     taskLock.unlock();
@@ -316,8 +335,9 @@ int LuaApplication::Core_yieldable(lua_State* L)
     bool isThread=(it!=LuaApplication::tasks_.end())&&(it->L==L);
     lua_pushboolean(L,lua_isyieldable(L));
     lua_pushboolean(L,isThread);
-    lua_pushboolean(L,isThread&&(it->autoYield));
-    return 3;
+    lua_pushboolean(L,isThread&&(it->autoYield||it->th));
+    lua_pushboolean(L,isThread&&(it->th));
+    return 4;
 }
 
 int LuaApplication::Core_asyncCall(lua_State* L)
@@ -1481,6 +1501,8 @@ void LuaApplication::deinitialize()
 
 	//Release all async tasks
     taskLock.lock();
+    taskStopping=true;
+    frameWake.notify_all();
     while (!tasks_.empty()) {
         AsyncLuaTask t=tasks_.front();
         if (t.th) {
@@ -1491,6 +1513,7 @@ void LuaApplication::deinitialize()
         tasks_.pop_front();
         luaL_unref(L,LUA_REGISTRYINDEX,t.taskRef);
     }
+    taskStopping=false;
     taskLock.unlock();
 
     //Schedule Tasks, at least one task should be run no matter if there is enough time or not
@@ -1801,6 +1824,7 @@ void LuaApplication::enterFrame(GStatus *status)
 	else
 		taskFrameTime_ = 0;
     taskLock.unlock();
+    frameWake.notify_all();
     application_->deleteAutounrefPool(pool);
 }
 

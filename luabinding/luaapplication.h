@@ -21,6 +21,7 @@ class Ticker;
 #include <map>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 #include <gglobal.h>
 
@@ -177,6 +178,8 @@ public:
     };
     static std::deque<AsyncLuaTask> tasks_;
     static std::mutex taskLock;
+    static std::condition_variable frameWake;
+    static bool taskStopping;
     static double meanFrameTime_; //Average frame duration
     static double meanFreeTime_; //Average time available for async tasks
     static unsigned long frameCounter_; //Global frame counter
