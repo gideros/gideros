@@ -250,7 +250,7 @@ static size_t readHelper(int fd, void* buf, size_t count) {
 		return 0;
 
 	size_t rem = endOffset - curr;
-
+#undef min
 	return ::read(fd, buf, std::min(rem, count));
 }
 

@@ -114,6 +114,7 @@ Sprite::Sprite(Application* application) :
 
 	alpha_ = 1;
 	colorTransform_ = 0;
+	effectsMode_ = CONTINUOUS;
 //	graphics_ = 0;
 
 	sfactor_ = (ShaderEngine::BlendFactor) -1;
@@ -376,9 +377,9 @@ void Sprite::updateEffects()
 	if (effectsMode_!=CONTINUOUS) {
 		if (!(changes_&INV_EFFECTS)) return;
 	}
-	effectsDrawing_=true;
-    float swidth,sheight;
 	if (!effectStack_.empty()) {
+		effectsDrawing_ = true;
+		float swidth, sheight;
 		float minx, miny, maxx, maxy;
 
         objectBounds(&minx, &miny, &maxx, &maxy,true);
@@ -445,9 +446,9 @@ void Sprite::updateEffects()
 				}
 			}
 		}
+		revalidate(INV_EFFECTS);
+		effectsDrawing_ = false;
 	}
-	revalidate(INV_EFFECTS);
-	effectsDrawing_=false;
 }
 
 void Sprite::redrawEffects() {

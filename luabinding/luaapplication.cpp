@@ -72,6 +72,7 @@
 #include "tlsf.h"
 #include "CoreRandom.cpp.inc"
 #include "memcache.cpp.inc"
+#include <mutex>
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
 int LuaApplication::debuggerBreak=0;
@@ -289,7 +290,7 @@ int LuaApplication::Core_yield(lua_State* L)
     	{
     		if (lua_toboolean(L,1))
     		{
-    			std::unique_lock lk(taskLock);
+    			std::unique_lock<std::mutex> lk(taskLock);
                 lua_enableThreads(L,-1);
                 frameWake.wait(lk);
                 lua_enableThreads(L,1);
@@ -394,7 +395,7 @@ static int Signal_wait(lua_State *L) {
     }
     bool ret=true;
     if (sig) {
-        std::unique_lock lk(LuaApplication::taskLock);
+        std::unique_lock<std::mutex> lk(LuaApplication::taskLock);
         lua_enableThreads(L,-1);
         if (dur==0)
             sig->wait(lk);
