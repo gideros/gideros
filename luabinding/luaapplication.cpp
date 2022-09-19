@@ -73,6 +73,7 @@
 #include "CoreRandom.cpp.inc"
 #include "memcache.cpp.inc"
 #include <mutex>
+#include <functional>
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
 int LuaApplication::debuggerBreak=0;
@@ -379,6 +380,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
 static int Signal_wait(lua_State *L) {
     std::condition_variable *sig=(std::condition_variable *) luaL_checkudata(L,1,"Signal");
     double dur=luaL_optnumber(L,2,0);
+    bool hasPredicate=(lua_type(L,3)==LUA_TFUNCTION);
     LuaApplication::taskLock.lock();
     std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
     while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
@@ -397,11 +399,24 @@ static int Signal_wait(lua_State *L) {
     if (sig) {
         std::unique_lock<std::mutex> lk(LuaApplication::taskLock);
         lua_enableThreads(L,-1);
+        std::function<bool()> p=[=]{
+    		if (LuaApplication::taskStopping) return true;
+    		if (!hasPredicate) return false;
+    		lua_pushvalue(L,3);
+    		lua_call(L,0,1);
+    		bool exit=lua_toboolean(L,-1);
+    		lua_pop(L,1);
+    		return exit;
+        };
         if (dur==0)
-            sig->wait(lk);
+            sig->wait(lk,p);
         else
-            ret=(sig->wait_for(lk,std::chrono::milliseconds((int)(dur*1000)))==std::cv_status::no_timeout);
+            ret=sig->wait_for(lk,std::chrono::milliseconds((int)(dur*1000)),p);
         lua_enableThreads(L,1);
+        if (LuaApplication::taskStopping) {
+            lua_pushstring(L,"System stopping");
+            lua_error(L);
+        }
     }
     lua_pushboolean(L,ret);
     return 1;
