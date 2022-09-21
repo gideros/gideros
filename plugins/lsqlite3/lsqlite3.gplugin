@@ -56,4 +56,7 @@ iOSProject.exportPluginFiles("lsqlite3",
         </replacelist>
     </template>
  </target>
+ <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
 </plugin>
