@@ -329,7 +329,9 @@ private:
 private:
 	QList<QStringList> fileAssociations_;
 
-	
+private slots:
+    void zoom(int zoom);
+
 private slots:
 	void find();
 	void findFirst();

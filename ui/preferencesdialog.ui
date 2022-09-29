@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>492</width>
-    <height>335</height>
+    <height>344</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -158,8 +158,8 @@
           <rect>
            <x>10</x>
            <y>150</y>
-           <width>271</width>
-           <height>101</height>
+           <width>281</width>
+           <height>141</height>
           </rect>
          </property>
          <layout class="QFormLayout" name="formLayout">
@@ -260,6 +260,38 @@
               <string>Only before</string>
              </property>
             </item>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="wordHighlighterDelay">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="showGroupSeparator" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="minimum">
+             <number>100</number>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+            <property name="singleStep">
+             <number>50</number>
+            </property>
+            <property name="stepType">
+             <enum>QAbstractSpinBox::DefaultStepType</enum>
+            </property>
+            <property name="value">
+             <number>800</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="wordHighlighterDelayLabel">
+            <property name="text">
+             <string>Highlight delay (ms):</string>
+            </property>
            </widget>
           </item>
          </layout>
