@@ -23,6 +23,7 @@ namespace Keys {
 		static Key foldCompact = "prefs:foldCompact";
         static Key wordHighlighter = "prefs:wordHighlighter";
         static Key wordHighlighterSimple = "prefs:wordHighlighterSimple";
+		static Key wordHighlighterDelay = "prefs:wordHighlighterDelay";
     }
     namespace Editor {
         static Key theme = "editorTheme";

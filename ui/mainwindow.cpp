@@ -135,7 +135,7 @@ MainWindow::MainWindow(QWidget *parent)
 /*	mdiArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea_->setViewMode(QMdiArea::TabbedView);
-	mdiArea_->setDocumentMode(true); */
+    mdiArea_->setDocumentMode(true); */
 
 //	mdiArea_->setTabShape(QTabWidget::Triangular);
 
@@ -303,7 +303,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     outputDock_ = new QDockWidget(tr("Output"), this);
-    outputDock_->setAllowedAreas(Qt::BottomDockWidgetArea);
+    outputDock_->setAllowedAreas(Qt::BottomDockWidgetArea|Qt::RightDockWidgetArea|Qt::LeftDockWidgetArea);
     outputDock_->setObjectName("output");
     outputDock_->setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
     outputDock_->setWidget(outputContainer);
@@ -381,7 +381,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui.actionExport_Pack, SIGNAL(triggered()), this, SLOT(exportPack()));
 
 //	connect(libraryWidget_, SIGNAL(modified()), this, SLOT(onModified()));
-	connect(libraryWidget_, SIGNAL(openRequest(const QString&, const QString&)), this, SLOT(onOpenRequest(const QString&, const QString&)));
+    connect(libraryWidget_, SIGNAL(openRequest(const QString&, const QString&)), this, SLOT(onOpenRequest(const QString&, const QString&)));
 	connect(libraryWidget_, SIGNAL(previewRequest(const QString&, const QString&)), this, SLOT(onPreviewRequest(const QString&, const QString&)));
 	connect(libraryWidget_, SIGNAL(insertIntoDocument(const QString&)), this, SLOT(onInsertIntoDocument(const QString&)));
 	connect(libraryWidget_, SIGNAL(automaticDownsizingEnabled(const QString&)), this, SLOT(downsize(const QString&)));
@@ -1693,6 +1693,7 @@ TextEdit* MainWindow::createTextEdit()
 	connect(textEdit, SIGNAL(copyAvailable(bool)), this, SLOT(updateUI()));
     connect(textEdit, SIGNAL(textChanged()), this, SLOT(updateUI()));
     connect(textEdit, SIGNAL(lookupSymbol(QString,int,int)), this, SLOT(lookupSymbol(QString,int,int)));
+    connect(textEdit->sciScintilla(), SIGNAL(zoom(int)), this, SLOT(zoom(int)));
     return textEdit;
 }
 
@@ -1714,62 +1715,59 @@ void MainWindow::insertColorInCode()
 #ifdef SCINTILLAEDIT_H
 	TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
 
-	if(textEdit){
-	QColor c;
+    if(textEdit)
+    {
+        QColor c;
 
-	if (textEdit->hasSelectedText()){
+        if (textEdit->hasSelectedText())
+        {
+            QString sel = textEdit->getSelectedText();
 
-		QString sel = textEdit->getSelectedText();
+            if (!sel.isEmpty() && sel.startsWith("0x"))
+            {
+                c.setNamedColor(sel.replace("0x", "#"));
+            }
+            else
+            {
+                QMessageBox::information(this, "Information", "The selected text is not a valid color syntax!");
+                return;
+            }
+        }
+        else
+        {
+            c = Qt::white;
+        }
 
-		if (!sel.isEmpty() && sel.startsWith("0x")){
-			c.setNamedColor(sel.replace("0x", "#"));
-		}else{
-			QMessageBox::information(this, "Information", "The selected text is not a valid color syntax!");
-			return;
-		}
-	}else{
-		c = QColor("#ffffff");
-	}
+        const QColor color = QColorDialog::getColor(c, nullptr, "Select Color", QColorDialog::ColorDialogOption::DontUseNativeDialog);
 
-	QColorDialog* CD = new QColorDialog(c);
-	CD->setWindowFlags(Qt::Widget);
-	CD->setOptions(QColorDialog::DontUseNativeDialog);
-	CD->layout()->setContentsMargins(8, 8, 8, 8);
+        if (color.isValid())
+        {
+            textEdit->sciScintilla()->beginUndoAction();
 
-	connect(CD, &QColorDialog::currentColorChanged, [=](const QColor &color) {
-						textEdit->sciScintilla()->beginUndoAction();
-						
-						const QString& replaceText = color.name().replace("#", "0x");
-						
-						int from , to;
-						if (textEdit->hasSelectedText()){
-							from = textEdit->sciScintilla()->selectionStart();
-							to = textEdit->sciScintilla()->selectionEnd();
-							textEdit->sciScintilla()->setTargetRange(from,to);
-							textEdit->sciScintilla()->replaceTarget(replaceText.length(), replaceText.toUtf8());
-							textEdit->sciScintilla()->setSel(from, from + replaceText.length());
-							textEdit->sciScintilla()->setFocus(true);
-							return;
-						}else{
-							from = textEdit->sciScintilla()->currentPos();
-							textEdit->sciScintilla()->insertText(from, replaceText.toUtf8());
-							textEdit->sciScintilla()->setSel(from, from + replaceText.length());
-							textEdit->sciScintilla()->setFocus(true);
-							return;
-						}
-						
-						textEdit->sciScintilla()->endUndoAction();
-	});
-	CD->exec();
+            const QString& replaceText = color.name().replace("#", "0x");
+
+            if (textEdit->hasSelectedText())
+            {
+                auto from = textEdit->sciScintilla()->selectionStart();
+                auto to = textEdit->sciScintilla()->selectionEnd();
+
+                textEdit->sciScintilla()->setTargetRange(from,to);
+                textEdit->sciScintilla()->replaceTarget(replaceText.length(), replaceText.toUtf8());
+                textEdit->sciScintilla()->setSel(from, from + replaceText.length());
+                textEdit->sciScintilla()->setFocus(true);
+            }
+            else
+            {
+                auto from = textEdit->sciScintilla()->currentPos();
+
+                textEdit->sciScintilla()->insertText(from, replaceText.toUtf8());
+                textEdit->sciScintilla()->setSel(from, from + replaceText.length());
+                textEdit->sciScintilla()->setFocus(true);
+            }
+            textEdit->sciScintilla()->endUndoAction();
+        }
 #endif
-	}
-	//~ else
-	//~ {
-		//~ bool isProjectOpen = projectFileName_.isEmpty() == false;
-		//~ if (isProjectOpen){
-			//~ QMessageBox::information(this, "Information", "There is no selected color syntax!");
-		//~ }
-	//~ }
+    }
 }
 
 void MainWindow::setWrap()
@@ -1779,9 +1777,8 @@ void MainWindow::setWrap()
 	if (textEdit == NULL)
 		return;
 		
-	bool wrap_mode;
+    bool wrap_mode = false;
 
-	if (textEdit)
 #ifdef SCINTILLAEDIT_H
 	wrap_mode = textEdit->sciScintilla()->wrapMode();
 	textEdit->sciScintilla()->setWrapMode(wrap_mode ? 0 : 1);
@@ -2493,6 +2490,18 @@ void MainWindow::playerSettings()
 void MainWindow::cancelUpload()
 {
 
+}
+
+void MainWindow::zoom(int zoom)
+{
+    foreach (MdiSubWindow* window, mdiArea_->subWindowList())
+    {
+        TextEdit* textEdit = qobject_cast<TextEdit*>(window);
+        if (textEdit)
+            textEdit->sciScintilla()->setZoom(zoom);
+    }
+
+    showStatusbarMessage(QString("Zoom level: %1").arg(zoom), 3500);
 }
 
 void MainWindow::find()
