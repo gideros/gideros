@@ -129,23 +129,37 @@ void PreferencesDialog::setupEditorPrefs()
             }
     );
     
-    ui->wordHighlighterCheckBox->setChecked(settings.value(Keys::Prefs::wordHighlighter, 1).toBool());
+
+    bool wordHighlighterEnabled = settings.value(Keys::Prefs::wordHighlighter, 1).toBool();
+
+    ui->wordHighlighterCheckBox->setChecked(wordHighlighterEnabled);
     
     connect(ui->wordHighlighterCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
             [this](int state) {
                 this->settings.setValue(Keys::Prefs::wordHighlighter, state);
                 this->ui->wordHighlighterSimpleCheckBox->setEnabled(state);
+                this->ui->wordHighlighterDelay->setEnabled(state);
                 this->updateEditors([state](TextEdit* te) { te->wordHighlighter()->setEnabled(state); });
             }
     );
     
-    ui->wordHighlighterSimpleCheckBox->setEnabled(ui->wordHighlighterCheckBox->isChecked());
+    ui->wordHighlighterSimpleCheckBox->setEnabled(wordHighlighterEnabled);
     ui->wordHighlighterSimpleCheckBox->setChecked(settings.value(Keys::Prefs::wordHighlighterSimple, 1).toBool());
     
     connect(ui->wordHighlighterSimpleCheckBox, QOverload<int>::of(&QCheckBox::stateChanged), this,
             [this](int state) {
                 this->settings.setValue(Keys::Prefs::wordHighlighterSimple, state);
                 this->updateEditors([state](TextEdit* te) { te->wordHighlighter()->setSimpleMode(state); });
+            }
+    );
+
+    ui->wordHighlighterDelay->setEnabled(wordHighlighterEnabled);
+    ui->wordHighlighterDelay->setValue(settings.value(Keys::Prefs::wordHighlighterDelay, 800).toInt());
+
+    connect(ui->wordHighlighterDelay, QOverload<int>::of(&QSpinBox::valueChanged), this,
+            [this](int new_value) {
+                this->settings.setValue(Keys::Prefs::wordHighlighterDelay, new_value);
+                this->updateEditors([new_value](TextEdit* te) { te->wordHighlighter()->setDelay(new_value); });
             }
     );
     
