@@ -686,6 +686,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 
         FILL_BOOL("equalizeCells",equalizeCells);
         FILL_BOOL("resizeContainer",resizeContainer);
+        FILL_BOOL("worldAlign",worldAlign);
         FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
         FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
         FILL_NUM("zOffset",zOffset);
@@ -788,6 +789,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_NUM("insetTop",pInsets.top); STOR_NUM("insetLeft",pInsets.left);
         STOR_NUM("insetBottom",pInsets.bottom); STOR_NUM("insetRight",pInsets.right);
         STOR_BOOL("equalizeCells",equalizeCells);
+        STOR_BOOL("worldAlign",worldAlign);
         STOR_BOOL("resizeContainer",resizeContainer);
         STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
         STOR_NUM("gridAnchorX",gridAnchorX); STOR_NUM("gridAnchorY",gridAnchorY);
@@ -1803,9 +1805,10 @@ int SpriteBinder::getBounds(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	Sprite* targetCoordinateSpace = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+	bool visible=lua_toboolean(L,3);
 
 	float minx, miny, maxx, maxy;
-	sprite->getBounds(targetCoordinateSpace, &minx, &miny, &maxx, &maxy);
+	sprite->getBounds(targetCoordinateSpace, &minx, &miny, &maxx, &maxy, visible);
 
 	if (minx > maxx || miny > maxy)
 	{

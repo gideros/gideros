@@ -1552,7 +1552,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 }
 
 void Sprite::getBounds(const Sprite* targetCoordinateSpace, float* minx,
-        float* miny, float* maxx, float* maxy) {
+        float* miny, float* maxx, float* maxy, bool visible) {
 	bool found = false;
 	Matrix transform;
 	const Sprite *curr = this;
@@ -1577,7 +1577,7 @@ void Sprite::getBounds(const Sprite* targetCoordinateSpace, float* minx,
 	}
 
 	std::stack<Matrix4> pxform;
-    boundsHelper(transform, minx, miny, maxx, maxy, pxform, false, false,BOUNDS_UNSPEC);
+    boundsHelper(transform, minx, miny, maxx, maxy, pxform, visible, false,BOUNDS_UNSPEC);
 }
 
 void Sprite::setBlendFunc(ShaderEngine::BlendFactor sfactor,

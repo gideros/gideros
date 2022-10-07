@@ -72,7 +72,18 @@ Particles::~Particles() {
 
 void Particles::clearParticles() {
 	particleCount=0;
-    dead_.clear();
+	int tsize=0;
+	ttl_.resize(tsize);
+	points_.resize(tsize * 16);
+	colors_.resize(tsize * 16);
+    texcoords_.resize(tsize * 16);
+    speeds_.resize(tsize * 5);
+    decay_.resize(tsize * 6);
+    acceleration_.resize(tsize * 6);
+    originalColors_.resize(tsize);
+	indices_.resize(tsize * 6);
+	tag_.resize(tsize);
+	dead_.clear();
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 

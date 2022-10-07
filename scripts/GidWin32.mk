@@ -20,21 +20,20 @@ WIN32_RELEASE=$(RELEASE)/Templates/win32/WindowsDesktopTemplate
 
 LIBS_lua+=$(WIN32_BUILDDIR)/gvfs.dll
 
-INCLUDEPATHS_gid+=libgid/include/win32 libgid/external/curl-7.40.0-devel-mingw32/include
+INCLUDEPATHS_gid+=
 OBJFILES_gid+= $(addprefix libgid/src/win32/,gapplication-win32 gaudio-win32 ggeolocation-win32 ghttp-win32 \
 				 ginput-win32 gui-win32)
 LIBS_gid+= \
  libgid/external/jpeg-9/build/mingw48_32/libjpeg.a \
- libgid/external/libpng-1.6.2/build/mingw481_win32/libpng.a \
- libgid/external/mpg123-1.15.3/lib/mingw48_32/libmpg123.a \
- libgid/external/openal-soft-1.13/build/mingw48_32/libOpenAL32.dll.a \
- libgid/external/zlib-1.2.8/build/mingw48_32/libzlibx.a \
- libgid/external/curl-7.40.0-devel-mingw32/lib/libcurldll.a \
- -lglew32 -lopengl32 \
- $(WIN32_BUILDDIR)/gvfs.dll
+ -lglew32 -lopengl32 -lcurl \
+ $(addprefix $(WIN32_BUILDDIR)/,openal.dll mp3.dll gvfs.dll)
 #LIBS_gid+=libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/lib/x86/libpthreadGC2.a \
 
 LIBS_gideros+= $(addprefix $(WIN32_BUILDDIR)/,gid.dll lua.dll pystring.dll)
+
+DEFINES_openal+=HAVE_WINMM  HAVE_UNISTD_H "ALC_API=__declspec\\\(dllexport\\\)" "AL_API=__declspec\\\(dllexport\\\)"
+OBJFILES_openal+=$(addprefix libgid/external/openal-soft/alc/backends/,winmm)
+LIBS_openal+=-lwinmm
 
 ##PLAYER
 INCLUDEPATHS_player+=libgid/include/win32
@@ -46,7 +45,6 @@ INCLUDEPATHS_player+=2dsg/gfxbackends/gl2
 INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
 DEFINES_player+=WIN32=1
 LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.dll gideros.dll) \
-	libgid/external/zlib-1.2.8/build/mingw48_32/libzlibx.a \
 	-lglew32 \
 	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm
 
@@ -89,7 +87,7 @@ $(WIN32_BUILDDIR)/%.o : %.c
 depend:
 	g++ $(INCLUDEPATHS) -MM ../libgvfs/*.cpp ../libgvfs/*.c > libgvfs.dep
 			
-win32.libs: sdk.win32libs.dir gvfs.win32.libs pystring.win32.libs lua.win32.libs gid.win32.libs gideros.win32.libs
+win32.libs: sdk.win32libs.dir gvfs.win32.libs pystring.win32.libs lua.win32.libs gid.win32.libs gideros.win32.libs mp3.win32.libs openal.win32.libs
 
 win32.app: player.win32.app
 
@@ -100,6 +98,8 @@ win32.libs.install: win32.libs
 	cp $(WIN32_BUILDDIR)/lua.dll $(WIN32_RELEASE)
 	cp $(WIN32_BUILDDIR)/gideros.dll $(WIN32_RELEASE)
 	cp $(WIN32_BUILDDIR)/pystring.dll $(WIN32_RELEASE)
+	cp $(WIN32_BUILDDIR)/mp3.dll $(WIN32_RELEASE)
+	cp $(WIN32_BUILDDIR)/openal.dll $(WIN32_RELEASE)
 
 %.win32.plugin:
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "win32" ]; then cd win32; ROOT=$$R/$(ROOT) RELEASE=$$R/$(RELEASE) $(MINGWMAKE) $(MAKEJOBS); fi
@@ -120,11 +120,13 @@ win32.libs.install: win32.libs
 win32.install: win32.libs.install win32.plugins.install win32.app
 	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/WindowsDesktopTemplate.exe
 	cp $(WIN32_BUILDDIR)/player-console.exe $(WIN32_RELEASE)/WindowsDesktopTemplate-Console.exe
+	cp win32_example/cacert.pem $(WIN32_RELEASE)
 	cp $(WIN32_BIN)/glew32.dll $(WIN32_RELEASE)
-	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
-	cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
+	cp $(WIN32_BIN)/{libcurl*,libidn*,libnghttp*,libbrotli*,libpsl*,libssh*,libiconv*,libintl*,libzstd,zlib1,libunistring*}.dll $(WIN32_RELEASE)
+	#cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
+	#cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
 	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(WIN32_BIN)/$$f.dll $(WIN32_RELEASE); done
-	strip $(addprefix $(WIN32_RELEASE)/,WindowsDesktopTemplate.exe WindowsDesktopTemplate-Console.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
+	strip $(addprefix $(WIN32_RELEASE)/,WindowsDesktopTemplate.exe WindowsDesktopTemplate-Console.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll openal.dll mp3.dll)
 
 win32.clean: win32.plugins.clean
 	rm -rf $(WIN32_BUILDDIR) 

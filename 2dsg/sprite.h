@@ -395,7 +395,7 @@ public:
 		return allSprites_;
 	}
 
-    void getBounds(const Sprite* targetCoordinateSpace, float* minx, float* miny, float* maxx, float* maxy);
+    void getBounds(const Sprite* targetCoordinateSpace, float* minx, float* miny, float* maxx, float* maxy, bool visible);
 
 	void clearBlendFunc();
 	void setBlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor);

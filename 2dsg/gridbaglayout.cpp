@@ -592,6 +592,8 @@ void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w
     h = t + insets.top + insets.bottom + ((info.height>1)?((info.height-1)*cellSpacingY):0);
 }
 
+#define WALIGNF(x) roundf(x)
+#define WALIGN(x) (worldAlign?WALIGNF(x):x)
 void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	Sprite *comp;
     size_t compindex;
@@ -779,8 +781,15 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 * that has been collected.
 	 */
 
-	info.startx = diffw*gridAnchorX + insets.left;
-	info.starty = diffh*gridAnchorY + insets.top;
+    if (worldAlign) {
+        for (i = 0; i < info.width; i++)
+            info.minWidth[i] = WALIGNF(info.minWidth[i]);
+        for (i = 0; i < info.height; i++)
+            info.minHeight[i] = WALIGNF(info.minHeight[i]);
+    }
+
+    info.startx = WALIGN(diffw*gridAnchorX + insets.left);
+    info.starty = WALIGN(diffh*gridAnchorY + insets.top);
 
     layoutInfo = info;
     std::stack<Sprite *> stack;
@@ -794,28 +803,30 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
             if ((!comp->visible())||(!comp->layoutConstraints))
                 continue;
             constraints = lookupConstraints(comp);
+            float csx=WALIGN(cellSpacingX);
+            float csy=WALIGN(cellSpacingY);
 
             r.x = info.startx;
             for (i = 0; i < constraints->tempX; i++)
-                r.x += info.minWidth[i] + cellSpacingX;
+                r.x += info.minWidth[i] + csx;
 
             r.y = info.starty;
             for (i = 0; i < constraints->tempY; i++)
-                r.y += info.minHeight[i] + cellSpacingY;
+                r.y += info.minHeight[i] + csy;
 
             r.width = 0;
             for (i = constraints->tempX;
                     i < (constraints->tempX + constraints->tempWidth); i++) {
-                r.width += info.minWidth[i] + cellSpacingX;
+                r.width += info.minWidth[i] + csx;
             }
-            if (constraints->tempWidth>0) r.width-=cellSpacingX;
+            if (constraints->tempWidth>0) r.width-=csx;
 
             r.height = 0;
             for (i = constraints->tempY;
                     i < (constraints->tempY + constraints->tempHeight); i++) {
-                r.height += info.minHeight[i] + cellSpacingY;
+                r.height += info.minHeight[i] + csy;
             }
-            if (constraints->tempHeight>0) r.height-=cellSpacingY;
+            if (constraints->tempHeight>0) r.height-=csy;
 
             AdjustForGravity(comp, constraints, r);
 
@@ -830,8 +841,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
             }
 
             //Last step: displace the component according to its origin/offset
-            r.x+=constraints->offsetX+constraints->originX*r.width;
-            r.y+=constraints->offsetY+constraints->originY*r.height;
+            r.x+=WALIGN(constraints->offsetX+constraints->originX*r.width);
+            r.y+=WALIGN(constraints->offsetY+constraints->originY*r.height);
 
             //In case of groups, correct placement
             float px=0,py=0;

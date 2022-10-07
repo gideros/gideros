@@ -510,28 +510,63 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 0,m);
+    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
   else if (iMsg==WM_LBUTTONUP){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 0,m);
+    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
-  else if (iMsg==WM_MOUSEMOVE && wParam & MK_LBUTTON !=0){
+  else if (iMsg==WM_RBUTTONDOWN){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam),m);
+    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 2,m);
+    return 0;
+  }
+  else if (iMsg==WM_RBUTTONUP){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 2,m);
+    return 0;
+  }
+  else if (iMsg==WM_MBUTTONDOWN){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 4,m);
+    return 0;
+  }
+  else if (iMsg==WM_MBUTTONUP){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 4,m);
+    return 0;
+  }
+  else if (iMsg==WM_MOUSEMOVE){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  int b=0;
+	  if (wParam&MK_LBUTTON) b|=1;
+	  if (wParam&MK_RBUTTON) b|=2;
+	  if (wParam&MK_MBUTTON) b|=4;
+	  if (b)
+		  ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam),b,m);
+	  else
+		  ginputp_mouseHover(LOWORD(lParam), HIWORD(lParam),b,m);
     return 0;
   }
   else if (iMsg==WM_MOUSEWHEEL){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,HIWORD(wParam),m);
+    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,GET_WHEEL_DELTA_WPARAM(wParam),m);
     return 0;
   }
   else if (iMsg==WM_KEYDOWN){
@@ -548,6 +583,30 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
 	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
     ginputp_keyUp(wParam,m);
+    return 0;
+  }
+  else if (iMsg==WM_CHAR){
+	char sc[4];
+	char *obuf=sc;
+	int uni=wParam;
+	 if (uni<0x80)
+	  *(obuf++)=uni;
+	 else
+	 {
+	  if (uni<0x800)
+	  {
+	   *(obuf++)=0xC0|(uni>>6);
+	   *(obuf++)=0x80|(uni&0x3F);
+	  }
+	  else
+	  {
+	    *(obuf++)=0xE0|(uni>>12);
+	    *(obuf++)=0x80|((uni>>6)&0x3F);
+	    *(obuf++)=0x80|(uni&0x3F);
+	  }
+	 }
+	 *(obuf++)=0;
+    ginputp_keyChar(sc);
     return 0;
   }
   else if (iMsg==WM_PAINT){

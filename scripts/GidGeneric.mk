@@ -60,6 +60,14 @@ OBJFILES_gid += $(addprefix libgid/external/libxmp-4.3/src/loaders/,$(XMP_LOADER
 OBJFILES_gid += \
 	libgid/external/libxmp-4.3/lite/src/format \
 	libgid/external/libxmp-4.3/lite/src/loaders/mod_load
+OBJFILES_gid+=$(addprefix libgid/external/zlib-1.2.8/,$(notdir $(basename $(wildcard libgid/external/zlib-1.2.8/*.c))))
+OBJFILES_gid+=$(addprefix libgid/external/libpng-1.6.2/,png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans \
+	pngwio pngwrite pngwtran pngwutil)
+OBJFILES_gid+=$(addprefix libgid/external/jpeg-9/,jaricom jdapimin jdapistd jdarith jdatadst jdatasrc jdcoefct jdcolor jddctmgr jdhuff jdinput \
+	jdmainct jdmarker jdmaster jdmerge jdpostct jdsample jdtrans jerror jfdctflt jfdctfst jfdctint \
+	jidctflt jidctfst jidctint jquant1 jquant2 jutils jmemmgr jmemnobs jcomapi \
+	jcapimin jcapistd jcarith jccoefct jccolor jcdctmgr jchuff jcinit jcmainct \
+	jcmarker jcmaster jcparam jcprepct jcsample jctrans)
 
 DEFINES_gid=GIDEROS_LIBRARY _REENTRANT LIBXMP_CORE_PLAYER
 
@@ -79,7 +87,7 @@ INCLUDEPATHS_player = libgvfs libgideros $(LUA_INCLUDE) $(LUA_INCLUDE_CORE) libp
 	libgid/external/snappy-1.1.0 \
 	libgid/external/libpng-1.6.2 \
 	libgid/external/jpeg-9 \
-	libgid/external/openal-soft-1.13/include/AL \
+	libgid/external/openal-soft/include/AL \
 	libgid/external/mpg123-1.15.3/src/libmpg123 \
 	libgid/external/zlib-1.2.8 \
 	libgid/external/libxmp-4.3/include \
@@ -102,4 +110,27 @@ OBJFILES_player+= $(addprefix libgid/external/freetype-$(FREETYPE_VER)/src/, \
 	$(addprefix base/,ftbbox ftbitmap ftglyph ftlcdfil ftstroke ftbase ftsystem ftinit ftgasp) \
 	raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype cff/cff gzip/ftgzip  \
 	psnames/psnames pshinter/pshinter)
-#2.4.12  base/ftxf86.c
+
+OBJFILES_player+=$(addprefix libgid/external/zlib-1.2.8/,$(notdir $(basename $(wildcard libgid/external/zlib-1.2.8/*.c))))
+
+DEFINES_mp3=OPT_GENERIC REAL_IS_FLOAT HAVE_UNISTD_H _REENTRANT
+INCLUDEPATHS_mp3=\
+	libgid/external/mpg123-1.15.3/src/libmpg123 \
+	libgid/external/mpg123-1.15.3/src
+OBJFILES_mp3+=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,\
+	compat dct64 dither equalizer feature format frame icy icy2utf8 id3 index layer1 layer2 layer3 \
+	libmpg123 ntom optimize parse readers stringbuf synth synth_8bit synth_real synth_s32 tabinit)
+
+DEFINES_openal=AL_ALEXT_PROTOTYPES OPENAL_SUBDIR_AL RESTRICT=__restrict
+INCLUDEPATHS_openal=$(addprefix libgid/external/openal-soft/,. core common alc include)
+OBJFILES_openal+=$(addprefix libgid/external/openal-soft/, \
+			$(addprefix al/,auxeffectslot buffer effect error event extension filter listener source state) \
+			$(addprefix al/effects/,autowah chorus compressor convolution dedicated distortion echo effects equalizer fshifter modulator null pshifter reverb vmorpher) \
+			$(addprefix alc/,alc alconfig alu context device panning) \
+			$(addprefix alc/effects/,autowah chorus compressor convolution dedicated distortion echo equalizer fshifter modulator null pshifter reverb vmorpher) \
+			$(addprefix alc/backends/,base null loopback) \
+			$(addprefix common/,alcomplex alfstream almalloc alstring polyphase_resampler ringbuffer strutils threads) \
+			$(addprefix core/,ambdec ambidefs bformatdec bs2b bsinc_tables buffer_storage context converter cpu_caps devformat device effectslot except fmt_traits fpu_ctrl helpers hrtf logging mastering mixer uhjfilter uiddefs voice) \
+			$(addprefix core/filters/,biquad nfc splitter) \
+			$(addprefix core/mixer/,mixer_c) \
+	)			
