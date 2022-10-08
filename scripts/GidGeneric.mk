@@ -37,7 +37,7 @@ INCLUDEPATHS_gid = libgid/external/glew-1.10.0/include \
 	libgid/external/snappy-1.1.0 \
 	libgid/external/libpng-1.6.2 \
 	libgid/external/jpeg-9 \
-	libgid/external/openal-soft-1.13/include/AL \
+	libgid/external/openal-soft/include/AL \
 	libgid/external/zlib-1.2.8 \
 	libgid/external/libxmp-4.3/include \
 	libgid/external/libxmp-4.3/src \

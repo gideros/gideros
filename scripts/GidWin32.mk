@@ -20,7 +20,7 @@ WIN32_RELEASE=$(RELEASE)/Templates/win32/WindowsDesktopTemplate
 
 LIBS_lua+=$(WIN32_BUILDDIR)/gvfs.dll
 
-INCLUDEPATHS_gid+=
+INCLUDEPATHS_gid+= libgid/include/win32
 OBJFILES_gid+= $(addprefix libgid/src/win32/,gapplication-win32 gaudio-win32 ggeolocation-win32 ghttp-win32 \
 				 ginput-win32 gui-win32)
 LIBS_gid+= \
@@ -87,7 +87,7 @@ $(WIN32_BUILDDIR)/%.o : %.c
 depend:
 	g++ $(INCLUDEPATHS) -MM ../libgvfs/*.cpp ../libgvfs/*.c > libgvfs.dep
 			
-win32.libs: sdk.win32libs.dir gvfs.win32.libs pystring.win32.libs lua.win32.libs gid.win32.libs gideros.win32.libs mp3.win32.libs openal.win32.libs
+win32.libs: sdk.win32libs.dir gvfs.win32.libs pystring.win32.libs lua.win32.libs mp3.win32.libs openal.win32.libs gid.win32.libs gideros.win32.libs
 
 win32.app: player.win32.app
 
