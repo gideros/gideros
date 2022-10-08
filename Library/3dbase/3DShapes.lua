@@ -5,6 +5,7 @@ Mesh3D.MODE_BUMP=4
 Mesh3D.MODE_SHADOW=8
 Mesh3D.MODE_ANIMATED=16
 Mesh3D.MODE_INSTANCED=32
+Mesh3D.MODE_COLORED=64
 
 function Mesh3D:init()
 	self.mode=0
