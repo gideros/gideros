@@ -229,7 +229,33 @@ void g_exit()
 }
 
 bool g_checkStringProperty(bool isSet, const char* what){
-    return false;
+    if (isSet){
+        if ( (strcmp(what, "cursor") == 0)
+             || (strcmp(what, "windowTitle") == 0)
+             || (strcmp(what, "windowModel") == 0)
+             || (strcmp(what, "clipboard") == 0)
+             || (strcmp(what, "mkDir") == 0)
+             || (strcmp(what, "documentDirectory") == 0)
+             || (strcmp(what, "temporaryDirectory") == 0)
+           )
+        {
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        if ( (strcmp(what, "openFileDialog") == 0)
+             || (strcmp(what, "openDirectoryDialog") == 0)
+             || (strcmp(what, "saveFileDialog") == 0)
+             || (strcmp(what, "directory") == 0)
+           )
+        {
+            return true;
+        }else{
+            return false;
+        }
+
+    }
 }
 
 void g_setProperty(const char* what, const char* arg){

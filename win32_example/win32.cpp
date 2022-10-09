@@ -230,26 +230,26 @@ void W32Screen::getMaxSize(int &w,int &h)
 	h=monitor_info.rcMonitor.bottom-monitor_info.rcMonitor.top;
 }
 
-void W32Screen::setPosition(int w,int h)
+void W32Screen::setPosition(int x,int y)
 {
 	if (!wnd) return;
     RECT rect;
-    rect.top=w;
-    rect.left=h;
-    rect.right=0;
-    rect.bottom=0;
+    rect.top=x;
+    rect.left=y;
+    rect.right=x;
+    rect.bottom=y;
 
     AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
-    SetWindowPos(wnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOSIZE);
+    SetWindowPos(wnd,HWND_TOP,rect.left,rect.top, rect.right-rect.left, rect.bottom-rect.top, SWP_NOSIZE);
 }
 
-void W32Screen::getPosition(int &w,int &h)
+void W32Screen::getPosition(int &x,int &y)
 {
 	if (!wnd) return;
 	RECT rect;
 	GetClientRect(wnd,&rect);
-	w=rect.left;
-	h=rect.top;
+	x=rect.left;
+	y=rect.top;
 }
 
 int W32Screen::getId()
@@ -309,7 +309,7 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 	  pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	  pfd.iPixelType = PFD_TYPE_RGBA;
 	  pfd.cColorBits = 24;
-	  pfd.cDepthBits = 16;
+	  pfd.cDepthBits = 24;
 	  pfd.cStencilBits = 8;
 	  pfd.iLayerType = PFD_MAIN_PLANE;
 
@@ -387,7 +387,7 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
   pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
   pfd.iPixelType = PFD_TYPE_RGBA;
   pfd.cColorBits = 24;
-  pfd.cDepthBits = 16;
+  pfd.cDepthBits = 24;
   pfd.cStencilBits = 8;
   pfd.iLayerType = PFD_MAIN_PLANE;
 
