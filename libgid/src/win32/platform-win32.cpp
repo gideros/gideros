@@ -225,7 +225,11 @@ int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
 }
 
 int getKeyboardModifiers() {
-	return 0;
+	int m=0;
+	if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
+	if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
+	if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
+	return m;
 }
 
 static int s_fps = 60;
