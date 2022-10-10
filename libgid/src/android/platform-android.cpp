@@ -262,31 +262,31 @@ void g_setFps(int fps)
 
 }
 
-bool g_checkStringProperty(bool isSet, const char* what){
-    return false;
-}
-void g_setProperty(const char* what, const char* arg){
+std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
+{
+	std::vector<gapplication_Variant> rets;
+	gapplication_Variant r;
+	if (!set) {
+		JNIEnv *env = g_getJNIEnv();
 
-}
-
-static std::string g_propResult;
-const char* g_getProperty(const char* what, const char* arg){
-    JNIEnv *env = g_getJNIEnv();
-
-	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
-	jmethodID getMethodID = env->GetStaticMethodID(localRefCls, "getProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-	jstring jwhat = env->NewStringUTF(what?what:"");
-	jstring jarg = env->NewStringUTF(arg?arg:"");
-	jstring jresult = (jstring)env->CallStaticObjectMethod(localRefCls, getMethodID,jwhat,jarg);
-	const char *result = env->GetStringUTFChars(jresult, NULL);
-	g_propResult = result;
-	env->ReleaseStringUTFChars(jresult, result);
-	env->DeleteLocalRef(jresult);
-	env->DeleteLocalRef(jwhat);
-	env->DeleteLocalRef(jarg);
-	env->DeleteLocalRef(localRefCls);
-
-	return g_propResult.c_str();
+		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+		jmethodID getMethodID = env->GetStaticMethodID(localRefCls, "getProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+		jstring jwhat = env->NewStringUTF(what?what:"");
+		jstring jarg = env->NewStringUTF(arg?arg:"");
+		jstring jresult = (jstring)env->CallStaticObjectMethod(localRefCls, getMethodID,jwhat,jarg);
+		if (jresult) {
+			r.type=gapplication_Variant::STRING;
+			const char *result = env->GetStringUTFChars(jresult, NULL);
+			r.s= result;
+			rets.push_back(r);
+			env->ReleaseStringUTFChars(jresult, result);
+			env->DeleteLocalRef(jresult);
+		}
+		env->DeleteLocalRef(jwhat);
+		env->DeleteLocalRef(jarg);
+		env->DeleteLocalRef(localRefCls);
+	}
+	return rets;
 }
 
 bool gapplication_checkPermission(const char *what) {

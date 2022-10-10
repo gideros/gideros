@@ -48,16 +48,18 @@ LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.d
 	-lglew32 \
 	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm
 
+DEFINES+=UNICODE_
+
 ##RULES
 %.win32.libs: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
 	#BUILDING $*
 	@mkdir -p $(addprefix $(WIN32_BUILDDIR)/,$(dir $(sort $(OBJFILES_$*))))
 	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*)" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" LIBNAME=$* $(MAKE) $(MAKEJOBS) -f $(firstword $(MAKEFILE_LIST)) win32.libs.build
 
-win32.libs.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
+win32.libs.build: CXXFLAGS = -municode -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#LINK $(LIBNAME).dll
-	@$(WIN32_CXX) -g -o $(WIN32_BUILDDIR)/$(LIBNAME).dll -shared $^ $(LIBS) 
+	@$(WIN32_CXX) -municode -g -o $(WIN32_BUILDDIR)/$(LIBNAME).dll -shared $^ $(LIBS) 
 	cp $(WIN32_BUILDDIR)/$(LIBNAME).dll $(SDK)/lib/win32
 
 %.win32.app: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
@@ -66,10 +68,10 @@ win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mwindows" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$* $(MAKE) $(MAKEJOBS) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
 	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mconsole" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$*-console $(MAKE) $(MAKEJOBS) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
 
-win32.app.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
+win32.app.build: CXXFLAGS = -municode -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 win32.app.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#EXE $(APPNAME) $(LIBS)
-	@$(WIN32_CXX) -g -o $(WIN32_BUILDDIR)/$(APPNAME) $^ $(LIBS)
+	@$(WIN32_CXX) -municode -g -o $(WIN32_BUILDDIR)/$(APPNAME) $^ $(LIBS)
 
 
 $(WIN32_BUILDDIR)/%.o : %.cpp

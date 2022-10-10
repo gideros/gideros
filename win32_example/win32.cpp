@@ -1,4 +1,5 @@
 #include <iostream>
+#include <libnetwork.h>
 #include <windows.h>
 
 #include "gl/glew.h"
@@ -16,7 +17,6 @@
 #include <string>
 #include <direct.h>
 #include <binder.h>
-#include <libnetwork.h>
 #include "ginput-win32.h"
 #include "luaapplication.h"
 #include "platform.h"
@@ -49,11 +49,31 @@ extern "C" {
   void setWin32Stuff(HINSTANCE hInst, HWND hwnd);
 }
 
+static std::wstring ws(const char *str)
+{
+    if (!str) return std::wstring();
+    int sl=strlen(str);
+    int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+    std::wstring res(sz, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+    return res;
+}
+
+static std::string us(const wchar_t *str)
+{
+    if (!str) return std::string();
+    int sl=wcslen(str);
+    int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+    std::string res(sz, 0);
+    WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+    return res;
+}
+
 #define ID_TIMER   1
 
 HWND hwndcopy;
 
-char commandLine[256];
+std::string commandLine;
 // int dxChrome,dyChrome;
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
@@ -75,19 +95,18 @@ static void luaError(const char *error)
 
 static void loadPlugins()
 {
-  static char fullname[MAX_PATH];
+  static wchar_t fullname[MAX_PATH];
   WIN32_FIND_DATA fd; 
-  HANDLE hFind = FindFirstFile("plugins\\*.dll", &fd); 
+  HANDLE hFind = FindFirstFile(L"plugins\\*.dll", &fd);
 
   if(hFind != INVALID_HANDLE_VALUE) { 
     do { 
       // read all (real) files in current folder
       // , delete '!' read other 2 default folder . and ..
       if (! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
-
-	strcpy(fullname,"plugins\\");
-	strcat(fullname,fd.cFileName);
-	printf("found DLL: %s\n",fullname);
+	wcscpy(fullname,L"plugins\\");
+	wcscat(fullname,fd.cFileName);
+	wprintf(L"found DLL: %ls\n",fullname);
 
 	HMODULE hModule = LoadLibrary(fullname);
 	void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
@@ -111,12 +130,12 @@ static void printFunc(const char *str, int len, void *data)
 std::string getDeviceName()
 {
 
-  static char buf[MAX_COMPUTERNAME_LENGTH + 1];
+  static wchar_t buf[MAX_COMPUTERNAME_LENGTH + 1];
   DWORD dwCompNameLen = MAX_COMPUTERNAME_LENGTH;
   std::string name;
 
   if (GetComputerName(buf, &dwCompNameLen) != 0) {
-    name=buf;
+    name=us(buf);
   }
 
   return name;
@@ -281,14 +300,14 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 	  wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
 	  wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
 	  wndclass.lpszMenuName  = MAKEINTRESOURCE(100);
-	  wndclass.lpszClassName = "GidW32Screen" ;
+	  wndclass.lpszClassName = L"GidW32Screen" ;
 	  wndclass.hIconSm       = NULL ;
 
 	  W32Class=RegisterClassEx (&wndclass) ;
 	}
 
-	  wnd = CreateWindow ("GidW32Screen",         // window class name
-			       "",     // window caption
+	  wnd = CreateWindow (L"GidW32Screen",         // window class name
+			       L"",     // window caption
 			       WS_OVERLAPPEDWINDOW,     // window style
 			       0,           // initial x position
 			       0,           // initial y position
@@ -566,7 +585,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,GET_WHEEL_DELTA_WPARAM(wParam),m);
+    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,GET_WHEEL_DELTA_WPARAM(wParam)*120,m);
     return 0;
   }
   else if (iMsg==WM_KEYDOWN){
@@ -682,16 +701,17 @@ DWORD WINAPI RenderMain(LPVOID lpParam)
 
 // ######################################################################
 
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                    PSTR szCmdLine, int iCmdShow)
+int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                    LPWSTR szCmdLine, int iCmdShow)
 {
-  static char szAppName[] = "giderosGame" ;
+  static wchar_t szAppName[] = L"giderosGame" ;
   HWND        hwnd ;
   MSG         msg ;
   WNDCLASSEX  wndclass ;
   int ret;
 
-  printf("szCmdLine=%s\n",szCmdLine);
+  wprintf(L"szCmdLine=%ls\n",szCmdLine);
+  commandLine=us(szCmdLine);
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
@@ -710,7 +730,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   hInst=hInstance;
   hwnd = CreateWindow (szAppName,         // window class name
-		       "Gideros Win32",     // window caption
+		       L"Gideros Win32",     // window caption
 		       WS_OVERLAPPEDWINDOW,     // window style
 		       0,           // initial x position
 		       0,           // initial y position

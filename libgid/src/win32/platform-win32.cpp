@@ -7,12 +7,34 @@
 #include "luaapplication.h"
 #include <application.h>
 #include <gapplication-win32.h>
+#include "platform.h"
+#include <gfile_p.h>
 
 extern HWND hwndcopy;
-extern char commandLine[];
+extern std::string commandLine;
 // extern int dxChrome,dyChrome;
 extern LuaApplication *application_;
 
+
+static std::wstring ws(const char *str)
+{
+    if (!str) return std::wstring();
+    int sl=strlen(str);
+    int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+    std::wstring res(sz, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+    return res;
+}
+
+static std::string us(const wchar_t *str)
+{
+    if (!str) return std::string();
+    int sl=wcslen(str);
+    int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+    std::string res(sz, 0);
+    WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+    return res;
+}
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
   RECT desktop;
@@ -38,7 +60,8 @@ std::vector<std::string> getDeviceInfo()
 
 void openUrl(const char* url)
 {
-  ShellExecute(hwndcopy,NULL,url,NULL,NULL,SW_SHOWNORMAL);
+  std::wstring w=ws(url);
+  ShellExecute(hwndcopy,NULL,w.c_str(),NULL,NULL,SW_SHOWNORMAL);
 }
 
 bool canOpenUrl(const char *url)
@@ -54,11 +77,9 @@ std::string getLocale()
 
   GetLocaleInfo(lcid, LOCALE_SISO639LANGNAME, szBuff1, 10); 
   GetLocaleInfo(lcid, LOCALE_SISO3166CTRYNAME, szBuff2, 10); 
+  std::string s=us(szBuff1)+"_"+us(szBuff2);
 
-  strcat(szBuff1,"_");
-  strcat(szBuff1,szBuff2);
-
-  return szBuff1;
+  return s;
 }
 
 std::string getLanguage()
@@ -66,7 +87,7 @@ std::string getLanguage()
   TCHAR szBuff[10]; 
   LCID lcid = GetUserDefaultLCID(); 
   GetLocaleInfo(lcid, LOCALE_SISO639LANGNAME, szBuff, 10); 
-  return szBuff;
+  return us(szBuff);
 }
 
 std::string getAppId(){
@@ -228,42 +249,441 @@ void g_exit()
   exit(0);
 }
 
-bool g_checkStringProperty(bool isSet, const char* what){
-    if (isSet){
-        if ( (strcmp(what, "cursor") == 0)
-             || (strcmp(what, "windowTitle") == 0)
-             || (strcmp(what, "windowModel") == 0)
-             || (strcmp(what, "clipboard") == 0)
-             || (strcmp(what, "mkDir") == 0)
-             || (strcmp(what, "documentDirectory") == 0)
-             || (strcmp(what, "temporaryDirectory") == 0)
-           )
+
+std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
+{
+    std::vector<gapplication_Variant> rets;
+    gapplication_Variant r;
+    RECT rr;
+    rr.left=rr.right=rr.top=rr.bottom=0;
+    if (!set) {
+        /*------------------------------------------------------------------*/
+		if (!strcmp(what,"commandLine"))
+		{
+			r.type=gapplication_Variant::STRING;
+			r.s=commandLine;
+			rets.push_back(r);
+		}
+		else if (strcmp(what, "windowPosition") == 0)
         {
-            return true;
+			GetWindowRect(hwndcopy,&rr);
+            r.type=gapplication_Variant::DOUBLE;
+            r.d=rr.left;
+            rets.push_back(r);
+            r.d=rr.top;
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
+
+        }else if (strcmp(what, "windowSize") == 0)
+        {
+			GetWindowRect(hwndcopy,&rr);
+            r.type=gapplication_Variant::DOUBLE;
+            r.d=rr.right-rr.left;
+            rets.push_back(r);
+            r.d=rr.bottom-rr.top;
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "screenSize") == 0)
+        {
+            r.type=gapplication_Variant::DOUBLE;
+            const HWND hDesktop = GetDesktopWindow();
+            GetClientRect(hDesktop, &rr);
+            r.d=rr.right;
+            rets.push_back(r);
+            r.d=rr.bottom;
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "cursorPosition") == 0)
+        {
+        	POINT p;
+        	GetCursorPos(&p);
+            r.type=gapplication_Variant::DOUBLE;
+            r.d=p.x;
+            rets.push_back(r);
+            r.d=p.y;
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "clipboard") == 0)
+        {
+        	  // Try opening the clipboard
+        	  if (OpenClipboard(nullptr))
+        	  {
+            	  HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+            	  if (hData != nullptr)
+            	  {
+                	  wchar_t * pszText = static_cast<wchar_t*>( GlobalLock(hData) );
+                	  if (pszText != nullptr)
+                	  {
+                          r.type=gapplication_Variant::STRING;
+                          r.s=us(pszText);
+                          rets.push_back(r);
+                	  }
+                	  GlobalUnlock( hData );
+            	  }
+            	  CloseClipboard();
+        	  }
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "windowTitle") == 0)
+        {
+        	wchar_t wtitle[1024];
+        	GetWindowText(hwndcopy,wtitle,1024);
+            r.type=gapplication_Variant::STRING;
+            r.s=us(wtitle);
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "directory") == 0)
+        {
+/* TODO
+            QStringList acceptedValue;
+            acceptedValue << "executable" << "document"  << "desktop" << "temporary" << "data" ;
+            acceptedValue << "music" << "movies"  << "pictures" << "cache" << "download" ;
+            acceptedValue << "home";
+
+            if (args.size()>0)&&(acceptedValue.contains(args[0].s)){
+                QString argString=args[0].s;
+                QString pathGet = "";
+                if (argString == "executable"){
+                    pathGet = QDir::currentPath();
+                }else if (argString == "document"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+                }else if (argString == "desktop"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+                }else if (argString == "temporary"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+                }else if (argString == "data"){
+    #ifdef RASPBERRY_PI
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    #else
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    #endif
+                }else if (argString == "music"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+                }else if (argString == "movies"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+                }else if (argString == "pictures"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+                }else if (argString == "cache"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+                }else if (argString == "download"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+                }else if (argString == "home"){
+                    pathGet = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+
+                }else{
+
+                }
+                r.type=gapplication_Variant::STRING;
+                r.s=pathGet.toStdString();
+                rets.push_back(r);
+            }else{
+                QString info = "Accepted value for ";
+                info.append(what);
+                info.append(" :");
+                MainWindow::getInstance()->printToOutput(info.toStdString().c_str());
+                for( int i=0; i<acceptedValue.size(); ++i ){
+                    MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
+                }
+            }
+
+            /*------------------------------------------------------------------*/
+        }else if ((strcmp(what, "openDirectoryDialog") == 0)
+                || (strcmp(what, "openFileDialog") == 0)
+                || (strcmp(what, "saveFileDialog") == 0))
+            {
+        	/* TODO
+            if(args.size() == 1){
+
+                MainWindow::getInstance()->printToOutput("[[Usage Example]]");
+                if (strcmp(what, "openDirectoryDialog") == 0){
+                    MainWindow::getInstance()->printToOutput("application:get(\"openDirectoryDialog\",\"Open Directory|C:/)\")");
+                }else if (strcmp(what, "openFileDialog") == 0){
+                    MainWindow::getInstance()->printToOutput("application:get(\"openFileDialog\",\"Open File|C:/|Text File (*.txt);;Image File (*.jpg *.png)\")");
+                }else if (strcmp(what, "saveFileDialog") == 0){
+                    MainWindow::getInstance()->printToOutput("application:get(\"saveFileDialog\",\"Save File|C:/|Text File (*.txt);;Image File (*.jpg *.png)\")");
+                }
+            }else{
+
+                QString title = QString::fromUtf8(args[0].s.c_str());
+                QString place = "";
+                QString extension = "";
+                if (args.size() >= 2){place = QString::fromUtf8(args[1].s.c_str());}
+                if (args.size() >= 3){extension = QString::fromUtf8(args[2].s.c_str());}
+
+                QString fileName = "";
+                if (strcmp(what, "openDirectoryDialog") == 0){
+                    fileName = QFileDialog::getExistingDirectory(MainWindow::getInstance(),title ,place, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+                }else if (strcmp(what, "openFileDialog") == 0){
+                    fileName = QFileDialog::getOpenFileName(MainWindow::getInstance(), title,place,extension);
+
+                }else if (strcmp(what, "saveFileDialog") == 0){
+                    fileName = QFileDialog::getSaveFileName(MainWindow::getInstance(), title,place,extension);
+
+                }
+                r.type=gapplication_Variant::STRING;
+                r.s=fileName.toStdString();
+                rets.push_back(r);
+            }
+            /*------------------------------------------------------------------*/
+
+        }else if (strcmp(what, "temporaryDirectory") == 0)
+        {
+            r.type=gapplication_Variant::STRING;
+            r.s=getTemporaryDirectory();
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "documentDirectory") == 0)
+        {
+            r.type=gapplication_Variant::STRING;
+            r.s=getDocumentsDirectory();
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
         }else{
-            return false;
+            // feel free to change this list
+        	/* TODO
+            QStringList acceptedWhat;
+            acceptedWhat << "[x,y] windowPosition";
+            acceptedWhat << "[w,h] windowSize";
+            acceptedWhat << "[w,h] screenSize";
+            acceptedWhat << "[x,y] cursorPosition";
+            acceptedWhat << "[text] clipboard";
+            acceptedWhat << "[text] windowTitle";
+            acceptedWhat << "[path] directory(where//help)";
+            acceptedWhat << "[path] openDirectoryDialog(title|path//help)";
+            acceptedWhat << "[path] openFileDialog(title|path|extensions//help)";
+            acceptedWhat << "[path] saveFileDialog(title|path|extensions//help)";
+            acceptedWhat << "[path] documentDirectory";
+            acceptedWhat << "[path] temporaryDirectory";
+
+            MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:get()");
+            for( int i=0; i<acceptedWhat.size(); ++i ){
+                MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedWhat.at(i)).toStdString().c_str() );
+            }
+            */
         }
-    }else{
-        if ( (strcmp(what, "openFileDialog") == 0)
-             || (strcmp(what, "openDirectoryDialog") == 0)
-             || (strcmp(what, "saveFileDialog") == 0)
-             || (strcmp(what, "directory") == 0)
-           )
+    }
+    else {
+        /*------------------------------------------------------------------*/
+        if (strcmp(what, "cursor") == 0)
         {
-            return true;
+        	/* TODO
+            QStringList acceptedValue;
+            acceptedValue << "arrow" << "upArrow" << "cross" << "wait" << "IBeam";
+            acceptedValue << "sizeVer" << "sizeHor" << "sizeBDiag" << "sizeFDiag" << "sizeAll";
+            acceptedValue << "blank" << "splitV" << "splitH" << "pointingHand" << "forbidden";
+            acceptedValue << "whatsThis" << "busy" << "openHand" << "closedHand" << "dragCopy";
+            acceptedValue << "dragMove" << "dragLink";
+            // value of cursor also taken from index of the text, do not change the list
+
+            if (args.size()>0)&&(acceptedValue.contains(args[0].s)){
+                arg1 = acceptedValue.indexOf(args[0].s);
+                MainWindow::getInstance()->setCursor((Qt::CursorShape) arg1);
+            }else{
+                QString info = "Accepted value for ";
+                info.append(what);
+                info.append(" :");
+                MainWindow::getInstance()->printToOutput(info.toStdString().c_str());
+                for( int i=0; i<acceptedValue.size(); ++i ){
+                    MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
+                }
+            }
+
+
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "windowPosition") == 0)
+        {
+            if (args.size()>=2)
+            	SetWindowPos(hwndcopy,0,args[0].d,args[1].d,0,0,SWP_NOSIZE);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "windowSize") == 0)
+        {
+            if (args.size()>=2)
+            	SetWindowPos(hwndcopy,0,0,0,args[0].d,args[1].d,SWP_NOMOVE);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "minimumSize") == 0)
+        {
+            /*TODO
+              if (args.size()>=2)
+                MainWindow::getInstance()->setMinimumSize(QSize(args[0].d,args[1].d));
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "maximumSize") == 0)
+        {
+            /*TODO
+            if (args.size()>=2)
+                MainWindow::getInstance()->setMaximumSize(QSize(args[0].d,args[1].d));
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "windowColor") == 0)
+        {
+            /*TODO
+            if (args.size()>=3) {
+                if (args[0].d > 255) {args[0].d = 255;}else if(args[0].d < 0) {args[0].d = 255;}
+                if (args[1].d > 255) {args[1].d = 255;}else if(args[1].d < 0) {args[1].d = 255;}
+                if (args[2].d > 255) {args[2].d = 255;}else if(args[2].d < 0) {args[2].d = 255;}
+                QPalette palette;
+                QColor backgroundColor = QColor(args[0].d, args[1].d, args[2].d);
+                palette.setColor(QPalette::Window, backgroundColor);
+                MainWindow::getInstance()->setPalette(palette);
+            }
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "windowTitle") == 0)
+        {
+            if (args.size()>=1) {
+            	std::wstring w=ws(args[0].s.c_str());
+            	SetWindowText(hwndcopy,w.c_str());
+            }
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "windowModel") == 0)
+        {
+        	/* TODO
+            QStringList acceptedValue;
+            acceptedValue << "reset" << "stayOnTop" << "stayOnBottom" << "frameless" << "noTitleBar";
+            acceptedValue << "noButton" << "onlyMinimize" << "onlyMaximize" << "onlyClose" << "noMinimize";
+            acceptedValue << "noMaximize" << "noClose" << "helpButton";
+
+            if ((args.size()>0)&&acceptedValue.contains(args[0].s)) {
+                Qt::WindowFlags flags = MainWindow::getInstance()->windowFlags();
+                QString argString=QString::fromUtf8(args[0].s);
+
+                if (argString == "reset"){
+                    flags = Qt::Window;
+                }else if (argString == "stayOnTop"){
+                    flags |= Qt::WindowStaysOnTopHint;
+                }else if (argString == "stayOnBottom"){
+                    flags |= Qt::WindowStaysOnBottomHint;
+                }else if (argString == "frameless"){
+                    flags |= Qt::FramelessWindowHint;
+                }else if (argString == "noTitleBar"){
+                    flags = Qt::Window;
+                    flags |= Qt::CustomizeWindowHint;
+                }else if (argString == "noButton"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowTitleHint;
+                }else if (argString == "noClose"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowMinimizeButtonHint;
+                }else if (argString == "onlyMaximize"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowMaximizeButtonHint;
+                }else if (argString == "onlyClose"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowCloseButtonHint;
+                }else if (argString == "noMinimize"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowMaximizeButtonHint;
+                    flags |= Qt::WindowCloseButtonHint;
+                }else if (argString == "noMaximize"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowMinimizeButtonHint;
+                    flags |= Qt::WindowCloseButtonHint;
+                }else if (argString == "noClose"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowMinimizeButtonHint;
+                    flags |= Qt::WindowMaximizeButtonHint;
+                }else if (argString == "helpButton"){
+                    flags = Qt::Window;
+                    flags |= Qt::WindowContextHelpButtonHint;
+                    flags |= Qt::WindowCloseButtonHint;
+                }
+
+                MainWindow::getInstance()->setWindowFlags(flags);
+                if (MainWindow::getInstance()->fullScreen()){
+                    MainWindow::getInstance()->showFullScreen();
+                }else{
+                    MainWindow::getInstance()->showNormal();
+                }
+
+            }else{
+
+                QString info = "Accepted value for ";
+                info.append(what);
+                info.append(" :");
+                MainWindow::getInstance()->printToOutput(info.toStdString().c_str());
+                for( int i=0; i<acceptedValue.size(); ++i ){
+                    MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
+                }
+            }
+
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "wintabMode") == 0)
+        {
+    #ifdef Q_OS_WIN
+            auto nativeWindowsApp = dynamic_cast<QNativeInterface::Private::QWindowsApplication *>(QGuiApplicationPrivate::platformIntegration());
+            if (args.size()>=1)
+                nativeWindowsApp->setWinTabEnabled(args[0].d);
+    #endif
+        }else if (strcmp(what, "cursorPosition") == 0)
+        {
+            if (args.size()>=2)
+                SetCursorPos(args[0].d,args[1].d);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "clipboard") == 0)
+        {
+            if (args.size()>=1) {
+          	  if (OpenClipboard(nullptr))
+          	  {
+          		  EmptyClipboard();
+              	  std::wstring w=ws(args[0].s.c_str());
+              	  HANDLE hData = GlobalAlloc(GMEM_MOVEABLE|GMEM_ZEROINIT,w.size()*sizeof(wchar_t)+2);
+              	  if (hData != nullptr)
+              	  {
+                  	  wchar_t * pszText = static_cast<wchar_t*>( GlobalLock(hData) );
+                  	  if (pszText != nullptr)
+                      	  memcpy(pszText,w.c_str(),w.size()*sizeof(wchar_t));
+                  	  GlobalUnlock( hData );
+              	  }
+              	  SetClipboardData(CF_UNICODETEXT,hData);
+              	  CloseClipboard();
+          	  }
+
+            }
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "mkDir") == 0)
+        {
+        	/* TODO
+            if(args.size() <= 1){
+                MainWindow::getInstance()->printToOutput("[[Usage Example]]");
+                MainWindow::getInstance()->printToOutput("application:set(\"mkDir\",application:get(\"directory\",\"executable\")..\"|dirName\")");
+            }else{
+                QDir dirPath = QDir::temp();
+                dirPath.setPath(QString::fromUtf8(args[0].s));
+                dirPath.mkdir(QString::fromUtf8(args[1].s));
+            }
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "documentDirectory") == 0)
+        {
+            if(args.size() >= 1)
+                setDocumentsDirectory(args[0].s.c_str());
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "temporaryDirectory") == 0)
+        {
+            if(args.size() >= 1)
+                setTemporaryDirectory(args[0].s.c_str());
         }else{
-            return false;
+        	/* TODO
+
+            // feel free to change this list
+            QStringList acceptedWhat;
+            acceptedWhat << "windowPosition(x,y)";
+            acceptedWhat << "windowSize(w,h)";
+            acceptedWhat << "minimumSize(w,h)";
+            acceptedWhat << "maximumSize(w,h)";
+            acceptedWhat << "windowColor(r,g,b)";
+            acceptedWhat << "windowTitle(text)";
+            acceptedWhat << "wintabMode(enable)";
+            acceptedWhat << "windowModel(type//help)";
+            acceptedWhat << "cursor(type//help)";
+            acceptedWhat << "cursorPosition(x,y)";
+            acceptedWhat << "clipboard(text)";
+            acceptedWhat << "mkdir(path|dirName//help)";
+            acceptedWhat << "documentDirectory(path)";
+            acceptedWhat << "temporaryDirectory(path)";
+
+            MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:set()");
+            for( int i=0; i<acceptedWhat.size(); ++i ){
+                MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedWhat.at(i)).toStdString().c_str() );
+            }
+            */
         }
 
     }
-}
-
-void g_setProperty(const char* what, const char* arg){
-
-}
-
-const char* g_getProperty(const char* what, const char* arg)
-{
-  if (strcmp(what,"commandLine")==0)
-    return commandLine;
+    return rets;
 }

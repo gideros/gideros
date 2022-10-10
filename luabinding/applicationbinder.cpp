@@ -991,86 +991,69 @@ int ApplicationBinder::getDeviceName(lua_State *L)
 int ApplicationBinder::set(lua_State *L)
 {
     Binder binder(L);
+    int nargs=lua_gettop(L);
     (void)binder.getInstance("Application", 1);
 
     const char* what = luaL_checkstring(L, 2);
 
-    std::stringstream arg;
-    if ( g_checkStringProperty(true,what)){
-        std::string arg4 = luaL_checkstring(L, 3);
-        arg << arg4;
-    }else{
-        int arg1 = luaL_optnumber(L, 3, 0);
-        int arg2 = luaL_optnumber(L, 4, 0);
-        int arg3 = luaL_optnumber(L, 5, 0);
-        arg << arg1;
-        arg << "|";
-        arg << arg2;
-        arg << "|";
-        arg << arg3;
+    std::vector<gapplication_Variant> args;
+    for (int i=3;i<=nargs;i++) {
+    	gapplication_Variant arg;
+    	if (lua_type(L,i)==LUA_TNIL) {
+    		arg.type=gapplication_Variant::NIL;
+    	}
+    	else if (lua_type(L,i)==LUA_TSTRING) {
+    		arg.type=gapplication_Variant::STRING;
+    		arg.s=luaL_checkstring(L,i);
+    	}
+    	else {
+    		arg.type=gapplication_Variant::DOUBLE;
+    		arg.d=luaL_checknumber(L,i);
+    	}
+    	args.push_back(arg);
     }
 
-    g_setProperty(what, arg.str().c_str());
-
-
+    std::vector<gapplication_Variant> rets=g_getsetProperty(true,what,args);
     return 0;
 }
 
 int ApplicationBinder::get(lua_State *L)
 {
-
     Binder binder(L);
+    int nargs=lua_gettop(L);
     (void)binder.getInstance("Application", 1);
 
     const char* what = luaL_checkstring(L, 2);
 
-    std::stringstream arg;
-    if ( g_checkStringProperty(false,what)){
-        std::string arg4 = luaL_checkstring(L, 3);
-        arg << arg4;
-    }else{
-        int arg1 = luaL_optnumber(L, 3, 0);
-        int arg2 = luaL_optnumber(L, 4, 0);
-        int arg3 = luaL_optnumber(L, 5, 0);
-        arg << arg1;
-        arg << "|";
-        arg << arg2;
-        arg << "|";
-        arg << arg3;
+    std::vector<gapplication_Variant> args;
+    for (int i=3;i<=nargs;i++) {
+    	gapplication_Variant arg;
+    	if (lua_type(L,i)==LUA_TNIL) {
+    		arg.type=gapplication_Variant::NIL;
+    	}
+    	else if (lua_type(L,i)==LUA_TSTRING) {
+    		arg.type=gapplication_Variant::STRING;
+    		arg.s=luaL_checkstring(L,i);
+    	}
+    	else {
+    		arg.type=gapplication_Variant::DOUBLE;
+    		arg.d=luaL_checknumber(L,i);
+    	}
+    	args.push_back(arg);
     }
 
-    const char* propertyGet = g_getProperty(what,arg.str().c_str());
-    std::string stringProp = propertyGet;
-
-    char *returnedProperty = (char*)malloc((stringProp.length() + 1)*sizeof(char));
-
-    strcpy(returnedProperty, propertyGet);
-    std::string firstChar(returnedProperty,returnedProperty+1);
-
-    unsigned int index = 0;
-
-    if  (strcmp(firstChar.c_str(), "s") == 0){
-        std::string resultChar(returnedProperty + 1);
-        lua_pushstring(L, resultChar.c_str());
-        index = 1;
-    }else{
-
-        const char* arrayProperty[10] = {""};
-        arrayProperty[index] = strtok(returnedProperty,"|");
-
-        while(arrayProperty[index] != NULL)
-        {
-            lua_pushnumber(L, atoi(arrayProperty[index]));
-            ++index;
-            arrayProperty[index] = strtok(NULL, "|");
-
-        }
+    std::vector<gapplication_Variant> rets=g_getsetProperty(false,what,args);
+    int rc=0;
+    for (auto ret=rets.begin();ret!=rets.end();ret++) {
+    	if (ret->type==gapplication_Variant::STRING)
+    		lua_pushstring(L,ret->s.c_str());
+    	else if (ret->type==gapplication_Variant::DOUBLE)
+    		lua_pushnumber(L,ret->d);
+    	else
+    		lua_pushnil(L);
+    	rc++;
     }
-    free(returnedProperty);
-
-    return index;
-
-
+    return rc;
 }
 
 int ApplicationBinder::checkPermission(lua_State *L)
