@@ -150,8 +150,7 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
 		0,//D3D11_CREATE_DEVICE_DEBUG,
-		nullptr,
-		0,
+		nullptr, 0,
 		D3D11_SDK_VERSION,
 		&dev11,
 		nullptr,
@@ -273,6 +272,8 @@ struct ProjectProperties
 	int mouseToTouch;
 	int touchToMouse;
 	int mouseTouchOrder;
+	int windowWidth;
+	int windowHeight;
 };
 
 class ApplicationManager;
@@ -1331,6 +1332,15 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.mouseToTouch;
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
+
+	buffer >> properties_.windowWidth;
+	buffer >> properties_.windowHeight;
+
+	width_=properties_.windowWidth?properties_.windowWidth:properties_.logicalWidth;
+	height_=properties_.windowHeight?properties_.windowHeight:properties_.logicalHeight;
+
+	if ((properties_.orientation==eLandscapeRight)||(properties_.orientation==eLandscapeLeft)) //Landscape
+		std::swap(width_,height_);
 
 	if (xaml)
 		application_->setResolution(width_, height_);

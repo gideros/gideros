@@ -14,6 +14,7 @@
 #include <sys/sysctl.h>
 #include <net/if.h>
 #include <net/if_dl.h>
+#include "platform.h"
 
 // typeSpecifier -> "hw.machine" or "hw.model"
 NSString* getSysInfoByName(const char* typeSpecifier)

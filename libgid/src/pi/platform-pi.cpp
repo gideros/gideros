@@ -2,6 +2,7 @@
 #include <string>
 
 #include <stdlib.h>
+#include "platform.h"
 
 void GetDesktopResolution(int& horizontal, int& vertical)
 {

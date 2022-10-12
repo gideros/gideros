@@ -17,6 +17,7 @@
 #include <ginput.h>
 #include <QStandardPaths>
 #include <QScreen>
+#include "platform.h"
 
 #if defined(Q_OS_WIN)
     #include <windows.h>

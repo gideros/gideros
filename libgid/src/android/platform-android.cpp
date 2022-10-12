@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <jni.h>
+#include "platform.h"
 
 extern "C" {
 JavaVM *g_getJavaVM();

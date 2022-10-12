@@ -7,6 +7,7 @@
 #include <ppltasks.h>
 #include <giderosapi.h>
 #include "gapplication.h"
+#include "platform.h"
 
 using namespace Concurrency;
 
