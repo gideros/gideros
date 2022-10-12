@@ -201,58 +201,6 @@ void g_exit()
 #endif
 
 
-bool g_checkStringProperty(bool isSet, const char* what){
-    if (isSet){
-        if ( (strcmp(what, "cursor") == 0)
-             || (strcmp(what, "windowTitle") == 0)
-             || (strcmp(what, "windowModel") == 0)
-             || (strcmp(what, "clipboard") == 0)
-             || (strcmp(what, "mkDir") == 0)
-             || (strcmp(what, "documentDirectory") == 0)
-             || (strcmp(what, "temporaryDirectory") == 0)
-           )
-        {
-            return true;
-        }else{
-            return false;
-        }
-    }else{
-        if ( (strcmp(what, "openFileDialog") == 0)
-             || (strcmp(what, "openDirectoryDialog") == 0)
-             || (strcmp(what, "saveFileDialog") == 0)
-             || (strcmp(what, "directory") == 0)
-           )
-        {
-            return true;
-        }else{
-            return false;
-        }
-
-    }
-}
-
-void g_setProperty(const char* what, const char* arg){
-
-    QString argGet = QString::fromUtf8(arg);
-    int arg1 = 0;
-    int arg2 = 0;
-    int arg3 = 0;
-    QString argString = "";
-
-    if ( g_checkStringProperty(true,what)){
-        argString = argGet;
-        argString.replace("\\","\\\\");
-    }else{
-        QStringList arrayArg = argGet.split("|",Qt::KeepEmptyParts);
-        arg1 = arrayArg.at(0).toInt();
-        arg2 = arrayArg.at(1).toInt();
-        arg3 = arrayArg.at(2).toInt();
-    }
-
-
-
-}
-
 std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
     std::vector<gapplication_Variant> rets;
@@ -313,8 +261,9 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             acceptedValue << "music" << "movies"  << "pictures" << "cache" << "download" ;
             acceptedValue << "home";
 
-            if (args.size()>0)&&(acceptedValue.contains(args[0].s)){
-                QString argString=args[0].s;
+            QString argString=QString::fromUtf8(args[0].s.c_str());
+            if ((args.size()>0)&&acceptedValue.contains(argString)){
+
                 QString pathGet = "";
                 if (argString == "executable"){
                     pathGet = QDir::currentPath();
@@ -444,9 +393,9 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             acceptedValue << "dragMove" << "dragLink";
             // value of cursor also taken from index of the text, do not change the list
 
-            if (args.size()>0)&&(acceptedValue.contains(args[0].s)){
-                arg1 = acceptedValue.indexOf(args[0].s);
-                MainWindow::getInstance()->setCursor((Qt::CursorShape) arg1);
+            QString argString=QString::fromUtf8(args[0].s.c_str());
+            if ((args.size()>0)&&acceptedValue.contains(argString)){
+                MainWindow::getInstance()->setCursor((Qt::CursorShape) acceptedValue.indexOf(argString));
             }else{
                 QString info = "Accepted value for ";
                 info.append(what);
@@ -503,9 +452,9 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             acceptedValue << "noButton" << "onlyMinimize" << "onlyMaximize" << "onlyClose" << "noMinimize";
             acceptedValue << "noMaximize" << "noClose" << "helpButton";
 
-            if ((args.size()>0)&&acceptedValue.contains(args[0].s)) {
+            QString argString=QString::fromUtf8(args[0].s.c_str());
+            if ((args.size()>0)&&acceptedValue.contains(argString)) {
                 Qt::WindowFlags flags = MainWindow::getInstance()->windowFlags();
-                QString argString=QString::fromUtf8(args[0].s);
 
                 if (argString == "reset"){
                     flags = Qt::Window;
