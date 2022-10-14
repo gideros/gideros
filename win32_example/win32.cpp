@@ -706,22 +706,27 @@ DWORD WINAPI RenderMain(LPVOID lpParam)
 
 // ######################################################################
 
+static const wchar_t *szAppName = L"giderosGame" ;
 int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPWSTR szCmdLine, int iCmdShow)
 {
-  static wchar_t szAppName[] = L"giderosGame" ;
+  commandLine=us(szCmdLine);
   PATH_AppName=us(szAppName);
   //Get standard paths
-  wchar_t szDir[MAX_PATH]={0 };
-  GetModuleFileName(NULL, szDir, sizeof(szDir));
-  wchar_t * pEnd = wcsrchr(szDir, L'\\');
-  if (pEnd)
-	*pEnd = L'\0';
-  PATH_Executable=us(szDir);
-  szDir[GetTempPath(sizeof(szDir),szDir)-1]=L'\0';
-  PATH_Temp=us(szDir);
-  PATH_Cache=PATH_Temp+"\\"+PATH_AppName;
-  CreateDirectory(ws(PATH_Cache.c_str()).c_str(),NULL);
+  {
+	  wchar_t szDir[MAX_PATH]={0, };
+	  GetModuleFileName(NULL, szDir, sizeof(szDir));
+	  wchar_t * pEnd = wcsrchr(szDir, L'\\');
+	  if (pEnd)
+		*pEnd = L'\0';
+	  PATH_Executable=us(szDir);
+  }
+  //Get standard paths
+  {
+	  PATH_Temp=us(_wgetenv(L"TEMP"));
+	  PATH_Cache=PATH_Temp+"\\"+PATH_AppName;
+	  CreateDirectory(ws(PATH_Cache.c_str()).c_str(),NULL);
+  }
 
   HWND        hwnd ;
   MSG         msg ;
@@ -729,7 +734,6 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   int ret;
 
   wprintf(L"szCmdLine=%ls\n",szCmdLine);
-  commandLine=us(szCmdLine);
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
