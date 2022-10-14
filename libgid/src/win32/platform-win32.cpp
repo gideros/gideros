@@ -9,10 +9,12 @@
 #include <gapplication-win32.h>
 #include "platform.h"
 #include <gfile_p.h>
+#include <shlobj.h>
+#include <combaseapi.h>
+#include <knownfolders.h>
 
 extern HWND hwndcopy;
 extern std::string commandLine;
-// extern int dxChrome,dyChrome;
 extern LuaApplication *application_;
 
 
@@ -254,6 +256,10 @@ void g_exit()
 }
 
 
+extern std::string PATH_Executable;
+extern std::string PATH_Temp;
+extern std::string PATH_Cache;
+extern std::string PATH_AppName;
 std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
     std::vector<gapplication_Variant> rets;
@@ -337,56 +343,55 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "directory") == 0)
         {
-/* TODO
-            QStringList acceptedValue;
-            acceptedValue << "executable" << "document"  << "desktop" << "temporary" << "data" ;
-            acceptedValue << "music" << "movies"  << "pictures" << "cache" << "download" ;
-            acceptedValue << "home";
-
-            if (args.size()>0)&&(acceptedValue.contains(args[0].s)){
-                QString argString=args[0].s;
-                QString pathGet = "";
-                if (argString == "executable"){
-                    pathGet = QDir::currentPath();
-                }else if (argString == "document"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-                }else if (argString == "desktop"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-                }else if (argString == "temporary"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-                }else if (argString == "data"){
-    #ifdef RASPBERRY_PI
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-    #else
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    #endif
-                }else if (argString == "music"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-                }else if (argString == "movies"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
-                }else if (argString == "pictures"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-                }else if (argString == "cache"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-                }else if (argString == "download"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-                }else if (argString == "home"){
-                    pathGet = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-
-                }else{
-
-                }
-                r.type=gapplication_Variant::STRING;
-                r.s=pathGet.toStdString();
-                rets.push_back(r);
+        	if (args.size()>0)
+        	{
+        		std::string &s=args[0].s;
+        		KNOWNFOLDERID fid;
+        		if (s=="executable") {
+					r.type=gapplication_Variant::STRING;
+					r.s=PATH_Executable;
+					rets.push_back(r);
+					return rets;
+        		}
+        		else if (s=="documents") fid=FOLDERID_Documents;
+        		else if (s=="desktop") fid=FOLDERID_Desktop;
+        		else if (s=="temporary") {
+					r.type=gapplication_Variant::STRING;
+					r.s=PATH_Temp;
+					rets.push_back(r);
+					return rets;
+        		}
+        		else if (s=="data") fid=FOLDERID_LocalAppData;
+        		else if (s=="music") fid=FOLDERID_Music;
+        		else if (s=="movies") fid=FOLDERID_Videos;
+        		else if (s=="pictures") fid=FOLDERID_Pictures;
+        		else if (s=="cache") {
+					r.type=gapplication_Variant::STRING;
+					r.s=PATH_Cache;
+					rets.push_back(r);
+					return rets;
+        		}
+        		else if (s=="download") fid=FOLDERID_Downloads;
+        		else if (s=="home") fid=FOLDERID_Profile;
+        		else return rets;
+				PWSTR ppszPath; // variable to receive the path memory block pointer
+				HRESULT hr = SHGetKnownFolderPath(fid, 0, NULL, &ppszPath);
+				if (SUCCEEDED(hr)) {
+					r.type=gapplication_Variant::STRING;
+					r.s=us(ppszPath);
+					if (s=="data")
+						r.s=r.s+'\\'+PATH_AppName;
+					rets.push_back(r);
+				}
+				CoTaskMemFree(ppszPath); // free up the path memory block
             }else{
-                QString info = "Accepted value for ";
+/*                QString info = "Accepted value for ";
                 info.append(what);
                 info.append(" :");
                 MainWindow::getInstance()->printToOutput(info.toStdString().c_str());
                 for( int i=0; i<acceptedValue.size(); ++i ){
                     MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
-                }
+                }*/
             }
 
             /*------------------------------------------------------------------*/

@@ -46,7 +46,7 @@ INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
 DEFINES_player+=WIN32=1
 LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.dll gideros.dll) \
 	-lglew32 \
-	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm
+	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm -lole32 -luuid
 
 DEFINES+=UNICODE_
 
@@ -124,7 +124,7 @@ win32.install: win32.libs.install win32.plugins.install win32.app
 	cp $(WIN32_BUILDDIR)/player-console.exe $(WIN32_RELEASE)/WindowsDesktopTemplate-Console.exe
 	cp win32_example/cacert.pem $(WIN32_RELEASE)
 	cp $(WIN32_BIN)/glew32.dll $(WIN32_RELEASE)
-	cp $(WIN32_BIN)/{libcurl*,libidn*,libnghttp*,libbrotli*,libpsl*,libssh*,libiconv*,libintl*,libzstd,zlib1,libunistring*}.dll $(WIN32_RELEASE)
+	cp $(WIN32_BIN)/{libcurl*,libidn*,libnghttp*,libbrotli*,libpsl*,libssh*,libiconv*,libintl*,libzstd,zlib1,libunistring*,libssl*,libcrypto*}.dll $(WIN32_RELEASE)
 	#cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
 	#cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
 	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(WIN32_BIN)/$$f.dll $(WIN32_RELEASE); done

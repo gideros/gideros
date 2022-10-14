@@ -273,7 +273,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
 		jmethodID getMethodID = env->GetStaticMethodID(localRefCls, "getProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
 		jstring jwhat = env->NewStringUTF(what?what:"");
-		jstring jarg = env->NewStringUTF(arg?arg:"");
+		jstring jarg = env->NewStringUTF((args.size()>0)?args[0].s.c_str():"");
 		jstring jresult = (jstring)env->CallStaticObjectMethod(localRefCls, getMethodID,jwhat,jarg);
 		if (jresult) {
 			r.type=gapplication_Variant::STRING;

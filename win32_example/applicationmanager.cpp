@@ -418,7 +418,8 @@ void NetworkManager::calculateMD5(const char* file)
 		md5_[file] = md5;
 }
 
-
+extern std::string PATH_AppName;
+extern std::string PATH_Cache;
 ApplicationManager::ApplicationManager() {
 
 	deviceOrientation_ = eFixed;
@@ -444,13 +445,11 @@ ApplicationManager::ApplicationManager() {
 	    strcpy(resourcePath,"assets\\");
 	    gpath_setDrivePath(0,resourcePath);
 
-	    char docsPath[MAX_PATH];
-	    strcpy(docsPath,getenv("APPDATA"));
-	    strcat(docsPath, "\\giderosgame\\");
-	    std::wstring w=ws(docsPath);
-	    CreateDirectory(w.c_str(),NULL);        // create dir if it does not exist
-	    gpath_setDrivePath(1,docsPath);
-
+	    std::string docsPath=us(_wgetenv(L"APPDATA"));
+	    docsPath=docsPath+"\\"+PATH_AppName+"\\";
+	    CreateDirectory(ws(docsPath.c_str()).c_str(),NULL);        // create dir if it does not exist
+	    gpath_setDrivePath(1,docsPath.c_str());
+	    gpath_setDrivePath(2,(PATH_Cache+"\\").c_str());
 
 		gvfs_init();
 		//gvfs_setPlayerModeEnabled(player ? 1 : 0);
