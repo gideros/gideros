@@ -861,6 +861,18 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
                 comp->layoutState->ArrangeGrid(comp,r.width,r.height);
                 comp->layoutState->dirty=false;
             }
+            //Auto clip
+            if (constraints->autoClip) {
+            	comp->setClip(0,0,r.width,r.height);
+            	/*
+            	float minx,miny,maxx,maxy;
+            	comp->localBounds(&minx, &miny, &maxx, &maxy);
+            	if ((minx<(r.x-px))||(miny<(r.y-py))||(maxx>(r.x-px+r.width))||(maxy>(r.y-py+r.height)))
+            	{
+            		comp->setClip(0,0,r.width,r.height);
+            	}
+            	*/
+            }
             if (constraints->group)
                 stack.push(comp);
         } //for (components) loop

@@ -752,6 +752,7 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
         FILL_BOOL("shrink",optimizeSize);
         FILL_BOOL("group",group);
+        FILL_BOOL("autoclip",autoClip);
 
 		lua_getfield(L,2,"insets");
         if (!lua_isnoneornil(L,-1)) {
@@ -826,6 +827,8 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
         STOR_NUM("offsetx",offsetX); STOR_NUM("offsety",offsetY);
         STOR_NUM("originx",originX); STOR_NUM("originy",originY);
 		STOR_BOOL("shrink",optimizeSize);
+        STOR_BOOL("group",group);
+        STOR_BOOL("autoclip",autoClip);
 	}
 	else
 		lua_pushnil(L);

@@ -660,7 +660,8 @@ static GLint stencilopToGl(ShaderEngine::StencilOp sf)
 void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 {
 	GLCALL_INIT;
-	if (state.dClear)
+    GLCALL glDepthMask(state.dMask);
+    if (state.dClear)
 	{
 		state.dClear=false;
 		s_depthBufferCleared=false;
@@ -687,20 +688,21 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 			s_depthEnable=false;
 		}
 	}
-	if (state.sClear)
+    if (state.sClear)
 	{
 		if (currentBuffer)
 			currentBuffer->needDepthStencil();
-		GLCALL glClear(GL_STENCIL_BUFFER_BIT);
+        GLCALL glStencilMask(state.sWMask);
+        GLCALL glClear(GL_STENCIL_BUFFER_BIT);
 		state.sClear=false;
 	}
 	GLCALL glStencilOp(stencilopToGl(state.sFail),stencilopToGl(state.dFail),stencilopToGl(state.dPass));
-	GLCALL glDepthMask(state.dMask);
 	if (state.sFunc==STENCIL_DISABLE)
 		GLCALL glDisable(GL_STENCIL_TEST);
 	else
 	{
-		GLCALL glEnable(GL_STENCIL_TEST);
+        GLCALL glStencilMask(state.sWMask);
+        GLCALL glEnable(GL_STENCIL_TEST);
 		GLenum sf=GL_ALWAYS;
 		switch (state.sFunc)
 		{
@@ -716,7 +718,6 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 				break;
 		}
 		GLCALL glStencilFunc(sf,state.sRef,state.sMask);
-		GLCALL glStencilMask(state.sWMask);
 	}
 	switch (state.cullMode) {
 	case CULL_FRONT:

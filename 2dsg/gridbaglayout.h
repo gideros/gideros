@@ -55,6 +55,8 @@ struct GridBagConstraints {
     bool optimizeSize;
     //Object group
     bool group;
+    //Auto clip
+    bool autoClip;
 
     std::map<std::string,std::string> resolved;
 
@@ -83,6 +85,7 @@ struct GridBagConstraints {
 
         optimizeSize=false;
         group=false;
+        autoClip=false;
     }
 
     GridBagConstraints(size_t gridx, size_t gridy,
@@ -117,6 +120,8 @@ struct GridBagConstraints {
         prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
         tempHeight=tempWidth=tempX=tempY=0;
         optimizeSize=false;
+        group=false;
+        autoClip=false;
     }
 };
 

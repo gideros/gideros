@@ -541,11 +541,6 @@ static D3D11_STENCIL_OP stencilopToDX11(ShaderEngine::StencilOp sf)
 void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 {
 	ID3D11DepthStencilState *cs = g_pDSOff;
-	if (state.dClear)
-	{
-		state.dClear=false;
-		s_depthBufferCleared=false;
-	}
 	if (state.dTest)
 	{
 		if (!s_depthEnable)
@@ -570,14 +565,6 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 		}
 	}
 
-
-	if (state.sClear)
-	{
-		if (currentBuffer)
-			currentBuffer->needDepthStencil();
-		g_devcon->ClearDepthStencilView(currentBuffer ? ((dx11ShaderBuffer *)currentBuffer)->depthStencil : g_depthStencil, D3D11_CLEAR_STENCIL, 0, 0);
-		state.sClear = false;
-	}
 
 	if (!((state.sFail == STENCIL_KEEP) && (state.dFail == STENCIL_KEEP) && (state.dPass == STENCIL_KEEP) &&
 		(state.sFunc == STENCIL_DISABLE) && (state.sMask = 0xFF) && (state.sRef == 0)))
@@ -626,6 +613,21 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 	}
 
 	g_devcon->OMSetDepthStencilState(cs, state.sRef);
+
+	if (state.sClear)
+	{
+		if (currentBuffer)
+			currentBuffer->needDepthStencil();
+		g_devcon->ClearDepthStencilView(currentBuffer ? ((dx11ShaderBuffer *)currentBuffer)->depthStencil : g_depthStencil, D3D11_CLEAR_STENCIL, 0, 0);
+		state.sClear = false;
+	}
+
+	if (state.dClear)
+	{
+		state.dClear=false;
+		s_depthBufferCleared=false;
+	}
+
 	dsCurrent = state;
 	updateRasterizer();
 }
