@@ -161,8 +161,10 @@ void looptick(void *a)
 #ifdef GLFW
 			  glfwDestroyWindow(glfw_win);
 #else
-			  if (webglCtx)
+		/*	  if (webglCtx) {
+				  emscripten_webgl_make_context_current(0);
 				  emscripten_webgl_destroy_context(webglCtx);
+			  }*/
 #endif
 			  initGL(defWidth,defHeight);
 			  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);

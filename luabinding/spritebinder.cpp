@@ -2246,8 +2246,22 @@ int SpriteBinder::setStyle(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::setStyle", 0);
 
-    Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    if (!lua_istable(L, 1))	// check if the bottom of stack (first paramater, i.e. self) is table
+    {
+        luaL_typerror(L, 1, "Sprite");
+        return 0;
+    }
+    lua_getfield(L, 1, "__userdata"); // get adress
+    if (lua_isnil(L, -1))
+    {
+        lua_pop(L, 1);
+        luaL_error(L, "Sprite '__userdata' cannot be found");
+        return 0;
+    }
+    void* ptr = *(void**)lua_touserdata(L, -1);
+    Sprite* sprite = static_cast<Sprite*>(ptr);
+    lua_pop(L, 1);
+
     if (!lua_isnil(L,2))
         luaL_checktype(L,2,LUA_TTABLE);
     bool propagate=lua_toboolean(L,3);
