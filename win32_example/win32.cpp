@@ -258,8 +258,8 @@ void W32Screen::setPosition(int x,int y)
 {
 	if (!wnd) return;
     RECT rect;
-    rect.top=x;
-    rect.left=y;
+    rect.left=x;
+    rect.top=y;
     rect.right=x;
     rect.bottom=y;
 
