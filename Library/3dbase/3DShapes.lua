@@ -5,6 +5,7 @@ Mesh3D.MODE_BUMP=4
 Mesh3D.MODE_SHADOW=8
 Mesh3D.MODE_ANIMATED=16
 Mesh3D.MODE_INSTANCED=32
+Mesh3D.MODE_COLORED=64
 
 function Mesh3D:init()
 	self.mode=0
@@ -21,6 +22,7 @@ function Mesh3D:updateMode(set,clear)
 			if (nm&Mesh3D.MODE_BUMP)>0 then tc=tc.."n" end
 			if (nm&Mesh3D.MODE_ANIMATED)>0 then tc=tc.."a" end
 			if (nm&Mesh3D.MODE_INSTANCED)>0 then tc=tc.."i" end
+			if (nm&Mesh3D.MODE_COLORED)>0 then tc=tc.."c" end
 			Lighting.setSpriteMode(self,tc)
 		end
 	end
