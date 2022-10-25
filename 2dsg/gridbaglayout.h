@@ -133,12 +133,13 @@ struct GridBagLayoutInfo {
     std::vector<float> minHeight;            /* largest minHeight in each row */
     std::vector<double> weightX;           /* largest weight in each column */
     std::vector<double> weightY;           /* largest weight in each row */
+    float cellSpacingX,cellSpacingY;
     bool valid;
-    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),valid(false) {
+    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),cellSpacingX(0),cellSpacingY(0),valid(false) {
         this->width = width;
         this->height = height;
     }
-    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(), valid(false)
+    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),cellSpacingX(0),cellSpacingY(0), valid(false)
     {
     }
 };

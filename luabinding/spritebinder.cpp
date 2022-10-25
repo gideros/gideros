@@ -890,6 +890,7 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 		STOR_INT("width",width); STOR_INT("height",height);
 		STOR_NUM("reqWidth",reqWidth); STOR_NUM("reqHeight",reqHeight);
 		STOR_NUM("startx",startx); STOR_NUM("starty",starty);
+		STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
 		STOR_NUM_ARRAY("minWidth",minWidth);
 		STOR_NUM_ARRAY("minHeight",minHeight);
 		STOR_NUM_ARRAY("weightX",weightX);
