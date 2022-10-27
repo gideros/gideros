@@ -74,7 +74,7 @@ bool setKeyboardVisibility(bool visible)
 }
 
 
-bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText)
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
 {
 	JNIEnv *env = g_getJNIEnv();
 
@@ -83,6 +83,7 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 	jstring jlabel = env->NewStringUTF(label);
 	jstring jaction = env->NewStringUTF(actionLabel);
 	jstring jhint = env->NewStringUTF(hintText);
+	jstring jcontext = env->NewStringUTF(context);
 
 	if (selstart>0) {
 		int n=0;
@@ -97,12 +98,13 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 		selend=n;
 	}
 
-	jmethodID setKeepAwakeID = env->GetStaticMethodID(localRefCls, "setTextInput", "(ILjava/lang/String;IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
-	jboolean ret=env->CallStaticBooleanMethod(localRefCls, setKeepAwakeID, (jint)type,jbuf,(jint)selstart,(jint)selend,jlabel,jaction,jhint);
+	jmethodID setKeepAwakeID = env->GetStaticMethodID(localRefCls, "setTextInput", "(ILjava/lang/String;IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+	jboolean ret=env->CallStaticBooleanMethod(localRefCls, setKeepAwakeID, (jint)type,jbuf,(jint)selstart,(jint)selend,jlabel,jaction,jhint,jcontext);
 	env->DeleteLocalRef(jbuf);
 	env->DeleteLocalRef(jlabel);
 	env->DeleteLocalRef(jaction);
 	env->DeleteLocalRef(jhint);
+	env->DeleteLocalRef(jcontext);
 	env->DeleteLocalRef(localRefCls);
 	return ret;
 }

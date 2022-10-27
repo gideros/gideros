@@ -12,6 +12,7 @@ typedef struct gapplication_OpenUrlEvent
 typedef struct gapplication_TextInputEvent
 {
     const char *text;
+    const char *context;
     int selStart;
     int selEnd;
 } gapplication_TextInputEvent;

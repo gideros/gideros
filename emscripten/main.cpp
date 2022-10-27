@@ -283,12 +283,15 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 	 if (e->altKey) m|=GINPUT_ALT_MODIFIER;
 	 if (e->metaKey) m|=GINPUT_META_MODIFIER;
 
-	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
+		 //EM_ASM( document.getElementById("canvas").setCapture(true); );
 		 ginputp_mouseDown(x,y,bs,m);
+	 }
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
 	 {
 		 checkEventTriggers();
 		 ginputp_mouseUp(x,y,bs,m);
+		 //if (!b) EM_ASM( document.getElementById("canvas").setCapture(false); );
 	 }
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE)
 	 {

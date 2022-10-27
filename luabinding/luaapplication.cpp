@@ -1020,7 +1020,7 @@ void LuaApplication::callback(int type, void *event)
     else if (type == GAPPLICATION_TEXT_INPUT_EVENT)
     {
         gapplication_TextInputEvent *event2 = (gapplication_TextInputEvent*)event;
-        TextInputEvent eventg(TextInputEvent::TEXT_INPUT,event2->text,event2->selStart,event2->selEnd);
+        TextInputEvent eventg(TextInputEvent::TEXT_INPUT,event2->text,event2->context,event2->selStart,event2->selEnd);
         application_->broadcastEvent(&eventg);
     }
     else if (type == GAPPLICATION_MEMORY_LOW_EVENT)

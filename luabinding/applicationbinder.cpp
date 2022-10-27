@@ -485,7 +485,8 @@ int ApplicationBinder::setTextInput(lua_State* L)
 			luaL_optinteger(L,5,luaL_optinteger(L,4,0)),
 			luaL_optstring(L,6,""),
 			luaL_optstring(L,7,""),
-			luaL_optstring(L,8,"")
+			luaL_optstring(L,8,""),
+			luaL_optstring(L,9,"")
 			));
 
 	return 1;

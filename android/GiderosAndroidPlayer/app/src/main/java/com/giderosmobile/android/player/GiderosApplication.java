@@ -816,6 +816,7 @@ public class GiderosApplication
 	static int tisInitCapsMode=0;
 	static String tisBuffer="";
 	static int tisToken=-1;
+	static String tisContext="";
 	
 	public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
 		outAttrs.actionLabel = tisActionLabel;
@@ -837,7 +838,7 @@ public class GiderosApplication
 					tisBuffer=e.toString();
 					//Log.v("EBE","TE:"+tisEditable+" SS:"+tisSelStart+" SE:"+tisSelEnd+" BB:"+e.toString());
 					GiderosApplication app = GiderosApplication.getInstance();
-					nativeTextInput(tisBuffer,tisSelStart,tisSelEnd);
+					nativeTextInput(tisBuffer,tisSelStart,tisSelEnd,tisContext);
 					if (tisToken!=-1) {
 						Activity activity = WeakActivityHolder.get();
 				    	InputMethodManager imm = (InputMethodManager)
@@ -910,7 +911,7 @@ public class GiderosApplication
 		return b;
 	}	 
 	
-	static public boolean setTextInput(final int type,final String buffer,final int selStart,final int selEnd,final String label,final String actionLabel,final String hintText)
+	static public boolean setTextInput(final int type,final String buffer,final int selStart,final int selEnd,final String label,final String actionLabel,final String hintText,final String context)
 	{
 		final Activity activity = WeakActivityHolder.get();
 		activity.runOnUiThread(new Runnable() {
@@ -923,6 +924,7 @@ public class GiderosApplication
 				tisActionLabel=actionLabel;
 				tisHint=hintText;
 				tisInitCapsMode=((type&0x0F)==1)?(type&0x7000):0;
+				tisContext=context;
 				int bl=tisBuffer.length();
 				Log.v("EBE","STI:"+tisType+" SS:"+tisSelStart+" SE:"+tisSelEnd+" BL:"+bl+" BB:"+buffer+" TE:"+tisEditable);
 				if (tisSelStart>bl) tisSelStart=bl;
@@ -1527,7 +1529,7 @@ public class GiderosApplication
 	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
 	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
 	static private native void nativeKeyChar(String keyChar);
-	static private native void nativeTextInput(String buffer,int selStart,int selEnd);
+	static private native void nativeTextInput(String buffer,int selStart,int selEnd, String context);
 	static private native void nativeOpenALSetup(int sampleRate);
 	static private native void nativeCreate(boolean player,Activity activity);
 	static private native void nativeSetDirectories(String externalDir, String internalDir, String cacheDir);

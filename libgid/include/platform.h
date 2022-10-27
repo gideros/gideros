@@ -185,7 +185,7 @@ std::string getLanguage();
 void setKeepAwake(bool awake);
 bool setKeyboardVisibility(bool visible);
 int getKeyboardModifiers();
-bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText);
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context);
 typedef struct gapplication_ClipboardResponseCb
 {
 	bool result;

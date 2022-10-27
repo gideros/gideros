@@ -191,7 +191,7 @@ bool setKeyboardVisibility(bool visible) {
 }
 #endif
 
-bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText)
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
 {
 	return false;
 }
