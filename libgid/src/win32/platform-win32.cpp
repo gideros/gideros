@@ -427,9 +427,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 	}
                 }
 
-//                printf("t p e:\n %ls\n %ls\n %ls\n", title.c_str(),place.c_str(),extension.c_str()); // TEST OK
-
-                DWORD dwFlags; // new 20221028 XXX
+                DWORD dwFlags;
                 HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
                 if (SUCCEEDED(hr))
                 {
@@ -438,62 +436,59 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     	fileTypes[i].pszName=filters[i].first.c_str();
                     	fileTypes[i].pszSpec=filters[i].second.c_str();
                     }
-					if (strcmp(what, "openDirectoryDialog") == 0){
-							/* TO DO */
-							/*--------------------------------------------------*/
-					}else if (strcmp(what, "openFileDialog") == 0){
-                        IFileOpenDialog *pFile;
-                        // Create the FileOpenDialog object.
-                        hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, 
+                    IFileDialog *pFile;
+					if (strcmp(what, "saveFileDialog") == 0)
+                        hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL,
+                                IID_IFileSaveDialog, reinterpret_cast<void**>(&pFile));
+					else
+                        hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
                                 IID_IFileOpenDialog, reinterpret_cast<void**>(&pFile));
-                        if (SUCCEEDED(hr))
-                        {
-                            // get/set options
-                            pFile->GetOptions(&dwFlags);
-                            pFile->SetOptions(dwFlags | FOS_FORCEFILESYSTEM);
-                            pFile->SetFileTypes(filters.size(), fileTypes); // SEE ABOVE fileTypes
-                            pFile->SetFileTypeIndex(1); // index starts at 1
-//                            pFile->SetDefaultExtension(L"obj;fbx"); // XXX
-                            hr = pFile->SetTitle(title.c_str()); // need more check?
+					if (SUCCEEDED(hr))
+					{
+						bool isFolder=(strcmp(what, "openDirectoryDialog") == 0);
+						// get/set options
+						pFile->GetOptions(&dwFlags);
+						pFile->SetOptions(dwFlags | FOS_FORCEFILESYSTEM | (isFolder?FOS_PICKFOLDERS:0));
+						if (!isFolder) {
+							pFile->SetFileTypes(filters.size(), fileTypes); // SEE ABOVE fileTypes
+							pFile->SetFileTypeIndex(1); // index starts at 1
+							//                            pFile->SetDefaultExtension(L"obj;fbx"); // XXX
+						}
+						hr = pFile->SetTitle(title.c_str()); // need more check?
 
-                            // set starting folder
-                            IShellItem *pItem = NULL;
-                            hr = SHCreateItemFromParsingName(place.c_str(), NULL, IID_IShellItem, (LPVOID *)&pItem);
-                            if (SUCCEEDED(hr))
-                            {
-                                pFile->SetFolder(pItem);
-                                pItem->Release();
-                                pItem = NULL;
-                            }
+						// set starting folder
+						IShellItem *pItem = NULL;
+						hr = SHCreateItemFromParsingName(place.c_str(), NULL, IID_IShellItem, (LPVOID *)&pItem);
+						if (SUCCEEDED(hr))
+						{
+							pFile->SetFolder(pItem);
+							pItem->Release();
+							pItem = NULL;
+						}
 
-                            // Show the Open dialog box.
-                            hr = pFile->Show(NULL);
-                            // Get the file name from the dialog box.
-                            if (SUCCEEDED(hr))
-                            {
-                                IShellItem *pItem;
-                                hr = pFile->GetResult(&pItem);
-                                if (SUCCEEDED(hr))
-                                {
-                                    PWSTR pszFilePath;
-                                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-                                    if (SUCCEEDED(hr))
-                                    {
-                                        r.type=gapplication_Variant::STRING;
-                                        r.s=us(pszFilePath);
-                                        rets.push_back(r);
+						// Show the Open dialog box.
+						hr = pFile->Show(NULL);
+						// Get the file name from the dialog box.
+						if (SUCCEEDED(hr))
+						{
+							IShellItem *pItem;
+							hr = pFile->GetResult(&pItem);
+							if (SUCCEEDED(hr))
+							{
+								PWSTR pszFilePath;
+								hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+								if (SUCCEEDED(hr))
+								{
+									r.type=gapplication_Variant::STRING;
+									r.s=us(pszFilePath);
+									rets.push_back(r);
 
-                                        CoTaskMemFree(pszFilePath);
-                                    }
-                                    pItem->Release();
-                                }
-                            }
-                            pFile->Release();
-                        }
-							/*--------------------------------------------------*/
-					}else if (strcmp(what, "saveFileDialog") == 0){
-							/* TO DO */
-							/*--------------------------------------------------*/
+									CoTaskMemFree(pszFilePath);
+								}
+								pItem->Release();
+							}
+						}
+						pFile->Release();
 					}
 	                CoUninitialize();
 	                delete[] fileTypes;
