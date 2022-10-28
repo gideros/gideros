@@ -317,11 +317,11 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 
                 MainWindow::getInstance()->printToOutput("[[Usage Example]]");
                 if (strcmp(what, "openDirectoryDialog") == 0){
-                    MainWindow::getInstance()->printToOutput("application:get(\"openDirectoryDialog\",\"Open Directory|C:/)\")");
+                    MainWindow::getInstance()->printToOutput("application:get(\"openDirectoryDialog\",\"Open Directory\",\"C:/)\")");
                 }else if (strcmp(what, "openFileDialog") == 0){
-                    MainWindow::getInstance()->printToOutput("application:get(\"openFileDialog\",\"Open File|C:/|Text File (*.txt);;Image File (*.jpg *.png)\")");
+                    MainWindow::getInstance()->printToOutput("application:get(\"openFileDialog\",\"Open File\",\"C:/\",\"Text File (*.txt);;Image File (*.jpg *.png)\")");
                 }else if (strcmp(what, "saveFileDialog") == 0){
-                    MainWindow::getInstance()->printToOutput("application:get(\"saveFileDialog\",\"Save File|C:/|Text File (*.txt);;Image File (*.jpg *.png)\")");
+                    MainWindow::getInstance()->printToOutput("application:get(\"saveFileDialog\",\"Save File\",\"C:/\",\"Text File (*.txt);;Image File (*.jpg *.png)\")");
                 }
             }else{
 

@@ -13,6 +13,8 @@
 #include <combaseapi.h>
 #include <knownfolders.h>
 
+#include <wchar.h> // new 20221026 XXX
+
 extern HWND hwndcopy;
 extern std::string commandLine;
 extern LuaApplication *application_;
@@ -266,7 +268,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
     gapplication_Variant r;
     RECT rr;
     rr.left=rr.right=rr.top=rr.bottom=0;
-    if (!set) {
+    if (!set) { // GET
         /*------------------------------------------------------------------*/
 		if (!strcmp(what,"commandLine"))
 		{
@@ -385,13 +387,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 				}
 				CoTaskMemFree(ppszPath); // free up the path memory block
             }else{
-/*                QString info = "Accepted value for ";
-                info.append(what);
-                info.append(" :");
-                MainWindow::getInstance()->printToOutput(info.toStdString().c_str());
-                for( int i=0; i<acceptedValue.size(); ++i ){
-                    MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
-                }*/
+                /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
             }
 
             /*------------------------------------------------------------------*/
@@ -399,38 +395,109 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 || (strcmp(what, "openFileDialog") == 0)
                 || (strcmp(what, "saveFileDialog") == 0))
             {
-        	/* TODO
-            if(args.size() == 1){
-
-                MainWindow::getInstance()->printToOutput("[[Usage Example]]");
-                if (strcmp(what, "openDirectoryDialog") == 0){
-                    MainWindow::getInstance()->printToOutput("application:get(\"openDirectoryDialog\",\"Open Directory|C:/)\")");
-                }else if (strcmp(what, "openFileDialog") == 0){
-                    MainWindow::getInstance()->printToOutput("application:get(\"openFileDialog\",\"Open File|C:/|Text File (*.txt);;Image File (*.jpg *.png)\")");
-                }else if (strcmp(what, "saveFileDialog") == 0){
-                    MainWindow::getInstance()->printToOutput("application:get(\"saveFileDialog\",\"Save File|C:/|Text File (*.txt);;Image File (*.jpg *.png)\")");
+            if(args.size() <= 2){
+                /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
+            }
+            else
+            {
+                std::wstring title = ws(args[0].s.c_str());
+                std::wstring place = ws(args[1].s.c_str());
+                std::vector<std::pair<std::wstring,std::wstring>> filters;
+                if (args.size()>=3) {
+                	std::wstring ext = ws(args[2].s.c_str());
+                	while (!ext.empty()) {
+                    	std::wstring next;
+                		size_t semicolon=ext.find(L";;");
+                		if (semicolon!=std::wstring::npos) {
+                			next=ext.substr(semicolon+2);
+                			ext=ext.substr(0,semicolon);
+                		}
+                		size_t p1=ext.find_first_of(L'(');
+                		size_t p2=ext.find_last_of(L')');
+                		if ((p1!=std::wstring::npos)&&(p2!=std::wstring::npos)&&(p2>p1))
+                		{
+                			//Valid filter, extract label and extensions
+                			std::wstring label=ext.substr(0,p1);
+                			std::wstring exts=ext.substr(p1+1,p2-p1-1);
+                			//QT uses space for extensions separator, while windows expects semicolon. Convert them.
+                			std::replace(exts.begin(),exts.end(),L' ',L';');
+                			filters.push_back(std::pair<std::wstring,std::wstring>(label,exts));
+                		}
+                		ext=next;
+                	}
                 }
-            }else{
 
-                QString title = QString::fromUtf8(args[0].s.c_str());
-                QString place = "";
-                QString extension = "";
-                if (args.size() >= 2){place = QString::fromUtf8(args[1].s.c_str());}
-                if (args.size() >= 3){extension = QString::fromUtf8(args[2].s.c_str());}
+//                printf("t p e:\n %ls\n %ls\n %ls\n", title.c_str(),place.c_str(),extension.c_str()); // TEST OK
 
-                QString fileName = "";
-                if (strcmp(what, "openDirectoryDialog") == 0){
-                    fileName = QFileDialog::getExistingDirectory(MainWindow::getInstance(),title ,place, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-                }else if (strcmp(what, "openFileDialog") == 0){
-                    fileName = QFileDialog::getOpenFileName(MainWindow::getInstance(), title,place,extension);
+                DWORD dwFlags; // new 20221028 XXX
+                HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+                if (SUCCEEDED(hr))
+                {
+                    COMDLG_FILTERSPEC *fileTypes=new COMDLG_FILTERSPEC[filters.size()];
+                    for (size_t i=0;i<filters.size();i++) {
+                    	fileTypes[i].pszName=filters[i].first.c_str();
+                    	fileTypes[i].pszSpec=filters[i].second.c_str();
+                    }
+					if (strcmp(what, "openDirectoryDialog") == 0){
+							/* TO DO */
+							/*--------------------------------------------------*/
+					}else if (strcmp(what, "openFileDialog") == 0){
+                        IFileOpenDialog *pFile;
+                        // Create the FileOpenDialog object.
+                        hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, 
+                                IID_IFileOpenDialog, reinterpret_cast<void**>(&pFile));
+                        if (SUCCEEDED(hr))
+                        {
+                            // get/set options
+                            pFile->GetOptions(&dwFlags);
+                            pFile->SetOptions(dwFlags | FOS_FORCEFILESYSTEM);
+                            pFile->SetFileTypes(filters.size(), fileTypes); // SEE ABOVE fileTypes
+                            pFile->SetFileTypeIndex(1); // index starts at 1
+//                            pFile->SetDefaultExtension(L"obj;fbx"); // XXX
+                            hr = pFile->SetTitle(title.c_str()); // need more check?
 
-                }else if (strcmp(what, "saveFileDialog") == 0){
-                    fileName = QFileDialog::getSaveFileName(MainWindow::getInstance(), title,place,extension);
+                            // set starting folder
+                            IShellItem *pItem = NULL;
+                            hr = SHCreateItemFromParsingName(place.c_str(), NULL, IID_IShellItem, (LPVOID *)&pItem);
+                            if (SUCCEEDED(hr))
+                            {
+                                pFile->SetFolder(pItem);
+                                pItem->Release();
+                                pItem = NULL;
+                            }
 
+                            // Show the Open dialog box.
+                            hr = pFile->Show(NULL);
+                            // Get the file name from the dialog box.
+                            if (SUCCEEDED(hr))
+                            {
+                                IShellItem *pItem;
+                                hr = pFile->GetResult(&pItem);
+                                if (SUCCEEDED(hr))
+                                {
+                                    PWSTR pszFilePath;
+                                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+                                    if (SUCCEEDED(hr))
+                                    {
+                                        r.type=gapplication_Variant::STRING;
+                                        r.s=us(pszFilePath);
+                                        rets.push_back(r);
+
+                                        CoTaskMemFree(pszFilePath);
+                                    }
+                                    pItem->Release();
+                                }
+                            }
+                            pFile->Release();
+                        }
+							/*--------------------------------------------------*/
+					}else if (strcmp(what, "saveFileDialog") == 0){
+							/* TO DO */
+							/*--------------------------------------------------*/
+					}
+	                CoUninitialize();
+	                delete[] fileTypes;
                 }
-                r.type=gapplication_Variant::STRING;
-                r.s=fileName.toStdString();
-                rets.push_back(r);
             }
             /*------------------------------------------------------------------*/
 
@@ -447,27 +514,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             rets.push_back(r);
             /*------------------------------------------------------------------*/
         }else{
-            // feel free to change this list
-        	/* TODO
-            QStringList acceptedWhat;
-            acceptedWhat << "[x,y] windowPosition";
-            acceptedWhat << "[w,h] windowSize";
-            acceptedWhat << "[w,h] screenSize";
-            acceptedWhat << "[x,y] cursorPosition";
-            acceptedWhat << "[text] clipboard";
-            acceptedWhat << "[text] windowTitle";
-            acceptedWhat << "[path] directory(where//help)";
-            acceptedWhat << "[path] openDirectoryDialog(title|path//help)";
-            acceptedWhat << "[path] openFileDialog(title|path|extensions//help)";
-            acceptedWhat << "[path] saveFileDialog(title|path|extensions//help)";
-            acceptedWhat << "[path] documentDirectory";
-            acceptedWhat << "[path] temporaryDirectory";
-
-            MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:get()");
-            for( int i=0; i<acceptedWhat.size(); ++i ){
-                MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedWhat.at(i)).toStdString().c_str() );
-            }
-            */
+            /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
         }
     }
     else {
@@ -667,30 +714,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             if(args.size() >= 1)
                 setTemporaryDirectory(args[0].s.c_str());
         }else{
-        	/* TODO
-
-            // feel free to change this list
-            QStringList acceptedWhat;
-            acceptedWhat << "windowPosition(x,y)";
-            acceptedWhat << "windowSize(w,h)";
-            acceptedWhat << "minimumSize(w,h)";
-            acceptedWhat << "maximumSize(w,h)";
-            acceptedWhat << "windowColor(r,g,b)";
-            acceptedWhat << "windowTitle(text)";
-            acceptedWhat << "wintabMode(enable)";
-            acceptedWhat << "windowModel(type//help)";
-            acceptedWhat << "cursor(type//help)";
-            acceptedWhat << "cursorPosition(x,y)";
-            acceptedWhat << "clipboard(text)";
-            acceptedWhat << "mkdir(path|dirName//help)";
-            acceptedWhat << "documentDirectory(path)";
-            acceptedWhat << "temporaryDirectory(path)";
-
-            MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:set()");
-            for( int i=0; i<acceptedWhat.size(); ++i ){
-                MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedWhat.at(i)).toStdString().c_str() );
-            }
-            */
+            /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
         }
 
     }
