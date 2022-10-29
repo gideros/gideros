@@ -686,6 +686,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 
         FILL_BOOL("equalizeCells",equalizeCells);
         FILL_BOOL("resizeContainer",resizeContainer);
+        FILL_BOOL("worldAlign",worldAlign);
         FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
         FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
         FILL_NUM("zOffset",zOffset);
@@ -751,6 +752,7 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
         FILL_BOOL("shrink",optimizeSize);
         FILL_BOOL("group",group);
+        FILL_BOOL("autoclip",autoClip);
 
 		lua_getfield(L,2,"insets");
         if (!lua_isnoneornil(L,-1)) {
@@ -788,6 +790,7 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_NUM("insetTop",pInsets.top); STOR_NUM("insetLeft",pInsets.left);
         STOR_NUM("insetBottom",pInsets.bottom); STOR_NUM("insetRight",pInsets.right);
         STOR_BOOL("equalizeCells",equalizeCells);
+        STOR_BOOL("worldAlign",worldAlign);
         STOR_BOOL("resizeContainer",resizeContainer);
         STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
         STOR_NUM("gridAnchorX",gridAnchorX); STOR_NUM("gridAnchorY",gridAnchorY);
@@ -824,6 +827,8 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
         STOR_NUM("offsetx",offsetX); STOR_NUM("offsety",offsetY);
         STOR_NUM("originx",originX); STOR_NUM("originy",originY);
 		STOR_BOOL("shrink",optimizeSize);
+        STOR_BOOL("group",group);
+        STOR_BOOL("autoclip",autoClip);
 	}
 	else
 		lua_pushnil(L);
@@ -885,6 +890,7 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 		STOR_INT("width",width); STOR_INT("height",height);
 		STOR_NUM("reqWidth",reqWidth); STOR_NUM("reqHeight",reqHeight);
 		STOR_NUM("startx",startx); STOR_NUM("starty",starty);
+		STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
 		STOR_NUM_ARRAY("minWidth",minWidth);
 		STOR_NUM_ARRAY("minHeight",minHeight);
 		STOR_NUM_ARRAY("weightX",weightX);
@@ -1803,9 +1809,10 @@ int SpriteBinder::getBounds(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	Sprite* targetCoordinateSpace = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+	bool visible=lua_toboolean(L,3);
 
 	float minx, miny, maxx, maxy;
-	sprite->getBounds(targetCoordinateSpace, &minx, &miny, &maxx, &maxy);
+	sprite->getBounds(targetCoordinateSpace, &minx, &miny, &maxx, &maxy, visible);
 
 	if (minx > maxx || miny > maxy)
 	{
@@ -2240,8 +2247,22 @@ int SpriteBinder::setStyle(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::setStyle", 0);
 
-    Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    if (!lua_istable(L, 1))	// check if the bottom of stack (first paramater, i.e. self) is table
+    {
+        luaL_typerror(L, 1, "Sprite");
+        return 0;
+    }
+    lua_getfield(L, 1, "__userdata"); // get adress
+    if (lua_isnil(L, -1))
+    {
+        lua_pop(L, 1);
+        luaL_error(L, "Sprite '__userdata' cannot be found");
+        return 0;
+    }
+    void* ptr = *(void**)lua_touserdata(L, -1);
+    Sprite* sprite = static_cast<Sprite*>(ptr);
+    lua_pop(L, 1);
+
     if (!lua_isnil(L,2))
         luaL_checktype(L,2,LUA_TTABLE);
     bool propagate=lua_toboolean(L,3);

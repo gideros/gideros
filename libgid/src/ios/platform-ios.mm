@@ -14,6 +14,7 @@
 #include <sys/sysctl.h>
 #include <net/if.h>
 #include <net/if_dl.h>
+#include "platform.h"
 
 // typeSpecifier -> "hw.machine" or "hw.model"
 NSString* getSysInfoByName(const char* typeSpecifier)
@@ -182,24 +183,24 @@ void g_exit()
     exit(0);
 }
 
-bool g_checkStringProperty(bool isSet, const char* what){
-    return false;
-}
-
-void g_setProperty(const char* what, const char* arg){
-}
-
-static std::string g_propResult;
-const char* g_getProperty(const char* what, const char* arg){
-	g_propResult="";
+std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
+{
+	std::vector<gapplication_Variant> rets;
+	gapplication_Variant r;
+	if (!set) {
 #if TARGET_OS_IOS
-	if (what&&(!strcmp(what,"batteryLevel"))) {
-		UIDevice *myDevice = [UIDevice currentDevice];    
-		[myDevice setBatteryMonitoringEnabled:YES];
-		double batLeft = (float)[myDevice batteryLevel] * 100;
-		NSString * levelLabel = [NSString stringWithFormat:@"%.f", batLeft];
-		g_propResult=[levelLabel UTF8String];
-	}
+		if (!strcmp(what,"batteryLevel"))
+		{
+			r.type=gapplication_Variant::STRING;
+			UIDevice *myDevice = [UIDevice currentDevice];    
+			[myDevice setBatteryMonitoringEnabled:YES];
+			double batLeft = (float)[myDevice batteryLevel] * 100;
+			NSString * levelLabel = [NSString stringWithFormat:@"%.f", batLeft];
+			r.s=[levelLabel UTF8String];
+			rets.push_back(r);
+		}
 #endif
-	return g_propResult.c_str();
+	}
+	return rets;
 }
+

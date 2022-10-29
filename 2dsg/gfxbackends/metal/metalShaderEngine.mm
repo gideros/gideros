@@ -428,9 +428,6 @@ void metalShaderEngine::setDepthStencil(DepthStencil state)
 {
     if (currentBuffer&&(state.dTest||(state.sFunc!=ShaderEngine::STENCIL_DISABLE)))
         currentBuffer->needDepthStencil();
-    clear((state.dClear?2:0)|(state.sClear?4:0));
-    state.dClear=false;
-    state.sClear=false;
     dsCurrent=state;
     
     id<MTLDepthStencilState> mds=stateCache[state];
@@ -466,6 +463,9 @@ void metalShaderEngine::setDepthStencil(DepthStencil state)
         }
         [encoder() setCullMode:cull];
     }
+    clear((state.dClear?2:0)|(state.sClear?4:0));
+    state.dClear=false;
+    state.sClear=false;
     //[encoder() setStencilStoreAction:state.sFunc==(ShaderEngine::STENCIL_DISABLE)?MTLStoreActionDontCare: MTLStoreActionStore];    
 }
 

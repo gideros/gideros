@@ -22,6 +22,7 @@ function Mesh3D:updateMode(set,clear)
 			if (nm&Mesh3D.MODE_BUMP)>0 then tc=tc.."n" end
 			if (nm&Mesh3D.MODE_ANIMATED)>0 then tc=tc.."a" end
 			if (nm&Mesh3D.MODE_INSTANCED)>0 then tc=tc.."i" end
+			if (nm&Mesh3D.MODE_COLORED)>0 then tc=tc.."c" end
 			Lighting.setSpriteMode(self,tc)
 		end
 	end

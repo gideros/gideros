@@ -86,8 +86,8 @@ versioning: tools
 	$(BUILDTOOLS)/bin2c luabinding/luabindings.luac >luabinding/luabindings.luac.c
 
 #SDK includes
-vpath %.h libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.17.2/include/AL
-vpath %.hpp libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft-1.17.2/include/AL
+vpath %.h libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft/include/AL
+vpath %.hpp libgideros:libgvfs:libgid/include:$(LUA_INCLUDE):libgid/external/openal-soft/include/AL
 $(SDK)/include/%: %
 	cp $^ $(SDK)/include
 

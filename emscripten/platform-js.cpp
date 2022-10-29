@@ -32,7 +32,7 @@ bool setKeyboardVisibility(bool visible){
 	return false;
 }
 
-bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText)
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
 {
 	return false;
 }
@@ -126,21 +126,20 @@ bool canOpenUrl(const char *url)
     return true;
 }
 
-bool g_checkStringProperty(bool isSet, const char* what)
-{
- return false;
-}
-
 extern const char *currentUrl;
-const char* g_getProperty(const char* what, const char* arg)
+std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
- if (!strcmp(what,"currentUrl"))
-  return currentUrl;
- return NULL;
-}
-
-void g_setProperty(const char* what, const char* arg)
-{
+	std::vector<gapplication_Variant> rets;
+	gapplication_Variant r;
+	if (!set) {
+		if (!strcmp(what,"currentUrl"))
+		{
+			r.type=gapplication_Variant::STRING;
+			r.s=currentUrl;
+			rets.push_back(r);
+		}
+	}
+	return rets;
 }
 
 static int s_fps = 60;

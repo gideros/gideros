@@ -9,6 +9,25 @@
 
 using namespace std;
 
+static std::wstring ws(const char *str)
+{
+    if (!str) return std::wstring();
+    int sl=strlen(str);
+    int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+    std::wstring res(sz, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+    return res;
+}
+
+static std::string us(const wchar_t *str)
+{
+    if (!str) return std::string();
+    int sl=wcslen(str);
+    int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+    std::string res(sz, 0);
+    WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+    return res;
+}
 class Win32Dialog
 {
 public:
@@ -30,35 +49,43 @@ static g_id mygid;
 
 INT_PTR CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-  static char buffer[1024];
+  wchar_t buffer[1024];
   gui_TextInputDialogCompleteEvent *event;
 
   if (iMsg==WM_INITDIALOG){
+	std:wstring wt=ws(map_[mygid].title.c_str());
+    SetWindowText(hwnd,wt.c_str());
+    wt=ws(map_[mygid].message.c_str());
+    SetDlgItemText(hwnd,TID_MESSAGE,wt.c_str());
 
-    SetWindowText(hwnd,map_[mygid].title.c_str());
-    SetDlgItemText(hwnd,TID_MESSAGE,map_[mygid].message.c_str());
-
-    if (map_[mygid].nbutton>=2) 
-      SetDlgItemText(hwnd,TID_BUTTON1,map_[mygid].button1.c_str());
+    if (map_[mygid].nbutton>=2) {
+    	wt=ws(map_[mygid].button1.c_str());
+    	SetDlgItemText(hwnd,TID_BUTTON1,wt.c_str());
+    }
     else
       ShowWindow(GetDlgItem(hwnd,TID_BUTTON1),SW_HIDE);
 
-    if (map_[mygid].nbutton==3) 
-      SetDlgItemText(hwnd,TID_BUTTON2,map_[mygid].button2.c_str());
+    if (map_[mygid].nbutton==3) {
+    	wt=ws(map_[mygid].button2.c_str());
+      SetDlgItemText(hwnd,TID_BUTTON2,wt.c_str());
+    }
     else
       ShowWindow(GetDlgItem(hwnd,TID_BUTTON2),SW_HIDE);
 
-    SetDlgItemText(hwnd,TID_BUTTON3,map_[mygid].cancelButton.c_str());
+    wt=ws(map_[mygid].cancelButton.c_str());
+    SetDlgItemText(hwnd,TID_BUTTON3,wt.c_str());
 
-    SetDlgItemText(hwnd,TID_EDIT,map_[mygid].text.c_str());
+    wt=ws(map_[mygid].text.c_str());
+    SetDlgItemText(hwnd,TID_EDIT,wt.c_str());
 
     return TRUE;
   }
   else if (iMsg==WM_COMMAND){
     if (LOWORD(wParam)==TID_BUTTON1){
       GetDlgItemText(hwnd,TID_EDIT,buffer,1024);
+      std::string bt=us(buffer);
 
-      size_t size = sizeof(gui_TextInputDialogCompleteEvent) + strlen(buffer) + 1
+      size_t size = sizeof(gui_TextInputDialogCompleteEvent) + bt.size() + 1
 	+ map_[mygid].button1.length() + 1;
 
       event = (gui_TextInputDialogCompleteEvent*)malloc(size);
@@ -68,10 +95,10 @@ INT_PTR CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM
 
       event->text =     (char*)event + sizeof(gui_TextInputDialogCompleteEvent);
       event->buttonText=(char*)event + sizeof(gui_TextInputDialogCompleteEvent)
-  	               +strlen(buffer)+1;
+  	               +bt.size()+1;
 
       strcpy((char*)event->buttonText, map_[mygid].button1.c_str());
-      strcpy((char*)event->text,buffer);
+      strcpy((char*)event->text,bt.c_str());
 
       EndDialog(hwnd,LOWORD(wParam));
       gevent_EnqueueEvent(mygid, map_[mygid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, 
@@ -80,8 +107,9 @@ INT_PTR CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM
     }
     else if (LOWORD(wParam)==TID_BUTTON2){
       GetDlgItemText(hwnd,TID_EDIT,buffer,1024);
+      std::string bt=us(buffer);
 
-      size_t size = sizeof(gui_TextInputDialogCompleteEvent) + strlen(buffer) + 1 
+      size_t size = sizeof(gui_TextInputDialogCompleteEvent) + bt.size() + 1
 	+ map_[mygid].button2.length() + 1;
 
       event = (gui_TextInputDialogCompleteEvent*)malloc(size);
@@ -91,10 +119,10 @@ INT_PTR CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM
 
       event->text =     (char*)event + sizeof(gui_TextInputDialogCompleteEvent);
       event->buttonText=(char*)event + sizeof(gui_TextInputDialogCompleteEvent)
-  	               +strlen(buffer)+1;
+  	               +bt.size()+1;
 
       strcpy((char*)event->buttonText, map_[mygid].button2.c_str());
-      strcpy((char*)event->text,buffer);
+      strcpy((char*)event->text,bt.c_str());
 
       EndDialog(hwnd,LOWORD(wParam));
       gevent_EnqueueEvent(mygid, map_[mygid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, 
@@ -103,8 +131,9 @@ INT_PTR CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM
     }
     else if (LOWORD(wParam)==TID_BUTTON3){
       GetDlgItemText(hwnd,TID_EDIT,buffer,1024);
+      std::string bt=us(buffer);
 
-      size_t size = sizeof(gui_TextInputDialogCompleteEvent) + strlen(buffer) + 1 
+      size_t size = sizeof(gui_TextInputDialogCompleteEvent) + bt.size() + 1
 	+ map_[mygid].cancelButton.length() + 1;
 
       event = (gui_TextInputDialogCompleteEvent*)malloc(size);
@@ -114,10 +143,10 @@ INT_PTR CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM
 
       event->text =     (char*)event + sizeof(gui_TextInputDialogCompleteEvent);
       event->buttonText=(char*)event + sizeof(gui_TextInputDialogCompleteEvent)
-  	               +strlen(buffer)+1;
+  	               +bt.size()+1;
 
       strcpy((char*)event->buttonText, map_[mygid].cancelButton.c_str());
-      strcpy((char*)event->text,buffer);
+      strcpy((char*)event->text,bt.c_str());
 
       EndDialog(hwnd,LOWORD(wParam));
       gevent_EnqueueEvent(mygid, map_[mygid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, 
@@ -137,21 +166,27 @@ INT_PTR CALLBACK AlertDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lPa
   gui_AlertDialogCompleteEvent *event;
 
   if (iMsg==WM_INITDIALOG){
+		std:wstring wt=ws(map_[mygid].title.c_str());
+	    SetWindowText(hwnd,wt.c_str());
+	    wt=ws(map_[mygid].message.c_str());
+	    SetDlgItemText(hwnd,ID_MESSAGE,wt.c_str());
 
-    SetWindowText(hwnd,map_[mygid].title.c_str());
-    SetDlgItemText(hwnd,ID_MESSAGE,map_[mygid].message.c_str());
+	    if (map_[mygid].nbutton>=2) {
+	    	wt=ws(map_[mygid].button1.c_str());
+	    	SetDlgItemText(hwnd,ID_BUTTON1,wt.c_str());
+	    }
+	    else
+	      ShowWindow(GetDlgItem(hwnd,ID_BUTTON1),SW_HIDE);
 
-    if (map_[mygid].nbutton>=2) 
-      SetDlgItemText(hwnd,ID_BUTTON1,map_[mygid].button1.c_str());
-    else
-      ShowWindow(GetDlgItem(hwnd,ID_BUTTON1),SW_HIDE);
+	    if (map_[mygid].nbutton==3) {
+	    	wt=ws(map_[mygid].button2.c_str());
+	      SetDlgItemText(hwnd,ID_BUTTON2,wt.c_str());
+	    }
+	    else
+	      ShowWindow(GetDlgItem(hwnd,ID_BUTTON2),SW_HIDE);
 
-    if (map_[mygid].nbutton==3) 
-      SetDlgItemText(hwnd,ID_BUTTON2,map_[mygid].button2.c_str());
-    else
-      ShowWindow(GetDlgItem(hwnd,ID_BUTTON2),SW_HIDE);
-
-    SetDlgItemText(hwnd,ID_BUTTON3,map_[mygid].cancelButton.c_str());
+	    wt=ws(map_[mygid].cancelButton.c_str());
+	    SetDlgItemText(hwnd,ID_BUTTON3,wt.c_str());
 
     return TRUE;
   }

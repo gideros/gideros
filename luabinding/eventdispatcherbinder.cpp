@@ -729,6 +729,9 @@ public:
             lua_pushstring(L, v->text());
             lua_setfield(L, -2, "text");
 
+            lua_pushstring(L, v->context());
+            lua_setfield(L, -2, "context");
+
             lua_pushinteger(L, v->selStart());
             lua_setfield(L, -2, "selectionStart");
 

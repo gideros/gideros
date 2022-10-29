@@ -2,6 +2,7 @@
 #include <string>
 
 #include <stdlib.h>
+#include "platform.h"
 
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
@@ -63,7 +64,7 @@ bool setKeyboardVisibility(bool visible){
 	return false;
 }
 
-bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText)
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
 {
 	return false;
 }
@@ -101,15 +102,17 @@ void g_exit()
   exit(0);
 }
 
-bool g_checkStringProperty(bool isSet, const char* what){
-    return false;
-}
-
-void g_setProperty(const char* what, const char* arg){
-
-}
-
-const char* g_getProperty(const char* what, const char* arg)
+std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
-   return NULL;
+	std::vector<gapplication_Variant> rets;
+	gapplication_Variant r;
+/*	if (!set) {
+		if (!strcmp(what,"currentUrl"))
+		{
+			r.type=gapplication_Variant::STRING;
+			r.s=currentUrl;
+			rets.push_back(r);
+		}
+	}*/
+	return rets;
 }

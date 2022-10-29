@@ -1,4 +1,5 @@
 #include <iostream>
+#include <libnetwork.h>
 #include <windows.h>
 
 #include "gl/glew.h"
@@ -16,7 +17,6 @@
 #include <string>
 #include <direct.h>
 #include <binder.h>
-#include <libnetwork.h>
 #include "ginput-win32.h"
 #include "luaapplication.h"
 #include "platform.h"
@@ -49,11 +49,36 @@ extern "C" {
   void setWin32Stuff(HINSTANCE hInst, HWND hwnd);
 }
 
+static std::wstring ws(const char *str)
+{
+    if (!str) return std::wstring();
+    int sl=strlen(str);
+    int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+    std::wstring res(sz, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+    return res;
+}
+
+static std::string us(const wchar_t *str)
+{
+    if (!str) return std::string();
+    int sl=wcslen(str);
+    int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+    std::string res(sz, 0);
+    WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+    return res;
+}
+
 #define ID_TIMER   1
 
 HWND hwndcopy;
 
-char commandLine[256];
+std::string commandLine;
+std::string PATH_Executable;
+std::string PATH_Temp;
+std::string PATH_Cache;
+std::string PATH_AppName;
+
 // int dxChrome,dyChrome;
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
@@ -75,19 +100,18 @@ static void luaError(const char *error)
 
 static void loadPlugins()
 {
-  static char fullname[MAX_PATH];
+  static wchar_t fullname[MAX_PATH];
   WIN32_FIND_DATA fd; 
-  HANDLE hFind = FindFirstFile("plugins\\*.dll", &fd); 
+  HANDLE hFind = FindFirstFile(L"plugins\\*.dll", &fd);
 
   if(hFind != INVALID_HANDLE_VALUE) { 
     do { 
       // read all (real) files in current folder
       // , delete '!' read other 2 default folder . and ..
       if (! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
-
-	strcpy(fullname,"plugins\\");
-	strcat(fullname,fd.cFileName);
-	printf("found DLL: %s\n",fullname);
+	wcscpy(fullname,L"plugins\\");
+	wcscat(fullname,fd.cFileName);
+	wprintf(L"found DLL: %ls\n",fullname);
 
 	HMODULE hModule = LoadLibrary(fullname);
 	void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
@@ -111,12 +135,12 @@ static void printFunc(const char *str, int len, void *data)
 std::string getDeviceName()
 {
 
-  static char buf[MAX_COMPUTERNAME_LENGTH + 1];
+  static wchar_t buf[MAX_COMPUTERNAME_LENGTH + 1];
   DWORD dwCompNameLen = MAX_COMPUTERNAME_LENGTH;
   std::string name;
 
   if (GetComputerName(buf, &dwCompNameLen) != 0) {
-    name=buf;
+    name=us(buf);
   }
 
   return name;
@@ -230,26 +254,26 @@ void W32Screen::getMaxSize(int &w,int &h)
 	h=monitor_info.rcMonitor.bottom-monitor_info.rcMonitor.top;
 }
 
-void W32Screen::setPosition(int w,int h)
+void W32Screen::setPosition(int x,int y)
 {
 	if (!wnd) return;
     RECT rect;
-    rect.top=w;
-    rect.left=h;
-    rect.right=0;
-    rect.bottom=0;
+    rect.left=x;
+    rect.top=y;
+    rect.right=x;
+    rect.bottom=y;
 
     AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
-    SetWindowPos(wnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOSIZE);
+    SetWindowPos(wnd,HWND_TOP,rect.left,rect.top, rect.right-rect.left, rect.bottom-rect.top, SWP_NOSIZE);
 }
 
-void W32Screen::getPosition(int &w,int &h)
+void W32Screen::getPosition(int &x,int &y)
 {
 	if (!wnd) return;
 	RECT rect;
 	GetClientRect(wnd,&rect);
-	w=rect.left;
-	h=rect.top;
+	x=rect.left;
+	y=rect.top;
 }
 
 int W32Screen::getId()
@@ -281,14 +305,14 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 	  wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
 	  wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
 	  wndclass.lpszMenuName  = MAKEINTRESOURCE(100);
-	  wndclass.lpszClassName = "GidW32Screen" ;
+	  wndclass.lpszClassName = L"GidW32Screen" ;
 	  wndclass.hIconSm       = NULL ;
 
 	  W32Class=RegisterClassEx (&wndclass) ;
 	}
 
-	  wnd = CreateWindow ("GidW32Screen",         // window class name
-			       "",     // window caption
+	  wnd = CreateWindow (L"GidW32Screen",         // window class name
+			       L"",     // window caption
 			       WS_OVERLAPPEDWINDOW,     // window style
 			       0,           // initial x position
 			       0,           // initial y position
@@ -309,7 +333,7 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 	  pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	  pfd.iPixelType = PFD_TYPE_RGBA;
 	  pfd.cColorBits = 24;
-	  pfd.cDepthBits = 16;
+	  pfd.cDepthBits = 24;
 	  pfd.cStencilBits = 8;
 	  pfd.iLayerType = PFD_MAIN_PLANE;
 
@@ -387,7 +411,7 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
   pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
   pfd.iPixelType = PFD_TYPE_RGBA;
   pfd.cColorBits = 24;
-  pfd.cDepthBits = 16;
+  pfd.cDepthBits = 24;
   pfd.cStencilBits = 8;
   pfd.iLayerType = PFD_MAIN_PLANE;
 
@@ -510,28 +534,63 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 0,m);
+    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
   else if (iMsg==WM_LBUTTONUP){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 0,m);
+    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
-  else if (iMsg==WM_MOUSEMOVE && wParam & MK_LBUTTON !=0){
+  else if (iMsg==WM_RBUTTONDOWN){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam),m);
+    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 2,m);
+    return 0;
+  }
+  else if (iMsg==WM_RBUTTONUP){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 2,m);
+    return 0;
+  }
+  else if (iMsg==WM_MBUTTONDOWN){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 4,m);
+    return 0;
+  }
+  else if (iMsg==WM_MBUTTONUP){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 4,m);
+    return 0;
+  }
+  else if (iMsg==WM_MOUSEMOVE){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  int b=0;
+	  if (wParam&MK_LBUTTON) b|=1;
+	  if (wParam&MK_RBUTTON) b|=2;
+	  if (wParam&MK_MBUTTON) b|=4;
+	  if (b)
+		  ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam),b,m);
+	  else
+		  ginputp_mouseHover(LOWORD(lParam), HIWORD(lParam),b,m);
     return 0;
   }
   else if (iMsg==WM_MOUSEWHEEL){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,HIWORD(wParam),m);
+    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,GET_WHEEL_DELTA_WPARAM(wParam)*120,m);
     return 0;
   }
   else if (iMsg==WM_KEYDOWN){
@@ -548,6 +607,30 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
 	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
     ginputp_keyUp(wParam,m);
+    return 0;
+  }
+  else if (iMsg==WM_CHAR){
+	char sc[4];
+	char *obuf=sc;
+	int uni=wParam;
+	 if (uni<0x80)
+	  *(obuf++)=uni;
+	 else
+	 {
+	  if (uni<0x800)
+	  {
+	   *(obuf++)=0xC0|(uni>>6);
+	   *(obuf++)=0x80|(uni&0x3F);
+	  }
+	  else
+	  {
+	    *(obuf++)=0xE0|(uni>>12);
+	    *(obuf++)=0x80|((uni>>6)&0x3F);
+	    *(obuf++)=0x80|(uni&0x3F);
+	  }
+	 }
+	 *(obuf++)=0;
+    ginputp_keyChar(sc);
     return 0;
   }
   else if (iMsg==WM_PAINT){
@@ -623,16 +706,34 @@ DWORD WINAPI RenderMain(LPVOID lpParam)
 
 // ######################################################################
 
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                    PSTR szCmdLine, int iCmdShow)
+static const wchar_t *szAppName = L"giderosGame" ;
+int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                    LPWSTR szCmdLine, int iCmdShow)
 {
-  static char szAppName[] = "giderosGame" ;
+  commandLine=us(szCmdLine);
+  PATH_AppName=us(szAppName);
+  //Get standard paths
+  {
+	  wchar_t szDir[MAX_PATH]={0, };
+	  GetModuleFileName(NULL, szDir, sizeof(szDir));
+	  wchar_t * pEnd = wcsrchr(szDir, L'\\');
+	  if (pEnd)
+		*pEnd = L'\0';
+	  PATH_Executable=us(szDir);
+  }
+  //Get standard paths
+  {
+	  PATH_Temp=us(_wgetenv(L"TEMP"));
+	  PATH_Cache=PATH_Temp+"\\"+PATH_AppName;
+	  CreateDirectory(ws(PATH_Cache.c_str()).c_str(),NULL);
+  }
+
   HWND        hwnd ;
   MSG         msg ;
   WNDCLASSEX  wndclass ;
   int ret;
 
-  printf("szCmdLine=%s\n",szCmdLine);
+  wprintf(L"szCmdLine=%ls\n",szCmdLine);
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
@@ -651,7 +752,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   hInst=hInstance;
   hwnd = CreateWindow (szAppName,         // window class name
-		       "Gideros Win32",     // window caption
+		       L"Gideros Win32",     // window caption
 		       WS_OVERLAPPEDWINDOW,     // window style
 		       0,           // initial x position
 		       0,           // initial y position

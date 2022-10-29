@@ -243,7 +243,7 @@ public:
 	bool keyDown(int keyCode, int repeatCount);
 	bool keyUp(int keyCode, int repeatCount);
 	void keyChar(const char *keyChar);
-	void textInput(const char *text,int ss,int se);
+	void textInput(const char *text,int ss,int se,const char *context);
 
 	void pause();
 	void resume();
@@ -1576,11 +1576,12 @@ void ApplicationManager::keyChar(const char *str)
 	ginputp_keyChar(str);
 }
 
-void ApplicationManager::textInput(const char *text,int ss,int se)
+void ApplicationManager::textInput(const char *text,int ss,int se, const char *context)
 {
-    gapplication_TextInputEvent *event = (gapplication_TextInputEvent*)gevent_CreateEventStruct1(
+    gapplication_TextInputEvent *event = (gapplication_TextInputEvent*)gevent_CreateEventStruct2(
                                            sizeof(gapplication_TextInputEvent),
-                                        offsetof(gapplication_TextInputEvent, text), text);
+                                        offsetof(gapplication_TextInputEvent, text), text,
+										offsetof(gapplication_TextInputEvent, context), context);
     event->selStart=ss;
     event->selEnd=se;
 
@@ -1895,7 +1896,7 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyChar(JNIE
 	env->ReleaseStringUTFChars(keyChar, sBytes);
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeTextInput(JNIEnv* env, jclass cls, jstring text,jint ss,jint se)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTextInput(JNIEnv* env, jclass cls, jstring text,jint ss,jint se,jstring context)
 {
 	const char* sBytes = env->GetStringUTFChars(text, NULL);
 	if (ss>0) {
@@ -1920,8 +1921,10 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeTextInput(JN
 		while (((*r)&0xC0)==0x80) r++;
 		se=r-sBytes;
 	}
+	const char* sContext = env->GetStringUTFChars(context, NULL);
 
-	s_applicationManager->textInput(sBytes,ss,se);
+	s_applicationManager->textInput(sBytes,ss,se,sContext);
+	env->ReleaseStringUTFChars(text, sContext);
 	env->ReleaseStringUTFChars(text, sBytes);
 }
 

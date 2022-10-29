@@ -35,7 +35,12 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 	
 	position = (g_MVMatrix*pos).xyz;
 	normalCoord = normalize((g_NMatrix*hF4(norm.xyz,0)).xyz);
-	if OPT_SHADOWS then lightSpace = g_LMatrix*hF4(position,1.0); end
+	if OPT_SHADOWS then
+		lightSpace = g_LMatrix*hF4(position,1.0);
+	end
+	if OPT_COLORED then
+		vcolor=COLOR
+	end
 	return g_MVPMatrix * pos;
 end
 
@@ -124,25 +129,36 @@ function D3._FLUA_Shader() : Shader
 				shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+hF3(-1.5,-1.5,0.0))*scale).r
 				shadow+=shadow2D(g_ShadowMap, projCoords.xyz+(offset+hF3(0.5,-1.5,0.0))*scale).r
 				shadow/=4.0;
-				if(projCoords.z >= 0.999) then shadow = 1.0 end
+				if(projCoords.z >= 0.999) then
+					shadow = 1.0
+				end
 			end
 		end
 		return shadow
 	end
 	local color0 = lF4(g_Color)
-	if OPT_TEXTURED then color0 = color0*texture2D(g_Texture,texCoord) end
+	if OPT_COLORED then
+		color0=color0*vcolor
+	end
+	if OPT_TEXTURED then
+		color0 = color0*texture2D(g_Texture,texCoord)
+	end
 	local color1 = lF3(0.5, 0.5, 0.5)
 	local normal = normalize(normalCoord)
 
 	local lightDir = normalize(lightPos.xyz - position.xyz)
 	local viewDir = normalize(cameraPos.xyz-position.xyz)
-	if OPT_NORMMAP then normal=perturb_normal(normal, viewDir, texCoord) end
+	if OPT_NORMMAP then
+		normal=perturb_normal(normal, viewDir, texCoord)
+	end
 
 	local diff = max(0.0, dot(normal, lightDir))
 	local spec =0.0
     -- calculate shadow
 	local shadow=1.0
-	if OPT_SHADOWS then shadow = ShadowCalculation(lightSpace,FragCoord) end
+	if OPT_SHADOWS then
+		shadow = ShadowCalculation(lightSpace,FragCoord)
+	end
 	if (diff>0.0) then
 		local nh = max(0.0, dot(reflect(-lightDir,normal),viewDir))
 		spec = pow(nh, 32.0)*shadow

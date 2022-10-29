@@ -60,6 +60,26 @@ void drawInfo();
 void refreshLocalIPs();
 void g_exit();
 
+static std::wstring ws(const char *str)
+{
+    if (!str) return std::wstring();
+    int sl=strlen(str);
+    int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+    std::wstring res(sz, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+    return res;
+}
+
+static std::string us(const wchar_t *str)
+{
+    if (!str) return std::string();
+    int sl=wcslen(str);
+    int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+    std::string res(sz, 0);
+    WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+    return res;
+}
+
 void NetworkManager::printToServer_s(const char *str, int len, void *data)
 {
 	//printJS(str,len,data);
@@ -398,7 +418,8 @@ void NetworkManager::calculateMD5(const char* file)
 		md5_[file] = md5;
 }
 
-
+extern std::string PATH_AppName;
+extern std::string PATH_Cache;
 ApplicationManager::ApplicationManager() {
 
 	deviceOrientation_ = eFixed;
@@ -424,12 +445,11 @@ ApplicationManager::ApplicationManager() {
 	    strcpy(resourcePath,"assets\\");
 	    gpath_setDrivePath(0,resourcePath);
 
-	    char docsPath[MAX_PATH];
-	    strcpy(docsPath,getenv("APPDATA"));
-	    strcat(docsPath, "\\giderosgame\\");
-	    CreateDirectory(docsPath,NULL);        // create dir if it does not exist
-	    gpath_setDrivePath(1,docsPath);
-
+	    std::string docsPath=us(_wgetenv(L"APPDATA"));
+	    docsPath=docsPath+"\\"+PATH_AppName+"\\";
+	    CreateDirectory(ws(docsPath.c_str()).c_str(),NULL);        // create dir if it does not exist
+	    gpath_setDrivePath(1,docsPath.c_str());
+	    gpath_setDrivePath(2,(PATH_Cache+"\\").c_str());
 
 		gvfs_init();
 		//gvfs_setPlayerModeEnabled(player ? 1 : 0);
@@ -550,7 +570,8 @@ ApplicationManager::ApplicationManager() {
 		else
 		{
 			printf("%s\n",error);
-			MessageBox(NULL,error,"Fatal error",MB_OK);
+			std::wstring werror=ws(error);
+			MessageBox(NULL,werror.c_str(),L"Fatal error",MB_OK);
 
 			//throw luaException(error);
 			g_exit();

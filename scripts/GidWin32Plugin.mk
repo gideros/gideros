@@ -9,7 +9,7 @@ OBJS=$(addprefix $(BUILD)/,$(addsuffix .o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS)) -I$(ROOT)/Sdk/include
 CFLGS+=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
-	-O2
+	-O2 -DUNICODE_ -municode
 CXXFLGS+=-std=c++11
 CXXINCS+=
 LFLGS+=-L$(ROOT)/Sdk/lib/win32 -llua -lgvfs -lgid -lgideros

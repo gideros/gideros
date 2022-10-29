@@ -24,6 +24,10 @@ extern size_t GiderosUIShown;
 
 #ifdef EGL
 EGLDisplay display;
+#elif defined(GLFW)
+static GLFWwindow *glfw_win;
+#else
+static EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglCtx;
 #endif
 float pixelRatio=1.0;
 int lastGLWidth=0,lastGLHeight=0;
@@ -42,11 +46,10 @@ static void errorLua(const char *detail)
 	emscripten_force_exit(1);
 }
 
-static GLFWwindow *glfw_win;
 int initGL(int &width, int &height)
 {
  //emscripten_set_canvas_size(width,height);
-#ifndef EGL
+#ifdef GLFW
  if (glfwInit() != GL_TRUE) {
   printf("glfwInit() failed\n");
   return GL_FALSE;
@@ -71,7 +74,7 @@ int initGL(int &width, int &height)
    canvas.width=$0;
    canvas.height=$1;
    },width*ratio,height*ratio);    */ 
-#else
+#elif defined(EGL)
  EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
  EGLint major = 0, minor = 0;
  EGLBoolean ret = eglInitialize(display, &major, &minor);
@@ -101,6 +104,36 @@ int initGL(int &width, int &height)
  };
  EGLContext context = eglCreateContext(display, config, NULL, contextAttribs);
  ret = eglMakeCurrent(display, surface, surface, context);*/
+#else
+ pixelRatio=emscripten_get_device_pixel_ratio();
+ printf("Resize:%d,%d\n",width,height);
+ lastGLWidth=width;
+ lastGLHeight=height;
+ width*=pixelRatio;
+ height*=pixelRatio;
+ printf("CanvasSize: %d,%d (%f)\n",width,height,pixelRatio);
+ emscripten_set_canvas_element_size("#canvas",width,height);
+
+
+ //8, 8, 8, 8, 16, 8, GLFW_WINDOW
+ //glfwWindowHint(,);
+ EmscriptenWebGLContextAttributes ctx;
+ emscripten_webgl_init_context_attributes(&ctx);
+ ctx.stencil=true;
+ //ctx.explicitSwapControl=true;
+ ctx.majorVersion=2;
+
+ webglCtx=emscripten_webgl_create_context("#canvas",&ctx);
+ if (webglCtx<=0) {
+	 ctx.majorVersion=1;
+	 webglCtx=emscripten_webgl_create_context("#canvas",&ctx);
+ }
+ if (webglCtx<=0) {
+	 printf("Failed to create WebGL context:%d\n",(int)webglCtx);
+	 webglCtx=0;
+ }
+
+ emscripten_webgl_make_context_current(webglCtx);
 #endif
  return 0;
 }
@@ -125,17 +158,28 @@ void looptick(void *a)
 		  int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
 		  int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
 		  if (defWidth!=lastGLWidth || defHeight!=lastGLHeight) {
+#ifdef GLFW
 			  glfwDestroyWindow(glfw_win);
+#else
+		/*	  if (webglCtx) {
+				  emscripten_webgl_make_context_current(0);
+				  emscripten_webgl_destroy_context(webglCtx);
+			  }*/
+#endif
 			  initGL(defWidth,defHeight);
 			  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
 		  }
 		if (s_applicationManager->drawFrame()) {
 			if (!inWebXR) {
-	#ifndef EGL
+#ifdef GLFW
 				glfwSwapBuffers(glfw_win);
-	#else
+#elif defined(EGL)
 				eglSwapInterval(display,1);
-	#endif
+#else
+				  /*if (webglCtx)
+					  emscripten_webgl_commit_frame();
+					  */
+#endif
 			}
 		}
 	}
@@ -239,12 +283,15 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 	 if (e->altKey) m|=GINPUT_ALT_MODIFIER;
 	 if (e->metaKey) m|=GINPUT_META_MODIFIER;
 
-	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN) {
+		 //EM_ASM( document.getElementById("canvas").setCapture(true); );
 		 ginputp_mouseDown(x,y,bs,m);
+	 }
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
 	 {
 		 checkEventTriggers();
 		 ginputp_mouseUp(x,y,bs,m);
+		 //if (!b) EM_ASM( document.getElementById("canvas").setCapture(false); );
 	 }
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE)
 	 {

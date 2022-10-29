@@ -55,6 +55,8 @@ struct GridBagConstraints {
     bool optimizeSize;
     //Object group
     bool group;
+    //Auto clip
+    bool autoClip;
 
     std::map<std::string,std::string> resolved;
 
@@ -83,6 +85,7 @@ struct GridBagConstraints {
 
         optimizeSize=false;
         group=false;
+        autoClip=false;
     }
 
     GridBagConstraints(size_t gridx, size_t gridy,
@@ -117,6 +120,8 @@ struct GridBagConstraints {
         prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
         tempHeight=tempWidth=tempX=tempY=0;
         optimizeSize=false;
+        group=false;
+        autoClip=false;
     }
 };
 
@@ -128,12 +133,13 @@ struct GridBagLayoutInfo {
     std::vector<float> minHeight;            /* largest minHeight in each row */
     std::vector<double> weightX;           /* largest weight in each column */
     std::vector<double> weightY;           /* largest weight in each row */
+    float cellSpacingX,cellSpacingY;
     bool valid;
-    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),valid(false) {
+    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),cellSpacingX(0),cellSpacingY(0),valid(false) {
         this->width = width;
         this->height = height;
     }
-    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(), valid(false)
+    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),cellSpacingX(0),cellSpacingY(0), valid(false)
     {
     }
 };
@@ -164,13 +170,14 @@ public:
     bool equalizeCells;
     bool dirty;
     bool resizeContainer;
+    bool worldAlign;
     float cellSpacingX,cellSpacingY;
     float gridAnchorX,gridAnchorY;
     float zOffset;
     std::map<std::string,std::string> resolved;
     std::map<std::string,std::map<int,std::string>> resolvedArray;
     GridBagLayout() :
-            optimizing(false),equalizeCells(false),dirty(false),resizeContainer(false),
+            optimizing(false),equalizeCells(false),dirty(false),resizeContainer(false),worldAlign(false),
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
 			zOffset(0)
     {

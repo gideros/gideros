@@ -575,6 +575,9 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 	}
 }
 
+#define WALIGNF(x) roundf(x)
+#define WALIGN(x) (worldAlign?WALIGNF(x):x)
+
 void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w,
         float &h, GridInsets &insets) {
     size_t i;
@@ -583,13 +586,13 @@ void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w
 
 	t = 0;
 	for (i = 0; i < info.width; i++)
-		t += info.minWidth[i];
-    w = t + insets.left + insets.right + ((info.width>1)?((info.width-1)*cellSpacingX):0);
+		t += WALIGN(info.minWidth[i]);
+    w = t + WALIGN(insets.left) + WALIGN(insets.right) + ((info.width>1)?((info.width-1)*WALIGN(cellSpacingX)):0);
 
 	t = 0;
 	for (i = 0; i < info.height; i++)
-		t += info.minHeight[i];
-    h = t + insets.top + insets.bottom + ((info.height>1)?((info.height-1)*cellSpacingY):0);
+		t += WALIGN(info.minHeight[i]);
+    h = t + WALIGN(insets.top) + WALIGN(insets.bottom) + ((info.height>1)?((info.height-1)*WALIGN(cellSpacingY)):0);
 }
 
 void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
@@ -779,8 +782,20 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 * that has been collected.
 	 */
 
-	info.startx = diffw*gridAnchorX + insets.left;
-	info.starty = diffh*gridAnchorY + insets.top;
+    info.startx = WALIGN(diffw*gridAnchorX + insets.left);
+    info.starty = WALIGN(diffh*gridAnchorY + insets.top);
+    float csx=WALIGN(cellSpacingX);
+    float csy=WALIGN(cellSpacingY);
+    info.cellSpacingY=csy;
+    info.cellSpacingX=csx;
+
+    if (worldAlign) {
+        for (i = 0; i < info.width; i++)
+            info.minWidth[i] = WALIGNF(info.minWidth[i]);
+        for (i = 0; i < info.height; i++)
+            info.minHeight[i] = WALIGNF(info.minHeight[i]);
+    }
+
 
     layoutInfo = info;
     std::stack<Sprite *> stack;
@@ -797,25 +812,25 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 
             r.x = info.startx;
             for (i = 0; i < constraints->tempX; i++)
-                r.x += info.minWidth[i] + cellSpacingX;
+                r.x += info.minWidth[i] + csx;
 
             r.y = info.starty;
             for (i = 0; i < constraints->tempY; i++)
-                r.y += info.minHeight[i] + cellSpacingY;
+                r.y += info.minHeight[i] + csy;
 
             r.width = 0;
             for (i = constraints->tempX;
                     i < (constraints->tempX + constraints->tempWidth); i++) {
-                r.width += info.minWidth[i] + cellSpacingX;
+                r.width += info.minWidth[i] + csx;
             }
-            if (constraints->tempWidth>0) r.width-=cellSpacingX;
+            if (constraints->tempWidth>0) r.width-=csx;
 
             r.height = 0;
             for (i = constraints->tempY;
                     i < (constraints->tempY + constraints->tempHeight); i++) {
-                r.height += info.minHeight[i] + cellSpacingY;
+                r.height += info.minHeight[i] + csy;
             }
-            if (constraints->tempHeight>0) r.height-=cellSpacingY;
+            if (constraints->tempHeight>0) r.height-=csy;
 
             AdjustForGravity(comp, constraints, r);
 
@@ -830,8 +845,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
             }
 
             //Last step: displace the component according to its origin/offset
-            r.x+=constraints->offsetX+constraints->originX*r.width;
-            r.y+=constraints->offsetY+constraints->originY*r.height;
+            r.x+=WALIGN(constraints->offsetX+constraints->originX*r.width);
+            r.y+=WALIGN(constraints->offsetY+constraints->originY*r.height);
 
             //In case of groups, correct placement
             float px=0,py=0;
@@ -849,6 +864,18 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
             {
                 comp->layoutState->ArrangeGrid(comp,r.width,r.height);
                 comp->layoutState->dirty=false;
+            }
+            //Auto clip
+            if (constraints->autoClip) {
+            	comp->setClip(0,0,r.width,r.height);
+            	/*
+            	float minx,miny,maxx,maxy;
+            	comp->localBounds(&minx, &miny, &maxx, &maxy);
+            	if ((minx<(r.x-px))||(miny<(r.y-py))||(maxx>(r.x-px+r.width))||(maxy>(r.y-py+r.height)))
+            	{
+            		comp->setClip(0,0,r.width,r.height);
+            	}
+            	*/
             }
             if (constraints->group)
                 stack.push(comp);

@@ -24,6 +24,7 @@ public:
 		a_ = a;
 
 		isWhite_ = r == 1 && g == 1 && b == 1 && a == 1;
+		invalidate(INV_GRAPHICS);
 	}
 
 	void getColor(float &r,float &g, float &b, float &a)
@@ -88,11 +89,13 @@ public:
     void clearGradient()
     {
         colors_.clear();
+    	invalidate(INV_GRAPHICS);
     }
 
     void setStretching(bool isStretching)
     {
         isStretching_ = isStretching;
+    	invalidate(INV_GRAPHICS);
     }
 
     void setNinePatch(float vl,float vr,float vt,float vb,float tl,float tr,float tt,float tb);

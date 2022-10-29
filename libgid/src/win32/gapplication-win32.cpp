@@ -1,6 +1,8 @@
 #include <gapplication.h>
 #include <gapplication-win32.h>
 
+#include <Shellscalingapi.h>
+extern HWND hwndcopy;
 class GGApplicationManager
 {
     
@@ -16,13 +18,22 @@ public:
     }
 	
 	int getScreenDensity()
-    {   
-      return 0;
+    {
+#if NTDDI_VERSION >= NTDDI_WINBLUE
+		HMONITOR mon=MonitorFromWindow(hwndcopy,MONITOR_DEFAULTTOPRIMARY);
+		if (mon) {
+			UINT x,y;
+			if (GetDpiForMonitor(mon,MDT_RAW_DPI,&x,&y)==0) {
+				return x;
+			}
+		}
+#endif
+      return 96; //Default ?
     }
 
 	void exit()
 	{
-		//App.Current.Exit();
+		PostQuitMessage(0);
 	}
 
     g_id addCallback(gevent_Callback callback, void *udata)
