@@ -2507,8 +2507,9 @@ void MainWindow::zoom(int zoom)
 void MainWindow::find()
 {
     QPoint od_Pos = this->outputDock_->mapToGlobal(this->outputDock_->rect().topRight());
-    QPoint fd_Pos = this->findDialog_->mapToGlobal(this->findDialog_->rect().topLeft());
-    this->findDialog_->move(od_Pos.x() - findDialog_->width(), od_Pos.y());
+//    QPoint fd_Pos = this->findDialog_->mapToGlobal(this->findDialog_->rect().topLeft());
+//    this->findDialog_->move(od_Pos.x() - findDialog_->width(), od_Pos.y());
+	this->findDialog_->move( (od_Pos.x() - findDialog_->width())*0.5, od_Pos.y()); // new 20221029 XXX
     
 	replaceDialog_->hide();
 //	findInFilesDialog_->hide();
@@ -2591,8 +2592,9 @@ void MainWindow::findPrevious()
 void MainWindow::replace()
 {
     QPoint od_Pos = this->outputDock_->mapToGlobal(this->outputDock_->rect().topRight());
-    QPoint fd_Pos = this->replaceDialog_->mapToGlobal(this->replaceDialog_->rect().topLeft());
-    this->replaceDialog_->move(od_Pos.x() - replaceDialog_->width(), od_Pos.y());
+//    QPoint fd_Pos = this->replaceDialog_->mapToGlobal(this->replaceDialog_->rect().topLeft());
+//    this->replaceDialog_->move(od_Pos.x() - replaceDialog_->width(), od_Pos.y());
+	this->replaceDialog_->move((od_Pos.x() - replaceDialog_->width()) * 0.5, od_Pos.y()); // new 20221029 XXX
     
 	findDialog_->hide();
 	replaceDialog_->show();
