@@ -1056,6 +1056,23 @@ void LuaApplication::resetStyleCache()
 }
 
 struct LuaApplication::_StyleCache LuaApplication::styleCache;
+int LuaApplication::getStyleTable(lua_State *L,int sprIndex)
+{
+	lua_getfield(L,sprIndex,"__style");
+	bool lpop=false;
+	while (lua_isnil(L,-1)) {
+		lua_pop(L,1);
+		lua_getfield(L, sprIndex, "__parent");
+		if (lua_isnil(L,-1))
+			break;
+		if (lpop) lua_remove(L,-2);
+		lua_getfield(L,-1,"__style");
+		sprIndex=-1;
+		lpop=true;
+	}
+	if (lpop) lua_remove(L,-2);
+	return 1;
+}
 
 int LuaApplication::resolveStyle(lua_State *L,const char *key,int luaIndex)
 {
@@ -1248,7 +1265,7 @@ void LuaApplication::resolveColor(lua_State *L,int spriteIdx, int colIdx, float 
         colIdx=0;
     }
     if (!colIdx) {
-        lua_getfield(L,spriteIdx,"__style");
+    	getStyleTable(L,spriteIdx);
         resolveStyle(L,cache.c_str(),0);
         idx=-1;
     }

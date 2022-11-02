@@ -664,7 +664,7 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 		sprite->clearLayoutState();
 	else {
         luaL_checktype(L, 2, LUA_TTABLE);
-        lua_getfield(L,1,"__style");
+        LuaApplication::getStyleTable(L,1);
 		GridBagLayout *p=sprite->getLayoutState();
 		FILL_NUM_ARRAY("columnWidths",columnWidths);
 		FILL_NUM_ARRAY("rowHeights",rowHeights);
@@ -710,7 +710,7 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		sprite->clearLayoutConstraints();
 	else {
         luaL_checktype(L, 2, LUA_TTABLE);
-        lua_getfield(L,1,"__style");
+        LuaApplication::getStyleTable(L,1);
         GridBagConstraints *p=sprite->getLayoutConstraints();
 
 		FILL_INT("gridx",gridx); FILL_INT("gridy",gridy);
@@ -2230,14 +2230,9 @@ static void gatherStyledChildren(lua_State *L,int idx,int tidx)
         lua_checkstack(L,8);
         lua_pushnil(L);
         while (lua_next(L,-2)) {
-            if (lua_rawgetfield(L,-1,"__style")==LUA_TTABLE) {
-                lua_pop(L,1);
-                gatherStyledChildren(L,-1,tidx-3);
-                lua_pushvalue(L,-2);
-                lua_rawset(L,tidx-4);
-            }
-            else
-                lua_pop(L,2);
+		   gatherStyledChildren(L,-1,tidx-3);
+		   lua_pushvalue(L,-2);
+		   lua_rawset(L,tidx-4);
         }
     }
     lua_pop(L,1);
@@ -2303,7 +2298,7 @@ int SpriteBinder::resolveStyle(lua_State* L)
     if (hasTable)
         lua_pushvalue(L,3);
     else
-        lua_getfield(L,1,"__style");
+    	LuaApplication::getStyleTable(L,1);
 
     const char *skey=luaL_checkstring(L,2);
     int rtype=LuaApplication::resolveStyle(L,skey,-2);
@@ -2334,7 +2329,7 @@ int SpriteBinder::updateStyle(lua_State* L)
     StackChecker checker(L, "SpriteBinder::updateStyle", 0);
     Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-    lua_getfield(L,1,"__style");
+	LuaApplication::getStyleTable(L,1);
     {
         GridBagLayout *p=sprite->layoutState;
         if (p&&(!(p->resolved.empty()&&p->resolvedArray.empty()))) {
