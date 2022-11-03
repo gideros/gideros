@@ -862,8 +862,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
                 comp->setZ(zOffset);
             if (comp->layoutState&&comp->layoutState->dirty)
             {
-                comp->layoutState->ArrangeGrid(comp,r.width,r.height);
                 comp->layoutState->dirty=false;
+                comp->layoutState->ArrangeGrid(comp,r.width,r.height);
             }
             //Auto clip
             if (constraints->autoClip) {
