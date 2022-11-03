@@ -628,7 +628,7 @@ int SpriteBinder::getClip(lua_State* L)
 
 #define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolved[n]=key; lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2);
 #define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2); p->resolvedArray[n][i]=key; }
-#define RESOLVE(n) FRESOLVE(n,-1) }
+#define RESOLVE(n) FRESOLVE(n,-1) } else p->resolved.erase(n);
 #define RESOLVED(n) if ((!raw)&&p->resolved.count(n)) lua_pushstring(L,p->resolved[n].c_str()); else
 #define ARESOLVED(n,i) if ((!raw)&&p->resolvedArray.count(n)&&p->resolvedArray[n].count(i)) lua_pushstring(L,p->resolvedArray[n][i].c_str()); else
 #define FILL_NUM_ARRAY(n,f) \
@@ -678,6 +678,12 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
                 p->resolved["insetBottom"]=p->resolved["insetTop"];
                 p->resolved["insetRight"]=p->resolved["insetTop"];
             }
+			else {
+				p->resolved.erase("insetTop");
+				p->resolved.erase("insetLeft");
+				p->resolved.erase("insetBottom");
+				p->resolved.erase("insetRight");
+			}
             p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
         }
 		lua_pop(L,1);
@@ -735,6 +741,10 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
             FRESOLVE("minWidth",-1)
                 p->resolved["prefWidth"]=p->resolved["minWidth"];
             }
+        	else {
+        		p->resolved.erase("minWidth");
+        		p->resolved.erase("prefWidth");
+        	}
             float width=luaL_checknumber(L,-1);
             p->aminWidth=width; p->prefWidth=width;
         }
@@ -744,6 +754,10 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
             FRESOLVE("minHeight",-1)
                 p->resolved["prefHeight"]=p->resolved["minHeight"];
             }
+			else {
+				p->resolved.erase("minHeight");
+				p->resolved.erase("prefHeight");
+			}
             float height=luaL_checknumber(L,-1);
             p->aminHeight=height; p->prefHeight=height;
         }
@@ -761,6 +775,12 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
                 p->resolved["insetBottom"]=p->resolved["insetTop"];
                 p->resolved["insetRight"]=p->resolved["insetTop"];
             }
+			else {
+				p->resolved.erase("insetTop");
+				p->resolved.erase("insetLeft");
+				p->resolved.erase("insetBottom");
+				p->resolved.erase("insetRight");
+			}
             p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
         }
 		lua_pop(L,1);
