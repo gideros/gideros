@@ -587,10 +587,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_MOUSEWHEEL){
-	  int m=0;
-	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
-	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,GET_WHEEL_DELTA_WPARAM(wParam)*120,m);
+    int m=0;
+    if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+    if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0, GET_WHEEL_DELTA_WPARAM(wParam),m); // new 20221114 XXX
     return 0;
   }
   else if (iMsg==WM_KEYDOWN){

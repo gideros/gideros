@@ -230,9 +230,9 @@ int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
 
 int getKeyboardModifiers() {
 	int m=0;
-	if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
-	if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
-	if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
+	if (GetAsyncKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER; // new 20221114 XXX
+	if (GetAsyncKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER; // new 20221114 XXX
+	if (GetAsyncKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
 	return m;
 }
 
