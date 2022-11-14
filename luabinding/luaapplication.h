@@ -196,6 +196,7 @@ public:
     static int Core_profilerReport(lua_State *L);
     static int Core_random(lua_State *L);
     static int Core_randomSeed(lua_State *L);
+    static int getStyleTable(lua_State *L,int sprIndex);
     static int resolveStyle(lua_State *L,const char *key,int luaIndex);
     static int resolveStyleInternal(lua_State *L,const char *key,int luaIndex,int refIndex);
     static void resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache);

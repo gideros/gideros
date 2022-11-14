@@ -1312,7 +1312,7 @@ void Sprite::invalidate(int changes) {
                 h->layoutState->layoutInfoCache[1].valid=false;
             }
         }
-		else
+		else if (!(h->layoutConstraints&&h->layoutConstraints->group))
             changes=(ChangeSet)(changes&(~(INV_LAYOUT|INV_CONSTRAINTS)));
 
         h->changes_=(ChangeSet)(h->changes_|(changes&(~INV_CONSTRAINTS)));

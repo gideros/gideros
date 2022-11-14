@@ -391,7 +391,11 @@
 		or (Export.getProperty("sys.exportType")=="player") then
 			iOSProject.Entitlements.mac["com.apple.security.network.server"]=true
 		end		
-iOSProject.InfoPlist.NSUserTrackingUsageDescription=Export.getProperty("plugin.reqTrackingReason")   	]]></lua>
+		local trackReason=Export.getProperty("plugin.reqTrackingReason")
+		if trackReason and #trackReason>0 then
+			iOSProject.InfoPlist.NSUserTrackingUsageDescription=trackReason
+		end   	
+]]></lua>
 	   <if condition="[[[plugin.reqGpsBackground]]]">
     	<template name="Project" path="">
 		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
