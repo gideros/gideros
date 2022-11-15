@@ -39,6 +39,7 @@ static std::string us(const wchar_t *str)
     WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
     return res;
 }
+
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
   RECT desktop;
@@ -94,8 +95,9 @@ std::string getLanguage()
   return us(szBuff);
 }
 
-std::string getAppId(){
-	return "";
+std::string getAppId()
+{
+  return "";
 }
 
 void getSafeDisplayArea(int &x,int &y,int &w,int &h)
@@ -211,7 +213,8 @@ void setKeepAwake(bool awake)
 {
 }
 
-bool setKeyboardVisibility(bool visible){
+bool setKeyboardVisibility(bool visible)
+{
 	return false;
 }
 
@@ -220,15 +223,18 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 	return false;
 }
 
-int setClipboard(std::string data,std::string mimeType, int luaFunc) {
+int setClipboard(std::string data,std::string mimeType, int luaFunc)
+{
 	return -1;
 }
 
-int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
+int getClipboard(std::string &data,std::string &mimeType, int luaFunc)
+{
 	return -1;
 }
 
-int getKeyboardModifiers() {
+int getKeyboardModifiers()
+{
 	int m=0;
 	if (GetAsyncKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER; // new 20221114 XXX
 	if (GetAsyncKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER; // new 20221114 XXX
@@ -269,14 +275,13 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
     RECT rr;
     rr.left=rr.right=rr.top=rr.bottom=0;
     if (!set) { // GET
-        /*------------------------------------------------------------------*/
 		if (!strcmp(what,"commandLine"))
 		{
 			r.type=gapplication_Variant::STRING;
 			r.s=commandLine;
 			rets.push_back(r);
-		}
-		else if (strcmp(what, "windowPosition") == 0)
+            /*------------------------------------------------------------------*/
+		}else if (strcmp(what, "windowPosition") == 0)
         {
 			GetWindowRect(hwndcopy,&rr);
             r.type=gapplication_Variant::DOUBLE;
@@ -285,7 +290,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             r.d=rr.top;
             rets.push_back(r);
             /*------------------------------------------------------------------*/
-
         }else if (strcmp(what, "windowSize") == 0)
         {
 			GetWindowRect(hwndcopy,&rr);
@@ -389,7 +393,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             }else{
                 /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
             }
-
             /*------------------------------------------------------------------*/
         }else if ((strcmp(what, "openDirectoryDialog") == 0)
                 || (strcmp(what, "openFileDialog") == 0)
@@ -450,9 +453,11 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 						pFile->GetOptions(&dwFlags);
 						pFile->SetOptions(dwFlags | FOS_FORCEFILESYSTEM | (isFolder?FOS_PICKFOLDERS:0));
 						if (!isFolder) {
-							pFile->SetFileTypes(filters.size(), fileTypes); // SEE ABOVE fileTypes
+							pFile->SetFileTypes(filters.size(), fileTypes);
 							pFile->SetFileTypeIndex(1); // index starts at 1
-							//                            pFile->SetDefaultExtension(L"obj;fbx"); // XXX
+							//pFile->SetDefaultExtension(L"obj;fbx"); // append default extension
+                            //printf("* fileTypes *, set default extension to %ls\n", fileTypes[0].pszSpec); OK
+							pFile->SetDefaultExtension(fileTypes[0].pszSpec); // append default 1st extension
 						}
 						hr = pFile->SetTitle(title.c_str()); // need more check?
 
@@ -495,7 +500,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 }
             }
             /*------------------------------------------------------------------*/
-
         }else if (strcmp(what, "temporaryDirectory") == 0)
         {
             r.type=gapplication_Variant::STRING;
@@ -512,8 +516,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
         }
     }
-    else {
-        /*------------------------------------------------------------------*/
+    else { // SET
         if (strcmp(what, "cursor") == 0)
         {
         	/* TODO
@@ -537,8 +540,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
                 }
             }
-
-
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "windowPosition") == 0)
         {
@@ -643,7 +644,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 }
 
             }else{
-
                 QString info = "Accepted value for ";
                 info.append(what);
                 info.append(" :");
@@ -652,7 +652,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
                 }
             }
-
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "wintabMode") == 0)
         {
@@ -689,15 +688,12 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "mkDir") == 0)
         {
-        	/* TODO
-            if(args.size() <= 1){
-                MainWindow::getInstance()->printToOutput("[[Usage Example]]");
-                MainWindow::getInstance()->printToOutput("application:set(\"mkDir\",application:get(\"directory\",\"executable\")..\"|dirName\")");
-            }else{
-                QDir dirPath = QDir::temp();
-                dirPath.setPath(QString::fromUtf8(args[0].s));
-                dirPath.mkdir(QString::fromUtf8(args[1].s));
-            }
+            // new 20221114 XXX
+            std::wstring dir = ws(args[0].s.c_str());
+            if (_wmkdir(dir.c_str()) == 0)
+                printf("mkDir OK: %S\n", dir.c_str()); // can be useful for the w32 console
+            else
+                printf("mkDir failed or Dir may already exist: %S\n", dir.c_str()); // can be useful for the w32 console
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "documentDirectory") == 0)
         {
@@ -711,7 +707,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
         }else{
             /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
         }
-
     }
     return rets;
 }

@@ -534,6 +534,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
     ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
@@ -541,6 +542,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
     ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
@@ -548,6 +550,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
     ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 2,m);
     return 0;
   }
@@ -555,6 +558,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
     ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 2,m);
     return 0;
   }
@@ -562,6 +566,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
     ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 4,m);
     return 0;
   }
@@ -569,6 +574,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
     ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 4,m);
     return 0;
   }
@@ -576,6 +582,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
 	  int b=0;
 	  if (wParam&MK_LBUTTON) b|=1;
 	  if (wParam&MK_RBUTTON) b|=2;
@@ -587,9 +594,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_MOUSEWHEEL){
-    int m=0;
-    if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
-    if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
     ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0, GET_WHEEL_DELTA_WPARAM(wParam),m); // new 20221114 XXX
     return 0;
   }
@@ -783,4 +791,3 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   printf("program ends\n");
   return msg.wParam ;
 }
-
