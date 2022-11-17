@@ -43,7 +43,7 @@ local LightingShaderConstants={
 {name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false},
 {name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="n"},
 {name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false,code="s"},
-{name="bones",type=Shader.CMATRIX,mult=32,vertex=true,code="a"},
+{name="bones",type=Shader.CMATRIX,mult=64,vertex=true,code="a"},
 {name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
 }
 --[[

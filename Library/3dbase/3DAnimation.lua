@@ -9,14 +9,11 @@ function D3Anim.updateBones()
 			local bn=1
 			for n,bd in ipairs(k.animBones) do
 				local b=bd.bone
-				local m=Matrix.new()
-				m:setMatrix(b.poseIMat:getMatrix())
-				while true do
-					local m1=b:getMatrix()
-					m1:multiply(m) m=m1
-					b=b:getParent()
-					if b==k.bonesTop then break end
-				end
+				
+				-- Bone to Mesh
+				local m=G3DFormat.sprToSprMatrix(b,k.bonesTop,k.bonesTop)
+				m:multiply(b.poseIMat)				
+			
 				bt[bn],bt[bn+1],bt[bn+2],bt[bn+3],
 				bt[bn+4],bt[bn+5],bt[bn+6],bt[bn+7],
 				bt[bn+8],bt[bn+9],bt[bn+10],bt[bn+11],
@@ -71,14 +68,17 @@ function D3Anim.tick()
 				aor=1-aratio
 				if al or aratio>=1 then anim.oldAnim=nil end
 			end
-			ac=D3Anim.animate(k,anim)
+			ac,al=D3Anim.animate(k,anim)
 			if ao and ac then animateIns(ao,aor) animateIns(ac,1-aor)
 			elseif ao then animateIns(ao,1)
 			elseif ac then animateIns(ac,1)
 			else aend[slot]=true
 			end
+			if al and anim.onEnd then anim.onEnd(slot) end
 		end
-		for slot,_ in pairs(aend) do a.animations[slot]=nil end
+		for slot,_ in pairs(aend) do 
+			a.animations[slot]=nil 
+		end
 		for bone,srtl in pairs(ares) do
 			if #srtl>0 then
 				local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -120,7 +120,7 @@ function D3Anim.setBonesPose(m,poses)
 	a.dirty=true
 end
 
-function D3Anim.setAnimation(model,anim,track,loop,transitionTime,speed)
+function D3Anim.setAnimation(model,anim,track,loop,transitionTime,speed,onEnd)
 	assert(D3Anim._animatedModel[model],"Model not animatable")
 	local an=D3Anim._animatedModel[model]
 	local oldAnim,oldStart,oldLen,tm=nil,nil,nil,os:timer()
@@ -132,7 +132,7 @@ function D3Anim.setAnimation(model,anim,track,loop,transitionTime,speed)
 	an.animations[track]={
 		anim=anim,tm=tm,loop=loop,
 		oldAnim=oldAnim,oldStart=oldStart,oldLen=oldLen,
-		speed=speed
+		speed=speed, onEnd=onEnd,
 	}
 end
 

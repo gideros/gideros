@@ -496,9 +496,9 @@ protected:
     bool worldAlign_;
     enum BoundsMode {
         BOUNDS_UNSPEC=0,
-        BOUNDS_OBJECT=1,
-        BOUNDS_LOCAL=2,
-        BOUNDS_GLOBAL=3,
+        BOUNDS_OBJECT=1, //Internal object bounds, excluding local transform
+        BOUNDS_LOCAL=2, //Locally transformed object bounds, that is bounds of the object in its parent space
+        BOUNDS_GLOBAL=3, //Global bounds
         BOUNDS_MAX=4
     };
     struct {
@@ -530,7 +530,7 @@ public:
 
 protected:
     void layoutSizesChanged();
-    void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::stack<Matrix4> &pxform, bool xformValid=false) const;
+    void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::vector<Matrix4> &pxform, bool xformValid=false) const;
     virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
 	{
 		if (minx)
@@ -547,7 +547,13 @@ protected:
 	void recursiveDispatchEvent(Event* event, bool canBeStopped, bool reverse);
 
 private:
-    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::stack<Matrix> parentXform,bool visible=false, bool nosubs=false, BoundsMode mode=BOUNDS_UNSPEC, bool *xformValid=nullptr);
+    struct ClipRect {
+        float xmin;
+        float xmax;
+        float ymin;
+        float ymax;
+    };
+    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::vector<Matrix> &parentXform, ClipRect *parentClip=nullptr,bool visible=false, bool nosubs=false, BoundsMode mode=BOUNDS_UNSPEC, bool *xformValid=nullptr);
 
 protected:
     Application *application_;

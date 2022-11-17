@@ -50,6 +50,30 @@ function G3DFormat.computeG3DSizes(g3d)
 	g3d.center={(g3d.max[1]+g3d.min[1])/2,(g3d.max[2]+g3d.min[2])/2,(g3d.max[3]+g3d.min[3])/2}
 end
 
+function G3DFormat.stackMatrix(source,root)
+	local s={}
+	while source and source~=root do 
+		table.insert(s,source) 
+		source=source:getParent() 
+	end
+	assert(source==root,"Root node isn't a parent of source node")
+	local m=Matrix.new()
+	while true do
+		local p=table.remove(s)
+		if not p then break end
+		m:multiply(p:getMatrix())
+	end
+	return m
+end
+
+function G3DFormat.sprToSprMatrix(from,to,top)
+	-- Mat MUL: if 1,2:A,3:B, then B=3->2, A=2->1, A*B=3->1
+	local mi=G3DFormat.stackMatrix(to,top) --to->top
+	mi:invert() --top->to
+	mi:multiply(G3DFormat.stackMatrix(from,top)) --(top->to*from->top)->from->to
+	return mi
+end
+
 function G3DFormat.srtToMatrix(v,rev)
 	local mt=Matrix.new()
 	if rev and v.t then
@@ -213,14 +237,14 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 		if top and top.bones and obj.bones then
 			m.animBones={}
 			for k,v in ipairs(obj.bones) do
-				m.animBones[k]={ boneref=v.node }
+				m.animBones[k]={ boneref=v.node, poseMat=v.poseMat, poseIMat=v.poseIMat }
 				if v.poseSrt then m.animBones[k].poseMat=G3DFormat.srtToMatrix(v.poseSrt) end
 				top.animMeshes=top.animMeshes or {}
 				top.animMeshes[m]=true
 			end
 			m.bonesTop=top
+			smode=smode|D3.Mesh.MODE_ANIMATED
 		end
-		smode=smode|D3.Mesh.MODE_ANIMATED
 	end
 	m:updateMode(smode|D3.Mesh.MODE_SHADOW,0)
 	return m
@@ -261,7 +285,7 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 			m:setMatrix(unpack(g3d.transform))
 			spr:setMatrix(m)
 		elseif g3d.srt then
-			spr:setMatrix(G3DFormat.srtToMatrix(g3d.srt))
+			spr:setMatrix(Matrix.fromSRT(g3d.srt))
 		end
 		spr.srt=g3d.srt
 	end
@@ -281,16 +305,12 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 							p=p:getParent()
 						end
 						p=nil
-					end
-					while p do
-						local m1=p:getMatrix()
-						m1:multiply(mi) mi=m1
-						if p==m.bonesTop then break end
-						p=p:getParent()
+					else
+						mi=G3DFormat.sprToSprMatrix(p,m.bonesTop,m.bonesTop) -->Bone Pose to Mesh
 					end
 					b.bone.poseMat=Matrix.new()
 					b.bone.poseMat:setMatrix(mi:getMatrix())
-					mi:invert()
+					mi:invert() -- -> Mesh to Bone Pose
 					b.bone.poseIMat=mi
 				end
 			end

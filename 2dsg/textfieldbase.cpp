@@ -24,7 +24,7 @@ bool TextFieldBase::scaleChanged() {
 	bool changed=(scalex!=lscalex_)||(scaley!=lscaley_)||(fontver!=lfontCacheVersion_);
 	lscalex_=scalex;
 	lscaley_=scaley;
-	lfontCacheVersion_=fontver;
+    lfontCacheVersion_=fontver;
     prefWidth_=prefHeight_=-1;
     textlayout_.letterSpacingCache=-1;
 	return changed;
@@ -35,8 +35,8 @@ bool TextFieldBase::setDimensions(float w,float h,bool forLayout)
     G_UNUSED(forLayout);
     bool changed=Sprite::setDimensions(w,h);
     if (changed) {
-		layout_.w=w;
-		layout_.h=h;
+        layout_.w=w;
+        layout_.h=h;
         float pwidth=prefWidth_;
         float pheight=prefHeight_;
         setLayout(&layout_);

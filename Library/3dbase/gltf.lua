@@ -15,8 +15,45 @@ function Gltf:getScene(i)
 	local root={}
 	root.type="group"
 	root.parts={}
+	root.name="s"..i
+	root.bones={}
+	self.collectBones=root.bones
 	for ni,n in ipairs(ns.nodes) do
-		root.parts["n"..ni]=self:getNode(n+1)
+		root.parts["n"..n]=self:getNode(n+1)
+	end
+	self.collectBones=nil
+	if self.desc.animations then
+		local PATHLEN={ scale=3, rotation=4, translation=3 }
+		root.animations={}
+		for an,ad in ipairs(self.desc.animations) do
+			local abones={}
+			local btab={}
+			for _,c in ipairs(ad.channels) do
+				local bone=btab[c.target.node]
+				local samp=ad.samplers[c.sampler+1]
+				if not bone then
+					bone={ boneId="n"..c.target.node, samplerIn=samp.input, keyframes={} }
+					btab[c.target.node]=bone
+					abones[#abones+1]=bone
+					local kfrms=self:getBuffer(samp.input+1,false,1)
+					for ki,kv in ipairs(kfrms) do
+						bone.keyframes[ki]={ keytime=(kv-kfrms[1])*1000 }
+					end
+				else
+					assert(bone.samplerIn==samp.input)
+				end
+				local path=c.target.path
+				local pl=PATHLEN[path]
+				local kfrms=self:getBuffer(samp.output+1,false,pl)
+				for ki,kv in ipairs(bone.keyframes) do
+					local b=(ki-1)*pl
+					local v={}
+					for n=1,pl do v[n]=kfrms[n+b] end
+					kv[path]=v
+				end
+			end
+			root.animations[an]={ bones=abones, name=ad.name }
+		end
 	end
 	return root
 end
@@ -29,6 +66,23 @@ function Gltf:getNode(i)
 	root.name=nd.name
 	if nd.mesh then
 		local md=self.desc.meshes[nd.mesh+1]
+		local bones
+		if nd.skin then
+			local sd=self.desc.skins[nd.skin+1]
+			bones={}
+			local mats=self:getBuffer(sd.inverseBindMatrices+1,false,16)
+			for k,v in ipairs(sd.joints) do
+				local n=(k-1)*16+1
+				local rm=Matrix.new() rm:setMatrix(
+					mats[n+0],mats[n+1],mats[n+2],mats[n+3],
+					mats[n+4],mats[n+5],mats[n+6],mats[n+7],
+					mats[n+8],mats[n+9],mats[n+10],mats[n+11],
+					mats[n+12],mats[n+13],mats[n+14],mats[n+15])
+				rm:invert()
+				bones[k]={ node="n"..v, _poseMat=rm }
+				if self.collectBones then self.collectBones["n"..v]=true end
+			end
+		end
 		for pi,prim in ipairs(md.primitives) do
 			local function bufferIndex(str)
 				for n,id in pairs(prim.attributes) do
@@ -36,21 +90,25 @@ function Gltf:getNode(i)
 				end
 				return 0
 			end
+			local animi=self:getBuffer(bufferIndex("JOINTS_0"),false,4)
+			local animw=self:getBuffer(bufferIndex("WEIGHTS_0"),false,4)
 			local m={
 				vertices=self:getBuffer(bufferIndex("POSITION"),false,3), 
 				texcoords=self:getBuffer(bufferIndex("TEXCOORD")),
 				normals=self:getBuffer(bufferIndex("NORMAL")),
 				colors=self:getBuffer(bufferIndex("COLOR_0"),false,4), 
 				indices=self:getBuffer(prim.indices+1,true),
+				animdata=animi and animw and { bi=animi, bw=animw },
 				type="mesh",
 				material=self:getMaterial((prim.material or -1)+1),
+				bones=bones,
 			}
 			root.parts["p"..pi]=m
 		end
 	end
 	if nd.children then
 		for ni,n in ipairs(nd.children) do
-			root.parts["n"..ni]=self:getNode(n+1)
+			root.parts["n"..n]=self:getNode(n+1)
 		end
 	end
 	if nd.matrix then 
@@ -73,6 +131,7 @@ function Gltf:getBuffer(i,indices,vlen)
 	elseif bd.type=="VEC2" then bm=2
 	elseif bd.type=="VEC3" then bm=3
 	elseif bd.type=="VEC4" then bm=4
+	elseif bd.type=="MAT4" then bm=16
 	else assert(false,"Unhandled type:"..bd.type)
 	end
 --	local tm=os:clock()
