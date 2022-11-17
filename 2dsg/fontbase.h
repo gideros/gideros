@@ -81,8 +81,9 @@ public:
         ChunkStyle style;
 	};
 	struct TextLayout {
-    	TextLayout() : x(0),y(0),w(0),h(0),bh(0),mw(0),lines(0),styleFlags(0) { };
+        TextLayout() : x(0),y(0),dx(0),dy(0),w(0),h(0),bh(0),mw(0),lines(0),styleFlags(0) { };
 		float x,y;
+        float dx,dy;
         float w,h,bh,mw;
 		int lines;
 		int styleFlags;
@@ -90,7 +91,7 @@ public:
         std::map<std::string,struct ChunkLayout> metricsCache;
         float letterSpacingCache;
         void clear() {
-			x=y=w=h=bh=mw=lines=styleFlags=0;
+            x=y=dx=dy=w=h=bh=mw=lines=styleFlags=0;
 			parts.clear();
             metricsCache.clear();
 		};

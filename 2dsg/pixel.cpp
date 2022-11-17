@@ -396,7 +396,7 @@ bool Pixel::setDimensions(float width,float height,bool forLayout)
         invalidate(INV_GRAPHICS|INV_BOUNDS);
         if ((!(isStretching_|| isNinePatch_))&&texture_[0]) updateTexture();
     }
-    return Sprite::setDimensions(width, height);
+    return Sprite::setDimensions(width, height, forLayout);
 }
 
 void Pixel::setTextureRegion(BitmapData *bitmapdata,int slot)

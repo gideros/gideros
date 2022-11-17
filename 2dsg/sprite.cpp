@@ -1296,11 +1296,7 @@ void Sprite::invalidate(int changes) {
     if (changes&(INV_CONSTRAINTS))
         changes|=INV_LAYOUT;
 
-    if (changes&(INV_LAYOUT|INV_CONSTRAINTS)) {
-        Stage *stage=getStage();
-        if (stage)
-            stage->needLayout=true;
-    }
+    bool globalLayout=(changes&(INV_LAYOUT|INV_CONSTRAINTS));
 
 	//Propagate to parents
     Sprite *h=parent_;
@@ -1308,7 +1304,14 @@ void Sprite::invalidate(int changes) {
         if (h->layoutState)
         {
             if (changes&(INV_LAYOUT|INV_CONSTRAINTS))
-                h->layoutState->dirty=true;
+            {
+                if (h->layoutState->optimizing) {
+                    changes=(ChangeSet)(changes&(~(INV_LAYOUT|INV_CONSTRAINTS)));
+                    globalLayout=false;
+                }
+                else
+                    h->layoutState->dirty=true;
+            }
             if (changes&INV_CONSTRAINTS) {
                 h->layoutState->layoutInfoCache[0].valid=false;
                 h->layoutState->layoutInfoCache[1].valid=false;
@@ -1320,6 +1323,12 @@ void Sprite::invalidate(int changes) {
         h->changes_=(ChangeSet)(h->changes_|(changes&(~INV_CONSTRAINTS)));
 		h=h->parent_;
 	}
+
+    if (globalLayout) {
+        Stage *stage=getStage();
+        if (stage)
+            stage->needLayout=true;
+    }
 }
 
 struct ClipRect {
@@ -1837,8 +1846,10 @@ bool Sprite::setDimensions(float w,float h, bool forLayout)
         reqHeight_=h;
         if (layoutState)
             layoutState->dirty=true;
-        invalidate(INV_CONSTRAINTS);
-        layoutSizesChanged();
+        if (!forLayout) {
+            //invalidate(INV_CONSTRAINTS);
+            layoutSizesChanged();
+        }
         redrawEffects();
 
         if (hasEventListener(LayoutEvent::RESIZED))

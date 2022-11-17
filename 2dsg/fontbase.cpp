@@ -490,14 +490,18 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
 	if (breakwords&&(tl.mw>breaksize))
 		tl.mw=breaksize;
 	//Compute block size
-	tl.x = 1e30;
-	tl.y = 1e30;
-	float mx=-1e30,my=-1e30;
+    tl.x = 1e30;
+    tl.y = 1e30;
+    tl.dx = 1e30;
+    tl.dy = 1e30;
+    float mx=-1e30,my=-1e30;
 	tl.styleFlags=0;
 	for (size_t k=0;k<tl.parts.size();k++)
 	{
-		tl.x=std::min(tl.x,tl.parts[k].x);
-		tl.y=std::min(tl.y,tl.parts[k].y);
+        tl.x=std::min(tl.x,tl.parts[k].x);
+        tl.y=std::min(tl.y,tl.parts[k].y);
+        tl.dx=std::min(tl.dx,tl.parts[k].dx);
+        tl.dy=std::min(tl.dy,tl.parts[k].dy);
         mx=std::max(mx,tl.parts[k].x+tl.parts[k].w);
         my=std::max(my,tl.parts[k].y+tl.parts[k].h);
         tl.styleFlags|=tl.parts[k].style.styleFlags;
