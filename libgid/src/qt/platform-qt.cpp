@@ -21,6 +21,26 @@
 
 #if defined(Q_OS_WIN)
     #include <windows.h>
+    static std::wstring ws(const char *str)
+    {
+        if (!str) return std::wstring();
+        int sl=strlen(str);
+        int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+        std::wstring res(sz, 0);
+        MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+        return res;
+    }
+
+    static std::string us(const wchar_t *str)
+    {
+        if (!str) return std::string();
+        int sl=wcslen(str);
+        int sz = WideCharToMultiByte(CP_UTF8, 0, str, sl, 0, 0,NULL,NULL);
+        std::string res(sz, 0);
+        WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
+        return res;
+    }
+
 #elif defined(Q_OS_MAC)
     #import <IOKit/pwr_mgt/IOPMLib.h>
 
@@ -30,8 +50,7 @@
     IOReturn success = kIOReturnError;
 #endif
 
-std::vector<std::string> getDeviceInfo()
-{
+std::vector<std::string> getDeviceInfo() {
 	std::vector<std::string> result;
 
 #ifdef Q_OS_WIN
@@ -44,8 +63,7 @@ std::vector<std::string> getDeviceInfo()
 	return result;
 }
 
-void setKeepAwake(bool awake)
-{
+void setKeepAwake(bool awake) {
     if (awake){
         #if defined(Q_OS_WIN)
             SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
@@ -74,12 +92,11 @@ void setKeepAwake(bool awake)
     }
 }
 
-bool setKeyboardVisibility(bool visible){
+bool setKeyboardVisibility(bool visible) {
 	return false;
 }
 
-bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
-{
+bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context) {
 	return false;
 }
 
@@ -122,29 +139,26 @@ int getKeyboardModifiers() {
    return m;
 }
 
-void vibrate(int ms)
-{
+void vibrate(int ms) {
 }
 
-void setWindowSize(int width, int height){
+void setWindowSize(int width, int height) {
     MainWindow::getInstance()->resizeWindow(width, height);
 }
 
-void setFullScreen(bool fullScreen){
+void setFullScreen(bool fullScreen) {
     MainWindow::getInstance()->fullScreenWindow(fullScreen);
 }
 
-std::string getDeviceName(){
+std::string getDeviceName() {
     return QHostInfo::localHostName().toStdString();
 }
 
-std::string getLocale()
-{
+std::string getLocale() {
 	return QLocale().name().toStdString();
 }
 
-std::string getLanguage()
-{
+std::string getLanguage() {
 	QString locale = QLocale().name();
 
 	QStringList list = locale.split("_");
@@ -155,21 +169,18 @@ std::string getLanguage()
 	return "en";
 }
 
-std::string getAppId(){
+std::string getAppId() {
 	return "";
 }
 
-void getSafeDisplayArea(int &x,int &y,int &w,int &h)
-{
+void getSafeDisplayArea(int &x,int &y,int &w,int &h) {
 }
 
-void openUrl(const char* url)
-{
+void openUrl(const char* url) {
     QDesktopServices::openUrl(QUrl::fromEncoded(url));
 }
 
-bool canOpenUrl(const char *url)
-{
+bool canOpenUrl(const char *url) {
     return true;
 }
 
@@ -177,21 +188,18 @@ static int s_fps = 60;
 
 extern "C" {
 
-int g_getFps()
-{
+int g_getFps() {
     return s_fps;
 }
 
-void g_setFps(int fps)
-{
+void g_setFps(int fps) {
     s_fps = fps;
 }
 
 }
 
 
-void g_exit()
-{
+void g_exit() {
     QCoreApplication::quit();
 }
 
@@ -200,13 +208,11 @@ void g_exit()
 #include <QtGui/qpa/qplatformintegration.h>
 #endif
 
-
 std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
     std::vector<gapplication_Variant> rets;
     gapplication_Variant r;
-    if (!set) {
-        /*------------------------------------------------------------------*/
+    if (!set) { // GET
         if (strcmp(what, "windowPosition") == 0)
         {
             r.type=gapplication_Variant::DOUBLE;
@@ -215,7 +221,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             r.d=MainWindow::getInstance()->pos().y();
             rets.push_back(r);
             /*------------------------------------------------------------------*/
-
         }else if (strcmp(what, "windowSize") == 0)
         {
             r.type=gapplication_Variant::DOUBLE;
@@ -255,7 +260,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "directory") == 0)
         {
-
             QStringList acceptedValue;
             acceptedValue << "executable" << "document"  << "desktop" << "temporary" << "data" ;
             acceptedValue << "music" << "movies"  << "pictures" << "cache" << "download" ;
@@ -291,9 +295,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     pathGet = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
                 }else if (argString == "home"){
                     pathGet = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-
                 }else{
-
                 }
                 r.type=gapplication_Variant::STRING;
                 r.s=pathGet.toStdString();
@@ -307,14 +309,29 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
                 }
             }
-
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "pathfileexists") == 0) // new 20221116 XXX
+        {
+            std::wstring path = ws(args[0].s.c_str());
+            int m = 0; // modes: 0=Existence only, 2=Write-only, 4=Read-only, 6=Read and write
+            if (args.size() >= 2) {
+                m = args[1].d;
+                if (m != 0 || m != 2 || m != 4 || m != 6)
+                    m = 0;
+            }
+            int retValue = _waccess(path.c_str(), m); // 0 = OK, else -1
+            if (retValue == 0) {
+                r.type=gapplication_Variant::DOUBLE;
+//              r.d=retValue; // 0 = OK, else -1, not so good in lua!?
+                r.d=1; // for lua 1=OK otherwise nil, looks better?!
+                rets.push_back(r);
+            }
             /*------------------------------------------------------------------*/
         }else if ((strcmp(what, "openDirectoryDialog") == 0)
                 || (strcmp(what, "openFileDialog") == 0)
                 || (strcmp(what, "saveFileDialog") == 0))
             {
             if(args.size() == 1){
-
                 MainWindow::getInstance()->printToOutput("[[Usage Example]]");
                 if (strcmp(what, "openDirectoryDialog") == 0){
                     MainWindow::getInstance()->printToOutput("application:get(\"openDirectoryDialog\",\"Open Directory\",\"C:/)\")");
@@ -324,7 +341,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     MainWindow::getInstance()->printToOutput("application:get(\"saveFileDialog\",\"Save File\",\"C:/\",\"Text File (*.txt);;Image File (*.jpg *.png)\")");
                 }
             }else{
-
                 QString title = QString::fromUtf8(args[0].s.c_str());
                 QString place = "";
                 QString extension = "";
@@ -346,7 +362,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 rets.push_back(r);
             }
             /*------------------------------------------------------------------*/
-
         }else if (strcmp(what, "temporaryDirectory") == 0)
         {
             r.type=gapplication_Variant::STRING;
@@ -359,7 +374,8 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             r.s=getDocumentsDirectory();
             rets.push_back(r);
             /*------------------------------------------------------------------*/
-        }else{
+        }else
+        {
             // feel free to change this list
             QStringList acceptedWhat;
             acceptedWhat << "[x,y] windowPosition";
@@ -381,8 +397,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             }
         }
     }
-    else {
-        /*------------------------------------------------------------------*/
+    else { // SET
         if (strcmp(what, "cursor") == 0)
         {
             QStringList acceptedValue;
@@ -405,8 +420,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
                 }
             }
-
-
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "windowPosition") == 0)
         {
@@ -503,9 +516,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 }else{
                     MainWindow::getInstance()->showNormal();
                 }
-
-            }else{
-
+            }else {
                 QString info = "Accepted value for ";
                 info.append(what);
                 info.append(" :");
@@ -514,7 +525,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
                 }
             }
-
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "wintabMode") == 0)
         {
@@ -523,6 +533,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             if (args.size()>=1)
                 nativeWindowsApp->setWinTabEnabled(args[0].d);
     #endif
+            /*------------------------------------------------------------------*/
         }else if (strcmp(what, "cursorPosition") == 0)
         {
             if (args.size()>=2)
@@ -554,8 +565,9 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
         {
             if(args.size() >= 1)
                 setTemporaryDirectory(args[0].s.c_str());
-        }else{
-
+            /*------------------------------------------------------------------*/
+        }else
+        {
             // feel free to change this list
             QStringList acceptedWhat;
             acceptedWhat << "windowPosition(x,y)";
@@ -578,7 +590,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedWhat.at(i)).toStdString().c_str() );
             }
         }
-
     }
     return rets;
 }
