@@ -625,34 +625,35 @@ int SpriteBinder::getClip(lua_State* L)
 
     return 4;
 }
-
-#define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolved[n]=key; lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2);
-#define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2); p->resolvedArray[n][i]=key; }
-#define RESOLVE(n) FRESOLVE(n,-1) } else p->resolved.erase(n);
-#define RESOLVED(n) if ((!raw)&&p->resolved.count(n)) lua_pushstring(L,p->resolved[n].c_str()); else
-#define ARESOLVED(n,i) if ((!raw)&&p->resolvedArray.count(n)&&p->resolvedArray[n].count(i)) lua_pushstring(L,p->resolvedArray[n][i].c_str()); else
+#define FKEY(n) (STRKEY_LAYOUT_##n)
+#define FSKEY(n) (#n)
+#define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolved[FKEY(n)]=key; lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2);
+#define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2); p->resolvedArray[FKEY(n)][i]=key; }
+#define RESOLVE(n) FRESOLVE(n,-1) } else p->resolved.erase(FKEY(n));
+#define RESOLVED(n) if ((!raw)&&p->resolved.count(FKEY(n))) lua_pushstring(L,p->resolved[FKEY(n)].c_str()); else
+#define ARESOLVED(n,i) if ((!raw)&&p->resolvedArray.count(FKEY(n))&&p->resolvedArray[FKEY(n)].count(i)) lua_pushstring(L,p->resolvedArray[FKEY(n)][i].c_str()); else
 #define FILL_NUM_ARRAY(n,f) \
-		lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { \
+        lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { \
 			luaL_checktype(L,-1, LUA_TTABLE); \
 			p->f.resize(lua_objlen(L,-1)); \
-            p->resolvedArray.erase(n); \
+            p->resolvedArray.erase(FKEY(n)); \
             for (size_t k=1;k<=(size_t)lua_objlen(L,-1);k++) { \
                 lua_rawgeti(L,-1,k); ARESOLVE(n,-2,k-1); \
                 p->f[k-1]=lua_tonumber(L,-1); \
                 lua_pop(L,1); } \
 		} lua_pop(L,1);
-#define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tointeger(L,-1); } lua_pop(L,1);
-#define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1);
-#define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1);
-#define FILL_BOOL(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
+#define FILL_INT(n,f) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tointeger(L,-1); } lua_pop(L,1);
+#define FILL_INTT(n,f,t) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1);
+#define FILL_NUM(n,f) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1);
+#define FILL_BOOL(n,f) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
 #define STOR_NUM_ARRAY(n,f) \
 		lua_newtable(L); \
         for (size_t k=0;k<p->f.size();k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
-		lua_setfield(L,-2,n);
-#define STOR_INT(n,f) RESOLVED(n) lua_pushinteger(L,p->f); lua_setfield(L,-2,n);
-#define STOR_INTT(n,f,t) RESOLVED(n) lua_pushinteger(L,(int)p->f); lua_setfield(L,-2,n);
-#define STOR_NUM(n,f) RESOLVED(n) lua_pushnumber(L,p->f); lua_setfield(L,-2,n);
-#define STOR_BOOL(n,f) lua_pushboolean(L,p->f); lua_setfield(L,-2,n);
+        lua_setfield(L,-2,FSKEY(n));
+#define STOR_INT(n,f) RESOLVED(n) lua_pushinteger(L,p->f); lua_setfield(L,-2,FSKEY(n));
+#define STOR_INTT(n,f,t) RESOLVED(n) lua_pushinteger(L,(int)p->f); lua_setfield(L,-2,FSKEY(n));
+#define STOR_NUM(n,f) RESOLVED(n) lua_pushnumber(L,p->f); lua_setfield(L,-2,FSKEY(n));
+#define STOR_BOOL(n,f) lua_pushboolean(L,p->f); lua_setfield(L,-2,FSKEY(n));
 
 int SpriteBinder::setLayoutParameters(lua_State *L)
 {
@@ -666,36 +667,36 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         luaL_checktype(L, 2, LUA_TTABLE);
         LuaApplication::getStyleTable(L,1);
 		GridBagLayout *p=sprite->getLayoutState();
-		FILL_NUM_ARRAY("columnWidths",columnWidths);
-		FILL_NUM_ARRAY("rowHeights",rowHeights);
-		FILL_NUM_ARRAY("columnWeights",columnWeights);
-		FILL_NUM_ARRAY("rowWeights",rowWeights);
+        FILL_NUM_ARRAY(columnWidths,columnWidths);
+        FILL_NUM_ARRAY(rowHeights,rowHeights);
+        FILL_NUM_ARRAY(columnWeights,columnWeights);
+        FILL_NUM_ARRAY(rowWeights,rowWeights);
 
 		lua_getfield(L,2,"insets");
         if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE("insetTop",-1)
-                p->resolved["insetLeft"]=p->resolved["insetTop"];
-                p->resolved["insetBottom"]=p->resolved["insetTop"];
-                p->resolved["insetRight"]=p->resolved["insetTop"];
+            FRESOLVE(insetTop,-1)
+                p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
+                p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
+                p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
             }
 			else {
-				p->resolved.erase("insetTop");
-				p->resolved.erase("insetLeft");
-				p->resolved.erase("insetBottom");
-				p->resolved.erase("insetRight");
+                p->resolved.erase(FKEY(insetTop));
+                p->resolved.erase(FKEY(insetLeft));
+                p->resolved.erase(FKEY(insetBottom));
+                p->resolved.erase(FKEY(insetRight));
 			}
             p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
         }
 		lua_pop(L,1);
-        FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
-        FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
+        FILL_NUM(insetTop,pInsets.top); FILL_NUM(insetLeft,pInsets.left);
+        FILL_NUM(insetBottom,pInsets.bottom); FILL_NUM(insetRight,pInsets.right);
 
-        FILL_BOOL("equalizeCells",equalizeCells);
-        FILL_BOOL("resizeContainer",resizeContainer);
-        FILL_BOOL("worldAlign",worldAlign);
-        FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
-        FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
-        FILL_NUM("zOffset",zOffset);
+        FILL_BOOL(equalizeCells,equalizeCells);
+        FILL_BOOL(resizeContainer,resizeContainer);
+        FILL_BOOL(worldAlign,worldAlign);
+        FILL_NUM(cellSpacingX,cellSpacingX); FILL_NUM(cellSpacingY,cellSpacingY);
+        FILL_NUM(gridAnchorX,gridAnchorX); FILL_NUM(gridAnchorY,gridAnchorY);
+        FILL_NUM(zOffset,zOffset);
 
         lua_pop(L,1);
         p->dirty=true;
@@ -719,10 +720,10 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         LuaApplication::getStyleTable(L,1);
         GridBagConstraints *p=sprite->getLayoutConstraints();
 
-		FILL_INT("gridx",gridx); FILL_INT("gridy",gridy);
-		FILL_INT("gridwidth",gridwidth); FILL_INT("gridheight",gridheight);
-		FILL_NUM("weightx",weightx); FILL_NUM("weighty",weighty);
-        FILL_INTT("anchor",anchor,GridBagConstraints::_Anchor);
+        FILL_INT(gridx,gridx); FILL_INT(gridy,gridy);
+        FILL_INT(gridwidth,gridwidth); FILL_INT(gridheight,gridheight);
+        FILL_NUM(weightx,weightx); FILL_NUM(weighty,weighty);
+        FILL_INTT(anchor,anchor,GridBagConstraints::_Anchor);
         lua_getfield(L,2,"fill");
         if (!lua_isnoneornil(L,-1)) {
             int fill=luaL_checkinteger(L,-1);
@@ -730,20 +731,20 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
             p->fillY=(fill==1)||(fill==3)?1:0;
         }
         lua_pop(L,1);
-        FILL_NUM("fillx",fillX); FILL_NUM("filly",fillY);
-        FILL_NUM("aspectRatio",aspectRatio);
-        FILL_NUM("anchorx",anchorX); FILL_NUM("anchory",anchorY);
-        FILL_NUM("offsetx",offsetX); FILL_NUM("offsety",offsetY);
-        FILL_NUM("originx",originX); FILL_NUM("originy",originY);
-        FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
+        FILL_NUM(fillx,fillX); FILL_NUM(filly,fillY);
+        FILL_NUM(aspectRatio,aspectRatio);
+        FILL_NUM(anchorx,anchorX); FILL_NUM(anchory,anchorY);
+        FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
+        FILL_NUM(originx,originX); FILL_NUM(originy,originY);
+        FILL_NUM(ipadx,ipadx); FILL_NUM(ipady,ipady);
         lua_getfield(L,2,"width");
         if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE("minWidth",-1)
-                p->resolved["prefWidth"]=p->resolved["minWidth"];
+            FRESOLVE(minWidth,-1)
+                p->resolved[FKEY(prefWidth)]=p->resolved[FKEY(minWidth)];
             }
         	else {
-        		p->resolved.erase("minWidth");
-        		p->resolved.erase("prefWidth");
+                p->resolved.erase(FKEY(minWidth));
+                p->resolved.erase(FKEY(prefWidth));
         	}
             float width=luaL_checknumber(L,-1);
             p->aminWidth=width; p->prefWidth=width;
@@ -751,41 +752,41 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         lua_pop(L,1);
         lua_getfield(L,2,"height");
         if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE("minHeight",-1)
-                p->resolved["prefHeight"]=p->resolved["minHeight"];
+            FRESOLVE(minHeight,-1)
+                p->resolved[FKEY(prefHeight)]=p->resolved[FKEY(minHeight)];
             }
 			else {
-				p->resolved.erase("minHeight");
-				p->resolved.erase("prefHeight");
+                p->resolved.erase(FKEY(minHeight));
+                p->resolved.erase(FKEY(prefHeight));
 			}
             float height=luaL_checknumber(L,-1);
             p->aminHeight=height; p->prefHeight=height;
         }
         lua_pop(L,1);
-        FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
-		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
-        FILL_BOOL("shrink",optimizeSize);
-        FILL_BOOL("group",group);
-        FILL_BOOL("autoclip",autoClip);
+        FILL_NUM(minWidth,aminWidth); FILL_NUM(minHeight,aminHeight);
+        FILL_NUM(prefWidth,prefWidth); FILL_NUM(prefHeight,prefHeight);
+        FILL_BOOL(shrink,optimizeSize);
+        FILL_BOOL(group,group);
+        FILL_BOOL(autoclip,autoClip);
 
 		lua_getfield(L,2,"insets");
         if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE("insetTop",-1)
-                p->resolved["insetLeft"]=p->resolved["insetTop"];
-                p->resolved["insetBottom"]=p->resolved["insetTop"];
-                p->resolved["insetRight"]=p->resolved["insetTop"];
+            FRESOLVE(insetTop,-1)
+                p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
+                p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
+                p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
             }
-			else {
-				p->resolved.erase("insetTop");
-				p->resolved.erase("insetLeft");
-				p->resolved.erase("insetBottom");
-				p->resolved.erase("insetRight");
-			}
+            else {
+                p->resolved.erase(FKEY(insetTop));
+                p->resolved.erase(FKEY(insetLeft));
+                p->resolved.erase(FKEY(insetBottom));
+                p->resolved.erase(FKEY(insetRight));
+            }
             p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
         }
 		lua_pop(L,1);
-		FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
-		FILL_NUM("insetBottom",insets.bottom); FILL_NUM("insetRight",insets.right);
+        FILL_NUM(insetTop,insets.top); FILL_NUM(insetLeft,insets.left);
+        FILL_NUM(insetBottom,insets.bottom); FILL_NUM(insetRight,insets.right);
         lua_pop(L,1);
         sprite->invalidate(Sprite::INV_CONSTRAINTS);
 	}
@@ -803,18 +804,18 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
 		GridBagLayout *p=sprite->getLayoutState();
         bool raw=lua_toboolean(L,2);
 		lua_newtable(L);
-		STOR_NUM_ARRAY("columnWidths",columnWidths);
-		STOR_NUM_ARRAY("rowHeights",rowHeights);
-		STOR_NUM_ARRAY("columnWeights",columnWeights);
-		STOR_NUM_ARRAY("rowWeights",rowWeights);
-        STOR_NUM("insetTop",pInsets.top); STOR_NUM("insetLeft",pInsets.left);
-        STOR_NUM("insetBottom",pInsets.bottom); STOR_NUM("insetRight",pInsets.right);
-        STOR_BOOL("equalizeCells",equalizeCells);
-        STOR_BOOL("worldAlign",worldAlign);
-        STOR_BOOL("resizeContainer",resizeContainer);
-        STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
-        STOR_NUM("gridAnchorX",gridAnchorX); STOR_NUM("gridAnchorY",gridAnchorY);
-        STOR_NUM("zOffset",zOffset);
+        STOR_NUM_ARRAY(columnWidths,columnWidths);
+        STOR_NUM_ARRAY(rowHeights,rowHeights);
+        STOR_NUM_ARRAY(columnWeights,columnWeights);
+        STOR_NUM_ARRAY(rowWeights,rowWeights);
+        STOR_NUM(insetTop,pInsets.top); STOR_NUM(insetLeft,pInsets.left);
+        STOR_NUM(insetBottom,pInsets.bottom); STOR_NUM(insetRight,pInsets.right);
+        STOR_BOOL(equalizeCells,equalizeCells);
+        STOR_BOOL(worldAlign,worldAlign);
+        STOR_BOOL(resizeContainer,resizeContainer);
+        STOR_NUM(cellSpacingX,cellSpacingX); STOR_NUM(cellSpacingY,cellSpacingY);
+        STOR_NUM(gridAnchorX,gridAnchorX); STOR_NUM(gridAnchorY,gridAnchorY);
+        STOR_NUM(zOffset,zOffset);
 	}
 	else
 		lua_pushnil(L);
@@ -832,23 +833,23 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 		GridBagConstraints *p=sprite->getLayoutConstraints();
         bool raw=lua_toboolean(L,2);
         lua_newtable(L);
-		STOR_INT("gridx",gridx); STOR_INT("gridy",gridy);
-		STOR_INT("gridwidth",gridwidth); STOR_INT("gridheight",gridheight);
-		STOR_NUM("weightx",weightx); STOR_NUM("weighty",weighty);
-        STOR_INTT("anchor",anchor,GridBagConstraints::_Anchor);
-        STOR_NUM("fillx",fillX); STOR_NUM("filly",fillY);
-        STOR_NUM("aspectRatio",aspectRatio);
-        STOR_NUM("anchorx",anchorX); STOR_NUM("anchory",anchorY);
-        STOR_NUM("ipadx",ipadx); STOR_NUM("ipady",ipady);
-		STOR_NUM("minWidth",aminWidth); STOR_NUM("minHeight",aminHeight);
-		STOR_NUM("prefWidth",prefWidth); STOR_NUM("prefHeight",prefHeight);
-		STOR_NUM("insetTop",insets.top); STOR_NUM("insetLeft",insets.left);
-		STOR_NUM("insetBottom",insets.bottom); STOR_NUM("insetRight",insets.right);
-        STOR_NUM("offsetx",offsetX); STOR_NUM("offsety",offsetY);
-        STOR_NUM("originx",originX); STOR_NUM("originy",originY);
-		STOR_BOOL("shrink",optimizeSize);
-        STOR_BOOL("group",group);
-        STOR_BOOL("autoclip",autoClip);
+        STOR_INT(gridx,gridx); STOR_INT(gridy,gridy);
+        STOR_INT(gridwidth,gridwidth); STOR_INT(gridheight,gridheight);
+        STOR_NUM(weightx,weightx); STOR_NUM(weighty,weighty);
+        STOR_INTT(anchor,anchor,GridBagConstraints::_Anchor);
+        STOR_NUM(fillx,fillX); STOR_NUM(filly,fillY);
+        STOR_NUM(aspectRatio,aspectRatio);
+        STOR_NUM(anchorx,anchorX); STOR_NUM(anchory,anchorY);
+        STOR_NUM(ipadx,ipadx); STOR_NUM(ipady,ipady);
+        STOR_NUM(minWidth,aminWidth); STOR_NUM(minHeight,aminHeight);
+        STOR_NUM(prefWidth,prefWidth); STOR_NUM(prefHeight,prefHeight);
+        STOR_NUM(insetTop,insets.top); STOR_NUM(insetLeft,insets.left);
+        STOR_NUM(insetBottom,insets.bottom); STOR_NUM(insetRight,insets.right);
+        STOR_NUM(offsetx,offsetX); STOR_NUM(offsety,offsetY);
+        STOR_NUM(originx,originX); STOR_NUM(originy,originY);
+        STOR_BOOL(shrink,optimizeSize);
+        STOR_BOOL(group,group);
+        STOR_BOOL(autoclip,autoClip);
 	}
 	else
 		lua_pushnil(L);
@@ -907,14 +908,14 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 		}
 		lua_newtable(L);
 
-		STOR_INT("width",width); STOR_INT("height",height);
-		STOR_NUM("reqWidth",reqWidth); STOR_NUM("reqHeight",reqHeight);
-		STOR_NUM("startx",startx); STOR_NUM("starty",starty);
-		STOR_NUM("cellSpacingX",cellSpacingX); STOR_NUM("cellSpacingY",cellSpacingY);
-		STOR_NUM_ARRAY("minWidth",minWidth);
-		STOR_NUM_ARRAY("minHeight",minHeight);
-		STOR_NUM_ARRAY("weightX",weightX);
-		STOR_NUM_ARRAY("weightY",weightY);
+        STOR_INT(width,width); STOR_INT(height,height);
+        STOR_NUM(reqWidth,reqWidth); STOR_NUM(reqHeight,reqHeight);
+        STOR_NUM(startx,startx); STOR_NUM(starty,starty);
+        STOR_NUM(cellSpacingX,cellSpacingX); STOR_NUM(cellSpacingY,cellSpacingY);
+        STOR_NUM_ARRAY(minWidth,minWidth);
+        STOR_NUM_ARRAY(minHeight,minHeight);
+        STOR_NUM_ARRAY(weightX,weightX);
+        STOR_NUM_ARRAY(weightY,weightY);
 	}
 	else
 		lua_pushnil(L);
@@ -2328,18 +2329,18 @@ int SpriteBinder::resolveStyle(lua_State* L)
 }
 
 #define FILL_NUM_ARRAY(n,f) \
-        if (p->resolvedArray.count(n)) { \
+        if (p->resolvedArray.count(FKEY(n))) { \
             for (size_t k=0;k<p->f.size();k++) { \
-                if (p->resolvedArray[n].count(k)) { \
+                if (p->resolvedArray[FKEY(n)].count(k)) { \
                     lua_pushvalue(L,-1); \
-                    LuaApplication::resolveStyle(L,p->resolvedArray[n][k].c_str(),0); \
+                    LuaApplication::resolveStyle(L,p->resolvedArray[FKEY(n)][k].c_str(),0); \
                     p->f[k]=lua_tonumber(L,-1); \
                     lua_pop(L,1); \
                     dirty=true; \
                 } } }
-#define FILL_NUM(n,f) if (p->resolved.count(n)) { \
+#define FILL_NUM(n,f) if (p->resolved.count(FKEY(n))) { \
     lua_pushvalue(L,-1); \
-    LuaApplication::resolveStyle(L,p->resolved[n].c_str(),0);\
+    LuaApplication::resolveStyle(L,p->resolved[FKEY(n)].c_str(),0);\
     p->f=lua_tonumber(L,-1);\
     lua_pop(L,1);\
     dirty=true; }
@@ -2355,17 +2356,17 @@ int SpriteBinder::updateStyle(lua_State* L)
         if (p&&(!(p->resolved.empty()&&p->resolvedArray.empty()))) {
             bool dirty=false;
 
-            FILL_NUM_ARRAY("columnWidths",columnWidths);
-            FILL_NUM_ARRAY("rowHeights",rowHeights);
-            FILL_NUM_ARRAY("columnWeights",columnWeights);
-            FILL_NUM_ARRAY("rowWeights",rowWeights);
+            FILL_NUM_ARRAY(columnWidths,columnWidths);
+            FILL_NUM_ARRAY(rowHeights,rowHeights);
+            FILL_NUM_ARRAY(columnWeights,columnWeights);
+            FILL_NUM_ARRAY(rowWeights,rowWeights);
 
-            FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
-            FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
+            FILL_NUM(insetTop,pInsets.top); FILL_NUM(insetLeft,pInsets.left);
+            FILL_NUM(insetBottom,pInsets.bottom); FILL_NUM(insetRight,pInsets.right);
 
-            FILL_NUM("cellSpacingX",cellSpacingX); FILL_NUM("cellSpacingY",cellSpacingY);
-            FILL_NUM("gridAnchorX",gridAnchorX); FILL_NUM("gridAnchorY",gridAnchorY);
-            FILL_NUM("zOffset",zOffset);
+            FILL_NUM(cellSpacingX,cellSpacingX); FILL_NUM(cellSpacingY,cellSpacingY);
+            FILL_NUM(gridAnchorX,gridAnchorX); FILL_NUM(gridAnchorY,gridAnchorY);
+            FILL_NUM(zOffset,zOffset);
 
             if (dirty) {
                 p->dirty=true;
@@ -2382,21 +2383,21 @@ int SpriteBinder::updateStyle(lua_State* L)
         if (p&&(!p->resolved.empty())) {
             bool dirty=false;
 
-            FILL_NUM("weightx",weightx); FILL_NUM("weighty",weighty);
-            FILL_NUM("fillx",fillX); FILL_NUM("filly",fillY);
-            FILL_NUM("aspectRatio",aspectRatio);
-            FILL_NUM("anchorx",anchorX); FILL_NUM("anchory",anchorY);
-            FILL_NUM("offsetx",offsetX); FILL_NUM("offsety",offsetY);
-            FILL_NUM("originx",originX); FILL_NUM("originy",originY);
-            FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
+            FILL_NUM(weightx,weightx); FILL_NUM(weighty,weighty);
+            FILL_NUM(fillx,fillX); FILL_NUM(filly,fillY);
+            FILL_NUM(aspectRatio,aspectRatio);
+            FILL_NUM(anchorx,anchorX); FILL_NUM(anchory,anchorY);
+            FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
+            FILL_NUM(originx,originX); FILL_NUM(originy,originY);
+            FILL_NUM(ipadx,ipadx); FILL_NUM(ipady,ipady);
 
-            FILL_NUM("prefWidth", prefWidth);
-            FILL_NUM("minWidth", aminWidth);
-            FILL_NUM("prefHeight", prefHeight);
-            FILL_NUM("minHeight", aminHeight);
+            FILL_NUM(prefWidth, prefWidth);
+            FILL_NUM(minWidth, aminWidth);
+            FILL_NUM(prefHeight, prefHeight);
+            FILL_NUM(minHeight, aminHeight);
 
-            FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
-            FILL_NUM("insetBottom",insets.bottom); FILL_NUM("insetRight",insets.right);
+            FILL_NUM(insetTop,insets.top); FILL_NUM(insetLeft,insets.left);
+            FILL_NUM(insetBottom,insets.bottom); FILL_NUM(insetRight,insets.right);
 
             if (dirty)
                 sprite->invalidate(Sprite::INV_CONSTRAINTS);
