@@ -106,8 +106,6 @@ void getSafeDisplayArea(int &x,int &y,int &w,int &h)
 
 void setWindowSize(int width, int height)
 {
-  printf("setWindowSize: %d x %d. hwndcopy=%p\n",width,height,hwndcopy);
-
   Orientation app_orient=application_->orientation();
 
   if (app_orient==ePortrait || app_orient==ePortraitUpsideDown){
@@ -118,9 +116,7 @@ void setWindowSize(int width, int height)
     rect.bottom=height;
 
     AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
-
     SetWindowPos(hwndcopy,HWND_TOP,0,0,rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
-    printf("SetWindowPos: %d %d\n",rect.right-rect.left, rect.bottom-rect.top);
   }
   else {
     RECT rect;
@@ -130,12 +126,10 @@ void setWindowSize(int width, int height)
     rect.bottom=width;
 
     AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
-
     SetWindowPos(hwndcopy,HWND_TOP,0,0,rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
-    printf("SetWindowPos: %d %d\n",rect.right-rect.left, rect.bottom-rect.top);
   }
 
-  //application_->setHardwareOrientation(app_orient);   // previously eFixed
+  //application_->setHardwareOrientation(app_orient); // previously eFixed
   //application_->getApplication()->setDeviceOrientation(app_orient);
 }
 
@@ -165,8 +159,7 @@ void W32SetFullScreen(bool fullScreen,HWND wnd,W32FullScreen *save)
     		  save->ex_style & ~(WS_EX_DLGMODALFRAME |
                     WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
 
-      // On expand, if we're given a window_rect, grow to it, otherwise do
-      // not resize.
+      // On expand, if we're given a window_rect, grow to it, otherwise do not resize.
       if (!for_metro) {
         MONITORINFO monitor_info;
         monitor_info.cbSize = sizeof(monitor_info);
@@ -394,6 +387,23 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
             }
             /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "pathfileexists") == 0) // new 20221116 XXX
+        {
+            std::wstring path = ws(args[0].s.c_str());
+            int m = 0; // modes: 0=Existence only, 2=Write-only, 4=Read-only, 6=Read and write
+            if (args.size() >= 2) {
+                m = args[1].d;
+                if (m != 0 || m != 2 || m != 4 || m != 6)
+                    m = 0;
+            }
+            int retValue = _waccess(path.c_str(), m); // 0 = OK, else -1
+            if (retValue == 0) {
+                r.type=gapplication_Variant::DOUBLE;
+//              r.d=retValue; // 0 = OK, else -1, not so good in lua!?
+                r.d=1; // for lua 1=OK otherwise nil, looks better?!
+                rets.push_back(r);
+            }
+            /*------------------------------------------------------------------*/
         }else if ((strcmp(what, "openDirectoryDialog") == 0)
                 || (strcmp(what, "openFileDialog") == 0)
                 || (strcmp(what, "saveFileDialog") == 0))
@@ -519,26 +529,23 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
     else { // SET
         if (strcmp(what, "cursor") == 0)
         {
-        	/* TODO
-            QStringList acceptedValue;
-            acceptedValue << "arrow" << "upArrow" << "cross" << "wait" << "IBeam";
-            acceptedValue << "sizeVer" << "sizeHor" << "sizeBDiag" << "sizeFDiag" << "sizeAll";
-            acceptedValue << "blank" << "splitV" << "splitH" << "pointingHand" << "forbidden";
-            acceptedValue << "whatsThis" << "busy" << "openHand" << "closedHand" << "dragCopy";
-            acceptedValue << "dragMove" << "dragLink";
-            // value of cursor also taken from index of the text, do not change the list
-
-            if (args.size()>0)&&(acceptedValue.contains(args[0].s)){
-                arg1 = acceptedValue.indexOf(args[0].s);
-                MainWindow::getInstance()->setCursor((Qt::CursorShape) arg1);
-            }else{
-                QString info = "Accepted value for ";
-                info.append(what);
-                info.append(" :");
-                MainWindow::getInstance()->printToOutput(info.toStdString().c_str());
-                for( int i=0; i<acceptedValue.size(); ++i ){
-                    MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedValue.at(i)).toStdString().c_str() );
-                }
+            /* TODO */
+            std::string &shape = args[0].s;
+//            QStringList acceptedValue;
+//            acceptedValue << "arrow" << "upArrow" << "cross" << "wait" << "IBeam";
+//            acceptedValue << "sizeVer" << "sizeHor" << "sizeBDiag" << "sizeFDiag" << "sizeAll";
+//            acceptedValue << "blank" << "splitV" << "splitH" << "pointingHand" << "forbidden";
+//            acceptedValue << "whatsThis" << "busy" << "openHand" << "closedHand" << "dragCopy";
+//            acceptedValue << "dragMove" << "dragLink";
+            HCURSOR cursor;
+            if (shape == "arrow") {
+                printf("** cursor arrow\n"); // LUA DEBUG OK BUT ARROW SHAPE DOESN'T CHANGE :-(
+                cursor = LoadCursorA(NULL, (LPCSTR)IDC_ARROW);
+                SetCursor(cursor);
+            } else if (shape == "upArrow") {
+                printf("** cursor uparrow\n"); // LUA DEBUG OK BUT ARROW SHAPE DOESN'T CHANGE :-(
+                cursor = LoadCursorA(NULL, (LPCSTR)IDC_UPARROW);
+                SetCursor(cursor);
             }
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "windowPosition") == 0)
@@ -554,8 +561,8 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
         }else if (strcmp(what, "minimumSize") == 0)
         {
             /*TODO
-              if (args.size()>=2)
-                MainWindow::getInstance()->setMinimumSize(QSize(args[0].d,args[1].d));
+            if (args.size()>=2)
+                SetMinimumSize(hwndcopy,0,0,0,args[0].d,args[1].d,SWP_NOMOVE);
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "maximumSize") == 0)
         {
@@ -660,6 +667,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             if (args.size()>=1)
                 nativeWindowsApp->setWinTabEnabled(args[0].d);
     #endif
+            /*------------------------------------------------------------------*/
         }else if (strcmp(what, "cursorPosition") == 0)
         {
             if (args.size()>=2)
@@ -668,22 +676,21 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
         }else if (strcmp(what, "clipboard") == 0)
         {
             if (args.size()>=1) {
-          	  if (OpenClipboard(nullptr))
-          	  {
-          		  EmptyClipboard();
-              	  std::wstring w=ws(args[0].s.c_str());
-              	  HANDLE hData = GlobalAlloc(GMEM_MOVEABLE|GMEM_ZEROINIT,w.size()*sizeof(wchar_t)+2);
-              	  if (hData != nullptr)
-              	  {
-                  	  wchar_t * pszText = static_cast<wchar_t*>( GlobalLock(hData) );
-                  	  if (pszText != nullptr)
-                      	  memcpy(pszText,w.c_str(),w.size()*sizeof(wchar_t));
-                  	  GlobalUnlock( hData );
-              	  }
-              	  SetClipboardData(CF_UNICODETEXT,hData);
-              	  CloseClipboard();
-          	  }
-
+                if (OpenClipboard(nullptr))
+                {
+                    EmptyClipboard();
+                    std::wstring w=ws(args[0].s.c_str());
+                    HANDLE hData = GlobalAlloc(GMEM_MOVEABLE|GMEM_ZEROINIT,w.size()*sizeof(wchar_t)+2);
+                    if (hData != nullptr)
+                    {
+                        wchar_t * pszText = static_cast<wchar_t*>( GlobalLock(hData) );
+                        if (pszText != nullptr)
+                        memcpy(pszText,w.c_str(),w.size()*sizeof(wchar_t));
+                        GlobalUnlock( hData );
+                    }
+                    SetClipboardData(CF_UNICODETEXT,hData);
+                    CloseClipboard();
+                }
             }
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "mkDir") == 0)
