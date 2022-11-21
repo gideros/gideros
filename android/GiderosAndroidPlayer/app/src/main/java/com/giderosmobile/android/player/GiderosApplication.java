@@ -531,10 +531,12 @@ public class GiderosApplication
 		int[] insets=new int[4];
 		if (GiderosSettings.notchReady&&(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)) {
 			DisplayCutout cutout = mGLView_.getRootWindowInsets().getDisplayCutout();
-			insets[0]=cutout.getSafeInsetLeft();
-			insets[1]=cutout.getSafeInsetRight();
-			insets[2]=cutout.getSafeInsetTop();
-			insets[3]=cutout.getSafeInsetBottom();
+			if (cutout != null) {
+				insets[0]=cutout.getSafeInsetLeft();
+				insets[1]=cutout.getSafeInsetRight();
+				insets[2]=cutout.getSafeInsetTop();
+				insets[3]=cutout.getSafeInsetBottom();
+			}
 		}
 		return insets;
 	}
@@ -593,9 +595,11 @@ public class GiderosApplication
 		}
 	}
 	
-	
+	static boolean onDemandEnabled=false;
 	public void onPause()
 	{
+		if (onDemandEnabled)
+			enableOnDemand(false);
 		oculusPause();
 		isForeground_ = false;
 
@@ -652,6 +656,8 @@ public class GiderosApplication
 				nativeTick();
 			}
 		}
+		if (onDemandEnabled)
+			enableOnDemand(true);
 	}
 
 	public void onLowMemory()
@@ -1284,6 +1290,7 @@ public class GiderosApplication
 
 	static public void enableOnDemand_s(boolean en)
 	{
+		onDemandEnabled=en;
 		instance_.enableOnDemand(en);
 	}
 

@@ -198,10 +198,10 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	{
 		if (mPlaying == true)
 		{
-			if (!GiderosSettings.oculusNative)
-				((GiderosGLSurfaceView)mGLView).onPause();
 			mPlaying = false;
 			GiderosApplication.getInstance().onPause();
+			if (!GiderosSettings.oculusNative)
+				((GiderosGLSurfaceView)mGLView).onPause();
 		}
 		
 		super.onPause();
