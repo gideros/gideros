@@ -319,7 +319,11 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 if (m != 0 || m != 2 || m != 4 || m != 6)
                     m = 0;
             }
+#ifdef Q_OS_WIN
             int retValue = _waccess(path.c_str(), m); // 0 = OK, else -1
+#else
+            int retValue = 0; //waccess is a windows function, what is the Mac or QT equivalent ?
+#endif
             if (retValue == 0) {
                 r.type=gapplication_Variant::DOUBLE;
 //              r.d=retValue; // 0 = OK, else -1, not so good in lua!?
