@@ -16,7 +16,7 @@
  <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and landscape"/>
  <property name="reqNoSensor" type="boolean" title="Screen doesn't rotate (tilt game) unknown initial orientation"/>
  <property name="reqMaxAspect" type="boolean" title="Support aspect ratios of 2.1 or higher"/>
- <property name="reqScreenShape" type="boolean" title="Support non rectangular screen shapes (iOS, notch ready)"/>
+ <property name="reqScreenShape" type="boolean" title="Support non rectangular (with notch) screen shapes (iOS, Android)"/>
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to write external storage"/>
  <property name="reqMinSdk" type="string" title="Android Minimum Version" description="The android SDK version your app requires to run (optional)" default="" />
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
@@ -198,6 +198,16 @@
 	            <replace>
             		<orig>translucentCanvas=false</orig>
         	    	<by>translucentCanvas=true</by>
+    	        </replace>
+    	    </replacelist>
+	    </template>
+    </if>
+    <if condition="[[[plugin.reqScreenShape]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="GiderosSettings.java">
+	            <replace>
+            		<orig>notchReady=false</orig>
+        	    	<by>notchReady=true</by>
     	        </replace>
     	    </replacelist>
 	    </template>

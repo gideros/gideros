@@ -62,6 +62,8 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.view.DisplayCutout;
+import android.os.Build;
 
 import com.giderosmobile.android.GiderosSettings;
 import android.view.SurfaceHolder;
@@ -524,6 +526,17 @@ public class GiderosApplication
 			
 			executeMethod ( theClass, null, "onCreate", new Class < ? > [] { Activity.class }, new Object [] { WeakActivityHolder.get() });
 		}
+	}
+	static public int[] getSafeArea() {
+		int[] insets=new int[4];
+		if (GiderosSettings.notchReady&&(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)) {
+			DisplayCutout cutout = mGLView_.getRootWindowInsets().getDisplayCutout();
+			insets[0]=cutout.getSafeInsetLeft();
+			insets[1]=cutout.getSafeInsetRight();
+			insets[2]=cutout.getSafeInsetTop();
+			insets[3]=cutout.getSafeInsetBottom();
+		}
+		return insets;
 	}
 	
 	static public void onDestroy()

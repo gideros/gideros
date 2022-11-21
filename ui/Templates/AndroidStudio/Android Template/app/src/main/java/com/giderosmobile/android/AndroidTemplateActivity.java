@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Gravity;
 import android.graphics.Color;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.view.inputmethod.EditorInfo;
@@ -88,6 +89,8 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			mGLView.setOnTouchListener(this);
 
 			boolean showSplash = true;
+			if (GiderosSettings.notchReady&&(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P))
+				getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 
 			if (showSplash && getResources().getIdentifier("splash", "drawable", getPackageName()) != 0) {
 				layout = (FrameLayout) getWindow().getDecorView();

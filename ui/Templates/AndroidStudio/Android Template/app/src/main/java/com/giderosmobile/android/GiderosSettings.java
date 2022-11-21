@@ -6,4 +6,5 @@ public class GiderosSettings {
 	public static View mainView=null;
 	public static boolean translucentCanvas=false;
 	public static boolean oculusNative=false;
+	public static boolean notchReady=false;
 }

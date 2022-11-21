@@ -231,6 +231,18 @@ std::string getAppId(){
 
 void getSafeDisplayArea(int &x,int &y,int &w,int &h)
 {
+	JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jmethodID methodID = env->GetStaticMethodID(localRefCls, "getSafeArea", "()[I");
+	jintArray iarr=(jintArray) env->CallStaticObjectMethod(localRefCls, methodID);
+    int *p= env->GetIntArrayElements(iarr, NULL);
+    x=p[0];
+    y=p[2];
+    w=p[1];
+    h=p[3];
+    env->ReleaseIntArrayElements(iarr,p, JNI_ABORT);
+	env->DeleteLocalRef(localRefCls);
 }
 
 void g_exit()

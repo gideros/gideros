@@ -44,9 +44,9 @@ size_t FontBase::getCharIndexAtOffset(struct ChunkLayout &c, float offset, float
         for (size_t g=0;g<gln;g++) {
             FontBase::GlyphLayout &v=c.shaped[g];
             float ax=v.advX*c.shapeScaleX;
+            n=v.srcIndex;
             if (offset<(xbase+ax))
             {
-                n=v.srcIndex;
                 if ((!notFirst)||(n>0))
                     break;
             }
@@ -386,7 +386,7 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
 				size_t brk=cur;
                 float bsize=0;
                 int cpos=getCharIndexAtOffset(tl.parts[cur],wmax,params->letterSpacing,cur==st);
-                if (cpos>(int)(tl.parts[cur].text.size()))
+                if (cpos>=(int)(tl.parts[cur].text.size()))
 					brk++;
                 else if (cpos>=0)
 				{
@@ -411,7 +411,12 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
                     }
 				}
                 if (cpos==0) forceBreak=true;
-                if (singleline||(cpos==0)) { cw=ccw; break; }
+                if (singleline||(cpos==0)) {
+                    //we can't/shouldn't display anything after the break, clear out extra parts and give-up
+                    tl.parts.resize(brk);
+                    cw=ccw;
+                    break;
+                }
                 if ((brk<pmax)&&(brk>st)) {
                     int ln=pmax-brk;
                     layoutHorizontal(tl,st, params->w, ccw, sw, tabSpace, params,true,brk-1);
