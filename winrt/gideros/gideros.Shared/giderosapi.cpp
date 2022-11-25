@@ -1588,61 +1588,61 @@ extern "C" {
 		ginputp_keyChar(keyChar);
 	}
 
-	void gdr_mouseDown(int x, int y, int button){
+	void gdr_mouseDown(int x, int y, int button,int mod){
 		lastMouseButton_ = button;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseDown(xn, yn, button,0);
+		ginputp_mouseDown(xn, yn, button,mod);
 	}
 
-	void gdr_mouseMove(int x, int y){
+	void gdr_mouseMove(int x, int y, int mod){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseMove(xn, yn, lastMouseButton_,0);
+		ginputp_mouseMove(xn, yn, lastMouseButton_,mod);
 	}
 
-	void gdr_mouseHover(int x, int y){
+	void gdr_mouseHover(int x, int y, int mod){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseHover(xn, yn, 0,0);
+		ginputp_mouseHover(xn, yn, 0,mod);
 	}
 
-	void gdr_mouseUp(int x, int y, int button){
+	void gdr_mouseUp(int x, int y, int button, int mod){
 		if (lastMouseButton_ == button)
 			lastMouseButton_ = 0;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseUp(xn, yn, button,0);
+		ginputp_mouseUp(xn, yn, button,mod);
 	}
 
-	void gdr_mouseWheel(int x, int y, int delta){
+	void gdr_mouseWheel(int x, int y, int delta, int mod){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseWheel(xn, yn, 0, delta,0);
+		ginputp_mouseWheel(xn, yn, 0, delta,mod);
 	}
 
-	void gdr_touchBegin(int x, int y, int id){
+	void gdr_touchBegin(int x, int y, int id, int mod){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchBegin(xn, yn, id,0);
+		ginputp_touchBegin(xn, yn, id,mod);
 	}
 
-	void gdr_touchMove(int x, int y, int id){
+	void gdr_touchMove(int x, int y, int id, int mod){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchMove(xn, yn, id,0);
+		ginputp_touchMove(xn, yn, id,mod);
 	}
 
-	void gdr_touchEnd(int x, int y, int id){
+	void gdr_touchEnd(int x, int y, int id, int mod){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchEnd(xn, yn, id,0);
+		ginputp_touchEnd(xn, yn, id,mod);
 	}
 
-	void gdr_touchCancel(int x, int y, int id){
+	void gdr_touchCancel(int x, int y, int id, int mod){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchCancel(xn, yn, id,0);
+		ginputp_touchCancel(xn, yn, id,mod);
 	}
 
 	void gdr_resize(int width, int height, int orientation)

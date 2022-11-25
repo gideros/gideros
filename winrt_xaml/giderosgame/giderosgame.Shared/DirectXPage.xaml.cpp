@@ -314,59 +314,73 @@ void DirectXPage::AppBarButton_Click(Object^ sender, RoutedEventArgs^ e)
 {
 }
 
+static int getModifiers(Windows::System::VirtualKeyModifiers vm) {
+	int mm = (int)vm;
+	int m = 0;
+	if (mm & (int)Windows::System::VirtualKeyModifiers::Control) m |= 4;
+	if (mm & (int)Windows::System::VirtualKeyModifiers::Shift) m |= 1;
+	if (mm & (int)Windows::System::VirtualKeyModifiers::Menu) m |= 2;
+	return m;
+}
+
+
 void DirectXPage::OnPointerPressed(Object ^sender, PointerEventArgs^ Args)
 {
+	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
-		gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
 	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1,m);
 	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2,m);
 	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4,m);
 	else
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0,m);
 }
 
 void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ Args)
 {
+	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->IsInContact) {
 		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
-			gdr_touchMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+			gdr_touchMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
 		else
-			gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+			gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y,m);
 	}
 	else {
-		gdr_mouseHover(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+		gdr_mouseHover(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y,m);
 	}
 }
 
 void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ Args)
 {
+	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
-		gdr_touchEnd(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		gdr_touchEnd(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
 	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1, m);
 	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2, m);
 	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4, m);
 	else
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0, m);
 }
 
 void DirectXPage::OnPointerLost(Object^ sender, PointerEventArgs^ Args)
 {
+	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
-		gdr_touchCancel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		gdr_touchCancel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
 	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1,m);
 	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2,m);
 	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4,m);
 	else
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0,m);
 }
 
 void DirectXPage::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ Args)
@@ -402,7 +416,8 @@ void DirectXPage::OnKeyChar(CoreWindow^ sender, CharacterReceivedEventArgs^ Args
 
 void DirectXPage::OnWheelChanged(Object^ sender, PointerEventArgs^ Args)
 {
-	gdr_mouseWheel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->Properties->MouseWheelDelta);
+	int m = getModifiers(Args->KeyModifiers);
+	gdr_mouseWheel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->Properties->MouseWheelDelta,m);
 }
 
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP

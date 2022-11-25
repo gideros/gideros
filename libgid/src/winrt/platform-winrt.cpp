@@ -21,6 +21,8 @@ using namespace Windows::Globalization;
 using namespace Windows::ApplicationModel;
 using namespace Windows::Security::ExchangeActiveSyncProvisioning;
 using namespace Windows::System::Profile;
+using namespace Windows::Devices::Input;
+using namespace Windows::UI::ViewManagement;
 
 std::wstring utf8_ws(const char *str);
 std::string utf8_us(const wchar_t *str);
@@ -173,23 +175,20 @@ void setKeepAwake(bool awake)
 	}, true);
 }
 
-#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
-bool setKeyboardVisibility(bool visible) {
-	return false;
-}
-#else
 bool setKeyboardVisibility(bool visible) {
 	bool done = false;
 	gdr_dispatchUi([&] {
-		Windows::UI::ViewManagement::InputPane^ ip = Windows::UI::ViewManagement::InputPane::GetForCurrentView();
-		if (visible)
-			done = ip->TryShow();
-		else
-			done = ip->TryHide();
+		KeyboardCapabilities^ keyboardCapabilities = ref new KeyboardCapabilities();
+		if (!keyboardCapabilities->KeyboardPresent) {
+			Windows::UI::ViewManagement::InputPane^ ip = Windows::UI::ViewManagement::InputPane::GetForCurrentView();
+			if (visible)
+				done = ip->TryShow();
+			else
+				done = ip->TryHide();
+		}
 	}, true);
 	return done;
 }
-#endif
 
 bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
 {
@@ -278,7 +277,11 @@ void g_setFps(int fps)
 
 void g_exit()
 {
-	Windows::ApplicationModel::Core::CoreApplication::Exit();
+	gdr_dispatchUi([&] {
+		//Mimic a close from title bar
+		ApplicationView::GetForCurrentView()->TryConsolidateAsync();
+	}, true);
+	//Windows::ApplicationModel::Core::CoreApplication::Exit();
 }
 
 std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)

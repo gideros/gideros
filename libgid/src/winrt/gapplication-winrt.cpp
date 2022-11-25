@@ -31,7 +31,6 @@ public:
 
 	void exit()
 	{
-		//App.Current.Exit();
 	}
 
     g_id addCallback(gevent_Callback callback, void *udata)

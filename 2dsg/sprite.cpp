@@ -1348,7 +1348,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
     }
     int cacheMode=(mode<<2)+(visible?2:0)+(nosubs?1:0);
 
-    if (boundsCache[cacheMode].valid) {
+    if (((mode==BOUNDS_GLOBAL)||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC)))&&boundsCache[cacheMode].valid) {
         if (minx)
             *minx=boundsCache[cacheMode].minx;
         if (miny)
