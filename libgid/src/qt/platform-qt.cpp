@@ -312,7 +312,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "pathfileexists") == 0) // new 20221116 XXX
         {
-            std::wstring path = ws(args[0].s.c_str());
             int m = 0; // modes: 0=Existence only, 2=Write-only, 4=Read-only, 6=Read and write
             if (args.size() >= 2) {
                 m = args[1].d;
@@ -320,6 +319,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     m = 0;
             }
 #ifdef Q_OS_WIN
+            std::wstring path = ws(args[0].s.c_str());
             int retValue = _waccess(path.c_str(), m); // 0 = OK, else -1
 #else
             int retValue = 0; //waccess is a windows function, what is the Mac or QT equivalent ?
