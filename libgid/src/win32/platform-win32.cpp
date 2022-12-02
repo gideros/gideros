@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define OEMRESOURCE
 #include <windows.h>
 #include <vector>
 #include <string>
@@ -13,7 +14,7 @@
 #include <combaseapi.h>
 #include <knownfolders.h>
 
-#include <wchar.h> // new 20221026 XXX
+#include <wchar.h>
 
 extern HWND hwndcopy;
 extern std::string commandLine;
@@ -261,6 +262,35 @@ extern std::string PATH_Executable;
 extern std::string PATH_Temp;
 extern std::string PATH_Cache;
 extern std::string PATH_AppName;
+
+#ifndef OCR_HELP
+#define OCR_HELP 32651
+#endif
+static std::map<std::string,int> cursorMap={
+		{ "arrow", OCR_NORMAL },
+		{ "upArrow", OCR_UP },
+		{ "cross", OCR_CROSS },
+		{ "wait", OCR_WAIT },
+		{ "IBeam", OCR_IBEAM },
+		{ "sizeVer",OCR_SIZENS },
+		{ "sizeHor", OCR_SIZEWE },
+		{ "sizeBDiag",OCR_SIZENWSE },
+		{ "sizeFDiag", OCR_SIZENESW },
+		{ "sizeAll", OCR_SIZEALL }, //Doesn't really fit, but best so far'
+//		{ "blank",  "none"},
+		{ "splitV", OCR_SIZENS }, //need better
+		{ "splitH", OCR_SIZEWE }, //need better
+		{ "pointingHand", OCR_HAND },
+		{ "forbidden", OCR_NO },
+		{ "whatsThis", OCR_HELP },
+		{ "busy", OCR_APPSTARTING },
+//		{ "openHand", "grab" },
+//		{ "closedHand", "grabbing" },
+//		{ "dragCopy", "copy" },
+//		{ "dragMove", "move" },
+//		{ "dragLink", "alias" },
+};
+
 std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
     std::vector<gapplication_Variant> rets;
@@ -530,23 +560,11 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
         if (strcmp(what, "cursor") == 0)
         {
             /* TODO */
-            std::string &shape = args[0].s;
-//            QStringList acceptedValue;
-//            acceptedValue << "arrow" << "upArrow" << "cross" << "wait" << "IBeam";
-//            acceptedValue << "sizeVer" << "sizeHor" << "sizeBDiag" << "sizeFDiag" << "sizeAll";
-//            acceptedValue << "blank" << "splitV" << "splitH" << "pointingHand" << "forbidden";
-//            acceptedValue << "whatsThis" << "busy" << "openHand" << "closedHand" << "dragCopy";
-//            acceptedValue << "dragMove" << "dragLink";
-            HCURSOR cursor;
-            if (shape == "arrow") {
-                printf("** cursor arrow\n"); // LUA DEBUG OK BUT ARROW SHAPE DOESN'T CHANGE :-(
-                cursor = LoadCursorA(NULL, (LPCSTR)IDC_ARROW);
-                SetCursor(cursor);
-            } else if (shape == "upArrow") {
-                printf("** cursor uparrow\n"); // LUA DEBUG OK BUT ARROW SHAPE DOESN'T CHANGE :-(
-                cursor = LoadCursorA(NULL, (LPCSTR)IDC_UPARROW);
-                SetCursor(cursor);
-            }
+            int cursorIdx=cursorMap[args[0].s];
+            if (cursorIdx==0) cursorIdx=OCR_NORMAL;
+            HANDLE cursor=LoadImage(NULL,MAKEINTRESOURCE(cursorIdx),IMAGE_CURSOR,0,0,LR_DEFAULTSIZE|LR_SHARED);
+            SetCursor((HCURSOR)cursor);
+            SetClassLongPtr(hwndcopy,GCL_HCURSOR,(LONG_PTR)cursor);
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "windowPosition") == 0)
         {
