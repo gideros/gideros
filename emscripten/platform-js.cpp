@@ -1,6 +1,32 @@
 #include <platform.h>
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
+#include <map>
+
+static std::map<std::string,std::string> cursorMap={
+		{ "arrow", "initial" },
+		{ "upArrow", "n-resize" },
+		{ "cross", "crosshair" },
+		{ "wait", "wait" },
+		{ "IBeam", "text" },
+		{ "sizeVer", "ns-resize" },
+		{ "sizeHor", "ew-resize" },
+		{ "sizeBDiag", "nwse-resize" },
+		{ "sizeFDiag", "nesw-resize" },
+		{ "sizeAll", "all-scroll" }, //Doesn't really fit, but best so far'
+		{ "blank", "nine" },
+		{ "splitV", "row-resize" },
+		{ "splitH", "col-resize" },
+		{ "pointingHand", "pointer" },
+		{ "forbidden", "not-allowed" },
+		{ "whatsThis", "help" },
+		{ "busy", "progress" },
+		{ "openHand", "grab" },
+		{ "closedHand", "grabbing" },
+		{ "dragCopy", "copy" },
+		{ "dragMove", "move" },
+		{ "dragLink", "alias" },
+};
 
 std::vector<std::string> getDeviceInfo()
 {
@@ -137,6 +163,15 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 			r.type=gapplication_Variant::STRING;
 			r.s=currentUrl;
 			rets.push_back(r);
+		}
+	}
+	else {
+		if (!strcmp(what,"cursor")) {
+			std::string mapped=cursorMap[args[0].s];
+			if (mapped.empty()) mapped="initial";
+			EM_ASM_({
+				document.getElementById("canvas").style.cursor=UTF8ToString($0);
+			},mapped.c_str());
 		}
 	}
 	return rets;
