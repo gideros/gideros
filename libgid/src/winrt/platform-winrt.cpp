@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <map>
 
 #include <stdlib.h>
 #include <memory>
@@ -284,17 +285,148 @@ void g_exit()
 	//Windows::ApplicationModel::Core::CoreApplication::Exit();
 }
 
+static std::map<std::string, Windows::UI::Core::CoreCursorType> cursorMap = {
+		{ "arrow", Windows::UI::Core::CoreCursorType::Arrow },
+		{ "upArrow", Windows::UI::Core::CoreCursorType::UpArrow },
+		{ "cross", Windows::UI::Core::CoreCursorType::Cross },
+		{ "wait", Windows::UI::Core::CoreCursorType::Wait },
+		{ "IBeam", Windows::UI::Core::CoreCursorType::IBeam },
+		{ "sizeVer", Windows::UI::Core::CoreCursorType::SizeNorthSouth },
+		{ "sizeHor", Windows::UI::Core::CoreCursorType::SizeWestEast },
+		{ "sizeBDiag", Windows::UI::Core::CoreCursorType::SizeNorthwestSoutheast },
+		{ "sizeFDiag", Windows::UI::Core::CoreCursorType::SizeNortheastSouthwest },
+		{ "sizeAll", Windows::UI::Core::CoreCursorType::SizeAll }, 
+//		{ "blank", "none" },
+		{ "splitV", Windows::UI::Core::CoreCursorType::SizeNorthSouth },
+		{ "splitH", Windows::UI::Core::CoreCursorType::SizeWestEast },
+		{ "pointingHand", Windows::UI::Core::CoreCursorType::Hand },
+		{ "forbidden", Windows::UI::Core::CoreCursorType::UniversalNo },
+		{ "whatsThis", Windows::UI::Core::CoreCursorType::Help },
+		{ "busy", Windows::UI::Core::CoreCursorType::Wait },
+//		{ "openHand", "grab" },
+//		{ "closedHand", "grabbing" },
+//		{ "dragCopy", "copy" },
+//		{ "dragMove", "move" },
+//		{ "dragLink", "alias" },
+};
+
 std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
 	std::vector<gapplication_Variant> rets;
 	gapplication_Variant r;
-/*	if (!set) {
-		if (!strcmp(what,"currentUrl"))
+	if (!set) {
+/*		if (!strcmp(what, "currentUrl"))
 		{
 			r.type=gapplication_Variant::STRING;
 			r.s=currentUrl;
 			rets.push_back(r);
+		}*/
+	}
+	else {
+		if (!strcmp(what, "cursor")) {
+			Windows::UI::Core::CoreCursorType mapped = cursorMap[args[0].s];
+			gdr_dispatchUi([&] {
+				Windows::UI::Core::CoreWindow::GetForCurrentThread()->PointerCursor = ref new Windows::UI::Core::CoreCursor(mapped, 0);
+			}, true);
 		}
-	}*/
+		else if ((strcmp(what, "openDirectoryDialog") == 0)
+			|| (strcmp(what, "openFileDialog") == 0)
+			|| (strcmp(what, "saveFileDialog") == 0))
+		{
+			if (args.size() <= 2) {
+				/* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
+			}
+			else
+			{
+				std::string title = args[0].s;
+				std::string place = args[1].s;
+				std::vector<std::pair<std::string, std::string>> filters;
+				if (args.size() >= 3) {
+					std::string ext = args[2].s;
+					while (!ext.empty()) {
+						std::string next;
+						size_t semicolon = ext.find(";;");
+						if (semicolon != std::wstring::npos) {
+							next = ext.substr(semicolon + 2);
+							ext = ext.substr(0, semicolon);
+						}
+						size_t p1 = ext.find_first_of('(');
+						size_t p2 = ext.find_last_of(')');
+						if ((p1 != std::string::npos) && (p2 != std::string::npos) && (p2 > p1))
+						{
+							//Valid filter, extract label and extensions
+							std::string label = ext.substr(0, p1);
+							std::string exts = ext.substr(p1 + 1, p2 - p1 - 1);
+							//QT uses space for extensions separator, while windows expects semicolon. Convert them.
+							std::replace(exts.begin(), exts.end(), ' ', ';');
+							filters.push_back(std::pair<std::string, std::string>(label, exts));
+						}
+						ext = next;
+					}
+				}
+
+
+				gdr_dispatchUi([&] {
+					bool unsnapped = ((ApplicationView::GetForCurrentView()->Value != ApplicationViewState::Snapped) || ApplicationView::GetForCurrentView()->TryUnsnap());
+					if (strcmp(what, "openDirectoryDialog") == 0) {
+						Windows::Storage::Pickers::FolderPicker^ folderPicker = ref new Windows::Storage::Pickers::FolderPicker();
+							folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
+							folderPicker->FileTypeFilter->Clear();
+							for (auto it = filters.begin(); it != filters.end(); it++)
+								folderPicker->FileTypeFilter->Append(ref new String(utf8_ws(it->second.c_str()).c_str()));
+							if (folderPicker->FileTypeFilter->Size == 0)
+								folderPicker->FileTypeFilter->Append("*");
+							Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFolder^>^ action = folderPicker->PickSingleFolderAsync();
+							while (action->Status == Windows::Foundation::AsyncStatus::Started)
+								Sleep(10); //XXX There must be better to do
+							Windows::Storage::StorageFolder^ folder = action->GetResults();
+							if (folder != nullptr)
+							{
+								Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList->AddOrReplace("PickedFolderToken", folder);
+									r.type = gapplication_Variant::STRING;
+								r.s = utf8_us(folder->Path->Data());
+								rets.push_back(r);
+							}
+					}
+					else if (strcmp(what, "openFileDialog") == 0) {
+						Windows::Storage::Pickers::FileOpenPicker^ folderPicker = ref new Windows::Storage::Pickers::FileOpenPicker();
+						folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
+						folderPicker->FileTypeFilter->Clear();
+						for (auto it = filters.begin(); it != filters.end(); it++)
+							folderPicker->FileTypeFilter->Append(ref new String(utf8_ws(it->second.c_str()).c_str()));
+						if (folderPicker->FileTypeFilter->Size==0)
+							folderPicker->FileTypeFilter->Append("*");
+						Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFile^>^ action = folderPicker->PickSingleFileAsync();
+						while (action->Status == Windows::Foundation::AsyncStatus::Started)
+							Sleep(10); //XXX There must be better to do
+						Windows::Storage::StorageFile^ folder = action->GetResults();
+						if (folder != nullptr)
+						{
+							Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList->AddOrReplace("PickedFileToken", folder);
+							r.type = gapplication_Variant::STRING;
+							r.s = utf8_us(folder->Path->Data());
+							rets.push_back(r);
+						}
+					}
+					else if (strcmp(what, "saveFileDialog") == 0) {
+						Windows::Storage::Pickers::FileSavePicker^ folderPicker = ref new Windows::Storage::Pickers::FileSavePicker();
+						folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
+						Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFile^>^ action = folderPicker->PickSaveFileAsync();
+						while (action->Status == Windows::Foundation::AsyncStatus::Started)
+							Sleep(10); //XXX There must be better to do
+						Windows::Storage::StorageFile^ folder = action->GetResults();
+						if (folder != nullptr)
+						{
+							Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList->AddOrReplace("PickedSaveFileToken", folder);
+							r.type = gapplication_Variant::STRING;
+							r.s = utf8_us(folder->Path->Data());
+							rets.push_back(r);
+						}
+					}
+				}, true);
+			}
+			/*------------------------------------------------------------------*/
+		}
+	}
 	return rets;
 }

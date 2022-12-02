@@ -14,7 +14,7 @@ static std::map<std::string,std::string> cursorMap={
 		{ "sizeBDiag", "nwse-resize" },
 		{ "sizeFDiag", "nesw-resize" },
 		{ "sizeAll", "all-scroll" }, //Doesn't really fit, but best so far'
-		{ "blank", "nine" },
+		{ "blank", "none" },
 		{ "splitV", "row-resize" },
 		{ "splitH", "col-resize" },
 		{ "pointingHand", "pointer" },
