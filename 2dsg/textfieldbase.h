@@ -55,6 +55,7 @@ protected:
     float prefWidth_,prefHeight_;
 public:
     std::string styCache_color;
+    std::string styCache_font;
 };
 
 #endif

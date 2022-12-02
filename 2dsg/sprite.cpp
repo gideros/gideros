@@ -816,9 +816,11 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 	if (sprite->parent_ == this) {
         auto it=std::find(children_.begin(), children_.end(), sprite);
         size_t cindex=it-children_.begin();
-        children_.erase(it);
-        if (cindex<(size_t)index) index--;
-        children_.insert(children_.begin() + index, sprite);
+        if (cindex!=index) {
+            children_.erase(it);
+            if (cindex<(size_t)index) index--;
+            children_.insert(children_.begin() + index, sprite);
+        }
         return index;
 	}
 

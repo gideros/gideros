@@ -2247,13 +2247,22 @@ int SpriteBinder::setWorldAlign(lua_State* L)
 
 static void gatherStyledChildren(lua_State *L,int idx,int tidx)
 {
+    if (lua_rawgetfield(L,idx,"__style")==LUA_TTABLE) {
+        if (lua_rawgetfield(L,-1,"__Cache")==LUA_TTABLE) {
+            lua_pop(L,1);
+            lua_newtable(L);
+            lua_setfield(L,-2,"__Cache");
+        }
+        lua_pop(L,1);
+    }
+    lua_pop(L,1);
     if (lua_rawgetfield(L,idx,"__children")!=LUA_TNIL) {
         lua_checkstack(L,8);
         lua_pushnil(L);
         while (lua_next(L,-2)) {
 		   gatherStyledChildren(L,-1,tidx-3);
-		   lua_pushvalue(L,-2);
-		   lua_rawset(L,tidx-4);
+           lua_pushvalue(L,-2);
+           lua_rawset(L,tidx-4);
         }
     }
     lua_pop(L,1);
@@ -2330,10 +2339,11 @@ int SpriteBinder::resolveStyle(lua_State* L)
 
 #define FILL_NUM_ARRAY(n,f) \
         if (p->resolvedArray.count(FKEY(n))) { \
+            auto &pa=p->resolvedArray[FKEY(n)]; \
             for (size_t k=0;k<p->f.size();k++) { \
-                if (p->resolvedArray[FKEY(n)].count(k)) { \
+                if (pa.count(k)) { \
                     lua_pushvalue(L,-1); \
-                    LuaApplication::resolveStyle(L,p->resolvedArray[FKEY(n)][k].c_str(),0); \
+                    LuaApplication::resolveStyle(L,pa[k].c_str(),0); \
                     p->f[k]=lua_tonumber(L,-1); \
                     lua_pop(L,1); \
                     dirty=true; \

@@ -14,6 +14,7 @@ void TextFieldBase::cloneFrom(TextFieldBase *s)
     prefWidth_=s->prefWidth_;
     prefHeight_=s->prefHeight_;
     styCache_color=s->styCache_color;
+    styCache_font=s->styCache_font;
 }
 
 bool TextFieldBase::scaleChanged() {

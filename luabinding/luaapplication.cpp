@@ -1087,8 +1087,29 @@ int LuaApplication::resolveStyle(lua_State *L,const char *key,int luaIndex)
     return ret;
 }
 
-int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaIndex,int refIndex)
+static char emptyValue;
+void LuaApplication::cacheComputedStyle(lua_State *L, const char *key, bool empty) { //Tr,val
+    if (lua_rawgetfield(L,-2,"__Cache")==LUA_TTABLE) {
+        if (empty)
+            lua_pushlightuserdata(L,&emptyValue);
+        else
+            lua_pushvalue(L,-2);
+        lua_setfield(L,-2,key);
+    }
+    lua_pop(L,1);
+}
+
+#include "fontbasebinder.h"
+#include <fontbase.h>
+#include <luautil.h>
+int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaIndex,int refIndex, int limit, bool recursed)
 {
+    if (limit>1000) {
+        lua_pushfstringL(L,"Recursion while resolving style: %s",key);
+        lua_error(L);
+        return LUA_TNIL;
+    }
+
     //Expected callStack: refstring, parentstring, table
 	if (luaIndex>0) luaIndex=0;
     if ((!key)&&luaIndex) key=lua_tolstring(L,luaIndex,NULL);
@@ -1102,9 +1123,9 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
         lua_error(L);
     }
     lua_checkstack(L,8);
-    lua_pushvalue(L,-1);
-    size_t limit=1000;
-    while (limit>0) {
+
+    int rtype;
+    if (!recursed) { //If we're not looking up a reference
         int klen=strlen(key);
         if (((*key)=='|')||((klen>3)&&((key[klen-4]=='.')&&(
                                            ((key[klen-3]=='p')&&(key[klen-3]=='n')&&(key[klen-3]=='g'))||
@@ -1112,11 +1133,11 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                                            ))))
         {
             //File, return as is
-            lua_pop(L,2);
+            lua_pop(L,1);
             if (luaIndex)
-            	lua_pushvalue(L,luaIndex+1);
+                lua_pushvalue(L,luaIndex+1);
             else
-            	lua_pushlstring(L,key,klen);
+                lua_pushlstring(L,key,klen);
             return LUA_TSTRING;
         }
         const char *kk=key;
@@ -1125,26 +1146,20 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
             //Number-String: check for a unit
             if (kk[0]==0) {
                 //Not suffix, just convert to number
-                lua_pop(L,2);
+                lua_pop(L,1);
                 lua_pushnumber(L,strtod(key,NULL));
                 return LUA_TNUMBER;
             }
             else if ((kk[0]=='e')&&(kk[1]=='m')&&(kk[2]==0)) {
-                if (resolveStyleInternal(L,"font",0,refIndex-1)==LUA_TNIL)
+                Binder binder(L);
+                if (resolveStyleInternal(L,"font",0,refIndex,true)==LUA_TNIL)
                 {
                     lua_pushfstringL(L,"Font not found for computing: %s",key);
                     lua_error(L);
                 }
-                lua_getfield(L,-1,"getLineHeight");
-                if (lua_isnil(L,-1))
-                {
-                    lua_pushfstringL(L,"Resolved font is invalid for computing: %s",key);
-                    lua_error(L);
-                }
-                lua_insert(L,-2);
-                lua_call(L,1,1);
-                lua_Number num=lua_tonumber(L,-1);
-                lua_pop(L,2);
+                FontBase *font = static_cast<FontBase*>(binder.getInstance("FontBase", -1));
+                lua_Number num=font->getLineHeight();
+                lua_pop(L,1);
                 lua_pushnumber(L,num*strtod(key,NULL));
                 return LUA_TNUMBER;
             }
@@ -1158,7 +1173,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                     char unitName[32+6]="unit.";
                     strncpy(unitName+5,kk,32);
                     unitName[32+5]=0;
-                    if (resolveStyleInternal(L,unitName,0,refIndex-1)==LUA_TNIL)
+                    if (resolveStyleInternal(L,unitName,0,refIndex,true)==LUA_TNIL)
                     {
                         lua_pushfstringL(L,"Unit not recognized: %s",kk);
                         lua_error(L);
@@ -1169,92 +1184,105 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                     else if ((kk[0]=='i')&&(kk[1]=='s')&&(kk[2]==0)) // Cached-'is'
                         styleCache.unitIs=num;
                 }
-                lua_pop(L,2);
+                lua_pop(L,1);
                 lua_pushnumber(L,num*strtod(key,NULL));
                 return LUA_TNUMBER;
             }
         }
-        //Check if current table is a reference
-        bool inherit=true;
-        while (inherit&&(limit>0)) { //Tc
-            if (limit<200)
-            {
-                lua_pushnil(L);
-                lua_pop(L,1);
-            }
-            int rtype;
-            lua_pushvalue(L,refIndex-1); //Tc,Ref
-            if (lua_rawget(L,-2)==LUA_TSTRING) { //Tc,Tc[Ref]
-                lua_pushvalue(L,refIndex-2+1); //Tc,Key,Parent
-                rtype=lua_rawget(L,-3); //Tc,Key,Tc[Parent]
-                if (rtype==LUA_TTABLE)
-                    rtype=resolveStyleInternal(L,NULL,-2,refIndex-3); //Tc,Key,Tr
-                if (rtype!=LUA_TTABLE)
-                {
-                    lua_pushfstringL(L,"Reference doesn't resolve to a table: %s",lua_tolstring(L,-2,NULL));
-                    lua_error(L);
-                }
-                lua_remove(L,-2); //Tc,Tr
-                //Lookup in reference
-                if (luaIndex) {
-                	lua_pushvalue(L,luaIndex-2); //Tc,Tr,key
-                	rtype=lua_gettable(L,-2); //Tc,Tr,Tr[key]
-                }
-                else
-                	rtype=lua_getfield(L,-1,key); //Tc,Tr,Tr[key]
-                lua_remove(L,-2); //Tc,Tr[key]
-            }
-            else {
-                lua_pop(L,1); //Tc
-                rtype=lua_getfield(L,-1,key); //Tc,Tc[key]
-            }
-            if (rtype==LUA_TNIL) {
-                lua_pop(L,1); //Tc
-                lua_pushvalue(L,refIndex-1+1); //Tc,Parent
-                rtype=lua_rawget(L,-2); //Tc,Tc[parent]
-                if (rtype==LUA_TSTRING) {
-                    //Parent is a string, look it up
-                    lua_pushvalue(L,-2); //Tc,Key,Tc
-                    rtype=resolveStyleInternal(L,NULL,-2,refIndex-3); //Tc,Key,Tr
-                    lua_remove(L,-2); //Tc,Tr
-                }
-                if (rtype==LUA_TNIL) {
-                    //Nothing, return nil
-                    lua_remove(L,-2); //nil
-                    lua_remove(L,-2); 
-                    return rtype;
-                }
-                if (rtype!=LUA_TTABLE)
-                {
-                    lua_pushfstringL(L,"Parent style isn't a table while resolving: %s",key);
-                    lua_error(L);
-                }
-                lua_remove(L,-2); //Tc[parent] or Tr
-            }
-            else if (rtype!=LUA_TSTRING) {
-                //Not a string, return it
-                lua_remove(L,-2); //Tc[key]
-                lua_remove(L,-2);
-                return rtype;
-            }
-            else {
-                //Got a string, re-run full key processing
-                key=lua_tolstring(L,-1,NULL);
-                if (luaIndex) {
-                    lua_replace(L,luaIndex-2); //Tc
-                    lua_pop(L,1); //
-                }
-                else
-                    lua_pop(L,2); //
-                lua_pushvalue(L,-1); //Tc
-                inherit=false;
-            }
-            limit-=1;
-        }
     }
-    lua_pushfstringL(L,"Recursion while resolving style: %s",key);
-    lua_error(L);
-    return LUA_TNIL;
+
+    //Check cache
+    bool hasCache=false;
+    if (lua_rawgetfield(L,-1,"__Cache")==LUA_TTABLE) {
+        hasCache=true;
+        if (luaIndex) {
+            lua_pushvalue(L,luaIndex-1); //Tc,C,key
+            rtype=lua_gettable(L,-2); //Tc,C,Tr
+        }
+        else
+            rtype=lua_rawgetfield(L,-1,key); //Tc,C,Tr
+        if (key[0]!='f') {
+            lua_pushnil(L);
+            lua_pop(L,1);
+        }
+        if ((rtype==LUA_TLIGHTUSERDATA)&&(lua_tolightuserdata(L,-1)==&emptyValue)) {
+            lua_pop(L,3);
+            lua_pushnil(L);
+            return LUA_TNIL;
+        }
+        if (rtype!=LUA_TNIL) {
+            lua_remove(L,-2);
+            lua_remove(L,-2);
+            return rtype;
+        }
+        lua_pop(L,2);
+    }
+    else
+        lua_pop(L,1);
+
+    //Check if current table is a reference
+    lua_pushvalue(L,refIndex); //Tc,Ref
+    if (lua_rawget(L,-2)==LUA_TSTRING) { //Tc,Tc[Ref]
+        lua_pushvalue(L,refIndex-1+1); //Tc,Key,Parent
+        rtype=lua_rawget(L,-3); //Tc,Key,Tc[Parent]
+        if (rtype==LUA_TTABLE)
+            rtype=resolveStyleInternal(L,NULL,-2,refIndex-2,limit+1,true); //Tc,Key,Tr
+        if (rtype!=LUA_TTABLE)
+        {
+            lua_pushfstringL(L,"Reference doesn't resolve to a table: %s",lua_tolstring(L,-2,NULL));
+            lua_error(L);
+        }
+        lua_remove(L,-2); //Tc,Tr
+        //Lookup in reference
+        if (luaIndex) {
+            lua_pushvalue(L,luaIndex-1); //Tc,Tr,key
+            rtype=lua_gettable(L,-2); //Tc,Tr,Tr[key]
+        }
+        else
+            rtype=lua_getfield(L,-1,key); //Tc,Tr,Tr[key]
+        lua_remove(L,-2); //Tc,Tr[key]
+    }
+    else {
+        lua_pop(L,1); //Tc
+        rtype=lua_getfield(L,-1,key); //Tc,Tc[key]
+    }
+    //Check Parent if nil
+    if (rtype==LUA_TNIL) {
+        lua_pop(L,1); //Tc
+        lua_pushvalue(L,refIndex+1); //Tc,Parent
+        rtype=lua_rawget(L,-2); //Tc,Tc[parent]
+        if (rtype==LUA_TSTRING) {
+            //Parent is a string, look it up
+            lua_pushvalue(L,-2); //Tc,Key,Tc
+            rtype=resolveStyleInternal(L,NULL,-2,refIndex-2,limit+1,true); //Tc,Key,Tr
+            lua_remove(L,-2); //Tc,Tr
+        }
+        if (rtype==LUA_TNIL) {
+            //Nothing, return nil
+            lua_remove(L,-2);
+            return rtype;
+        }
+        if (rtype!=LUA_TTABLE)
+        {
+            lua_pushfstringL(L,"Parent style isn't a table while resolving: %s",key);
+            lua_error(L);
+        }
+        //Tc,Tc[parent] or Tr
+        //Recurse in parent
+        rtype=resolveStyleInternal(L,key,luaIndex?luaIndex-1:0,refIndex-1,limit+1); //Tc,Tr
+    }
+    while ((rtype==LUA_TSTRING)&&(recursed||!limit)) {
+        //Got a string, re-run full key processing
+        const char *skey=lua_tolstring(L,-1,NULL); //Tc,Key
+        lua_pushvalue(L,-2); //Tc,Key,Tc
+        //Recurse
+        rtype=resolveStyleInternal(L,skey,-2,refIndex-2,limit+1); //Tc,Key,Tr
+        lua_remove(L,-2); //Tc,Tr
+    }
+    if (hasCache)
+        cacheComputedStyle(L,key,rtype==LUA_TNIL);
+    lua_remove(L,-2); //Tc[key]
+    return rtype;
 }
 
 void LuaApplication::resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache)

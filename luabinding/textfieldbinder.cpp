@@ -146,7 +146,21 @@ int TextFieldBinder::setFont(lua_State* L)
 
     Binder binder(L);
     TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
-    FontBase* font = static_cast<FontBase*>(binder.getInstance("FontBase", 2));
+
+    int ctype=lua_type(L,2);
+    FontBase* font;
+    if (ctype==LUA_TSTRING) { //Resolvable
+        const char *key=lua_tostring(L,2);
+        textField->styCache_font=key;
+        LuaApplication::getStyleTable(L,1);
+        LuaApplication::resolveStyle(L,key,0);
+        font = static_cast<FontBase*>(binder.getInstance("FontBase", -1));
+        lua_pop(L,1);
+    }
+    else {
+        textField->styCache_font.clear();
+        font = static_cast<FontBase*>(binder.getInstance("FontBase", 2));
+    }
 
     textField->setFont(font);
 
@@ -349,6 +363,12 @@ int TextFieldBinder::updateStyle(lua_State* L)
     if (HASCOL(color)) {
         COLVEC(color);
         textField->setTextColor(color[0],color[1],color[2],color[3]);
+    }
+    if (HASCOL(font)) {
+        LuaApplication::getStyleTable(L,1);
+        LuaApplication::resolveStyle(L,textField->styCache_font.c_str(),0);
+        textField->setFont(static_cast<FontBase*>(binder.getInstance("FontBase", -1)));
+        lua_pop(L,1);
     }
     return 0;
 }
