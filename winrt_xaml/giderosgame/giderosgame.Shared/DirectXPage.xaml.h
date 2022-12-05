@@ -1,4 +1,4 @@
-﻿//
+//
 // DirectXPage.xaml.h
 // Declaration of the DirectXPage class.
 //
@@ -61,7 +61,6 @@ namespace giderosgame
 		bool m_windowVisible;
 
 		Windows::Foundation::IAsyncAction^ m_renderLoopWorker;
-
 	};
 }
 

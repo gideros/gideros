@@ -3,6 +3,7 @@
 
 using namespace Windows::UI::Core;
 #include <functional>
+extern CoreIndependentInputSource^ gdr_s_coreInput;
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,6 +38,7 @@ extern "C" {
 	void gdr_scaleChanged(float s);
 	void gdr_dispatchUi(std::function<void()> func, bool wait);
 	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView();
+	Windows::UI::Core::CoreWindow^ gdr_getRootWindow();
 #ifdef __cplusplus
 }
 #endif

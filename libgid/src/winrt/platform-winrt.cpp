@@ -9,11 +9,13 @@
 #include <giderosapi.h>
 #include "gapplication.h"
 #include "platform.h"
+#include <collection.h>
 
 using namespace Concurrency;
 
 using namespace Windows::System;
 using namespace Platform;
+using namespace Platform::Collections;
 using namespace Windows::Storage;
 
 using namespace Windows::System::UserProfile;
@@ -315,21 +317,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 	std::vector<gapplication_Variant> rets;
 	gapplication_Variant r;
 	if (!set) {
-/*		if (!strcmp(what, "currentUrl"))
-		{
-			r.type=gapplication_Variant::STRING;
-			r.s=currentUrl;
-			rets.push_back(r);
-		}*/
-	}
-	else {
-		if (!strcmp(what, "cursor")) {
-			Windows::UI::Core::CoreCursorType mapped = cursorMap[args[0].s];
-			gdr_dispatchUi([&] {
-				Windows::UI::Core::CoreWindow::GetForCurrentThread()->PointerCursor = ref new Windows::UI::Core::CoreCursor(mapped, 0);
-			}, true);
-		}
-		else if ((strcmp(what, "openDirectoryDialog") == 0)
+		if ((strcmp(what, "openDirectoryDialog") == 0)
 			|| (strcmp(what, "openFileDialog") == 0)
 			|| (strcmp(what, "saveFileDialog") == 0))
 		{
@@ -340,13 +328,14 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 			{
 				std::string title = args[0].s;
 				std::string place = args[1].s;
-				std::vector<std::pair<std::string, std::string>> filters;
+				std::vector<std::string> filters;
+				std::map<std::string, std::vector<std::string>> choices;
 				if (args.size() >= 3) {
 					std::string ext = args[2].s;
 					while (!ext.empty()) {
 						std::string next;
 						size_t semicolon = ext.find(";;");
-						if (semicolon != std::wstring::npos) {
+						if (semicolon != std::string::npos) {
 							next = ext.substr(semicolon + 2);
 							ext = ext.substr(0, semicolon);
 						}
@@ -357,49 +346,65 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 							//Valid filter, extract label and extensions
 							std::string label = ext.substr(0, p1);
 							std::string exts = ext.substr(p1 + 1, p2 - p1 - 1);
-							//QT uses space for extensions separator, while windows expects semicolon. Convert them.
-							std::replace(exts.begin(), exts.end(), ' ', ';');
-							filters.push_back(std::pair<std::string, std::string>(label, exts));
+							size_t semicolon;
+							std::vector<std::string> elist;
+							while ((semicolon = exts.find(" "))!=std::string::npos)
+							{
+								std::string e = exts.substr(0, semicolon);
+								size_t dot = e.find(".");
+								if (dot != std::string::npos)
+									e = e.substr(dot);
+								exts= exts.substr(semicolon + 1);
+								filters.push_back(e);
+								elist.push_back(e);
+							}
+							size_t dot = exts.find(".");
+							if (dot != std::string::npos)
+								exts = exts.substr(dot);
+							filters.push_back(exts);
+							elist.push_back(exts);
+							choices[label] = elist;
 						}
 						ext = next;
 					}
 				}
 
+				std::shared_ptr<Concurrency::event> _completed = std::make_shared<Concurrency::event>();
 
 				gdr_dispatchUi([&] {
 					bool unsnapped = ((ApplicationView::GetForCurrentView()->Value != ApplicationViewState::Snapped) || ApplicationView::GetForCurrentView()->TryUnsnap());
-					if (strcmp(what, "openDirectoryDialog") == 0) {
-						Windows::Storage::Pickers::FolderPicker^ folderPicker = ref new Windows::Storage::Pickers::FolderPicker();
-							folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
-							folderPicker->FileTypeFilter->Clear();
-							for (auto it = filters.begin(); it != filters.end(); it++)
-								folderPicker->FileTypeFilter->Append(ref new String(utf8_ws(it->second.c_str()).c_str()));
-							if (folderPicker->FileTypeFilter->Size == 0)
-								folderPicker->FileTypeFilter->Append("*");
-							Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFolder^>^ action = folderPicker->PickSingleFolderAsync();
-							while (action->Status == Windows::Foundation::AsyncStatus::Started)
-								Sleep(10); //XXX There must be better to do
-							Windows::Storage::StorageFolder^ folder = action->GetResults();
-							if (folder != nullptr)
-							{
-								Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList->AddOrReplace("PickedFolderToken", folder);
-									r.type = gapplication_Variant::STRING;
-								r.s = utf8_us(folder->Path->Data());
-								rets.push_back(r);
-							}
-					}
-					else if (strcmp(what, "openFileDialog") == 0) {
-						Windows::Storage::Pickers::FileOpenPicker^ folderPicker = ref new Windows::Storage::Pickers::FileOpenPicker();
-						folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
-						folderPicker->FileTypeFilter->Clear();
-						for (auto it = filters.begin(); it != filters.end(); it++)
-							folderPicker->FileTypeFilter->Append(ref new String(utf8_ws(it->second.c_str()).c_str()));
-						if (folderPicker->FileTypeFilter->Size==0)
-							folderPicker->FileTypeFilter->Append("*");
-						Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFile^>^ action = folderPicker->PickSingleFileAsync();
-						while (action->Status == Windows::Foundation::AsyncStatus::Started)
-							Sleep(10); //XXX There must be better to do
-						Windows::Storage::StorageFile^ folder = action->GetResults();
+				if (strcmp(what, "openDirectoryDialog") == 0) {
+					Windows::Storage::Pickers::FolderPicker^ folderPicker = ref new Windows::Storage::Pickers::FolderPicker();
+					folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
+					folderPicker->FileTypeFilter->Clear();
+					for (auto it = filters.begin(); it != filters.end(); it++)
+						folderPicker->FileTypeFilter->Append(ref new String(utf8_ws(it->c_str()).c_str()));
+					if (folderPicker->FileTypeFilter->Size == 0)
+						folderPicker->FileTypeFilter->Append("*");
+					Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFolder^>^ action = folderPicker->PickSingleFolderAsync();
+					create_task(action).then([&](Windows::Storage::StorageFolder^ folder)
+					{
+						if (folder != nullptr)
+						{
+							Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList->AddOrReplace("PickedFolderToken", folder);
+							r.type = gapplication_Variant::STRING;
+							r.s = utf8_us(folder->Path->Data());
+							rets.push_back(r);
+						}
+						_completed->set();
+					});
+				}
+				else if (strcmp(what, "openFileDialog") == 0) {
+					Windows::Storage::Pickers::FileOpenPicker^ folderPicker = ref new Windows::Storage::Pickers::FileOpenPicker();
+					folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
+					folderPicker->FileTypeFilter->Clear();
+					for (auto it = filters.begin(); it != filters.end(); it++)
+						folderPicker->FileTypeFilter->Append(ref new String(utf8_ws(it->c_str()).c_str()));
+					if (folderPicker->FileTypeFilter->Size == 0)
+						folderPicker->FileTypeFilter->Append("*");
+					Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFile^>^ action = folderPicker->PickSingleFileAsync();
+					create_task(action).then([&](Windows::Storage::StorageFile^ folder)
+					{
 						if (folder != nullptr)
 						{
 							Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList->AddOrReplace("PickedFileToken", folder);
@@ -407,14 +412,28 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 							r.s = utf8_us(folder->Path->Data());
 							rets.push_back(r);
 						}
+						_completed->set();
+					});
+				}
+				else if (strcmp(what, "saveFileDialog") == 0) {
+					Windows::Storage::Pickers::FileSavePicker^ folderPicker = ref new Windows::Storage::Pickers::FileSavePicker();
+					folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
+					folderPicker->FileTypeChoices->Clear();
+					for (auto it = choices.begin(); it != choices.end(); it++) {
+						Platform::Collections::Vector<String^> ^el = ref new Platform::Collections::Vector<String^>(0);
+						for (size_t i = 0; i < it->second.size(); i++)
+							el->Append(ref new String(utf8_ws(it->second[i].c_str()).c_str()));
+						folderPicker->FileTypeChoices->Insert(ref new String(utf8_ws(it->first.c_str()).c_str()),el);
 					}
-					else if (strcmp(what, "saveFileDialog") == 0) {
-						Windows::Storage::Pickers::FileSavePicker^ folderPicker = ref new Windows::Storage::Pickers::FileSavePicker();
-						folderPicker->SuggestedStartLocation = Windows::Storage::Pickers::PickerLocationId::Desktop;
-						Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFile^>^ action = folderPicker->PickSaveFileAsync();
-						while (action->Status == Windows::Foundation::AsyncStatus::Started)
-							Sleep(10); //XXX There must be better to do
-						Windows::Storage::StorageFile^ folder = action->GetResults();
+						
+					if (folderPicker->FileTypeChoices->Size == 0) {
+						Platform::Collections::Vector<String^>^ el = ref new Platform::Collections::Vector<String^>(0);
+						el->Append("*");
+						folderPicker->FileTypeChoices->Insert("File", el);
+					}
+					Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFile^>^ action = folderPicker->PickSaveFileAsync();
+					create_task(action).then([&](Windows::Storage::StorageFile^ folder)
+					{
 						if (folder != nullptr)
 						{
 							Windows::Storage::AccessCache::StorageApplicationPermissions::FutureAccessList->AddOrReplace("PickedSaveFileToken", folder);
@@ -422,10 +441,19 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 							r.s = utf8_us(folder->Path->Data());
 							rets.push_back(r);
 						}
-					}
-				}, true);
+						_completed->set();
+					});
+				}
+				}, false);
+				_completed->wait();
 			}
 			/*------------------------------------------------------------------*/
+		}
+	}
+	else {
+		if (!strcmp(what, "cursor")) {
+			Windows::UI::Core::CoreCursorType mapped = cursorMap[args[0].s];
+			gdr_s_coreInput->PointerCursor = ref new Windows::UI::Core::CoreCursor(mapped, 0);
 		}
 	}
 	return rets;

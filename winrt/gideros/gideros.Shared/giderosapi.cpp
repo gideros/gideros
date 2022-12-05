@@ -375,6 +375,7 @@ public:
 	void scaleChanged(float scale);
 
 	static Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
+	static Windows::UI::Core::CoreWindow^ getWindow();
 
 private:
 	void loadProperties();
@@ -407,10 +408,12 @@ private:
 	int nframe_;
 
 	static Platform::WeakReference xamlRoot_;
+	static Platform::WeakReference xamlWindow_;
 	bool xaml;
 };
 
 Platform::WeakReference ApplicationManager::xamlRoot_;
+Platform::WeakReference ApplicationManager::xamlWindow_;
 
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
@@ -706,8 +709,10 @@ void NetworkManager::calculateMD5(const char* file)
 
 ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
-	if (swapChainPanel!=nullptr)
+	if (swapChainPanel!=nullptr) {
 		xamlRoot_ = Platform::WeakReference(swapChainPanel);
+		xamlWindow_ = Platform::WeakReference(Window);
+	}
 
 	xaml = useXaml;
 
@@ -914,6 +919,10 @@ ApplicationManager::~ApplicationManager()
 
 Windows::UI::Xaml::Controls::SwapChainPanel^ ApplicationManager::getRoot(){
 	return xamlRoot_.Resolve<Windows::UI::Xaml::Controls::SwapChainPanel>();
+}
+
+Windows::UI::Core::CoreWindow^ ApplicationManager::getWindow() {
+	return xamlWindow_.Resolve<Windows::UI::Core::CoreWindow>();
 }
 
 void ApplicationManager::scaleChanged(float s)
@@ -1516,6 +1525,7 @@ void ApplicationManager::resize(int width, int height,int orientation)
 
 static ApplicationManager *s_manager = NULL;
 static int lastMouseButton_ = 0;
+CoreIndependentInputSource^ gdr_s_coreInput = nullptr;
 
 extern "C" {
 
@@ -1526,6 +1536,9 @@ extern "C" {
 
 	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView(){
 		return ApplicationManager::getRoot();
+	}
+	Windows::UI::Core::CoreWindow^ gdr_getRootWindow() {
+		return ApplicationManager::getWindow();
 	}
 
 	void gdr_drawFrame(bool useXaml)

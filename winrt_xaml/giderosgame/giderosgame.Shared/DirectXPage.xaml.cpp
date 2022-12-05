@@ -192,7 +192,7 @@ DirectXPage::DirectXPage():
 	canvasOrientation = DisplayInformation::GetForCurrentView()->CurrentOrientation;
 	canvasUpdated = true;
 
-	gdr_initialize(true, nullptr, swapChainPanel, canvasWidth, canvasHeight, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+	gdr_initialize(true, window, swapChainPanel, canvasWidth, canvasHeight, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 	gdr_drawFirstFrame();
 
 	auto workItemHandler2 = ref new WorkItemHandler([this](IAsyncAction ^ action)
@@ -203,6 +203,7 @@ DirectXPage::DirectXPage():
 			Windows::UI::Core::CoreInputDeviceTypes::Touch |
 			Windows::UI::Core::CoreInputDeviceTypes::Pen
 		);
+		gdr_s_coreInput = m_coreInput;
 
 		// Register for pointer events, which will be raised on the background thread.
 		m_coreInput->PointerPressed += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerPressed);

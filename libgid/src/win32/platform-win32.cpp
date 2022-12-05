@@ -559,7 +559,6 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
     else { // SET
         if (strcmp(what, "cursor") == 0)
         {
-            /* TODO */
             int cursorIdx=cursorMap[args[0].s];
             if (cursorIdx==0) cursorIdx=OCR_NORMAL;
             HANDLE cursor=LoadImage(NULL,MAKEINTRESOURCE(cursorIdx),IMAGE_CURSOR,0,0,LR_DEFAULTSIZE|LR_SHARED);
