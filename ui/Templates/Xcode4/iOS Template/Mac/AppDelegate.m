@@ -43,6 +43,7 @@
     self.viewController = [[ViewController alloc] init];
     self.window = [NSWindow windowWithContentViewController:self.viewController];
     self.window.delegate=self.viewController;
+    [self.window setAcceptsMouseMovedEvents:TRUE];
     [self.window setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString*)kCFBundleNameKey]];
 
     int height = bounds.size.width;

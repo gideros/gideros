@@ -8,7 +8,7 @@ extern "C" {
 void gdr_initialize(UIView* view, int width, int height, bool player);
 void gdr_surfaceChanged(int width,int height);
 void gdr_drawFirstFrame();
-void gdr_drawFrame();
+void gdr_drawFrame(bool force);
 void gdr_exitGameLoop();
 void gdr_deinitialize();
 void gdr_suspend();

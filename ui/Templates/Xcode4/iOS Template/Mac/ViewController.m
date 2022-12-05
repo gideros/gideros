@@ -113,8 +113,9 @@
 - (void)drawFrame
 {
     @autoreleasepool {
-    gdr_drawFrame();
-}
+    	gdr_drawFrame(resized);
+	resized=FALSE;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -126,6 +127,17 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
+    [self.glView resized];
+    resized=TRUE;
+}
+- (void)windowDidEnterFullScreen:(NSNotification *)notification
+{
+    resized=TRUE;
+    [self.glView resized];
+}
+- (void)windowDidExitFullScreen:(NSNotification *)notification
+{
+    resized=TRUE;
     [self.glView resized];
 }
 

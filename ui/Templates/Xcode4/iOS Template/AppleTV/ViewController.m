@@ -121,7 +121,8 @@ NSMutableArray *tableData;
 
 - (void)drawFrame
 {
-    gdr_drawFrame();
+   gdr_drawFrame(resized);
+   resized=FALSE;
 }
 
 - (void)didReceiveMemoryWarning

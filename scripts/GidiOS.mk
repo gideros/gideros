@@ -97,6 +97,7 @@ mac.libs.install: mac.libs
 	cp $(ROOT)/ios/iosplayer/libiosplayer.mac.a $(MAC_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/libopenal.mac.a $(MAC_TEMPLATE)/libopenal.a
 	cp $(ROOT)/ios/iosplayer/build/Release/default.metallib $(MAC_TEMPLATE)
+	cp $(ROOT)/ios/iosplayer/build/Release/default.metallib $(MAC_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(MAC_TEMPLATE)
 
 luasocket.%: PLUGINDIR=LuaSocket

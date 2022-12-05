@@ -13,6 +13,7 @@
     NSTableView *tableView;
 	    
     BOOL animating;
+    BOOL resized;
     NSInteger animationFrameInterval;
     CVDisplayLinkRef displayLink;
 

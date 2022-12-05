@@ -229,7 +229,7 @@ public:
 	
 //	void surfaceCreated();
 //	void surfaceChanged(int width, int height);
-	void drawFrame();
+	void drawFrame(bool force);
 	
 //	void setDirectories(const char *externalDir, const char *internalDir, const char *cacheDir);
 //	void setFileSystem(const char *files);
@@ -1001,7 +1001,7 @@ void *ApplicationManager::renderLoop()
 
 #endif
 
-void ApplicationManager::drawFrame()
+void ApplicationManager::drawFrame(bool force)
 {
 #if THREADED_RENDER_LOOP
 	if (autorotating_)
@@ -1049,10 +1049,10 @@ void ApplicationManager::drawFrame()
     if (status.error())
         luaError(status.errorString());
 
-    bool now=false;
+    bool now=force;
     if (!application_->onDemandDraw(now))
         now=true;
-    if (now) {
+    if (now||force) {
 #if THREADED_RENDER_LOOP
         renderTick_ = true;
         [renderCond_ signal];
@@ -1151,12 +1151,17 @@ void ApplicationManager::loadProperties()
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
-	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
+    application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
 #if TARGET_OS_OSX
-    if (properties_.windowWidth != 0 && properties_.windowHeight != 0)
-        setWindowSize(properties_.windowWidth,properties_.windowHeight);
+    if (properties_.windowWidth != 0 && properties_.windowHeight != 0) {
+        if ((properties_.orientation==eLandscapeLeft)||
+            (properties_.orientation==eLandscapeRight))
+            setWindowSize(properties_.windowHeight,properties_.windowWidth);
+        else
+            setWindowSize(properties_.windowWidth,properties_.windowHeight);
+    }
 #endif
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
@@ -1246,8 +1251,13 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
 #if TARGET_OS_OSX
-    if (properties_.windowWidth != 0 && properties_.windowHeight != 0)
-        setWindowSize(properties_.windowWidth,properties_.windowHeight);
+    if (properties_.windowWidth != 0 && properties_.windowHeight != 0) {
+        if ((properties_.orientation==eLandscapeLeft)||
+            (properties_.orientation==eLandscapeRight))
+            setWindowSize(properties_.windowHeight,properties_.windowWidth);
+        else
+            setWindowSize(properties_.windowWidth,properties_.windowHeight);
+    }
 #endif
     
 #if !TARGET_OS_TV && !TARGET_OS_OSX
@@ -1759,9 +1769,9 @@ void gdr_surfaceChanged(int width,int height)
          s_manager->surfaceChanged(width,height);
 }
 
-void gdr_drawFrame()
+void gdr_drawFrame(bool force)
 {
-	s_manager->drawFrame();
+	s_manager->drawFrame(force);
 }
 
 void gdr_exitGameLoop()

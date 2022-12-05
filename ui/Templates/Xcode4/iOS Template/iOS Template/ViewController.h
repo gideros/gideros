@@ -21,6 +21,7 @@
     UITableView *tableView;
 	    
     BOOL animating;
+    BOOL resized;
     NSInteger animationFrameInterval;
     CADisplayLink *displayLink;
 
