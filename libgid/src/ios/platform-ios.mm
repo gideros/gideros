@@ -199,8 +199,129 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 			r.s=[levelLabel UTF8String];
 			rets.push_back(r);
 		}
+#elif TARGETOS_OSX
+        if ((strcmp(what, "openDirectoryDialog") == 0)
+            || (strcmp(what, "openFileDialog") == 0)
+            || (strcmp(what, "saveFileDialog") == 0))
+        {
+            if (args.size() <= 2) {
+                /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
+            }
+            else
+            {
+                std::string title = args[0].s;
+                std::string place = args[1].s;
+                
+                std::vector<std::string> filters;
+                if (args.size() >= 3) {
+                    std::string ext = args[2].s;
+                    while (!ext.empty()) {
+                        std::string next;
+                        size_t semicolon = ext.find(";;");
+                        if (semicolon != std::string::npos) {
+                            next = ext.substr(semicolon + 2);
+                            ext = ext.substr(0, semicolon);
+                        }
+                        size_t p1 = ext.find_first_of('(');
+                        size_t p2 = ext.find_last_of(')');
+                        if ((p1 != std::string::npos) && (p2 != std::string::npos) && (p2 > p1))
+                        {
+                            //Valid filter, extract label and extensions
+                            std::string label = ext.substr(0, p1);
+                            std::string exts = ext.substr(p1 + 1, p2 - p1 - 1);
+                            size_t semicolon;
+                            while ((semicolon = exts.find(" "))!=std::string::npos)
+                            {
+                                std::string e = exts.substr(0, semicolon);
+                                size_t dot = e.find(".");
+                                if (dot != std::string::npos)
+                                    e = e.substr(dot+1);
+                                exts= exts.substr(semicolon + 1);
+                                filters.push_back(e);
+                            }
+                            size_t dot = exts.find(".");
+                            if (dot != std::string::npos)
+                                exts = exts.substr(dot+1);
+                            filters.push_back(exts);
+                        }
+                        ext = next;
+                    }
+                }
+                size_t nfilters=filters.size();
+                NSMutableArray<UTType *> *ftypes=[NSMutableArray<UTType *> arrayWithCapacity:nfilters];
+                for (size_t i=0;i<nfilters;i++) {
+                    ftypes[0i]=[UTType typeWithFilenameExtension:[NSString initWithUTF8String:filters[i].c_str()]];
+                }
+
+                if (strcmp(what, "openDirectoryDialog") == 0) {
+                    NSOpenPanel* panel = [NSOpenPanel openPanel];
+                    panel.canChooseFiles=FALSE;
+                    panel.canChooseDirectories=TRUE;
+                    panel.allowsMultipleSelection=FALSE;
+                    panel.title=[NSString initWithUTF8String:title.c_str()];
+
+                    if ([panel runModal]==NSFileHandlingPanelOKButton)
+                    {
+                        r.type = gapplication_Variant::STRING;
+                        r.s = [[panel URL] fileSystemRepresentation];
+                        rets.push_back(r);
+                    }
+                }
+                else if (strcmp(what, "openFileDialog") == 0) {
+                    panel.canChooseFiles=TRUE;
+                    panel.canChooseDirectories=FALSE;
+                    panel.allowsMultipleSelection=FALSE;
+                    panel.title=[NSString initWithUTF8String:title.c_str()];
+                    panel.allowContentTypes=ftypes;
+                    
+                    if ([panel runModal]==NSFileHandlingPanelOKButton)
+                    {
+                        r.type = gapplication_Variant::STRING;
+                        r.s = [[panel URL] fileSystemRepresentation];
+                        rets.push_back(r);
+                    }
+                }
+                else if (strcmp(what, "saveFileDialog") == 0) {
+                    NSSavePanel* panel = [NSSavePanel savePanel];
+                    panel.canChooseFiles=TRUE;
+                    panel.canChooseDirectories=FALSE;
+                    panel.allowsMultipleSelection=FALSE;
+                    panel.title=[NSString initWithUTF8String:title.c_str()];
+                    panel.allowContentTypes=ftype;
+                    
+                    if ([panel runModal]==NSFileHandlingPanelOKButton)
+                    {
+                        r.type = gapplication_Variant::STRING;
+                        r.s = [[panel URL] fileSystemRepresentation];
+                        rets.push_back(r);
+                    }
+                }
+            }
+            /*------------------------------------------------------------------*/
+        }
 #endif
 	}
+    else {
+#if TARGET_OS_OSX
+        if (!strcmp(what, "cursor")) {
+            NSCursor *mapped=[NSCursor arrowCursor];
+            if (args[0].s=="arrow") mapped=[NSCursor arrowCursor];
+            else if (args[0].s=="cross") mapped=[NSCursor crosshairCursor];
+            else if (args[0].s=="IBeam") mapped=[NSCursor IBeamCursor];
+            else if (args[0].s=="sizeHor") mapped=[NSCursor resizeLeftRightCursor];
+            else if (args[0].s=="sizeVer") mapped=[NSCursor resizeUpDownCursor];
+            else if (args[0].s=="splitH") mapped=[NSCursor resizeLeftRightCursor];
+            else if (args[0].s=="splitV") mapped=[NSCursor resizeUpDownCursor];
+            else if (args[0].s=="pointingHand") mapped=[NSCursor pointingHandCursor];
+            else if (args[0].s=="forbidden") mapped=[NSCursor operationNotAllowedCursor];
+            else if (args[0].s=="openHand") mapped=[NSCursor openHandCursor];
+            else if (args[0].s=="closedHand") mapped=[NSCursor closedHandCursor];
+            else if (args[0].s=="dragCopy") mapped=[NSCursor dragCopyCursor];
+            else if (args[0].s=="dragLink") mapped=[NSCursor dragLinkCursor];
+            [mapped set];
+        }
+#endif
+    }
 	return rets;
 }
 
