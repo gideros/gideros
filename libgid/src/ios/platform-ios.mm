@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 #endif
 #import <AudioToolbox/AudioToolbox.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include <vector>
 #include <string>
@@ -199,7 +200,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 			r.s=[levelLabel UTF8String];
 			rets.push_back(r);
 		}
-#elif TARGETOS_OSX
+#elif TARGET_OS_OSX
         if ((strcmp(what, "openDirectoryDialog") == 0)
             || (strcmp(what, "openFileDialog") == 0)
             || (strcmp(what, "saveFileDialog") == 0))
@@ -248,9 +249,12 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     }
                 }
                 size_t nfilters=filters.size();
-                NSMutableArray<UTType *> *ftypes=[NSMutableArray<UTType *> arrayWithCapacity:nfilters];
-                for (size_t i=0;i<nfilters;i++) {
-                    ftypes[0i]=[UTType typeWithFilenameExtension:[NSString initWithUTF8String:filters[i].c_str()]];
+                NSMutableArray<UTType *> *ftypes=nil;
+                if (@available (macOS 11, *)) {
+                    ftypes=[NSMutableArray<UTType *> arrayWithCapacity:nfilters];
+                    for (size_t i=0;i<nfilters;i++) {
+                        ftypes[0]=[UTType typeWithFilenameExtension:[NSString stringWithUTF8String:filters[i].c_str()]];
+                    }
                 }
 
                 if (strcmp(what, "openDirectoryDialog") == 0) {
@@ -258,7 +262,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     panel.canChooseFiles=FALSE;
                     panel.canChooseDirectories=TRUE;
                     panel.allowsMultipleSelection=FALSE;
-                    panel.title=[NSString initWithUTF8String:title.c_str()];
+                    panel.title=[NSString stringWithUTF8String:title.c_str()];
 
                     if ([panel runModal]==NSFileHandlingPanelOKButton)
                     {
@@ -268,11 +272,13 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                     }
                 }
                 else if (strcmp(what, "openFileDialog") == 0) {
+                    NSOpenPanel* panel = [NSOpenPanel openPanel];
                     panel.canChooseFiles=TRUE;
                     panel.canChooseDirectories=FALSE;
                     panel.allowsMultipleSelection=FALSE;
-                    panel.title=[NSString initWithUTF8String:title.c_str()];
-                    panel.allowContentTypes=ftypes;
+                    panel.title=[NSString stringWithUTF8String:title.c_str()];
+                    if (@available (macOS 11, *))
+                        panel.allowedContentTypes=ftypes;
                     
                     if ([panel runModal]==NSFileHandlingPanelOKButton)
                     {
@@ -283,11 +289,9 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
                 }
                 else if (strcmp(what, "saveFileDialog") == 0) {
                     NSSavePanel* panel = [NSSavePanel savePanel];
-                    panel.canChooseFiles=TRUE;
-                    panel.canChooseDirectories=FALSE;
-                    panel.allowsMultipleSelection=FALSE;
-                    panel.title=[NSString initWithUTF8String:title.c_str()];
-                    panel.allowContentTypes=ftype;
+                    panel.title=[NSString stringWithUTF8String:title.c_str()];
+                    if (@available (macOS 11, *))
+                        panel.allowedContentTypes=ftypes;
                     
                     if ([panel runModal]==NSFileHandlingPanelOKButton)
                     {
