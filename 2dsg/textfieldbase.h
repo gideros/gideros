@@ -56,6 +56,7 @@ protected:
 public:
     std::string styCache_color;
     std::string styCache_font;
+    std::string styCache_text;
 };
 
 #endif

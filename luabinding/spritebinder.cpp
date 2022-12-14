@@ -2247,6 +2247,7 @@ int SpriteBinder::setWorldAlign(lua_State* L)
 
 static void gatherStyledChildren(lua_State *L,int idx,int tidx)
 {
+    /*
     if (lua_rawgetfield(L,idx,"__style")==LUA_TTABLE) {
         if (lua_rawgetfield(L,-1,"__Cache")==LUA_TTABLE) {
             lua_pop(L,1);
@@ -2256,6 +2257,7 @@ static void gatherStyledChildren(lua_State *L,int idx,int tidx)
         lua_pop(L,1);
     }
     lua_pop(L,1);
+    */
     if (lua_rawgetfield(L,idx,"__children")!=LUA_TNIL) {
         lua_checkstack(L,8);
         lua_pushnil(L);

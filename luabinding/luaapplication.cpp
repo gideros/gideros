@@ -354,6 +354,7 @@ int LuaApplication::Core_yieldable(lua_State* L)
     return 4;
 }
 
+#include "lstate.h"
 int LuaApplication::Core_asyncCall(lua_State* L)
 {
 	LuaApplication::AsyncLuaTask t;
@@ -369,6 +370,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
     t.nargs=nargs-1;
     t.terminated=false;
     t.inError=false;
+    T->profilerHook=L->profilerHook;
     lua_xmove(L,T,nargs);
     taskLock.lock();
     LuaApplication::tasks_.push_back(t);
@@ -1747,7 +1749,6 @@ void LuaApplication::tick(GStatus *status)
 }
 
 static double yieldHookLimit;
-#include "lstate.h"
 #ifdef LUA_IS_LUAU
 static void yieldHook(lua_State* L, int gc) {
     if ((gc==-1)&&lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {

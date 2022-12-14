@@ -25,7 +25,7 @@ Viewport::~Viewport()
 void Viewport::setContent(Sprite *s)
 {
     if (s)
-    	s->ref();
+        s->ref();
     if (content_)
         content_->unref();
     content_ = s;

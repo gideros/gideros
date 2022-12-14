@@ -91,8 +91,32 @@ int ViewportBinder::setContent(lua_State* L)
 	Binder binder(L);
 	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
 	Sprite* s = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
-	shape->setContent(s);
+    Sprite* os = shape->getContent();
+    shape->setContent(s);
 
+    if (s!=os) {
+        lua_getfield(L, 1, "__children");
+        if (lua_isnil(L, -1))
+        {
+            lua_pop(L, 1);
+            lua_newtable(L);
+            lua_pushvalue(L,-1);
+            lua_setfield(L, 1, "__children");
+        }
+
+        if (os) {
+            lua_pushlightuserdata(L, os);
+            lua_pushnil(L);
+            lua_rawset(L, -3);							// sprite.__children[child] = nil
+        }
+
+        if (s) {
+            lua_pushlightuserdata(L, s);
+            lua_pushvalue(L, 2);
+            lua_rawset(L, -3);							// sprite.__children[child] = child
+        }
+        lua_pop(L, 1);								// pop sprite.__children
+    }
 	return 0;
 }
 
@@ -133,8 +157,12 @@ int ViewportBinder::getContent(lua_State* L)
 	Binder binder(L);
 	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
 	Sprite* s = shape->getContent();
-	if (s)
-	    binder.pushInstance("Sprite", s);
+    if (s) {
+        lua_getfield(L, 1, "__children");
+        lua_pushlightuserdata(L, s);
+        lua_rawget(L,-2);
+        lua_remove(L,-2);
+    }
 	else
 		lua_pushnil(L);
 	return 1;
