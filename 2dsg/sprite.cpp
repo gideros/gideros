@@ -1283,8 +1283,10 @@ void Sprite::invalidate(int changes) {
 		while (true) {
 			Sprite *h=stack.pop();
 			if (h==nullptr) break;
-			h->changes_=(ChangeSet)(h->changes_|downchanges);
-			stack.push_all(h->children_.data(),h->children_.size());
+            if ((h->changes_&downchanges)!=downchanges) {
+                h->changes_=(ChangeSet)(h->changes_|downchanges);
+                stack.push_all(h->children_.data(),h->children_.size());
+            }
 		}
 	}
 
