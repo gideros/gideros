@@ -162,7 +162,7 @@ int ShaderBinder::create(lua_State* L)
         lua_getfield(L,-6,"instances");
         cst.instances=luaL_optinteger(L,-1,0);
         lua_getfield(L,-7,"stride");
-        cst.instances=luaL_optinteger(L,-1,0);
+        cst.stride=luaL_optinteger(L,-1,0);
         lua_pop(L,8);
     	datas.push_back(cst);
       }
