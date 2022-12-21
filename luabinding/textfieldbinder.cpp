@@ -49,6 +49,72 @@ static void populateLayout(lua_State* L,int index,FontBase::TextLayoutParameters
     lua_getfield(L,index,"breakChar"); tp->breakchar=luaL_optstring(L,-1,""); lua_pop(L,1);
 }
 
+static bool hasStyledText(const char *text)
+{
+    while (*text) {
+        while ((*text)&&((*text)!=27)) text++;
+        if (!(*text)) break;
+        text++;
+        if (*text=='[') {
+            text++;
+            while (true) {
+                if (!strncmp(text,"color=",6)) {
+                    text+=6;
+                    if (*text!='#')
+                        return true;
+                }
+                while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
+                if ((*text)==',')
+                    text++;
+                else
+                    break;
+            }
+        }
+    }
+    return false;
+}
+
+static std::string resolveTextStyle(lua_State *L, std::string original)
+{
+    //lua index 1 is current sprite
+    std::string converted=original;
+    const char *rtext=converted.c_str();
+    const char *text=rtext;
+    while (*text) {
+        while ((*text)&&((*text)!=27)) text++;
+        if (!(*text)) break;
+        text++;
+        if (*text=='[') {
+            text++;
+            while (true) {
+                if (!strncmp(text,"color=",6)) {
+                    text+=6; //Skip "color="
+                    const char *colb=text;
+                    while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
+                    if ((*text)&&(*colb!='#')&&(text!=colb)) {
+                        //We have a non null, non numeric color code
+                        size_t prev=colb-rtext;
+                        std::string colRef=converted.substr(prev,text-colb);
+                        float var[4];
+                        LuaApplication::resolveColor(L,1,0,var,colRef);
+                        char resolved[10];
+                        sprintf(resolved,"#%02x%02x%02x%02x",((int)(var[0]*255))&0xFF,((int)(var[1]*255))&0xFF,((int)(var[2]*255))&0xFF,((int)(var[3]*255))&0xFF);
+                        converted=converted.substr(0,prev)+resolved+converted.substr(text-rtext);
+                        rtext=converted.c_str();
+                        text=rtext+prev+9;
+                    }
+                }
+                while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
+                if ((*text)==',')
+                    text++;
+                else
+                    break;
+            }
+        }
+    }
+    return converted;
+}
+
 int TextFieldBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "TextFieldBinder::create", 1);
@@ -93,28 +159,31 @@ int TextFieldBinder::create(lua_State* L)
             break;
     }
 
-/*
-	if (lua_gettop(L) == 0)
-	{
-		textField = new TextField;
-	}
-	else if (lua_gettop(L) == 1)
-	{
-		Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
-		textField = new TextField(font);
-	}
-	else
-	{
-		Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
-		const char* text = luaL_checkstring(L, 2);
-		textField = new TextField(font, text);
-	}
+    if (str2&&hasStyledText(str2))
+        textField->styCache_text=str2;
+
+    /*
+    if (lua_gettop(L) == 0)
+    {
+        textField = new TextField;
+    }
+    else if (lua_gettop(L) == 1)
+    {
+        Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
+        textField = new TextField(font);
+    }
+    else
+    {
+        Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
+        const char* text = luaL_checkstring(L, 2);
+        textField = new TextField(font, text);
+    }
 */
 
-	binder.pushInstance("TextField", textField);
+    binder.pushInstance("TextField", textField);
 
-/*	if  (lua_gettop(L) == 1)
-	{
+    /*	if  (lua_gettop(L) == 1)
+    {
 		lua_pushvalue(L, 1);
 		lua_setfield(L, -2, "__font");
 	}
@@ -165,72 +234,6 @@ int TextFieldBinder::setFont(lua_State* L)
     textField->setFont(font);
 
     return 0;
-}
-
-static bool hasStyledText(const char *text)
-{
-    while (*text) {
-        while ((*text)&&((*text)!=27)) text++;
-        if (!(*text)) break;
-        text++;
-        if (*text=='[') {
-            text++;
-            while (true) {
-                if (!strncmp(text,"color=",6)) {
-                    text+=6;
-                    if (*text!='#')
-                        return true;
-                }
-                while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
-                if ((*text)==',')
-                    text++;
-                else
-                    break;
-            }
-        }
-    }
-    return false;
-}
-
-static std::string resolveTextStyle(lua_State *L, std::string original)
-{
-    //lua index 1 is current sprite
-    std::string converted=original;
-    const char *rtext=converted.c_str();
-    const char *text=rtext;
-    while (*text) {
-        while ((*text)&&((*text)!=27)) text++;
-        if (!(*text)) break;
-        text++;
-        if (*text=='[') {
-            text++;
-            while (true) {
-                if (!strncmp(text,"color=",6)) {
-                    text+=6; //Skip "color="
-                    const char *colb=text;
-                    while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
-                    if ((*text)&&(*colb!='#')&&(text!=colb)) {
-                        //We have a non null, non numeric color code
-                        size_t prev=colb-rtext;
-                        std::string colRef=original.substr(prev,text-colb);
-                        float var[4];
-                        LuaApplication::resolveColor(L,1,0,var,colRef);
-                        char resolved[10];
-                        sprintf(resolved,"#%02x%02x%02x%02x",((int)(var[0]*255))&0xFF,((int)(var[1]*255))&0xFF,((int)(var[2]*255))&0xFF,((int)(var[3]*255))&0xFF);
-                        converted=converted.substr(0,prev)+resolved+converted.substr(text-rtext);
-                        rtext=converted.c_str();
-                        text=rtext+prev+9;
-                    }
-                }
-                while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
-                if ((*text)==',')
-                    text++;
-                else
-                    break;
-            }
-        }
-    }
-    return converted;
 }
 
 int TextFieldBinder::getText(lua_State* L)
