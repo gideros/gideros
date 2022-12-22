@@ -1869,6 +1869,14 @@ void gdr_didReceiveMemoryWarning()
     void gdr_mouseWheel(int x, int y, int button, int delta,int mod) {
         ginputp_mouseWheel(x,y,button,delta,mod);
     }
+	void gdr_mouseEnter(int x, int y, int buttons, int mod)
+	{
+		ginputp_mouseEnter(x, y, buttons, mod);
+	}
+	void gdr_mouseLeave(int x, int y, int mod)
+	{
+		ginputp_mouseLeave(x, y, mod);
+	}
 #endif
 
 void gdr_keyDown(int keyCode, int repeat)

@@ -210,6 +210,8 @@ DirectXPage::DirectXPage():
 		m_coreInput->PointerMoved += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerMoved);
 		m_coreInput->PointerReleased += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerReleased);
 		m_coreInput->PointerWheelChanged += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnWheelChanged);
+		m_coreInput->PointerEntered += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerEntered);
+		m_coreInput->PointerExited += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerExited);
 		// Calculate the updated frame and render once per vertical blanking interval.
 		while (action->Status == AsyncStatus::Started)
 		{
@@ -330,14 +332,13 @@ void DirectXPage::OnPointerPressed(Object ^sender, PointerEventArgs^ Args)
 	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
 		gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
-	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1,m);
-	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2,m);
-	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4,m);
-	else
-		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0,m);
+	else {
+		int b = 0;
+		if (Args->CurrentPoint->Properties->IsLeftButtonPressed) b |= 1;
+		if (Args->CurrentPoint->Properties->IsRightButtonPressed) b |= 2;
+		if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed) b |= 4;
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, b, m);
+	}
 }
 
 void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ Args)
@@ -345,13 +346,29 @@ void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ Args)
 	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->IsInContact) {
 		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
-			gdr_touchMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
+			gdr_touchMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId, m);
 		else
-			gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y,m);
+			gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, m);
 	}
 	else {
-		gdr_mouseHover(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y,m);
+		gdr_mouseHover(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, m);
 	}
+}
+
+void DirectXPage::OnPointerEntered(Object^ sender, PointerEventArgs^ Args)
+{
+	int m = getModifiers(Args->KeyModifiers);
+	int b = 0;
+	if (Args->CurrentPoint->Properties->IsLeftButtonPressed) b |= 1;
+	if (Args->CurrentPoint->Properties->IsRightButtonPressed) b |= 2;
+	if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed) b |= 4;
+	gdr_mouseEnter(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, b, m);
+}
+
+void DirectXPage::OnPointerExited(Object^ sender, PointerEventArgs^ Args)
+{
+	int m = getModifiers(Args->KeyModifiers);
+	gdr_mouseLeave(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, m);
 }
 
 void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ Args)
@@ -359,14 +376,13 @@ void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ Args)
 	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
 		gdr_touchEnd(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
-	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1, m);
-	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2, m);
-	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4, m);
-	else
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0, m);
+	else {
+		int b = 0;
+		if (Args->CurrentPoint->Properties->IsLeftButtonPressed) b |= 1;
+		if (Args->CurrentPoint->Properties->IsRightButtonPressed) b |= 2;
+		if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed) b |= 4;
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, b, m);
+	}
 }
 
 void DirectXPage::OnPointerLost(Object^ sender, PointerEventArgs^ Args)
@@ -374,14 +390,13 @@ void DirectXPage::OnPointerLost(Object^ sender, PointerEventArgs^ Args)
 	int m = getModifiers(Args->KeyModifiers);
 	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
 		gdr_touchCancel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId,m);
-	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1,m);
-	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2,m);
-	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4,m);
-	else
-		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0,m);
+	else {
+		int b = 0;
+		if (Args->CurrentPoint->Properties->IsLeftButtonPressed) b |= 1;
+		if (Args->CurrentPoint->Properties->IsRightButtonPressed) b |= 2;
+		if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed) b |= 4;
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, b, m);
+	}
 }
 
 void DirectXPage::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ Args)

@@ -30,6 +30,8 @@ extern "C" {
 	void gdr_mouseHover(int x, int y, int mod);
 	void gdr_mouseUp(int x, int y, int button, int mod);
 	void gdr_mouseWheel(int x, int y, int delta, int mod);
+	void gdr_mouseEnter(int x, int y, int buttons, int mod);
+	void gdr_mouseLeave(int x, int y, int mod);
 	void gdr_touchBegin(int x, int y, int id, int mod);
 	void gdr_touchMove(int x, int y, int id, int mod);
 	void gdr_touchEnd(int x, int y, int id, int mod);

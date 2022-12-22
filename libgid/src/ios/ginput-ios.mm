@@ -889,6 +889,21 @@ public:
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_WHEEL_EVENT, mouseEvent, 0, this);
         deleteMouseEvent(mouseEvent);
     }
+
+    void mouseEnter(int x, int y, int buttons,int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons, mod);
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_ENTER_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
+    void mouseLeave(int x, int y, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x,y,0,mod);
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_LEAVE_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
 private:
     std::vector<UITouch*> touches_;
 	std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool1_;
@@ -1222,6 +1237,18 @@ void ginputp_keyChar(const char *keyChar)
     {
         if (s_manager)
             s_manager->mouseWheel(x, y, buttons,delta, mod);
+    }
+
+    void ginputp_mouseEnter(int x, int y, int buttons, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseEnter(x, y, buttons, mod);
+    }
+
+    void ginputp_mouseLeave(int x, int y, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseLeave(x,y,mod);
     }
 
 void ginput_setMouseToTouchEnabled(int enabled)

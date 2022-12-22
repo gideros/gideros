@@ -418,6 +418,24 @@ void Application::mouseWheel(int x, int y, int wheel, int modifiers) {
 			logicalTranslateY_, wheel);
 }
 
+void Application::mouseEnter(int x, int y, int buttons, int modifiers)
+{
+    correctTouchPositionHardware(&x, &y);
+    correctTouchPosition(&x, &y);
+    correctTouchPositionLogical(&x, &y);
+    stage_->mouseEnter(x, y, buttons, modifiers, logicalScaleX_, logicalScaleY_, logicalTranslateX_,
+            logicalTranslateY_);
+}
+
+void Application::mouseLeave(int x, int y, int modifiers)
+{
+    correctTouchPositionHardware(&x, &y);
+    correctTouchPosition(&x, &y);
+    correctTouchPositionLogical(&x, &y);
+    stage_->mouseLeave(x, y, modifiers, logicalScaleX_, logicalScaleY_, logicalTranslateX_,
+            logicalTranslateY_);
+}
+
 void Application::keyDown(int keyCode, int realCode,int modifiers) {
 	stage_->keyDown(keyCode, realCode, modifiers);
 }

@@ -348,6 +348,20 @@ public:
         deleteMouseEvent(mouseEvent);
     }
 
+    void mouseEnter(int x, int y, int buttons,int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons, mod);
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_ENTER_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
+    void mouseLeave(int x, int y, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x,y,0,mod);
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_LEAVE_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
 	void touchBegin(int x, int y, int id, int mod)
 	{
 		ginput_TouchEvent *touchEvent = newTouchEvent(m_pointerIds.size());
@@ -868,6 +882,18 @@ void ginputp_mouseWheel(int x, int y, int buttons, int delta, int mod)
 {
     if (s_manager)
         s_manager->mouseWheel(x, y, buttons,delta, mod);
+}
+
+void ginputp_mouseEnter(int x, int y, int buttons, int mod)
+{
+    if (s_manager)
+        s_manager->mouseEnter(x, y, buttons, mod);
+}
+
+void ginputp_mouseLeave(int x, int y, int mod)
+{
+    if (s_manager)
+        s_manager->mouseLeave(x,y,mod);
 }
 
 void ginputp_touchBegin(int x, int y, int id, int mod){

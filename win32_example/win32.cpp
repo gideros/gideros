@@ -485,6 +485,7 @@ void render()
     ScreenManager::manager->tick();
 }
 
+static bool mouseEntered=false;
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
   static RECT clientRect,winRect;
@@ -587,10 +588,32 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  if (wParam&MK_LBUTTON) b|=1;
 	  if (wParam&MK_RBUTTON) b|=2;
 	  if (wParam&MK_MBUTTON) b|=4;
+	  if (!mouseEntered)
+	  {
+		  TRACKMOUSEEVENT lpEventTrack;
+
+		  lpEventTrack.cbSize = sizeof( TRACKMOUSEEVENT );
+		  lpEventTrack.dwFlags = TME_LEAVE;
+		  lpEventTrack.dwHoverTime = 1;
+		  lpEventTrack.hwndTrack = hwnd;
+
+		  mouseEntered=true;
+		  TrackMouseEvent(&lpEventTrack);
+		  ginputp_mouseEnter(LOWORD(lParam), HIWORD(lParam),b,m);
+	  }
 	  if (b)
 		  ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam),b,m);
 	  else
 		  ginputp_mouseHover(LOWORD(lParam), HIWORD(lParam),b,m);
+    return 0;
+  }
+  else if (iMsg==WM_MOUSLEAVE){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+      ginputp_mouseLeave(0,0,m);
+      mouseEntered=false;
     return 0;
   }
   else if (iMsg==WM_MOUSEWHEEL){

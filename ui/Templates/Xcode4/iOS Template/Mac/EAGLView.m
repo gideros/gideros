@@ -45,6 +45,9 @@ extern void metalShaderNewFrame(void);
     modifiers=0;
     
     [self setAcceptsTouchEvents:TRUE];
+    //by using [self bounds] we get our internal origin (0, 0)
+    NSTrackingArea* trackingArea = [[NSTrackingArea alloc] initWithRect:[self bounds] options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways) owner:self userInfo:nil];
+    [self addTrackingArea:trackingArea];
     
     return self;
 }
@@ -254,6 +257,22 @@ int keyMods(NSEventModifierFlags mod) {
     NSPoint event_location = event.locationInWindow;
     NSPoint local_point = [self convertPoint:event_location fromView:nil];
     gdr_mouseMove(local_point.x, local_point.y, mouseButton(event.buttonNumber), keyMods(event.modifierFlags));
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+    if (event.window==nil) return;
+    NSPoint event_location = event.locationInWindow;
+    NSPoint local_point = [self convertPoint:event_location fromView:nil];
+    gdr_mouseEnter(local_point.x, local_point.y, mouseButton(event.buttonNumber), keyMods(event.modifierFlags));
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+    if (event.window==nil) return;
+    NSPoint event_location = event.locationInWindow;
+    NSPoint local_point = [self convertPoint:event_location fromView:nil];
+    gdr_mouseLeave(local_point.x, local_point.y, keyMods(event.modifierFlags));
 }
 
 - (void)scrollWheel:(NSEvent *)event

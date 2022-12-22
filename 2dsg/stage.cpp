@@ -52,6 +52,21 @@ void Stage::mouseWheel(int x, int y, int modifiers, float sx, float sy, float tx
     dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
 }
 
+void Stage::mouseEnter(int x, int y, int buttons, int modifiers, float sx, float sy, float tx, float ty)
+{
+    MouseEvent event(MouseEvent::MOUSE_ENTER, x, y, sx, sy, tx, ty);
+    event.button = buttons;
+    event.modifiers = modifiers;
+    dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
+}
+
+void Stage::mouseLeave(int x, int y, int modifiers, float sx, float sy, float tx, float ty)
+{
+    MouseEvent event(MouseEvent::MOUSE_LEAVE, x, y, sx, sy, tx, ty);
+    event.modifiers = modifiers;
+    dispatchToSpritesWithListeners(&event,SPRITE_EVENTMASK_MOUSE);
+}
+
 template<class T> class faststack {
     std::stack<T *> s;
 public:
@@ -195,6 +210,8 @@ void Stage::populateSpritesWithListeners()
             sprite->hasEventListener(MouseEvent::MOUSE_UP)       ||
             sprite->hasEventListener(MouseEvent::MOUSE_WHEEL)    ||
             sprite->hasEventListener(MouseEvent::MOUSE_HOVER)    ||
+            sprite->hasEventListener(MouseEvent::MOUSE_ENTER)    ||
+            sprite->hasEventListener(MouseEvent::MOUSE_LEAVE)    ||
             sprite->hasEventListener(TouchEvent::TOUCHES_BEGIN)  ||
             sprite->hasEventListener(TouchEvent::TOUCHES_MOVE)   ||
             sprite->hasEventListener(TouchEvent::TOUCHES_END)    ||

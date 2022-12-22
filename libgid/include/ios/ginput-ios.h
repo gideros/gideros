@@ -25,6 +25,8 @@ G_API void ginputp_mouseMove(int x, int y, int button,int mod);
 G_API void ginputp_mouseHover(int x, int y, int button,int mod);
 G_API void ginputp_mouseUp(int x, int y, int button,int mod);
 G_API void ginputp_mouseWheel(int x, int y, int button, int delta,int mod);
+G_API void ginputp_mouseEnter(int x, int y, int buttons, int mod);
+G_API void ginputp_mouseLeave(int x, int y, int mod);
 
 #ifdef __cplusplus
 }
