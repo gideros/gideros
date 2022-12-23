@@ -53,6 +53,7 @@ local GFUNC_MAP={
 	["dFdx"]={type="func", value="dFdx", rtype="1", acount=1},
 	["dFdy"]={type="func", value="dFdy", rtype="1", acount=1},
 	["inversesqrt"]={type="func", value="inversesqrt", rtype="1", acount=1},
+	["sqrt"]={type="func", value="sqrt", rtype="1", acount=1},
 	["max"]={type="func", value="max", rtype="1", acount=2},
 	["min"]={type="func", value="min", rtype="1", acount=2},
 	["pow"]={type="func", value="pow", rtype="1", acount=2},
@@ -145,7 +146,7 @@ local function genFunction(fg,gmap,tmap,omap,ophandler)
 	oh.RETURN=GEN_RETURN
 	local ff=gmap[fg.name]._fcode
 	local fccode=gmap[fg.name].fccode
-	assert(ff or fccode,"Function "..fg.name.." not defined")
+	assert(ff or fccode,"Function "..fg.name.." defined in additional funcs table, but not in code")
 	if ff or fccode then
 		if fg.rtype then _code=_code..tmap[fg.rtype]
 		else _code=_code.."void"
@@ -569,10 +570,10 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 		return ("_tex_%s.SampleCmp(_smp_%s, (%s).xy,((%s).z-0.5)*2.0)"):format(tex.value,tex.value,sp.value,sp.value)
 	end, rtype="hF4"}
 	gmap["mix"]={type="func", value="lerp", rtype="1", acount=3}
-	gmap["atan2"]={type="func", value="atan2", 
+	--[[gmap["atan2"]={type="func", value="atan2", 
 		evaluate=function (ff,fn,y,x)
 			return ("atan2(%s,%s)"):format(x.value,y.value)
-		end,rtype="1", acount=2}
+		end,rtype="1", acount=2}]]
 	gmap["fract"]={type="func", value="frac", rtype="1", acount=1}
 	gmap["dFdx"]={type="func", value="ddx", rtype="1", acount=1}
 	gmap["dFdy"]={type="func", value="ddy", rtype="1", acount=1}

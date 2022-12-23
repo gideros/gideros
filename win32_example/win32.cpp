@@ -607,7 +607,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		  ginputp_mouseHover(LOWORD(lParam), HIWORD(lParam),b,m);
     return 0;
   }
-  else if (iMsg==WM_MOUSLEAVE){
+  else if (iMsg==WM_MOUSELEAVE){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
