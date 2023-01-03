@@ -174,10 +174,8 @@ static NSUInteger lfbw=0,lfbh=0;
     
     // The framebuffer will be re-created at the beginning of the next setFramebuffer method call.
     CGSize drawableSize = self.bounds.size;
-    /*
     drawableSize.width *= self.contentScaleFactor;
     drawableSize.height *= self.contentScaleFactor;
-     */
     metalLayer.drawableSize = drawableSize;
     framebufferDirty=TRUE;
 }
@@ -187,30 +185,26 @@ static NSUInteger lfbw=0,lfbh=0;
     *sa=safeArea;
 }
 
-- (void)enableRetinaDisplay:(BOOL)enable
-{/*
-	if (retinaDisplay == enable)
-		return;
-	
-	if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] == NO)
-		return;
-	
-	if ([self respondsToSelector:@selector(contentScaleFactor)] == NO)
-		return;
-	
-	retinaDisplay = enable;
-	
-	if (retinaDisplay)
-		self.contentScaleFactor = [UIScreen mainScreen].scale;
-	else 
-		self.contentScaleFactor = 1;
-	
+- (void)enableRetinaDisplay:(BOOL)enable scalePtr:(float *)scale
+{
+    enable=TRUE;
+    if (retinaDisplay == enable)
+        return;
+
+    retinaDisplay = enable;
+    
+    if (retinaDisplay)
+        self.contentScaleFactor = self.window.backingScaleFactor;
+    else
+        self.contentScaleFactor = 1;
+    
     // The framebuffer will be re-created (with the new resolution) at the beginning of the next setFramebuffer method call.
     CGSize drawableSize = self.bounds.size;
     drawableSize.width *= self.contentScaleFactor;
     drawableSize.height *= self.contentScaleFactor;
-    metalLayer.drawableSize = drawableSize;*/
+    metalLayer.drawableSize = drawableSize;
     framebufferDirty=TRUE;
+    *scale=self.contentScaleFactor;
 }
 
 int mouseButton(NSInteger bn) {
@@ -280,7 +274,7 @@ int keyMods(NSEventModifierFlags mod) {
     if (event.window==nil) return;
     NSPoint event_location = event.locationInWindow;
     NSPoint local_point = [self convertPoint:event_location fromView:nil];
-    gdr_mouseWheel(local_point.x, local_point.y, mouseButton(event.buttonNumber),event.scrollingDeltaY, keyMods(event.modifierFlags));
+    gdr_mouseWheel(local_point.x, local_point.y, mouseButton(event.buttonNumber),event.scrollingDeltaY*120, keyMods(event.modifierFlags));
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(NSEvent *)event

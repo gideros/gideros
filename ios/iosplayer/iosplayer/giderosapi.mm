@@ -327,6 +327,8 @@ public:
     UIView *view_;
 };
 
+float gdr_ScaleFactor=1;
+
 
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
@@ -1141,12 +1143,15 @@ void ApplicationManager::loadProperties()
 	bool notRetina = (properties_.retinaDisplay == 0) || (properties_.retinaDisplay == 1 && !phone) || (properties_.retinaDisplay == 2 && phone);
 	
 	float contentScaleFactor = 1;
-	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
 #if !TARGET_OS_OSX
-	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
-		contentScaleFactor = view_.contentScaleFactor;
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES)];
+    if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
+        contentScaleFactor = view_.contentScaleFactor;
+#else
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES) scalePtr:&contentScaleFactor];
 #endif
 	scaleFactor_=contentScaleFactor;
+    gdr_ScaleFactor=contentScaleFactor;
     application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1237,12 +1242,15 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	bool notRetina = (properties_.retinaDisplay == 0) || (properties_.retinaDisplay == 1 && !phone) || (properties_.retinaDisplay == 2 && phone);
 	
 	float contentScaleFactor = 1;
-	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
 #if !TARGET_OS_OSX
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES)];
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
+#else
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES) scalePtr:&contentScaleFactor];
 #endif
 	scaleFactor_=contentScaleFactor;
+    gdr_ScaleFactor=contentScaleFactor;
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);

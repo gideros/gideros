@@ -24,11 +24,14 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
     CGRect safeArea;
     id<MTLTexture> metalDepth;
     NSEventModifierFlags modifiers;
+    CGFloat contentScaleFator;
 }
+
+@property (nonatomic) CGFloat contentScaleFactor;
 
 - (void)setFramebuffer;
 - (BOOL)presentFramebuffer;
-- (void)enableRetinaDisplay:(BOOL)enable;
+- (void)enableRetinaDisplay:(BOOL)enable scalePtr:(float *)scale;
 - (void) setup;
 - (void) tearDown;
 -(void) resized;
