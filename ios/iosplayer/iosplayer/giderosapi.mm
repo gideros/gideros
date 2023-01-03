@@ -1747,11 +1747,41 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 }
 
 int setClipboard(std::string data,std::string mimeType, int luaFunc) {
+#if TARGET_OS_OSX
+    NSPasteboard *pb=[NSPasteboard generalPasteboard];
+    if (mimeType=="text/plain") {
+        [pb clearContents];
+        [pb declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:nil];
+        [pb setString:[NSString stringWithUTF8String:data.c_str()] forType:NSPasteboardTypeString];
+        return 1;
+    }
+#elif !TARGET_OS_TV
+    UIPasteboard *pb=[UIPasteboard generalPasteboard];
+    if (mimeType=="text/plain") {
+        pb.string=[NSString stringWithUTF8String:data.c_str()];
+        return 1;
+    }
+#endif
 	return -1;
 }
 
 int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
-	return -1;
+#if TARGET_OS_OSX
+    NSString *s=[[NSPasteboard generalPasteboard] stringForType:NSPasteboardTypeString];
+    if (s!=nil) {
+        data=[s UTF8String];
+        mimeType="text/plain";
+        return 1;
+    }
+#elif !TARGET_OS_TV
+    NSString *s=[UIPasteboard generalPasteboard].string;
+    if (s!=nil) {
+        data=[s UTF8String];
+        mimeType="text/plain";
+        return 1;
+    }
+#endif
+    return -1;
 }
 
 int getKeyboardModifiers() {
