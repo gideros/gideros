@@ -110,11 +110,44 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 }
 
 int setClipboard(std::string data,std::string mimeType, int luaFunc) {
-	return -1;
+	JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jstring jdata = env->NewStringUTF(data.c_str());
+	jstring jmime = env->NewStringUTF(mimeType.c_str());
+	jmethodID setClipboardID = env->GetStaticMethodID(localRefCls, "setClipboard", "(Ljava/lang/String;Ljava/lang/String;)Z");
+	jboolean ret=env->CallStaticBooleanMethod(localRefCls, setClipboardID, jdata, jmime);
+	env->DeleteLocalRef(jmime);
+	env->DeleteLocalRef(jdata);
+	env->DeleteLocalRef(localRefCls);
+	return ret?1:-1;
 }
 
 int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
-	return -1;
+	JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jstring jmime = env->NewStringUTF(mimeType.c_str());
+	jmethodID getClipboardID = env->GetStaticMethodID(localRefCls, "getClipboard", "(Ljava/lang/String;)[Ljava/lang/String;");
+	jobjectArray sArray =(jobjectArray)env->CallStaticObjectMethod(localRefCls, getClipboardID, jmime);
+	if (sArray) {
+		jstring jodata = (jstring)env->GetObjectArrayElement(sArray, 0);
+		jstring jomime = (jstring)env->GetObjectArrayElement(sArray, 1);
+		const char *sodata=env->GetStringUTFChars(jodata, NULL);
+		data=sodata;
+		env->ReleaseStringUTFChars(jodata, sodata);
+		env->DeleteLocalRef(jodata);
+		const char *somime=env->GetStringUTFChars(jomime, NULL);
+		mimeType=somime;
+		env->ReleaseStringUTFChars(jomime, somime);
+		env->DeleteLocalRef(jomime);
+
+		env->DeleteLocalRef(sArray);
+	}
+
+	env->DeleteLocalRef(jmime);
+	env->DeleteLocalRef(localRefCls);
+	return sArray?1:-1;
 }
 
 int getKeyboardModifiers() {
