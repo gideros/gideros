@@ -104,7 +104,7 @@ static size_t utf8_offset(const char *text,int cp) {
 }
 
 #define ESC	27
-void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
+void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy,int &cline)
 {
 	if (ri>text_.size()) ri=text_.size();
 	size_t lc;
@@ -138,6 +138,7 @@ void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
 			 */
 			cx=advX+c.dx;
 			cy=c.dy;
+			cline=c.line;
 			return;
 		}
 	}
@@ -145,10 +146,12 @@ void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy)
 		FontBase::ChunkLayout &c=textlayout_.parts[lc];
 		cx=c.dx+c.advX;
 		cy=c.dy;
+		cline=c.line;
 		return;
 	}
 	cx=0;
 	cy=getFont()->getAscender();
+	cline=0;
 }
 
 size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)

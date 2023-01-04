@@ -240,6 +240,7 @@ public:
 	}
 	void setMatrix(float m11,float m12,float m21,float m22,float tx,float ty);
 	void setMatrix(const float *m);
+    static void quaternionToEuler(float w,float x,float y,float z,float &rx,float &ry,float &rz);
 private:
 	Matrix4 matrix_;
 

@@ -38,6 +38,10 @@ public:
     void keyUp(int keyCode, int realCode, int modifiers);
     void keyChar(const char *code);
 
+    void validateLayout();
+    void validateEffects();
+
+
     Application* application() const
     {
         return application_;

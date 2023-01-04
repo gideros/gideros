@@ -5,6 +5,7 @@
 #include "platform.h"
 
 #include "application.h"
+#include "stage.h"
 
 #include "luautil.h"
 #include "stackchecker.h"
@@ -1140,8 +1141,8 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
     if (!recursed) { //If we're not looking up a reference
         int klen=strlen(key);
         if (((*key)=='|')||((klen>3)&&((key[klen-4]=='.')&&(
-                                           ((key[klen-3]=='p')&&(key[klen-3]=='n')&&(key[klen-3]=='g'))||
-                                           ((key[klen-3]=='j')&&(key[klen-3]=='p')&&(key[klen-3]=='g'))
+                                           ((key[klen-3]=='p')&&(key[klen-2]=='n')&&(key[klen-1]=='g'))||
+                                           ((key[klen-3]=='j')&&(key[klen-2]=='p')&&(key[klen-1]=='g'))
                                            ))))
         {
             //File, return as is
@@ -1689,6 +1690,49 @@ static int tick(lua_State *L)
     return 0;
 }
 
+static int updateStyles(lua_State *L) {
+    LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    luaApplication->resetStyleCache();
+
+    /* perform style updating */
+    lua_getglobal(L,"application");
+    int npop=1;
+    if (!lua_isnil(L,-1))
+    {
+        lua_getfield(L,-1,"__styleUpdates");
+        npop++;
+        if (!lua_isnil(L,-1))
+        {
+            lua_pushnil(L);
+            lua_setfield(L,-3,"__styleUpdates");
+            lua_pushnil(L);
+            while (lua_next(L,-2)) {
+                lua_pop(L,1); //No need for sprite itself
+                lua_getfield(L,-1,"updateStyle");
+                lua_pushvalue(L,-2);
+                lua_call(L,1,0);
+            }
+        }
+    }
+    lua_pop(L,npop);
+    return 0;
+}
+
+static int updateLayout(lua_State *L) {
+    LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application *application = luaApplication->getApplication();
+    application->stage()->validateLayout();
+    return 0;
+}
+
+static int updateEffects(lua_State *L) {
+    LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application *application = luaApplication->getApplication();
+    application->stage()->validateEffects();
+    return 0;
+}
+
+bool LuaApplication::hasStyleUpdate=false;
 static int enterFrame(lua_State* L)
 {
     StackChecker checker(L, "enterFrame", 0);
@@ -1711,31 +1755,24 @@ static int enterFrame(lua_State* L)
 
     application->enterFrame();
 
-    luaApplication->resetStyleCache();
 
-    /* perform style updating */
-    lua_getglobal(L,"application");
-    int npop=1;
-    if (!lua_isnil(L,-1))
-    {
-		lua_getfield(L,-1,"__styleUpdates");
-		npop++;
-		if (!lua_isnil(L,-1))
-		{
-			lua_pushnil(L);
-			lua_setfield(L,-3,"__styleUpdates");
-			lua_pushnil(L);
-			while (lua_next(L,-2)) {
-				lua_pop(L,1); //No need for sprite itself
-				lua_getfield(L,-1,"updateStyle");
-				lua_pushvalue(L,-2);
-				lua_call(L,1,0);
-			}
-		}
+    if (LuaApplication::hasStyleUpdate) {
+        LuaApplication::hasStyleUpdate=false;
+        lua_pushcnfunction(L,updateStyles,"gideros_updateStyles");
+        lua_call(L,0,0);
     }
-    lua_pop(L,npop);
 
-	return 0;
+    if (application->stage()->needLayout) {
+        lua_pushcnfunction(L,updateLayout,"gideros_updateLayout");
+        lua_call(L,0,0);
+    }
+
+    if (application->stage()->spriteWithEffectCount) {
+        lua_pushcnfunction(L,updateEffects,"gideros_updateEffects");
+        lua_call(L,0,0);
+    }
+
+    return 0;
 }
 
 void LuaApplication::tick(GStatus *status)

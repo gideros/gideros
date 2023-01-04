@@ -410,10 +410,12 @@ int TextFieldBinder::getPointFromTextPosition(lua_State *L)
     Binder binder(L);
     TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
     float cx=0,cy=0;
-	textField->getPointFromTextPos((size_t)luaL_checkinteger(L,2),cx,cy);
+    int cl;
+	textField->getPointFromTextPos((size_t)luaL_checkinteger(L,2),cx,cy,cl);
 	lua_pushnumber(L,cx);
 	lua_pushnumber(L,cy);
-	return 2;
+	lua_pushnumber(L,cl);
+	return 3;
 }
 
 int TextFieldBinder::getTextPositionFromPoint(lua_State *L)

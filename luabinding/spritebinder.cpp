@@ -2315,6 +2315,7 @@ int SpriteBinder::setStyle(lua_State* L)
 			gatherStyledChildren(L,1,-1);
     }
     lua_pop(L,npop);
+    LuaApplication::hasStyleUpdate=true;
     return 0;
 }
 

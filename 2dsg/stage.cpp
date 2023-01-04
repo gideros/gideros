@@ -141,10 +141,14 @@ void Stage::enterFrame(int deltaFrameCount, double lastFrameRenderTime)
 	}
 
     application_->deleteAutounrefPool(pool);
+}
 
+void Stage::validateLayout() {
     if (needLayout)
         computeLayout(this);
+}
 
+void Stage::validateEffects() {
     if (true)
         updateAllEffects();
 }

@@ -527,6 +527,7 @@ public:
     GridBagConstraints *layoutConstraints;
     GridBagLayout *layoutState;
     int spriteWithLayoutCount;
+    int spriteWithEffectCount;
 
 protected:
     void layoutSizesChanged();

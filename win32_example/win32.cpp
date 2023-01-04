@@ -479,9 +479,10 @@ void render()
 		s_applicationManager->surfaceChanged(glWidth,glHeight,glWidth>glHeight?90:0);
 		glChanged=false;
 	}
-    s_applicationManager->drawFrame();
-    SwapBuffers(hDC);
-    wglMakeCurrent(NULL,NULL);
+    if (s_applicationManager->drawFrame()) {
+        SwapBuffers(hDC);
+        wglMakeCurrent(NULL,NULL);
+    }
     ScreenManager::manager->tick();
 }
 

@@ -71,7 +71,8 @@ void gapplication_luaCallback(int luaFuncRef,void *data,gapplication_LuaArgPushe
 class LuaApplication : public LuaApplicationBase
 {
 public:
-	LuaApplication(void);
+    static bool hasStyleUpdate;
+    LuaApplication(void);
 	~LuaApplication(void);
 
 	void enableExceptions();
