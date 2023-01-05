@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+ <properties win_org="GiderosMobile" app_icon="" logicalWidth="320" app_name="" html5_pwa="1" version="1.0" winrt_package="com.yourdomain.yourapp" backgroundColor="#ffffff" mouseTouchOrder="0" mainluaOnly="0" osx_bundle="com.yourdomain." osx_domain="giderosmobile.com" html5_symbols="1" scaleMode="0" ios_bundle="com.yourdomain." html5_crash="" architecture="7" html5_fbload="100" touchToMouse="1" iosDevice="0" splash_h_image="" version_code="1" logicalHeight="480" osx_category="5" html5_pack="1" retinaDisplay="3" splash_v_image="" build_number="1" encryptCode="0" splashScaleMode="0" vsync="0" osx_signingId="" tv_icon="" html5_host="" winrt_org="GiderosMobile" html5_mem="256" windowWidth="1024" orientation="0" atv_bundle="com.yourdomain.yourapp-atv" macos_category="5" win_domain="giderosmobile.com" fps="60" html5_fbinstant="0" osx_installerId="" html5_wasm="0" macos_bundle="com.yourdomain.yourapp-macos" disableSplash="0" mouseToTouch="1" autorotation="0" windowHeight="768" exportMode="2" osx_org="GiderosMobile" encryptAssets="0">
+  <imageScales/>
+  <plugins>
+   <plugin enabled="1" name="JSON"/>
+   <plugin enabled="1" name="LuaFileSystem"/>
+  </plugins>
+  <exports>
+   <export name="APK">
+    <property value="" name="androidPath"/>
+    <property value="" name="androidSdk"/>
+    <property value="26" name="androidTarget"/>
+    <property value="" name="androidTools"/>
+    <property value="1" name="buildAab"/>
+    <property value="0" name="buildApk"/>
+    <property value="0" name="deployApk"/>
+    <property value="" name="javaPath"/>
+    <property value="" name="keyAlias"/>
+    <property value="" name="keyStore"/>
+    <property value="com.yourdomain.yourapp" name="packageName"/>
+    <property value="0" name="timestampApk"/>
+   </export>
+  </exports>
+ </properties>
+ <folder path="../../Library/3dbase" name="3D">
+  <file name="../../Library/3dbase/3DAnimation.lua"/>
+  <file name="../../Library/3dbase/3DGdxLoader.lua"/>
+  <file name="../../Library/3dbase/3DLighting.lua"/>
+  <file name="../../Library/3dbase/3DObjLoader.lua"/>
+  <file name="../../Library/3dbase/3DShaders.lua"/>
+  <file name="../../Library/3dbase/3DShapes.lua"/>
+  <file name="../../Library/3dbase/3DView.lua"/>
+  <file name="../../Library/3dbase/G3DFormat.lua"/>
+  <file name="../../Library/3dbase/gltf.lua"/>
+  <file name="../../Library/3dbase/loadgscn.lua"/>
+ </folder>
+ <folder name="aui">
+  <folder name="icons">
+   <file name="assets/aui/icons/content-save-edit.png"/>
+   <file name="assets/aui/icons/content-save.png"/>
+   <file name="assets/aui/icons/export.png"/>
+   <file name="assets/aui/icons/file-cabinet.png"/>
+   <file name="assets/aui/icons/file-plus.png"/>
+   <file name="assets/aui/icons/file.png"/>
+  </folder>
+  <file name="assets/aui/as_shelf.lua"/>
+  <file name="assets/aui/aui_main.lua"/>
+  <file name="assets/aui/aui_proplist.lua"/>
+  <file name="assets/aui/aui_styles.lua"/>
+  <file name="assets/aui/aui_tree.lua"/>
+  <file name="assets/aui/editor.lua"/>
+ </folder>
+ <folder path="../../Library/luashader" name="luashader">
+  <file name="../../Library/luashader/effects.lua"/>
+  <file name="../../Library/luashader/luac_codegen.lua"/>
+  <file name="../../Library/luashader/luac_loader.lua"/>
+  <file name="../../Library/luashader/luashader.lua"/>
+  <file name="../../Library/luashader/luau_codegen.lua"/>
+  <file name="../../Library/luashader/stdluashaders.lua"/>
+ </folder>
+ <folder path="../../Library/ui" name="ui">
+  <folder name="icons">
+   <file name="../../Library/ui/icons/bdr-multi.png"/>
+   <file name="../../Library/ui/icons/checkbox-multi.png"/>
+   <file name="../../Library/ui/icons/checkbox.png"/>
+   <file name="../../Library/ui/icons/clock_arrows.png"/>
+   <file name="../../Library/ui/icons/clock_hand_h.png"/>
+   <file name="../../Library/ui/icons/clock_hand_m.png"/>
+   <file name="../../Library/ui/icons/clock_hand_s.png"/>
+   <file name="../../Library/ui/icons/eye.png"/>
+   <file name="../../Library/ui/icons/grey-button.png"/>
+   <file name="../../Library/ui/icons/grey-panel.png"/>
+   <file name="../../Library/ui/icons/ic_cal.png"/>
+   <file name="../../Library/ui/icons/ic_clock.png"/>
+   <file name="../../Library/ui/icons/ic_help.png"/>
+   <file name="../../Library/ui/icons/ic_ref.png"/>
+   <file name="../../Library/ui/icons/kbd_bs.png"/>
+   <file name="../../Library/ui/icons/kbd_capslock.png"/>
+   <file name="../../Library/ui/icons/kbd_check.png"/>
+   <file name="../../Library/ui/icons/kbd_hide.png"/>
+   <file name="../../Library/ui/icons/kbd_noshift.png"/>
+   <file name="../../Library/ui/icons/kbd_ocheck.png"/>
+   <file name="../../Library/ui/icons/kbd_return.png"/>
+   <file name="../../Library/ui/icons/kbd_shift.png"/>
+   <file name="../../Library/ui/icons/kbd_tab.png"/>
+   <file name="../../Library/ui/icons/knob-band-h.png"/>
+   <file name="../../Library/ui/icons/knob-band-v.png"/>
+   <file name="../../Library/ui/icons/knob-dots-h.png"/>
+   <file name="../../Library/ui/icons/knob-dots-v.png"/>
+   <file name="../../Library/ui/icons/label.png"/>
+   <file name="../../Library/ui/icons/minus.png"/>
+   <file name="../../Library/ui/icons/panel.png"/>
+   <file name="../../Library/ui/icons/plus.png"/>
+   <file name="../../Library/ui/icons/radio-multi.png"/>
+   <file name="../../Library/ui/icons/radio-sel.png"/>
+   <file name="../../Library/ui/icons/rdown.png"/>
+   <file name="../../Library/ui/icons/rnext.png"/>
+   <file name="../../Library/ui/icons/rprev.png"/>
+   <file name="../../Library/ui/icons/splitpane-bar-h.png"/>
+   <file name="../../Library/ui/icons/splitpane-bar-v.png"/>
+   <file name="../../Library/ui/icons/splitpane-h.png"/>
+   <file name="../../Library/ui/icons/splitpane-v.png"/>
+   <file name="../../Library/ui/icons/spot.png"/>
+   <file name="../../Library/ui/icons/sqbrd-multi.png"/>
+   <file name="../../Library/ui/icons/textfield-multi.png"/>
+   <file name="../../Library/ui/icons/tree-collapse.png"/>
+   <file name="../../Library/ui/icons/tree-end.png"/>
+   <file name="../../Library/ui/icons/tree-expand.png"/>
+   <file name="../../Library/ui/icons/tree-sub.png"/>
+   <file name="../../Library/ui/icons/tree-vert.png"/>
+  </folder>
+  <folder name="theme">
+   <file name="../../Library/ui/theme/pc_base.lua"/>
+  </folder>
+  <file name="../../Library/ui/uiaccordion.lua"/>
+  <file name="../../Library/ui/uianimate.lua"/>
+  <file name="../../Library/ui/uibar.lua"/>
+  <file name="../../Library/ui/uibehavior.lua"/>
+  <file name="../../Library/ui/uiborder.lua"/>
+  <file name="../../Library/ui/uibreadcrumbs.lua"/>
+  <file name="../../Library/ui/uibuilder.lua"/>
+  <file name="../../Library/ui/uibutton.lua"/>
+  <file name="../../Library/ui/uicalendar.lua"/>
+  <file name="../../Library/ui/uicheckbox.lua"/>
+  <file name="../../Library/ui/uicolor.lua"/>
+  <file name="../../Library/ui/uicombobox.lua"/>
+  <file name="../../Library/ui/uicontrol.lua"/>
+  <file name="../../Library/ui/uidesc.lua"/>
+  <file name="../../Library/ui/uidialog.lua"/>
+  <file name="../../Library/ui/uidnd.lua"/>
+  <file name="../../Library/ui/uievent.lua"/>
+  <file name="../../Library/ui/uifocus.lua"/>
+  <file name="../../Library/ui/uiimagetext.lua"/>
+  <file name="../../Library/ui/uiinit.lua"/>
+  <file name="../../Library/ui/uikeyboard.lua"/>
+  <file name="../../Library/ui/uilabel.lua"/>
+  <file name="../../Library/ui/uilayout.lua"/>
+  <file name="../../Library/ui/uilocale.lua"/>
+  <file name="../../Library/ui/uipanel.lua"/>
+  <file name="../../Library/ui/uiprogress.lua"/>
+  <file name="../../Library/ui/uiscrollbar.lua"/>
+  <file name="../../Library/ui/uiselection.lua"/>
+  <file name="../../Library/ui/uishaders.lua"/>
+  <file name="../../Library/ui/uislider.lua"/>
+  <file name="../../Library/ui/uispinner.lua"/>
+  <file name="../../Library/ui/uisplitpane.lua"/>
+  <file name="../../Library/ui/uistyle.lua"/>
+  <file name="../../Library/ui/uitable.lua"/>
+  <file name="../../Library/ui/uitextfield.lua"/>
+  <file name="../../Library/ui/uitheme.lua"/>
+  <file name="../../Library/ui/uitimepicker.lua"/>
+  <file name="../../Library/ui/uitoolbar.lua"/>
+  <file name="../../Library/ui/uitooltip.lua"/>
+  <file name="../../Library/ui/uitree.lua"/>
+  <file name="../../Library/ui/uiutils.lua"/>
+  <file name="../../Library/ui/uiweekschedule.lua"/>
+ </folder>
+ <file name="assets/OpenSans-Bold.ttf"/>
+ <file name="assets/files.lua"/>
+ <file name="assets/init.lua"/>
+ <file excludeFromExecution="1" name="assets/inspect.lua"/>
+ <file name="assets/library.lua"/>
+ <file name="assets/main.lua"/>
+ <file name="assets/matrix_maths.lua"/>
+</project>
