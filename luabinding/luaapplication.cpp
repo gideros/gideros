@@ -372,6 +372,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
     t.terminated=false;
     t.inError=false;
     T->profilerHook=L->profilerHook;
+    T->profileTableAllocs=L->profileTableAllocs;
     lua_xmove(L,T,nargs);
     taskLock.lock();
     LuaApplication::tasks_.push_back(t);
@@ -852,8 +853,10 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "profilerStop");
 	lua_pushcnfunction(L, LuaApplication::Core_profilerReset, "Core.profilerReset");
 	lua_setfield(L, -2, "profilerReset");
-	lua_pushcnfunction(L, LuaApplication::Core_profilerReport, "Core.profilerReport");
-	lua_setfield(L, -2, "profilerReport");
+    lua_pushcnfunction(L, LuaApplication::Core_profilerReport, "Core.profilerReport");
+    lua_setfield(L, -2, "profilerReport");
+    lua_pushcnfunction(L, LuaApplication::Core_enableAllocationTracking, "Core.enableAllocationTracking");
+    lua_setfield(L, -2, "enableAllocationTracking");
 	lua_pushcnfunction(L, LuaApplication::Core_random, "Core.random");
 	lua_setfield(L, -2, "random");
 	lua_pushcnfunction(L, LuaApplication::Core_randomSeed, "Core.randomSeed");
@@ -2590,6 +2593,20 @@ int LuaApplication::Core_profilerReset(lua_State *L)
 		delete it->second;
 	proFuncs.clear();
 	return 0;
+}
+
+int LuaApplication::Core_enableAllocationTracking(lua_State *L)
+{
+    lua_gc(L, LUA_GCCOLLECT, 0);
+    lua_gc(L, LUA_GCCOLLECT, 0);
+    bool en=lua_toboolean(L,1);
+    L->profileTableAllocs=en;
+    lua_getglobal(L,"__tableAllocationProfiler__");
+    if (!en) {
+        lua_pushnil(L);
+        lua_setglobal(L,"__tableAllocationProfiler__");
+    }
+    return 1;
 }
 
 int LuaApplication::Core_random(lua_State *L)
