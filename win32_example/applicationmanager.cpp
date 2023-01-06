@@ -651,7 +651,7 @@ ApplicationManager::ApplicationManager() {
 	}
 
 	static bool canvasShown = false;
-	void ApplicationManager::drawFrame() {
+	bool ApplicationManager::drawFrame() {
 		if (networkManager_)
 			networkManager_->tick();
 
@@ -708,9 +708,15 @@ ApplicationManager::ApplicationManager() {
 			gaudio_AdvanceStreamBuffers();
 		}
 
-		application_->clearBuffers();
-		application_->renderScene(1);
-		drawIPs();
+		bool doDraw = true;
+		if (!application_->onDemandDraw(doDraw))
+			doDraw = true;
+
+		if (doDraw) {
+			application_->clearBuffers();
+			application_->renderScene(1);
+			drawIPs();
+		}
 		/*
 		if ((!running_ || drawInfos_) && player_) {
 	//		glMatrixMode(GL_MODELVIEW);
@@ -739,6 +745,7 @@ ApplicationManager::ApplicationManager() {
 		if (!canvasShown) {
 			canvasShown = true;
 		}
+		return doDraw;
 	}
 
 	void ApplicationManager::loadProperties() {

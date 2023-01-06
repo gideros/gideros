@@ -106,7 +106,7 @@ public:
 #endif
 
 Sprite::Sprite(Application* application) :
-        spriteWithLayoutCount(0), application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0), drawCount_(0) {
+        spriteWithLayoutCount(0), spriteWithEffectCount(0), application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0), drawCount_(0) {
 	allSprites_.insert(this);
 
 //	graphicsBases_.push_back(GraphicsBase());
@@ -153,6 +153,7 @@ void Sprite::cloneFrom(Sprite *s) {
         *layoutState=*s->layoutState;
     }
     spriteWithLayoutCount=s->spriteWithLayoutCount;
+    spriteWithEffectCount=s->spriteWithEffectCount;
     isVisible_=s->isVisible_;
     localTransform_=s->localTransform_;
     worldTransform_=s->worldTransform_;
@@ -358,7 +359,7 @@ void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
 
 	Sprite *p=this;
 	while (p) {
-		p->spriteWithLayoutCount+=diff;
+        p->spriteWithEffectCount+=diff;
         p=p->parent();
 	}
 }
@@ -462,6 +463,7 @@ void Sprite::updateAllEffects() {
     while (true) {
         Sprite *sprite = stack.pop();
         if (sprite == nullptr) break;
+        if (sprite->spriteWithEffectCount==0) continue;
 
         if (sprite->isVisible_ == false) {
             continue;
@@ -816,7 +818,7 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 	if (sprite->parent_ == this) {
         auto it=std::find(children_.begin(), children_.end(), sprite);
         size_t cindex=it-children_.begin();
-        if (cindex!=index) {
+        if ((int)cindex!=index) {
             children_.erase(it);
             if (cindex<(size_t)index) index--;
             children_.insert(children_.begin() + index, sprite);
@@ -829,6 +831,20 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 	sprite->ref();		// guard
 
 	if (sprite->parent_) {
+        if (sprite->spriteWithLayoutCount) {
+            Sprite *p=sprite->parent_;
+            while (p) {
+                p->spriteWithLayoutCount-=sprite->spriteWithLayoutCount;
+                p=p->parent();
+            }
+        }
+        if (sprite->spriteWithEffectCount) {
+            Sprite *p=sprite->parent_;
+            while (p) {
+                p->spriteWithEffectCount-=sprite->spriteWithEffectCount;
+                p=p->parent();
+            }
+        }
 		SpriteVector& children = sprite->parent_->children_;
 		children.erase(std::find(children.begin(), children.end(), sprite));
 		sprite->unref();
@@ -852,8 +868,9 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 
 	Sprite *p=this;
 	while (p) {
-		p->spriteWithLayoutCount+=sprite->spriteWithLayoutCount;
-		p=p->parent();
+        p->spriteWithLayoutCount+=sprite->spriteWithLayoutCount;
+        p->spriteWithEffectCount+=sprite->spriteWithEffectCount;
+        p=p->parent();
 	}
 
 
@@ -1012,13 +1029,20 @@ void Sprite::removeChildAt(int index, GStatus* status) {
 
 	child->parent_ = 0;
 	children_.erase(children_.begin() + index);
-	if (child->spriteWithLayoutCount) {
-		Sprite *p=this;
-		while (p) {
-			p->spriteWithLayoutCount-=child->spriteWithLayoutCount;
-			p=p->parent();
-		}
-	}
+    if (child->spriteWithLayoutCount) {
+        Sprite *p=this;
+        while (p) {
+            p->spriteWithLayoutCount-=child->spriteWithLayoutCount;
+            p=p->parent();
+        }
+    }
+    if (child->spriteWithEffectCount) {
+        Sprite *p=this;
+        while (p) {
+            p->spriteWithEffectCount-=child->spriteWithEffectCount;
+            p=p->parent();
+        }
+    }
 
 	application_->autounref(child);
 
@@ -1283,8 +1307,10 @@ void Sprite::invalidate(int changes) {
 		while (true) {
 			Sprite *h=stack.pop();
 			if (h==nullptr) break;
-			h->changes_=(ChangeSet)(h->changes_|downchanges);
-			stack.push_all(h->children_.data(),h->children_.size());
+            if ((h->changes_&downchanges)!=downchanges) {
+                h->changes_=(ChangeSet)(h->changes_|downchanges);
+                stack.push_all(h->children_.data(),h->children_.size());
+            }
 		}
 	}
 

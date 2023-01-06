@@ -53,6 +53,8 @@ public:
     void mouseMove(int x, int y, int button, int modifiers, int type);
     void mouseHover(int x, int y, int button, int modifiers, int type);
 	void mouseWheel(int x, int y, int wheel, int modifiers);
+    void mouseEnter(int x, int y, int buttons, int modifiers);
+    void mouseLeave(int x, int y, int modifiers);
 
     void touchesBegin(ginput_TouchEvent *event);
     void touchesMove(ginput_TouchEvent *event);

@@ -42,7 +42,7 @@ public:
     virtual void getDimensions(float &w,float &h);
     void getMinimumSize(float &w,float &h,bool preferred);
     bool optimizeSize(float &w,float &h);
-    void getPointFromTextPos(size_t ri,float &cx,float &cy);
+    void getPointFromTextPos(size_t ri,float &cx,float &cy, int &cline);
     size_t getTextPosFromPoint(float &cx,float &cy);
 
 protected:
@@ -56,6 +56,7 @@ protected:
 public:
     std::string styCache_color;
     std::string styCache_font;
+    std::string styCache_text;
 };
 
 #endif

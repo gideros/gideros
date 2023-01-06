@@ -71,7 +71,7 @@ local function ShaderFilter(t,code)
 end
 
 Lighting._shaders={}
-Lighting.getShader=function(code)
+function Lighting.getShader(code)
 	local cmap={
 		{"t","TEXTURED",true},
 		{"c","COLORED",true},

@@ -278,7 +278,7 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
 					else
 					{
 						styles.styleFlags|=TEXTSTYLEFLAG_COLOR;
-						int param=strtol(val.c_str()+1,NULL,16);
+                        unsigned long param=strtoul(val.c_str()+1,NULL,16);
 						switch (val.size())
 						{
 							case 4:

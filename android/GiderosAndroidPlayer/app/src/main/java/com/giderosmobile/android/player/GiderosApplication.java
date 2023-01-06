@@ -24,6 +24,10 @@ import dalvik.system.DexClassLoader;
 import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.ClipData.Item;
+import android.content.ClipDescription;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -1350,6 +1354,35 @@ public class GiderosApplication
         }
 	}
 
+    static public boolean setClipboard(String data, String mime) {
+		final Activity activity = WeakActivityHolder.get();
+    	ClipboardManager clipboard = (ClipboardManager)
+    	        activity.getSystemService(Context.CLIPBOARD_SERVICE);
+    	if (mime.startsWith("text/")) {
+    		ClipData clip = ClipData.newPlainText(mime, data);
+    		clipboard.setPrimaryClip(clip);
+    		return true;
+    	}
+    	return false;
+    }
+
+    static public String[] getClipboard(String mime) {
+		final Activity activity = WeakActivityHolder.get();
+    	ClipboardManager clipboard = (ClipboardManager)
+    	        activity.getSystemService(Context.CLIPBOARD_SERVICE);
+    	if (clipboard.hasPrimaryClip()) {
+    	    ClipData clip = clipboard.getPrimaryClip();
+    	    if (clip.getDescription().hasMimeType(mime)) {
+    	    	if (mime.startsWith("text/")) {
+    	    		return new String[] {
+    	    				clip.getItemAt(0).coerceToText(activity).toString(), mime
+    	    		};
+    	    	}
+    	    }
+    	}
+    	return null;
+    }
+    
 	static public void openUrl(String url)
 	{
 		Uri uri=Uri.parse(url);

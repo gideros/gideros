@@ -30,7 +30,9 @@ public:
 	static Type MOUSE_DOWN;
 	static Type MOUSE_MOVE;
     static Type MOUSE_HOVER;
-	static Type MOUSE_WHEEL;
+    static Type MOUSE_WHEEL;
+    static Type MOUSE_ENTER;
+    static Type MOUSE_LEAVE;
 
 	virtual void apply(EventVisitor* v);
 };

@@ -5,6 +5,7 @@
 #include "platform.h"
 
 #include "application.h"
+#include "stage.h"
 
 #include "luautil.h"
 #include "stackchecker.h"
@@ -354,6 +355,7 @@ int LuaApplication::Core_yieldable(lua_State* L)
     return 4;
 }
 
+#include "lstate.h"
 int LuaApplication::Core_asyncCall(lua_State* L)
 {
 	LuaApplication::AsyncLuaTask t;
@@ -369,6 +371,8 @@ int LuaApplication::Core_asyncCall(lua_State* L)
     t.nargs=nargs-1;
     t.terminated=false;
     t.inError=false;
+    T->profilerHook=L->profilerHook;
+    T->profileTableAllocs=L->profileTableAllocs;
     lua_xmove(L,T,nargs);
     taskLock.lock();
     LuaApplication::tasks_.push_back(t);
@@ -849,8 +853,10 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "profilerStop");
 	lua_pushcnfunction(L, LuaApplication::Core_profilerReset, "Core.profilerReset");
 	lua_setfield(L, -2, "profilerReset");
-	lua_pushcnfunction(L, LuaApplication::Core_profilerReport, "Core.profilerReport");
-	lua_setfield(L, -2, "profilerReport");
+    lua_pushcnfunction(L, LuaApplication::Core_profilerReport, "Core.profilerReport");
+    lua_setfield(L, -2, "profilerReport");
+    lua_pushcnfunction(L, LuaApplication::Core_enableAllocationTracking, "Core.enableAllocationTracking");
+    lua_setfield(L, -2, "enableAllocationTracking");
 	lua_pushcnfunction(L, LuaApplication::Core_random, "Core.random");
 	lua_setfield(L, -2, "random");
 	lua_pushcnfunction(L, LuaApplication::Core_randomSeed, "Core.randomSeed");
@@ -923,6 +929,16 @@ void LuaApplication::callback(int type, void *event)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
         application_->mouseWheel(event2->x, event2->y, event2->wheel, event2->modifiers);
+    }
+    else if (type == GINPUT_MOUSE_ENTER_EVENT)
+    {
+        ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
+        application_->mouseEnter(event2->x, event2->y, event2->button, event2->modifiers);
+    }
+    else if (type == GINPUT_MOUSE_LEAVE_EVENT)
+    {
+        ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
+        application_->mouseLeave(event2->x, event2->y, event2->modifiers);
     }
     else if (type == GINPUT_KEY_DOWN_EVENT)
     {
@@ -1128,8 +1144,8 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
     if (!recursed) { //If we're not looking up a reference
         int klen=strlen(key);
         if (((*key)=='|')||((klen>3)&&((key[klen-4]=='.')&&(
-                                           ((key[klen-3]=='p')&&(key[klen-3]=='n')&&(key[klen-3]=='g'))||
-                                           ((key[klen-3]=='j')&&(key[klen-3]=='p')&&(key[klen-3]=='g'))
+                                           ((key[klen-3]=='p')&&(key[klen-2]=='n')&&(key[klen-1]=='g'))||
+                                           ((key[klen-3]=='j')&&(key[klen-2]=='p')&&(key[klen-1]=='g'))
                                            ))))
         {
             //File, return as is
@@ -1677,6 +1693,49 @@ static int tick(lua_State *L)
     return 0;
 }
 
+static int updateStyles(lua_State *L) {
+    LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    luaApplication->resetStyleCache();
+
+    /* perform style updating */
+    lua_getglobal(L,"application");
+    int npop=1;
+    if (!lua_isnil(L,-1))
+    {
+        lua_getfield(L,-1,"__styleUpdates");
+        npop++;
+        if (!lua_isnil(L,-1))
+        {
+            lua_pushnil(L);
+            lua_setfield(L,-3,"__styleUpdates");
+            lua_pushnil(L);
+            while (lua_next(L,-2)) {
+                lua_pop(L,1); //No need for sprite itself
+                lua_getfield(L,-1,"updateStyle");
+                lua_pushvalue(L,-2);
+                lua_call(L,1,0);
+            }
+        }
+    }
+    lua_pop(L,npop);
+    return 0;
+}
+
+static int updateLayout(lua_State *L) {
+    LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application *application = luaApplication->getApplication();
+    application->stage()->validateLayout();
+    return 0;
+}
+
+static int updateEffects(lua_State *L) {
+    LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application *application = luaApplication->getApplication();
+    application->stage()->validateEffects();
+    return 0;
+}
+
+bool LuaApplication::hasStyleUpdate=false;
 static int enterFrame(lua_State* L)
 {
     StackChecker checker(L, "enterFrame", 0);
@@ -1699,31 +1758,24 @@ static int enterFrame(lua_State* L)
 
     application->enterFrame();
 
-    luaApplication->resetStyleCache();
 
-    /* perform style updating */
-    lua_getglobal(L,"application");
-    int npop=1;
-    if (!lua_isnil(L,-1))
-    {
-		lua_getfield(L,-1,"__styleUpdates");
-		npop++;
-		if (!lua_isnil(L,-1))
-		{
-			lua_pushnil(L);
-			lua_setfield(L,-3,"__styleUpdates");
-			lua_pushnil(L);
-			while (lua_next(L,-2)) {
-				lua_pop(L,1); //No need for sprite itself
-				lua_getfield(L,-1,"updateStyle");
-				lua_pushvalue(L,-2);
-				lua_call(L,1,0);
-			}
-		}
+    if (LuaApplication::hasStyleUpdate) {
+        LuaApplication::hasStyleUpdate=false;
+        lua_pushcnfunction(L,updateStyles,"gideros_updateStyles");
+        lua_call(L,0,0);
     }
-    lua_pop(L,npop);
 
-	return 0;
+    if (application->stage()->needLayout) {
+        lua_pushcnfunction(L,updateLayout,"gideros_updateLayout");
+        lua_call(L,0,0);
+    }
+
+    if (application->stage()->spriteWithEffectCount) {
+        lua_pushcnfunction(L,updateEffects,"gideros_updateEffects");
+        lua_call(L,0,0);
+    }
+
+    return 0;
 }
 
 void LuaApplication::tick(GStatus *status)
@@ -1747,7 +1799,6 @@ void LuaApplication::tick(GStatus *status)
 }
 
 static double yieldHookLimit;
-#include "lstate.h"
 #ifdef LUA_IS_LUAU
 static void yieldHook(lua_State* L, int gc) {
     if ((gc==-1)&&lua_isyieldable(L)&&(iclock() >= yieldHookLimit)) {
@@ -2542,6 +2593,20 @@ int LuaApplication::Core_profilerReset(lua_State *L)
 		delete it->second;
 	proFuncs.clear();
 	return 0;
+}
+
+int LuaApplication::Core_enableAllocationTracking(lua_State *L)
+{
+    lua_gc(L, LUA_GCCOLLECT, 0);
+    lua_gc(L, LUA_GCCOLLECT, 0);
+    bool en=lua_toboolean(L,1);
+    L->profileTableAllocs=en;
+    lua_getglobal(L,"__tableAllocationProfiler__");
+    if (!en) {
+        lua_pushnil(L);
+        lua_setglobal(L,"__tableAllocationProfiler__");
+    }
+    return 1;
 }
 
 int LuaApplication::Core_random(lua_State *L)

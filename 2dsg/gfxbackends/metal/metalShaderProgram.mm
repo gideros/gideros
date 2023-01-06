@@ -456,7 +456,7 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
                 }
             }
             mrpd.vertexDescriptor.attributes[nattr]=vad;
-            vbd.stride=attstride?attstride:sstep*attributes->mult;
+            vbd.stride=attstride?attstride:(attributes->stride?attributes->stride:sstep*attributes->mult);
             if (attributes->instances) {
                 vbd.stepFunction=MTLVertexStepFunctionPerInstance;
                 vbd.stepRate=attributes->instances;

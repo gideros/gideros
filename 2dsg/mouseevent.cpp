@@ -6,6 +6,8 @@ MouseEvent::Type MouseEvent::MOUSE_DOWN("mouseDown");
 MouseEvent::Type MouseEvent::MOUSE_MOVE("mouseMove");
 MouseEvent::Type MouseEvent::MOUSE_HOVER("mouseHover");
 MouseEvent::Type MouseEvent::MOUSE_WHEEL("mouseWheel");
+MouseEvent::Type MouseEvent::MOUSE_ENTER("mouseEnter");
+MouseEvent::Type MouseEvent::MOUSE_LEAVE("mouseLeave");
 
 void MouseEvent::apply(EventVisitor* v)
 {

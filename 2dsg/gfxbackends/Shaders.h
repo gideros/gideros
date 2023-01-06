@@ -37,6 +37,7 @@ public:
     	unsigned char slot;
     	unsigned short offset;
     	unsigned int instances;
+    	unsigned int stride;
     };
     enum SystemConstant {
     	SysConst_None=0,

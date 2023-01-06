@@ -299,7 +299,15 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 			 ginputp_mouseMove(x,y,b,m);
 		 else
 			 ginputp_mouseHover(x,y,b,m);
-	}
+	 }
+	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEENTER)
+	 {
+		 ginputp_mouseEnter(x,y,b,m);
+	 }
+	 else if (eventType == EMSCRIPTEN_EVENT_MOUSELEAVE)
+	 {
+		 ginputp_mouseLeave(x,y,m);
+	 }
 
   return true;
 }
@@ -430,6 +438,8 @@ char *url=(char *) EM_ASM_INT_V({
     ret = emscripten_set_mousedown_callback("#canvas", 0, capture, mouse_callback);
     ret = emscripten_set_mouseup_callback("#canvas", 0, capture, mouse_callback);
     ret = emscripten_set_mousemove_callback("#canvas", 0, capture, mouse_callback);
+    ret = emscripten_set_mouseenter_callback("#canvas", 0, capture, mouse_callback);
+    ret = emscripten_set_mouseleave_callback("#canvas", 0, capture, mouse_callback);
     ret = emscripten_set_wheel_callback("#canvas", 0, capture, wheel_callback);
     ret = emscripten_set_touchstart_callback("#canvas", 0, capture, touch_callback);
     ret = emscripten_set_touchend_callback("#canvas", 0, capture, touch_callback);

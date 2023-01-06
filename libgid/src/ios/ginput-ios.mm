@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 #include <gevent.h>
+extern float gdr_ScaleFactor;
 
 class GGInputManager;
 
@@ -328,6 +329,8 @@ public:
 #if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
+#else
+        contentScaleFactor=gdr_ScaleFactor;
 #endif
         bool has3Dtouch = false;
         #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
@@ -406,6 +409,8 @@ public:
 #if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
+#else
+        contentScaleFactor=gdr_ScaleFactor;
 #endif
         
         bool has3Dtouch = false;
@@ -484,6 +489,8 @@ public:
 #if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
+#else
+        contentScaleFactor=gdr_ScaleFactor;
 #endif
         bool has3Dtouch = false;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
@@ -565,6 +572,8 @@ public:
 #if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
+#else
+        contentScaleFactor=gdr_ScaleFactor;
 #endif
         bool has3Dtouch = false;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
@@ -735,21 +744,21 @@ private:
 public:
     void mouseDown(int x, int y, int button,int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x*gdr_ScaleFactor, y*gdr_ScaleFactor, button, mod);
         
         ginput_TouchEvent *touchEvent = NULL;
         if (isMouseToTouchEnabled_)
         {
             touchEvent = newTouchEvent(1);
-            touchEvent->touch.x = x;
-            touchEvent->touch.y = y;
+            touchEvent->touch.x = x*gdr_ScaleFactor;
+            touchEvent->touch.y = y*gdr_ScaleFactor;
             touchEvent->touch.id = 0;
             touchEvent->touch.pressure = 0;
             touchEvent->touch.touchType = 2;
             touchEvent->touch.modifiers = mod;
             touchEvent->touch.mouseButton=button;
-            touchEvent->allTouches[0].x = x;
-            touchEvent->allTouches[0].y = y;
+            touchEvent->allTouches[0].x = x*gdr_ScaleFactor;
+            touchEvent->allTouches[0].y = y*gdr_ScaleFactor;
             touchEvent->allTouches[0].id = 0;
             touchEvent->allTouches[0].pressure = 0;
             touchEvent->allTouches[0].touchType = 2;
@@ -782,21 +791,21 @@ public:
     
     void mouseMove(int x, int y, int button, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x*gdr_ScaleFactor, y*gdr_ScaleFactor, button, mod);
         
         ginput_TouchEvent *touchEvent = NULL;
         if (isMouseToTouchEnabled_)
         {
             touchEvent = newTouchEvent(1);
-            touchEvent->touch.x = x;
-            touchEvent->touch.y = y;
+            touchEvent->touch.x = x*gdr_ScaleFactor;
+            touchEvent->touch.y = y*gdr_ScaleFactor;
             touchEvent->touch.id = 0;
             touchEvent->touch.pressure = 0;
             touchEvent->touch.touchType = 2;
             touchEvent->touch.modifiers = mod;
             touchEvent->touch.mouseButton=button;
-            touchEvent->allTouches[0].x = x;
-            touchEvent->allTouches[0].y = y;
+            touchEvent->allTouches[0].x = x*gdr_ScaleFactor;
+            touchEvent->allTouches[0].y = y*gdr_ScaleFactor;
             touchEvent->allTouches[0].id = 0;
             touchEvent->allTouches[0].pressure = 0;
             touchEvent->allTouches[0].touchType = 2;
@@ -829,7 +838,7 @@ public:
     
     void mouseHover(int x, int y, int button, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x*gdr_ScaleFactor, y*gdr_ScaleFactor, button, mod);
         
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_HOVER_EVENT, mouseEvent, 0, this);
         deleteMouseEvent(mouseEvent);
@@ -837,21 +846,21 @@ public:
     
     void mouseUp(int x, int y, int button, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x*gdr_ScaleFactor, y*gdr_ScaleFactor, button, mod);
         
         ginput_TouchEvent *touchEvent = NULL;
         if (isMouseToTouchEnabled_)
         {
             touchEvent = newTouchEvent(1);
-            touchEvent->touch.x = x;
-            touchEvent->touch.y = y;
+            touchEvent->touch.x = x*gdr_ScaleFactor;
+            touchEvent->touch.y = y*gdr_ScaleFactor;
             touchEvent->touch.id = 0;
             touchEvent->touch.pressure = 0;
             touchEvent->touch.touchType = 2;
             touchEvent->touch.modifiers = mod;
             touchEvent->touch.mouseButton=button;
-            touchEvent->allTouches[0].x = x;
-            touchEvent->allTouches[0].y = y;
+            touchEvent->allTouches[0].x = x*gdr_ScaleFactor;
+            touchEvent->allTouches[0].y = y*gdr_ScaleFactor;
             touchEvent->allTouches[0].id = 0;
             touchEvent->allTouches[0].pressure = 0;
             touchEvent->allTouches[0].touchType = 2;
@@ -884,11 +893,26 @@ public:
     
     void mouseWheel(int x, int y, int buttons,int delta, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons, mod);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x*gdr_ScaleFactor, y*gdr_ScaleFactor, buttons, mod);
         mouseEvent->wheel=delta;
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_WHEEL_EVENT, mouseEvent, 0, this);
         deleteMouseEvent(mouseEvent);
     }
+
+    void mouseEnter(int x, int y, int buttons,int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x*gdr_ScaleFactor, y*gdr_ScaleFactor, buttons, mod);
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_ENTER_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
+    void mouseLeave(int x, int y, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x*gdr_ScaleFactor,y*gdr_ScaleFactor,0,mod);
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_LEAVE_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
 private:
     std::vector<UITouch*> touches_;
 	std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool1_;
@@ -1222,6 +1246,18 @@ void ginputp_keyChar(const char *keyChar)
     {
         if (s_manager)
             s_manager->mouseWheel(x, y, buttons,delta, mod);
+    }
+
+    void ginputp_mouseEnter(int x, int y, int buttons, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseEnter(x, y, buttons, mod);
+    }
+
+    void ginputp_mouseLeave(int x, int y, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseLeave(x,y,mod);
     }
 
 void ginput_setMouseToTouchEnabled(int enabled)

@@ -1389,6 +1389,22 @@ bool GLCanvas::event(QEvent *event){
         mouseReleaseEvent((QMouseEvent*)event);
         return true;
     }
+    else if(event->type() == QEvent::Enter){
+        QEnterEvent *e=(QEnterEvent*)event;
+        Qt::KeyboardModifiers qmod=e->modifiers();
+        int m=0;
+        if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
+        if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
+        if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
+        if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
+        ginputp_mouseEnter(e->position().x() * deviceScale_, e->position().y() * deviceScale_,
+                e->buttons(), m);
+        return true;
+    }
+    else if(event->type() == QEvent::Leave){
+        ginputp_mouseLeave(0,0,0);
+        return true;
+    }
     else if(event->type() == QEvent::Wheel){
         wheelEvent((QWheelEvent*)event);
         return true;

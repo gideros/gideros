@@ -26,6 +26,8 @@ public:
     void mouseMove(int x, int y, int button, int modifiers, int type, float sx, float sy, float tx, float ty);
     void mouseHover(int x, int y, int button, int modifiers, int type, float sx, float sy, float tx, float ty);
     void mouseWheel(int x, int y, int modifiers, float sx, float sy, float tx, float ty, int wheel);
+    void mouseEnter(int x, int y, int buttons, int modifiers, float sx, float sy, float tx, float ty);
+    void mouseLeave(int x, int y, int modifiers, float sx, float sy, float tx, float ty);
 
     void touchesBegin(ginput_TouchEvent *event, float sx, float sy, float tx, float ty);
     void touchesMove(ginput_TouchEvent *event, float sx, float sy, float tx, float ty);
@@ -35,6 +37,10 @@ public:
     void keyDown(int keyCode, int realCode, int modifiers);
     void keyUp(int keyCode, int realCode, int modifiers);
     void keyChar(const char *code);
+
+    void validateLayout();
+    void validateEffects();
+
 
     Application* application() const
     {

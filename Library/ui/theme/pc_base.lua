@@ -1,0 +1,378 @@
+--!NEEDS:../uitheme.lua
+
+local colNone=UI.Colors.transparent
+UI.Theme.PointCore_Base={
+	["theme.C1F"]=UI.Color(0x1B1B1B),
+	["theme.C1M"]=UI.Color(0x424242),
+	["theme.C1L"]=UI.Color(0x6D6D6D),
+	["theme.C1MM"]=UI.Color(0x2E2E2E),
+	["theme.C2F"]=UI.Color(0x005662),
+	["theme.C2F30"]=UI.Color(0x005662,.3),
+	["theme.C2M"]=UI.Color(0x00838F),
+	["theme.C2L"]=UI.Color(0x4FB3BF),
+	["theme.C2FF"]=UI.Color(0x2E474B),
+	["theme.CH"]=UI.Color(0xFFA726),
+	["theme.ER"]=UI.Color(0xFF0000),
+	["theme.T"]=UI.Colors.white,
+	["theme.Y15"]=UI.Color(1,1,1,0.15),--OV15
+	["theme.Y30"]=UI.Color(1,1,1,0.3),--OV30
+	["theme.Y50"]=UI.Color(1,1,1,0.5),--OV50
+	["theme.OVI15"]=UI.Color(0,0,0,0.15),
+	["theme.OVI30"]=UI.Color(0,0,0,0.3),
+	["theme.OVI50"]=UI.Color(0,0,0,0.5),
+	--
+	colText="theme.T",
+	colUI="theme.T",
+	colBackground="theme.C1M",
+	colDarkBackground="theme.C1MM",
+	colHighlight="theme.CH",
+	--
+	["button.styBack"]={
+		colWidgetBack="button.colBackground",
+		brdWidget={ },
+		shader=
+			{ 
+			class="UI.Shader.Shadow", 
+			params={ radius=5, ccolor={0,0,0,1}, angle=180, displace=0, expand=1.05 } 
+		},
+	},
+	["button.colBackground"]="theme.C2L",
+	--
+	["checkbox.colTickboxBack"]="theme.C2F",
+	["checkbox.styDisabled"]={
+		["checkbox.colTickboxBack"]="theme.OVI30",
+		["checkbox.colTickboxFore"]="theme.Y30",
+		["checkbox.colTickboxTick"]=colNone, 
+	},
+	["checkbox.styDisabledTicked"]={
+		["checkbox.colTickboxBack"]="theme.OVI30",
+		["checkbox.colTickboxFore"]="theme.Y30", 
+		["checkbox.colTickboxTick"]="theme.Y30", 
+	},
+	["checkbox.styDisabledThird"]={
+		["checkbox.colTickboxBack"]="theme.OVI30",
+		["checkbox.colTickboxFore"]="theme.Y30", 
+		["checkbox.colTickboxTick"]=colNone, 
+		["checkbox.colTickboxThird"]="theme.Y30", 
+	},
+	--
+	["combobox.colBackground"]="theme.C2F",
+	["combobox.colBorder"]="theme.C2M",
+	--
+	["breadcrumbs.styRoot"]={ 
+		colText="theme.C2L",
+	},
+	["breadcrumbs.styItem"]={
+		colText="theme.C2L",
+	},
+	["breadcrumbs.styLast"]={
+		colText="colHighlight",
+	},
+	["breadcrumbs.styElipsis"]={
+		colText="colUI",
+	},
+	["breadcrumbs.stySeparator"]={
+		colText="colUI",
+	},
+	--
+	["buttontextfield.szInset"]="0.25s",
+	["buttontextfield.szMargin"]="0.5s",
+	["buttontextfieldcombo.styButton"]={
+		["button.styBack"]={
+			colWidgetBack=UI.Colors.white,
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/textfield-multi.png",true),
+				corners={0,"buttontextfield.szMargin","buttontextfield.szMargin","buttontextfield.szMargin",63,63,63,63,},
+				insets={ left="buttontextfield.szMargin",right="buttontextfield.szInset",top="buttontextfield.szMargin",bottom="buttontextfield.szMargin"},
+			}),
+			shader={ 
+				class="UI.Shader.MultiLayer", 
+				params={ colLayer1="button.colBackground", colLayer2="button.colBorder", colLayer3="button.colFocus", colLayer4=colNone } 
+			}
+		},
+		["button.colBackground"]="textfield.colBorder",
+		["button.colBorder"]=colNone,
+		["button.colFocus"]=colNone,
+		["button.styInside"]={
+			["image.colTint"]="colUI",
+		},
+		["button.styError"]={
+			["button.colBackground"]="theme.ER",
+		},
+		["button.stySelected"]={
+			["button.colBackground"]="theme.C2L",
+		},
+		["button.stySelectedFocused"]={
+			["button.colBackground"]="theme.C2L",
+		},
+		["button.styFocused"]={
+			["button.colBackground"]="textfield.colBorder",
+		},
+	},
+	["buttontextfieldcombo.styButtonDisabled"]={
+		["button.styBack"]={
+			colWidgetBack=UI.Colors.white,
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/textfield-multi.png",true),
+				corners={0,"textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
+				insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+			}),
+			shader={
+				class="UI.Shader.MultiLayer", 
+				params={ colLayer1="button.colBackground", colLayer2="button.colBorder", colLayer3="button.colFocus", colLayer4=colNone } 
+			}
+		},
+		["button.colBackground"]=colNone,
+		["button.colBorder"]=colNone,
+		["button.colFocus"]=colNone,
+		["button.styInside"]={
+			["image.colTint"]="theme.Y30",
+		},
+		["button.styError"]={},
+		["button.stySelected"]={},
+		["button.stySelectedFocused"]={},
+		["button.styFocused"]={},
+	},
+	--
+	["calendar.colBackground"]="theme.C1M",
+	["calendar.colBorder"]="theme.C2M",
+	["calendar.colDaysOther"]="theme.Y50",
+	["calendar.stySpinners"]={
+		["spinner.colIcon"]="theme.C2L",
+	},
+
+	--
+	["dnd.colSrcHighlight"]="theme.Y15",
+	["dnd.colDstHighlight"]="theme.T",
+	--
+	["passwordfield.styButtonDisabled"]={
+		["button.styInside"]={
+			["image.colTint"]="theme.Y30",
+		},
+	},
+	--
+	["keyboard.colSpecKeys"]="theme.C2F",
+	["keyboard.styKeys"]={
+		["button.styBack"]={
+			colWidgetBack=UI.Colors.white,
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/textfield-multi.png",true),
+				corners={"textfield.szMargin","textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
+				insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+			}),
+			shader={ 
+				class="UI.Shader.MultiLayer", 
+				params={ colLayer1="button.colBackground", colLayer2="theme.C2M", colLayer3=colNone, colLayer4=colNone } 
+			}
+		},
+		["label.font"]="font.bold",
+	},
+	["keyboard.stySpecKeys"]={
+		["button.styBack"]={
+			colWidgetBack=UI.Colors.white,
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/textfield-multi.png",true),
+				corners={"textfield.szMargin","textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
+				insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+			}),
+			shader={ 
+				class="UI.Shader.MultiLayer", 
+				params={ colLayer1="keyboard.colSpecKeys", colLayer2="theme.C2M", colLayer3=colNone, colLayer4=colNone } 
+			}
+		},	
+	},
+	--
+	["progress.colBorder"]="theme.C1M",
+	["progress.colBackground"]="theme.C2F",
+	["progress.styDisabled"]={
+		["progress.colRemain"]="theme.C1F",
+		["progress.colBackground"]=colNone,
+		["progress.colDone"]="theme.C1L",
+	},
+	--
+	["scrollbar.colBar"]="colDisabled",
+	--
+	["slider.colKnob"]=colNone,
+	["slider.colKnobCenter"]="theme.C2L",
+	["slider.colRailBorder"]="theme.C1M",
+	["slider.colRailBackground"]="theme.C1L",
+	["slider.colRailActive"]="theme.CH",
+	["slider.styDisabled"]={
+		["slider.colRailActive"]="theme.OVI30",
+		["slider.colRailBackground"]="theme.OVI30",
+	},
+	["slider.styKnobDisabled"]={
+		["slider.colKnobCenter"]="theme.Y30",
+	},
+	--
+	["splitpane.styThin"]={
+		["splitpane.szKnobThin"]=".2is",
+		["splitpane.tblKnobSizes"]={0,".4is",0},
+		["splitpane.colKnob"]="theme.C1F",
+		["splitpane.brdKnobH"]=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/knob-band-v.png",true,{ mipmap=true }),
+			corners={0,0,"1s","1s",0,0,63,63},
+		}),
+		["splitpane.brdKnobV"]=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/knob-band-h.png",true,{ mipmap=true }),
+			corners={"1s","1s",0,0,63,63,0,0},
+		}),
+		["splitpane.styKnobHandleH"]={
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/knob-dots-v.png",true,{ mipmap=true }),
+				corners={0,0,0,0,0,0,0,0},
+				insets={ left="splitpane.szKnobThin", right="splitpane.szKnobThin", top="splitpane.szKnob", bottom="splitpane.szKnob" },
+			}),
+			colWidgetBack="splitpane.colKnobHandle",
+		},
+		["splitpane.styKnobHandleV"]={
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/knob-dots-h.png",true,{ mipmap=true }),
+				corners={0,0,0,0,0,0,0,0},
+				insets={ left="splitpane.szKnob", right="splitpane.szKnob", top="splitpane.szKnobThin", bottom="splitpane.szKnobThin" },
+			}),
+			colWidgetBack="splitpane.colKnobHandle",
+		},
+	},
+	--
+	["table.colHeader"]="theme.C2F",
+	["table.colTextHeader"]="theme.CH",
+	["table.styDndMarker"]={
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/textfield-multi.png",true),
+			corners={"textfield.szMargin","textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
+			insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+		}),
+		shader={
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="table.colHeader", colLayer2="dnd.colDstHighlight", colLayer3=colNone, colLayer4=colNone }
+		},
+		colWidgetBack="dnd.colDstHighlight",
+		colText="table.colTextHeader",
+	},
+	["table.styRowOdd"]={},
+	["table.styRowSelected"]={},
+	["table.styRowEven"]="table.styRowOdd",
+	["table.styCellSelected"]={
+		colWidgetBack = "colSelect"
+	},
+	--
+	["textfield.colTipText"]="theme.Y50",
+	["textfield.colBackground"]="theme.C2F", 	--R
+	["textfield.colBorder"]="theme.C2M", 		--V
+	["textfield.colBorderWide"]=colNone,		--B
+	["textfield.styDisabled"]={
+		["textfield.colBackground"]=colNone, 
+		["textfield.colBorder"]="theme.Y30", 
+		["textfield.colBorderWide"]=colNone, 
+		["textfield.colForeground"]="theme.Y50", 
+	},
+	["textfield.styFocused"]={
+		["textfield.colBorder"]=colNone, 
+		["textfield.colBorderWide"]="theme.C2L", 
+	},
+	["textfield.styFocusedReadonly"]="textfield.styReadonly",
+	["textfield.styReadonly"]={
+		["textfield.colBackground"]=colNone, 
+		["textfield.colBorder"]="theme.Y30", 
+	},
+	["textfield.szMargin"]=".5s",
+	--
+	["toolbox.colHeader"]="theme.C1F",
+	["toolbox.colBorder"]="theme.C1F",
+	["toolbox.colBack"]="theme.C2F",--colNone,
+	["toolbox.styHeader"]={
+		["image.colTint"]="theme.C1L",
+	},
+	--
+	["tooltip.szIcon"]="2is",
+	["tooltip.szMarker"]="2is",
+	["tooltip.szUrlDisplace"]=0.2,
+	["tooltip.szMinWidth"]="10em",
+	["tooltip.icIcon"]=Texture.new("ui/icons/ic_help.png",true,{ mipmap=true, rawalpha=true }),
+	["tooltip.icUrl"]=Texture.new("ui/icons/ic_ref.png",true,{ mipmap=true, rawalpha=true }),
+	["tooltip.colIcon"]="colHighlight",
+	["tooltip.colIconFore"]="theme.C1F",
+	["tooltip.colUrl"]="theme.C2L",
+	["tooltip.colUrlFore"]="theme.T",
+	["tooltip.colRef"]="theme.C2L",
+	["tooltip.colShadow"]="theme.C1F",
+	["tooltip.colMarkerBack"]="theme.C1F",
+	["tooltip.styLargeMarker"]={
+		colWidgetBack=UI.Colors.white,
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
+			corners={"1is","1is","1is","1is",63,63,63,63,},
+			insets={ left=0,right=0,top=0,bottom=0},
+		}),
+		shader={
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="tooltip.colMarkerBack", colLayer2="tooltip.colMarkerBorder", colLayer3=colNone, colLayer4=colNone }
+		},
+	},
+
+	["tooltip.styIcon"]={
+		colWidgetBack=UI.Colors.white,
+		brdWidget=UI.Border.NinePatch.new({
+			texture="tooltip.icIcon",
+			corners={0,0,0,0,0,0,0,0},
+		}),
+		shader={
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="tooltip.colIcon", colLayer2="tooltip.colIconFore", colLayer3=colNone, colLayer4=colNone }
+		},
+	},
+	["tooltip.styHelpMarker"]={
+		colWidgetBack=UI.Colors.white,
+		brdWidget=UI.Border.NinePatch.new({
+			texture="tooltip.icIcon",
+			corners={0,0,0,0,0,0,0,0},
+		}),
+		shader={
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1=colNone, colLayer2="tooltip.colIcon", colLayer3=colNone, colLayer4=colNone }
+		},
+	},
+	["tooltip.styUrl"]={
+		colWidgetBack=UI.Colors.white,
+		brdWidget=UI.Border.NinePatch.new({
+			texture="tooltip.icUrl",
+			corners={0,0,0,0,0,0,0,0},
+		}),
+		shader={
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="tooltip.colUrl", colLayer2="tooltip.colUrlFore", colLayer3="tooltip.colShadow", colLayer4=colNone }
+		},
+	},
+	["tooltip.styRef"]={
+		--font="font.small",
+		["label.color"]="tooltip.colRef",
+	},
+}
+UI.Theme.PointCore_Base.__index=UI.Theme.PointCore_Base
+
+UI.Theme.PointCore_Red={
+	["theme.C2F"]=UI.Color(0x8E0000),
+	["theme.C2M"]=UI.Color(0xC62828),
+	["theme.C2L"]=UI.Color(0xFF5F52),
+	["theme.C2FF"]=UI.Color(0x4B472E),
+	["theme.CH"]=UI.Color(0x26A7FF),
+}
+setmetatable(UI.Theme.PointCore_Red,UI.Theme.PointCore_Base)
+
+UI.Theme.PointCore_Pink={
+	["theme.T"]=UI.Colors.black,
+	["theme.C1F"]=UI.Color(0xBCBCBC),
+	["theme.C1M"]=UI.Color(0xEEEEEE),
+	["theme.C1L"]=UI.Color(0xFFFFFF),
+	["theme.C1MM"]=UI.Color(0xAEAEAE),
+	["theme.C2F"]=UI.Color(0xBF5F82),
+	["theme.C2M"]=UI.Color(0xF48FB1),
+	["theme.C2L"]=UI.Color(0xFFC1E3),
+	["theme.C2FF"]=UI.Color(0x4B472E),
+	["theme.CH"]=UI.Color(0x43A047),
+	["theme.Y15"]=UI.Color(0,0,0,0.15),
+	["theme.Y30"]=UI.Color(0,0,0,0.3),
+	["theme.Y50"]=UI.Color(0,0,0,0.5),
+}
+setmetatable(UI.Theme.PointCore_Pink,UI.Theme.PointCore_Base)

@@ -49,6 +49,72 @@ static void populateLayout(lua_State* L,int index,FontBase::TextLayoutParameters
     lua_getfield(L,index,"breakChar"); tp->breakchar=luaL_optstring(L,-1,""); lua_pop(L,1);
 }
 
+static bool hasStyledText(const char *text)
+{
+    while (*text) {
+        while ((*text)&&((*text)!=27)) text++;
+        if (!(*text)) break;
+        text++;
+        if (*text=='[') {
+            text++;
+            while (true) {
+                if (!strncmp(text,"color=",6)) {
+                    text+=6;
+                    if (*text!='#')
+                        return true;
+                }
+                while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
+                if ((*text)==',')
+                    text++;
+                else
+                    break;
+            }
+        }
+    }
+    return false;
+}
+
+static std::string resolveTextStyle(lua_State *L, std::string original)
+{
+    //lua index 1 is current sprite
+    std::string converted=original;
+    const char *rtext=converted.c_str();
+    const char *text=rtext;
+    while (*text) {
+        while ((*text)&&((*text)!=27)) text++;
+        if (!(*text)) break;
+        text++;
+        if (*text=='[') {
+            text++;
+            while (true) {
+                if (!strncmp(text,"color=",6)) {
+                    text+=6; //Skip "color="
+                    const char *colb=text;
+                    while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
+                    if ((*text)&&(*colb!='#')&&(text!=colb)) {
+                        //We have a non null, non numeric color code
+                        size_t prev=colb-rtext;
+                        std::string colRef=converted.substr(prev,text-colb);
+                        float var[4];
+                        LuaApplication::resolveColor(L,1,0,var,colRef);
+                        char resolved[10];
+                        sprintf(resolved,"#%02x%02x%02x%02x",((int)(var[0]*255))&0xFF,((int)(var[1]*255))&0xFF,((int)(var[2]*255))&0xFF,((int)(var[3]*255))&0xFF);
+                        converted=converted.substr(0,prev)+resolved+converted.substr(text-rtext);
+                        rtext=converted.c_str();
+                        text=rtext+prev+9;
+                    }
+                }
+                while ((*text)&&((*text)!=']')&&((*text)!=',')) text++;
+                if ((*text)==',')
+                    text++;
+                else
+                    break;
+            }
+        }
+    }
+    return converted;
+}
+
 int TextFieldBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "TextFieldBinder::create", 1);
@@ -93,28 +159,31 @@ int TextFieldBinder::create(lua_State* L)
             break;
     }
 
-/*
-	if (lua_gettop(L) == 0)
-	{
-		textField = new TextField;
-	}
-	else if (lua_gettop(L) == 1)
-	{
-		Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
-		textField = new TextField(font);
-	}
-	else
-	{
-		Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
-		const char* text = luaL_checkstring(L, 2);
-		textField = new TextField(font, text);
-	}
+    if (str2&&hasStyledText(str2))
+        textField->styCache_text=str2;
+
+    /*
+    if (lua_gettop(L) == 0)
+    {
+        textField = new TextField;
+    }
+    else if (lua_gettop(L) == 1)
+    {
+        Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
+        textField = new TextField(font);
+    }
+    else
+    {
+        Font* font = static_cast<Font*>(binder.getInstance("Font", 1));
+        const char* text = luaL_checkstring(L, 2);
+        textField = new TextField(font, text);
+    }
 */
 
-	binder.pushInstance("TextField", textField);
+    binder.pushInstance("TextField", textField);
 
-/*	if  (lua_gettop(L) == 1)
-	{
+    /*	if  (lua_gettop(L) == 1)
+    {
 		lua_pushvalue(L, 1);
 		lua_setfield(L, -2, "__font");
 	}
@@ -167,17 +236,19 @@ int TextFieldBinder::setFont(lua_State* L)
     return 0;
 }
 
-
 int TextFieldBinder::getText(lua_State* L)
 {
 	StackChecker checker(L, "TextFieldBinder::getText", 1);
 
 	Binder binder(L);
-	TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
 
-	lua_pushstring(L, textField->text());
+    if (!textField->styCache_text.empty())
+        lua_pushstring(L, textField->styCache_text.c_str());
+    else
+        lua_pushstring(L, textField->text());
 
-	return 1;
+    return 1;
 }
 
 int TextFieldBinder::setText(lua_State* L)
@@ -188,7 +259,14 @@ int TextFieldBinder::setText(lua_State* L)
 	TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
 
 	const char* text = luaL_checkstring(L, 2);
-	textField->setText(text);
+    if (hasStyledText(text)) {
+        textField->styCache_text=text;
+        textField->setText(resolveTextStyle(L,textField->styCache_text).c_str());
+    }
+    else {
+        textField->styCache_text.clear();
+        textField->setText(text);
+    }
 
 	return 0;
 }
@@ -332,10 +410,12 @@ int TextFieldBinder::getPointFromTextPosition(lua_State *L)
     Binder binder(L);
     TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
     float cx=0,cy=0;
-	textField->getPointFromTextPos((size_t)luaL_checkinteger(L,2),cx,cy);
+    int cl;
+	textField->getPointFromTextPos((size_t)luaL_checkinteger(L,2),cx,cy,cl);
 	lua_pushnumber(L,cx);
 	lua_pushnumber(L,cy);
-	return 2;
+	lua_pushnumber(L,cl);
+	return 3;
 }
 
 int TextFieldBinder::getTextPositionFromPoint(lua_State *L)
@@ -369,6 +449,9 @@ int TextFieldBinder::updateStyle(lua_State* L)
         LuaApplication::resolveStyle(L,textField->styCache_font.c_str(),0);
         textField->setFont(static_cast<FontBase*>(binder.getInstance("FontBase", -1)));
         lua_pop(L,1);
+    }
+    if (HASCOL(text)) {
+        textField->setText(resolveTextStyle(L,textField->styCache_text).c_str());
     }
     return 0;
 }

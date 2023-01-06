@@ -25,8 +25,9 @@ ShapeBinder::ShapeBinder(lua_State* L)
 		{"lineTo", lineTo},
 		{"endPath", endPath},
 		{"closePath", closePath},
-		{"clear", clear},
-		{NULL, NULL},
+        {"clear", clear},
+        {"tesselate", tesselate},
+        {NULL, NULL},
 	};
 
 	binder.createClass("Shape", "Sprite", create, destruct, functionList);
@@ -123,6 +124,59 @@ int ShapeBinder::setLineStyle(lua_State* L)
 	shape->setLineStyle(thickness, color, alpha);
 
 	return 0;
+}
+
+int ShapeBinder::tesselate(lua_State* L)
+{
+    Binder binder(L);
+
+    luaL_checktype(L,1,LUA_TTABLE);
+    Shape::WindingRule windingRule = Shape::eEvenOdd;
+    if (!lua_isnone(L, 2))
+    {
+        const char* winding = luaL_checkstring(L, 2);
+        if (strcmp(winding, EVEN_ODD) == 0)
+        {
+            windingRule = Shape::eEvenOdd;
+        }
+        else if (strcmp(winding, NON_ZERO) == 0)
+        {
+            windingRule = Shape::eNonZero;
+        }
+        else
+        {
+            GStatus status(2008, "winding");		// Error #2008: Parameter %s must be one of the accepted values.
+            luaL_error(L, "%s", status.errorString());
+            return 0;
+        }
+    }
+    std::vector<std::vector<Point2f>> contours;
+    int cn=lua_objlen(L,1);
+    for (int k=1;k<=cn;k++) {
+        std::vector<Point2f> ctr;
+        lua_rawgeti(L,1,k);
+        int ln=lua_objlen(L,-1);
+        for (int l=1;l<=ln;l+=2) {
+            lua_rawgeti(L,-1,l);
+            double x=luaL_checknumber(L,-1);
+            lua_rawgeti(L,-2,l+1);
+            double y=luaL_checknumber(L,-1);
+            lua_pop(L,2);
+            ctr.push_back(Point2f(x,y));
+        }
+        contours.push_back(ctr);
+        lua_pop(L,1);
+    }
+
+    std::vector<double> ts=Shape::tesselate(contours,windingRule);
+    lua_createtable(L,ts.size(),0);
+    for (size_t k=0;k<ts.size();k++)
+    {
+        lua_pushnumber(L,ts[k]);
+        lua_rawseti(L,-2,k+1);
+    }
+
+    return 1;
 }
 
 int ShapeBinder::beginPath(lua_State* L)

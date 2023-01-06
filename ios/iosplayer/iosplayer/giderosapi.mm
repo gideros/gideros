@@ -327,6 +327,8 @@ public:
     UIView *view_;
 };
 
+float gdr_ScaleFactor=1;
+
 
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
@@ -1141,12 +1143,15 @@ void ApplicationManager::loadProperties()
 	bool notRetina = (properties_.retinaDisplay == 0) || (properties_.retinaDisplay == 1 && !phone) || (properties_.retinaDisplay == 2 && phone);
 	
 	float contentScaleFactor = 1;
-	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
 #if !TARGET_OS_OSX
-	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
-		contentScaleFactor = view_.contentScaleFactor;
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES)];
+    if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
+        contentScaleFactor = view_.contentScaleFactor;
+#else
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES) scalePtr:&contentScaleFactor];
 #endif
 	scaleFactor_=contentScaleFactor;
+    gdr_ScaleFactor=contentScaleFactor;
     application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1237,12 +1242,15 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	bool notRetina = (properties_.retinaDisplay == 0) || (properties_.retinaDisplay == 1 && !phone) || (properties_.retinaDisplay == 2 && phone);
 	
 	float contentScaleFactor = 1;
-	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
 #if !TARGET_OS_OSX
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES)];
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
+#else
+    [view_ enableRetinaDisplay:(notRetina ? NO : YES) scalePtr:&contentScaleFactor];
 #endif
 	scaleFactor_=contentScaleFactor;
+    gdr_ScaleFactor=contentScaleFactor;
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1739,11 +1747,41 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 }
 
 int setClipboard(std::string data,std::string mimeType, int luaFunc) {
+#if TARGET_OS_OSX
+    NSPasteboard *pb=[NSPasteboard generalPasteboard];
+    if (mimeType=="text/plain") {
+        [pb clearContents];
+        [pb declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:nil];
+        [pb setString:[NSString stringWithUTF8String:data.c_str()] forType:NSPasteboardTypeString];
+        return 1;
+    }
+#elif !TARGET_OS_TV
+    UIPasteboard *pb=[UIPasteboard generalPasteboard];
+    if (mimeType=="text/plain") {
+        pb.string=[NSString stringWithUTF8String:data.c_str()];
+        return 1;
+    }
+#endif
 	return -1;
 }
 
 int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
-	return -1;
+#if TARGET_OS_OSX
+    NSString *s=[[NSPasteboard generalPasteboard] stringForType:NSPasteboardTypeString];
+    if (s!=nil) {
+        data=[s UTF8String];
+        mimeType="text/plain";
+        return 1;
+    }
+#elif !TARGET_OS_TV
+    NSString *s=[UIPasteboard generalPasteboard].string;
+    if (s!=nil) {
+        data=[s UTF8String];
+        mimeType="text/plain";
+        return 1;
+    }
+#endif
+    return -1;
 }
 
 int getKeyboardModifiers() {
@@ -1869,6 +1907,14 @@ void gdr_didReceiveMemoryWarning()
     void gdr_mouseWheel(int x, int y, int button, int delta,int mod) {
         ginputp_mouseWheel(x,y,button,delta,mod);
     }
+	void gdr_mouseEnter(int x, int y, int buttons, int mod)
+	{
+		ginputp_mouseEnter(x, y, buttons, mod);
+	}
+	void gdr_mouseLeave(int x, int y, int mod)
+	{
+		ginputp_mouseLeave(x, y, mod);
+	}
 #endif
 
 void gdr_keyDown(int keyCode, int repeat)

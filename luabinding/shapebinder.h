@@ -20,7 +20,8 @@ private:
 	static int endPath(lua_State* L);
 	static int closePath(lua_State* L);
 
-	static int clear(lua_State* L);
+    static int tesselate(lua_State* L);
+    static int clear(lua_State* L);
 };
 
 #endif

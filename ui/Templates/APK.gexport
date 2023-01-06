@@ -170,14 +170,10 @@ local ap=require("Tools/export_android")
         	</replacelist>		
 		</template>
 		<if condition="[[[eq:[[[sys.exportType]]]:player]]]">
-    	<template name="$MANIFEST$" path="">
-        	<replacelist wildcards="AndroidManifest.xml">
-	            <append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-        	    	<by><![CDATA[<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>]]></by>
-    	        </append>
-        	</replacelist>
-    	</template>
+		    <lua>
+		    	local ap=require("Tools/export_android")
+		    	ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE")
+		    </lua>
 		</if>		
 		<if condition="[[[export.forOculus]]]">
 	    	<template name="$MANIFEST$" path="">

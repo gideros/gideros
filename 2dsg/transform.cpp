@@ -29,15 +29,58 @@ static void rotation(float angle, float result[2][2])
  result[1][1] = std::cos(angle);
 }
 
+void Transform::quaternionToEuler(float w,float x,float y,float z,float &rx,float &ry,float &rz)
+{
+    float test = x * y + z * w;
+    if (test>0.499) {
+        rx=0;
+        ry=-2*atan2f(x,w)*180/M_PI;
+        rz=-90;
+    }
+    else if (test<-0.499)
+    {
+        rx=0;
+        ry=2*atan2f(x,w)*180/M_PI;
+        rz=90;
+    }
+    else
+    {
+        rx=-atan2f(2*x*w-2*y*z,1-2*x*x-2*z*z)*180/M_PI;
+        ry=-atan2f(2*y*w-2*x*z,1-2*y*y-2*z*z)*180/M_PI;
+        rz=-asinf(2*x*y+2*z*w)*180/M_PI;
+    }
+}
+
 void Transform::setMatrix(const float *m)
 {
 	matrix_.set(m);
-	rotationZ_=0;
-	rotationX_=0;
-	rotationY_=0;
-	scaleX_=1.0;
-	scaleY_=1.0;
-	scaleZ_=1.0;
+
+    scaleX_=sqrtf(m[0]*m[0]+m[1]*m[1]+m[2]*m[2]+m[3]*m[3]);
+    scaleY_=sqrtf(m[4]*m[4]+m[5]*m[5]+m[6]*m[6]+m[7]*m[7]);
+    scaleZ_=sqrtf(m[8]*m[8]+m[9]*m[9]+m[10]*m[10]+m[11]*m[11]);
+
+    float m00=m[0]/scaleX_;
+    float m01=m[1]/scaleY_;
+    float m02=m[2]/scaleZ_;
+    float m10=m[4]/scaleX_;
+    float m11=m[5]/scaleY_;
+    float m12=m[6]/scaleZ_;
+    float m20=m[8]/scaleX_;
+    float m21=m[9]/scaleY_;
+    float m22=m[10]/scaleZ_;
+
+    float qw=fmaxf(0,sqrtf(1+m00+m11+m22)/2);
+    float qx=fmaxf(0,sqrtf(1+m00-m11-m22)/2);
+    float qy=fmaxf(0,sqrtf(1-m00+m11-m22)/2);
+    float qz=fmaxf(0,sqrtf(1-m00-m11+m22)/2);
+
+    if (qx*(m21-m12)<0) qx=-qx;
+    if (qy*(m02-m20)<0) qy=-qy;
+    if (qz*(m10-m01)<0) qz=-qz;
+
+    float qm=sqrtf(qw*qw+qx*qx+qy*qy+qz*qz);
+
+    quaternionToEuler(qw/qm,qx/qm,qy/qm,qz/qm,rotationX_,rotationY_,rotationZ_);
 
 	tx_=m[12];
 	ty_=m[13];
@@ -77,7 +120,7 @@ void Transform::setMatrix(float m11,float m12,float m21,float m22,float tx,float
 	ty_=ty;
 	tz_=0;
 
-        refX_=0;
+    refX_=0;
 	refY_=0;
 	refZ_=0;
 

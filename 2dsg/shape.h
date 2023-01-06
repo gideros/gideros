@@ -36,6 +36,7 @@ public:
 	void endPath();
 
 	void clear();
+    static std::vector<double> tesselate(const std::vector<std::vector<Point2f> > & contours, WindingRule windingRule);
 protected:
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
 

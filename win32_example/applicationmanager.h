@@ -119,7 +119,7 @@ public:
 	void surfaceCreated();
 	void surfaceChanged(int width, int height, int rotation);
 	void updateHardwareOrientation();
-	void drawFrame();
+	bool drawFrame();
 
 	void setDirectories(const char *externalDir, const char *internalDir,
 			const char *cacheDir);

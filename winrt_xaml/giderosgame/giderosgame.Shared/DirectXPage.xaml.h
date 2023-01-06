@@ -47,6 +47,8 @@ namespace giderosgame
 		void OnPointerMoved(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerReleased(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerLost(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerEntered(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerExited(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnWheelChanged(Object ^ sender, Windows::UI::Core::PointerEventArgs ^ Args);
 
 		void OnKeyDown(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::KeyEventArgs ^ Args);

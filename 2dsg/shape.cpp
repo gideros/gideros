@@ -61,7 +61,7 @@ public:
 		internal_gluDeleteTess(tess);
 	}
 
-	std::vector<float> triangles;
+    std::vector<double> triangles;
 
 private:
 	static void BeginCallback_s(GLenum type, void* polygon_data)   
@@ -295,6 +295,13 @@ void Shape::cloneFrom(Shape *s) {
 Shape::~Shape()
 {
 	clear();
+}
+
+std::vector<double> Shape::tesselate(const std::vector<std::vector<Point2f> > & contours, WindingRule windingRule)
+{
+    Tesselator tes;
+    tes.tesselate(contours, windingRule == eEvenOdd);
+    return tes.triangles;
 }
 
 void Shape::clearFillStyle()
