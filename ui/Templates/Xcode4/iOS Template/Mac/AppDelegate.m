@@ -21,7 +21,6 @@
     return true;
 }
 
-
 - (void) applicationDidFinishLaunching:(NSNotification *)launchOptions
 {
     [self copyUserDefaultsToCache];
@@ -38,7 +37,40 @@
     [appMenu addItem:quitMenuItem];
     [appMenuItem setSubmenu:appMenu];
     
-    CGRect bounds = CGRectMake(100,100, 320,480);
+    NSString *path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets"] stringByAppendingPathComponent:@"properties.bin"];
+    
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    
+    int ww=320;
+    int wh=480;
+    BOOL isPlayer = false;
+    BOOL exists = [fileManager fileExistsAtPath:path];
+    if (!exists) {
+        isPlayer = true;
+    }
+    else {
+        NSData *properties=[fileManager contentsAtPath:path];
+        if (properties!=nil) {
+            int *props=(int *)[properties bytes];
+            int width=props[1];
+            int height=props[2];
+            int sc=props[3];
+            int skip=4+sc*2;
+            int orient=props[skip];
+            ww=props[skip+7];
+            wh=props[skip+8];
+            if (ww==0) {
+                ww=width;
+                wh=height;
+            }
+            if (orient&1) {
+                int c=ww;
+                ww=wh;
+                wh=c;
+            }
+        }
+    }
+    CGRect bounds = CGRectMake(100,100, ww,wh);
  
     self.viewController = [[ViewController alloc] init];
     self.window = [NSWindow windowWithContentViewController:self.viewController];
@@ -48,17 +80,6 @@
 
     int height = bounds.size.width;
     int width = bounds.size.height;
-    
-    
-    NSString *path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets"] stringByAppendingPathComponent:@"properties.bin"];
-    
-    NSFileManager *fileManager = [[NSFileManager alloc] init];
-    
-    BOOL isPlayer = false;
-    BOOL exists = [fileManager fileExistsAtPath:path];
-    if (!exists) {
-        isPlayer = true;
-    }
     
     gdr_initialize([self.viewController getGlView], height, width, isPlayer); //Reversed width,height
  
