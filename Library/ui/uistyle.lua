@@ -939,6 +939,33 @@ UI.Style.textfield={
 	styReadonly={
 	},
 	szMargin=".3s",
+	szCutPasteButton="1is",
+	colCutPasteButton="colText",
+	styCutPaste={
+		["image.colTint"]="textfield.colCutPasteButton",
+		["textfield.szSpacing"]=".2s",		
+		["textfield.colBoxBack"]="colBackground",
+		["textfield.colBoxBorder"]="colHighlight",
+		["textfield.szBoxBorder"]=".3s",
+		["textfield.icCut"]=Texture.new("ui/icons/cp_cut.png",true,{ mipmap=true }),
+		["textfield.icCopy"]=Texture.new("ui/icons/cp_copy.png",true,{ mipmap=true }),
+		["textfield.icPaste"]=Texture.new("ui/icons/cp_paste.png",true,{ mipmap=true }),
+	},
+	styCutPasteBox={
+		colWidgetBack=colFull,
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
+			corners={"textfield.szBoxBorder","textfield.szBoxBorder","textfield.szBoxBorder","textfield.szBoxBorder",63,63,63,63,},
+			insets={ left="textfield.szBoxBorder",right="textfield.szBoxBorder",top="textfield.szBoxBorder",bottom="textfield.szBoxBorder"},
+		}),
+		shader={
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="textfield.colBoxBack", colLayer2="textfield.colBoxBorder", colLayer3=colNone, colLayer4=colNone }
+		},
+	},
+	styCutPasteSingle={
+		["textfield.szSpacing"]=0,
+	},
 }
 UI.Style.timepicker={
 	szWidth="5em",

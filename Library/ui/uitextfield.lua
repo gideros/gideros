@@ -417,7 +417,6 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 		self._textfield:unfocus({ TAG="TextEdit",reason="BACK" })
 	elseif ctrl and keyCode==KeyCode.V and not self.hasTextInput then
 		application:getClipboard("text/plain",function (res,data,mime)
-			print("CP:",res,data,mime)
 			if res then
 				self:addChars(data) 
 			end
@@ -425,7 +424,7 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 	elseif ctrl and keyCode==KeyCode.C and not self.hasTextInput then
 		local seltext=self:getSelectedText()
 		if seltext then
-			application:setClipboard(seltext,"text/plain",function (res) print("CC:",res) end)
+			application:setClipboard(seltext,"text/plain",function (res) end)
 		end
 	elseif ctrl and keyCode==KeyCode.X and not self.hasTextInput then
 		local seltext=self:getSelectedText()
