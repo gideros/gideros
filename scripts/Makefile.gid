@@ -46,7 +46,7 @@ PLUGINS_ATV=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics
 PLUGINS_MAC=luasocket ogg liquidfun gsfxr microphone spine harfbuzz reactphysics3d imgui cute_c2
 PLUGINS_WINRT=luasocket ogg liquidfun gsfxr harfbuzz reactphysics3d imgui cute_c2
 
-ADDONS=GSFXREditor Player TAME
+ADDONS=GSFXREditor Player TAME SceneBuilder
 
 ROOT=.
 SDK=$(ROOT)/Sdk

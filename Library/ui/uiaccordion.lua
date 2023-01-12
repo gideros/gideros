@@ -148,8 +148,12 @@ function UI.Accordion:buildTab(d)
 end
 
 function UI.Accordion:updateTab(cell,event)
-	if cell.h and cell.h.uiUpdate then
-		cell.h:uiUpdate(cell.d,{ expanded=self.expanded[cell.d] },event) --d,mode --event(from onMouseClick)
+	if cell.h then
+		cell.h:setFlags({ expanded=(self.expanded[cell.d] or false) },event)
+		if cell.h.uiUpdate then
+			-- TODO remove!
+			cell.h:uiUpdate(cell.d,{ expanded=self.expanded[cell.d] },event) --d,mode --event(from onMouseClick)
+		end
 	end
 end
 

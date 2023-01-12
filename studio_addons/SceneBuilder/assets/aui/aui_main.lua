@@ -44,10 +44,18 @@ function AUI.Main:init()
 			},
 			-- Left side
 			{ class= UI.Panel, layoutModel=UI.Layout.Vertical, layout={fill=1, gridx=0,gridy=1, width="aui_asshelf.szAll"}, children={
-				{ class="UI.Label", Style="aui_main.styLabel", Text="Library", layout={ fill=1 },  },
+				{ class="UI.Panel", LocalStyle="aui_main.styLabel", layoutModel={ rowWeights={1}, columnWeights={1,0}}, layout={ fill=1 },  
+				  children={
+					{ class="UI.Label", Text="Library", layout={ fill=1 },  },
+					{ class="UI.Image", Image="aui_main.icPlus", layout={ gridx=1, fill=0, width="1em", height="1em" }, 
+					name="btLibraryAdd", behavior=UI.Behavior.Button, },
+				  }
+				},
 				{ class=UI.Viewport, layout={fill=1,weighty=1 },
 					Scrollbar={UI.Viewport.SCROLLBAR.AUTO,UI.Viewport.SCROLLBAR.AUTO},
-					name="assetLibrary",
+					Content={
+						class=AUI.AssetLibrary, name="assetLibrary", layout={ anchorx=0, anchory=0, fill=Sprite.LAYOUT_FILL_HORIZONTAL},
+					}					
 				},
 				}
 			},
@@ -92,11 +100,10 @@ function AUI.Main:init()
 	UI.BuilderSelf(Template,self)
 	
 
-	local assetLib=AssetShelf.new("KayKit")
-	self.allAssets={ assetLib }
+	self.allAssets=AssetShelf.loadAll()
 	--assetLib:import("I:/3D/Assets/Packs/KayKit-Dungeon")
 
-	self.assetLibrary:setContent(AUI.AssetShelf.new(assetLib))
+	self.assetLibrary:updateLibrary(self.allAssets)
 	
 	self:newProject()
 	
@@ -150,7 +157,30 @@ function AUI.Main:loadProject(file)
 							t:setScale(s.transform.scale[1],s.transform.scale[2],s.transform.scale[3])
 						end
 					end
-					m:update()
+					if s.physics then
+						local s=s.physics
+						local pspec={ shape=s.shapetype }
+						if s.transform then
+							local t=Matrix.new()
+							pspec.transform=t
+							if s.transform.position then
+								t:setPosition(s.transform.position[1],s.transform.position[2],s.transform.position[3])
+							end
+							if s.transform.rotation then
+								t:setRotationX(s.transform.rotation[1])
+								t:setRotationY(s.transform.rotation[2])
+								t:setRotationZ(s.transform.rotation[3])
+							end
+							if s.transform.scale then
+								t:setScale(s.transform.scale[1],s.transform.scale[2],s.transform.scale[3])
+							end
+						end
+						m:makeBody(pspec)
+						if s.bodytype then m.body.bodytype=s.bodytype end
+					else
+						m:makeBody(pspec)
+					end
+					m:update(s.physics)
 				end
 			else
 				local m=self.editor:addGroup(p)
@@ -176,6 +206,7 @@ function AUI.Main:saveProject(file)
 			if it.model then
 				it=it.model
 				local t=it:getTransform()
+				local tp=it.body.fixtureTransform
 				sub[i]={
 					asset={ name=it.assetName, lib=it.assetLib.name, },
 					name=it.name,
@@ -184,6 +215,15 @@ function AUI.Main:saveProject(file)
 						position={ t:getX(), t:getY(), t:getZ() },
 						rotation={ t:getRotationX(), t:getRotationY(), t:getRotationZ() },
 						scale= { t:getScaleX(), t:getScaleY(), t:getScaleZ() },
+					},
+					physics={
+						bodytype=it.body.bodytype,
+						shapetype=it.body.shapetype,
+						transform={
+							position={ tp:getX(), tp:getY(), tp:getZ() },
+							rotation={ tp:getRotationX(), tp:getRotationY(), tp:getRotationZ() },
+							scale= { tp:getScaleX(), tp:getScaleY(), tp:getScaleZ() },
+						},
 					}
 				}
 			else
@@ -287,6 +327,14 @@ function AUI.Main:onWidgetAction(w)
 			self:exportAssets(file)
 		end
 		return true
+	elseif w==self.btLibraryAdd then
+		local file=application:get("openDirectoryDialog","Import Library",nil)
+		local name=file
+		while name:find("/") do name=name:sub(name:find("/")+1) end
+		local assetLib=AssetShelf.new(name)
+		assetLib:import(file)
+		table.insert(self.allAssets,assetLib)
+		self.assetLibrary:updateLibrary(self.allAssets)
 	elseif w==self.btInfo then
 		local dialog=UI.Dialog.confirm("Do you agree","Yes!","No :(")
 		local scw=screen:getWidth()
@@ -297,4 +345,24 @@ function AUI.Main:onWidgetAction(w)
 		end,"colShadow",100)
 		UI.Animation:animate(dialog,"pop",UI.Animation.AnchorMove,1000,{ easing={type="bounce",way="in"}})
 	end
+end
+
+function AUI.Main:onAssetShelfDelete(w,name)
+	local dialog=UI.Dialog.confirm("This will remove asset collection \e[color=colHighlight]"..name.."\e[color] from your library.","I confirm","Cancel")
+	dialog:setLayoutConstraints({fill=Sprite.LAYOUT_FILL_NONE, width="20em"})
+	UI.ModalScreen.showDialog(UI.Screen.getScreen(w),dialog,function(res,dialog,cleanup)
+		if res then
+			local idx
+			for k,alib in ipairs(self.allAssets) do
+				if alib.name==name then idx=k end
+			end
+			if idx then
+				local al=table.remove(self.allAssets,idx)
+				al:delete()
+			end
+			self.assetLibrary:updateLibrary(self.allAssets)
+		end
+		cleanup()
+		return true
+	end,"colShadow",100)
 end

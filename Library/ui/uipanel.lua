@@ -150,6 +150,7 @@ local function linkStyle(s,c,noupd)
 end
 
 function UI.Panel:newClone()
+	self.__parent=nil --Fixed in future Gideros
 	local tc=table.clone
 	local t,t2
 	t=tc(self._istyle) t.__Parent=UI.Style._style self._istyle=t t2=t

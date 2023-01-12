@@ -28,7 +28,9 @@ local LightingShaderAttrs={
 {name="INSTMATA",type=Shader.DFLOAT,amult=4,slot=6,offset=0,instances=1,code="i"},
 {name="INSTMATB",type=Shader.DFLOAT,amult=4,slot=7,offset=0,instances=1,code="i"},
 {name="INSTMATC",type=Shader.DFLOAT,amult=4,slot=8,offset=0,instances=1,code="i"},
-{name="INSTMATD",type=Shader.DFLOAT,amult=4,slot=9,offset=0,instances=1,code="i"}
+{name="INSTMATD",type=Shader.DFLOAT,amult=4,slot=9,offset=0,instances=1,code="i"},
+{name="VOXELDATA",type=Shader.DFLOAT,amult=4,slot=10,offset=0,instances=1,code="v"},
+{name="VOXELFACE",type=Shader.DFLOAT,amult=1,slot=11,offset=0,code="v"},
 }
 
 local LightingShaderConstants={
@@ -43,6 +45,7 @@ local LightingShaderConstants={
 {name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false},
 {name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="n"},
 {name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false,code="s"},
+{name="g_ColorMap",type=Shader.CTEXTURE,mult=1,vertex=true,code="v"},
 {name="bones",type=Shader.CMATRIX,mult=64,vertex=true,code="a"},
 {name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
 }
@@ -59,6 +62,7 @@ local LightingShaderVarying={
 {name="normalCoord",type=Shader.CFLOAT3},
 {name="lightSpace",type=Shader.CFLOAT4,code="s"},
 {name="vcolor",type=Shader.CFLOAT4,code="c"},
+{name="vcolor",type=Shader.CFLOAT4,code="v"},
 }
 
 -- Shaders defs
@@ -82,6 +86,7 @@ function Lighting.getShader(code)
 		{"n","NORMMAP",true},
 		{"i","INSTANCED",true},
 		{"a","ANIMATED",true},
+		{"v","VOXEL",true},
 	}
 	local lcode,ccode,acode="","",""
 	local lconst={}
@@ -196,6 +201,11 @@ function Lighting.setSpriteMode(sprite,mode)
 			Lighting._shadowed[sprite]=sprite
 		end
 		if sc:find("a") then D3Anim._addMesh(sprite) end
+		if sc:find("v") then
+			if sh.textureIndex.g_ColorMap then
+				sprite:setTexture(sprite.colorMap,sh.textureIndex.g_ColorMap)
+			end
+		end
 	end
 end
 

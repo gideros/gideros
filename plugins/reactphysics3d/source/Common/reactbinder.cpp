@@ -67,6 +67,18 @@ public:
 				lua_setfield(L, -2, "fixture1");
 				getb2(L, cp.getCollider2());
 				lua_setfield(L, -2, "fixture2");
+				size_t nc=cp.getNbContactPoints();
+				lua_createtable(L,nc,0);
+				for (size_t i=0;i<nc;i++) {
+					CollisionCallback::ContactPoint ccp=cp.getContactPoint(i);
+					lua_newtable(L);
+					lua_pushnumber(L,ccp.getPenetrationDepth());
+					lua_setfield(L, -2, "penetration");
+					lua_pushvector(L,ccp.getWorldNormal().x,ccp.getWorldNormal().y,ccp.getWorldNormal().z,0);
+					lua_setfield(L, -2, "normal");
+					lua_rawseti(L,-2,i+1);
+				}
+				lua_setfield(L, -2, "contacts");
 				lua_call(L, 2, 0);
 			}
 		}

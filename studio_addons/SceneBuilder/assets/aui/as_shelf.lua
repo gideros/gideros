@@ -1,4 +1,5 @@
 --!NEEDS:ui/uipanel.lua
+--!NEEDS:ui/uiaccordion.lua
 
 AUI=AUI or {}
 AUI.AssetItem=Core.class(UI.Panel,function(lib) end)
@@ -74,3 +75,51 @@ function AUI.AssetShelf:cleanupDndData(data,target)
 
 end
 
+
+AUI.AssetShelfLabel=Core.class(UI.Panel,function (item) return end)
+
+AUI.AssetShelfLabel.Template={
+	class="AUI.AssetShelfLabel", 
+	LocalStyle="aui_aslib.styLabel",
+	layoutModel={ insets="aui_asitem.szSpacing", cellSpacingX="aui_asitem.szSpacing", columnWeights={0,1,0}, rowWeights={1}, },
+	children={
+		{ class="UI.Image", Image="aui_aslib.icBRight", name="icn", layout={gridx=0, fill=Sprite.LAYOUT_FILL_BOTH, width="1em", height="1em" } },
+		{ class="UI.Label", name="lbl", layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH }, 
+			TextLayout = { flags = FontBase.TLF_REF_LINETOP | FontBase.TLF_VCENTER | FontBase.TLF_LEFT | FontBase.TLF_SINGLELINE },
+		},
+		{ class="UI.Image", Image="aui_aslib.icTrash", name="btDelete", behavior=UI.Behavior.Button, layout={gridx=2, fill=Sprite.LAYOUT_FILL_BOTH, width="1em", height="1em" } },
+	}
+}	
+
+function AUI.AssetShelfLabel:init(item)
+	UI.BuilderSelf(AUI.AssetShelfLabel.Template,self)
+	--self.img:setImage(item.assetLib:getThumbnail(item.assetName))		
+	self.lbl:setText(item.name)
+	self.name=item.name
+end
+
+function AUI.AssetShelfLabel:setFlags(changes)
+	UI.Panel.setFlags(self,changes)
+	if changes.expanded~=nil then
+		self.icn:setImage(if changes.expanded then "aui_aslib.icBDown" else "aui_aslib.icBRight")
+	end
+end
+
+function AUI.AssetShelfLabel:onWidgetAction(w)
+	if w==self.btDelete then
+		UI.dispatchEvent(self,"AssetShelfDelete",self.name)
+	end
+end
+
+AUI.AssetLibrary=Core.class(UI.Accordion,function() end)
+local function shelfBuilder(shelf,inside)
+	if not inside then
+		return AUI.AssetShelfLabel.new(shelf)
+	else
+		return AUI.AssetShelf.new(shelf)
+	end
+end
+
+function AUI.AssetLibrary:updateLibrary(lib)
+	self:setData(lib,shelfBuilder)
+end

@@ -256,8 +256,8 @@ private:
     float refX_;
     float refY_;
     float refZ_;
-	mutable bool isDirty_;
-	void compose();
+    mutable bool isDirty_;
+    void compose();
 };
 
 

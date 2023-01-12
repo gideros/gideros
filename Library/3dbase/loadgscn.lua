@@ -15,7 +15,55 @@ function Files.load(file)
 	return js
 end
 
-function LoadGScene(libpath,file)
+local function MakeBody(self,spec,world)
+	if spec.bodytype=="ignore" then return end
+	local r3d=require "reactphysics3d"
+	local body=world:createBody()
+	if spec.bodytype=="kinetic" then
+		body:setType(r3d.Body.KINETIC_BODY)
+	elseif spec.bodytype=="dynamic" then
+		body:setType(r3d.Body.DYNAMIC_BODY)
+	else
+		body:setType(r3d.Body.STATIC_BODY)
+	end
+
+	local m=self
+	local ft=spec and spec.transform
+	if not ft then
+		ft=Matrix.new()
+		ft:setPosition(m.center[1],m.center[2],m.center[3])
+	end
+	local sx,sy,sz=ft:getScale()
+	local stx,sty,stz=m:getScale()
+	local dimx,dimy,dimz=(m.max[1]-m.min[1])/2,(m.max[2]-m.min[2])/2,(m.max[3]-m.min[3])/2 --Those are half dimensions
+	local shapedim=vector(dimx,dimy,dimz,0)
+	local shape
+	local shapetype=spec and spec.shape
+	dimx=dimx*sx*stx
+	dimy=dimy*sy*sty
+	dimz=dimz*sz*stz
+	if shapetype=="sphere" then
+		shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
+	else
+		shape=r3d.BoxShape.new(dimx,dimy,dimz)
+	end
+	if shape then
+		body.shapedim=shapedim
+		body.shape=shape
+		body.shapetype=shapetype
+		local fft=ft:duplicate()
+		fft:setScale(1,1,1)
+		body.fixture=body:createFixture(shape,fft,1000)
+		body.fixtureTransform=ft
+	end
+	self.body=body
+	body.model=self
+	local ft=m:getMatrix()
+	ft:setScale(1,1,1)
+	self.body:setTransform(ft)
+end
+
+function LoadGScene(libpath,file,world)
 	local loadGroup
 	local scene=Sprite.new()
 	scene.refs={}
@@ -56,6 +104,26 @@ function LoadGScene(libpath,file)
 					if s.transform.scale then
 						t:setScale(s.transform.scale[1],s.transform.scale[2],s.transform.scale[3])
 					end
+				end
+				if s.physics and world then
+					local s=s.physics
+					local pspec={ shape=s.shapetype, bodytype=s.bodytype }
+					if s.transform then
+						local t=Matrix.new()
+						pspec.transform=t
+						if s.transform.position then
+							t:setPosition(s.transform.position[1],s.transform.position[2],s.transform.position[3])
+						end
+						if s.transform.rotation then
+							t:setRotationX(s.transform.rotation[1])
+							t:setRotationY(s.transform.rotation[2])
+							t:setRotationZ(s.transform.rotation[3])
+						end
+						if s.transform.scale then
+							t:setScale(s.transform.scale[1],s.transform.scale[2],s.transform.scale[3])
+						end
+					end
+					MakeBody(m,pspec,world)
 				end
 				if m.name then scene.refs[m.name]=m end
 				p:addChild(m)

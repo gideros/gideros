@@ -54,6 +54,17 @@ UI.Selection.Set=function(s,mode,onChange)
 	end
 end
 
+local function uiUnselectAll(s)
+	local sh=s._uisel_holder
+	local uis=UI.Selection
+	if sh.mode==uis.CLICK then
+	else
+		sh.sel={}
+		s:uiSelection(sh.sel)
+		sh.handler(s,sh.sel)
+	end
+end
+
 local function uiUpdateSelection(s,spr,data,action)
 	local selpoint=spr
 	if s and spr then
@@ -119,7 +130,11 @@ end
 
 UI.Selection._selSelectData=function(s,data) --without onMouseClick --force row selection
 	local spr,data=s:uiSelectData(data) --spr,data
-	if spr then uiUpdateSelection(s,spr,data) end
+	if spr then 
+		uiUpdateSelection(s,spr,data)
+	else
+		uiUnselectAll(s)
+	end
 end
 
 function UI.Selection.select(s,dataList) --Software selection
@@ -148,7 +163,10 @@ end
 
 function UI.Selection._selHandler(s,x,y,c)
 	local spr,data=s:uiSelect(x,y)
-	if spr then uiUpdateSelection(s,spr,data,if c and c>=2 then "doubleclick" else "click") end
+	if spr then 
+		uiUpdateSelection(s,spr,data,if c and c>=2 then "doubleclick" else "click")
+	else
+	end
 end
 
 function UI.Selection._selHandlerDragStart(s,x,y,d,a,change,long)

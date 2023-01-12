@@ -277,6 +277,7 @@ UI.Theme.PointCore_Base={
 		["textfield.colBorder"]="theme.Y30", 
 	},
 	["textfield.szMargin"]=".5s",
+	["textfield.colCutPasteButton"]="theme.C2M",
 	--
 	["toolbox.colHeader"]="theme.C1F",
 	["toolbox.colBorder"]="theme.C1F",

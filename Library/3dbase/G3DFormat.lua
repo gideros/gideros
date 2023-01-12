@@ -1,5 +1,7 @@
 G3DFormat={}
 
+local g3dNum=0
+
 function G3DFormat.computeG3DSizes(g3d)
 	if g3d.type=="group" then
 		for _,v in pairs(g3d.parts) do
@@ -31,6 +33,8 @@ function G3DFormat.computeG3DSizes(g3d)
 		end
 		g3d.min={minx,miny,minz}
 		g3d.max={maxx,maxy,maxz}
+	elseif g3d.type=="voxel" then
+		g3d.min={0,0,0}
 	else
 		assert(g3d.type,"No type G3D structure")
 		assert(false,"Unrecognized object type: "..g3d.type)
@@ -43,11 +47,40 @@ function G3DFormat.computeG3DSizes(g3d)
 		m=G3DFormat.srtToMatrix(g3d.srt)
 	end
 	if m then
-		g3d.min[1],g3d.min[2],g3d.min[3]=m:transformPoint(g3d.min[1],g3d.min[2],g3d.min[3])
-		g3d.max[1],g3d.max[2],g3d.max[3]=m:transformPoint(g3d.max[1],g3d.max[2],g3d.max[3])
+		local x1,y1,z1=m:transformPoint(g3d.min[1],g3d.min[2],g3d.min[3])
+		local x2,y2,z2=m:transformPoint(g3d.max[1],g3d.max[2],g3d.max[3])
+		g3d.min[1],g3d.min[2],g3d.min[3]=x1><x2,y1><y2,z1><z2
+		g3d.max[1],g3d.max[2],g3d.max[3]=x1<>x2,y1<>y2,z1<>z2
 	end
 
 	g3d.center={(g3d.max[1]+g3d.min[1])/2,(g3d.max[2]+g3d.min[2])/2,(g3d.max[3]+g3d.min[3])/2}
+end
+
+function G3DFormat.makeSerializable(g3d)
+	if g3d.type=="group" then
+		for _,v in pairs(g3d.parts) do
+			G3DFormat.makeSerializable(v)
+		end
+	elseif g3d.type=="mesh" then
+		local mat=g3d.material
+		mat.texture=nil
+		if mat and mat.embeddedtexture and not mat.embeddedtexture.b64 then
+			local rt=RenderTarget.new(mat.embeddedtexture:getWidth(),mat.embeddedtexture:getHeight())
+			local bm=Bitmap.new(mat.embeddedtexture)
+			rt:clear(0,0)
+			rt:draw(bm)
+			g3dNum+=1
+			local bname="_g3d_"..g3dNum..".png"			
+			local bb=Buffer.new(bname) -- embedded texture buffer
+			rt:save("|B|"..bname)
+			mat.embeddedtexture={ type="png", b64=Cryptography.b64(bb:get()) }
+		end
+	elseif g3d.type=="voxel" then
+		
+	else
+		assert(g3d.type,"No type G3D structure")
+		assert(false,"Unrecognized object type: "..g3d.type)
+	end
 end
 
 function G3DFormat.stackMatrix(source,root)
@@ -176,7 +209,17 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 	end
 	-- DIFFUSE
 	if mtl.embeddedtexture and not mtl.texture then -- .glb embedded texture (buffer)
-		mtl.texture=mtl.embeddedtexture
+		if mtl.embeddedtexture.b64 then --Assume Base64
+			local iext=mtl.embeddedtexture.type
+			local data=Cryptography.unb64(mtl.embeddedtexture.b64)
+			g3dNum+=1
+			local bname="_g3d_"..g3dNum.."."..iext
+			local bb=Buffer.new(bname) -- embedded texture buffer
+			bb:set(data)
+			mtl.texture=Texture.new("|B|"..bname,true,{ wrap=TextureBase.REPEAT, extend=false})
+		else
+			mtl.texture=mtl.embeddedtexture
+		end
 		mtl.texturew=mtl.texture:getWidth()
 		mtl.textureh=mtl.texture:getHeight()
 	end
@@ -250,6 +293,24 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 	return m
 end
 
+function G3DFormat.buildG3DVoxel(obj,mtls,top)
+	local m=D3.Cube.new(1,1,1)
+	m.name=obj.name
+	m:setGenericArray(10,Shader.DFLOAT,4,#obj.voxels/4,obj.voxels)
+	local fmap={}
+	for i=0,5 do
+		for j=1,4 do
+			fmap[i*4+j]=1<<(i+8)
+		end
+	end
+	m:setGenericArray(11,Shader.DFLOAT,1,24,fmap)
+	Mesh.setInstanceCount(m,obj.voxelCount)
+	m.colorMap=Texture.new(obj.colorMap,256,1,{extend=false, rawalpha=true})
+	--m:setCullMode(Sprite.CULL_BACK)
+	m:updateMode(D3.Mesh.MODE_LIGHTING|D3.Mesh.MODE_SHADOW|D3.Mesh.MODE_VOXEL,0)
+	return m
+end
+
 function G3DFormat.buildG3D(g3d,mtl,top)
 	local spr=nil
 	if g3d.type=="group" then
@@ -272,6 +333,8 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 		end
 	elseif g3d.type=="mesh" then
 		spr=G3DFormat.buildG3DObject(g3d,mtl,top)
+	elseif g3d.type=="voxel" then
+		spr=G3DFormat.buildG3DVoxel(g3d,mtl,top)
 	else
 		assert(g3d.type,"No type G3D structure")
 		assert(false,"Unrecognized object type: "..g3d.type)

@@ -79,7 +79,7 @@ function Gltf:getNode(i)
 					mats[n+8],mats[n+9],mats[n+10],mats[n+11],
 					mats[n+12],mats[n+13],mats[n+14],mats[n+15])
 				rm:invert()
-				bones[k]={ node="n"..v, _poseMat=rm }
+				bones[k]={ node="n"..v }
 				if self.collectBones then self.collectBones["n"..v]=true end
 			end
 		end

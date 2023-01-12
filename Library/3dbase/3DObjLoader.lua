@@ -125,6 +125,7 @@ function importObj(path,file,imtls,matpfx,textureFolder,textureMap)
 		elseif fld[1]=="usemtl" then
 			buildObject()
 			mtl=matpfx..fld[2]
+			if mtls[mtl] then mtl=mtls[mtl] end
 		end
 	end
 	buildObject() --If any in progress

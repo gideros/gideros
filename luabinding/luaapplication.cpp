@@ -96,8 +96,12 @@ static void LuaCallback_s(int type, void *event, void *udata)
 
 	lua_getref(L,type);
 	lua_unref(L,type);
-    int nret=((gapplication_LuaArgPusher)udata)(L,event);
-    lua_call(L, nret, 0);
+	if (lua_type(L,-1)==LUA_TFUNCTION) {
+		int nret=((gapplication_LuaArgPusher)udata)(L,event);
+		lua_call(L, nret, 0);
+	}
+	else
+		lua_pop(L,1);
 }
 
 void gapplication_luaCallback(int luaFuncRef,void *data,gapplication_LuaArgPusher pusher)

@@ -33,7 +33,8 @@ tgtdpi=UI.Default.TargetDpi or tgtdpi
 
 local zoom=(dpi/tgtdpi)/ls
 local fzoom=20
-if debug then print("UI.Style","application:getScreenDensity()",application:getScreenDensity(),"diag",diag,"ls",ls,"dpi",dpi,"tgtdpi",tgtdpi,"zoom",zoom,fzoom,"platform",platform,"mode",detectedMode) end
+if debug then print("UI.Style","getDeviceHeight()",application:getDeviceHeight(),"getDeviceWidth()",application:getDeviceWidth(),"getScreenDensity()",application:getScreenDensity()) end
+if debug then print("UI.Style","diag",diag,"ls",ls,"dpi",dpi,"tgtdpi",tgtdpi,"zoom",zoom,fzoom,"platform",platform,"mode",detectedMode) end
 
 UI.Style={}
 setmetatable(UI.Style,{

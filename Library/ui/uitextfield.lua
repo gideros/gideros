@@ -225,7 +225,8 @@ function TextEdit:setCaretPos(index,focusing)
   end
 end
 function TextEdit:getCaretPosition()
-  return (self and self.caret) and self.caret:getPosition()
+	if not self.caret then return end
+	return self.caret:getPosition()
 end
 function TextEdit:setCaretPosition(cx,cy)
   if self and self.caret then
@@ -416,6 +417,7 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 		self._textfield:unfocus({ TAG="TextEdit",reason="BACK" })
 	elseif ctrl and keyCode==KeyCode.V and not self.hasTextInput then
 		application:getClipboard("text/plain",function (res,data,mime)
+			print("CP:",res,data,mime)
 			if res then
 				self:addChars(data) 
 			end
@@ -423,7 +425,7 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 	elseif ctrl and keyCode==KeyCode.C and not self.hasTextInput then
 		local seltext=self:getSelectedText()
 		if seltext then
-			application:setClipboard(seltext,"text/plain",function (res) end)
+			application:setClipboard(seltext,"text/plain",function (res) print("CC:",res) end)
 		end
 	elseif ctrl and keyCode==KeyCode.X and not self.hasTextInput then
 		local seltext=self:getSelectedText()
@@ -592,6 +594,80 @@ function UI.TextField:onMouseClick(x,y,c)
   end
 end
 
+function UI.TextField:onLongPrepare(ex,ey,ratio)
+	if not self.prepare then
+		self.prepare=UI.Behavior.LongClick.makeIndicator(self,{})
+	end
+	self.prepare:indicate(self,ex,ey,ratio)
+	if ratio<0 then self.prepare=nil end
+	return true
+end
+
+function UI.TextField:onLongClick(x,y,c)
+  if not self._flags.disabled and self.editor.editing then
+	local hasSel=self.editor:getSelectedText()
+	if hasSel or not self._flags.readonly then
+		local popup=UI.Builder({
+			class="UI.Panel", 
+			Style="textfield.styCutPaste",
+			LocalStyle="textfield.styCutPasteBox",
+			layoutModel={ 
+				rowHeights={ "textfield.szCutPasteButton" }, 
+				columnWidths={ },
+				cellSpacingX="textfield.szSpacing", },
+			children={
+				{ class="UI.Image", Image="textfield.icCut", name="btCut", behavior=UI.Behavior.Button, layout={ gridx=0, fill=Sprite.LAYOUT_FILL_BOTH, width="textfield.szCutPasteButton", },},
+				{ class="UI.Image", Image="textfield.icCopy", name="btCopy", behavior=UI.Behavior.Button, layout={ gridx=1, fill=Sprite.LAYOUT_FILL_BOTH, width="textfield.szCutPasteButton", },},
+				{ class="UI.Image", Image="textfield.icPaste", name="btPaste", behavior=UI.Behavior.Button, layout={ gridx=2, fill=Sprite.LAYOUT_FILL_BOTH, width="textfield.szCutPasteButton", },},
+			}
+		})
+		local popupX,popupY=self.editor:getCaretPosition()
+		if not hasSel then
+			popup.btCut:setVisible(false)
+			popup.btCopy:setVisible(false)
+			popup:setStateStyle("textfield.styCutPasteSingle")
+		end
+		if self._flags.readonly then
+			popup.btPaste:setVisible(false)
+		end
+		popup.uitextfield=self
+		function popup:onWidgetAction(w)
+			if w==self.btCut then
+				local seltext=self.uitextfield.editor:getSelectedText()
+				if seltext then
+					application:setClipboard(seltext,"text/plain",function (res) end)
+					self.uitextfield.editor:cutSelection()
+					self.uitextfield.editor:textChanged()
+				end
+			elseif w==self.btCopy then
+				local seltext=self.uitextfield.editor:getSelectedText()
+				if seltext then
+					application:setClipboard(seltext,"text/plain",function (res) end)
+				end
+			elseif w==self.btPaste then
+				application:getClipboard("text/plain",function (res,data,mime)
+					if res then
+						self.uitextfield.editor:addChars(data) 
+					end
+				end)
+			end
+			self.uitextfield:dismissCutPaste()
+			return true
+		end
+		self.cutpastePopup=popup
+		UI.Screen.popupAt(self.editorBox,popup,{{x=popupX, y=popupY,dy=-1,dx=0,mvtx=true,mvty=true}})
+	end
+	return true
+  end
+end
+
+function UI.TextField:dismissCutPaste()
+	if self.cutpastePopup then 
+		self.cutpastePopup:removeFromParent()
+		self.cutpastePopup=nil
+	end
+end
+
 function UI.TextField:onDragStart(x,y)
 	if not self._flags.disabled and not self._flags.readonly then
 		self:focus({ TAG="UI.TextField",reason="ON_CLICK" } )
@@ -646,22 +722,28 @@ function UI.TextField:ensureVisible(x,y)
 end
 
 function UI.TextField:focus(event)
-  if not self._flags.disabled and not self._flags.readonly then
-    local gained=UI.Focus:request(self)
-    if gained then
-      UI.dispatchEvent(self,"FocusChange",self:getText(),true,event) --focused
-    end
-    return gained
-  end
+	self:dismissCutPaste()
+	if not self._flags.disabled and not self._flags.readonly then
+		local gained=UI.Focus:request(self)
+		if gained then
+			UI.Control.onLongClick[self]=self
+			UI.Control.onLongPrepare[self]=self
+			UI.dispatchEvent(self,"FocusChange",self:getText(),true,event) --focused
+		end
+		return gained
+	end
 end
 
 function UI.TextField:unfocus(event)
-  local same=UI.Focus:relinquish(self)
-  if same then
-	self.editor:setSelected(0,0)
-    UI.dispatchEvent(self,"FocusChange",self:getText(),false,event) --unfocused
-  end
-  return same
+	self:dismissCutPaste()
+	UI.Control.onLongClick[self]=nil
+	UI.Control.onLongPrepare[self]=nil
+	local same=UI.Focus:relinquish(self)
+	if same then
+		self.editor:setSelected(0,0)
+		UI.dispatchEvent(self,"FocusChange",self:getText(),false,event) --unfocused
+	end
+	return same
 end
 
 function UI.TextField:setTextType(tt)

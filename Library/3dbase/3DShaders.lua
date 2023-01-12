@@ -2,7 +2,7 @@ D3=D3 or {}
 
 local slang=Shader.getShaderLanguage()
 
-function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INSTMATA,INSTMATB,INSTMATC,INSTMATD) : Shader
+function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INSTMATA,INSTMATB,INSTMATC,INSTMATD,VOXELDATA,VOXELFACE) : Shader
 	if OPT_TEXTURED then texCoord=TEXCOORD end
 	local pos = hF4(POSITION,1.0)
 	local norm = hF4(NORMAL,0.0)
@@ -18,7 +18,16 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 	if OPT_INSTANCED then
 		local imat=hF44(INSTMATA,INSTMATB,INSTMATC,INSTMATD);
 		pos=imat*InstanceMatrix*pos;
-		norm = imat*InstanceMatrix*hF4(norm.xyz, 0.0);
+		norm = imat*InstanceMatrix*hF4(norm.xyz, 0.0)
+	end
+	if OPT_VOXEL then
+		pos.x=.5+pos.x/2+VOXELDATA.x
+		pos.y=.5+pos.y/2+VOXELDATA.y
+		pos.z=.5+pos.z/2+VOXELDATA.z
+		local msk=floor(VOXELDATA.w/VOXELFACE)
+		local msk2=2*floor(msk/2)
+		if msk~=msk2 then pos=hF4(0,0,0,1) end
+		vcolor=texture2D(g_ColorMap,hF2(((VOXELDATA.w)%256)/255,0));
 	end
 	if OPT_ANIMATED then
 		local nulv=hF4(0,0,0,0)
@@ -138,6 +147,9 @@ function D3._FLUA_Shader() : Shader
 	end
 	local color0 = lF4(g_Color)
 	if OPT_COLORED then
+		color0=color0*vcolor
+	end
+	if OPT_VOXEL then
 		color0=color0*vcolor
 	end
 	if OPT_TEXTURED then

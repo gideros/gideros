@@ -14,6 +14,13 @@ function EditorModel:init(editor,assetitem)
 	local m=assetitem.lib:getModel(assetitem.name)
 	self.sprite=m
 	m.model=self
+	if m.animations and m.animations[1] then
+		local anim
+		for _,a in ipairs(m.animations) do 
+			if a.name:lower()=="idle" then anim=a end
+		end 
+		D3Anim.setAnimation(m,anim or m.animations[1],"main",true)
+	end
 end
 
 function EditorModel:makeBody(bodySpec)
@@ -27,13 +34,14 @@ function EditorModel:makeBody(bodySpec)
 		ft:setPosition(m.center[1],m.center[2],m.center[3])
 	end
 	local sx,sy,sz=ft:getScale()
+	local stx,sty,stz=self.transform:getScale()
 	local dimx,dimy,dimz=(m.max[1]-m.min[1])/2,(m.max[2]-m.min[2])/2,(m.max[3]-m.min[3])/2 --Those are half dimensions
 	local shapedim=vector(dimx,dimy,dimz,0)
 	local shape
 	local shapetype=bodySpec and bodySpec.shape
-	dimx=dimx*sx
-	dimy=dimy*sy
-	dimz=dimz*sz
+	dimx=dimx*sx*stx
+	dimy=dimy*sy*sty
+	dimz=dimz*sz*stz
 	if shapetype=="sphere" then
 		shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
 	else
@@ -50,7 +58,9 @@ function EditorModel:makeBody(bodySpec)
 	end
 	self.body=body
 	body.model=self
-	self.body:setTransform(self.transform)
+	local ft=self.transform:duplicate()
+	ft:setScale(1,1,1)
+	self.body:setTransform(ft)
 end
 
 function EditorModel:removeBody()
@@ -62,23 +72,33 @@ end
 
 function EditorModel:getTransform(physics)
 	if physics and self.body and self.body.fixture then 
-		self.bodyUpdate=true
-		return self.body.fixtureTransform
+		local ft=self.transform:duplicate()
+		ft:multiply(self.body.fixtureTransform)
+		self.bodyUpdate=ft
+		return ft
 	else 
 		return self.transform
 	end
 end
-function EditorModel:update(event)
+function EditorModel:update(event,bodyUpdate)
 	self.sprite:setMatrix(self.transform)
 	if self.body then
-		if self.bodyUpdate then
+		if self.bodyUpdate or bodyUpdate then
+			if self.bodyUpdate then
+				local wt=self.transform:duplicate()
+				wt:invert()
+				wt:multiply(self.bodyUpdate)
+				self.body.fixtureTransform=wt
+			end
 			self.bodyUpdate=nil
 			self.body:destroyFixture(self.body.fixture)
 			
 			local sx,sy,sz=self.body.fixtureTransform:getScale()
-			local dimx=self.body.shapedim.x*sx
-			local dimy=self.body.shapedim.y*sy
-			local dimz=self.body.shapedim.z*sz
+			local stx,sty,stz=self.transform:getScale()
+			
+			local dimx=self.body.shapedim.x*sx*stx
+			local dimy=self.body.shapedim.y*sy*sty
+			local dimz=self.body.shapedim.z*sz*stz
 			if self.body.shapetype=="sphere" then
 				self.body.shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
 			else
@@ -89,7 +109,9 @@ function EditorModel:update(event)
 			fft:setScale(1,1,1)
 			self.body.fixture=self.body:createFixture(self.body.shape,fft,1000)
 		end
-		self.body:setTransform(self.transform)
+		local ft=self.transform:duplicate()
+		ft:setScale(1,1,1)
+		self.body:setTransform(ft)
 	end
 	if self.editor then
 		if  self.editor.selection==self then
@@ -108,48 +130,77 @@ function EditorModel:getPropertyList()
 		{ name="Name" },
 		{ name="Tag" },
 		{ name="Transform", category=true, },
-		{ name="PositionX", type="number" },
-		{ name="PositionY", type="number" },
-		{ name="PositionZ", type="number" },
-		{ name="RotationX", type="number" },
-		{ name="RotationY", type="number" },
-		{ name="RotationZ", type="number" },
-		{ name="ScaleX", type="number" },
-		{ name="ScaleY", type="number" },
-		{ name="ScaleZ", type="number" },
+		{ name="Position", type="vector" },
+		{ name="Rotation", type="vector" },
+		{ name="Scale", type="vector" },
+		{ name="Physics", category=true, },
+		{ name="ColShape", type="set", typeset={ "Box", "Sphere" }, label="Shape"},
+		{ name="ColType", type="set", typeset={ "Static", "Dynamic", "Kinematic", "Ignore"}, label="Type"},
+		{ name="ColPosition", type="vector", label="Position" },
+		{ name="ColRotation", type="vector", label="Rotation" },
+		{ name="ColScale", type="vector", label="Scale" },
 	}
 	return pl
 end
+local ColShapeMap={
+	box=1,
+	sphere=2,
+}
+local ColShapeList={
+	"box",
+	"sphere",
+}
+local ColTypeMap={
+	static=1,
+	dynamic=2,
+	kinematic=3,
+	ignore=4,
+}
+local ColTypeList={
+	"static",
+	"dynamic",
+	"kinematic",
+	"ignore",
+}
+
 function EditorModel:getProperty(name)
 	if name=="Name" then return self.name
 	elseif name=="Tag" then return self.tag
 	elseif name=="Type" then return self.assetName
-	elseif name=="PositionX" then return self.transform:getX()
-	elseif name=="PositionY" then return self.transform:getY()
-	elseif name=="PositionZ" then return self.transform:getZ()
-	elseif name=="RotationX" then return self.transform:getRotationX()
-	elseif name=="RotationY" then return self.transform:getRotationY()
-	elseif name=="RotationZ" then return self.transform:getRotationZ()
-	elseif name=="ScaleX" then return self.transform:getScaleX()
-	elseif name=="ScaleY" then return self.transform:getScaleY()
-	elseif name=="ScaleZ" then return self.transform:getScaleZ()
+	--
+	elseif name=="Position" then return vector(self.transform:getPosition())
+	elseif name=="Rotation" then return vector(self.transform:getRotationX(),self.transform:getRotationY(),self.transform:getRotationZ())
+	elseif name=="Scale" then return vector(self.transform:getScale())
+	--
+	elseif name=="ColShape" then return ColShapeMap[self.body.shapetype] or 1
+	elseif name=="ColType" then return ColTypeMap[self.body.bodytype] or 1
+	elseif name=="ColPosition" then return vector(self.body.fixtureTransform:getPosition())
+	elseif name=="ColRotation" then return vector(self.body.fixtureTransform:getRotationX(),self.body.fixtureTransform:getRotationY(),self.body.fixtureTransform:getRotationZ())
+	elseif name=="ColScale" then return vector(self.body.fixtureTransform:getScale())
 	end
 end
 
 function EditorModel:setProperty(name,value)
+	local bodyUpdate=false
 	if name=="Name" then self.name=value
 	elseif name=="Tag" then self.tag=value
-	elseif name=="PositionX" then self.transform:setX(value)
-	elseif name=="PositionY" then self.transform:setY(value)
-	elseif name=="PositionZ" then self.transform:setZ(value)
-	elseif name=="RotationX" then self.transform:setRotationX(value)
-	elseif name=="RotationY" then self.transform:setRotationY(value)
-	elseif name=="RotationZ" then self.transform:setRotationZ(value)
-	elseif name=="ScaleX" then self.transform:setScaleX(value)
-	elseif name=="ScaleY" then self.transform:setScaleY(value)
-	elseif name=="ScaleZ" then self.transform:setScaleZ(value)
+	elseif name=="Position" then self.transform:setPosition(value.x,value.y,value.z)
+	elseif name=="Rotation" then 
+		self.transform:setRotationX(value.x)
+		self.transform:setRotationY(value.y)
+		self.transform:setRotationZ(value.z)
+	elseif name=="Scale" then self.transform:setScale(value.x,value.y,value.z) bodyUpdate=true
+	--
+	elseif name=="ColShape" then self.body.shapetype=ColShapeList[value] bodyUpdate=true
+	elseif name=="ColType" then self.body.bodytype=ColTypeList[value]
+	elseif name=="ColPosition" then self.body.fixtureTransform:setPosition(value.x,value.y,value.z) bodyUpdate=true
+	elseif name=="ColRotation" then 
+		self.body.fixtureTransform:setRotationX(value.x)
+		self.body.fixtureTransform:setRotationY(value.y)
+		self.body.fixtureTransform:setRotationZ(value.z) bodyUpdate=true
+	elseif name=="ColScale" then self.body.fixtureTransform:setScale(value.x,value.y,value.z) bodyUpdate=true
 	end
-	self:update(true)
+	self:update(true,bodyUpdate)
 end
 
 
@@ -184,6 +235,7 @@ function AUI.Editor:init()
 	UI.Control.onMouseClick[self]=self
 	UI.Control.onKeyDown[self]=self
 	UI.Control.onKeyUp[self]=self
+	UI.Control.onEnterFrame[self]=self
 
 	self.models=Sprite.new()
 	self.models.name="Scene"
@@ -356,6 +408,10 @@ function AUI.Editor:locateModel(x,y,keepSel)
 	return n and n.model
 end
 
+function AUI.Editor:onEnterFrame()
+	D3Anim.tick()
+end
+
 function AUI.Editor:onMouseWheel(x,y,w,wd)
 	if self.selection and (UI.Control.Meta.mouseButton or 0)~=0 then
 		local im=self.selection:getTransform(self:isPhysics())
@@ -365,7 +421,7 @@ function AUI.Editor:onMouseWheel(x,y,w,wd)
 		im:setScaleY(s.y*sf)
 		im:setScaleZ(s.z*sf)
 	
-		self.selection:update(true)
+		self.selection:update(true,true)
 	else
 		self.transform.zoom=(self.transform.zoom-wd*.1)<>0.1
 		self:updateTransform()
