@@ -43,8 +43,12 @@ local function parsemtl(mtls,path,file,prefix,textureFolder,textureMap)
 		for i=1,#fld,1 do fld[i]=string.gsub(fld[i], "\r", "") end
 		if (fld[2]~=nil) then fld[2]=string.gsub(fld[2], "\r", "") end
 		if fld[1]=="newmtl" then mtl={} mtls[prefix..fld[2]]=mtl
-		elseif fld[1]=="Kd" then mtl.kd={fld[2],fld[3],fld[4],1.0}
-		elseif fld[1]=="d" then mtl.kd[4]=fld[2] -- alpha XXX
+		-- bug new blender .obj format (not legacy), kd is no more!
+		elseif fld[1]=="Kd" then mtl.kd={fld[2],fld[3],fld[4],1.0} -- support for blender < 3.4.0 (legacy .obj)
+		elseif fld[1]=="d" then
+			if mtl.kd then mtl.kd[4]=fld[2] -- alpha XXX
+			else mtl.kd={1,1,1,fld[2]} -- rgba, support for blender >= 3.4.0 (new .obj format!), new 20230107 XXX
+			end
 		elseif fld[1]=="map_Kd" then
 			table.remove(fld,1)
 			local f=table.concat(fld," ")
