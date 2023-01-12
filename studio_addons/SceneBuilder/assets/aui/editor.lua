@@ -17,7 +17,7 @@ function EditorModel:init(editor,assetitem)
 	if m.animations and m.animations[1] then
 		local anim
 		for _,a in ipairs(m.animations) do 
-			if a.name:lower()=="idle" then anim=a end
+			if a.name and a.name:lower()=="idle" then anim=a end
 		end 
 		D3Anim.setAnimation(m,anim or m.animations[1],"main",true)
 	end
@@ -52,6 +52,8 @@ function EditorModel:makeBody(bodySpec)
 		body.shape=shape
 		body.shapetype=shapetype
 		local fft=ft:duplicate()
+		local tx,ty,tz=fft:getPosition()
+		fft:setPosition(tx*stx,ty*sty,tz*stz)
 		fft:setScale(1,1,1)
 		body.fixture=body:createFixture(shape,fft,1000)
 		body.fixtureTransform=ft
@@ -84,6 +86,7 @@ function EditorModel:update(event,bodyUpdate)
 	self.sprite:setMatrix(self.transform)
 	if self.body then
 		if self.bodyUpdate or bodyUpdate then
+			local stx,sty,stz=self.transform:getScale()
 			if self.bodyUpdate then
 				local wt=self.transform:duplicate()
 				wt:invert()
@@ -94,7 +97,6 @@ function EditorModel:update(event,bodyUpdate)
 			self.body:destroyFixture(self.body.fixture)
 			
 			local sx,sy,sz=self.body.fixtureTransform:getScale()
-			local stx,sty,stz=self.transform:getScale()
 			
 			local dimx=self.body.shapedim.x*sx*stx
 			local dimy=self.body.shapedim.y*sy*sty
@@ -106,6 +108,8 @@ function EditorModel:update(event,bodyUpdate)
 			end
 			
 			local fft=self.body.fixtureTransform:duplicate()
+			local tx,ty,tz=fft:getPosition()
+			fft:setPosition(tx*stx,ty*sty,tz*stz)
 			fft:setScale(1,1,1)
 			self.body.fixture=self.body:createFixture(self.body.shape,fft,1000)
 		end

@@ -52,6 +52,8 @@ local function MakeBody(self,spec,world)
 		body.shape=shape
 		body.shapetype=shapetype
 		local fft=ft:duplicate()
+		local tx,ty,tz=fft:getPosition()
+		fft:setPosition(tx*stx,ty*sty,tz*stz)
 		fft:setScale(1,1,1)
 		body.fixture=body:createFixture(shape,fft,1000)
 		body.fixtureTransform=ft

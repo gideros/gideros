@@ -56,14 +56,20 @@ function G3DFormat.computeG3DSizes(g3d)
 	g3d.center={(g3d.max[1]+g3d.min[1])/2,(g3d.max[2]+g3d.min[2])/2,(g3d.max[3]+g3d.min[3])/2}
 end
 
-function G3DFormat.makeSerializable(g3d)
+function G3DFormat.makeSerializable(g3d,mtls)
 	if g3d.type=="group" then
 		for _,v in pairs(g3d.parts) do
-			G3DFormat.makeSerializable(v)
+			G3DFormat.makeSerializable(v,mtls)
 		end
 	elseif g3d.type=="mesh" then
 		local mat=g3d.material
-		mat.texture=nil
+		if mtls and type(mat)=="string" then 
+			mat=mtls[mat]
+			g3d.material=mat
+		end
+		if mat then
+			mat.texture=nil
+		end
 		if mat and mat.embeddedtexture and not mat.embeddedtexture.b64 then
 			local rt=RenderTarget.new(mat.embeddedtexture:getWidth(),mat.embeddedtexture:getHeight())
 			local bm=Bitmap.new(mat.embeddedtexture)
@@ -184,7 +190,7 @@ function G3DFormat.quaternionToEuler(w,x,y,z)
 	return ^>rx,^>ry,^>rz
 end
 
-function G3DFormat.buildG3DObject(obj,mtls,top)
+function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 	local m=D3.Mesh.new()
 	m.name=obj.name
 	m:setVertexArray(obj.vertices)
@@ -226,7 +232,13 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 	if mtl.textureFile and not mtl.texture then -- .fbx texture (file path)
 		local path = mtl.modelpath or ""
 		mtl.textureFile = string.gsub(mtl.textureFile, "\\", "/") -- fix for android (and linux?)
-		mtl.texture=Texture.new(path..mtl.textureFile,true,{ wrap=TextureBase.REPEAT, extend=false})
+		local tpath=path..mtl.textureFile
+		if assetResolver and assetResolver.resolvePath then
+			tpath=assetResolver.resolvePath(tpath,"texture")
+		end
+		if tpath then
+			mtl.texture=Texture.new(tpath,true,{ wrap=TextureBase.REPEAT, extend=false})
+		end
 		mtl.texturew=mtl.texture:getWidth()
 		mtl.textureh=mtl.texture:getHeight()
 	end
@@ -246,7 +258,13 @@ function G3DFormat.buildG3DObject(obj,mtls,top)
 	if mtl.normalMapFile and not mtl.normalMap then -- .fbx normal map texture (file path)
 		local path = mtl.modelpath or ""
 		mtl.normalMapFile = string.gsub(mtl.normalMapFile, "\\", "/") -- fix for android (and linux?)
-		mtl.normalMap=Texture.new(path..mtl.normalMapFile,true,{ wrap=TextureBase.REPEAT, extend=false})
+		local tpath=path..mtl.normalMapFile
+		if assetResolver and assetResolver.resolvePath then
+			tpath=assetResolver.resolvePath(tpath,"texture")
+		end
+		if tpath then
+			mtl.normalMap=Texture.new(tpath,true,{ wrap=TextureBase.REPEAT, extend=false})
+		end
 	end
 	if (mtl.normalMap~=nil) then
 		m:setTexture(mtl.normalMap,1)
@@ -311,7 +329,7 @@ function G3DFormat.buildG3DVoxel(obj,mtls,top)
 	return m
 end
 
-function G3DFormat.buildG3D(g3d,mtl,top)
+function G3DFormat.buildG3D(g3d,mtl,top,assetResolver)
 	local spr=nil
 	if g3d.type=="group" then
 		spr=D3.Group.new()
@@ -324,7 +342,7 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 		end
 		spr.animations=g3d.animations
 		for k,v in pairs(g3d.parts) do
-			local m=G3DFormat.buildG3D(v,mtl,ltop)
+			local m=G3DFormat.buildG3D(v,mtl,ltop,assetResolver)
 			spr:addChild(m)
 			spr.objs[k]=m
 			if ltop and ltop.bones then
@@ -332,9 +350,9 @@ function G3DFormat.buildG3D(g3d,mtl,top)
 			end
 		end
 	elseif g3d.type=="mesh" then
-		spr=G3DFormat.buildG3DObject(g3d,mtl,top)
+		spr=G3DFormat.buildG3DObject(g3d,mtl,top,assetResolver)
 	elseif g3d.type=="voxel" then
-		spr=G3DFormat.buildG3DVoxel(g3d,mtl,top)
+		spr=G3DFormat.buildG3DVoxel(g3d,mtl,top,assetResolver)
 	else
 		assert(g3d.type,"No type G3D structure")
 		assert(false,"Unrecognized object type: "..g3d.type)

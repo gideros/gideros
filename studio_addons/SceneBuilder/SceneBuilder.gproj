@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties encryptAssets="0" logicalWidth="320" orientation="0" macos_category="5" mouseToTouch="1" windowWidth="1024" winrt_package="com.yourdomain.yourapp" version_code="1" scaleMode="0" osx_signingId="" html5_host="" retinaDisplay="3" app_name="" version="1.0" macos_bundle="com.yourdomain.yourapp-macos" osx_installerId="" windowHeight="768" winrt_org="GiderosMobile" ios_bundle="com.yourdomain." autorotation="0" html5_pwa="1" osx_category="5" tv_icon="" html5_wasm="0" win_org="GiderosMobile" html5_symbols="1" encryptCode="0" html5_fbinstant="0" osx_bundle="com.yourdomain." html5_fbload="100" vsync="0" logicalHeight="480" touchToMouse="1" architecture="7" iosDevice="0" app_icon="" mainluaOnly="0" backgroundColor="#ffffff" fps="60" splash_v_image="" osx_domain="giderosmobile.com" osx_org="GiderosMobile" splashScaleMode="0" exportMode="2" splash_h_image="" build_number="1" html5_mem="256" html5_crash="" disableSplash="0" win_domain="giderosmobile.com" html5_pack="1" atv_bundle="com.yourdomain.yourapp-atv" mouseTouchOrder="0">
+ <properties html5_crash="" backgroundColor="#ffffff" scaleMode="0" app_icon="" app_name="" retinaDisplay="3" atv_bundle="com.yourdomain.yourapp-atv" version="1.0" encryptAssets="0" architecture="7" logicalWidth="320" macos_category="5" encryptCode="0" html5_mem="256" html5_host="" ios_bundle="com.yourdomain." osx_installerId="" mainluaOnly="0" splash_h_image="" mouseToTouch="1" winrt_org="GiderosMobile" touchToMouse="1" splashScaleMode="0" disableSplash="0" win_domain="giderosmobile.com" osx_domain="giderosmobile.com" html5_pack="1" win_org="GiderosMobile" osx_signingId="" windowWidth="1024" mouseTouchOrder="0" iosDevice="0" version_code="1" exportMode="2" winrt_package="com.yourdomain.yourapp" tv_icon="" vsync="0" html5_pwa="1" html5_fbload="100" splash_v_image="" osx_bundle="com.yourdomain." osx_category="5" macos_bundle="com.yourdomain.yourapp-macos" logicalHeight="480" autorotation="0" fps="60" html5_symbols="1" build_number="1" html5_fbinstant="0" osx_org="GiderosMobile" windowHeight="768" orientation="0" html5_wasm="0">
   <imageScales/>
   <plugins>
    <plugin name="JSON" enabled="1"/>
@@ -32,6 +32,7 @@
   <file name="../../Library/3dbase/3DShapes.lua"/>
   <file name="../../Library/3dbase/3DView.lua"/>
   <file name="../../Library/3dbase/G3DFormat.lua"/>
+  <file name="../../Library/3dbase/fbxloader.lua"/>
   <file name="../../Library/3dbase/gltf.lua"/>
   <file name="../../Library/3dbase/loadgscn.lua"/>
   <file name="../../Library/3dbase/magicavoxel.lua"/>
@@ -70,6 +71,9 @@
    <file name="../../Library/ui/icons/clock_hand_h.png"/>
    <file name="../../Library/ui/icons/clock_hand_m.png"/>
    <file name="../../Library/ui/icons/clock_hand_s.png"/>
+   <file name="../../Library/ui/icons/cp_copy.png"/>
+   <file name="../../Library/ui/icons/cp_cut.png"/>
+   <file name="../../Library/ui/icons/cp_paste.png"/>
    <file name="../../Library/ui/icons/eye.png"/>
    <file name="../../Library/ui/icons/grey-button.png"/>
    <file name="../../Library/ui/icons/grey-panel.png"/>

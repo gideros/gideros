@@ -57,7 +57,11 @@ end
 function AssetShelf:getModel(name)
 	local data=self:readFile(name..".g3d")
 	G3DFormat.computeG3DSizes(data)
-	return G3DFormat.buildG3D(data)
+	return G3DFormat.buildG3D(data,nil,nil,{
+		resolvePath=function(path,type)
+			return self.libPath.."/"..path
+		end
+	})
 end
 	
 function AssetShelf:readFile(file)
@@ -71,6 +75,7 @@ function AssetShelf:exportAsset(name,folder)
 end
 
 function AssetShelf:import(path)
+	local texmap={}
 	for file in lfs.dir(application:getNativePath(path)) do
 		local filePath=application:getNativePath(path.."/"..file)
 		local attrs=lfs.attributes(filePath)
@@ -79,6 +84,7 @@ function AssetShelf:import(path)
 			if filePath:sub(-4):lower()==".glb" then ftype="glb" end
 			if filePath:sub(-4):lower()==".obj" then ftype="obj" end
 			if filePath:sub(-4):lower()==".vox" then ftype="vox" end
+			if filePath:sub(-4):lower()==".fbx" then ftype="fbx" end
 			if ftype then
 				local oname=file
 				local odot=oname:find(".",nil,true)
@@ -90,17 +96,26 @@ function AssetShelf:import(path)
 						print("Object "..oname.." already present in library, replacing")
 					end
 					--print(oname,filePath)
-					local data
+					local data,mtls
 					if ftype=="glb" then
 						local glb=Glb.new(path,file)
 						data=glb:getScene()
 					elseif ftype=="obj" then
-						data=importObj(path,file)
+						data,mtls=importObj(path,file)
 					elseif ftype=="vox" then
 						local vox=MagicaVoxel.new(path.."/"..file)
 						data=vox:getModel(true)
+					elseif ftype=="fbx" then
+						local tout=application:getNativePath("|T|temp.gdx")
+						os.execute(lfs.currentdir().."\\Tools\\fbx-conv-win32.exe -f -o g3dj \""..filePath.."\" \""..tout.."\"")
+						data,mtls=loadGdx("|T|temp.gdx")
+						os.remove("|T|temp.gdx")
 					end
-					G3DFormat.makeSerializable(data)
+					--local m=G3DFormat.buildG3D(data)
+					local textures={}
+					self:checkG3dTextures(data,mtls,textures)
+					self:mapTextures(textures,texmap)
+					G3DFormat.makeSerializable(data,mtls)
 					--print(require("inspect").inspect(data))
 					Files.saveJson(self.libPath.."/"..oname..".g3d",data)
 					self:generateThumbnail(oname,data)
@@ -112,9 +127,72 @@ function AssetShelf:import(path)
 	Files.saveJson(self.libPath.."/_manifest_.json",self.files)
 end
 
+function AssetShelf:mapTextures(texs,map)
+	local donet={}
+	local n=0
+	for _,tm in ipairs(texs) do
+		local skip
+		if donet[tm.key] then
+			if donet[tm.key][tm.table] then skip=true end
+		else
+			donet[tm.key]={}
+		end
+		donet[tm.key][tm.table]=true
+		if not skip then
+			local file=tm.table[tm.key]
+			local mfile=map[file]
+			if not mfile then
+				local lfile=application:get("openFileDialog","Choose a texture file for "..file,nil,"Texture (*.png;*.jpg)")
+				if lfile and lfile~="" then 
+					mfile=lfile
+				else
+					mfile=file
+				end
+				n=n+1
+				local tfile=tostring(n).."_"..(mfile:match("([^./\\]+%.[^/\\]+)$"))
+				lfs.mkdir(application:getNativePath(self.libPath.."/textures"))
+				local itex=Files.load(mfile)
+				Files.save(self.libPath.."/textures/"..tfile,itex)				
+				mfile="textures/"..tfile
+				print(file,mfile)
+				map[file]=mfile
+			end
+			tm.table[tm.key]=mfile
+		end
+	end
+end
+
+function AssetShelf:checkG3dTextures(g3d,mtls,textures)
+	if g3d.type=="group" then
+		for _,v in pairs(g3d.parts) do
+			self:checkG3dTextures(v,mtls,textures)
+		end
+	elseif g3d.type=="mesh" then
+		local mat=g3d.material
+		if mtls and type(mat)=="string" then 
+			mat=mtls[mat]
+		end
+		if mat and mat.textureFile then 
+			table.insert(textures,{ table=mat, key="textureFile" })
+		end
+		if mat and mat.normalMapFile then 
+			table.insert(textures,{ table=mat, key="normalMapFile" })
+		end
+	elseif g3d.type=="voxel" then
+		
+	else
+		assert(g3d.type,"No type G3D structure")
+		assert(false,"Unrecognized object type: "..g3d.type)
+	end
+end
+
 function AssetShelf:generateThumbnail(name,data)
 	G3DFormat.computeG3DSizes(data)
-	local m=G3DFormat.buildG3D(data)
+	local m=G3DFormat.buildG3D(data,nil,nil,{
+		resolvePath=function(path,type)
+			return self.libPath.."/"..path
+		end
+	})
 
 	-- Adjust scale
 	m:setAnchorPosition(m.center[1],m.center[2],m.center[3])

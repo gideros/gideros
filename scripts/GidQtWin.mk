@@ -128,6 +128,7 @@ qt.install: buildqt qt5.install qt.player html5.tools
 	cp $(ROOT)/gdrdeamon/release/gdrdeamon.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrbridge/release/gdrbridge.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
+	cp $(ROOT)/external/fbxconv-bin/fbx-conv-win32.exe $(RELEASE)/Tools
 	-cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
 
 ifeq ($(QT_VER),5)	
