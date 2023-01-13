@@ -35,7 +35,7 @@ function EditorModel:makeBody(bodySpec)
 	end
 	local sx,sy,sz=ft:getScale()
 	local stx,sty,stz=self.transform:getScale()
-	local dimx,dimy,dimz=(m.max[1]-m.min[1])/2,(m.max[2]-m.min[2])/2,(m.max[3]-m.min[3])/2 --Those are half dimensions
+	local dimx,dimy,dimz=((m.max[1]-m.min[1])/2)<>0.01,((m.max[2]-m.min[2])/2)<>0.01,((m.max[3]-m.min[3])/2)<>0.01 --Those are half dimensions
 	local shapedim=vector(dimx,dimy,dimz,0)
 	local shape
 	local shapetype=bodySpec and bodySpec.shape

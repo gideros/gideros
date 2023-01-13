@@ -98,6 +98,7 @@ function AssetShelf:import(path)
 			if filePath:sub(-4):lower()==".obj" then ftype="obj" end
 			if filePath:sub(-4):lower()==".vox" then ftype="vox" end
 			if filePath:sub(-4):lower()==".fbx" then ftype="fbx" end
+			if filePath:sub(-13):lower()==".unitypackage" then ftype="unity" end
 			if ftype then
 				local oname=file
 				local odot=oname:find(".",nil,true)
@@ -123,16 +124,49 @@ function AssetShelf:import(path)
 						os.execute(lfs.currentdir().."\\Tools\\fbx-conv-win32.exe -f -o g3dj \""..filePath.."\" \""..tout.."\"")
 						data,mtls=loadGdx("|T|temp.gdx")
 						os.remove("|T|temp.gdx")
+					elseif ftype=="unity" then
+						local ua=UAPack.new(filePath)
+						--Extract textures
+						for _,ff in pairs(ua:getFiles()) do
+							if ff.type=="png" or ff.type=="jpg" then
+								local aname=ff.pathname:match("([^./\\]+%.[^/\\]+)$")
+								Files.save(path.."/"..aname,ff.asset)
+							end
+						end
+						--Extract fbx
+						for _,ff in pairs(ua:getFiles()) do
+							if ff.type=="fbx" then
+								Files.save("|T|temp.fbx",ff.asset)
+								local tout=application:getNativePath("|T|temp.gdx")
+								local tin=application:getNativePath("|T|temp.fbx")
+								os.execute(lfs.currentdir().."\\Tools\\fbx-conv-win32.exe -f -o g3dj \""..tin.."\" \""..tout.."\"")
+								data,mtls=loadGdx("|T|temp.gdx")
+								os.remove("|T|temp.gdx")
+								os.remove("|T|temp.fbx")
+								
+								local aname=ff.pathname:match("([^./\\]+)%.[^/\\]+$")
+											
+								local textures={}
+								self:checkG3dTextures(data,mtls,textures)
+								self:mapTextures(textures,texmap)
+								G3DFormat.makeSerializable(data,mtls)
+								Files.saveJson(self.libPath.."/"..aname..".g3d",data,true)
+								self:generateThumbnail(aname,data)
+								self.files[aname]=aname..".g3d"
+								
+								data=nil
+							end
+						end
 					end
-					--local m=G3DFormat.buildG3D(data)
-					local textures={}
-					self:checkG3dTextures(data,mtls,textures)
-					self:mapTextures(textures,texmap)
-					G3DFormat.makeSerializable(data,mtls)
-					--print(require("inspect").inspect(data))
-					Files.saveJson(self.libPath.."/"..oname..".g3d",data,true)
-					self:generateThumbnail(oname,data)
-					self.files[oname]=oname..".g3d"
+					if data then
+						local textures={}
+						self:checkG3dTextures(data,mtls,textures)
+						self:mapTextures(textures,texmap)
+						G3DFormat.makeSerializable(data,mtls)
+						Files.saveJson(self.libPath.."/"..oname..".g3d",data,true)
+						self:generateThumbnail(oname,data)
+						self.files[oname]=oname..".g3d"
+					end
 				end					
 			end
 		end

@@ -2,6 +2,7 @@ Files={}
 
 function Files.loadJson(file)
 	local js=Files.load(file)
+	if not js then return end
 	if js:sub(1,1)=="x" then js=zlib.decompress(js) end
 	local ok,ret=pcall(json.decode,js)
 	if not ok then return end
