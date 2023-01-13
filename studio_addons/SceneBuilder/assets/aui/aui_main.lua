@@ -263,7 +263,7 @@ function AUI.Main:exportAssets(folder)
 	end
 	gatherAssets(self.editor:getSceneData())
 	for _,n in pairs(assets) do
-		n.lib:exportAsset(n.name, folder)
+		n.lib:exportAsset(n.name, folder, {})
 	end
 end
 

@@ -2,6 +2,7 @@ local Files={}
 
 function Files.loadJson(file)
 	local js=Files.load(file)
+	if js:sub(1,1)=="x" then js=zlib.decompress(js) end
 	local ok,ret=pcall(json.decode,js)
 	if not ok then return end
 	return ret
@@ -90,7 +91,11 @@ function LoadGScene(libpath,file,world)
 			if s.asset then	
 				local data=Files.loadJson(libpath.."/"..s.asset.lib.."/"..s.asset.name..".g3d")
 				G3DFormat.computeG3DSizes(data)
-				local m=G3DFormat.buildG3D(data)
+				local m=G3DFormat.buildG3D(data,nil,nil,{
+					resolvePath=function(path,type)
+						return libpath.."/"..s.asset.lib.."/"..path
+					end
+				})
 				m.name=s.name
 				m.tag=s.tag
 				if s.transform then

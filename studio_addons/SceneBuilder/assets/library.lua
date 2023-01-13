@@ -68,10 +68,23 @@ function AssetShelf:readFile(file)
 	return Files.loadJson(self.libPath.."/"..file)
 end
 
-function AssetShelf:exportAsset(name,folder)
+function AssetShelf:exportAsset(name,folder,exportContext)
 	lfs.mkdir(application:getNativePath(folder.."/"..self.name))
 	local data=self:readFile(name..".g3d")
-	Files.saveJson(folder.."/"..self.name.."/"..name..".g3d",data)
+	local tlist={}
+	self:checkG3dTextures(data,{},tlist)
+	Files.saveJson(folder.."/"..self.name.."/"..name..".g3d",data,true)
+	for _,tm in ipairs(tlist) do
+		local tfile=folder.."/"..self.name.."/"..tm.table[tm.key]
+		local sfile=self.libPath.."/"..tm.table[tm.key]
+		exportContext.tfiles=exportContext.tfiles or {}
+		if not exportContext.tfiles[sfile] then
+			local td=Files.load(sfile)
+			lfs.mkdir(application:getNativePath(folder.."/"..self.name.."/textures"))
+			Files.save(tfile,td)
+			exportContext.tfiles[sfile]=true
+		end
+	end
 end
 
 function AssetShelf:import(path)
@@ -117,7 +130,7 @@ function AssetShelf:import(path)
 					self:mapTextures(textures,texmap)
 					G3DFormat.makeSerializable(data,mtls)
 					--print(require("inspect").inspect(data))
-					Files.saveJson(self.libPath.."/"..oname..".g3d",data)
+					Files.saveJson(self.libPath.."/"..oname..".g3d",data,true)
 					self:generateThumbnail(oname,data)
 					self.files[oname]=oname..".g3d"
 				end					
