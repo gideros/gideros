@@ -87,8 +87,11 @@ function AssetShelf:exportAsset(name,folder,exportContext)
 	end
 end
 
-function AssetShelf:import(path)
+function AssetShelf:import(path,cb)
 	local texmap={}
+	local imp_n,imp_m=0,0
+	
+	local workmap={}
 	for file in lfs.dir(application:getNativePath(path)) do
 		local filePath=application:getNativePath(path.."/"..file)
 		local attrs=lfs.attributes(filePath)
@@ -106,71 +109,109 @@ function AssetShelf:import(path)
 				if #oname==0 then
 					print("Couldn't extract a name from file ",file)
 				else
-					if self.files[oname] then
-						print("Object "..oname.." already present in library, replacing")
+					local ua
+					if ftype=="unity" then
+						ua=UAPack.new(filePath)
+						imp_m+=#ua:getPrefabs()
+					else
+						imp_m+=1
 					end
-					--print(oname,filePath)
-					local data,mtls
-					if ftype=="glb" then
-						local glb=Glb.new(path,file)
-						data=glb:getScene()
-					elseif ftype=="obj" then
-						data,mtls=importObj(path,file)
-					elseif ftype=="vox" then
-						local vox=MagicaVoxel.new(path.."/"..file)
-						data=vox:getModel(true)
-					elseif ftype=="fbx" then
-						local tout=application:getNativePath("|T|temp.gdx")
-						os.execute(lfs.currentdir().."\\Tools\\fbx-conv-win32.exe -f -o g3dj \""..filePath.."\" \""..tout.."\"")
-						data,mtls=loadGdx("|T|temp.gdx")
-						os.remove("|T|temp.gdx")
-					elseif ftype=="unity" then
-						local ua=UAPack.new(filePath)
-						--Extract textures
-						for _,ff in pairs(ua:getFiles()) do
-							if ff.type=="png" or ff.type=="jpg" then
-								local aname=ff.pathname:match("([^./\\]+%.[^/\\]+)$")
-								Files.save(path.."/"..aname,ff.asset)
-							end
-						end
-						--Extract fbx
-						for _,ff in pairs(ua:getFiles()) do
-							if ff.type=="fbx" then
-								Files.save("|T|temp.fbx",ff.asset)
-								local tout=application:getNativePath("|T|temp.gdx")
-								local tin=application:getNativePath("|T|temp.fbx")
-								os.execute(lfs.currentdir().."\\Tools\\fbx-conv-win32.exe -f -o g3dj \""..tin.."\" \""..tout.."\"")
-								data,mtls=loadGdx("|T|temp.gdx")
-								os.remove("|T|temp.gdx")
-								os.remove("|T|temp.fbx")
-								
-								local aname=ff.pathname:match("([^./\\]+)%.[^/\\]+$")
-											
-								local textures={}
-								self:checkG3dTextures(data,mtls,textures)
-								self:mapTextures(textures,texmap)
-								G3DFormat.makeSerializable(data,mtls)
-								Files.saveJson(self.libPath.."/"..aname..".g3d",data,true)
-								self:generateThumbnail(aname,data)
-								self.files[aname]=aname..".g3d"
-								
-								data=nil
-							end
-						end
-					end
-					if data then
-						local textures={}
-						self:checkG3dTextures(data,mtls,textures)
-						self:mapTextures(textures,texmap)
-						G3DFormat.makeSerializable(data,mtls)
-						Files.saveJson(self.libPath.."/"..oname..".g3d",data,true)
-						self:generateThumbnail(oname,data)
-						self.files[oname]=oname..".g3d"
-					end
-				end					
+					table.insert(workmap,{path=path,file=file,filePath=filePath,oname=oname,ftype=ftype, unityasset=ua})
+				end
 			end
 		end
 	end
+
+	for fn,work in ipairs(workmap) do
+		local path=work.path
+		local file=work.file
+		local filePath=work.filePath
+		local oname=work.oname
+		local ftype=work.ftype
+		if self.files[oname] then
+			print("Object "..oname.." already present in library, replacing")
+		end
+		
+		imp_n+=1
+		cb(imp_n,imp_m,oname)
+		--print(oname,filePath)
+		local data,mtls
+		if ftype=="glb" then
+			local glb=Glb.new(path,file)
+			data=glb:getScene()
+		elseif ftype=="obj" then
+			data,mtls=importObj(path,file)
+		elseif ftype=="vox" then
+			local vox=MagicaVoxel.new(path.."/"..file)
+			data=vox:getModel(true)
+		elseif ftype=="fbx" then
+			local tout=application:getNativePath("|T|temp.gdx")
+			os.execute(lfs.currentdir().."\\Tools\\fbx-conv-win32.exe -f -o g3dj \""..filePath.."\" \""..tout.."\"")
+			data,mtls=loadGdx("|T|temp.gdx")
+			os.remove("|T|temp.gdx")
+		elseif ftype=="unity" then
+			imp_n-=1
+			local ua=work.unityasset
+			local uafiles=ua:getPrefabs()
+			for pn,ff in ipairs(uafiles) do
+				imp_n+=1
+				
+				local aname=ff.filename
+				cb(imp_n,imp_m,aname)
+				
+				Files.save("|T|temp.fbx",ff.mesh)
+				local tout=application:getNativePath("|T|temp.gdx")
+				local tin=application:getNativePath("|T|temp.fbx")
+				os.execute(lfs.currentdir().."\\Tools\\fbx-conv-win32.exe -f -o g3dj \""..tin.."\" \""..tout.."\"")
+				data,mtls=loadGdx("|T|temp.gdx")
+				os.remove("|T|temp.gdx")
+				os.remove("|T|temp.fbx")
+
+							
+				local textures={}
+				self:checkG3dTextures(data,mtls,textures)
+				
+				local function mapUnityTexture(utex,map)
+					local file=utex.pathname
+					if map[file] then return map[file] end
+					local tfile=tostring(pn).."_"..(file:match("([^./\\]+%.[^/\\]+)$"))
+					lfs.mkdir(application:getNativePath(self.libPath.."/textures"))
+					Files.save(self.libPath.."/textures/"..tfile,utex.asset)				
+					local mfile="textures/"..tfile
+					map[file]=mfile
+					return mfile
+				end
+						
+				local mats=ff.materials
+				for _,tm in ipairs(textures) do
+					if mats[1] and mats[1][tm.key] then												
+						tm.table[tm.key]=mapUnityTexture(mats[1][tm.key],texmap)
+					else
+						print("No mapping for "..tm.key.." : "..tm.table[tm.key])
+						tm.table[tm.key]=nil
+					end
+				end
+						
+				G3DFormat.makeSerializable(data,mtls)
+				Files.saveJson(self.libPath.."/"..aname..".g3d",data,true)
+				self:generateThumbnail(aname,data)
+				self.files[aname]=aname..".g3d"
+						
+				data=nil
+				Core.yield(true)
+			end
+		end
+		if data then
+			local textures={}
+			self:checkG3dTextures(data,mtls,textures)
+			self:mapTextures(textures,texmap)
+			G3DFormat.makeSerializable(data,mtls)
+			Files.saveJson(self.libPath.."/"..oname..".g3d",data,true)
+			self:generateThumbnail(oname,data)
+			self.files[oname]=oname..".g3d"
+		end
+		Core.yield(true)
+	end					
 	Files.saveJson(self.libPath.."/_manifest_.json",self.files)
 end
 

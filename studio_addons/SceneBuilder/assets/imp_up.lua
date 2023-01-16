@@ -1,6 +1,6 @@
 UAPack=Core.class()
 
-	function UAPack:init(file)
+function UAPack:init(file)
 	local res=Files.load(file)
 	assert(res and res:byte(1) and res:byte(2) and (res:byte(1)==31) and (res:byte(2)==139),"Not a unity package")
 	local ok,error = pcall(function () res = zlib.decompress(res,15+16) end)
@@ -22,7 +22,9 @@ UAPack=Core.class()
 				--Figure out format
 				if fdata:sub(1,20)=="Kaydara FBX Binary  " then
 					folders[fp].type="fbx"
-				end
+				end				
+			elseif ff=="asset.meta" then
+				folders[fp].meta=self:parseMeta(fdata)
 			elseif ff=="pathname" then
 				if not folders[fp].type then
 					folders[fp].type=fdata:match("[^./\\]+%.([^/\\]+)$")
@@ -37,8 +39,118 @@ UAPack=Core.class()
 	end
 	
 	self.assets=folders
+	
+	-- Collect prefabs
+	self.prefabs={}
+	
+	local function fileref(r)
+		local guid=r:match("guid: (%w+)")
+		return guid and folders[guid]
+	end
+	for _,ff in pairs(folders) do
+		if ff.type=="prefab" then
+			local yaml=self:parseYaml(ff.asset)
+			local rmesh=fileref(yaml.MeshFilter.m_Mesh)
+			local mats={}
+			for n,r in ipairs(yaml.MeshRenderer.m_Materials) do
+				local rmat=fileref(r)
+				if rmat then
+					local myaml=self:parseYaml(rmat.asset)
+					--print(json.encode(myaml))
+					local mtex,btex
+					pcall(function() mtex=fileref(myaml.Material.m_SavedProperties.m_TexEnvs._MainTex.m_Texture) end)
+					pcall(function() btex=fileref(myaml.Material.m_SavedProperties.m_TexEnvs._BumpMap.m_Texture) end)
+					--print("PTEX:",mtex and mtex.pathname, btex and btex.pathname)
+					mats[n]={textureFile=mtex, normalMapFile=btex}
+				end
+			end
+			if rmesh and rmesh.type=="fbx" then
+				table.insert(self.prefabs,
+					{
+						mesh=rmesh.asset,
+						filename=ff.pathname:match("([^./\\]+)%.[^/\\]+$"),
+						materials=mats
+					})
+			end	
+		end
+	end
 end
 
 function UAPack:getFiles()
 	return self.assets
+end
+
+function UAPack:getPrefabs()
+	return self.prefabs
+end
+
+function UAPack:parseMeta(data)
+	local f={}
+	local t,tn=f,{}
+	while data do
+		local ld=data:find("\n")
+		local line
+		if ld then
+			line=data:sub(1,ld-1)
+			data=data:sub(ld+1)
+		else
+			line=data
+			data=nil
+		end
+		--print(line)
+		local indent,key,val=line:match("(%s*)(%w+):%s*([^%s]*.*)")
+		if not key or #key==0 then break end
+		local ilev=#(indent or "")
+		for ii=ilev+1,ilev+40 do tn[ii]=nil end
+		--print(ilev,key,"//",val)
+		t=tn[ilev] or t
+		tn[ilev]=t
+		if val and #val>0 then
+			t[key]=val
+		else
+			t[key]={} t=t[key]			
+		end
+	end
+	return f
+end
+
+function UAPack:parseYaml(data)
+	local f={}
+	local t,tn=f,{}
+	while data do
+		local ld=data:find("\n")
+		local line
+		if ld then
+			line=data:sub(1,ld-1)
+			data=data:sub(ld+1)
+		else
+			line=data
+			data=nil
+		end
+		--print(line)
+		if line:sub(1,1)=="%" then --Comment
+		elseif line:sub(1,3)=="---" then --Section
+		else
+			local indent,key,sep,val=line:match("([%s-]*)([^%s:]*)(:)%s*([^%s]*.*)")
+			if not key or #key==0 then break end
+			local ilev=#(indent or "")
+			for ii=ilev+1,ilev+40 do tn[ii]=nil end
+			--print(ilev,key,"//",val)
+			t=tn[ilev] or t
+			tn[ilev]=t
+			if indent:find("-") then
+				if #(val or "")>0 then
+					local kk=key..(sep or "")..(val or "")
+					table.insert(t,kk)
+				else
+					t[key]={} t=t[key]			
+				end
+			elseif  val and #val>0 then
+				t[key]=val
+			else
+				t[key]={} t=t[key]			
+			end
+		end
+	end
+	return f
 end

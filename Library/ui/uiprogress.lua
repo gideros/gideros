@@ -48,7 +48,7 @@ function UI.ProgressBar:init(textFormat)
 end
 function UI.ProgressBar:updateStyle(...)
 	UI.Panel.updateStyle(self,...)
-	self:setShaderConstant("fRatio",Shader.CFLOAT,1,self.progress)
+	self:setShaderConstant("fRatio",Shader.CFLOAT,1,self.progress or 0)
 end
 function UI.ProgressBar:setFlags(changes)
 	UI.Panel.setFlags(self,changes)
@@ -60,7 +60,7 @@ function UI.ProgressBar:updateLabel()
 	if ft=="function" then
 		self.label:setText(self.textFormat(self.progress))
 	elseif ft=="string" then
-		self.label:setText(self.textFormat:format(self.progress*100))
+		self.label:setText(self.textFormat:format((self.progress or 0)*100))
 	end
 end
 
@@ -72,7 +72,7 @@ end
 
 function UI.ProgressBar:setProgress(p)
 	UI.Progress.setProgress(self,p)
-	self:setShaderConstant("fRatio",Shader.CFLOAT,1,p)
+	self:setShaderConstant("fRatio",Shader.CFLOAT,1,p or 0)
 	self:updateLabel()
 end
 

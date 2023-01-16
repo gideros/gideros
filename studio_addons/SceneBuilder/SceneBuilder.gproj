@@ -23,7 +23,6 @@
    </export>
   </exports>
  </properties>
- <file name="assets/imp_up.lua"/>
  <folder name="3D" path="../../Library/3dbase">
   <file name="../../Library/3dbase/3DAnimation.lua"/>
   <file name="../../Library/3dbase/3DGdxLoader.lua"/>
@@ -165,6 +164,7 @@
  </folder>
  <file name="assets/OpenSans-Bold.ttf"/>
  <file name="assets/files.lua"/>
+ <file name="assets/imp_up.lua"/>
  <file name="assets/init.lua"/>
  <file name="assets/inspect.lua" excludeFromExecution="1"/>
  <file name="assets/library.lua"/>

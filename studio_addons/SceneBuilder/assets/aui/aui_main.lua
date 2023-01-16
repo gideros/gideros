@@ -332,9 +332,29 @@ function AUI.Main:onWidgetAction(w)
 		local name=file
 		while name:find("/") do name=name:sub(name:find("/")+1) end
 		local assetLib=AssetShelf.new(name)
-		assetLib:import(file)
-		table.insert(self.allAssets,assetLib)
-		self.assetLibrary:updateLibrary(self.allAssets)
+		
+		local dialog=UI.Builder({
+			class="UI.Dialog",
+			layout={fill=Sprite.LAYOUT_FILL_HORIZONTAL},
+			layoutModel={ rowWeights={0,1,},columnWeights={1},cellSpacingX=10,cellSpacingY=5,equalizeCells=true},
+			children={
+				{ class="UI.Label", 	name="lbText", 	Text="Importing...", layout={fill=1},TextLayout={flags=FontBase.TLF_VCENTER|FontBase.TLF_REF_LINETOP|FontBase.TLF_BREAKWORDS}},
+				{ class="UI.ProgressBar", name="pgBar", layout={gridy=1,fill=1},},
+			}
+		})
+		dialog:setLayoutConstraints({fill=Sprite.LAYOUT_FILL_NONE, width="20em"})
+		local ms=UI.ModalScreen.showDialog(UI.Screen.getScreen(w),dialog,"colShadow",100)
+
+		Core.asyncCall(function ()
+			assetLib:import(file,function (ni,nm,asset)
+				print(ni,nm,asset)
+				dialog.pgBar:setTextFormat(tostring(ni).."/"..nm..": "..asset)
+				dialog.pgBar:setProgress(ni/nm)
+			end)
+			table.insert(self.allAssets,assetLib)
+			self.assetLibrary:updateLibrary(self.allAssets)
+			ms:destroy()
+		end)
 	elseif w==self.btInfo then
 		local dialog=UI.Dialog.confirm("Do you agree","Yes!","No :(")
 		local scw=screen:getWidth()
