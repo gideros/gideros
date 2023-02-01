@@ -210,7 +210,7 @@ long int gaudio_WavTell(g_id id)
     return (g_ftell(handle->fis) - handle->dataPos) / handle->sampleSize;
 }
 
-size_t gaudio_WavRead(g_id id, size_t size, void *data)
+size_t gaudio_WavRead(g_id id, size_t size, void *data, unsigned int *streamPos)
 {
     GGWavHandle *handle = ctxmap[id];
 

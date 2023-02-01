@@ -61,7 +61,7 @@ g_id GGSoundManager::SoundCreateFromFile(const char *fileName, bool stream, gaud
 
         size_t size = numChannels * (bitsPerSample / 8) * numSamples;
         void *data = malloc(size);
-        loader.read(handle, size, data);
+        loader.read(handle, size, data, NULL);
 
         loader.close(handle);
 

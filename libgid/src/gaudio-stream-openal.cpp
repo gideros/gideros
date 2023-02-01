@@ -198,10 +198,11 @@ public:
     bool SoundHasEffect(const char *effect)
     {
 #ifdef AL_EFFECT_TYPE
-    	return (effect&&!strcmp(effect,"equalizer"));
-#else
-    	return false;
+		if (!effect) return false;
+		if (!strcmp(effect,"equalizer")) return true;
+		if (!strcmp(effect,"biquad")) return true;
 #endif
+		return false;
     }
 
     void ChannelStop(g_id channel)
@@ -469,22 +470,30 @@ public:
 
         Channel *channel2 = iter->second;
         int etype=0;
+        int esubtype=0;
         if (!strcmp(effect,"equalizer"))
             etype=AL_EFFECT_EQUALIZER;
-    	if (etype) {
+        if (!strcmp(effect,"biquad")) //Generic biquad filtering
+        {
+            etype=AL_EFFECT_EQUALIZER;
+            esubtype=1;
+        }
+        if (etype) {
     		if (!channel2->slot)
     			alGenAuxiliaryEffectSlots(1, &channel2->slot);
-    		if (!channel2->effect) {
+            if (!channel2->effect)
                 alGenEffects(1, &channel2->effect);
-        		alEffecti(channel2->effect, AL_EFFECT_TYPE, etype);
-    		}
+            alEffecti(channel2->effect, AL_EFFECT_TYPE, etype);
             if (params) {
                 switch (etype) {
                     case AL_EFFECT_EQUALIZER:
                     {
                         //Set params
-                        for (int p=AL_EQUALIZER_LOW_GAIN;p<=AL_EQUALIZER_HIGH_CUTOFF;p++)
-                            alEffectf(channel2->effect,p,params[p]);
+                        if (esubtype==1)
+                            alEffectfv(channel2->effect,AL_EQUALIZER_BIQUADS,params+1);
+                        else
+                            for (int p=AL_EQUALIZER_LOW_GAIN;p<=AL_EQUALIZER_HIGH_CUTOFF;p++)
+                                alEffectf(channel2->effect,p,params[p]);
                     }
                     break;
                 }
@@ -690,10 +699,10 @@ private:
             pitch(1.f),
             looping(false),
             nodata(false),
-            lastPosition(0),
             toClose(false),
-			bufferedSize(0),
-			streaming(streaming)
+			streaming(streaming),
+            lastPosition(0),
+			bufferedSize(0)
         {
         }
 
@@ -780,14 +789,14 @@ private:
             channel->bufferedSize-=sizeInBytes;
         }
 
-        unsigned int pos = (channel->sound->loader.tell(channel->file) * 1000LL) / channel->sound->sampleRate;
-        size_t size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data);
+        unsigned int pos = channel->sound->loader.tell(channel->file);
+        size_t size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data, &pos);
 
         if (size == 0 && channel->looping)
         {
             channel->sound->loader.seek(channel->file, 0, SEEK_SET);
             pos = 0;
-            size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data);
+            size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data, &pos);
         }
 
         if (size > 0)
@@ -816,7 +825,7 @@ private:
             alBufferData(buffer, cformat, data, size, csr);
             alSourceQueueBuffers(channel->source, 1, &buffer);
             channel->bufferedSize+=size;
-            channel->buffers.push_back(std::make_pair(buffer, pos));
+            channel->buffers.push_back(std::make_pair(buffer, (pos * 1000LL) / channel->sound->sampleRate));
             if (!channel->paused)
             {
                 ALint state;

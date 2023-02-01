@@ -64,8 +64,9 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"setSkew", SpriteBinder::setSkew},
         {"getSkew", SpriteBinder::getSkew},
 		{"localToGlobal", SpriteBinder::localToGlobal},
-		{"globalToLocal", SpriteBinder::globalToLocal},
-		{"isVisible", SpriteBinder::isVisible},
+        {"globalToLocal", SpriteBinder::globalToLocal},
+        {"spriteToLocal", SpriteBinder::spriteToLocal},
+        {"isVisible", SpriteBinder::isVisible},
 		{"setVisible", SpriteBinder::setVisible},
 		{"isOnStage", SpriteBinder::isOnStage},
 		{"getColorTransform", SpriteBinder::getColorTransform},
@@ -1477,23 +1478,49 @@ int SpriteBinder::localToGlobal(lua_State* L)
 
 int SpriteBinder::globalToLocal(lua_State* L)
 {
-	StackChecker checker(L, "globalToLocal", 3);
+    StackChecker checker(L, "globalToLocal", 3);
 
-	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
-	double x = luaL_checknumber(L, 2);
-	double y = luaL_checknumber(L, 3);
-	double z = luaL_optnumber(L, 4, 0.0);
+    double x = luaL_checknumber(L, 2);
+    double y = luaL_checknumber(L, 3);
+    double z = luaL_optnumber(L, 4, 0.0);
 
-	float tx, ty, tz;
-	sprite->globalToLocal(x, y, z, &tx, &ty, &tz);
+    float tx, ty, tz;
+    sprite->globalToLocal(x, y, z, &tx, &ty, &tz);
 
-	lua_pushnumber(L, tx);
-	lua_pushnumber(L, ty);
-	lua_pushnumber(L, tz);
+    lua_pushnumber(L, tx);
+    lua_pushnumber(L, ty);
+    lua_pushnumber(L, tz);
 
-	return 3;
+    return 3;
+}
+
+int SpriteBinder::spriteToLocal(lua_State* L)
+{
+    StackChecker checker(L, "spriteToLocal", 3);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* ref = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+
+    double x = luaL_checknumber(L, 3);
+    double y = luaL_checknumber(L, 4);
+    double z = luaL_optnumber(L, 5, 0.0);
+
+    float tx, ty, tz;
+    if (!sprite->spriteToLocal(ref, x, y, z, &tx, &ty, &tz)) {
+        lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
+    }
+
+    lua_pushnumber(L, tx);
+    lua_pushnumber(L, ty);
+    lua_pushnumber(L, tz);
+
+    return 3;
 }
 
 int SpriteBinder::isVisible(lua_State* L)
@@ -1664,10 +1691,14 @@ int SpriteBinder::hitTestPoint(lua_State* L)
 
 	bool shapeFlag = false;
 
-	if (lua_gettop(L) >= 4)
-		shapeFlag = lua_toboolean(L, 4);
+    int nargs=lua_gettop(L);
+    if (nargs >= 4)
+        shapeFlag = lua_toboolean(L, 4);
+    Sprite *ref=nullptr;
+    if ((nargs >= 5)&&(!lua_isnil(L,5)))
+        ref = static_cast<Sprite*>(binder.getInstance("Sprite", 5));
 
-	lua_pushboolean(L, sprite->hitTestPoint(x, y, shapeFlag));
+    lua_pushboolean(L, sprite->hitTestPoint(x, y, shapeFlag, ref));
 	
 	return 1;
 }
@@ -1683,9 +1714,13 @@ int SpriteBinder::getChildrenAtPoint(lua_State* L)
 	double y = luaL_checknumber(L, 3);
 	bool visible = lua_toboolean(L, 4);
 	bool nosubs = lua_toboolean(L, 5);
+    int nargs=lua_gettop(L);
+    Sprite *ref=nullptr;
+    if ((nargs >= 6)&&(!lua_isnil(L,6)))
+        ref = static_cast<Sprite*>(binder.getInstance("Sprite", 6));
 
     std::vector<std::pair<int,Sprite *>>res;
-	sprite->getChildrenAtPoint(x, y, visible, nosubs, res);
+    sprite->getChildrenAtPoint(x, y, ref, visible, nosubs, res);
 	int nres=res.size();
 	lua_createtable(L,nres,0);
 	for (int i=0;i<nres;i++) {

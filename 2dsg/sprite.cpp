@@ -958,7 +958,7 @@ Sprite* Sprite::getChildAt(int index, GStatus* status) const {
 	return children_[index];
 }
 
-void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::vector<Matrix4> &pxform, bool xformValid) const {
+void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::vector<Matrix4> &pxform, const Sprite *ref, bool xformValid) const {
     float minx, miny, maxx, maxy;
     int parentidx=children.size();
     size_t sc=skipSet_.size();
@@ -968,12 +968,12 @@ void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<s
             Sprite *c=children_[i];
             if (c->isVisible_) {
                 Matrix transform=pxform.back() * c->localTransform_.matrix();
-                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, BOUNDS_GLOBAL, &xformValid);
+                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, &xformValid);
                 if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
                     children.push_back(std::pair<int,Sprite *>(parentidx,c));
                     if ((!nosubs)&&(!c->children_.empty())) {
                         pxform.push_back(transform);
-                        c->checkInside(x,y,visible,nosubs,children,pxform,xformValid); //We are recursing so matrix must have been set already
+                        c->checkInside(x,y,visible,nosubs,children,pxform,ref,xformValid); //We are recursing so matrix must have been set already
                         pxform.pop_back();
                     }
                 }
@@ -982,19 +982,20 @@ void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<s
     }
 }
 
-void Sprite::getChildrenAtPoint(float x, float y, bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children) const {
+void Sprite::getChildrenAtPoint(float x, float y, const Sprite *ref, bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children) const {
 	Matrix transform;
     std::vector<Matrix4> pxform;
 	std::stack<const Sprite *> pstack;
     const Sprite *curr = this;
     const Sprite *last = NULL;
 
-	while (curr) {
+    while (curr!=ref) {
 		pstack.push(curr);
 		last = curr;
 		curr = curr->parent_;
 	}    
-    if (visible&&(!last->isStage())) return;
+    if (ref&&(!curr)) return;
+    if (visible&&(!(ref?curr->isVisible_:last->isStage()))) return;
 
     while (!pstack.empty()) {
 		curr=pstack.top();
@@ -1004,7 +1005,7 @@ void Sprite::getChildrenAtPoint(float x, float y, bool visible, bool nosubs,std:
 	}
 
     pxform.push_back(transform);
-    checkInside(x,y,visible,nosubs,children,pxform);
+    checkInside(x,y,visible,nosubs,children,pxform,ref);
 }
 
 void Sprite::removeChildAt(int index, GStatus* status) {
@@ -1156,6 +1157,47 @@ void Sprite::globalToLocal(float x, float y, float z, float* tx, float* ty, floa
 		*tz = z;
 }
 
+bool Sprite::spriteToLocal(const Sprite *ref,float x, float y, float z, float* tx, float* ty, float* tz) const {
+    std::set<const Sprite *> base;
+    std::stack<const Sprite*> stack;
+
+    const Sprite* curr = this;
+    while (curr) {
+        base.insert(curr);
+        if (curr==ref) break;
+        curr = curr->parent_;
+    }
+    curr=ref;
+    while (curr&&(base.find(curr)==base.end())) {
+        curr->matrix().transformPoint(x, y, z, &x, &y, &z);
+        curr = curr->parent_;
+    }
+
+    if (!curr) return false;
+
+    const Sprite *self = this;
+    while (self!=curr) {
+        stack.push(self);
+        self = self->parent_;
+    }
+
+    while (stack.empty() == false) {
+        stack.top()->matrix().inverseTransformPoint(x, y, z, &x, &y, &z);
+        stack.pop();
+    }
+
+    if (tx)
+        *tx = x;
+
+    if (ty)
+        *ty = y;
+
+    if (tz)
+        *tz = z;
+
+    return true;
+}
+
 void Sprite::objectBounds(float* minx, float* miny, float* maxx, float* maxy,
         bool visible) {
     std::vector<Matrix4> pxform;
@@ -1199,19 +1241,42 @@ void Sprite::getDimensions(float& w,float &h)
     if (h<reqHeight_) h=reqHeight_;
 }
 
-bool Sprite::hitTestPoint(float x, float y, bool visible) {
+
+bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
 	Matrix transform;
     std::vector<Matrix4> pxform;
-	std::stack<const Sprite *> pstack;
-	const Sprite *curr = this;
-	const Sprite *last=NULL;
-	while (curr) {
+	std::stack<const Sprite *> pstack;    
+    std::set<const Sprite *> base;
+    std::stack<const Sprite*> stack;
+
+    if (ref) {
+        const Sprite* curr = ref;
+        while (curr) {
+            base.insert(curr);
+            if (curr==this) break;
+            curr = curr->parent_;
+        }
+    }
+
+	const Sprite *curr = this;    
+    const Sprite *last=NULL;
+    while (curr&&((!ref)||(base.find(curr)==base.end()))) {
         if (visible&&(!curr->isVisible_)) return false;
         pstack.push(curr);
 		last=curr;
 		curr = curr->parent_;
 	}
-	if (visible&&(!last->isStage())) return false;
+    if (ref) last=curr;
+    if (!last) return false;
+    if (visible&&(!(ref?(last->isVisible_):(last->isStage())))) return false;
+
+    if (ref) {
+        curr=ref;
+        while (curr!=last) {
+            curr->matrix().transformPoint(x, y, &x, &y);
+            curr = curr->parent_;
+        }
+    }
 
 	while (!pstack.empty()) {
 		curr=pstack.top();
@@ -1221,13 +1286,11 @@ bool Sprite::hitTestPoint(float x, float y, bool visible) {
 	}
 
 	float tx, ty;
-	//globalToLocal(x, y, &tx, &ty);
 	tx = x;
 	ty = y;
 
 	float minx, miny, maxx, maxy;
-	//objectBounds(&minx, &miny, &maxx, &maxy,visible);
-    boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, false, BOUNDS_GLOBAL);
+    boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, false, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL);
 
 	return (tx >= minx && ty >= miny && tx <= maxx && ty <= maxy);
 }
@@ -1314,9 +1377,11 @@ void Sprite::invalidate(int changes) {
 		}
 	}
 
-	if (changes&(INV_GRAPHICS))
+    if (changes&(INV_GRAPHICS)) {
 		changes|=INV_EFFECTS;
-
+        for (auto it=viewports.begin();it!=viewports.end();it++)
+            (*it)->invalidate(INV_GRAPHICS);
+    }
 
     changes_=(ChangeSet)(changes_|(changes&(~INV_CONSTRAINTS)));
 

@@ -92,7 +92,7 @@ struct GGAudioLoader
 {
     typedef g_id (*OpenFunc)(const char *fileName, int *numChannels, int *sampleRate, int *bitsPerSample, int *numSamples, gaudio_Error *error);
     typedef void (*CloseFunc)(g_id id);
-    typedef size_t (*ReadFunc)(g_id id, size_t size, void *data);
+    typedef size_t (*ReadFunc)(g_id id, size_t size, void *data, unsigned int *streamPos);
     typedef int (*SeekFunc)(g_id id, long int offset, int whence);
     typedef long int (*TellFunc)(g_id id);
     typedef void (*FormatFunc)(g_id id, int *sampleRate, int *numChannels);

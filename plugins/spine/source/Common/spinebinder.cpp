@@ -50,8 +50,8 @@ void _spAtlasPage_createTexture(spAtlasPage* self, const char* path) {
 	parameters.pow2 = false;
 
 	TextureData *tex = application->getTextureManager()->createTextureFromFile(
-			path, parameters).get();
-	self->rendererObject = tex;
+            path, parameters).get();
+    self->rendererObject = tex;
 	self->width = tex->baseWidth;
 	self->height = tex->baseHeight;
 }

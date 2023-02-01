@@ -56,7 +56,8 @@ public:
 	void localToGlobal(float x, float y, float* tx, float* ty) const;
 	void globalToLocal(float x, float y, float* tx, float* ty) const;
 	void localToGlobal(float x, float y, float z, float* tx, float* ty, float* tz) const;
-	void globalToLocal(float x, float y, float z, float* tx, float* ty, float* tz) const;
+    void globalToLocal(float x, float y, float z, float* tx, float* ty, float* tz) const;
+    bool spriteToLocal(const Sprite *ref,float x, float y, float z, float* tx, float* ty, float* tz) const;
 
 	void setAlpha(float alpha);
 	float alpha() const;
@@ -72,7 +73,7 @@ public:
 	}
 
 	Sprite* getChildAt(int index, GStatus* status = 0) const;
-    void getChildrenAtPoint(float x, float y, bool visible, bool nosubs, std::vector<std::pair<int,Sprite *>> &children) const;
+    void getChildrenAtPoint(float x, float y, const Sprite *ref, bool visible, bool nosubs, std::vector<std::pair<int,Sprite *>> &children) const;
 
 	Sprite* parent() const
 	{
@@ -383,7 +384,7 @@ public:
 
 	// Evaluates the sprite to see if its bounds overlaps or intersects with the point specified by the x and y parameters.
 	// The x and y parameters specify a point in the global coordinate space.
-    bool hitTestPoint(float x, float y, bool visible=false);
+    bool hitTestPoint(float x, float y, bool visible=false,const Sprite *ref=NULL);
 	
 	virtual bool isStage() const
 	{
@@ -528,10 +529,11 @@ public:
     GridBagLayout *layoutState;
     int spriteWithLayoutCount;
     int spriteWithEffectCount;
+    std::vector<Sprite *> viewports;
 
 protected:
     void layoutSizesChanged();
-    void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::vector<Matrix4> &pxform, bool xformValid=false) const;
+    void checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::vector<Matrix4> &pxform, const Sprite *ref=nullptr, bool xformValid=false) const;
     virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
 	{
 		if (minx)

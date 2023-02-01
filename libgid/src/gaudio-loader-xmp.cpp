@@ -68,7 +68,7 @@ long int gaudio_XmpTell(g_id gid)
     return pos;
 }
 
-size_t gaudio_XmpRead(g_id gid, size_t size, void *data)
+size_t gaudio_XmpRead(g_id gid, size_t size, void *data, unsigned int *streamPos)
 {
     xmp_context xc = ctxmap[gid];
     size = (size / 4) * 4;

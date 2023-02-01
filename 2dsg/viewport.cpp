@@ -24,10 +24,14 @@ Viewport::~Viewport()
 
 void Viewport::setContent(Sprite *s)
 {
-    if (s)
+    if (s) {
         s->ref();
-    if (content_)
+        s->viewports.push_back(this);
+    }
+    if (content_) {
+        content_->viewports.erase(std::find(content_->viewports.begin(),content_->viewports.end(),this));
         content_->unref();
+    }
     content_ = s;
 }
 

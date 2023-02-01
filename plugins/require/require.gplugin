@@ -23,6 +23,7 @@
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
  <property name="reqCanOpenUrl" type="string" title="This app can open these url schemes: (with ',' separator)"/>
  <property name="reqCanRespondUrl" type="string" title="This app can respond to these url schemes: (with ',' separator)"/>
+ <property name="reqQueryApps" type="string" title="This app can use the following other apps packages: (with ',' separator) (android)"/>
  <property name="reqDisable64bits" type="boolean" title="Disable 64bits libs (android)"/> 
  <property name="reqDisableX86" type="boolean" title="Disable x86 libs (android)"/> 
  <property name="reqDisableArm" type="boolean" title="Disable arm libs (android)"/> 
@@ -298,6 +299,21 @@
 					</replace>
 				</replacelist>
 			</template>]])
+			
+--[[			
+		local urls = Export.getProperty("plugin.reqQueryApps")
+		if urls and string.len(urls)>0 then
+			local t,pattern = {},urls.format("([^%s]+)", ",")
+			urls:gsub(pattern, function(s) t[#t+1] = s end)
+			if #t>0 then
+				local urls=iOSProject.InfoPlist.LSApplicationQueriesSchemes or { }
+				iOSProject.InfoPlist.LSApplicationQueriesSchemes=urls
+				for i,v in ipairs(t) do
+					table.insert(urls,v)
+				end
+			end
+		end
+	]]
 			
 		local urls = Export.getProperty("plugin.reqCanRespondUrl")
 		if urls and string.len(urls)>0 then

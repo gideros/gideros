@@ -156,7 +156,7 @@ long int gaudio_SFXTell(g_id id)
 	return handle->nBytesRead;
 }
 
-size_t gaudio_SFXRead(g_id id, size_t size, void *data)
+size_t gaudio_SFXRead(g_id id, size_t size, void *data, unsigned int *streamPos)
 {
     GGSFXHandle *handle = ctxmap[id];
 

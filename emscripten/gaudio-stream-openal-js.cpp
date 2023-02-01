@@ -176,10 +176,11 @@ public:
     bool SoundHasEffect(const char *effect)
     {
 #ifdef AL_EFFECT_TYPE
-    	return (effect&&!strcmp(effect,"equalizer"));
-#else
-    	return false;
+		if (!effect) return false;
+		if (!strcmp(effect,"equalizer")) return true;
+		if (!strcmp(effect,"biquad")) return true;
 #endif
+    	return false;
     }
 
     void ChannelStop(g_id channel)
@@ -251,6 +252,8 @@ public:
 
         if (channel2->source == 0)
             return channel2->lastPosition;
+        if (channel2->buffers.empty())
+        	return 0;
 
         ALfloat offset;
         alGetSourcef(channel2->source, AL_SEC_OFFSET, &offset);
@@ -437,22 +440,30 @@ public:
 
         Channel *channel2 = iter->second;
         int etype=0;
+        int esubtype=0;
         if (!strcmp(effect,"equalizer"))
             etype=AL_EFFECT_EQUALIZER;
+        if (!strcmp(effect,"biquad")) //Generic biquad filtering
+        {
+            etype=AL_EFFECT_EQUALIZER;
+            esubtype=1;
+        }
     	if (etype) {
     		if (!channel2->slot)
     			alGenAuxiliaryEffectSlots(1, &channel2->slot);
-    		if (!channel2->effect) {
+            if (!channel2->effect)
                 alGenEffects(1, &channel2->effect);
-        		alEffecti(channel2->effect, AL_EFFECT_TYPE, etype);
-    		}
+        	alEffecti(channel2->effect, AL_EFFECT_TYPE, etype);
             if (params) {
                 switch (etype) {
                     case AL_EFFECT_EQUALIZER:
                     {
                         //Set params
-                        for (int p=AL_EQUALIZER_LOW_GAIN;p<=AL_EQUALIZER_HIGH_CUTOFF;p++)
-                            alEffectf(channel2->effect,p,params[p]);
+                        if (esubtype==1)
+                            alEffectfv(channel2->effect,AL_EQUALIZER_BIQUADS,params+1);
+                        else
+    	                    for (int p=AL_EQUALIZER_LOW_GAIN;p<=AL_EQUALIZER_HIGH_CUTOFF;p++)
+	                            alEffectf(channel2->effect,p,params[p]);
                     }
                     break;
                 }
@@ -623,8 +634,8 @@ private:
             nodata(false),
             toClose(false),
 			streaming(streaming),
-			bufferedSize(0),
-            lastPosition(0)
+            lastPosition(0),
+			bufferedSize(0)
         {
         }
 
@@ -711,33 +722,20 @@ private:
             channel->bufferedSize-=sizeInBytes;
         }
 
-        int sampSize=channel->sound->bitsPerSample*channel->sound->numChannels/8;
-        int sampMult=1;
-        if (channel->sound->sampleRate<22050)
-            sampMult++;
-        if (channel->sound->sampleRate<11025)
-            sampMult+=2;
-
-        unsigned int pos = (channel->sound->loader.tell(channel->file) * 1000LL) / channel->sound->sampleRate;
-        size_t size = channel->sound->loader.read(channel->file, BUFFER_SIZE/sampMult, data);
+        unsigned int pos = channel->sound->loader.tell(channel->file);
+        size_t size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data, &pos);
 
         if (size == 0 && channel->looping)
         {
             channel->sound->loader.seek(channel->file, 0, SEEK_SET);
             pos = 0;
-            size = channel->sound->loader.read(channel->file, BUFFER_SIZE/sampMult, data);
+            size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data, &pos);
         }
 
         if (size > 0)
         {
-            //printf("SampRate:%d SampMult:%d SampSize:%d\n",channel->sound->sampleRate,sampMult,sampSize);
         	ALenum cformat=channel->sound->format;
         	int csr=channel->sound->sampleRate;
-        	int sampMult=1;
-        	if (channel->sound->sampleRate<22050)
-            	sampMult++;
-        	if (channel->sound->sampleRate<11025)
-            sampMult+=2;
         	if (channel->sound->loader.format)
         	{
         		int chn;
@@ -757,45 +755,10 @@ private:
         		          cformat = AL_FORMAT_STEREO16;
         		}
         	}
-            if (sampMult>1)
-            {
-             //Expand buffer to match sampleRate             
-             int nsmp=size/sampSize;
-                if (sampSize==1)
-                {
-                 int8_t *b=(int8_t *)(data+size*sampMult);
-                 for (int k=nsmp-1;k>=0;k--)
-                 {
-                     int8_t smp=((int8_t *)data)[k];
-                     for (int j=0;j<sampMult;j++)
-                         *(--b)=smp;
-                 }
-                }
-                else if (sampSize==2)
-                {
-                 int16_t *b=(int16_t *)(data+size*sampMult);
-                 for (int k=size-1;k>=0;k--)
-                 {
-                     int16_t smp=((int16_t *)data)[k];
-                     for (int j=0;j<sampMult;j++)
-                         *(--b)=smp;
-                 }
-                }
-                else if (sampSize==4)
-                {
-                 int32_t *b=(int32_t *)(data+size*sampMult);
-                 for (int k=size-1;k>=0;k--)
-                 {
-                     int32_t smp=((int32_t *)data)[k];
-                     for (int j=0;j<sampMult;j++)
-                         *(--b)=smp;
-                 }                
-                }
-            }
-            alBufferData(buffer, cformat, data, size*sampMult, csr*sampMult);
+            alBufferData(buffer, cformat, data, size, csr);
             alSourceQueueBuffers(channel->source, 1, &buffer);
             channel->bufferedSize+=size;
-            channel->buffers.push_back(std::make_pair(buffer, pos));
+            channel->buffers.push_back(std::make_pair(buffer, (pos * 1000LL) / channel->sound->sampleRate));
             if (!channel->paused)
             {
                 ALint state;

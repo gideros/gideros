@@ -1379,5 +1379,10 @@ int EventDispatcherBinder::removeAllListeners(lua_State* L)
 
 	eventDispatcher->removeEventListeners();
 
+    //EventBinderMap *map=static_cast<EventBinderMap*>(eventDispatcher->data(&key_map));
+    eventDispatcher->setData(&key_map, nullptr);
+    lua_pushnil(L);
+    lua_setfield(L,1,"__events");
+
 	return 0;
 }

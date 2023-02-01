@@ -397,7 +397,7 @@ void gaudio_OggFormat(g_id gid, int *csr, int *chn) {
 	*chn = channels;
 }
 
-size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
+size_t gaudio_OggRead(g_id gid, size_t size, void *data, unsigned int *streamPos) {
 	GGOggHandle *handle = ctxmap[gid];
 	/* on to the main decode loop.  We assume in this example that audio
 	 and video start roughly together, and don't begin playback until
@@ -426,7 +426,8 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 			int maxsamples = (audiofd_fragsize - audiobuf_fill) / 2;
 			ogg_int64_t gpos=0;
 			if ((ret = handle->audio_p->GetAudio(audiobuf+(audiobuf_fill/2), maxsamples,gpos)) > 0) {
-                                audiobuf_fill += ret*2;
+                bool audioStart=(audiobuf_fill==0);
+                audiobuf_fill += ret*2;
 				if (audiobuf_fill == audiofd_fragsize)
 					audiobuf_ready = 1;
 				if (gpos >= 0)
@@ -437,7 +438,8 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data) {
 					handle->audio_granulepos += ret/channels;
 				}
 				handle->audio_time = handle->audio_p->GranuleTime(handle->audio_granulepos);
-			} else {
+                if (audioStart&&streamPos) *streamPos=(unsigned int) (handle->audio_time * handle->sampleRate);
+            } else {
 
 				/* no pending audio; is there a pending packet to decode? */
 				if (ogg_stream_packetout(&handle->ao, &handle->op) > 0) {

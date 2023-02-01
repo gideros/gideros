@@ -861,6 +861,9 @@ static int bindAll(lua_State* L)
     lua_setfield(L, -2, "profilerReport");
     lua_pushcnfunction(L, LuaApplication::Core_enableAllocationTracking, "Core.enableAllocationTracking");
     lua_setfield(L, -2, "enableAllocationTracking");
+    lua_pushcnfunction(L, lua_findreferences, "Core.findReferences");
+    lua_setfield(L, -2, "findReferences");
+
 	lua_pushcnfunction(L, LuaApplication::Core_random, "Core.random");
 	lua_setfield(L, -2, "random");
 	lua_pushcnfunction(L, LuaApplication::Core_randomSeed, "Core.randomSeed");

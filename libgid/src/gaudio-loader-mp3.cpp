@@ -119,7 +119,7 @@ long int gaudio_Mp3Tell(g_id gid)
     return mpg123_tell(handle->mh);
 }
 
-size_t gaudio_Mp3Read(g_id gid, size_t size, void *data)
+size_t gaudio_Mp3Read(g_id gid, size_t size, void *data, unsigned int *streamPos)
 {
     GGMp3Handle *handle = ctxmap[gid];
 
