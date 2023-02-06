@@ -181,6 +181,7 @@ void Pixel::extraBounds(float* minx, float* miny, float* maxx, float* maxy) cons
 void Pixel::updateVertices() {
 	float dx=-width_*anchorx_;
 	float dy=-height_*anchory_;
+    RENDER_LOCK();
     if (isNinePatch_) {
 		float vt=insetv_t_;
 		float vb=insetv_b_;
@@ -223,6 +224,7 @@ void Pixel::updateVertices() {
     }
 	vertices.Update();
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    RENDER_UNLOCK();
 }
 
 void Pixel::updateTexture()
@@ -260,6 +262,7 @@ void Pixel::updateTexture()
         x+= u0;
         y+= v0;
 
+        RENDER_LOCK();
         if (isNinePatch_) {
     		float vt=insett_t_*pfy;
     		float vb=insett_b_*pfy;
@@ -305,6 +308,7 @@ void Pixel::updateTexture()
 			tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
  		texcoords.Update();
  		invalidate(INV_GRAPHICS);
+        RENDER_UNLOCK();
         return;
     }
 
@@ -333,6 +337,7 @@ void Pixel::updateTexture()
 
     float dx=-width_*anchorx_;
     float dy=-height_*anchory_;
+    RENDER_LOCK();
     vertices[0] = Point2f(x1+dx,y1+dy);
     vertices[1] = Point2f(x2+dx,y1+dy);
     vertices[2] = Point2f(x2+dx,y2+dy);
@@ -363,6 +368,7 @@ void Pixel::updateTexture()
 		tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
     texcoords.Update();
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    RENDER_UNLOCK();
 }
 
 void Pixel::setAnchorPoint(float x, float y)
@@ -478,6 +484,7 @@ void Pixel::setTextureScale(float sx, float sy)
 void Pixel::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4)
 {
     c1_ = c1, a1_ = a1, c2_ = c2, a2_ = a2, c3_ = c3, a3_ = a3, c4_ = c4, a4_ = a4;
+    RENDER_LOCK();
     colors_.resize(16);
     colors_[0] = ((c1 >> 16) & 0xff) * a1;
     colors_[1] = ((c1 >> 8) & 0xff) * a1;
@@ -497,6 +504,7 @@ void Pixel::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, in
     colors_[15] = 255 * a4;
     colors_.Update();
 	invalidate(INV_GRAPHICS);
+    RENDER_UNLOCK();
 }
 
 int Pixel::getMixedColor(int c1, int c2, float a1,float a2,float a,float &am)

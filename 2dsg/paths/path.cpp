@@ -2008,7 +2008,8 @@ static void create_stroke_geometry(struct path *path) {
 	update_bounds(path->stroke_bounds, kv_size(path->stroke_geoms[1].vertices),
 			kv_data(path->stroke_geoms[1].vertices), 12);
 
-	for (i = 0; i < 2; ++i) {
+    RENDER_LOCK();
+    for (i = 0; i < 2; ++i) {
 
 		path->stroke_geoms[i].vertex_buffer->assign(
 				kv_data(path->stroke_geoms[i].vertices),
@@ -2034,6 +2035,7 @@ static void create_stroke_geometry(struct path *path) {
 		kv_free(path->stroke_geoms[i].vertices);
 		kv_free(path->stroke_geoms[i].indices);
 	}
+    RENDER_UNLOCK();
 }
 
 static void add_fill_line(struct path *p, float xc, float yc, float x0,
@@ -2295,7 +2297,8 @@ static void create_fill_geometry(struct path *path) {
 	update_bounds(path->fill_bounds, kv_size(path->fill_geoms[3].vertices),
 			kv_data(path->fill_geoms[3].vertices), 4);
 
-	path->fill_bounds_vbo->resize(8);
+    RENDER_LOCK();
+    path->fill_bounds_vbo->resize(8);
 	(*path->fill_bounds_vbo)[0] = path->fill_bounds[0];
 	(*path->fill_bounds_vbo)[1] = path->fill_bounds[1];
 	(*path->fill_bounds_vbo)[2] = path->fill_bounds[2];
@@ -2332,6 +2335,7 @@ static void create_fill_geometry(struct path *path) {
 	kv_data(m.indices) + kv_size(m.indices));
 	path->fill_vertex_buffer->Update();
 	path->fill_index_buffer->Update();
+    RENDER_UNLOCK();
 
 	free_merger4f(&m);
 
@@ -3105,6 +3109,7 @@ void Path2D::setPath(const PrPath *ppath) {
 void Path2D::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4)
 {
 	c1_ = c1, a1_ = a1, c2_ = c2, a2_ = a2, c3_ = c3, a3_ = a3, c4_ = c4, a4_ = a4;
+    RENDER_LOCK();
     colors_.resize(16);
     colors_[0] = ((c1 >> 16) & 0xff) * a1;
     colors_[1] = ((c1 >> 8) & 0xff) * a1;
@@ -3123,6 +3128,7 @@ void Path2D::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, i
     colors_[14] = (c4 & 0xff) * a4;
     colors_[15] = 255 * a4;
     colors_.Update();
+    RENDER_UNLOCK();
 }
 
 int Path2D::getMixedColor(int c1, int c2, float a1,float a2,float a,float &am)

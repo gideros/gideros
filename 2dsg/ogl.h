@@ -19,5 +19,12 @@
 void oglInitialize(unsigned int sw,unsigned int sh);
 void oglCleanup();
 
+//Renderer SYNC macros
+#define RENDER_START()
+#define RENDER_END()
+#define RENDER_LOCK()
+#define RENDER_UNLOCK()
+#define RENDER_DO(f) f()
+
 #endif
 

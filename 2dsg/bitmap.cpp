@@ -79,7 +79,8 @@ void Bitmap::extraBounds(float* minx, float* miny, float* maxx, float* maxy) con
 
 void Bitmap::setCoords()
 {
-	if (bitmapdata_ != NULL)
+    RENDER_LOCK();
+    if (bitmapdata_ != NULL)
 	{
 		graphicsBase_.data = bitmapdata_->texture()->data;
 
@@ -128,6 +129,7 @@ void Bitmap::setCoords()
 		graphicsBase_.texcoords[3] = Point2f(0, v);
 		graphicsBase_.texcoords.Update();
 	}
+    RENDER_UNLOCK();
 }
 
 void Bitmap::setAnchorPoint(float x, float y)

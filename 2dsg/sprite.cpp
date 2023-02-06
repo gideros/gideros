@@ -141,6 +141,7 @@ void Sprite::cloneFrom(Sprite *s) {
     skipSet_=s->skipSet_;
     checkClip_=s->checkClip_;
     memcpy(boundsCache,s->boundsCache,sizeof(boundsCache));
+    boundsCacheRef=s->boundsCacheRef;
     changes_=s->changes_;
     if (s->layoutConstraints)
     {
@@ -228,7 +229,8 @@ void Sprite::setupShader(struct _ShaderSpec &spec) {
 
 void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,int variant,bool inherit) {
 	int sid=(id<<8)|variant;
-	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
+    RENDER_LOCK();
+    std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
 	if (shader)
 		shader->Retain();
 	if (it!=shaders_.end()) {
@@ -249,7 +251,8 @@ void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,in
 		sp.inherit=inherit;
 		shaders_[sid]=sp;
 	}
-	invalidate(INV_GRAPHICS|INV_SHADER);
+    RENDER_UNLOCK();
+    invalidate(INV_GRAPHICS|INV_SHADER);
 }
 
 bool Sprite::setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id,int variant)
@@ -328,7 +331,8 @@ void setupEffectShader(Bitmap *source,Sprite::Effect &e)
 }
 
 void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
-	int diff=0;
+    RENDER_LOCK();
+    int diff=0;
 	if (effectStack_.size()>0) {
 		diff-=1;
 		for (size_t i=0;i<effectStack_.size();i++) {
@@ -362,6 +366,7 @@ void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
         p->spriteWithEffectCount+=diff;
         p=p->parent();
 	}
+    RENDER_UNLOCK();
 }
 
 bool Sprite::setEffectShaderConstant(size_t effectNumber,ShaderParam p)
@@ -608,9 +613,9 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
             continue;
 
 		if ((sprite != this) && (sprite->parent_))
-			sprite->worldTransform_ = sprite->parent_->worldTransform_ * sprite->localTransform_.matrix();
+            sprite->renderTransform_ = sprite->parent_->renderTransform_ * sprite->localTransform_.matrix();
 		else
-			sprite->worldTransform_ = transform * localTransform_.matrix();
+            sprite->renderTransform_ = transform * localTransform_.matrix();
 
         if (sprite->worldAlign_) { //Adjust to integer world coordinates
             float dx,dy;
@@ -622,13 +627,13 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
                 if ((dx!=1)||(dy!=1))
                     sprite->worldTransform_.scale(dx,dy,1);
             }*/
-            sprite->worldTransform_.transformPoint(0,0,&dx,&dy);
+            sprite->renderTransform_.transformPoint(0,0,&dx,&dy);
             dx=roundf(dx)-dx;
             dy=roundf(dy)-dy;
             if (dx||dy)
-                sprite->worldTransform_.translate(dx,dy,0);
+                sprite->renderTransform_.translate(dx,dy,0);
         }
-        ShaderEngine::Engine->setModel(sprite->worldTransform_);
+        ShaderEngine::Engine->setModel(sprite->renderTransform_);
 
         if (clipState==0) {
             float minx,miny,maxx,maxy;
@@ -688,7 +693,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			setupEffectShader(&source,sprite->effectStack_[i]);
             Matrix4 xform;
             if (sprite->parent_)
-                xform=sprite->parent_->worldTransform_;
+                xform=sprite->parent_->renderTransform_;
             else
                 xform=transform;
             xform=xform*sprite->localTransform_.matrix();
@@ -702,7 +707,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
             ((Sprite *)&source)->doDraw(xform, sx, sy, ex, ey);
 		}
 		else
-			sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
+            sprite->doDraw(sprite->renderTransform_, sx, sy, ex, ey);
 
 		stack.push(sprite);
 		stack.push(nullptr); //End marker
@@ -804,11 +809,11 @@ int Sprite::addChild(Sprite* sprite, GStatus* status) {
 }
 
 int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
+    G_UNUSED(status);
 	/* This is not necessary, we are only called by spritebinder and the check is already done there.
 	if (canChildBeAddedAt(sprite, index, status) == false)
 		return -1;
 	*/
-
     invalidate(INV_GRAPHICS|INV_BOUNDS|INV_LAYOUT);
 	Stage* stage1 = sprite->getStage();
 
@@ -819,9 +824,11 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
         auto it=std::find(children_.begin(), children_.end(), sprite);
         size_t cindex=it-children_.begin();
         if ((int)cindex!=index) {
+            RENDER_LOCK();
             children_.erase(it);
             if (cindex<(size_t)index) index--;
             children_.insert(children_.begin() + index, sprite);
+            RENDER_UNLOCK();
         }
         return index;
 	}
@@ -830,7 +837,8 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 
 	sprite->ref();		// guard
 
-	if (sprite->parent_) {
+    RENDER_LOCK();
+    if (sprite->parent_) {
         if (sprite->spriteWithLayoutCount) {
             Sprite *p=sprite->parent_;
             while (p) {
@@ -852,7 +860,8 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 	sprite->parent_ = this;
 
 	children_.insert(children_.begin() + index, sprite);
-	sprite->ref();
+    RENDER_UNLOCK();
+    sprite->ref();
     if (layoutState&&sprite->layoutConstraints) {
         layoutState->dirty=true;
         layoutState->layoutInfoCache[0].valid=false;
@@ -916,8 +925,10 @@ void Sprite::setChildIndex(Sprite* child, int index, GStatus* status) {
 		return;
 	}
 
+    RENDER_LOCK();
 	children_.erase(children_.begin() + currentIndex);
-	children_.insert(children_.begin() + index, child);
+	children_.insert(children_.begin() + index, child);    
+    RENDER_UNLOCK();
 }
 
 void Sprite::swapChildren(Sprite* child1, Sprite* child2, GStatus* status) {
@@ -929,7 +940,9 @@ void Sprite::swapChildren(Sprite* child1, Sprite* child2, GStatus* status) {
 	if (index2 == childCount())
 		return;
 
+    RENDER_LOCK();
 	std::swap(children_[index1], children_[index2]);
+    RENDER_UNLOCK();
 }
 
 void Sprite::swapChildrenAt(int index1, int index2, GStatus* status) {
@@ -945,7 +958,9 @@ void Sprite::swapChildrenAt(int index1, int index2, GStatus* status) {
 		return;
 	}
 
-	std::swap(children_[index1], children_[index2]);
+    RENDER_LOCK();
+    std::swap(children_[index1], children_[index2]);
+    RENDER_UNLOCK();
 }
 
 Sprite* Sprite::getChildAt(int index, GStatus* status) const {
@@ -968,7 +983,7 @@ void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<s
             Sprite *c=children_[i];
             if (c->isVisible_) {
                 Matrix transform=pxform.back() * c->localTransform_.matrix();
-                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, &xformValid);
+                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, ref, &xformValid);
                 if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
                     children.push_back(std::pair<int,Sprite *>(parentidx,c));
                     if ((!nosubs)&&(!c->children_.empty())) {
@@ -1028,7 +1043,8 @@ void Sprite::removeChildAt(int index, GStatus* status) {
 
 	bool connected = stage != NULL;
 
-	child->parent_ = 0;
+    RENDER_LOCK();
+    child->parent_ = 0;
 	children_.erase(children_.begin() + index);
     if (child->spriteWithLayoutCount) {
         Sprite *p=this;
@@ -1044,6 +1060,7 @@ void Sprite::removeChildAt(int index, GStatus* status) {
             p=p->parent();
         }
     }
+    RENDER_UNLOCK();
 
 	application_->autounref(child);
 
@@ -1104,14 +1121,16 @@ void Sprite::replaceChild(Sprite* oldChild, Sprite* newChild) {
 	if (oldChild == newChild)
 		return;
 
+    RENDER_LOCK();
     oldChild->invalidate(INV_CONSTRAINTS);
     oldChild->parent_ = 0;
 
 	newChild->ref();
 	oldChild->unref();
-	*iter = newChild;
+    *iter = newChild;
+    newChild->parent_ = this;
+    RENDER_UNLOCK();
 
-	newChild->parent_ = this;
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
@@ -1194,6 +1213,47 @@ bool Sprite::spriteToLocal(const Sprite *ref,float x, float y, float z, float* t
 
     if (tz)
         *tz = z;
+
+    return true;
+}
+
+bool Sprite::spriteToLocalMatrix(const Sprite *ref,Matrix &mat) const {
+    std::set<const Sprite *> base;
+    std::stack<const Sprite*> stack;
+
+    const Sprite* curr = this;
+    while (curr) {
+        base.insert(curr);
+        if (curr==ref) break;
+        curr = curr->parent_;
+    }
+    curr=ref;
+    while (curr&&(base.find(curr)==base.end())) {
+        stack.push(curr);
+        curr = curr->parent_;
+    }
+    if (!curr) return false;
+
+    const Sprite *self = this;
+    int st=0;
+    while (self!=curr) {
+        stack.push(self);
+        st++;
+        self = self->parent_;
+    }
+
+    if (st) {
+        while (st--) {
+            mat=mat*stack.top()->matrix();
+            stack.pop();
+        }
+        mat.invert();
+    }
+
+    while (stack.empty() == false) {
+        mat=mat*stack.top()->matrix();
+        stack.pop();
+    }
 
     return true;
 }
@@ -1290,7 +1350,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
 	ty = y;
 
 	float minx, miny, maxx, maxy;
-    boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, false, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL);
+    boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, false, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, ref);
 
 	return (tx >= minx && ty >= miny && tx <= maxx && ty <= maxy);
 }
@@ -1433,7 +1493,7 @@ struct ClipRect {
 
 void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
         float* maxx, float* maxy, std::vector<Matrix> &parentXform,ClipRect *parentClip,
-        bool visible, bool nosubs, BoundsMode mode, bool *xformValid) {
+        bool visible, bool nosubs, BoundsMode mode, const Sprite *ref, bool *xformValid) {
     if (changes_&INV_BOUNDS) {
         for (size_t i=0;i<BOUNDS_MAX*4;i++)
             boundsCache[i].valid=false;
@@ -1441,7 +1501,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
     }
     int cacheMode=(mode<<2)+(visible?2:0)+(nosubs?1:0);
 
-    if (((mode==BOUNDS_GLOBAL)||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC)))&&boundsCache[cacheMode].valid) {
+    if (((mode==BOUNDS_GLOBAL)||((mode==BOUNDS_REF)&&(boundsCacheRef==ref))||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC)))&&boundsCache[cacheMode].valid) {
         if (minx)
             *minx=boundsCache[cacheMode].minx;
         if (miny)
@@ -1624,7 +1684,7 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
                     float lgminx = 1e30, lgminy = 1e30, lgmaxx = -1e30, lgmaxy = -1e30;
                     children_[i]->boundsHelper(transform, &lgminx, &lgminy,
                             &lgmaxx, &lgmaxy, parentXform,&clip,
-                            visible, nosubs,mode,&xformvalid_);
+                            visible, nosubs,mode,ref,&xformvalid_);
                     //Contribute to global bounds
                     gminx = std::min(lgminx, gminx);
                     gminy = std::min(lgminy, gminy);
@@ -1636,12 +1696,14 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 
         //Whatever the sprite is, global bounds are always the same
         //Local and object bounds however are only valid at the sprite level
-        if ((mode==BOUNDS_GLOBAL)||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC))) {
+        if ((mode==BOUNDS_GLOBAL)||(mode==BOUNDS_REF)||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC))) {
             boundsCache[cacheMode].minx=gminx;
             boundsCache[cacheMode].miny=gminy;
             boundsCache[cacheMode].maxx=gmaxx;
-            boundsCache[cacheMode].maxy=gmaxy;
+            boundsCache[cacheMode].maxy=gmaxy;            
             boundsCache[cacheMode].valid=true;
+            if (mode==BOUNDS_REF)
+                boundsCacheRef=ref;
         }
 
 		if (minx)

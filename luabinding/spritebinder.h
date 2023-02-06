@@ -80,6 +80,7 @@ private:
 	static int localToGlobal(lua_State* L);
     static int globalToLocal(lua_State* L);
     static int spriteToLocal(lua_State* L);
+    static int spriteToLocalMatrix(lua_State* L);
 
 	static int isVisible(lua_State* L);
 	static int setVisible(lua_State* L);

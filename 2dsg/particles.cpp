@@ -88,7 +88,8 @@ void Particles::clearParticles() {
 }
 
 int Particles::addParticle(float x, float y, float z, float size, float angle, int ttl, float extra) {
-	int s = -1;
+    RENDER_LOCK();
+    int s = -1;
 	int k = 2;
 	int kmax=particleCount*16;
 	while (k < kmax) {
@@ -169,7 +170,8 @@ int Particles::addParticle(float x, float y, float z, float size, float angle, i
 	indices_.Update();
 	boundsDirty_ = true;
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
-	return s;
+    RENDER_UNLOCK();
+    return s;
 }
 
 void Particles::removeParticle(int i) {
@@ -181,7 +183,8 @@ void Particles::removeParticle(int i) {
 void Particles::setPosition(int i, float x, float y, float z) {
     if (i >= (int)particleCount)
 		return;
-	points_[i * 16] = x;
+    RENDER_LOCK();
+    points_[i * 16] = x;
     points_[i * 16 + 1] = y;
     points_[i * 16 + 2] = z;
     points_[i * 16 + 4] = x;
@@ -194,7 +197,8 @@ void Particles::setPosition(int i, float x, float y, float z) {
 	points_[i * 16 + 13] = y;
     points_[i * 16 + 14] = z;
     points_.Update();
-	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    invalidate(INV_GRAPHICS|INV_BOUNDS);
+    RENDER_UNLOCK();
 }
 
 void Particles::getPosition(int i, float *x, float *y, float *z) {
@@ -212,16 +216,19 @@ void Particles::getPosition(int i, float *x, float *y, float *z) {
 void Particles::setSize(int i, float size) {
     if (i >= (int)particleCount)
 		return;
+    RENDER_LOCK();
     texcoords_[i * 16 + 2] = size;
     texcoords_[i * 16 + 4 + 2] = size;
     texcoords_[i * 16 + 8 + 2] = size;
     texcoords_[i * 16 + 12 + 2] = size;
     texcoords_.Update();
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    RENDER_UNLOCK();
 }
 
 void Particles::scaleParticles(float size,bool absolute) {
-	for (size_t i=0;i<(particleCount*4);i++) {
+    RENDER_LOCK();
+    for (size_t i=0;i<(particleCount*4);i++) {
         if (texcoords_[i*4+2]!=0) {
 			if (absolute)
                 texcoords_[i*4+2]=size;
@@ -230,7 +237,8 @@ void Particles::scaleParticles(float size,bool absolute) {
 		}
 	}
     texcoords_.Update();
-	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    invalidate(INV_GRAPHICS|INV_BOUNDS);
+    RENDER_UNLOCK();
 }
 
 float Particles::getSize(int i) {
@@ -282,7 +290,8 @@ void Particles::setColor(int i, unsigned int color, float alpha) {
 	unsigned int b = (color & 0xff) * alpha;
 	unsigned int a = 255 * alpha;
 
-	for (int k = 0; k < 16; k += 4) {
+    RENDER_LOCK();
+    for (int k = 0; k < 16; k += 4) {
 		colors_[i * 16 + k] = r;
 		colors_[i * 16 + k + 1] = g;
 		colors_[i * 16 + k + 2] = b;
@@ -290,6 +299,7 @@ void Particles::setColor(int i, unsigned int color, float alpha) {
 	}
 	colors_.Update();
 	invalidate(INV_GRAPHICS);
+    RENDER_UNLOCK();
 }
 
 void Particles::setSpeed(int i, float vx, float vy, float vz, float vs, float va) {
@@ -431,12 +441,14 @@ void Particles::setExtra(int i, float extra)
 {
     if (i >= (int)particleCount)
         return;
+    RENDER_LOCK();
     points_[i * 16 + 3] = extra;
     points_[i * 16 + 7] = extra;
     points_[i * 16 + 11] = extra;
     points_[i * 16 + 15] = extra;
     points_.Update();
     invalidate(INV_GRAPHICS|INV_BOUNDS);
+    RENDER_UNLOCK();
 }
 
 float Particles::getExtra(int i) const
@@ -465,6 +477,7 @@ void Particles::tick() {
 	lastTickTime_=iclk;
 	if (paused_) return;
 
+    RENDER_LOCK();
     for (auto it=dead_.begin();it!=dead_.cend();it++)
         removeParticle(*it);
     dead_.clear();
@@ -535,6 +548,7 @@ void Particles::tick() {
 		}
 	}
 	invalidate(changes);
+    RENDER_UNLOCK();
 }
 
 std::set<int> Particles::getDead() {

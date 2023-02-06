@@ -85,7 +85,8 @@ void TTTextField::createGraphics()
 {
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
 	scaleChanged(); //Mark current scale as graphics scale
-	if (data_)
+    RENDER_LOCK();
+    if (data_)
 	{
 		application_->getTextureManager()->destroyTexture(data_);
 		data_ = NULL;
@@ -172,6 +173,7 @@ void TTTextField::createGraphics()
 		maxy_ = maxy/scaley;
 		styleFlags_=textlayout_.styleFlags;
 	}
+    RENDER_UNLOCK();
     bool layoutSizeChanged=FDIF(textlayout_.mw,lmw)||FDIF(textlayout_.bh,lbh)||FDIF(textlayout_.h,lh)||FDIF(textlayout_.w,lw);
 	if (layoutSizeChanged) layoutSizesChanged();
 }
@@ -233,11 +235,13 @@ void TTTextField::setTextColor(float r,float g,float b,float a)
     g_ = g;
     b_ = b;
 
-    if (styleFlags_&TEXTSTYLEFLAG_COLOR)
+    if (styleFlags_&TEXTSTYLEFLAG_COLOR) {
         createGraphics();
+        graphicsBase_.setColor(1,1,1,1);
+    }
     else
         graphicsBase_.setColor(r,g,b,a);
-	invalidate(INV_GRAPHICS);
+    invalidate(INV_GRAPHICS);
 }
 
 void TTTextField::textColor(float &r,float &g,float &b,float &a)

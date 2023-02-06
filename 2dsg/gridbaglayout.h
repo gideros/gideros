@@ -18,8 +18,15 @@ struct GridBagConstraints {
     //Placement in grid
     size_t gridx;
     size_t gridy;
+    //Span in grid
     size_t gridwidth;
     size_t gridheight;
+    //Relativeplacement
+    bool gridRelative;
+    //If min size is too high, place the sprite in next(+1) or previous(-1) column or row depedning on gridx/gridy relative placement. 0 to disable
+    signed char overflowMode;
+    //Hide priority: if non 0 and min size is too high, hide prioritary Sprites
+    unsigned char hidePriority;
     //Relative weight
     double weightx;
     double weighty;
@@ -38,6 +45,7 @@ struct GridBagConstraints {
     size_t tempY;
     size_t tempWidth;
     size_t tempHeight;
+    bool tempHide;
     float minWidth;
     float minHeight;
     //Minimum and prefered sizes
@@ -66,6 +74,10 @@ struct GridBagConstraints {
         gridwidth = 1;
         gridheight = 1;
 
+        gridRelative=false;
+        overflowMode=0;
+        hidePriority=0;
+
         weightx = 0;
         weighty = 0;
         anchor = CENTER;
@@ -81,44 +93,9 @@ struct GridBagConstraints {
 
         prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
         tempHeight=tempWidth=tempX=tempY=0;
+        tempHide=false;
         offsetX=offsetY=originX=originY=0;
 
-        optimizeSize=false;
-        group=false;
-        autoClip=false;
-    }
-
-    GridBagConstraints(size_t gridx, size_t gridy,
-                              size_t gridwidth, size_t gridheight,
-                              double weightx, double weighty,
-                              _Anchor anchor, float fillX, float fillY,
-                              GridInsets insets, float ipadx, float ipady,
-                              float anchorX,float anchorY,
-							  float offsetX,float offsetY,
-                              float originX,float originY,
-                              float aspectRatio) {
-        this->gridx = gridx;
-        this->gridy = gridy;
-        this->gridwidth = gridwidth;
-        this->gridheight = gridheight;
-        this->fillX = fillX;
-        this->fillY = fillY;
-        this->ipadx = ipadx;
-        this->ipady = ipady;
-        this->insets = insets;
-        this->anchor  = anchor;
-        this->anchorX  = anchorX;
-        this->anchorY  = anchorY;
-        this->weightx = weightx;
-        this->weighty = weighty;
-        this->offsetX = offsetX;
-        this->offsetY = offsetY;
-        this->originX = originX;
-        this->originY = originY;
-        this->aspectRatio = aspectRatio;
-
-        prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
-        tempHeight=tempWidth=tempX=tempY=0;
         optimizeSize=false;
         group=false;
         autoClip=false;
@@ -146,18 +123,16 @@ struct GridBagLayoutInfo {
 
 class Sprite;
 class GridBagLayout {
-    GridBagConstraints defaultConstraints;
     GridBagLayoutInfo layoutInfo;
 protected:
     struct Rectangle {
     	float x,y,width,height;
     	Rectangle(): x(0),y(0),width(0),height(0) { }
     };
-    GridBagConstraints *lookupConstraints(Sprite *comp);
     /*void getLayoutOrigin (float &x,float &y);
     void getLayoutDimension(float *wdim,float *hdim,int &wsize, int &hsize);
     void getLayoutWeights(double *wdim,double *hdim,int &wsize, int &hsize);*/
-    void preInitMaximumArraySizes(Sprite *parent,size_t &a0,size_t &a1);
+    void preInitMaximumArraySizes(std::vector<Sprite *> &candidates,size_t &a0,size_t &a1);
     void AdjustForGravity(Sprite *comp,GridBagConstraints *constraints, Rectangle &r);
 public:
     GridBagLayoutInfo layoutInfoCache[2];
@@ -184,7 +159,7 @@ public:
     {
 
     }
-    GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag);
+    GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight);
     void getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);
     GridBagLayoutInfo *getCurrentLayoutInfo() { return &layoutInfo; }
@@ -232,5 +207,8 @@ public:
 #define STRKEY_LAYOUT_shrink            62
 #define STRKEY_LAYOUT_group             63
 #define STRKEY_LAYOUT_autoclip          64
+#define STRKEY_LAYOUT_gridRelative      65
+#define STRKEY_LAYOUT_overflowMode      66
+#define STRKEY_LAYOUT_hidePriority      67
 
 #endif /* GRIDBAGLAYOUT_H_ */

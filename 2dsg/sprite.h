@@ -58,6 +58,7 @@ public:
 	void localToGlobal(float x, float y, float z, float* tx, float* ty, float* tz) const;
     void globalToLocal(float x, float y, float z, float* tx, float* ty, float* tz) const;
     bool spriteToLocal(const Sprite *ref,float x, float y, float z, float* tx, float* ty, float* tz) const;
+    bool spriteToLocalMatrix(const Sprite *ref,Matrix &mat) const;
 
 	void setAlpha(float alpha);
 	float alpha() const;
@@ -485,7 +486,7 @@ public:
 	void redrawEffects();
     void updateEffects();
     void logicalTransformChanged();
-    void setSkipSet(const std::vector<char>& skip) { skipSet_=skip; };
+    void setSkipSet(const std::vector<char>& skip) { RENDER_LOCK(); skipSet_=skip; RENDER_UNLOCK(); };
     void setCheckClip(bool check) { checkClip_=check; };
 protected:
 	EffectUpdateMode effectsMode_;
@@ -500,7 +501,8 @@ protected:
         BOUNDS_OBJECT=1, //Internal object bounds, excluding local transform
         BOUNDS_LOCAL=2, //Locally transformed object bounds, that is bounds of the object in its parent space
         BOUNDS_GLOBAL=3, //Global bounds
-        BOUNDS_MAX=4
+        BOUNDS_REF=4, //Bounds versus a specific reference
+        BOUNDS_MAX=5
     };
     struct {
         float minx;
@@ -509,6 +511,7 @@ protected:
         float maxy;
         bool valid;
     } boundsCache[4*BOUNDS_MAX];
+    const Sprite *boundsCacheRef;
 
     void revalidate(int changes) { 	changes_=(ChangeSet)(changes_&(~changes));  };
 public:
@@ -556,7 +559,7 @@ private:
         float ymin;
         float ymax;
     };
-    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::vector<Matrix> &parentXform, ClipRect *parentClip=nullptr,bool visible=false, bool nosubs=false, BoundsMode mode=BOUNDS_UNSPEC, bool *xformValid=nullptr);
+    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::vector<Matrix> &parentXform, ClipRect *parentClip=nullptr,bool visible=false, bool nosubs=false, BoundsMode mode=BOUNDS_UNSPEC, const Sprite *ref=nullptr, bool *xformValid=nullptr);
 
 protected:
     Application *application_;
@@ -565,6 +568,7 @@ private:
 	bool isVisible_;
     Transform localTransform_;
     mutable Matrix4 worldTransform_;
+    mutable Matrix4 renderTransform_;
 //	Graphics* graphics_;
 
 	ShaderEngine::BlendFactor sfactor_, dfactor_;

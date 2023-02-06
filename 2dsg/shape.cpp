@@ -146,7 +146,8 @@ static void createGraphicsBase(const std::vector<std::vector<Point2f> >& polygon
 	int start = result.vertices.size();
 	int ntriangles = tes.triangles.size() / 2;
 
-	for (std::size_t i = 0; i < ntriangles; ++i)
+    RENDER_LOCK();
+    for (std::size_t i = 0; i < ntriangles; ++i)
 	{
 		float x = tes.triangles[i * 2 + 0];
 		float y = tes.triangles[i * 2 + 1];
@@ -165,6 +166,7 @@ static void createGraphicsBase(const std::vector<std::vector<Point2f> >& polygon
 	result.indices.Update();
 	if (texcoords)
 		result.texcoords.Update();
+    RENDER_UNLOCK();
 }
 
 static void lineToPolygon(float x0, float y0, float x1, float y1, float thickness, std::vector<Point2f>& polygon)

@@ -165,6 +165,16 @@ void Application::configureFrustum(float fov, float farplane, float nearplane) {
 	fov_ = fov;
 }
 
+/** Rendering routine modifies:
+ *  - current projection matrices
+ *  - Shader Engine state
+ * It also needs to have consistent:
+ *  - Sprite hierarchy (children and skipset) x
+ *  - Effect stacks x
+ *  - Shaders x
+ *  - VBOs
+ *  - Textures
+ *  */
 void Application::renderScene(int deltaFrameCount, float *vmat, float *pmat, const std::function<void(ShaderEngine *,Matrix4 &)> &preStage) {
 	if (nframe_ < 0 || time_ < 0) {
 		nframe_ = 0;
@@ -184,6 +194,7 @@ void Application::renderScene(int deltaFrameCount, float *vmat, float *pmat, con
 
 	if (!ShaderEngine::Engine)
 		return;
+    RENDER_START();
 	ShaderEngine *gfx = ShaderEngine::Engine;
 	//oglTextureReset();
 	gfx->reset();
@@ -376,6 +387,7 @@ void Application::renderScene(int deltaFrameCount, float *vmat, float *pmat, con
 	lastFrameRenderTime_ = iclock() - time;
     if (onDemandDraw_)
         stage_->changes_=(Sprite::ChangeSet) (stage_->changes_&(~Sprite::INV_EFFECTS));
+    RENDER_END();
 }
 
 void Application::mouseDown(int x, int y, int button, int modifiers, int type) {

@@ -1738,7 +1738,9 @@ static int updateLayout(lua_State *L) {
 static int updateEffects(lua_State *L) {
     LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
     Application *application = luaApplication->getApplication();
-    application->stage()->validateEffects();
+    RENDER_DO([=] {
+        application->stage()->validateEffects();
+    });
     return 0;
 }
 

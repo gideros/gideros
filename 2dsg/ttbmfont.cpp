@@ -903,6 +903,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
     if (strlen(text) == 0)
         return;
 
+    RENDER_LOCK();
     std::map<int, int> layerMap;
     std::map<int, int> gfxMap;
     std::map<int, int> gfxMap2;
@@ -943,7 +944,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			gfxMap[l] = gfxMap[l] + 1;
 		}
 
-		vGraphicsBase->resize(gfx);
+        vGraphicsBase->resize(gfx);
 
 		for (std::map<int, int>::iterator it = gfxMap.begin();
 				it != gfxMap.end(); it++) {
@@ -1062,6 +1063,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			x += gl.advX;
 		}
 	}
+    RENDER_UNLOCK();
 }
 
 void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,

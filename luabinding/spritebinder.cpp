@@ -66,6 +66,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"localToGlobal", SpriteBinder::localToGlobal},
         {"globalToLocal", SpriteBinder::globalToLocal},
         {"spriteToLocal", SpriteBinder::spriteToLocal},
+        {"spriteToLocalMatrix", SpriteBinder::spriteToLocalMatrix},
         {"isVisible", SpriteBinder::isVisible},
 		{"setVisible", SpriteBinder::setVisible},
 		{"isOnStage", SpriteBinder::isOnStage},
@@ -725,6 +726,9 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 
         FILL_INT(gridx,gridx); FILL_INT(gridy,gridy);
         FILL_INT(gridwidth,gridwidth); FILL_INT(gridheight,gridheight);
+        FILL_BOOL(gridRelative,gridRelative);
+        FILL_INT(overflowMode,overflowMode);
+        FILL_INT(hidePriority,hidePriority);
         FILL_NUM(weightx,weightx); FILL_NUM(weighty,weighty);
         FILL_INTT(anchor,anchor,GridBagConstraints::_Anchor);
         lua_getfield(L,2,"fill");
@@ -839,6 +843,9 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
         STOR_INT(gridx,gridx); STOR_INT(gridy,gridy);
         STOR_INT(gridwidth,gridwidth); STOR_INT(gridheight,gridheight);
         STOR_NUM(weightx,weightx); STOR_NUM(weighty,weighty);
+        STOR_BOOL(gridRelative,gridRelative);
+        STOR_INT(overflowMode,overflowMode);
+        STOR_INT(hidePriority,hidePriority);
         STOR_INTT(anchor,anchor,GridBagConstraints::_Anchor);
         STOR_NUM(fillx,fillX); STOR_NUM(filly,fillY);
         STOR_NUM(aspectRatio,aspectRatio);
@@ -896,13 +903,13 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 		} else
 		{
 			float dw,dh;
-			pi = sp->getLayoutInfo(sprite, (type>=2)?2:type); //PREFERRED or BEST
+            float pwidth,pheight;
+            sprite->getDimensions(pwidth, pheight);
+            pi = sp->getLayoutInfo(sprite, (type>=2)?2:type, pwidth, pheight); //PREFERRED or BEST
 		    sp->getMinSize(sprite, pi, dw, dh, sp->pInsets);
 		    if (type==3) {//BEST
-				float pwidth,pheight;
-				sprite->getDimensions(pwidth, pheight);
 				if (pwidth < dw || pheight < dh) {
-					pi = sp->getLayoutInfo(sprite, 1);
+                    pi = sp->getLayoutInfo(sprite, 1, pwidth, pheight);
 					sp->getMinSize(sprite, pi, dw, dh, sp->pInsets);
 				}
 		    }
@@ -1521,6 +1528,26 @@ int SpriteBinder::spriteToLocal(lua_State* L)
     lua_pushnumber(L, tz);
 
     return 3;
+}
+
+int SpriteBinder::spriteToLocalMatrix(lua_State* L)
+{
+    StackChecker checker(L, "spriteToLocalMatrix", 1);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* ref = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+
+    Matrix m;
+    if (!sprite->spriteToLocalMatrix(ref,m))
+        lua_pushnil(L);
+    else {
+        Transform *t=new Transform();
+        t->setMatrix(m.data());
+        binder.pushInstance("Matrix", t);
+    }
+
+    return 1;
 }
 
 int SpriteBinder::isVisible(lua_State* L)
@@ -2384,16 +2411,17 @@ int SpriteBinder::resolveStyle(lua_State* L)
                 if (pa.count(k)) { \
                     lua_pushvalue(L,-1); \
                     LuaApplication::resolveStyle(L,pa[k].c_str(),0); \
-                    p->f[k]=lua_tonumber(L,-1); \
+                    lua_Number nn=lua_tonumber(L,-1);\
+                    if (nn!=p->f[k]) { p->f[k]=nn; dirty=true; }\
                     lua_pop(L,1); \
-                    dirty=true; \
                 } } }
 #define FILL_NUM(n,f) if (p->resolved.count(FKEY(n))) { \
     lua_pushvalue(L,-1); \
     LuaApplication::resolveStyle(L,p->resolved[FKEY(n)].c_str(),0);\
-    p->f=lua_tonumber(L,-1);\
+    lua_Number nn=lua_tonumber(L,-1);\
+    if (nn!=p->f) { p->f=nn; dirty=true; }\
     lua_pop(L,1);\
-    dirty=true; }
+    }
 
 int SpriteBinder::updateStyle(lua_State* L)
 {

@@ -151,6 +151,7 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 		return;
 	}
 
+    RENDER_LOCK();
     int gfx = vGraphicsBase->size();
     vGraphicsBase->resize(gfx+1);
     GraphicsBase *graphicsBase = &((*vGraphicsBase)[gfx]);
@@ -281,6 +282,7 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 	graphicsBase->vertices.resize(gi * 4);
 	graphicsBase->texcoords.resize(gi * 4);
 	graphicsBase->indices.resize(gi * 6);
+    RENDER_UNLOCK();
 }
 
 static bool readLine(G_FILE *f, std::string *line) {

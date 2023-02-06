@@ -330,6 +330,7 @@ void TexturePackFont::drawText(std::vector<GraphicsBase> * vGraphicsBase, const 
         return;
     }
 
+    RENDER_LOCK();
     int gfx = vGraphicsBase->size();
     vGraphicsBase->resize(gfx+1);
     GraphicsBase *graphicsBase = &((*vGraphicsBase)[gfx]);
@@ -446,6 +447,7 @@ void TexturePackFont::drawText(std::vector<GraphicsBase> * vGraphicsBase, const 
     graphicsBase->vertices.resize(gi * 4);
     graphicsBase->texcoords.resize(gi * 4);
     graphicsBase->indices.resize(gi * 6);
+    RENDER_UNLOCK();
 }
 
 TexturePackFont::~TexturePackFont() {
