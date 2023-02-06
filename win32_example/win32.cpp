@@ -177,6 +177,7 @@ public:
 	virtual void getPosition(int &w,int &h);
 	virtual void setState(int state);
 	virtual int getState();
+	virtual void setTitle(const char *title);
 	virtual void getMaxSize(int &w,int &h);
 	virtual int getId();
 	virtual void closed();
@@ -242,6 +243,11 @@ int W32Screen::getState()
 	if (!IsWindowVisible(wnd)) s|=HIDDEN;
 	if (wnd==0) s|=CLOSED;
 	return s;
+}
+
+void W32Screen::setTitle(const char *title)
+{
+	SetWindowText(hwndcopy,ws(title).c_str());
 }
 
 void W32Screen::getMaxSize(int &w,int &h)

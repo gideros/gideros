@@ -19,6 +19,7 @@ private:
     static int getPosition(lua_State *L);
     static int setState(lua_State *L);
     static int getState(lua_State *L);
+    static int setTitle(lua_State *L);
     static int getMaxSize(lua_State *L);
     static int getId(lua_State *L);
 };

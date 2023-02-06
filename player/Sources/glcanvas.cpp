@@ -66,7 +66,8 @@ public:
 	virtual void getPosition(int &w,int &h);
 	virtual void setState(int state);
 	virtual int getState();
-	virtual void getMaxSize(int &w,int &h);
+    virtual void setTitle(const char *title);
+    virtual void getMaxSize(int &w,int &h);
 	virtual int getId();
 	bool event(QEvent* ev);
 	QtScreen(Application *application);
@@ -131,6 +132,11 @@ int QtScreen::getState()
 	if (!isVisible()) s|=HIDDEN;
 	if (closed_) s|=CLOSED;
 	return s;
+}
+
+void QtScreen::setTitle(const char *title)
+{
+    QOpenGLWindow::setTitle(QString::fromUtf8(title));
 }
 
 void QtScreen::getMaxSize(int &w,int &h)

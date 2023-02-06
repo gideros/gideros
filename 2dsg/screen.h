@@ -1,7 +1,7 @@
 /*
  * window.h
  *
- *  Created on: 9 août 2017
+ *  Created on: 9 aoÃ»t 2017
  *      Author: Nicolas
  */
 
@@ -42,7 +42,8 @@ public:
 	virtual int getId()=0;
 	virtual void setState(int state) { G_UNUSED(state); };
 	virtual int getState() { return 0; };
-	virtual void tick() {};
+    virtual void setTitle(const char *title) { G_UNUSED(title); };
+    virtual void tick() {};
 	Screen(Application *application);
 	virtual ~Screen();
 	void setContent(Sprite *content);

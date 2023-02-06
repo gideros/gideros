@@ -18,6 +18,7 @@ ScreenBinder::ScreenBinder(lua_State *L)
         {"getPosition",getPosition},
         {"setState",setState},
         {"getState",getState},
+        {"setTitle",setTitle},
         {"getMaxSize",getMaxSize},
         {"getId",getId},
         {NULL, NULL},
@@ -176,4 +177,13 @@ int ScreenBinder::getId(lua_State *L)
     Screen *screen = static_cast<Screen*>(binder.getInstance("Screen", 1));
     lua_pushinteger(L,screen->getId());
     return 1;
+}
+
+int ScreenBinder::setTitle(lua_State *L)
+{
+    Binder binder(L);
+    Screen *screen = static_cast<Screen*>(binder.getInstance("Screen", 1));
+    const char *t=luaL_checkstring(L,2);
+    screen->setTitle(t);
+    return 0;
 }
