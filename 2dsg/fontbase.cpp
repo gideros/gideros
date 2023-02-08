@@ -145,7 +145,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, flo
 void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *params,FontBase::TextLayout &tl)
 {
 	float lh=getLineHeight()+params->lineSpacing;
-	float sw=getAdvanceX(" ",params->letterSpacing,-1);
+	float sw=getSpaceSize()+params->letterSpacing;
     float as=getAscender();
     float ds=getDescender();
     float bb=(getLineHeight()-as-ds)/2;

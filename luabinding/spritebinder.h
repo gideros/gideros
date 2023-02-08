@@ -123,7 +123,10 @@ private:
     static int setStyle(lua_State* L);
     static int resolveStyle(lua_State* L);
 
+    static int layoutStrings[64];    
 public:
+    static size_t tokenChildren;
+    static size_t tokenParent;
     static int updateStyle(lua_State* L);
 };
 

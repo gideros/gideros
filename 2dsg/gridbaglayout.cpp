@@ -40,7 +40,7 @@ void GridBagLayout::preInitMaximumArraySizes(std::vector<Sprite *> &candidates, 
 	a1 = preMaximumArrayYIndex;
 } //PreInitMaximumSizes
 
-GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight) {
+GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight) {
 	Sprite *comp;
 	GridBagConstraints *constraints;
 
@@ -156,7 +156,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, flo
             if ((dw==-1)||(dh==-1)) {
                 float diw,dih;
                 if (comp->layoutState) {
-                    GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
+                    GridBagLayoutInfo &info = comp->layoutState->getLayoutInfo(comp,
                             sizeflag, pwidth, pheight);
                     comp->layoutState->getMinSize(comp, info, diw, dih,comp->layoutState->pInsets);
                 }
@@ -168,7 +168,7 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, flo
         }
         else {
             if (comp->layoutState) {
-                GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp,
+                GridBagLayoutInfo &info = comp->layoutState->getLayoutInfo(comp,
                         sizeflag, pwidth,pheight);
                 comp->layoutState->getMinSize(comp, info, dw, dh,comp->layoutState->pInsets);
             }
@@ -267,7 +267,12 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, flo
     if (layoutHeight < rowWeights.size())
         layoutHeight = rowWeights.size();
 
-    GridBagLayoutInfo r = GridBagLayoutInfo(layoutWidth, layoutHeight);
+    parent->layoutState->layoutInfoCache[sizeflag-1]=GridBagLayoutInfo(layoutWidth, layoutHeight);
+    GridBagLayoutInfo &r = parent->layoutState->layoutInfoCache[sizeflag-1];
+    r.weightX.resize(maximumArrayYIndex);
+    r.weightY.resize(maximumArrayXIndex);
+    r.minWidth.resize(maximumArrayYIndex);
+    r.minHeight.resize(maximumArrayXIndex);
 
 	/*
 	 * Pass #2
@@ -321,15 +326,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, flo
         constraints->tempWidth = curWidth;
         constraints->tempHeight = curHeight;
     }
-
-	r.weightX.clear();
-    r.weightX.resize(maximumArrayYIndex);
-	r.weightY.clear();
-    r.weightY.resize(maximumArrayXIndex);
-	r.minWidth.clear();
-    r.minWidth.resize(maximumArrayYIndex);
-	r.minHeight.clear();
-    r.minHeight.resize(maximumArrayXIndex);
 
 	/*
 	 * Apply minimum row/column dimensions and weights
@@ -513,7 +509,6 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, flo
         }
     }
     r.valid=true;
-    parent->layoutState->layoutInfoCache[sizeflag-1]=r;
 
 	return r;
 } //getLayoutInfo()
@@ -537,7 +532,7 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
             comp->layoutState->ArrangeGrid(comp,proposeW,proposeH);
             comp->layoutState->layoutInfoCache[PREFERREDSIZE-1].valid=false;
             comp->layoutState->optimizing=false;
-            GridBagLayoutInfo info = comp->layoutState->getLayoutInfo(comp, PREFERREDSIZE,proposeW,proposeH);
+            GridBagLayoutInfo &info = comp->layoutState->getLayoutInfo(comp, PREFERREDSIZE,proposeW,proposeH);
             GridInsets insets = comp->layoutState->pInsets;
             float dw,dh;
             comp->layoutState->getMinSize(comp, info, dw, dh, insets);
@@ -657,7 +652,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
     size_t i;
 	float diffw, diffh;
 	double weight;
-	GridBagLayoutInfo info;
 	std::vector<double> distribute;
 
 	/*
@@ -674,33 +668,38 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 * of space needed.
 	 */
 
-    info = getLayoutInfo(parent, PREFERREDSIZE,pwidth, pheight);
-    getMinSize(parent, info, dw, dh, insets);
-
-    if (resizeContainer) {
-    	GridBagLayoutInfo info2;
-		float dw2,dh2;
-        info2 = getLayoutInfo(parent, MINSIZE,pwidth, pheight);
-		getMinSize(parent, info2, dw2, dh2, insets);
-		if ((dw2<dw)||(dh2<dh)) {
-			info=info2;
-			dw=dw2;
-			dh=dh2;
-		}
-		if ((pwidth!=dw)||(pheight!=dh)) {
-			pwidth=dw;
-			pheight=dh;
-			parent->setDimensions(pwidth, pheight);
-		}
-    }
-    else
     {
-		if (pwidth < dw || pheight < dh) {
-            info = getLayoutInfo(parent, MINSIZE,pwidth, pheight);
-			getMinSize(parent, info, dw, dh, insets);
-		}
+        GridBagLayoutInfo &info = getLayoutInfo(parent, PREFERREDSIZE,pwidth, pheight);
+        getMinSize(parent, info, dw, dh, insets);
+
+        if (resizeContainer) {
+            float dw2,dh2;
+            GridBagLayoutInfo &info2 = getLayoutInfo(parent, MINSIZE,pwidth, pheight);
+            getMinSize(parent, info2, dw2, dh2, insets);
+            if ((dw2<dw)||(dh2<dh)) {
+                layoutInfo = info2;
+                dw=dw2;
+                dh=dh2;
+            }
+            else
+                layoutInfo = info;
+            if ((pwidth!=dw)||(pheight!=dh)) {
+                pwidth=dw;
+                pheight=dh;
+                parent->setDimensions(pwidth, pheight);
+            }
+        }
+        else
+        {
+            if (pwidth < dw || pheight < dh) {
+                info = getLayoutInfo(parent, MINSIZE,pwidth, pheight);
+                getMinSize(parent, info, dw, dh, insets);
+            }
+            layoutInfo = info;
+        }
     }
 
+    GridBagLayoutInfo &info =layoutInfo;
     //Don't try to layout with a too small area
     if (pwidth<dw) pwidth=dw;
     if (pheight<dh) pheight=dh;
@@ -849,7 +848,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
     }
 
 
-    layoutInfo = info;
     std::stack<Sprite *> stack;
     stack.push(parent);
     while (!stack.empty()) {

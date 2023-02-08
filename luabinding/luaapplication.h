@@ -200,7 +200,7 @@ public:
     static int Core_randomSeed(lua_State *L);
     static int getStyleTable(lua_State *L,int sprIndex);
     static int resolveStyle(lua_State *L,const char *key,int luaIndex);
-    static int resolveStyleInternal(lua_State *L,const char *key,int luaIndex,int refIndex, int limit=0, bool recursed=false);
+    static int resolveStyleInternal(lua_State *L,const char *key,int luaIndex, int limit=0, bool recursed=false);
     static void cacheComputedStyle(lua_State *L, const char *key, bool empty);
     static void resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache);
     void resetStyleCache();
@@ -212,6 +212,7 @@ public:
     static std::map<int,bool> breakpoints;
     static void (*debuggerHook)(void *context,lua_State *L,lua_Debug *ar);
     static void *debuggerContext;
+    static size_t token__parent,token__style,token__Reference,token__Parent,token__Cache;
 private:
     static struct _StyleCache {
         float unitS;

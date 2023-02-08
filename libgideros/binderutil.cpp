@@ -125,16 +125,22 @@ void g_createClass(lua_State* L,
 	}
 }
 
-void g_pushInstance(lua_State* L, const char* classname, void* ptr)
+void g_makeInstance(lua_State* L, const char* classname, void* ptr)
 {
-	lua_newtable(L);                 // create table to be the object
-
-	luaL_getmetatable(L, classname); // get metatable
+    if (!classname) {
+        //Figure out class meta from current instance
+        lua_getfield(L,-1, "__userdata");
+        lua_getmetatable(L,-1); //This should have returned 1, otherwise we're not dealing with an instance at all
+        lua_remove(L,-2);
+    }
+    else
+        luaL_getmetatable(L, classname); // get metatable
+    lua_pushvalue(L,-1);
 #ifdef LUA_IS_LUAU
     lua_rawgetfield(L, -1, "__gc"); // mt.__gc = destructor
     void **destructor=(void **)lua_touserdata(L,-1);
     lua_pop(L,1);
-    lua_setmetatable(L, -2);		 // set metatable for table and pop metatable
+    lua_setmetatable(L, -3);		 // set metatable for table and pop metatable
     void** userdata;
     if (destructor)
         userdata= (void**)lua_newuserdatadtor(L,sizeof(void*),(void (*)(void *))(*destructor)); // create userdata and push it onto the stack
@@ -142,18 +148,24 @@ void g_pushInstance(lua_State* L, const char* classname, void* ptr)
         userdata= (void**)lua_newuserdata(L,sizeof(void*)); // create userdata and push it onto the stack
 #else
 
-	lua_setmetatable(L, -2);		 // set metatable for table and pop metatable
+    lua_setmetatable(L, -3);		 // set metatable for table and pop metatable
 
 	void** userdata = (void**)lua_newuserdata(L,sizeof(void*)); // create userdata and push it onto the stack
 #endif
 	*userdata = ptr;											// store adress in userdata
 
-	luaL_getmetatable(L, classname);  // get metatable
+    lua_insert(L,-2);
 	lua_setmetatable(L, -2);          // set metatable for userdata and pop metatable
 
 	lua_setfield(L, -2, "__userdata");   // table.__userdata = userdata
 
 	// stack top is the new instance (table)
+}
+
+void g_pushInstance(lua_State* L, const char* classname, void* ptr)
+{
+    lua_newtable(L);                 // create table to be the object
+    g_makeInstance(L,classname,ptr);
 }
 
 /* convert a stack index to positive */

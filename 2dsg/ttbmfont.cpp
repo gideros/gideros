@@ -262,6 +262,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	fontInfo_.ascender = 0;
 	fontInfo_.descender = 1000000;
 	fontInfo_.height = 0;
+	fontInfo_.spaceSize=-1E21;
 	defaultSize_ = size;
 	outlineSize_ = outline;
 	stroker=NULL;
@@ -341,6 +342,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	}
 
 	fontInfo_.height = fontInfo_.ascender + fontInfo_.height;
+	fontInfo_.spaceSize=-1E21;
 
 	charset_ = chars;
 
@@ -640,6 +642,7 @@ void TTBMFont::checkLogicalScale() {
 		fontInfo_.descender = 1000000;
 		fontInfo_.height = 0;
 		fontInfo_.charGlyphs.clear();
+		fontInfo_.spaceSize=-1E21;
 
 		for (std::vector<FontFace>::iterator it = fontFaces_.begin();
 				it != fontFaces_.end(); it++) {
@@ -1129,6 +1132,12 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,
 		*pmaxx = maxx;
 	if (pmaxy)
 		*pmaxy = maxy;
+}
+
+float TTBMFont::getSpaceSize() {
+	if (fontInfo_.spaceSize<-1E20)
+		fontInfo_.spaceSize=getAdvanceX(" ",0);
+	return fontInfo_.spaceSize;
 }
 
 float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size, std::string name) {

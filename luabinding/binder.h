@@ -29,6 +29,8 @@ public:
 
     void pushInstance(const char* classname, void* ptr);
 
+    void makeInstance(const char* classname, void* ptr);
+
     void* getInstance(const char* classname, int index = 1) const;
 
     void setInstance(int index, void* ptr);

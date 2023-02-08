@@ -32,6 +32,7 @@ public:
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy, std::string name="");
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1, std::string name="");
+    virtual float getSpaceSize();
     virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1, std::string name="");
     virtual float getAscender();
     virtual float getDescender();
@@ -70,6 +71,7 @@ private:
         std::map<wchar32_t, FT_UInt> charGlyphs;
         std::map<wchar32_t, int> charFace;
         std::map<std::pair<wchar32_t, wchar32_t>, int> kernings;
+        float spaceSize;
     };
 
     struct FontFace

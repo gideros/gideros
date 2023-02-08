@@ -66,6 +66,7 @@ struct GridBagConstraints {
     //Auto clip
     bool autoClip;
 
+    int64_t resolvedMap;
     std::map<int,std::string> resolved;
 
     GridBagConstraints() {
@@ -99,6 +100,8 @@ struct GridBagConstraints {
         optimizeSize=false;
         group=false;
         autoClip=false;
+
+        resolvedMap=0;
     }
 };
 
@@ -150,6 +153,7 @@ public:
     float cellSpacingX,cellSpacingY;
     float gridAnchorX,gridAnchorY;
     float zOffset;
+    int64_t resolvedMap;
     std::map<int,std::string> resolved;
     std::map<int,std::map<int,std::string>> resolvedArray;
     GridBagLayout() :
@@ -157,9 +161,9 @@ public:
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
 			zOffset(0)
     {
-
+        resolvedMap=0;
     }
-    GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight);
+    GridBagLayoutInfo &getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight);
     void getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);
     GridBagLayoutInfo *getCurrentLayoutInfo() { return &layoutInfo; }
@@ -182,33 +186,42 @@ public:
 #define STRKEY_LAYOUT_gridAnchorY       15
 #define STRKEY_LAYOUT_zOffset           16
 
-#define STRKEY_LAYOUT_gridx             40
-#define STRKEY_LAYOUT_gridy             41
-#define STRKEY_LAYOUT_gridwidth         42
-#define STRKEY_LAYOUT_gridheight        43
-#define STRKEY_LAYOUT_weightx           44
-#define STRKEY_LAYOUT_weighty           45
-#define STRKEY_LAYOUT_anchor            46
-#define STRKEY_LAYOUT_fillx             47
-#define STRKEY_LAYOUT_filly             48
-#define STRKEY_LAYOUT_aspectRatio       49
-#define STRKEY_LAYOUT_anchorx           50
-#define STRKEY_LAYOUT_anchory           51
-#define STRKEY_LAYOUT_offsetx           52
-#define STRKEY_LAYOUT_offsety           53
-#define STRKEY_LAYOUT_originx           54
-#define STRKEY_LAYOUT_originy           55
-#define STRKEY_LAYOUT_ipadx             56
-#define STRKEY_LAYOUT_ipady             57
-#define STRKEY_LAYOUT_minWidth          58
-#define STRKEY_LAYOUT_minHeight         59
-#define STRKEY_LAYOUT_prefWidth         60
-#define STRKEY_LAYOUT_prefHeight        61
-#define STRKEY_LAYOUT_shrink            62
-#define STRKEY_LAYOUT_group             63
-#define STRKEY_LAYOUT_autoclip          64
-#define STRKEY_LAYOUT_gridRelative      65
-#define STRKEY_LAYOUT_overflowMode      66
-#define STRKEY_LAYOUT_hidePriority      67
+#define STRKEY_LAYOUT_reqWidth          20
+#define STRKEY_LAYOUT_reqHeight         21
+#define STRKEY_LAYOUT_startx            22
+#define STRKEY_LAYOUT_starty            23
+#define STRKEY_LAYOUT_weightX           24
+#define STRKEY_LAYOUT_weightY           25
+#define STRKEY_LAYOUT_width             26
+#define STRKEY_LAYOUT_height            27
+
+#define STRKEY_LAYOUT_gridx             30
+#define STRKEY_LAYOUT_gridy             31
+#define STRKEY_LAYOUT_gridwidth         32
+#define STRKEY_LAYOUT_gridheight        33
+#define STRKEY_LAYOUT_weightx           34
+#define STRKEY_LAYOUT_weighty           35
+#define STRKEY_LAYOUT_anchor            36
+#define STRKEY_LAYOUT_fillx             37
+#define STRKEY_LAYOUT_filly             38
+#define STRKEY_LAYOUT_aspectRatio       39
+#define STRKEY_LAYOUT_anchorx           40
+#define STRKEY_LAYOUT_anchory           41
+#define STRKEY_LAYOUT_offsetx           42
+#define STRKEY_LAYOUT_offsety           43
+#define STRKEY_LAYOUT_originx           44
+#define STRKEY_LAYOUT_originy           45
+#define STRKEY_LAYOUT_ipadx             46
+#define STRKEY_LAYOUT_ipady             47
+#define STRKEY_LAYOUT_minWidth          48
+#define STRKEY_LAYOUT_minHeight         49
+#define STRKEY_LAYOUT_prefWidth         50
+#define STRKEY_LAYOUT_prefHeight        51
+#define STRKEY_LAYOUT_shrink            52
+#define STRKEY_LAYOUT_group             53
+#define STRKEY_LAYOUT_autoclip          54
+#define STRKEY_LAYOUT_gridRelative      55
+#define STRKEY_LAYOUT_overflowMode      56
+#define STRKEY_LAYOUT_hidePriority      57
 
 #endif /* GRIDBAGLAYOUT_H_ */

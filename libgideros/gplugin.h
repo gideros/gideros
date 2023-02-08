@@ -220,6 +220,7 @@ GIDEROS_API void g_createClass(lua_State* L,
 								 int (*constructor) (lua_State*),
 								 int (*destructor) (void*),
 								 const luaL_reg* functionlist);
+GIDEROS_API void g_makeInstance(lua_State* L, const char* classname, void* ptr);
 GIDEROS_API void g_pushInstance(lua_State* L, const char* classname, void* ptr);
 GIDEROS_API void* g_getInstance(lua_State* L, const char* classname, int index);
 GIDEROS_API void g_setInstance(lua_State* L, int index, void* ptr);

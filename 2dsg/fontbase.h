@@ -33,6 +33,7 @@ public:
     virtual float getAscender() = 0;
     virtual float getDescender() = 0;
     virtual float getLineHeight() = 0;
+    virtual float getSpaceSize() { return getAdvanceX(" ",0); };
 
 	virtual Type getType() const = 0;
 	int getCacheVersion() { return cacheVersion_; };

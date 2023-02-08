@@ -38,6 +38,11 @@ void Binder::pushInstance(const char* classname, void* ptr)
     g_pushInstance(L, classname, ptr);
 }
 
+void Binder::makeInstance(const char* classname, void* ptr)
+{
+    g_makeInstance(L, classname, ptr);
+}
+
 bool Binder::isInstanceOf(const char* classname, int index) const
 {
     return g_isInstanceOf(L, classname, index) != 0;

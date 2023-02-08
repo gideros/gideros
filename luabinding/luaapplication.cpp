@@ -489,6 +489,12 @@ int LuaApplication::Core_asyncThread(lua_State* L)
     return 1;
 }
 
+size_t LuaApplication::token__parent;
+size_t LuaApplication::token__style;
+size_t LuaApplication::token__Reference;
+size_t LuaApplication::token__Parent;
+size_t LuaApplication::token__Cache;
+
 #include "luabindings.luac.c"
 static int bindAll(lua_State* L)
 {
@@ -526,7 +532,13 @@ static int bindAll(lua_State* L)
     luaL_newmetatable(L, "Object");
     luaL_register(L, NULL, functionList);
     lua_setglobal(L, "Object");
-	
+
+    LuaApplication::token__parent=lua_newtoken(L,"__parent");
+    LuaApplication::token__style=lua_newtoken(L,"__style");
+    LuaApplication::token__Reference=lua_newtoken(L,"__Reference");
+    LuaApplication::token__Parent=lua_newtoken(L,"__Parent");
+    LuaApplication::token__Cache=lua_newtoken(L,"__Cache");
+
 	EventBinder eventBinder(L);
 	EventDispatcherBinder eventDispatcherBinder(L);
 	TimerBinder timerBinder(L);
@@ -1081,15 +1093,15 @@ void LuaApplication::resetStyleCache()
 struct LuaApplication::_StyleCache LuaApplication::styleCache;
 int LuaApplication::getStyleTable(lua_State *L,int sprIndex)
 {
-	lua_getfield(L,sprIndex,"__style");
+    lua_rawgettoken(L,sprIndex,token__style);
 	bool lpop=false;
 	while (lua_isnil(L,-1)) {
 		lua_pop(L,1);
-		lua_getfield(L, sprIndex, "__parent");
+        lua_rawgettoken(L, sprIndex, token__parent);
 		if (lua_isnil(L,-1))
 			break;
 		if (lpop) lua_remove(L,-2);
-		lua_getfield(L,-1,"__style");
+        lua_rawgettoken(L,-1,token__style);
 		sprIndex=-1;
 		lpop=true;
 	}
@@ -1100,24 +1112,17 @@ int LuaApplication::getStyleTable(lua_State *L,int sprIndex)
 int LuaApplication::resolveStyle(lua_State *L,const char *key,int luaIndex)
 {
     //Style table is expected to be at top of stack
-	lua_pushstring(L,"__Reference");
-	lua_insert(L,-2);
-	lua_pushstring(L,"__Parent");
-	lua_insert(L,-2);
-    int ret=resolveStyleInternal(L,key,luaIndex?luaIndex-2:0,-3);
-	lua_remove(L,-2);
-	lua_remove(L,-2);
-    return ret;
+    return resolveStyleInternal(L,key,luaIndex);
 }
 
 static char emptyValue;
 void LuaApplication::cacheComputedStyle(lua_State *L, const char *key, bool empty) { //Tr,val
-    if (lua_rawgetfield(L,-2,"__Cache")==LUA_TTABLE) {
+    if (lua_rawgettoken(L,-2,token__Cache)==LUA_TTABLE) {
         if (empty)
             lua_pushlightuserdata(L,&emptyValue);
         else
             lua_pushvalue(L,-2);
-        lua_setfield(L,-2,key);
+        lua_rawsetfield(L,-2,key);
     }
     lua_pop(L,1);
 }
@@ -1125,7 +1130,7 @@ void LuaApplication::cacheComputedStyle(lua_State *L, const char *key, bool empt
 #include "fontbasebinder.h"
 #include <fontbase.h>
 #include <luautil.h>
-int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaIndex,int refIndex, int limit, bool recursed)
+int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaIndex, int limit, bool recursed)
 {
     if (limit>1000) {
         lua_pushfstringL(L,"Recursion while resolving style: %s",key);
@@ -1175,7 +1180,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
             }
             else if ((kk[0]=='e')&&(kk[1]=='m')&&(kk[2]==0)) {
                 Binder binder(L);
-                if (resolveStyleInternal(L,"font",0,refIndex,true)==LUA_TNIL)
+                if (resolveStyleInternal(L,"font",0,true)==LUA_TNIL)
                 {
                     lua_pushfstringL(L,"Font not found for computing: %s",key);
                     lua_error(L);
@@ -1196,7 +1201,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                     char unitName[32+6]="unit.";
                     strncpy(unitName+5,kk,32);
                     unitName[32+5]=0;
-                    if (resolveStyleInternal(L,unitName,0,refIndex,true)==LUA_TNIL)
+                    if (resolveStyleInternal(L,unitName,0,true)==LUA_TNIL)
                     {
                         lua_pushfstringL(L,"Unit not recognized: %s",kk);
                         lua_error(L);
@@ -1216,18 +1221,14 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
 
     //Check cache
     bool hasCache=false;
-    if (lua_rawgetfield(L,-1,"__Cache")==LUA_TTABLE) {
+    if (lua_rawgettoken(L,-1,token__Cache)==LUA_TTABLE) {
         hasCache=true;
         if (luaIndex) {
             lua_pushvalue(L,luaIndex-1); //Tc,C,key
-            rtype=lua_gettable(L,-2); //Tc,C,Tr
+            rtype=lua_rawget(L,-2); //Tc,C,Tr
         }
         else
             rtype=lua_rawgetfield(L,-1,key); //Tc,C,Tr
-        if (key[0]!='f') {
-            lua_pushnil(L);
-            lua_pop(L,1);
-        }
         if ((rtype==LUA_TLIGHTUSERDATA)&&(lua_tolightuserdata(L,-1)==&emptyValue)) {
             lua_pop(L,3);
             lua_pushnil(L);
@@ -1244,12 +1245,10 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
         lua_pop(L,1);
 
     //Check if current table is a reference
-    lua_pushvalue(L,refIndex); //Tc,Ref
-    if (lua_rawget(L,-2)==LUA_TSTRING) { //Tc,Tc[Ref]
-        lua_pushvalue(L,refIndex-1+1); //Tc,Key,Parent
-        rtype=lua_rawget(L,-3); //Tc,Key,Tc[Parent]
+    if (lua_rawgettoken(L,-1,token__Reference)==LUA_TSTRING) { //Tc,Tc[Ref]
+        rtype=lua_rawgettoken(L,-2,token__Parent); //Tc,Key,Tc[Parent]
         if (rtype==LUA_TTABLE)
-            rtype=resolveStyleInternal(L,NULL,-2,refIndex-2,limit+1,true); //Tc,Key,Tr
+            rtype=resolveStyleInternal(L,NULL,-2,limit+1,true); //Tc,Key,Tr
         if (rtype!=LUA_TTABLE)
         {
             lua_pushfstringL(L,"Reference doesn't resolve to a table: %s",lua_tolstring(L,-2,NULL));
@@ -1272,12 +1271,11 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
     //Check Parent if nil
     if (rtype==LUA_TNIL) {
         lua_pop(L,1); //Tc
-        lua_pushvalue(L,refIndex+1); //Tc,Parent
-        rtype=lua_rawget(L,-2); //Tc,Tc[parent]
+        rtype=lua_rawgettoken(L,-1,token__Parent); //Tc,Tc[Parent]
         if (rtype==LUA_TSTRING) {
             //Parent is a string, look it up
             lua_pushvalue(L,-2); //Tc,Key,Tc
-            rtype=resolveStyleInternal(L,NULL,-2,refIndex-2,limit+1,true); //Tc,Key,Tr
+            rtype=resolveStyleInternal(L,NULL,-2,limit+1,true); //Tc,Key,Tr
             lua_remove(L,-2); //Tc,Tr
         }
         if (rtype==LUA_TNIL) {
@@ -1292,14 +1290,14 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
         }
         //Tc,Tc[parent] or Tr
         //Recurse in parent
-        rtype=resolveStyleInternal(L,key,luaIndex?luaIndex-1:0,refIndex-1,limit+1); //Tc,Tr
+        rtype=resolveStyleInternal(L,key,luaIndex?luaIndex-1:0,limit+1); //Tc,Tr
     }
     while ((rtype==LUA_TSTRING)&&(recursed||!limit)) {
         //Got a string, re-run full key processing
         const char *skey=lua_tolstring(L,-1,NULL); //Tc,Key
         lua_pushvalue(L,-2); //Tc,Key,Tc
         //Recurse
-        rtype=resolveStyleInternal(L,skey,-2,refIndex-2,limit+1); //Tc,Key,Tr
+        rtype=resolveStyleInternal(L,skey,-2,limit+1); //Tc,Key,Tr
         lua_remove(L,-2); //Tc,Tr
     }
     if (hasCache)

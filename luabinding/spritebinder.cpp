@@ -6,6 +6,11 @@
 #include "luaapplication.h"
 #include <luautil.h>
 
+
+int SpriteBinder::layoutStrings[64];
+size_t SpriteBinder::tokenChildren;
+size_t SpriteBinder::tokenParent;
+
 SpriteBinder::SpriteBinder(lua_State* L)
 {
 	Binder binder(L);
@@ -233,6 +238,10 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	lua_setfield(L, -2, "EFFECT_MODE_TRIGGERED");
 
     lua_setglobal(L, "Sprite");
+    for (int k=0;k<64;k++)
+    	layoutStrings[k]=-1;
+    tokenChildren=lua_newtoken(L,"__children");
+    tokenParent=lua_newtoken(L,"__parent");
 }
 
 int SpriteBinder::create(lua_State* L)
@@ -245,14 +254,6 @@ int SpriteBinder::create(lua_State* L)
     Sprite* sprite = new Sprite(application->getApplication());
 	binder.pushInstance("Sprite", sprite);
 
-/*	lua_getglobal(L, "Graphics");
-	lua_getfield(L, -1, "new");
-	lua_remove(L, -2);
-	lua_pushvalue(L, -2);
-	lua_call(L, 1, 1);
-	lua_setfield(L, -2, "graphics"); // sprite.graphics = Graphics.new(sprite)
-	*/
-
 	return 1;
 }
 
@@ -263,8 +264,8 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
     lua_pushvalue(L,cidx-1);
     lua_rawset(L,fidx-2);
 
-    lua_getfield(L, oidx, "__userdata");
-    lua_getfield(L, cidx-1, "__userdata");
+    lua_rawgetfield(L, oidx, "__userdata");
+    lua_rawgetfield(L, cidx-1, "__userdata");
     if (lua_getmetatable(L,-2))
         lua_setmetatable(L,-2);
     lua_pop(L,2);
@@ -273,30 +274,33 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
 
     int cc=c->childCount();
     if (cc>0) {
-        lua_getfield(L,oidx,"__children");
-        lua_createtable(L,0,cc);
+        lua_rawgettoken(L,oidx,SpriteBinder::tokenChildren); //OCL
+        lua_createtable(L,0,cc); //OCL,CCL
         for(int k=0;k<cc;k++) {
             Sprite *sl=o->child(k);
             Sprite *cl=c->child(k);
-            lua_pushlightuserdata(L, sl);
-            lua_rawget(L,-3);
+            lua_pushlightuserdata(L, sl); //OCL,CCL,OUD
+            lua_rawget(L,-3); //OCL,CCL,OCO
             cl->ref();
-            binder.pushInstance("Sprite", cl); //OCL,CCL,OCO,CCO
+            lua_clonetable(L,-1); //OCL, CCL, OCO, CCO
+            binder.makeInstance(NULL, cl); //OCL,CCL,OCO,CCO
             fixupClone(L,sl,cl,-2,-1,fidx-4);
             lua_pushvalue(L,cidx-4);
-            lua_setfield(L, -2, "__parent");
+            lua_rawsettoken(L, -2, SpriteBinder::tokenParent);
             lua_pushlightuserdata(L, cl);
             lua_pushvalue(L,-2); //OCL,CCL,OCO,CCO,CLK,CCO
             lua_rawset(L,-5); //OCL,CCL,OCO,CCO
             lua_rawset(L,fidx-4); //OCL,CCL [fidx[oco]=cco]
         }
-        lua_setfield(L, cidx-2, "__children"); //OCL
+        lua_rawsettoken(L, cidx-2, SpriteBinder::tokenChildren); //OCL
         lua_pop(L,1);
     }
 
     //Last step, clone/map original data to cloned table
-    lua_getfield(L, cidx, "__children"); //-1:Save __children
-    lua_getfield(L, cidx-1, "__userdata"); //-2:Save __userdata
+    lua_remaptable(L,cidx,fidx);
+    /*
+    lua_rawgettoken(L, cidx, SpriteBinder::tokenChildren); //-1:Save __children
+    lua_rawgetfield(L, cidx-1, "__userdata"); //-2:Save __userdata
     lua_pushnil(L); //-3: Pairs key
     while (lua_next(L,oidx-3)) { //-4: K,V
         lua_pushvalue(L,-2); //-5:K,V,K
@@ -309,19 +313,18 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
             lua_remove(L,-2); //-5:K,K,M(V)
         lua_rawset(L,cidx-5); //-3:K
     }
+    lua_rawsetfield(L, cidx-2, "__userdata"); //-1:Restore __userdata
+    lua_rawsettoken(L, cidx-1, SpriteBinder::tokenChildren); //0:Restore __children
+    */
     lua_pushnil(L);
-    lua_setfield(L, cidx-3, "__parent");
+    lua_rawsettoken(L, cidx-1, SpriteBinder::tokenParent);
 
-    lua_setfield(L, cidx-2, "__userdata"); //-1:Restore __userdata
-    lua_setfield(L, cidx-1, "__children"); //0:Restore __children
-    lua_getfield(L,cidx,"newClone");
-    if (!lua_isfunction(L,-1))
+    if (lua_getfield(L,cidx,"newClone")!=LUA_TFUNCTION)
         lua_pop(L,1);
     else {
         lua_pushvalue(L,cidx-1);
         lua_call(L,1,0);
     }
-
 }
 
 int SpriteBinder::clone(lua_State *L)
@@ -331,7 +334,9 @@ int SpriteBinder::clone(lua_State *L)
     Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
     Sprite* clone = sprite->clone();
 
-    binder.pushInstance("Sprite", clone);
+    lua_clonetable(L,1);
+    binder.makeInstance(NULL, clone); //OCL,CCL,OCO,CCO //TOSEE: Sprite ?
+    //binder.pushInstance("Sprite", clone);
     lua_newtable(L);
     lua_pushvalue(L,1);
     fixupClone(L,sprite, clone,-1,-3,-2);
@@ -363,13 +368,13 @@ static void createChildrenTable(lua_State* L)
 {
 	StackChecker checker(L, "createChildrenTable");
 	
-	lua_getfield(L, 1, "__children");
+    lua_rawgettoken(L, 1, SpriteBinder::tokenChildren);
 	if (lua_isnil(L, -1))
 	{
 		lua_pop(L, 1);
 
 		lua_newtable(L);
-		lua_setfield(L, 1, "__children");
+        lua_rawsettoken(L, 1, SpriteBinder::tokenChildren);
 	}
 	else
 		lua_pop(L, 1);
@@ -396,8 +401,8 @@ int SpriteBinder::addChild(lua_State* L)
 	if (child->parent())
 	{
 		// remove from parent's __children table
-		lua_getfield(L, 2, "__parent");			// push child.__parent
-		lua_getfield(L, -1, "__children");		// push child.__parent.__children
+        lua_rawgettoken(L, 2, tokenParent);			// push child.__parent
+        lua_rawgettoken(L, -1, tokenChildren);		// push child.__parent.__children
 
 		lua_pushlightuserdata(L, child);
 		lua_pushnil(L);
@@ -408,12 +413,12 @@ int SpriteBinder::addChild(lua_State* L)
 
 	// set new parent
 	lua_pushvalue(L, 1);
-	lua_setfield(L, 2, "__parent");				// child.__parent = sprite
+    lua_rawsettoken(L, 2, tokenParent);				// child.__parent = sprite
 
 	createChildrenTable(L);
 
 	// add to __children table
-	lua_getfield(L, 1, "__children");			// push sprite.__children
+    lua_rawgettoken(L, 1, tokenChildren);			// push sprite.__children
 	lua_pushlightuserdata(L, child);
 	lua_pushvalue(L, 2);
 	lua_rawset(L, -3);							// sprite.__children[child] = child
@@ -447,8 +452,8 @@ int SpriteBinder::addChildAt(lua_State* L)
 	if (child->parent())
 	{
 		// remove from parent's __children table
-		lua_getfield(L, 2, "__parent");			// push child.__parent
-		lua_getfield(L, -1, "__children");		// push child.__parent.__children
+        lua_rawgettoken(L, 2, tokenParent);			// push child.__parent
+        lua_rawgettoken(L, -1, tokenChildren);		// push child.__parent.__children
 
 		lua_pushlightuserdata(L, child);
 		lua_pushnil(L);
@@ -459,12 +464,12 @@ int SpriteBinder::addChildAt(lua_State* L)
 
 	// set new parent
 	lua_pushvalue(L, 1);
-	lua_setfield(L, 2, "__parent");				// child.__parent = sprite
+    lua_rawsettoken(L, 2, tokenParent);				// child.__parent = sprite
 
 	createChildrenTable(L);
 
 	// add to __children table
-	lua_getfield(L, 1, "__children");			// push sprite.__children
+    lua_rawgettoken(L, 1, tokenChildren);			// push sprite.__children
 	lua_pushlightuserdata(L, child);
 	lua_pushvalue(L, 2);
 	lua_rawset(L, -3);							// sprite.__children[child] = child
@@ -489,11 +494,11 @@ int SpriteBinder::removeChildAt(lua_State* L)
 
 	Sprite* child = sprite->getChildAt(index - 1);
 
-	lua_getfield(L, 1, "__children");	// push sprite.__children
+    lua_rawgettoken(L, 1, tokenChildren);	// push sprite.__children
 	lua_pushlightuserdata(L, child);
 	lua_rawget(L, -2);					// push sprite.__children[child]
 	lua_pushnil(L);
-	lua_setfield(L, -2, "__parent");	// sprite.__children[child].__parent = nil
+    lua_rawsettoken(L, -2, tokenParent);	// sprite.__children[child].__parent = nil
 	lua_pop(L, 1);						// pop sprite.__children[child]
 
 	lua_pushlightuserdata(L, child);
@@ -521,9 +526,9 @@ int SpriteBinder::removeChild(lua_State* L)
         luaL_error(L, "%s", status.errorString());
 
 	lua_pushnil(L);
-	lua_setfield(L, 2, "__parent");		// child.__parent = nil
+    lua_rawsettoken(L, 2, tokenParent);		// child.__parent = nil
 
-	lua_getfield(L, 1, "__children");	// push sprite.__children
+    lua_rawgettoken(L, 1, tokenChildren);	// push sprite.__children
 	lua_pushlightuserdata(L, child);
 	lua_pushnil(L);
 	lua_rawset(L, -3);					// sprite.__children[sprite] = nil
@@ -591,7 +596,7 @@ int SpriteBinder::getChildAt(lua_State* L)
 
 	Sprite* child = sprite->getChildAt(index - 1);
 
-	lua_getfield(L, 1, "__children");	// push sprite.__children
+    lua_rawgettoken(L, 1, tokenChildren);	// push sprite.__children
 	lua_pushlightuserdata(L, child);
 	lua_rawget(L, -2);					// push sprite.__children[child]
 	lua_remove(L, -2);					// pop sprite.__children
@@ -629,35 +634,41 @@ int SpriteBinder::getClip(lua_State* L)
 
     return 4;
 }
+
 #define FKEY(n) (STRKEY_LAYOUT_##n)
 #define FSKEY(n) (#n)
-#define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolved[FKEY(n)]=key; lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2);
-#define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2); p->resolvedArray[FKEY(n)][i]=key; }
-#define RESOLVE(n) FRESOLVE(n,-1) } else p->resolved.erase(FKEY(n));
-#define RESOLVED(n) if ((!raw)&&p->resolved.count(FKEY(n))) lua_pushstring(L,p->resolved[FKEY(n)].c_str()); else
-#define ARESOLVED(n,i) if ((!raw)&&p->resolvedArray.count(FKEY(n))&&p->resolvedArray[FKEY(n)].count(i)) lua_pushstring(L,p->resolvedArray[FKEY(n)][i].c_str()); else
+#define FMKEY(n) (1LL<<FKEY(n))
+#define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolvedMap|=FMKEY(n); p->resolved[FKEY(n)]=key; lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2);
+#define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolvedMap|=FMKEY(n); lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2); p->resolvedArray[FKEY(n)][i]=key; }
+#define RESOLVE(n) FRESOLVE(n,-1) } else { p->resolvedMap&=~FMKEY(n); p->resolved.erase(FKEY(n)); }
+#define RESOLVED(n) if ((!raw)&&(p->resolvedMap&FMKEY(n))) lua_pushstring(L,p->resolved[FKEY(n)].c_str()); else
+#define ARESOLVED(n,i) if ((!raw)&&(p->resolvedMap&FMKEY(n))&&p->resolvedArray[FKEY(n)].count(i)) lua_pushstring(L,p->resolvedArray[FKEY(n)][i].c_str()); else
 #define FILL_NUM_ARRAY(n,f) \
         lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { \
 			luaL_checktype(L,-1, LUA_TTABLE); \
 			p->f.resize(lua_objlen(L,-1)); \
+            p->resolvedMap&=~FMKEY(n); \
             p->resolvedArray.erase(FKEY(n)); \
             for (size_t k=1;k<=(size_t)lua_objlen(L,-1);k++) { \
                 lua_rawgeti(L,-1,k); ARESOLVE(n,-2,k-1); \
                 p->f[k-1]=lua_tonumber(L,-1); \
                 lua_pop(L,1); } \
 		} lua_pop(L,1);
-#define FILL_INT(n,f) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tointeger(L,-1); } lua_pop(L,1);
-#define FILL_INTT(n,f,t) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1);
-#define FILL_NUM(n,f) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1);
-#define FILL_BOOL(n,f) lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
+#define FETCH_KEY(n) if (layoutStrings[FKEY(n)]==-1) layoutStrings[FKEY(n)]=lua_newtoken(L,FSKEY(n));
+#define FETCH_VAL(n) FETCH_KEY(n) lua_rawgettoken(L,2,layoutStrings[FKEY(n)]);
+#define STORE_VAL(n) FETCH_KEY(n) lua_rawsettoken(L,-2,layoutStrings[FKEY(n)]);
+#define FILL_INT(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tointeger(L,-1); } lua_pop(L,1);
+#define FILL_INTT(n,f,t) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1);
+#define FILL_NUM(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1);
+#define FILL_BOOL(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
 #define STOR_NUM_ARRAY(n,f) \
 		lua_newtable(L); \
         for (size_t k=0;k<p->f.size();k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
-        lua_setfield(L,-2,FSKEY(n));
-#define STOR_INT(n,f) RESOLVED(n) lua_pushinteger(L,p->f); lua_setfield(L,-2,FSKEY(n));
-#define STOR_INTT(n,f,t) RESOLVED(n) lua_pushinteger(L,(int)p->f); lua_setfield(L,-2,FSKEY(n));
-#define STOR_NUM(n,f) RESOLVED(n) lua_pushnumber(L,p->f); lua_setfield(L,-2,FSKEY(n));
-#define STOR_BOOL(n,f) lua_pushboolean(L,p->f); lua_setfield(L,-2,FSKEY(n));
+        STORE_VAL(n);
+#define STOR_INT(n,f) RESOLVED(n) lua_pushinteger(L,p->f); STORE_VAL(n);
+#define STOR_INTT(n,f,t) RESOLVED(n) lua_pushinteger(L,(int)p->f); STORE_VAL(n);
+#define STOR_NUM(n,f) RESOLVED(n) lua_pushnumber(L,p->f); STORE_VAL(n);
+#define STOR_BOOL(n,f) lua_pushboolean(L,p->f); STORE_VAL(n);
 
 int SpriteBinder::setLayoutParameters(lua_State *L)
 {
@@ -1393,7 +1404,7 @@ int SpriteBinder::getParent(lua_State* L)
 {
 	StackChecker checker(L, "getParent", 1);
 
-	lua_getfield(L, 1, "__parent");
+    lua_rawgettoken(L, 1, tokenParent);
 
 	return 1;
 }
@@ -1447,15 +1458,15 @@ int SpriteBinder::removeFromParent(lua_State* L)
 	if (parent == NULL)
 		return 0;
 
-	lua_getfield(L, 1, "__parent");		// puah sprite.__parent
-	lua_getfield(L, -1, "__children");	// push sprite.__parent.__children
+    lua_rawgettoken(L, 1, tokenParent);		// puah sprite.__parent
+    lua_rawgettoken(L, -1, tokenChildren);	// push sprite.__parent.__children
 	lua_pushlightuserdata(L, sprite);
 	lua_pushnil(L);
 	lua_rawset(L, -3);					// sprite.__parent.__children[sprite] = nil
 	lua_pop(L, 2);						// pop sprite.__parent and sprite.__parent.__children
 
 	lua_pushnil(L);
-	lua_setfield(L, 1, "__parent");		// sprite.__parent = nil
+    lua_rawsettoken(L, 1, tokenParent);		// sprite.__parent = nil
 
 	parent->removeChild(sprite);
 
@@ -1753,10 +1764,10 @@ int SpriteBinder::getChildrenAtPoint(lua_State* L)
 	for (int i=0;i<nres;i++) {
         int pidx=res[i].first;
         if (pidx==0)
-            lua_getfield(L, 1, "__children");	// push sprite.__children
+            lua_rawgettoken(L, 1, tokenChildren);	// push sprite.__children
         else {
             lua_rawgeti(L,-1,pidx);
-            lua_getfield(L, -1, "__children");	// push sprite.__children
+            lua_rawgettoken(L, -1, tokenChildren);	// push sprite.__children
             lua_remove(L, -2);					// pop sprite.__children
         }
         lua_pushlightuserdata(L, res[i].second);
@@ -2322,7 +2333,7 @@ static void gatherStyledChildren(lua_State *L,int idx,int tidx)
     }
     lua_pop(L,1);
     */
-    if (lua_rawgetfield(L,idx,"__children")!=LUA_TNIL) {
+    if (lua_rawgettoken(L,idx,SpriteBinder::tokenChildren)!=LUA_TNIL) {
         lua_checkstack(L,8);
         lua_pushnil(L);
         while (lua_next(L,-2)) {
@@ -2358,18 +2369,18 @@ int SpriteBinder::setStyle(lua_State* L)
         luaL_checktype(L,2,LUA_TTABLE);
     bool propagate=lua_toboolean(L,3);
     lua_pushvalue(L,2);
-    lua_setfield(L,1,"__style");
+    lua_rawsetfield(L,1,"__style");
     lua_getglobal(L,"application");
     int npop=1;
     if (!lua_isnil(L,-1))
     {
-		lua_getfield(L,-1,"__styleUpdates");
+        lua_rawgetfield(L,-1,"__styleUpdates");
 		if (lua_isnil(L,-1))
 		{
 			lua_pop(L,1);
 			lua_newtable(L);
 			lua_pushvalue(L,-1);
-			lua_setfield(L,-3,"__styleUpdates");
+            lua_rawsetfield(L,-3,"__styleUpdates");
 		}
 		npop++;
 		lua_pushvalue(L,1);
@@ -2405,7 +2416,7 @@ int SpriteBinder::resolveStyle(lua_State* L)
 }
 
 #define FILL_NUM_ARRAY(n,f) \
-        if (p->resolvedArray.count(FKEY(n))) { \
+        if (p->resolvedMap&FMKEY(n)) { \
             auto &pa=p->resolvedArray[FKEY(n)]; \
             for (size_t k=0;k<p->f.size();k++) { \
                 if (pa.count(k)) { \
@@ -2415,7 +2426,7 @@ int SpriteBinder::resolveStyle(lua_State* L)
                     if (nn!=p->f[k]) { p->f[k]=nn; dirty=true; }\
                     lua_pop(L,1); \
                 } } }
-#define FILL_NUM(n,f) if (p->resolved.count(FKEY(n))) { \
+#define FILL_NUM(n,f) if (p->resolvedMap&FMKEY(n)) { \
     lua_pushvalue(L,-1); \
     LuaApplication::resolveStyle(L,p->resolved[FKEY(n)].c_str(),0);\
     lua_Number nn=lua_tonumber(L,-1);\
@@ -2429,9 +2440,10 @@ int SpriteBinder::updateStyle(lua_State* L)
     Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 	LuaApplication::getStyleTable(L,1);
+    bool dirtyConstraints=false;
     {
         GridBagLayout *p=sprite->layoutState;
-        if (p&&(!(p->resolved.empty()&&p->resolvedArray.empty()))) {
+        if (p&&p->resolvedMap) {
             bool dirty=false;
 
             FILL_NUM_ARRAY(columnWidths,columnWidths);
@@ -2450,7 +2462,7 @@ int SpriteBinder::updateStyle(lua_State* L)
                 p->dirty=true;
                 p->layoutInfoCache[0].valid=false;
                 p->layoutInfoCache[1].valid=false;
-                sprite->invalidate(Sprite::INV_CONSTRAINTS);
+                dirtyConstraints=true;
             }
         }
     }
@@ -2458,7 +2470,7 @@ int SpriteBinder::updateStyle(lua_State* L)
     //Constraints
     {
         GridBagConstraints *p=sprite->layoutConstraints;
-        if (p&&(!p->resolved.empty())) {
+        if (p&&p->resolvedMap) {
             bool dirty=false;
 
             FILL_NUM(weightx,weightx); FILL_NUM(weighty,weighty);
@@ -2477,11 +2489,12 @@ int SpriteBinder::updateStyle(lua_State* L)
             FILL_NUM(insetTop,insets.top); FILL_NUM(insetLeft,insets.left);
             FILL_NUM(insetBottom,insets.bottom); FILL_NUM(insetRight,insets.right);
 
-            if (dirty)
-                sprite->invalidate(Sprite::INV_CONSTRAINTS);
+            dirtyConstraints|=dirty;
         }
     }
 
+    if (dirtyConstraints)
+        sprite->invalidate(Sprite::INV_CONSTRAINTS);
     lua_pop(L,1);
     return 0;
 }
