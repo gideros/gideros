@@ -20,10 +20,12 @@
 #include <alc.h>
 #endif
 
+#ifdef WINSTORE
+#undef max
+#endif
+
 #include <map>
-
-#include <pthread.h>
-
+#include <thread>
 #include <math.h>
 
 namespace {
@@ -48,7 +50,7 @@ static void calculateAmplitudeData(int numChannels, int bitsPerSample, gmicropho
         }
 
         event->peakAmplitude = peak;
-        event->averageAmplitude = sqrt(sum / n);
+        event->averageAmplitude = (float) sqrt(sum / n);
     }
     else if (bitsPerSample == 16)
     {
@@ -66,7 +68,7 @@ static void calculateAmplitudeData(int numChannels, int bitsPerSample, gmicropho
         }
 
         event->peakAmplitude = peak;
-        event->averageAmplitude = sqrt(sum / n);
+        event->averageAmplitude = (float) sqrt(sum / n);
     }
 }
 
@@ -172,7 +174,7 @@ public:
             return;
 
         microphone2->exit = false;
-        pthread_create(&microphone2->thread, NULL, run_s, microphone2);
+		microphone2->thread=std::thread(run_s, microphone2);
 
         microphone2->isStarted = true;
     }
@@ -190,7 +192,7 @@ public:
             return;
 
         microphone2->exit = true;
-        pthread_join(microphone2->thread, NULL);
+		microphone2->thread.join();
 
         microphone2->isStarted = false;
 
@@ -319,7 +321,7 @@ private:
         int bitsPerSample;
         int bytesPerSample;
         bool isStarted;
-        pthread_t thread;
+        std::thread thread;
         volatile bool exit;
 
     private:

@@ -12,7 +12,6 @@ public:
 		gid_ = g_NextId();
 
 		//GID-ADS-FRAMEWORKS-DEF
-		frameworks["vungle"] = &createInstance<AdsVungle>;
 	}
 
 	~GAds()

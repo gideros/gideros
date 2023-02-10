@@ -244,7 +244,7 @@ static int create(lua_State *L)
     int sampleRate = (int)luaL_checkinteger(L, 2);
     int numChannels = (int)luaL_checkinteger(L, 3);
     int bitsPerSample = (int)luaL_optinteger(L, 4,16);
-    float quality = luaL_optnumber(L, 5,0.5); //Balanced
+    float quality = (float) luaL_optnumber(L, 5,0.5); //Balanced
 
     gmicrophone_Error error;
     GMicrophone *microphone = new GMicrophone(L, NULL, numChannels, sampleRate, bitsPerSample, quality, &error);

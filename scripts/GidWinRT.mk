@@ -93,14 +93,20 @@ winrt.libs.clean: winrt.lua.clean winrt.gvfs.clean
 	cp plugins/$*/source/winrt/$*/$*.Windows/$(WINRT_CONF)/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/Win32/
 	cp plugins/$*/source/winrt/$*/$*.Windows/x64/$(WINRT_CONF)/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/x64
 
-luasocket.plugin.winrt:
-	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
-	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32
-	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM
-	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64
-	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/ARM/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/ARM/
-	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/x64/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/x64/
-	cp Release/All\ Plugins/luasocket/bin/WinRT/$(WINRT_CONF)/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/Win32/
+%.eplugin.winrt:
+	$(call WINRT_BUILD_WIN,plugins/$*/source/winrt/$*,$*)
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT/Win32
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT/ARM
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT/x64
+	cp Release/All\ Plugins/$*/bin/WinRT/$(WINRT_CONF)/ARM/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/ARM/
+	cp Release/All\ Plugins/$*/bin/WinRT/$(WINRT_CONF)/x64/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/x64/
+	cp Release/All\ Plugins/$*/bin/WinRT/$(WINRT_CONF)/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/Win32/
+
+luasocket.plugin.winrt: luasocket.eplugin.winrt
+	
+
+microphone.plugin.winrt: microphone.eplugin.winrt
+	
 
 %.plugin.winrt.clean:
 	$(call WINRT_CLEAN,plugins/$*/source/winrt,$*)
