@@ -25,7 +25,11 @@
 #endif
 
 #include <map>
+#ifdef USE_PTHREADS
+#include <pthread.h>
+#else
 #include <thread>
+#endif
 #include <math.h>
 
 namespace {
@@ -174,8 +178,11 @@ public:
             return;
 
         microphone2->exit = false;
+#ifdef USE_PTHREADS
+        pthread_create(&microphone2->thread, NULL, run_s, microphone2);
+#else
 		microphone2->thread=std::thread(run_s, microphone2);
-
+#endif
         microphone2->isStarted = true;
     }
 
@@ -192,8 +199,11 @@ public:
             return;
 
         microphone2->exit = true;
+#ifdef USE_PTHREADS
+        pthread_join(microphone2->thread, NULL);
+#else
 		microphone2->thread.join();
-
+#endif
         microphone2->isStarted = false;
 
         gevent_RemoveEventsWithGid(microphone2->gid);
@@ -321,7 +331,11 @@ private:
         int bitsPerSample;
         int bytesPerSample;
         bool isStarted;
+#ifdef USE_PTHREADS
+        pthread_t thread;
+#else
         std::thread thread;
+#endif        
         volatile bool exit;
 
     private:
