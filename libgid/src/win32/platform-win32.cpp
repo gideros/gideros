@@ -512,7 +512,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 						}
 
 						// Show the Open dialog box.
-						hr = pFile->Show(NULL);
+						hr = pFile->Show(hwndcopy);
 						// Get the file name from the dialog box.
 						if (SUCCEEDED(hr))
 						{

@@ -2,6 +2,7 @@ SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 WIN32_CHAIN=PATH=$(WIN32_BIN):$(PATH) $(WIN32_BIN)/
 WIN32_CC=$(WIN32_CHAIN)gcc
 WIN32_CXX=$(WIN32_CHAIN)g++
+WIN32_RES=$(WIN32_CHAIN)windres
 
 win32.install: win32.libs.install win32.plugins.install
 
@@ -39,7 +40,7 @@ LIBS_openal+=-lwinmm
 INCLUDEPATHS_player+=libgid/include/win32
 OBJFILES_player+= $(basename $(wildcard 2dsg/gfxbackends/gl2/*.cpp))
 #OBJFILES_player+= $(basename $(wildcard 2dsg/gfxbackends/dx11/*.cpp)) $(basename $(wildcard 2dsg/gfxbackends/dx11/*.c))
-OBJFILES_player+= win32_example/win32 win32_example/applicationmanager libgid/src/win32/platform-win32
+OBJFILES_player+= win32_example/win32 win32_example/applicationmanager libgid/src/win32/platform-win32 libgid/src/win32/win32_res
 INCLUDEPATHS_player+=win32_example
 INCLUDEPATHS_player+=2dsg/gfxbackends/gl2
 INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
@@ -81,6 +82,10 @@ $(WIN32_BUILDDIR)/%.o : %.cpp
 $(WIN32_BUILDDIR)/%.o : %.c
 	#CC $(basename $(notdir $@))
 	@$(WIN32_CC) -g $(CXXFLAGS) -c $< -o $@
+
+$(WIN32_BUILDDIR)/%.o : %.rc
+	#CC $(basename $(notdir $@))
+	@$(WIN32_RES) $< $@
 
 	
 #-include libgvfs.dep

@@ -606,8 +606,8 @@ ApplicationManager::ApplicationManager() {
 		height_ = height;
 		updateHardwareOrientation();
 		application_->setResolution(width_, height_);
-		if (ShaderEngine::Engine)
-			ShaderEngine::Engine->reset(true);
+		/*if (ShaderEngine::Engine)
+			ShaderEngine::Engine->reset(true);*/
 
 		/*	switch (rotation) {
 		 case 0:
