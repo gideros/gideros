@@ -2,7 +2,7 @@
 UI.Slider=Core.class(UI.Panel,function(params) return end)
 UI.Slider.HORIZONTAL=false
 UI.Slider.VERTICAL=true
-function UI.Slider:init(direction,svgpath,resolution,dual)
+function UI.Slider:init(direction,svgpath,resolution,dual,offset)
 	self.knobResolution=resolution or 0.001
 	self.svgPath=svgpath
 	self.vertical=direction
@@ -13,13 +13,23 @@ function UI.Slider:init(direction,svgpath,resolution,dual)
 	self.prail=Mesh.new()
 
 	self.dual=dual
-	self.knob=UI.Panel.new()
-	self.knob:setStyle("slider.styKnob")
-	self.knob:setStateStyle("slider.styKnobNormal")
+	self.handleOffset=offset
+	local function makeKnob()
+		local knob=UI.Panel.new()
+		knob:setLocalStyle("slider.styKnob")
+		knob:setStateStyle("slider.styKnobNormal")
+		if self.handleOffset then
+			knob:setLayoutParameters({ rowWeights={1}, columnWeights={1}})
+			local p=UI.Panel.new()
+			p:setStyle("slider.styHand")
+			p:setLayoutConstraints({fill=Sprite.LAYOUT_FILL_VERTICAL, width="slider.szHand"})
+			knob:addChild(p) knob.hand=p
+		end
+		return knob
+	end
+	self.knob=makeKnob()
 	if dual then
-		self.knob2=UI.Panel.new()
-		self.knob2:setStyle("slider.styKnob")
-		self.knob2:setStateStyle("slider.styKnobNormal")
+		self.knob2=makeKnob()
 	end
 	self:setLayoutParameters{ rowWeights={1}, columnWeights={1}}
 
@@ -63,9 +73,9 @@ function UI.Slider:setCenter(ctr)
 	self:setKnobPosition(self.knobPos[1],self.knobPos[2])
 end
 function UI.Slider:setIndicator(indicator)
-	self:makeIndicator(self.knob,self.indicator[self.knob])
+	self:makeIndicator(self.knob,self.indicator[self.knob],1)
 	if self.dual then
-		self:makeIndicator(self.knob2,self.indicator[self.knob2])
+		self:makeIndicator(self.knob2,self.indicator[self.knob2],-1)
 	end
 	self:placeKnob(self.knobPos)
 end
@@ -77,13 +87,23 @@ end
 function UI.Slider:updateStyle(...)
 	UI.Panel.updateStyle(self,...)
 	local ms=self:resolveStyle("slider.szKnob")
-	
-	self.knob:setLayoutConstraints{ width=ms, height=ms, anchorx=0,anchory=0 }
-	self.rail:setPosition(ms/2,ms/2)
-	self.prail:setPosition(ms/2,ms/2)
+	self.handleDisp=ms*(self.handleOffset or 0)
+	local function updateKnob(knob,dir)
+		knob:setLayoutConstraints{ width=ms, height=ms+self.handleDisp*2, anchorx=0,anchory=0 }
+		if knob.hand then
+			if dir>0 then
+				knob:setLayoutParameters({ insetTop=self.handleDisp+ms, insetBottom=ms*.25})
+			else
+				knob:setLayoutParameters({ insetBottom=self.handleDisp+ms, insetTop=ms*.25})
+			end
+		end
+	end
+	updateKnob(self.knob,1)
+	self.rail:setPosition(ms/2,ms/2+self.handleDisp)
+	self.prail:setPosition(ms/2,ms/2+self.handleDisp)
 	self.knobSize=ms
 	if self.dual then
-		self.knob2:setLayoutConstraints{ width=ms, height=ms, anchorx=0,anchory=0 }
+		updateKnob(self.knob2,-1)
 	end
 	self:setRailStyle(self.rail,self:resolveStyle("slider.styRail"))
 	self:updateRail()
@@ -243,6 +263,7 @@ function UI.Slider:onDragStart(x,y,ed,ea,change,long)
 	if long then return end
 	if self:getFlags().disabled then return end
 	local kx,ky=self.knob:getAnchorPosition()
+	if self.vertical then kx-=self.handleDisp else ky-=self.handleDisp end
 	local d=(x+kx)^2+(y+ky)^2
 	if d<=(self.knobSize^2) then
 		self.sliding=1
@@ -251,6 +272,7 @@ function UI.Slider:onDragStart(x,y,ed,ea,change,long)
 	end
 	if self.dual then
 		local kx,ky=self.knob2:getAnchorPosition()
+		if self.vertical then kx-=self.handleDisp else ky-=self.handleDisp end
 		local d=(x+kx)^2+(y+ky)^2
 		if d<=(self.knobSize^2) then
 			self.sliding=2
@@ -279,14 +301,21 @@ function UI.Slider:onDrag(x,y)
 	end
 end
 
-function UI.Slider:makeIndicator(ref,indicator)
+function UI.Slider:makeIndicator(ref,indicator,dir)
 	self.indicator[ref]=indicator
 	if indicator and not self.indicatorLayer[ref] then
 		self.indicatorLayer[ref]=UI.Panel.new()
 		self.indicatorLayer[ref]:setLayoutParameters{}
 		self.indicatorLayer[ref]:addChild(indicator)
-		indicator:setLayoutConstraints{ originx=-.5, originy=-1 }
-		self:addChild(self.indicatorLayer[ref])
+		local oy=0
+		if (self.handleOffset or 0)==0 then -- TODO This should be configurable somehow
+			dir=-1
+			oy=-self.knobSize/2
+		else 
+			dir=-0.5
+		end
+		indicator:setLayoutConstraints{ originx=-.5, originy=dir, offsety=oy }
+		ref:addChild(self.indicatorLayer[ref])
 	elseif self.indicatorLayer[ref] and not self.indicator[ref] then
 		self.indicatorLayer[ref]:removeFromParent()
 	end
@@ -295,10 +324,10 @@ end
 function UI.Slider:placeKnob(p)
 	if not self.pathShape then return end
 	self.rail:setShaderConstant("fRatio",Shader.CFLOAT2,1,if self.dual then p[1] else p[1]><self.knobCenter,if self.dual then p[2] else p[1]<>self.knobCenter)
-	local function placeKnob(k,p)
+	local function placeKnob(k,p,dir)
 		local op=p
 		p*=self.pathLength
-		local pp,lp=0,0
+		local pp,lp
 		for _,ps in ipairs(self.pathShape) do
 			if ps.o>p then
 				if not pp then
@@ -314,22 +343,24 @@ function UI.Slider:placeKnob(p)
 		local sl=math.distance(pp.x,pp.y,pp.x2,pp.y2)
 		p=lp
 		if p>sl then p=sl end
-		local nx=pp.x+(pp.x2-pp.x)*p/sl
-		local ny=pp.y+(pp.y2-pp.y)*p/sl
-		local px=(nx-self.pathRefX)*self.pathScale
-		local py=(ny-self.pathRefY)*self.pathScale
+		local dx,dy=pp.x2-pp.x,pp.y2-pp.y
+		local oy,ox=math.normalize(dx,dy)
+		local nx=pp.x+dx*p/sl
+		local ny=pp.y+dy*p/sl
+		local px=(nx-self.pathRefX)*self.pathScale-self.handleDisp*ox*dir
+		local py=(ny-self.pathRefY)*self.pathScale-self.handleDisp*oy*dir
 		k:setAnchorPosition(-px,-py)
 		if self.formatter then
 			if not self.indicator[k] then
-				self:makeIndicator(k,UI.Utils.makeWidget(""))
+				self:makeIndicator(k,UI.Utils.makeWidget(""),dir)
 			end
-			self.indicatorLayer[k]:setAnchorPosition(-px-self.knobSize/2,-py)
+			self.indicatorLayer[k]:setAnchorPosition(-self.knobSize/2,-self.knobSize/2-self.handleDisp)
 			self.formatter(self.indicator[k],op)
 		end
 	end
-	placeKnob(self.knob,p[1])
+	placeKnob(self.knob,p[1],1)
 	if self.dual then
-		placeKnob(self.knob2,p[2])
+		placeKnob(self.knob2,p[2],-1)
 	end
 end
 
@@ -361,7 +392,7 @@ UI.Slider.Definition= {
 	name="Slider",
 	icon="ui/icons/panel.png",
 	class="UI.Slider",
-	constructorArgs={ "Vertical", "Path", "Resolution","Dual"  },
+	constructorArgs={ "Vertical", "Path", "Resolution","Dual","HandleOffset"  },
 	properties={
 		{ name="Path", type="string" },
 		{ name="Vertical", type="boolean" },
@@ -370,10 +401,11 @@ UI.Slider.Definition= {
 		{ name="Indicator", type="sprite"},
 		{ name="Formatter", type="function"},
 		{ name="Dual", type="boolean" },
+		{ name="HandleOffset", type="number" },
 	},
 }
 
-UI.ArcSlider=Core.class(UI.Slider,function(astart,aend,res,dual) 
+UI.ArcSlider=Core.class(UI.Slider,function(astart,aend,res,dual,offset) 
 	astart=astart or 0
 	aend=aend or 90
 	local sc=1000
@@ -384,14 +416,14 @@ UI.ArcSlider=Core.class(UI.Slider,function(astart,aend,res,dual)
 	local p="M"..e1x..","..e1y..
 			"A"..sc..","..sc..","..^>(aend-astart)..","..large..",1,"..e2x..","..e2y
 
-	return false,p,res,dual
+	return false,p,res,dual,offset
 end)
 
 UI.ArcSlider.Definition= {
 	name="Slider",
 	icon="ui/icons/panel.png",
 	class="UI.ArcSlider",
-	constructorArgs={ "StartAngle", "EndAngle", "Resolution","Dual"  },
+	constructorArgs={ "StartAngle", "EndAngle", "Resolution","Dual","HandleOffset"  },
 	properties={
 		{ name="StartAngle", type="number"},
 		{ name="EndAngle", type="number"},

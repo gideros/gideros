@@ -26,8 +26,7 @@ end
 
 function UI.Utils.colorTransform(p,c,style)
   while type(c)=="string" do
-	assert(style,"Style needed for color refs:"..c)
-	local rc=stage:resolveStyle(c,style)
+	local rc=p:resolveStyle(c,style)
 	if not rc then	
 		--print("NOCOL:",c) 
 	end

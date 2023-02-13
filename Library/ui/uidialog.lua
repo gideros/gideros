@@ -120,6 +120,7 @@ function UI.Screen:init()
 	self.safe=UI.Panel.new()
 	self:addChild(self.safe)
 	self.safe:setLayoutParameters{ columnWeights={1}, rowWeights={1}}
+	self.safe:setLayoutConstraints{ fill=Sprite.LAYOUT_FILL_BOTH}
 
 	self.glass=UI.Panel.new()
 	self:addChild(self.glass)
@@ -170,6 +171,7 @@ function UI.Screen:onLingerEnd()
 end
 
 function UI.Screen:resized()
+	if Oculus then return end
 	local sx,sy,sw,sh=application:getLogicalBounds()
 	self:setDimensions(sw-sx,sh-sy) self:setPosition(sx,sy)
 	local tsx,tsy,tsw,tsh=application:getDeviceSafeArea(true)

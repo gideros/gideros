@@ -14,7 +14,7 @@ end
 UI.Label=Core.class(UI.Panel,function (text,layout) return nil end)
 function UI.Label:init(text,layout,font)
 	self._label=TextField.new(self._style.font,text or "",initLayout(layout))
-	if self._label.setWorldAlign then self._label:setWorldAlign(true) end
+	if self._label.setWorldAlign then self._label:setWorldAlign(not Oculus) end
 	self:addChild(self._label)
 	self:setLayoutParameters({columnWeights={1},rowWeights={1}, insetLeft="label.szInset", insetRight="label.szInset"})
 	self._label:setLayoutConstraints({fill=Sprite.LAYOUT_FILL_BOTH})

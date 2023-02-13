@@ -4,7 +4,7 @@
 
 if _PRINTER then print("uistyle.lua") end
 
-local debug = _PRINTER
+local debug = nil
 if debug then print("UI.Style","debug !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!") end
 
 UI.Default=UI.Default or {}
@@ -14,7 +14,9 @@ local targetTab			=8
 local targetMonitor		=12
 
 local dpi=application:getScreenDensity() or 120--326 --96
-local diag=(application:getDeviceHeight()^2+application:getDeviceWidth()^2)^0.5/dpi
+local dh=application:getDeviceHeight()
+if Oculus then dh=dh/2 end
+local diag=(dh^2+application:getDeviceWidth()^2)^0.5/dpi
 local ls=application:getLogicalScaleX()
 local tgtdpi=120 --96
 local detectedMode="monitor"
@@ -675,6 +677,12 @@ UI.Style.progress={
 			corners={0,0,0,0,0,0,0,0},
 			insets={ left="progress.szCircular", right="progress.szCircular", top="progress.szCircular", bottom="progress.szCircular" },
 	}),
+	styBeads={
+		["progress.szBead"]=".5s",
+		["progress.szBeadMargin"]=".15s",
+		["progress.colBead"]="colText",
+		--["progress.icBead"]=Texture.new("ui/icons/eye.png",true,{ mipmap=true }),
+	},
 	styCircular={
 		colWidgetBack="colHighlight",
 		
@@ -777,6 +785,10 @@ UI.Style.scrollbar={
 UI.Style.slider={
 	colKnob="colHighlight",
 	colKnobCenter="colText",
+	styHand={
+		colWidgetBack="colText",
+		["slider.szHand"]=".1s",
+	},
 	colRailBorder="colHeader",
 	colRailBackground="colBackground",
 	colRailActive="colSelect",
@@ -852,6 +864,7 @@ UI.Style.splitpane={
 	colKnob="colHeader",
 	colKnobHandle="colHighlight",
 	colKnobSymbol="colUI",
+	colKnobShadow="colDisabled",
 	styKnobH={
 		brdWidget="splitpane.brdKnobH",
 		colWidgetBack="splitpane.colKnob" 
@@ -862,21 +875,21 @@ UI.Style.splitpane={
 	},
 	styKnobHandleH={
 		brdWidget=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/splitpane-h.png",true,{ mipmap=true }),
+			texture=Texture.new("ui/icons/splitpane-h.png",true,{ mipmap=true, rawalpha=true }),
 			corners={0,0,0,0,0,0,0,0},
 			insets={ left="splitpane.szKnob", right="splitpane.szKnob", top="splitpane.szKnob", bottom="splitpane.szKnob" },
 		}),
 		colWidgetBack=0xFFFFFF,
-		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="splitpane.colKnobHandle", colLayer2="splitpane.colKnobSymbol", colLayer3="splitpane.colKnobHandle" }},
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="splitpane.colKnobHandle", colLayer2="splitpane.colKnobSymbol", colLayer3="splitpane.colKnobShadow" }},
 	},
 	styKnobHandleV={
 		brdWidget=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/splitpane-v.png",true,{ mipmap=true }),
+			texture=Texture.new("ui/icons/splitpane-v.png",true,{ mipmap=true, rawalpha=true }),
 			corners={0,0,0,0,0,0,0,0},
 			insets={ left="splitpane.szKnob", right="splitpane.szKnob", top="splitpane.szKnob", bottom="splitpane.szKnob" },
 		}),
 		colWidgetBack=0xFFFFFF,
-		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="splitpane.colKnobHandle", colLayer2="splitpane.colKnobSymbol", colLayer3="splitpane.colKnobHandle" }},
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="splitpane.colKnobHandle", colLayer2="splitpane.colKnobSymbol", colLayer3="splitpane.colKnobShadow" }},
 	},
 }
 UI.Style.table={
@@ -985,41 +998,43 @@ UI.Style.toolbox={
 	styContainer={
 		colWidgetBack=colFull,
 		brdWidget=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
-			corners={"toolbox.szBorder","toolbox.szBorder","toolbox.szBorder","toolbox.szBorder",63,63,63,63,},
+			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
+			corners={"toolbox.szBorder","toolbox.szBorder","toolbox.szBorder","toolbox.szBorder",63,63,63,63},
 			insets={ left=0, right=0, top=0, bottom=0 },
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
-			params={ colLayer1="toolbox.colBack", colLayer2=colNone, colLayer3=colNone, colLayer4=colNone } 
+			params={ colLayer1="toolbox.colBack", colLayer2="toolbox.colBorder", colLayer3=colNone, colLayer4=colNone } 
 		}
 	},
 	styItem={},
 	styHeader={
+		["image.colTint"]="toolbox.colHeaderIcon",
 	},
 	styHeaderLocal={
 		colWidgetBack=colFull,
 		shader={ 
 			class="UI.Shader.MultiLayer", 
-			params={ colLayer1="toolbox.colHeader", colLayer2="toolbox.colBorder", colLayer3=colNone, colLayer4=colNone } 
+			params={ colLayer1="toolbox.colHeader", colLayer2="toolbox.colBorder", colLayer3="toolbox.colHeaderIcon", colLayer4=colNone } 
 		}
 	},
 	styHeaderHorizontal={
 		brdWidget=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
-			corners={"toolbox.szBorder",0,"toolbox.szBorder","toolbox.szBorder",63,63,63,63,},
+			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
+			corners={"toolbox.szBorder",0,"toolbox.szBorder","toolbox.szBorder",63,63,63,63},
 			insets={ left=0, right=0, top=0, bottom=0 },
 		}),
 	},
 	styHeaderVertical={
 		brdWidget=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
-			corners={"toolbox.szBorder","toolbox.szBorder","toolbox.szBorder",0,63,63,63,63,},
+			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
+			corners={"toolbox.szBorder","toolbox.szBorder","toolbox.szBorder",0,63,63,63,63},
 			insets={ left=0, right=0, top=0, bottom=0 },
 		}),
 	},
 	colBack="colBackground",
 	colHeader="colHeader",
+	colHeaderIcon="colBackground",
 	colBorder="colHighlight",
 	szBorder=".3s",
 }

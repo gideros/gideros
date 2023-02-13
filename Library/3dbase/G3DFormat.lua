@@ -106,6 +106,7 @@ function G3DFormat.stackMatrix(source,root)
 end
 
 function G3DFormat.sprToSprMatrix(from,to,top)
+	if Sprite.spriteToLocalMatrix then return to:spriteToLocalMatrix(from) end
 	-- Mat MUL: if 1,2:A,3:B, then B=3->2, A=2->1, A*B=3->1
 	local mi=G3DFormat.stackMatrix(to,top) --to->top
 	mi:invert() --top->to

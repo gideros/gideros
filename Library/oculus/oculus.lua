@@ -112,6 +112,34 @@ function Oculus.updateHandTracking(e)
 	end
 end
 
+function Oculus.updateVRHand(hand,e,grip,index)
+	if hand.__bgrip~=grip or hand.__bindex~=index then
+		local bp={}
+		local eg=grip*0.3
+		local ei=index*0.3
+		local ep=eg*.2
+		local n=nil
+		local rots={n,
+					n,n,ep,eg,eg, --Pouce
+					ei,ei,ei, --Index
+					eg,eg,eg, --Majeur
+					eg,eg,eg, --Annulaire
+					n,eg*.6,eg,eg, --Auriculaire
+					n,n,n,n,n}
+		
+		for n,b in pairs(rots) do
+			local m=Matrix.fromSRT({r={0,0,math.sin(b),math.cos(b)},t=hand.bones["bone_"..n].srt.t})
+			bp["bone_"..n]={{ratio=1,mat={m:getMatrix()}}}
+		end
+		D3Anim.setBonesPose(hand.objs.hand.objs.mesh,bp)
+		hand.__bgrip=grip
+		hand.__bindex=index
+	end
+	local ss=1
+	local srt={r=e.rotation,t=e.position, s={ss,ss,ss}}
+	hand:setMatrix(Matrix.fromSRT(srt))
+end
+
 function Oculus.updateVRHands(e)
 	if e.deviceType==4  then
 		local _hand
@@ -119,27 +147,7 @@ function Oculus.updateVRHands(e)
 		elseif (e.caps&8)==8 then _hand=Oculus._vrRHand
 		end
 		if _hand then
-			local bp={}
-			local eg=e.gripTrigger*0.3
-			local ei=e.indexTrigger*0.3
-			local ep=eg*.2
-			local n=nil
-			local rots={n,
-						n,n,ep,eg,eg, --Pouce
-						ei,ei,ei, --Index
-						eg,eg,eg, --Majeur
-						eg,eg,eg, --Annulaire
-						n,eg*.6,eg,eg, --Auriculaire
-						n,n,n,n,n}
-			
-			for n,b in pairs(rots) do
-				local m=Matrix.fromSRT({r={0,0,math.sin(b),math.cos(b)},t=_hand.bones["bone_"..n].srt.t})
-				bp["bone_"..n]={{ratio=1,mat={m:getMatrix()}}}
-			end
-			D3Anim.setBonesPose(_hand.objs.hand.objs.mesh,bp)
-			local ss=1
-			local srt={r=e.rotation,t=e.position, s={ss,ss,ss}}
-			_hand:setMatrix(Matrix.fromSRT(srt))
+			Oculus.updateVRHand(_hand,e,e.gripTrigger,e.indexTrigger)
 		end
 	end
 end

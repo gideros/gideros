@@ -19,11 +19,12 @@ end)
 function UI.Panel:init(bc) 
 	self._flags={} 
 	self._istyle={ __Parent=UI.Style._style }
-	self._lstyle={ __Parent=self._istyle }
-	self._bstyle={ __Parent=self._lstyle }
-	self._style={ __Parent=self._bstyle }
+	--self._lstyle={ __Parent=self._istyle }
+	--self._bstyle={ __Parent=self._lstyle }
+	--self._style={ __Parent=self._bstyle }
+	self._style={ __Parent=self._istyle }
 	Sprite.setStyle(self,self._style)
-	UI.Panel.setColor(self,bc or "colWidgetBack")
+	self:setColor(bc or "colWidgetBack")
 end
 
 function UI.Panel:destroy()
@@ -42,32 +43,45 @@ function UI.Panel:setFlagsAll(changes)
 	end
 end
 
-local function sstyle(self,sc,style)
-	local istyle=style
-	local p=rawget(sc,"__Parent")
+local function sstyle(self,sc,style,p)
+	local p=p or rawget(sc,"__Parent")
 	local cc=rawget(sc,"__Cache")
 	table.clear(sc)
 	if type(style)=="string" then
 		rawset(sc,"__Reference",style)
 	else
-		assert(type(style)=="table","Style is undefined:"..tostring(istyle))
+		assert(type(style)=="table","Style is undefined:"..tostring(style))
 		table.clone(style,sc)
 	end
 	sc.__Parent=p
-	if cc then sc.__Cache={} end
+	if cc then table.clear(cc) sc.__Cache=cc end
 	self:updatedStyle()
 end
 function UI.Panel:setStyle(style)
 	sstyle(self,self._istyle,style or {})
 end
 function UI.Panel:setLocalStyle(style)
-	sstyle(self,self._lstyle,style or {})
+	local relink=false
+	if not self._lstyle then
+		self._lstyle={}
+		(self._bstyle or self._style).__Parent=self._lstyle
+		relink=true
+	end
+	sstyle(self,self._lstyle,style or {},self._istyle)
+	if relink then self:setStyleInheritance(self.styleInheritance) end
 end
 function UI.Panel:setBaseStyle(style)
-	sstyle(self,self._bstyle,style or {})
+	local relink=false
+	if not self._bstyle then
+		self._bstyle={}
+		self._style.__Parent=self._bstyle
+		relink=true
+	end
+	sstyle(self,self._bstyle,style or {},self._lstyle or self._istyle)
+	if relink then self:setStyleInheritance(self.styleInheritance) end
 end
 function UI.Panel:setStateStyle(style)
-	sstyle(self,self._style,style or {})
+	sstyle(self,self._style,style or {},self._bstyle or self._lstyle or self._istyle)
 end
 
 --TODO move this to utils ?
@@ -92,7 +106,6 @@ end
 function UI.Panel:updateStyle(fromParent)
 	Pixel.updateStyle(self)
 	
-	if self._bgcolor then UI.Panel.setColor(self,self._bgcolor) end
 	if not self.border and not self._borderSpec and self:resolveStyle("brdWidget") then self._borderSpec="brdWidget" end
 	if self._borderSpec then self:setBorder(self._borderSpec) end
 	self:setShaderSpec(self:resolveStyle("shader"),self)
@@ -134,11 +147,11 @@ local function linkStyle(s,c,noupd)
 		local bstyle=s._istyle
 		local inheritance=c.parentStyleInheritance or s.styleInheritance
 		if inheritance=="local" then
-			bstyle=s._lstyle
+			bstyle=s._lstyle or s._istyle
 		elseif inheritance=="base" then
-			bstyle=s._bstyle
+			bstyle=s._bstyle or s._lstyle or s._istyle
 		elseif inheritance=="state" then
-			bstyle=s._style
+			bstyle=s._style or s._bstyle or s._lstyle or s._istyle
 		end
 		c._istyle.__Parent=bstyle
 		if not noupd and s:isOnStage() then
@@ -154,19 +167,21 @@ function UI.Panel:newClone()
 	local tc=table.clone
 	local t,t2
 	t=tc(self._istyle) t.__Parent=UI.Style._style self._istyle=t t2=t
-	t=tc(self._lstyle) t.__Parent=t2 self._lstyle=t t2=t
-	t=tc(self._bstyle) t.__Parent=t2 self._bstyle=t t2=t
+	if self._lstyle then t=tc(self._lstyle) t.__Parent=t2 self._lstyle=t t2=t end
+	if self._bstyle then t=tc(self._bstyle) t.__Parent=t2 self._bstyle=t t2=t end
 	t=tc(self._style) t.__Parent=t2 self._style=t
 	
-	Sprite.setStyle(self,t,true)
+	Sprite.setStyle(self,t,false)
 
 	self._flags=tc(self._flags)
-	if self.behavior then self.behavior=table.clone(self.behavior) self.behavior:clone(self) end
+	local lb=self.behavior
+	if lb then lb=table.clone(lb) self.behavior=lb lb:clone(self) end
 	--Relink children
-	if self.__children then
+	local ct=self.__children
+	if ct then
 		local lc,lv=nil,nil
 		while true do
-			lc,lv=next(self.__children,lc)
+			lc,lv=next(ct,lc)
 			if lv then
 				linkStyle(self,lv,true)
 			else
@@ -292,13 +307,6 @@ end
 
 function UI.Panel:getToolTip()
 	return self.ToolTip
-end
-
-if not Sprite.setStyle then
-	function UI.Panel:setColor(c)
-	  self._bgcolor=c
-	  Pixel.setColor(self,UI.Utils.colorVector(c,self._style))
-	end
 end
 
 function UI.Panel:getColor()

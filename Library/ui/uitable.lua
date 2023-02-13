@@ -13,8 +13,8 @@ function UI.Table:init(columns,direction,cellSpacingX,cellSpacingY)--no data
 	self.data={}
 	self.dataRows={}
 	self.direction=direction --Horizontal if not false or nil
-	self:setWorldAlign(true)
-	self:setLayoutParameters{ equalizeCells=true, worldAlign=true }
+	self:setWorldAlign(not Oculus)
+	self:setLayoutParameters{ equalizeCells=true, worldAlign=not Oculus }
 	self.cheader=UI.Panel.new()
 	self.cheader:setLayoutConstraints{ gridy=0, gridx=0, fill=Sprite.LAYOUT_FILL_BOTH }
 	self.cheader:setStyle("table.styRowHeader")
@@ -25,6 +25,7 @@ function UI.Table:init(columns,direction,cellSpacingX,cellSpacingY)--no data
 	self.minRowSize=0
 	self.selection={}
 	UI.Control.onMouseClick[self]=self
+	UI.Control.onKeyDown[self]=self
 	self:setCheckClip(true)
 end
 
@@ -53,12 +54,16 @@ function UI.Table:newClone()
 	self:setColumns(_columns)
 	self:setData(_data,self.builder)
 	UI.Control.onMouseClick[self]=self
+	UI.Control.onKeyDown[self]=self
 end
 
 function UI.Table:onMouseClick(x,y)
 	UI.Focus:request(self)
 	return true --stopPropagation !
 end
+
+UI.Table.onKeyDown=UI.Selection.handleKeyEvent
+
 function UI.Table:updateRow(rowWidget)
 	if self and rowWidget and rowWidget.d then
 		local rowsel = if self.selection[rowWidget.d] then true else false
@@ -538,6 +543,17 @@ function UI.Table:uiSelectRange(d1,d2)
 	return ret
 end
 
+function UI.Table:uiSelectAll()
+	local ret={}
+	local c=(self.viewModel and #self.viewModel) or (self.data and #self.data) or 0
+	for i=1,c do
+		local ii=if self.viewModel then self.viewModel[i] else i
+		local d=self.data[ii]
+		ret[self.dataRows[d]]=d
+	end
+	return ret
+end
+
 function UI.Table:uiSelection(sel) --row selection only --implements Row DATA .ClickCell and .onClickCell to have cell selection
 	if self.selection then
 		for data,rowWidget in pairs(self.selection) do
@@ -550,9 +566,11 @@ function UI.Table:uiSelection(sel) --row selection only --implements Row DATA .C
 	end
 	if sel then
 		for rowWidget,data in pairs(sel) do
-			self.selection[data]=rowWidget
-			rowWidget:setStateStyle("table.styRowSelected")
-			self:updateRow(rowWidget)
+			if not self.selection[data] then
+				self.selection[data]=rowWidget
+				rowWidget:setStateStyle("table.styRowSelected")
+				self:updateRow(rowWidget)
+			end
 		end
 	end
 end

@@ -31,7 +31,7 @@ local layout_fr={
 local platform,system = application:getDeviceInfo()
 platform=platform:lower()
 system=(system or ""):lower()
-UI.Keyboard.NATIVE=true --Try first platform virtual keyboard
+UI.Keyboard.NATIVE=not Oculus --Try first platform virtual keyboard
 UI.Keyboard.PHYSICAL=
 	if platform=="android" then false
 	elseif platform=="ios" then false

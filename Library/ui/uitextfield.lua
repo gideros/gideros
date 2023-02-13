@@ -65,7 +65,7 @@ function TextEdit:init(font,text,layout)
   self.password=layout and layout.password
   self.multiline=layout and layout.multiline
   self:setText(text or "")
-  if self.setWorldAlign then self:setWorldAlign(true) end
+  if self.setWorldAlign then self:setWorldAlign(not Oculus) end
 end
 
 function TextEdit:setFont(font)
@@ -122,7 +122,7 @@ local function setTextInput(self,text,index1,index2) --,"label","action","hint")
 	if self.password then --setTextInput --TVARIANT_PASSWORD (ne marche pas sur téléphone Christian - marche sur Samsung Android 10 Sandrine)
 		textType = textType|Application.TEXTINPUT_TVARIANT_PASSWORD
 	end
-	self.hasTextInput = application:setTextInput(textType,text,index1,index2,nil,nil,nil,tostring(self))--,"label","action","hint","context")
+	self.hasTextInput = not Oculus and application:setTextInput(textType,text,index1,index2,nil,nil,nil,tostring(self))--,"label","action","hint","context")
     if debugTextInput then print("UI.TextField setTextInput","self.hasTextInput?",self.hasTextInput,"type=",textType,"text=",text,"index1=",index1,"index2=",index2) end
   end
 end
@@ -271,6 +271,24 @@ function TextEdit:goRight(update,select)
 		self:setSelectionStartEnd(select and ocp,self.caretPos)
 	end
 end
+function TextEdit:goHome(update,select)
+	self:hideLast()
+	local ocp=self.caretPos
+	self:setCaretPosition(0,self.caretY)
+	if update then 
+		self:setCaretPos(self.caretPos)
+		self:setSelectionStartEnd(select and ocp,self.caretPos)
+	end
+end
+function TextEdit:goEnd(update,select)
+	self:hideLast()
+	local ocp=self.caretPos
+	self:setCaretPosition(self:getWidth(),self.caretY)
+	if update then 
+		self:setCaretPos(self.caretPos)
+		self:setSelectionStartEnd(select and ocp,self.caretPos)
+	end
+end
 function TextEdit:goUp(update,select)
 	if self.multiline then
 		local ocp=self.caretPos
@@ -400,7 +418,10 @@ end
 function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=KeyCode.DELETE=403 - on ne prend pas en compte la combinaison ctrl+D)
 	--print("processKey","keyCode",keyCode,modifiers)
 	local ctrl=((modifiers or 0)&7)==KeyCode.MODIFIER_CTRL
+	local meta=((modifiers or 0)&7)==KeyCode.MODIFIER_META
+	ctrl=ctrl or meta -- for MAC
 	local shift=((modifiers or 0)&7)==KeyCode.MODIFIER_SHIFT
+	
 	if keyCode==KeyCode.LEFT then
 		self:goLeft(true,shift)
 	elseif keyCode==KeyCode.RIGHT then
@@ -409,24 +430,30 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 		self:goUp(true,shift)
 	elseif keyCode==KeyCode.DOWN then
 		self:goDown(true,shift)
+	elseif keyCode==KeyCode.HOME then
+		self:goHome(true,shift)
+	elseif keyCode==KeyCode.END then
+		self:goEnd(true,shift)
 	elseif keyCode==KeyCode.DELETE then
 		self:deleteChar()
 	elseif keyCode==KeyCode.BACKSPACE and self.caretPos>0 then --BACK (BS 8)
 		self:backspace()
 	elseif keyCode==KeyCode.BACK then --BACK (BS 301)
 		self._textfield:unfocus({ TAG="TextEdit",reason="BACK" })
-	elseif ctrl and keyCode==KeyCode.V and not self.hasTextInput then
+	elseif ctrl and keyCode==KeyCode.A then
+		self:setSelected(0,#self:getText())	
+	elseif ((ctrl and keyCode==KeyCode.V) or (shift and keyCode==KeyCode.INSERT)) and not self.hasTextInput then
 		application:getClipboard("text/plain",function (res,data,mime)
 			if res then
 				self:addChars(data) 
 			end
 		end)
-	elseif ctrl and keyCode==KeyCode.C and not self.hasTextInput then
+	elseif ctrl and (keyCode==KeyCode.INSERT or keyCode==KeyCode.C) and not self.hasTextInput then
 		local seltext=self:getSelectedText()
 		if seltext then
 			application:setClipboard(seltext,"text/plain",function (res) end)
 		end
-	elseif ctrl and keyCode==KeyCode.X and not self.hasTextInput then
+	elseif ctrl and (keyCode==KeyCode.DELETE or keyCode==KeyCode.X) and not self.hasTextInput then
 		local seltext=self:getSelectedText()
 		if seltext then
 			application:setClipboard(seltext,"text/plain",function (res) end)
@@ -581,7 +608,7 @@ function UI.TextField:onMouseClick(x,y,c)
     if not self:focus({ TAG="UI.TextField",reason="ON_CLICK" } ) then	
 		local ocp=self.editor.caretPos
 		self.editor:setCaretPosition(self.editor:globalToLocal(self:localToGlobal(x,y)))
-		if c>1 then
+		if (c or 0)>1 then
 			self.editor:setSelected(0,#self.editor:getText())
 		elseif shift then
 			self.editor:setSelectionStartEnd(ocp,self.editor.caretPos)
@@ -621,6 +648,8 @@ function UI.TextField:onLongClick(x,y,c)
 			}
 		})
 		local popupX,popupY=self.editor:getCaretPosition()
+		popupY = popupY - self.editor.caretOffset
+		
 		if not hasSel then
 			popup.btCut:setVisible(false)
 			popup.btCopy:setVisible(false)

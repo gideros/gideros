@@ -104,14 +104,13 @@ function UI.Shader.MultiLayer:init(params)
 		vertexShader,
 		function () : Shader
 			local t=texture2D(fTexture, fTexCoord)
-			local frag=colLayer1*t.r
-			frag=frag*frag.a
-			local f2=colLayer2*t.g
-			frag=frag*(1-f2.a)+f2*f2.a
-			f2=colLayer3*t.b
-			frag=frag*(1-f2.a)+f2*f2.a
-			f2=colLayer4*t.a
-			frag=frag*(1-f2.a)+f2*f2.a
+			local frag=colLayer1*t.r*colLayer1.a
+			local f2=colLayer2*t.g*colLayer2.a
+			frag=frag*(1-f2.a)+f2
+			f2=colLayer3*t.b*colLayer3.a
+			frag=frag*(1-f2.a)+f2
+			f2=colLayer4*t.a*colLayer4.a
+			frag=frag*(1-f2.a)+f2
 			frag*=fColor
 			if (frag.a==0.0) then discard() end
 			return lF4(frag)
@@ -411,7 +410,7 @@ function UI.Shader.ProgressMultiLayer:init(params)
 			frag=frag*frag.a
 			local f2=colLayer2*t.g
 			frag=frag*(1-f2.a)+f2
-			f2=(if fXPos>fRatio then colLayer3a else colLayer3)*t.b
+			f2=(if fXPos<fRatio.x or fXPos>fRatio.y then colLayer3a else colLayer3)*t.b
 			
 			frag=frag*(1-f2.a)+f2			
 			f2=colLayer4*t.a
@@ -423,7 +422,7 @@ function UI.Shader.ProgressMultiLayer:init(params)
 			{name="vMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP,vertex=true},
 			{name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=false},
 			{name="fTexture",type=Shader.CTEXTURE,vertex=false},
-			{name="fRatio",type=Shader.CFLOAT,vertex=false},
+			{name="fRatio",type=Shader.CFLOAT2,vertex=false},
 			{name="vBounds",type=Shader.CFLOAT4,sys=Shader.SYS_BOUNDS,vertex=true},
 			{name="colLayer1",type=Shader.CFLOAT4,vertex=false},
 			{name="colLayer2",type=Shader.CFLOAT4,vertex=false},

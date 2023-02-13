@@ -279,12 +279,10 @@ UI.Theme.PointCore_Base={
 	["textfield.szMargin"]=".5s",
 	["textfield.colCutPasteButton"]="theme.C2M",
 	--
+	["toolbox.colHeaderIcon"]="theme.C1L",
 	["toolbox.colHeader"]="theme.C1F",
 	["toolbox.colBorder"]="theme.C1F",
-	["toolbox.colBack"]="theme.C2F",--colNone,
-	["toolbox.styHeader"]={
-		["image.colTint"]="theme.C1L",
-	},
+	["toolbox.colBack"]="theme.C2F",
 	--
 	["tooltip.szIcon"]="2is",
 	["tooltip.szMarker"]="2is",

@@ -359,13 +359,13 @@ function UI.Accordion:offerDndData(data,x,y)
 		y-=lp.insetTop
 		local lcs=2*(lp.cellSpacingY or 0)
 		while ll<=lmax and ls[ll*2-1] and y>ls[ll*2-1] do 
-			local lls=ls[ll*2-1]+ls[ll*2]+lcs 
+			local lls=ls[ll*2-1]+(ls[ll*2] or 0)+lcs 
 			y-=lls
 			ys+=lls
 			ll+=1 
 		end
 		
-		local sh=ls[ll*2-1]+ls[ll*2]+lcs
+		local sh=(ls[ll*2-1] or 0)+(ls[ll*2] or 0)+lcs
 		
 		local over
 		if self.dndBetween then

@@ -2,7 +2,8 @@
 UI.Toolbox=Core.class(UI.Table,function (header,direction) return nil,direction end)
 
 function UI.Toolbox:init(header,direction)
-	self:setStyle("toolbox.styToolbox")
+	self:setLocalStyle("toolbox.styToolbox")
+	self:setStyleInheritance("local")
 	self:setBaseStyle("toolbox.styContainer")
 	self:setColumns({
 		{ 

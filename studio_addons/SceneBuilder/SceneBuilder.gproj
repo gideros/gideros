@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties architecture="7" html5_pack="1" html5_host="" iosDevice="0" html5_fbinstant="0" html5_pwa="1" exportMode="2" splash_v_image="" scaleMode="0" build_number="1" version="1.0" autorotation="0" ios_bundle="com.yourdomain." tv_icon="" osx_installerId="" winrt_package="com.yourdomain.yourapp" retinaDisplay="3" splash_h_image="" logicalWidth="320" html5_crash="" orientation="0" html5_fbload="100" encryptCode="0" win_org="GiderosMobile" version_code="1" mouseTouchOrder="0" osx_bundle="com.yourdomain." osx_org="GiderosMobile" app_icon="" backgroundColor="#ffffff" winrt_org="GiderosMobile" win_domain="giderosmobile.com" vsync="0" macos_bundle="com.yourdomain.yourapp-macos" osx_category="5" splashScaleMode="0" html5_symbols="1" html5_mem="256" touchToMouse="1" atv_bundle="com.yourdomain.yourapp-atv" app_name="" encryptAssets="0" html5_wasm="0" mainluaOnly="0" fps="60" disableSplash="0" windowHeight="768" osx_signingId="" osx_domain="giderosmobile.com" mouseToTouch="1" logicalHeight="480" windowWidth="1024" macos_category="5">
+ <properties version="1.0" vsync="0" mainluaOnly="0" backgroundColor="#ffffff" architecture="7" splash_h_image="" fps="60" logicalWidth="320" html5_pack="1" mouseTouchOrder="0" html5_pwa="1" atv_bundle="com.yourdomain.yourapp-atv" tv_icon="" html5_symbols="1" mouseToTouch="1" osx_installerId="" touchToMouse="1" exportMode="2" osx_category="5" win_domain="giderosmobile.com" autorotation="0" ios_bundle="com.yourdomain." splash_v_image="" app_name="" osx_domain="giderosmobile.com" windowWidth="1024" splashScaleMode="0" html5_mem="256" version_code="1" retinaDisplay="3" disableSplash="0" logicalHeight="480" app_icon="" orientation="0" osx_signingId="" html5_fbinstant="0" macos_bundle="com.yourdomain.yourapp-macos" macos_category="5" encryptAssets="0" scaleMode="0" winrt_org="GiderosMobile" encryptCode="0" winrt_package="com.yourdomain.yourapp" windowHeight="768" html5_crash="" osx_org="GiderosMobile" build_number="1" osx_bundle="com.yourdomain." html5_host="" iosDevice="0" win_org="GiderosMobile" html5_fbload="100" html5_wasm="0">
   <imageScales/>
   <plugins>
-   <plugin enabled="1" name="JSON"/>
-   <plugin enabled="1" name="LuaFileSystem"/>
+   <plugin name="JSON" enabled="1"/>
+   <plugin name="LuaFileSystem" enabled="1"/>
   </plugins>
   <exports>
    <export name="APK">
@@ -23,7 +23,7 @@
    </export>
   </exports>
  </properties>
- <folder name="3D" path="../../Library/3dbase">
+ <folder path="../../Library/3dbase" name="3D">
   <file name="../../Library/3dbase/3DAnimation.lua"/>
   <file name="../../Library/3dbase/3DGdxLoader.lua"/>
   <file name="../../Library/3dbase/3DLighting.lua"/>
@@ -54,7 +54,7 @@
   <file name="assets/aui/aui_tree.lua"/>
   <file name="assets/aui/editor.lua"/>
  </folder>
- <folder name="luashader" path="../../Library/luashader">
+ <folder path="../../Library/luashader" name="luashader">
   <file name="../../Library/luashader/effects.lua"/>
   <file name="../../Library/luashader/luac_codegen.lua"/>
   <file name="../../Library/luashader/luac_loader.lua"/>
@@ -62,11 +62,12 @@
   <file name="../../Library/luashader/luau_codegen.lua"/>
   <file name="../../Library/luashader/stdluashaders.lua"/>
  </folder>
- <folder name="ui" path="../../Library/ui">
+ <folder path="../../Library/ui" name="ui">
   <folder name="icons">
    <file name="../../Library/ui/icons/bdr-multi.png"/>
    <file name="../../Library/ui/icons/checkbox-multi.png"/>
    <file name="../../Library/ui/icons/checkbox.png"/>
+   <file name="../../Library/ui/icons/cirbdr-multi.png"/>
    <file name="../../Library/ui/icons/clock_arrows.png"/>
    <file name="../../Library/ui/icons/clock_hand_h.png"/>
    <file name="../../Library/ui/icons/clock_hand_m.png"/>

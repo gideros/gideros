@@ -1,10 +1,9 @@
 D3Anim={}
 D3Anim._animated={}
 D3Anim._animatedModel={}
-
 function D3Anim.updateBones()
-	for k,a in pairs(D3Anim._animated) do
-		if D3Anim._animatedModel[k.bonesTop].dirty then
+	for k,a in pairs(D3Anim._animated) do	
+		if D3Anim._animatedModel[k.bonesTop].dirty then 
 			local bt={}
 			local bn=1
 			for n,bd in ipairs(k.animBones) do
@@ -21,8 +20,9 @@ function D3Anim.updateBones()
 				bn=bn+16
 			end
 			k:setShaderConstant("bones",Shader.CMATRIX,#k.animBones,bt)
-			a.dirty=false
+			D3Anim._animatedModel[k.bonesTop].dirty=false
 		end
+		a.dirty=false
 	end
 end
 
@@ -49,7 +49,8 @@ function D3Anim.animate(m,a)
 end
 
 function D3Anim.tick()
-	for k,a in pairs(D3Anim._animatedModel) do
+
+	for k,a in pairs(D3Anim._animatedModel) do	
 		local ares={}
 		local aend={}
 		for slot,anim in pairs(a.animations) do

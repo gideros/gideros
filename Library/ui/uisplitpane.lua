@@ -259,7 +259,7 @@ function UI.Splitpane:getKnob()
 end
 
 function UI.Splitpane:onKnobMove(x,y)
-	if self.knob.customized or self.knobHandle:hitTestPoint(self.knob:localToGlobal(x,y)) then
+	if self.knob.customized or self.knobHandle:hitTestPoint(x,y,false,self.knob) then
 		UI.Control.setLocalCursor(if self.vertical then "splitV" else "splitH")
 	end
 end
@@ -267,7 +267,7 @@ end
 function UI.Splitpane:onDragStart(x,y,ed,ea,change,long)
 	if long then return end
 	UI.Focus:request(self)
-	self.dragging=self.knob.customized or self.knobHandle:hitTestPoint(self.knob:localToGlobal(x,y))
+	self.dragging=self.knob.customized or self.knobHandle:hitTestPoint(x,y,false,self.knob)
 	if self.dragging then 
 		self.dragTabs=self:fixupTabs(self.tabs) 
 	end
@@ -281,7 +281,7 @@ end
 
 function UI.Splitpane:onKnobClick(x,y)
 	if not self.tabs or #self.tabs<3 then return end
-	if not (self.knob.customized or self.knobHandle:hitTestPoint(self.knob:localToGlobal(x,y))) then return end
+	if not (self.knob.customized or self.knobHandle:hitTestPoint(x,y,false,self.knob)) then return end
 	UI.Focus:request(self)
 	local tabs=self:fixupTabs(self.tabs) 
 	if self.ratio<=(tabs[1] or 0) or self.ratio>=(tabs[#tabs] or 1) then

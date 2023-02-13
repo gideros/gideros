@@ -161,6 +161,25 @@ function UI.Selection.select(s,dataList) --Software selection
 	s:uiSelection(sh.sel)
 end
 
+function UI.Selection.handleKeyEvent(s,kc,rc)
+	local sh=s._uisel_holder
+	if not sh then return end
+	local uis=UI.Selection
+	if sh.mode==uis.MULTIPLE then
+		local modifiers=UI.Control.Meta.modifiers or 0
+		local ctrl=((modifiers or 0)&7)==KeyCode.MODIFIER_CTRL
+		local meta=((modifiers or 0)&7)==KeyCode.MODIFIER_META
+		ctrl=ctrl or meta -- for MAC
+--		local shift=(modifiers&KeyCode.MODIFIER_SHIFT)>0
+		if kc==KeyCode.A and ctrl and s.uiSelectAll then
+			sh.sel=table.clone(s:uiSelectAll())
+			s:uiSelection(sh.sel)
+			sh.handler(s,sh.sel)
+			return true
+		end
+	end
+end
+
 function UI.Selection._selHandler(s,x,y,c)
 	local spr,data=s:uiSelect(x,y)
 	if spr then 
