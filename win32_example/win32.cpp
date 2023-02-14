@@ -1,6 +1,7 @@
 #include <iostream>
 #include <libnetwork.h>
 #include <windows.h>
+#include <windowsx.h>
 
 #include "gl/glew.h"
 #include "gl/glext.h"
@@ -618,7 +619,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER;
       ginputp_mouseLeave(0,0,m);
       mouseEntered=false;
     return 0;
@@ -627,8 +628,16 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
-    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0, GET_WHEEL_DELTA_WPARAM(wParam),m); // new 20221114 XXX
+	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER;
+	  int b=0;
+	  if (wParam&MK_LBUTTON) b|=1;
+	  if (wParam&MK_RBUTTON) b|=2;
+	  if (wParam&MK_MBUTTON) b|=4;
+	  POINT pt;
+	  pt.x = GET_X_LPARAM(lParam);
+	  pt.y = GET_Y_LPARAM(lParam);
+	  ScreenToClient(hwnd, &pt);
+	  ginputp_mouseWheel(pt.x, pt.y, b, GET_WHEEL_DELTA_WPARAM(wParam),m); // new 20221114 XXX
     return 0;
   }
   else if ((iMsg==WM_KEYDOWN)||(iMsg==WM_SYSKEYDOWN)) {
