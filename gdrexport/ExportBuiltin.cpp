@@ -37,6 +37,12 @@ void ExportBuiltin::exportAllAssetsFiles(ExportContext *ctx)
     ExportCommon::exportPropertiesBin(ctx);
 }
 
+static QByteArray bytepad(QByteArray s,qsizetype sz) {
+    QByteArray padded=QByteArray(s);
+    padded.append(sz-s.size(),(char)0);
+    return padded;
+}
+
 void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
 {
     QStringList wildcards1;
@@ -153,6 +159,10 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("BackgroundColor=\"#FFFFFF\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
         replaceList1 << qMakePair(QString("BackgroundColor=\"#FEFEFE\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
         replaceList1 << qMakePair(QString(" Version=\"1.0.0.0\"").toUtf8(), (" Version=\""+winver+"\"").toUtf8());
+    }
+    else if(ctx->deviceFamily == e_Win32){
+    	ctx->replaceList[0] << qMakePair(bytepad(ctx->templatenamews.toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
+    	ctx->replaceList[0] << qMakePair(bytepad(QString("Win32 Template App Name").toUtf8(),256), bytepad(ctx->appName.toUtf8(),256));
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());

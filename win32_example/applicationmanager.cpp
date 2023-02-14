@@ -420,6 +420,7 @@ void NetworkManager::calculateMD5(const char* file)
 
 extern std::string PATH_AppName;
 extern std::string PATH_Cache;
+extern std::string PATH_Executable;
 ApplicationManager::ApplicationManager() {
 
 	deviceOrientation_ = eFixed;
@@ -441,10 +442,7 @@ ApplicationManager::ApplicationManager() {
 
 		gpath_setDefaultDrive(0);
 
-	    char resourcePath[MAX_PATH];
-	    strcpy(resourcePath,"assets\\");
-	    gpath_setDrivePath(0,resourcePath);
-
+	    gpath_setDrivePath(0,(PATH_Executable+"\\assets\\").c_str());
 	    std::string docsPath=us(_wgetenv(L"APPDATA"));
 	    docsPath=docsPath+"\\"+PATH_AppName+"\\";
 	    CreateDirectory(ws(docsPath.c_str()).c_str(),NULL);        // create dir if it does not exist

@@ -631,15 +631,16 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0, GET_WHEEL_DELTA_WPARAM(wParam),m); // new 20221114 XXX
     return 0;
   }
-  else if (iMsg==WM_KEYDOWN){
+  else if ((iMsg==WM_KEYDOWN)||(iMsg==WM_SYSKEYDOWN)) {
 	  int m=0;
 	  if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
 	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
 	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
     ginputp_keyDown(wParam,m);
-    return 0;
+    if ((iMsg==WM_KEYDOWN)||(wParam==VK_F10))
+    	return 0;
   }
-  else if (iMsg==WM_KEYUP){
+  else if ((iMsg==WM_KEYUP)||(iMsg==WM_SYSKEYUP)) {
 	  int m=0;
 	  if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
 	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
@@ -744,12 +745,14 @@ DWORD WINAPI RenderMain(LPVOID lpParam)
 
 // ######################################################################
 
-static const wchar_t *szAppName = L"giderosGame" ;
+static const char szAppName[256] = "WindowsDesktopTemplate" ;
+static const char szAppTitle[256] = "Win32 Template App Name" ;
 int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPWSTR szCmdLine, int iCmdShow)
 {
   commandLine=us(szCmdLine);
-  PATH_AppName=us(szAppName);
+  PATH_AppName=szAppName;
+  std::wstring wAppName=ws(szAppName);
   //Get standard paths
   {
 	  wchar_t szDir[MAX_PATH]={0, };
@@ -783,14 +786,14 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
   wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
   wndclass.lpszMenuName  = MAKEINTRESOURCE(100);
-  wndclass.lpszClassName = szAppName ;
+  wndclass.lpszClassName = wAppName.c_str();
   wndclass.hIconSm       = NULL ;
   
   RegisterClassEx (&wndclass) ;
 
   hInst=hInstance;
-  hwnd = CreateWindow (szAppName,         // window class name
-		       L"Gideros Win32",     // window caption
+  hwnd = CreateWindow (wAppName.c_str(),         // window class name
+		       ws(szAppTitle).c_str(),     // window caption
 		       WS_OVERLAPPEDWINDOW,     // window style
 		       0,           // initial x position
 		       0,           // initial y position
