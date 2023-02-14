@@ -1,35 +1,10 @@
 --[[
 Load meshes from a wavefromt .obj file
 Usage:
-sprite=loadObj(path,file) : load the file located at path/file
-
+	sprite=loadObj(path,file) : load the file located at path/file
 Returned sprite has a few specific attributes:
-- objs: table referencing all objects within the loaded file
+	- objs: table referencing all objects within the loaded file
 ]]
-
-local function Split(str, delim, maxNb)
-    -- Eliminate bad cases...
-    if string.find(str, delim) == nil then return { str } end
-	if maxNb == nil or maxNb < 1 then
-		maxNb = 0 -- No limit
-	end
-	local result = {}
-	local pat = "(.-)" .. delim .. "()"
-	local nb = 0
-	local lastPos
---	for part, pos in string.gfind(str, pat) do -- doesn't work for me!
-	for part, pos in string.gmatch(str, pat) do
-		if #part>0 then
-			nb = nb + 1
-			result[nb] = part
-			lastPos = pos
-			if nb == maxNb then break end
-		end
-	end
-	-- Handle the last field
-	if nb ~= maxNb then result[nb + 1] = string.sub(str, lastPos) end
-	return result
-end
 
 local function parsemtl(mtls,path,file,prefix,textureFolder,textureMap)
 	if not io.open(path.."/"..file) then
@@ -39,7 +14,7 @@ local function parsemtl(mtls,path,file,prefix,textureFolder,textureMap)
 	local mtl={ texturew=0, textureh=0 }
 	for line in io.lines(path.."/"..file) do
 		line=line:gsub("  ", " ") -- fix for new blender 3.1 inserting 2 spaces instead of 1
-		fld=Split(line," ",10)
+		fld=line:split(" ",10)
 		for i=1,#fld,1 do fld[i]=string.gsub(fld[i], "\r", "") end
 		if (fld[2]~=nil) then fld[2]=string.gsub(fld[2], "\r", "") end
 		if fld[1]=="newmtl" then mtl={} mtls[prefix..fld[2]]=mtl
@@ -97,7 +72,7 @@ function importObj(path,file,imtls,matpfx,textureFolder,textureMap)
 		end
 	end
 	for line in io.lines(path.."/"..file) do
-		fld=Split(line," ")
+		fld=line:split(" ")
 		for i=1,#fld,1 do fld[i]=string.gsub(fld[i], "\r", "") end
 		if fld[1]=="v" then
 			table.insert(v,tonumber(fld[2]))
@@ -114,7 +89,7 @@ function importObj(path,file,imtls,matpfx,textureFolder,textureMap)
 			local itab={}
 			for ii=2,#fld,1 do
 				if (fld[ii]~=nil) and (fld[ii]~="") then
-					local ifl=Split(fld[ii],"/",3)
+					local ifl=fld[ii]:split("/",3)
 					table.insert(itab,{ v=tonumber(ifl[1]), t=tonumber(ifl[2]), n=tonumber(ifl[3])})
 				end
 			end
