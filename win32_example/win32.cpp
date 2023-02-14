@@ -169,6 +169,7 @@ class W32Screen : public Screen {
 	HDC dc;
 	HWND wnd;
 	W32FullScreen fs;
+	bool closed_;
 protected:
 	virtual void setVisible(bool);
 public:
@@ -233,7 +234,7 @@ void W32Screen::setState(int state)
 
 int W32Screen::getState()
 {
-	if (!wnd) return 0;
+	if (!wnd) return CLOSED;
 	int s=NORMAL;
 	if (fs.isFullScreen) s=FULLSCREEN;
 	else
@@ -242,7 +243,7 @@ int W32Screen::getState()
 		if (IsZoomed(wnd)) s=MAXIMIZED;
 	}
 	if (!IsWindowVisible(wnd)) s|=HIDDEN;
-	if (wnd==0) s|=CLOSED;
+	if (closed_) s|=CLOSED;
 	return s;
 }
 
@@ -291,6 +292,7 @@ int W32Screen::getId()
 void W32Screen::setVisible(bool visible)
 {
 	if (!wnd) return;
+	if (visible) closed_=false;
 	ShowWindow(wnd,visible?SW_SHOW:SW_HIDE);
 }
 
@@ -346,17 +348,21 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 
 	  format = ChoosePixelFormat( dc, &pfd );
 
+	  closed_=true;
 	  SetPixelFormat( dc, format, &pfd );
 	  screenMap[wnd]=this;
 }
 
 W32Screen::~W32Screen()
 {
+    DestroyWindow(wnd);
 }
 
 void W32Screen::closed()
 {
-	wnd=0;
+	if (!wnd) return;
+	closed_=true;
+	setContent(NULL);
 }
 
 LRESULT CALLBACK W32Proc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -372,7 +378,6 @@ LRESULT CALLBACK W32Proc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0 ;
   }
   else if (iMsg==WM_CLOSE){
-    DestroyWindow(hwnd);
     screenMap[hwnd]->closed();
     return 0;
   }
