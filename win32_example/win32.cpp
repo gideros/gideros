@@ -499,6 +499,12 @@ void render()
 }
 
 static bool mouseEntered=false;
+static std::vector<int> touch_xs;
+static std::vector<int> touch_ys;
+static std::vector<int> touch_ids;
+static std::vector<int> touch_types;
+static std::vector<float> touch_pressures;
+
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
   static RECT clientRect,winRect;
@@ -643,6 +649,108 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  pt.y = GET_Y_LPARAM(lParam);
 	  ScreenToClient(hwnd, &pt);
 	  ginputp_mouseWheel(pt.x, pt.y, b, GET_WHEEL_DELTA_WPARAM(wParam),m); // new 20221114 XXX
+    return 0;
+  }
+  else if ((iMsg==WM_POINTERUPDATE)||(iMsg==WM_POINTERENTER)||(iMsg==WM_POINTERLEAVE)||
+		  (iMsg==WM_POINTERUP)||(iMsg==WM_POINTERDOWN)||(iMsg==WM_POINTERWHEEL)||
+		  (iMsg==WM_POINTERCAPTURECHANGED)) {
+	  int m=0;
+	  int b=0;
+	  if ((iMsg!=WM_POINTERWHEEL)&&(iMsg!=WM_POINTERCAPTURECHANGED)) {
+		  if (IS_POINTER_FIRSTBUTTON_WPARAM(wParam)) b|=1;
+		  if (IS_POINTER_SECONDBUTTON_WPARAM(wParam)) b|=2;
+		  if (IS_POINTER_THIRDBUTTON_WPARAM(wParam)) b|=4;
+	  }
+
+	  POINT pt;
+	  pt.x = GET_X_LPARAM(lParam);
+	  pt.y = GET_Y_LPARAM(lParam);
+	  ScreenToClient(hwnd, &pt);
+	  int tid=GET_POINTERID_WPARAM(wParam);
+	  bool contact=(iMsg==WM_POINTERCAPTURECHANGED)?false:IS_POINTER_INCONTACT_WPARAM(wParam);
+	  float pressure=0;
+	  int touchType=2;
+	  POINTER_INPUT_TYPE ptype;
+	  if (GetPointerType(tid,&ptype)) {
+		  POINTER_INFO *pi=NULL;
+		  POINTER_TOUCH_INFO pti;
+		  POINTER_PEN_INFO ppi;
+		  switch (ptype) {
+		  case PT_TOUCH: {
+			  if (GetPointerTouchInfo(tid,&pti)) {
+				  pi=&pti.pointerInfo;
+				  if (pti.touchMask&TOUCH_MASK_PRESSURE)
+					  pressure=(1.f/512)*pti.pressure;
+			  }
+			  touchType=0; break;
+		  }
+		  case PT_PEN: {
+			  if (GetPointerPenInfo(tid,&ppi)) {
+				  pi=&ppi.pointerInfo;
+				  if (ppi.penMask&PEN_MASK_PRESSURE)
+					  pressure=(1.f/512)*ppi.pressure;
+			  }
+			  touchType=1; break;
+		  }
+		  }
+		  if (pi) {
+			  if (pi->dwKeyStates&POINTER_MOD_SHIFT) m|=1;
+			  if (pi->dwKeyStates&POINTER_MOD_CTRL) m|=4;
+		  }
+	  }
+
+	  int tloc=-1;
+	  for (size_t i=0;i<touch_xs.size(); i++)
+		  if (touch_ids[i]==tid) tloc=i;
+	  bool pcontact=(tid>=0);
+	  if (contact)
+	  {
+		  if (tloc<0) {
+			  tloc=touch_xs.size();
+			  touch_xs.push_back(pt.x);
+			  touch_ys.push_back(pt.y);
+			  touch_ids.push_back(tid);
+			  touch_pressures.push_back(pressure);
+			  touch_types.push_back(touchType);
+		  }
+		  else {
+			  touch_xs[tloc]=pt.x;
+			  touch_ys[tloc]=pt.y;
+			  touch_pressures[tloc]=pressure;
+		  }
+	  }
+	  else {
+		  if (tloc>=0) {
+			  touch_xs.erase(touch_xs.begin()+tloc);
+			  touch_ys.erase(touch_ys.begin()+tloc);
+			  touch_ids.erase(touch_ids.begin()+tloc);
+			  touch_pressures.erase(touch_pressures.begin()+tloc);
+			  touch_types.erase(touch_types.begin()+tloc);
+			  tloc=-1;
+		  }
+	  }
+
+	  if (iMsg==WM_POINTERCAPTURECHANGED)
+	  {
+		  if (pcontact)
+			  ginputp_touchesCancel(pt.x,pt.y, tid, pressure, touchType, touch_xs.size(), touch_xs.data(), touch_ys.data(), touch_ids.data(), touch_pressures.data(), touch_types.data(),m,b);
+	  }
+	  else if (iMsg==WM_POINTERWHEEL)
+		  ginputp_mouseWheel(pt.x,pt.y,b,GET_WHEEL_DELTA_WPARAM(wParam),m);
+	  else if (iMsg==WM_POINTERUP)
+		  ginputp_touchesEnd(pt.x,pt.y, tid, pressure, touchType, touch_xs.size(), touch_xs.data(), touch_ys.data(), touch_ids.data(), touch_pressures.data(), touch_types.data(),m,b);
+	  else if (iMsg==WM_POINTERDOWN)
+		  ginputp_touchesBegin(pt.x,pt.y, tid, pressure, touchType, touch_xs.size(), touch_xs.data(), touch_ys.data(), touch_ids.data(), touch_pressures.data(), touch_types.data(),m,b);
+	  else if (iMsg==WM_POINTERENTER)
+	      ginputp_mouseEnter(pt.x,pt.y,b,m);
+	  else if (iMsg==WM_POINTERLEAVE)
+	      ginputp_mouseLeave(pt.x,pt.y,m);
+	  else if (iMsg==WM_POINTERUPDATE) {
+		  if (contact)
+			  ginputp_touchesMove(pt.x,pt.y, tid, pressure, touchType, touch_xs.size(), touch_xs.data(), touch_ys.data(), touch_ids.data(), touch_pressures.data(), touch_types.data(),m,b);
+		  else
+			  ginputp_mouseHover(pt.x,pt.y,b,m);
+	  }
     return 0;
   }
   else if ((iMsg==WM_KEYDOWN)||(iMsg==WM_SYSKEYDOWN)) {

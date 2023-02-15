@@ -983,12 +983,13 @@ void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<s
             Sprite *c=children_[i];
             if (c->isVisible_) {
                 Matrix transform=pxform.back() * c->localTransform_.matrix();
-                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, ref, &xformValid);
+                bool xformValid2=xformValid;
+                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, ref, &xformValid2);
                 if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
                     children.push_back(std::pair<int,Sprite *>(parentidx,c));
                     if ((!nosubs)&&(!c->children_.empty())) {
                         pxform.push_back(transform);
-                        c->checkInside(x,y,visible,nosubs,children,pxform,ref,xformValid); //We are recursing so matrix must have been set already
+                        c->checkInside(x,y,visible,nosubs,children,pxform,ref,xformValid2); //We are recursing so matrix must have been set already
                         pxform.pop_back();
                     }
                 }

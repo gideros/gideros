@@ -44,7 +44,7 @@ OBJFILES_player+= win32_example/win32 win32_example/applicationmanager libgid/sr
 INCLUDEPATHS_player+=win32_example
 INCLUDEPATHS_player+=2dsg/gfxbackends/gl2
 INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
-DEFINES_player+=WIN32=1
+DEFINES_player+=WIN32=1 _WIN32_WINNT=0x602 WINVER=0x602
 LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.dll gideros.dll) \
 	-lglew32 \
 	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm -lole32 -luuid
