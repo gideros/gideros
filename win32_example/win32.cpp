@@ -803,19 +803,21 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		return (LRESULT) new W32Screen(application_->getApplication(),hInst);
   }
   else if (iMsg==WM_CLOSE){
+	    printf("WM_CLOSE Called\n");
 	    drawok=false;
 	    Sleep(30);
-		wglMakeCurrent(hDC,hRC);
-    printf("WM_CLOSE Called\n");
 
-      PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
-    
+
+		wglMakeCurrent(hDC,hRC);
+      PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT");
       if (wglSwapIntervalEXT == NULL){
-	printf("Error, no wglSwapIntervalEXT\n");
-	exit(1);
+		printf("Error, no wglSwapIntervalEXT\n");
+		exit(1);
       }
       wglSwapIntervalEXT(0);
-    
+
+	    s_applicationManager->stop();
+
     // application
     delete s_applicationManager;
     DisableOpenGL(hwnd, hDC, hRC);
