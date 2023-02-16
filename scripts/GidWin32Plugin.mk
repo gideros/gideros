@@ -22,7 +22,7 @@ path:
 	mkdir -p $(sort $(dir $(OBJS)))
 
 clean:
-	rm -rf $(BUILD)
+	rm -rf $(OBJS) $(BUILD)
 	
 $(BUILD)/%.o: ../%.cpp
 	@echo "C+ $<"

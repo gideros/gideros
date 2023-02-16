@@ -563,7 +563,7 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             if (cursorIdx==0) cursorIdx=OCR_NORMAL;
             HANDLE cursor=LoadImage(NULL,MAKEINTRESOURCE(cursorIdx),IMAGE_CURSOR,0,0,LR_DEFAULTSIZE|LR_SHARED);
             SetCursor((HCURSOR)cursor);
-            SetClassLongPtr(hwndcopy,GCL_HCURSOR,(LONG_PTR)cursor);
+            SetClassLongPtr(hwndcopy,GCLP_HCURSOR,(LONG_PTR)cursor);
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "windowPosition") == 0)
         {

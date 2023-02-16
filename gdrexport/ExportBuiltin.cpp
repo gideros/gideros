@@ -321,7 +321,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       ctx->templatename = "WindowsDesktopTemplate";
       ctx->templatenamews = "WindowsDesktopTemplate";
       ctx->platform = "Win32";
-      underscore = true;
+      underscore = false;
       break;
 
     case e_WindowsDesktop:

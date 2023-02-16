@@ -249,7 +249,7 @@ int W32Screen::getState()
 
 void W32Screen::setTitle(const char *title)
 {
-	SetWindowText(hwndcopy,ws(title).c_str());
+	SetWindowText(wnd,ws(title).c_str());
 }
 
 void W32Screen::getMaxSize(int &w,int &h)

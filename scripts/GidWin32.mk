@@ -115,16 +115,17 @@ win32.libs.install: win32.libs
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "win32" ]; then cd win32; ROOT=$$R/$(ROOT) RELEASE=$$R/$(RELEASE) $(MINGWMAKE) clean; fi
 
 %.win32.plugin.install:
-	@if [ -d "$(ROOT)/plugins/$*/source/win32" ]; then echo -n "Installing" $*; \
+	@if [ -d "$(ROOT)/plugins/$*/source/win32" ]; then echo "Installing" $*; \
 		mkdir -p $(RELEASE)/"All Plugins"/$*/bin/win32; \
 		cp $(ROOT)/plugins/$*/source/win32/Build/*.dll $(RELEASE)/"All Plugins"/$*/bin/win32; \
 		strip $(RELEASE)/"All Plugins"/$*/bin/win32/*.dll; \
-		if [ -n "$(findstring $(notdir $*),$(PLUGINS_DEFAULT))" ]; then \
+		fi
+#		if [ -n "$(findstring $(notdir $*),$(PLUGINS_DEFAULT))" ]; then \
 			echo " DEFAULT"; mkdir -p $(WIN32_RELEASE)/plugins; \
 			cp $(ROOT)/plugins/$*/source/win32/Build/*.dll $(WIN32_RELEASE)/plugins; \
-	else echo ""; fi; fi
+	else echo ""; fi
 
-win32.install: win32.libs.install win32.plugins.install win32.app
+win32.install: win32.libs.install win32.app win32.plugins.install
 	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/WindowsDesktopTemplate.exe
 	cp $(WIN32_BUILDDIR)/player-console.exe $(WIN32_RELEASE)/WindowsDesktopTemplate-Console.exe
 	cp win32_example/cacert.pem $(WIN32_RELEASE)
@@ -132,7 +133,7 @@ win32.install: win32.libs.install win32.plugins.install win32.app
 	cp $(WIN32_BIN)/{libcurl*,libidn*,libnghttp*,libbrotli*,libpsl*,libssh*,libiconv*,libintl*,libzstd,zlib1,libunistring*,libssl*,libcrypto*}.dll $(WIN32_RELEASE)
 	#cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
 	#cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
-	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(WIN32_BIN)/$$f.dll $(WIN32_RELEASE); done
+	for f in libgcc_s_seh-1 libstdc++-6 libwinpthread-1; do cp $(WIN32_BIN)/$$f.dll $(WIN32_RELEASE); done
 	strip $(addprefix $(WIN32_RELEASE)/,WindowsDesktopTemplate.exe WindowsDesktopTemplate-Console.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll openal.dll mp3.dll)
 
 win32.clean: win32.plugins.clean
