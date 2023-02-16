@@ -211,6 +211,7 @@ static Server* g_server = NULL;
 QString GLCanvas::appPackage;
 bool GLCanvas::EnableVSYNC=false;
 bool GLCanvas::TabletActive=false;
+bool GLCanvas::TabletPress=false;
 
 static void printToServer(const char* str, int len, void* data) {
     G_UNUSED(data);
@@ -257,6 +258,7 @@ GLCanvas::GLCanvas(QWidget *parent) :
     for( int i=1; i<=4; ++i )
         mouseButtonPressed_[i] = false;
     setMouseTracking(true);
+    setTabletTracking(true);
 	//setFocusPolicy(Qt::WheelFocus);
 
 	/*
@@ -1267,13 +1269,17 @@ void GLCanvas::tabletEvent(QTabletEvent* event) {
 
 
     if(event->type() == QEvent::TabletPress){
-        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->button());
+        TabletPress=true;
+        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->buttons());
 
     }else if(event->type() == QEvent::TabletMove){
-        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->buttons());
-
+        if (TabletPress)
+            ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->buttons());
+        else
+            ginputp_mouseHover(xs[0], ys[0],0, m);
     }else if(event->type() == QEvent::TabletRelease){
-        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->button());
+        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m,event->buttons());
+        if (event->buttons()==0) TabletPress=false;
     }
     event->accept();
 }

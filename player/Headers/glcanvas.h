@@ -43,6 +43,7 @@ public:
     static QString appPackage;
     static bool EnableVSYNC;
     static bool TabletActive;
+    static bool TabletPress;
 
 private slots:
 	void onTimer();
