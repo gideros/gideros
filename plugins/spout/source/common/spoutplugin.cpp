@@ -7,10 +7,56 @@
 #include "lua.h"
 //#include "luautil.h"
 #include "lauxlib.h"
+
+#ifdef QT_CORE_LIB
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
+#define GLCALL_CHECK if (!QOpenGLContext::currentContext()) return;
 #define GLCALL_INIT QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
 #define GLCALL glFuncs->
+#define GLECALL_INIT QOpenGLExtraFunctions *gleFuncs = QOpenGLContext::currentContext()->extraFunctions();
+#define GLECALL gleFuncs->
+#define OPENGL_ES
+#elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#ifdef GIDEROS_GL1
+    #include <OpenGLES/ES1/gl.h>
+    #include <OpenGLES/ES1/glext.h>
+#else
+	#include <OpenGLES/ES3/gl.h>
+	#include <OpenGLES/ES3/glext.h>
+#endif
+#define OPENGL_ES
+#elif TARGET_OS_OSX
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#elif __ANDROID__
+#ifdef GIDEROS_GL1
+    #include <GLES/gl.h>
+    #include <GLES/glext.h>
+#else
+    #include <GLES3/gl3.h>
+    #include <GLES3/gl3ext.h>
+#endif
+#define OPENGL_ES
+#elif WINSTORE
+#include "dxcompat.hpp"
+#define OPENGL_DESKTOP
+#elif EMSCRIPTEN
+#define	OPENGL_ES
+    #include <GLES3/gl3.h>
+//    #include <GLES3/gl3ext.h>
+#elif RASPBERRY_PI
+    #include <GLES3/gl3.h>
+//    #include <GLES3/gl3ext.h>
+#define OPENGL_ES
+#else
+#include <GL/glew.h>
+#define OPENGL_DESKTOP
+#define GLCALL_INIT
+#define GLCALL
+#endif
+
 #ifndef G_UNUSED
 #define G_UNUSED(x) (void)(x)
 #endif

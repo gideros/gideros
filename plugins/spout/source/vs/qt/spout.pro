@@ -13,7 +13,7 @@ INCLUDEPATH += ../../../../../2dsg
 INCLUDEPATH += ../../../../../2dsg/gfxbackends
 
 SOURCES += \
-    spoutplugin.cpp
+    ../../common/spoutplugin.cpp
 
 HEADERS += 
 

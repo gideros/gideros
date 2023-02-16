@@ -28,7 +28,7 @@ endif
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera 
 PLUGINS_WINONLY=spout steam luamidi
 PLUGINS_MACONLY=steam luamidi
-PLUGINS_WIN32=lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui cute_c2
+PLUGINS_WIN32=spout lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui cute_c2
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts megacool map share storereview
