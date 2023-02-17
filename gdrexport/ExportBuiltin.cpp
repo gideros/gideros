@@ -287,7 +287,7 @@ static QString quote(const QString &str) {
 void ExportBuiltin::doExport(ExportContext *ctx)
 {
     QString templatedir;
-    bool underscore=false;
+    Utilities::RemoveSpaceMode underscore=Utilities::NODIGIT;
     bool needGApp=false;
 
     switch (ctx->deviceFamily)
@@ -297,7 +297,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       ctx->templatename = "iOS Template";
       ctx->templatenamews = "iOS_Template";
       ctx->platform = "iOS";
-      underscore = true;
+      underscore = Utilities::IDENTIFIER;
       break;
 
     case e_Android:
@@ -305,7 +305,6 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 	  ctx->platform = "AndroidStudio";
       ctx->templatename = "Android Template";
       ctx->templatenamews = "AndroidTemplate";
-      underscore = false;
       break;
 
     case e_WinRT:
@@ -313,7 +312,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       ctx->templatename = "WinRT Template";
       ctx->templatenamews = "WinRTTemplate";
       ctx->platform = "WinRT";
-      underscore = true;
+      underscore = Utilities::IDENTIFIER;
       break;
 
     case e_Win32:
@@ -321,7 +320,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       ctx->templatename = "WindowsDesktopTemplate";
       ctx->templatenamews = "WindowsDesktopTemplate";
       ctx->platform = "Win32";
-      underscore = false;
+      underscore = Utilities::UNDERSCORES;
       break;
 
     case e_WindowsDesktop:
@@ -329,7 +328,6 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ctx->templatename = "WindowsDesktopTemplate";
         ctx->templatenamews = "WindowsDesktopTemplate";
         ctx->platform = "WindowsDesktop";
-        underscore = false;
         break;
 
     case e_MacOSXDesktop:
@@ -337,10 +335,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ctx->templatename = "MacOSXDesktopTemplate";
         ctx->templatenamews = "MacOSXDesktopTemplate";
         ctx->platform = "MacOSXDesktop";
-        underscore = false;
         break;
     case e_GApp:
-        underscore = false;
         needGApp = true;
         ctx->platform = "GApp";
         break;
@@ -349,7 +345,6 @@ void ExportBuiltin::doExport(ExportContext *ctx)
     	ctx->templatename = "Html5";
     	ctx->templatenamews = "Html5";
         ctx->platform = "Html5";
-        underscore = false;
         needGApp = true;
         break;
     default:

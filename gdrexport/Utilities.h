@@ -24,7 +24,13 @@
 
 class Utilities {
 public:
-	static QString RemoveSpaces(QString text,bool allowUnderscore);
+    enum RemoveSpaceMode {
+        NODIGIT=0, //Remove spaces and digits
+        ALLOWDIGIT=1, //Remove spaces but allow digits
+        IDENTIFIER=2, //Replace spaces with underscores, prevent digits at first character
+        UNDERSCORES=3, //Allow digits, replace other space like with underscoes
+    };
+    static QString RemoveSpaces(QString text,RemoveSpaceMode mode);
 	static bool bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char *m,int ms,const unsigned char *r);
 	static int bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs);
 	static void fileCopy(	const QString& srcName,

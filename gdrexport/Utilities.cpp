@@ -15,10 +15,10 @@
 #include <unistd.h>
 #endif
 
-QString Utilities::RemoveSpaces(QString text,bool allowUnderscore)
+QString Utilities::RemoveSpaces(QString text,RemoveSpaceMode mode)
 {
 	QString res;
-    if (allowUnderscore)
+    if ((mode==IDENTIFIER)||(mode==UNDERSCORES))
     {
     	res=text;
         for (int i = 0; i < res.size(); ++i)
@@ -29,7 +29,7 @@ QString Utilities::RemoveSpaces(QString text,bool allowUnderscore)
             bool upper = ('A' <= c) && (c <= 'Z');
             bool lower = ('a' <= c) && (c <= 'z');
 
-            if ((!number && !upper && !lower) || (number && i == 0))
+            if ((!number && !upper && !lower) || ((mode==IDENTIFIER) && number && i == 0))
             	res[i] = QChar('_');
         }
     }
@@ -48,7 +48,7 @@ QString Utilities::RemoveSpaces(QString text,bool allowUnderscore)
             if (upper || lower)
                 letter = true;
 
-            if ((number || upper || lower) && letter)
+            if (letter || (number && (mode==ALLOWDIGIT)))
             	res += text[i];
         }
     }

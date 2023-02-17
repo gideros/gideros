@@ -52,7 +52,7 @@ ExportXml::ExportXml() {
 void ExportXml::SetupProperties(ExportContext *ctx)
 {
 	this->ctx = ctx;
-	ctx->basews = Utilities::RemoveSpaces(ctx->base, false);
+    ctx->basews = Utilities::RemoveSpaces(ctx->base, Utilities::NODIGIT);
 	if (ctx->props.empty())
 	{
 	//Fill properties: System
@@ -582,7 +582,7 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
 	}
 
 	ctx->templatename = name;
-    ctx->templatenamews = Utilities::RemoveSpaces(name, false); //TODO underscores or not ?
+    ctx->templatenamews = Utilities::RemoveSpaces(name, Utilities::NODIGIT); //TODO underscores or not ?
     ExportCommon::exportInfo("Template: %s from [%s] to [%s]\n", name.toStdString().c_str(),
             path.toStdString().c_str(), dest.toStdString().c_str());
 
