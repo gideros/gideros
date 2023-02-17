@@ -135,6 +135,7 @@ win32.install: win32.libs.install win32.app win32.plugins.install
 	#cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
 	for f in libgcc_s_seh-1 libstdc++-6 libwinpthread-1; do cp $(WIN32_BIN)/$$f.dll $(WIN32_RELEASE); done
 	strip $(addprefix $(WIN32_RELEASE)/,WindowsDesktopTemplate.exe WindowsDesktopTemplate-Console.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll openal.dll mp3.dll)
+	mkdir -p $(WIN32_RELEASE)/plugins
 
 win32.clean: win32.plugins.clean
 	rm -rf $(WIN32_BUILDDIR) 
