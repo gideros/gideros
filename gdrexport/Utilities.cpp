@@ -36,7 +36,7 @@ QString Utilities::RemoveSpaces(QString text,RemoveSpaceMode mode)
     else
     {
         // 1234 Hebe Gube 456 --> HebeGube456
-        bool letter = false;
+        bool letter = (mode==ALLOWDIGIT);
         for (int i = 0; i < text.size(); ++i)
         {
             char c = text[i].toLatin1();
@@ -48,7 +48,7 @@ QString Utilities::RemoveSpaces(QString text,RemoveSpaceMode mode)
             if (upper || lower)
                 letter = true;
 
-            if (letter || (number && (mode==ALLOWDIGIT)))
+            if ((upper || lower || number) && letter)
             	res += text[i];
         }
     }

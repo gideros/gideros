@@ -25,8 +25,8 @@
 class Utilities {
 public:
     enum RemoveSpaceMode {
-        NODIGIT=0, //Remove spaces and digits
-        ALLOWDIGIT=1, //Remove spaces but allow digits
+        NODIGIT=0, //Remove spaces and first digits
+        ALLOWDIGIT=1, //Remove spaces but allow first digits
         IDENTIFIER=2, //Replace spaces with underscores, prevent digits at first character
         UNDERSCORES=3, //Allow digits, replace other space like with underscoes
     };
