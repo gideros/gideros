@@ -12,6 +12,7 @@
 class WinRTExport {
 public:
 	static void updateWinRTProject(QString projfile,ExportContext *ctx);
+    static QByteArray makeIconFile(QImage *image, QColor fill, int mode);
 };
 
 #endif /* GDREXPORT_WINRTEXPORT_H_ */

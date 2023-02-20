@@ -16,6 +16,7 @@
 #include <QProcess>
 #include <QImage>
 #include <QPainter>
+#include <QBuffer>
 #include <QCoreApplication>
 #include "filedownloader.h"
 #include "cendian.h"
@@ -64,9 +65,89 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 	ctx->replaceList.clear();
 }
 
+QByteArray ExportCommon::resizeImageData(QImage *image, int width, int height,
+        int quality, bool withAlpha, QColor fill, int mode, bool paletted) {
+    Q_UNUSED(quality);
+    int iwidth = image->width(); //image width
+    int iheight = image->height(); //image height
+    int rwidth = width; //resampled width
+    int rheight = height; //resampled height
+
+    float k_w = fabs((float) width / (float) iwidth); //width scaling coef
+    float k_h = fabs((float) height / (float) iheight); //height scaling coef
+    int dst_x = 0;
+    int dst_y = 0;
+    bool redraw = false;
+    int sx = 0;
+    int sy = 0;
+    int sw = -1;
+    int sh = -1;
+
+    if (mode == 0) {  //show all
+        //use smallest
+        if (k_h < k_w) {
+            rwidth = round((iwidth * height) / iheight);
+        } else {
+            rheight = round((iheight * width) / iwidth);
+        }
+
+        //new width is bigger than existing
+        if (width > rwidth) {
+            dst_x = (width - rwidth) / 2;
+            redraw = true;
+        }
+
+        //new height is bigger than existing
+        if (height > rheight) {
+            dst_y = (height - rheight) / 2;
+            redraw = true;
+        }
+    } else if (mode == 1) {  //crop
+        if (k_h < k_w) {
+            rheight = round((iheight * width) / iwidth);
+        } else {
+            rwidth = round((iwidth * height) / iheight);
+        }
+
+        if (width < rwidth) {
+            sx = (rwidth - width) / 2;
+            sw = width;
+            redraw = true;
+        }
+
+        if (height < rheight) {
+            sy = (rheight - height) / 2;
+            sh = height;
+            redraw = true;
+        }
+    }
+
+    QImage xform = image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    if (redraw)  //(dst_x || dst_y)
+    {
+        QImage larger(width, height, QImage::Format_ARGB32);
+        larger.fill(fill);
+        QPainter painter(&larger);
+        painter.drawImage(dst_x, dst_y, xform, sx, sy, sw, sh);
+        painter.end();
+        xform = larger;
+    }
+    if (!withAlpha)
+        xform = xform.convertToFormat(QImage::Format_RGB888);
+    if (paletted)
+        xform = xform.convertToFormat(QImage::Format_Indexed8);
+    QBuffer output;
+    output.open(QFile::OpenModeFlag::WriteOnly);
+    xform.save(&output, "png", 0); //Use maximumt compression for PNG, not quality since png is lossless anyhow
+    output.close();
+    return output.buffer();
+}
+
 void ExportCommon::resizeImage(QImage *image, int width, int height,
         QString output, int quality, bool withAlpha, QColor fill, int mode, bool paletted) {
-	int iwidth = image->width(); //image width
+    Q_UNUSED(quality);
+    int iwidth = image->width(); //image width
 	int iheight = image->height(); //image height
 	int rwidth = width; //resampled width
 	int rheight = height; //resampled height
@@ -161,12 +242,41 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 						src.toStdString().c_str());
 		}
 	}
-	if (ctx->appicon->isNull())
-		return false;
-	exportInfo("Generating app icon (%dx%d)\n", width, height);
-	resizeImage(ctx->appicon, width, height,
-            ctx->outputDir.absoluteFilePath(output), 100, withAlpha, paletted);
-	return true;
+    if (ctx->appicon->isNull())
+        return false;
+    exportInfo("Generating app icon (%dx%d)\n", width, height);
+    resizeImage(ctx->appicon, width, height,
+                ctx->outputDir.absoluteFilePath(output), 100, withAlpha, paletted);
+    return true;
+}
+
+QByteArray ExportCommon::appIconData(ExportContext *ctx, int width, int height,
+        bool withAlpha, bool paletted) {
+    if (ctx->appicon == NULL) {
+        QDir path(QFileInfo(ctx->projectFileName_).path());
+        if (ctx->properties.app_icon.isEmpty())
+            ctx->appicon = new QImage("Tools/gideros-mobile-icon.png");
+        else {
+            QString appicon = ctx->properties.app_icon;
+            for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
+                const QString& s1 = ctx->fileQueue[i].first;
+                const QString& s2 = ctx->fileQueue[i].second;
+                if (s1 == appicon) {
+                    appicon = s2;
+                    break;
+                }
+            }
+            QString src = path.absoluteFilePath(appicon);
+            ctx->appicon = new QImage(src);
+            if (ctx->appicon->isNull())
+                fprintf(stderr, "App icon %s not found or not readable\n",
+                        src.toStdString().c_str());
+        }
+    }
+    if (ctx->appicon->isNull())
+        return QByteArray();
+    exportInfo("Generating app icon (%dx%d)\n", width, height);
+    return resizeImageData(ctx->appicon, width, height, 100, withAlpha, paletted);
 }
 
 bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height,

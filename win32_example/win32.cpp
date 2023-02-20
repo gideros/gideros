@@ -310,7 +310,7 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 	  wndclass.cbClsExtra    = 0 ;
 	  wndclass.cbWndExtra    = 0 ;
 	  wndclass.hInstance     = hInstance ;
-	  wndclass.hIcon         = NULL;
+	  wndclass.hIcon         = LoadIcon(hInstance,MAKEINTRESOURCE(1));
 	  wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
 	  wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
 	  wndclass.lpszMenuName  = MAKEINTRESOURCE(100);
@@ -906,7 +906,7 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   wndclass.cbClsExtra    = 0 ;
   wndclass.cbWndExtra    = 0 ;
   wndclass.hInstance     = hInstance ;
-  wndclass.hIcon         = NULL;
+  wndclass.hIcon         = LoadIcon(hInstance,MAKEINTRESOURCE(1));
   wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
   wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
   wndclass.lpszMenuName  = MAKEINTRESOURCE(100);

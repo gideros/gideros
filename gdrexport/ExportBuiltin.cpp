@@ -163,6 +163,30 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     else if(ctx->deviceFamily == e_Win32){
     	ctx->replaceList[0] << qMakePair(bytepad(ctx->templatenamews.toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
     	ctx->replaceList[0] << qMakePair(bytepad(QString("Win32 Template App Name").toUtf8(),256), bytepad(ctx->appName.toUtf8(),256));
+        const unsigned char icoHdr[]={
+            0x89,0x50, 0x4E,0x47,0xD,0xA, 0x1A,0x0A,0,0,
+            0,0xD,0x49,0x48, 0x44,0x52,0,0, 1,0,0,0, 1,0,8,6,
+            0,0,0,0x5C, 0x72,0xA8,0x66,0,0,0x20,0,0x49, 0x44,0x41,0x54,0x78,
+            '$','G','I','D', 'E','R','O','S', '$','A','P','P', '$','I','C','O',
+            'N','$','S','T','U','B','$', '1',
+        };
+        const int isize[]={256,64,32,16};
+        const int imax[]={203776,28672,16384,13312};
+        QByteArray ipoint=QByteArray((const char *)icoHdr,sizeof(icoHdr));
+
+        for (int in=0;in<4;in++) {
+            QByteArray ico=ExportCommon::appIconData(ctx,isize[in],isize[in]);
+            if (!ico.isEmpty()) {
+                if (ico.size()>imax[in]) {
+                    ExportCommon::exportError("Icon file too large (%d): %d > %d\n",isize[in],ico.size(),imax[in]);
+                }
+                else {
+                    ipoint[ipoint.size()-1]=('1'+in);
+                    ctx->replaceList[0] << qMakePair(bytepad(ipoint,imax[in]), bytepad(ico,imax[in]));
+                }
+            }
+        }
+        ctx->replaceList[0] << qMakePair(bytepad(ctx->templatenamews.toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());
