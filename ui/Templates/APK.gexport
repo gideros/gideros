@@ -37,9 +37,13 @@ if lfs.attributes(java,"mode")~="directory" then
 			end
 		end
 		if pcall(getPathAndroidStudio) and rPathData then
-			java = rPathData.."/jre"
 		else
-			java="C:/Program Files/Android/Android Studio/jre"
+			rPathData="C:/Program Files/Android/Android Studio"
+		end
+		--Check JBR first (new electric eel android studio)
+		java = rPathData.."/jbr"
+		if not lfs.attributes(java) then
+			java = rPathData.."/jre"
 		end
 	else
 		java="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/jre"
