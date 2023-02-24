@@ -64,12 +64,16 @@ int main(int argc, char *argv[]){
     int vsync=settings.value("vsync",0).toInt();
     GLCanvas::EnableVSYNC=vsync;
     QSurfaceFormat formatGL;
-	formatGL.setSwapInterval(vsync?(60/fps):0);
+    formatGL.setSwapInterval(vsync?(60/fps):0);
 	formatGL.setStencilBufferSize(8);
 	formatGL.setDepthBufferSize(16);
     formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    //formatGL.setProfile(QSurfaceFormat::CoreProfile);
+    int msaa=settings.value("msaa",0).toInt();
+    if (msaa)
+        formatGL.setSamples(msaa);
     //formatGL.setColorSpace(QSurfaceFormat::sRGBColorSpace);
-	QSurfaceFormat::setDefaultFormat(formatGL);
+    QSurfaceFormat::setDefaultFormat(formatGL);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 

@@ -26,7 +26,7 @@ VOut VShader(float4 position : vVertex, float4 color : vColor, float4 texcoord :
 	float ca=cos(angle);
 	float sa=sin(angle);
 	float2x2 rot=float2x2(ca,sa,-sa,ca);
-	rad=mul(rad,rot);
+	rad=mul(rot,rad);
 	output.position = mul(vMatrix, position + float4(rad, 0.0, 0.0));
 	output.color = color*vfColor;
 	output.texcoord = texcoord.xy;

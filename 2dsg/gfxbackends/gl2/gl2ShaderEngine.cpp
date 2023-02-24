@@ -391,6 +391,13 @@ void ogl2ShaderEngine::reset(bool reinit) {
 	GLCALL glDisable(GL_CULL_FACE);
 	GLCALL glDepthFunc(GL_LEQUAL);
 
+#ifdef GL_MULTISAMPLE
+    GLCALL glEnable(GL_MULTISAMPLE);
+#endif
+#ifdef GL_LINE_SMOOTH
+    GLCALL glEnable(GL_LINE_SMOOTH);
+#endif
+
 #ifndef PREMULTIPLIED_ALPHA
 #error PREMULTIPLIED_ALPHA is not defined
 #endif
@@ -823,11 +830,14 @@ void ogl2ShaderEngine::getProperties(std::map<std::string,std::string> &props)
 	{ std::ostringstream s; GLCALL glGetShaderPrecisionFormat(GL_FRAGMENT_SHADER,GL_HIGH_FLOAT,range,precision);
 	s << precision[0]; props["fragment_float_high_precision"]=s.str(); }
 #endif
-	{ std::ostringstream s; GLCALL glGetIntegerv(GL_MAX_TEXTURE_SIZE,range);
-	s << range[0]; props["max_texture_size"]=s.str(); }
-	props["version"]=(const char *) GLCALL glGetString(GL_VERSION);
+    { std::ostringstream s; GLCALL glGetIntegerv(GL_MAX_TEXTURE_SIZE,range);
+    s << range[0]; props["max_texture_size"]=s.str(); }
+    { std::ostringstream s; range[0]=0; GLCALL glGetIntegerv(GL_SAMPLES,range);
+    s << range[0]; props["msaa"]=s.str(); }
+    props["version"]=(const char *) GLCALL glGetString(GL_VERSION);
 	props["glsl_version"]=(const char *) GLCALL glGetString(GL_SHADING_LANGUAGE_VERSION);
 	props["vendor"]=(const char *) GLCALL glGetString(GL_VENDOR);
 	props["renderer"]=(const char *) GLCALL glGetString(GL_RENDERER);
-	props["extensions"]=(const char *) GLCALL glGetString(GL_EXTENSIONS);
+    const char *ss=(const char *) GLCALL glGetString(GL_EXTENSIONS);
+    props["extensions"]=ss?ss:"";
 }
