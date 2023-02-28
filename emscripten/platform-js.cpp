@@ -158,7 +158,24 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 	std::vector<gapplication_Variant> rets;
 	gapplication_Variant r;
 	if (!set) {
-		if (!strcmp(what,"currentUrl"))
+		if (strcmp(what, "screenSize") == 0)
+		{
+			int width,height;
+			emscripten_get_screen_size(&width,&height);
+			double ratio=emscripten_get_device_pixel_ratio();
+			r.type=gapplication_Variant::DOUBLE;
+			r.d=ratio*width;
+			rets.push_back(r);
+			r.d=ratio*height;
+			rets.push_back(r);
+			/*------------------------------------------------------------------*/
+        }else if (strcmp(what, "windowTitle") == 0)
+        {
+            r.type=gapplication_Variant::STRING;
+            r.s=emscripten_get_window_title();
+            rets.push_back(r);
+            /*------------------------------------------------------------------*/
+		} else if (!strcmp(what,"currentUrl"))
 		{
 			r.type=gapplication_Variant::STRING;
 			r.s=currentUrl;
@@ -172,6 +189,11 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 			EM_ASM_({
 				document.getElementById("canvas").style.cursor=UTF8ToString($0);
 			},mapped.c_str());
+        }else if (strcmp(what, "windowTitle") == 0)
+        {
+            if (args.size()>=1)
+                emscripten_set_window_title(args[0].s.c_str());
+            /*------------------------------------------------------------------*/
 		}
 	}
 	return rets;

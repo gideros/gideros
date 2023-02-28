@@ -26,6 +26,9 @@ using namespace Windows::Security::ExchangeActiveSyncProvisioning;
 using namespace Windows::System::Profile;
 using namespace Windows::Devices::Input;
 using namespace Windows::UI::ViewManagement;
+using namespace Windows::Graphics::Display;
+using namespace Windows::ApplicationModel::Core;
+
 
 std::wstring utf8_ws(const char *str);
 std::string utf8_us(const wchar_t *str);
@@ -317,7 +320,21 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 	std::vector<gapplication_Variant> rets;
 	gapplication_Variant r;
 	if (!set) {
-		if ((strcmp(what, "openDirectoryDialog") == 0)
+		if (strcmp(what, "screenSize") == 0)
+		{
+			double width,height;
+			gdr_dispatchUi([&] {
+				DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+				width=dinfo->ScreenWidthInRawPixels;
+				height=dinfo->ScreenHeightInRawPixels;
+			}, true);
+			r.type=gapplication_Variant::DOUBLE;
+			r.d=width;
+			rets.push_back(r);
+			r.d=height;
+			rets.push_back(r);
+			/*------------------------------------------------------------------*/
+		}else if ((strcmp(what, "openDirectoryDialog") == 0)
 			|| (strcmp(what, "openFileDialog") == 0)
 			|| (strcmp(what, "saveFileDialog") == 0))
 		{
