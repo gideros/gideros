@@ -117,7 +117,7 @@ int buffer_meth_receive(lua_State *L, p_buffer buf) {
     /* initialize buffer with optional extra prefix 
      * (useful for concatenating previous partial results) */
     luaL_buffinit(L, &b);
-    luaL_addlstring(&b, part, size);
+    luaL_addlstring(&b, part, size,-1);
     /* receive new patterns */
     if (!lua_isnumber(L, 2)) {
         const char *p= luaL_optstring(L, 2, "*l");
@@ -194,7 +194,7 @@ static int recvraw(p_buffer buf, size_t wanted, luaL_Buffer *b) {
         size_t count; const char *data;
         err = buffer_get(buf, &data, &count);
         count = MIN(count, wanted - total);
-        luaL_addlstring(b, data, count);
+        luaL_addlstring(b, data, count,-1);
         buffer_skip(buf, count);
         total += count;
         if (total >= wanted) break;
@@ -212,7 +212,7 @@ static int recvall(p_buffer buf, luaL_Buffer *b) {
         const char *data; size_t count;
         err = buffer_get(buf, &data, &count);
         total += count;
-        luaL_addlstring(b, data, count);
+        luaL_addlstring(b, data, count,-1);
         buffer_skip(buf, count);
     }
     if (err == IO_CLOSED) {

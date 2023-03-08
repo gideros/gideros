@@ -540,7 +540,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_CommentDirective);
 
     frontend=new Luau::Frontend(fileResolver, &configResolver, frontendOptions);
-    Luau::registerBuiltinTypes(frontend->typeChecker);
+    Luau::registerBuiltinTypes(*frontend);
 
     std::stringstream gid_api;
     gid_api << "export type Shader = any\n";

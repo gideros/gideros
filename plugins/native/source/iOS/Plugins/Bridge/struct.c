@@ -187,7 +187,7 @@ static void putinteger (lua_State *L, luaL_Buffer *b, int arg, int endian,
       value >>= 8;
     }
   }
-  luaL_addlstring(b, buff, size);
+  luaL_addlstring(b, buff, size, -1);
 }
 
 
@@ -231,13 +231,13 @@ static int b_pack (lua_State *L) {
       case 'f': {
         float f = (float)luaL_checknumber(L, arg++);
         correctbytes((char *)&f, size, h.endian);
-        luaL_addlstring(&b, (char *)&f, size);
+        luaL_addlstring(&b, (char *)&f, size, -1);
         break;
       }
       case 'd': {
         double d = luaL_checknumber(L, arg++);
         correctbytes((char *)&d, size, h.endian);
-        luaL_addlstring(&b, (char *)&d, size);
+        luaL_addlstring(&b, (char *)&d, size, -1);
         break;
       }
       case 'c': case 's': {
@@ -245,7 +245,7 @@ static int b_pack (lua_State *L) {
         const char *s = luaL_checklstring(L, arg++, &l);
         if (size == 0) size = l;
         luaL_argcheck(L, l >= (size_t)size, arg, "string too short");
-        luaL_addlstring(&b, s, size);
+        luaL_addlstring(&b, s, size, -1);
         if (opt == 's') {
           luaL_addchar(&b, '\0');  /* add zero at the end */
           size++;

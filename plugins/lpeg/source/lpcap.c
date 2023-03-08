@@ -378,7 +378,7 @@ static void stringcap (luaL_Buffer *b, CapState *cs) {
       if (l > n)
         luaL_error(cs->L, "invalid capture index (%d)", l);
       else if (cps[l].isstring)
-        luaL_addlstring(b, cps[l].u.s.s, cps[l].u.s.e - cps[l].u.s.s);
+        luaL_addlstring(b, cps[l].u.s.s, cps[l].u.s.e - cps[l].u.s.s,-1);
       else {
         Capture *curr = cs->cap;
         cs->cap = cps[l].u.cp;  /* go back to evaluate that nested capture */
@@ -397,18 +397,18 @@ static void stringcap (luaL_Buffer *b, CapState *cs) {
 static void substcap (luaL_Buffer *b, CapState *cs) {
   const char *curr = cs->cap->s;
   if (isfullcap(cs->cap))  /* no nested captures? */
-    luaL_addlstring(b, curr, cs->cap->siz - 1);  /* keep original text */
+    luaL_addlstring(b, curr, cs->cap->siz - 1,-1);  /* keep original text */
   else {
     cs->cap++;  /* skip open entry */
     while (!isclosecap(cs->cap)) {  /* traverse nested captures */
       const char *next = cs->cap->s;
-      luaL_addlstring(b, curr, next - curr);  /* add text up to capture */
+      luaL_addlstring(b, curr, next - curr,-1);  /* add text up to capture */
       if (addonestring(b, cs, "replacement"))
         curr = closeaddr(cs->cap - 1);  /* continue after match */
       else  /* no capture value */
         curr = next;  /* keep original text in final result */
     }
-    luaL_addlstring(b, curr, cs->cap->s - curr);  /* add last piece of text */
+    luaL_addlstring(b, curr, cs->cap->s - curr,-1);  /* add last piece of text */
   }
   cs->cap++;  /* go to next capture */
 }

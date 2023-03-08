@@ -4,7 +4,7 @@
 int StateToState::bufferWriter(lua_State* L, const void* p, size_t size, void* ud)
 {
     (void)L; // suppress annoying unused variable warning
-    luaL_addlstring(static_cast<luaL_Buffer*>(ud), static_cast<const char*>(p), size);
+    luaL_addlstring(static_cast<luaL_Buffer*>(ud), static_cast<const char*>(p), size, -1);
 	return 0;
 }
 
