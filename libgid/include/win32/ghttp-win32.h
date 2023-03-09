@@ -1,45 +1,16 @@
-#ifndef GHTTPQT_H
-#define GHTTPQT_H
-
-#include <QObject>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-class QAuthenticator;
-class QNetworkProxy;
-#include <deque>
-#include <map>
+#ifndef GHTTP_W32_H
+#define GHTTP_W32_H
 
 #include <ghttp.h>
 
-class HTTPManager : public QObject
-{
-    Q_OBJECT
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-public:
-    HTTPManager();
-    ~HTTPManager();
+G_API void ghttp_InitCA(std::string cafolder);
 
-    g_id Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata);
-    g_id Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata);
-    g_id Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata);
-    g_id Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata);
-    void Close(g_id id);
-    void CloseAll();
-
-private slots:
-    void finished(QNetworkReply *reply);
-    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
-
-private:
-    QNetworkAccessManager *manager_;
-
-    struct NetworkReply
-    {
-        g_id id;
-        gevent_Callback callback;
-        void *udata;
-    };
-    std::map<QNetworkReply*, NetworkReply> map_;
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif

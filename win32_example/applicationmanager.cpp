@@ -9,7 +9,7 @@
 #include <platformutil.h>
 #include <vector>
 #include <bytebuffer.h>
-#include <ghttp.h>
+#include <ghttp-win32.h>
 #include <limits.h>
 
 #include <platform.h>
@@ -468,6 +468,7 @@ ApplicationManager::ApplicationManager() {
 
 		// http
 		ghttp_Init();
+		ghttp_InitCA(PATH_Executable);
 
 		// ui
 		gui_init();

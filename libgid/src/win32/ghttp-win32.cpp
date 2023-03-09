@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include <map>
-#include <ghttp.h>
+#include <ghttp-win32.h>
 #include <pthread.h>
 #include <curl/curl.h>
 #include <algorithm>
@@ -10,6 +10,7 @@
 
 static bool sslErrorsIgnore=false;
 static std::string colon=": ";
+static std::string capath;
 
 struct NetworkReply
 {
@@ -74,7 +75,7 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 	mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
 	if(mem->memory == NULL) {
 	/* out of memory! */
-	printf("not enough memory (realloc returned NULL)\n");
+	printf("HTTP: not enough memory (realloc returned NULL)\n");
 	return 0;
 	}
 
@@ -173,9 +174,9 @@ static void *post_one(void *ptr)        // thread
 
   for (int i=0; i<reply2->header.size(); i++){
     headers = curl_slist_append(headers, reply2->header[i].c_str());
-    printf("header %p %s\n",headers,reply2->header[i].c_str());
+    //printf("header %p %s\n",headers,reply2->header[i].c_str());
   }
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+  curl_easy_setopt(curl, CURLOPT_CAINFO, capath.c_str());
 
   curl_easy_setopt(curl, CURLOPT_URL, reply2->url.c_str());
   //  curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
@@ -273,7 +274,7 @@ static void *put_one_url(void *ptr)     // thread
 
   for (int i=0; i<reply2->header.size(); i++){
     headers = curl_slist_append(headers, reply2->header[i].c_str());
-    printf("header %p %s\n",headers,reply2->header[i].c_str());
+    //printf("header %p %s\n",headers,reply2->header[i].c_str());
   }
 
   MemoryStruct chunk;
@@ -293,7 +294,7 @@ static void *put_one_url(void *ptr)     // thread
   curl=curl_easy_init();
 
   /* pass our list of custom made headers */
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+  curl_easy_setopt(curl, CURLOPT_CAINFO, capath.c_str());
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -384,7 +385,7 @@ static void *get_one_url(void *ptr)          // thread
 
   for (int i=0; i<reply2->header.size(); i++){
     headers = curl_slist_append(headers, reply2->header[i].c_str());
-    printf("header %p %s\n",headers,reply2->header[i].c_str());
+    //printf("header %p %s\n",headers,reply2->header[i].c_str());
   }
 
   MemoryStruct chunk;
@@ -394,11 +395,11 @@ static void *get_one_url(void *ptr)          // thread
   chunk.size = 0;
   chunk.reply=reply2;
   
-  printf("Processing: %s\n",reply2->url.c_str());
+  //printf("Processing: %s\n",reply2->url.c_str());
 
   curl = curl_easy_init();
 
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+  curl_easy_setopt(curl, CURLOPT_CAINFO, capath.c_str());
   /* pass our list of custom made headers */
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -476,7 +477,6 @@ static void *get_one_url(void *ptr)          // thread
 //######################################################################
 
 extern "C" {
-
 void ghttp_Init()
 {
   pthread_mutex_init(&mutexget, NULL);
@@ -484,6 +484,12 @@ void ghttp_Init()
   pthread_mutex_init(&mutexpost, NULL);
   curl_global_init(CURL_GLOBAL_ALL);
 }
+
+void ghttp_InitCA(std::string cafolder)
+{
+	capath=cafolder+"\\cacert.pem";
+}
+
 
 void ghttp_Cleanup()
 {
@@ -510,6 +516,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, geven
   reply2.size = 0;
   reply2.streaming=streaming;
 
+  reply2.header.push_back("User-Agent: Gideros");
   if (header)
     for (; header->name; ++header){
       str=header->name + colon + header->value;
@@ -519,7 +526,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, geven
 
   map_[gid] = reply2;
 
-  printf("ghttp_Get: %d %p %s\n",gid,&gid,url);
+  //printf("ghttp_Get: %d %p %s\n",gid,&gid,url);
 
   error = pthread_create(&tid,
 			 NULL, /* default attributes please */
@@ -553,6 +560,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 
   memcpy(reply2.data,data,size);
 
+  reply2.header.push_back("User-Agent: Gideros");
   if (header)
     for (; header->name; ++header){
       str=header->name + colon + header->value;
@@ -561,7 +569,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 
   map_[gid] = reply2;
 
-  printf("ghttp_Post: %d %p %s\n",gid,&gid,url);
+  //printf("ghttp_Post: %d %p %s\n",gid,&gid,url);
 
   error = pthread_create(&tid,
 			 NULL, /* default attributes please */
@@ -579,12 +587,13 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, ge
 {
 
   CURL *curl = curl_easy_init();
-  curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+  curl_easy_setopt(curl, CURLOPT_CAINFO, capath.c_str());
   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
   curl_easy_setopt(curl, CURLOPT_URL, url);
 
   struct curl_slist *headers = NULL;
 
+  headers = curl_slist_append(headers, "User-Agent: Gideros");
   if (header)
     for (; header->name; ++header){
       std::string str=header->name + colon + header->value;
@@ -610,7 +619,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 
   g_id gid = g_NextId();
 
-  printf("ghttp_Put: size = %d\n",size);
+  //printf("ghttp_Put: size = %d\n",size);
 
   NetworkReply reply2;
   reply2.gid = gid;
@@ -623,6 +632,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 
   memcpy(reply2.data,data,size);
 
+  reply2.header.push_back("User-Agent: Gideros");
   if (header)
     for (; header->name; ++header){
       str=header->name + colon + header->value;
@@ -632,7 +642,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 
   map_[gid] = reply2;
 
-  printf("ghttp_Put: %d %p %s\n",gid,&gid,url);
+  //printf("ghttp_Put: %d %p %s\n",gid,&gid,url);
 
   error = pthread_create(&tid,
 			 NULL, /* default attributes please */

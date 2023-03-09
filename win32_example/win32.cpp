@@ -80,7 +80,6 @@ std::string PATH_Temp;
 std::string PATH_Cache;
 std::string PATH_AppName;
 
-// int dxChrome,dyChrome;
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
 
@@ -101,34 +100,35 @@ static void luaError(const char *error)
 
 static void loadPlugins()
 {
-  static wchar_t fullname[MAX_PATH];
-  WIN32_FIND_DATA fd; 
-  HANDLE hFind = FindFirstFile(L"plugins\\*.dll", &fd);
+	std::wstring pluginDir=ws(PATH_Executable.c_str());
+	pluginDir+=L"\\plugins\\";
+	std::wstring pattern=pluginDir+L"*.dll";
+	WIN32_FIND_DATA fd;
+	HANDLE hFind = FindFirstFile(pattern.c_str(), &fd);
 
-  if(hFind != INVALID_HANDLE_VALUE) { 
-    do { 
-      // read all (real) files in current folder
-      // , delete '!' read other 2 default folder . and ..
-      if (! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
-	wcscpy(fullname,L"plugins\\");
-	wcscat(fullname,fd.cFileName);
-	wprintf(L"found DLL: %ls\n",fullname);
+	if(hFind != INVALID_HANDLE_VALUE) {
+		do {
+			// read all (real) files in current folder
+			// , delete '!' read other 2 default folder . and ..
+			if (! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
+				std::wstring dll=pluginDir+fd.cFileName;
+				wprintf(L"found DLL: %ls\n",dll.c_str());
 
-	HMODULE hModule = LoadLibrary(fullname);
-	void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
-	if (plugin)
-	  PluginManager::instance().registerPlugin((void*(*)(lua_State*, int))plugin);
-      }
-    } while(FindNextFile(hFind, &fd)); 
-    FindClose(hFind); 
-  } 
+				HMODULE hModule = LoadLibrary(dll.c_str());
+				void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
+				if (plugin)
+					PluginManager::instance().registerPlugin((void*(*)(lua_State*, int))plugin);
+			}
+		} while(FindNextFile(hFind, &fd));
+		FindClose(hFind);
+	}
 }
 
 // ######################################################################
 
 static void printFunc(const char *str, int len, void *data)
 {
-  printf("%s",str);
+	printf("%s",str);
 }
 
 // ######################################################################
