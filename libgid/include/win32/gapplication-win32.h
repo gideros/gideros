@@ -18,7 +18,7 @@ void W32SetFullScreen(bool fullScreen,HWND wnd,W32FullScreen *save);
 
 extern "C" {
 #endif
-
+G_API void gapplication_init_w32(HWND hwnd);
 G_API void gapplication_enqueueEvent(int type, void *event, int free);
 
 #ifdef __cplusplus

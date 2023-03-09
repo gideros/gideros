@@ -421,6 +421,7 @@ void NetworkManager::calculateMD5(const char* file)
 extern std::string PATH_AppName;
 extern std::string PATH_Cache;
 extern std::string PATH_Executable;
+extern HWND hwndcopy;
 ApplicationManager::ApplicationManager() {
 
 	deviceOrientation_ = eFixed;
@@ -459,6 +460,7 @@ ApplicationManager::ApplicationManager() {
 
 		// application
 		gapplication_init();
+		gapplication_init_w32(hwndcopy);
 
 		// input
 		ginput_init();

@@ -4,6 +4,10 @@ WIN32_CC=$(WIN32_CHAIN)gcc
 WIN32_CXX=$(WIN32_CHAIN)g++
 WIN32_RES=$(WIN32_CHAIN)windres
 
+WIN32_TGTVER:=0x603
+
+WIN32_TGTVERDEF=_WIN32_WINNT=$(WIN32_TGTVER) WINVER=$(WIN32_TGTVER)
+
 win32.install: win32.libs.install win32.plugins.install
 
 
@@ -22,11 +26,12 @@ WIN32_RELEASE=$(RELEASE)/Templates/win32/WindowsDesktopTemplate
 LIBS_lua+=$(WIN32_BUILDDIR)/gvfs.dll
 
 INCLUDEPATHS_gid+= libgid/include/win32
+DEFINES_gid+=$(WIN32_TGTVERDEF)
 OBJFILES_gid+= $(addprefix libgid/src/win32/,gapplication-win32 gaudio-win32 ggeolocation-win32 ghttp-win32 \
 				 ginput-win32 gui-win32)
 LIBS_gid+= \
  libgid/external/jpeg-9/build/mingw48_32/libjpeg.a \
- -lglew32 -lopengl32 -lcurl \
+ -lglew32 -lopengl32 -lcurl -lshcore \
  $(addprefix $(WIN32_BUILDDIR)/,openal.dll mp3.dll gvfs.dll)
 #LIBS_gid+=libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/lib/x86/libpthreadGC2.a \
 
@@ -44,9 +49,9 @@ OBJFILES_player+= win32_example/win32 win32_example/applicationmanager win32_exa
 INCLUDEPATHS_player+=win32_example
 INCLUDEPATHS_player+=2dsg/gfxbackends/gl2
 INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
-DEFINES_player+=WIN32=1 _WIN32_WINNT=0x602 WINVER=0x602
+DEFINES_player+=WIN32=1 $(WIN32_TGTVERDEF)
 LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.dll gideros.dll) \
-	-lglew32 \
+	-lglew32 -lshcore \
 	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm -lole32 -luuid
 
 DEFINES+=UNICODE_

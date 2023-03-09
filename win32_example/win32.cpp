@@ -43,6 +43,7 @@
 #include "applicationmanager.h"
 #include <map>
 #include <screen.h>
+#include <Shellscalingapi.h>
 
 extern "C" {
   void g_setFps(int);
@@ -539,17 +540,30 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     glWidth=LOWORD(lParam);
     glHeight=HIWORD(lParam);
     glChanged=true;
-    //printf("WM_SIZE: %d x %d\n",glWidth,glHeight);
+    printf("WM_SIZE: %d x %d\n",glWidth,glHeight);
     return 0;
+  }
+  else if (iMsg==WM_DPICHANGED)  {
+        WORD g_dpi = HIWORD(wParam);
+        printf("DPI Changed:%d\n",g_dpi);
+        RECT* const prcNewWindow = (RECT*)lParam;
+        SetWindowPos(hwnd,
+            NULL,
+            prcNewWindow ->left,
+            prcNewWindow ->top,
+            prcNewWindow->right - prcNewWindow->left,
+            prcNewWindow->bottom - prcNewWindow->top,
+            SWP_NOZORDER | SWP_NOACTIVATE);
+        return 0;
   }
   // allows large windows bigger than screen
-  else if (iMsg==WM_GETMINMAXINFO) {
+/*  else if (iMsg==WM_GETMINMAXINFO) {
     DefWindowProc(hwnd, iMsg, wParam, lParam);
     MINMAXINFO* pmmi = (MINMAXINFO*)lParam;
-    pmmi->ptMaxTrackSize.x = 2000;
-    pmmi->ptMaxTrackSize.y = 2000;
+    pmmi->ptMaxTrackSize.x = 20000;
+    pmmi->ptMaxTrackSize.y = 20000;
     return 0;
-  }
+  }*/
   else if (iMsg==WM_LBUTTONDOWN){
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
@@ -892,6 +906,12 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	  PATH_Cache=PATH_Temp+"\\"+PATH_AppName;
 	  CreateDirectory(ws(PATH_Cache.c_str()).c_str(),NULL);
   }
+
+#if NTDDI_VERSION >= NTDDI_WINBLUE
+  SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+#else
+  SetProcessDPIAware();
+#endif
 
   HWND        hwnd ;
   MSG         msg ;

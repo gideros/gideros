@@ -1,8 +1,9 @@
 #include <gapplication.h>
 #include <gapplication-win32.h>
 
+#include <windows.h>
 #include <Shellscalingapi.h>
-extern HWND hwndcopy;
+HWND hwndcopy;
 class GGApplicationManager
 {
     
@@ -74,6 +75,11 @@ extern "C" {
 void gapplication_init()
 {
     s_manager = new GGApplicationManager;
+}
+
+void gapplication_init_w32(HWND hwnd)
+{
+    hwndcopy=hwnd;
 }
 
 void gapplication_cleanup()
