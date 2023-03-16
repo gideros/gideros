@@ -158,9 +158,10 @@ DirectXPage::DirectXPage():
 //	pointerVisualizationSettings->IsContactFeedbackEnabled = false; 
 //	pointerVisualizationSettings->IsBarrelButtonFeedbackEnabled = false;
 
-	window->KeyUp += ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyUp);
-	window->KeyDown += ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyDown);
+	//window->KeyUp += ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyUp);
+	//window->KeyDown += ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyDown);
 	window->CharacterReceived += ref new TypedEventHandler<CoreWindow^, CharacterReceivedEventArgs^>(this, &DirectXPage::OnKeyChar);
+	window->Dispatcher->AcceleratorKeyActivated += ref new TypedEventHandler<CoreDispatcher^, AcceleratorKeyEventArgs^>(this, &DirectXPage::OnKeyAccel);
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &DirectXPage::OnBackButtonPressed);
 #else
@@ -403,9 +404,10 @@ void DirectXPage::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ Args)
 {
 	Args->Handled = true;
 	int m=0;
-	if (sender->GetKeyState(Windows::System::VirtualKey::Shift) !=CoreVirtualKeyStates::None) m |= 1;
-	if (sender->GetKeyState(Windows::System::VirtualKey::Menu) != CoreVirtualKeyStates::None) m |= 2;
-	if (sender->GetKeyState(Windows::System::VirtualKey::Control) != CoreVirtualKeyStates::None) m |= 4;
+	if (((int)sender->GetKeyState(Windows::System::VirtualKey::Shift) & (int)CoreVirtualKeyStates::Down)) m |= 1;
+	if (((int)sender->GetKeyState(Windows::System::VirtualKey::Menu) & (int)CoreVirtualKeyStates::Down)) m |= 2;
+	if (Args->KeyStatus.IsMenuKeyDown) m |= 2;
+	if (((int)sender->GetKeyState(Windows::System::VirtualKey::Control) & (int)CoreVirtualKeyStates::Down)) m |= 4;
 	gdr_keyDown((int)Args->VirtualKey,m);
 }
 
@@ -413,9 +415,10 @@ void DirectXPage::OnKeyUp(CoreWindow^ sender, KeyEventArgs^ Args)
 {
 	Args->Handled = true;
 	int m=0;
-	if (sender->GetKeyState(Windows::System::VirtualKey::Shift) != CoreVirtualKeyStates::None) m |= 1;
-	if (sender->GetKeyState(Windows::System::VirtualKey::Menu) != CoreVirtualKeyStates::None) m |= 2;
-	if (sender->GetKeyState(Windows::System::VirtualKey::Control) != CoreVirtualKeyStates::None) m |= 4;
+	if (((int)sender->GetKeyState(Windows::System::VirtualKey::Shift) & (int)CoreVirtualKeyStates::Down)) m |= 1;
+	if (((int)sender->GetKeyState(Windows::System::VirtualKey::Menu) & (int)CoreVirtualKeyStates::Down)) m |= 2;
+	if (Args->KeyStatus.IsMenuKeyDown) m |= 2;
+	if (((int)sender->GetKeyState(Windows::System::VirtualKey::Control) & (int)CoreVirtualKeyStates::Down)) m |= 4;
 	gdr_keyUp((int)Args->VirtualKey,m);
 }
 
@@ -428,6 +431,25 @@ void DirectXPage::OnKeyChar(CoreWindow^ sender, CharacterReceivedEventArgs^ Args
 	WideCharToMultiByte(CP_UTF8, 0, &wc, 1,
 		buf, 15, NULL, NULL);
 	gdr_keyChar(buf);
+}
+
+void DirectXPage::OnKeyAccel(CoreDispatcher^ sender, AcceleratorKeyEventArgs^ Args)
+{
+	if (((Args->EventType == CoreAcceleratorKeyEventType::KeyDown || Args->EventType == CoreAcceleratorKeyEventType::SystemKeyDown)
+		&& !Args->KeyStatus.WasKeyDown)||(Args->EventType == CoreAcceleratorKeyEventType::KeyUp || Args->EventType == CoreAcceleratorKeyEventType::SystemKeyUp))
+	{
+		bool isAltKeyPressed = Args->KeyStatus.IsMenuKeyDown;
+		int m = 0;
+		CoreWindow^ main = CoreWindow::GetForCurrentThread();
+		if (((int)main->GetKeyState(Windows::System::VirtualKey::Shift) & (int)CoreVirtualKeyStates::Down)) m |= 1;
+		if (((int)main->GetKeyState(Windows::System::VirtualKey::Menu) & (int)CoreVirtualKeyStates::Down)) m |= 2;
+		if (Args->KeyStatus.IsMenuKeyDown) m |= 2;
+		if (((int)main->GetKeyState(Windows::System::VirtualKey::Control) & (int)CoreVirtualKeyStates::Down)) m |= 4;
+		if (Args->EventType == CoreAcceleratorKeyEventType::KeyUp || Args->EventType == CoreAcceleratorKeyEventType::SystemKeyUp)
+			gdr_keyUp((int)Args->VirtualKey, m);
+		else
+			gdr_keyDown((int)Args->VirtualKey, m);
+	}
 }
 
 void DirectXPage::OnWheelChanged(Object^ sender, PointerEventArgs^ Args)

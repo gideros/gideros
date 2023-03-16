@@ -71,6 +71,19 @@ public:
         keyMap_[GINPUT_KEY_Y] = GINPUT_KEY_Y;
         keyMap_[GINPUT_KEY_Z] = GINPUT_KEY_Z;
 
+		keyMap_[112] = GINPUT_KEY_F1;
+		keyMap_[113] = GINPUT_KEY_F2;
+		keyMap_[114] = GINPUT_KEY_F3;
+		keyMap_[115] = GINPUT_KEY_F4;
+		keyMap_[116] = GINPUT_KEY_F5;
+		keyMap_[117] = GINPUT_KEY_F6;
+		keyMap_[118] = GINPUT_KEY_F7;
+		keyMap_[119] = GINPUT_KEY_F8;
+		keyMap_[120] = GINPUT_KEY_F9;
+		keyMap_[121] = GINPUT_KEY_F10;
+		keyMap_[122] = GINPUT_KEY_F11;
+		keyMap_[123] = GINPUT_KEY_F12;
+
 		keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
 		keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
@@ -81,6 +94,14 @@ public:
 		keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
 		keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
 		keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
+
+		keyMap_[36] = GINPUT_KEY_HOME;
+		keyMap_[35] = GINPUT_KEY_END;
+		keyMap_[45] = GINPUT_KEY_INSERT;
+		keyMap_[46] = GINPUT_KEY_DELETE;
+		keyMap_[33] = GINPUT_KEY_PAGEUP;
+		keyMap_[34] = GINPUT_KEY_PAGEDOWN;
+		keyMap_[GINPUT_KEY_ENTER] = GINPUT_KEY_ENTER;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 

@@ -34,7 +34,7 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     tdesc.Usage = D3D11_USAGE_DEFAULT;
     tdesc.BindFlags = ((format==FMT_DEPTH)? D3D11_BIND_DEPTH_STENCIL:D3D11_BIND_RENDER_TARGET) | D3D11_BIND_SHADER_RESOURCE;
     tdesc.CPUAccessFlags = 0;
-	tdesc.MiscFlags = 0;// ((filtering == FILT_LINEAR_MIPMAP) ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0);
+	tdesc.MiscFlags =  ((filtering == FILT_LINEAR_MIPMAP) ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0);
     tdesc.Format = DXGI_FORMAT_UNKNOWN;
     switch (format)
     {
