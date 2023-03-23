@@ -66,6 +66,7 @@ static const char *vs_codeSC =
 "attribute highp vec4 data0;                                                  \n"
 "attribute highp vec4 data1;                                                  \n"
 "attribute highp vec4 data2;                                                  \n"
+"attribute highp vec4 linepos;                                                  \n"
 "                                                                       \n"
 "varying highp vec2 pos;                                                      \n"
 "varying highp float p, q;                                                    \n"
@@ -149,6 +150,7 @@ static const char *vs_codeSL =
 "uniform highp mat4 xform;                                                    \n"
 "                                                                       \n"
 "attribute highp vec4 data0;                                                  \n"
+"attribute highp vec4 linepos;                                                  \n"
 "                                                                       \n"
 "varying mediump vec2 uv;                                                       \n"
 "                                                                       \n"
@@ -205,12 +207,14 @@ void pathShadersInit(bool isGLES)
 	const ShaderProgram::DataDesc pathAttributesStrokeC[] = {
 			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0,0 },
 			{ "data1", ShaderProgram::DFLOAT, 4, 1, 0,0 },
-			{ "data2", ShaderProgram::DFLOAT, 4, 2, 0,0 },
-			{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
+            { "data2", ShaderProgram::DFLOAT, 4, 2, 0,0 },
+            { "linepos", ShaderProgram::DFLOAT, 4, 3, 0,0 },
+            { "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	const ShaderProgram::DataDesc pathAttributesStrokeSL[] = {
 			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0,0 },
-			{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
+            { "linepos", ShaderProgram::DFLOAT, 4, 1, 0,0 },
+            { "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
     const char *hdrShaderCode=isGLES?hdrShaderCode_ES:hdrShaderCode_DK;
 	ShaderProgram::pathShaderFillC = new ogl2ShaderProgram(hdrShaderCode,

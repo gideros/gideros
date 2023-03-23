@@ -26,18 +26,20 @@ void pathShadersInit()
 			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0,0 },
 			{ "data1", ShaderProgram::DFLOAT, 4, 1, 0,0 },
 			{ "data2", ShaderProgram::DFLOAT, 4, 2, 0,0 },
+			{ "linepos", ShaderProgram::DFLOAT, 4, 3, 0,0 },
 			{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	const ShaderProgram::DataDesc pathAttributesStrokeSL[] = {
 			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0,0 },
+			{ "linepos", ShaderProgram::DFLOAT, 4, 1, 0,0 },
 			{ "", ShaderProgram::DFLOAT, 0, 0, 0,0 } };
 
 	ShaderProgram::pathShaderFillC = new metalShaderProgram("gidPathFCV","gidPathFCF", pathUniforms,
 			pathAttributesFillC,1,0);
 	ShaderProgram::pathShaderStrokeC = new metalShaderProgram("gidPathSCV","gidPathSCF", pathUniforms,
-			pathAttributesStrokeC,7,48);
+			pathAttributesStrokeC,15,64);
     ShaderProgram::pathShaderStrokeLC = new metalShaderProgram("gidPathSLV","gidPathSLF", pathUniforms,
-                                                            pathAttributesStrokeSL,1,0);
+                                                            pathAttributesStrokeSL,3,32);
 }
 
 void pathShadersRelease()

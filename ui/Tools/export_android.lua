@@ -14,12 +14,20 @@ function AndroidProject.useFeature(name,req)
     AndroidProject.features[name]=req or false
 end
 
-function AndroidProject.usePermission(name,maxSdk)
+function AndroidProject.usePermission(name,maxSdk,flags)
   local msdk=maxSdk or MAX_SDK
-  local csdk=AndroidProject.permissions[name]
-  if csdk==nil or csdk<msdk then
-    AndroidProject.permissions[name]=msdk
+  local cperm=AndroidProject.permissions[name] or { maxSdk=msdk, flags={} }
+  cperm.maxSdk=cperm.maxSdk><msdk
+  if flags then
+	if type(flags)=="table" then
+		for _,f in ipairs(flags) do
+			cperm.flags[f]=true
+		end
+	elseif type(flags)=="string" then
+		cperm.flags[flags]=true
+	end
   end
+  AndroidProject.permissions[name]=cperm
 end
 
 function AndroidProject.minSdk(minsdk)
@@ -32,8 +40,15 @@ local function apply()
   local perms=""
   for n,s in pairs(AndroidProject.permissions) do
     local e=""
-    if s<MAX_SDK then
-      e=([[android:maxSdkVersion="%d" ]]):format(s)
+    if s.maxSdk<MAX_SDK then
+      e=([[android:maxSdkVersion="%d" ]]):format(s.maxSdk)
+    end
+    if next(s.flags) and (tonumber(Export.getProperty("export.androidTarget")) or 0)>=32 then
+	local p=""
+	for pf,_ in pairs(s.flags) do
+		p=p.."|"..pf
+	end
+      e=e..([[android:usesPermissionFlags="%s" ]]):format(p:sub(2))
     end
     perms=perms..(([[<uses-permission android:name="%s" %s/>
       ]]):format(n,e))

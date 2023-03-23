@@ -15,7 +15,7 @@ cbuffer cbv : register(b0)
 	float4x4 xform;
 };
 
-VOut VShader(float4 d0 : dataA, float4 d1: dataB, float4 d2: dataC)
+VOut VShader(float4 d0 : dataA, float4 d1: dataB, float4 d2: dataC, float4 linepos : linepos)
 {
 	VOut output;
 

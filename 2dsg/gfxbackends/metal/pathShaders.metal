@@ -10,15 +10,21 @@
 using namespace metal;
 
 
-struct InVertex1
+struct InVertexFC
 {
     float4 data0 [[attribute(0)]];
 };
-struct InVertex3
+struct InVertexSL
+{
+    float4 data0 [[attribute(0)]];
+    float4 linepos [[attribute(1)]];
+};
+struct InVertexSC
 {
     float4 data0 [[attribute(0)]];
     float4 data1 [[attribute(1)]];
     float4 data2 [[attribute(2)]];
+    float4 linepos [[attribute(3)]];
 };
 
 struct PVertexTC
@@ -49,7 +55,7 @@ struct Uniforms
 
 
 //Fill curve
-vertex PVertexTC gidPathFCV(InVertex1 inVertex [[stage_in]],
+vertex PVertexTC gidPathFCV(InVertexFC inVertex [[stage_in]],
                     constant Uniforms &uniforms [[buffer(0)]])
 {
     PVertexTC outVert;
@@ -66,7 +72,7 @@ fragment half4 gidPathFCF(PVertexTC vert [[stage_in]],
 }
 
 //Stroke curve
-vertex PVertexSC gidPathSCV(InVertex3 inVertex [[stage_in]],
+vertex PVertexSC gidPathSCV(InVertexSC inVertex [[stage_in]],
                            constant Uniforms &uniforms [[buffer(0)]])
 {
     PVertexSC outVert;
@@ -133,7 +139,7 @@ fragment half4 gidPathSCF(PVertexSC vert [[stage_in]],
 
 
 //Stroke line
-vertex PVertexTC gidPathSLV(InVertex1 inVertex [[stage_in]],
+vertex PVertexTC gidPathSLV(InVertexSL inVertex [[stage_in]],
                             constant Uniforms &uniforms [[buffer(0)]])
 {
     PVertexTC outVert;

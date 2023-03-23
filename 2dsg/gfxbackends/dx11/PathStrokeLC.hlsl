@@ -14,7 +14,7 @@ cbuffer cbv : register(b0)
 	float4x4 mv;
 };
 
-VOut VShader(float4 position : vVertex)
+VOut VShader(float4 position : vVertex, float4 linepos : linepos)
 {
 	VOut output;
 
