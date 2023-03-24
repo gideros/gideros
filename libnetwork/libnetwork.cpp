@@ -446,7 +446,7 @@ int NetworkBase::sendData(const void* data, unsigned int size, bool noCheck)
         size_t osize;
         char *block=q->append(gptPrint,size-2,&osize); //Subtract 2 bytes: packet type+trailing 0
         if (block) {
-            memcpy(block+osize-1,data+1,size-1);
+            memcpy(block+osize-1,((char *)data)+1,size-1);
             return q->id();
         }
     }
