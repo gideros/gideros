@@ -178,6 +178,18 @@ public:
 		free(data_);
 	}
 
+    char *append(char type,size_t inc,size_t *oldSize)  {
+        if (currentPosition_!=0) return NULL;
+        if ((size_+inc)>1024) return NULL;
+        if (data_[12]!=type) return NULL;
+        if (oldSize) *oldSize=size_;
+        size_+=inc;
+        data_=(char *) realloc(data_,size_);
+        unsigned int* header = (unsigned int*)data_;
+        header[0] = size_;
+        return data_;
+    }
+
 	unsigned int id() const
 	{
 		return id_;
@@ -428,6 +440,16 @@ int NetworkBase::sendData(const void* data, unsigned int size, bool noCheck)
     } else
         if (sendQueue_.size() > 1024) //Avoid queue size beginning too big in forced mode (print mainly)
             return -1;
+
+    if (size&&(((char *)data)[0]==gptPrint)&&sendQueue_.size()) {
+        QueueElement *q=sendQueue_.back();
+        size_t osize;
+        char *block=q->append(gptPrint,size-2,&osize); //Subtract 2 bytes: packet type+trailing 0
+        if (block) {
+            memcpy(block+osize-1,data+1,size-1);
+            return q->id();
+        }
+    }
 
 	QueueElement* queueElement = new QueueElement(data, size, 0);
 	sendQueue_.push_back(queueElement);
