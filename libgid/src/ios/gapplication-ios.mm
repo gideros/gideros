@@ -63,9 +63,18 @@ public:
             @"iPad5,2": @163, //Mini4
 		};
 
-		id mdpi=modelDpi[getSysInfoByName("hw.machine")];
+        NSString *model=getSysInfoByName("hw.machine");
+		id mdpi=modelDpi[model];
 		if (mdpi)
 			return [mdpi integerValue]*scale;
+        if ([model hasPrefix:@"iPhone"]) {
+            NSArray<NSString *>* ca=[[model substringFromIndex:6] componentsSeparatedByString:@","];
+            NSString *major=[ca firstObject];
+            if (major) {
+                int mm=[major intValue];
+                if (mm>10) return 153*scale;
+            }
+        }
 		
         int dpi;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
