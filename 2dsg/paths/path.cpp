@@ -42,16 +42,16 @@ struct vector4f {
 #define kh_vector2f_hash_func(a) ((khint_t)((a.x) * 1e6f) ^ (khint_t)((a.y) * 1e6f))
 #define kh_vector4f_hash_func(a) ((khint_t)((a.x) * 1e6f) ^ (khint_t)((a.y) * 1e6f) ^ (khint_t)((a.z) * 1e6f) ^ (khint_t)((a.w) * 1e6f))
 
-KHASH_INIT(vector2f, struct vector2f, unsigned short, 1, kh_vector2f_hash_func,
+KHASH_INIT(vector2f, struct vector2f, unsigned int, 1, kh_vector2f_hash_func,
 		kh_vector2f_hash_equal)
-KHASH_INIT(vector4f, struct vector4f, unsigned short, 1, kh_vector4f_hash_func,
+KHASH_INIT(vector4f, struct vector4f, unsigned int, 1, kh_vector4f_hash_func,
 		kh_vector4f_hash_equal)
 
 /* TODO: better hash functions */
 
 struct merger4f {
 	khash_t(vector4f) *h;kvec_t(struct vector4f)
-	vertices;kvec_t(unsigned short)
+    vertices;kvec_t(int)
 	indices;
 };
 
@@ -68,7 +68,7 @@ static void free_merger4f(struct merger4f *m) {
 }
 
 static void merge4f(struct merger4f *m, const struct vector4f *vertices,
-		unsigned short *indices, int count) {
+        unsigned int *indices, int count) {
 	int i;
 
 	for (i = 0; i < count; ++i) {
@@ -350,11 +350,11 @@ reduced_path_vec;
 
 struct geometry {
 	kvec_t(float)
-	vertices;kvec_t(unsigned short)
+    vertices;kvec_t(unsigned int)
 	indices;
 
 	VertexBuffer<float> *vertex_buffer;
-	VertexBuffer<unsigned short> *index_buffer;
+    VertexBuffer<unsigned int> *index_buffer;
 	int count;
 };
 
@@ -384,7 +384,7 @@ struct path {
 	struct geometry stroke_geoms[2]; /* 1: solid 2: quad */
 
 	VertexBuffer<vector4f> *fill_vertex_buffer;
-	VertexBuffer<unsigned short> *fill_index_buffer;
+    VertexBuffer<unsigned int> *fill_index_buffer;
 	int fill_counts[2];
 	int fill_starts[2];
 
@@ -1094,12 +1094,12 @@ static void path_commands(unsigned int path, int num_commands,
 		for (i = 0; i < 2; ++i) {
 			p->stroke_geoms[i].vertex_buffer = new VertexBuffer<float>();
 			p->stroke_geoms[i].index_buffer =
-					new VertexBuffer<unsigned short>();
+                    new VertexBuffer<unsigned int>();
 			p->stroke_geoms[i].count = 0;
 		}
 
 		p->fill_vertex_buffer = new VertexBuffer<vector4f>();
-		p->fill_index_buffer = new VertexBuffer<unsigned short>();
+        p->fill_index_buffer = new VertexBuffer<unsigned int>();
 		p->fill_bounds_vbo = new VertexBuffer<float>();
 
 		set_path(path);
@@ -2457,7 +2457,7 @@ static void stroke_path(unsigned int path, const Matrix4 *xform, Sprite *spr) {
 
 	if (p->stroke_geoms[0].count > 0) {
 		VertexBuffer<float> *vb = p->stroke_geoms[0].vertex_buffer;
-		VertexBuffer<unsigned short> *ib = p->stroke_geoms[0].index_buffer;
+        VertexBuffer<unsigned int> *ib = p->stroke_geoms[0].index_buffer;
 		ShaderProgram *shp=spr->getShader(ShaderEngine::STDP_PATHSTROKELINE);
 		shp->setConstant(1,	ShaderProgram::CMATRIX, 1, xform->data());
 		shp->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
@@ -2469,7 +2469,7 @@ static void stroke_path(unsigned int path, const Matrix4 *xform, Sprite *spr) {
                 vb->modified, &vb->bufferCache,32,16);
         shp->drawElements(
 				ShaderProgram::Triangles, p->stroke_geoms[0].count,
-				ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
+                ShaderProgram::DINT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache);
 		vb->modified = false;
 		ib->modified = false;
@@ -2477,7 +2477,7 @@ static void stroke_path(unsigned int path, const Matrix4 *xform, Sprite *spr) {
 
 	if (p->stroke_geoms[1].count > 0) {
 		VertexBuffer<float> *vb = p->stroke_geoms[1].vertex_buffer;
-		VertexBuffer<unsigned short> *ib = p->stroke_geoms[1].index_buffer;
+        VertexBuffer<unsigned int> *ib = p->stroke_geoms[1].index_buffer;
 
 #if 0
 		float w0x, w0y,w1x,w1y;
@@ -2522,7 +2522,7 @@ static void stroke_path(unsigned int path, const Matrix4 *xform, Sprite *spr) {
                 &((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache, 64,
                 48);
         shp->drawElements(ShaderProgram::Triangles,
-				p->stroke_geoms[1].count, ShaderProgram::DUSHORT, &((*ib)[0]),
+                p->stroke_geoms[1].count, ShaderProgram::DINT, &((*ib)[0]),
 				ib->modified, &ib->bufferCache);
 		ib->modified = false;
 #endif
@@ -2574,7 +2574,7 @@ static void fill_path(unsigned int path, int fill_mode,
 	shp->setConstant(1, ShaderProgram::CMATRIX, 1,	xform->data());
 
 	VertexBuffer<vector4f> *vb = p->fill_vertex_buffer;
-	VertexBuffer<unsigned short> *ib = p->fill_index_buffer;
+    VertexBuffer<unsigned int> *ib = p->fill_index_buffer;
 	/*
 	 glog_d("Fill path: VB Size:%d",vb->size());
 	 for (int k=0;k<vb->size();k++)
@@ -2594,7 +2594,7 @@ static void fill_path(unsigned int path, int fill_mode,
                                                 &vb->bufferCache);
         vb->modified = false;
 		shp->drawElements(ShaderProgram::Triangles,
-				ib->size(), ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
+                ib->size(), ShaderProgram::DINT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache, p->fill_starts[0], p->fill_counts[0]);
 		ib->modified = false;
 	}
@@ -2610,7 +2610,7 @@ static void fill_path(unsigned int path, int fill_mode,
                                                 &vb->bufferCache);
         vb->modified = false;
 		shp->drawElements(ShaderProgram::Triangles,
-				ib->size(), ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
+                ib->size(), ShaderProgram::DINT, &((*ib)[0]), ib->modified,
 				&ib->bufferCache, p->fill_starts[1], p->fill_counts[1]);
 		ib->modified = false;
 	}
@@ -2824,7 +2824,7 @@ void Path2D::cloneFrom(Path2D *s)
             p->stroke_geoms[i].vertex_buffer = new VertexBuffer<float>();
             p->stroke_geoms[i].vertex_buffer->assign(sp->stroke_geoms[i].vertex_buffer->cbegin(),sp->stroke_geoms[i].vertex_buffer->cend());
             p->stroke_geoms[i].vertex_buffer->Update();
-            p->stroke_geoms[i].index_buffer = new VertexBuffer<unsigned short>();
+            p->stroke_geoms[i].index_buffer = new VertexBuffer<unsigned int>();
             p->stroke_geoms[i].index_buffer->assign(sp->stroke_geoms[i].index_buffer->cbegin(),sp->stroke_geoms[i].index_buffer->cend());
             p->stroke_geoms[i].index_buffer->Update();
         }
@@ -2832,7 +2832,7 @@ void Path2D::cloneFrom(Path2D *s)
         p->fill_vertex_buffer = new VertexBuffer<vector4f>();
         p->fill_vertex_buffer->assign(sp->fill_vertex_buffer->cbegin(),sp->fill_vertex_buffer->cend());
         p->fill_vertex_buffer->Update();
-        p->fill_index_buffer = new VertexBuffer<unsigned short>();
+        p->fill_index_buffer = new VertexBuffer<unsigned int>();
         p->fill_index_buffer->assign(sp->fill_index_buffer->cbegin(),sp->fill_index_buffer->cend());
         p->fill_index_buffer->Update();
         p->fill_bounds_vbo = new VertexBuffer<float>();
