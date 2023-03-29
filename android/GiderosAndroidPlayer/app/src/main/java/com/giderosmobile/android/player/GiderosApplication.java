@@ -1338,7 +1338,11 @@ public class GiderosApplication
     
     static public String getDeviceType()
 	{
-		UiModeManager uiModeManager = (UiModeManager) WeakActivityHolder.get().getSystemService(Context.UI_MODE_SERVICE);
+    	//Recommanded way of detecting a TV device
+    	if (WeakActivityHolder.get().getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))
+            return "TV";
+    	//Generic way
+    	UiModeManager uiModeManager = (UiModeManager) WeakActivityHolder.get().getSystemService(Context.UI_MODE_SERVICE);
         if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
             return "TV";
         } else if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_APPLIANCE) {
