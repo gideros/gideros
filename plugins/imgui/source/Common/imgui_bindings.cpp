@@ -10431,12 +10431,13 @@ int PopFont(lua_State* _UNUSED(L))
 ImFont* addFont(lua_State *L, ImFontAtlas* atlas, const char* file_name, double size_pixels, bool setupConfig = false, int idx = -1)
 {
 	ImFontConfig cfg = ImFontConfig();
-	ImVector<ImWchar> ranges;
 
 	if (setupConfig)
 	{
-		loadFontConfig(L, idx, cfg, atlas, ranges);
-		cfg.GlyphRanges = ranges.Data;
+        ImVector<ImWchar> *ranges=new ImVector<ImWchar>;
+        loadFontConfig(L, idx, cfg, atlas, *ranges);
+        cfg.GlyphRanges = ranges->Data;
+        //Mem leak: we should delete ranges above at some point, but when ? ImGui expects it to be live as long as the font is used
 	}
 
 	ImFont* font = atlas->AddFontFromFileTTF(file_name, size_pixels, &cfg);
@@ -10529,6 +10530,7 @@ int FontAtlas_Build(lua_State* L)
 
 	unsigned char* pixels;
 	int width, height;
+    atlas->Build();
 	atlas->GetTexDataAsRGBA32(&pixels, &width, &height);
 	
 	gtexture_update((g_id)(uintptr_t)id, width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP,  GTEXTURE_LINEAR, pixels);

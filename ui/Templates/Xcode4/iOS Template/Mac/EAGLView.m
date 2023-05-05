@@ -300,7 +300,7 @@ int keyMods(NSEventModifierFlags mod) {
 
 - (void)keyDown:(NSEvent *)event
 {
-    gdr_keyDown(event.keyCode, [event isARepeat]?1:0);
+    gdr_keyDown(event.keyCode, keyMods(event.modifierFlags), [event isARepeat]?1:0);
     NSString *c=event.characters;
     if (c!=NULL) {
         unichar uni=[c characterAtIndex:0];
@@ -312,19 +312,19 @@ int keyMods(NSEventModifierFlags mod) {
 
 - (void)keyUp:(NSEvent *)event
 {
-    gdr_keyUp(event.keyCode, [event isARepeat]?1:0);
+    gdr_keyUp(event.keyCode, keyMods(event.modifierFlags), [event isARepeat]?1:0);
 }
 
 - (void)flagsChanged:(NSEvent *)event
 {
     NSEventModifierFlags set=event.modifierFlags&(~modifiers);
     NSEventModifierFlags clr=modifiers&(~event.modifierFlags);
-    if (set&NSEventModifierFlagShift) gdr_keyDown(16, 0);
-    if (clr&NSEventModifierFlagShift) gdr_keyUp(16, 0);
-    if (set&NSEventModifierFlagControl) gdr_keyDown(17, 0);
-    if (clr&NSEventModifierFlagControl) gdr_keyUp(17, 0);
-    if (set&NSEventModifierFlagOption) gdr_keyDown(18, 0);
-    if (clr&NSEventModifierFlagOption) gdr_keyUp(18, 0);
+    if (set&NSEventModifierFlagShift) gdr_keyDown(16, 0, 0);
+    if (clr&NSEventModifierFlagShift) gdr_keyUp(16, 0, 0);
+    if (set&NSEventModifierFlagControl) gdr_keyDown(17, 0, 0);
+    if (clr&NSEventModifierFlagControl) gdr_keyUp(17, 0, 0);
+    if (set&NSEventModifierFlagOption) gdr_keyDown(18, 0, 0);
+    if (clr&NSEventModifierFlagOption) gdr_keyUp(18, 0, 0);
     modifiers=event.modifierFlags;
 }
 
@@ -335,8 +335,8 @@ int keyMods(NSEventModifierFlags mod) {
 
 - (void)deleteBackward;
 {
-    gdr_keyDown(0x33,0); //Simulate a backspace key press and release
-    gdr_keyUp(0x33,0);
+    gdr_keyDown(0x33,0, 0); //Simulate a backspace key press and release
+    gdr_keyUp(0x33,0, 0);
 }
 
 - (BOOL) hasText

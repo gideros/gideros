@@ -323,8 +323,14 @@ EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userD
  int x=e->mouse.targetX*pixelRatio;
  int y=e->mouse.targetY*pixelRatio;
  int b=e->mouse.buttons;
+ int m=0;
+ if (e->mouse.ctrlKey) m|=GINPUT_CTRL_MODIFIER;
+ if (e->mouse.shiftKey) m|=GINPUT_SHIFT_MODIFIER;
+ if (e->mouse.altKey) m|=GINPUT_ALT_MODIFIER;
+ if (e->mouse.metaKey) m|=GINPUT_META_MODIFIER;
+
  b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
-  ginputp_mouseWheel(x,y,b,-w,0);
+  ginputp_mouseWheel(x,y,b,-w,m);
   return true;
 }
 

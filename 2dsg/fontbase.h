@@ -193,6 +193,7 @@ public:
         return eCompositeFont;
     }
 
+    virtual void chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params);
     virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, float a, TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l);
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy, std::string name="");
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1, std::string name="");

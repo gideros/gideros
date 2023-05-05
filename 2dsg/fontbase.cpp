@@ -604,6 +604,9 @@ void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char
                 l2.parts.push_back(c);
                 ChunkLayout &c2 = l2.parts[p2];
                 it->font->chunkMetrics(c2,layout);
+                c.shaped=c2.shaped;
+                c.shapeScaleX=c2.shapeScaleX;
+                c.shapeScaleY=c2.shapeScaleY;
                 p2++;
             }
         }
@@ -613,6 +616,18 @@ void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char
             l2.styleFlags|=colorFlag;
         it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB,(it->colorA<0)?a:it->colorA, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l2);
 	}
+}
+
+void CompositeFont::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
+{
+    for (std::vector<CompositeFontSpec>::iterator it=fonts_.begin(); it != fonts_.end(); it++) {
+        if (part.style.font==it->name) {
+            it->font->chunkMetrics(part,params);
+            return;
+        }
+    }
+    FontBase::chunkMetrics(part,params);
+    return;
 }
 
 void CompositeFont::getBounds(const char *text, float letterSpacing, float *rminx, float *rminy, float *rmaxx, float *rmaxy, std::string name)

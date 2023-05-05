@@ -249,8 +249,8 @@ static NSUInteger lfbw=0,lfbh=0;
 
 - (void)deleteBackward;
 {
-    gdr_keyDown(0x33,0); //Simulate a backspace key press and release
-    gdr_keyUp(0x33,0);
+    gdr_keyDown(0x33,0,0); //Simulate a backspace key press and release
+    gdr_keyUp(0x33,0,0);
 }
 
 - (BOOL) hasText
