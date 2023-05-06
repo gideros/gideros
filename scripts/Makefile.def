@@ -1,0 +1,43 @@
+QTBASEDIR=/c/Qt
+MAKEJOBS=-j12
+
+NDKBUILD=cmd //c /e/DEV/Android/android-ndk-r17c_x86_64/ndk-build.cmd
+#NDKBUILD=cmd //c /e/DEV/Android/android-ndk-r20b/ndk-build.cmd
+
+#JAVA_HOME=E:\DEV\Android\Android Studio\jre
+JAVA_HOME=E:\DEV\Android\Android Studio\jbr
+#JAVA_HOME=E:\DEV\Android\Java\jdk-17.0.1
+
+ANDROID_HOME=E:\\\\DEV\\\\Android\\\\Sdk
+
+FXC="/c/Program Files (x86)/Windows Kits/10/bin/10.0.22000.0/x86/fxc.exe"
+MSBUILD="/e/Soft/Microsoft Visual Studio/2022/Community/MSbuild/Current/Bin/MSBuild.exe"
+
+EMSDK=/c/Applications/emscripten
+EMSDKPATH=$(EMSDK):$(EMSDK)/node/14.15.5_64bit/bin:$(EMSDK)/python/3.9.2-1_64bit:$(EMSDK)/upstream/emscripten:$(EMSDK)/upstream/bin
+EMSDK_PREFIX=PATH=$(EMSDKPATH):$$$$PATH
+EMSDK_PREFIX=cmd //c
+
+STEAMSDK=/e/dev/steamworks_sdk_143
+export STEAMSDK
+
+WIN32_BIN=/e/soft/msys64/mingw32/bin
+export WIN32_BIN
+
+CRUNCHME=crunchme-qt-win.exe
+NSIS=cmd //c "/c/Program Files (x86)/NSIS/makensis.exe"
+WIN_SIGN="/c/Program Files (x86)/Windows Kits/10/bin/x86/signtool.exe"
+#WIN_KEYSTORE=/path/to/cert.p12
+#WIN_KEYPASS=KeyPassword
+#WIN_KEYTSS="http://timestamp.comodoca.com"
+
+
+MAC_HOST=user@host
+MAC_PATH=gideros/gideros
+OSX_SIGNING_IDENTITY="ID"
+OSX_SIGNING_PASSWORD="keychain password"
+
+QT_ARCH=mingw_64
+QT_TOOLSARCH=mingw1120_64
+QTVER=6.2.4
+QT5ICUVER=54
