@@ -928,13 +928,13 @@ private:
     int mouseTouchOrder_;
 
 public:
-    int keyDown(int realCode, int repeatCount)
+    int keyDown(int realCode, int mods, int repeatCount)
     {
         int keyCode = convertKeyCode(realCode);
         
         if (repeatCount == 0)
         {
-            ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+            ginput_KeyEvent *event = newKeyEvent(keyCode, realCode, mods);
             gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
             deleteKeyEvent(event);
         }
@@ -942,13 +942,13 @@ public:
         return 1;
     }
     
-    int keyUp(int realCode, int repeatCount)
+    int keyUp(int realCode, int mods, int repeatCount)
     {
         int keyCode = convertKeyCode(realCode);
         
         if (repeatCount == 0)
         {
-            ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+            ginput_KeyEvent *event = newKeyEvent(keyCode, realCode, mods);
             gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
             deleteKeyEvent(event);
         }
@@ -958,7 +958,7 @@ public:
     
     void keyChar(const char *keychar)
     {
-        ginput_KeyEvent *event = newKeyEvent(0,0);
+        ginput_KeyEvent *event = newKeyEvent(0,0,-1);
         if (strlen(keychar)<(sizeof(event->charCode)))
         {
             strcpy(event->charCode,keychar);
@@ -969,7 +969,7 @@ public:
     
     
 private:
-    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode, int modifiers)
     {
         [keyPoolMutex_ lock];
         ginput_KeyEvent *event;
@@ -987,7 +987,7 @@ private:
         
         event->keyCode = keyCode;
         event->realCode = realCode;
-        event->modifiers = -1;
+        event->modifiers = modifiers;
         
         return event;
     }
@@ -1198,17 +1198,17 @@ void ginputp_touchesCancelled(NSSet *touches, NSSet *allTouches, UIView *view)
         s_manager->touchesCancelled(touches, allTouches, view);
 }
 
-g_bool ginputp_keyDown(int keyCode, int repeatCount)
+g_bool ginputp_keyDown(int keyCode, int mods, int repeatCount)
 {
     if (s_manager)
-        return s_manager->keyDown(keyCode, repeatCount);
+        return s_manager->keyDown(keyCode, mods, repeatCount);
     return g_false;
 }
     
-g_bool ginputp_keyUp(int keyCode, int repeatCount)
+g_bool ginputp_keyUp(int keyCode, int mods, int repeatCount)
 {
     if (s_manager)
-        return s_manager->keyUp(keyCode, repeatCount);
+        return s_manager->keyUp(keyCode, mods, repeatCount);
      return g_false;
 }
     

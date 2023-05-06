@@ -741,7 +741,7 @@ private:
             ALint state;
             alGetSourcei(channel->source, AL_SOURCE_STATE, &state);
 
-            if (state == AL_STOPPED)
+            if ((state == AL_STOPPED)||(state == AL_INITIAL))
             {
                 deleteSourceAndBuffers(channel);
 
