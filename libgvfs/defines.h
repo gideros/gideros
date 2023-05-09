@@ -61,7 +61,7 @@
 
 #define __isthreaded g__isthreaded
 
-#define __CONCAT(x,y) x ## y
+#define __CONCAT_S(x,y) x ## y
 
 #ifndef ALIGNBYTES
 #define ALIGNBYTES  (sizeof(void *)-1)

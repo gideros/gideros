@@ -34,7 +34,7 @@ LOCAL_ARM_MODE         := arm
 LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/../../../../../Sdk/include $(LOCAL_PATH)/../../Common
 LOCAL_SRC_FILES        := gshare.cpp ../../Common/sharebinder.cpp
-LOCAL_LDLIBS           := -ldl -llog -latomic
+LOCAL_LDLIBS           := -ldl -llog 
 LOCAL_SHARED_LIBRARIES := lua gideros
 
 include $(BUILD_SHARED_LIBRARY)

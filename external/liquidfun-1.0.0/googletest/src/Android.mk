@@ -82,7 +82,7 @@ include $(CLEAR_VARS)
 ifeq ($(TARGET_ARCH), arm)
    LOCAL_SDK_VERSION := 8
 else
-# NDK support of other archs (ie. x86 and mips) are only available after android-9
+# NDK support of other archs (ie. x86 and mips) are only available after android-19
    LOCAL_SDK_VERSION := 9
 endif
 
@@ -112,7 +112,7 @@ include $(CLEAR_VARS)
 ifeq ($(TARGET_ARCH), arm)
    LOCAL_SDK_VERSION := 8
 else
-# NDK support of other archs (ie. x86 and mips) are only available after android-9
+# NDK support of other archs (ie. x86 and mips) are only available after android-19
    LOCAL_SDK_VERSION := 9
 endif
 
