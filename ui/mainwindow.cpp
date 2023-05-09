@@ -92,7 +92,6 @@ void MainWindow::notifyAddon(QString clientId,const char *data) {
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    globalZoomLevel_ = 0;
     inChooseTab_ = false;
     changeTabKeyPressState_ = 0;
     tabListWidget_ = NULL;
@@ -2329,18 +2328,17 @@ TextEdit* MainWindow::openFile(const QString& fn, bool suppressErrors/* = false*
 		return existing;
 	}
 
-    TextEdit* child = createTextEdit();
+	TextEdit* child = createTextEdit();
     if (child->loadFile(fileName, itemName, suppressErrors) == true)
-    {
-        mdiArea_->addSubWindow(child);
-        child->showMaximized();
-        child->sciScintilla()->setZoom(globalZoomLevel_);
-    }
-    else
-    {
-        child->close();
+	{
+		mdiArea_->addSubWindow(child);
+		child->showMaximized();
+	}
+	else
+	{
+		child->close();
         child = nullptr;
-    }
+	}
 
 	return child;
 }
@@ -2502,7 +2500,7 @@ void MainWindow::zoom(int zoom)
         if (textEdit)
             textEdit->sciScintilla()->setZoom(zoom);
     }
-    globalZoomLevel_ = zoom;
+
     showStatusbarMessage(QString("Zoom level: %1").arg(zoom), 3500);
 }
 
@@ -3841,7 +3839,6 @@ void MainWindow::restoreOpenFiles()
 					QPoint p = cursorPositions[i].toPoint();
 #ifdef SCINTILLAEDIT_H
                     textEdit->sciScintilla()->setCurrentPos(textEdit->sciScintilla()->positionFromPoint(p.x(),p.y()));
-                    textEdit->sciScintilla()->setZoom(globalZoomLevel_);
 #else
                     textEdit->sciScintilla()->setCursorPosition(p.x(), p.y());
 #endif

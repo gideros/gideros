@@ -331,8 +331,6 @@ private:
 
 private slots:
     void zoom(int zoom);
-private:
-    int globalZoomLevel_;
 
 private slots:
 	void find();
