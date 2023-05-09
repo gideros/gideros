@@ -1,6 +1,5 @@
 // TODO
-// tables instead of vectors?
-// Nav settings
+// tables instead of vectors
 // Remove "CallbackData" vecotr?
 
 #define _UNUSED(n)
@@ -26,6 +25,8 @@
 #include "texturebase.h"
 #include "bitmapdata.h"
 #include "bitmap.h"
+
+#include <chrono>
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +57,7 @@
 #elif defined(IS_BETA_BUILD)
 #define PLUGIN_NAME "ImGui_beta"
 #include "stackchecker.h"
-#define STACK_CHECKER(L, pre, delta) StackChecker checker(L, pre, delta);
+#define STACK_CHECKER(L, pre, delta) EmptyStackChecker checker(L, pre, delta);
 #else
 #define PLUGIN_NAME "ImGui"
 #define STACK_CHECKER(L, pre, delta) ((void)0)
@@ -130,7 +131,7 @@ static void stackDump(lua_State* L, const char* prefix = "")
 		i--;
 	}
 	LUA_PRINT("------------ Stack Dump Finished ------------\n");
-	
+
 	DUMP_INDEX++;
 }
 
@@ -438,6 +439,8 @@ static ImGuiMouseButton giderosMouseToImGui(const int button)
 {
 	switch (button)
 	{
+	case GINPUT_NO_BUTTON:
+		return 0;
 	case GINPUT_LEFT_BUTTON:
 		return ImGuiMouseButton_Left;
 	case GINPUT_RIGHT_BUTTON:
@@ -457,9 +460,12 @@ static ImGuiKey giderosKeyToImGuiKey(const int key)
 {
 	switch (key)
 	{
-		case GINPUT_KEY_SHIFT:		return ImGuiKey_ModShift;
-		case GINPUT_KEY_CTRL:		return ImGuiKey_ModCtrl;
-		case GINPUT_KEY_ALT:		return ImGuiKey_ModAlt;
+		case GINPUT_LEFT_BUTTON:	return ImGuiKey_MouseLeft;
+		case GINPUT_RIGHT_BUTTON:	return ImGuiKey_MouseRight;
+		case GINPUT_MIDDLE_BUTTON:	return ImGuiKey_MouseMiddle;
+		case GINPUT_KEY_SHIFT:		return ImGuiMod_Shift;
+		case GINPUT_KEY_CTRL:		return ImGuiMod_Ctrl;
+		case GINPUT_KEY_ALT:		return ImGuiMod_Alt;
 		case GINPUT_KEY_BACKSPACE:	return ImGuiKey_Backspace;
 		case GINPUT_KEY_TAB:		return ImGuiKey_Tab;
 		case GINPUT_KEY_ENTER:		return ImGuiKey_Enter;
@@ -539,10 +545,10 @@ static ImGuiKey giderosModKeyToImGuiMod(const int key)
 {
 	switch (key)
 	{
-		case GINPUT_ALT_MODIFIER:	return ImGuiKey_ModAlt;
-		case GINPUT_SHIFT_MODIFIER:	return ImGuiKey_ModShift;
-		case GINPUT_CTRL_MODIFIER:	return ImGuiKey_ModCtrl;
-		case GINPUT_META_MODIFIER:	return ImGuiKey_ModSuper;
+		case GINPUT_ALT_MODIFIER:	return ImGuiMod_Alt;
+		case GINPUT_SHIFT_MODIFIER:	return ImGuiMod_Shift;
+		case GINPUT_CTRL_MODIFIER:	return ImGuiMod_Ctrl;
+		case GINPUT_META_MODIFIER:	return ImGuiMod_Super;
 		default:					return ImGuiKey_None;
 	}
 }
@@ -551,11 +557,14 @@ static int imGuiKeyToGideros(const int key)
 {
 	switch (key)
 	{
-		case ImGuiKey_ModShift:		return GINPUT_KEY_SHIFT;
-		case ImGuiKey_ModCtrl:		return GINPUT_KEY_CTRL;
-		case ImGuiKey_ModAlt:		return GINPUT_KEY_ALT;
+		case ImGuiKey_MouseLeft:	return GINPUT_LEFT_BUTTON;
+		case ImGuiKey_MouseRight:	return GINPUT_RIGHT_BUTTON;
+		case ImGuiKey_MouseMiddle:	return GINPUT_MIDDLE_BUTTON;
+		case ImGuiMod_Shift:		return GINPUT_KEY_SHIFT;
+		case ImGuiMod_Ctrl:			return GINPUT_KEY_CTRL;
+		case ImGuiMod_Alt:			return GINPUT_KEY_ALT;
 		case ImGuiKey_Backspace:	return GINPUT_KEY_BACKSPACE;
-		case ImGuiKey_Tab:		return GINPUT_KEY_TAB;
+		case ImGuiKey_Tab:			return GINPUT_KEY_TAB;
 		case ImGuiKey_Enter:		return GINPUT_KEY_ENTER;
 		case ImGuiKey_Escape:		return GINPUT_KEY_ESC;
 		case ImGuiKey_Space:		return GINPUT_KEY_SPACE;
@@ -563,42 +572,42 @@ static int imGuiKeyToGideros(const int key)
 		case ImGuiKey_UpArrow:		return GINPUT_KEY_UP;
 		case ImGuiKey_RightArrow:	return GINPUT_KEY_RIGHT;
 		case ImGuiKey_DownArrow:	return GINPUT_KEY_DOWN;
-		case ImGuiKey_0:		return GINPUT_KEY_0;
-		case ImGuiKey_1:		return GINPUT_KEY_1;
-		case ImGuiKey_2:		return GINPUT_KEY_2;
-		case ImGuiKey_3:		return GINPUT_KEY_3;
-		case ImGuiKey_4:		return GINPUT_KEY_4;
-		case ImGuiKey_5:		return GINPUT_KEY_5;
-		case ImGuiKey_6:		return GINPUT_KEY_6;
-		case ImGuiKey_7:		return GINPUT_KEY_7;
-		case ImGuiKey_8:		return GINPUT_KEY_8;
-		case ImGuiKey_9:		return GINPUT_KEY_9;
-		case ImGuiKey_A:		return GINPUT_KEY_A;
-		case ImGuiKey_B:		return GINPUT_KEY_B;
-		case ImGuiKey_C:		return GINPUT_KEY_C;
-		case ImGuiKey_D:		return GINPUT_KEY_D;
-		case ImGuiKey_E:		return GINPUT_KEY_E;
-		case ImGuiKey_F:		return GINPUT_KEY_F;
-		case ImGuiKey_G:		return GINPUT_KEY_G;
-		case ImGuiKey_H:		return GINPUT_KEY_H;
-		case ImGuiKey_I:		return GINPUT_KEY_I;
-		case ImGuiKey_J:		return GINPUT_KEY_J;
-		case ImGuiKey_K:		return GINPUT_KEY_K;
-		case ImGuiKey_L:		return GINPUT_KEY_L;
-		case ImGuiKey_M:		return GINPUT_KEY_M;
-		case ImGuiKey_N:		return GINPUT_KEY_N;
-		case ImGuiKey_O:		return GINPUT_KEY_O;
-		case ImGuiKey_P:		return GINPUT_KEY_P;
-		case ImGuiKey_Q:		return GINPUT_KEY_Q;
-		case ImGuiKey_R:		return GINPUT_KEY_R;
-		case ImGuiKey_S:		return GINPUT_KEY_S;
-		case ImGuiKey_T:		return GINPUT_KEY_T;
-		case ImGuiKey_U:		return GINPUT_KEY_U;
-		case ImGuiKey_V:		return GINPUT_KEY_V;
-		case ImGuiKey_W:		return GINPUT_KEY_W;
-		case ImGuiKey_X:		return GINPUT_KEY_X;
-		case ImGuiKey_Y:		return GINPUT_KEY_Y;
-		case ImGuiKey_Z:		return GINPUT_KEY_Z;
+		case ImGuiKey_0:			return GINPUT_KEY_0;
+		case ImGuiKey_1:			return GINPUT_KEY_1;
+		case ImGuiKey_2:			return GINPUT_KEY_2;
+		case ImGuiKey_3:			return GINPUT_KEY_3;
+		case ImGuiKey_4:			return GINPUT_KEY_4;
+		case ImGuiKey_5:			return GINPUT_KEY_5;
+		case ImGuiKey_6:			return GINPUT_KEY_6;
+		case ImGuiKey_7:			return GINPUT_KEY_7;
+		case ImGuiKey_8:			return GINPUT_KEY_8;
+		case ImGuiKey_9:			return GINPUT_KEY_9;
+		case ImGuiKey_A:			return GINPUT_KEY_A;
+		case ImGuiKey_B:			return GINPUT_KEY_B;
+		case ImGuiKey_C:			return GINPUT_KEY_C;
+		case ImGuiKey_D:			return GINPUT_KEY_D;
+		case ImGuiKey_E:			return GINPUT_KEY_E;
+		case ImGuiKey_F:			return GINPUT_KEY_F;
+		case ImGuiKey_G:			return GINPUT_KEY_G;
+		case ImGuiKey_H:			return GINPUT_KEY_H;
+		case ImGuiKey_I:			return GINPUT_KEY_I;
+		case ImGuiKey_J:			return GINPUT_KEY_J;
+		case ImGuiKey_K:			return GINPUT_KEY_K;
+		case ImGuiKey_L:			return GINPUT_KEY_L;
+		case ImGuiKey_M:			return GINPUT_KEY_M;
+		case ImGuiKey_N:			return GINPUT_KEY_N;
+		case ImGuiKey_O:			return GINPUT_KEY_O;
+		case ImGuiKey_P:			return GINPUT_KEY_P;
+		case ImGuiKey_Q:			return GINPUT_KEY_Q;
+		case ImGuiKey_R:			return GINPUT_KEY_R;
+		case ImGuiKey_S:			return GINPUT_KEY_S;
+		case ImGuiKey_T:			return GINPUT_KEY_T;
+		case ImGuiKey_U:			return GINPUT_KEY_U;
+		case ImGuiKey_V:			return GINPUT_KEY_V;
+		case ImGuiKey_W:			return GINPUT_KEY_W;
+		case ImGuiKey_X:			return GINPUT_KEY_X;
+		case ImGuiKey_Y:			return GINPUT_KEY_Y;
+		case ImGuiKey_Z:			return GINPUT_KEY_Z;
 		//case ImGuiKey_:		return GINPUT_KEY_BACK;
 		//case ImGuiKey_:		return GINPUT_KEY_SEARCH;
 		//case ImGuiKey_:		return GINPUT_KEY_MENU;
@@ -607,25 +616,25 @@ static int imGuiKeyToGideros(const int key)
 		//case ImGuiKey_:		return GINPUT_KEY_START;
 		//case ImGuiKey_:		return GINPUT_KEY_L1;
 		//case ImGuiKey_:		return GINPUT_KEY_R1;
-		case ImGuiKey_Home:		return GINPUT_KEY_HOME;
-		case ImGuiKey_End:		return GINPUT_KEY_END;
+		case ImGuiKey_Home:			return GINPUT_KEY_HOME;
+		case ImGuiKey_End:			return GINPUT_KEY_END;
 		case ImGuiKey_Insert:		return GINPUT_KEY_INSERT;
 		case ImGuiKey_Delete:		return GINPUT_KEY_DELETE;
 		case ImGuiKey_PageUp:		return GINPUT_KEY_PAGEUP;
 		case ImGuiKey_PageDown:		return GINPUT_KEY_PAGEDOWN;
-		case ImGuiKey_F1:		return GINPUT_KEY_F1;
-		case ImGuiKey_F2:		return GINPUT_KEY_F2;
-		case ImGuiKey_F3:		return GINPUT_KEY_F3;
-		case ImGuiKey_F4:		return GINPUT_KEY_F4;
-		case ImGuiKey_F5:		return GINPUT_KEY_F5;
-		case ImGuiKey_F6:		return GINPUT_KEY_F6;
-		case ImGuiKey_F7:		return GINPUT_KEY_F7;
-		case ImGuiKey_F8:		return GINPUT_KEY_F8;
-		case ImGuiKey_F9:		return GINPUT_KEY_F9;
-		case ImGuiKey_F10:		return GINPUT_KEY_F10;
-		case ImGuiKey_F11:		return GINPUT_KEY_F11;
-		case ImGuiKey_F12:		return GINPUT_KEY_F12;
-		default: 			return 0;
+		case ImGuiKey_F1:			return GINPUT_KEY_F1;
+		case ImGuiKey_F2:			return GINPUT_KEY_F2;
+		case ImGuiKey_F3:			return GINPUT_KEY_F3;
+		case ImGuiKey_F4:			return GINPUT_KEY_F4;
+		case ImGuiKey_F5:			return GINPUT_KEY_F5;
+		case ImGuiKey_F6:			return GINPUT_KEY_F6;
+		case ImGuiKey_F7:			return GINPUT_KEY_F7;
+		case ImGuiKey_F8:			return GINPUT_KEY_F8;
+		case ImGuiKey_F9:			return GINPUT_KEY_F9;
+		case ImGuiKey_F10:			return GINPUT_KEY_F10;
+		case ImGuiKey_F11:			return GINPUT_KEY_F11;
+		case ImGuiKey_F12:			return GINPUT_KEY_F12;
+		default:					return 0;
 	}
 }
 
@@ -693,7 +702,7 @@ static ginput_Touch getTouchInfo(lua_State* L)
 			info.touchType = i;
 			break;
 		}
-	}	
+	}
 	lua_pop(L, 1);
 	
 	lua_pop(L, 1); // pop "touch" table
@@ -791,8 +800,8 @@ void setupUVs(lua_State* L, GTextureData& data, int idx)
 	{
 		float x = 0.0f;
 		float y = 0.0f;
-		float w = data.texture_size.x;
-		float h = data.texture_size.y;
+		float w = 0.0f;
+		float h = 0.0f;
 		bool clamp_area;
 		
 		switch (lua_type(L, idx))
@@ -898,6 +907,10 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiHoveredFlags_AllowWhenOverlapped, "HoveredFlags_AllowWhenOverlapped");
 	BIND_IENUM(L, ImGuiHoveredFlags_AnyWindow, "HoveredFlags_AnyWindow");
 	BIND_IENUM(L, ImGuiHoveredFlags_RootWindow, "HoveredFlags_RootWindow");
+	BIND_IENUM(L, ImGuiHoveredFlags_NoNavOverride , "HoveredFlags_NoNavOverride");
+	BIND_IENUM(L, ImGuiHoveredFlags_DelayNormal , "HoveredFlags_DelayNormal");
+	BIND_IENUM(L, ImGuiHoveredFlags_DelayShort , "HoveredFlags_DelayShort");
+	BIND_IENUM(L, ImGuiHoveredFlags_NoSharedDelay , "HoveredFlags_NoSharedDelay");
 	
 	//ImGuiInputTextFlags
 	BIND_IENUM(L, ImGuiInputTextFlags_EnterReturnsTrue, "InputTextFlags_EnterReturnsTrue");
@@ -922,6 +935,7 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiInputTextFlags_AlwaysOverwrite, "InputTextFlags_AlwaysOverwrite");
 	BIND_IENUM(L, ImGuiInputTextFlags_CharsUppercase, "InputTextFlags_CharsUppercase");
 	BIND_IENUM(L, ImGuiInputTextFlags_NoBackground, "InputTextFlags_NoBackground");
+	BIND_IENUM(L, ImGuiInputTextFlags_EscapeClearsAll, "InputTextFlags_EscapeClearsAll");
 	
 	//ImGuiTabBarFlags
 	BIND_IENUM(L, ImGuiTabBarFlags_AutoSelectNewTabs, "TabBarFlags_AutoSelectNewTabs");
@@ -980,6 +994,9 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiStyleVar_ButtonTextAlign, "StyleVar_ButtonTextAlign");
 	BIND_IENUM(L, ImGuiStyleVar_CellPadding, "StyleVar_CellPadding");
 	BIND_IENUM(L, ImGuiStyleVar_DisabledAlpha, "StyleVar_DisabledAlpha");
+	BIND_IENUM(L, ImGuiStyleVar_SeparatorTextBorderSize, "StyleVar_SeparatorTextBorderSize");
+	BIND_IENUM(L, ImGuiStyleVar_SeparatorTextAlign, "StyleVar_SeparatorTextAlign");
+	BIND_IENUM(L, ImGuiStyleVar_SeparatorTextPadding, "StyleVar_SeparatorTextPadding");
 	
 	
 	//ImGuiCol
@@ -1265,25 +1282,8 @@ void bindEnums(lua_State* L)
 	//ImGuiItemFlags
 	BIND_IENUM(L, ImGuiItemFlags_Disabled, "ItemFlags_Disabled");
 	BIND_IENUM(L, ImGuiItemFlags_ButtonRepeat, "ItemFlags_ButtonRepeat");
-	
-	//ImGuiNavInput
-	BIND_IENUM(L, ImGuiNavInput_FocusNext, "NavInput_FocusNext");
-	BIND_IENUM(L, ImGuiNavInput_TweakFast, "NavInput_TweakFast");
-	BIND_IENUM(L, ImGuiNavInput_Input, "NavInput_Input");
-	BIND_IENUM(L, ImGuiNavInput_DpadRight, "NavInput_DpadRight");
-	BIND_IENUM(L, ImGuiNavInput_FocusPrev, "NavInput_FocusPrev");
-	BIND_IENUM(L, ImGuiNavInput_LStickDown, "NavInput_LStickDown");
-	BIND_IENUM(L, ImGuiNavInput_LStickUp, "NavInput_LStickUp");
-	BIND_IENUM(L, ImGuiNavInput_Activate, "NavInput_Activate");
-	BIND_IENUM(L, ImGuiNavInput_LStickLeft, "NavInput_LStickLeft");
-	BIND_IENUM(L, ImGuiNavInput_LStickRight, "NavInput_LStickRight");
-	BIND_IENUM(L, ImGuiNavInput_DpadLeft, "NavInput_DpadLeft");
-	BIND_IENUM(L, ImGuiNavInput_DpadDown, "NavInput_DpadDown");
-	BIND_IENUM(L, ImGuiNavInput_TweakSlow, "NavInput_TweakSlow");
-	BIND_IENUM(L, ImGuiNavInput_DpadUp, "NavInput_DpadUp");
-	BIND_IENUM(L, ImGuiNavInput_Menu, "NavInput_Menu");
-	BIND_IENUM(L, ImGuiNavInput_Cancel, "NavInput_Cancel");
-	
+	BIND_IENUM(L, ImGuiItemFlags_NoTabStop, "ItemFlags_NoTabStop");
+
 	// ImGuiTableBgTarget
 	BIND_IENUM(L, ImGuiTableBgTarget_None, "TableBgTarget_None");
 	BIND_IENUM(L, ImGuiTableBgTarget_RowBg0, "TableBgTarget_RowBg0");
@@ -1529,26 +1529,174 @@ void bindEnums(lua_State* L)
 	BIND_IENUM(L, ImGuiKey_GamepadRStickDown, "Key_GamepadRStickDown");
 	BIND_IENUM(L, ImGuiKey_GamepadRStickLeft, "Key_GamepadRStickLeft");
 	BIND_IENUM(L, ImGuiKey_GamepadRStickRight, "Key_GamepadRStickRight");
+
+	// Mouse
+	BIND_IENUM(L, ImGuiKey_MouseLeft, "Key_MouseLeft");
+	BIND_IENUM(L, ImGuiKey_MouseRight, "Key_MouseRight");
+	BIND_IENUM(L, ImGuiKey_MouseMiddle, "Key_MouseMiddle");
+	BIND_IENUM(L, ImGuiKey_MouseX1, "Key_MouseX1");
+	BIND_IENUM(L, ImGuiKey_MouseX2, "Key_MouseX2");
+	BIND_IENUM(L, ImGuiKey_MouseWheelX, "Key_MouseWheelX");
+	BIND_IENUM(L, ImGuiKey_MouseWheelY, "Key_MouseWheelY");
 	
 	// Modifiers
-	BIND_IENUM(L, ImGuiKey_ModCtrl, "Key_ModCtrl");
-	BIND_IENUM(L, ImGuiKey_ModShift, "Key_ModShift");
-	BIND_IENUM(L, ImGuiKey_ModAlt, "Key_ModAlt");
-	BIND_IENUM(L, ImGuiKey_ModSuper, "Key_ModSuper");
+	BIND_IENUM(L, ImGuiMod_Ctrl, "Mod_Ctrl");
+	BIND_IENUM(L, ImGuiMod_Shift, "Mod_Shift");
+	BIND_IENUM(L, ImGuiMod_Alt, "Mod_Alt");
+	BIND_IENUM(L, ImGuiMod_Super, "Mod_Super");
+
+	BIND_IENUM(L, ImGuiKeyOwner_Any, "KeyOwner_Any");
+	BIND_IENUM(L, ImGuiKeyOwner_None, "KeyOwner_None");
+
+	BIND_IENUM(L, ImGuiInputFlags_None, "InputFlags_None");
+	BIND_IENUM(L, ImGuiInputFlags_Repeat, "InputFlags_Repeat");
+	BIND_IENUM(L, ImGuiInputFlags_RepeatRateDefault, "InputFlags_RepeatRateDefault");
+	BIND_IENUM(L, ImGuiInputFlags_RepeatRateNavMove, "InputFlags_RepeatRateNavMove");
+	BIND_IENUM(L, ImGuiInputFlags_RepeatRateNavTweak, "InputFlags_RepeatRateNavTweak");
+	BIND_IENUM(L, ImGuiInputFlags_RepeatRateMask_, "InputFlags_RepeatRateMask_");
+
+	BIND_IENUM(L, ImGuiInputFlags_CondHovered, "InputFlags_CondHovered");
+	BIND_IENUM(L, ImGuiInputFlags_CondActive, "InputFlags_CondActive");
+	BIND_IENUM(L, ImGuiInputFlags_CondDefault_, "InputFlags_CondDefault_");
+	BIND_IENUM(L, ImGuiInputFlags_CondMask_, "InputFlags_CondMask_");
+
+	BIND_IENUM(L, ImGuiInputFlags_LockThisFrame, "InputFlags_LockThisFrame");
+	BIND_IENUM(L, ImGuiInputFlags_LockUntilRelease, "InputFlags_LockUntilRelease");
+
+	BIND_IENUM(L, ImGuiInputFlags_RouteFocused, "InputFlags_RouteFocused");
+	BIND_IENUM(L, ImGuiInputFlags_RouteGlobalLow, "InputFlags_RouteGlobalLow");
+	BIND_IENUM(L, ImGuiInputFlags_RouteGlobal, "InputFlags_RouteGlobal");
+	BIND_IENUM(L, ImGuiInputFlags_RouteGlobalHigh, "InputFlags_RouteGlobalHigh");
+	BIND_IENUM(L, ImGuiInputFlags_RouteMask_, "InputFlags_RouteMask_");
+	BIND_IENUM(L, ImGuiInputFlags_RouteAlways, "InputFlags_RouteAlways");
+	BIND_IENUM(L, ImGuiInputFlags_RouteUnlessBgFocused, "InputFlags_RouteUnlessBgFocused");
+	BIND_IENUM(L, ImGuiInputFlags_RouteExtraMask_, "InputFlags_RouteExtraMask_");
 	
 	BIND_FENUM(L, FLT_MAX, "FLT_MAX");
 	BIND_FENUM(L, DBL_MAX, "DBL_MAX");
 	
-	lua_pop(L, 1);	
+	lua_pop(L, 1);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Input system
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+static ImVec2 TranslateMousePos(Sprite* sprite, float x, float y)
+{
+	std::stack<const Sprite*> stack;
+	float z;
+
+	const Sprite* curr = sprite;
+	while (curr)
+	{
+		stack.push(curr);
+		curr = curr->parent();
+	}
+
+	float ox = x;
+	float oy = y;
+	while (!stack.empty())
+	{
+		stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
+		// Avoid NaN
+		if (x != x)
+		{
+			x = ox;
+			y = oy;
+			break;
+		}
+		stack.pop();
+	}
+	return ImVec2(x, y);
+}
+
+void UpdateModifiers(int modifiers)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddKeyEvent(ImGuiMod_Alt, modifiers & GINPUT_ALT_MODIFIER);
+	io.AddKeyEvent(ImGuiMod_Ctrl, modifiers & GINPUT_CTRL_MODIFIER);
+	io.AddKeyEvent(ImGuiMod_Shift, modifiers & GINPUT_SHIFT_MODIFIER);
+	io.AddKeyEvent(ImGuiMod_Super, modifiers & GINPUT_META_MODIFIER);
+}
+
+void AddKeyboardInput(int giderosKeyCode, bool state)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	const ImGuiKey imguiKey = giderosKeyToImGuiKey(giderosKeyCode);
+	io.AddKeyEvent(imguiKey, state);
+}
+
+void AddInput(float x, float y, int giderosButton, bool state, int modifiers, float pressure = 0.0f, ImGuiMouseSource inputSource = ImGuiMouseSource_Mouse)
+{
+	ImGuiMouseButton imguiKey = giderosMouseToImGui(giderosButton);
+	ImGuiIO& io = ImGui::GetIO();
+	io.PenPressure = pressure;
+	io.AddMouseSourceEvent(inputSource);
+	io.AddMouseButtonEvent(imguiKey, state);
+	io.AddMousePosEvent(x, y);
+	UpdateModifiers(modifiers);
+}
+
+void AddInputStateOnly(int giderosButton, bool state, int modifiers, float pressure = 0.0f, ImGuiMouseSource inputSource = ImGuiMouseSource_Mouse)
+{
+	ImGuiMouseButton imguiKey = giderosMouseToImGui(giderosButton);
+	ImGuiIO& io = ImGui::GetIO();
+	io.PenPressure = pressure;
+	io.AddMouseSourceEvent(inputSource);
+	io.AddMouseButtonEvent(imguiKey, state);
+	UpdateModifiers(modifiers);
+}
+
+void AddInputPosOnly(float x, float y, int modifiers, ImGuiMouseSource inputSource = ImGuiMouseSource_Mouse)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMouseSourceEvent(inputSource);
+	io.AddMousePosEvent(x, y);
+	UpdateModifiers(modifiers);
+}
+
+void AddWheelInput(float x, float y, float wheel, int modifiers)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
+	io.AddMouseWheelEvent(0.0f, wheel < 0 ? -1.0f : 1.0f);
+	io.AddMousePosEvent(x, y);
+	UpdateModifiers(modifiers);
+}
+
+class EventListener;
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// GestureDetector (WIP)
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+class GestureDetector
+{
+public:
+	GestureDetector();
+
+	void onTouchBegin(float x, float y);
+	void onTouchMove(float x, float y);
+	void onTouchEnd(float x, float y, int modifiers, float pressure);
+	void onTouchCancel(float x, float y);
+	void reset();
+
+private:
+	bool m_holdGestureValid;
+	std::chrono::steady_clock::time_point m_gestureTouchStart;
+	float m_startTouchX, m_startTouchY;
+};
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
 /// GidImGui
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
-
-class EventListener;
 
 class GidImGui
 {
@@ -1557,19 +1705,21 @@ public:
 			 bool addMouseListeners, bool addKeyboardListeners, bool addTouchListeners);
 	~GidImGui();
 
+	GestureDetector* gestureDetector;
 	EventListener* eventListener;
 	ImGuiContext* ctx;
 	SpriteProxy* proxy;
 	std::vector<CallbackData*> callbacks;
 
 	bool resetTouchPosOnEnd;
+	bool touchGesturesEnabled;
 
 	void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	void clearCallbacks();
 private:
-	VertexBuffer<Point2f> vertices;
-	VertexBuffer<Point2f> texcoords;
-	VertexBuffer<VColor> colors;
+	VertexBuffer<Point2f> m_vertices;
+	VertexBuffer<Point2f> m_texcoords;
+	VertexBuffer<VColor> m_colors;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1580,152 +1730,76 @@ private:
 
 class EventListener : public EventDispatcher
 {
-private:
-	GidImGui* gidImGui;
-
-	void updateModifiers(int modifiers)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.AddKeyEvent(ImGuiKey_ModAlt, modifiers & GINPUT_ALT_MODIFIER);
-		io.AddKeyEvent(ImGuiKey_ModCtrl, modifiers & GINPUT_CTRL_MODIFIER);
-		io.AddKeyEvent(ImGuiKey_ModShift, modifiers & GINPUT_SHIFT_MODIFIER);
-		io.AddKeyEvent(ImGuiKey_ModSuper, modifiers & GINPUT_META_MODIFIER);
-	}
-
-	void keyUpOrDown(int giderosKeyCode, bool state)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		const ImGuiKey imguiKey = giderosKeyToImGuiKey(giderosKeyCode);
-		io.AddKeyEvent(imguiKey, state);
-	}
-
-	void mouseUpOrDown(float x, float y, int giderosButton, bool state, int modifiers, float pressure = 0.0f)
-	{
-		ImGuiKey imguiKey = giderosMouseToImGui(giderosButton);
-		ImGuiIO& io = ImGui::GetIO();
-		const ImVec2 mpos = translateMousePos(gidImGui->proxy, x, y);
-		io.PenPressure = pressure;
-		io.AddMouseButtonEvent(imguiKey, state);
-		io.AddMousePosEvent(mpos.x, mpos.y);
-		updateModifiers(modifiers);
-	}
-
-	void scaleMouseCoords(float& x, float& y)
-	{
-		x = x * r_app_scale.x + app_bounds.x;
-		y = y * r_app_scale.y + app_bounds.y;
-	}
-
 public:
-	ImVec2 r_app_scale;
-	ImVec2 app_bounds;
+	ImVec2 invAppScale;
+	ImVec2 appBounds;
 
-	EventListener(GidImGui* p_gidImGui)
+	EventListener(GidImGui* gidImGui) :
+		m_imgui(gidImGui)
 	{
-		this->gidImGui = p_gidImGui;
-		applicationResize(nullptr);
+		onApplicationResize(nullptr);
 	}
 
 	~EventListener() { }
 
-	static ImVec2 translateMousePos(Sprite* sprite, float x, float y)
-	{
-		std::stack<const Sprite*> stack;
-		float z;
-
-		const Sprite* curr = sprite;
-		while (curr)
-		{
-			stack.push(curr);
-			curr = curr->parent();
-		}
-		
-		float ox = x;
-		float oy = y;
-		while (!stack.empty())
-		{
-			stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
-			// Avoid NaN
-			if (x != x)
-			{
-				x = ox;
-				y = oy;
-				break;
-			}
-			stack.pop();
-		}
-		return ImVec2(x, y);
-	}
-
-	void mouseUpOrDown(ginput_Touch touch, bool state)
-	{
-		//LUA_PRINTF("POS: (%f; %f)\nBTN:%d\nSTATE: %d\nMODS: %d\nPRESSURE: %f\n=================", touch.x, touch.y, touch.mouseButton, state?1:0, touch.modifiers, touch.pressure);
-		mouseUpOrDown(touch.x, touch.y, touch.mouseButton, state, touch.modifiers, touch.pressure);
-	}
-	
-	void mouseUpOrDown(ginput_MouseEvent mouse, bool state)
-	{
-		mouseUpOrDown(mouse.x, mouse.y, mouse.button, state, mouse.modifiers);
-	}
-	
 	///////////////////////////////////////////////////
 	///
 	/// MOUSE
 	///
 	///////////////////////////////////////////////////
 
-	void mouseDown(MouseEvent* event)
+	void onMouseDown(MouseEvent* event)
 	{
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, event->button, true, event->modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInput(mpos.x, mpos.y, event->button, true, event->modifiers);
 	}
 
-	void mouseUp(MouseEvent* event)
+	void onMouseUp(MouseEvent* event)
 	{
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, event->button, false, event->modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInput(mpos.x, mpos.y, event->button, false, event->modifiers);
 	}
 
-	void mouseMove(float x, float y, int button, int modifiers)
+	void onMouseMove(float x, float y, int button, int modifiers)
 	{
-		mouseUpOrDown(x, y, button, true, modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInput(mpos.x, mpos.y, button, true, modifiers);
 	}
 
-	void mouseHover(float x, float y, int modifiers)
+	void onMouseHover(float x, float y, int modifiers)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		ImVec2 mpos = translateMousePos(gidImGui->proxy, x, y);
-		io.AddMousePosEvent(mpos.x, mpos.y);
-		updateModifiers(modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInputPosOnly(mpos.x, mpos.y, modifiers);
 	}
 
-	void mouseHover(MouseEvent* event)
-	{
-		float x = (float)event->x;
-		float y = (float)event->y;
-		scaleMouseCoords(x, y);
-		mouseHover(x, y, event->modifiers);
-	}
-
-	void mouseWheel(float x, float y, int wheel, int modifiers)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		const ImVec2 mpos = translateMousePos(gidImGui->proxy, x, y);
-		io.AddMouseWheelEvent(0.0f, wheel < 0 ? -1.0f : 1.0f);
-		io.AddMousePosEvent(mpos.x, mpos.y);
-		updateModifiers(modifiers);
-	}
-
-	void mouseWheel(MouseEvent* event)
+	void onMouseHover(MouseEvent* event)
 	{
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseWheel(x, y, event->wheel, event->modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInputPosOnly(mpos.x, mpos.y, event->modifiers);
+	}
+
+	void onMouseWheel(float x, float y, int wheel, int modifiers)
+	{
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddWheelInput(mpos.x, mpos.y, wheel, modifiers);
+	}
+
+	void onMouseWheel(MouseEvent* event)
+	{
+		float x = (float)event->x;
+		float y = (float)event->y;
+		scaleMouseCoords(x, y);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddWheelInput(mpos.x, mpos.y, event->wheel, event->modifiers);
 	}
 
 	///////////////////////////////////////////////////
@@ -1734,21 +1808,40 @@ public:
 	///
 	///////////////////////////////////////////////////
 
-	void touchesBegin(TouchEvent* event)
+	void onTouchesBegin(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
+		ginput_Touch& touch = event->event->touch;
+
+		if (touch.id > 0)
+		{
+			return;
+		}
+
 		float x = touch.x;
 		float y = touch.y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, true, event->event->touch.modifiers, touch.pressure);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+
+		if (m_imgui->touchGesturesEnabled)
+		{
+			m_imgui->gestureDetector->onTouchBegin(mpos.x, mpos.y);
+		}
+
+		AddInputPosOnly(mpos.x, mpos.y, touch.modifiers, ImGuiMouseSource_TouchScreen);
 	}
 
-	void touchesEnd(TouchEvent* event)
+	void onTouchesEnd(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
+		ginput_Touch& touch = event->event->touch;
+
+		if (touch.id > 0)
+		{
+			return;
+		}
+
 		float x;
 		float y;
-		if (gidImGui->resetTouchPosOnEnd)
+		if (m_imgui->resetTouchPosOnEnd)
 		{
 			x = FLT_MAX;
 			y = FLT_MAX;
@@ -1759,35 +1852,45 @@ public:
 			y = touch.y;
 		}
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, false, touch.modifiers, touch.pressure);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+
+		if (m_imgui->touchGesturesEnabled)
+		{
+			m_imgui->gestureDetector->onTouchEnd(mpos.x, mpos.y, touch.modifiers, touch.pressure);
+		}
+		AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, false, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	}
 
-	void touchesMove(TouchEvent* event)
+	void onTouchesMove(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
+		ginput_Touch& touch = event->event->touch;
+
+		if (touch.id > 0)
+		{
+			return;
+		}
+
 		float x = touch.x;
 		float y = touch.y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, true, touch.modifiers, touch.pressure);		
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+
+		if (m_imgui->touchGesturesEnabled)
+		{
+			m_imgui->gestureDetector->onTouchMove(mpos.x, mpos.y);
+		}
+
+		AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, true, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	}
 
-	void touchesCancel(TouchEvent* event)
+	void onTouchesCancel(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
-		float x;
-		float y;
-		if (gidImGui->resetTouchPosOnEnd)
-		{
-			x = FLT_MAX;
-			y = FLT_MAX;
+		auto io = ImGui::GetIO();
+		for (int i = 0; i < ImGuiMouseButton_COUNT; ++i) {
+			io.AddMouseButtonEvent(i, false);
 		}
-		else
-		{
-			x = touch.x;
-			y = touch.y;
-		}
-		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, false, touch.modifiers, touch.pressure);
+		io.ClearInputKeys();
+		m_imgui->gestureDetector->reset();
 	}
 
 	///////////////////////////////////////////////////
@@ -1796,44 +1899,44 @@ public:
 	///
 	///////////////////////////////////////////////////
 
-	void keyDown(KeyboardEvent* event)
+	void onKeyDown(KeyboardEvent* event)
 	{
-		keyDown(event->keyCode);
+		AddKeyboardInput(event->keyCode, true);
 	}
 
-	void keyDown(int keyCode)
+	void onKeyDown(int keyCode)
 	{
-		keyUpOrDown(keyCode, true);
+		AddKeyboardInput(keyCode, true);
 	}
 
-	void keyUp(KeyboardEvent* event)
+	void onKeyUp(KeyboardEvent* event)
 	{
-		keyUpOrDown(event->keyCode, false);
+		AddKeyboardInput(event->keyCode, false);
 	}
 
-	void keyUp(int keyCode)
+	void onKeyUp(int keyCode)
 	{
-		keyUpOrDown(keyCode, false);
+		AddKeyboardInput(keyCode, false);
 	}
 
-	void keyChar(KeyboardEvent* event)
+	void onKeyChar(KeyboardEvent* event)
 	{
-		keyChar(event->charCode);
+		onKeyChar(event->charCode);
 	}
 
-	void keyChar(std::string text)
+	void onKeyChar(std::string text)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddInputCharactersUTF8(text.c_str());
 	}
 
-	void keyChar2(const char* text) // error when adding event listener to a proxy in GidImGui constructor
+	void onKeyChar2(const char* text) // error when adding event listener to a proxy in GidImGui constructor
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddInputCharactersUTF8(text);
 	}
 
-	void applicationResize(Event *)
+	void onApplicationResize(Event *)
 	{
 		lua_getglobal(L, "application");
 
@@ -1852,18 +1955,77 @@ public:
 		lua_getfield(L, -1, "getLogicalBounds");
 		lua_pushvalue(L, -2);
 		lua_call(L, 1, 4);
-		app_bounds.x = luaL_checknumber(L, -4);
-		app_bounds.y = luaL_checknumber(L, -3);
+		appBounds.x = luaL_checknumber(L, -4);
+		appBounds.y = luaL_checknumber(L, -3);
 		lua_pop(L, 5);
 
-		r_app_scale.x = 1.0f / sx;
-		r_app_scale.y = 1.0f / sy;
+		invAppScale.x = 1.0f / sx;
+		invAppScale.y = 1.0f / sy;
+	}
+private:
+	GidImGui* m_imgui;
+
+	void scaleMouseCoords(float& x, float& y)
+	{
+		x = x * invAppScale.x + appBounds.x;
+		y = y * invAppScale.y + appBounds.y;
 	}
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// GestureDetector (WIP)
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
 
-//static 
+GestureDetector::GestureDetector() :
+	m_holdGestureValid(true),
+	m_startTouchX(0.0f),
+	m_startTouchY(0.0f)
+{
+}
+
+void GestureDetector::onTouchBegin(float x, float y)
+{
+	m_startTouchX = x;
+	m_startTouchY = y;
+	m_gestureTouchStart = std::chrono::steady_clock::now();
+}
+
+void GestureDetector::onTouchMove(float x, float y)
+{
+	float dx = m_startTouchX - x;
+	float dy = m_startTouchY - y;
+	float dist = dx * dx + dy * dy;
+
+	if (dist > 100 && m_holdGestureValid)
+	{
+		m_holdGestureValid = false;
+	}
+}
+
+void GestureDetector::onTouchEnd(float x, float y, int modifiers, float pressure)
+{
+	auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - m_gestureTouchStart).count();
+
+	if (m_holdGestureValid && diff > 500)
+	{
+		AddInputStateOnly(GINPUT_RIGHT_BUTTON, true, modifiers, pressure, ImGuiMouseSource_TouchScreen);
+		AddInputStateOnly(GINPUT_RIGHT_BUTTON, false, modifiers, pressure, ImGuiMouseSource_TouchScreen);
+	}
+
+	m_holdGestureValid = true;
+}
+
+void GestureDetector::onTouchCancel(float x, float y)
+{
+	m_holdGestureValid = true;
+}
+
+void GestureDetector::reset()
+{
+	m_holdGestureValid = true;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -1894,6 +2056,7 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 	ImGui::SetCurrentContext(ctx);
 	ImGui::SetLuaState(L);
 	resetTouchPosOnEnd = false;
+	touchGesturesEnabled = false;
 	ImGuiIO& io = ImGui::GetIO();
 	io.BackendRendererUserData = (void*)this;
 	
@@ -1904,6 +2067,10 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 	io.BackendPlatformName = "Gideros Studio";
 	io.BackendRendererName = "Gideros Studio";
 
+#if defined(TARGET_OS_MAC) || defined(__APPLE__)
+	io.ConfigMacOSXBehaviors = true;
+#endif
+
 	unsigned char* pixels;
 	int width, height;
 	io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
@@ -1913,32 +2080,33 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 	proxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
 
 	eventListener = new EventListener(this);
+	gestureDetector = new GestureDetector();
 	
 	if (addMouseListeners)
 	{
-		proxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::mouseDown);
-		proxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::mouseUp);
-		proxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::mouseDown);
-		proxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::mouseHover);
-		proxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::mouseWheel);
+		proxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::onMouseDown);
+		proxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::onMouseUp);
+		proxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::onMouseDown);
+		proxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::onMouseHover);
+		proxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::onMouseWheel);
 	}
 	
 	if (addTouchListeners)
 	{
-		proxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::touchesBegin);
-		proxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::touchesEnd);
-		proxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::touchesMove);
-		proxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::touchesCancel);
+		proxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::onTouchesBegin);
+		proxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::onTouchesEnd);
+		proxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::onTouchesMove);
+		proxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::onTouchesCancel);
 	}
 	
 	if (addKeyboardListeners)
 	{
-		proxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::keyDown);
-		proxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::keyUp);
-		proxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::keyChar);
+		proxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::onKeyDown);
+		proxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::onKeyUp);
+		proxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::onKeyChar);
 	}
 	
-	proxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::applicationResize);
+	proxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::onApplicationResize);
 }
 
 GidImGui::~GidImGui()
@@ -1967,16 +2135,16 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 
 		size_t vtx_size = cmd_list->VtxBuffer.Size;
 		
-		vertices.resize(vtx_size);
-		texcoords.resize(vtx_size);
-		colors.resize(vtx_size);
+		m_vertices.resize(vtx_size);
+		m_texcoords.resize(vtx_size);
+		m_colors.resize(vtx_size);
 		
 		for (size_t i = 0; i < vtx_size; i++)
 		{
-			vertices[i].x = vtx_buffer[i].pos.x;
-			vertices[i].y = vtx_buffer[i].pos.y;
-			texcoords[i].x = vtx_buffer[i].uv.x;
-			texcoords[i].y = vtx_buffer[i].uv.y;
+			m_vertices[i].x = vtx_buffer[i].pos.x;
+			m_vertices[i].y = vtx_buffer[i].pos.y;
+			m_texcoords[i].x = vtx_buffer[i].uv.x;
+			m_texcoords[i].y = vtx_buffer[i].uv.y;
 			
 			uint32_t c = vtx_buffer[i].col;
 			
@@ -1985,18 +2153,18 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 			uint32_t b = (c >> IM_COL32_B_SHIFT) & 0xFF;
 			uint32_t a = (c >> IM_COL32_A_SHIFT) & 0xFF;
 			
-			colors[i].r = (r * a) >> 8;
-			colors[i].g = (g * a) >> 8;
-			colors[i].b = (b * a) >> 8;
-			colors[i].a = a;
+			m_colors[i].r = (r * a) >> 8;
+			m_colors[i].g = (g * a) >> 8;
+			m_colors[i].b = (b * a) >> 8;
+			m_colors[i].a = a;
 		}
-		vertices.Update();
-		texcoords.Update();
-		colors.Update();
+		m_vertices.Update();
+		m_texcoords.Update();
+		m_colors.Update();
 
-		shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, &vertices[0], vtx_size, true, NULL);
-		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT,2, &texcoords[0], vtx_size, true, NULL);
-		shp->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE,4, &colors[0], vtx_size, true, NULL);
+		shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, &m_vertices[0], vtx_size, true, NULL);
+		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT,2, &m_texcoords[0], vtx_size, true, NULL);
+		shp->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE,4, &m_colors[0], vtx_size, true, NULL);
 		
 		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 		{
@@ -2074,7 +2242,7 @@ int initImGui(lua_State* L) // ImGui.new() call
 int destroyImGui(LUA_STATE* p)
 {
 	void* ptr = GIDEROS_DTOR_UDATA(p);
-	GidImGui* imgui = static_cast<GidImGui*>(static_cast<SpriteProxy *>(ptr)->getContext());
+	GidImGui* imgui = static_cast<GidImGui*>(static_cast<SpriteProxy*>(ptr)->getContext());
 
 	gtexture_delete((g_id)(uintptr_t)imgui->ctx->IO.Fonts->TexID);
 
@@ -2084,6 +2252,7 @@ int destroyImGui(LUA_STATE* p)
 	imgui->eventListener->removeEventListeners();
 	imgui->clearCallbacks();
 	delete imgui->eventListener;
+	delete imgui->gestureDetector;
 
 	return 0;
 }
@@ -2094,15 +2263,45 @@ int destroyImGui(LUA_STATE* p)
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+int SetTouchGesturesEnabled(lua_State* L)
+{
+	STACK_CHECKER(L, "setTouchGesturesEnabled", 0);
+
+	GidImGui* imgui = getImgui(L);
+	imgui->touchGesturesEnabled = lua_toboolean(L, 2);
+	return 0;
+}
+
+int GetTouchGesturesEnabled(lua_State* L)
+{
+	STACK_CHECKER(L, "isTouchGesturesEnabled", 1);
+
+	GidImGui* imgui = getImgui(L);
+	lua_pushboolean(L, imgui->touchGesturesEnabled);
+	return 1;
+}
+
 /// MOUSE INPUTS
+
+int MouseDown(lua_State* L)
+{
+	STACK_CHECKER(L, "onMouseDown", 0);
+
+	GidImGui* imgui = getImgui(L);
+	ginput_MouseEvent mouse = getMouseInfo(L);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInput(mpos.x, mpos.y,  mouse.button, true, mouse.modifiers);
+	return 0;
+}
 
 int MouseHover(lua_State* L)
 {
 	STACK_CHECKER(L, "onMouseHover", 0);
 
 	GidImGui* imgui = getImgui(L);
-	ginput_MouseEvent mouse = getMouseInfo(L);		
-	imgui->eventListener->mouseHover(mouse.x, mouse.y, mouse.modifiers);
+	ginput_MouseEvent mouse = getMouseInfo(L);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInputPosOnly(mpos.x, mpos.y, mouse.modifiers);
 	return 0;
 }
 
@@ -2111,28 +2310,9 @@ int MouseMove(lua_State* L)
 	STACK_CHECKER(L, "onMouseMove", 0);
 
 	GidImGui* imgui = getImgui(L);
-	ginput_MouseEvent mouse = getMouseInfo(L);	
-	imgui->eventListener->mouseUpOrDown(mouse, true);	
-	return 0;
-}
-
-int MouseDown(lua_State* L)
-{
-	STACK_CHECKER(L, "onMouseDown", 0);
-
-	GidImGui* imgui = getImgui(L);
-	ginput_MouseEvent mouse = getMouseInfo(L);	
-	imgui->eventListener->mouseUpOrDown(mouse, true);
-	return 0;
-}
-
-int MouseUp(lua_State* L)
-{
-	STACK_CHECKER(L, "onMouseUp", 0);
-
-	GidImGui* imgui = getImgui(L);
-	ginput_MouseEvent mouse = getMouseInfo(L);	
-	imgui->eventListener->mouseUpOrDown(mouse, false);
+	ginput_MouseEvent mouse = getMouseInfo(L);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInput(mpos.x, mpos.y,  mouse.button, true, mouse.modifiers);
 	return 0;
 }
 
@@ -2141,20 +2321,39 @@ int MouseWheel(lua_State* L)
 	STACK_CHECKER(L, "onMouseWheel", 0);
 
 	GidImGui* imgui = getImgui(L);
-	ginput_MouseEvent mouse = getMouseInfo(L);		
-	imgui->eventListener->mouseWheel(mouse.x, mouse.y, mouse.wheel, mouse.modifiers);
+	ginput_MouseEvent mouse = getMouseInfo(L);
+	imgui->eventListener->onMouseWheel(mouse.x, mouse.y, mouse.wheel, mouse.modifiers);
+	return 0;
+}
+
+int MouseUp(lua_State* L)
+{
+	STACK_CHECKER(L, "onMouseUp", 0);
+
+	GidImGui* imgui = getImgui(L);
+	ginput_MouseEvent mouse = getMouseInfo(L);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInput(mpos.x, mpos.y,  mouse.button, false, mouse.modifiers);
 	return 0;
 }
 
 /// TOUCH INPUT
 
-int TouchCancel(lua_State* L)
+int TouchBegin(lua_State* L)
 {
-	STACK_CHECKER(L, "onTouchCancel", 0);
+	STACK_CHECKER(L, "onTouchBegin", 0);
 
 	GidImGui* imgui = getImgui(L);
 	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, false);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, touch.x, touch.y);
+
+	if (imgui->touchGesturesEnabled)
+	{
+		imgui->gestureDetector->onTouchBegin(mpos.x, mpos.y);
+	}
+
+	//addInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, true, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
+	AddInputPosOnly(mpos.x, mpos.y, touch.modifiers, ImGuiMouseSource_TouchScreen);
 	return 0;
 }
 
@@ -2164,17 +2363,28 @@ int TouchMove(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, true);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, touch.x, touch.y);
+
+	if (imgui->touchGesturesEnabled)
+	{
+		imgui->gestureDetector->onTouchMove(mpos.x, mpos.y);
+	}
+
+	AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, true, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	return 0;
 }
 
-int TouchBegin(lua_State* L)
+int TouchCancel(lua_State* L)
 {
-	STACK_CHECKER(L, "onTouchBegin", 0);
+	STACK_CHECKER(L, "onTouchCancel", 0);
 
 	GidImGui* imgui = getImgui(L);
-	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, true);
+	auto io = ImGui::GetIO();
+	for (int i = 0; i < ImGuiMouseButton_COUNT; ++i) {
+		io.AddMouseButtonEvent(i, false);
+	}
+	io.ClearInputKeys();
+	imgui->gestureDetector->reset();
 	return 0;
 }
 
@@ -2184,7 +2394,26 @@ int TouchEnd(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, false);
+	float x, y;
+
+	if (imgui->resetTouchPosOnEnd)
+	{
+		x = FLT_MAX;
+		y = FLT_MAX;
+	}
+	else
+	{
+		x = touch.x;
+		y = touch.y;
+	}
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, x, y);
+
+	if (imgui->touchGesturesEnabled)
+	{
+		imgui->gestureDetector->onTouchEnd(mpos.x, mpos.y, touch.modifiers, touch.pressure);
+	}
+
+	AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, false, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	return 0;
 }
 
@@ -2200,7 +2429,7 @@ int KeyUp(lua_State* L)
 	int keyCode = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	
-	imgui->eventListener->keyUp(keyCode);
+	imgui->eventListener->onKeyUp(keyCode);
 	
 	return 0;
 }
@@ -2215,7 +2444,7 @@ int KeyDown(lua_State* L)
 	int keyCode = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	
-	imgui->eventListener->keyDown(keyCode);
+	imgui->eventListener->onKeyDown(keyCode);
 	
 	return 0;
 }
@@ -2231,7 +2460,7 @@ int KeyChar(lua_State* L)
 	const char* text = lua_tostring(L, -1);
 	lua_pop(L, 1);
 	
-	imgui->eventListener->keyChar2(text);
+	imgui->eventListener->onKeyChar2(text);
 	
 	return 0;
 }
@@ -2391,7 +2620,7 @@ int BeginChild(lua_State* L)
 	return 1;
 }
 
-int EndChild(lua_State* _UNUSED(L))
+int EndChild(lua_State* L)
 {
 	STACK_CHECKER(L, "endChild", 0);
 
@@ -2588,6 +2817,15 @@ int SetNextWindowBgAlpha(lua_State* L)
 
 	double alpha = luaL_checknumber(L, 2);
 	ImGui::SetNextWindowBgAlpha(alpha);
+	return 0;
+}
+
+int SetNextWindowScroll(lua_State* L)
+{
+	STACK_CHECKER(L, "setNextWindowScroll", 0);
+
+	ImVec2 scroll = ImVec2(luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+	ImGui::SetNextWindowScroll(scroll);
 	return 0;
 }
 
@@ -2979,20 +3217,20 @@ int PopTextWrapPos(lua_State* _UNUSED(L))
 	return 0;
 }
 
-int PushAllowKeyboardFocus(lua_State* L)
+int PushTabStop(lua_State* L)
 {
-	STACK_CHECKER(L, "pushAllowKeyboardFocus", 0);
+	STACK_CHECKER(L, "pushTabStop", 0);
 
 	bool allow_keyboard_focus = lua_toboolean(L, 2);
-	ImGui::PushAllowKeyboardFocus(allow_keyboard_focus);
+	ImGui::PushTabStop(allow_keyboard_focus);
 	return 0;
 }
 
-int PopAllowKeyboardFocus(lua_State* _UNUSED(L))
+int PopTabStop(lua_State* _UNUSED(L))
 {
-	STACK_CHECKER(L, "popAllowKeyboardFocus", 0);
+	STACK_CHECKER(L, "popTabStop", 0);
 
-	ImGui::PopAllowKeyboardFocus();
+	ImGui::PopTabStop();
 	return 0;
 }
 
@@ -3019,7 +3257,15 @@ int PopButtonRepeat(lua_State* _UNUSED(L))
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-int Separator(lua_State* _UNUSED(L))
+int SeparatorText(lua_State* L)
+{
+	STACK_CHECKER(L, "separatorText", 0);
+	const char* label = luaL_checkstring(L, 2);
+	ImGui::SeparatorText(label);
+	return 0;
+}
+
+int Separator(lua_State* L)
 {
 	STACK_CHECKER(L, "separator", 0);
 
@@ -3290,6 +3536,16 @@ int GetID(lua_State* L)
 	return 1;
 }
 
+int GetItemID(lua_State* L)
+{
+	STACK_CHECKER(L, "getItemID", 1);
+
+	ImGuiID id = ImGui::GetItemID();
+	lua_pushnumber(L, id);
+
+	return 1;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
 /// Widgets: Text
@@ -3415,15 +3671,33 @@ int ImageButton(lua_State* L)
 {
 	STACK_CHECKER(L, "imageButton", 1);
 
-	GTextureData data(L, 2);
-	const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-	int frame_padding = luaL_optinteger(L, 5, -1);
+	const char* str_id = luaL_checkstring(L, 2);
+	GTextureData data(L, 3);
+	const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
 	const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 6, 0xffffff), luaL_optnumber(L, 7, 1.0f));
 	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 8, 0xffffff), luaL_optnumber(L, 9, 0.0f));
 	
 	setupUVs(L, data, 10);
 	
-	lua_pushboolean(L, ImGui::ImageButton(data.texture, size, data.uv0, data.uv1, frame_padding, bg_col, tint));
+	lua_pushboolean(L, ImGui::ImageButton(str_id, data.texture, size, data.uv0, data.uv1, bg_col, tint));
+	return 1;
+}
+
+int ImageButtonUV(lua_State* L)
+{
+	STACK_CHECKER(L, "imageButtonUV", 1);
+
+	const char* str_id = luaL_checkstring(L, 2);
+	GTextureData data(L, 3);
+	const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+	const ImVec2& uv0 = ImVec2(luaL_checknumber(L, 6), luaL_checknumber(L, 7));
+	const ImVec2& uv1 = ImVec2(luaL_checknumber(L, 8), luaL_checknumber(L, 9));
+	const ImVec4& tint = GColor::toVec4(luaL_optinteger(L, 10, 0xffffff), luaL_optnumber(L, 11, 1.0f));
+	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 12, 0xffffff), luaL_optnumber(L, 13, 0.0f));
+
+	setupUVs(L, data, 10);
+
+	lua_pushboolean(L, ImGui::ImageButton(str_id, data.texture, size, uv0, uv1, bg_col, tint));
 	return 1;
 }
 
@@ -5269,8 +5543,72 @@ int MenuItemEx(lua_State* L)
 	
 	bool flag = ImGui::MenuItemEx(label, icon, shortcut, selected, enabled);
 	lua_pushboolean(L, flag);
-	
+
 	return 1;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Shortcuts?
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+int Shortcut(lua_State* L)
+{
+	STACK_CHECKER(L, "shortcut", 1);
+	ImGuiKeyChord keyChord = luaL_checkinteger(L, 2);
+	ImGuiID owner_id = luaL_optinteger(L, 3, 0);
+	ImGuiInputFlags flags = luaL_optinteger(L, 4, 0);
+
+	bool result = ImGui::Shortcut(keyChord, owner_id, flags);
+	lua_pushboolean(L, result);
+
+	return 1;
+}
+
+int SetShortcutRouting(lua_State* L)
+{
+	STACK_CHECKER(L, "setShortcutRouting", 1);
+
+	ImGuiKeyChord keyChord = luaL_checkinteger(L, 2);
+	ImGuiID owner_id = luaL_optinteger(L, 3, 0);
+	ImGuiInputFlags flags = luaL_optinteger(L, 4, 0);
+
+	bool result = ImGui::SetShortcutRouting(keyChord, owner_id, flags);
+	lua_pushboolean(L, result);
+
+	return 1;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Ownership
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+int SetItemKeyOwner(lua_State* L)
+{
+	STACK_CHECKER(L, "setItemKeyOwner", 0);
+
+	ImGuiKey key = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
+	ImGuiInputFlags flags = luaL_optinteger(L, 3, 0);
+
+	ImGui::SetItemKeyOwner(key, flags);
+
+	return 0;
+}
+
+int SetKeyOwner(lua_State* L)
+{
+	STACK_CHECKER(L, "setKeyOwner", 0);
+
+	ImGuiKey key = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
+	ImGuiID owner_id = luaL_checkinteger(L, 3);
+	ImGuiInputFlags flags = luaL_optinteger(L, 4, 0);
+
+	ImGui::SetKeyOwner(key, owner_id, flags);
+
+	return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -5337,7 +5675,7 @@ int BeginPopupModal(lua_State* L)
 	return 1;
 }
 
-int EndPopup(lua_State* _UNUSED(L))
+int EndPopup(lua_State* L)
 {
 	STACK_CHECKER(L, "endPopup", 0);
 
@@ -5376,14 +5714,6 @@ int OpenPopupOnItemClick(lua_State* L)
 	const char* str_id = luaL_optstring(L, 2, NULL);
 	ImGuiPopupFlags popup_flags = luaL_optinteger(L, 3, 1);
 	ImGui::OpenPopupOnItemClick(str_id, popup_flags);
-	return 0;
-}
-
-int OpenPopupContextItem(lua_State* L)
-{
-	STACK_CHECKER(L, "openPopupContextItem", 0);
-
-	LUA_THROW_ERROR("\"ImGui:openPopupContextItem()\" is deprecated, use \"ImGui:openPopupOnItemClick()\" instead");
 	return 0;
 }
 
@@ -7977,7 +8307,7 @@ int BeginChildFrame(lua_State* L)
 	return 1;
 }
 
-int EndChildFrame(lua_State* _UNUSED(L))
+int EndChildFrame(lua_State* L)
 {
 	STACK_CHECKER(L, "endChildFrame", 0);
 
@@ -8017,7 +8347,7 @@ int GetKeyName(lua_State* L)
 {
 	STACK_CHECKER(L, "GetKeyName", 1);
 	
-	int imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
+	ImGuiKey imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
 	const char* keyName = ImGui::GetKeyName(imguiKey);
 	lua_pushstring(L, keyName);
 	return 1;
@@ -8027,7 +8357,7 @@ int IsKeyDown(lua_State* L)
 {
 	STACK_CHECKER(L, "isKeyDown", 1);
 
-	int imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
+	ImGuiKey imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
 	lua_pushboolean(L, ImGui::IsKeyDown(imguiKey));
 	return 1;
 }
@@ -8036,10 +8366,11 @@ int IsKeyPressed(lua_State* L)
 {
 	STACK_CHECKER(L, "isKeyPressed", 1);
 	
-	int imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
+	ImGuiKey imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
 	bool repeat = luaL_optboolean(L, 3, 1);
+	ImGuiInputFlags flags = luaL_optinteger(L, 4, 0);
 	
-	lua_pushboolean(L, ImGui::IsKeyPressed(imguiKey, repeat));
+	lua_pushboolean(L, ImGui::IsKeyPressed(imguiKey, repeat, flags));
 	return 1;
 }
 
@@ -8047,7 +8378,7 @@ int IsKeyReleased(lua_State* L)
 {
 	STACK_CHECKER(L, "isKeyReleased", 1);
 	
-	int imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
+	ImGuiKey imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
 	lua_pushboolean(L, ImGui::IsKeyReleased(imguiKey));
 	return 1;
 }
@@ -8056,19 +8387,19 @@ int GetKeyPressedAmount(lua_State* L)
 {
 	STACK_CHECKER(L, "getKeyPressedAmount", 1);
 	
-	int imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
+	ImGuiKey imguiKey = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
 	double repeat_delay = luaL_checknumber(L, 3);
 	double rate = luaL_checknumber(L, 4);
 	lua_pushinteger(L, ImGui::GetKeyPressedAmount(imguiKey, repeat_delay, rate));
 	return 1;
 }
 
-int CaptureKeyboardFromApp(lua_State* L)
+int SetNextFrameWantCaptureKeyboard(lua_State* L)
 {
-	STACK_CHECKER(L, "captureKeyboardFromApp", 0);
+	STACK_CHECKER(L, "setNextFrameWantCaptureKeyboard", 0);
 
 	bool want_capture_keyboard_value = luaL_optboolean(L, 2, 1);
-	ImGui::CaptureKeyboardFromApp(want_capture_keyboard_value);
+	ImGui::SetNextFrameWantCaptureKeyboard(want_capture_keyboard_value);
 	return 0;
 }
 
@@ -8093,7 +8424,9 @@ int IsMouseClicked(lua_State* L)
 
 	ImGuiMouseButton button = giderosMouseToImGui(lua_tointeger(L, 2));
 	bool repeat = luaL_optboolean(L, 3, 0);
-	lua_pushboolean(L, ImGui::IsMouseClicked(button, repeat));
+	ImGuiInputFlags flags = luaL_optinteger(L, 4, 0);
+
+	lua_pushboolean(L, ImGui::IsMouseClicked(button, repeat, flags));
 	return 1;
 }
 
@@ -8220,12 +8553,12 @@ int SetMouseCursor(lua_State* L)
 	return 0;
 }
 
-int CaptureMouseFromApp(lua_State* L)
+int SetNextFrameWantCaptureMouse(lua_State* L)
 {
-	STACK_CHECKER(L, "captureMouseFromApp", 0);
+	STACK_CHECKER(L, "setNextFrameWantCaptureMouse", 0);
 
 	bool want_capture_mouse_value = luaL_optboolean(L, 2, 1) > 0;
-	ImGui::CaptureMouseFromApp(want_capture_mouse_value);
+	ImGui::SetNextFrameWantCaptureMouse(want_capture_mouse_value);
 	return 0;
 }
 
@@ -9277,6 +9610,62 @@ int Style_GetAntiAliasedFill(lua_State* L)
 	return 1;
 }
 
+int Style_SetSeparatorTextBorderSize(lua_State* L)
+{
+	STACK_CHECKER(L, "setSeparatorTextBorderSize", 0);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	style.SeparatorTextBorderSize = luaL_checknumber(L, 2);
+	return 0;
+}
+
+int Style_GetSeparatorTextBorderSize(lua_State* L)
+{
+	STACK_CHECKER(L, "getSeparatorTextBorderSize", 1);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	lua_pushnumber(L, style.SeparatorTextBorderSize);
+	return 1;
+}
+
+int Style_SetSeparatorTextAlign(lua_State* L)
+{
+	STACK_CHECKER(L, "setSeparatorTextAlign", 0);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	style.SeparatorTextAlign = ImVec2(luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+	return 0;
+}
+
+int Style_GetSeparatorTextAlign(lua_State* L)
+{
+	STACK_CHECKER(L, "getSeparatorTextAlign", 2);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	lua_pushnumber(L, style.SeparatorTextAlign.x);
+	lua_pushnumber(L, style.SeparatorTextAlign.y);
+	return 2;
+}
+
+int Style_SetSeparatorTextPadding(lua_State* L)
+{
+	STACK_CHECKER(L, "setSeparatorTextPadding", 0);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	style.SeparatorTextPadding = ImVec2(luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+	return 0;
+}
+
+int Style_GetSeparatorTextPadding(lua_State* L)
+{
+	STACK_CHECKER(L, "getSeparatorTextPadding", 2);
+
+	ImGuiStyle &style = *getPtr<ImGuiStyle>(L, "ImGuiStyle");
+	lua_pushnumber(L, style.SeparatorTextPadding.x);
+	lua_pushnumber(L, style.SeparatorTextPadding.y);
+	return 2;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -9427,7 +9816,7 @@ int IO_isMouseDown(lua_State* L)
 {
 	STACK_CHECKER(L, "isMouseDown", 1);
 
-	ImGuiKey button = giderosMouseToImGui(luaL_checkinteger(L, 2));
+	ImGuiMouseButton button = giderosMouseToImGui(luaL_checkinteger(L, 2));
 	lua_pushboolean(L, ImGui::IsMouseDown(button));
 	return  1;
 }
@@ -10151,23 +10540,17 @@ int SetMousePos(lua_State* L)
 	float x = luaL_checknumber(L, 2);
 	float y = luaL_checknumber(L, 3);
 	
-	ImVec2 mpos = imgui->eventListener->translateMousePos(imgui->proxy, x, y);
+	ImVec2 mpos = TranslateMousePos(imgui->proxy, x, y);
 	ImGuiIO& io = ImGui::GetIO();
 	io.AddMousePosEvent(mpos.x, mpos.y);
 	return 0;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/// 
-/// 1.87 new input functions
-/// 
-/////////////////////////////////////////////////////////////////////////////////////////////
-
 int IO_AddKeyEvent(lua_State* L)
 {
 	STACK_CHECKER(L, "addKeyEvent", 0);
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
-	int key = luaL_checkinteger(L, 2);
+	ImGuiKey key = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
 	bool down = lua_toboolean(L, 3);
 	io.AddKeyEvent(key, down);
 	return 0;
@@ -10177,7 +10560,7 @@ int IO_AddKeyAnalogEvent(lua_State* L)
 {
 	STACK_CHECKER(L, "addKeyAnalogEvent", 0);
 	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
-	int key = luaL_checkinteger(L, 2);
+	ImGuiKey key = giderosKeyToImGuiKey(luaL_checkinteger(L, 2));
 	bool down = lua_toboolean(L, 3);
 	float v = luaL_checknumber(L, 4);
 	io.AddKeyAnalogEvent(key, down, v);
@@ -10211,6 +10594,15 @@ int IO_AddMouseWheelEvent(lua_State* L)
 	float x = luaL_checknumber(L, 2);
 	float y = luaL_checknumber(L, 3);
 	io.AddMouseWheelEvent(x, y);
+	return 0;
+}
+
+int IO_SetAppAcceptingEvents(lua_State* L)
+{
+	STACK_CHECKER(L, "setAppAcceptingEvents", 0);
+	ImGuiIO& io = *getPtr<ImGuiIO>(L, "ImGuiIO");
+	bool accepting_events = luaL_optboolean(L, 2, true);
+	io.SetAppAcceptingEvents(accepting_events);
 	return 0;
 }
 
@@ -10325,7 +10717,7 @@ void loadFontConfig(lua_State* L, int index, ImFontConfig &config, ImFontAtlas* 
 	lua_getfield(L, index, "glyphExtraSpacingX");
 	if (!lua_isnil(L, -1)) config.GlyphExtraSpacing.x = luaL_checknumber(L, -1);
 	lua_pop(L, 1);
-	
+
 	lua_getfield(L, index, "glyphExtraSpacingY");
 	if (!lua_isnil(L, -1)) config.GlyphExtraSpacing.y = luaL_checknumber(L, -1);
 	lua_pop(L, 1);
@@ -10454,7 +10846,7 @@ int FontAtlas_AddFont(lua_State *L)
 	double size_pixels = luaL_checknumber(L, 3);
 	
 	ImFont* font = addFont(L, atlas, file_name, size_pixels, lua_gettop(L) > 3, 4);
-	
+
 	g_pushInstance(L, "ImFont", font);
 	
 	return 1;
@@ -10530,7 +10922,7 @@ int FontAtlas_Build(lua_State* L)
 
 	unsigned char* pixels;
 	int width, height;
-    atlas->Build();
+	atlas->Build();
 	atlas->GetTexDataAsRGBA32(&pixels, &width, &height);
 	
 	gtexture_update((g_id)(uintptr_t)id, width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP,  GTEXTURE_LINEAR, pixels);
@@ -13061,6 +13453,8 @@ int loader(lua_State* L)
 		{"getDisabledAlpha", Style_GetDisabledAlpha},
 		{"setCellPadding", Style_SetCellPadding},
 		{"getCellPadding", Style_GetCellPadding},
+		{"setSeparatorTextBorderSize", Style_SetSeparatorTextBorderSize},
+		{"getSeparatorTextBorderSize", Style_GetSeparatorTextBorderSize},
 		
 		{NULL, NULL},
 	};
@@ -13149,6 +13543,8 @@ int loader(lua_State* L)
 		{"addMousePosEvent", IO_AddMousePosEvent},
 		{"addMouseButtonEvent", IO_AddMouseButtonEvent},
 		{"addMouseWheelEvent", IO_AddMouseWheelEvent},
+
+		{"setAppAcceptingEvents", IO_SetAppAcceptingEvents},
 		
 		/// NAVIGATION +
 //		{"setNavInput", IO_SetNavInput},
@@ -13612,7 +14008,10 @@ int loader(lua_State* L)
 	g_createClass(L, "ImGuiSizeCallbackData", NULL, NULL, NULL, imguiSizeCallbackDataFunctionList);
 	
 	const luaL_Reg imguiFunctionList[] =
-	{		
+	{
+		{"setTouchGesturesEnabled", SetTouchGesturesEnabled},
+		{"isTouchGesturesEnabled", GetTouchGesturesEnabled},
+
 		{"beginDisabled", BeginDisabled},
 		{"endDisabled", EndDisabled},
 		
@@ -13691,6 +14090,7 @@ int loader(lua_State* L)
 		{"setNextWindowCollapsed", SetNextWindowCollapsed},
 		{"setNextWindowFocus", SetNextWindowFocus},
 		{"setNextWindowBgAlpha", SetNextWindowBgAlpha},
+		{"setNextWindowScroll", SetNextWindowScroll},
 		{"setWindowPos", SetWindowPos},
 		{"setWindowSize", SetWindowSize},
 		{"setWindowCollapsed", SetWindowCollapsed},
@@ -13728,11 +14128,12 @@ int loader(lua_State* L)
 		{"calcItemWidth", CalcItemWidth},
 		{"pushTextWrapPos", PushTextWrapPos},
 		{"popTextWrapPos", PopTextWrapPos},
-		{"pushAllowKeyboardFocus", PushAllowKeyboardFocus},
-		{"popAllowKeyboardFocus", PopAllowKeyboardFocus},
+		{"pushTabStop", PushTabStop},
+		{"popTabStop", PopTabStop},
 		{"pushButtonRepeat", PushButtonRepeat},
 		{"popButtonRepeat", PopButtonRepeat},
 		
+		{"separatorText", SeparatorText},
 		{"separator", Separator},
 		{"sameLine", SameLine},
 		{"newLine", NewLine},
@@ -13761,6 +14162,7 @@ int loader(lua_State* L)
 		{"pushID", PushID},
 		{"popID", PopID},
 		{"getID", GetID},
+		{"getItemID", GetItemID},
 		
 		{"text", Text},
 		{"textColored", TextColored},
@@ -13777,6 +14179,7 @@ int loader(lua_State* L)
 		/// Images +
 		
 		{"image", Image},
+		{"imageButton", ImageButton},
 		{"imageButton", ImageButton},
 		
 		{"scaledImage", ScaledImage},
@@ -13892,7 +14295,6 @@ int loader(lua_State* L)
 		{"endPopup", EndPopup },
 		{"openPopup", OpenPopup },
 		{"openPopupOnItemClick", OpenPopupOnItemClick},
-		{"openPopupContextItem", OpenPopupContextItem},
 		{"closeCurrentPopup", CloseCurrentPopup },
 		{"beginPopupContextItem", BeginPopupContextItem },
 		{"beginPopupContextWindow", BeginPopupContextWindow },
@@ -13964,7 +14366,7 @@ int loader(lua_State* L)
 		{"isKeyPressed", IsKeyPressed},
 		{"isKeyReleased", IsKeyReleased},
 		{"getKeyPressedAmount", GetKeyPressedAmount},
-		{"captureKeyboardFromApp", CaptureKeyboardFromApp},
+		{"setNextFrameWantCaptureKeyboard", SetNextFrameWantCaptureKeyboard},
 		
 		// Inputs Utilities: Mouse
 		{"isMouseDown", IsMouseDown},
@@ -13982,7 +14384,7 @@ int loader(lua_State* L)
 		{"resetMouseDragDelta", ResetMouseDragDelta},
 		{"getMouseCursor", GetMouseCursor},
 		{"setMouseCursor", SetMouseCursor},
-		{"captureMouseFromApp", CaptureMouseFromApp},
+		{"setNextFrameWantCaptureMouse", SetNextFrameWantCaptureMouse},
 		
 		// Windows
 		{"beginWindow", Begin},
@@ -14062,6 +14464,13 @@ int loader(lua_State* L)
 		{"getDragDropPayloadDataSize", CTX_GetDragDropPayloadDataSize},
 		
 		{"setMousePos", SetMousePos},
+
+		{"shortcut", Shortcut},
+		{"setShortcutRouting", SetShortcutRouting},
+
+		{"setItemKeyOwner", SetItemKeyOwner},
+		{"setKeyOwner", SetKeyOwner},
+
 		
 	#ifdef IS_DOCKING_BUILD
 		{"dockSpace", DockSpace},
