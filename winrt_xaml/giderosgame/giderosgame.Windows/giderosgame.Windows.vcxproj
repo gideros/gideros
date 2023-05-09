@@ -105,7 +105,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <PackageCertificateKeyFile>giderosgame.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>0939392C5F40C6B55E2743D2A6643936F6350A12</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>AAF52142BA39F006D2FF096D9DB10CA408AAF26A</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
