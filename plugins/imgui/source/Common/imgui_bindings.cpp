@@ -26,6 +26,8 @@
 #include "bitmapdata.h"
 #include "bitmap.h"
 
+#include <chrono>
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -437,6 +439,8 @@ static ImGuiMouseButton giderosMouseToImGui(const int button)
 {
 	switch (button)
 	{
+	case GINPUT_NO_BUTTON:
+		return 0;
 	case GINPUT_LEFT_BUTTON:
 		return ImGuiMouseButton_Left;
 	case GINPUT_RIGHT_BUTTON:
@@ -1576,11 +1580,123 @@ void bindEnums(lua_State* L)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
-/// GidImGui
+/// Input system
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+static ImVec2 TranslateMousePos(Sprite* sprite, float x, float y)
+{
+	std::stack<const Sprite*> stack;
+	float z;
+
+	const Sprite* curr = sprite;
+	while (curr)
+	{
+		stack.push(curr);
+		curr = curr->parent();
+	}
+
+	float ox = x;
+	float oy = y;
+	while (!stack.empty())
+	{
+		stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
+		// Avoid NaN
+		if (x != x)
+		{
+			x = ox;
+			y = oy;
+			break;
+		}
+		stack.pop();
+	}
+	return ImVec2(x, y);
+}
+
+void UpdateModifiers(int modifiers)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddKeyEvent(ImGuiMod_Alt, modifiers & GINPUT_ALT_MODIFIER);
+	io.AddKeyEvent(ImGuiMod_Ctrl, modifiers & GINPUT_CTRL_MODIFIER);
+	io.AddKeyEvent(ImGuiMod_Shift, modifiers & GINPUT_SHIFT_MODIFIER);
+	io.AddKeyEvent(ImGuiMod_Super, modifiers & GINPUT_META_MODIFIER);
+}
+
+void AddKeyboardInput(int giderosKeyCode, bool state)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	const ImGuiKey imguiKey = giderosKeyToImGuiKey(giderosKeyCode);
+	io.AddKeyEvent(imguiKey, state);
+}
+
+void AddInput(float x, float y, int giderosButton, bool state, int modifiers, float pressure = 0.0f, ImGuiMouseSource inputSource = ImGuiMouseSource_Mouse)
+{
+	ImGuiMouseButton imguiKey = giderosMouseToImGui(giderosButton);
+	ImGuiIO& io = ImGui::GetIO();
+	io.PenPressure = pressure;
+	io.AddMouseSourceEvent(inputSource);
+	io.AddMouseButtonEvent(imguiKey, state);
+	io.AddMousePosEvent(x, y);
+	UpdateModifiers(modifiers);
+}
+
+void AddInputStateOnly(int giderosButton, bool state, int modifiers, float pressure = 0.0f, ImGuiMouseSource inputSource = ImGuiMouseSource_Mouse)
+{
+	ImGuiMouseButton imguiKey = giderosMouseToImGui(giderosButton);
+	ImGuiIO& io = ImGui::GetIO();
+	io.PenPressure = pressure;
+	io.AddMouseSourceEvent(inputSource);
+	io.AddMouseButtonEvent(imguiKey, state);
+	UpdateModifiers(modifiers);
+}
+
+void AddInputPosOnly(float x, float y, int modifiers, ImGuiMouseSource inputSource = ImGuiMouseSource_Mouse)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMouseSourceEvent(inputSource);
+	io.AddMousePosEvent(x, y);
+	UpdateModifiers(modifiers);
+}
+
+void AddWheelInput(float x, float y, float wheel, int modifiers)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
+	io.AddMouseWheelEvent(0.0f, wheel < 0 ? -1.0f : 1.0f);
+	io.AddMousePosEvent(x, y);
+	UpdateModifiers(modifiers);
+}
+
 class EventListener;
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// GestureDetector (WIP)
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+class GestureDetector
+{
+public:
+	GestureDetector();
+
+	void onTouchBegin(float x, float y);
+	void onTouchMove(float x, float y);
+	void onTouchEnd(float x, float y, int modifiers, float pressure);
+	void onTouchCancel(float x, float y);
+	void reset();
+
+private:
+	bool m_holdGestureValid;
+	std::chrono::steady_clock::time_point m_gestureTouchStart;
+	float m_startTouchX, m_startTouchY;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// GidImGui
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 class GidImGui
 {
@@ -1589,19 +1705,21 @@ public:
 			 bool addMouseListeners, bool addKeyboardListeners, bool addTouchListeners);
 	~GidImGui();
 
+	GestureDetector* gestureDetector;
 	EventListener* eventListener;
 	ImGuiContext* ctx;
 	SpriteProxy* proxy;
 	std::vector<CallbackData*> callbacks;
 
 	bool resetTouchPosOnEnd;
+	bool touchGesturesEnabled;
 
 	void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	void clearCallbacks();
 private:
-	VertexBuffer<Point2f> vertices;
-	VertexBuffer<Point2f> texcoords;
-	VertexBuffer<VColor> colors;
+	VertexBuffer<Point2f> m_vertices;
+	VertexBuffer<Point2f> m_texcoords;
+	VertexBuffer<VColor> m_colors;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1612,94 +1730,17 @@ private:
 
 class EventListener : public EventDispatcher
 {
-private:
-	GidImGui* gidImGui;
-
-	void updateModifiers(int modifiers)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.AddKeyEvent(ImGuiMod_Alt, modifiers & GINPUT_ALT_MODIFIER);
-		io.AddKeyEvent(ImGuiMod_Ctrl, modifiers & GINPUT_CTRL_MODIFIER);
-		io.AddKeyEvent(ImGuiMod_Shift, modifiers & GINPUT_SHIFT_MODIFIER);
-		io.AddKeyEvent(ImGuiMod_Super, modifiers & GINPUT_META_MODIFIER);
-	}
-
-	void keyUpOrDown(int giderosKeyCode, bool state)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		const ImGuiKey imguiKey = giderosKeyToImGuiKey(giderosKeyCode);
-		io.AddKeyEvent(imguiKey, state);
-	}
-
-	void mouseUpOrDown(float x, float y, int giderosButton, bool state, int modifiers, float pressure = 0.0f, ImGuiMouseSource mouseSource = ImGuiMouseSource_Mouse)
-	{
-		ImGuiMouseButton imguiKey = giderosMouseToImGui(giderosButton);
-		ImGuiIO& io = ImGui::GetIO();
-		const ImVec2 mpos = translateMousePos(gidImGui->proxy, x, y);
-		io.PenPressure = pressure;
-		io.AddMouseSourceEvent(mouseSource);
-		io.AddMouseButtonEvent(imguiKey, state);
-		io.AddMousePosEvent(mpos.x, mpos.y);
-		updateModifiers(modifiers);
-	}
-
-	void scaleMouseCoords(float& x, float& y)
-	{
-		x = x * r_app_scale.x + app_bounds.x;
-		y = y * r_app_scale.y + app_bounds.y;
-	}
-
 public:
-	ImVec2 r_app_scale;
-	ImVec2 app_bounds;
+	ImVec2 invAppScale;
+	ImVec2 appBounds;
 
-	EventListener(GidImGui* p_gidImGui)
+	EventListener(GidImGui* gidImGui) :
+		m_imgui(gidImGui)
 	{
-		this->gidImGui = p_gidImGui;
-		applicationResize(nullptr);
+		onApplicationResize(nullptr);
 	}
 
 	~EventListener() { }
-
-	static ImVec2 translateMousePos(Sprite* sprite, float x, float y)
-	{
-		std::stack<const Sprite*> stack;
-		float z;
-
-		const Sprite* curr = sprite;
-		while (curr)
-		{
-			stack.push(curr);
-			curr = curr->parent();
-		}
-
-		float ox = x;
-		float oy = y;
-		while (!stack.empty())
-		{
-			stack.top()->matrix().inverseTransformPoint(x, y, 0, &x, &y, &z);
-			// Avoid NaN
-			if (x != x)
-			{
-				x = ox;
-				y = oy;
-				break;
-			}
-			stack.pop();
-		}
-		return ImVec2(x, y);
-	}
-
-	void mouseUpOrDown(ginput_Touch touch, bool state)
-	{
-		//LUA_PRINTF("POS: (%f; %f)\nBTN:%d\nSTATE: %d\nMODS: %d\nPRESSURE: %f\n=================", touch.x, touch.y, touch.mouseButton, state?1:0, touch.modifiers, touch.pressure);
-		mouseUpOrDown(touch.x, touch.y, touch.mouseButton, state, touch.modifiers, touch.pressure);
-	}
-
-	void mouseUpOrDown(ginput_MouseEvent mouse, bool state)
-	{
-		mouseUpOrDown(mouse.x, mouse.y, mouse.button, state, mouse.modifiers);
-	}
 
 	///////////////////////////////////////////////////
 	///
@@ -1707,60 +1748,58 @@ public:
 	///
 	///////////////////////////////////////////////////
 
-	void mouseDown(MouseEvent* event)
+	void onMouseDown(MouseEvent* event)
 	{
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, event->button, true, event->modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInput(mpos.x, mpos.y, event->button, true, event->modifiers);
 	}
 
-	void mouseUp(MouseEvent* event)
+	void onMouseUp(MouseEvent* event)
 	{
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, event->button, false, event->modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInput(mpos.x, mpos.y, event->button, false, event->modifiers);
 	}
 
-	void mouseMove(float x, float y, int button, int modifiers)
+	void onMouseMove(float x, float y, int button, int modifiers)
 	{
-		mouseUpOrDown(x, y, button, true, modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInput(mpos.x, mpos.y, button, true, modifiers);
 	}
 
-	void mouseHover(float x, float y, int modifiers)
+	void onMouseHover(float x, float y, int modifiers)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		ImVec2 mpos = translateMousePos(gidImGui->proxy, x, y);
-		io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
-		io.AddMousePosEvent(mpos.x, mpos.y);
-		updateModifiers(modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInputPosOnly(mpos.x, mpos.y, modifiers);
 	}
 
-	void mouseHover(MouseEvent* event)
-	{
-		float x = (float)event->x;
-		float y = (float)event->y;
-		scaleMouseCoords(x, y);
-		mouseHover(x, y, event->modifiers);
-	}
-
-	void mouseWheel(float x, float y, int wheel, int modifiers)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		const ImVec2 mpos = translateMousePos(gidImGui->proxy, x, y);
-		io.AddMouseSourceEvent(ImGuiMouseSource_Mouse);
-		io.AddMouseWheelEvent(0.0f, wheel < 0 ? -1.0f : 1.0f);
-		io.AddMousePosEvent(mpos.x, mpos.y);
-		updateModifiers(modifiers);
-	}
-
-	void mouseWheel(MouseEvent* event)
+	void onMouseHover(MouseEvent* event)
 	{
 		float x = (float)event->x;
 		float y = (float)event->y;
 		scaleMouseCoords(x, y);
-		mouseWheel(x, y, event->wheel, event->modifiers);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddInputPosOnly(mpos.x, mpos.y, event->modifiers);
+	}
+
+	void onMouseWheel(float x, float y, int wheel, int modifiers)
+	{
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddWheelInput(mpos.x, mpos.y, wheel, modifiers);
+	}
+
+	void onMouseWheel(MouseEvent* event)
+	{
+		float x = (float)event->x;
+		float y = (float)event->y;
+		scaleMouseCoords(x, y);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+		AddWheelInput(mpos.x, mpos.y, event->wheel, event->modifiers);
 	}
 
 	///////////////////////////////////////////////////
@@ -1769,21 +1808,40 @@ public:
 	///
 	///////////////////////////////////////////////////
 
-	void touchesBegin(TouchEvent* event)
+	void onTouchesBegin(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
+		ginput_Touch& touch = event->event->touch;
+
+		if (touch.id > 0)
+		{
+			return;
+		}
+
 		float x = touch.x;
 		float y = touch.y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, true, event->event->touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+
+		if (m_imgui->touchGesturesEnabled)
+		{
+			m_imgui->gestureDetector->onTouchBegin(mpos.x, mpos.y);
+		}
+
+		AddInputPosOnly(mpos.x, mpos.y, touch.modifiers, ImGuiMouseSource_TouchScreen);
 	}
 
-	void touchesEnd(TouchEvent* event)
+	void onTouchesEnd(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
+		ginput_Touch& touch = event->event->touch;
+
+		if (touch.id > 0)
+		{
+			return;
+		}
+
 		float x;
 		float y;
-		if (gidImGui->resetTouchPosOnEnd)
+		if (m_imgui->resetTouchPosOnEnd)
 		{
 			x = FLT_MAX;
 			y = FLT_MAX;
@@ -1794,35 +1852,45 @@ public:
 			y = touch.y;
 		}
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, false, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+
+		if (m_imgui->touchGesturesEnabled)
+		{
+			m_imgui->gestureDetector->onTouchEnd(mpos.x, mpos.y, touch.modifiers, touch.pressure);
+		}
+		AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, false, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	}
 
-	void touchesMove(TouchEvent* event)
+	void onTouchesMove(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
+		ginput_Touch& touch = event->event->touch;
+
+		if (touch.id > 0)
+		{
+			return;
+		}
+
 		float x = touch.x;
 		float y = touch.y;
 		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, true, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
+		const ImVec2 mpos = TranslateMousePos(m_imgui->proxy, x, y);
+
+		if (m_imgui->touchGesturesEnabled)
+		{
+			m_imgui->gestureDetector->onTouchMove(mpos.x, mpos.y);
+		}
+
+		AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, true, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	}
 
-	void touchesCancel(TouchEvent* event)
+	void onTouchesCancel(TouchEvent* event)
 	{
-		ginput_Touch touch = event->event->touch;
-		float x;
-		float y;
-		if (gidImGui->resetTouchPosOnEnd)
-		{
-			x = FLT_MAX;
-			y = FLT_MAX;
+		auto io = ImGui::GetIO();
+		for (int i = 0; i < ImGuiMouseButton_COUNT; ++i) {
+			io.AddMouseButtonEvent(i, false);
 		}
-		else
-		{
-			x = touch.x;
-			y = touch.y;
-		}
-		scaleMouseCoords(x, y);
-		mouseUpOrDown(x, y, touch.mouseButton, false, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
+		io.ClearInputKeys();
+		m_imgui->gestureDetector->reset();
 	}
 
 	///////////////////////////////////////////////////
@@ -1831,44 +1899,44 @@ public:
 	///
 	///////////////////////////////////////////////////
 
-	void keyDown(KeyboardEvent* event)
+	void onKeyDown(KeyboardEvent* event)
 	{
-		keyDown(event->keyCode);
+		AddKeyboardInput(event->keyCode, true);
 	}
 
-	void keyDown(int keyCode)
+	void onKeyDown(int keyCode)
 	{
-		keyUpOrDown(keyCode, true);
+		AddKeyboardInput(keyCode, true);
 	}
 
-	void keyUp(KeyboardEvent* event)
+	void onKeyUp(KeyboardEvent* event)
 	{
-		keyUpOrDown(event->keyCode, false);
+		AddKeyboardInput(event->keyCode, false);
 	}
 
-	void keyUp(int keyCode)
+	void onKeyUp(int keyCode)
 	{
-		keyUpOrDown(keyCode, false);
+		AddKeyboardInput(keyCode, false);
 	}
 
-	void keyChar(KeyboardEvent* event)
+	void onKeyChar(KeyboardEvent* event)
 	{
-		keyChar(event->charCode);
+		onKeyChar(event->charCode);
 	}
 
-	void keyChar(std::string text)
+	void onKeyChar(std::string text)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddInputCharactersUTF8(text.c_str());
 	}
 
-	void keyChar2(const char* text) // error when adding event listener to a proxy in GidImGui constructor
+	void onKeyChar2(const char* text) // error when adding event listener to a proxy in GidImGui constructor
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.AddInputCharactersUTF8(text);
 	}
 
-	void applicationResize(Event *)
+	void onApplicationResize(Event *)
 	{
 		lua_getglobal(L, "application");
 
@@ -1887,18 +1955,77 @@ public:
 		lua_getfield(L, -1, "getLogicalBounds");
 		lua_pushvalue(L, -2);
 		lua_call(L, 1, 4);
-		app_bounds.x = luaL_checknumber(L, -4);
-		app_bounds.y = luaL_checknumber(L, -3);
+		appBounds.x = luaL_checknumber(L, -4);
+		appBounds.y = luaL_checknumber(L, -3);
 		lua_pop(L, 5);
 
-		r_app_scale.x = 1.0f / sx;
-		r_app_scale.y = 1.0f / sy;
+		invAppScale.x = 1.0f / sx;
+		invAppScale.y = 1.0f / sy;
+	}
+private:
+	GidImGui* m_imgui;
+
+	void scaleMouseCoords(float& x, float& y)
+	{
+		x = x * invAppScale.x + appBounds.x;
+		y = y * invAppScale.y + appBounds.y;
 	}
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// GestureDetector (WIP)
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
 
-//static 
+GestureDetector::GestureDetector() :
+	m_holdGestureValid(true),
+	m_startTouchX(0.0f),
+	m_startTouchY(0.0f)
+{
+}
+
+void GestureDetector::onTouchBegin(float x, float y)
+{
+	m_startTouchX = x;
+	m_startTouchY = y;
+	m_gestureTouchStart = std::chrono::steady_clock::now();
+}
+
+void GestureDetector::onTouchMove(float x, float y)
+{
+	float dx = m_startTouchX - x;
+	float dy = m_startTouchY - y;
+	float dist = dx * dx + dy * dy;
+
+	if (dist > 100 && m_holdGestureValid)
+	{
+		m_holdGestureValid = false;
+	}
+}
+
+void GestureDetector::onTouchEnd(float x, float y, int modifiers, float pressure)
+{
+	auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - m_gestureTouchStart).count();
+
+	if (m_holdGestureValid && diff > 500)
+	{
+		AddInputStateOnly(GINPUT_RIGHT_BUTTON, true, modifiers, pressure, ImGuiMouseSource_TouchScreen);
+		AddInputStateOnly(GINPUT_RIGHT_BUTTON, false, modifiers, pressure, ImGuiMouseSource_TouchScreen);
+	}
+
+	m_holdGestureValid = true;
+}
+
+void GestureDetector::onTouchCancel(float x, float y)
+{
+	m_holdGestureValid = true;
+}
+
+void GestureDetector::reset()
+{
+	m_holdGestureValid = true;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -1929,6 +2056,7 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 	ImGui::SetCurrentContext(ctx);
 	ImGui::SetLuaState(L);
 	resetTouchPosOnEnd = false;
+	touchGesturesEnabled = false;
 	ImGuiIO& io = ImGui::GetIO();
 	io.BackendRendererUserData = (void*)this;
 	
@@ -1952,32 +2080,33 @@ GidImGui::GidImGui(LuaApplication* application, ImFontAtlas* atlas,
 	proxy = gtexture_get_spritefactory()->createProxy(application->getApplication(), this, _Draw, _Destroy);
 
 	eventListener = new EventListener(this);
+	gestureDetector = new GestureDetector();
 	
 	if (addMouseListeners)
 	{
-		proxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::mouseDown);
-		proxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::mouseUp);
-		proxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::mouseDown);
-		proxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::mouseHover);
-		proxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::mouseWheel);
+		proxy->addEventListener(MouseEvent::MOUSE_DOWN,     eventListener, &EventListener::onMouseDown);
+		proxy->addEventListener(MouseEvent::MOUSE_UP,       eventListener, &EventListener::onMouseUp);
+		proxy->addEventListener(MouseEvent::MOUSE_MOVE,     eventListener, &EventListener::onMouseDown);
+		proxy->addEventListener(MouseEvent::MOUSE_HOVER,    eventListener, &EventListener::onMouseHover);
+		proxy->addEventListener(MouseEvent::MOUSE_WHEEL,    eventListener, &EventListener::onMouseWheel);
 	}
 	
 	if (addTouchListeners)
 	{
-		proxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::touchesBegin);
-		proxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::touchesEnd);
-		proxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::touchesMove);
-		proxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::touchesCancel);
+		proxy->addEventListener(TouchEvent::TOUCHES_BEGIN,  eventListener, &EventListener::onTouchesBegin);
+		proxy->addEventListener(TouchEvent::TOUCHES_END,    eventListener, &EventListener::onTouchesEnd);
+		proxy->addEventListener(TouchEvent::TOUCHES_MOVE,   eventListener, &EventListener::onTouchesMove);
+		proxy->addEventListener(TouchEvent::TOUCHES_CANCEL, eventListener, &EventListener::onTouchesCancel);
 	}
 	
 	if (addKeyboardListeners)
 	{
-		proxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::keyDown);
-		proxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::keyUp);
-		proxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::keyChar);
+		proxy->addEventListener(KeyboardEvent::KEY_DOWN,    eventListener, &EventListener::onKeyDown);
+		proxy->addEventListener(KeyboardEvent::KEY_UP,      eventListener, &EventListener::onKeyUp);
+		proxy->addEventListener(KeyboardEvent::KEY_CHAR,    eventListener, &EventListener::onKeyChar);
 	}
 	
-	proxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::applicationResize);
+	proxy->addEventListener(Event::APPLICATION_RESIZE,  eventListener, &EventListener::onApplicationResize);
 }
 
 GidImGui::~GidImGui()
@@ -2006,16 +2135,16 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 
 		size_t vtx_size = cmd_list->VtxBuffer.Size;
 		
-		vertices.resize(vtx_size);
-		texcoords.resize(vtx_size);
-		colors.resize(vtx_size);
+		m_vertices.resize(vtx_size);
+		m_texcoords.resize(vtx_size);
+		m_colors.resize(vtx_size);
 		
 		for (size_t i = 0; i < vtx_size; i++)
 		{
-			vertices[i].x = vtx_buffer[i].pos.x;
-			vertices[i].y = vtx_buffer[i].pos.y;
-			texcoords[i].x = vtx_buffer[i].uv.x;
-			texcoords[i].y = vtx_buffer[i].uv.y;
+			m_vertices[i].x = vtx_buffer[i].pos.x;
+			m_vertices[i].y = vtx_buffer[i].pos.y;
+			m_texcoords[i].x = vtx_buffer[i].uv.x;
+			m_texcoords[i].y = vtx_buffer[i].uv.y;
 			
 			uint32_t c = vtx_buffer[i].col;
 			
@@ -2024,18 +2153,18 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 			uint32_t b = (c >> IM_COL32_B_SHIFT) & 0xFF;
 			uint32_t a = (c >> IM_COL32_A_SHIFT) & 0xFF;
 			
-			colors[i].r = (r * a) >> 8;
-			colors[i].g = (g * a) >> 8;
-			colors[i].b = (b * a) >> 8;
-			colors[i].a = a;
+			m_colors[i].r = (r * a) >> 8;
+			m_colors[i].g = (g * a) >> 8;
+			m_colors[i].b = (b * a) >> 8;
+			m_colors[i].a = a;
 		}
-		vertices.Update();
-		texcoords.Update();
-		colors.Update();
+		m_vertices.Update();
+		m_texcoords.Update();
+		m_colors.Update();
 
-		shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, &vertices[0], vtx_size, true, NULL);
-		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT,2, &texcoords[0], vtx_size, true, NULL);
-		shp->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE,4, &colors[0], vtx_size, true, NULL);
+		shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, &m_vertices[0], vtx_size, true, NULL);
+		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT,2, &m_texcoords[0], vtx_size, true, NULL);
+		shp->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE,4, &m_colors[0], vtx_size, true, NULL);
 		
 		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 		{
@@ -2123,6 +2252,7 @@ int destroyImGui(LUA_STATE* p)
 	imgui->eventListener->removeEventListeners();
 	imgui->clearCallbacks();
 	delete imgui->eventListener;
+	delete imgui->gestureDetector;
 
 	return 0;
 }
@@ -2133,7 +2263,36 @@ int destroyImGui(LUA_STATE* p)
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+int SetTouchGesturesEnabled(lua_State* L)
+{
+	STACK_CHECKER(L, "setTouchGesturesEnabled", 0);
+
+	GidImGui* imgui = getImgui(L);
+	imgui->touchGesturesEnabled = lua_toboolean(L, 2);
+	return 0;
+}
+
+int GetTouchGesturesEnabled(lua_State* L)
+{
+	STACK_CHECKER(L, "isTouchGesturesEnabled", 1);
+
+	GidImGui* imgui = getImgui(L);
+	lua_pushboolean(L, imgui->touchGesturesEnabled);
+	return 1;
+}
+
 /// MOUSE INPUTS
+
+int MouseDown(lua_State* L)
+{
+	STACK_CHECKER(L, "onMouseDown", 0);
+
+	GidImGui* imgui = getImgui(L);
+	ginput_MouseEvent mouse = getMouseInfo(L);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInput(mpos.x, mpos.y,  mouse.button, true, mouse.modifiers);
+	return 0;
+}
 
 int MouseHover(lua_State* L)
 {
@@ -2141,7 +2300,8 @@ int MouseHover(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	ginput_MouseEvent mouse = getMouseInfo(L);
-	imgui->eventListener->mouseHover(mouse.x, mouse.y, mouse.modifiers);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInputPosOnly(mpos.x, mpos.y, mouse.modifiers);
 	return 0;
 }
 
@@ -2151,27 +2311,8 @@ int MouseMove(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	ginput_MouseEvent mouse = getMouseInfo(L);
-	imgui->eventListener->mouseUpOrDown(mouse, true);
-	return 0;
-}
-
-int MouseDown(lua_State* L)
-{
-	STACK_CHECKER(L, "onMouseDown", 0);
-
-	GidImGui* imgui = getImgui(L);
-	ginput_MouseEvent mouse = getMouseInfo(L);
-	imgui->eventListener->mouseUpOrDown(mouse, true);
-	return 0;
-}
-
-int MouseUp(lua_State* L)
-{
-	STACK_CHECKER(L, "onMouseUp", 0);
-
-	GidImGui* imgui = getImgui(L);
-	ginput_MouseEvent mouse = getMouseInfo(L);
-	imgui->eventListener->mouseUpOrDown(mouse, false);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInput(mpos.x, mpos.y,  mouse.button, true, mouse.modifiers);
 	return 0;
 }
 
@@ -2181,19 +2322,38 @@ int MouseWheel(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	ginput_MouseEvent mouse = getMouseInfo(L);
-	imgui->eventListener->mouseWheel(mouse.x, mouse.y, mouse.wheel, mouse.modifiers);
+	imgui->eventListener->onMouseWheel(mouse.x, mouse.y, mouse.wheel, mouse.modifiers);
+	return 0;
+}
+
+int MouseUp(lua_State* L)
+{
+	STACK_CHECKER(L, "onMouseUp", 0);
+
+	GidImGui* imgui = getImgui(L);
+	ginput_MouseEvent mouse = getMouseInfo(L);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, mouse.x, mouse.y);
+	AddInput(mpos.x, mpos.y,  mouse.button, false, mouse.modifiers);
 	return 0;
 }
 
 /// TOUCH INPUT
 
-int TouchCancel(lua_State* L)
+int TouchBegin(lua_State* L)
 {
-	STACK_CHECKER(L, "onTouchCancel", 0);
+	STACK_CHECKER(L, "onTouchBegin", 0);
 
 	GidImGui* imgui = getImgui(L);
 	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, false);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, touch.x, touch.y);
+
+	if (imgui->touchGesturesEnabled)
+	{
+		imgui->gestureDetector->onTouchBegin(mpos.x, mpos.y);
+	}
+
+	//addInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, true, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
+	AddInputPosOnly(mpos.x, mpos.y, touch.modifiers, ImGuiMouseSource_TouchScreen);
 	return 0;
 }
 
@@ -2203,17 +2363,28 @@ int TouchMove(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, true);
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, touch.x, touch.y);
+
+	if (imgui->touchGesturesEnabled)
+	{
+		imgui->gestureDetector->onTouchMove(mpos.x, mpos.y);
+	}
+
+	AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, true, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	return 0;
 }
 
-int TouchBegin(lua_State* L)
+int TouchCancel(lua_State* L)
 {
-	STACK_CHECKER(L, "onTouchBegin", 0);
+	STACK_CHECKER(L, "onTouchCancel", 0);
 
 	GidImGui* imgui = getImgui(L);
-	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, true);
+	auto io = ImGui::GetIO();
+	for (int i = 0; i < ImGuiMouseButton_COUNT; ++i) {
+		io.AddMouseButtonEvent(i, false);
+	}
+	io.ClearInputKeys();
+	imgui->gestureDetector->reset();
 	return 0;
 }
 
@@ -2223,7 +2394,26 @@ int TouchEnd(lua_State* L)
 
 	GidImGui* imgui = getImgui(L);
 	ginput_Touch touch = getTouchInfo(L);
-	imgui->eventListener->mouseUpOrDown(touch, false);
+	float x, y;
+
+	if (imgui->resetTouchPosOnEnd)
+	{
+		x = FLT_MAX;
+		y = FLT_MAX;
+	}
+	else
+	{
+		x = touch.x;
+		y = touch.y;
+	}
+	const ImVec2 mpos = TranslateMousePos(imgui->proxy, x, y);
+
+	if (imgui->touchGesturesEnabled)
+	{
+		imgui->gestureDetector->onTouchEnd(mpos.x, mpos.y, touch.modifiers, touch.pressure);
+	}
+
+	AddInput(mpos.x, mpos.y, GINPUT_LEFT_BUTTON, false, touch.modifiers, touch.pressure, ImGuiMouseSource_TouchScreen);
 	return 0;
 }
 
@@ -2239,7 +2429,7 @@ int KeyUp(lua_State* L)
 	int keyCode = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	
-	imgui->eventListener->keyUp(keyCode);
+	imgui->eventListener->onKeyUp(keyCode);
 	
 	return 0;
 }
@@ -2254,7 +2444,7 @@ int KeyDown(lua_State* L)
 	int keyCode = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	
-	imgui->eventListener->keyDown(keyCode);
+	imgui->eventListener->onKeyDown(keyCode);
 	
 	return 0;
 }
@@ -2270,7 +2460,7 @@ int KeyChar(lua_State* L)
 	const char* text = lua_tostring(L, -1);
 	lua_pop(L, 1);
 	
-	imgui->eventListener->keyChar2(text);
+	imgui->eventListener->onKeyChar2(text);
 	
 	return 0;
 }
@@ -10350,7 +10540,7 @@ int SetMousePos(lua_State* L)
 	float x = luaL_checknumber(L, 2);
 	float y = luaL_checknumber(L, 3);
 	
-	ImVec2 mpos = imgui->eventListener->translateMousePos(imgui->proxy, x, y);
+	ImVec2 mpos = TranslateMousePos(imgui->proxy, x, y);
 	ImGuiIO& io = ImGui::GetIO();
 	io.AddMousePosEvent(mpos.x, mpos.y);
 	return 0;
@@ -10527,7 +10717,7 @@ void loadFontConfig(lua_State* L, int index, ImFontConfig &config, ImFontAtlas* 
 	lua_getfield(L, index, "glyphExtraSpacingX");
 	if (!lua_isnil(L, -1)) config.GlyphExtraSpacing.x = luaL_checknumber(L, -1);
 	lua_pop(L, 1);
-	
+
 	lua_getfield(L, index, "glyphExtraSpacingY");
 	if (!lua_isnil(L, -1)) config.GlyphExtraSpacing.y = luaL_checknumber(L, -1);
 	lua_pop(L, 1);
@@ -10656,7 +10846,7 @@ int FontAtlas_AddFont(lua_State *L)
 	double size_pixels = luaL_checknumber(L, 3);
 	
 	ImFont* font = addFont(L, atlas, file_name, size_pixels, lua_gettop(L) > 3, 4);
-	
+
 	g_pushInstance(L, "ImFont", font);
 	
 	return 1;
@@ -10732,7 +10922,7 @@ int FontAtlas_Build(lua_State* L)
 
 	unsigned char* pixels;
 	int width, height;
-    atlas->Build();
+	atlas->Build();
 	atlas->GetTexDataAsRGBA32(&pixels, &width, &height);
 	
 	gtexture_update((g_id)(uintptr_t)id, width, height, GTEXTURE_RGBA, GTEXTURE_UNSIGNED_BYTE, GTEXTURE_CLAMP,  GTEXTURE_LINEAR, pixels);
@@ -13819,6 +14009,9 @@ int loader(lua_State* L)
 	
 	const luaL_Reg imguiFunctionList[] =
 	{
+		{"setTouchGesturesEnabled", SetTouchGesturesEnabled},
+		{"isTouchGesturesEnabled", GetTouchGesturesEnabled},
+
 		{"beginDisabled", BeginDisabled},
 		{"endDisabled", EndDisabled},
 		

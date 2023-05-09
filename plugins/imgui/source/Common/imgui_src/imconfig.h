@@ -14,7 +14,7 @@
 
 #pragma once
 
-#define IS_BETA_BUILD // test things
+//#define IS_BETA_BUILD // test things
 //#define INCLUDE_IMPLOT
 
 #include "gstdio.h"
