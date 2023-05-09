@@ -27,7 +27,7 @@ extern int __isthreaded;
  *     WEAK_ALIAS(n) to generate the weak symbol n pointing to _weak_n,
  *     WEAK_PROTOTYPE(n) to generate a prototype for _weak_n (based on n).
  */
-#define WEAK_NAME(name)		__CONCAT(_weak_,name)
+#define WEAK_NAME(name)		__CONCAT_S(_weak_,name)
 #define WEAK_ALIAS(name)	__weak_alias(name, WEAK_NAME(name))
 #ifdef __GNUC__
 #define WEAK_PROTOTYPE(name)	__typeof__(name) WEAK_NAME(name)
@@ -38,7 +38,7 @@ extern int __isthreaded;
 /*
  * helper macro to make unique names in the thread namespace
  */
-#define __THREAD_NAME(name)	__CONCAT(_thread_tagname_,name)
+#define __THREAD_NAME(name)	__CONCAT_S(_thread_tagname_,name)
 
 
 struct __thread_private_tag_t {

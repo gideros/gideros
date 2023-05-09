@@ -27,7 +27,7 @@ LOCAL_ARM_MODE         := arm
 LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/../../../../../Sdk/include $(LOCAL_PATH)/..
 LOCAL_SRC_FILES        := countlybinder.cpp gcountly-android.cpp
-LOCAL_LDLIBS           := -ldl -llog -latomic
+LOCAL_LDLIBS           := -ldl -llog 
 LOCAL_SHARED_LIBRARIES := lua gideros
 
 include $(BUILD_SHARED_LIBRARY)

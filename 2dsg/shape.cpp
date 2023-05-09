@@ -15,11 +15,13 @@
 
 #ifndef __EMSCRIPTEN__
 #ifndef __APPLE__
+#ifndef __ANDROID__
 //emscripten and Xcode have it already
 static bool isnan(float x)
 {
     return x != x;
 }
+#endif
 #endif
 #endif
 

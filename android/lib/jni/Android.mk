@@ -553,7 +553,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/bufferbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
-LOCAL_LDLIBS := -lGLESv3 -ldl -llog -lOpenSLES -latomic
+LOCAL_LDLIBS := -lGLESv3 -ldl -llog -lOpenSLES
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
 LOCAL_STATIC_LIBRARIES := openal mpg123 libxmp
