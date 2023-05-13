@@ -3705,18 +3705,19 @@ int ScaledImage(lua_State* L)
 {
 	STACK_CHECKER(L, "scaledImage", 0);
 
-	GTextureData data(L, 2);
-	const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-	ImGuiImageScaleMode fit_mode = luaL_optinteger(L, 5, ImGuiImageScaleMode_LetterBox);
-	bool keep_size = lua_toboolean(L, 6);
-	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 7, 0.5f), luaL_optnumber(L, 8, 0.5f));
-	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 9, 0xffffff), luaL_optnumber(L, 10, 1.0f));
-	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 11, 0), luaL_optnumber(L, 12, 0.0f));
-	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 13, 0), luaL_optnumber(L, 14, 0.0f));
+	const char* str_id = luaL_checkstring(L, 2);
+	GTextureData data(L, 3);
+	const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+	int fit_mode = luaL_optinteger(L, 6, 0);
+	bool keep_size = lua_toboolean(L, 7);
+	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 8, 0.5f), luaL_optnumber(L, 9, 0.5f));
+	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 10, 0xffffff), luaL_optnumber(L, 11, 1.0f));
+	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 12, 0), luaL_optnumber(L, 13, 0.0f));
+	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
 	
-	setupUVs(L, data, 15);
+	setupUVs(L, data, 16);
 	
-	ImGui::ScaledImage(data.texture_size, data.texture, size, fit_mode, keep_size, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
+	ImGui::ScaledImage(str_id, data.texture_size, data.texture, size, fit_mode, keep_size, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
 	
 	return 0;
 }
@@ -3725,20 +3726,21 @@ int ScaledImageButton(lua_State* L)
 {
 	STACK_CHECKER(L, "scaledImageButton", 1);
 
-	GTextureData data(L, 2);
-	const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-	int fit_mode = luaL_optinteger(L, 5, 0);
-	bool keep_size = lua_toboolean(L, 6);
-	int flags = luaL_optinteger(L, 7, 0);
-	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 8, 0.5f), luaL_optnumber(L, 9, 0.5f));
-	const ImVec2& clip_offset = ImVec2(luaL_optnumber(L, 10, 0.0f), luaL_optnumber(L, 11, 0.0f));
-	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 12, 0xffffff), luaL_optnumber(L, 13, 1.0f));
-	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
-	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 16, 0), luaL_optnumber(L, 17, 0.0f));
+	const char* str_id = luaL_checkstring(L, 2);
+	GTextureData data(L, 3);
+	const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+	int fit_mode = luaL_optinteger(L, 6, 0);
+	bool keep_size = lua_toboolean(L, 7);
+	int flags = luaL_optinteger(L, 8, 0);
+	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 9, 0.5f), luaL_optnumber(L, 10, 0.5f));
+	const ImVec2& clip_offset = ImVec2(luaL_optnumber(L, 11, 0.0f), luaL_optnumber(L, 12, 0.0f));
+	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 13, 0xffffff), luaL_optnumber(L, 14, 1.0f));
+	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 15, 0), luaL_optnumber(L, 16, 0.0f));
+	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 17, 0), luaL_optnumber(L, 18, 0.0f));
 	
-	setupUVs(L, data, 18);
+	setupUVs(L, data, 19);
 	
-	lua_pushboolean(L, ImGui::ScaledImageButton(data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, data.uv0, data.uv1));
+	lua_pushboolean(L, ImGui::ScaledImageButton(str_id, data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, data.uv0, data.uv1));
 	return 1;
 }
 
@@ -8195,6 +8197,19 @@ int IsAnyItemFocused(lua_State* L)
 
 	lua_pushboolean(L, ImGui::IsAnyItemFocused());
 	return 1;
+}
+
+int GetItemRect(lua_State* L)
+{
+    STACK_CHECKER(L, "getItemRect", 4);
+
+    ImVec2 min = ImGui::GetItemRectMin();
+    ImVec2 max = ImGui::GetItemRectMax();
+    lua_pushnumber(L, min.x);
+    lua_pushnumber(L, min.y);
+    lua_pushnumber(L, max.x);
+    lua_pushnumber(L, max.y);
+    return 4;
 }
 
 int GetItemRectMin(lua_State* L)
@@ -14180,7 +14195,7 @@ int loader(lua_State* L)
 		
 		{"image", Image},
 		{"imageButton", ImageButton},
-		{"imageButton", ImageButton},
+		{"imageButtonUV", ImageButtonUV},
 		
 		{"scaledImage", ScaledImage},
 		{"scaledImageButton", ScaledImageButton},
@@ -14343,6 +14358,7 @@ int loader(lua_State* L)
 		{"isAnyItemHovered", IsAnyItemHovered},
 		{"isAnyItemActive", IsAnyItemActive},
 		{"isAnyItemFocused", IsAnyItemFocused},
+		{"getItemRect", GetItemRect},
 		{"getItemRectMin", GetItemRectMin},
 		{"getItemRectMax", GetItemRectMax},
 		{"getItemRectSize", GetItemRectSize},
