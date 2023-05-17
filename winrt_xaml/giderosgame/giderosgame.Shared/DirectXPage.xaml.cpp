@@ -243,6 +243,8 @@ DirectXPage::DirectXPage():
 			}
 		}
 		canvasWidth = 0;
+		m_coreInput->Dispatcher->StopProcessEvents();
+		gdr_s_coreInput = m_coreInput = nullptr;
 	});
 
 	// Run task on a dedicated high priority background thread.
@@ -254,7 +256,11 @@ DirectXPage::DirectXPage():
 DirectXPage::~DirectXPage()
 {
 	// Stop rendering and processing events on destruction.
-	m_coreInput->Dispatcher->StopProcessEvents();
+	m_renderLoopWorker->Cancel();
+	while (m_coreInput) {
+		Sleep(10);
+	}
+	m_renderLoopWorker = nullptr;
 	gdr_exitGameLoop();
 	gdr_deinitialize();
 }

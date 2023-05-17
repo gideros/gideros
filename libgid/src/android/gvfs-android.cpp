@@ -107,7 +107,7 @@ static int s_open(const char *pathname, int flags)
 
     if (iter == s_files.end())
     {
-        	glog_d("%s Not found in archive",pathname);
+        //glog_d("%s Not found in archive",pathname);
         errno = ENOENT;
         return -1;
     }

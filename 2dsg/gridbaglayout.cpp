@@ -738,7 +738,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 			}
 			if (equalizeCells)
 			{
-				while (true) {
+				int mloops=20;
+				while (mloops--) {
 					double neg=0;
 					double nweight=0;
                     for (size_t i=0;i<info.width;i++) {
@@ -794,7 +795,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 			}
 			if (equalizeCells)
 			{
-				while (true) {
+				int mloops=20;
+				while (mloops--) {
 					double neg=0;
 					double nweight=0;
                     for (size_t i=0;i<info.height;i++) {

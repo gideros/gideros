@@ -1,4 +1,4 @@
-﻿//
+//
 // App.xaml.h
 // Declaration of the App class.
 //
@@ -22,6 +22,9 @@ namespace giderosgame
 	private:
 		void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ e);
 		void OnResuming(Platform::Object ^sender, Platform::Object ^args);
+		void OnBackground(Platform::Object^ sender, Windows::ApplicationModel::EnteredBackgroundEventArgs^ e);
+		void OnForeground(Platform::Object^ sender, Windows::ApplicationModel::LeavingBackgroundEventArgs^ e);
+
 		DirectXPage^ m_directXPage;
 	};
 }

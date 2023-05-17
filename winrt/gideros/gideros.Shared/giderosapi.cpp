@@ -374,10 +374,12 @@ public:
 	void resize(int width, int height, int orientation);
 	void scaleChanged(float scale);
 
+
 	static Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
 	static Windows::UI::Core::CoreWindow^ getWindow();
 
 private:
+	void try_tick();
 	void loadProperties();
 	void loadLuaFiles();
 	void drawIPs();
@@ -1439,33 +1441,31 @@ void ApplicationManager::didReceiveMemoryWarning()
 		luaError(status.errorString());
 }
 
+void ApplicationManager::try_tick() {
+	if (!gdr_s_coreInput) {
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
+}
+
 void ApplicationManager::foreground()
 {
 	gapplication_enqueueEvent(GAPPLICATION_FOREGROUND_EVENT, NULL, 0);
-
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	try_tick();
 }
 
 void ApplicationManager::background()
 {
 	gapplication_enqueueEvent(GAPPLICATION_BACKGROUND_EVENT, NULL, 0);
-
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	try_tick();
 }
 
 void ApplicationManager::suspend()
 {
 	gapplication_enqueueEvent(GAPPLICATION_PAUSE_EVENT, NULL, 0);
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	try_tick();
 
 	dxgiDevice->Trim();
 }
@@ -1473,10 +1473,7 @@ void ApplicationManager::suspend()
 void ApplicationManager::resume()
 {
 	gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	try_tick();
 
 	next_game_tick = GetTickCount64();
 }
@@ -1484,11 +1481,7 @@ void ApplicationManager::resume()
 void ApplicationManager::exitRenderLoop()
 {
 	gapplication_enqueueEvent(GAPPLICATION_EXIT_EVENT, NULL, 0);
-
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	try_tick();
 }
 
 void ApplicationManager::resize(int width, int height,int orientation)
@@ -1563,6 +1556,14 @@ extern "C" {
 
 	void gdr_resume(){
 		s_manager->resume();
+	}
+
+	void gdr_background() {
+		s_manager->background();
+	}
+
+	void gdr_foreground() {
+		s_manager->foreground();
 	}
 
 	void gdr_deinitialize()
