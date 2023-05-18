@@ -40,8 +40,8 @@ BOOL gdr_isRunning();
 	void gdr_mouseEnter(int x, int y, int buttons, int mod);
 	void gdr_mouseLeave(int x, int y, int mod);
 #endif
-void gdr_keyDown(int keyCode, int repeat);
-void gdr_keyUp(int keyCode, int repeat);
+void gdr_keyDown(int keyCode, int mods, int repeat);
+void gdr_keyUp(int keyCode, int mods, int repeat);
 void gdr_keyChar(NSString *text);
 BOOL gdr_keyboardVisible();
 #ifdef __cplusplus

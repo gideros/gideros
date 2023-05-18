@@ -248,8 +248,8 @@ public:
 	void touchesEnded(NSSet *touches, NSSet *allTouches);
 	void touchesCancelled(NSSet *touches, NSSet *allTouches);
 
-    void keyDown(int keyCode, int repeat);
-    void keyUp(int keyCode, int repeat);
+    void keyDown(int keyCode, int mods, int repeat);
+    void keyUp(int keyCode, int mods, int repeat);
     void keyChar(NSString *text);
 
 	void suspend();
@@ -1509,14 +1509,14 @@ void ApplicationManager::touchesCancelled(NSSet *touches, NSSet *allTouches)
 }
 #endif
 
-void ApplicationManager::keyDown(int keyCode, int repeat)
+void ApplicationManager::keyDown(int keyCode, int mods, int repeat)
 {
-    ginputp_keyDown(keyCode,repeat);
+    ginputp_keyDown(keyCode,mods,repeat);
 }
 
-void ApplicationManager::keyUp(int keyCode, int repeat)
+void ApplicationManager::keyUp(int keyCode, int mods, int repeat)
 {
-    ginputp_keyUp(keyCode,repeat);
+    ginputp_keyUp(keyCode,mods,repeat);
 }
 
 void ApplicationManager::keyChar(NSString *text)
@@ -1917,14 +1917,14 @@ void gdr_didReceiveMemoryWarning()
 	}
 #endif
 
-void gdr_keyDown(int keyCode, int repeat)
+void gdr_keyDown(int keyCode, int mods, int repeat)
 {
-    s_manager->keyDown(keyCode,repeat);
+    s_manager->keyDown(keyCode,mods,repeat);
 }
 
-void gdr_keyUp(int keyCode, int repeat)
+void gdr_keyUp(int keyCode, int mods, int repeat)
 {
-    s_manager->keyUp(keyCode,repeat);
+    s_manager->keyUp(keyCode,mods,repeat);
 }
     
 void gdr_keyChar(NSString *text)

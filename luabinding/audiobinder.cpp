@@ -622,11 +622,19 @@ int AudioBinder::SoundChannel_destruct(void *p)
 {
     void *ptr = GIDEROS_DTOR_UDATA(p);
     GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(ptr);
-    soundChannel->unref();
+    lua_postgc(soundChannel->L,SoundChannel_destruct_real,ptr);
 
     return 0;
 }
 
+int AudioBinder::SoundChannel_destruct_real(lua_State *L, void *ptr)
+{
+    G_UNUSED(L);
+    GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(ptr);
+    soundChannel->unref();
+
+    return 0;
+}
 
 int AudioBinder::SoundChannel_stop(lua_State *L)
 {
