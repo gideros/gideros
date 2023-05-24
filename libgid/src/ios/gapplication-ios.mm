@@ -6,6 +6,7 @@
 #import <Cocoa/Cocoa.h>
 #endif
 extern NSString* getSysInfoByName(const char* typeSpecifier);
+extern float gdr_ScaleFactor;
 
 class GGApplicationManager
 {
@@ -34,12 +35,7 @@ public:
         fdpi=fdpi*[screen backingScaleFactor];
         int dpi=fdpi;
 #else
-        UIViewController *rootViewController = [[UIApplication sharedApplication].delegate viewController];
-        UIView *glView = [rootViewController glView];
-
-        float scale = 1;
-        if ([glView respondsToSelector:@selector(contentScaleFactor)])
-            scale = glView.contentScaleFactor;
+        float scale = gdr_ScaleFactor;
             
          NSDictionary *modelDpi = @{
             @"iPhone7,1": @133, //6+ x3=401
