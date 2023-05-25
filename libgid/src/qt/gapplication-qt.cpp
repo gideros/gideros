@@ -10,7 +10,7 @@ void gapplication_cleanup()
 {
 }
 
-int gapplication_getScreenDensity()
+int gapplication_getScreenDensity(int *ldpi)
 {
 	return -1;
 }

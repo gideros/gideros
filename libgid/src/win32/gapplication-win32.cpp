@@ -18,7 +18,7 @@ public:
         gevent_RemoveEventsWithGid(gid_);
     }
 	
-	int getScreenDensity()
+	int getScreenDensity(int *ldpi)
     {
 #if NTDDI_VERSION >= NTDDI_WINBLUE
 		HMONITOR mon=MonitorFromWindow(hwndcopy,MONITOR_DEFAULTTOPRIMARY);
@@ -108,8 +108,8 @@ void gapplication_exit()
 	s_manager->exit();
 }
 
-int gapplication_getScreenDensity(){
-	return s_manager->getScreenDensity();
+int gapplication_getScreenDensity(int *ldpi){
+	return s_manager->getScreenDensity(ldpi);
 }
 
 void gapplication_enqueueEvent(int type, void *event, int free)

@@ -149,7 +149,7 @@ void gapplication_removeCallbackWithGid(g_id gid)
     s_manager->removeCallbackWithGid(gid);
 }
 
-int gapplication_getScreenDensity()
+int gapplication_getScreenDensity(int *ldpi)
 {
     return s_manager->getScreenDensity();
 }

@@ -31,7 +31,7 @@ G_API void gapplication_cleanup();
 
 G_API void gapplication_exit();
 
-G_API int gapplication_getScreenDensity();
+G_API int gapplication_getScreenDensity(int *ldpi);
 
 G_API g_id gapplication_addCallback(gevent_Callback callback, void *udata);
 G_API void gapplication_removeCallback(gevent_Callback callback, void *udata);
