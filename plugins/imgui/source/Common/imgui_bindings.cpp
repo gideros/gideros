@@ -1686,8 +1686,6 @@ public:
 
 private:
 	bool m_holdGestureValid;
-	std::chrono::steady_clock::time_point m_gestureTouchStart;
-	float m_startTouchX, m_startTouchY;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1977,37 +1975,27 @@ private:
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-GestureDetector::GestureDetector() :
-	m_holdGestureValid(true),
-	m_startTouchX(0.0f),
-	m_startTouchY(0.0f)
+GestureDetector::GestureDetector()
 {
 }
 
 void GestureDetector::onTouchBegin(float x, float y)
 {
-	m_startTouchX = x;
-	m_startTouchY = y;
-	m_gestureTouchStart = std::chrono::steady_clock::now();
 }
 
 void GestureDetector::onTouchMove(float x, float y)
 {
-	float dx = m_startTouchX - x;
-	float dy = m_startTouchY - y;
-	float dist = dx * dx + dy * dy;
+	const ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
 
-	if (dist > 100 && m_holdGestureValid)
-	{
+	if (m_holdGestureValid && (delta.x > 10.0f || delta.x < -10.0f || delta.y > 10.0f || delta.y < -10.0f))
 		m_holdGestureValid = false;
-	}
 }
 
 void GestureDetector::onTouchEnd(float x, float y, int modifiers, float pressure)
 {
-	auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - m_gestureTouchStart).count();
+	float time = ImGui::GetIO().MouseDownDuration[ImGuiMouseButton_Left];
 
-	if (m_holdGestureValid && diff > 500)
+	if (m_holdGestureValid && time > 0.5f)
 	{
 		AddInputStateOnly(GINPUT_RIGHT_BUTTON, true, modifiers, pressure, ImGuiMouseSource_TouchScreen);
 		AddInputStateOnly(GINPUT_RIGHT_BUTTON, false, modifiers, pressure, ImGuiMouseSource_TouchScreen);
@@ -2461,6 +2449,21 @@ int KeyChar(lua_State* L)
 	
 	imgui->eventListener->onKeyChar2(text);
 	
+	return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Scroll on void
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+int ScrollWhenDragging(lua_State* L)
+{
+	float dx = luaL_checknumber(L, 2);
+	float dy = luaL_checknumber(L, 3);
+	ImGuiMouseButton mouse_button = giderosMouseToImGui(luaL_checknumber(L, 4));
+	ImGui::ScrollWhenDragging(dx, dy, mouse_button);
 	return 0;
 }
 
@@ -5366,45 +5369,92 @@ int EndListBox(lua_State* _UNUSED(L))
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+int CachePoints(lua_State* L)
+{
+	luaL_checktype(L, 1, LUA_TTABLE);
+	size_t len = luaL_getn(L, 1);
+	float* values = getTableValues<float>(L, 1, len);
+	lua_pushlightuserdata(L, values);
+	return 1;
+}
+
+int FreePoints(lua_State* L)
+{
+	const void* p = lua_topointer(L, 1);
+	const float* values = static_cast<const float*>(p);
+	delete[] values;
+	return 0;
+}
+
+void PlotLinesTemp(lua_State* L, const float* values, size_t len, int nextIdx)
+{
+	const char* label = luaL_checkstring(L, 2);
+	int values_offset = luaL_optinteger(L, nextIdx, 0);
+	const char* overlay_text = luaL_optstring(L, nextIdx + 1, NULL);
+	float scale_min = luaL_optnumber(L, nextIdx + 2, FLT_MAX);
+	float scale_max = luaL_optnumber(L, nextIdx + 3, FLT_MAX);
+	ImVec2 graph_size = ImVec2(luaL_optnumber(L, nextIdx + 4, 0), luaL_optnumber(L, nextIdx + 5, 0));
+	int stride = sizeof(float);
+
+	ImGui::PlotLines(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+}
+
+int PlotCachedPoints(lua_State* L)
+{
+	STACK_CHECKER(L, "plotCachedPoints", 0);
+
+	const void* p = lua_topointer(L, 3);
+	const float* values = static_cast<const float*>(p);
+	size_t len = luaL_checknumber(L, 4);
+	PlotLinesTemp(L, values, len, 5);
+	return 0;
+}
+
 int PlotLines(lua_State* L)
 {
 	STACK_CHECKER(L, "plotLines", 0);
 
-	const char* label = luaL_checkstring(L, 2);
-	
 	luaL_checktype(L, 3, LUA_TTABLE);
 	size_t len = luaL_getn(L, 3);
-	float* values = getTableValues<float>(L, 3, len);
-	int values_offset = luaL_optinteger(L, 4, 0);
-	const char* overlay_text = luaL_optstring(L, 5, NULL);
-	float scale_min = luaL_optnumber(L, 6, FLT_MAX);
-	float scale_max = luaL_optnumber(L, 7, FLT_MAX);
-	ImVec2 graph_size = ImVec2(luaL_optnumber(L, 8, 0), luaL_optnumber(L, 9, 0));
-	int stride = sizeof(float);
-	
-	ImGui::PlotLines(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+	const float* values = getTableValues<float>(L, 3, len);
+	PlotLinesTemp(L, values, len, 4);
 	delete[] values;
 	return 0;
+}
+
+void PlotHistogramTemp(lua_State* L, const float* values, size_t len, int nextIdx)
+{
+	const char* label = luaL_checkstring(L, 2);
+	int values_offset = luaL_optinteger(L, nextIdx, 0);
+	const char* overlay_text = luaL_optstring(L, nextIdx + 1, NULL);
+	float scale_min = luaL_optnumber(L, nextIdx + 2, FLT_MAX);
+	float scale_max = luaL_optnumber(L, nextIdx + 3, FLT_MAX);
+	ImVec2 graph_size = ImVec2(luaL_optnumber(L, nextIdx + 4, 0), luaL_optnumber(L, nextIdx + 5, 0));
+	int stride = sizeof(float);
+
+	ImGui::PlotHistogram(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
 }
 
 int PlotHistogram(lua_State* L)
 {
 	STACK_CHECKER(L, "plotHistogram", 0);
 
-	const char* label = luaL_checkstring(L, 2);
-	
 	luaL_checktype(L, 3, LUA_TTABLE);
 	int len = luaL_getn(L, 3);
-	float* values = getTableValues<float>(L, 3, len);
-	int values_offset = luaL_optinteger(L, 4, 0);
-	const char* overlay_text = luaL_optstring(L, 5, NULL);
-	float scale_min = luaL_optnumber(L, 6, FLT_MAX);
-	float scale_max = luaL_optnumber(L, 7, FLT_MAX);
-	ImVec2 graph_size = ImVec2(luaL_optnumber(L, 8, 0), luaL_optnumber(L, 9, 0));
-	int stride = sizeof(float);
-	
-	ImGui::PlotHistogram(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+	const float* values = getTableValues<float>(L, 3, len);
+	PlotHistogramTemp(L, values, len, 4);
 	delete[] values;
+	return 0;
+}
+
+int PlotCachedHistogram(lua_State* L)
+{
+	STACK_CHECKER(L, "plotHistogram", 0);
+
+	const void* p = lua_topointer(L, 3);
+	const float* values = static_cast<const float*>(p);
+	size_t len = luaL_checknumber(L, 4);
+	PlotHistogramTemp(L, values, len, 5);
 	return 0;
 }
 
@@ -14099,6 +14149,8 @@ int loader(lua_State* L)
 	
 	const luaL_Reg imguiFunctionList[] =
 	{
+		{"scrollWhenDragging", ScrollWhenDragging},
+
 		{"setTouchGesturesEnabled", SetTouchGesturesEnabled},
 		{"isTouchGesturesEnabled", GetTouchGesturesEnabled},
 
@@ -14364,6 +14416,10 @@ int loader(lua_State* L)
 		{"listBox", ListBox},
 		{"listBoxHeader", BeginListBox},
 		{"listBoxFooter", EndListBox},
+		{"cachePoints", CachePoints},
+		{"freePoints", FreePoints},
+		{"plotCachedPoints", PlotCachedPoints},
+		{"plotCachedHistogram", PlotCachedHistogram},
 		{"plotLines", PlotLines},
 		{"plotHistogram", PlotHistogram},
 		{"value", Value},

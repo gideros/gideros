@@ -544,6 +544,47 @@ namespace ImGui
 		return VFilledSliderScalar(label, mirror, size, ImGuiDataType_S32, v, &v_min, &v_max, format, flags);
 	}
 
+	void ScrollWhenDragging(float dx, float dy, ImGuiMouseButton mouse_button)
+	{
+		ImGuiContext& g = *ImGui::GetCurrentContext();
+
+		if(g.MovingWindow != nullptr)
+			return;
+
+		ImGuiWindow* window = g.CurrentWindow;
+
+		if(!window->ScrollbarX && !window->ScrollbarY) // Nothing to scroll
+			return;
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		bool hovered = false;
+		bool held = false;
+
+		const ImGuiWindow* window_to_highlight = g.NavWindowingTarget ? g.NavWindowingTarget : g.NavWindow;
+		bool window_highlight = (window_to_highlight && (window->RootWindowForTitleBarHighlight == window_to_highlight->RootWindowForTitleBarHighlight));
+
+		ImGuiButtonFlags button_flags = (mouse_button == ImGuiMouseButton_Left) ? ImGuiButtonFlags_MouseButtonLeft : (mouse_button == ImGuiMouseButton_Right) ? ImGuiButtonFlags_MouseButtonRight : ImGuiButtonFlags_MouseButtonMiddle;
+
+		if(io.MouseDown[mouse_button] && window_highlight)
+		{
+			ImGui::ButtonBehavior(window->InnerClipRect, window->GetID("##scrolldraggingoverlay"), &hovered, &held, button_flags);
+
+			if((window->InnerClipRect.Contains(io.MousePos)))
+				held = true;
+			else if(window->InnerClipRect.Contains(io.MouseClickedPos[mouse_button]) ) // If mouse has moved outside window, check if click was inside
+				held = true;
+			else
+				held = false;
+		}
+
+		if (held)
+		{
+			ImGui::SetScrollX(window, window->Scroll.x + dx * io.MouseDelta.x);
+			ImGui::SetScrollY(window, window->Scroll.y + dy * io.MouseDelta.y);
+		}
+	}
+
 }
 
 #endif
