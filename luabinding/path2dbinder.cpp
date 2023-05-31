@@ -239,7 +239,7 @@ int Path2DBinder::setPath(lua_State* L)
             coords[i] = luaL_checknumber(L, i + 3);
     }
 
-    shape->setPath(strlen(commands),(const unsigned char *)commands,coords.size(),&(coords[0]));
+    shape->setPath(strlen(commands),(const unsigned char *)commands,coords.size(),coords.data());
 
 	return 0;
 }
