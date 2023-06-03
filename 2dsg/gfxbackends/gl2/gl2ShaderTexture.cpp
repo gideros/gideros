@@ -42,7 +42,7 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         break;
     case FILT_LINEAR_MIPMAP:
-        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         break;
     }
@@ -56,6 +56,7 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     	case FMT_Y: glformat=GL_LUMINANCE; break;
     	case FMT_YA: glformat=GL_LUMINANCE_ALPHA; break;
     	case FMT_DEPTH: glformat=GL_DEPTH_COMPONENT; break;
+    	case FMT_NATIVE: break; // Format is defined elsewhere, there should be no data yet
     }
     GLuint gltype=GL_UNSIGNED_BYTE;
     switch (packing)
@@ -129,7 +130,7 @@ void ogl2ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         break;
     case FILT_LINEAR_MIPMAP:
-        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         break;
     }
@@ -143,6 +144,7 @@ void ogl2ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     	case FMT_Y: glformat=GL_LUMINANCE; break;
     	case FMT_YA: glformat=GL_LUMINANCE_ALPHA; break;
     	case FMT_DEPTH: glformat=GL_DEPTH_COMPONENT; break;
+    	case FMT_NATIVE: break; // Format is defined elsewhere, there should be no data
     }
     GLuint gltype=GL_UNSIGNED_BYTE;
     switch (packing)

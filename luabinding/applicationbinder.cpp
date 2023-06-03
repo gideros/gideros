@@ -896,14 +896,20 @@ int ApplicationBinder::getScreenDensity(lua_State* L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    int dpi = gapplication_getScreenDensity();
+    int ldpi = -1;
+    int dpi = gapplication_getScreenDensity(&ldpi);
 
     if (dpi == -1)
         lua_pushnil(L);
     else
         lua_pushinteger(L, dpi);
 
-    return 1;
+    if (ldpi == -1)
+        lua_pushnil(L);
+    else
+        lua_pushinteger(L, ldpi);
+
+    return 2;
 }
 
 int ApplicationBinder::getDeviceOrientation(lua_State *L)

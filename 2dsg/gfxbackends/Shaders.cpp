@@ -154,6 +154,8 @@ void ShaderEngine::popDepthStencil()
 	{
 		dsCurrent=dsStack.top();
 		dsStack.pop();
+        dsCurrent.dClear=false;
+        dsCurrent.sClear=false;
 	    setDepthStencil(dsCurrent);
 	}
 }

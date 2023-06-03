@@ -2009,9 +2009,9 @@ static void create_stroke_geometry(struct path *path) {
 	path->stroke_bounds[3] = -1e30f;
 
 	update_bounds(path->stroke_bounds, kv_size(path->stroke_geoms[0].vertices),
-			kv_data(path->stroke_geoms[0].vertices), 4);
+			kv_data(path->stroke_geoms[0].vertices), 8);
 	update_bounds(path->stroke_bounds, kv_size(path->stroke_geoms[1].vertices),
-			kv_data(path->stroke_geoms[1].vertices), 12);
+			kv_data(path->stroke_geoms[1].vertices), 16);
 
     RENDER_LOCK();
     for (i = 0; i < 2; ++i) {

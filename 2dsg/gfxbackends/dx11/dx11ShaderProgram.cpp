@@ -26,7 +26,8 @@ class dx11ShaderBufferCache : public ShaderBufferCache {
 public:
 	ID3D11Buffer *VBO;
 	int VBOcapacity;
-	dx11ShaderBufferCache() { VBO = NULL; VBOcapacity = 0; }
+	int cachedMult;
+	dx11ShaderBufferCache() { VBO = NULL; VBOcapacity = 0; cachedMult = 0; }
 	virtual ~dx11ShaderBufferCache()
 	{
 		if (VBO)
@@ -64,11 +65,11 @@ void dx11ShaderProgram::activate() {
 }
 
 ID3D11Buffer *dx11ShaderProgram::getCachedVBO(ShaderBufferCache **cache, bool index,int elmSize, int mult,
-	int count) {
+	int count, bool &modified) {
 	if (!*cache)
 		*cache = new dx11ShaderBufferCache();
 	dx11ShaderBufferCache *dc = static_cast<dx11ShaderBufferCache*> (*cache);
-	if ((dc->VBO == NULL) || (dc->VBOcapacity < count)) {
+	if ((dc->VBO == NULL) || (dc->VBOcapacity < count) || (dc->cachedMult != mult)) {
 		if (dc->VBO != NULL)
 			dc->VBO->Release();
 		D3D11_BUFFER_DESC bd;
@@ -81,6 +82,7 @@ ID3D11Buffer *dx11ShaderProgram::getCachedVBO(ShaderBufferCache **cache, bool in
 		D3D11_BIND_VERTEX_BUFFER : D3D11_BIND_INDEX_BUFFER; // use as a vertex buffer
 		g_dev->CreateBuffer(&bd, NULL, &(dc->VBO));
 		dc->VBOcapacity = count;
+		modified = true;
 	}
 	return dc->VBO;
 }
@@ -186,7 +188,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 	const DataDesc &dd = attributes[index];
 	if (!dd.mult) return;
 	unsigned int bcount = (flags&ShaderProgram::Flag_PointShader) ? count * 4 : count;
-	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,bcount):getGenericVBO(index + 1, elmSize, dd.mult, bcount);
+	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,bcount,modified):getGenericVBO(index + 1, elmSize, dd.mult, bcount);
 	if (!vbo) return;
 	if (modified || (!cache))
 	{
@@ -629,7 +631,7 @@ void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 	}
 
 	D3D11_MAPPED_SUBRESOURCE ms;
-	ID3D11Buffer *vbo = cache ? getCachedVBO(cache, true, indiceSize, 1, count) : getGenericVBO(0,indiceSize,1,count);
+	ID3D11Buffer *vbo = cache ? getCachedVBO(cache, true, indiceSize, 1, count, modified) : getGenericVBO(0,indiceSize,1,count);
 	if (modified || (!cache))
 	{
 		g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer

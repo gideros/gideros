@@ -1,46 +1,56 @@
 StandardShaders={}
 
 --Constants/Uniforms:
---PROGRAM-CODES: B,C,T,TA, TC,TAC,P,PS, PS3,FC,SC,SL
+--PROGRAM-CODES: B,C,T,TC, B3,C3,T3,TC3, TA,TAC,P,PS, PS3,FC,SC,SL
 StandardShaders.stdUniforms={
-	{cat=0b111001111111, name="vMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP,vertex=true},
-	{cat=0b111000000000, name="vXform",type=Shader.CMATRIX,sys=Shader.SYS_NONE, vertex=true}, --Positional, should always be second uniform
-	{cat=0b111000001101, name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=false},
-	{cat=0b110000000000, name="fFeather",type=Shader.CFLOAT,sys=Shader.SYS_NONE, vertex=false}, --Positional, should always be fourth uniform
-	{cat=0b000111110010, name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=true},
-	{cat=0b000111111100, name="fTexture",type=Shader.CTEXTURE,vertex=false},
-	{cat=0b000110000000, name="vWorldMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WORLD,vertex=true},
-	{cat=0b000100000000, name="vViewMatrix",type=Shader.CMATRIX,sys=Shader.SYS_VIEW,vertex=true},
-	{cat=0b000100000000, name="vProjMatrix",type=Shader.CMATRIX,sys=Shader.SYS_PROJECTION,vertex=true},
-	{cat=0b000001000000, name="vPSize",type=Shader.CFLOAT,sys=Shader.SYS_PARTICLESIZE,vertex=true},
+	{cat=0b1110011111111111, name="vMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP,vertex=true},
+	{cat=0b1110000000000000, name="vXform",type=Shader.CMATRIX,sys=Shader.SYS_NONE, vertex=true}, --Positional, should always be second uniform
+	{cat=0b1110000101010101, name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=false},
+	{cat=0b1100000000000000, name="fFeather",type=Shader.CFLOAT,sys=Shader.SYS_NONE, vertex=false}, --Positional, should always be fourth uniform
+	{cat=0b0001111010101010, name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=true},
+	{cat=0b0001111111001100, name="fTexture",type=Shader.CTEXTURE,vertex=false},
+	{cat=0b0001100000000000, name="vWorldMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WORLD,vertex=true},
+	{cat=0b0001000000000000, name="vViewMatrix",type=Shader.CMATRIX,sys=Shader.SYS_VIEW,vertex=true},
+	{cat=0b0001000000000000, name="vProjMatrix",type=Shader.CMATRIX,sys=Shader.SYS_PROJECTION,vertex=true},
+	{cat=0b0000010000000000, name="vPSize",type=Shader.CFLOAT,sys=Shader.SYS_PARTICLESIZE,vertex=true},
 }
 
 StandardShaders.stdAttributes={
-	{cat=0b000111111111, used=0b000111111111, name="vVertex",type=Shader.DFLOAT,mult=2,slot=0,offset=0},
-	{cat=0b000111111111, used=0b000111110010, name="vColor",type=Shader.DUBYTE,mult=4,slot=1,offset=0},
-	{cat=0b000111111111, used=0b000111111100, name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
-	{cat=0b111000000000, used=0b111000000000, name="data0",type=Shader.DFLOAT,mult=4,slot=0,offset=0,stride=48},
-	{cat=0b010000000000, used=0b010000000000, name="data1",type=Shader.DFLOAT,mult=4,slot=1,offset=0,stride=48},
-	{cat=0b010000000000, used=0b010000000000, name="data2",type=Shader.DFLOAT,mult=4,slot=2,offset=0,stride=48},
+	{cat=0b0000011100001111, used=0b0001111100001111, name="vVertex",type=Shader.DFLOAT,mult=2,slot=0,offset=0},
+	{cat=0b0000011111110000, used=0b0001111111110000, name="vVertex",type=Shader.DFLOAT,mult=3,slot=0,offset=0},
+	{cat=0b0001111111111111, used=0b0001111010101010, name="vColor",type=Shader.DUBYTE,mult=4,slot=1,offset=0},
+	{cat=0b0000011111111111, used=0b0001111111001100, name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
+	-- Particle shader variants
+	{cat=0b0001100000000000, used=0b0001111111110000, name="vVertex",type=Shader.DFLOAT,mult=4,slot=0,offset=0},
+	{cat=0b0001100000000000, used=0b0001111111110000, name="vTexCoord",type=Shader.DFLOAT,mult=4,slot=2,offset=0},
+	-- Line variants
+	{cat=0b0010000000000000, used=0b0010000000000000, name="dataa",type=Shader.DFLOAT,mult=4,slot=0,offset=0},
+	{cat=0b0100000000000000, used=0b0100000000000000, name="dataa",type=Shader.DFLOAT,mult=4,slot=0,offset=0,stride=64},
+	{cat=0b0100000000000000, used=0b0100000000000000, name="datab",type=Shader.DFLOAT,mult=4,slot=1,offset=0,stride=64},
+	{cat=0b0100000000000000, used=0b0100000000000000, name="datac",type=Shader.DFLOAT,mult=4,slot=2,offset=0,stride=64},
+	{cat=0b0100000000000000, used=0b0100000000000000, name="linepos",type=Shader.DFLOAT,mult=4,slot=3,offset=0,stride=64},
+	{cat=0b1000000000000000, used=0b1000000000000000, name="dataa",type=Shader.DFLOAT,mult=4,slot=0,offset=0,stride=32},
+	{cat=0b1000000000000000, used=0b1000000000000000, name="linepos",type=Shader.DFLOAT,mult=4,slot=1,offset=0,stride=32},
 }
 
 StandardShaders.stdVarying={
-	{cat=0b101111111100, name="fTexCoord",type=Shader.CFLOAT2},
-	{cat=0b000111110010, name="fInColor",type=Shader.CFLOAT4},
-	{cat=0b000110000000, name="fStepRot",type=Shader.CFLOAT2},
+	{cat=0b1011111111001100, name="fTexCoord",type=Shader.CFLOAT2},
+	{cat=0b0001111010101010, name="fInColor",type=Shader.CFLOAT4},
+	{cat=0b0001100000000000, name="fStepRot",type=Shader.CFLOAT2},
 		--For Line path shaders
-	{cat=0b010000000000, name="fPos",type=Shader.CFLOAT2},
-	{cat=0b010000000000, name="fPQ",type=Shader.CFLOAT2},
-	{cat=0b010000000000, name="fA",type=Shader.CFLOAT2},
-	{cat=0b010000000000, name="fB",type=Shader.CFLOAT2},
-	{cat=0b010000000000, name="fC",type=Shader.CFLOAT2},
-	{cat=0b010000000000, name="fOffsetWidth",type=Shader.CFLOAT2},
+	{cat=0b0100000000000000, name="fPos",type=Shader.CFLOAT2},
+	{cat=0b0100000000000000, name="fPQ",type=Shader.CFLOAT2},
+	{cat=0b0100000000000000, name="fA",type=Shader.CFLOAT2},
+	{cat=0b0100000000000000, name="fB",type=Shader.CFLOAT2},
+	{cat=0b0100000000000000, name="fC",type=Shader.CFLOAT2},
+	{cat=0b0100000000000000, name="fOffsetWidth",type=Shader.CFLOAT2},
+	{cat=0b1100000000000000, name="fLinePos",type=Shader.CFLOAT4},
 }
 
 StandardShaders.stdFunctions={
-	{cat=0b010000000000, name="evaluateQuadratic", rtype="hF2", acount=4,	args={ {name="a", type="hF2"},{name="b", type="hF2"},{name="c", type="hF2"}, {name="t", type="hF1"} }},
-	{cat=0b010000000000, name="check", rtype="hF1", acount=1,	args={ {name="a", type="hF2"},{name="b", type="hF2"},{name="c", type="hF2"},{name="pos", type="hF2"},{name="w", type="hF1"},{name="t", type="hF1"} }},
-	{cat=0b010000000000, name="cbrt", rtype="hF1", acount=1,	args={ {name="x", type="hF1"} }},
+	{cat=0b0100000000000000, name="evaluateQuadratic", rtype="hF2", acount=4,	args={ {name="a", type="hF2"},{name="b", type="hF2"},{name="c", type="hF2"}, {name="t", type="hF1"} }},
+	{cat=0b0100000000000000, name="check", rtype="hF1", acount=1,	args={ {name="a", type="hF2"},{name="b", type="hF2"},{name="c", type="hF2"},{name="pos", type="hF2"},{name="w", type="hF1"},{name="t", type="hF1"} }},
+	{cat=0b0100000000000000, name="cbrt", rtype="hF1", acount=1,	args={ {name="x", type="hF1"} }},
 }
 --VERTEX shaders
 --BASICS
@@ -64,6 +74,27 @@ function StandardShaders.vTextureColor(vVertex,vColor,vTexCoord) : Shader
 	fInColor=vColor*fColor
 	return vMatrix*vertex
 end
+function StandardShaders.vBasic3(vVertex,vColor,vTexCoord) : Shader
+	local vertex = hF4(vVertex,1.0)
+	return vMatrix*vertex
+end
+function StandardShaders.vColor3(vVertex,vColor,vTexCoord) : Shader
+	local vertex = hF4(vVertex,1.0)
+	fInColor=vColor*fColor
+	return vMatrix*vertex
+end
+function StandardShaders.vTexture3(vVertex,vColor,vTexCoord) : Shader
+	local vertex = hF4(vVertex,1.0)
+	fTexCoord=vTexCoord
+	return vMatrix*vertex
+end
+function StandardShaders.vTextureColor3(vVertex,vColor,vTexCoord) : Shader
+	local vertex = hF4(vVertex,1.0)
+	fTexCoord=vTexCoord
+	fInColor=vColor*fColor
+	return vMatrix*vertex
+end
+
 StandardShaders.vTextureAlpha=StandardShaders.vTexture
 StandardShaders.vTextureAlphaColor=StandardShaders.vTextureColor
 --PARTICLES
@@ -102,22 +133,24 @@ function StandardShaders.vParticles3(vVertex,vColor,vTexCoord) : Shader
 	return vProjMatrix*vertex
 end
 --PATHS
-function StandardShaders.vPathFC(data0) : Shader
-	fTexCoord=data0.zw
-	return vMatrix*vXform*hF4(data0.xy,0.0,1.0)
+function StandardShaders.vPathFC(dataa) : Shader
+	fTexCoord=dataa.zw
+	return vMatrix*vXform*hF4(dataa.xy,0.0,1.0)
 end
-function StandardShaders.vPathSC(data0,data1,data2) : Shader
-	fPos=data0.xy
-	fPQ=data0.zw
-	fA=data1.xy
-	fB=data1.zw
-	fC=data2.xy
-	fOffsetWidth=data2.zw
-	return vMatrix*vXform*hF4(data0.xy,0.0,1.0)
+function StandardShaders.vPathSC(dataa,datab,datac,linepos) : Shader
+	fPos=dataa.xy
+	fPQ=dataa.zw
+	fA=datab.xy
+	fB=datab.zw
+	fC=datac.xy
+	fOffsetWidth=datac.zw
+	fLinePos=linepos
+	return vMatrix*vXform*hF4(dataa.xy,0.0,1.0)
 end
-function StandardShaders.vPathSL(data0) : Shader
-	fTexCoord=normalize(data0.zw)
-	return vMatrix*vXform*hF4(data0.xy+data0.zw,0.0,1.0)
+function StandardShaders.vPathSL(dataa,linepos) : Shader
+	fTexCoord=normalize(dataa.zw)
+	fLinePos=linepos
+	return vMatrix*vXform*hF4(dataa.xy+dataa.zw,0.0,1.0)
 end
 
 --FRAGMENT Shaders
@@ -138,6 +171,11 @@ function StandardShaders.fTextureColor() : Shader
 	if (frag.a==0.0) then discard() end
 	return frag
 end
+StandardShaders.fBasic3=StandardShaders.fBasic
+StandardShaders.fColor3=StandardShaders.fColor
+StandardShaders.fTexture3=StandardShaders.fTexture
+StandardShaders.fTextureColor3=StandardShaders.fTextureColor
+
 function StandardShaders.fTextureAlpha() : Shader
 	local frag=lF4(fColor)*texture2D(fTexture, fTexCoord).aaaa
 	if (frag.a==0.0) then discard() end
@@ -221,36 +259,61 @@ end
 
 
 StandardShaders.stdSpecs={
-	[Shader.SHADER_PROGRAM_BASIC]={ cat=0, name="Basic" },
-	[Shader.SHADER_PROGRAM_COLOR]={ cat=1, name="Color" },
-	[Shader.SHADER_PROGRAM_TEXTURE]={ cat=2, name="Texture" },
-	[Shader.SHADER_PROGRAM_TEXTUREALPHA]={ cat=3, name="TextureAlpha" },
-	[Shader.SHADER_PROGRAM_TEXTURECOLOR]={ cat=4, name="TextureColor" },
-	[Shader.SHADER_PROGRAM_TEXTUREALPHACOLOR]={ cat=5, name="TextureAlphaColor" },
-	--[Shader.SHADER_PROGRAM_PARTICLE]={ cat=6, name="Basic" },
-	[Shader.SHADER_PROGRAM_PARTICLES]={ cat=7, name="Particles", 
-		variants={ [Shader.SHADER_VARIANT_3D]={ cat=8, name="Particles3", }}},
-	[Shader.SHADER_PROGRAM_PATHFILLCURVE]={ cat=9, name="PathFC" },
-	[Shader.SHADER_PROGRAM_PATHSTROKECURVE]={ cat=10, name="PathSC" },
-	[Shader.SHADER_PROGRAM_PATHSTROKELINE]={ cat=11, name="PathSL" },
+	[Shader.SHADER_PROGRAM_BASIC]={ cat=0, name="Basic", 
+		variants={ [Shader.SHADER_VARIANT_3D]={ cat=4, name="Basic3", }}},
+	[Shader.SHADER_PROGRAM_COLOR]={ cat=1, name="Color", 
+		variants={ [Shader.SHADER_VARIANT_3D]={ cat=5, name="Color3", }}},
+	[Shader.SHADER_PROGRAM_TEXTURE]={ cat=2, name="Texture",
+		variants={ [Shader.SHADER_VARIANT_3D]={ cat=6, name="Texture3", }}},
+	[Shader.SHADER_PROGRAM_TEXTURECOLOR]={ cat=3, name="TextureColor", 
+		variants={ [Shader.SHADER_VARIANT_3D]={ cat=7, name="TextureColor3", }}},
+	[Shader.SHADER_PROGRAM_TEXTUREALPHA]={ cat=8, name="TextureAlpha" },
+	[Shader.SHADER_PROGRAM_TEXTUREALPHACOLOR]={ cat=9, name="TextureAlphaColor" },
+	--[Shader.SHADER_PROGRAM_PARTICLE]={ cat=10, name="Basic" },
+	[Shader.SHADER_PROGRAM_PARTICLES]={ cat=11, name="Particles", 
+		variants={ [Shader.SHADER_VARIANT_3D]={ cat=12, name="Particles3", }}},
+	[Shader.SHADER_PROGRAM_PATHFILLCURVE]={ cat=13, name="PathFC" },
+	[Shader.SHADER_PROGRAM_PATHSTROKECURVE]={ cat=14, name="PathSC" },
+	[Shader.SHADER_PROGRAM_PATHSTROKELINE]={ cat=15, name="PathSL" },
 }
 
-function StandardShaders:build()
-	return Shader.lua(
-		self.vertexShader,
-		self.fragmentShader,
-		self.options or 0,
-		self.uniforms,
-		self.attributes,
-		self.varying,
-		self.functions,
-		self.constants)
+function StandardShaders:build(catchErrors)
+	local function buildShader()
+		return Shader.lua(
+			self.vertexShader,
+			self.fragmentShader,
+			self.options or 0,
+			self.uniforms,
+			self.attributes,
+			self.varying,
+			self.functions,
+			self.constants)
+	end
+	if catchErrors then
+		local ok,ret=pcall(buildShader)
+		if ok then return ret end
+		print("Failed to build shader: "..ret.." at:\n"..debug.traceback())
+		return nil,ret
+	else
+		return buildShader()
+	end
 end
 
 function StandardShaders:getShaderSpecification(type,variant)
+	local lang=Shader.getShaderLanguage()
+	if lang=="hlsl" then		
+		-- For HLSL always use 3D versions of basic shaders
+		if type==Shader.SHADER_PROGRAM_BASIC 
+			or type==Shader.SHADER_PROGRAM_COLOR
+			or type==Shader.SHADER_PROGRAM_TEXTURE
+			or type==Shader.SHADER_PROGRAM_TEXTURECOLOR then
+			variant=(variant or 0)|Shader.SHADER_VARIANT_3D
+		end
+	end
+	
 	local st=self.stdSpecs[type]
 	if not st then return end
-	st=st.variant and st.variant[variant] or st
+	st=st.variants and st.variants[variant] or st
 	local cmask=1<<st.cat
 	local function filter(t,c,attr)
 		local m={}
