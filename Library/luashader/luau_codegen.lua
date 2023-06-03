@@ -6,7 +6,8 @@ local function numvalue(n)
 end
 
 local function isInt(expr)
-	return tonumber(expr.value//1)==tonumber(expr.value)
+	local v=tonumber(expr.value)
+	return v and tonumber(expr.value//1)==v
 end
 
 local function promote(expr,type)

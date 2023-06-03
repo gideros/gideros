@@ -77,6 +77,10 @@
             		<orig><![CDATA[<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>]]></orig>
             		<by></by>
         	    </replace>
+	            <replace>
+            		<orig><![CDATA[<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>]]></orig>
+            		<by></by>
+        	    </replace>
     	    </replacelist>
 	    </template>
  	</if>

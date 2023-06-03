@@ -1732,7 +1732,11 @@ bool ApplicationManager::setKeyboardVisibility(bool visible)
         [view_ becomeFirstResponder];
     else
         [view_ resignFirstResponder];
+#if TARGET_OS_OSX
+    return false; //No virtual keyboard
+#else
     return true;
+#endif    
 }
 
 bool setKeyboardVisibility(bool visible){

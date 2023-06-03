@@ -63,7 +63,7 @@ protected:
 	int flags;
     void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache, int stride, int offset);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
-	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count);
+	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count, bool &modified);
 	void updateConstants();
     void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz, int flags,
                      const ConstantDesc *uniforms, const DataDesc *attributes);

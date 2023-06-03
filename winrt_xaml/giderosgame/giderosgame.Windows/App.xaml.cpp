@@ -34,6 +34,8 @@ App::App()
 	RequiresPointerMode = Windows::UI::Xaml::ApplicationRequiresPointerMode::WhenRequested;
 	Suspending += ref new SuspendingEventHandler(this, &App::OnSuspending);
 	Resuming += ref new EventHandler<Object^>(this, &App::OnResuming);
+	EnteredBackground += ref new EnteredBackgroundEventHandler(this, &App::OnBackground);
+	LeavingBackground += ref new LeavingBackgroundEventHandler(this, &App::OnForeground);
 }
 
 /// <summary>
@@ -94,4 +96,20 @@ void App::OnResuming(Object ^sender, Object ^args)
 
 	m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
 	gdr_resume();
+}
+
+void App::OnBackground(Object^ sender, EnteredBackgroundEventArgs^ e)
+{
+	(void)sender;	// Unused parameter
+	(void)e;	// Unused parameter
+
+	gdr_background();
+}
+
+void App::OnForeground(Object^ sender, LeavingBackgroundEventArgs^ e)
+{
+	(void)sender;	// Unused parameter
+	(void)e;	// Unused parameter
+
+	gdr_foreground();
 }

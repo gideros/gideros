@@ -91,7 +91,7 @@ void gapplication_exit()
 	s_manager->exit();
 }
 
-int gapplication_getScreenDensity(){
+int gapplication_getScreenDensity(int *ldpi){
 	return s_manager->getScreenDensity();
 }
 
