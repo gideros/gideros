@@ -6508,14 +6508,14 @@ int Clipper_GetItemsHeight(lua_State* L)
 	return 1;
 }
 
-int Clipper_ForceDisplayRangeByIndices(lua_State* L)
+int Clipper_IncludeRangeByIndices(lua_State* L)
 {
-	STACK_CHECKER(L, "forceDisplayRangeByIndices", 0);
+	STACK_CHECKER(L, "IncludeRangeByIndices", 0);
 
 	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
 	int item_min = luaL_checkinteger(L, 2);
 	int item_max = luaL_checkinteger(L, 3);
-	clipper->ForceDisplayRangeByIndices(item_min, item_max);
+	clipper->IncludeRangeByIndices(item_min, item_max);
 	return 0;
 }
 
@@ -14076,7 +14076,7 @@ int loader(lua_State* L)
 		{"step", Clipper_Step},
 		{"getDisplayStart", Clipper_GetDisplayStart},
 		{"getDisplayEnd", Clipper_GetDisplayEnd},
-		{"forceDisplayRangeByIndices", Clipper_ForceDisplayRangeByIndices},
+		{"includeRangeByIndices", Clipper_IncludeRangeByIndices},
 		{"getStartPosY", Clipper_GetStartPosY},
 		{"getItemsCount", Clipper_GetItemsCount},
 		{"getItemsHeight", Clipper_GetItemsHeight},
