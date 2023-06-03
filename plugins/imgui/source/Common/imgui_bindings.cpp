@@ -5399,9 +5399,9 @@ void PlotLinesTemp(lua_State* L, const float* values, size_t len, int nextIdx)
 	ImGui::PlotLines(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
 }
 
-int PlotCachedPoints(lua_State* L)
+int PlotCachedLines(lua_State* L)
 {
-	STACK_CHECKER(L, "plotCachedPoints", 0);
+	STACK_CHECKER(L, "plotCachedLines", 0);
 
 	const void* p = lua_topointer(L, 3);
 	const float* values = static_cast<const float*>(p);
@@ -14418,7 +14418,7 @@ int loader(lua_State* L)
 		{"listBoxFooter", EndListBox},
 		{"cachePoints", CachePoints},
 		{"freePoints", FreePoints},
-		{"plotCachedPoints", PlotCachedPoints},
+		{"plotCachedLines", PlotCachedLines},
 		{"plotCachedHistogram", PlotCachedHistogram},
 		{"plotLines", PlotLines},
 		{"plotHistogram", PlotHistogram},
