@@ -1667,8 +1667,6 @@ void AddWheelInput(float x, float y, float wheel, int modifiers)
 	UpdateModifiers(modifiers);
 }
 
-class EventListener;
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
 /// GestureDetector (WIP)
@@ -1688,8 +1686,6 @@ public:
 
 private:
 	bool m_holdGestureValid;
-	std::chrono::steady_clock::time_point m_gestureTouchStart;
-	float m_startTouchX, m_startTouchY;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1698,6 +1694,7 @@ private:
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+class EventListener;
 class GidImGui
 {
 public:
@@ -1978,37 +1975,27 @@ private:
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-GestureDetector::GestureDetector() :
-	m_holdGestureValid(true),
-	m_startTouchX(0.0f),
-	m_startTouchY(0.0f)
+GestureDetector::GestureDetector()
 {
 }
 
 void GestureDetector::onTouchBegin(float x, float y)
 {
-	m_startTouchX = x;
-	m_startTouchY = y;
-	m_gestureTouchStart = std::chrono::steady_clock::now();
 }
 
 void GestureDetector::onTouchMove(float x, float y)
 {
-	float dx = m_startTouchX - x;
-	float dy = m_startTouchY - y;
-	float dist = dx * dx + dy * dy;
+	const ImVec2 delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
 
-	if (dist > 100 && m_holdGestureValid)
-	{
+	if (m_holdGestureValid && (delta.x > 10.0f || delta.x < -10.0f || delta.y > 10.0f || delta.y < -10.0f))
 		m_holdGestureValid = false;
-	}
 }
 
 void GestureDetector::onTouchEnd(float x, float y, int modifiers, float pressure)
 {
-	auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - m_gestureTouchStart).count();
+	float time = ImGui::GetIO().MouseDownDuration[ImGuiMouseButton_Left];
 
-	if (m_holdGestureValid && diff > 500)
+	if (m_holdGestureValid && time > 0.5f)
 	{
 		AddInputStateOnly(GINPUT_RIGHT_BUTTON, true, modifiers, pressure, ImGuiMouseSource_TouchScreen);
 		AddInputStateOnly(GINPUT_RIGHT_BUTTON, false, modifiers, pressure, ImGuiMouseSource_TouchScreen);
@@ -2462,6 +2449,21 @@ int KeyChar(lua_State* L)
 	
 	imgui->eventListener->onKeyChar2(text);
 	
+	return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Scroll on void
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+int ScrollWhenDragging(lua_State* L)
+{
+	float dx = luaL_checknumber(L, 2);
+	float dy = luaL_checknumber(L, 3);
+	ImGuiMouseButton mouse_button = giderosMouseToImGui(luaL_checknumber(L, 4));
+	ImGui::ScrollWhenDragging(dx, dy, mouse_button);
 	return 0;
 }
 
@@ -3705,18 +3707,19 @@ int ScaledImage(lua_State* L)
 {
 	STACK_CHECKER(L, "scaledImage", 0);
 
-	GTextureData data(L, 2);
-	const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-	ImGuiImageScaleMode fit_mode = luaL_optinteger(L, 5, ImGuiImageScaleMode_LetterBox);
-	bool keep_size = lua_toboolean(L, 6);
-	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 7, 0.5f), luaL_optnumber(L, 8, 0.5f));
-	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 9, 0xffffff), luaL_optnumber(L, 10, 1.0f));
-	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 11, 0), luaL_optnumber(L, 12, 0.0f));
-	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 13, 0), luaL_optnumber(L, 14, 0.0f));
+	const char* str_id = luaL_checkstring(L, 2);
+	GTextureData data(L, 3);
+	const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+	int fit_mode = luaL_optinteger(L, 6, 0);
+	bool keep_size = lua_toboolean(L, 7);
+	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 8, 0.5f), luaL_optnumber(L, 9, 0.5f));
+	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 10, 0xffffff), luaL_optnumber(L, 11, 1.0f));
+	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 12, 0), luaL_optnumber(L, 13, 0.0f));
+	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
 	
-	setupUVs(L, data, 15);
+	setupUVs(L, data, 16);
 	
-	ImGui::ScaledImage(data.texture_size, data.texture, size, fit_mode, keep_size, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
+	ImGui::ScaledImage(str_id, data.texture_size, data.texture, size, fit_mode, keep_size, anchor, tint_col, border_col, bg_col, data.uv0, data.uv1);
 	
 	return 0;
 }
@@ -3725,20 +3728,21 @@ int ScaledImageButton(lua_State* L)
 {
 	STACK_CHECKER(L, "scaledImageButton", 1);
 
-	GTextureData data(L, 2);
-	const ImVec2& size = ImVec2(luaL_checknumber(L, 3), luaL_checknumber(L, 4));
-	int fit_mode = luaL_optinteger(L, 5, 0);
-	bool keep_size = lua_toboolean(L, 6);
-	int flags = luaL_optinteger(L, 7, 0);
-	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 8, 0.5f), luaL_optnumber(L, 9, 0.5f));
-	const ImVec2& clip_offset = ImVec2(luaL_optnumber(L, 10, 0.0f), luaL_optnumber(L, 11, 0.0f));
-	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 12, 0xffffff), luaL_optnumber(L, 13, 1.0f));
-	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 14, 0), luaL_optnumber(L, 15, 0.0f));
-	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 16, 0), luaL_optnumber(L, 17, 0.0f));
+	const char* str_id = luaL_checkstring(L, 2);
+	GTextureData data(L, 3);
+	const ImVec2& size = ImVec2(luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+	int fit_mode = luaL_optinteger(L, 6, 0);
+	bool keep_size = lua_toboolean(L, 7);
+	int flags = luaL_optinteger(L, 8, 0);
+	const ImVec2& anchor = ImVec2(luaL_optnumber(L, 9, 0.5f), luaL_optnumber(L, 10, 0.5f));
+	const ImVec2& clip_offset = ImVec2(luaL_optnumber(L, 11, 0.0f), luaL_optnumber(L, 12, 0.0f));
+	const ImVec4& tint_col = GColor::toVec4(luaL_optinteger(L, 13, 0xffffff), luaL_optnumber(L, 14, 1.0f));
+	const ImVec4& border_col = GColor::toVec4(luaL_optinteger(L, 15, 0), luaL_optnumber(L, 16, 0.0f));
+	const ImVec4& bg_col = GColor::toVec4(luaL_optinteger(L, 17, 0), luaL_optnumber(L, 18, 0.0f));
 	
-	setupUVs(L, data, 18);
+	setupUVs(L, data, 19);
 	
-	lua_pushboolean(L, ImGui::ScaledImageButton(data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, data.uv0, data.uv1));
+	lua_pushboolean(L, ImGui::ScaledImageButton(str_id, data.texture_size, data.texture, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, data.uv0, data.uv1));
 	return 1;
 }
 
@@ -4792,7 +4796,7 @@ int InputText(lua_State* L)
 	int buffer_size = luaL_checkinteger(L, 4);
 	ImGuiInputTextFlags flags = luaL_optinteger(L, 5, 0);
 	char* buffer = new char[buffer_size];
-	sprintf(buffer, "%s", text);
+	ImStrncpy(buffer, text, buffer_size);
 	bool result = false;
 	
 	if (lua_gettop(L) > 5)
@@ -4823,7 +4827,7 @@ int InputTextMultiline(lua_State* L)
 	ImVec2 size = ImVec2(luaL_optnumber(L, 5, 0.0f), luaL_optnumber(L, 6, 0.0f));
 	ImGuiInputTextFlags flags = luaL_optinteger(L, 7, 0);
 	char* buffer = new char[buffer_size];
-	sprintf(buffer, "%s", text);
+	ImStrncpy(buffer, text, buffer_size);
 	bool result = false;
 	
 	if (lua_gettop(L) > 7)
@@ -4854,10 +4858,10 @@ int InputTextWithHint(lua_State* L)
 	const char* label = luaL_checkstring(L, 2);
 	const char* text = luaL_checkstring(L, 3);
 	const char* hint = luaL_checkstring(L, 4);
-	size_t buf_size = luaL_checkinteger(L, 5);
+	size_t buffer_size = luaL_checkinteger(L, 5);
 	ImGuiInputTextFlags flags = luaL_optinteger(L, 6, 0);
-	char* buffer = new char[buf_size];
-	sprintf(buffer, "%s", text);
+	char* buffer = new char[buffer_size];
+	ImStrncpy(buffer, text, buffer_size);
 	bool result = false;
 	
 	if (lua_gettop(L) > 6)
@@ -4866,11 +4870,11 @@ int InputTextWithHint(lua_State* L)
 		CallbackData* callback = new CallbackData(L, 7);
 		imgui->callbacks.push_back(callback);
 
-		result = ImGui::InputTextWithHint(label, hint, buffer, buf_size, flags, InputTextCallback, (void *)callback);
+		result = ImGui::InputTextWithHint(label, hint, buffer, buffer_size, flags, InputTextCallback, (void *)callback);
 	}
 	else
 	{
-		result = ImGui::InputTextWithHint(label, hint, buffer, buf_size, flags);
+		result = ImGui::InputTextWithHint(label, hint, buffer, buffer_size, flags);
 	}
 	
 	lua_pushstring(L, &(*buffer));
@@ -5365,45 +5369,92 @@ int EndListBox(lua_State* _UNUSED(L))
 ///
 /////////////////////////////////////////////////////////////////////////////////////////////
 
+int CachePoints(lua_State* L)
+{
+	luaL_checktype(L, 1, LUA_TTABLE);
+	size_t len = luaL_getn(L, 1);
+	float* values = getTableValues<float>(L, 1, len);
+	lua_pushlightuserdata(L, values);
+	return 1;
+}
+
+int FreePoints(lua_State* L)
+{
+	const void* p = lua_topointer(L, 1);
+	const float* values = static_cast<const float*>(p);
+	delete[] values;
+	return 0;
+}
+
+void PlotLinesTemp(lua_State* L, const float* values, size_t len, int nextIdx)
+{
+	const char* label = luaL_checkstring(L, 2);
+	int values_offset = luaL_optinteger(L, nextIdx, 0);
+	const char* overlay_text = luaL_optstring(L, nextIdx + 1, NULL);
+	float scale_min = luaL_optnumber(L, nextIdx + 2, FLT_MAX);
+	float scale_max = luaL_optnumber(L, nextIdx + 3, FLT_MAX);
+	ImVec2 graph_size = ImVec2(luaL_optnumber(L, nextIdx + 4, 0), luaL_optnumber(L, nextIdx + 5, 0));
+	int stride = sizeof(float);
+
+	ImGui::PlotLines(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+}
+
+int PlotCachedLines(lua_State* L)
+{
+	STACK_CHECKER(L, "plotCachedLines", 0);
+
+	const void* p = lua_topointer(L, 3);
+	const float* values = static_cast<const float*>(p);
+	size_t len = luaL_checknumber(L, 4);
+	PlotLinesTemp(L, values, len, 5);
+	return 0;
+}
+
 int PlotLines(lua_State* L)
 {
 	STACK_CHECKER(L, "plotLines", 0);
 
-	const char* label = luaL_checkstring(L, 2);
-	
 	luaL_checktype(L, 3, LUA_TTABLE);
 	size_t len = luaL_getn(L, 3);
-	float* values = getTableValues<float>(L, 3, len);
-	int values_offset = luaL_optinteger(L, 4, 0);
-	const char* overlay_text = luaL_optstring(L, 5, NULL);
-	float scale_min = luaL_optnumber(L, 6, FLT_MAX);
-	float scale_max = luaL_optnumber(L, 7, FLT_MAX);
-	ImVec2 graph_size = ImVec2(luaL_optnumber(L, 8, 0), luaL_optnumber(L, 9, 0));
-	int stride = sizeof(float);
-	
-	ImGui::PlotLines(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+	const float* values = getTableValues<float>(L, 3, len);
+	PlotLinesTemp(L, values, len, 4);
 	delete[] values;
 	return 0;
+}
+
+void PlotHistogramTemp(lua_State* L, const float* values, size_t len, int nextIdx)
+{
+	const char* label = luaL_checkstring(L, 2);
+	int values_offset = luaL_optinteger(L, nextIdx, 0);
+	const char* overlay_text = luaL_optstring(L, nextIdx + 1, NULL);
+	float scale_min = luaL_optnumber(L, nextIdx + 2, FLT_MAX);
+	float scale_max = luaL_optnumber(L, nextIdx + 3, FLT_MAX);
+	ImVec2 graph_size = ImVec2(luaL_optnumber(L, nextIdx + 4, 0), luaL_optnumber(L, nextIdx + 5, 0));
+	int stride = sizeof(float);
+
+	ImGui::PlotHistogram(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
 }
 
 int PlotHistogram(lua_State* L)
 {
 	STACK_CHECKER(L, "plotHistogram", 0);
 
-	const char* label = luaL_checkstring(L, 2);
-	
 	luaL_checktype(L, 3, LUA_TTABLE);
 	int len = luaL_getn(L, 3);
-	float* values = getTableValues<float>(L, 3, len);
-	int values_offset = luaL_optinteger(L, 4, 0);
-	const char* overlay_text = luaL_optstring(L, 5, NULL);
-	float scale_min = luaL_optnumber(L, 6, FLT_MAX);
-	float scale_max = luaL_optnumber(L, 7, FLT_MAX);
-	ImVec2 graph_size = ImVec2(luaL_optnumber(L, 8, 0), luaL_optnumber(L, 9, 0));
-	int stride = sizeof(float);
-	
-	ImGui::PlotHistogram(label, values, len, values_offset, overlay_text, scale_min, scale_max, graph_size, stride);
+	const float* values = getTableValues<float>(L, 3, len);
+	PlotHistogramTemp(L, values, len, 4);
 	delete[] values;
+	return 0;
+}
+
+int PlotCachedHistogram(lua_State* L)
+{
+	STACK_CHECKER(L, "plotHistogram", 0);
+
+	const void* p = lua_topointer(L, 3);
+	const float* values = static_cast<const float*>(p);
+	size_t len = luaL_checknumber(L, 4);
+	PlotHistogramTemp(L, values, len, 5);
 	return 0;
 }
 
@@ -6095,7 +6146,7 @@ int ITCD_SetBuf(lua_State* L)
 
 	ImGuiInputTextCallbackData* data = getPtr<ImGuiInputTextCallbackData>(L, "ImGuiInputTextCallbackData");
 	const char* buf = luaL_checkstring(L, 2);
-	sprintf(data->Buf, "%s", buf);
+	ImStrncpy(data->Buf, buf, data->BufSize);
 	return 0;
 }
 
@@ -6457,17 +6508,82 @@ int Clipper_GetItemsHeight(lua_State* L)
 	return 1;
 }
 
-int Clipper_ForceDisplayRangeByIndices(lua_State* L)
+int Clipper_IncludeRangeByIndices(lua_State* L)
 {
-	STACK_CHECKER(L, "forceDisplayRangeByIndices", 0);
+	STACK_CHECKER(L, "IncludeRangeByIndices", 0);
 
 	ImGuiListClipper* clipper = getPtr<ImGuiListClipper>(L, "ImGuiListClipper");
 	int item_min = luaL_checkinteger(L, 2);
 	int item_max = luaL_checkinteger(L, 3);
-	clipper->ForceDisplayRangeByIndices(item_min, item_max);
+	clipper->IncludeRangeByIndices(item_min, item_max);
 	return 0;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// TextFilter
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+int initImGuiTextFilter(lua_State* L)
+{
+	ImGuiTextFilter* filter = new ImGuiTextFilter();
+	g_pushInstance(L, "ImGuiTextFilter", filter);
+	return 1;
+}
+
+int destroyImGuiTextFilter(LUA_STATE* p)
+{
+	destroyObject<ImGuiTextFilter>(p);
+	return 0;
+}
+
+int TextFilter_PassFilter(lua_State* L)
+{
+	ImGuiTextFilter* filter = getPtr<ImGuiTextFilter>(L, "ImGuiTextFilter");
+	const char* text = luaL_checkstring(L, 2);
+	lua_pushboolean(L, filter->PassFilter(text));
+	return 1;
+}
+
+int TextFilter_Draw(lua_State* L)
+{
+	ImGuiTextFilter* filter = getPtr<ImGuiTextFilter>(L, "ImGuiTextFilter");
+	const char* label = luaL_checkstring(L, 2);
+	float width = luaL_optnumber(L, 3, 0.0f);
+	lua_pushboolean(L, filter->Draw(label, width));
+	return 1;
+}
+
+int TextFilter_DrawWithHint(lua_State* L)
+{
+	ImGuiTextFilter* filter = getPtr<ImGuiTextFilter>(L, "ImGuiTextFilter");
+	const char* label = luaL_checkstring(L, 2);
+	const char* hint = luaL_checkstring(L, 3);
+	float width = luaL_optnumber(L, 4, 0.0f);
+	if (width != 0.0f)
+		ImGui::SetNextItemWidth(width);
+	bool value_changed = ImGui::InputTextWithHint(label, hint, filter->InputBuf, IM_ARRAYSIZE(filter->InputBuf));
+	if (value_changed)
+		filter->Build();
+	lua_pushboolean(L, value_changed);
+	return 1;
+}
+
+int TextFilter_SetBuffer(lua_State* L)
+{
+	ImGuiTextFilter* filter = getPtr<ImGuiTextFilter>(L, "ImGuiTextFilter");
+	const char* buff = luaL_checkstring(L, 2);
+	ImStrncpy(filter->InputBuf, buff, 256);
+	return 0;
+}
+
+int TextFilter_Build(lua_State* L)
+{
+	ImGuiTextFilter* filter = getPtr<ImGuiTextFilter>(L, "ImGuiTextFilter");
+	filter->Build();
+	return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///
@@ -8195,6 +8311,19 @@ int IsAnyItemFocused(lua_State* L)
 
 	lua_pushboolean(L, ImGui::IsAnyItemFocused());
 	return 1;
+}
+
+int GetItemRect(lua_State* L)
+{
+    STACK_CHECKER(L, "getItemRect", 4);
+
+    ImVec2 min = ImGui::GetItemRectMin();
+    ImVec2 max = ImGui::GetItemRectMax();
+    lua_pushnumber(L, min.x);
+    lua_pushnumber(L, min.y);
+    lua_pushnumber(L, max.x);
+    lua_pushnumber(L, max.y);
+    return 4;
 }
 
 int GetItemRectMin(lua_State* L)
@@ -13363,6 +13492,17 @@ int HelpMarker(lua_State* L)
 
 int loader(lua_State* L)
 {
+	const luaL_Reg imguiTextFilterFunctionsList[] = {
+		{"passFilter", TextFilter_PassFilter},
+		{"draw", TextFilter_Draw},
+		{"drawWithHint", TextFilter_DrawWithHint},
+		{"setBuffer", TextFilter_SetBuffer},
+		{"build", TextFilter_Build},
+		{NULL, NULL}
+	};
+
+	g_createClass(L, "ImGuiTextFilter", NULL, initImGuiTextFilter, destroyImGuiTextFilter, imguiTextFilterFunctionsList);
+	
 	const luaL_Reg imguiEmptyFunctionsList[] = {
 		{NULL, NULL}
 	};
@@ -13936,7 +14076,7 @@ int loader(lua_State* L)
 		{"step", Clipper_Step},
 		{"getDisplayStart", Clipper_GetDisplayStart},
 		{"getDisplayEnd", Clipper_GetDisplayEnd},
-		{"forceDisplayRangeByIndices", Clipper_ForceDisplayRangeByIndices},
+		{"includeRangeByIndices", Clipper_IncludeRangeByIndices},
 		{"getStartPosY", Clipper_GetStartPosY},
 		{"getItemsCount", Clipper_GetItemsCount},
 		{"getItemsHeight", Clipper_GetItemsHeight},
@@ -14009,6 +14149,8 @@ int loader(lua_State* L)
 	
 	const luaL_Reg imguiFunctionList[] =
 	{
+		{"scrollWhenDragging", ScrollWhenDragging},
+
 		{"setTouchGesturesEnabled", SetTouchGesturesEnabled},
 		{"isTouchGesturesEnabled", GetTouchGesturesEnabled},
 
@@ -14180,7 +14322,7 @@ int loader(lua_State* L)
 		
 		{"image", Image},
 		{"imageButton", ImageButton},
-		{"imageButton", ImageButton},
+		{"imageButtonUV", ImageButtonUV},
 		
 		{"scaledImage", ScaledImage},
 		{"scaledImageButton", ScaledImageButton},
@@ -14274,6 +14416,10 @@ int loader(lua_State* L)
 		{"listBox", ListBox},
 		{"listBoxHeader", BeginListBox},
 		{"listBoxFooter", EndListBox},
+		{"cachePoints", CachePoints},
+		{"freePoints", FreePoints},
+		{"plotCachedLines", PlotCachedLines},
+		{"plotCachedHistogram", PlotCachedHistogram},
 		{"plotLines", PlotLines},
 		{"plotHistogram", PlotHistogram},
 		{"value", Value},
@@ -14343,6 +14489,7 @@ int loader(lua_State* L)
 		{"isAnyItemHovered", IsAnyItemHovered},
 		{"isAnyItemActive", IsAnyItemActive},
 		{"isAnyItemFocused", IsAnyItemFocused},
+		{"getItemRect", GetItemRect},
 		{"getItemRectMin", GetItemRectMin},
 		{"getItemRectMax", GetItemRectMax},
 		{"getItemRectSize", GetItemRectSize},

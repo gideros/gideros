@@ -19,21 +19,21 @@
 //=============== CODE BORROWED FROM IMGUI_WIDGETS.CPP
 static const ImGuiDataTypeInfo GDataTypeInfo[] =
 {
-    { sizeof(char),             "S8",   "%d",   "%d"    },  // ImGuiDataType_S8
-    { sizeof(unsigned char),    "U8",   "%u",   "%u"    },
-    { sizeof(short),            "S16",  "%d",   "%d"    },  // ImGuiDataType_S16
-    { sizeof(unsigned short),   "U16",  "%u",   "%u"    },
-    { sizeof(int),              "S32",  "%d",   "%d"    },  // ImGuiDataType_S32
-    { sizeof(unsigned int),     "U32",  "%u",   "%u"    },
+	{ sizeof(char),				"S8",   "%d",   "%d"	},  // ImGuiDataType_S8
+	{ sizeof(unsigned char),	"U8",   "%u",   "%u"	},
+	{ sizeof(short),			"S16",  "%d",   "%d"	},  // ImGuiDataType_S16
+	{ sizeof(unsigned short),	"U16",  "%u",   "%u"	},
+	{ sizeof(int),				"S32",  "%d",   "%d"	},  // ImGuiDataType_S32
+	{ sizeof(unsigned int),		"U32",  "%u",   "%u"	},
 #ifdef _MSC_VER
-    { sizeof(ImS64),            "S64",  "%I64d","%I64d" },  // ImGuiDataType_S64
-    { sizeof(ImU64),            "U64",  "%I64u","%I64u" },
+	{ sizeof(ImS64),			"S64",  "%I64d","%I64d" },  // ImGuiDataType_S64
+	{ sizeof(ImU64),			"U64",  "%I64u","%I64u" },
 #else
-    { sizeof(ImS64),            "S64",  "%lld", "%lld"  },  // ImGuiDataType_S64
-    { sizeof(ImU64),            "U64",  "%llu", "%llu"  },
+	{ sizeof(ImS64),			"S64",  "%lld", "%lld"  },  // ImGuiDataType_S64
+	{ sizeof(ImU64),			"U64",  "%llu", "%llu"  },
 #endif
-    { sizeof(float),            "float", "%f",  "%f"    },  // ImGuiDataType_Float (float are promoted to double in va_arg)
-    { sizeof(double),           "double","%f",  "%lf"   },  // ImGuiDataType_Double
+	{ sizeof(float),			"float", "%f",  "%f"	},  // ImGuiDataType_Float (float are promoted to double in va_arg)
+	{ sizeof(double),			"double","%f",  "%lf"   },  // ImGuiDataType_Double
 };
 
 // FIXME-LEGACY: Prior to 1.61 our DragInt() function internally used floats and because of this the compile-time default value for format was "%.0f".
@@ -41,254 +41,251 @@ static const ImGuiDataTypeInfo GDataTypeInfo[] =
 // To honor backward compatibility we are rewriting the format string, unless IMGUI_DISABLE_OBSOLETE_FUNCTIONS is enabled. What could possibly go wrong?!
 static const char* PatchFormatStringFloatToInt(const char* fmt)
 {
-    if (fmt[0] == '%' && fmt[1] == '.' && fmt[2] == '0' && fmt[3] == 'f' && fmt[4] == 0) // Fast legacy path for "%.0f" which is expected to be the most common case.
-        return "%d";
-    const char* fmt_start = ImParseFormatFindStart(fmt);    // Find % (if any, and ignore %%)
-    const char* fmt_end = ImParseFormatFindEnd(fmt_start);  // Find end of format specifier, which itself is an exercise of confidence/recklessness (because snprintf is dependent on libc or user).
-    if (fmt_end > fmt_start && fmt_end[-1] == 'f')
-    {
+	if (fmt[0] == '%' && fmt[1] == '.' && fmt[2] == '0' && fmt[3] == 'f' && fmt[4] == 0) // Fast legacy path for "%.0f" which is expected to be the most common case.
+		return "%d";
+	const char* fmt_start = ImParseFormatFindStart(fmt);	// Find % (if any, and ignore %%)
+	const char* fmt_end = ImParseFormatFindEnd(fmt_start);  // Find end of format specifier, which itself is an exercise of confidence/recklessness (because snprintf is dependent on libc or user).
+	if (fmt_end > fmt_start && fmt_end[-1] == 'f')
+	{
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-        if (fmt_start == fmt && fmt_end[0] == 0)
-            return "%d";
-        ImGuiContext& g = *GImGui;
-        ImFormatString(g.TempBuffer, IM_ARRAYSIZE(g.TempBuffer), "%.*s%%d%s", (int)(fmt_start - fmt), fmt, fmt_end); // Honor leading and trailing decorations, but lose alignment/precision.
-        return g.TempBuffer;
+		if (fmt_start == fmt && fmt_end[0] == 0)
+			return "%d";
+		ImGuiContext& g = *GImGui;
+		ImFormatString(g.TempBuffer, IM_ARRAYSIZE(g.TempBuffer), "%.*s%%d%s", (int)(fmt_start - fmt), fmt, fmt_end); // Honor leading and trailing decorations, but lose alignment/precision.
+		return g.TempBuffer;
 #else
-        IM_ASSERT(0 && "DragInt(): Invalid format string!"); // Old versions used a default parameter of "%.0f", please replace with e.g. "%d"
+		IM_ASSERT(0 && "DragInt(): Invalid format string!"); // Old versions used a default parameter of "%.0f", please replace with e.g. "%d"
 #endif
-    }
-    return fmt;
+	}
+	return fmt;
 }
 
 //END OF BORROWED CODE
 
 namespace ImGui
 {
-    void FitImage(ImVec2& min, ImVec2& max, const ImVec2& rect_size,
-                   const ImVec2& texture_size, const ImVec2& anchor,
-                   ImGuiImageScaleMode fit_mode, bool keep_size)
-    {
-        ImVec2 scaled_texture_size;
-        switch (fit_mode) {
-        case ImGuiImageScaleMode_FitWidth:
-            scaled_texture_size = texture_size * rect_size.x / texture_size.x;
-            break;
-        case ImGuiImageScaleMode_FitHeight:
-            scaled_texture_size = texture_size * rect_size.y / texture_size.y;
-            break;
-        case ImGuiImageScaleMode_Stretch:
-            scaled_texture_size = rect_size;
-            break;
-        default:
-            scaled_texture_size = texture_size * ImMin(rect_size.x / texture_size.x, rect_size.y / texture_size.y);
-            break;
-        }
+	void FitImage(ImVec2& min, ImVec2& max, const ImVec2& rect_size,
+					const ImVec2& texture_size, const ImVec2& anchor,
+					ImGuiImageScaleMode fit_mode, bool keep_size)
+	{
+		ImVec2 scaled_texture_size;
+		switch (fit_mode) {
+		case ImGuiImageScaleMode_FitWidth:
+			scaled_texture_size = texture_size * rect_size.x / texture_size.x;
+			break;
+		case ImGuiImageScaleMode_FitHeight:
+			scaled_texture_size = texture_size * rect_size.y / texture_size.y;
+			break;
+		case ImGuiImageScaleMode_Stretch:
+			scaled_texture_size = rect_size;
+			break;
+		default:
+			scaled_texture_size = texture_size * ImMin(rect_size.x / texture_size.x, rect_size.y / texture_size.y);
+			break;
+		}
 
-        if (keep_size)
-        {
-            min += anchor * (rect_size - texture_size);
-            max = min + texture_size;
-        }
-        else
-        {
-            min += anchor * (rect_size - scaled_texture_size);
-            max = min + scaled_texture_size;
-        }
-    }
+		if (keep_size)
+		{
+			min += anchor * (rect_size - texture_size);
+			max = min + texture_size;
+		}
+		else
+		{
+			min += anchor * (rect_size - scaled_texture_size);
+			max = min + scaled_texture_size;
+		}
+	}
 
-    void ScaledImage(const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
-                     ImGuiImageScaleMode fit_mode, bool keep_size, const ImVec2& anchor,
-                     const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
-                     const ImVec2& uv0, const ImVec2& uv1)
-    {
-        ImGuiWindow* window = GetCurrentWindow();
-        if (window->SkipItems)
-            return;
+	void ScaledImage(const char* str_id, const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
+						ImGuiImageScaleMode fit_mode, bool keep_size, const ImVec2& anchor,
+						const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
+						const ImVec2& uv0, const ImVec2& uv1)
+	{
+		ImGuiWindow* window = GetCurrentWindow();
+		if (window->SkipItems)
+			return;
 
-        ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
-        ItemSize(bb);
-        if (!ItemAdd(bb, 0))
-            return;
+		ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
+		ItemSize(bb);
+		if (!ItemAdd(bb, window->GetID(str_id)))
+			return;
 
-        if (bg_col.w > 0.0f)
-            window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col));
+		if (bg_col.w > 0.0f)
+			window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col));
 
-        // Backup area to draw border after image
-        ImRect backup_bb = bb;
+		// Backup area to draw border after image
+		ImRect backup_bb = bb;
 
-        window->DrawList->PushClipRect(bb.Min, bb.Max, true);
-        FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
-        window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
-        window->DrawList->PopClipRect();
+		window->DrawList->PushClipRect(bb.Min, bb.Max, true);
+		FitImage(bb.Min, bb.Max, size, texture_size, anchor, fit_mode, keep_size);
+		window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
+		window->DrawList->PopClipRect();
 
-        if (border_col.w > 0.0f)
-            window->DrawList->AddRect(backup_bb.Min, backup_bb.Max, GetColorU32(border_col));
-    }
+		if (border_col.w > 0.0f)
+			window->DrawList->AddRect(backup_bb.Min, backup_bb.Max, GetColorU32(border_col));
+	}
 
-    bool ScaledImageButtonEx(const ImVec2& texture_size, ImTextureID texture_id, ImGuiID id, const ImVec2& size_arg,
-                             ImGuiImageScaleMode fit_mode, bool keep_size, ImGuiButtonFlags flags, const ImVec2& anchor,
-                             const ImVec2& clip_offset,
-                             const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
-                             const ImVec2& uv0, const ImVec2& uv1)
-    {
-        ImGuiContext& g = *GImGui;
-        ImGuiWindow* window = GetCurrentWindow();
-        if (window->SkipItems)
-            return false;
+	bool ScaledImageButtonEx(ImGuiID id, const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size_arg,
+								ImGuiImageScaleMode fit_mode, bool keep_size, ImGuiButtonFlags flags, const ImVec2& anchor,
+								const ImVec2& clip_offset,
+								const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
+								const ImVec2& uv0, const ImVec2& uv1)
+	{
+		ImGuiContext& g = *GImGui;
+		ImGuiWindow* window = GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
 
-        ImGuiStyle style = g.Style;
-        const ImVec2 padding = style.FramePadding;
+		ImGuiStyle style = g.Style;
+		const ImVec2 padding = style.FramePadding;
 
-        ImVec2 size = CalcItemSize(size_arg, texture_size.x + padding.x * 2.0f, texture_size.y + padding.y * 2.0f);
+		ImVec2 size = CalcItemSize(size_arg, texture_size.x + padding.x * 2.0f, texture_size.y + padding.y * 2.0f);
 
-        ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
-        ItemSize(bb);
-        if (!ItemAdd(bb, id))
-            return false;
+		ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
+		ItemSize(bb);
+		if (!ItemAdd(bb, id))
+			return false;
 
-        bool hovered, held;
-        bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
+		bool hovered, held;
+		bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
-        // Render bg frame
-        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-        RenderNavHighlight(bb, id);
-        RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
+		// Render bg frame
+		const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+		RenderNavHighlight(bb, id);
+		RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
 
-        // Calculate image area
-        bb.Min = ImVec2(ImMax(bb.Min.x, bb.Min.x + padding.x), ImMax(bb.Min.y, bb.Min.y + padding.y));
-        bb.Max = ImVec2(ImMin(bb.Max.x, bb.Max.x - padding.x), ImMin(bb.Max.y, bb.Max.y - padding.y));
+		// Calculate image area
+		bb.Min = ImVec2(ImMax(bb.Min.x, bb.Min.x + padding.x), ImMax(bb.Min.y, bb.Min.y + padding.y));
+		bb.Max = ImVec2(ImMin(bb.Max.x, bb.Max.x - padding.x), ImMin(bb.Max.y, bb.Max.y - padding.y));
 
-        //
-        if (bg_col.w > 0.0f)
-            window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col));
+		//
+		if (bg_col.w > 0.0f)
+			window->DrawList->AddRectFilled(bb.Min, bb.Max, GetColorU32(bg_col));
 
-        // Backup area to draw border after image
-        ImRect backup_bb = bb;
+		// Backup area to draw border after image
+		ImRect backup_bb = bb;
 
-        window->DrawList->PushClipRect(bb.Min - clip_offset, bb.Max + clip_offset, true);
-        FitImage(bb.Min, bb.Max, bb.GetSize(), texture_size, anchor, fit_mode, keep_size);
-        window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
-        window->DrawList->PopClipRect();
+		window->DrawList->PushClipRect(bb.Min - clip_offset, bb.Max + clip_offset, true);
+		FitImage(bb.Min, bb.Max, bb.GetSize(), texture_size, anchor, fit_mode, keep_size);
+		window->DrawList->AddImage(texture_id, bb.Min, bb.Max, uv0, uv1, GetColorU32(tint_col));
+		window->DrawList->PopClipRect();
 
-        if (border_col.w > 0.0f)
-            window->DrawList->AddRect(backup_bb.Min, backup_bb.Max, GetColorU32(border_col));
+		if (border_col.w > 0.0f)
+			window->DrawList->AddRect(backup_bb.Min, backup_bb.Max, GetColorU32(border_col));
 
-        return pressed;
-    }
+		return pressed;
+	}
 
-    bool ScaledImageButton(const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
-                           ImGuiImageScaleMode fit_mode, bool keep_size, ImGuiButtonFlags flags, const ImVec2& anchor,
-                           const ImVec2& clip_offset,
-                           const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
-                           const ImVec2& uv0, const ImVec2& uv1)
-    {
-        ImGuiContext& g = *GImGui;
-        ImGuiWindow* window = g.CurrentWindow;
-        if (window->SkipItems)
-            return false;
+	bool ScaledImageButton(const char* str_id, const ImVec2& texture_size, ImTextureID texture_id, const ImVec2& size,
+							ImGuiImageScaleMode fit_mode, bool keep_size, ImGuiButtonFlags flags, const ImVec2& anchor,
+							const ImVec2& clip_offset,
+							const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
+							const ImVec2& uv0, const ImVec2& uv1)
+	{
+		ImGuiContext& g = *GImGui;
+		ImGuiWindow* window = g.CurrentWindow;
+		if (window->SkipItems)
+			return false;
 
-        PushID((void*)(intptr_t)texture_id);
-        const ImGuiID id = window->GetID("#image");
-        PopID();
+		return ScaledImageButtonEx(window->GetID(str_id), texture_size, texture_id, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, uv0, uv1);
+	}
 
-        return ScaledImageButtonEx(texture_size, texture_id, id, size, fit_mode, keep_size, flags, anchor, clip_offset, tint_col, border_col, bg_col, uv0, uv1);
-    }
 
-    bool ScaledImageButtonWithText(const ImVec2& texture_size, ImTextureID texture_id, const char* label, const ImVec2& image_size_arg,
-                                   const ImVec2& button_size, ImGuiButtonFlags flags,
-                                   ImGuiImageScaleMode fit_mode, bool keep_size, const ImVec2& anchor, ImGuiDir image_side,
-                                   const ImVec2& clip_offset,
-                                   const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
-                                   const ImVec2& uv0, const ImVec2& uv1)
-    {
-        ImGuiWindow* window = GetCurrentWindow();
-        if (window->SkipItems)
-            return false;
+	bool ScaledImageButtonWithText(const ImVec2& texture_size, ImTextureID texture_id, const char* label, const ImVec2& image_size_arg,
+									const ImVec2& button_size, ImGuiButtonFlags flags,
+									ImGuiImageScaleMode fit_mode, bool keep_size, const ImVec2& anchor, ImGuiDir image_side,
+									const ImVec2& clip_offset,
+									const ImVec4& tint_col, const ImVec4& border_col, const ImVec4& bg_col,
+									const ImVec2& uv0, const ImVec2& uv1)
+	{
+		ImGuiWindow* window = GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
 
-        ImGuiContext& g = *GImGui;
-        const ImGuiStyle& style = g.Style;
-        const ImGuiID id = window->GetID(label);
-        const ImVec2 label_size = CalcTextSize(label, NULL, true);
-        const ImVec2 padding = style.FramePadding;
-        const ImVec2 image_size = CalcItemSize(image_size_arg, texture_size.x + padding.x * 2.0f, texture_size.y + padding.y * 2.0f);
+		ImGuiContext& g = *GImGui;
+		const ImGuiStyle& style = g.Style;
+		const ImGuiID id = window->GetID(label);
+		const ImVec2 label_size = CalcTextSize(label, NULL, true);
+		const ImVec2 padding = style.FramePadding;
+		const ImVec2 image_size = CalcItemSize(image_size_arg, texture_size.x + padding.x * 2.0f, texture_size.y + padding.y * 2.0f);
 
-        ImVec2 pos = window->DC.CursorPos;
-        if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && padding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
-            pos.y += window->DC.CurrLineTextBaseOffset - padding.y;
+		ImVec2 pos = window->DC.CursorPos;
+		if ((flags & ImGuiButtonFlags_AlignTextBaseLine) && padding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
+			pos.y += window->DC.CurrLineTextBaseOffset - padding.y;
 
-        ImVec2 size = CalcItemSize(button_size, label_size.x + padding.x * 2.0f, label_size.y + padding.y * 2.0f);
+		ImVec2 size = CalcItemSize(button_size, label_size.x + padding.x * 2.0f, label_size.y + padding.y * 2.0f);
 
-        ImRect bb(pos, pos + size);
-        ItemSize(size, padding.y);
-        if (!ItemAdd(bb, id))
-            return false;
+		ImRect bb(pos, pos + size);
+		ItemSize(size, padding.y);
+		if (!ItemAdd(bb, id))
+			return false;
 
-        if (g.CurrentItemFlags & ImGuiItemFlags_ButtonRepeat)
-            flags |= ImGuiButtonFlags_Repeat;
-        bool hovered, held;
-        bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
+		if (g.CurrentItemFlags & ImGuiItemFlags_ButtonRepeat)
+			flags |= ImGuiButtonFlags_Repeat;
+		bool hovered, held;
+		bool pressed = ButtonBehavior(bb, id, &hovered, &held, flags);
 
-        // Render
-        const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-        RenderNavHighlight(bb, id);
-        RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
+		// Render
+		const ImU32 col = GetColorU32((held && hovered) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
+		RenderNavHighlight(bb, id);
+		RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
 
-        // Calculate image area
-        bb.Min = ImVec2(ImMax(bb.Min.x, bb.Min.x + padding.x), ImMax(bb.Min.y, bb.Min.y + padding.y));
-        bb.Max = ImVec2(ImMin(bb.Max.x, bb.Max.x - padding.x), ImMin(bb.Max.y, bb.Max.y - padding.y));
-        if (g.LogEnabled)
-            LogSetNextTextDecoration("[", "]");
+		// Calculate image area
+		bb.Min = ImVec2(ImMax(bb.Min.x, bb.Min.x + padding.x), ImMax(bb.Min.y, bb.Min.y + padding.y));
+		bb.Max = ImVec2(ImMin(bb.Max.x, bb.Max.x - padding.x), ImMin(bb.Max.y, bb.Max.y - padding.y));
+		if (g.LogEnabled)
+			LogSetNextTextDecoration("[", "]");
 
-        ImRect ibb;
+		ImRect ibb;
 
-        switch (image_side) {
-        case ImGuiDir_Right:
-            {
-                ImVec2 backup_max = bb.Max;
-                bb.Max.x = ImClamp(bb.Max.x - image_size.x, bb.Min.x, bb.Max.x);
-                ibb = ImRect(ImVec2(bb.Max.x, bb.Min.y), backup_max);
-            }
-            break;
-        case ImGuiDir_Up:
-            {
-                ImVec2 backup_min = bb.Min;
-                bb.Min.y = ImClamp(bb.Min.y + image_size.y, bb.Min.y, bb.Max.y);
-                ibb = ImRect(backup_min, ImVec2(bb.Max.x, bb.Min.y));
-            }
-            break;
-        case ImGuiDir_Down:
-            {
-                ImVec2 backup_max = bb.Max;
-                bb.Max.y = ImClamp(bb.Max.y - image_size.y, bb.Min.y, bb.Max.y);
-                ibb = ImRect(ImVec2(bb.Min.x, bb.Max.y), backup_max);
-            }
-            break;
-        // Left align by default
-        default:
-            {
-                ImVec2 backup_min = bb.Min;
-                bb.Min.x = ImClamp(bb.Min.x + image_size.x, bb.Min.x, bb.Max.x);
-                ibb = ImRect(backup_min, ImVec2(bb.Min.x , bb.Max.y));
-            }
-            break;
-        }
+		switch (image_side) {
+		case ImGuiDir_Right:
+			{
+				ImVec2 backup_max = bb.Max;
+				bb.Max.x = ImClamp(bb.Max.x - image_size.x, bb.Min.x, bb.Max.x);
+				ibb = ImRect(ImVec2(bb.Max.x, bb.Min.y), backup_max);
+			}
+			break;
+		case ImGuiDir_Up:
+			{
+				ImVec2 backup_min = bb.Min;
+				bb.Min.y = ImClamp(bb.Min.y + image_size.y, bb.Min.y, bb.Max.y);
+				ibb = ImRect(backup_min, ImVec2(bb.Max.x, bb.Min.y));
+			}
+			break;
+		case ImGuiDir_Down:
+			{
+				ImVec2 backup_max = bb.Max;
+				bb.Max.y = ImClamp(bb.Max.y - image_size.y, bb.Min.y, bb.Max.y);
+				ibb = ImRect(ImVec2(bb.Min.x, bb.Max.y), backup_max);
+			}
+			break;
+		// Left align by default
+		default:
+			{
+				ImVec2 backup_min = bb.Min;
+				bb.Min.x = ImClamp(bb.Min.x + image_size.x, bb.Min.x, bb.Max.x);
+				ibb = ImRect(backup_min, ImVec2(bb.Min.x , bb.Max.y));
+			}
+			break;
+		}
 
-        if (bg_col.w > 0.0f)
-            window->DrawList->AddRectFilled(ibb.Min, ibb.Max, GetColorU32(bg_col));
+		if (bg_col.w > 0.0f)
+			window->DrawList->AddRectFilled(ibb.Min, ibb.Max, GetColorU32(bg_col));
 
-        ImRect backup_ibb = ibb;
-        window->DrawList->PushClipRect(ibb.Min - clip_offset, ibb.Max + clip_offset, true);
-        FitImage(ibb.Min, ibb.Max, ibb.GetSize(), texture_size, anchor, fit_mode, keep_size);
-        window->DrawList->AddImage(texture_id, ibb.Min, ibb.Max, uv0, uv1, GetColorU32(tint_col));
-        window->DrawList->PopClipRect();
+		ImRect backup_ibb = ibb;
+		window->DrawList->PushClipRect(ibb.Min - clip_offset, ibb.Max + clip_offset, true);
+		FitImage(ibb.Min, ibb.Max, ibb.GetSize(), texture_size, anchor, fit_mode, keep_size);
+		window->DrawList->AddImage(texture_id, ibb.Min, ibb.Max, uv0, uv1, GetColorU32(tint_col));
+		window->DrawList->PopClipRect();
 
-        if (border_col.w > 0.0f)
-            window->DrawList->AddRect(backup_ibb.Min, backup_ibb.Max, GetColorU32(border_col));
+		if (border_col.w > 0.0f)
+			window->DrawList->AddRect(backup_ibb.Min, backup_ibb.Max, GetColorU32(border_col));
 
-        RenderTextClipped(bb.Min, bb.Max, label, NULL, &label_size, style.ButtonTextAlign, &bb);
+		RenderTextClipped(bb.Min, bb.Max, label, NULL, &label_size, style.ButtonTextAlign, &bb);
 
-        return pressed;
-    }
+		return pressed;
+	}
 
 
 	bool FilledSliderScalar(const char* label, bool mirror, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
@@ -418,55 +415,55 @@ namespace ImGui
 		return value_changed;
 	}
 
-    bool FilledSliderFloat(const char* label, bool mirror, float* v, float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalar(label, mirror, ImGuiDataType_Float, v, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderFloat(const char* label, bool mirror, float* v, float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalar(label, mirror, ImGuiDataType_Float, v, &v_min, &v_max, format, flags);
+	}
 
-    bool FilledSliderFloat2(const char* label, bool mirror, float v[2], float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalarN(label, mirror, ImGuiDataType_Float, v, 2, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderFloat2(const char* label, bool mirror, float v[2], float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalarN(label, mirror, ImGuiDataType_Float, v, 2, &v_min, &v_max, format, flags);
+	}
 
-    bool FilledSliderFloat3(const char* label, bool mirror, float v[3], float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalarN(label, mirror, ImGuiDataType_Float, v, 3, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderFloat3(const char* label, bool mirror, float v[3], float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalarN(label, mirror, ImGuiDataType_Float, v, 3, &v_min, &v_max, format, flags);
+	}
 
-    bool FilledSliderFloat4(const char* label, bool mirror, float v[4], float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalarN(label, mirror, ImGuiDataType_Float, v, 4, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderFloat4(const char* label, bool mirror, float v[4], float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalarN(label, mirror, ImGuiDataType_Float, v, 4, &v_min, &v_max, format, flags);
+	}
 
-    bool FilledSliderAngle(const char* label, bool mirror, float* v_rad, float v_degrees_min, float v_degrees_max, const char* format, ImGuiSliderFlags flags)
-    {
-        if (format == NULL)
-            format = "%.0f deg";
-        float v_deg = (*v_rad) * 360.0f / (2 * IM_PI);
-        bool value_changed = FilledSliderFloat(label, mirror, &v_deg, v_degrees_min, v_degrees_max, format, flags);
-        *v_rad = v_deg * (2 * IM_PI) / 360.0f;
-        return value_changed;
-    }
+	bool FilledSliderAngle(const char* label, bool mirror, float* v_rad, float v_degrees_min, float v_degrees_max, const char* format, ImGuiSliderFlags flags)
+	{
+		if (format == NULL)
+			format = "%.0f deg";
+		float v_deg = (*v_rad) * 360.0f / (2 * IM_PI);
+		bool value_changed = FilledSliderFloat(label, mirror, &v_deg, v_degrees_min, v_degrees_max, format, flags);
+		*v_rad = v_deg * (2 * IM_PI) / 360.0f;
+		return value_changed;
+	}
 
-    bool FilledSliderInt(const char* label, bool mirror, int* v, int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalar(label, mirror, ImGuiDataType_S32, v, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderInt(const char* label, bool mirror, int* v, int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalar(label, mirror, ImGuiDataType_S32, v, &v_min, &v_max, format, flags);
+	}
 
-    bool FilledSliderInt2(const char* label, bool mirror, int v[2], int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalarN(label, mirror, ImGuiDataType_S32, v, 2, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderInt2(const char* label, bool mirror, int v[2], int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalarN(label, mirror, ImGuiDataType_S32, v, 2, &v_min, &v_max, format, flags);
+	}
 
-    bool FilledSliderInt3(const char* label, bool mirror, int v[3], int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalarN(label, mirror, ImGuiDataType_S32, v, 3, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderInt3(const char* label, bool mirror, int v[3], int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalarN(label, mirror, ImGuiDataType_S32, v, 3, &v_min, &v_max, format, flags);
+	}
 
-    bool FilledSliderInt4(const char* label, bool mirror, int v[4], int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return FilledSliderScalarN(label, mirror, ImGuiDataType_S32, v, 4, &v_min, &v_max, format, flags);
-    }
+	bool FilledSliderInt4(const char* label, bool mirror, int v[4], int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return FilledSliderScalarN(label, mirror, ImGuiDataType_S32, v, 4, &v_min, &v_max, format, flags);
+	}
 
 	bool VFilledSliderScalar(const char* label, bool mirror, const ImVec2& size, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
 	{
@@ -537,15 +534,56 @@ namespace ImGui
 		return value_changed;
 	}
 
-    bool VFilledSliderFloat(const char* label, bool mirror, const ImVec2& size, float* v, float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return VFilledSliderScalar(label, mirror, size, ImGuiDataType_Float, v, &v_min, &v_max, format, flags);
-    }
+	bool VFilledSliderFloat(const char* label, bool mirror, const ImVec2& size, float* v, float v_min, float v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return VFilledSliderScalar(label, mirror, size, ImGuiDataType_Float, v, &v_min, &v_max, format, flags);
+	}
 
-    bool VFilledSliderInt(const char* label, bool mirror, const ImVec2& size, int* v, int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
-    {
-        return VFilledSliderScalar(label, mirror, size, ImGuiDataType_S32, v, &v_min, &v_max, format, flags);
-    }
+	bool VFilledSliderInt(const char* label, bool mirror, const ImVec2& size, int* v, int v_min, int v_max, const char* format, ImGuiSliderFlags flags)
+	{
+		return VFilledSliderScalar(label, mirror, size, ImGuiDataType_S32, v, &v_min, &v_max, format, flags);
+	}
+
+	void ScrollWhenDragging(float dx, float dy, ImGuiMouseButton mouse_button)
+	{
+		ImGuiContext& g = *ImGui::GetCurrentContext();
+
+		if(g.MovingWindow != nullptr)
+			return;
+
+		ImGuiWindow* window = g.CurrentWindow;
+
+		if(!window->ScrollbarX && !window->ScrollbarY) // Nothing to scroll
+			return;
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		bool hovered = false;
+		bool held = false;
+
+		const ImGuiWindow* window_to_highlight = g.NavWindowingTarget ? g.NavWindowingTarget : g.NavWindow;
+		bool window_highlight = (window_to_highlight && (window->RootWindowForTitleBarHighlight == window_to_highlight->RootWindowForTitleBarHighlight));
+
+		ImGuiButtonFlags button_flags = (mouse_button == ImGuiMouseButton_Left) ? ImGuiButtonFlags_MouseButtonLeft : (mouse_button == ImGuiMouseButton_Right) ? ImGuiButtonFlags_MouseButtonRight : ImGuiButtonFlags_MouseButtonMiddle;
+
+		if(io.MouseDown[mouse_button] && window_highlight)
+		{
+			ImGui::ButtonBehavior(window->InnerClipRect, window->GetID("##scrolldraggingoverlay"), &hovered, &held, button_flags);
+
+			if((window->InnerClipRect.Contains(io.MousePos)))
+				held = true;
+			else if(window->InnerClipRect.Contains(io.MouseClickedPos[mouse_button]) ) // If mouse has moved outside window, check if click was inside
+				held = true;
+			else
+				held = false;
+		}
+
+		if (held)
+		{
+			ImGui::SetScrollX(window, window->Scroll.x + dx * io.MouseDelta.x);
+			ImGui::SetScrollY(window, window->Scroll.y + dy * io.MouseDelta.y);
+		}
+	}
 
 }
 
