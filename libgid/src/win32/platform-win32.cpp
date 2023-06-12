@@ -437,107 +437,101 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
         }else if ((strcmp(what, "openDirectoryDialog") == 0)
                 || (strcmp(what, "openFileDialog") == 0)
                 || (strcmp(what, "saveFileDialog") == 0))
-            {
-            if(args.size() <= 2){
-                /* INFO SHOWN IN GIDEROS STUDIO DEBUGGER, IMPLEMENTED IN QT, NOT NEEDED HERE? */
-            }
-            else
-            {
-                std::wstring title = ws(args[0].s.c_str());
-                std::wstring place = ws(args[1].s.c_str());
-                std::vector<std::pair<std::wstring,std::wstring>> filters;
-                if (args.size()>=3) {
-                	std::wstring ext = ws(args[2].s.c_str());
-                	while (!ext.empty()) {
-                    	std::wstring next;
-                		size_t semicolon=ext.find(L";;");
-                		if (semicolon!=std::wstring::npos) {
-                			next=ext.substr(semicolon+2);
-                			ext=ext.substr(0,semicolon);
-                		}
-                		size_t p1=ext.find_first_of(L'(');
-                		size_t p2=ext.find_last_of(L')');
-                		if ((p1!=std::wstring::npos)&&(p2!=std::wstring::npos)&&(p2>p1))
-                		{
-                			//Valid filter, extract label and extensions
-                			std::wstring label=ext.substr(0,p1);
-                			std::wstring exts=ext.substr(p1+1,p2-p1-1);
-                			//QT uses space for extensions separator, while windows expects semicolon. Convert them.
-                			std::replace(exts.begin(),exts.end(),L' ',L';');
-                			filters.push_back(std::pair<std::wstring,std::wstring>(label,exts));
-                		}
-                		ext=next;
-                	}
+        {
+            std::wstring title = ws(args[0].s.c_str());
+            std::wstring place = ws(args[1].s.c_str());
+            std::vector<std::pair<std::wstring,std::wstring>> filters;
+            if (args.size()>=3) {
+                std::wstring ext = ws(args[2].s.c_str());
+                while (!ext.empty()) {
+                    std::wstring next;
+                    size_t semicolon=ext.find(L";;");
+                    if (semicolon!=std::wstring::npos) {
+                        next=ext.substr(semicolon+2);
+                        ext=ext.substr(0,semicolon);
+                    }
+                    size_t p1=ext.find_first_of(L'(');
+                    size_t p2=ext.find_last_of(L')');
+                    if ((p1!=std::wstring::npos)&&(p2!=std::wstring::npos)&&(p2>p1))
+                    {
+                        //Valid filter, extract label and extensions
+                        std::wstring label=ext.substr(0,p1);
+                        std::wstring exts=ext.substr(p1+1,p2-p1-1);
+                        //QT uses space for extensions separator, while windows expects semicolon. Convert them.
+                        std::replace(exts.begin(),exts.end(),L' ',L';');
+                        filters.push_back(std::pair<std::wstring,std::wstring>(label,exts));
+                    }
+                    ext=next;
                 }
+            }
 
-                DWORD dwFlags;
-                HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+            DWORD dwFlags;
+            HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+            if (SUCCEEDED(hr))
+            {
+                COMDLG_FILTERSPEC *fileTypes=new COMDLG_FILTERSPEC[filters.size()];
+                for (size_t i=0;i<filters.size();i++) {
+                    fileTypes[i].pszName=filters[i].first.c_str();
+                    fileTypes[i].pszSpec=filters[i].second.c_str();
+                }
+                IFileDialog *pFile;
+                if (strcmp(what, "saveFileDialog") == 0)
+                    hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL,
+                            IID_IFileSaveDialog, reinterpret_cast<void**>(&pFile));
+                else
+                    hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
+                            IID_IFileOpenDialog, reinterpret_cast<void**>(&pFile));
                 if (SUCCEEDED(hr))
                 {
-                    COMDLG_FILTERSPEC *fileTypes=new COMDLG_FILTERSPEC[filters.size()];
-                    for (size_t i=0;i<filters.size();i++) {
-                    	fileTypes[i].pszName=filters[i].first.c_str();
-                    	fileTypes[i].pszSpec=filters[i].second.c_str();
+                    bool isFolder=(strcmp(what, "openDirectoryDialog") == 0);
+                    // get/set options
+                    pFile->GetOptions(&dwFlags);
+                    pFile->SetOptions(dwFlags | FOS_FORCEFILESYSTEM | (isFolder?FOS_PICKFOLDERS:0));
+                    if (!isFolder) {
+                        pFile->SetFileTypes(filters.size(), fileTypes);
+                        pFile->SetFileTypeIndex(1); // index starts at 1
+                        //pFile->SetDefaultExtension(L"obj;fbx"); // append default extension
+                        //printf("* fileTypes *, set default extension to %ls\n", fileTypes[0].pszSpec); OK
+                        pFile->SetDefaultExtension(fileTypes[0].pszSpec); // append default 1st extension
                     }
-                    IFileDialog *pFile;
-					if (strcmp(what, "saveFileDialog") == 0)
-                        hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL,
-                                IID_IFileSaveDialog, reinterpret_cast<void**>(&pFile));
-					else
-                        hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
-                                IID_IFileOpenDialog, reinterpret_cast<void**>(&pFile));
-					if (SUCCEEDED(hr))
-					{
-						bool isFolder=(strcmp(what, "openDirectoryDialog") == 0);
-						// get/set options
-						pFile->GetOptions(&dwFlags);
-						pFile->SetOptions(dwFlags | FOS_FORCEFILESYSTEM | (isFolder?FOS_PICKFOLDERS:0));
-						if (!isFolder) {
-							pFile->SetFileTypes(filters.size(), fileTypes);
-							pFile->SetFileTypeIndex(1); // index starts at 1
-							//pFile->SetDefaultExtension(L"obj;fbx"); // append default extension
-                            //printf("* fileTypes *, set default extension to %ls\n", fileTypes[0].pszSpec); OK
-							pFile->SetDefaultExtension(fileTypes[0].pszSpec); // append default 1st extension
-						}
-						hr = pFile->SetTitle(title.c_str()); // need more check?
+                    hr = pFile->SetTitle(title.c_str()); // need more check?
 
-						// set starting folder
-						IShellItem *pItem = NULL;
-						hr = SHCreateItemFromParsingName(place.c_str(), NULL, IID_IShellItem, (LPVOID *)&pItem);
-						if (SUCCEEDED(hr))
-						{
-							pFile->SetFolder(pItem);
-							pItem->Release();
-							pItem = NULL;
-						}
+                    // set starting folder
+                    IShellItem *pItem = NULL;
+                    hr = SHCreateItemFromParsingName(place.c_str(), NULL, IID_IShellItem, (LPVOID *)&pItem);
+                    if (SUCCEEDED(hr))
+                    {
+                        pFile->SetFolder(pItem);
+                        pItem->Release();
+                        pItem = NULL;
+                    }
 
-						// Show the Open dialog box.
-						hr = pFile->Show(hwndcopy);
-						// Get the file name from the dialog box.
-						if (SUCCEEDED(hr))
-						{
-							IShellItem *pItem;
-							hr = pFile->GetResult(&pItem);
-							if (SUCCEEDED(hr))
-							{
-								PWSTR pszFilePath;
-								hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-								if (SUCCEEDED(hr))
-								{
-									r.type=gapplication_Variant::STRING;
-									r.s=us(pszFilePath);
-									rets.push_back(r);
+                    // Show the Open dialog box.
+                    hr = pFile->Show(hwndcopy);
+                    // Get the file name from the dialog box.
+                    if (SUCCEEDED(hr))
+                    {
+                        IShellItem *pItem;
+                        hr = pFile->GetResult(&pItem);
+                        if (SUCCEEDED(hr))
+                        {
+                            PWSTR pszFilePath;
+                            hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+                            if (SUCCEEDED(hr))
+                            {
+                                r.type=gapplication_Variant::STRING;
+                                r.s=us(pszFilePath);
+                                rets.push_back(r);
 
-									CoTaskMemFree(pszFilePath);
-								}
-								pItem->Release();
-							}
-						}
-						pFile->Release();
-					}
-	                CoUninitialize();
-	                delete[] fileTypes;
+                                CoTaskMemFree(pszFilePath);
+                            }
+                            pItem->Release();
+                        }
+                    }
+                    pFile->Release();
                 }
+                CoUninitialize();
+                delete[] fileTypes;
             }
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "temporaryDirectory") == 0)
