@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "giderosgame", "giderosgame", "{92DE354A-925E-4E9B-A756-822C3E095827}"
 EndProject
@@ -10,10 +10,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "giderosgame.Windows", "giderosgame\giderosgame.Windows\giderosgame.Windows.vcxproj", "{1F1102C1-DAF7-47A5-8ADF-D2EC2CA795D0}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems*{1f1102c1-daf7-47a5-8adf-d2ec2ca795d0}*SharedItemsImports = 4
-		giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems*{f9d2c644-9c0b-41e9-b66f-8f48fd1e7bb7}*SharedItemsImports = 9
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
 		Debug|Win32 = Debug|Win32
@@ -51,5 +47,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98F881F5-D30A-45E8-83D7-388485FD1FDF}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems*{1f1102c1-daf7-47a5-8adf-d2ec2ca795d0}*SharedItemsImports = 4
+		giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems*{f9d2c644-9c0b-41e9-b66f-8f48fd1e7bb7}*SharedItemsImports = 9
 	EndGlobalSection
 EndGlobal

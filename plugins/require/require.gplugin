@@ -303,6 +303,21 @@
 				</replacelist>
 			</template>]])
 			
+		local urls = Export.getProperty("plugin.reqCanOpenUrl")
+		if urls and string.len(urls)>0 then
+			local t,pattern = {},urls.format("([^%s]+)", ",")
+			urls:gsub(pattern, function(s) t[#t+1] = s end)
+			if #t>0 then
+				local IFT=[[<intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="%s" />
+    </intent>]]
+    			local IFE="<template name=\"AndroidManifest\" path=\"\"><replacelist wildcards=\"AndroidManifest.xml\"><append><orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]".."]></orig><by><![CDATA[%s]".."]></by></append></replacelist></template>"
+    			local ifs=""
+				for i,v in ipairs(t) do ifs=ifs..IFT:format(v) end
+				if #ifs>0 then Export.callXml(IFE:format("<queries>"..ifs.."</queries>")) end
+			end
+		end
 		local urls = Export.getProperty("plugin.reqCanRespondUrl")
 		if urls and string.len(urls)>0 then
 			local t,pattern = {},urls.format("([^%s]+)", ",")

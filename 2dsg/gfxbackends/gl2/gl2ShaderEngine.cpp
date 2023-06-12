@@ -394,9 +394,6 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #ifdef GL_MULTISAMPLE
     GLCALL glEnable(GL_MULTISAMPLE);
 #endif
-#ifdef GL_LINE_SMOOTH
-    GLCALL glEnable(GL_LINE_SMOOTH);
-#endif
 
 #ifndef PREMULTIPLIED_ALPHA
 #error PREMULTIPLIED_ALPHA is not defined

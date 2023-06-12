@@ -617,7 +617,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		else
             sprite->renderTransform_ = transform * localTransform_.matrix();
 
-        if (sprite->worldAlign_) { //Adjust to integer world coordinates
+        if (sprite->worldAlign_&&(sprite->renderTransform_.type!=Matrix4::FULL)) { //Adjust to integer world coordinates
             float dx,dy;
             /*sprite->getDimensions(dx,dy);
             sprite->worldTransform_.transformPoint(dx,dy,&dx,&dy);

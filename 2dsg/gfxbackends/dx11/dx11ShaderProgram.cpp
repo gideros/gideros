@@ -82,6 +82,7 @@ ID3D11Buffer *dx11ShaderProgram::getCachedVBO(ShaderBufferCache **cache, bool in
 		D3D11_BIND_VERTEX_BUFFER : D3D11_BIND_INDEX_BUFFER; // use as a vertex buffer
 		g_dev->CreateBuffer(&bd, NULL, &(dc->VBO));
 		dc->VBOcapacity = count;
+		dc->cachedMult = mult;
 		modified = true;
 	}
 	return dc->VBO;

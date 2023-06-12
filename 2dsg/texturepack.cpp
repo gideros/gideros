@@ -191,9 +191,7 @@ bool TexturePack::location(const char* filename, int* x, int* y, int* width, int
 	if (iter == filenameMap_.end())
 		return false;
 
-	location(iter->second, x, y, width, height, dx1, dy1, dx2, dy2);
-
-	return true;
+	return location(iter->second, x, y, width, height, dx1, dy1, dx2, dy2);
 }
 
 std::vector<std::string> TexturePack::getRegionsNames() {
@@ -388,7 +386,8 @@ void TexturePackFont::drawText(std::vector<GraphicsBase> * vGraphicsBase, const 
 
             int left,top,width,height;
             int dx1,dy1,dx2,dy2;
-            pack_->location(name.c_str(),&left,&top,&width,&height,&dx1,&dy1,&dx2,&dy2);
+            if (!pack_->location(name.c_str(),&left,&top,&width,&height,&dx1,&dy1,&dx2,&dy2))
+            	continue;
 
             float x0 = x;
             float y0 = y - height*anchory_;

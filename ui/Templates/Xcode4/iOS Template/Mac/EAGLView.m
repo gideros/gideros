@@ -300,9 +300,10 @@ int keyMods(NSEventModifierFlags mod) {
 
 - (void)keyDown:(NSEvent *)event
 {
-    gdr_keyDown(event.keyCode, keyMods(event.modifierFlags), [event isARepeat]?1:0);
+	int mods=keyMods(event.modifierFlags);
+    gdr_keyDown(event.keyCode, mods, [event isARepeat]?1:0);
     NSString *c=event.characters;
-    if (c!=NULL) {
+    if ((c!=NULL)&&((mods&~1)==0)) {
         unichar uni=[c characterAtIndex:0];
         if ((uni<0xE000)||(uni>=0xF800)) {
             gdr_keyChar(c);
