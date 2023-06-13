@@ -107,10 +107,9 @@ function StandardShaders.vParticles(vVertex,vColor,vTexCoord) : Shader
     rad=rad*rot
     fInColor=hF4(vColor)*fColor
     local vertex = hF4(vVertex.xy+rad,0,1.0)
-    vertex.xy+=rad*xpl
     local xpsize=vWorldMatrix*hF4(vTexCoord.z,0.0,0.0,0.0)
     local xpl=length(xpsize.xyz)
-    if (xpl==0.0) then xpl=1.0 end
+    if (xpl<20.0) then xpl=20.0 end
     fStepRot=hF2(sign(vTexCoord.z)/xpl,vTexCoord.w)
     fTexCoord=vTexCoord.xy
 	return vMatrix*vertex
@@ -125,10 +124,10 @@ function StandardShaders.vParticles3(vVertex,vColor,vTexCoord) : Shader
     fInColor=hF4(vColor)*fColor
     local xpsize=vWorldMatrix*hF4(vTexCoord.z,0.0,0.0,0.0)
     local xpl=length(xpsize.xyz)
-    if (xpl==0.0) then xpl=1.0 end
+    if (xpl<20.0) then xpl=20.0 end
     local vertex = vViewMatrix*(vWorldMatrix*hF4(vVertex.xyz,1.0))
     vertex.xy+=rad*xpl
-    fStepRot=hF2(sign(vTexCoord.z)/100.0,vTexCoord.w)
+    fStepRot=hF2(sign(vTexCoord.z)/xpl,vTexCoord.w)
     fTexCoord=vTexCoord.xy
 	return vProjMatrix*vertex
 end

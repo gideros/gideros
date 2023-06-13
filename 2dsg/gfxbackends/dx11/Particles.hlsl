@@ -19,6 +19,7 @@ VOut VShader(float4 position : vVertex, float4 color : vColor, float4 texcoord :
 
 	float psizen = texcoord.z;
 	float psize = length(mul(vWorldMatrix, float4(texcoord.z, 0.0, 0.0, 0.0)));
+	if (psize<20.0) psize=20.0;
 	float angle = texcoord.w*3.141592654 / 180.0;
 	output.steprot = float2(sign(psizen) / psize, texcoord.w);
 	position.w = 1.0f;

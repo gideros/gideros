@@ -301,7 +301,7 @@ vertex PVertexPS gidPSV(InVertexPS inVertex [[stage_in]],
     outVert.texcoord = inVertex.vTexcoord.xy;
     float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vTexcoord.z,0.0,0.0,0.0);
     float xpl=length(xpsize.xyz);
-    if (xpl==0.0) xpl=1.0;
+	if (xpl<20.0) xpl=20.0;
     outVert.steprot=float2(sign(inVertex.vTexcoord.z)/xpl,inVertex.vTexcoord.w);
     return outVert;
 }
@@ -320,8 +320,8 @@ vertex PVertexPS gidPS3V(InVertexPS inVertex [[stage_in]],
     outVert.texcoord = inVertex.vTexcoord.xy;
     float4 xpsize=uniforms.vWorldMatrix*float4(inVertex.vTexcoord.z,0.0,0.0,0.0);
     float xpl=length(xpsize.xyz);
-    if (xpl==0.0) xpl=1.0;
-    outVert.steprot=float2(sign(inVertex.vTexcoord.z)/100.0,inVertex.vTexcoord.w);
+	if (xpl<20.0) xpl=20.0;
+    outVert.steprot=float2(sign(inVertex.vTexcoord.z)/xpl,inVertex.vTexcoord.w);
     float4 vpos = uniforms.vViewMatrix*(uniforms.vWorldMatrix*float4(inVertex.vVertex.xyz,1.0));
     vpos.xy+=rad*xpl;
     outVert.position = uniforms.vProjMatrix *vpos;
