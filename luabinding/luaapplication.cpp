@@ -2469,14 +2469,12 @@ static ProfileInfo *profilerGetInfo(Closure *cl)
 
 static void profilerHook(lua_State *L,int enter)
 {
-	double time=iclock();
 	Closure *cl=curr_func(L);
 	ProfileInfo *p=profilerGetInfo(cl);
 	if (enter)
 	{
 		if (!(p->enterCount++))
 		{
-			p->entered=time;
 			if (p->name.empty())
 			{
 				lua_Debug ar;                
@@ -2515,10 +2513,12 @@ static void profilerHook(lua_State *L,int enter)
                     p->callret=cp->fid;
 			    }
 			}
-		}
+            p->entered=iclock();
+        }
 	}
 	else
 	{
+        double time=iclock();
 		int rcalls=1;
 #ifndef LUA_IS_LUAU
 		if (f_isLua(L->ci)) {  /* Lua function? */

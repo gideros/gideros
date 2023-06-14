@@ -2893,16 +2893,28 @@ void Path2D::setLineColor(unsigned int color, float alpha) {
 void Path2D::setLineThickness(float thickness, float feather, float margin, float flatness) {
 	struct path *p = get_path(path);
 	if (p) {
-		p->stroke_width = thickness;
-		if ((feather >= 0) && (feather <= 1.0))
+        bool changed=false;
+        if (thickness!=p->stroke_width) {
+            p->stroke_width = thickness;
+            changed=true;
+        }
+        if ((feather >= 0) && (feather <= 1.0) &&(p->stroke_feather!=feather)) {
 			p->stroke_feather = feather;
-        if (margin>=0)
+            changed=true;
+        }
+        if ((margin>=0)&&(p->stroke_margin!=margin)) {
             p->stroke_margin=margin;
-        if (flatness>=0)
+            changed=true;
+        }
+        if ((flatness>=0)&&(p->stroke_flatness!=flatness)) {
             p->stroke_flatness=flatness;
-		p->is_stroke_dirty = 1;
-		getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_,
-				&maxy_);
+            changed=true;
+        }
+        if (changed) {
+            p->is_stroke_dirty = 1;
+            getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_,
+                    &maxy_);
+        }
 	}
 }
 

@@ -1425,7 +1425,7 @@ void Sprite::invalidate(int changes) {
     if ((changes_&changes)==changes) return; //Already invalid
 
     int downchanges=changes&(INV_TRANSFORM|INV_BOUNDS|INV_SHADER); //Bound, transfrom and shader changes impact children
-	if (downchanges) {
+    if (downchanges&&children_.size()) {
 		faststack<Sprite> stack;
 		stack.push_all(children_.data(),children_.size());
 		while (true) {
