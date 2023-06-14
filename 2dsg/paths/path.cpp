@@ -3006,15 +3006,17 @@ void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 		} else {
 			ShaderEngine::DepthStencil stencil =
 					ShaderEngine::Engine->pushDepthStencil();
+			/*
 			ShaderEngine::Engine->pushClip(p->fill_bounds[0], p->fill_bounds[1],
 					p->fill_bounds[2] - p->fill_bounds[0] + 1,
 					p->fill_bounds[3] - p->fill_bounds[1] + 1);
+					*/
 			stencil.sClear = true;
 			impressPath(path, xform, stencil);
 			stencil.sClear = false;
 			fillBounds(p->fill_bounds_vbo, fill, texture, stencil,
 					textureMatrix,cb);
-			ShaderEngine::Engine->popClip();
+			//ShaderEngine::Engine->popClip();
 			ShaderEngine::Engine->popDepthStencil();
 		}
 	}
