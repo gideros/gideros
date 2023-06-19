@@ -13,6 +13,11 @@ void Binder::enableTypeChecking()
     g_enableTypeChecking();
 }
 
+void Binder::initializeState()
+{
+    g_initializeBinderState(L);
+}
+
 void Binder::createClass(const char* classname,
                          const char* basename,
                          int (*constructor) (lua_State*),
@@ -51,6 +56,11 @@ bool Binder::isInstanceOf(const char* classname, int index) const
 void* Binder::getInstance(const char* classname, int index) const
 {
     return g_getInstance(L, classname, index);
+}
+
+void* Binder::getInstanceOfType(const char* classname, int type, int index) const
+{
+    return g_getInstanceOfType(L, classname, index, type);
 }
 
 void Binder::setInstance(int index, void* ptr)

@@ -6,6 +6,18 @@
 #include <luautil.h>
 
 bool disableTypeChecking_ = false;
+static size_t g_userdataToken=(size_t)-1;
+static size_t g_gcToken=(size_t)-1;
+static size_t g_inewToken=(size_t)-1;
+static size_t g_postInitToken=(size_t)-1;
+
+void g_initializeBinderState(lua_State *L) {
+    G_UNUSED(L);
+    g_userdataToken=(size_t)-1;
+    g_gcToken=(size_t)-1;
+    g_inewToken=(size_t)-1;
+    g_postInitToken=(size_t)-1;
+}
 
 void g_disableTypeChecking()
 {
@@ -24,9 +36,13 @@ int g_isTypeCheckingEnabled()
 
 static int constructor_postInit(lua_State *L)
 {
+    if (g_inewToken==((size_t)-1)) {
+        g_inewToken=lua_newtoken(L,"__new");
+        g_postInitToken=lua_newtoken(L,"postInit");
+    }
     int n = lua_gettop(L);
 
-    lua_getfield(L, lua_upvalueindex(1), "__new");
+    lua_gettoken(L, lua_upvalueindex(1), g_inewToken);
     for (int i = 1; i <= n; ++i)
         lua_pushvalue(L, i);
     lua_call(L, n, 1);
@@ -34,8 +50,7 @@ static int constructor_postInit(lua_State *L)
     if (lua_isnil(L, -1))
         return 1;
 
-    lua_getfield(L, -1, "postInit");
-    if (lua_type(L, -1) == LUA_TFUNCTION)
+    if (lua_gettoken(L, -1, g_postInitToken) == LUA_TFUNCTION)
     {
         lua_pushvalue(L, -2);
         for (int i = 1; i <= n; ++i)
@@ -127,9 +142,11 @@ void g_createClass(lua_State* L,
 
 void g_makeInstance(lua_State* L, const char* classname, void* ptr)
 {
+    if (g_userdataToken==((size_t)-1))
+        g_userdataToken=lua_newtoken(L,"__userdata");
     if (!classname) {
         //Figure out class meta from current instance
-        lua_getfield(L,-1, "__userdata");
+        lua_gettoken(L,-1, g_userdataToken);
         lua_getmetatable(L,-1); //This should have returned 1, otherwise we're not dealing with an instance at all
         lua_remove(L,-2);
     }
@@ -137,7 +154,9 @@ void g_makeInstance(lua_State* L, const char* classname, void* ptr)
         luaL_getmetatable(L, classname); // get metatable
     lua_pushvalue(L,-1);
 #ifdef LUA_IS_LUAU
-    lua_rawgetfield(L, -1, "__gc"); // mt.__gc = destructor
+    if (g_gcToken==((size_t)-1))
+        g_gcToken=lua_newtoken(L,"__gc");
+    lua_rawgettoken(L, -1, g_gcToken); // mt.__gc = destructor
     void **destructor=(void **)lua_touserdata(L,-1);
     lua_pop(L,1);
     lua_setmetatable(L, -3);		 // set metatable for table and pop metatable
@@ -157,7 +176,7 @@ void g_makeInstance(lua_State* L, const char* classname, void* ptr)
     lua_insert(L,-2);
 	lua_setmetatable(L, -2);          // set metatable for userdata and pop metatable
 
-	lua_setfield(L, -2, "__userdata");   // table.__userdata = userdata
+    lua_rawsettoken(L, -2, g_userdataToken);   // table.__userdata = userdata
 
 	// stack top is the new instance (table)
 }
@@ -215,18 +234,19 @@ int g_isInstanceOf(lua_State* L, const char* classname, int index)
 */
 void* g_getInstance(lua_State* L, const char* classname, int index)
 {
-	index = abs_index(L, index);
+    index = abs_index(L, index);
+    if (g_userdataToken==((size_t)-1))
+        g_userdataToken=lua_newtoken(L,"__userdata");
 
-	if (disableTypeChecking_ == true)
-	{
-		if (!lua_istable(L, index))	// check if the bottom of stack (first paramater, i.e. self) is table
-		{
+    if (disableTypeChecking_ == true)
+    {
+        if (!lua_istable(L, index))	// check if the bottom of stack (first paramater, i.e. self) is table
+        {
 			luaL_typerror(L, index, classname);
 			return NULL;
 		}
 
-		lua_getfield(L, index, "__userdata"); // get adress
-		if (lua_isnil(L, -1) != 0)
+        if (lua_gettoken(L, index, g_userdataToken)!=LUA_TUSERDATA) // get adress
 		{
 			lua_pop(L, 1);
 			luaL_error(L, "index '__userdata' cannot be found");
@@ -245,7 +265,7 @@ void* g_getInstance(lua_State* L, const char* classname, int index)
 			return NULL;
 		}
 
-		lua_getfield(L, LUA_REGISTRYINDEX, classname); // get metatable of given type
+        lua_rawgetfield(L, LUA_REGISTRYINDEX, classname); // get metatable of given type
 		if (lua_getmetatable(L, index) == 0)		// get metatable of given table. if table doesn't have metatable, give type error
 		{
 			lua_pop(L, 1);		// pop metatable of given type
@@ -259,8 +279,7 @@ void* g_getInstance(lua_State* L, const char* classname, int index)
 			{
 				lua_pop(L, 2);                      // pop both same metatables
 
-				lua_getfield(L, index, "__userdata"); // get adress
-				if (lua_isnil(L, -1) != 0)
+                if (lua_gettoken(L, index, g_userdataToken)!=LUA_TUSERDATA) // get adress
 				{
 					lua_pop(L, 1);
 					luaL_error(L, "index '__userdata' cannot be found");
@@ -288,12 +307,39 @@ void* g_getInstance(lua_State* L, const char* classname, int index)
 	return NULL;
 }
 
+void* g_getInstanceOfType(lua_State* L, const char* classname, int index, int typeMap)
+{
+    index = abs_index(L, index);
+    if (g_userdataToken==((size_t)-1))
+        g_userdataToken=lua_newtoken(L,"__userdata");
+
+    if (!lua_istable(L, index))	// check if the bottom of stack (first paramater, i.e. self) is table
+    {
+        luaL_typerror(L, index, classname);
+        return NULL;
+    }
+
+    if (lua_gettoken(L, index, g_userdataToken)!=LUA_TUSERDATA) // get address
+    {
+        lua_pop(L, 1);
+        luaL_error(L, "index '__userdata' cannot be found");
+        return NULL;
+    }
+    GReferenced* ptr = *(GReferenced**)lua_touserdata(L, -1);
+    lua_pop(L, 1);
+    if (ptr->isOfType(typeMap))
+        return ptr;
+
+    return g_getInstance(L,classname,index);
+}
+
 void g_setInstance(lua_State* L, int index, void* ptr)
 {
-	lua_getfield(L, index, "__userdata"); // get adress
-	if (lua_isnil(L, -1) != 0)
-	{
-		lua_pop(L, 1);
+    if (g_userdataToken==((size_t)-1))
+        g_userdataToken=lua_newtoken(L,"__userdata");
+    if (lua_gettoken(L, index, g_userdataToken)!=LUA_TUSERDATA) // get adress
+    {
+        lua_pop(L, 1);
 		luaL_error(L, "index '__userdata' cannot be found");
 	}
 	*(void**)lua_touserdata(L, -1) = ptr;

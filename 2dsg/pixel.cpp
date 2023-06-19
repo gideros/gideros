@@ -7,6 +7,7 @@ VertexBuffer<unsigned short> Pixel::ninepatch;
 
 Pixel::Pixel(Application *application) : Sprite(application)
 {
+    setTypeMap(GREFERENCED_TYPEMAP_PIXEL);
     r_ = 1, g_ = 1, b_ = 1, a_ = 1;
     width_ = 1, height_ = 1;
     sx_ = 1, sy_ = 1;

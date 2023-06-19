@@ -13,6 +13,8 @@ public:
     {
     }
 
+    void initializeState();
+
     void createClass(const char* classname,
                      const char* basename,
                      int (*constructor) (lua_State*),
@@ -32,6 +34,8 @@ public:
     void makeInstance(const char* classname, void* ptr);
 
     void* getInstance(const char* classname, int index = 1) const;
+
+    void* getInstanceOfType(const char* classname, int type, int index = 1) const;
 
     void setInstance(int index, void* ptr);
 

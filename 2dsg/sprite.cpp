@@ -107,7 +107,8 @@ public:
 
 Sprite::Sprite(Application* application) :
         spriteWithLayoutCount(0), spriteWithEffectCount(0), application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0), drawCount_(0) {
-	allSprites_.insert(this);
+    setTypeMap(GREFERENCED_TYPEMAP_SPRITE);
+    allSprites_.insert(this);
 
 //	graphicsBases_.push_back(GraphicsBase());
 	stopPropagationMask_=0;

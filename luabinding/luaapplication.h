@@ -213,6 +213,7 @@ public:
     static void (*debuggerHook)(void *context,lua_State *L,lua_Debug *ar);
     static void *debuggerContext;
     static size_t token__parent,token__style,token__Reference,token__Parent,token__Cache;
+    static size_t token_application,token__styleUpdates,token_updateStyle;
 private:
     static struct _StyleCache {
         float unitS;

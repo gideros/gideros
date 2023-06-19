@@ -10,6 +10,8 @@
 int SpriteBinder::layoutStrings[64];
 size_t SpriteBinder::tokenChildren;
 size_t SpriteBinder::tokenParent;
+size_t SpriteBinder::tokenUserdata;
+size_t SpriteBinder::tokenNewclone;
 
 SpriteBinder::SpriteBinder(lua_State* L)
 {
@@ -242,6 +244,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
     	layoutStrings[k]=-1;
     tokenChildren=lua_newtoken(L,"__children");
     tokenParent=lua_newtoken(L,"__parent");
+    tokenNewclone=lua_newtoken(L,"newClone");
+    tokenUserdata=lua_newtoken(L,"__userdata");
 }
 
 int SpriteBinder::create(lua_State* L)
@@ -264,8 +268,8 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
     lua_pushvalue(L,cidx-1);
     lua_rawset(L,fidx-2);
 
-    lua_rawgetfield(L, oidx, "__userdata");
-    lua_rawgetfield(L, cidx-1, "__userdata");
+    lua_rawgettoken(L, oidx, SpriteBinder::tokenUserdata);
+    lua_rawgettoken(L, cidx-1, SpriteBinder::tokenUserdata);
     if (lua_getmetatable(L,-2))
         lua_setmetatable(L,-2);
     lua_pop(L,2);
@@ -319,7 +323,7 @@ static void fixupClone(lua_State *L,Sprite *o,Sprite *c,int oidx,int cidx,int fi
     lua_pushnil(L);
     lua_rawsettoken(L, cidx-1, SpriteBinder::tokenParent);
 
-    if (lua_getfield(L,cidx,"newClone")!=LUA_TFUNCTION)
+    if (lua_gettoken(L,cidx,SpriteBinder::tokenNewclone)!=LUA_TFUNCTION)
         lua_pop(L,1);
     else {
         lua_pushvalue(L,cidx-1);
@@ -331,7 +335,7 @@ int SpriteBinder::clone(lua_State *L)
 {
     StackChecker checker(L, "SpriteBinder::clone", 1);
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
     Sprite* clone = sprite->clone();
 
     lua_clonetable(L,1);
@@ -356,8 +360,8 @@ int SpriteBinder::destruct(void *p)
 
 int SpriteBinder::setStopEventPropagation(lua_State *L) {
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	int mask=lua_tointeger(L,2);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    int mask=lua_tointeger(L,2);
 	if (mask==0) //if zero, it may have been something not convertible, check as boolean
 		mask=lua_toboolean(L,2)?-1:0;
 	sprite->setStopPropagationMask(mask);
@@ -385,8 +389,8 @@ int SpriteBinder::addChild(lua_State* L)
     StackChecker checker(L, "SpriteBinder::addChild", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Sprite* child = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* child = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
 
 	GStatus status;
 	if (sprite->canChildBeAdded(child, &status) == false)
@@ -435,8 +439,8 @@ int SpriteBinder::addChildAt(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::addChildAt", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Sprite* child = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* child = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
     int index = luaL_checkinteger(L, 3);
 
     GStatus status;
@@ -486,7 +490,7 @@ int SpriteBinder::removeChildAt(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::removeChildAt", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 	int index = luaL_checknumber(L, 2);
 	if (index < 0) index = sprite->childCount() + index + 1;
 	if (index < 1 || index > sprite->childCount())
@@ -517,8 +521,8 @@ int SpriteBinder::removeChild(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::removeChild", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Sprite* child = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* child = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
 
 	GStatus status;
 	int index = sprite->getChildIndex(child, &status);
@@ -555,9 +559,9 @@ int SpriteBinder::swapChildren(lua_State* L)
 {
         StackChecker checker(L, "SpriteBinder::swapChildren",0);
         Binder binder(L);
-        Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-        Sprite* sprite1 = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
-        Sprite* sprite2 = static_cast<Sprite*>(binder.getInstance("Sprite", 3));
+        Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+        Sprite* sprite1 = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
+        Sprite* sprite2 = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 3));
 
         sprite->swapChildren(sprite1,sprite2);
 
@@ -568,8 +572,8 @@ int SpriteBinder::swapChildrenAt(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::swapChildrenAt",0);
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	int index1 = luaL_checknumber(L, 2);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    int index1 = luaL_checknumber(L, 2);
 	if (index1 < 0) index1 = sprite->childCount() + index1 + 1;
 	if (index1 < 1 || index1 > sprite->childCount())
         luaL_error(L, "%s", GStatus(2006).errorString());	// Error #2006: The supplied index1 is out of bounds.
@@ -588,8 +592,8 @@ int SpriteBinder::getChildAt(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getChildAt", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	int index = luaL_checkinteger(L, 2);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    int index = luaL_checkinteger(L, 2);
 	if (index < 0) index = sprite->childCount() + index + 1;
 	if (index < 1 || index > sprite->childCount())
         luaL_error(L, "%s", GStatus(2006).errorString());	// Error #2006: The supplied index is out of bounds.
@@ -609,7 +613,7 @@ int SpriteBinder::setClip(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setClip", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = luaL_checknumber(L, 3);
@@ -625,7 +629,7 @@ int SpriteBinder::getClip(lua_State* L)
     StackChecker checker(L, "SpriteBinder::getClip", 4);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_pushnumber(L, sprite->clipX());
     lua_pushnumber(L, sprite->clipY());
@@ -675,8 +679,8 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
     StackChecker checker(L, "SpriteBinder::setLayoutParameters", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	if (lua_isnoneornil(L,2))
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    if (lua_isnoneornil(L,2))
 		sprite->clearLayoutState();
 	else {
         luaL_checktype(L, 2, LUA_TTABLE);
@@ -727,8 +731,8 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
     StackChecker checker(L, "SpriteBinder::setLayoutConstraints", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	if (lua_isnoneornil(L,2))
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    if (lua_isnoneornil(L,2))
 		sprite->clearLayoutConstraints();
 	else {
         luaL_checktype(L, 2, LUA_TTABLE);
@@ -816,8 +820,8 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
     StackChecker checker(L, "SpriteBinder::getLayoutParameters", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	if (sprite->hasLayoutState())
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    if (sprite->hasLayoutState())
 	{
 		GridBagLayout *p=sprite->getLayoutState();
         bool raw=lua_toboolean(L,2);
@@ -845,8 +849,8 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
     StackChecker checker(L, "SpriteBinder::getLayoutConstraints", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	if (sprite->hasLayoutConstraints())
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    if (sprite->hasLayoutConstraints())
 	{
 		GridBagConstraints *p=sprite->getLayoutConstraints();
         bool raw=lua_toboolean(L,2);
@@ -887,8 +891,8 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
     StackChecker checker(L, "SpriteBinder::getLayoutInfo", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	float epw=luaL_optnumber(L,2,-1);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    float epw=luaL_optnumber(L,2,-1);
 	float eph=luaL_optnumber(L,3,-1);
 	int type=luaL_optinteger(L,4,0);
 
@@ -962,7 +966,7 @@ int SpriteBinder::getX(lua_State* L)
 	StackChecker checker(L, "getX", 1);
 	
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->x());
 
@@ -974,7 +978,7 @@ int SpriteBinder::getY(lua_State* L)
 	StackChecker checker(L, "getY", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->y());
 
@@ -986,7 +990,7 @@ int SpriteBinder::getZ(lua_State* L)
 	StackChecker checker(L, "getZ", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->z());
 
@@ -998,7 +1002,7 @@ int SpriteBinder::getRotation(lua_State* L)
 	StackChecker checker(L, "getRotation", 1);
 	
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->rotation());
 
@@ -1010,7 +1014,7 @@ int SpriteBinder::getRotationX(lua_State* L)
 	StackChecker checker(L, "getRotationX", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->rotationX());
 
@@ -1022,7 +1026,7 @@ int SpriteBinder::getRotationY(lua_State* L)
 	StackChecker checker(L, "getRotationY", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->rotationY());
 
@@ -1034,7 +1038,7 @@ int SpriteBinder::getScaleX(lua_State* L)
 	StackChecker checker(L, "getScaleX", 1);
 	
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->scaleX());
 
@@ -1046,7 +1050,7 @@ int SpriteBinder::getScaleY(lua_State* L)
 	StackChecker checker(L, "getScaleY", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->scaleY());
 
@@ -1058,7 +1062,7 @@ int SpriteBinder::getScaleZ(lua_State* L)
 	StackChecker checker(L, "getScaleZ", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->scaleZ());
 
@@ -1070,7 +1074,7 @@ int SpriteBinder::getSkewX(lua_State* L)
     StackChecker checker(L, "getSkewX", 1);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_pushnumber(L, sprite->skewX());
 
@@ -1082,7 +1086,7 @@ int SpriteBinder::getSkewY(lua_State* L)
     StackChecker checker(L, "getSkewY", 1);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_pushnumber(L, sprite->skewY());
 
@@ -1094,7 +1098,7 @@ int SpriteBinder::setX(lua_State* L)
 	StackChecker checker(L, "setX");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double x = luaL_checknumber(L, 2);
 	sprite->setX(x);
@@ -1107,7 +1111,7 @@ int SpriteBinder::setY(lua_State* L)
 	StackChecker checker(L, "setY");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double y = luaL_checknumber(L, 2);
 	sprite->setY(y);
@@ -1120,7 +1124,7 @@ int SpriteBinder::setZ(lua_State* L)
 	StackChecker checker(L, "setZ");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double z = luaL_checknumber(L, 2);
 	sprite->setZ(z);
@@ -1133,7 +1137,7 @@ int SpriteBinder::setRotation(lua_State* L)
 	StackChecker checker(L, "setRotation");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double rotation = luaL_checknumber(L, 2);
 	sprite->setRotation(rotation);
@@ -1146,7 +1150,7 @@ int SpriteBinder::setRotationX(lua_State* L)
 	StackChecker checker(L, "setRotationX");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double rotation = luaL_checknumber(L, 2);
 	sprite->setRotationX(rotation);
@@ -1159,7 +1163,7 @@ int SpriteBinder::setRotationY(lua_State* L)
 	StackChecker checker(L, "setRotationY");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double rotation = luaL_checknumber(L, 2);
 	sprite->setRotationY(rotation);
@@ -1172,7 +1176,7 @@ int SpriteBinder::setScaleX(lua_State* L)
 	StackChecker checker(L, "setScaleX");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double scaleX = luaL_checknumber(L, 2);
 	sprite->setScaleX(scaleX);
@@ -1185,7 +1189,7 @@ int SpriteBinder::setScaleY(lua_State* L)
 	StackChecker checker(L, "setScaleY");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double scaleY = luaL_checknumber(L, 2);
 	sprite->setScaleY(scaleY);
@@ -1198,7 +1202,7 @@ int SpriteBinder::setScaleZ(lua_State* L)
 	StackChecker checker(L, "setScaleZ");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double scaleZ = luaL_checknumber(L, 2);
 	sprite->setScaleZ(scaleZ);
@@ -1211,7 +1215,7 @@ int SpriteBinder::setSkewX(lua_State* L)
     StackChecker checker(L, "setScaleX");
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     double skewX = luaL_checknumber(L, 2);
     sprite->setSkewX(skewX);
@@ -1224,7 +1228,7 @@ int SpriteBinder::setSkewY(lua_State* L)
     StackChecker checker(L, "setScaleY");
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     double skewY = luaL_checknumber(L, 2);
     sprite->setSkewY(skewY);
@@ -1237,7 +1241,7 @@ int SpriteBinder::setPosition(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setPosition", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = luaL_checknumber(L, 3);
@@ -1257,7 +1261,7 @@ int SpriteBinder::getPosition(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getPosition", 3);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->x());
 	lua_pushnumber(L, sprite->y());
@@ -1271,7 +1275,7 @@ int SpriteBinder::setAnchorPosition(lua_State* L)
     StackChecker checker(L, "SpriteBinder::setAnchorPosition", 0);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_Number x = luaL_checknumber(L, 2);
     lua_Number y = luaL_checknumber(L, 3);
@@ -1291,7 +1295,7 @@ int SpriteBinder::getAnchorPosition(lua_State* L)
     StackChecker checker(L, "SpriteBinder::getAnchorPosition", 3);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_pushnumber(L, sprite->refX());
     lua_pushnumber(L, sprite->refY());
@@ -1305,7 +1309,7 @@ int SpriteBinder::setAnchorPoint(lua_State* L)
     StackChecker checker(L, "SpriteBinder::setAnchorPoint", 0);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_Number x = luaL_checknumber(L, 2);
     lua_Number y = luaL_checknumber(L, 3);
@@ -1325,7 +1329,7 @@ int SpriteBinder::getAnchorPoint(lua_State* L)
     StackChecker checker(L, "SpriteBinder::getAnchorPoint", 2);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     float x1, y1, x2, y2;
     sprite->objectBounds(&x1, &y1, &x2, &y2);
@@ -1344,7 +1348,7 @@ int SpriteBinder::setScale(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setScale", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
@@ -1364,7 +1368,7 @@ int SpriteBinder::getScale(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getScale", 3);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->scaleX());
 	lua_pushnumber(L, sprite->scaleY());
@@ -1378,7 +1382,7 @@ int SpriteBinder::setSkew(lua_State* L)
     StackChecker checker(L, "SpriteBinder::setSkew", 0);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_Number x = luaL_checknumber(L, 2);
     lua_Number y = luaL_checknumber(L, 3);
@@ -1392,7 +1396,7 @@ int SpriteBinder::getSkew(lua_State* L)
     StackChecker checker(L, "SpriteBinder::getSkew", 2);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_pushnumber(L, sprite->skewX());
     lua_pushnumber(L, sprite->skewY());
@@ -1414,8 +1418,8 @@ int SpriteBinder::contains(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::contains", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Sprite* child = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* child = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
 
 	lua_pushboolean(L, sprite->contains(child));
 	
@@ -1428,8 +1432,8 @@ int SpriteBinder::getChildIndex(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getChildIndex", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Sprite* child = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* child = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
 
 
 	GStatus status;
@@ -1452,7 +1456,7 @@ int SpriteBinder::removeFromParent(lua_State* L)
 	StackChecker checker(L, "removeFromParent", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 	Sprite* parent = sprite->parent();
 
 	if (parent == NULL)
@@ -1478,7 +1482,7 @@ int SpriteBinder::localToGlobal(lua_State* L)
 	StackChecker checker(L, "localToGlobal", 3);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double x = luaL_checknumber(L, 2);
 	double y = luaL_checknumber(L, 3);
@@ -1499,7 +1503,7 @@ int SpriteBinder::globalToLocal(lua_State* L)
     StackChecker checker(L, "globalToLocal", 3);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     double x = luaL_checknumber(L, 2);
     double y = luaL_checknumber(L, 3);
@@ -1520,8 +1524,8 @@ int SpriteBinder::spriteToLocal(lua_State* L)
     StackChecker checker(L, "spriteToLocal", 3);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-    Sprite* ref = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* ref = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
 
     double x = luaL_checknumber(L, 3);
     double y = luaL_checknumber(L, 4);
@@ -1546,8 +1550,8 @@ int SpriteBinder::spriteToLocalMatrix(lua_State* L)
     StackChecker checker(L, "spriteToLocalMatrix", 1);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-    Sprite* ref = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* ref = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
 
     Matrix m;
     if (!sprite->spriteToLocalMatrix(ref,m))
@@ -1566,8 +1570,8 @@ int SpriteBinder::isVisible(lua_State* L)
 	StackChecker checker(L, "isVisible", 1);
 	
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+
 	bool recursiveCheck = lua_toboolean(L, 2);
 	
 	if (recursiveCheck)
@@ -1593,7 +1597,7 @@ int SpriteBinder::setVisible(lua_State* L)
 	StackChecker checker(L, "setVisible");
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	int visible = lua_toboolean(L, 2);
 	sprite->setVisible(visible);
@@ -1606,7 +1610,7 @@ int SpriteBinder::isOnStage(lua_State* L)
 	StackChecker checker(L, "isOnStage", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushboolean(L,sprite->getStage()!=NULL);
 
@@ -1639,7 +1643,7 @@ int SpriteBinder::getColorTransform(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getColorTransform", 4);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->colorTransform().redMultiplier());
 	lua_pushnumber(L, sprite->colorTransform().greenMultiplier());
@@ -1699,7 +1703,7 @@ int SpriteBinder::setColorTransform(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setColorTransform", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_Number redMultiplier = luaL_optnumber(L, 2, 1.0);
 	lua_Number greenMultiplier = luaL_optnumber(L, 3, 1.0);
@@ -1722,7 +1726,7 @@ int SpriteBinder::hitTestPoint(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::hitTestPoint", 1);
 	
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double x = luaL_checknumber(L, 2);
 	double y = luaL_checknumber(L, 3);
@@ -1734,7 +1738,7 @@ int SpriteBinder::hitTestPoint(lua_State* L)
         shapeFlag = lua_toboolean(L, 4);
     Sprite *ref=nullptr;
     if ((nargs >= 5)&&(!lua_isnil(L,5)))
-        ref = static_cast<Sprite*>(binder.getInstance("Sprite", 5));
+        ref = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 5));
 
     lua_pushboolean(L, sprite->hitTestPoint(x, y, shapeFlag, ref));
 	
@@ -1746,7 +1750,7 @@ int SpriteBinder::getChildrenAtPoint(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getChildrenAtPoint", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	double x = luaL_checknumber(L, 2);
 	double y = luaL_checknumber(L, 3);
@@ -1755,7 +1759,7 @@ int SpriteBinder::getChildrenAtPoint(lua_State* L)
     int nargs=lua_gettop(L);
     Sprite *ref=nullptr;
     if ((nargs >= 6)&&(!lua_isnil(L,6)))
-        ref = static_cast<Sprite*>(binder.getInstance("Sprite", 6));
+        ref = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 6));
 
     std::vector<std::pair<int,Sprite *>>res;
     sprite->getChildrenAtPoint(x, y, ref, visible, nosubs, res);
@@ -1784,7 +1788,7 @@ int SpriteBinder::getWidth(lua_State* L)
     StackChecker checker(L, "SpriteBinder::getWidth", 1);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     if (lua_isboolean(L, 2) && lua_toboolean(L, 2)) {
         float x1, y1, x2, y2;
@@ -1801,7 +1805,7 @@ int SpriteBinder::getHeight(lua_State* L)
     StackChecker checker(L, "SpriteBinder::getHeight", 1);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     if (lua_isboolean(L, 2) && lua_toboolean(L, 2)) {
         float x1, y1, x2, y2;
@@ -1823,7 +1827,7 @@ int SpriteBinder::getSize(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getSize", 2);
 	
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     float minx, miny, maxx, maxy;
 	
@@ -1850,7 +1854,7 @@ int SpriteBinder::getMatrix(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getMatrix", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	Transform *t=new Transform();
 	*t=sprite->transform();
@@ -1865,8 +1869,8 @@ int SpriteBinder::setMatrix(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setMatrix", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 2));
 
 	sprite->setMatrix(matrix);
 
@@ -1878,7 +1882,7 @@ int SpriteBinder::getAlpha(lua_State* L)
 	StackChecker checker(L, "getAlpha", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_pushnumber(L, sprite->alpha());
 
@@ -1890,7 +1894,7 @@ int SpriteBinder::setAlpha(lua_State* L)
 	StackChecker checker(L, "setAlpha", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	lua_Number alpha = luaL_checknumber(L, 2);
 	sprite->setAlpha(alpha);
@@ -1903,8 +1907,8 @@ int SpriteBinder::getBounds(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::getBounds", 4);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Sprite* targetCoordinateSpace = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite* targetCoordinateSpace = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
 	bool visible=lua_toboolean(L,3);
 
 	float minx, miny, maxx, maxy;
@@ -1934,7 +1938,7 @@ int SpriteBinder::setBlendMode(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setBlendFunc", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     if (lua_type(L, 2) == LUA_TSTRING) {
         std::string m = lua_tostring(L, 2);
@@ -1965,8 +1969,8 @@ int SpriteBinder::clearBlendMode(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::clearBlendFunc", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	sprite->clearBlendFunc();
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    sprite->clearBlendFunc();
 
 	return 0;
 }
@@ -1976,8 +1980,8 @@ int SpriteBinder::setShader(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setShader", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	ShaderProgram* shader = NULL;
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    ShaderProgram* shader = NULL;
 	if (!lua_isnoneornil(L,2))
 		shader=static_cast<ShaderProgram*>(binder.getInstance("Shader", 2));
 	sprite->setShader(shader,(ShaderEngine::StandardProgram)luaL_optinteger(L,3,0),luaL_optinteger(L,4,0),lua_toboolean(L,5));
@@ -2060,7 +2064,7 @@ int SpriteBinder::setShaderConstant(lua_State* L)
 
 	Binder binder(L);
 
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
    // virtual void setConstant(int index,ConstantType type,const void *ptr);
 
@@ -2077,8 +2081,8 @@ int SpriteBinder::setEffectStack(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::setEffectStack", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	std::vector<Sprite::Effect> effects;
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    std::vector<Sprite::Effect> effects;
 	Sprite::EffectUpdateMode mode=Sprite::CONTINUOUS;
 	if (!lua_isnoneornil(L,2)) {
 		luaL_checktype(L,2,LUA_TTABLE);
@@ -2149,7 +2153,7 @@ int SpriteBinder::setEffectConstant(lua_State* L)
 
 	Binder binder(L);
 
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     int num=luaL_checkinteger(L,2);
     if (num<1) {
@@ -2171,8 +2175,8 @@ int SpriteBinder::redrawEffects(lua_State* L)
 
 	Binder binder(L);
 
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	sprite->redrawEffects();
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    sprite->redrawEffects();
 	return 0;
 }
 
@@ -2182,8 +2186,8 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 
 	Binder binder(L);
 
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	ShaderEngine::DepthStencil ds;
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    ShaderEngine::DepthStencil ds;
 
 	if (lua_isnoneornil(L,2))
 		ds.dTest=false;
@@ -2243,7 +2247,7 @@ int SpriteBinder::getDrawCount(lua_State* L)
     StackChecker checker(L, "SpriteBinder::getDrawCount", 1);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     lua_pushinteger(L, sprite->drawCount());
 
@@ -2255,7 +2259,7 @@ int SpriteBinder::setCheckClip(lua_State* L)
     StackChecker checker(L, "SpriteBinder::setCheckClip", 0);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
     sprite->setCheckClip(lua_toboolean(L,2));
     return 0;
 }
@@ -2265,7 +2269,7 @@ int SpriteBinder::setHiddenChildren(lua_State* L)
     StackChecker checker(L, "SpriteBinder::setHiddenChildren", 0);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
     std::vector<char> hset;
     if (lua_type(L,2)==LUA_TTABLE) {
@@ -2315,7 +2319,7 @@ int SpriteBinder::setWorldAlign(lua_State* L)
     StackChecker checker(L, "SpriteBinder::setWorldAlign", 0);
 
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
     sprite->setWorldAlign(lua_toboolean(L,2));
     return 0;
 }
@@ -2354,8 +2358,7 @@ int SpriteBinder::setStyle(lua_State* L)
         luaL_typerror(L, 1, "Sprite");
         return 0;
     }
-    lua_getfield(L, 1, "__userdata"); // get adress
-    if (lua_isnil(L, -1))
+    if (lua_rawgettoken(L, 1, SpriteBinder::tokenUserdata)!=LUA_TUSERDATA) // get adress
     {
         lua_pop(L, 1);
         luaL_error(L, "Sprite '__userdata' cannot be found");
@@ -2370,17 +2373,18 @@ int SpriteBinder::setStyle(lua_State* L)
     bool propagate=lua_toboolean(L,3);
     lua_pushvalue(L,2);
     lua_rawsetfield(L,1,"__style");
-    lua_getglobal(L,"application");
+    lua_gettoken(L,LUA_GLOBALSINDEX,LuaApplication::token_application);
+
     int npop=1;
     if (!lua_isnil(L,-1))
     {
-        lua_rawgetfield(L,-1,"__styleUpdates");
+        lua_rawgettoken(L,-1,LuaApplication::token__styleUpdates);
 		if (lua_isnil(L,-1))
 		{
 			lua_pop(L,1);
 			lua_newtable(L);
 			lua_pushvalue(L,-1);
-            lua_rawsetfield(L,-3,"__styleUpdates");
+            lua_rawsettoken(L,-3,LuaApplication::token__styleUpdates);
 		}
 		npop++;
 		lua_pushvalue(L,1);
@@ -2438,8 +2442,8 @@ int SpriteBinder::updateStyle(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::updateStyle", 0);
     Binder binder(L);
-    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
-	LuaApplication::getStyleTable(L,1);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    LuaApplication::getStyleTable(L,1);
     bool dirtyConstraints=false;
     {
         GridBagLayout *p=sprite->layoutState;
@@ -2506,7 +2510,7 @@ int SpriteBinder::set(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::set", 0);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	const char* param = luaL_checkstring(L, 2);
 	lua_Number value = luaL_checknumber(L, 3);
@@ -2528,7 +2532,7 @@ int SpriteBinder::get(lua_State* L)
 	StackChecker checker(L, "SpriteBinder::get", 1);
 
 	Binder binder(L);
-	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
 	const char* param = luaL_checkstring(L, 2);
 

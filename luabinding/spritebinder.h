@@ -127,6 +127,8 @@ private:
 public:
     static size_t tokenChildren;
     static size_t tokenParent;
+    static size_t tokenNewclone;
+    static size_t tokenUserdata;
     static int updateStyle(lua_State* L);
 };
 

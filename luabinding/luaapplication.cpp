@@ -494,6 +494,9 @@ size_t LuaApplication::token__style;
 size_t LuaApplication::token__Reference;
 size_t LuaApplication::token__Parent;
 size_t LuaApplication::token__Cache;
+size_t LuaApplication::token_application;
+size_t LuaApplication::token__styleUpdates;
+size_t LuaApplication::token_updateStyle;
 
 #include "luabindings.luac.c"
 static int bindAll(lua_State* L)
@@ -504,6 +507,8 @@ static int bindAll(lua_State* L)
 	StackChecker checker(L, "bindAll", 0);
 
 	setEnvironTable(L);
+    Binder binder(L);
+    binder.initializeState();
 
 	{
 		lua_newtable(L);
@@ -538,6 +543,9 @@ static int bindAll(lua_State* L)
     LuaApplication::token__Reference=lua_newtoken(L,"__Reference");
     LuaApplication::token__Parent=lua_newtoken(L,"__Parent");
     LuaApplication::token__Cache=lua_newtoken(L,"__Cache");
+    LuaApplication::token_application=lua_newtoken(L,"application");
+    LuaApplication::token__styleUpdates=lua_newtoken(L,"__styleUpdates");
+    LuaApplication::token_updateStyle=lua_newtoken(L,"updateStyle");
 
 	EventBinder eventBinder(L);
 	EventDispatcherBinder eventDispatcherBinder(L);
@@ -1703,20 +1711,20 @@ static int updateStyles(lua_State *L) {
     luaApplication->resetStyleCache();
 
     /* perform style updating */
-    lua_getglobal(L,"application");
+    lua_rawgettoken(L,LUA_GLOBALSINDEX, LuaApplication::token_application);
     int npop=1;
     if (!lua_isnil(L,-1))
     {
-        lua_getfield(L,-1,"__styleUpdates");
+        lua_rawgettoken(L,-1,LuaApplication::token__styleUpdates);
         npop++;
         if (!lua_isnil(L,-1))
         {
             lua_pushnil(L);
-            lua_setfield(L,-3,"__styleUpdates");
+            lua_rawsettoken(L,-3,LuaApplication::token__styleUpdates);
             lua_pushnil(L);
             while (lua_next(L,-2)) {
                 lua_pop(L,1); //No need for sprite itself
-                lua_getfield(L,-1,"updateStyle");
+                lua_gettoken(L,-1,LuaApplication::token_updateStyle);
                 lua_pushvalue(L,-2);
                 lua_call(L,1,0);
             }
@@ -2417,6 +2425,7 @@ struct ProfileInfo {
 	int count;
 	double entered;
 	int enterCount;
+    double profOverHead;
     std::string callret;
 	std::map<std::string,double> cTime;
 	std::map<std::string,int> cCount;
@@ -2462,6 +2471,7 @@ static ProfileInfo *profilerGetInfo(Closure *cl)
 			p->time=0;
 			p->count=0;
 			p->enterCount=0;
+            p->profOverHead=0;
 		}
 	}
 	return p;
@@ -2469,6 +2479,7 @@ static ProfileInfo *profilerGetInfo(Closure *cl)
 
 static void profilerHook(lua_State *L,int enter)
 {
+    double enterTime=iclock();
 	Closure *cl=curr_func(L);
 	ProfileInfo *p=profilerGetInfo(cl);
 	if (enter)
@@ -2502,6 +2513,7 @@ static void profilerHook(lua_State *L,int enter)
                 }
 #endif
 			}
+            ProfileInfo *cp=NULL; //Caller, if any
 			if (L->ci>L->base_ci)
 			{
 				CallInfo *ci=L->ci;
@@ -2509,17 +2521,21 @@ static void profilerHook(lua_State *L,int enter)
 			    if(ttisfunction(ci->func))
 			    {
 			    	Closure *ccl=ci_func(ci);
-			    	ProfileInfo *cp=profilerGetInfo(ccl);
+                    cp=profilerGetInfo(ccl);
                     p->callret=cp->fid;
 			    }
 			}
-            p->entered=iclock();
+            double ltime=iclock();
+            p->entered=ltime;
+            if (cp)
+                cp->profOverHead+=ltime-enterTime;
         }
 	}
 	else
 	{
-        double time=iclock();
-		int rcalls=1;
+        ProfileInfo *cp=NULL; //Caller, if any
+        double ptime=0;
+        int rcalls=1;
 #ifndef LUA_IS_LUAU
 		if (f_isLua(L->ci)) {  /* Lua function? */
 		    rcalls+=L->ci->tailcalls;
@@ -2529,23 +2545,30 @@ static void profilerHook(lua_State *L,int enter)
 			if (p->enterCount)
 			{
 				double ctime=0;
-                if (!(--p->enterCount))
-					ctime=time-p->entered;
-				p->time+=ctime;
+                if (!(--p->enterCount)) {
+                    //We are leaving this function completely
+                    ptime=p->profOverHead;
+                    ctime=enterTime-p->entered-ptime;
+                    p->profOverHead=0;
+                }
+                p->time+=ctime;
 				p->count++;
                 ProfileInfo *np=NULL;
-				if (!(p->callret.empty()))
+                if (!(p->callret.empty()))
                 {
                     p->cCount[p->callret]=p->cCount[p->callret]+1;
                     p->cTime[p->callret]=p->cTime[p->callret]+ctime;
                     np=proFuncs[p->callret];
+                    if (!cp) cp=np;
                     if (!(p->enterCount))
                         p->callret.clear();
                 }
 				p=np;
 			}
 		}
-	}
+        if (cp)
+            cp->profOverHead+=iclock()-enterTime+ptime;
+    }
 }
 
 int LuaApplication::Core_profilerStart(lua_State *L)

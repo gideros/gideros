@@ -213,6 +213,7 @@ extern "C" {
 #define GIDEROS_DTOR_UDATA(p) (*(void**)LUA_DTOR_UDATA(p))
 GIDEROS_API void g_disableTypeChecking();
 GIDEROS_API void g_enableTypeChecking();
+GIDEROS_API void g_initializeBinderState(lua_State *L);
 GIDEROS_API int g_isTypeCheckingEnabled();
 GIDEROS_API void g_createClass(lua_State* L,
 								 const char* classname,
@@ -223,6 +224,7 @@ GIDEROS_API void g_createClass(lua_State* L,
 GIDEROS_API void g_makeInstance(lua_State* L, const char* classname, void* ptr);
 GIDEROS_API void g_pushInstance(lua_State* L, const char* classname, void* ptr);
 GIDEROS_API void* g_getInstance(lua_State* L, const char* classname, int index);
+GIDEROS_API void* g_getInstanceOfType(lua_State* L, const char* classname, int index, int typeMap);
 GIDEROS_API void g_setInstance(lua_State* L, int index, void* ptr);
 GIDEROS_API int g_isInstanceOf(lua_State* L, const char* classname, int index);
 
