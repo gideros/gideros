@@ -470,8 +470,13 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	public boolean onKeyPreIme(int keyCode, KeyEvent event) {
 		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
 			GiderosApplication app = GiderosApplication.getInstance();
-			if (app != null && app.onKeyDown(keyCode, event) == true)
-				return true;
+			if (app != null) {
+				int action = event.getAction();
+				if ((action==KeyEvent.ACTION_DOWN)&&(app.onKeyDown(keyCode, event) == true))
+					return true;
+				if ((action==KeyEvent.ACTION_UP)&&(app.onKeyUp(keyCode, event) == true))
+					return true;
+			} 
 		}
 		return super.onKeyPreIme(keyCode, event);
 	}

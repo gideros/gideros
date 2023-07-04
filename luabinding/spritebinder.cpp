@@ -756,6 +756,7 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
         FILL_NUM(fillx,fillX); FILL_NUM(filly,fillY);
         FILL_NUM(aspectRatio,aspectRatio);
         FILL_NUM(anchorx,anchorX); FILL_NUM(anchory,anchorY);
+        FILL_NUM(extraw,extraW); FILL_NUM(extrah,extraH);
         FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
         FILL_NUM(originx,originX); FILL_NUM(originy,originY);
         FILL_NUM(ipadx,ipadx); FILL_NUM(ipady,ipady);
@@ -870,6 +871,7 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
         STOR_NUM(prefWidth,prefWidth); STOR_NUM(prefHeight,prefHeight);
         STOR_NUM(insetTop,insets.top); STOR_NUM(insetLeft,insets.left);
         STOR_NUM(insetBottom,insets.bottom); STOR_NUM(insetRight,insets.right);
+        STOR_NUM(extraw,extraW); STOR_NUM(extrah,extraH);
         STOR_NUM(offsetx,offsetX); STOR_NUM(offsety,offsetY);
         STOR_NUM(originx,originX); STOR_NUM(originy,originY);
         STOR_BOOL(shrink,optimizeSize);
@@ -2481,6 +2483,7 @@ int SpriteBinder::updateStyle(lua_State* L)
             FILL_NUM(fillx,fillX); FILL_NUM(filly,fillY);
             FILL_NUM(aspectRatio,aspectRatio);
             FILL_NUM(anchorx,anchorX); FILL_NUM(anchory,anchorY);
+            FILL_NUM(extraw,extraW); FILL_NUM(extrah,extraH);
             FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
             FILL_NUM(originx,originX); FILL_NUM(originy,originY);
             FILL_NUM(ipadx,ipadx); FILL_NUM(ipady,ipady);

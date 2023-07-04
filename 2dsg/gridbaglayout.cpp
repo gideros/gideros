@@ -908,6 +908,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
             //Last step: displace the component according to its origin/offset
             r.x+=WALIGN(constraints->offsetX+constraints->originX*r.width);
             r.y+=WALIGN(constraints->offsetY+constraints->originY*r.height);
+            r.width+=constraints->extraW;
+            r.height+=constraints->extraH;
 
             //In case of groups, correct placement
             float px=0,py=0;

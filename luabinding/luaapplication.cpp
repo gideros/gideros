@@ -1186,9 +1186,30 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                 lua_pushnumber(L,strtod(key,NULL));
                 return LUA_TNUMBER;
             }
+            else if (((kk[0]=='*')||(kk[0]=='/')||(kk[0]=='+')||(kk[0]=='-'))&&kk[1]) {
+                //Basic maths
+                if (resolveStyleInternal(L,kk+1,0,limit+1,false)==LUA_TNIL)
+                {
+                    lua_pushfstringL(L,"Style not recognized: %s",kk+1);
+                    lua_error(L);
+                }
+                double op2=lua_tonumber(L,-1);
+                double op1=strtod(key,NULL);
+                double num;
+                switch (kk[0]) {
+                case '+': num=op1+op2; break;
+                case '-': num=op1-op2; break;
+                case '*': num=op1*op2; break;
+                case '/': num=op1/op2; break;
+                default: num=0;
+                }
+                lua_pop(L,1);
+                lua_pushnumber(L,num);
+                return LUA_TNUMBER;
+            }
             else if ((kk[0]=='e')&&(kk[1]=='m')&&(kk[2]==0)) {
                 Binder binder(L);
-                if (resolveStyleInternal(L,"font",0,true)==LUA_TNIL)
+                if (resolveStyleInternal(L,"font",0,limit+1,true)==LUA_TNIL)
                 {
                     lua_pushfstringL(L,"Font not found for computing: %s",key);
                     lua_error(L);
@@ -1209,7 +1230,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                     char unitName[32+6]="unit.";
                     strncpy(unitName+5,kk,32);
                     unitName[32+5]=0;
-                    if (resolveStyleInternal(L,unitName,0,true)==LUA_TNIL)
+                    if (resolveStyleInternal(L,unitName,0,limit+1,true)==LUA_TNIL)
                     {
                         lua_pushfstringL(L,"Unit not recognized: %s",kk);
                         lua_error(L);

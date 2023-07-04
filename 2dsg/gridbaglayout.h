@@ -53,6 +53,8 @@ struct GridBagConstraints {
     float prefWidth,prefHeight;
     //Anchor placement
     float anchorX,anchorY;
+    //Extra size, after layout
+    float extraW,extraH;
     //Absolute offset
     float offsetX,offsetY;
     //Source anchor point/relative offset
@@ -95,7 +97,7 @@ struct GridBagConstraints {
         prefWidth=prefHeight=minWidth=minHeight=aminWidth=aminHeight=-1;
         tempHeight=tempWidth=tempX=tempY=0;
         tempHide=false;
-        offsetX=offsetY=originX=originY=0;
+        offsetX=offsetY=originX=originY=extraW=extraH=0;
 
         optimizeSize=false;
         group=false;
@@ -223,5 +225,7 @@ public:
 #define STRKEY_LAYOUT_gridRelative      55
 #define STRKEY_LAYOUT_overflowMode      56
 #define STRKEY_LAYOUT_hidePriority      57
+#define STRKEY_LAYOUT_extraw            58
+#define STRKEY_LAYOUT_extrah            59
 
 #endif /* GRIDBAGLAYOUT_H_ */
