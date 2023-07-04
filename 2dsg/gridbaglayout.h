@@ -154,6 +154,8 @@ public:
     bool worldAlign;
     float cellSpacingX,cellSpacingY;
     float gridAnchorX,gridAnchorY;
+    float offsetX,offsetY;
+    float originX,originY;
     float zOffset;
     int64_t resolvedMap;
     std::map<int,std::string> resolved;
@@ -161,6 +163,7 @@ public:
     GridBagLayout() :
             optimizing(false),equalizeCells(false),dirty(false),placing(false),resizeContainer(false),worldAlign(false),
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
+            offsetX(0),offsetY(0),originX(0),originY(0),
 			zOffset(0)
     {
         resolvedMap=0;

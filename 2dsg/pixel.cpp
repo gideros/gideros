@@ -391,19 +391,19 @@ void Pixel::getAnchorPoint(float* x, float* y) const
 
 bool Pixel::setDimensions(float width,float height,bool forLayout)
 {
-    bool changed=(width_!=width)||(height_!=height);
 	width_=width;
 	height_=height;
 	if (!forLayout) {
 		minw_=width;
 		minh_=height;
 	}
+    bool changed=Sprite::setDimensions(width, height, forLayout);
     if (changed) {
         updateVertices();
         invalidate(INV_GRAPHICS|INV_BOUNDS);
         if ((!(isStretching_|| isNinePatch_))&&texture_[0]) updateTexture();
     }
-    return Sprite::setDimensions(width, height, forLayout);
+    return changed;
 }
 
 void Pixel::setTextureRegion(BitmapData *bitmapdata,int slot)

@@ -715,6 +715,8 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
         FILL_BOOL(worldAlign,worldAlign);
         FILL_NUM(cellSpacingX,cellSpacingX); FILL_NUM(cellSpacingY,cellSpacingY);
         FILL_NUM(gridAnchorX,gridAnchorX); FILL_NUM(gridAnchorY,gridAnchorY);
+        FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
+        FILL_NUM(originx,originX); FILL_NUM(originy,originY);
         FILL_NUM(zOffset,zOffset);
 
         lua_pop(L,1);
@@ -838,6 +840,8 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
         STOR_BOOL(resizeContainer,resizeContainer);
         STOR_NUM(cellSpacingX,cellSpacingX); STOR_NUM(cellSpacingY,cellSpacingY);
         STOR_NUM(gridAnchorX,gridAnchorX); STOR_NUM(gridAnchorY,gridAnchorY);
+        STOR_NUM(offsetx,offsetX); STOR_NUM(offsety,offsetY);
+        STOR_NUM(originx,originX); STOR_NUM(originy,originY);
         STOR_NUM(zOffset,zOffset);
 	}
 	else
@@ -2462,6 +2466,8 @@ int SpriteBinder::updateStyle(lua_State* L)
 
             FILL_NUM(cellSpacingX,cellSpacingX); FILL_NUM(cellSpacingY,cellSpacingY);
             FILL_NUM(gridAnchorX,gridAnchorX); FILL_NUM(gridAnchorY,gridAnchorY);
+            FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
+            FILL_NUM(originx,originX); FILL_NUM(originy,originY);
             FILL_NUM(zOffset,zOffset);
 
             if (dirty) {

@@ -835,8 +835,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 * that has been collected.
 	 */
 
-    info.startx = WALIGN(diffw*gridAnchorX + insets.left);
-    info.starty = WALIGN(diffh*gridAnchorY + insets.top);
+    info.startx = WALIGN(diffw*gridAnchorX + insets.left + pwidth*originX + offsetX);
+    info.starty = WALIGN(diffh*gridAnchorY + insets.top + pheight*originY + offsetY);
     float csx=WALIGN(cellSpacingX);
     float csy=WALIGN(cellSpacingY);
     info.cellSpacingY=csy;
