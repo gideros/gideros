@@ -225,7 +225,7 @@ function getParameterByName(name, url) {
     preRun: [],
     postRun: [],
     preInit: [],
-    TOTAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
+    INITIAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
     GiderosPlugins: [ /*GIDEROS_DYNLIB_PLUGIN*/ null ],
     JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ null ],
     requestFile: function (file) { return 0; },

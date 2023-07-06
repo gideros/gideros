@@ -389,7 +389,7 @@ int main() {
   try {
           
 char *url=(char *) EM_ASM_INT_V({
- return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
+ return allocate(intArrayFromString(location.href), ALLOC_STACK);
 });
  char *surl=(char *)malloc(strlen(url)+2);
  *surl='s';
@@ -549,7 +549,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE cJSON *JSCall(const char *mtd, cJSON *args)
 	char *sArgs=args?cJSON_PrintUnformatted(args):strdup("null");
 	if (args) cJSON_Delete(args);
 	char *ret=(char *) EM_ASM_INT({
-	 return allocate(intArrayFromString(Module.JSCallJS(UTF8ToString($0),UTF8ToString($1))||'null'), 'i8', ALLOC_STACK);
+	 return allocate(intArrayFromString(Module.JSCallJS(UTF8ToString($0),UTF8ToString($1))||'null'), ALLOC_STACK);
 	},mtd,sArgs);
 	free(sArgs);
 

@@ -156,6 +156,7 @@ EOPTS+=MAX_WEBGL_VERSION=2
 #EOPTS+=ERROR_ON_UNDEFINED_SYMBOLS=0
 #EOPTS+=LINKABLE=1
 EOPTS+=FORCE_FILESYSTEM=1
+EOPTS+=DEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$$ALLOC_STACK,$$allocate'
 ifneq ($(DEBUG),)
 OPTS+=-g4
 EOPTS+=ASSERTIONS=2
@@ -250,7 +251,7 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
 EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//;s/fp\$$/')))
-EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
+EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vhE "invoke_XX|getTempRet0|setTempRet0" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
 
 $(BUILD)/lib%.w.a:
 	@echo "EMAR" $@

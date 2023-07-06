@@ -160,7 +160,7 @@ G_API void gui_show(g_id gid)
 			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
-			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);
+			 var btj=allocate(intArrayFromString(bt), ALLOC_STACK);
       			 dynCall('viii', cb, [gid,bi,btj]);
 			});
 		},gid,d->Title.c_str(),d->Message.c_str(),
@@ -175,7 +175,7 @@ G_API void gui_show(g_id gid)
 		const char *res=(const char *) EM_ASM_INT({
 			var t=prompt(UTF8ToString($0),UTF8ToString($1));
 			if (t==null) return 0;
-			return allocate(intArrayFromString(t), 'i8', ALLOC_STACK);
+			return allocate(intArrayFromString(t), ALLOC_STACK);
 			},d->Message.c_str(),d->Text.c_str());
 		if (res)
 			d->Text=res;
@@ -191,8 +191,8 @@ G_API void gui_show(g_id gid)
 			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
-			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);
-			 var tj=allocate(intArrayFromString(t), 'i8', ALLOC_STACK);
+			 var btj=allocate(intArrayFromString(bt), ALLOC_STACK);
+			 var tj=allocate(intArrayFromString(t), ALLOC_STACK);
       			 dynCall('viiii', cb, [gid,bi,btj,tj]);
 			});
 		},gid,d->Title.c_str(),d->Message.c_str(),

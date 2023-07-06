@@ -36,7 +36,7 @@ static int JSNative_eval(lua_State *L) {
 	const char *str=luaL_checkstring(L,-1);
 
 	char *ret=(char *) EM_ASM_INT({
-	 return allocate(intArrayFromString(String(eval(UTF8ToString($0)))), 'i8', ALLOC_STACK);
+	 return allocate(intArrayFromString(String(eval(UTF8ToString($0)))), ALLOC_STACK);
 	},str);
 
 	lua_pushstring(L,ret);

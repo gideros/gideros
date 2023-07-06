@@ -34,7 +34,7 @@ std::vector<std::string> getDeviceInfo()
         
   result.push_back("Web");
 	char *userAgentC=(char *) EM_ASM_INT_V({
-	 return allocate(intArrayFromString(navigator.userAgent), 'i8', ALLOC_STACK);
+	 return allocate(intArrayFromString(navigator.userAgent), ALLOC_STACK);
 	});
   std::string userAgent=userAgentC;
   result.push_back(userAgent);
@@ -87,8 +87,8 @@ int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
 			if (window.navigator.clipboard && window.navigator.clipboard.readText) {
 				window.navigator.clipboard.readText().then(function (clipText) {
 						Module._gapplication_clipboardCallback($0,1,
-								allocate(intArrayFromString(clipText), 'i8', ALLOC_STACK),
-								allocate(intArrayFromString("text/plain"), 'i8', ALLOC_STACK))
+								allocate(intArrayFromString(clipText), ALLOC_STACK),
+								allocate(intArrayFromString("text/plain"), ALLOC_STACK))
 					}
 				).catch(
 					err => Module._gapplication_clipboardCallback($0,-1,0,0)
@@ -134,7 +134,7 @@ std::string getLocale()
 std::string getLanguage()
 {
 	char *lang=(char *) EM_ASM_INT_V({
-	 return allocate(intArrayFromString(Module.gplatformLanguage()), 'i8', ALLOC_STACK);
+	 return allocate(intArrayFromString(Module.gplatformLanguage()), ALLOC_STACK);
 	});
 
 	return lang;

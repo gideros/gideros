@@ -186,8 +186,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	http.onload = function http_onload(e) {
 		// if (http.status == 200 || _url.substr(0,4).toLowerCase() != "http") {
 		// console.log("rhdr:"+http.getAllResponseHeaders());
-		var hdrs = allocate(intArrayFromString(http.getAllResponseHeaders()),
-				'i8', ALLOC_STACK);
+		var hdrs = allocate(intArrayFromString(http.getAllResponseHeaders()),ALLOC_STACK);
 		var byteArray = new Uint8Array(http.response);
 		var buffer = _malloc(byteArray.length);
 		HEAPU8.set(byteArray, buffer);
@@ -284,8 +283,7 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 			  	res.headers.forEach(function(value,key) {
 			  	  ahdr=ahdr+key+": "+value+"\r\n";
 			  	});
-				var hdrs = allocate(intArrayFromString(ahdr),
-						'i8', ALLOC_STACK);
+				var hdrs = allocate(intArrayFromString(ahdr), ALLOC_STACK);
 				if (onload)
 					dynCall('viiiiiii', onload, [ handle, arg, 0,
 							0, res.status, hdrs,1 ]);
