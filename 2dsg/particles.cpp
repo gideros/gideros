@@ -482,11 +482,20 @@ void Particles::tick() {
         removeParticle(*it);
     dead_.clear();
 
-	int changes=INV_GRAPHICS;
+    int changes=0;
 	for (size_t i = 0; i < particleCount; i++) {
         if (texcoords_[i * 16 + 2] != 0) {
 			bool remove=false;
-            if (nframes&&(speeds_[i * 5]||speeds_[i * 5 + 1]||speeds_[i * 5 + 2])) changes|=INV_BOUNDS;
+            bool cpos=false;
+            if (nframes&&(speeds_[i * 5]||speeds_[i * 5 + 1]||speeds_[i * 5 + 2])) {
+                cpos=true;
+                changes|=INV_BOUNDS;
+            }
+            bool cspd=(nframes&&(speeds_[i * 5 +3]||speeds_[i * 5 + 4]));
+            bool cadc=((decay_[i * 6 + 3]!=1)||(acceleration_[i * 6 + 3])); //alpha decay
+            if (cadc||cpos||cspd)
+                changes|=INV_GRAPHICS;
+
             float nx = points_[i * 16] + speeds_[i * 5]*nframes;
             float ny = points_[i * 16 + 1] + speeds_[i * 5 + 1]*nframes;
             float nz = points_[i * 16 + 2] + speeds_[i * 5 + 2]*nframes;
@@ -494,60 +503,67 @@ void Particles::tick() {
             float na = texcoords_[i * 16 + 3] + speeds_[i * 5 + 4]*nframes;
             if ((ttl_[i]<=0)&&(fabs(ns)<0.1))
 				remove=true;
-			for (int k = 0; k < 16; k += 4) {
-				points_[i * 16 + k] = nx;
-                points_[i * 16 + k + 1] = ny;
-                points_[i * 16 + k + 2] = nz;
-                texcoords_[i * 16 + k + 2] = ns;
-                texcoords_[i * 16 + k + 3] = na;
-			}
-            points_.Update();
-            texcoords_.Update();
-            speeds_[i * 5] *= pow(decay_[i * 6 + 0],nframes);
-            speeds_[i * 5 + 1] *= pow(decay_[i * 6 + 1],nframes);
-            speeds_[i * 5 + 2] *= pow(decay_[i * 6 + 2],nframes);
-            speeds_[i * 5 + 3] *= pow(decay_[i * 6 + 4],nframes);
-            speeds_[i * 5 + 4] *= pow(decay_[i * 6 + 5],nframes);
-            speeds_[i * 5] += acceleration_[i * 6 + 0]*nframes;
-            speeds_[i * 5 + 1] += acceleration_[i * 6 + 1]*nframes;
-            speeds_[i * 5 + 2] += acceleration_[i * 6 + 2]*nframes;
-            speeds_[i * 5 + 3] += acceleration_[i * 6 + 4]*nframes;
-            speeds_[i * 5 + 4] += acceleration_[i * 6 + 5]*nframes;
-            if ((decay_[i * 6 + 3]!=1)||(acceleration_[i * 6 + 3])) //alpha decay
-			{
-				int color=originalColors_[i].color;
-				float alpha=originalColors_[i].alpha;
-                alpha=alpha*pow(decay_[i * 6 + 3],nframes);
-                alpha += acceleration_[i * 6 + 3]*nframes;
-                originalColors_[i].alpha=alpha;
-				alpha = std::min(std::max(alpha, 0.f), 1.f);
+            else {
+                if (cpos||cspd) {
+                    for (int k = 0; k < 16; k += 4) {
+                        points_[i * 16 + k] = nx;
+                        points_[i * 16 + k + 1] = ny;
+                        points_[i * 16 + k + 2] = nz;
+                        texcoords_[i * 16 + k + 2] = ns;
+                        texcoords_[i * 16 + k + 3] = na;
+                    }
+                    if (cpos)
+                        points_.Update();
+                    if (cspd)
+                        texcoords_.Update();
+                }
+                speeds_[i * 5] *= pow(decay_[i * 6 + 0],nframes);
+                speeds_[i * 5 + 1] *= pow(decay_[i * 6 + 1],nframes);
+                speeds_[i * 5 + 2] *= pow(decay_[i * 6 + 2],nframes);
+                speeds_[i * 5 + 3] *= pow(decay_[i * 6 + 4],nframes);
+                speeds_[i * 5 + 4] *= pow(decay_[i * 6 + 5],nframes);
+                speeds_[i * 5] += acceleration_[i * 6 + 0]*nframes;
+                speeds_[i * 5 + 1] += acceleration_[i * 6 + 1]*nframes;
+                speeds_[i * 5 + 2] += acceleration_[i * 6 + 2]*nframes;
+                speeds_[i * 5 + 3] += acceleration_[i * 6 + 4]*nframes;
+                speeds_[i * 5 + 4] += acceleration_[i * 6 + 5]*nframes;
+                if (cadc) //alpha decay
+                {
+                    int color=originalColors_[i].color;
+                    float alpha=originalColors_[i].alpha;
+                    alpha=alpha*pow(decay_[i * 6 + 3],nframes);
+                    alpha += acceleration_[i * 6 + 3]*nframes;
+                    originalColors_[i].alpha=alpha;
+                    alpha = std::min(std::max(alpha, 0.f), 1.f);
 
-				unsigned int r = ((color >> 16) & 0xff) * alpha;
-				unsigned int g = ((color >> 8) & 0xff) * alpha;
-				unsigned int b = (color & 0xff) * alpha;
-				unsigned int a = 255 * alpha;
+                    unsigned int r = ((color >> 16) & 0xff) * alpha;
+                    unsigned int g = ((color >> 8) & 0xff) * alpha;
+                    unsigned int b = (color & 0xff) * alpha;
+                    unsigned int a = 255 * alpha;
 
-				for (int k = 0; k < 16; k += 4) {
-					colors_[i * 16 + k] = r;
-					colors_[i * 16 + k + 1] = g;
-					colors_[i * 16 + k + 2] = b;
-					colors_[i * 16 + k + 3] = a;
-				}
-				colors_.Update();
-			}
-			if (ttl_[i] > 0) {
-				ttl_[i]=ttl_[i]-nframes;
-				if (ttl_[i]<=0)
-				{
-					ttl_[i]=0;
-					remove=true;
-				}
-			}
+                    for (int k = 0; k < 16; k += 4) {
+                        colors_[i * 16 + k] = r;
+                        colors_[i * 16 + k + 1] = g;
+                        colors_[i * 16 + k + 2] = b;
+                        colors_[i * 16 + k + 3] = a;
+                    }
+                    colors_.Update();
+                }
+            }
+            if (ttl_[i] > 0) {
+                ttl_[i]=ttl_[i]-nframes;
+                if (ttl_[i]<=0)
+                {
+                    ttl_[i]=0;
+                    remove=true;
+                }
+            }
 			if (remove)
                 dead_.insert(i);
 		}
 	}
-	invalidate(changes);
+    if (changes)
+        invalidate(changes);
     RENDER_UNLOCK();
 }
 
