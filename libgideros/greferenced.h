@@ -33,7 +33,7 @@ private:
 	int refcount_;
 	int typeMap_;
     std::map<void *, GReferenced*> data_;
-    int typeSig_;
+    unsigned int typeSig_;
 	GReferenced* proxy_;
 
 private:
