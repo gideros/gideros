@@ -905,8 +905,7 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 	if (sprite->hasLayoutState())
 	{
 		GridBagLayout *sp=sprite->getLayoutState();
-		GridBagLayoutInfo pi;
-		GridBagLayoutInfo *p=&pi;
+        GridBagLayoutInfo *p=nullptr;
 		if (type==0) { //Current
 			int loops=100; //Detect endless loops while forcing immediate layout
 			while(sp->dirty&&(loops--))
@@ -921,21 +920,23 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 			if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
 				sp->dirty=false;
 			p=sp->getCurrentLayoutInfo();
-		} else
+        }
+        if (!p)
 		{
 			float dw,dh;
             float pwidth,pheight;
+            if (type==0) type=3;
             sprite->getDimensions(pwidth, pheight);
-            pi = sp->getLayoutInfo(sprite, (type>=2)?2:type, pwidth, pheight); //PREFERRED or BEST
-		    sp->getMinSize(sprite, pi, dw, dh, sp->pInsets);
+            p = sp->getLayoutInfo(sprite, (type>=2)?2:type, pwidth, pheight, nullptr); //PREFERRED or BEST
+            sp->getMinSize(sprite, p, dw, dh, sp->pInsets);
 		    if (type==3) {//BEST
 				if (pwidth < dw || pheight < dh) {
-                    pi = sp->getLayoutInfo(sprite, 1, pwidth, pheight);
-					sp->getMinSize(sprite, pi, dw, dh, sp->pInsets);
+                    p = sp->getLayoutInfo(sprite, 1, pwidth, pheight, nullptr);
+                    sp->getMinSize(sprite, p, dw, dh, sp->pInsets);
 				}
 		    }
-		    pi.reqWidth=dw;
-		    pi.reqHeight=dh;
+            p->reqWidth=dw;
+            p->reqHeight=dh;
 		}
 		lua_newtable(L);
 

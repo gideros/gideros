@@ -167,9 +167,9 @@ public:
 			zOffset(0)
     {
         resolvedMap=0;
-    }
-    GridBagLayoutInfo &getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight);
-    void getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w,float &h, GridInsets &insets);
+     }
+    GridBagLayoutInfo *getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight, GridBagLayoutInfo *nocache);
+    void getMinSize(Sprite *parent, GridBagLayoutInfo *info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);
     GridBagLayoutInfo *getCurrentLayoutInfo() { return &layoutInfo; }
 };

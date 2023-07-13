@@ -40,12 +40,12 @@ void GridBagLayout::preInitMaximumArraySizes(std::vector<Sprite *> &candidates, 
 	a1 = preMaximumArrayYIndex;
 } //PreInitMaximumSizes
 
-GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight) {
+GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, float pwidth, float pheight, GridBagLayoutInfo *nocache) {
 	Sprite *comp;
 	GridBagConstraints *constraints;
 
     assert((sizeflag>=1)&&(sizeflag<=2));
-    if (parent->layoutState->layoutInfoCache[sizeflag-1].valid) return parent->layoutState->layoutInfoCache[sizeflag-1];
+    if ((nocache==nullptr)&&parent->layoutState->layoutInfoCache[sizeflag-1].valid) return &parent->layoutState->layoutInfoCache[sizeflag-1];
 
 	// Code below will address index curX+curWidth in the case of yMaxArray, weightY
 	// ( respectively curY+curHeight for xMaxArray, weightX ) where
@@ -123,6 +123,8 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     std::vector<size_t> ysMaxArray(maximumArrayXIndex);
 
 
+    GridBagLayoutInfo temp;
+
     for (auto it=candidates.begin();it!=candidates.end();it++) {
         Sprite *comp=*it;
         constraints = comp->layoutConstraints;
@@ -156,8 +158,8 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
             if ((dw==-1)||(dh==-1)) {
                 float diw,dih;
                 if (comp->layoutState) {
-                    GridBagLayoutInfo &info = comp->layoutState->getLayoutInfo(comp,
-                            sizeflag, pwidth, pheight);
+                    GridBagLayoutInfo *info = comp->layoutState->getLayoutInfo(comp,
+                            sizeflag, pwidth, pheight,nocache?&temp:nullptr);
                     comp->layoutState->getMinSize(comp, info, diw, dih,comp->layoutState->pInsets);
                 }
                 else
@@ -168,8 +170,8 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
         }
         else {
             if (comp->layoutState) {
-                GridBagLayoutInfo &info = comp->layoutState->getLayoutInfo(comp,
-                        sizeflag, pwidth,pheight);
+                GridBagLayoutInfo *info = comp->layoutState->getLayoutInfo(comp,
+                        sizeflag, pwidth,pheight,nocache?&temp:nullptr);
                 comp->layoutState->getMinSize(comp, info, dw, dh,comp->layoutState->pInsets);
             }
             else
@@ -267,12 +269,20 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     if (layoutHeight < rowWeights.size())
         layoutHeight = rowWeights.size();
 
-    parent->layoutState->layoutInfoCache[sizeflag-1]=GridBagLayoutInfo(layoutWidth, layoutHeight);
-    GridBagLayoutInfo &r = parent->layoutState->layoutInfoCache[sizeflag-1];
-    r.weightX.resize(maximumArrayYIndex);
-    r.weightY.resize(maximumArrayXIndex);
-    r.minWidth.resize(maximumArrayYIndex);
-    r.minHeight.resize(maximumArrayXIndex);
+    GridBagLayoutInfo *r=nocache;
+    if (!nocache) {
+        parent->layoutState->layoutInfoCache[sizeflag-1]=GridBagLayoutInfo(layoutWidth, layoutHeight);
+        r = &parent->layoutState->layoutInfoCache[sizeflag-1];
+    }
+    else {
+        nocache->width=layoutWidth;
+        nocache->height=layoutHeight;
+    }
+
+    r->weightX.resize(maximumArrayYIndex);
+    r->weightY.resize(maximumArrayXIndex);
+    r->minWidth.resize(maximumArrayYIndex);
+    r->minHeight.resize(maximumArrayXIndex);
 
 	/*
 	 * Pass #2
@@ -301,13 +311,13 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
         curHeight = constraints->gridheight;
 
         if (curWidth <= 0) {
-            curWidth += r.width - constraints->tempX;
+            curWidth += r->width - constraints->tempX;
             if (curWidth < 1)
                 curWidth = 1;
         }
 
         if (curHeight <= 0) {
-            curHeight += r.height - constraints->tempY;
+            curHeight += r->height - constraints->tempY;
             if (curHeight < 1)
                 curHeight = 1;
         }
@@ -331,18 +341,18 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
 	 * Apply minimum row/column dimensions and weights
 	 */
 	for (size_t i = 0; i < columnWidths.size(); i++)
-		r.minWidth[i] = columnWidths[i];
+        r->minWidth[i] = columnWidths[i];
 	for (size_t i = 0; i < rowHeights.size(); i++)
-		r.minHeight[i] = rowHeights[i];
+        r->minHeight[i] = rowHeights[i];
 	size_t max =
-			columnWeights.size() < r.weightX.size() ?
-					columnWeights.size() : r.weightX.size();
+            columnWeights.size() < r->weightX.size() ?
+                    columnWeights.size() : r->weightX.size();
 	for (size_t i = 0; i < max; i++)
-		r.weightX[i] = columnWeights[i];
-	max = rowWeights.size() < r.weightY.size() ?
-			rowWeights.size() : r.weightY.size();
+        r->weightX[i] = columnWeights[i];
+    max = rowWeights.size() < r->weightY.size() ?
+            rowWeights.size() : r->weightY.size();
 	for (size_t i = 0; i < max; i++)
-		r.weightY[i] = rowWeights[i];
+        r->weightY[i] = rowWeights[i];
 
 	/*
 	 * Pass #3
@@ -370,20 +380,20 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
 
                 weight_diff = constraints->weightx;
                 for (k = constraints->tempX; k < px; k++)
-                    weight_diff -= r.weightX[k];
+                    weight_diff -= r->weightX[k];
                 if (weight_diff > 0.0) {
                     weight = 0.0;
                     for (k = constraints->tempX; k < px; k++)
-                        weight += r.weightX[k];
+                        weight += r->weightX[k];
                     for (k = constraints->tempX; weight > 0.0 && k < px; k++) {
-                        double wt = r.weightX[k];
+                        double wt = r->weightX[k];
                         double dx = (wt * weight_diff) / weight;
-                        r.weightX[k] += dx;
+                        r->weightX[k] += dx;
                         weight_diff -= dx;
                         weight -= wt;
                     }
                     /* Assign the remainder to the rightmost cell */
-                    r.weightX[px - 1] += weight_diff;
+                    r->weightX[px - 1] += weight_diff;
                 }
 
                 /*
@@ -398,20 +408,20 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
                         + constraints->insets.left + constraints->insets.right;
 
                 for (k = constraints->tempX; k < px; k++)
-                    pixels_diff -= r.minWidth[k];
+                    pixels_diff -= r->minWidth[k];
                 if (pixels_diff > 0) {
                     weight = 0.0;
                     for (k = constraints->tempX; k < px; k++)
-                        weight += r.weightX[k];
+                        weight += r->weightX[k];
                     for (k = constraints->tempX; weight > 0.0 && k < px; k++) {
-                        double wt = r.weightX[k];
+                        double wt = r->weightX[k];
                         double dx = ((wt * ((double) pixels_diff)) / weight);
-                        r.minWidth[k] += dx;
+                        r->minWidth[k] += dx;
                         pixels_diff -= dx;
                         weight -= wt;
                     }
                     /* Any leftovers go into the rightmost cell */
-                    r.minWidth[px - 1] += pixels_diff;
+                    r->minWidth[px - 1] += pixels_diff;
                 }
             } else if (constraints->tempWidth > i
                     && constraints->tempWidth < nextSize)
@@ -429,20 +439,20 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
 
                 weight_diff = constraints->weighty;
                 for (k = constraints->tempY; k < py; k++)
-                    weight_diff -= r.weightY[k];
+                    weight_diff -= r->weightY[k];
                 if (weight_diff > 0.0) {
                     weight = 0.0;
                     for (k = constraints->tempY; k < py; k++)
-                        weight += r.weightY[k];
+                        weight += r->weightY[k];
                     for (k = constraints->tempY; weight > 0.0 && k < py; k++) {
-                        double wt = r.weightY[k];
+                        double wt = r->weightY[k];
                         double dy = (wt * weight_diff) / weight;
-                        r.weightY[k] += dy;
+                        r->weightY[k] += dy;
                         weight_diff -= dy;
                         weight -= wt;
                     }
                     /* Assign the remainder to the bottom cell */
-                    r.weightY[py - 1] += weight_diff;
+                    r->weightY[py - 1] += weight_diff;
                 }
 
                 /*
@@ -456,20 +466,20 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
                 pixels_diff = constraints->minHeight + constraints->ipady
                         + constraints->insets.top + constraints->insets.bottom;
                 for (k = constraints->tempY; k < py; k++)
-                    pixels_diff -= r.minHeight[k];
+                    pixels_diff -= r->minHeight[k];
                 if (pixels_diff > 0) {
                     weight = 0.0;
                     for (k = constraints->tempY; k < py; k++)
-                        weight += r.weightY[k];
+                        weight += r->weightY[k];
                     for (k = constraints->tempY; weight > 0.0 && k < py; k++) {
-                        double wt = r.weightY[k];
+                        double wt = r->weightY[k];
                         double dy = ((wt * ((double) pixels_diff)) / weight);
-                        r.minHeight[k] += dy;
+                        r->minHeight[k] += dy;
                         pixels_diff -= dy;
                         weight -= wt;
                     }
                     /* Any leftovers go into the bottom cell */
-                    r.minHeight[py - 1] += pixels_diff;
+                    r->minHeight[py - 1] += pixels_diff;
                 }
             } else if (constraints->tempHeight > i
                     && constraints->tempHeight < nextSize)
@@ -481,34 +491,34 @@ GridBagLayoutInfo &GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     if (equalizeCells&&(sizeflag==PREFERREDSIZE)) {
         double mw=0;
         for (size_t i = 0; i < maximumArrayYIndex; i++) {
-            if (r.weightX[i]>0) {
-                double mwt=r.minWidth[i]/r.weightX[i];
+            if (r->weightX[i]>0) {
+                double mwt=r->minWidth[i]/r->weightX[i];
                 if (mwt>mw) mw=mwt;
             }
         }
         if (mw>0) {
             for (size_t i = 0; i < maximumArrayYIndex; i++) {
-                if (r.weightX[i]>0) {
-                    r.minWidth[i]=r.weightX[i]*mw;
+                if (r->weightX[i]>0) {
+                    r->minWidth[i]=r->weightX[i]*mw;
                 }
             }
         }
         mw=0;
         for (size_t i = 0; i < maximumArrayXIndex; i++) {
-            if (r.weightY[i]>0) {
-                double mwt=r.minHeight[i]/r.weightY[i];
+            if (r->weightY[i]>0) {
+                double mwt=r->minHeight[i]/r->weightY[i];
                 if (mwt>mw) mw=mwt;
             }
         }
         if (mw>0) {
             for (size_t i = 0; i < maximumArrayXIndex; i++) {
-                if (r.weightY[i]>0) {
-                    r.minHeight[i]=r.weightY[i]*mw;
+                if (r->weightY[i]>0) {
+                    r->minHeight[i]=r->weightY[i]*mw;
                 }
             }
         }
     }
-    r.valid=true;
+    r->valid=true;
 
 	return r;
 } //getLayoutInfo()
@@ -527,16 +537,15 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 	if (constraints->optimizeSize) {
 		float proposeW=r.width-constraints->ipadx;
 		float proposeH=r.height-constraints->ipady;
-		if (comp->layoutState) {
+        if (comp->layoutState) {
             comp->layoutState->optimizing=true;
             comp->layoutState->ArrangeGrid(comp,proposeW,proposeH);
-            comp->layoutState->layoutInfoCache[PREFERREDSIZE-1].valid=false;
             comp->layoutState->optimizing=false;
-            GridBagLayoutInfo &info = comp->layoutState->getLayoutInfo(comp, PREFERREDSIZE,proposeW,proposeH);
+            GridBagLayoutInfo cinfo;
+            GridBagLayoutInfo *info=comp->layoutState->getLayoutInfo(comp, PREFERREDSIZE,proposeW,proposeH,&cinfo);
             GridInsets insets = comp->layoutState->pInsets;
             float dw,dh;
             comp->layoutState->getMinSize(comp, info, dw, dh, insets);
-            comp->layoutState->dirty=true;
             constraints->minWidth=dw;
             constraints->minHeight=dh;
         }
@@ -625,21 +634,21 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 #define WALIGNF(x) roundf(x)
 #define WALIGN(x) (worldAlign?WALIGNF(x):x)
 
-void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo &info, float &w,
+void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo *info, float &w,
         float &h, GridInsets &insets) {
     size_t i;
     float t;
     G_UNUSED(parent);
 
 	t = 0;
-	for (i = 0; i < info.width; i++)
-		t += WALIGN(info.minWidth[i]);
-    w = t + WALIGN(insets.left) + WALIGN(insets.right) + ((info.width>1)?((info.width-1)*WALIGN(cellSpacingX)):0);
+    for (i = 0; i < info->width; i++)
+        t += WALIGN(info->minWidth[i]);
+    w = t + WALIGN(insets.left) + WALIGN(insets.right) + ((info->width>1)?((info->width-1)*WALIGN(cellSpacingX)):0);
 
 	t = 0;
-	for (i = 0; i < info.height; i++)
-		t += WALIGN(info.minHeight[i]);
-    h = t + WALIGN(insets.top) + WALIGN(insets.bottom) + ((info.height>1)?((info.height-1)*WALIGN(cellSpacingY)):0);
+    for (i = 0; i < info->height; i++)
+        t += WALIGN(info->minHeight[i]);
+    h = t + WALIGN(insets.top) + WALIGN(insets.bottom) + ((info->height>1)?((info->height-1)*WALIGN(cellSpacingY)):0);
 }
 
 void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
@@ -669,20 +678,20 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 */
 
     {
-        GridBagLayoutInfo &info = getLayoutInfo(parent, PREFERREDSIZE,pwidth, pheight);
+        GridBagLayoutInfo *info = getLayoutInfo(parent, PREFERREDSIZE,pwidth, pheight, nullptr);
         getMinSize(parent, info, dw, dh, insets);
 
         if (resizeContainer) {
             float dw2,dh2;
-            GridBagLayoutInfo &info2 = getLayoutInfo(parent, MINSIZE,pwidth, pheight);
+            GridBagLayoutInfo *info2 = getLayoutInfo(parent, MINSIZE,pwidth, pheight, nullptr);
             getMinSize(parent, info2, dw2, dh2, insets);
             if ((dw2<dw)||(dh2<dh)) {
-                layoutInfo = info2;
+                layoutInfo = *info2;
                 dw=dw2;
                 dh=dh2;
             }
             else
-                layoutInfo = info;
+                layoutInfo = *info;
             if ((pwidth!=dw)||(pheight!=dh)) {
                 pwidth=dw;
                 pheight=dh;
@@ -692,22 +701,22 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
         else
         {
             if (pwidth < dw || pheight < dh) {
-                info = getLayoutInfo(parent, MINSIZE,pwidth, pheight);
+                info = getLayoutInfo(parent, MINSIZE,pwidth, pheight, nullptr);
                 getMinSize(parent, info, dw, dh, insets);
             }
-            layoutInfo = info;
+            layoutInfo = *info;
         }
     }
 
-    GridBagLayoutInfo &info =layoutInfo;
+    GridBagLayoutInfo *info =&layoutInfo;
     //Don't try to layout with a too small area
     if (pwidth<dw) pwidth=dw;
     if (pheight<dh) pheight=dh;
 
 	r.width = dw;
 	r.height = dh;
-	info.reqWidth = dw;
-	info.reqHeight = dh;
+    info->reqWidth = dw;
+    info->reqHeight = dh;
 
 	/*
 	 * If the current dimensions of the window don't match the desired
@@ -719,21 +728,21 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
     diffw = pwidth - r.width;
 	if (diffw != 0) {
 		weight = 0.0;
-		for (i = 0; i < info.width; i++)
-			weight += info.weightX[i];
+        for (i = 0; i < info->width; i++)
+            weight += info->weightX[i];
 		if (weight > 0.0) {
-			distribute.resize(info.width);
+            distribute.resize(info->width);
             if (equalizeCells)
-                for (i = 0; i < info.width; i++) {
-                    if (info.weightX[i]>0) diffw+=info.minWidth[i];
+                for (i = 0; i < info->width; i++) {
+                    if (info->weightX[i]>0) diffw+=info->minWidth[i];
                 }
             double perWeight=diffw/weight;
-            for (i = 0; i < info.width; i++) {
+            for (i = 0; i < info->width; i++) {
                 float dx;
                 if (equalizeCells)
-                    dx= (info.weightX[i]>0)?perWeight*info.weightX[i]-info.minWidth[i]:0; //Non weighted cells shouldn't be distributed any space
+                    dx= (info->weightX[i]>0)?perWeight*info->weightX[i]-info->minWidth[i]:0; //Non weighted cells shouldn't be distributed any space
                 else
-                    dx= (float) ((((double) diffw) * info.weightX[i]) / weight);
+                    dx= (float) ((((double) diffw) * info->weightX[i]) / weight);
                 distribute[i]=dx;
 			}
 			if (equalizeCells)
@@ -742,28 +751,28 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 				while (mloops--) {
 					double neg=0;
 					double nweight=0;
-                    for (size_t i=0;i<info.width;i++) {
+                    for (size_t i=0;i<info->width;i++) {
 						if (distribute[i]<0)
 							neg+=distribute[i];
 						else
-							nweight+=info.weightX[i];
+                            nweight+=info->weightX[i];
 					}
                     if ((neg>=0)||(nweight<=0)) break;
                     neg/=nweight;
-                    for (size_t i=0;i<info.width;i++) {
+                    for (size_t i=0;i<info->width;i++) {
 						if (distribute[i]<0)
 							distribute[i]=0;
 						else
-							distribute[i]+=info.weightX[i]*neg;
+                            distribute[i]+=info->weightX[i]*neg;
 					}
 				}
 			}
-            for (i = 0; i < info.width; i++) {
-				info.minWidth[i] += distribute[i];
+            for (i = 0; i < info->width; i++) {
+                info->minWidth[i] += distribute[i];
 				r.width += distribute[i];
-				if (info.minWidth[i] < 0) {
-					r.width -= info.minWidth[i];
-					info.minWidth[i] = 0;
+                if (info->minWidth[i] < 0) {
+                    r.width -= info->minWidth[i];
+                    info->minWidth[i] = 0;
 				}
 			}
 		}
@@ -776,21 +785,21 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
     diffh = pheight - r.height;
 	if (diffh != 0) {
 		weight = 0.0;
-		for (i = 0; i < info.height; i++)
-			weight += info.weightY[i];
+        for (i = 0; i < info->height; i++)
+            weight += info->weightY[i];
 		if (weight > 0.0) {
             if (equalizeCells)
-                for (i = 0; i < info.height; i++) {
-                    if (info.weightY[i]>0) diffh+=info.minHeight[i];
+                for (i = 0; i < info->height; i++) {
+                    if (info->weightY[i]>0) diffh+=info->minHeight[i];
                 }
             double perWeight=diffh/weight;
-			distribute.resize(info.height);
-            for (size_t i = 0; i < info.height; i++) {
+            distribute.resize(info->height);
+            for (size_t i = 0; i < info->height; i++) {
 				float dy;
                 if (equalizeCells)
-                    dy= (info.weightY[i]>0)?perWeight*info.weightY[i]-info.minHeight[i]:0;
+                    dy= (info->weightY[i]>0)?perWeight*info->weightY[i]-info->minHeight[i]:0;
                 else
-                	dy = (float) ((((double) diffh) * info.weightY[i]) / weight);
+                    dy = (float) ((((double) diffh) * info->weightY[i]) / weight);
                 distribute[i]=dy;
 			}
 			if (equalizeCells)
@@ -799,28 +808,28 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 				while (mloops--) {
 					double neg=0;
 					double nweight=0;
-                    for (size_t i=0;i<info.height;i++) {
+                    for (size_t i=0;i<info->height;i++) {
 						if (distribute[i]<0)
 							neg+=distribute[i];
 						else
-							nweight+=info.weightY[i];
+                            nweight+=info->weightY[i];
 					}
                     if ((neg>=0)||(nweight<=0)) break;
 					neg/=nweight;
-                    for (size_t i=0;i<info.height;i++) {
+                    for (size_t i=0;i<info->height;i++) {
 						if (distribute[i]<0)
 							distribute[i]=0;
 						else
-							distribute[i]+=info.weightY[i]*neg;
+                            distribute[i]+=info->weightY[i]*neg;
 					}
 				}
 			}
-			for (i = 0; i < info.height; i++) {
-				info.minHeight[i] += distribute[i];
+            for (i = 0; i < info->height; i++) {
+                info->minHeight[i] += distribute[i];
 				r.height += distribute[i];
-				if (info.minHeight[i] < 0) {
-					r.height -= info.minHeight[i];
-					info.minHeight[i] = 0;
+                if (info->minHeight[i] < 0) {
+                    r.height -= info->minHeight[i];
+                    info->minHeight[i] = 0;
 				}
 			}
 		}
@@ -835,18 +844,18 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	 * that has been collected.
 	 */
 
-    info.startx = WALIGN(diffw*gridAnchorX + insets.left + pwidth*originX + offsetX);
-    info.starty = WALIGN(diffh*gridAnchorY + insets.top + pheight*originY + offsetY);
+    info->startx = WALIGN(diffw*gridAnchorX + insets.left + pwidth*originX + offsetX);
+    info->starty = WALIGN(diffh*gridAnchorY + insets.top + pheight*originY + offsetY);
     float csx=WALIGN(cellSpacingX);
     float csy=WALIGN(cellSpacingY);
-    info.cellSpacingY=csy;
-    info.cellSpacingX=csx;
+    info->cellSpacingY=csy;
+    info->cellSpacingX=csx;
 
     if (worldAlign) {
-        for (i = 0; i < info.width; i++)
-            info.minWidth[i] = WALIGNF(info.minWidth[i]);
-        for (i = 0; i < info.height; i++)
-            info.minHeight[i] = WALIGNF(info.minHeight[i]);
+        for (i = 0; i < info->width; i++)
+            info->minWidth[i] = WALIGNF(info->minWidth[i]);
+        for (i = 0; i < info->height; i++)
+            info->minHeight[i] = WALIGNF(info->minHeight[i]);
     }
 
 
@@ -871,25 +880,25 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
                     comp->setVisible(true);
             }
 
-            r.x = info.startx;
+            r.x = info->startx;
             for (i = 0; i < constraints->tempX; i++)
-                r.x += info.minWidth[i] + csx;
+                r.x += info->minWidth[i] + csx;
 
-            r.y = info.starty;
+            r.y = info->starty;
             for (i = 0; i < constraints->tempY; i++)
-                r.y += info.minHeight[i] + csy;
+                r.y += info->minHeight[i] + csy;
 
             r.width = 0;
             for (i = constraints->tempX;
                     i < (constraints->tempX + constraints->tempWidth); i++) {
-                r.width += info.minWidth[i] + csx;
+                r.width += info->minWidth[i] + csx;
             }
             if (constraints->tempWidth>0) r.width-=csx;
 
             r.height = 0;
             for (i = constraints->tempY;
                     i < (constraints->tempY + constraints->tempHeight); i++) {
-                r.height += info.minHeight[i] + csy;
+                r.height += info->minHeight[i] + csy;
             }
             if (constraints->tempHeight>0) r.height-=csy;
 
