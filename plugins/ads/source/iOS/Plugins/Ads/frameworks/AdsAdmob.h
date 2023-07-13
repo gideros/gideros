@@ -13,17 +13,25 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "AdsManager.h"
 
-@interface AdsAdmob : NSObject <AdsProtocol, GADInterstitialDelegate, GADRewardBasedVideoAdDelegate>
-@property(nonatomic, assign) const GADAdSize *currentType;
+@interface AdsAdmob : NSObject <AdsProtocol>
+@property(nonatomic, assign) const GADAdSize currentType;
 @property(nonatomic, copy) NSString *currentSize;
 @property(nonatomic, copy) NSString *appKey;
-@property(nonatomic, copy) NSString *interstitialId;  //save the id for reload automatically
-@property(nonatomic, copy) NSString *rewardedVideoId;
 @property(nonatomic, copy) NSString *testID;
 @property (nonatomic, retain) AdsManager *mngr;
+- (const GADAdSize) getAdType:(NSString*)type orientation:(NSString*)orientation;
+
 @end
 
-@interface AdsAdmobListener : NSObject <GADBannerViewDelegate>
+@interface AdsAdmobFullscreenListener : NSObject <GADFullScreenContentDelegate>
+@property (nonatomic, retain) AdsState *state;
+@property (nonatomic, retain) AdsAdmob *instance;
+@property (nonatomic, copy) NSString *placeId;
+@property (nonatomic, retain) NSObject *ad;
+-(id)init:(AdsState*)state placeId:(NSString *)placeId ad:(NSObject *)ad with:(AdsAdmob*)instance;
+@end
+
+@interface AdsAdmobBannerListener : NSObject <GADBannerViewDelegate>
 @property (nonatomic, retain) AdsState *state;
 @property (nonatomic, retain) AdsAdmob *instance;
 -(id)init:(AdsState*)state with:(AdsAdmob*)instance;
