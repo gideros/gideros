@@ -133,7 +133,6 @@
             AdsAdmobFullscreenListener* ls=(AdsAdmobFullscreenListener *)[self.mngr get:type];
             GADInterstitialAd* interstitial_=(GADInterstitialAd *)ls.ad;
             if (interstitial_){
-                [AdsClass adDisplayed:[self class] forType:type];
                 [interstitial_ presentFromRootViewController:[AdsClass getRootViewController]];
             }
         }];
@@ -177,7 +176,6 @@
             AdsAdmobFullscreenListener* ls=(AdsAdmobFullscreenListener *)[self.mngr get:type];
             GADRewardedAd* interstitial_=(GADRewardedAd *)ls.ad;
              if (interstitial_){
-                [AdsClass adDisplayed:[self class] forType:type];
                 [interstitial_ presentFromRootViewController:[AdsClass getRootViewController] userDidEarnRewardHandler:^{
                     
                     GADAdReward *reward =
@@ -228,7 +226,6 @@
             AdsAdmobFullscreenListener* ls=(AdsAdmobFullscreenListener *)[self.mngr get:type];
             GADRewardedInterstitialAd* interstitial_=(GADRewardedInterstitialAd *)ls.ad;
              if (interstitial_){
-                [AdsClass adDisplayed:[self class] forType:type];
                 [interstitial_ presentFromRootViewController:[AdsClass getRootViewController] userDidEarnRewardHandler:^{
                     
                     GADAdReward *reward =
@@ -362,18 +359,19 @@
 - (void)ad:(nonnull id<GADFullScreenPresentingAd>)ad
     didFailToPresentFullScreenContentWithError:(nonnull NSError *)error;
 {
-    [AdsClass adFailed:[self class] with:[error localizedDescription] forType:[self.state getType]];
+    [AdsClass adFailed:[self.instance class] with:[error localizedDescription] forType:[self.state getType]];
 }
 
 /// Tells the delegate that the ad presented full screen content.
 - (void)adDidPresentFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad
 {
+    [AdsClass adDisplayed:[self.instance class] forType:[self.state getType]];
 }
 
 /// Tells the delegate that the ad dismissed full screen content.
 - (void)adDidDismissFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad
 {
-    [AdsClass adDismissed:[self class] forType:[self.state getType]];
+    [AdsClass adDismissed:[self.instance class] forType:[self.state getType]];
     [self.instance loadAd:[NSMutableArray arrayWithObjects:[self.state getType],self.placeId, nil]];
 }
 
