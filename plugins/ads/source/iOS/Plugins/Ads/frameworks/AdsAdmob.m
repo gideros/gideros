@@ -141,8 +141,6 @@
             [self hideAd:type];
         }];
         [listener setHide:^(){
-        	//NOTE release is forbidden with ARC, but should we do something else ?
-            //interstitial_=nil;            
         }];
         [self.mngr set:adlistener forType:type withListener:listener];
         adlistener.state=[self.mngr getState:type];
@@ -150,7 +148,7 @@
         
         //is it OK  to release the interstitial_ when it is showing the ads if set autokill to true?
         [self.mngr setAutoKill:false forType:type];
-     }
+    }
     else if([type isEqualToString:@"rewarded"]){
         if([self.mngr get:type] != nil){
             [self.mngr reset:type];
@@ -158,53 +156,101 @@
 
         AdsAdmobFullscreenListener *adlistener=[[AdsAdmobFullscreenListener alloc] init:[self.mngr getState:type] placeId:placeId ad:nil with:self];
 
-            GADRequest *request = [GADRequest request];
-            [GADRewardedInterstitialAd loadWithAdUnitID:placeId
-                                        request:request
-                              completionHandler:^(GADRewardedInterstitialAd *ad, NSError *error) {
-              if (error) {
-                   [AdsClass adFailed:[self class] with:[error localizedDescription] forType:@"rewarded"];
-                  [self.mngr reset:@"rewarded"];
-                return;
-              }
-                
-                ad.fullScreenContentDelegate=adlistener;
-                adlistener.ad=ad;
-                [AdsClass adReceived:[self class] forType:@"rewarded"];
-                [self.mngr load:@"rewarded"];
-             }];
-            
-            
-            AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
-            [listener setShow:^(){
-                AdsAdmobFullscreenListener* ls=(AdsAdmobFullscreenListener *)[self.mngr get:type];
-                GADRewardedInterstitialAd* interstitial_=(GADRewardedInterstitialAd *)ls.ad;
-                 if (interstitial_){
-                    [AdsClass adDisplayed:[self class] forType:type];
-                    [interstitial_ presentFromRootViewController:[AdsClass getRootViewController] userDidEarnRewardHandler:^{
+        GADRequest *request = [GADRequest request];
+        [GADRewardedAd loadWithAdUnitID:placeId
+                                    request:request
+                          completionHandler:^(GADRewardedAd *ad, NSError *error) {
+			if (error) {
+			  [AdsClass adFailed:[self class] with:[error localizedDescription] forType:type];
+			  [self.mngr reset:type];
+			  return;
+			}
+			    
+			ad.fullScreenContentDelegate=adlistener;
+			adlistener.ad=ad;
+			[AdsClass adReceived:[self class] forType:type];
+			[self.mngr load:type];
+		}];
                         
-                        GADAdReward *reward =
-                            interstitial_.adReward;
-                        int amount = [reward.amount intValue];
-                        [AdsClass adRewarded:[self class] forType:@"rewarded" withAmount:amount];
-                      }];
-                    AdsState *state = [self.mngr getState:type];
-                    if(state != nil)
-                        [state reset:false];
-                }
-            }];
-            [listener setDestroy:^(){
-               
-            }];
-            [listener setHide:^(){
-               
-            }];
-        
-            [self.mngr set:adlistener forType:type withListener:listener];
-            adlistener.state=[self.mngr getState:type];
-            [self.mngr setPreload:true forType:type];
-            [self.mngr setAutoKill:false forType:type];
+        AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
+        [listener setShow:^(){
+            AdsAdmobFullscreenListener* ls=(AdsAdmobFullscreenListener *)[self.mngr get:type];
+            GADRewardedAd* interstitial_=(GADRewardedAd *)ls.ad;
+             if (interstitial_){
+                [AdsClass adDisplayed:[self class] forType:type];
+                [interstitial_ presentFromRootViewController:[AdsClass getRootViewController] userDidEarnRewardHandler:^{
+                    
+                    GADAdReward *reward =
+                        interstitial_.adReward;
+                    int amount = [reward.amount intValue];
+                    [AdsClass adRewarded:[self class] forType:type withAmount:amount];
+                  }];
+                AdsState *state = [self.mngr getState:type];
+                if(state != nil)
+                    [state reset:false];
+            }
+        }];
+        [listener setDestroy:^(){
+            [self hideAd:type];           
+        }];
+        [listener setHide:^(){
+        }];
+    
+        [self.mngr set:adlistener forType:type withListener:listener];
+        adlistener.state=[self.mngr getState:type];
+        [self.mngr setPreload:true forType:type];
+        [self.mngr setAutoKill:false forType:type];
+    }
+    else if([type isEqualToString:@"rewarded_interstitial"]){
+        if([self.mngr get:type] != nil){
+            [self.mngr reset:type];
+        }
 
+        AdsAdmobFullscreenListener *adlistener=[[AdsAdmobFullscreenListener alloc] init:[self.mngr getState:type] placeId:placeId ad:nil with:self];
+        GADRequest *request = [GADRequest request];
+        [GADRewardedInterstitialAd loadWithAdUnitID:placeId
+                                    request:request
+                          completionHandler:^(GADRewardedInterstitialAd *ad, NSError *error) {
+            if (error) {
+              [AdsClass adFailed:[self class] with:[error localizedDescription] forType:type];
+              [self.mngr reset:type];
+              return;
+            }
+            
+            ad.fullScreenContentDelegate=adlistener;
+            adlistener.ad=ad;
+            [AdsClass adReceived:[self class] forType:type];
+            [self.mngr load:type];
+         }];
+         
+        AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
+        [listener setShow:^(){
+            AdsAdmobFullscreenListener* ls=(AdsAdmobFullscreenListener *)[self.mngr get:type];
+            GADRewardedInterstitialAd* interstitial_=(GADRewardedInterstitialAd *)ls.ad;
+             if (interstitial_){
+                [AdsClass adDisplayed:[self class] forType:type];
+                [interstitial_ presentFromRootViewController:[AdsClass getRootViewController] userDidEarnRewardHandler:^{
+                    
+                    GADAdReward *reward =
+                        interstitial_.adReward;
+                    int amount = [reward.amount intValue];
+                    [AdsClass adRewarded:[self class] forType:type withAmount:amount];
+                  }];
+                AdsState *state = [self.mngr getState:type];
+                if(state != nil)
+                    [state reset:false];
+            }
+        }];
+        [listener setDestroy:^(){
+            [self hideAd:type];           
+        }];
+        [listener setHide:^(){
+        }];
+    
+        [self.mngr set:adlistener forType:type withListener:listener];
+        adlistener.state=[self.mngr getState:type];
+        [self.mngr setPreload:true forType:type];
+        [self.mngr setAutoKill:false forType:type];
     }
     else
     {
@@ -309,6 +355,7 @@
 /// Tells the delegate that a click has been recorded for the ad.
 - (void)adDidRecordClick:(nonnull id<GADFullScreenPresentingAd>)ad;
 {
+    [AdsClass adActionBegin:[self.instance class] forType:[self.state getType]];
 }
 
 /// Tells the delegate that the ad failed to present full screen content.
@@ -321,19 +368,13 @@
 /// Tells the delegate that the ad presented full screen content.
 - (void)adDidPresentFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad
 {
-    [AdsClass adActionBegin:[self.instance class] forType:[self.state getType]];
-}
-
-/// Tells the delegate that the ad will dismiss full screen content.
-- (void)adWillDismissFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad
-{
-    [AdsClass adDismissed:[self class] forType:[self.state getType]];
-    [self.instance loadAd:[NSMutableArray arrayWithObjects:[self.state getType],self.placeId, nil]];
 }
 
 /// Tells the delegate that the ad dismissed full screen content.
 - (void)adDidDismissFullScreenContent:(nonnull id<GADFullScreenPresentingAd>)ad
 {
+    [AdsClass adDismissed:[self class] forType:[self.state getType]];
+    [self.instance loadAd:[NSMutableArray arrayWithObjects:[self.state getType],self.placeId, nil]];
 }
 
 @end
