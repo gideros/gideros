@@ -682,8 +682,8 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
 
     int width = w;
     int height = h;
-    int exwidth = nextpow2(w);
-    int exheight = nextpow2(h);
+    int exwidth = parameters.pow2?nextpow2(w):w;
+    int exheight = parameters.pow2?nextpow2(h):h;
 
     unsigned char bpp;
     g_id gid = gtexture_RenderTargetCreate(exwidth, exheight, wrap, filter, depth?GTEXTURE_DEPTH:format,&bpp);
