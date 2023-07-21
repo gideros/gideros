@@ -1,17 +1,30 @@
 D3Anim={}
-D3Anim._animated={}
-D3Anim._animatedModel={}
+--[[ State of animated meshs
+- Each animated mesh have a list of bone descriptors (animBones) and a model reference (bonesTop)
+]]
+D3Anim._animated={} 
+
+-- State of animated models (which can contain several meshes)
+-- A mesh's model is given by its 'bonesTop'
+D3Anim._animatedModel={} 
+
 function D3Anim.updateBones()
+	-- Go through all meshes with dirty models
+	local cleaned={}
 	for k,a in pairs(D3Anim._animated) do	
 		if D3Anim._animatedModel[k.bonesTop].dirty then 
 			local bt={}
 			local bn=1
 			for n,bd in ipairs(k.animBones) do
 				local b=bd.bone
-				
-				-- Bone to Mesh
-				local m=G3DFormat.sprToSprMatrix(b,k.bonesTop,k.bonesTop)
-				m:multiply(b.poseIMat)				
+				local m
+				if b then
+					-- Bone to Mesh
+					m=G3DFormat.sprToSprMatrix(b,k.bonesTop,k.bonesTop)
+					m:multiply(b.poseIMat)				
+				else
+					m=Matrix.new()
+				end
 			
 				bt[bn],bt[bn+1],bt[bn+2],bt[bn+3],
 				bt[bn+4],bt[bn+5],bt[bn+6],bt[bn+7],
@@ -20,9 +33,12 @@ function D3Anim.updateBones()
 				bn=bn+16
 			end
 			k:setShaderConstant("bones",Shader.CMATRIX,#k.animBones,bt)
-			D3Anim._animatedModel[k.bonesTop].dirty=false
+			cleaned[k.bonesTop]=true
 		end
 		a.dirty=false
+	end
+	for k,_ in pairs(cleaned) do
+		D3Anim._animatedModel[k].dirty=false
 	end
 end
 
@@ -49,10 +65,11 @@ function D3Anim.animate(m,a)
 end
 
 function D3Anim.tick()
-
+	-- Animate all models
 	for k,a in pairs(D3Anim._animatedModel) do	
 		local ares={}
 		local aend={}
+		-- Collect contributions from all running animations on this model
 		for slot,anim in pairs(a.animations) do
 			local function animateIns(mvs,ratio)
 				for bone,srt in pairs(mvs) do
@@ -80,6 +97,7 @@ function D3Anim.tick()
 		for slot,_ in pairs(aend) do 
 			a.animations[slot]=nil 
 		end
+		-- Compute bones matrices
 		for bone,srtl in pairs(ares) do
 			if #srtl>0 then
 				local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -96,6 +114,7 @@ function D3Anim.tick()
 		end
 		a.dirty=true
 	end
+	-- Update bones rendering
 	D3Anim.updateBones()
 end
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
- <properties build_number="1" macos_category="5" architecture="7" osx_installerId="" html5_host="" splash_v_image="" osx_signingId="" app_icon="" mouseToTouch="1" fps="60" win_org="GiderosMobile" win_domain="giderosmobile.com" mouseTouchOrder="0" html5_symbols="0" html5_wasm="1" disableSplash="0" logicalWidth="320" version="1.0" winrt_package="com.yourdomain.yourapp" scaleMode="3" osx_category="5" logicalHeight="480" mainluaOnly="0" html5_fbload="100" osx_org="GiderosMobile" ios_bundle="com.yourdomain." html5_crash="" encryptCode="0" backgroundColor="#ffffff" retinaDisplay="3" tv_icon="" windowHeight="0" osx_bundle="com.yourdomain." app_name="" splashScaleMode="0" osx_domain="giderosmobile.com" version_code="1" orientation="0" autorotation="0" iosDevice="0" vsync="0" encryptAssets="0" atv_bundle="com.yourdomain.yourapp-atv" macos_bundle="com.yourdomain.yourapp-macos" html5_mem="256" html5_fbinstant="0" html5_pack="1" splash_h_image="" windowWidth="0" html5_pwa="0" touchToMouse="1" exportMode="0" winrt_org="GiderosMobile">
+ <properties mainluaOnly="0" osx_installerId="" exportMode="0" architecture="7" fps="60" mouseToTouch="1" macos_category="5" backgroundColor="#ffffff" encryptAssets="0" retinaDisplay="3" disableSplash="0" win_org="GiderosMobile" html5_mem="256" app_name="" version="1.0" html5_pwa="0" splash_h_image="" logicalHeight="480" atv_bundle="com.yourdomain.yourapp-atv" html5_wasm="1" winrt_org="GiderosMobile" logicalWidth="320" version_code="1" touchToMouse="1" tv_icon="" iosDevice="0" osx_org="GiderosMobile" winrt_package="com.yourdomain.yourapp" scaleMode="3" html5_host="" mouseTouchOrder="0" html5_pack="1" app_icon="" html5_fbload="100" html5_crash="" encryptCode="0" vsync="0" osx_bundle="com.yourdomain." win_domain="giderosmobile.com" ios_bundle="com.yourdomain." splashScaleMode="0" splash_v_image="" html5_fbinstant="0" windowHeight="0" autorotation="0" windowWidth="0" orientation="0" html5_symbols="0" osx_signingId="" macos_bundle="com.yourdomain.yourapp-macos" osx_category="5" osx_domain="giderosmobile.com" build_number="1">
   <imageScales/>
   <plugins>
-   <plugin name="JSON" enabled="1"/>
+   <plugin enabled="1" name="JSON"/>
   </plugins>
   <exports>
    <export name="APK">
@@ -31,7 +31,10 @@
   <file name="../../../Library/3dbase/3DShapes.lua"/>
   <file name="../../../Library/3dbase/3DView.lua"/>
   <file name="../../../Library/3dbase/G3DFormat.lua"/>
+  <file name="../../../Library/3dbase/fbxloader.lua"/>
   <file name="../../../Library/3dbase/gltf.lua"/>
+  <file name="../../../Library/3dbase/loadgscn.lua"/>
+  <file name="../../../Library/3dbase/magicavoxel.lua"/>
  </folder>
  <folder name="luashader" path="../../../Library/luashader">
   <file name="../../../Library/luashader/effects.lua"/>
@@ -39,6 +42,7 @@
   <file name="../../../Library/luashader/luac_loader.lua"/>
   <file name="../../../Library/luashader/luashader.lua"/>
   <file name="../../../Library/luashader/luau_codegen.lua"/>
+  <file name="../../../Library/luashader/stdluashaders.lua"/>
  </folder>
  <folder name="models">
   <folder name="characterLargeFemale">

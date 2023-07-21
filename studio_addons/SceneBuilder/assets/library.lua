@@ -98,6 +98,7 @@ function AssetShelf:import(path,cb)
 		if attrs and attrs.mode=="file" then
 			local ftype
 			if filePath:sub(-4):lower()==".glb" then ftype="glb" end
+			if filePath:sub(-5):lower()==".gltf" then ftype="gltf" end
 			if filePath:sub(-4):lower()==".obj" then ftype="obj" end
 			if filePath:sub(-4):lower()==".vox" then ftype="vox" end
 			if filePath:sub(-4):lower()==".fbx" then ftype="fbx" end
@@ -138,6 +139,9 @@ function AssetShelf:import(path,cb)
 		local data,mtls
 		if ftype=="glb" then
 			local glb=Glb.new(path,file)
+			data=glb:getScene()
+		elseif ftype=="gltf" then
+			local glb=Gltf.new(path,file)
 			data=glb:getScene()
 		elseif ftype=="obj" then
 			data,mtls=importObj(path,file)

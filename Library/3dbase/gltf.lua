@@ -31,26 +31,91 @@ function Gltf:getScene(i)
 			for _,c in ipairs(ad.channels) do
 				local bone=btab[c.target.node]
 				local samp=ad.samplers[c.sampler+1]
+				local path=c.target.path
 				if not bone then
-					bone={ boneId="n"..c.target.node, samplerIn=samp.input, keyframes={} }
+					bone={ boneId="n"..c.target.node, keyframes={}, keytimes={} }
 					btab[c.target.node]=bone
 					abones[#abones+1]=bone
-					local kfrms=self:getBuffer(samp.input+1,false,1)
-					for ki,kv in ipairs(kfrms) do
-						bone.keyframes[ki]={ keytime=(kv-kfrms[1])*1000 }
-					end
-				else
-					assert(bone.samplerIn==samp.input)
 				end
-				local path=c.target.path
 				local pl=PATHLEN[path]
-				local kfrms=self:getBuffer(samp.output+1,false,pl)
-				for ki,kv in ipairs(bone.keyframes) do
+				local ksmpout=self:getBuffer(samp.output+1,false,pl) -- vector
+				local ksmpin=self:getBuffer(samp.input+1,false,1) --Time points
+				--Populate keyframes, possibly with partial data
+				for ki,kv in ipairs(ksmpin) do
 					local b=(ki-1)*pl
 					local v={}
-					for n=1,pl do v[n]=kfrms[n+b] end
-					kv[path]=v
+					for n=1,pl do v[n]=ksmpout[n+b] end
+					local ktm=(kv*1000)//1
+					local kf=bone.keyframes[ktm] 
+					if not kf then
+						kf={ keytime=ktm }
+						bone.keyframes[ktm]=kf
+						bone.keytimes[#bone.keytimes+1]=ktm
+					end
+					kf[path]=v
 				end
+			end
+			
+			--Reassemble keyframes			
+			for _,bone in ipairs(abones) do
+				-- Sort timeline
+				table.sort(bone.keytimes)
+				local kfirst=bone.keytimes[1]
+				-- Reassembled and sorted key frames vector
+				local nkf={}
+				-- Missing vectors recording
+				local otm={}
+				local ohisto={}
+				-- Go through all partial keyframes in order
+				for i,ktm in ipairs(bone.keytimes) do
+					-- Assign to ordered vector and fix keyframe time
+					local kf=bone.keyframes[ktm]
+					kf.keytime-=kfirst
+					nkf[i]=kf
+					-- Check each vector
+					for path,pl in pairs(PATHLEN) do
+						local vp=kf[path]
+						if vp then
+							-- Vector is present: check for holes
+							local op=ohisto[path]
+							ohisto[path]=nil
+							if op and otm[path] then
+								-- We need to interpolate and fill holes
+								local ltm=otm[path]
+								local vst=bone.keyframes[ltm][path]
+								local vsr=(ktm-ltm)
+								for _,ktm in ipairs(op) do
+									local v={}
+									for n=1,pl do 
+										v[n]=vst[n]+(vp[n]-vst[n])*(ktm-ltm)/vsr
+									end
+									bone.keyframes[ktm][path]=v
+								end
+							elseif op then --We have holes at very start: what should we do ???
+								print("No starting point")
+							end
+							-- Record last time point with a value for this vector
+							otm[path]=ktm							
+						else
+							--We don't have a value, record it as a hole
+							local op=ohisto[path] or {}
+							ohisto[path]=op
+							op[#op+1]=ktm
+						end
+					end
+				end
+				for path,pl in pairs(PATHLEN) do
+					local op=ohisto[path]
+					ohisto[path]=nil
+					if op and otm[path] then
+						print("No ending point for "..path)
+					elseif op then 
+						--Not strictly an derror, default value will be used
+						--print("No values for "..path)
+					end
+				end
+				bone.keyframes=nkf
+				bone.keytimes=nil
 			end
 			root.animations[an]={ bones=abones, name=ad.name }
 		end

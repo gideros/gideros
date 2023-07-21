@@ -128,7 +128,7 @@ function processController(e)
 	elseif k==KeyCode.BUTTON_R1 then	bit=12
 	end
 	if bit>=0 then
-		if e.type=="keyDown" then
+		if e:getType()=="keyDown" then
 			udlr=udlr|(1<<bit)
 		else
 			udlr=udlr&~(1<<bit)
