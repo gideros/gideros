@@ -1,3 +1,9 @@
 [submodule "libgid/external/openal-soft"]
 	path = libgid/external/openal-soft
 	url = https://github.com/gideros/openal-soft.git
+[submodule "lexilla"]
+	path = lexilla
+	url = https://github.com/gideros/lexilla.git
+[submodule "scintilla"]
+	path = scintilla
+	url = https://github.com/gideros/scintilla.git

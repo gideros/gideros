@@ -44,6 +44,9 @@ function EditorModel:makeBody(bodySpec)
 	dimz=dimz*sz*stz
 	if shapetype=="sphere" then
 		shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
+	elseif shapetype=="capsule" then
+		local rad=dimx<>dimz
+		shape=r3d.CapsuleShape.new(rad,dimy)
 	else
 		shape=r3d.BoxShape.new(dimx,dimy,dimz)
 	end
@@ -103,6 +106,9 @@ function EditorModel:update(event,bodyUpdate)
 			local dimz=self.body.shapedim.z*sz*stz
 			if self.body.shapetype=="sphere" then
 				self.body.shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
+			elseif self.body.shapetype=="capsule" then
+				local rad=dimx<>dimz
+				self.body.shape=r3d.CapsuleShape.new(rad,dimy)
 			else
 				self.body.shape=r3d.BoxShape.new(dimx,dimy,dimz)
 			end
@@ -138,7 +144,7 @@ function EditorModel:getPropertyList()
 		{ name="Rotation", type="vector" },
 		{ name="Scale", type="vector" },
 		{ name="Physics", category=true, },
-		{ name="ColShape", type="set", typeset={ "Box", "Sphere" }, label="Shape"},
+		{ name="ColShape", type="set", typeset={ "Box", "Sphere", "Capsule" }, label="Shape"},
 		{ name="ColType", type="set", typeset={ "Static", "Dynamic", "Kinematic", "Ignore"}, label="Type"},
 		{ name="ColPosition", type="vector", label="Position" },
 		{ name="ColRotation", type="vector", label="Rotation" },
@@ -149,10 +155,12 @@ end
 local ColShapeMap={
 	box=1,
 	sphere=2,
+	capsule=3,
 }
 local ColShapeList={
 	"box",
 	"sphere",
+	"capsule",
 }
 local ColTypeMap={
 	static=1,

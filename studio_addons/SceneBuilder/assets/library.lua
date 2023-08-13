@@ -1,13 +1,19 @@
 local lfs=require "lfs"
 AssetShelf=Core.class()
 
+function AssetShelf.setLibraryPath(path)
+	AssetShelf.libraryPath=path or application:getNativePath("|D|Library")
+	local ll=#AssetShelf.libraryPath
+	if AssetShelf.libraryPath:sub(ll,ll)=="/" then AssetShelf.libraryPath=AssetShelf.libraryPath:sub(1,ll-1) end
+end
+
 function AssetShelf.loadAll()
 	local t={}
-	local libdir=application:getNativePath("|D|Library")
+	local libdir=AssetShelf.libraryPath
 	lfs.mkdir(libdir)
 	for file in lfs.dir(libdir) do
 		if file:sub(1,1)~="." then
-			local filePath=application:getNativePath("|D|Library".."/"..file)
+			local filePath=application:getNativePath(AssetShelf.libraryPath.."/"..file)
 			local attrs=lfs.attributes(filePath)
 			if attrs and attrs.mode=="directory" then
 				t[#t+1]=AssetShelf.new(file)
@@ -20,8 +26,8 @@ end
 
 function AssetShelf:init(name)
 	self.name=name
-	self.libPath="|D|Library/"..name
-	lfs.mkdir(application:getNativePath("|D|Library"))
+	self.libPath=self.libraryPath.."/"..name
+	lfs.mkdir(self.libraryPath)
 	lfs.mkdir(application:getNativePath(self.libPath))
 	self.files=self:readFile("_manifest_.json") or {}	
 end

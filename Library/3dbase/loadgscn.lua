@@ -45,6 +45,8 @@ local function MakeBody(self,spec,world)
 	dimz=dimz*sz*stz
 	if shapetype=="sphere" then
 		shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
+	elseif shapetype=="capsule" then
+		shape=r3d.CapsuleShape.new(dimx<>dimz,dimy)
 	else
 		shape=r3d.BoxShape.new(dimx,dimy,dimz)
 	end
@@ -57,6 +59,9 @@ local function MakeBody(self,spec,world)
 		fft:setPosition(tx*stx,ty*sty,tz*stz)
 		fft:setScale(1,1,1)
 		body.fixture=body:createFixture(shape,fft,1000)
+		local mat = body.fixture:getMaterial()
+		mat.bounciness = 0 -- 0 = no bounciness, 1 = max bounciness
+		body.fixture:setMaterial(mat)
 		body.fixtureTransform=ft
 	end
 	self.body=body
@@ -98,6 +103,7 @@ function LoadGScene(libpath,file,world)
 				})
 				m.name=s.name
 				m.tag=s.tag
+				m.asset=s.asset
 				if s.transform then
 					local t=m
 					if s.transform.position then

@@ -99,7 +99,13 @@ function AUI.Main:init()
 	}
 	UI.BuilderSelf(Template,self)
 	
-
+	self.params= Files.loadJson("|D|params.json") or {}
+	while not self.params.libPath do
+		self.params.libPath=application:get("openDirectoryDialog","Import Library",nil)
+		Files.saveJson("|D|params.json",self.params)
+	end
+	
+	AssetShelf.setLibraryPath(self.params.libPath)
 	self.allAssets=AssetShelf.loadAll()
 	--assetLib:import("I:/3D/Assets/Packs/KayKit-Dungeon")
 
