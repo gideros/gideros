@@ -25,6 +25,8 @@ public:
 };
 pthread_mutex_t GGLock::mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 
+class Buffer;
+static std::map<std::string,Buffer *> bufferMap;
 class Buffer : public GReferenced
 {
 public:
@@ -35,7 +37,8 @@ public:
 		pos=0;
 	}
 	virtual ~Buffer() {
-	}
+        bufferMap[id]=NULL;
+    }
 	size_t append(const char *data,size_t size) {
 		size_t c=d.size();
 		if (!size) return c;
@@ -91,7 +94,6 @@ private:
 	std::vector<char> d;
 };
 
-static std::map<std::string,Buffer *> bufferMap;
 static std::vector<Buffer *> fdMap;
 
 static int s_open(const char *pathname, int flags) {
@@ -106,7 +108,8 @@ static int s_open(const char *pathname, int flags) {
 		errno = EACCES;
 		return -1;
 	}
-	b->opened=true;
+    b->ref();
+    b->opened=true;
 	b->pos=0;
 	fdMap.push_back(b);
 	int fd=fdMap.size()|0x4000;
@@ -121,6 +124,7 @@ static int s_close(int fd) {
 		return -1;
 	}
 	b->opened=false;
+    b->unref();
 	fdMap[fd-1]=NULL;
 	while ((!fdMap.empty())&&(!fdMap.back()))
 		fdMap.erase(fdMap.end()-1);
@@ -235,8 +239,6 @@ int BufferBinder::destruct(void *p)
 {
 	void *ptr = GIDEROS_DTOR_UDATA(p);
 	Buffer* buffer = static_cast<Buffer*>(ptr);
-	if (buffer->refCount()==1)
-		bufferMap[buffer->id]=NULL;
 	buffer->unref();
 	return 0;
 }

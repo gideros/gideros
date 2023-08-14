@@ -772,7 +772,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
 	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
 	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
-    ginputp_keyDown(wParam,m);
+	 if (!(lParam&0x40000000)) //Don't send repeated keys
+		 ginputp_keyDown(wParam,m);
     if ((iMsg==WM_KEYDOWN)||(wParam==VK_F10))
     	return 0;
   }
@@ -805,7 +806,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  }
 	 }
 	 *(obuf++)=0;
-    ginputp_keyChar(sc);
+	 if (!(lParam&0x40000000)) //Don't send repeated keys
+		 ginputp_keyChar(sc);
     return 0;
   }
   else if (iMsg==WM_PAINT){
