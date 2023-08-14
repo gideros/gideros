@@ -43,7 +43,7 @@ static void setb2(lua_State* L) {
 	lua_pop(L, 3);
 }
 
-static PhysicsCommon physicsCommon;
+static PhysicsCommon *physicsCommon=NULL;
 
 class GidEventListener: public EventListener {
 public:
@@ -165,7 +165,7 @@ static int r3dWorld_create(lua_State* L) {
 #undef PINTT
 	}
 
-	rp3d::PhysicsWorld *world = physicsCommon.createPhysicsWorld(ws);
+	rp3d::PhysicsWorld *world = physicsCommon->createPhysicsWorld(ws);
 
 	binder.pushInstance("r3dWorld", world);
     lua_newtable(L);
@@ -184,7 +184,7 @@ static int r3dWorld_destruct(void *p) {
 		delete e;
 		events[world] = NULL;
 	}
-	physicsCommon.destroyPhysicsWorld(world);
+	physicsCommon->destroyPhysicsWorld(world);
 
 	return 0;
 }
@@ -870,7 +870,7 @@ static int r3dBoxShape_create(lua_State* L) {
 
 	rp3d::Vector3 sz;
 	TO_VECTOR(L, 1, sz);
-	rp3d::BoxShape *shape = physicsCommon.createBoxShape(sz);
+	rp3d::BoxShape *shape = physicsCommon->createBoxShape(sz);
 	shapeType[shape]=SHP_BOX;
 
 	binder.pushInstance("r3dBoxShape", shape);
@@ -890,7 +890,7 @@ static int r3dBoxShape_SetHalfExtents(lua_State* L) {
 static int r3dSphereShape_create(lua_State* L) {
 	Binder binder(L);
 
-	rp3d::SphereShape *shape = physicsCommon.createSphereShape(luaL_checknumber(L, 1));
+	rp3d::SphereShape *shape = physicsCommon->createSphereShape(luaL_checknumber(L, 1));
 	shapeType[shape]=SHP_SPHERE;
 
 	binder.pushInstance("r3dSphereShape", shape);
@@ -908,7 +908,7 @@ static int r3dSphereShape_SetRadius(lua_State* L) {
 static int r3dCapsuleShape_create(lua_State* L) {
 	Binder binder(L);
 
-	rp3d::CapsuleShape *shape = physicsCommon.createCapsuleShape(luaL_checknumber(L, 1),
+	rp3d::CapsuleShape *shape = physicsCommon->createCapsuleShape(luaL_checknumber(L, 1),
 			luaL_checknumber(L, 2));
 	shapeType[shape]=SHP_CAPSULE;
 
@@ -1032,7 +1032,7 @@ public:
 #ifndef _NO_THROW
 		try {
 #endif
-			polymesh = physicsCommon.createPolyhedronMesh(polygonVertexArray);
+			polymesh = physicsCommon->createPolyhedronMesh(polygonVertexArray);
 #ifndef _NO_THROW
 		} catch (std::runtime_error &e) {
 			delete polygonVertexArray;
@@ -1046,7 +1046,7 @@ public:
 	}
  ~gidPolyMesh() {
 	 if (polymesh)
-		 physicsCommon.destroyPolyhedronMesh(polymesh);
+		 physicsCommon->destroyPolyhedronMesh(polymesh);
 	 delete polygonVertexArray;
 	 delete faces;
  }
@@ -1063,11 +1063,11 @@ public:
 				indices, 3 * sizeof(int),
 				rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 				rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
-		trimesh=physicsCommon.createTriangleMesh();
+		trimesh=physicsCommon->createTriangleMesh();
 		trimesh->addSubpart(triangleArray);
 	}
  ~gidTriMesh() {
-	 physicsCommon.destroyTriangleMesh(trimesh);
+	 physicsCommon->destroyTriangleMesh(trimesh);
 	 delete triangleArray;
  }
 };
@@ -1076,7 +1076,7 @@ static int r3dConvexMeshShape_create(lua_State* L) {
 	Binder binder(L);
 
 	gidPolyMesh *gd=new gidPolyMesh(L, 1);
-	rp3d::ConvexMeshShape *shape = physicsCommon.createConvexMeshShape(gd->polymesh);
+	rp3d::ConvexMeshShape *shape = physicsCommon->createConvexMeshShape(gd->polymesh);
 	shapeData[shape]=gd;
 	shapeType[shape]=SHP_CONVEX;
 
@@ -1098,7 +1098,7 @@ static int r3dConcaveMeshShape_create(lua_State* L) {
 	Binder binder(L);
 
 	gidTriMesh *gd=new gidTriMesh(L, 1);
-	rp3d::ConcaveMeshShape *shape = physicsCommon.createConcaveMeshShape(gd->trimesh);
+	rp3d::ConcaveMeshShape *shape = physicsCommon->createConcaveMeshShape(gd->trimesh);
 	shapeData[shape]=gd;
 	shapeType[shape]=SHP_CONCAVE;
 
@@ -1147,7 +1147,7 @@ static int r3dHeightFieldShape_create(lua_State* L) {
 	}
 
 	gidHeightField *gd=new gidHeightField(d);
-	rp3d::HeightFieldShape *shape = physicsCommon.createHeightFieldShape(w,h,ih,ah, d, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
+	rp3d::HeightFieldShape *shape = physicsCommon->createHeightFieldShape(w,h,ih,ah, d, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
 	shapeData[shape]=gd;
 	shapeType[shape]=SHP_HEIGHTFIELD;
 
@@ -1171,12 +1171,12 @@ static int r3dShape_destruct(void *p) {
 
 	if (shapeData[shape]) delete shapeData[shape];
 	switch (shapeType[shape]) {
-	case SHP_BOX: physicsCommon.destroyBoxShape((BoxShape *)shape); break;
-	case SHP_SPHERE: physicsCommon.destroySphereShape((SphereShape *)shape); break;
-	case SHP_CAPSULE: physicsCommon.destroyCapsuleShape((CapsuleShape *)shape); break;
-	case SHP_CONVEX: physicsCommon.destroyConvexMeshShape((ConvexMeshShape *)shape); break;
-	case SHP_CONCAVE: physicsCommon.destroyConcaveMeshShape((ConcaveMeshShape *)shape); break;
-	case SHP_HEIGHTFIELD: physicsCommon.destroyHeightFieldShape((HeightFieldShape *)shape); break;
+	case SHP_BOX: physicsCommon->destroyBoxShape((BoxShape *)shape); break;
+	case SHP_SPHERE: physicsCommon->destroySphereShape((SphereShape *)shape); break;
+	case SHP_CAPSULE: physicsCommon->destroyCapsuleShape((CapsuleShape *)shape); break;
+	case SHP_CONVEX: physicsCommon->destroyConvexMeshShape((ConvexMeshShape *)shape); break;
+	case SHP_CONCAVE: physicsCommon->destroyConcaveMeshShape((ConcaveMeshShape *)shape); break;
+	case SHP_HEIGHTFIELD: physicsCommon->destroyHeightFieldShape((HeightFieldShape *)shape); break;
 	}
 	shapeData.erase(shape);
 	shapeType.erase(shape);
@@ -1789,9 +1789,14 @@ static void g_initializePlugin(lua_State *L) {
     lua_pop(L, 2);
     luaL_newweaktable(L);
     luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_b2);
+
+    if (physicsCommon)
+    	delete physicsCommon;
+    physicsCommon=new PhysicsCommon();
 }
 
 static void g_deinitializePlugin(lua_State *_UNUSED(L)) {
+
 }
 
 #ifdef QT_NO_DEBUG

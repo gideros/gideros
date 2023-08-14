@@ -1496,13 +1496,21 @@ struct ClipRect {
 void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
         float* maxx, float* maxy, std::vector<Matrix> &parentXform,ClipRect *parentClip,
         bool visible, bool nosubs, BoundsMode mode, const Sprite *ref, bool *xformValid) {
-    if (changes_&INV_BOUNDS) {
-        for (size_t i=0;i<BOUNDS_MAX*4;i++)
-            boundsCache[i].valid=false;
-        revalidate(INV_BOUNDS);
+    // Clear hierarchy caches when needed
+    Sprite *hrun=this;
+    if (changes_&INV_BOUNDS)
+    while (hrun) {
+        if (hrun->changes_&INV_BOUNDS)
+        {
+            for (size_t i=0;i<BOUNDS_MAX*4;i++)
+                hrun->boundsCache[i].valid=false;
+            hrun->revalidate(INV_BOUNDS);
+        }
+        hrun=hrun->parent_;
     }
-    int cacheMode=(mode<<2)+(visible?2:0)+(nosubs?1:0);
 
+    //Handle local cache
+    int cacheMode=(mode<<2)+(visible?2:0)+(nosubs?1:0);
     if (((mode==BOUNDS_GLOBAL)||((mode==BOUNDS_REF)&&(boundsCacheRef==ref))||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC)))&&boundsCache[cacheMode].valid) {
         if (minx)
             *minx=boundsCache[cacheMode].minx;
