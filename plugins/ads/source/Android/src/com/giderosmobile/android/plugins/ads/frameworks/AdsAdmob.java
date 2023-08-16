@@ -25,6 +25,10 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.FormError;
+import com.google.android.ump.UserMessagingPlatform;
 
 public class AdsAdmob implements AdsInterface, OnInitializationCompleteListener {
 	
@@ -441,8 +445,35 @@ public class AdsAdmob implements AdsInterface, OnInitializationCompleteListener 
 	}
 	
 	@Override
-	public boolean checkConsent(boolean underAge) { return false; }
-	
+	public boolean checkConsent(boolean underAge) { 
+	    // Set tag for under age of consent. false means users are not under age
+	    // of consent.
+	    ConsentRequestParameters params = new ConsentRequestParameters
+	        .Builder()
+	        .setTagForUnderAgeOfConsent(underAge)
+	        .build();
+
+	    consentInformation = UserMessagingPlatform.getConsentInformation(sActivity.get());
+	    consentInformation.requestConsentInfoUpdate(
+	    		sActivity.get(),
+	        params,
+	        (OnConsentInfoUpdateSuccessListener) () -> {
+	          UserMessagingPlatform.loadAndShowConsentFormIfRequired(
+	        		  sActivity.get(),
+	            (OnConsentFormDismissedListener) loadAndShowError -> {
+	              if (loadAndShowError != null) {
+	            	  Ads.adConsent(AdsAdmob.me, loadAndShowError.getMessage(), loadAndShowError.getErrorCode());
+	              }
+	              else
+	            	  Ads.adConsent(AdsAdmob.me, "", 0);
+	            }
+	          )
+	        },
+	        (OnConsentInfoUpdateFailureListener) requestConsentError -> {
+          	  Ads.adConsent(AdsAdmob.me, requestConsentError.getMessage(), requestConsentError.getErrorCode());
+	        });
+	  return true;
+	}	
 
 	@Override
 	public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {

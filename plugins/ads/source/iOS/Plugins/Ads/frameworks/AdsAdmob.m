@@ -8,6 +8,7 @@
 #include "gideros.h"
 #import "AdsAdmob.h"
 #import "AdsClass.h"
+#include <UserMessagingPlatform/UserMessagingPlatform.h>
 
 
 @implementation AdsAdmob
@@ -330,7 +331,32 @@
 
 -(BOOL)checkConsent:(BOOL) underAge
 {
-	return FALSE;
+  // Create a UMPRequestParameters object.
+  UMPRequestParameters *parameters = [[UMPRequestParameters alloc] init];
+  // Set tag for under age of consent. NO means users are not under age
+  // of consent.
+  parameters.tagForUnderAgeOfConsent = underAge;
+
+  // Request an update for the consent information.
+  [UMPConsentInformation.sharedInstance
+      requestConsentInfoUpdateWithParameters:parameters
+      completionHandler:^(NSError *_Nullable requestConsentError) {
+        if (requestConsentError) {
+          [AdsClass adConsent:[self class] with:requestConsentError.localizedDescription andCode:requestConsentError.code];
+          return;
+        }
+
+        [UMPConsentForm loadAndPresentIfRequiredFromViewController:[AdsClass getRootViewController]
+            completionHandler:^(NSError *loadAndPresentError) {
+              if (loadAndPresentError) {
+		          [AdsClass adConsent:[self class] with:loadAndPresentError.localizedDescription andCode:loadAndPresentError.code];
+                return;
+              }
+
+		      [AdsClass adConsent:[self class] with:@"" andCode:0];
+            }];
+      }];
+	return TRUE;
 }
 
 -(UIView*)getView{
