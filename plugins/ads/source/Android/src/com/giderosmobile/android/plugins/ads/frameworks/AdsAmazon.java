@@ -249,6 +249,9 @@ public class AdsAmazon implements AdsInterface{
 	public void enableTesting() {
 		AdRegistration.enableTesting(true);
 	}
+
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
 	
 }
 

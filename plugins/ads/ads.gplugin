@@ -266,6 +266,7 @@
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
 		            implementation 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
+ 					implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
 					</by>
 				</append>
             	<prepend>

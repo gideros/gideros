@@ -207,6 +207,9 @@ public class AdsApplovin implements AdsInterface {
 		
 	}
 	
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }
 
 class AdsApplovinListener implements AppLovinAdLoadListener, AppLovinAdVideoPlaybackListener, AppLovinAdClickListener, AppLovinAdRewardListener, AppLovinAdDisplayListener{

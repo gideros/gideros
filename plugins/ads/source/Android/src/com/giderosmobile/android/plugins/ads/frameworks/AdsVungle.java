@@ -171,4 +171,7 @@ public class AdsVungle implements AdsInterface {
 	public void enableTesting() {
 
 	}
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }

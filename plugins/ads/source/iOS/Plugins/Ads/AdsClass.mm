@@ -227,6 +227,16 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
     return 0;
 }
 
++(BOOL)checkConsent:(NSString*)adprovider forUnderAge:(BOOL) underAge
+{
+	id ad = [ads objectForKey:[adprovider lowercaseString]];
+    if (ad) {
+        return [ad checkConsent:underAge];
+    }
+    else
+    	return FALSE;
+}
+
 +(BOOL)hasConnection{
     Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
     NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
@@ -279,6 +289,10 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
 
 +(void)adError:(Class)adprovider with:(NSString*)error{
     gads_adError([[AdsClass modifyName:adprovider] UTF8String],[error UTF8String]);
+}
+
++(void)adConsent:(Class)adprovider with:(NSString*)error andCode:(int) errorcode {
+    gads_adConsent([[AdsClass modifyName:adprovider] UTF8String],[error UTF8String],errorcode);
 }
 
 +(NSString*)modifyName:(Class)name{

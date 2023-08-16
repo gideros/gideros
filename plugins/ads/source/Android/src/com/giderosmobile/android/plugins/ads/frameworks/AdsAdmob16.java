@@ -330,6 +330,9 @@ public class AdsAdmob implements AdsInterface {
 		testID = obj.toString();
 	}
 	
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }
 
 class AdsAdmobListener extends AdListener{

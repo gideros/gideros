@@ -117,6 +117,7 @@ static const char *AD_DISMISSED = "adDismissed";
 static const char *AD_DISPLAYED = "adDisplayed";
 static const char *AD_REWARDED = "adRewarded";
 static const char *AD_ERROR = "adError";
+static const char *AD_CONSENT = "adConsent";
 
 static char keyWeak = ' ';
 
@@ -202,6 +203,11 @@ public:
 		return gads_getHeight(ad_);
 	}
     
+	bool checkConsent(gads_ConsentRequest *request)
+	{
+		return gads_checkConsent(ad_,request);
+	}
+    
 private:
 	static void callback_s(int type, void *event, void *udata)
 	{
@@ -237,6 +243,14 @@ private:
 			else if (type == GADS_AD_REWARDED_EVENT)
 			{
 				gads_RewardEvent *event2 = (gads_RewardEvent*)event;
+				if(strcmp(event2->ad, ad_) == 0)
+				{
+					shouldDispatch = 1;
+				}
+			}
+			else if (type == GADS_AD_CONSENT_EVENT)
+			{
+				gads_ConsentEvent *event2 = (gads_ConsentEvent*)event;
 				if(strcmp(event2->ad, ad_) == 0)
 				{
 					shouldDispatch = 1;
@@ -307,6 +321,9 @@ private:
 					case GADS_AD_ERROR_EVENT:
 						lua_pushstring(L, AD_ERROR);
 						break;
+					case GADS_AD_CONSENT_EVENT:
+						lua_pushstring(L, AD_CONSENT);
+						break;
 				}
                 
 				lua_call(L, 1, 1);
@@ -344,6 +361,15 @@ private:
 
 					lua_pushboolean(L,event2->state);
 					lua_setfield(L, -2, "state");
+				}
+				else if (type == GADS_AD_CONSENT_EVENT)
+				{
+					gads_ConsentEvent *event2 = (gads_ConsentEvent*)event;
+
+					lua_pushstring(L, event2->error);
+					lua_setfield(L, -2, "error");
+					lua_pushinteger(L, event2->errorcode);
+					lua_setfield(L, -2, "errorcode");
 				}
 				else
 				{
@@ -409,15 +435,6 @@ static int init(lua_State *L)
 	lua_pushvalue(L, -1);
     return 1;
 }
-
-static int hasConnection(lua_State *L)
-{
-    Ads *ads = getInstance(L, 1);
-    int has = ads->hasConnection();
-    lua_pushboolean(L, has);
-    return 1;
-}
-
 
 static int setKey(lua_State *L)
 {
@@ -597,8 +614,28 @@ static int getHeight(lua_State *L)
 	lua_pushnumber(L, height);
     return 1;
 }
+static int hasConnection(lua_State *L)
+{
+    Ads *ads = getInstance(L, 1);
+    int has = ads->hasConnection();
+    lua_pushboolean(L, has);
+    return 1;
+}
 
 
+static int checkConsent(lua_State *L)
+{
+	gads_ConsentRequest req;
+    Ads *ads = getInstance(L, 1);
+    luaL_checktype(L,2,LUA_TTABLE);
+
+    lua_getfield(L,2,"underAge");
+    req.underAge=lua_toboolean(L,-1);
+    lua_pop(L,1);
+
+    lua_pushboolean(L,ads->checkConsent(&req));
+    return 1;
+}
 
 static int loader(lua_State *L)
 {
@@ -622,6 +659,7 @@ static int loader(lua_State *L)
 		{"set", set},
 		{"get", get},
         {"hasConnection", hasConnection},
+		{"checkConsent",checkConsent},
 		{NULL, NULL},
 	};
     
@@ -650,6 +688,8 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "ADS_READY");
 	lua_pushstring(L, AD_ERROR);
 	lua_setfield(L, -2, "AD_ERROR");
+	lua_pushstring(L, AD_CONSENT);
+	lua_setfield(L, -2, "AD_CONSENT");
 	lua_pop(L, 1);
     
     return 0;

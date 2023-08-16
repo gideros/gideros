@@ -132,6 +132,11 @@
     [RevMobAds session].testingMode = RevMobAdsTestingModeWithAds;
 }
 
+-(BOOL)checkConsent:(BOOL) underAge
+{
+	return FALSE;
+}
+
 -(UIView*)getView{
     return (UIView*)[self.mngr get:self.currentSize];
 }

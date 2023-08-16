@@ -232,6 +232,9 @@ public class AdsMax implements AdsInterface {
 		
 	}
 	
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }
 
 class AdsMaxListener implements MaxAdListener, MaxRewardedAdListener, MaxAdViewAdListener {

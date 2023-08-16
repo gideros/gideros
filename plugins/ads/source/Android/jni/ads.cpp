@@ -219,6 +219,15 @@ public:
 		return has;
 	}
 
+	bool checkConsent(const char *ad,gads_ConsentRequest *request)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jAd = env->NewStringUTF(ad);
+		bool res = env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "checkConsent", "(Ljava/lang/String;Z)Z"), jAd, request->underAge);
+		env->DeleteLocalRef(jAd);
+		return res;
+	}
+
 	void onAdReceived(jstring jAd, jstring jAdType)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -357,6 +366,25 @@ public:
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_ERROR_EVENT, event, 1, this);
 	}
 	
+	void onAdConsent(jstring jAd, jstring jerror, int errorcode)
+	{
+		JNIEnv *env = g_getJNIEnv();
+
+		const char *error = jerror ? env->GetStringUTFChars(jerror, NULL) : NULL;
+		const char *ad = env->GetStringUTFChars(jAd, NULL);
+
+		gads_ConsentEvent *event = (gads_ConsentEvent*)gevent_CreateEventStruct2(
+			sizeof(gads_ConsentEvent),
+			offsetof(gads_ConsentEvent, ad), ad,
+			offsetof(gads_ConsentEvent, error), error);
+		event->errorcode=errorcode;
+
+		if (jerror)
+			env->ReleaseStringUTFChars(jerror, error);
+		env->ReleaseStringUTFChars(jAd, ad);
+		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_CONSENT_EVENT, event, 1, this);
+	}
+
 	g_id addCallback(gevent_Callback callback, void *udata)
 	{
 		return callbackList_.addCallback(callback, udata);
@@ -430,6 +458,11 @@ void Java_com_giderosmobile_android_plugins_ads_Ads_onAdError(JNIEnv *env, jclas
 void Java_com_giderosmobile_android_plugins_ads_Ads_onAdRewarded(JNIEnv *env, jclass clz, jstring jAd, jstring jAdType, jint amount, jlong data)
 {
 	((GAds*)data)->onAdRewarded(jAd, jAdType, amount);
+}
+
+void Java_com_giderosmobile_android_plugins_ads_Ads_onAdConsent(JNIEnv *env, jclass clz, jstring jAd, jstring jerror, jint errorcode, jlong data)
+{
+	((GAds*)data)->onAdConsent(jAd, jerror, (int)errorcode);
 }
 
 }
@@ -569,6 +602,11 @@ int gads_getHeight(const char *ad)
 int gads_hasConnection(const char *ad)
 {
 	return s_ads->hasConnection(ad);
+}
+
+bool gads_checkConsent(const char *ad,gads_ConsentRequest *request)
+{
+	return s_ads->checkConsent(ad,request);
 }
 
 g_id gads_addCallback(gevent_Callback callback, void *udata)

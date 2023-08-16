@@ -7,14 +7,15 @@
 enum
 {
 	GADS_AD_RECEIVED_EVENT,
+	GADS_AD_DISPLAYED_EVENT,
 	GADS_AD_FAILED_EVENT,
 	GADS_AD_ACTION_BEGIN_EVENT,
 	GADS_AD_ACTION_END_EVENT,
 	GADS_AD_DISMISSED_EVENT,
-    GADS_AD_DISPLAYED_EVENT,
 	GADS_AD_ERROR_EVENT,
 	GADS_AD_REWARDED_EVENT,
 	GADS_ADS_READY_EVENT,
+	GADS_AD_CONSENT_EVENT,
 };
 
 typedef struct gads_AdErrorEvent
@@ -54,6 +55,13 @@ typedef struct gads_ReadyEvent
 	int state;
 } gads_ReadyEvent;
 
+typedef struct gads_ConsentEvent
+{
+	const char* ad;
+	const char *error;
+	int errorcode;
+} gads_ConsentEvent;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -63,8 +71,6 @@ G_API int gads_isAvailable();
 G_API void gads_init();
 G_API void gads_cleanup();
 
-G_API int gads_hasConnection();
-    
 G_API bool gads_hasProvider(const char *ad);
 G_API void gads_initialize(const char *ad);
 G_API void gads_destroy(const char *ad);
@@ -76,17 +82,23 @@ G_API void gads_hideAd(const char *ad, const char *type);
 G_API void gads_enableTesting(const char *ad);
 G_API void gads_setAlignment(const char *ad, const char *hor, const char *ver);
     
+struct gads_ConsentRequest {
+	bool underAge;
+};
+
 G_API void gads_setX(const char *ad, int x);
 G_API void gads_setY(const char *ad, int y);
 G_API int gads_getX(const char *ad);
 G_API int gads_getY(const char *ad);
 G_API int gads_getWidth(const char *ad);
 G_API int gads_getHeight(const char *ad);
+G_API int gads_hasConnection();
+G_API bool gads_checkConsent(const char *ad,gads_ConsentRequest *request);
 
 G_API g_id gads_addCallback(gevent_Callback callback, void *udata);
 G_API void gads_removeCallback(gevent_Callback callback, void *udata);
 G_API void gads_removeCallbackWithGid(g_id gid);
-    
+
 G_API void gads_adsReady(const char* ad, int state);
 G_API void gads_adReceived(const char *ad, const char *type);
 G_API void gads_adFailed(const char *ad, const char *error, const char *type);
@@ -96,7 +108,8 @@ G_API void gads_adDismissed(const char *ad, const char *type);
 G_API void gads_adDisplayed(const char *ad, const char *type);
 G_API void gads_adRewarded(const char *ad, const char *type, int amount);
 G_API void gads_adError(const char *ad, const char *error);
-
+G_API void gads_adConsent(const char *ad, const char *error, int errorcode);
+    
 #ifdef __cplusplus
 }
 #endif

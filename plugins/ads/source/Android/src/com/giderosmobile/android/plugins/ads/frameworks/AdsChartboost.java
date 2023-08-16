@@ -272,6 +272,9 @@ public class AdsChartboost extends ChartboostDelegate implements AdsInterface{
 	}
 
 	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
+	@Override
 	public void didFailToLoadInterstitial(String arg0, CBImpressionError error) {
 		Ads.adFailed(this, "interstitial", error.name());
 		mngr.reset("interstitial");

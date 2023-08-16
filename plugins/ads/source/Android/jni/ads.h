@@ -18,6 +18,7 @@ enum
 	GADS_AD_ERROR_EVENT,
 	GADS_AD_REWARDED_EVENT,
 	GADS_ADS_READY_EVENT,
+	GADS_AD_CONSENT_EVENT,
 };
 
 typedef struct gads_AdErrorEvent
@@ -57,6 +58,13 @@ typedef struct gads_ReadyEvent
 	int state;
 } gads_ReadyEvent;
 
+typedef struct gads_ConsentEvent
+{
+	const char* ad;
+	const char *error;
+	int errorcode;
+} gads_ConsentEvent;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -77,6 +85,10 @@ G_API void gads_hideAd(const char *ad, const char *type);
 G_API void gads_enableTesting(const char *ad);
 G_API void gads_setAlignment(const char *ad, const char *hor, const char *ver);
 
+struct gads_ConsentRequest {
+	bool underAge;
+};
+
 G_API void gads_setX(const char *ad, int x);
 G_API void gads_setY(const char *ad, int y);
 G_API int gads_getX(const char *ad);
@@ -84,6 +96,7 @@ G_API int gads_getY(const char *ad);
 G_API int gads_getWidth(const char *ad);
 G_API int gads_getHeight(const char *ad);
 G_API int gads_hasConnection(const char *ad);
+G_API bool gads_checkConsent(const char *ad,gads_ConsentRequest *request);
 
 G_API g_id gads_addCallback(gevent_Callback callback, void *udata);
 G_API void gads_removeCallback(gevent_Callback callback, void *udata);

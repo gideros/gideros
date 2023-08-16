@@ -257,6 +257,9 @@ public class AdsTapjoy implements AdsInterface, TapjoyFullScreenAdNotifier, Tapj
 		//can be set up in Tapjoy account
 		
 	}
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }
 
 class AdsTapjoyListener implements TapjoyDisplayAdNotifier{

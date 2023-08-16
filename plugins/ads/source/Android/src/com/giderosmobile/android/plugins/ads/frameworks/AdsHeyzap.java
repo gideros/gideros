@@ -252,6 +252,9 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 	}
 
 	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
+	@Override
 	public void onAudioFinished() {}
 
 	@Override

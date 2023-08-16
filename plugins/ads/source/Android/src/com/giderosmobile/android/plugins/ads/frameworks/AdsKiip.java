@@ -195,6 +195,9 @@ public class AdsKiip implements AdsInterface, Kiip.OnContentListener, DialogInte
         Kiip.getInstance().setTestMode(true);
     }
 
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
     @Override
     public void onContent(Kiip kiip, String momentId, int quantity, String transactionId,
                           String signature) {

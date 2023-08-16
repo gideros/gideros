@@ -439,6 +439,10 @@ public class AdsAdmob implements AdsInterface, OnInitializationCompleteListener 
 				new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
 		MobileAds.setRequestConfiguration(configuration);
 	}
+	
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 
 	@Override
 	public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {

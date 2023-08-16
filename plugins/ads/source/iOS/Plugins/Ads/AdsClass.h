@@ -31,6 +31,7 @@
 +(int)getY:(NSString*)adprovider;
 +(int)getWidth:(NSString*)adprovider;
 +(int)getHeight:(NSString*)adprovider;
++(BOOL)checkConsent:(NSString*)adprovider forUnderAge:(BOOL) underAge;
 +(BOOL)hasConnection;
 +(BOOL)isPortrait;
 +(void)adReceived:(Class)adprovider forType:(NSString*)type;
@@ -42,4 +43,5 @@
 +(void)adRewarded:(Class)adprovider forType:(NSString*)type withAmount:(int)amount;
 +(void)adError:(Class)adprovider with:(NSString*)error;
 +(void)adsReady:(Class)adprovider state:(BOOL)state;
++(void)adConsent:(Class)adprovider with:(NSString*)error andCode:(int) errorcode;
 @end

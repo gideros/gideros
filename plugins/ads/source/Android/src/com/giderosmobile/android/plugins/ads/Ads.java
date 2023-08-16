@@ -514,6 +514,15 @@ public class Ads {
 		return height;
 	}
 
+	public static bool checkConsent(String adprovider, boolean underAge){
+		String adp = modifyName(adprovider);
+		if(ads.containsKey(adp))
+		{
+			return ads.get(adp).getConsent(underAge);
+		}
+		return false;
+	}
+
 	public static void adReceived(Object caller, String adType){
 		if (sData != 0)
 			onAdReceived(getCallerName(caller), adType, sData);
@@ -552,6 +561,10 @@ public class Ads {
 		if (sData != 0)
 			onAdRewarded(getCallerName(caller), adType, amount, sData);
 	}
+	public static void adConsent(Object caller, String error, int errorcode){
+		if (sData != 0)
+			onAdConsent(getCallerName(caller), error, errorcode, sData);
+	}
 
 
 
@@ -563,6 +576,7 @@ public class Ads {
 	private static native void onAdDisplayed(String ad, String adType, long data);
 	private static native void onAdRewarded(String ad, String adType, int amount, long data);
 	private static native void onAdError(String ad, String error, long data);
+	private static native void onAdConsent(String ad, String error, int errorcode, long data);
 	
 	private static String modifyName(String adprovider){
 		return adprovider.substring(0,1).toUpperCase() + adprovider.substring(1).toLowerCase();

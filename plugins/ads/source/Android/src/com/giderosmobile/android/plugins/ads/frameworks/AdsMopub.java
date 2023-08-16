@@ -156,6 +156,9 @@ public class AdsMopub implements AdsInterface{
 	public void enableTesting() {
 		
 	}
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }
 
 class AdsMopubBannerListener implements BannerAdListener{

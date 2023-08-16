@@ -96,6 +96,11 @@
 -(void)enableTesting{
 }
 
+-(BOOL)checkConsent:(BOOL) underAge
+{
+	return FALSE;
+}
+
 -(UIView*)getView{
     return nil;
 }

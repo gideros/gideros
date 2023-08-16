@@ -201,6 +201,9 @@ public class AdsRevmob implements AdsInterface{
 		revmob.setTestingMode(RevMobTestingMode.WITH_ADS);
 	}
 
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }
 
 class AdsRevmobListener implements RevMobAdsListener{

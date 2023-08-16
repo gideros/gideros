@@ -239,6 +239,10 @@ public class AdsInmobi implements AdsInterface{
 		//has no testing
 		InMobi.setLogLevel(LOG_LEVEL.DEBUG);
 	}
+	
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 }
 
 class AdsInmobiInterstitialListener implements IMInterstitialListener {

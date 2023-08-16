@@ -140,6 +140,11 @@ static CGRect rects[6];
     [InMobi setLogLevel:IMLogLevelDebug];
 }
 
+-(BOOL)checkConsent:(BOOL) underAge
+{
+	return FALSE;
+}
+
 -(UIView*)getView{
     return (UIView*)[self.mngr get:self.currentSize];
 }

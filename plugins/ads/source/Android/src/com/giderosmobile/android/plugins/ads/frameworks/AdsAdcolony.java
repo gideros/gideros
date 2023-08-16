@@ -174,6 +174,9 @@ public class AdsAdcolony implements AdsInterface, AdColonyAdAvailabilityListener
 	}
 	
 	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
+	@Override
 	public void enableTesting() {
 		// is enabled inside Adcolony account
 		

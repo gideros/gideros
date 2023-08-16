@@ -111,6 +111,11 @@ public:
         return [AdsClass getHeight:[NSString stringWithUTF8String:ad]];
 	}
 	
+	bool checkConsent(const char *ad,gads_ConsentRequest *request)
+	{
+        return [AdsClass checkConsent:[NSString stringWithUTF8String:ad] forUnderAge:request->underAge];
+	}
+	
 	void onAdsReady(const char* ad, int state)
 	{
 		gads_ReadyEvent* event = (gads_ReadyEvent*)gevent_CreateEventStruct1(
@@ -197,6 +202,17 @@ public:
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_ERROR_EVENT, event, 1, this);
 	}
 	
+	void onAdConsent(const char *ad, const char *error, int errorcode)
+	{
+		gads_ConsentEvent *event = (gads_ConsentEvent*)gevent_CreateEventStruct2(
+			sizeof(gads_ConsentEvent),
+			offsetof(gads_ConsentEvent, ad), ad,
+			offsetof(gads_ConsentEvent, error), error);
+		event->errorcode=errorcode;
+
+		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_CONSENT_EVENT, event, 1, this);
+	}
+		
 	g_id addCallback(gevent_Callback callback, void *udata)
 	{
 		return callbackList_.addCallback(callback, udata);
@@ -449,4 +465,9 @@ void gads_adError(const char *ad, const char *error){
     }
 }
 
+void gads_adConsent(const char *ad, const char *error, int errorcode) {
+    if(s_ads)
+	{
+        s_ads->onAdConsent(ad, error, errorcode);
+    }
 }

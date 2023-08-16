@@ -199,6 +199,9 @@ public class AdsMillenial implements AdsInterface {
 		
 	}
 	
+	@Override
+	public boolean checkConsent(boolean underAge) { return false; }
+	
 	private String getAutoSize() {
 		String[] typearray = {"iab_leaderboard", "med_banner", "banner"};
         int[][] maparray = {
