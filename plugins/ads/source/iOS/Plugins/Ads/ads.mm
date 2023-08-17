@@ -250,9 +250,9 @@ extern "C" {
 
 int gads_isAvailable()
 {
-	return 1;
+    return 1;
 }
-    
+
 int gads_hasConnection()
 {
     if(s_ads)
@@ -264,16 +264,16 @@ int gads_hasConnection()
 
 void gads_init()
 {
-	s_ads = new GAds;
+    s_ads = new GAds;
 }
 
 void gads_cleanup()
 {
-	if(s_ads)
-	{
-		delete s_ads;
-		s_ads = NULL;
-	}
+    if(s_ads)
+    {
+        delete s_ads;
+        s_ads = NULL;
+    }
 }
 
 bool gads_hasProvider(const char *ad)
@@ -283,28 +283,28 @@ bool gads_hasProvider(const char *ad)
 
 void gads_initialize(const char *ad)
 {
-	if(s_ads)
-	{
-		s_ads->init(ad);
-	}
+    if(s_ads)
+    {
+        s_ads->init(ad);
+    }
 }
 
 void gads_destroy(const char *ad)
 {
-	if(s_ads != NULL)
-	{
-		s_ads->destroy(ad);
-	}
+    if(s_ads != NULL)
+    {
+        s_ads->destroy(ad);
+    }
 }
 
 void gads_setKey(const char *ad, gads_Parameter *params)
 {
-	if(s_ads)
-	{
-		s_ads->setKey(ad, params);
-	}
+    if(s_ads)
+    {
+        s_ads->setKey(ad, params);
+    }
 }
-    
+
 void gads_loadAd(const char *ad, gads_Parameter *params)
 {
     if(s_ads)
@@ -315,20 +315,20 @@ void gads_loadAd(const char *ad, gads_Parameter *params)
 
 void gads_showAd(const char *ad, gads_Parameter *params)
 {
-	if(s_ads)
-	{
-		s_ads->showAd(ad, params);
-	}
+    if(s_ads)
+    {
+        s_ads->showAd(ad, params);
+    }
 }
 
 void gads_hideAd(const char *ad, const char *type)
 {
-	if(s_ads)
-	{
-		s_ads->hideAd(ad, type);
-	}
+    if(s_ads)
+    {
+        s_ads->hideAd(ad, type);
+    }
 }
-    
+
 void gads_enableTesting(const char *ad)
 {
     if(s_ads)
@@ -337,14 +337,21 @@ void gads_enableTesting(const char *ad)
     }
 }
 
+bool gads_checkConsent(const char *ad,gads_ConsentRequest *request)
+{
+    if(s_ads)
+        return s_ads->checkConsent(ad, request);
+    return false;
+}
+
 void gads_setAlignment(const char *ad, const char *hor, const char *ver)
 {
-	if(s_ads)
-	{
-		s_ads->setAlignment(ad, hor, ver);
-	}
+    if(s_ads)
+    {
+        s_ads->setAlignment(ad, hor, ver);
+    }
 }
-    
+
 void gads_setX(const char *ad, int x)
 {
     if(s_ads)
@@ -352,7 +359,7 @@ void gads_setX(const char *ad, int x)
         s_ads->setX(ad, x);
     }
 }
-    
+
 void gads_setY(const char *ad, int y)
 {
     if(s_ads)
@@ -360,22 +367,22 @@ void gads_setY(const char *ad, int y)
         s_ads->setY(ad, y);
     }
 }
-    
+
 int gads_getX(const char *ad)
 {
     return s_ads->getX(ad);
 }
-    
+
 int gads_getY(const char *ad)
 {
     return s_ads->getY(ad);
 }
-    
+
 int gads_getWidth(const char *ad)
 {
     return s_ads->getWidth(ad);
 }
-    
+
 int gads_getHeight(const char *ad)
 {
     return s_ads->getHeight(ad);
@@ -383,67 +390,67 @@ int gads_getHeight(const char *ad)
 
 g_id gads_addCallback(gevent_Callback callback, void *udata)
 {
-	return s_ads->addCallback(callback, udata);
+    return s_ads->addCallback(callback, udata);
 }
 
 void gads_removeCallback(gevent_Callback callback, void *udata)
 {
-	if(s_ads)
-	{
-		s_ads->removeCallback(callback, udata);
-	}
+    if(s_ads)
+    {
+        s_ads->removeCallback(callback, udata);
+    }
 }
 
 void gads_removeCallbackWithGid(g_id gid)
 {
-	if(s_ads)
-	{
-		s_ads->removeCallbackWithGid(gid);
-	}
+    if(s_ads)
+    {
+        s_ads->removeCallbackWithGid(gid);
+    }
 }
-    	
+
 void gads_adReceived(const char *ad, const char *type){
     if(s_ads)
-	{
+    {
         s_ads->onAdReceived(ad, type);
     }
 }
-    
+
 void gads_adFailed(const char *ad, const char *error, const char *type){
     if(s_ads)
-	{
+    {
         s_ads->onAdFailed(ad, error, type);
     }
 }
-    
+
 void gads_adActionBegin(const char *ad, const char *type){
     if(s_ads)
-	{
+    {
         s_ads->onAdActionBegin(ad, type);
     }
 }
-    
+
 void gads_adActionEnd(const char *ad, const char *type){
     if(s_ads)
-	{
+    {
         s_ads->onAdActionEnd(ad, type);
     }
 }
-    
+
 void gads_adDismissed(const char *ad, const char *type){
     if(s_ads)
-	{
+    {
         s_ads->onAdDismissed(ad, type);
     }
 }
-    
+
 void gads_adDisplayed(const char *ad, const char *type){
     if(s_ads)
     {
         s_ads->onAdDisplayed(ad, type);
     }
 }
-    
+
 void gads_adRewarded(const char *ad, const char *type, int amount){
     if(s_ads)
     {
@@ -460,14 +467,16 @@ void gads_adsReady(const char *ad, int state){
 
 void gads_adError(const char *ad, const char *error){
     if(s_ads)
-	{
+    {
         s_ads->onAdError(ad, error);
     }
 }
 
 void gads_adConsent(const char *ad, const char *error, int errorcode) {
     if(s_ads)
-	{
+    {
         s_ads->onAdConsent(ad, error, errorcode);
     }
+}
+
 }

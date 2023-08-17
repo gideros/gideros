@@ -82,10 +82,10 @@ G_API void gads_hideAd(const char *ad, const char *type);
 G_API void gads_enableTesting(const char *ad);
 G_API void gads_setAlignment(const char *ad, const char *hor, const char *ver);
     
-struct gads_ConsentRequest {
+typedef struct gads_ConsentRequest {
 	bool reset;
 	bool underAge;
-};
+} gads_ConsentRequest;
 
 G_API void gads_setX(const char *ad, int x);
 G_API void gads_setY(const char *ad, int y);

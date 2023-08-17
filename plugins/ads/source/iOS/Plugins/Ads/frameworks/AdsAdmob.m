@@ -91,6 +91,8 @@
         GADMobileAds.sharedInstance.requestConfiguration.testDeviceIdentifiers = @[ [parameters objectAtIndex:2] ];
        /* [GADMobileAds configureWithApplicationID:[parameters objectAtIndex:1]]; */
     }
+    if ([parameters count] >=4)
+        self.testID=[parameters objectAtIndex:3];
 }
 
 -(void)loadAd:(NSMutableArray*)parameters{
@@ -308,31 +310,15 @@
 
 
 -(void)enableTesting{
-    NSString *test;
-    if (NSClassFromString(@"ASIdentifierManager")) {
-        test = [[[ASIdentifierManager sharedManager]
-                advertisingIdentifier] UUIDString];
-        // Create pointer to the string as UTF8
-        const char *ptr = [test UTF8String];
-        
-        // Create byte array of unsigned chars
-        unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
-        
-        // Create 16 byte MD5 hash value, store in buffer
-        CC_MD5(ptr, (CC_LONG)strlen(ptr), md5Buffer);
-        
-        // Convert MD5 value in the buffer to NSString of hex values
-        NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
-        for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
-            [output appendFormat:@"%02x",md5Buffer[i]];
-        self.testID = output;
-    }
 }
 
 -(BOOL)checkConsent:(BOOL) reset forUnderAge:(BOOL) underAge
 {
   // Create a UMPRequestParameters object.
-  UMPRequestParameters *parameters = [[UMPRequestParameters alloc] init];
+    UMPRequestParameters *parameters = [[UMPRequestParameters alloc] init];
+    UMPDebugSettings *debugSettings=[[UMPDebugSettings alloc] init];
+    debugSettings.testDeviceIdentifiers=@[ self.testID ];
+    parameters.debugSettings=debugSettings;
   // Set tag for under age of consent. NO means users are not under age
   // of consent.
   parameters.tagForUnderAgeOfConsent = underAge;
@@ -344,10 +330,24 @@
       requestConsentInfoUpdateWithParameters:parameters
       completionHandler:^(NSError *_Nullable requestConsentError) {
         if (requestConsentError) {
-          [AdsClass adConsent:[self class] with:requestConsentError.localizedDescription andCode:requestConsentError.code];
+          [AdsClass adConsent:[self class] with:requestConsentError.localizedDescription andCode:(int)requestConsentError.code];
           return;
         }
 
+      [UMPConsentForm loadWithCompletionHandler:^(UMPConsentForm * _Nullable consentForm, NSError * _Nullable error) {
+          if (error) {
+              [AdsClass adConsent:[self class] with:error.localizedDescription andCode:(int)error.code];
+            return;
+          }
+          [consentForm presentFromViewController:[AdsClass getRootViewController] completionHandler:^(NSError * _Nullable error) {
+              if (error) {
+                  [AdsClass adConsent:[self class] with:error.localizedDescription andCode:(int)error.code];
+                return;
+              }
+              [AdsClass adConsent:[self class] with:@"" andCode:0];
+          }];
+      }];
+      /*
         [UMPConsentForm loadAndPresentIfRequiredFromViewController:[AdsClass getRootViewController]
             completionHandler:^(NSError *loadAndPresentError) {
               if (loadAndPresentError) {
@@ -356,8 +356,8 @@
               }
 
 		      [AdsClass adConsent:[self class] with:@"" andCode:0];
-            }];
-      }];
+            }];*/
+      }]; 
 	return TRUE;
 }
 
