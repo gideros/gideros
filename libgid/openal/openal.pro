@@ -16,7 +16,13 @@ INCLUDEPATH += \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}
 
 # openal (24 files)
-DEFINES += AL_BUILD_LIBRARY AL_ALEXT_PROTOTYPES OPENAL_SUBDIR_AL HAVE_DSOUND HAVE_WINMM "ALC_API=__declspec\\(dllexport\\)" "AL_API=__declspec\\(dllexport\\)" RESTRICT=__restrict
+DEFINES += AL_BUILD_LIBRARY AL_ALEXT_PROTOTYPES OPENAL_SUBDIR_AL  RESTRICT=__restrict 
+win32 {
+	DEFINES += "ALC_API=__declspec\\(dllexport\\)" "AL_API=__declspec\\(dllexport\\)" HAVE_DSOUND HAVE_WINMM
+}
+unix:!macx {
+	DEFINES += HAVE_ALSA
+}
 #openal Common FILES
 SOURCES  += \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/al/auxeffectslot.cpp \
@@ -65,8 +71,6 @@ SOURCES  += \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/effects/reverb.cpp        \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/effects/vmorpher.cpp       \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/base.cpp        \
-        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/dsound.cpp        \
-        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/winmm.cpp        \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/null.cpp        \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/loopback.cpp        \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/common/alcomplex.cpp        \
@@ -109,4 +113,15 @@ SOURCES  += \
 #       $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/core/rtkit.cpp                 \
 #       $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/core/dbus_wrap.cpp
 
+win32 {
+SOURCES  += \
+        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/dsound.cpp        \
+        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/winmm.cpp        \
  LIBS+= -lwinmm -lole32 -ldsound -ldxguid -lks -lksuser
+}
+unix:!macx {
+SOURCES  += \
+        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/alsa.cpp        
+	DEFINES += HAVE_ALSA
+	LIBS+= -lasound
+}

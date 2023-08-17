@@ -1,6 +1,6 @@
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/Makefile.def
 
-QT=$(QTBASEDIR)/$(QTVER)/$(QT_ARCH)
+QT?=$(QTBASEDIR)/$(QTVER)/$(QT_ARCH)
 LUA_ENGINE?=luau
 export LUA_ENGINE
 ifeq ($(LUA_ENGINE),luau)
@@ -63,7 +63,7 @@ CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 RELEASE=$(ROOT)/Build.Win
 TARGET_PLF+=android winrt html5 win32
 else
-QMAKE=$(QT)/bin/qmake
+QMAKE?=$(QT)/bin/qmake
 UNAME_S := $(shell uname -s)
 CC=gcc
 CXX=g++
