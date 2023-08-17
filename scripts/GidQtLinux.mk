@@ -14,13 +14,13 @@ endif
 
 SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
-vpath %.so libgideros:libgvfs:libgid:$(LUA_ENGINE)
+vpath %.so libgideros:libgvfs:libgid:libgid/openal:$(LUA_ENGINE)
 
 $(SDK)/lib/desktop/%: %
 	cp -P $^* $(SDK)/lib/desktop
 	
 
-SDK_LIBS_QTLIST=libgideros liblua libgid libgvfs
+SDK_LIBS_QTLIST=libgideros liblua libgid libgvfs libopenal
 SDK_LIBS_QT=$(addsuffix .so,$(SDK_LIBS_QTLIST))
 
 sdk.qtlibs.dir:
@@ -28,9 +28,9 @@ sdk.qtlibs.dir:
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs libgid/xmp) libgid.qmake5.rel $(addsuffix .qmake.rel,$(LUA_ENGINE) libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs libgid/xmp libgid/openal) libgid.qmake5.rel $(addsuffix .qmake.rel,$(LUA_ENGINE) libgideros) sdk.qtlibs
 
-qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid $(LUA_ENGINE) libgideros)
+qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid/openal libgid $(LUA_ENGINE) libgideros)
 
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
@@ -114,9 +114,9 @@ qt.install: buildqt qt.player tools html5.tools
 	cp $(BUILDTOOLS)/luauc $(RELEASE)/Tools
 	for t in gdrdeamon gdrbridge gdrexport; do \
 	cp $(ROOT)/$$t/$$t $(RELEASE)/Tools; done 
-	for f in $(QT5DLLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE); done
-	for f in $(QT5DLLTOOLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE)/Tools; done
-	for a in $(QT5PLUGINS); do mkdir -p $(RELEASE)/$$(dirname $$a); cp -P $(QT)/plugins/$$(dirname $$a)/lib$$(basename $$a).so* $(RELEASE)/$$(dirname $$a)/; done
+	for f in $(QT5DLLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE); done
+	for f in $(QT5DLLTOOLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE)/Tools; done
+	for a in $(QT5PLUGINS); do mkdir -p $(RELEASE)/$$(dirname $$a); cp -P $(QTPLUGINS)/$$(dirname $$a)/lib$$(basename $$a).so* $(RELEASE)/$$(dirname $$a)/; done
 	#PLAYER
 	cp -R $(ROOT)/player/GiderosPlayer $(RELEASE)
 	cp -P $(SDK)/lib/desktop/*.so* $(RELEASE)
@@ -147,7 +147,7 @@ qt.player:
 	cp -R $(ROOT)/desktop/LinuxDesktopTemplate $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
 	cp -P $(SDK)/lib/desktop/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/
 	cp -P libpystring/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
-	for f in $(QT5DLLS); do cp -P $(QT)/lib/lib$$f.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate; done
+	for f in $(QT5DLLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate; done
 	
 buildqtplugins: 
 	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN))

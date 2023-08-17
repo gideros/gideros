@@ -108,7 +108,13 @@ LZIP_FILES=adler32 compress crc32 deflate gzclose gzlib gzread gzwrite infback i
 #PNG
 PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans \
         pngwio pngwrite pngwtran pngwutil
+win32 {
 SOURCES += $$expand(PNGFILES,./external/libpng-1.6.2/,.c)
+}
+
+macx {
+SOURCES += $$expand(PNGFILES,./external/libpng-1.6.2/,.c)
+}
 
 #JPEG
 JPEGFILES=jaricom jdapimin jdapistd jdarith jdatadst jdatasrc jdcoefct jdcolor jddctmgr jdhuff jdinput \
@@ -159,17 +165,7 @@ CONFIG(debug, debug|release){
     LIBS += -L"./openal/release" -lopenal
 }
 
-#INCLUDEPATH += "./external/openal-soft-1.13/include"
-#LIBS += -L"../libgid/external/openal-soft-1.13/build/mingw48_32" -lOpenAL32
-#LIBS += -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32
-#LIBS += -L"../libgid/external/libpng-1.6.2/build/mingw48_32" -lpng
-#LIBS += -L"../libgid/external/jpeg-9/build/mingw48_32" -ljpeg
-
-#LIBS += -L"../libgid/external/mpg123-1.15.3/lib/mingw48_32" -lmpg123
-
 LIBS += -lpthread
-
-#LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
 }
 
 macx {
@@ -192,20 +188,12 @@ LIBS += -lpthread
 unix:!macx {
 DEFINES += OPENAL_SUBDIR_AL
 DEFINES += STRICT_LINUX
-INCLUDEPATH += "./external/openal-soft-1.13/include"
-
-LIBS += -L"../libgid/external/libpng-1.6.2/build/gcc484_64" -lpng
-#LIBS += -L"../libgid/external/openal-soft-1.13/build/gcc484_64" -lOpenAL32
-LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
+INCLUDEPATH += "./external/openal-soft/include"
 
 LIBS += -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW
-LIBS += -L"../libgid/external/jpeg-9/build/gcc484_64" -ljpeg
-
-LIBS += -L"../libgid/external/mpg123-1.15.3/lib/gcc484_64" -lmpg123
-
 LIBS += -lpthread
+LIBS += -L"./openal" -lopenal
 
-#LIBS += -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx
 }
 
 win32 {
