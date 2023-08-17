@@ -1303,6 +1303,11 @@ void Sprite::getDimensions(float& w,float &h)
     if (h<reqHeight_) h=reqHeight_;
 }
 
+void Sprite::setMatrix(const float *m)
+{
+    localTransform_.setMatrix(m);
+    invalidate(INV_TRANSFORM);
+}
 
 bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
 	Matrix transform;

@@ -184,7 +184,16 @@ static int r3dWorld_destruct(void *p) {
 		delete e;
 		events[world] = NULL;
 	}
-	physicsCommon->destroyPhysicsWorld(world);
+    uint32 bodies=world->getNbRigidBodies();
+    for (uint32 bn=0;bn<bodies;bn++) {
+        rp3d::RigidBody* body=world->getRigidBody(bn);
+        Sprite *sprite=static_cast<Sprite*> (body->getUserData());
+        if (sprite) {
+            sprite->unref();
+            body->setUserData(NULL);
+        }
+    }
+    physicsCommon->destroyPhysicsWorld(world);
 
 	return 0;
 }
@@ -305,8 +314,6 @@ static int r3dWorld_CreateBody(lua_State* L) {
     lua_pushvalue(L,1);
 	lua_setfield(L, -2, "__world"); //Retain world
 
-    body->setUserData(world);
-
 	lua_pushlightuserdata(L, body);
 	lua_pushvalue(L, -2);
     setb2(L);
@@ -335,6 +342,8 @@ static int r3dWorld_DestroyBody(lua_State* L) {
 	lua_pushnil(L);
 	lua_setfield(L, 2, "__world");
 
+    Sprite *lSprite=static_cast<Sprite*> (body->getUserData());
+    if (lSprite) lSprite->unref();
     body->setUserData(NULL);
 	world->destroyRigidBody(body);
 
@@ -360,6 +369,17 @@ static int r3dWorld_Step(lua_State* L) {
 		float step=luaL_checknumber(L, 2);
 		if (step==0) step=0.001; //Step cannot be 0, use a dummy tiny step instead
 		world->update(step);
+        uint32 bodies=world->getNbRigidBodies();
+        for (uint32 bn=0;bn<bodies;bn++) {
+            rp3d::RigidBody* body=world->getRigidBody(bn);
+            Sprite *sprite=static_cast<Sprite*> (body->getUserData());
+            if (sprite) {
+                const rp3d::Transform t = body->getTransform();
+                float mat[16];
+                t.getOpenGLMatrix(mat);
+                sprite->setMatrix(mat);
+            }
+        }
 #ifndef _NO_THROW
     } catch (std::exception &e) {
         throw;
@@ -604,6 +624,19 @@ static int r3dBody_UpdateMassPropertiesFromColliders(lua_State* L) {
 	return 0;
 }
 
+static int r3dBody_setSprite(lua_State *L) {
+    Binder binder(L);
+    rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(binder.getInstance(
+            "r3dBody", 1));
+    CHECK_BODY(body,1);
+    Sprite *sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Sprite *lSprite=static_cast<Sprite*> (body->getUserData());
+    if (lSprite) lSprite->unref();
+    if (sprite) sprite->ref();
+    body->setUserData(sprite);
+    return 0;
+}
+
 static int r3dBody_destruct(void *p) {
 	if (lua_isclosing(L)) return 0; //Worlds and all their bodies are going to be destroyed anyway
     void* ptr = GIDEROS_DTOR_UDATA(p);
@@ -613,8 +646,10 @@ static int r3dBody_destruct(void *p) {
     if (lua_isnil(L,-1)) {
       //Body has been GC'ed, check if still live in the world
       rp3d::RigidBody* body = static_cast<rp3d::RigidBody*>(ptr);
-      rp3d::PhysicsWorld* world = static_cast<rp3d::PhysicsWorld*>(body->getUserData());
+      rp3d::PhysicsWorld* world = &(body->getWorld());
       if (world!=NULL) { //Not yet destroyed
+          Sprite *lSprite=static_cast<Sprite*> (body->getUserData());
+          if (lSprite) lSprite->unref();
           body->setUserData(NULL);
           world->destroyRigidBody(body);
       }
@@ -945,7 +980,7 @@ public:
 		size_t vn = lua_objlen(L, n);
 		if (vn % 3)
 			luaL_error(L,
-					"Vertex array should contain a multiple of 3 items, %d supplied",
+                    "Vertex array should contain a multiple of 3 items, %zu supplied",
 					vn);
 		size_t in = lua_objlen(L, n + 1);
 		if (hasFaces) {
@@ -960,10 +995,10 @@ public:
 				nt+=nk;
 				facesn[k] = nk;
 			}
-			if (nt>in) {
+            if ((size_t)nt>in) {
 				delete facesn;
 				luaL_error(L,
-						"Faces reference more indices than supplied (%d>%d)",
+                        "Faces reference more indices than supplied (%d>%zu)",
 						nt,in);
 			}
 		}
@@ -972,7 +1007,7 @@ public:
 			facesn=NULL;
 			if (in % 3)
 			luaL_error(L,
-					"Index array should contain a multiple of 3 items, %d supplied",
+                    "Index array should contain a multiple of 3 items, %zu supplied",
 					in);
 		}
 		vc = vn / 3;
@@ -982,11 +1017,11 @@ public:
 			lua_rawgeti(L, n + 1, k + 1);
 			int ik = luaL_optinteger(L, -1, 0);
 			lua_pop(L, 1);
-			if ((ik <= 0)||(ik > vc)) {
+            if ((ik <= 0)||((size_t)ik > vc)) {
                 delete[] indices;
 				if (facesn) delete facesn;
 				luaL_error(L,
-						"Index array contains an invalid vertice index: %d, max:%d",
+                        "Index array contains an invalid vertice index: %d, max:%zu",
 						ik, vc);
 			}
 			indices[k] = ik-1;
@@ -1137,8 +1172,8 @@ static int r3dHeightFieldShape_create(lua_State* L) {
 	float ah=luaL_checknumber(L,4);
 	luaL_checktype(L, 5, LUA_TTABLE);
 	size_t hn = lua_objlen(L, 5);
-	if (hn!=w*h)
-		luaL_error(L,"Height field size mismatch (%dx%d!=%d)",w,h,hn);
+    if (hn!=(size_t)(w*h))
+        luaL_error(L,"Height field size mismatch (%dx%d!=%zu)",w,h,hn);
 	float *d=new float[hn];
 	for (size_t k = 0; k < hn; k++) {
 		lua_rawgeti(L, 5, k + 1);
@@ -1665,6 +1700,7 @@ static int loader(lua_State *L) {
 			{ "raycast", r3dBody_RayCast },
 			{ "testPointInside", r3dBody_TestPointInside },
 			{ "updateMassPropertiesFromColliders", r3dBody_UpdateMassPropertiesFromColliders },
+            { "setSprite", r3dBody_setSprite },
 			{ NULL, NULL }, };
     binder.createClass("r3dBody", NULL/*"EventDispatcher"*/, NULL, r3dBody_destruct,
 			r3dBody_functionList);

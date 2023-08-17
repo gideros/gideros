@@ -79,7 +79,14 @@ function AUI.Main:init()
 					},
 				}},
 				Second={ class= UI.Panel, layoutModel=UI.Layout.Vertical, layout={fill=1}, children={
-					{ class="UI.Label", Style="aui_main.styLabel", Text="Object properties", layout={ fill=1 },  },
+					{ class="UI.Panel", LocalStyle="aui_main.styLabel", layoutModel={ rowWeights={1}, columnWeights={1,0}}, layout={ fill=1 },  
+					  children={
+						{ class="UI.Label", Text="Object properties", layout={ fill=1 },  },
+						{ class="UI.Image", Image="aui_main.icArchive", layout={ gridx=1, fill=0, width="1em", height="1em" }, 
+						name="btLibraryUpdate", behavior=UI.Behavior.Button, },
+					  }
+					},
+					
 					{ class=UI.Viewport, layout={fill=1, weighty=1, },
 						Scrollbar={UI.Viewport.SCROLLBAR.AUTO,UI.Viewport.SCROLLBAR.AUTO},					
 						Content={
@@ -333,6 +340,8 @@ function AUI.Main:onWidgetAction(w)
 			self:exportAssets(file)
 		end
 		return true
+	elseif w==self.btLibraryUpdate then
+		self.editor:updateLibFromSelected()
 	elseif w==self.btLibraryAdd then
 		local file=application:get("openDirectoryDialog","Import Library",nil)
 		local name=file

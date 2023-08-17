@@ -11,7 +11,7 @@ function EditorModel:init(editor,assetitem)
 	self.assetName=assetitem.name
 	self.editor=editor
 	
-	local m=assetitem.lib:getModel(assetitem.name)
+	local m,md=assetitem.lib:getModel(assetitem.name)
 	self.sprite=m
 	m.model=self
 	if m.animations and m.animations[1] then
@@ -21,6 +21,45 @@ function EditorModel:init(editor,assetitem)
 		end 
 		D3Anim.setAnimation(m,anim or m.animations[1],"main",true)
 	end
+	
+	--Decode MD.physics
+	local pspec={shape="box"}
+	if md.physics then
+		local s=md.physics
+		pspec={ shape=s.shapetype, bodytype=s.bodytype }
+		if s.transform then
+			local t=Matrix.new()
+			pspec.transform=t
+			if s.transform.position then
+				t:setPosition(s.transform.position[1],s.transform.position[2],s.transform.position[3])
+			end
+			if s.transform.rotation then
+				t:setRotationX(s.transform.rotation[1])
+				t:setRotationY(s.transform.rotation[2])
+				t:setRotationZ(s.transform.rotation[3])
+			end
+			if s.transform.scale then
+				t:setScale(s.transform.scale[1],s.transform.scale[2],s.transform.scale[3])
+			end
+		end
+	end		
+	self:makeBody(pspec)
+end
+
+function EditorModel:updateInLibray()
+	local it=self
+	local tp=it.body.fixtureTransform
+	local md=self.assetLib:getModelData(self.assetName)
+	md.physics={
+		bodytype=it.body.bodytype,
+		shapetype=it.body.shapetype,
+		transform={
+			position={ tp:getX(), tp:getY(), tp:getZ() },
+			rotation={ tp:getRotationX(), tp:getRotationY(), tp:getRotationZ() },
+			scale= { tp:getScaleX(), tp:getScaleY(), tp:getScaleZ() },
+		},
+	}
+	self.assetLib:updateModelData(self.assetName,md)
 end
 
 function EditorModel:makeBody(bodySpec)
@@ -42,14 +81,7 @@ function EditorModel:makeBody(bodySpec)
 	dimx=dimx*sx*stx
 	dimy=dimy*sy*sty
 	dimz=dimz*sz*stz
-	if shapetype=="sphere" then
-		shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
-	elseif shapetype=="capsule" then
-		local rad=dimx<>dimz
-		shape=r3d.CapsuleShape.new(rad,dimy)
-	else
-		shape=r3d.BoxShape.new(dimx,dimy,dimz)
-	end
+	shape=D3.GScene.makePhysicsShape(shapetype,dimx,dimy,dimz)
 	if shape then
 		body.shapedim=shapedim
 		body.shape=shape
@@ -104,14 +136,7 @@ function EditorModel:update(event,bodyUpdate)
 			local dimx=self.body.shapedim.x*sx*stx
 			local dimy=self.body.shapedim.y*sy*sty
 			local dimz=self.body.shapedim.z*sz*stz
-			if self.body.shapetype=="sphere" then
-				self.body.shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
-			elseif self.body.shapetype=="capsule" then
-				local rad=dimx<>dimz
-				self.body.shape=r3d.CapsuleShape.new(rad,dimy)
-			else
-				self.body.shape=r3d.BoxShape.new(dimx,dimy,dimz)
-			end
+			self.body.shape=D3.GScene.makePhysicsShape(self.body.shapetype,dimx,dimy,dimz)
 			
 			local fft=self.body.fixtureTransform:duplicate()
 			local tx,ty,tz=fft:getPosition()
@@ -144,7 +169,7 @@ function EditorModel:getPropertyList()
 		{ name="Rotation", type="vector" },
 		{ name="Scale", type="vector" },
 		{ name="Physics", category=true, },
-		{ name="ColShape", type="set", typeset={ "Box", "Sphere", "Capsule" }, label="Shape"},
+		{ name="ColShape", type="set", typeset={ "Box", "Sphere", "Capsule", "Cylinder" }, label="Shape"},
 		{ name="ColType", type="set", typeset={ "Static", "Dynamic", "Kinematic", "Ignore"}, label="Type"},
 		{ name="ColPosition", type="vector", label="Position" },
 		{ name="ColRotation", type="vector", label="Rotation" },
@@ -156,11 +181,13 @@ local ColShapeMap={
 	box=1,
 	sphere=2,
 	capsule=3,
+	cylinder=4,
 }
 local ColShapeList={
 	"box",
 	"sphere",
 	"capsule",
+	"cylinder",
 }
 local ColTypeMap={
 	static=1,
@@ -262,6 +289,12 @@ function AUI.Editor:init()
 	self:updateView()
 end
 
+function AUI.Editor:updateLibFromSelected()
+	if self.selection then
+		self.selection:updateInLibray()
+	end
+end
+
 function AUI.Editor:updateSelectedModel()
 	if self.selection then
 		self.placementGrid:setVisible(true)
@@ -314,7 +347,6 @@ end
 function AUI.Editor:addModel(assetitem,parentGroup)
 	local mdl=EditorModel.new(self,assetitem)
 	self.models:addChild(mdl.sprite)
-	mdl:makeBody({shape="box"})
 	return mdl
 end
 

@@ -449,6 +449,7 @@ public:
     	setXY(x,y);
     	setDimensions(w,h,forLayout);
     }
+    virtual void setMatrix(const float *m);
 
 	virtual bool setDimensions(float w,float h,bool forLayout=false);
     virtual void getDimensions(float &w,float &h);

@@ -37,6 +37,7 @@ UI.Style.aui_tree={
 UI.Style.aui_main={
 	szSpacing=".1s",
 	icPlus=Texture.new("ui/icons/plus.png",true,{ mipmap=true }),
+	icArchive=Texture.new("aui/icons/file-cabinet.png",true,{ mipmap=true }),
 	styLabel={
 		colWidgetBack=UI.Colors.white,
 		brdWidget=UI.Border.NinePatch.new({

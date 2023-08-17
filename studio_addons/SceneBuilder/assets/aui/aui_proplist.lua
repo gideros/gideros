@@ -53,6 +53,9 @@ function AUI.PropertyList:buildEditor(d)
 	if not d.readonly then
 		if d.type=="vector" then
 			fd=VectorEditor.new(val)
+		elseif d.type=="action" then
+			fd=UI.Button.new()
+			fd:setText(d.actionLabel or d.name)
 		elseif d.type=="set" then
 			fd=UI.Spinner.new(d.typeset)
 			fd:setValue(val)

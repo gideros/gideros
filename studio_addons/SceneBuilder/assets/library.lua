@@ -67,7 +67,16 @@ function AssetShelf:getModel(name)
 		resolvePath=function(path,type)
 			return self.libPath.."/"..path
 		end
-	})
+	}),data
+end
+
+function AssetShelf:getModelData(name)
+	local data=self:readFile(name..".g3d")
+	return data
+end
+
+function AssetShelf:updateModelData(name,data)
+	Files.saveJson(self.libPath.."/"..name..".g3d",data,true)
 end
 	
 function AssetShelf:readFile(file)

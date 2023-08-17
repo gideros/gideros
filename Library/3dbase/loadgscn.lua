@@ -16,6 +16,53 @@ function Files.load(file)
 	return js
 end
 
+local function makeCylinderShape(steps,r,h)
+	--For collision, ensure closed/CCW shape
+	local va,ca,fa={},{},{}
+	local nc,nf,idx=1,1,1
+	local rs=(2*math.pi)/steps
+	for ix=0,steps-1 do
+		local x=math.cos(ix*rs)*r
+		local z=-math.sin(ix*rs)*r
+		--EDGE-TOP
+		va[idx]=x idx+=1
+		va[idx]=h idx+=1
+		va[idx]=z idx+=1
+		--EDGE-BOTTOM
+		va[idx]=x idx+=1
+		va[idx]=-h idx+=1
+		va[idx]=z idx+=1
+	end
+
+	
+	for i=1,steps*2-1,2 do ca[nc]=i nc+=1 end --TOP SURFACE	
+	fa[nf]=steps nf+=1
+	for i=1,steps*2-1,2 do
+		ca[nc]=i nc+=1 ca[nc]=i+1 nc+=1 
+		ca[nc]=i+3 nc+=1 ca[nc]=i+2 nc+=1 
+		fa[nf]=4 nf+=1
+	end		
+	ca[nc-2]=2 ca[nc-1]=1
+	for i=steps*2,2,-2 do ca[nc]=i nc+=1 end
+	fa[nf]=steps nf+=1
+	return r3d.ConvexMeshShape.new(va,ca,fa)
+end
+
+local GScene={}
+function GScene.makePhysicsShape(shapetype,dimx,dimy,dimz)
+	local shape
+	if shapetype=="sphere" then
+		shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
+	elseif shapetype=="capsule" then
+		shape=r3d.CapsuleShape.new(dimx<>dimz,dimy)
+	elseif shapetype=="cylinder" then
+		shape=makeCylinderShape(10,(dimx<>dimz),dimy)
+	else
+		shape=r3d.BoxShape.new(dimx,dimy,dimz)
+	end
+	return shape
+end
+
 local function MakeBody(self,spec,world)
 	if spec.bodytype=="ignore" then return end
 	local r3d=require "reactphysics3d"
@@ -43,13 +90,7 @@ local function MakeBody(self,spec,world)
 	dimx=dimx*sx*stx
 	dimy=dimy*sy*sty
 	dimz=dimz*sz*stz
-	if shapetype=="sphere" then
-		shape=r3d.SphereShape.new(dimx<>dimy<>dimz)
-	elseif shapetype=="capsule" then
-		shape=r3d.CapsuleShape.new(dimx<>dimz,dimy)
-	else
-		shape=r3d.BoxShape.new(dimx,dimy,dimz)
-	end
+	shape=GScene.makePhysicsShape(shapetype,dimx,dimy,dimz)
 	if shape then
 		body.shapedim=shapedim
 		body.shape=shape
@@ -151,3 +192,6 @@ function LoadGScene(libpath,file,world)
 	loadGroup(project.scene,scene)
 	return scene
 end
+
+D3=D3 or {}
+D3.GScene=GScene

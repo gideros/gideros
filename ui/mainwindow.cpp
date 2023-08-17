@@ -2770,15 +2770,11 @@ void MainWindow::dataReceived(const QByteArray& d)
         //outputWidget_->append(QString::fromUtf8(str.c_str()));
         QString strU = QString::fromUtf8(str.c_str());
         if (strU.startsWith("<") && strU.endsWith(">"))
-        {
             outputWidget_->insertHtml(strU);
-            outputWidget_->moveCursor(QTextCursor::End);
-        }
         else
-        {
             outputWidget_->append(strU);
-        }
-	}
+        outputWidget_->moveCursor(QTextCursor::End);
+    }
 	if (data[0] == 6 && isTransferring_ == true)
 	{
 		printf("file list has got\n");
