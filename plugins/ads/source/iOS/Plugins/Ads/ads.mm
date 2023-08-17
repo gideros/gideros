@@ -113,7 +113,7 @@ public:
 	
 	bool checkConsent(const char *ad,gads_ConsentRequest *request)
 	{
-        return [AdsClass checkConsent:[NSString stringWithUTF8String:ad] forUnderAge:request->underAge];
+        return [AdsClass checkConsent:[NSString stringWithUTF8String:ad] reset:request->reset forUnderAge:request->underAge];
 	}
 	
 	void onAdsReady(const char* ad, int state)

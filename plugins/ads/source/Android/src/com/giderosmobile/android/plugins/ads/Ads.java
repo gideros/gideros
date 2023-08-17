@@ -514,11 +514,11 @@ public class Ads {
 		return height;
 	}
 
-	public static bool checkConsent(String adprovider, boolean underAge){
+	public static boolean checkConsent(String adprovider,boolean reset, boolean underAge){
 		String adp = modifyName(adprovider);
 		if(ads.containsKey(adp))
 		{
-			return ads.get(adp).getConsent(underAge);
+			return ads.get(adp).checkConsent(reset,underAge);
 		}
 		return false;
 	}

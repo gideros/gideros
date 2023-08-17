@@ -35,5 +35,5 @@ public interface AdsInterface {
 	
 	public int getHeight();
 	
-	public boolean getConsent(boolean underAge);
+	public boolean checkConsent(boolean reset,boolean underAge);
 }

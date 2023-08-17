@@ -211,7 +211,7 @@ public class AdsSamsung implements AdsInterface, AdInterstitialListener, AdVideo
 	}
 	
 	@Override
-	public boolean checkConsent(boolean underAge) { return false; }
+	public boolean checkConsent(boolean reset,boolean underAge) { return false; }
 	
 	private String getAutoSize() {
 		String[] arr = {"large_banner", "medium_banner", "small_banner"};

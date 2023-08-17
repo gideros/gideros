@@ -329,7 +329,7 @@
     }
 }
 
--(BOOL)checkConsent:(BOOL) underAge
+-(BOOL)checkConsent:(BOOL) reset forUnderAge:(BOOL) underAge
 {
   // Create a UMPRequestParameters object.
   UMPRequestParameters *parameters = [[UMPRequestParameters alloc] init];
@@ -337,6 +337,8 @@
   // of consent.
   parameters.tagForUnderAgeOfConsent = underAge;
 
+	if (reset)
+		[UMPConsentInformation.sharedInstance reset];
   // Request an update for the consent information.
   [UMPConsentInformation.sharedInstance
       requestConsentInfoUpdateWithParameters:parameters

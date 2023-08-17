@@ -25,6 +25,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.ump.ConsentForm;
 import com.google.android.ump.ConsentInformation;
 import com.google.android.ump.ConsentRequestParameters;
 import com.google.android.ump.FormError;
@@ -445,7 +446,7 @@ public class AdsAdmob implements AdsInterface, OnInitializationCompleteListener 
 	}
 	
 	@Override
-	public boolean checkConsent(boolean underAge) { 
+	public boolean checkConsent(boolean reset,boolean underAge) { 
 	    // Set tag for under age of consent. false means users are not under age
 	    // of consent.
 	    ConsentRequestParameters params = new ConsentRequestParameters
@@ -453,23 +454,26 @@ public class AdsAdmob implements AdsInterface, OnInitializationCompleteListener 
 	        .setTagForUnderAgeOfConsent(underAge)
 	        .build();
 
-	    consentInformation = UserMessagingPlatform.getConsentInformation(sActivity.get());
+	    ConsentInformation consentInformation = UserMessagingPlatform.getConsentInformation(sActivity.get());
+	    if (reset)
+	    	consentInformation.reset();
+	    
 	    consentInformation.requestConsentInfoUpdate(
 	    		sActivity.get(),
 	        params,
-	        (OnConsentInfoUpdateSuccessListener) () -> {
+	        (ConsentInformation.OnConsentInfoUpdateSuccessListener) () -> {
 	          UserMessagingPlatform.loadAndShowConsentFormIfRequired(
 	        		  sActivity.get(),
-	            (OnConsentFormDismissedListener) loadAndShowError -> {
+	            (ConsentForm.OnConsentFormDismissedListener) loadAndShowError -> {
 	              if (loadAndShowError != null) {
 	            	  Ads.adConsent(AdsAdmob.me, loadAndShowError.getMessage(), loadAndShowError.getErrorCode());
 	              }
 	              else
 	            	  Ads.adConsent(AdsAdmob.me, "", 0);
 	            }
-	          )
+	          );
 	        },
-	        (OnConsentInfoUpdateFailureListener) requestConsentError -> {
+	        (ConsentInformation.OnConsentInfoUpdateFailureListener) requestConsentError -> {
           	  Ads.adConsent(AdsAdmob.me, requestConsentError.getMessage(), requestConsentError.getErrorCode());
 	        });
 	  return true;

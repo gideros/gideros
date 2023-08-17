@@ -31,7 +31,7 @@
 +(int)getY:(NSString*)adprovider;
 +(int)getWidth:(NSString*)adprovider;
 +(int)getHeight:(NSString*)adprovider;
-+(BOOL)checkConsent:(NSString*)adprovider forUnderAge:(BOOL) underAge;
++(BOOL)checkConsent:(NSString*)adprovider reset:(BOOL)reset forUnderAge:(BOOL) underAge;
 +(BOOL)hasConnection;
 +(BOOL)isPortrait;
 +(void)adReceived:(Class)adprovider forType:(NSString*)type;

@@ -196,7 +196,7 @@ public class AdsKiip implements AdsInterface, Kiip.OnContentListener, DialogInte
     }
 
 	@Override
-	public boolean checkConsent(boolean underAge) { return false; }
+	public boolean checkConsent(boolean reset,boolean underAge) { return false; }
 	
     @Override
     public void onContent(Kiip kiip, String momentId, int quantity, String transactionId,

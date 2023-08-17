@@ -223,7 +223,7 @@ public:
 	{
 		JNIEnv *env = g_getJNIEnv();
 		jstring jAd = env->NewStringUTF(ad);
-		bool res = env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "checkConsent", "(Ljava/lang/String;Z)Z"), jAd, request->underAge);
+		bool res = env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "checkConsent", "(Ljava/lang/String;ZZ)Z"), jAd, request->reset, request->underAge);
 		env->DeleteLocalRef(jAd);
 		return res;
 	}

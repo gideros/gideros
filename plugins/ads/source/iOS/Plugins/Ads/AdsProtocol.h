@@ -18,5 +18,5 @@
 -(void)hideAd:(NSString*)type;
 -(void)enableTesting;
 -(UIView*)getView;
--(BOOL)checkConsent:(BOOL) underAge;
+-(BOOL)checkConsent:(BOOL) reset forUnderAge:(BOOL) underAge;
 @end

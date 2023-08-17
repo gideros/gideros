@@ -140,7 +140,7 @@ static CGRect rects[6];
     [InMobi setLogLevel:IMLogLevelDebug];
 }
 
--(BOOL)checkConsent:(BOOL) underAge
+-(BOOL)checkConsent:(BOOL) reset forUnderAge:(BOOL) underAge
 {
 	return FALSE;
 }

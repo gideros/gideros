@@ -629,6 +629,10 @@ static int checkConsent(lua_State *L)
     Ads *ads = getInstance(L, 1);
     luaL_checktype(L,2,LUA_TTABLE);
 
+    lua_getfield(L,2,"reset");
+    req.reset=lua_toboolean(L,-1);
+    lua_pop(L,1);
+
     lua_getfield(L,2,"underAge");
     req.underAge=lua_toboolean(L,-1);
     lua_pop(L,1);

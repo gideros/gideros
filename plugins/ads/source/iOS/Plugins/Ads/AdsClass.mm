@@ -227,11 +227,11 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
     return 0;
 }
 
-+(BOOL)checkConsent:(NSString*)adprovider forUnderAge:(BOOL) underAge
++(BOOL)checkConsent:(NSString*)adprovider reset:(BOOL)reset forUnderAge:(BOOL) underAge
 {
 	id ad = [ads objectForKey:[adprovider lowercaseString]];
     if (ad) {
-        return [ad checkConsent:underAge];
+        return [ad checkConsent:reset forUnderAge:underAge];
     }
     else
     	return FALSE;

@@ -152,7 +152,7 @@ public class AdsTapfortap implements AdsInterface, Banner.BannerListener, Inters
 	}
 
 	@Override
-	public boolean checkConsent(boolean underAge) { return false; }
+	public boolean checkConsent(boolean reset,boolean underAge) { return false; }
 	
 	@Override
 	public void bannerOnFail(Banner Banner, String s, Throwable throwable) {

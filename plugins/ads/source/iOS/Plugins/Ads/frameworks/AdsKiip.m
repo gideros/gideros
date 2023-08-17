@@ -196,7 +196,7 @@
     [[Kiip sharedInstance] setTestMode:TRUE];
 }
 
--(BOOL)checkConsent:(BOOL) underAge
+-(BOOL)checkConsent:(BOOL) reset forUnderAge:(BOOL) underAge
 {
 	return FALSE;
 }

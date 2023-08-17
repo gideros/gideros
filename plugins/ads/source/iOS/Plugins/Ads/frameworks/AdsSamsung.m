@@ -188,7 +188,7 @@
 
 }
 
--(BOOL)checkConsent:(BOOL) underAge
+-(BOOL)checkConsent:(BOOL) reset forUnderAge:(BOOL) underAge
 {
 	return FALSE;
 }

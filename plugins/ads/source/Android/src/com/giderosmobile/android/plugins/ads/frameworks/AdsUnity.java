@@ -115,7 +115,7 @@ public class AdsUnity implements AdsInterface, IUnityAdsListener {
 	}
 
 	@Override
-	public boolean checkConsent(boolean underAge) { return false; }
+	public boolean checkConsent(boolean reset,boolean underAge) { return false; }
 	
 	@Override
 	public void onUnityAdsReady(String s) {

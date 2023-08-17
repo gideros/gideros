@@ -83,6 +83,7 @@ G_API void gads_enableTesting(const char *ad);
 G_API void gads_setAlignment(const char *ad, const char *hor, const char *ver);
     
 struct gads_ConsentRequest {
+	bool reset;
 	bool underAge;
 };
 
