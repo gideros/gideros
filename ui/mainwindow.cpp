@@ -3266,24 +3266,29 @@ void MainWindow::exportProject()
             templatename = "WindowsDesktopTemplate";
             templatenamews = "WindowsDesktopTemplate";
             arguments << "-platform" << "win32";
-        } else if (exportType=="Windows") {
+        } else if (exportType=="Desktop") {
             templatedir = "Qt";
-            templatename = "WindowsDesktopTemplate";
-            templatenamews = "WindowsDesktopTemplate";
-            arguments << "-platform" << "windows";
-            arguments << "-organization" << dialog.win_org();
-            arguments << "-domain" << dialog.win_domain();
-        } else if (exportType=="MacOSX") {
-            templatedir = "Qt";
-            templatename = "MacOSXDesktopTemplate";
-            templatenamews = "MacOSXDesktopTemplate";
-            arguments << "-platform" << "macosx";
-            arguments << "-organization" << dialog.osx_org();
-            arguments << "-domain" << dialog.osx_domain();
-            arguments << "-bundle" << dialog.osx_bundle();
-            arguments << "-signingId" << dialog.osx_signingId();
-            arguments << "-installerId" << dialog.osx_installerId();
-            arguments << "-category" << dialog.osx_category();
+            QString expPlatform=dialog.qtexp_platform();
+            arguments << "-organization" << dialog.qtexp_org();
+            arguments << "-domain" << dialog.qtexp_domain();
+            if (expPlatform=="Windows")
+            {
+                templatename = "WindowsDesktopTemplate";
+                templatenamews = "WindowsDesktopTemplate";
+                arguments << "-platform" << "qtwindows";
+            } else if (expPlatform=="Mac") {
+                templatename = "MacOSXDesktopTemplate";
+                templatenamews = "MacOSXDesktopTemplate";
+                arguments << "-platform" << "qtmacosx";
+                arguments << "-bundle" << dialog.osx_bundle();
+                arguments << "-signingId" << dialog.osx_signingId();
+                arguments << "-installerId" << dialog.osx_installerId();
+                arguments << "-category" << dialog.osx_category();
+            } else if (expPlatform=="Linux") {
+                templatename = "LinuxDesktopTemplate";
+                templatenamews = "LinuxDesktopTemplate";
+                arguments << "-platform" << "qtlinux";
+            }
         } else if (exportType=="GApp") {
             arguments << "-platform" << "gapp";
         } else if (exportType=="Html5") {

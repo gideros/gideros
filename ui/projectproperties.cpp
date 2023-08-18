@@ -113,14 +113,13 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("atv_bundle", this->atv_bundle);
     properties.setAttribute("macos_bundle", this->macos_bundle);
     properties.setAttribute("macos_category", this->macos_category);
-	properties.setAttribute("osx_org", this->osx_org);
-	properties.setAttribute("osx_domain", this->osx_domain);
+    properties.setAttribute("qtexp_platform", this->qtexp_platform);
+    properties.setAttribute("qtexp_org", this->qtexp_org);
+    properties.setAttribute("qtexp_domain", this->qtexp_domain);
     properties.setAttribute("osx_bundle", this->osx_bundle);
     properties.setAttribute("osx_signingId", this->osx_signingId);
     properties.setAttribute("osx_installerId", this->osx_installerId);
     properties.setAttribute("osx_category", this->osx_category);
-    properties.setAttribute("win_org", this->win_org);
-	properties.setAttribute("win_domain", this->win_domain);
     properties.setAttribute("winrt_org", this->winrt_org);
     properties.setAttribute("winrt_package", this->winrt_package);
     properties.setAttribute("html5_host", this->html5_host);
@@ -254,10 +253,12 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->macos_bundle = properties.attribute("macos_bundle");
         if (!properties.attribute("macos_category").isEmpty())
             this->macos_category = properties.attribute("macos_category").toInt();
-        if (!properties.attribute("osx_org").isEmpty())
-			this->osx_org = properties.attribute("osx_org");
-        if (!properties.attribute("osx_domain").isEmpty())
-			this->osx_domain = properties.attribute("osx_domain");
+        if (!properties.attribute("qtexp_platform").isEmpty())
+            this->qtexp_platform = properties.attribute("qtexp_platform").toInt();
+        if (!properties.attribute("qtexp_org").isEmpty())
+            this->qtexp_org = properties.attribute("qtexp_org");
+        if (!properties.attribute("qtexp_domain").isEmpty())
+            this->qtexp_domain = properties.attribute("qtexp_domain");
         if (!properties.attribute("osx_bundle").isEmpty())
             this->osx_bundle = properties.attribute("osx_bundle");
         if (!properties.attribute("osx_signingId").isEmpty())
@@ -266,10 +267,6 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->osx_installerId = properties.attribute("osx_installerId");
         if (!properties.attribute("osx_category").isEmpty())
             this->osx_category = properties.attribute("osx_category").toInt();
-        if (!properties.attribute("win_org").isEmpty())
-			this->win_org = properties.attribute("win_org");
-        if (!properties.attribute("win_domain").isEmpty())
-			this->win_domain = properties.attribute("win_domain");
         if (!properties.attribute("winrt_org").isEmpty())
             this->winrt_org = properties.attribute("winrt_org");
         if (!properties.attribute("winrt_package").isEmpty())

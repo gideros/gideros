@@ -23,7 +23,7 @@ void ExportBuiltin::exportAllAssetsFiles(ExportContext *ctx)
         ctx->jetset << "mp3" << "mp4" << "png" << "jpg" << "jpeg" << "wav";
 
     ExportCommon::exportAssets(ctx,true);
-    if(ctx->deviceFamily == e_MacOSXDesktop || ctx->deviceFamily == e_WindowsDesktop)
+    if(ctx->deviceFamily == e_MacOSXDesktop || ctx->deviceFamily == e_WindowsDesktop || ctx->deviceFamily == e_LinuxDesktop)
         ctx->outputDir.cd("..");
 
     // write allfiles.txt
@@ -269,17 +269,11 @@ void ExportBuiltin::prepareAssetFolder(ExportContext *ctx)
     	ctx->outputDir.cd("assets");
     }
 
-        if(ctx->deviceFamily == e_MacOSXDesktop || ctx->deviceFamily == e_WindowsDesktop){
+        if(ctx->deviceFamily == e_MacOSXDesktop || ctx->deviceFamily == e_WindowsDesktop || ctx->deviceFamily == e_LinuxDesktop){
             QString org;
             QString domain;
-            if(ctx->deviceFamily == e_MacOSXDesktop){
-                org = ctx->args["organization"];
-                domain = ctx->args["domain"];
-            }
-            else if(ctx->deviceFamily == e_WindowsDesktop){
-                org = ctx->args["organization"];
-                domain = ctx->args["domain"];
-            }
+            org = ctx->args["organization"];
+            domain = ctx->args["domain"];
             QString filename = "data.bin";
             QFile file(QDir::cleanPath(ctx->outputDir.absoluteFilePath(filename)));
             if (file.open(QIODevice::WriteOnly))
@@ -353,12 +347,17 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ctx->templatenamews = "WindowsDesktopTemplate";
         ctx->platform = "WindowsDesktop";
         break;
-
     case e_MacOSXDesktop:
         templatedir = "Qt";
         ctx->templatename = "MacOSXDesktopTemplate";
         ctx->templatenamews = "MacOSXDesktopTemplate";
         ctx->platform = "MacOSXDesktop";
+        break;
+    case e_LinuxDesktop:
+        templatedir = "Qt";
+        ctx->templatename = "LinuxDesktopTemplate";
+        ctx->templatenamews = "LinuxDesktopTemplate";
+        ctx->platform = "LinuxDesktop";
         break;
     case e_GApp:
         needGApp = true;

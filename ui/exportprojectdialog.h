@@ -34,14 +34,13 @@ public:
     QString macos_category() const;
     QString packageName() const;
     QString androidTemplate() const;
-    QString osx_org() const;
-    QString osx_domain() const;
+    QString qtexp_platform() const;
+    QString qtexp_org() const;
+    QString qtexp_domain() const;
     QString osx_bundle() const;
     QString osx_category() const;
     QString osx_signingId() const;
     QString osx_installerId() const;
-    QString win_org() const;
-    QString win_domain() const;
     QString winrt_org() const;
     QString winrt_package() const;
     QString html5_host() const;
@@ -60,6 +59,7 @@ private:
 	//QSet<ProjectProperties::Plugin> plugins;
 	int xmlTabCount;
 	QStringList exportTypes;
+    QStringList qtPlatforms;
     QMap<QString, QString> osxCat;
 };
 

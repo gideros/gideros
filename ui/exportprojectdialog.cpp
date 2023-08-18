@@ -52,8 +52,10 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     osxCat["Trivia Games"] = "public.app-category.trivia-games";
     osxCat["Word Games"] = "public.app-category.word-games";
 
-    exportTypes << "Apple" << "Windows" << "MacOSX"
+    exportTypes << "Apple" << "Desktop"
             << "WinRT" << "GApp" << "Win32" << "Html5";
+
+    qtPlatforms << "Windows" << "Mac" << "Linux";
 
 	properties_ = properties;
 
@@ -75,14 +77,13 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     ui->atv_bundle->setText(properties_->atv_bundle);
     ui->macos_bundle->setText(properties_->macos_bundle);
     ui->macos_category->setCurrentIndex(properties_->macos_category);
-    ui->osx_org->setText(properties->osx_org);
-    ui->osx_domain->setText(properties->osx_domain);
+    ui->qtexp_org->setText(properties->qtexp_org);
+    ui->qtexp_domain->setText(properties->qtexp_domain);
+    ui->qtexp_platform->setCurrentIndex(properties->qtexp_platform);
     ui->osx_bundle->setText(properties_->osx_bundle);
     ui->osx_signingid->setText(properties_->osx_signingId);
     ui->osx_installerid->setText(properties_->osx_installerId);
     ui->osx_category->setCurrentIndex(properties_->osx_category);
-    ui->win_org->setText(properties->win_org);
-    ui->win_domain->setText(properties->win_domain);
     ui->winrt_org->setText(properties->winrt_org);
     ui->winrt_package->setText(properties->winrt_package);
     ui->html5_host->setText(properties->html5_host);
@@ -191,14 +192,19 @@ QString ExportProjectDialog::macos_category() const
     return osxCat[ui->macos_category->currentText()];
 }
 
-QString ExportProjectDialog::osx_org() const
+QString ExportProjectDialog::qtexp_platform() const
 {
-    return ui->osx_org->text();
+    return qtPlatforms[ui->qtexp_platform->currentIndex()];
 }
 
-QString ExportProjectDialog::osx_domain() const
+QString ExportProjectDialog::qtexp_org() const
 {
-    return ui->osx_domain->text();
+    return ui->qtexp_org->text();
+}
+
+QString ExportProjectDialog::qtexp_domain() const
+{
+    return ui->qtexp_domain->text();
 }
 
 QString ExportProjectDialog::osx_bundle() const
@@ -219,16 +225,6 @@ QString ExportProjectDialog::osx_installerId() const
 QString ExportProjectDialog::osx_category() const
 {
     return osxCat[ui->osx_category->currentText()];
-}
-
-QString ExportProjectDialog::win_org() const
-{
-    return ui->win_org->text();
-}
-
-QString ExportProjectDialog::win_domain() const
-{
-    return ui->win_domain->text();
 }
 
 QString ExportProjectDialog::winrt_org() const
@@ -269,14 +265,13 @@ void ExportProjectDialog::onAccepted()
     properties_->atv_bundle = ui->atv_bundle->text();
     properties_->macos_bundle = ui->macos_bundle->text();
     properties_->macos_category = ui->macos_category->currentIndex();
-    properties_->osx_org = ui->osx_org->text();
-    properties_->osx_domain = ui->osx_domain->text();
+    properties_->qtexp_platform = ui->qtexp_platform->currentIndex();
+    properties_->qtexp_org = ui->qtexp_org->text();
+    properties_->qtexp_domain = ui->qtexp_domain->text();
     properties_->osx_bundle = ui->osx_bundle->text();
     properties_->osx_signingId = ui->osx_signingid->text();
     properties_->osx_installerId = ui->osx_installerid->text();
     properties_->osx_category = ui->osx_category->currentIndex();
-    properties_->win_org = ui->win_org->text();
-    properties_->win_domain = ui->win_domain->text();
     properties_->winrt_org = ui->winrt_org->text();
     properties_->winrt_package = ui->winrt_package->text();
     properties_->encryptCode = ui->encryptCode->isChecked();

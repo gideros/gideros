@@ -47,12 +47,7 @@ target platform to export the application source.</string>
        </item>
        <item>
         <property name="text">
-         <string>Windows Desktop</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Mac OS X Desktop</string>
+         <string>Desktop</string>
         </property>
        </item>
        <item>
@@ -95,7 +90,7 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>6</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -177,67 +172,41 @@ target platform to export the application source.</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
-      <attribute name="title">
-       <string>Windows Desktop</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_52">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_40">
-         <item>
-          <widget class="QLabel" name="label4_2">
-           <property name="text">
-            <string>Organization:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="win_org">
-           <property name="text">
-            <string>GiderosMobile</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QLabel" name="label5_2">
-           <property name="text">
-            <string>Domain:       </string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="win_domain">
-           <property name="text">
-            <string>giderosmobile.com</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer11">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>41</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
-       <string>Mac OS X Desktop</string>
+       <string>Desktop</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Platform:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="qtexp_platform">
+           <item>
+            <property name="text">
+             <string>Windows</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Mac OS</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Linux</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_38">
          <item>
@@ -248,7 +217,7 @@ target platform to export the application source.</string>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="osx_org">
+          <widget class="QLineEdit" name="qtexp_org">
            <property name="text">
             <string>GiderosMobile</string>
            </property>
@@ -266,7 +235,7 @@ target platform to export the application source.</string>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="osx_domain">
+          <widget class="QLineEdit" name="qtexp_domain">
            <property name="text">
             <string>giderosmobile.com</string>
            </property>
@@ -279,7 +248,7 @@ target platform to export the application source.</string>
          <item>
           <widget class="QLabel" name="label6">
            <property name="text">
-            <string>Bundle ID:      </string>
+            <string>Bundle ID (OSX):      </string>
            </property>
           </widget>
          </item>
@@ -297,7 +266,7 @@ target platform to export the application source.</string>
          <item>
           <widget class="QLabel" name="label3_2">
            <property name="text">
-            <string>App Category:</string>
+            <string>App Category (OSX):</string>
            </property>
           </widget>
          </item>
@@ -324,7 +293,7 @@ target platform to export the application source.</string>
          <item>
           <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>Signing identity:</string>
+            <string>Signing identity (OSX):</string>
            </property>
           </widget>
          </item>
@@ -338,7 +307,7 @@ target platform to export the application source.</string>
          <item>
           <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>Installer signing identity:</string>
+            <string>Installer signing identity (OSX):</string>
            </property>
           </widget>
          </item>
@@ -610,6 +579,13 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
         <widget class="QCheckBox" name="html5_symbols">
          <property name="text">
           <string>Output symbols (for debugging)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDialogButtonBox" name="buttonBox_2">
+         <property name="standardButtons">
+          <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
          </property>
         </widget>
        </item>

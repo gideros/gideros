@@ -29,7 +29,8 @@ enum DeviceFamily
   e_GApp,
   e_Win32,
   e_Html5,
-  e_Xml
+  e_Xml,
+  e_LinuxDesktop,
 };
 
 struct ExportContext

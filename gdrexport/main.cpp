@@ -219,7 +219,7 @@ void usage()
     fprintf(stderr, "Usage: gdrexport -options <project_file> <output_dir>\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options general: \n");
-    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, windows, macosx, winrt, win32, gapp, html5)\n");
+    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, qtwindows, qtmacosx, qtlinux, winrt, win32, gapp, html5)\n");
     fprintf(stderr, "    -encrypt                   #encrypts code and assets\n");
     fprintf(stderr, "    -encrypt-code              #encrypts code\n");
     fprintf(stderr, "    -encrypt-assets            #encrypts assets\n");
@@ -232,11 +232,11 @@ void usage()
     fprintf(stderr, "    -package <package_name>    #apk package name\n");
     fprintf(stderr, "    -template <template>       #template to use (eclipse, androidstudio)\n");
     fprintf(stderr, "\n");
-    fprintf(stderr, "Options windows: \n");
+    fprintf(stderr, "Options qtwindows: \n");
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -domain <domain_name>      #domain name\n");
     fprintf(stderr, "\n");
-    fprintf(stderr, "Options macosx: \n");
+    fprintf(stderr, "Options qtmacosx: \n");
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -domain <domain_name>      #domain name\n");
     fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
@@ -302,13 +302,17 @@ int main(int argc, char *argv[])
             {
             	ctx.deviceFamily = e_Android;
             }
-            else if (platform.toLower() == "windows")
+            else if (platform.toLower() == "qtwindows")
             {
             	ctx.deviceFamily = e_WindowsDesktop;
             }
-            else if (platform.toLower() == "macosx")
+            else if (platform.toLower() == "qtmacosx")
             {
-            	ctx.deviceFamily = e_MacOSXDesktop;
+                ctx.deviceFamily = e_MacOSXDesktop;
+            }
+            else if (platform.toLower() == "qtlinux")
+            {
+                ctx.deviceFamily = e_LinuxDesktop;
             }
             else if (platform.toLower() == "winrt")
             {
