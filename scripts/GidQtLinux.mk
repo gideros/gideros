@@ -71,7 +71,7 @@ qlexilla.debug:
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Linux
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; \
+	R=`pwd`; cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; \
 		else if [ -d "Desktop" ]; then cd Desktop; fi; fi; \
 	cp -P *.so* $$R/$(RELEASE)/Plugins; \
 	cp -P *.so* $$R/$(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins; \
