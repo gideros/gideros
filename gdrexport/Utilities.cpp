@@ -11,7 +11,7 @@
 #include "ExportCommon.h"
 #include <QRegularExpression>
 
-#ifdef Q_OS_MACX
+#if defined(Q_OS_MACX) || defined (Q_OS_LINUX)
 #include <unistd.h>
 #endif
 
@@ -279,7 +279,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
                     destFile.replace(renameList[i].first, renameList[i].second);
                 QString destName = destDir.absoluteFilePath(destFile);
                 QString target;
-#ifdef Q_OS_MACX
+#if defined(Q_OS_MACX) || defined (Q_OS_LINUX)
                 char buffer[1024];
                 int linkLen=readlink(srcName.toUtf8().constData(),buffer,1024);
                 if (linkLen>=0)
