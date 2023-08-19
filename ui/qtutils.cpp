@@ -25,5 +25,8 @@ void doShowInFinder(const QString& path){
         scriptArgs << QLatin1String("-e")
                    << QLatin1String("tell application \"Finder\" to activate");
         QProcess::execute("/usr/bin/osascript", scriptArgs);
+#elif defined(Q_OS_LINUX)
+    scriptArgs << QDir::toNativeSeparators(path);
+    QProcess::execute(QLatin1String("xdg-open"), scriptArgs);
 #endif
 }
