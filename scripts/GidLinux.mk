@@ -121,7 +121,7 @@ linux.install: linux.libs.install linux.app linux.plugins.install
 	#cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.so $(LINUX_RELEASE)
 	#cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.so $(LINUX_RELEASE)
 	#for f in libgcc_s_seh-1 libstdc++-6 libwinpthread-1; do cp $(LINUX_BIN)/$$f.so $(LINUX_RELEASE); done
-	strip $(addprefix $(LINUX_RELEASE)/,LinuxTemplate gid.so gvfs.so lua.so pystring.so gideros.so openal.so mp3.so)
+	strip $(addprefix $(LINUX_RELEASE)/,LinuxTemplate libgid.so libgvfs.so liblua.so libpystring.so libgideros.so libopenal.so libmp3.so)
 	mkdir -p $(LINUX_RELEASE)/plugins
 
 linux.clean: linux.plugins.clean
