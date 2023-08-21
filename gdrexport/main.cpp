@@ -219,7 +219,7 @@ void usage()
     fprintf(stderr, "Usage: gdrexport -options <project_file> <output_dir>\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options general: \n");
-    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, qtwindows, qtmacosx, qtlinux, winrt, win32, gapp, html5)\n");
+    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, qtwindows, qtmacosx, qtlinux, winrt, win32, linux, gapp, html5)\n");
     fprintf(stderr, "    -encrypt                   #encrypts code and assets\n");
     fprintf(stderr, "    -encrypt-code              #encrypts code\n");
     fprintf(stderr, "    -encrypt-assets            #encrypts assets\n");
@@ -320,7 +320,11 @@ int main(int argc, char *argv[])
             }
             else if (platform.toLower() == "win32")
             {
-            	ctx.deviceFamily = e_Win32;
+                ctx.deviceFamily = e_Win32;
+            }
+            else if (platform.toLower() == "linux")
+            {
+                ctx.deviceFamily = e_Linux;
             }
             else if (platform.toLower() == "gapp")
             {
@@ -565,7 +569,8 @@ int main(int argc, char *argv[])
                 << "libgideros.a" // Apple
                 << "gid.dll" //QT Win
                 << "libgid.1.dylib" //QT Mac
-                << "libgid.so.1.0.0" //QT Linux + Linux
+                << "libgid.so.1.0.0" //QT Linux
+                << "libgid.so" //Linux
                 << "gideros.WindowsPhone.lib" << "gideros.Windows.lib" //UWP
                 << "gideros.html.mem" << "gideros-wasm.wasm"  //HTML
                 << "*.exe"; //WIN32

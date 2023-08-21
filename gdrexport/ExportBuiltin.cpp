@@ -160,6 +160,10 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("BackgroundColor=\"#FEFEFE\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
         replaceList1 << qMakePair(QString(" Version=\"1.0.0.0\"").toUtf8(), (" Version=\""+winver+"\"").toUtf8());
     }
+    else if(ctx->deviceFamily == e_Linux){
+        ctx->replaceList[0] << qMakePair(bytepad(ctx->templatenamews.toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
+        ctx->replaceList[0] << qMakePair(bytepad(QString("Linux Template App Name").toUtf8(),256), bytepad(ctx->appName.toUtf8(),256));
+    }
     else if(ctx->deviceFamily == e_Win32){
     	ctx->replaceList[0] << qMakePair(bytepad(ctx->templatenamews.toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
     	ctx->replaceList[0] << qMakePair(bytepad(QString("Win32 Template App Name").toUtf8(),256), bytepad(ctx->appName.toUtf8(),256));
@@ -338,6 +342,14 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       ctx->templatename = "WindowsDesktopTemplate";
       ctx->templatenamews = "WindowsDesktopTemplate";
       ctx->platform = "Win32";
+      underscore = Utilities::UNDERSCORES;
+      break;
+
+    case e_Linux:
+      templatedir = "linux";
+      ctx->templatename = "LinuxTemplate";
+      ctx->templatenamews = "LinuxTemplate";
+      ctx->platform = "Linux";
       underscore = Utilities::UNDERSCORES;
       break;
 

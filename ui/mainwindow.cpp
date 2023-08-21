@@ -3291,6 +3291,8 @@ void MainWindow::exportProject()
             }
         } else if (exportType=="GApp") {
             arguments << "-platform" << "gapp";
+        } else if (exportType=="Linux") {
+            arguments << "-platform" << "linux";
         } else if (exportType=="Html5") {
             templatedir = "Html5";
             templatename = "Html5";

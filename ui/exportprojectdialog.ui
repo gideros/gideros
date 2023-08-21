@@ -67,6 +67,11 @@ target platform to export the application source.</string>
        </item>
        <item>
         <property name="text">
+         <string>Linux</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>Html5</string>
         </property>
        </item>
@@ -475,6 +480,24 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
         </spacer>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Linux</string>
+      </attribute>
+      <widget class="QLabel" name="label_16">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>721</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Export a Linux project. No specific settings yet.</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="tab_6">
       <attribute name="title">

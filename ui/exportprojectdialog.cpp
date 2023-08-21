@@ -53,7 +53,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     osxCat["Word Games"] = "public.app-category.word-games";
 
     exportTypes << "Apple" << "Desktop"
-            << "WinRT" << "GApp" << "Win32" << "Html5";
+            << "WinRT" << "GApp" << "Win32" << "Linux" << "Html5";
 
     qtPlatforms << "Windows" << "Mac" << "Linux";
 

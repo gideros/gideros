@@ -208,9 +208,12 @@ void cb_mousebtn(GLFWwindow *win,int btn,int act,int mods) {
 }
 // ######################################################################
 static ApplicationManager *s_applicationManager;
+static const char szAppName[256] = "LinuxTemplate" ;
+static const char szAppTitle[256] = "Linux Template App Name" ;
+
 int main(int argc, char *argv[])
 {	
-  PATH_AppName="LinuxTemplate";
+  PATH_AppName=szAppName;
   char pathName[PATH_MAX+1];
   readlink("/proc/self/exe",pathName,PATH_MAX);
   PATH_Executable=pathName;
