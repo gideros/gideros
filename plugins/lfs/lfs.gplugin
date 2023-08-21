@@ -54,5 +54,8 @@ iOSProject.exportPluginFiles("lfs",
  <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
  </target>
+ <target name="Linux">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/linux" dest="plugins"/>
+ </target>
  </plugin>
  

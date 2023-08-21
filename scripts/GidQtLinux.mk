@@ -61,17 +61,17 @@ qlexilla.debug:
 	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS) debug
 
 %.qtplugin:
-	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; $(MAKE) $(MAKEJOBS); \
+	cd $(ROOT)/plugins/$*/source; if [ -d "qtlinux" ]; then cd qtlinux; $(MAKE) $(MAKEJOBS); \
 		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE) $(MAKEJOBS) $(QTTGT_DIR); fi 
 
 %.qtplugin.clean:
-	cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; elif [ -d "Desktop" ]; then cd Desktop; fi; if [ -f Makefile ]; then $(MAKE) clean; fi
+	cd $(ROOT)/plugins/$*/source; if [ -d "qtlinux" ]; then cd qtlinux; elif [ -d "Desktop" ]; then cd Desktop; fi; if [ -f Makefile ]; then $(MAKE) clean; fi
 
 %.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Linux
-	R=`pwd`; cd $(ROOT)/plugins/$*/source; if [ -d "linux" ]; then cd linux; \
+	R=`pwd`; cd $(ROOT)/plugins/$*/source; if [ -d "qtlinux" ]; then cd qtlinux; \
 		else if [ -d "Desktop" ]; then cd Desktop; fi; fi; \
 	cp -P *.so* $$R/$(RELEASE)/Plugins; \
 	cp -P *.so* $$R/$(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins; \

@@ -30,6 +30,9 @@ iOSProject.exportPluginFiles("bit",
  <target name="Html5">
  	<lua>require("Tools/export_html5").export("bit")</lua>
  </target>
+ <target name="Linux">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/linux" dest="plugins"/>
+ </target>
  <target name="WinRT">
     <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
     <template name="project" path="">
