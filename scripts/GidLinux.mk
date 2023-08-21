@@ -40,7 +40,7 @@ OBJFILES_player+= linux/main linux/applicationmanager libgid/src/linux/platform-
 INCLUDEPATHS_player+=linux
 INCLUDEPATHS_player+=2dsg/gfxbackends/gl2
 LIBS_player = -lgvfs -lgid -llua -lpystring -lgideros \
-	-lGL -lglfw -lpthread -lGLEW -ldl
+	-lGL -lglfw -lpthread -lGLEW -ldl -lcurl
 
 
 ##RULES
@@ -114,6 +114,8 @@ linux.libs.install: linux.libs
 
 linux.install: linux.libs.install linux.app linux.plugins.install
 	cp $(LINUX_BUILDDIR)/player $(LINUX_RELEASE)/LinuxTemplate
+	cp linux/cacert.pem $(LINUX_RELEASE)
+	cp linux/cacert.pem $(LINUX_BUILDDIR)
 	#cp $(LINUX_BIN)/glew32.so $(LINUX_RELEASE)
 	#cp $(LINUX_BIN)/{libcurl*,libidn*,libnghttp*,libbrotli*,libpsl*,libssh*,libiconv*,libintl*,libzstd,zlib1,libunistring*,libssl*,libcrypto*}.so $(LINUX_RELEASE)
 	#cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.so $(LINUX_RELEASE)

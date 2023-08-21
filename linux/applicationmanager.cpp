@@ -452,6 +452,7 @@ ApplicationManager::ApplicationManager() {
 
 		// http
 		ghttp_Init();
+		ghttp_InitCA(PATH_Executable);
 
 		// ui
 		gui_init();

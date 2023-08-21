@@ -23,6 +23,8 @@
 #include "limits.h"
 #include "glog.h"
 #include "gplugin.h"
+#include "ginput-linux.h"
+#include "ghttp-linux.h"
 
 static GLFWwindow *glfw_win;
 float pixelRatio=1.0;
@@ -49,7 +51,10 @@ static bool g_portrait, drawok;
 
 std::string getDeviceName()
 {
-  return "placeholder";
+	char Name[256];
+	memset(Name,0,256);
+	gethostname(Name,256);
+	return Name;
 }
 
 static void loadPlugins() {
@@ -108,19 +113,98 @@ int initGL(int &width, int &height)
 
 int defWidth, defHeight;
 bool resized;
+int mButtons=0;
+double mpos_x=0,mpos_y=0;
 void cb_winsize(GLFWwindow *win,int w,int h) {
 	defWidth=w;
 	defHeight=h;
 	resized=true;
 }
+void cb_key(GLFWwindow *win,int key,int scan,int action, int mods)
+{
+	int mmap=0;
+	if (mods&GLFW_MOD_SHIFT)
+		mmap|=GINPUT_SHIFT_MODIFIER;
+	if (mods&GLFW_MOD_ALT)
+		mmap|=GINPUT_ALT_MODIFIER;
+	if (mods&GLFW_MOD_CONTROL)
+		mmap|=GINPUT_CTRL_MODIFIER;
+	if (mods&GLFW_MOD_SUPER)
+		mmap|=GINPUT_META_MODIFIER;
+	if (action)
+		ginputp_keyDown(key,mmap);
+	else
+		ginputp_keyUp(key,mmap);
+}
+void cb_char(GLFWwindow *win,unsigned int uni) {
+	char sc[4];
+	char *obuf=sc;
+	 if (uni<0x80)
+	  *(obuf++)=uni;
+	 else
+	 {
+	  if (uni<0x800)
+	  {
+	   *(obuf++)=0xC0|(uni>>6);
+	   *(obuf++)=0x80|(uni&0x3F);
+	  }
+	  else
+	  {
+	    *(obuf++)=0xE0|(uni>>12);
+	    *(obuf++)=0x80|((uni>>6)&0x3F);
+	    *(obuf++)=0x80|(uni&0x3F);
+	  }
+	 }
+	 *(obuf++)=0;
+	 ginputp_keyChar(sc);
+}
+
 void cb_cursorpos(GLFWwindow *win,double x,double y) {
-	printf("MOUSEM:%f,%f\n",x,y);
+	int mod=0;
+	mpos_x=x;
+	mpos_y=y;
+	if (mButtons) 
+		ginputp_mouseMove(x,y,mButtons,mod);
+	else
+		ginputp_mouseHover(x,y,mButtons,mod);
+	//printf("MOUSEM:%f,%f\n",x,y);
 }
 void cb_cursorenter(GLFWwindow *win,int enter) {
-	printf("MOUSEE:%d\n",enter);
+	double x,y;
+	int mods=0;
+	glfwGetCursorPos(win,&x,&y);
+	if (enter)
+		ginputp_mouseEnter(x,y,0,mods);
+	else
+		ginputp_mouseLeave(0,0,mods);
+	//printf("MOUSEE:%d\n",enter);
 }
 void cb_mousebtn(GLFWwindow *win,int btn,int act,int mods) {
-	printf("MOUSEB:%d,%d,%d\n",btn,act,mods);
+	int bmap=0;
+	if (btn==GLFW_MOUSE_BUTTON_LEFT)
+		bmap=GINPUT_LEFT_BUTTON;
+	else if (btn==GLFW_MOUSE_BUTTON_RIGHT)
+		bmap=GINPUT_RIGHT_BUTTON;
+	else if (btn==GLFW_MOUSE_BUTTON_MIDDLE)
+		bmap=GINPUT_MIDDLE_BUTTON;
+	int mmap=0;
+	if (mods&GLFW_MOD_SHIFT)
+		mmap|=GINPUT_SHIFT_MODIFIER;
+	if (mods&GLFW_MOD_ALT)
+		mmap|=GINPUT_ALT_MODIFIER;
+	if (mods&GLFW_MOD_CONTROL)
+		mmap|=GINPUT_CTRL_MODIFIER;
+	if (mods&GLFW_MOD_SUPER)
+		mmap|=GINPUT_META_MODIFIER;
+	if (act) {
+		mButtons|=(1<<bmap);
+		ginputp_mouseDown(mpos_x,mpos_y,bmap,mmap);
+	}
+	else {
+		mButtons&=~(1<<bmap);
+		ginputp_mouseUp(mpos_x,mpos_y,bmap,mmap);		
+	}
+	//printf("MOUSEB:%d,%d,%d\n",btn,act,mods);
 }
 // ######################################################################
 static ApplicationManager *s_applicationManager;
@@ -146,6 +230,8 @@ int main(int argc, char *argv[])
 	s_applicationManager->surfaceCreated();
 	
 	glfwSetWindowSizeCallback(glfw_win,cb_winsize);
+	glfwSetKeyCallback(glfw_win,cb_key);
+	glfwSetCharCallback(glfw_win,cb_char);
 	glfwSetCursorPosCallback(glfw_win,cb_cursorpos);
 	glfwSetCursorEnterCallback(glfw_win,cb_cursorenter);
 	glfwSetMouseButtonCallback(glfw_win,cb_mousebtn);

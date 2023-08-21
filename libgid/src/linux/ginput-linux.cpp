@@ -6,7 +6,7 @@
 #include <string.h>
 #include <map>
 #include <pthread.h>
-
+#include <GLFW/glfw3.h>
 namespace ginput {
 
 class InputManager
@@ -18,57 +18,82 @@ public:
         isTouchToMouseEnabled_ = 0;
         mouseTouchOrder_= 0;
 
-        keyMap_[GINPUT_KEY_LEFT] = GINPUT_KEY_LEFT;
-        keyMap_[GINPUT_KEY_RIGHT] = GINPUT_KEY_RIGHT;
-        keyMap_[GINPUT_KEY_UP] = GINPUT_KEY_UP;
-        keyMap_[GINPUT_KEY_DOWN] = GINPUT_KEY_DOWN;
+        keyMap_[GLFW_KEY_LEFT] = GINPUT_KEY_LEFT;
+        keyMap_[GLFW_KEY_RIGHT] = GINPUT_KEY_RIGHT;
+        keyMap_[GLFW_KEY_UP] = GINPUT_KEY_UP;
+        keyMap_[GLFW_KEY_DOWN] = GINPUT_KEY_DOWN;
 
-        keyMap_[GINPUT_KEY_0] = GINPUT_KEY_0;
-        keyMap_[GINPUT_KEY_1] = GINPUT_KEY_1;
-        keyMap_[GINPUT_KEY_2] = GINPUT_KEY_2;
-        keyMap_[GINPUT_KEY_3] = GINPUT_KEY_3;
-        keyMap_[GINPUT_KEY_4] = GINPUT_KEY_4;
-        keyMap_[GINPUT_KEY_5] = GINPUT_KEY_5;
-        keyMap_[GINPUT_KEY_6] = GINPUT_KEY_6;
-        keyMap_[GINPUT_KEY_7] = GINPUT_KEY_7;
-        keyMap_[GINPUT_KEY_8] = GINPUT_KEY_8;
-        keyMap_[GINPUT_KEY_9] = GINPUT_KEY_9;
+        keyMap_[GLFW_KEY_0] = GINPUT_KEY_0;
+        keyMap_[GLFW_KEY_1] = GINPUT_KEY_1;
+        keyMap_[GLFW_KEY_2] = GINPUT_KEY_2;
+        keyMap_[GLFW_KEY_3] = GINPUT_KEY_3;
+        keyMap_[GLFW_KEY_4] = GINPUT_KEY_4;
+        keyMap_[GLFW_KEY_5] = GINPUT_KEY_5;
+        keyMap_[GLFW_KEY_6] = GINPUT_KEY_6;
+        keyMap_[GLFW_KEY_7] = GINPUT_KEY_7;
+        keyMap_[GLFW_KEY_8] = GINPUT_KEY_8;
+        keyMap_[GLFW_KEY_9] = GINPUT_KEY_9;
 
-        keyMap_[GINPUT_KEY_A] = GINPUT_KEY_A;
-        keyMap_[GINPUT_KEY_B] = GINPUT_KEY_B;
-        keyMap_[GINPUT_KEY_C] = GINPUT_KEY_C;
-        keyMap_[GINPUT_KEY_D] = GINPUT_KEY_D;
-        keyMap_[GINPUT_KEY_E] = GINPUT_KEY_E;
-        keyMap_[GINPUT_KEY_F] = GINPUT_KEY_F;
-        keyMap_[GINPUT_KEY_G] = GINPUT_KEY_G;
-        keyMap_[GINPUT_KEY_H] = GINPUT_KEY_H;
-        keyMap_[GINPUT_KEY_I] = GINPUT_KEY_I;
-        keyMap_[GINPUT_KEY_J] = GINPUT_KEY_J;
-        keyMap_[GINPUT_KEY_K] = GINPUT_KEY_K;
-        keyMap_[GINPUT_KEY_L] = GINPUT_KEY_L;
-        keyMap_[GINPUT_KEY_M] = GINPUT_KEY_M;
-        keyMap_[GINPUT_KEY_N] = GINPUT_KEY_N;
-        keyMap_[GINPUT_KEY_O] = GINPUT_KEY_O;
-        keyMap_[GINPUT_KEY_P] = GINPUT_KEY_P;
-        keyMap_[GINPUT_KEY_Q] = GINPUT_KEY_Q;
-        keyMap_[GINPUT_KEY_R] = GINPUT_KEY_R;
-        keyMap_[GINPUT_KEY_S] = GINPUT_KEY_S;
-        keyMap_[GINPUT_KEY_T] = GINPUT_KEY_T;
-        keyMap_[GINPUT_KEY_U] = GINPUT_KEY_U;
-        keyMap_[GINPUT_KEY_V] = GINPUT_KEY_V;
-        keyMap_[GINPUT_KEY_W] = GINPUT_KEY_W;
-        keyMap_[GINPUT_KEY_X] = GINPUT_KEY_X;
-        keyMap_[GINPUT_KEY_Y] = GINPUT_KEY_Y;
-        keyMap_[GINPUT_KEY_Z] = GINPUT_KEY_Z;
+        keyMap_[GLFW_KEY_A] = GINPUT_KEY_A;
+        keyMap_[GLFW_KEY_B] = GINPUT_KEY_B;
+        keyMap_[GLFW_KEY_C] = GINPUT_KEY_C;
+        keyMap_[GLFW_KEY_D] = GINPUT_KEY_D;
+        keyMap_[GLFW_KEY_E] = GINPUT_KEY_E;
+        keyMap_[GLFW_KEY_F] = GINPUT_KEY_F;
+        keyMap_[GLFW_KEY_G] = GINPUT_KEY_G;
+        keyMap_[GLFW_KEY_H] = GINPUT_KEY_H;
+        keyMap_[GLFW_KEY_I] = GINPUT_KEY_I;
+        keyMap_[GLFW_KEY_J] = GINPUT_KEY_J;
+        keyMap_[GLFW_KEY_K] = GINPUT_KEY_K;
+        keyMap_[GLFW_KEY_L] = GINPUT_KEY_L;
+        keyMap_[GLFW_KEY_M] = GINPUT_KEY_M;
+        keyMap_[GLFW_KEY_N] = GINPUT_KEY_N;
+        keyMap_[GLFW_KEY_O] = GINPUT_KEY_O;
+        keyMap_[GLFW_KEY_P] = GINPUT_KEY_P;
+        keyMap_[GLFW_KEY_Q] = GINPUT_KEY_Q;
+        keyMap_[GLFW_KEY_R] = GINPUT_KEY_R;
+        keyMap_[GLFW_KEY_S] = GINPUT_KEY_S;
+        keyMap_[GLFW_KEY_T] = GINPUT_KEY_T;
+        keyMap_[GLFW_KEY_U] = GINPUT_KEY_U;
+        keyMap_[GLFW_KEY_V] = GINPUT_KEY_V;
+        keyMap_[GLFW_KEY_W] = GINPUT_KEY_W;
+        keyMap_[GLFW_KEY_X] = GINPUT_KEY_X;
+        keyMap_[GLFW_KEY_Y] = GINPUT_KEY_Y;
+        keyMap_[GLFW_KEY_Z] = GINPUT_KEY_Z;
+		
+        keyMap_[GLFW_KEY_F1] = GINPUT_KEY_F1;
+        keyMap_[GLFW_KEY_F2] = GINPUT_KEY_F2;
+        keyMap_[GLFW_KEY_F3] = GINPUT_KEY_F3;
+        keyMap_[GLFW_KEY_F4] = GINPUT_KEY_F4;
+        keyMap_[GLFW_KEY_F5] = GINPUT_KEY_F5;
+        keyMap_[GLFW_KEY_F6] = GINPUT_KEY_F6;
+        keyMap_[GLFW_KEY_F7] = GINPUT_KEY_F7;
+        keyMap_[GLFW_KEY_F8] = GINPUT_KEY_F8;
+        keyMap_[GLFW_KEY_F9] = GINPUT_KEY_F9;
+        keyMap_[GLFW_KEY_F10] = GINPUT_KEY_F10;
+        keyMap_[GLFW_KEY_F11] = GINPUT_KEY_F11;
+        keyMap_[GLFW_KEY_F12] = GINPUT_KEY_F12;
 
-	keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
-	keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
-	keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
+    keyMap_[GLFW_KEY_HOME] = GINPUT_KEY_HOME;
+    keyMap_[GLFW_KEY_END] = GINPUT_KEY_END;
+    keyMap_[GLFW_KEY_INSERT] = GINPUT_KEY_INSERT;
+    keyMap_[GLFW_KEY_DELETE] = GINPUT_KEY_DELETE;
+    keyMap_[GLFW_KEY_PAGE_UP] = GINPUT_KEY_PAGEUP;
+    keyMap_[GLFW_KEY_PAGE_DOWN] = GINPUT_KEY_PAGEDOWN;
+    keyMap_[GLFW_KEY_ENTER] = GINPUT_KEY_ENTER;
 
-	keyMap_[GINPUT_KEY_CTRL] = GINPUT_KEY_CTRL;
-	keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
-	keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
-	keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
+
+	keyMap_[GLFW_KEY_SPACE] = GINPUT_KEY_SPACE;
+	keyMap_[GLFW_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
+	keyMap_[GLFW_KEY_ESCAPE] = GINPUT_KEY_ESC;
+	keyMap_[GLFW_KEY_TAB] = GINPUT_KEY_TAB;
+
+	keyMap_[GLFW_KEY_RIGHT_CONTROL] = GINPUT_KEY_CTRL;
+	keyMap_[GLFW_KEY_RIGHT_SHIFT] = GINPUT_KEY_SHIFT;
+	keyMap_[GLFW_KEY_RIGHT_ALT] = GINPUT_KEY_ALT;
+	keyMap_[GLFW_KEY_LEFT_CONTROL] = GINPUT_KEY_CTRL;
+	keyMap_[GLFW_KEY_LEFT_SHIFT] = GINPUT_KEY_SHIFT;
+	keyMap_[GLFW_KEY_LEFT_ALT] = GINPUT_KEY_ALT;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
