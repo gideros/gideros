@@ -33,11 +33,13 @@ PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming gift
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts megacool map share storereview
 PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
+PLUGINS_LINUX=lsqlite3 luasocket lfs json lpeg clipper struct bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_WIN+=threads
 PLUGINS_ANDROID+=threads
 PLUGINS_WIN32+=bitop threads
 PLUGINS_HTML5+=bitop
+PLUGINS_LINUX+=bitop
 endif
 
 #Precompiled plugins only below
@@ -161,6 +163,7 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidPkg.mk
 else
 ifeq ($(UNAME_S),Linux)
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtLinux.mk
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidLinux.mk
 else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidiOS.mk

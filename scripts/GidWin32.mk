@@ -24,6 +24,7 @@ WIN32_RELEASE=$(RELEASE)/Templates/win32/WindowsDesktopTemplate
 #LIBS_gvfs+= libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/lib/x86/libpthreadGC2.a
 
 LIBS_lua+=$(WIN32_BUILDDIR)/gvfs.dll
+DEFINES_lua+=LUA_BUILD_AS_DLL 
 
 INCLUDEPATHS_gid+= libgid/include/win32
 DEFINES_gid+=$(WIN32_TGTVERDEF)

@@ -11,7 +11,7 @@ INCLUDEPATHS_pystring = libpystring
 OBJFILES_pystring = $(addprefix libpystring/,pystring)
 DEFINES_pystring=PYSTRING_LIBRARY
 
-DEFINES_lua=LUA_BUILD_AS_DLL LUA_CORE
+DEFINES_lua=LUA_CORE
 ifeq ($(LUA_ENGINE),luau)
 INCLUDEPATHS_lua=luau/VM/src luau/VM/include luau/Compiler/include luau/Common/include luau/Ast/include libgvfs
 OBJFILES_lua=$(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
