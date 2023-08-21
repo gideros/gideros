@@ -561,9 +561,14 @@ int main(int argc, char *argv[])
 
      //Encryption key replacement info
      QStringList wildcards2;
-     wildcards2 << "libgideros.so" << "libgiderosvr.so" << "libgideros.a" << "gid.dll"
-     		   << "libgid.1.dylib" << "gideros.WindowsPhone.lib"
-     		   << "gideros.Windows.lib" << "gideros.html.mem" << "gideros-wasm.wasm" << "*.exe";
+     wildcards2 << "libgideros.so" << "libgiderosvr.so" // Android
+                << "libgideros.a" // Apple
+                << "gid.dll" //QT Win
+                << "libgid.1.dylib" //QT Mac
+                << "libgid.so.1.0.0" //QT Linux + Linux
+                << "gideros.WindowsPhone.lib" << "gideros.Windows.lib" //UWP
+                << "gideros.html.mem" << "gideros-wasm.wasm"  //HTML
+                << "*.exe"; //WIN32
      ctx.wildcards << wildcards2;
 
      QList<QPair<QByteArray, QByteArray> > replaceList2;
