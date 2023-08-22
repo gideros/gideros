@@ -30,7 +30,7 @@ static ApplicationManager *s_applicationManager;
 static const char szAppName[256] = "LinuxTemplateDir" ;
 static const char szAppTitle[256] = "Linux Template App Name" ;
 
-static GLFWwindow *glfw_win;
+GLFWwindow *glfw_win;
 float pixelRatio=1.0;
 int lastGLWidth=0,lastGLHeight=0;
 
@@ -43,13 +43,6 @@ extern "C" {
   void g_setFps(int);
   int g_getFps();
 }
-
-// ######################################################################
-
-static LuaApplication *application_;
-static int g_windowWidth;    // width if window was in portrait mode
-static int g_windowHeight;   // height if window was in portrait mode > windowWidth
-static bool g_portrait, drawok;
 
 // ######################################################################
 
@@ -117,12 +110,24 @@ int initGL(int &width, int &height)
 
 int defWidth, defHeight;
 bool resized;
-int mButtons=0;
+int mButtons=0,mMods=0;
 double mpos_x=0,mpos_y=0;
 void cb_winsize(GLFWwindow *win,int w,int h) {
 	defWidth=w;
 	defHeight=h;
 	resized=true;
+}
+int getMods(GLFWwindow *win) {
+	int mmap=0;
+	if (glfwGetKey(win,GLFW_KEY_LEFT_SHIFT)||glfwGetKey(win,GLFW_KEY_RIGHT_SHIFT))
+		mmap|=GINPUT_SHIFT_MODIFIER;
+	if (glfwGetKey(win,GLFW_KEY_LEFT_ALT)||glfwGetKey(win,GLFW_KEY_RIGHT_ALT))
+		mmap|=GINPUT_ALT_MODIFIER;
+	if (glfwGetKey(win,GLFW_KEY_LEFT_CONTROL)||glfwGetKey(win,GLFW_KEY_RIGHT_CONTROL))
+		mmap|=GINPUT_CTRL_MODIFIER;
+	if (glfwGetKey(win,GLFW_KEY_LEFT_SUPER)||glfwGetKey(win,GLFW_KEY_RIGHT_SUPER))
+		mmap|=GINPUT_META_MODIFIER;
+	return mmap;
 }
 void cb_key(GLFWwindow *win,int key,int scan,int action, int mods)
 {
@@ -135,10 +140,19 @@ void cb_key(GLFWwindow *win,int key,int scan,int action, int mods)
 		mmap|=GINPUT_CTRL_MODIFIER;
 	if (mods&GLFW_MOD_SUPER)
 		mmap|=GINPUT_META_MODIFIER;
-	if (action)
+	if (action==GLFW_PRESS) {
 		ginputp_keyDown(key,mmap);
-	else
+		if (key==GLFW_KEY_TAB)
+			ginputp_keyChar("\t");
+		else if (key==GLFW_KEY_ENTER)
+			ginputp_keyChar("\r");
+		else if (key==GLFW_KEY_BACKSPACE)
+			ginputp_keyChar("\b");
+	}
+	else if (action==GLFW_RELEASE)
 		ginputp_keyUp(key,mmap);
+	mMods=getMods(win);
+	//printf("CBK:%d,%d %d %x\n",key,scan,action,mMods);
 }
 void cb_char(GLFWwindow *win,unsigned int uni) {
 	char sc[4];
@@ -161,26 +175,25 @@ void cb_char(GLFWwindow *win,unsigned int uni) {
 	 }
 	 *(obuf++)=0;
 	 ginputp_keyChar(sc);
+	//printf("CBC:%d [%s]\n",uni,sc);
 }
 
 void cb_cursorpos(GLFWwindow *win,double x,double y) {
-	int mod=0;
 	mpos_x=x;
 	mpos_y=y;
 	if (mButtons) 
-		ginputp_mouseMove(x,y,mButtons,mod);
+		ginputp_mouseMove(x,y,mButtons,mMods);
 	else
-		ginputp_mouseHover(x,y,mButtons,mod);
+		ginputp_mouseHover(x,y,mButtons,mMods);
 	//printf("MOUSEM:%f,%f\n",x,y);
 }
 void cb_cursorenter(GLFWwindow *win,int enter) {
 	double x,y;
-	int mods=0;
 	glfwGetCursorPos(win,&x,&y);
 	if (enter)
-		ginputp_mouseEnter(x,y,0,mods);
+		ginputp_mouseEnter(x,y,0,mMods);
 	else
-		ginputp_mouseLeave(0,0,mods);
+		ginputp_mouseLeave(0,0,mMods);
 	//printf("MOUSEE:%d\n",enter);
 }
 void cb_mousebtn(GLFWwindow *win,int btn,int act,int mods) {
@@ -209,6 +222,9 @@ void cb_mousebtn(GLFWwindow *win,int btn,int act,int mods) {
 		ginputp_mouseUp(mpos_x,mpos_y,bmap,mmap);		
 	}
 	//printf("MOUSEB:%d,%d,%d\n",btn,act,mods);
+}
+void cb_scroll(GLFWwindow *win,double xoff, double yoff) {
+	ginputp_mouseWheel(mpos_x,mpos_y,mButtons,yoff*120,mMods);
 }
 // ######################################################################
 
@@ -239,6 +255,7 @@ int main(int argc, char *argv[])
 	glfwSetCursorPosCallback(glfw_win,cb_cursorpos);
 	glfwSetCursorEnterCallback(glfw_win,cb_cursorenter);
 	glfwSetMouseButtonCallback(glfw_win,cb_mousebtn);
+	glfwSetScrollCallback(glfw_win,cb_scroll);
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(glfw_win,GLFW_RAW_MOUSE_MOTION,GLFW_TRUE);
 		

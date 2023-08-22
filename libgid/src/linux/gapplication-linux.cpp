@@ -1,5 +1,7 @@
 #include <gapplication.h>
 #include <gapplication-linux.h>
+#include <GLFW/glfw3.h>
+#include <cstdio>
 
 class GGApplicationManager
 {
@@ -17,12 +19,19 @@ public:
 	
 	int getScreenDensity()
     {   
-      return 0;
+	  GLFWmonitor *m=glfwGetPrimaryMonitor();
+	  const GLFWvidmode *vm=glfwGetVideoMode(m);
+	  int wm,hm;
+	  glfwGetMonitorPhysicalSize(m,&wm,&hm);
+	  double dpi=((double)vm->width)*25.4/wm;
+	  float sx,sy;
+	  glfwGetMonitorContentScale(m,&sx,&sy);
+      return dpi;
     }
 
 	void exit()
 	{
-		//App.Current.Exit();
+		//exit(0);
 	}
 
     g_id addCallback(gevent_Callback callback, void *udata)

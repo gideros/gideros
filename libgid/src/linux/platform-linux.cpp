@@ -3,7 +3,9 @@
 
 #include <stdlib.h>
 #include "platform.h"
+#include <GLFW/glfw3.h>
 
+extern GLFWwindow *glfw_win;
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
 }
@@ -12,7 +14,7 @@ std::vector<std::string> getDeviceInfo()
 {
   std::vector<std::string> result;
 
-  result.push_back("pi");
+  result.push_back("Linux");
   
   return result;
 }
@@ -28,12 +30,20 @@ bool canOpenUrl(const char *url)
 
 std::string getLocale()
 {
-  return "placeholder";
+  std::string l=getenv("LOCALE");
+  size_t dot=l.find_first_of('.');
+  if (dot!=std::string::npos)
+	  l=l.substr(0,dot-1);
+  return l;
 }
 
 std::string getLanguage()
 {
-  return "placeholder";
+  std::string l=getenv("LANG");
+  size_t dot=l.find_first_of('.');
+  if (dot!=std::string::npos)
+	  l=l.substr(0,dot-1);
+  return l;
 }
 
 std::string getAppId(){
@@ -46,6 +56,7 @@ void getSafeDisplayArea(int &x,int &y,int &w,int &h)
 
 void setWindowSize(int width, int height)
 {
+	glfwSetWindowSize(glfw_win,width,height);
 }
 
 void setFullScreen(bool fullScreen)
@@ -70,10 +81,20 @@ bool setTextInput(int type,const char *buffer,int selstart,int selend,const char
 }
 
 int setClipboard(std::string data,std::string mimeType, int luaFunc) {
+	if (mimeType=="text/plain") {
+		glfwSetClipboardString(NULL,data.c_str());
+		return 1;
+	}
 	return -1;
 }
 
 int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
+	const char *text=glfwGetClipboardString(NULL);
+	if (text) {
+		data=text;
+		mimeType="text/plain";
+		return 1;
+	}
 	return -1;
 }
 

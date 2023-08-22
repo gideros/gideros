@@ -487,7 +487,7 @@ void ghttp_Init()
 
 void ghttp_InitCA(std::string cafolder)
 {
-	capath=cafolder+"\\cacert.pem";
+	capath=cafolder+"/cacert.pem";
 }
 
 void ghttp_Cleanup()
