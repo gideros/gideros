@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=LinuxTemplate
+Exec=LinuxTemplate
+Type=Application
+Categories=Utility;
+Icon=icon
+X-AppImage-Version=1
+X-AppImage-Arch=x86_64
+

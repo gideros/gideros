@@ -52,7 +52,7 @@ LIBS_player = -lgvfs -lgid -llua -lpystring -lgideros \
 linux.libs.build: CXXFLAGS = -g -O2 $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 linux.libs.build: $(addprefix $(LINUX_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#LINK $(LIBNAME).so
-	@$(LINUX_CXX) -g -o $(LINUX_BUILDDIR)/lib$(LIBNAME).so -shared $^ -L$(LINUX_BUILDDIR) $(LIBS) 
+	@$(LINUX_CXX) -g -o $(LINUX_BUILDDIR)/lib$(LIBNAME).so -shared $^ -Wl,-rpath,'$$ORIGIN' -Wl,-rpath,'$$ORIGIN/syslib' -L$(LINUX_BUILDDIR) $(LIBS) 
 	@cp $(LINUX_BUILDDIR)/lib$(LIBNAME).so $(SDK)/lib/linux
 
 %.linux.app: $(OBJFILES_%) $(addprefix $(LINUX_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
@@ -63,7 +63,7 @@ linux.libs.build: $(addprefix $(LINUX_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 linux.app.build: CXXFLAGS = -g -O2 $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 linux.app.build: $(addprefix $(LINUX_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#EXE $(APPNAME) $(LIBS)
-	@$(LINUX_CXX) -g -o $(LINUX_BUILDDIR)/$(APPNAME) $^ -Wl,-rpath-link,$(LINUX_BUILDDIR) -L$(LINUX_BUILDDIR) $(LIBS)
+	@$(LINUX_CXX) -g -o $(LINUX_BUILDDIR)/$(APPNAME) $^ -Wl,-rpath,'$$ORIGIN' -Wl,-rpath,'$$ORIGIN/syslib' -Wl,-rpath-link,$(LINUX_BUILDDIR) -L$(LINUX_BUILDDIR) $(LIBS)
 
 
 $(LINUX_BUILDDIR)/%.o : %.cpp
@@ -116,12 +116,12 @@ linux.install: linux.libs.install linux.app linux.plugins.install
 	cp $(LINUX_BUILDDIR)/player $(LINUX_RELEASE)/LinuxTemplate
 	cp linux/cacert.pem $(LINUX_RELEASE)
 	cp linux/cacert.pem $(LINUX_BUILDDIR)
-	#cp $(LINUX_BIN)/glew32.so $(LINUX_RELEASE)
-	#cp $(LINUX_BIN)/{libcurl*,libidn*,libnghttp*,libbrotli*,libpsl*,libssh*,libiconv*,libintl*,libzstd,zlib1,libunistring*,libssl*,libcrypto*}.so $(LINUX_RELEASE)
-	#cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.so $(LINUX_RELEASE)
-	#cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.so $(LINUX_RELEASE)
-	#for f in libgcc_s_seh-1 libstdc++-6 libwinpthread-1; do cp $(LINUX_BIN)/$$f.so $(LINUX_RELEASE); done
-	#strip $(addprefix $(LINUX_RELEASE)/,LinuxTemplate libgid.so libgvfs.so liblua.so libpystring.so libgideros.so libopenal.so libmp3.so)
+	cp linux/app.desktop $(LINUX_RELEASE)/LinuxTemplate.desktop
+	mkdir -p $(LINUX_RELEASE)/syslib
+	for i in `ldd $(LINUX_RELEASE)/LinuxTemplate | grep '=> /lib' | cut -d' ' -f 3 `; do cp $$i $(LINUX_RELEASE)/syslib/; done
+	cd $(LINUX_RELEASE)/syslib; rm $(addprefix lib,$(addsuffix .*,c dl m pthread))
+	cd $(LINUX_RELEASE)/syslib; for i in *; do patchelf --set-rpath '$$ORIGIN' $$i; done
+	strip $(addprefix $(LINUX_RELEASE)/,LinuxTemplate libgid.so libgvfs.so liblua.so libpystring.so libgideros.so libopenal.so libmp3.so)
 	mkdir -p $(LINUX_RELEASE)/plugins
 
 linux.clean: linux.plugins.clean

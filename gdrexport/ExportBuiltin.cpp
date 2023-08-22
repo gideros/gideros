@@ -55,6 +55,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         "*.appxmanifest" <<
         "*.gradle" <<
         "*.html" << "gidloader.js" << "manifest.json" <<
+		"*.desktop" <<
         "*.project";
     ctx->wildcards << wildcards1;
 
@@ -597,6 +598,9 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        ExportCommon::splashHImage(ctx,620,300,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-100.png"));
        ExportCommon::splashHImage(ctx,1240,600,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-200.png"));
        ExportCommon::splashHImage(ctx,2480,1200,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-400.png"));
+   }
+   else if(ctx->deviceFamily == e_Linux){
+        ExportCommon::appIcon(ctx,512,512,QString("icon.png"));
    }
    else if(ctx->deviceFamily == e_iOS){
         ExportCommon::appIcon(ctx,29,29,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon29x29.png"));

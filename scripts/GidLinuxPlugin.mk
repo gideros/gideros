@@ -16,7 +16,7 @@ LFLGS+=-L$(ROOT)/Sdk/lib/linux -llua -lgvfs -lgid -lgideros
 
 all: path $(OBJS)
 	@echo "LINK" $(TARGET)
-	@$(LINUX_CXX) -shared $(OBJS) $(LFLGS) -o $(BUILD)/$(TARGET).so
+	@$(LINUX_CXX) -shared $(OBJS) $(LFLGS) -Wl,-rpath,'$$ORIGIN/..' -Wl,-rpath,'$$ORIGIN/../syslib' -o $(BUILD)/$(TARGET).so
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
