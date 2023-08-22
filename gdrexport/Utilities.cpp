@@ -156,17 +156,19 @@ int Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,
             return;
         QByteArray data = in.readAll();
         in.close();
-	int rcount=0;
+		int rcount=0;
 
-        for (int i = 0; i < replaceList[match].size(); ++i)
+        for (int i = 0; i < replaceList[match].size(); ++i) {
+			//ExportCommon::exportInfo("%d.%d: RepSize %d -> %d\n",match,i,replaceList[match][i].first.size(),replaceList[match][i].second.size());
         	if (replaceList[match][i].first.size()==replaceList[match][i].second.size()) //Perform bitwise replacement if sizes are equal
         		rcount+=bitwiseReplace(data.data(),data.size(),
         			replaceList[match][i].first.constData(),replaceList[match][i].first.size(),
         			replaceList[match][i].second.constData(),replaceList[match][i].second.size());
         	else
-		{
+			{
         		data.replace(replaceList[match][i].first, replaceList[match][i].second);
-			rcount++;
+				rcount++;
+			}
 		}
 
         QFile out(destName);

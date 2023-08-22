@@ -161,7 +161,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString(" Version=\"1.0.0.0\"").toUtf8(), (" Version=\""+winver+"\"").toUtf8());
     }
     else if(ctx->deviceFamily == e_Linux){
-        ctx->replaceList[0] << qMakePair(bytepad(ctx->templatenamews.toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
+        ctx->replaceList[0] << qMakePair(bytepad(QString("LinuxTemplateDir").toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
         ctx->replaceList[0] << qMakePair(bytepad(QString("Linux Template App Name").toUtf8(),256), bytepad(ctx->appName.toUtf8(),256));
     }
     else if(ctx->deviceFamily == e_Win32){

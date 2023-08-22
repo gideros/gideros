@@ -570,7 +570,7 @@ int main(int argc, char *argv[])
                 << "gid.dll" //QT Win
                 << "libgid.1.dylib" //QT Mac
                 << "libgid.so.1.0.0" //QT Linux
-                << "libgid.so" //Linux
+                << "libgid.so" << "LinuxTemplate" //Linux
                 << "gideros.WindowsPhone.lib" << "gideros.Windows.lib" //UWP
                 << "gideros.html.mem" << "gideros-wasm.wasm"  //HTML
                 << "*.exe"; //WIN32

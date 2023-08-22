@@ -26,6 +26,10 @@
 #include "ginput-linux.h"
 #include "ghttp-linux.h"
 
+static ApplicationManager *s_applicationManager;
+static const char szAppName[256] = "LinuxTemplateDir" ;
+static const char szAppTitle[256] = "Linux Template App Name" ;
+
 static GLFWwindow *glfw_win;
 float pixelRatio=1.0;
 int lastGLWidth=0,lastGLHeight=0;
@@ -100,7 +104,7 @@ int initGL(int &width, int &height)
                       
  //8, 8, 8, 8, 16, 8, GLFW_WINDOW
  //glfwWindowHint(,);
- glfw_win = glfwCreateWindow(width, height, "", NULL, NULL);
+ glfw_win = glfwCreateWindow(width, height, szAppTitle, NULL, NULL);
  glfwMakeContextCurrent(glfw_win);
 
 	if (glewInit()!=GLEW_OK) {
@@ -207,9 +211,6 @@ void cb_mousebtn(GLFWwindow *win,int btn,int act,int mods) {
 	//printf("MOUSEB:%d,%d,%d\n",btn,act,mods);
 }
 // ######################################################################
-static ApplicationManager *s_applicationManager;
-static const char szAppName[256] = "LinuxTemplate" ;
-static const char szAppTitle[256] = "Linux Template App Name" ;
 
 int main(int argc, char *argv[])
 {	
