@@ -43,14 +43,14 @@ qtlibs.install: buildqtlibs
 qscintilla:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS)
-	mkdir -p $(QT)/include/ScintillaEdit
-	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(QT)/include/ScintillaEdit
+	mkdir -p $(ROOT)/qtinc/ScintillaEdit
+	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(ROOT)/qtinc/ScintillaEdit
 
 qlexilla:
 	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
 	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS)
-	mkdir -p $(QT)/include/Lexilla
-	cp lexilla/include/*.h $(QT)/include/Lexilla
+	mkdir -p $(ROOT)/qtinc/Lexilla
+	cp lexilla/include/*.h $(ROOT)/qtinc/Lexilla
 
 qscintilla.debug:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
@@ -211,5 +211,5 @@ bundle.installer: bundle
 	mkdir  -p $(ROOT)/ROOTLINUX
 	mv $(RELEASE).Final $(ROOT)/ROOTLINUX/Gideros\ Studio
 	rm -f $(ROOT)/Gideros.tar.xz
-	cd $(ROOT)/ROOTLINUX; tar -cJf $(ROOT)/Gideros.tar.xz "Gideros\ Studio"
+	cd $(ROOT)/ROOTLINUX; tar -cJf $(ROOT)/Gideros.tar.xz Gideros\ Studio
 	rm -rf $(ROOT)/ROOTLINUX

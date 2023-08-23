@@ -261,6 +261,9 @@ macx {
     LIBS += -L$$[QT_INSTALL_LIBS]
 }
 
+unix:!macx {
+   INCLUDEPATH += ../qtinc
+}
 
 win32 {
 	equals(USE_SCINTILLAEDIT,y): LIBS += -L"../scintilla/qt/ScintillaEdit/$$_CONFIG_" -L"../lexilla/src/$$_CONFIG_"
