@@ -31,7 +31,7 @@ enum DeviceFamily
   e_Html5,
   e_Xml,
   e_LinuxDesktop,
-    e_Linux,
+  e_Linux,
 };
 
 struct ExportContext

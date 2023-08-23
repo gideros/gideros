@@ -210,6 +210,6 @@ bundle.installer: bundle
 	rm -rf $(ROOT)/ROOTLINUX
 	mkdir  -p $(ROOT)/ROOTLINUX
 	mv $(RELEASE).Final $(ROOT)/ROOTLINUX/Gideros\ Studio
-	rm -f $(ROOT)/Gideros.tgz
-	cd $(ROOT)/ROOTLINUX; tar -czf $(ROOT)/Gideros.tgz "Gideros\ Studio"
+	rm -f $(ROOT)/Gideros.tar.xz
+	cd $(ROOT)/ROOTLINUX; tar -cJf $(ROOT)/Gideros.tar.xz "Gideros\ Studio"
 	rm -rf $(ROOT)/ROOTLINUX

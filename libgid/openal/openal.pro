@@ -116,7 +116,7 @@ SOURCES  += \
 win32 {
 SOURCES  += \
         $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/dsound.cpp        \
-        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/winmm.cpp        \
+        $${LOCAL_OPENAL_PATH}/openal-soft$${LOCAL_OPENAL_VERSION}/alc/backends/winmm.cpp
  LIBS+= -lwinmm -lole32 -ldsound -ldxguid -lks -lksuser
 }
 unix:!macx {

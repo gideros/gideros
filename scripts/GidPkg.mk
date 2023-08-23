@@ -88,7 +88,7 @@ fetch.linux.pkg:
 	scp -B $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildLinux.zip $(RELEASE)/BuildLinux.zip
 
 fetchbundle.linux.pkg:
-	scp -B $(LINUX_HOST):$(LINUX_PATH)/Gideros.tgz $(ROOT)/Gideros.tgz
+	scp -B $(LINUX_HOST):$(LINUX_PATH)/Gideros.tar.xz $(ROOT)/Gideros.tar.xz
 
 bundle.linux.pkg:
 	echo "\
@@ -113,10 +113,10 @@ push.remote.pkg:
 	cd $(RELEASE);\
 	rm -f BuildWin.zip;\
 	zip -r BuildWin.zip Sdk Players Templates "All Plugins" Addons Resources Documentation $(TXTFILES);\
-	[ ! -z "$(MAC_HOST)"] && scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildWin.zip; \
-	[ ! -z "$(LINUX_HOST)"] && scp -B BuildWin.zip $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildWin.zip; \
-	[ ! -z "$(MAC_HOST)"] && [ -f BuildLinux.zip] && scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildLinux.zip; \
-	[ ! -z "$(LINUX_HOST)"] && [ -f BuildMac.zip] && scp -B BuildMac.zip $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildMac.zip; \
+	[ ! -z "$(MAC_HOST)" ] && scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildWin.zip; \
+	[ ! -z "$(LINUX_HOST)" ] && scp -B BuildWin.zip $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildWin.zip; \
+	[ ! -z "$(MAC_HOST)" ] && [ -f BuildLinux.zip ] && scp -B BuildLinux.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildLinux.zip; \
+	[ ! -z "$(LINUX_HOST)" ] && [ -f BuildMac.zip ] && scp -B BuildMac.zip $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildMac.zip; \
 	echo "done";
 
 sync.remote.pkg: fetch.mac.pkg fetch.linux.pkg push.remote.pkg
@@ -136,17 +136,22 @@ macpull: build.mac.pkg fetch.mac.pkg
 
 linuxpull: build.linux.pkg fetch.linux.pkg
 	
-build.all.thrun : winpush.subthr macpull.subthr linuxpull.thr
+build.all.thrun: all.subthr fetchdoc.subthr build.mac.pkg.subthr build.linux.pkg.subthr 
 
 build.all.thr:
-	$(MAKE) -j2 -f scripts/Makefile.gid build.all.thrun
+	$(MAKE) -j4 -f scripts/Makefile.gid build.all.thrun
+	
+sync.remote.thrun: fetch.mac.pkg fetch.linux.pkg
+
+sync.remote.thr:
+	$(MAKE) -j2 -f scripts/Makefile.gid sync.remote.thrun
 
 bundle.all.thrun : bundle.installer.subthr bundle.mac.pkg.subthr bundle.linux.pkg.subthr 
 
 bundle.all.thr:
-	$(MAKE) -j2 -f scripts/Makefile.gid bundle.all.thrun
+	$(MAKE) -j3 -f scripts/Makefile.gid bundle.all.thrun
 	
-all.pkg: start.pkg build.all.thr bundle.all.thr fetchbundle.mac.pkg fetchbundle.linux.pkg
+all.pkg: start.pkg build.all.thr sync.remote.thr push.remote.pkg bundle.all.thr fetchbundle.mac.pkg fetchbundle.linux.pkg
 	echo -n "Finished on "; date
 
 bundle.pkg: bundle.all.thr fetchbundle.mac.pkg fetchbundle.linux.pkg
