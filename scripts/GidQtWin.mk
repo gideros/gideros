@@ -228,6 +228,7 @@ bundle:
 	mv $(RELEASE).Tmp/* $(RELEASE)
 	rm -rf $(RELEASE).Tmp
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
+	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildLinux.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildLinux.zip; fi
 	-cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE).Final/All\ Plugins
 
 bundle.win:

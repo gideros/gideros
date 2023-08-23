@@ -26,7 +26,8 @@ fetchdoc:
 	#mv docs.giderosmobile.com $(RELEASE)/Documentation
 	#-wget -nv "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE)/Resources/gideros_annot.api
 	cp $(addprefix $(ROOT)/,$(TXTFILES)) $(RELEASE)
-	 
+
+#MAC remote build
 build.mac.pkg:
 	echo "\
 	source /etc/profile;\
@@ -34,7 +35,7 @@ build.mac.pkg:
 	make -f scripts/Makefile.gid;\
 	exit;\
 	" |	ssh $(MAC_HOST)
-	
+
 fetch.mac.pkg:
 	echo "\
 	source /etc/profile;\
@@ -49,13 +50,6 @@ fetch.mac.pkg:
 fetchbundle.mac.pkg:
 	scp -B $(MAC_HOST):$(MAC_PATH)/Gideros.pkg $(ROOT)/Gideros.pkg
 
-push.mac.pkg:
-	cp -r $(SDK) $(RELEASE);\
-	cd $(RELEASE);\
-	rm -f BuildWin.zip;\
-	zip -r BuildWin.zip Sdk Players Templates "All Plugins" Addons Resources Documentation $(TXTFILES);\
-	scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildWin.zip 
-
 bundle.mac.pkg:
 	echo "\
 	source /etc/profile;\
@@ -63,8 +57,6 @@ bundle.mac.pkg:
 	make -f scripts/Makefile.gid bundle.installer;\
 	exit;\
 	" |	ssh $(MAC_HOST)
-
-sync.mac.pkg: fetch.mac.pkg push.mac.pkg
 
 clean.mac.pkg:
 	echo "\
@@ -75,7 +67,62 @@ clean.mac.pkg:
 	exit;\
 	" |	ssh $(MAC_HOST)
 
-clean.all.thrun : clean.subthr clean.mac.pkg.subthr
+#Linux remote build
+build.linux.pkg:
+	echo "\
+	source /etc/profile;\
+	cd $(LINUX_PATH);\
+	make -f scripts/Makefile.gid;\
+	exit;\
+	" |	ssh $(LINUX_HOST)
+
+fetch.linux.pkg:
+	echo "\
+	source /etc/profile;\
+	cp -r $(LINUX_PATH)/$(SDK) $(LINUX_PATH)/Build.Linux;\
+	cd $(LINUX_PATH)/Build.Linux;\
+	rm -f BuildLinux.zip;\
+	zip -r BuildLinux.zip Sdk Players Templates All\\ Plugins;\
+	exit;\
+	" |	ssh $(LINUX_HOST)
+	scp -B $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildLinux.zip $(RELEASE)/BuildLinux.zip
+
+fetchbundle.linux.pkg:
+	scp -B $(LINUX_HOST):$(LINUX_PATH)/Gideros.tgz $(ROOT)/Gideros.tgz
+
+bundle.linux.pkg:
+	echo "\
+	source /etc/profile;\
+	cd $(LINUX_PATH);\
+	make -f scripts/Makefile.gid bundle.installer;\
+	exit;\
+	" |	ssh $(LINUX_HOST)
+
+clean.linux.pkg:
+	echo "\
+	source /etc/profile;\
+	cd $(LINUX_PATH);\
+	git pull;\
+	make -f scripts/Makefile.gid clean;\
+	exit;\
+	" |	ssh $(LINUX_HOST)
+
+#Syncing rules
+push.remote.pkg:
+	cp -r $(SDK) $(RELEASE);\
+	cd $(RELEASE);\
+	rm -f BuildWin.zip;\
+	zip -r BuildWin.zip Sdk Players Templates "All Plugins" Addons Resources Documentation $(TXTFILES);\
+	[ ! -z "$(MAC_HOST)"] && scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildWin.zip; \
+	[ ! -z "$(LINUX_HOST)"] && scp -B BuildWin.zip $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildWin.zip; \
+	[ ! -z "$(MAC_HOST)"] && [ -f BuildLinux.zip] && scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildLinux.zip; \
+	[ ! -z "$(LINUX_HOST)"] && [ -f BuildMac.zip] && scp -B BuildMac.zip $(LINUX_HOST):$(LINUX_PATH)/Build.Linux/BuildMac.zip; \
+	echo "done";
+
+sync.remote.pkg: fetch.mac.pkg fetch.linux.pkg push.remote.pkg
+
+#General build
+clean.all.thrun : clean.subthr clean.mac.pkg.subthr clean.linux.pkg.subthr
 
 clean.all.pkg:	
 	$(MAKE) -j2 -f scripts/Makefile.gid clean.all.thrun
@@ -83,24 +130,26 @@ clean.all.pkg:
 %.subthr:
 	$(MAKE) -j1 -f scripts/Makefile.gid $*
 	
-winpush: all fetchdoc push.mac.pkg
+winpush: all fetchdoc push.remote.pkg
 
 macpull: build.mac.pkg fetch.mac.pkg
+
+linuxpull: build.linux.pkg fetch.linux.pkg
 	
-build.all.thrun : winpush.subthr macpull.subthr 
+build.all.thrun : winpush.subthr macpull.subthr linuxpull.thr
 
 build.all.thr:
 	$(MAKE) -j2 -f scripts/Makefile.gid build.all.thrun
 
-bundle.all.thrun : bundle.installer.subthr bundle.mac.pkg.subthr 
+bundle.all.thrun : bundle.installer.subthr bundle.mac.pkg.subthr bundle.linux.pkg.subthr 
 
 bundle.all.thr:
 	$(MAKE) -j2 -f scripts/Makefile.gid bundle.all.thrun
 	
-all.pkg: start.pkg build.all.thr bundle.all.thr fetchbundle.mac.pkg
+all.pkg: start.pkg build.all.thr bundle.all.thr fetchbundle.mac.pkg fetchbundle.linux.pkg
 	echo -n "Finished on "; date
 
-bundle.pkg: bundle.all.thr fetchbundle.mac.pkg
+bundle.pkg: bundle.all.thr fetchbundle.mac.pkg fetchbundle.linux.pkg
 
 start.pkg:
 	echo -n "Starting on "; date
@@ -121,7 +170,15 @@ addons.pkg: $(addsuffix .addons.pkg,$(ADDONS))
 	make -f scripts/Makefile.gid $*;\
 	exit;\
 	" |	ssh $(MAC_HOST)
-	
+
+%.linuxmake.pkg:
+	echo "\
+	source /etc/profile;\
+	cd $(LINUX_PATH);\
+	make -f scripts/Makefile.gid $*;\
+	exit;\
+	" |	ssh $(LINUX_HOST)
+
 %.fetchplugin.mac.pkg:
 	echo "\
 	source /etc/profile;\

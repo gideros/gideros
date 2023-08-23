@@ -623,34 +623,8 @@ ApplicationManager::ApplicationManager() {
 				}
 				skipFirstEnterFrame_ = true;
 
-				/*
-				 bool licensed = (licenseKey_[15] == 'f' && licenseKey_[16] == 'f');
-				 if (licensed)
-				 {
-				 loadLuaFiles();
-				 skipFirstEnterFrame_ = true;
-				 }
-				 else
-				 {
-				 application_->getApplication()->setBackgroundColor(0, 0, 0);
-				 splashScreen_ = new SplashScreen(application_->getApplication());
-				 application_->getApplication()->stage()->addChild(splashScreen_);
-				 splashScreen_->unref();
-				 }
-				 */
-
 				applicationStarted_ = true;
 			}
-
-			/*		if (splashScreen_ && splashScreen_->isFinished())
-			 {
-			 application_->getApplication()->stage()->removeChild(splashScreen_);
-			 splashScreen_ = NULL;
-			 application_->getApplication()->setBackgroundColor(1, 1, 1);
-
-			 loadLuaFiles();
-			 skipFirstEnterFrame_ = true;
-			 }*/
 		}
 
 		if (skipFirstEnterFrame_ == true) {

@@ -197,23 +197,19 @@ bundle:
 	mv $(RELEASE).Tmp/* $(RELEASE)
 	rm -rf $(RELEASE).Tmp
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildWin.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildWin.zip; fi
+	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
 	#Use our local version of that file due to line endings change
 	cp $(ROOT)/ui/Templates/AndroidStudio/Android\ Template/gradlew $(RELEASE).Final/Templates/AndroidStudio/Android\ Template
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
-	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
-	cp -r $(RELEASE).Final/Resources $(RELEASE).Final/Gideros\ Studio.app/Contents
 
-bundle.mac:
+bundle.linux:
 	cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE).Final/All\ Plugins
-	cp -r $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents/
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 
 bundle.installer: bundle
-	rm -rf $(ROOT)/ROOTMAC
-	mkdir  -p $(ROOT)/ROOTMAC/Applications
-	mv $(RELEASE).Final $(ROOT)/ROOTMAC/Applications/Gideros\ Studio
-	rm -f $(ROOT)/Gideros.pkg
-	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --version $(GIDEROS_VERSION) --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros-App.pkg
-	security -v unlock-keychain -p $(OSX_SIGNING_PASSWORD) "$$HOME/Library/Keychains/login.keychain" && productbuild --distribution Release/GiderosDist.plist --package-path $(ROOT)/Gideros-App.pkg --sign $(OSX_SIGNING_IDENTITY) $(ROOT)/Gideros.pkg
-	rm -rf $(ROOT)/ROOTMAC
-	cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
+	rm -rf $(ROOT)/ROOTLINUX
+	mkdir  -p $(ROOT)/ROOTLINUX
+	mv $(RELEASE).Final $(ROOT)/ROOTLINUX/Gideros\ Studio
+	rm -f $(ROOT)/Gideros.tgz
+	cd $(ROOT)/ROOTLINUX; tar -czf $(ROOT)/Gideros.tgz "Gideros\ Studio"
+	rm -rf $(ROOT)/ROOTLINUX

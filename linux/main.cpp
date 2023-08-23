@@ -27,6 +27,8 @@
 #include "ghttp-linux.h"
 
 static ApplicationManager *s_applicationManager;
+LuaApplication *application_;
+
 static const char szAppName[256] = "LinuxTemplateDir" ;
 static const char szAppTitle[256] = "Linux Template App Name" ;
 
@@ -38,6 +40,7 @@ std::string PATH_Executable;
 std::string PATH_Temp;
 std::string PATH_Cache;
 std::string PATH_AppName;
+std::vector<std::string> PATH_CommandLine;
 
 extern "C" {
   void g_setFps(int);
@@ -129,6 +132,7 @@ int getMods(GLFWwindow *win) {
 		mmap|=GINPUT_META_MODIFIER;
 	return mmap;
 }
+
 void cb_key(GLFWwindow *win,int key,int scan,int action, int mods)
 {
 	int mmap=0;
@@ -230,14 +234,15 @@ void cb_scroll(GLFWwindow *win,double xoff, double yoff) {
 
 int main(int argc, char *argv[])
 {	
-  PATH_AppName=szAppName;
-  char pathName[PATH_MAX+1];
-  readlink("/proc/self/exe",pathName,PATH_MAX);
-  PATH_Executable=pathName;
-  PATH_Executable=PATH_Executable.substr(0,PATH_Executable.rfind('/'));
-  PATH_Temp="/tmp";
-  PATH_Cache=PATH_Temp+"/"+PATH_AppName;
-
+	for (int i=0;i<argc;i++)
+		PATH_CommandLine.push_back(std::string(argv[i]));
+	PATH_AppName=szAppName;
+	char pathName[PATH_MAX+1];
+	readlink("/proc/self/exe",pathName,PATH_MAX);
+	PATH_Executable=pathName;
+	PATH_Executable=PATH_Executable.substr(0,PATH_Executable.rfind('/'));
+	PATH_Temp="/tmp";
+	PATH_Cache=PATH_Temp+"/"+PATH_AppName;
 
 	defWidth=320;
 	defHeight=480;
@@ -247,6 +252,7 @@ int main(int argc, char *argv[])
     loadPlugins();
 	
 	s_applicationManager=new ApplicationManager();
+	application_=s_applicationManager->getApplication();
 	s_applicationManager->surfaceCreated();
 	
 	glfwSetWindowSizeCallback(glfw_win,cb_winsize);
@@ -258,8 +264,7 @@ int main(int argc, char *argv[])
 	glfwSetScrollCallback(glfw_win,cb_scroll);
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(glfw_win,GLFW_RAW_MOUSE_MOTION,GLFW_TRUE);
-		
-	
+			
 	glfwMakeContextCurrent(glfw_win);
     while(!glfwWindowShouldClose(glfw_win))
     {
@@ -267,18 +272,14 @@ int main(int argc, char *argv[])
 		  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
 		}
 
-		s_applicationManager->drawFrame();
+		if (s_applicationManager->drawFrame()) {
+			glfwSwapBuffers(glfw_win);
+		}
 
-        glfwSwapBuffers(glfw_win);
 		glfwPollEvents();
-
     }
 
 	glfwDestroyWindow(glfw_win);
 	glfwTerminate();
-
-//   esRegisterDrawFunc ( &esContext, Draw );
-
-//   esMainLoop ( &esContext );
    return 0;
 }
