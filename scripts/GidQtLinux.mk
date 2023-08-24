@@ -1,3 +1,5 @@
+LINUX_SYSLIBS?=/usr/lib/x86_64
+
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
 qtapp.install: qtlibs.install qtplugins.install qt.install
@@ -96,7 +98,7 @@ QT5PLUGINS= \
 	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-glx-integration) \
 	imageformats/qjpeg \
 	#$(addprefix mediaservice/,dsengine qtmedia_audioengine) \
-
+QT5DEPSDLL=b2.so.1 double-conversion.so.3 md4c.so.0 pcre2-16.so.0
 
 qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
@@ -117,6 +119,7 @@ qt.install: buildqt qt.player tools html5.tools
 	for f in $(QT5DLLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE); done
 	for f in $(QT5DLLTOOLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE)/Tools; done
 	for a in $(QT5PLUGINS); do mkdir -p $(RELEASE)/$$(dirname $$a); cp -P $(QTPLUGINS)/$$(dirname $$a)/lib$$(basename $$a).so* $(RELEASE)/$$(dirname $$a)/; done
+	for f in $(QT5DEPSDLLS); do cp -P $(LINUX_SYSLIBS)/lib$$f $(RELEASE); done
 	#PLAYER
 	cp -R $(ROOT)/player/GiderosPlayer $(RELEASE)
 	cp -P $(SDK)/lib/desktop/*.so* $(RELEASE)
@@ -126,6 +129,8 @@ qt.install: buildqt qt.player tools html5.tools
 	#FONT CREATOR
 	cp -R $(ROOT)/fontcreator/GiderosFontCreator $(RELEASE)
 	mkdir -p $(RELEASE)/Templates
+	#EXTRAS
+	cp $(ROOT)/Release/LinuxExtra/* $(RELEASE)
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/AndroidStudio $(RELEASE)/Templates

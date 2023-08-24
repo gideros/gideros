@@ -1645,7 +1645,7 @@ void MainWindow::startPlayer()
 #elif defined(Q_OS_WIN)
 	QProcess::startDetached("GiderosPlayer.exe");
 #else
-	QProcess::startDetached("GiderosPlayer");
+	QProcess::startDetached("./GiderosPlayer");
 #endif
 }
 
@@ -1656,7 +1656,7 @@ void MainWindow::startTexturePacker()
 #elif defined(Q_OS_WIN)
 	QProcess::startDetached("GiderosTexturePacker.exe");
 #else
-	QProcess::startDetached("GiderosTexturePacker");
+	QProcess::startDetached("./GiderosTexturePacker");
 #endif
 }
 
@@ -1667,7 +1667,7 @@ void MainWindow::startFontCreator()
 #elif defined(Q_OS_WIN)
 	QProcess::startDetached("GiderosFontCreator.exe");
 #else
-	QProcess::startDetached("GiderosFontCreator");
+	QProcess::startDetached("./GiderosFontCreator");
 #endif
 }
 
