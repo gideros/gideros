@@ -1,4 +1,4 @@
-LINUX_SYSLIBS?=/usr/lib/x86_64
+LINUX_SYSLIBS?=/usr/lib/x86_64-linux-gnu
 
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
@@ -98,7 +98,8 @@ QT5PLUGINS= \
 	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-glx-integration) \
 	imageformats/qjpeg \
 	#$(addprefix mediaservice/,dsengine qtmedia_audioengine)
-QT5DEPSDLL=b2.so.1 double-conversion.so.3 md4c.so.0 pcre2-16.so.0
+	
+QT5DEPSDLLS=b2.so.1 double-conversion.so.3 md4c.so.0 pcre2-16.so.0
 
 qt.install: buildqt qt.player tools html5.tools
 	#STUDIO

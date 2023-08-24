@@ -8,6 +8,7 @@
 #include <cctype>
 #include <locale>
 
+//#define CURL_DEBUG
 static bool sslErrorsIgnore=false;
 static std::string colon=": ";
 static std::string capath;
@@ -169,6 +170,9 @@ static void *post_one(void *ptr)        // thread
   chunk.reply=reply2;
 
   curl = curl_easy_init();
+#ifdef CURL_DEBUG  
+  curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
 
   struct curl_slist *headers=NULL;
 
@@ -292,7 +296,9 @@ static void *put_one_url(void *ptr)     // thread
   printf("put_one_url: %s\n",reply2->url.c_str());
 
   curl=curl_easy_init();
-
+#ifdef CURL_DEBUG  
+  curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
   /* pass our list of custom made headers */
   curl_easy_setopt(curl, CURLOPT_CAINFO, capath.c_str());
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
@@ -398,6 +404,9 @@ static void *get_one_url(void *ptr)          // thread
   //printf("Processing: %s\n",reply2->url.c_str());
 
   curl = curl_easy_init();
+#ifdef CURL_DEBUG  
+  curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
 
   curl_easy_setopt(curl, CURLOPT_CAINFO, capath.c_str());
   /* pass our list of custom made headers */
@@ -659,11 +668,13 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 
 void ghttp_Close(g_id gid)
 {
+ pthread_mutex_lock (&mutexmap);
  if (map_.count(gid))
  {
   pthread_cancel(map_[gid].tid);
   map_.erase(gid);
  }
+pthread_mutex_unlock (&mutexmap);
 }
 
 void ghttp_CloseAll()
