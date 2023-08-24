@@ -99,7 +99,7 @@ QT5PLUGINS= \
 	imageformats/qjpeg \
 	#$(addprefix mediaservice/,dsengine qtmedia_audioengine)
 	
-QT5DEPSDLLS=b2.so.1 double-conversion.so.3 md4c.so.0 pcre2-16.so.0
+QT5DEPSDLLS=b2.so double-conversion.so md4c.so pcre2-16.so
 
 qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
@@ -120,7 +120,7 @@ qt.install: buildqt qt.player tools html5.tools
 	for f in $(QT5DLLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE); done
 	for f in $(QT5DLLTOOLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE)/Tools; done
 	for a in $(QT5PLUGINS); do mkdir -p $(RELEASE)/$$(dirname $$a); cp -P $(QTPLUGINS)/$$(dirname $$a)/lib$$(basename $$a).so* $(RELEASE)/$$(dirname $$a)/; done
-	for f in $(QT5DEPSDLLS); do cp -P $(LINUX_SYSLIBS)/lib$$f $(RELEASE); done
+	for f in $(QT5DEPSDLLS); do cp -P $(LINUX_SYSLIBS)/lib$$f* $(RELEASE); done
 	#PLAYER
 	cp -R $(ROOT)/player/GiderosPlayer $(RELEASE)
 	cp -P $(SDK)/lib/desktop/*.so* $(RELEASE)
