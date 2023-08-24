@@ -32,7 +32,7 @@ struct MemoryStruct {
   struct NetworkReply *reply;
 };
 
-static pthread_mutex_t mutexget, mutexput, mutexpost;
+static pthread_mutex_t mutexmap;
 
 static std::map<g_id, NetworkReply> map_;
 
@@ -252,9 +252,9 @@ static void *post_one(void *ptr)        // thread
   free(chunk.memory);
   curl_slist_free_all(headers); /* free the header list */
 
-  pthread_mutex_lock (&mutexpost);
+  pthread_mutex_lock (&mutexmap);
   map_.erase(reply2->gid);
-  pthread_mutex_unlock (&mutexpost);
+  pthread_mutex_unlock (&mutexmap);
 
   free(reply2->data);
 
@@ -363,9 +363,9 @@ static void *put_one_url(void *ptr)     // thread
   free(chunkRet.memory);
   curl_slist_free_all(headers); /* free the header list */
 
-  pthread_mutex_lock (&mutexput);
+  pthread_mutex_lock (&mutexmap);
   map_.erase(reply2->gid);
-  pthread_mutex_unlock (&mutexput);
+  pthread_mutex_unlock (&mutexmap);
 
   free(reply2->data);
 
@@ -467,9 +467,9 @@ static void *get_one_url(void *ptr)          // thread
   free(chunk.memory);
   curl_slist_free_all(headers); /* free the header list */
 
-  pthread_mutex_lock (&mutexget);
+  pthread_mutex_lock (&mutexmap);
   map_.erase(reply2->gid);
-  pthread_mutex_unlock (&mutexget);
+  pthread_mutex_unlock (&mutexmap);
 
   return NULL;
 }
@@ -479,9 +479,7 @@ static void *get_one_url(void *ptr)          // thread
 extern "C" {
 void ghttp_Init()
 {
-  pthread_mutex_init(&mutexget, NULL);
-  pthread_mutex_init(&mutexput, NULL);
-  pthread_mutex_init(&mutexpost, NULL);
+  pthread_mutex_init(&mutexmap, NULL);
   curl_global_init(CURL_GLOBAL_ALL);
 }
 
@@ -493,9 +491,7 @@ void ghttp_InitCA(std::string cafolder)
 void ghttp_Cleanup()
 {
   curl_global_cleanup();
-  pthread_mutex_destroy(&mutexget);
-  pthread_mutex_destroy(&mutexput);
-  pthread_mutex_destroy(&mutexpost);
+  pthread_mutex_destroy(&mutexmap);
 }
 
 g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, gevent_Callback callback, void* udata)
@@ -523,6 +519,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, geven
     } 
 
 
+  pthread_mutex_lock (&mutexmap);
   map_[gid] = reply2;
 
   //printf("ghttp_Get: %d %p %s\n",gid,&gid,url);
@@ -535,6 +532,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, geven
     fprintf(stderr, "Couldn't run thread, errno %d\n", error);
 
   map_[gid].tid=tid;
+  pthread_mutex_unlock (&mutexmap);
 
   return gid;
 }
@@ -566,6 +564,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
       reply2.header.push_back(str);
     } 
 
+  pthread_mutex_lock (&mutexmap);
   map_[gid] = reply2;
 
   //printf("ghttp_Post: %d %p %s\n",gid,&gid,url);
@@ -578,6 +577,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
     fprintf(stderr, "Couldn't run thread, errno %d\n", error);
 
   map_[gid].tid=tid;
+  pthread_mutex_unlock (&mutexmap);
 
   return gid;
 }
@@ -639,6 +639,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
     } 
 
 
+  pthread_mutex_lock (&mutexmap);
   map_[gid] = reply2;
 
   //printf("ghttp_Put: %d %p %s\n",gid,&gid,url);
@@ -651,14 +652,18 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
     fprintf(stderr, "Couldn't run thread, errno %d\n", error);
 
   map_[gid].tid=tid;
+  pthread_mutex_unlock (&mutexmap);
 
   return gid;
 }
 
 void ghttp_Close(g_id gid)
 {
+ if (map_.count(gid))
+ {
   pthread_cancel(map_[gid].tid);
   map_.erase(gid);
+ }
 }
 
 void ghttp_CloseAll()

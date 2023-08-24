@@ -97,7 +97,7 @@ QT5PLUGINS= \
 	$(addprefix tls/,qopensslbackend) \
 	$(addprefix xcbglintegrations/,qxcb-egl-integration qxcb-glx-integration) \
 	imageformats/qjpeg \
-	#$(addprefix mediaservice/,dsengine qtmedia_audioengine) \
+	#$(addprefix mediaservice/,dsengine qtmedia_audioengine)
 QT5DEPSDLL=b2.so.1 double-conversion.so.3 md4c.so.0 pcre2-16.so.0
 
 qt.install: buildqt qt.player tools html5.tools
