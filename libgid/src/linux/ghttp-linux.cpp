@@ -674,7 +674,7 @@ void ghttp_Close(g_id gid)
   pthread_cancel(map_[gid].tid);
   map_.erase(gid);
  }
-pthread_mutex_unlock (&mutexmap);
+ pthread_mutex_unlock (&mutexmap);
 }
 
 void ghttp_CloseAll()
