@@ -70,12 +70,12 @@ qlexilla.debug:
 %.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins
-	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Linux
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/QtLinux
 	R=`pwd`; cd $(ROOT)/plugins/$*/source; if [ -d "qtlinux" ]; then cd qtlinux; \
 		else if [ -d "Desktop" ]; then cd Desktop; fi; fi; \
 	cp -P *.so* $$R/$(RELEASE)/Plugins; \
 	cp -P *.so* $$R/$(RELEASE)/Templates/Qt/LinuxDesktopTemplate/Plugins; \
-	cp -P *.so* $$R/$(RELEASE)/All\ Plugins/$*/bin/Linux	
+	cp -P *.so* $$R/$(RELEASE)/All\ Plugins/$*/bin/QtLinux	
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
