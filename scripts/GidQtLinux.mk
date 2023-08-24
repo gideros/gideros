@@ -131,6 +131,7 @@ qt.install: buildqt qt.player tools html5.tools
 	mkdir -p $(RELEASE)/Templates
 	#EXTRAS
 	cp $(ROOT)/Release/LinuxExtra/* $(RELEASE)
+	chmod +x $(RELEASE)/*.sh
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/AndroidStudio $(RELEASE)/Templates
