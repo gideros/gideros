@@ -155,6 +155,8 @@ qt.player:
 	cp -P $(SDK)/lib/desktop/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/
 	cp -P libpystring/*.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate
 	for f in $(QT5DLLS); do cp -P $(QTLIBS)/lib$$f.so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate; done
+	for a in $(QT5PLUGINS); do mkdir -p $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/$$(dirname $$a); cp -P $(QTPLUGINS)/$$(dirname $$a)/lib$$(basename $$a).so* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate/$$(dirname $$a)/; done
+	for f in $(QT5DEPSDLLS); do cp -P $(LINUX_SYSLIBS)/lib$$f* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate; done
 	
 buildqtplugins: 
 	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN))
