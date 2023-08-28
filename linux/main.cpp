@@ -26,6 +26,8 @@
 #include "ginput-linux.h"
 #include "ghttp-linux.h"
 
+#include <screen.h>
+
 static ApplicationManager *s_applicationManager;
 LuaApplication *application_;
 
@@ -82,6 +84,201 @@ static void loadPlugins() {
 	}
 }
 
+// Screen API
+class LinuxScreenManager : public ScreenManager {
+public:
+	LinuxScreenManager();
+	virtual Screen *openScreen(Application *application,int id);
+	virtual void screenDestroyed();
+};
+
+class LinuxScreen : public Screen {
+	virtual void tick();
+	GLFWwindow *win;
+	bool closed_;
+	int savedX,savedY,savedW,savedH;
+protected:
+	virtual void setVisible(bool);
+public:
+	virtual void setSize(int w,int h);
+	virtual void getSize(int &w,int &h);
+	virtual void setPosition(int w,int h);
+	virtual void getPosition(int &w,int &h);
+	virtual void setState(int state);
+	virtual int getState();
+	virtual void setTitle(const char *title);
+	virtual void getMaxSize(int &w,int &h);
+	virtual int getId();
+	virtual void closed();
+	LinuxScreen(Application *application);
+	~LinuxScreen();
+};
+
+void LinuxScreen::tick()
+{
+	if (!win) return;
+    if (glfwWindowShouldClose(win))
+		closed();	 	
+	else if (glfwGetWindowAttrib(win,GLFW_VISIBLE))
+	{
+		Matrix4 m;
+		glfwMakeContextCurrent(win);
+		draw(m);
+		glfwSwapBuffers(win);
+	    glfwMakeContextCurrent(glfw_win);
+	}
+}
+
+void LinuxScreen::setSize(int w,int h)
+{
+	if (!win) return;
+    GLFWmonitor *m=glfwGetWindowMonitor(win);
+	if (m) glfwSetWindowMonitor(win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
+	glfwSetWindowSize(win,w,h);
+}
+
+void LinuxScreen::getSize(int &w,int &h)
+{
+	if (!win) return;
+	int ww,hh;
+	glfwGetWindowSize(win,&ww,&hh);
+	w=ww;
+	h=hh;
+}
+
+void LinuxScreen::setState(int state)
+{
+	if (!win) return;
+    GLFWmonitor *m=glfwGetWindowMonitor(win);
+	if (state&FULLSCREEN) 
+	{
+		if (!m) {
+			glfwGetWindowPos(win,&savedX,&savedY);
+			glfwGetWindowSize(win,&savedW,&savedH);
+			GLFWmonitor *m=glfwGetPrimaryMonitor();
+			const GLFWvidmode *vm=glfwGetVideoMode(m);
+			glfwSetWindowMonitor(win,m,0,0,vm->width,vm->height,vm->refreshRate);
+		}
+	}
+	else if (state&MINIMIZED)
+	{
+		if (m) glfwSetWindowMonitor(win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
+		glfwIconifyWindow(win);		
+	}
+	else if (state&MAXIMIZED)
+	{
+		if (m) glfwSetWindowMonitor(win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
+		glfwMaximizeWindow(win);				
+	}
+	else {
+		if (m) glfwSetWindowMonitor(win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
+		if (glfwGetWindowAttrib(win,GLFW_ICONIFIED)||
+			glfwGetWindowAttrib(win,GLFW_MAXIMIZED))
+				glfwRestoreWindow(win);		
+	}
+}
+
+int LinuxScreen::getState()
+{
+	if (!win) return CLOSED;
+	int s=NORMAL;
+	if (glfwGetWindowMonitor(win)!=NULL) s=FULLSCREEN;
+	else
+	{
+		if (glfwGetWindowAttrib(win,GLFW_ICONIFIED)) s=MINIMIZED;
+		if (glfwGetWindowAttrib(win,GLFW_MAXIMIZED)) s=MAXIMIZED;
+	}
+	if (!glfwGetWindowAttrib(win,GLFW_VISIBLE)) s|=HIDDEN;
+	if (closed_) s|=CLOSED;
+	return s;
+}
+
+void LinuxScreen::setTitle(const char *title)
+{
+	glfwSetWindowTitle(win,title);
+}
+
+void LinuxScreen::getMaxSize(int &w,int &h)
+{
+	GLFWmonitor *m=glfwGetPrimaryMonitor();
+	const GLFWvidmode *vm=glfwGetVideoMode(m);
+	w=vm->width;
+	h=vm->height;
+}
+
+void LinuxScreen::setPosition(int x,int y)
+{
+	if (!win) return;
+    GLFWmonitor *m=glfwGetWindowMonitor(win);
+	if (m) glfwSetWindowMonitor(win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
+	glfwSetWindowPos(win,x,y);
+}
+
+void LinuxScreen::getPosition(int &x,int &y)
+{
+	if (!win) return;
+	int xx,yy;
+	glfwGetWindowPos(win,&xx,&yy);
+	x=xx;
+	y=yy;
+}
+
+int LinuxScreen::getId()
+{
+	return 0;
+}
+
+void LinuxScreen::setVisible(bool visible)
+{
+	if (!win) return;
+	if (visible) {
+		closed_=false;
+		glfwShowWindow(win);
+	}
+	else
+		glfwHideWindow(win);
+}
+
+LinuxScreen::LinuxScreen(Application *application) : Screen(application)
+{
+	glfwWindowHint(GLFW_VISIBLE,0);
+	win = glfwCreateWindow(320,240,"",NULL, glfw_win);
+	closed_=true;
+}
+
+LinuxScreen::~LinuxScreen()
+{
+	glfwDestroyWindow(win);
+	win=NULL;
+}
+
+void LinuxScreen::closed()
+{
+	if (!win) return;
+	closed_=true;
+	setContent(NULL);
+	glfwHideWindow(win);
+	glfwSetWindowShouldClose(win, GLFW_FALSE);
+}
+
+
+LinuxScreenManager::LinuxScreenManager()
+{
+}
+
+void LinuxScreenManager::screenDestroyed()
+{
+}
+
+
+Screen *LinuxScreenManager::openScreen(Application *application,int id)
+{
+	return (Screen *)(new LinuxScreen(application));
+}
+
+
+
+// Main Init
 int initGL(int &width, int &height)
 {
  if (glfwInit() != GL_TRUE) {
@@ -112,7 +309,7 @@ int initGL(int &width, int &height)
 }
 
 int defWidth, defHeight;
-bool resized;
+bool resized,repaint;
 int mButtons=0,mMods=0;
 double mpos_x=0,mpos_y=0;
 void cb_winsize(GLFWwindow *win,int w,int h) {
@@ -230,6 +427,9 @@ void cb_mousebtn(GLFWwindow *win,int btn,int act,int mods) {
 void cb_scroll(GLFWwindow *win,double xoff, double yoff) {
 	ginputp_mouseWheel(mpos_x,mpos_y,mButtons,yoff*120,mMods);
 }
+void cb_refresh(GLFWwindow *win) {
+	repaint=true;
+}
 // ######################################################################
 
 int main(int argc, char *argv[])
@@ -248,6 +448,7 @@ int main(int argc, char *argv[])
 	defHeight=480;
 	initGL(defWidth,defHeight);
 	resized=false;
+	repaint=true;
 
     loadPlugins();
 	
@@ -264,17 +465,22 @@ int main(int argc, char *argv[])
 	glfwSetScrollCallback(glfw_win,cb_scroll);
 	if (glfwRawMouseMotionSupported())
 		glfwSetInputMode(glfw_win,GLFW_RAW_MOUSE_MOTION,GLFW_TRUE);
+	glfwSetWindowRefreshCallback(glfw_win,cb_refresh);
 			
 	glfwMakeContextCurrent(glfw_win);
+	ScreenManager::manager=new LinuxScreenManager();
+
     while(!glfwWindowShouldClose(glfw_win))
     {
 		if (resized) {
 		  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
 		}
 
-		if (s_applicationManager->drawFrame()) {
+		if (s_applicationManager->drawFrame(repaint)) {
 			glfwSwapBuffers(glfw_win);
+			repaint=false;
 		}
+		ScreenManager::manager->tick();
 
 		glfwPollEvents();
     }

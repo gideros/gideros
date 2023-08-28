@@ -76,8 +76,11 @@ void getSafeDisplayArea(int &x,int &y,int &w,int &h)
 {
 }
 
+static int savedX,savedY,savedW,savedH;
 void setWindowSize(int width, int height)
 {
+  GLFWmonitor *m=glfwGetWindowMonitor(glfw_win);
+  if (m) glfwSetWindowMonitor(glfw_win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
   Orientation app_orient=application_->orientation();
   if (app_orient==ePortrait || app_orient==ePortraitUpsideDown)
 	glfwSetWindowSize(glfw_win,width,height);
@@ -87,6 +90,17 @@ void setWindowSize(int width, int height)
 
 void setFullScreen(bool fullScreen)
 {
+	GLFWmonitor *m=glfwGetWindowMonitor(glfw_win);
+	if (m&&(!fullScreen)) {
+		glfwSetWindowMonitor(glfw_win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
+	}
+	if ((!m)&&fullScreen) {
+		glfwGetWindowPos(glfw_win,&savedX,&savedY);
+		glfwGetWindowSize(glfw_win,&savedW,&savedH);
+		GLFWmonitor *m=glfwGetPrimaryMonitor();
+		const GLFWvidmode *vm=glfwGetVideoMode(m);
+		glfwSetWindowMonitor(glfw_win,m,0,0,vm->width,vm->height,vm->refreshRate);
+	}
 }
 
 void vibrate(int ms)
@@ -366,13 +380,19 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "windowPosition") == 0)
         {
-            if (args.size()>=2)
-            	glfwSetWindowPos(glfw_win,args[0].d,args[1].d);
+            if (args.size()>=2) {
+			    GLFWmonitor *m=glfwGetWindowMonitor(glfw_win);
+			    if (m) glfwSetWindowMonitor(glfw_win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
+            	glfwSetWindowPos(glfw_win,args[0].d,args[1].d);				
+			}
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "windowSize") == 0)
         {
-            if (args.size()>=2)
+            if (args.size()>=2) {
+			    GLFWmonitor *m=glfwGetWindowMonitor(glfw_win);
+			    if (m) glfwSetWindowMonitor(glfw_win,NULL,savedX,savedY,savedW,savedH,GLFW_DONT_CARE);		
             	glfwSetWindowSize(glfw_win,args[0].d,args[1].d);
+			}
             /*------------------------------------------------------------------*/
         }else if (strcmp(what, "minimumSize") == 0)
         {

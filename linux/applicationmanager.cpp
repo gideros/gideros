@@ -606,7 +606,7 @@ ApplicationManager::ApplicationManager() {
 	}
 
 	static bool canvasShown = false;
-	bool ApplicationManager::drawFrame() {
+	bool ApplicationManager::drawFrame(bool forceDraw) {
 		if (networkManager_)
 			networkManager_->tick();
 
@@ -641,7 +641,7 @@ ApplicationManager::ApplicationManager() {
 		if (!application_->onDemandDraw(doDraw))
 			doDraw = true;
 
-		if (doDraw) {
+		if (doDraw||forceDraw) {
 			application_->clearBuffers();
 			application_->renderScene(1);
 			drawIPs();
