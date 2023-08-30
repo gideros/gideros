@@ -617,6 +617,7 @@ static int lua_fftop(lua_State *L,bool inv)
     luaL_checktype(L,1,LUA_TTABLE); //REAL PART
     int hasI=(lua_type(L,2)==LUA_TTABLE); //IMAGINARY PART
     int hasW=(lua_type(L,3)==LUA_TTABLE); //WINDOW
+    bool power=lua_toboolean(L,4);
     int nlen=lua_objlen(L,1);
 	if (nlen&(nlen-1)) {
 		lua_pushfstring(L,"Input array size must be a power of two, got %d",nlen);
@@ -649,15 +650,24 @@ static int lua_fftop(lua_State *L,bool inv)
 	}
     std::vector<std::complex<double>> dout=dj::fft1d(dd,inv?dj::fft_dir::DIR_BWD:dj::fft_dir::DIR_FWD);
 	lua_createtable(L,nlen,0);
-	lua_createtable(L,nlen,0);
-    for (int k=1;k<=nlen;k++) {
-        lua_pushnumber(L,dout[k-1].real());
-        lua_rawseti(L,-3,k);
-        lua_pushnumber(L,dout[k-1].imag());
-        lua_rawseti(L,-2,k);
-	}
+    if (power)
+    {
+        for (int k=1;k<=nlen;k++) {
+            lua_pushnumber(L,std::abs(dout[k-1]));
+            lua_rawseti(L,-2,k);
+        }
+    }
+    else {
+        lua_createtable(L,nlen,0);
+        for (int k=1;k<=nlen;k++) {
+            lua_pushnumber(L,dout[k-1].real());
+            lua_rawseti(L,-3,k);
+            lua_pushnumber(L,dout[k-1].imag());
+            lua_rawseti(L,-2,k);
+        }
+    }
 
-    return 2;
+    return power?1:2;
 }
 
 static int lua_fft(lua_State* L)
