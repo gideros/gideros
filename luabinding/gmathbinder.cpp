@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <string.h>
 
+#include "dj_fft.h"
+
 struct VEC {
 	double x;
 	double y;
@@ -609,6 +611,65 @@ static int math_edge (lua_State *L) {
 	return rs;
 }
 
+//FFT
+static int lua_fftop(lua_State *L,bool inv)
+{
+    luaL_checktype(L,1,LUA_TTABLE); //REAL PART
+    int hasI=(lua_type(L,2)==LUA_TTABLE); //IMAGINARY PART
+    int hasW=(lua_type(L,3)==LUA_TTABLE); //WINDOW
+    int nlen=lua_objlen(L,1);
+	if (nlen&(nlen-1)) {
+		lua_pushfstring(L,"Input array size must be a power of two, got %d",nlen);
+		lua_error(L);
+	}
+    if (hasI&&(lua_objlen(L,2)!=nlen)) {
+        lua_pushfstring(L,"Input arrays must have the same size (imaginary mismatch)");
+        lua_error(L);
+    }
+    if (hasW&&(lua_objlen(L,3)!=nlen)) {
+        lua_pushfstring(L,"Input arrays must have the same size (window mismatch)");
+        lua_error(L);
+    }
+    std::vector<std::complex<double>> dd;
+    int npop=(hasI?2:1)+(hasW?1:0);
+    for (int k=1;k<=nlen;k++) {
+		lua_rawgeti(L,1,k);
+		double r=lua_tonumber(L,-1);
+		double i=0;
+        if (hasI) {
+            lua_rawgeti(L,2,k);
+            i=lua_tonumber(L,-1);
+        }
+        if (hasW) {
+            lua_rawgeti(L,3,k);
+            r*=lua_tonumber(L,-1);
+        }
+        lua_pop(L,npop);
+		dd.push_back(std::complex<double>(r,i));
+	}
+    std::vector<std::complex<double>> dout=dj::fft1d(dd,inv?dj::fft_dir::DIR_BWD:dj::fft_dir::DIR_FWD);
+	lua_createtable(L,nlen,0);
+	lua_createtable(L,nlen,0);
+    for (int k=1;k<=nlen;k++) {
+        lua_pushnumber(L,dout[k-1].real());
+        lua_rawseti(L,-3,k);
+        lua_pushnumber(L,dout[k-1].imag());
+        lua_rawseti(L,-2,k);
+	}
+
+    return 2;
+}
+
+static int lua_fft(lua_State* L)
+{
+	return lua_fftop(L,false);
+}
+
+static int lua_ifft(lua_State* L)
+{
+	return lua_fftop(L,true);
+}
+
 //LUAU vector
 static int lua_vector(lua_State* L)
 {
@@ -680,6 +741,8 @@ void register_gideros_math(lua_State *L) {
 	  {"inside", math_inside},
 	  {"edge", math_edge},
 	  {"vector", lua_vector},
+	  {"fft", lua_fft},
+	  {"ifft", lua_ifft},
 	  {NULL, NULL}
 	};
 	luaL_register(L, LUA_MATHLIBNAME, mathlib);
