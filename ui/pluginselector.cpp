@@ -82,6 +82,8 @@ PluginSelector::PluginSelector(QSet<ProjectProperties::Plugin> selection,
 	iconMap["Windows"]=QImage("Resources/platforms/pc.png");
 	iconMap["MacOSX"]=QImage("Resources/platforms/mac.png");
 	iconMap["Win32"]=QImage("Resources/platforms/win32.png");
+    iconMap["Apple"]=QImage("Resources/platforms/apple.png");
+    iconMap["Linux"]=QImage("Resources/platforms/linux.png");
 
 	ui->plugins->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->plugins->setSelectionMode(QAbstractItemView::SingleSelection);
