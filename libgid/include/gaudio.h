@@ -56,6 +56,7 @@ G_API long int gaudio_XmpTell(g_id id);
 
 // sound & channel
 G_API g_id gaudio_SoundCreateFromFile(const char *fileName, g_bool stream, gaudio_Error *error);
+G_API g_id gaudio_SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo);
 G_API void gaudio_SoundDelete(g_id sound);
 G_API unsigned int gaudio_SoundGetLength(g_id sound);
 G_API g_id gaudio_SoundPlay(g_id sound, g_bool paused, g_bool streaming);

@@ -86,6 +86,15 @@ g_id GGSoundManager::SoundCreateFromFile(const char *fileName, bool stream, gaud
     }
 }
 
+g_id GGSoundManager::SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo)
+{
+    g_id sound = sampleInterface_->SoundCreateFromBuffer(samples, stereo?2:1, rate,16,stereo?(sampleCount/2):sampleCount);
+
+    sounds_[sound] = new Sound(sound, sampleInterface_);
+
+    return sound;
+}
+
 void GGSoundManager::SoundDelete(g_id sound)
 {
     std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
@@ -454,6 +463,11 @@ g_id GGAudioManager::SoundCreateFromFile(const char *fileName, bool stream, gaud
     return soundManager_->SoundCreateFromFile(fileName, stream, error);
 }
 
+g_id GGAudioManager::SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo)
+{
+    return soundManager_->SoundCreateFromData(samples,sampleCount,rate,stereo);
+}
+
 void GGAudioManager::SoundDelete(g_id sound)
 {
     soundManager_->SoundDelete(sound);
@@ -778,6 +792,11 @@ void gaudio_Cleanup()
 g_id gaudio_SoundCreateFromFile(const char *fileName, g_bool stream, gaudio_Error *error)
 {
     return s_manager->SoundCreateFromFile(fileName, stream, error);
+}
+
+g_id gaudio_SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo)
+{
+    return s_manager->SoundCreateFromData(samples,sampleCount,rate,stereo);
 }
 
 void gaudio_SoundDelete(g_id sound)

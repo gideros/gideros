@@ -98,6 +98,20 @@ public:
         }
     }
 
+    GGSound(lua_State *L, std::vector<signed short> samples, bool stereo, int rate) :
+        L(L)
+    {
+        /* TODO: create a better way to get main thread */
+        LuaApplication *application = (LuaApplication*)luaL_getdata(L);
+        lua_State *mainL = application->getLuaState();
+        L = mainL;
+        this->L = mainL;
+
+        gid = gaudio_SoundCreateFromData(samples.data(),samples.size(),rate,stereo);
+        setSoundInterface();
+    }
+
+
     ~GGSound()
     {
         if ((!sig_.empty())&&(!lua_isclosing(L)))
@@ -372,6 +386,7 @@ private:
 
     void callback(int type, void *event)
     {
+        G_UNUSED(event);
         if (type == GAUDIO_CHANNEL_COMPLETE_EVENT)
         {
             lastPosition_ = interface.ChannelGetPosition(gid);
@@ -455,23 +470,43 @@ int AudioBinder::Sound_create(lua_State *L)
 
     Binder binder(L);
 
-    const char *fileName = luaL_checkstring(L, 1);
+    bool isRaw=lua_type(L,1)==LUA_TTABLE;
 
+    const char *fileName = NULL;
     std::vector<char> sig;
-    int flags = gpath_getDriveFlags(gpath_getPathDrive(fileName));
-    if (flags & GPATH_RO)
+    std::vector<signed short> samples;
+    bool stereo=false;
+    int rate=8000;
+    if (isRaw)
     {
-        append(sig, fileName, strlen(fileName) + 1);
+        rate=luaL_checknumber(L,2);
+        stereo=lua_toboolean(L,3);
+        int len=lua_objlen(L,1);
+        for (int k=0;k<len;k++) {
+            lua_rawgeti(L,1,k+1);
+            samples.push_back(lua_tonumber(L,-1)*32767);
+            lua_pop(L,1);
+        }
     }
     else
     {
-        if (flags & GPATH_REAL)
+        fileName = luaL_checkstring(L, 1);
+
+        int flags = gpath_getDriveFlags(gpath_getPathDrive(fileName));
+        if (flags & GPATH_RO)
         {
             append(sig, fileName, strlen(fileName) + 1);
+        }
+        else
+        {
+            if (flags & GPATH_REAL)
+            {
+                append(sig, fileName, strlen(fileName) + 1);
 
-            struct stat s;
-            stat(gpath_transform(fileName), &s);
-            append(sig, &s.st_mtime, sizeof(s.st_mtime));
+                struct stat s;
+                stat(gpath_transform(fileName), &s);
+                append(sig, &s.st_mtime, sizeof(s.st_mtime));
+            }
         }
     }
 
@@ -496,8 +531,11 @@ int AudioBinder::Sound_create(lua_State *L)
     }
     else
     {
-        gaudio_Error error;
-        sound = new GGSound(L, fileName, &error, sig);
+        gaudio_Error error=GAUDIO_NO_ERROR;
+        if (isRaw)
+            sound = new GGSound(L, samples, stereo, rate);
+        else
+            sound = new GGSound(L, fileName, &error, sig);
 
         switch (error)
         {

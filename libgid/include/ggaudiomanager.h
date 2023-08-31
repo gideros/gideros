@@ -151,6 +151,7 @@ public:
     ~GGSoundManager();
 
     g_id SoundCreateFromFile(const char *fileName, bool stream, gaudio_Error *error);
+    g_id SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo);
     void SoundDelete(g_id sound);
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
@@ -241,6 +242,7 @@ public:
     ~GGAudioManager();
 
     g_id SoundCreateFromFile(const char *fileName, bool stream, gaudio_Error *error);
+    g_id SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo);
     void SoundDelete(g_id sound);
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
