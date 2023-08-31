@@ -99,7 +99,8 @@ MovieClipBinder::MovieClipBinder(lua_State* L)
 		{"clearAction", clearAction},
 		{"getFrame", getFrame},
 		{"isPlaying", isPlaying},
-		{NULL, NULL},
+        {"getTweenFunction", getTweenFunction},
+        {NULL, NULL},
 	};
 
 	binder.createClass("MovieClip", "Sprite", create, destruct, functionList);
@@ -435,4 +436,22 @@ int MovieClipBinder::isPlaying(lua_State* L)
 	lua_pushboolean(L,movieclip->isPlaying());
 
 	return 1;
+}
+
+static int tweenClosure(lua_State *L)
+{
+    TweenType t=(TweenType)lua_tointeger(L, lua_upvalueindex(1));
+    double n=lua_tonumber(L,1);
+    lua_pushnumber(L,(MovieClip::getTweenFunction(t))(n));
+    return 1;
+}
+
+int MovieClipBinder::getTweenFunction(lua_State* L)
+{
+    StackChecker checker(L, "MovieClipBinder::getTweenFunction", 1);
+    const char *upname=luaL_checkstring(L, -1);
+    TweenType tweenType = (TweenType)StringId::instance().id(upname);
+    lua_pushinteger(L,tweenType);
+    lua_pushcnclosure(L,tweenClosure,1,upname);
+    return 1;
 }

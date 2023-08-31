@@ -21,7 +21,8 @@ private:
 	static int setReverseAction(lua_State* L);
 	static int clearAction(lua_State* L);
 	static int getFrame(lua_State* L);
-	static int isPlaying(lua_State* L);
+    static int isPlaying(lua_State* L);
+    static int getTweenFunction(lua_State* L);
 };
 
 #endif

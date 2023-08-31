@@ -57,6 +57,8 @@ enum TweenType
 	eEaseCosineCurve,
 };
 
+typedef double  (*TweenFunction)(double);
+
 struct Parameter
 {
 	Parameter() {}
@@ -69,7 +71,7 @@ struct Parameter
 	std::string strParam;
 	int param;
 	float start, end;
-	double (*tweenFunction)(double);
+    TweenFunction tweenFunction;
 };
 
 class MovieClip : public Sprite
@@ -100,6 +102,8 @@ public:
 	void gotoAndStop(int frame);
 	int getFrame();
 	bool isPlaying();
+
+    static TweenFunction getTweenFunction(TweenType type);
 
 protected:
 	struct Frame

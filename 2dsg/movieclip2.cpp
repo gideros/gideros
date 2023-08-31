@@ -773,9 +773,9 @@ static qreal easeOutInBounce(qreal t)
 	return easeOutInBounce(t, a);
 }
 
-static double (*getTweenFunction(TweenType tweenType))(double)
+TweenFunction MovieClip::getTweenFunction(TweenType tweenType)
 {
-	double (*tweenFunction)(double) = easeNone;
+    TweenFunction tweenFunction = easeNone;
 
 	switch (tweenType)
 	{
@@ -924,7 +924,7 @@ Parameter::Parameter(int param, float start, float end, TweenType tweenType) :
 	start(start),
 	end(end)
 {
-	tweenFunction = getTweenFunction(tweenType);
+    tweenFunction = MovieClip::getTweenFunction(tweenType);
 }
 
 Parameter::Parameter(const char* strparam, float start, float end, TweenType tweenType) : 
@@ -933,7 +933,7 @@ Parameter::Parameter(const char* strparam, float start, float end, TweenType twe
 	end(end)
 {
 	strParam=strparam;
-	tweenFunction = getTweenFunction(tweenType);
+    tweenFunction = MovieClip::getTweenFunction(tweenType);
 }
 
 Parameter::Parameter(int param, float start, float end, const char* tweenType) :
@@ -941,7 +941,7 @@ Parameter::Parameter(int param, float start, float end, const char* tweenType) :
 	start(start),
 	end(end)
 {
-	tweenFunction = getTweenFunction((TweenType)StringId::instance().id(tweenType));
+    tweenFunction = MovieClip::getTweenFunction((TweenType)StringId::instance().id(tweenType));
 }
 Parameter::Parameter(const char* strparam, float start, float end, const char* tweenType) :
 	param(StringId::instance().id(strparam)),
@@ -949,7 +949,7 @@ Parameter::Parameter(const char* strparam, float start, float end, const char* t
 	end(end)
 {
 	strParam=strparam;
-	tweenFunction = getTweenFunction((TweenType)StringId::instance().id(tweenType));
+    tweenFunction = MovieClip::getTweenFunction((TweenType)StringId::instance().id(tweenType));
 }
 
 MovieClip::MovieClip(Type type, Application *application, bool holdWhilePlaying) : Sprite(application)
@@ -1196,9 +1196,7 @@ void MovieClip::interpolateParameters()
 	{
 		const std::vector<Frame*>& frames = iter->second;
 		for (std::size_t i = 0; i < frames.size(); ++i)
-		{
-			Sprite* sprite = frames[i]->sprite;
-
+		{			
 			int s = frames[i]->start;
 			int e = frames[i]->end;
 
