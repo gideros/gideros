@@ -28,21 +28,24 @@ void GReferenced::setData(void *key, GReferenced *data)
     if (data)
         data->ref();
 
-    std::map<void*, GReferenced*>::iterator iter = data_.find(key);
-    if (iter != data_.end())
+    if (!data_) data_=new std::map<void *, GReferenced*>();
+
+    std::map<void*, GReferenced*>::iterator iter = data_->find(key);
+    if (iter != data_->end())
     {
         iter->second->unref();
-        data_.erase(iter);
+        data_->erase(iter);
     }
 
     if (data)
-        data_[key] = data;
+        (*data_)[key] = data;
 }
 
 GReferenced* GReferenced::data(void *key) const
 {
-    std::map<void*, GReferenced*>::const_iterator iter = data_.find(key);
-    if (iter != data_.end())
+    if (data_==nullptr) return NULL;
+    std::map<void*, GReferenced*>::const_iterator iter = data_->find(key);
+    if (iter != data_->end())
         return iter->second;
     return NULL;
 }
@@ -60,16 +63,20 @@ GReferenced* GReferenced::proxy() const
 GReferenced::GReferenced() : refcount_(1), proxy_(NULL)
 {
 	instanceCount++;
+    data_=nullptr;
 }
 
 GReferenced::~GReferenced()
 {
 	assert(refcount_ == 1);
 
-    while (!data_.empty())
-    {
-        void *key = data_.begin()->first;
-        setData(key, NULL);
+    if (data_!=nullptr) {
+        while (!data_->empty())
+        {
+            void *key = data_->begin()->first;
+            setData(key, NULL);
+        }
+        delete data_;
     }
 
 	instanceCount--;

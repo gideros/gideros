@@ -26,10 +26,12 @@ void Viewport::setContent(Sprite *s)
 {
     if (s) {
         s->ref();
-        s->viewports.push_back(this);
+        if (!s->viewports)
+            s->viewports=new std::vector<Sprite *>();
+        s->viewports->push_back(this);
     }
-    if (content_) {
-        content_->viewports.erase(std::find(content_->viewports.begin(),content_->viewports.end(),this));
+    if (content_&&content_->viewports) {
+        content_->viewports->erase(std::find(content_->viewports->begin(),content_->viewports->end(),this));
         content_->unref();
     }
     content_ = s;

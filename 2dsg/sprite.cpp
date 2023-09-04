@@ -133,15 +133,22 @@ Sprite::Sprite(Application* application) :
     changes_=(ChangeSet)0x0FF; //All invalid, except constraints which is never actually revalidated
 	hasCustomShader_=false;
     worldAlign_=false;
+    shaders_=nullptr;
+    viewports=nullptr;
+    effectStack_=nullptr;
+    skipSet_=nullptr;
 }
 
 void Sprite::cloneFrom(Sprite *s) {
     effectsMode_=s->effectsMode_;
     hasCustomShader_=s->hasCustomShader_;
-    effectStack_=s->effectStack_;
-    skipSet_=s->skipSet_;
+    if (s->effectStack_)
+        effectStack_=new std::vector<Effect>(*(s->effectStack_));
+    if (s->skipSet_)
+        skipSet_=new std::vector<char>(*(s->skipSet_));
     checkClip_=s->checkClip_;
     memcpy(boundsCache,s->boundsCache,sizeof(boundsCache));
+    memcpy(boundsCacheValid,s->boundsCacheValid,sizeof(boundsCacheValid));
     boundsCacheRef=s->boundsCacheRef;
     changes_=s->changes_;
     if (s->layoutConstraints)
@@ -177,9 +184,12 @@ void Sprite::cloneFrom(Sprite *s) {
     reqWidth_=s->reqWidth_;
     reqHeight_=s->reqHeight_;
     stopPropagationMask_=s->stopPropagationMask_;
-    shaders_=s->shaders_;
-    for (auto ss=shaders_.cbegin();ss!=shaders_.cend();ss++)
-        if (ss->second.shader) ss->second.shader->Retain();
+    if (s->shaders_)
+    {
+        shaders_=new std::map<int,struct _ShaderSpec>(*(s->shaders_));
+        for (auto ss=shaders_->cbegin();ss!=shaders_->cend();ss++)
+            if (ss->second.shader) ss->second.shader->Retain();
+    }
     stencil_=s->stencil_;
     worldAlign_=s->worldAlign_;
 }
@@ -197,16 +207,27 @@ Sprite::~Sprite() {
 	allSprites_.erase(this);
 	allSpritesWithListeners_.erase(this);
 
-	std::map<int,struct _ShaderSpec>::iterator it=shaders_.begin();
-	while (it!=shaders_.end())
-	{
-		if (it->second.shader)
-			it->second.shader->Release();
-		it++;
-	}
+    if (shaders_!=nullptr)
+    {
+        std::map<int,struct _ShaderSpec>::iterator it=shaders_->begin();
+        while (it!=shaders_->end())
+        {
+            if (it->second.shader)
+                it->second.shader->Release();
+            it++;
+        }
+        delete shaders_;
+    }
+    if (viewports)
+        delete viewports;
 
-	clearLayoutState();
-	clearLayoutConstraints();
+    clearLayoutState();
+    clearLayoutConstraints();
+
+    if (effectStack_)
+        delete effectStack_;
+    if (skipSet_)
+        delete skipSet_;
 }
 
 void Sprite::setupShader(struct _ShaderSpec &spec) {
@@ -231,10 +252,12 @@ void Sprite::setupShader(struct _ShaderSpec &spec) {
 void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,int variant,bool inherit) {
 	int sid=(id<<8)|variant;
     RENDER_LOCK();
-    std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
+    if (shaders_==nullptr)
+        shaders_=new std::map<int,struct _ShaderSpec>();
+    std::map<int,struct _ShaderSpec>::iterator it=shaders_->find(sid);
 	if (shader)
 		shader->Retain();
-	if (it!=shaders_.end()) {
+    if (it!=shaders_->end()) {
 		if (it->second.shader)
 			it->second.shader->Release();
 		if (shader) {
@@ -243,14 +266,14 @@ void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,in
 		}
 		else {
 			it->second.params.clear();
-			shaders_.erase(it);
+            shaders_->erase(it);
 		}
 	}
 	else if (shader) {
 		struct _ShaderSpec sp;
 		sp.shader=shader;
 		sp.inherit=inherit;
-		shaders_[sid]=sp;
+        (*shaders_)[sid]=sp;
 	}
     RENDER_UNLOCK();
     invalidate(INV_GRAPHICS|INV_SHADER);
@@ -258,9 +281,10 @@ void Sprite::setShader(ShaderProgram *shader,ShaderEngine::StandardProgram id,in
 
 bool Sprite::setShaderConstant(ShaderParam p,ShaderEngine::StandardProgram id,int variant)
 {
+    if (shaders_==nullptr) return false;
 	int sid=(id<<8)|variant;
-	std::map<int,struct _ShaderSpec>::iterator it=shaders_.find(sid);
-	if (it!=shaders_.end()) {
+    std::map<int,struct _ShaderSpec>::iterator it=shaders_->find(sid);
+    if (it!=shaders_->end()) {
 		it->second.params[p.name]=p;
 		invalidate(INV_GRAPHICS);
 		return true;
@@ -276,25 +300,25 @@ ShaderProgram *Sprite::getShader(ShaderEngine::StandardProgram id,int variant)
 		revalidate(INV_SHADER);
 		int sid=(id<<8)|variant;
 		std::map<int, struct _ShaderSpec>::iterator it;
-		if (!shaders_.empty()) {
+        if ((shaders_)&&!shaders_->empty()) {
 			hasCustomShader_=true;
-			it = shaders_.find(sid);
-			if (it != shaders_.end()) {
+            it = shaders_->find(sid);
+            if (it != shaders_->end()) {
 				setupShader(it->second);
 				return it->second.shader;
 			}
-			it = shaders_.find(0);
-			if (it != shaders_.end()) {
+            it = shaders_->find(0);
+            if (it != shaders_->end()) {
 				setupShader(it->second);
 				return it->second.shader;
 			}
 		}
 		Sprite *p=parent();
 		while (p) {
-			if (!p->shaders_.empty()) {
+            if ((p->shaders_)&&!p->shaders_->empty()) {
 				hasCustomShader_=true;
-				it = p->shaders_.find(sid);
-				if (it != p->shaders_.end()) {
+                it = p->shaders_->find(sid);
+                if (it != p->shaders_->end()) {
 					if (it->second.inherit) {
 						setupShader(it->second);
 						return it->second.shader;
@@ -334,31 +358,40 @@ void setupEffectShader(Bitmap *source,Sprite::Effect &e)
 void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
     RENDER_LOCK();
     int diff=0;
-	if (effectStack_.size()>0) {
+    if (effectStack_&&effectStack_->size()>0) {
 		diff-=1;
-		for (size_t i=0;i<effectStack_.size();i++) {
-			if (effectStack_[i].shader)
-				effectStack_[i].shader->Release();
-			if (effectStack_[i].buffer)
-				effectStack_[i].buffer->unref();
-            for (size_t t=0;t<effectStack_[i].textures.size();t++)
-                if (effectStack_[i].textures[t])
-                    effectStack_[i].textures[t]->unref();
+        for (size_t i=0;i<effectStack_->size();i++) {
+            if ((*effectStack_)[i].shader)
+                (*effectStack_)[i].shader->Release();
+            if ((*effectStack_)[i].buffer)
+                (*effectStack_)[i].buffer->unref();
+            for (size_t t=0;t<(*effectStack_)[i].textures.size();t++)
+                if ((*effectStack_)[i].textures[t])
+                    (*effectStack_)[i].textures[t]->unref();
 		}
 	}
-	effectStack_=effects;
-	if (effectStack_.size()>0) {
-		diff+=1;
-		for (size_t i=0;i<effectStack_.size();i++) {
-			if (effectStack_[i].shader)
-				effectStack_[i].shader->Retain();
-			if (effectStack_[i].buffer)
-				effectStack_[i].buffer->ref();
-            for (size_t t=0;t<effectStack_[i].textures.size();t++)
-                if (effectStack_[i].textures[t])
-                    effectStack_[i].textures[t]->ref();
-		}
-	}
+    if (effects.empty()) {
+        if (effectStack_)
+            effectStack_->clear();
+    }
+    else {
+        if (effectStack_==nullptr)
+            effectStack_=new std::vector<Effect>(effects);
+        else
+            effectStack_->assign(effects.cbegin(),effects.cend());
+        if (effectStack_->size()>0) {
+            diff+=1;
+            for (size_t i=0;i<effectStack_->size();i++) {
+                if ((*effectStack_)[i].shader)
+                    (*effectStack_)[i].shader->Retain();
+                if ((*effectStack_)[i].buffer)
+                    (*effectStack_)[i].buffer->ref();
+                for (size_t t=0;t<(*effectStack_)[i].textures.size();t++)
+                    if ((*effectStack_)[i].textures[t])
+                        (*effectStack_)[i].textures[t]->ref();
+            }
+        }
+    }
 	invalidate(INV_EFFECTS);
 	effectsMode_=mode;
 
@@ -372,9 +405,9 @@ void Sprite::setEffectStack(std::vector<Effect> effects,EffectUpdateMode mode) {
 
 bool Sprite::setEffectShaderConstant(size_t effectNumber,ShaderParam p)
 {
-	if (effectNumber>=effectStack_.size())
+    if ((effectStack_==nullptr)||(effectNumber>=effectStack_->size()))
 		return false;
-	effectStack_[effectNumber].params[p.name]=p;
+    (*effectStack_)[effectNumber].params[p.name]=p;
 	invalidate(INV_EFFECTS);
 	return true;
 }
@@ -384,7 +417,7 @@ void Sprite::updateEffects()
 	if (effectsMode_!=CONTINUOUS) {
 		if (!(changes_&INV_EFFECTS)) return;
 	}
-	if (!effectStack_.empty()) {
+    if ((effectStack_)&&!effectStack_->empty()) {
 		effectsDrawing_ = true;
 		float swidth, sheight;
 		float minx, miny, maxx, maxy;
@@ -395,20 +428,20 @@ void Sprite::updateEffects()
 			return; //Empty Sprite, do nothing
 		swidth = maxx;
 		sheight = maxy;
-		for (size_t i = 0; i < effectStack_.size(); i++) {
-			if (effectStack_[i].buffer) {
+        for (size_t i = 0; i < effectStack_->size(); i++) {
+            if ((*effectStack_)[i].buffer) {
 				if (i == 0) { //First stage, draw the Sprite normally onto the first buffer
 					Matrix xform;
-					if (effectStack_[i].autoBuffer) {
+                    if ((*effectStack_)[i].autoBuffer) {
 						float maxx, maxy;
 
-						effectStack_[i].autoTransform.transformPoint(0, 0, &maxx, &maxy);
+                        (*effectStack_)[i].autoTransform.transformPoint(0, 0, &maxx, &maxy);
 						float tx, ty;
-						effectStack_[i].autoTransform.transformPoint(swidth, 0, &tx, &ty);
+                        (*effectStack_)[i].autoTransform.transformPoint(swidth, 0, &tx, &ty);
 						maxx = std::max(maxx, tx); maxy = std::max(maxy, ty);
-						effectStack_[i].autoTransform.transformPoint(0, sheight, &tx, &ty);
+                        (*effectStack_)[i].autoTransform.transformPoint(0, sheight, &tx, &ty);
 						maxx = std::max(maxx, tx); maxy = std::max(maxy, ty);
-						effectStack_[i].autoTransform.transformPoint(swidth, sheight, &tx, &ty);
+                        (*effectStack_)[i].autoTransform.transformPoint(swidth, sheight, &tx, &ty);
 						maxx = std::max(maxx, tx); maxy = std::max(maxy, ty);
 						maxx = std::max(maxx, .0F); maxy = std::max(maxy, .0F);
 						swidth = maxx; sheight = maxy;
@@ -418,38 +451,38 @@ void Sprite::updateEffects()
                         sheight *= sy;
                         int bw=ceil(swidth);
                         int bh=ceil(sheight);
-                        effectStack_[i].buffer->resize(bw, bh, sx, sy);
+                        (*effectStack_)[i].buffer->resize(bw, bh, sx, sy);
                        // xform.scale(1.0/sx, 1.0/sy, 1);
 					}
-					if (effectStack_[i].clearBuffer)
-						effectStack_[i].buffer->clear(0, 0, 0, 0, -1, -1);
-					xform = xform * effectStack_[i].transform;
+                    if ((*effectStack_)[i].clearBuffer)
+                        (*effectStack_)[i].buffer->clear(0, 0, 0, 0, -1, -1);
+                    xform = xform * (*effectStack_)[i].transform;
 					Matrix invL = localTransform_.matrix().inverse();
 					xform = xform * invL;
 
-					effectStack_[i].buffer->draw(this, xform);
+                    (*effectStack_)[i].buffer->draw(this, xform);
 				}
-				else if (effectStack_[i - 1].buffer) {
-					if (effectStack_[i].autoBuffer) {
+                else if ((*effectStack_)[i - 1].buffer) {
+                    if ((*effectStack_)[i].autoBuffer) {
 						float maxx, maxy;
 
-						effectStack_[i].autoTransform.transformPoint(0, 0, &maxx, &maxy);
+                        (*effectStack_)[i].autoTransform.transformPoint(0, 0, &maxx, &maxy);
 						float tx, ty;
-						effectStack_[i].autoTransform.transformPoint(swidth, 0, &tx, &ty);
+                        (*effectStack_)[i].autoTransform.transformPoint(swidth, 0, &tx, &ty);
 						maxx = std::max(maxx, tx); maxy = std::max(maxy, ty);
-						effectStack_[i].autoTransform.transformPoint(0, sheight, &tx, &ty);
+                        (*effectStack_)[i].autoTransform.transformPoint(0, sheight, &tx, &ty);
 						maxx = std::max(maxx, tx); maxy = std::max(maxy, ty);
-						effectStack_[i].autoTransform.transformPoint(swidth, sheight, &tx, &ty);
+                        (*effectStack_)[i].autoTransform.transformPoint(swidth, sheight, &tx, &ty);
 						maxx = std::max(maxx, tx); maxy = std::max(maxy, ty);
 						maxx = std::max(maxx, .0F); maxy = std::max(maxy, .0F);
 						swidth = maxx; sheight = maxy;
-						effectStack_[i].buffer->resize(ceilf(swidth), ceilf(sheight), application_->getLogicalScaleX(), application_->getLogicalScaleY());
+                        (*effectStack_)[i].buffer->resize(ceilf(swidth), ceilf(sheight), application_->getLogicalScaleX(), application_->getLogicalScaleY());
 					}
-					if (effectStack_[i].clearBuffer)
-						effectStack_[i].buffer->clear(0, 0, 0, 0, -1, -1);
-					Bitmap source(application_, effectStack_[i - 1].buffer);
-					setupEffectShader(&source, effectStack_[i - 1]);
-					effectStack_[i].buffer->draw(&source, effectStack_[i].transform);
+                    if ((*effectStack_)[i].clearBuffer)
+                        (*effectStack_)[i].buffer->clear(0, 0, 0, 0, -1, -1);
+                    Bitmap source(application_, (*effectStack_)[i - 1].buffer);
+                    setupEffectShader(&source, (*effectStack_)[i - 1]);
+                    (*effectStack_)[i].buffer->draw(&source, (*effectStack_)[i].transform);
 				}
 			}
 		}
@@ -584,7 +617,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				break;
 		}
 
-		bool lastEffect=((!sprite->effectsDrawing_)&&(sprite->effectStack_.size()>0));
+        bool lastEffect=((!sprite->effectsDrawing_)&&sprite->effectStack_&&(sprite->effectStack_->size()>0));
 
 		if (pop == true) {
             sprite->drawCount_=1;
@@ -689,17 +722,17 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 
 		if (lastEffect)
 		{
-            size_t i=sprite->effectStack_.size()-1;
-			Bitmap source(application_,sprite->effectStack_[i].buffer);
-			setupEffectShader(&source,sprite->effectStack_[i]);
+            size_t i=sprite->effectStack_->size()-1;
+            Bitmap source(application_,(*sprite->effectStack_)[i].buffer);
+            setupEffectShader(&source,(*sprite->effectStack_)[i]);
             Matrix4 xform;
             if (sprite->parent_)
                 xform=sprite->parent_->renderTransform_;
             else
                 xform=transform;
             xform=xform*sprite->localTransform_.matrix();
-            xform=xform*sprite->effectStack_[i].postTransform;
-            if (sprite->effectStack_[0].autoBuffer) {
+            xform=xform*(*sprite->effectStack_)[i].postTransform;
+            if ((*sprite->effectStack_)[0].autoBuffer) {
                 Matrix mscale;
                 mscale.scale(1/application_->getLogicalScaleX(),1/application_->getLogicalScaleY(),1);
                 xform=xform*mscale;
@@ -715,8 +748,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 
         if (!lastEffect) //Don't draw subs if rendering last effect
         {
-            int sc=sprite->skipSet_.size();
-            char *sd=sprite->skipSet_.data();
+            int sc=sprite->skipSet_?sprite->skipSet_->size():0;
+            char *sd=sc?sprite->skipSet_->data():NULL;
             int sz = sprite->children_.size();
             for (int i = sz - 1; i >= 0; --i)
             {
@@ -977,15 +1010,15 @@ Sprite* Sprite::getChildAt(int index, GStatus* status) const {
 void Sprite::checkInside(float x,float y,bool visible, bool nosubs,std::vector<std::pair<int,Sprite *>> &children, std::vector<Matrix4> &pxform, const Sprite *ref, bool xformValid) const {
     float minx, miny, maxx, maxy;
     int parentidx=children.size();
-    size_t sc=skipSet_.size();
-    const char *sd=skipSet_.data();
+    size_t sc=skipSet_?skipSet_->size():0;
+    char *sd=sc?skipSet_->data():NULL;
     for (size_t i = 0; i < children_.size(); ++i) {
         if ((i>=sc)||(!sd[i])) {
             Sprite *c=children_[i];
             if (c->isVisible_) {
                 Matrix transform=pxform.back() * c->localTransform_.matrix();
                 bool xformValid2=xformValid;
-                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, ref, &xformValid2);
+                c->boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, nosubs, ref?BOUNDS_REF:BOUNDS_GLOBAL, ref, &xformValid2);
                 if (x >= minx && y >= miny && x <= maxx && y <= maxy) {
                     children.push_back(std::pair<int,Sprite *>(parentidx,c));
                     if ((!nosubs)&&(!c->children_.empty())) {
@@ -1357,7 +1390,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
 	ty = y;
 
 	float minx, miny, maxx, maxy;
-    boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, false, ref?BOUNDS_UNSPEC:BOUNDS_GLOBAL, ref);
+    boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, false, ref?BOUNDS_REF:BOUNDS_GLOBAL, ref);
 
 	return (tx >= minx && ty >= miny && tx <= maxx && ty <= maxy);
 }
@@ -1446,7 +1479,8 @@ void Sprite::invalidate(int changes) {
 
     if (changes&(INV_GRAPHICS)) {
 		changes|=INV_EFFECTS;
-        for (auto it=viewports.begin();it!=viewports.end();it++)
+        if (viewports)
+        for (auto it=viewports->begin();it!=viewports->end();it++)
             (*it)->invalidate(INV_GRAPHICS);
     }
 
@@ -1498,6 +1532,28 @@ struct ClipRect {
 	float ymax;
 };
 
+Sprite::BoundsCacheSlot cacheSlot(Sprite::BoundsMode mode,bool visible, bool noSubs)
+{
+    switch (mode) {
+    case Sprite::BOUNDS_OBJECT:
+        if (noSubs) return Sprite::BOUNDSCACHE_MAX;
+        return visible?Sprite::BOUNDSCACHE_OBJECT_V:Sprite::BOUNDSCACHE_OBJECT;
+    case Sprite::BOUNDS_LOCAL:
+        if (noSubs) return Sprite::BOUNDSCACHE_MAX;
+        return visible?Sprite::BOUNDSCACHE_LOCAL_V:Sprite::BOUNDSCACHE_LOCAL;
+    case Sprite::BOUNDS_GLOBAL:
+        if (noSubs)
+            return visible?Sprite::BOUNDSCACHE_GLOBAL_VS:Sprite::BOUNDSCACHE_GLOBAL_S;
+        return visible?Sprite::BOUNDSCACHE_GLOBAL_V:Sprite::BOUNDSCACHE_GLOBAL;
+    case Sprite::BOUNDS_REF:
+        if (noSubs)
+            return visible?Sprite::BOUNDSCACHE_REF_VS:Sprite::BOUNDSCACHE_REF_S;
+        return visible?Sprite::BOUNDSCACHE_REF_V:Sprite::BOUNDSCACHE_REF;
+    default:
+        return Sprite::BOUNDSCACHE_MAX;
+    }
+}
+
 void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
         float* maxx, float* maxy, std::vector<Matrix> &parentXform,ClipRect *parentClip,
         bool visible, bool nosubs, BoundsMode mode, const Sprite *ref, bool *xformValid) {
@@ -1507,25 +1563,30 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
     while (hrun) {
         if (hrun->changes_&INV_BOUNDS)
         {
-            for (size_t i=0;i<BOUNDS_MAX*4;i++)
-                hrun->boundsCache[i].valid=false;
+            for (size_t i=0;i<BOUNDSCACHE_MAX;i++)
+                hrun->boundsCacheValid[i]=false;
             hrun->revalidate(INV_BOUNDS);
         }
         hrun=hrun->parent_;
     }
 
     //Handle local cache
-    int cacheMode=(mode<<2)+(visible?2:0)+(nosubs?1:0);
-    if (((mode==BOUNDS_GLOBAL)||((mode==BOUNDS_REF)&&(boundsCacheRef==ref))||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC)))&&boundsCache[cacheMode].valid) {
-        if (minx)
-            *minx=boundsCache[cacheMode].minx;
-        if (miny)
-            *miny=boundsCache[cacheMode].miny;
-        if (maxx)
-            *maxx=boundsCache[cacheMode].maxx;
-        if (maxy)
-            *maxy=boundsCache[cacheMode].maxy;
-        return;
+    BoundsCacheSlot cacheMode=cacheSlot(mode,visible,nosubs);
+    if ((cacheMode!=BOUNDSCACHE_MAX)&&boundsCacheValid[cacheMode])
+    {
+        if  ((mode==BOUNDS_GLOBAL)||
+             ((mode==BOUNDS_REF)&&(boundsCacheRef==ref))||
+             (parentClip==nullptr))  {
+                if (minx)
+                    *minx=boundsCache[cacheMode].minx;
+                if (miny)
+                    *miny=boundsCache[cacheMode].miny;
+                if (maxx)
+                    *maxx=boundsCache[cacheMode].maxx;
+                if (maxy)
+                    *maxy=boundsCache[cacheMode].maxy;
+                return;
+        }
     }
 
 #if 1
@@ -1547,8 +1608,8 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
                     if (!visible)
                         stack.push_all(sprite->children_.data(),sprite->children_.size());
                     else {
-						int sc=sprite->skipSet_.size();
-						const char *sd=sprite->skipSet_.data();
+                        int sc=sprite->skipSet_?sprite->skipSet_->size():0;
+                        char *sd=sc?sprite->skipSet_->data():NULL;
 						int sz = sprite->children_.size();
 						for (int i = 0; i <sz; i++)
 						{
@@ -1689,8 +1750,8 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
         }
 
         if ((!nosubs)&&((!visible)||isVisible_)) {
-            int sc=skipSet_.size();
-            const char *sd=skipSet_.data();
+            int sc=skipSet_?skipSet_->size():0;
+            char *sd=sc?skipSet_->data():NULL;
             int sz = children_.size();
             for (int i = 0; i <sz; i++)
             {
@@ -1711,12 +1772,13 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
 
         //Whatever the sprite is, global bounds are always the same
         //Local and object bounds however are only valid at the sprite level
-        if ((mode==BOUNDS_GLOBAL)||(mode==BOUNDS_REF)||((parentClip==nullptr)&&(mode!=BOUNDS_UNSPEC))) {
+        if ((cacheMode!=BOUNDSCACHE_MAX)&&
+                ((mode==BOUNDS_GLOBAL)||(mode==BOUNDS_REF)||(parentClip==nullptr))) {
             boundsCache[cacheMode].minx=gminx;
             boundsCache[cacheMode].miny=gminy;
             boundsCache[cacheMode].maxx=gmaxx;
             boundsCache[cacheMode].maxy=gmaxy;            
-            boundsCache[cacheMode].valid=true;
+            boundsCacheValid[cacheMode]=true;
             if (mode==BOUNDS_REF)
                 boundsCacheRef=ref;
         }

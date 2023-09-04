@@ -58,7 +58,7 @@ public:
         std::string dot2 = dot ? (dot + 1) : "";
         std::transform(dot2.begin(), dot2.end(), dot2.begin(), ::tolower);
 
-        if (dot2 == "wav")
+        if ((dot2 == "wav")&&(strncmp("|B|",fileName,3)))
         {
             gid = gaudio_SoundCreateFromFile(fileName, g_false, error);
             setSoundInterface();

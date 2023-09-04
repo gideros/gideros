@@ -487,31 +487,47 @@ public:
 	void redrawEffects();
     void updateEffects();
     void logicalTransformChanged();
-    void setSkipSet(const std::vector<char>& skip) { RENDER_LOCK(); skipSet_=skip; RENDER_UNLOCK(); };
+    void setSkipSet(const std::vector<char>& skip) { RENDER_LOCK(); if (!skipSet_) skipSet_=new std::vector<char>(skip); else skipSet_->assign(skip.cbegin(),skip.cend()); RENDER_UNLOCK(); };
     void setCheckClip(bool check) { checkClip_=check; };
 protected:
 	EffectUpdateMode effectsMode_;
     bool effectsDrawing_;
     bool hasCustomShader_;
-    std::vector<Effect> effectStack_;
-    std::vector<char> skipSet_;
     bool checkClip_;
     bool worldAlign_;
+    std::vector<Effect> *effectStack_;
+    std::vector<char> *skipSet_;
+public:
     enum BoundsMode {
         BOUNDS_UNSPEC=0,
         BOUNDS_OBJECT=1, //Internal object bounds, excluding local transform
         BOUNDS_LOCAL=2, //Locally transformed object bounds, that is bounds of the object in its parent space
         BOUNDS_GLOBAL=3, //Global bounds
         BOUNDS_REF=4, //Bounds versus a specific reference
-        BOUNDS_MAX=5
     };
+    enum BoundsCacheSlot {
+        BOUNDSCACHE_OBJECT=0,
+        BOUNDSCACHE_OBJECT_V,
+        BOUNDSCACHE_LOCAL,
+        BOUNDSCACHE_LOCAL_V,
+        BOUNDSCACHE_GLOBAL,
+        BOUNDSCACHE_GLOBAL_V,
+        BOUNDSCACHE_GLOBAL_S,
+        BOUNDSCACHE_GLOBAL_VS,
+        BOUNDSCACHE_REF,
+        BOUNDSCACHE_REF_V,
+        BOUNDSCACHE_REF_S,
+        BOUNDSCACHE_REF_VS,
+        BOUNDSCACHE_MAX
+    };
+protected:
     struct {
         float minx;
         float miny;
         float maxx;
         float maxy;
-        bool valid;
-    } boundsCache[4*BOUNDS_MAX];
+    } boundsCache[BOUNDSCACHE_MAX];
+    bool boundsCacheValid[BOUNDSCACHE_MAX];
     const Sprite *boundsCacheRef;
 
     void revalidate(int changes) { 	changes_=(ChangeSet)(changes_&(~changes));  };
@@ -533,7 +549,7 @@ public:
     GridBagLayout *layoutState;
     int spriteWithLayoutCount;
     int spriteWithEffectCount;
-    std::vector<Sprite *> viewports;
+    std::vector<Sprite *> *viewports;
 
 protected:
     void layoutSizesChanged();
@@ -594,7 +610,7 @@ protected:
 	static std::set<Sprite*> allSpritesWithListeners_;
 
 protected:
-	std::map<int,struct _ShaderSpec> shaders_;
+    std::map<int,struct _ShaderSpec> *shaders_;
 	ShaderEngine::DepthStencil stencil_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;

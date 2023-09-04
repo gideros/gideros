@@ -32,9 +32,9 @@ protected:
 private:
 	int refcount_;
 	int typeMap_;
-    std::map<void *, GReferenced*> data_;
+    std::map<void *, GReferenced*> *data_;
     unsigned int typeSig_;
-	GReferenced* proxy_;
+    GReferenced* proxy_;
 
 private:
 	GReferenced(const GReferenced&);

@@ -35,6 +35,7 @@ struct GGWavHandle
     int sampleSize;
     unsigned int dataPos;
     unsigned int dataSize;
+    size_t playPos;
 };
 static std::map<g_id, GGWavHandle *> ctxmap;
 
@@ -161,6 +162,7 @@ g_id gaudio_WavOpen(const char *fileName, int *numChannels, int *sampleRate, int
     handle->sampleSize = format.blockAlign;
     handle->dataPos = dataPos;
     handle->dataSize = dataSize;
+    handle->playPos = 0;
 
     g_id gid = g_NextId();
     ctxmap[gid]=handle;
@@ -201,7 +203,9 @@ int gaudio_WavSeek(g_id id, long int offset, int whence)
 
     g_fseek(handle->fis, offset, SEEK_SET);
 
-    return (g_ftell(handle->fis) - handle->dataPos) / handle->sampleSize;
+    handle->playPos = (g_ftell(handle->fis) - handle->dataPos) / handle->sampleSize;
+
+    return handle->playPos;
 }
 
 long int gaudio_WavTell(g_id id)
@@ -217,7 +221,10 @@ size_t gaudio_WavRead(g_id id, size_t size, void *data, unsigned int *streamPos)
     size_t size2 = size / handle->sampleSize;
     size_t remain = (handle->dataSize / handle->sampleSize) - gaudio_WavTell(id);
 
-    return g_fread(data, handle->sampleSize, std::min(size2, remain), handle->fis) * handle->sampleSize;
+    size_t adv=g_fread(data, handle->sampleSize, std::min(size2, remain), handle->fis);
+    if (streamPos) *streamPos=handle->playPos;
+    handle->playPos+=adv;
+    return adv * handle->sampleSize;
 }
 
 }
