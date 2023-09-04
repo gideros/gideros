@@ -96,6 +96,11 @@ public:
 			parts.clear();
             metricsCache.clear();
 		};
+        void dispose()
+        {
+            parts.clear();
+            metricsCache.clear();
+        };
 	};
 	struct ChunkClass {
 		std::string text;
@@ -135,6 +140,7 @@ public:
         TLF_NOBIDI=(1<<14),
         TLF_SINGLELINE=(1<<15),
         TLF_FORCESHAPING=(1<<16),
+        TLF_DISPOSELAYOUT=(1<<17),
     };
 
     struct TextLayoutParameters {
@@ -147,7 +153,40 @@ public:
         std::string breakchar;
         float alignx,aligny;
         float aspect;
+        bool operator <(const TextLayoutParameters & op2) const
+        {
+            if (w<op2.w) return true;
+            if (flags<op2.flags) return true;
+            if (letterSpacing<op2.letterSpacing) return true;
+            if (lineSpacing<op2.lineSpacing) return true;
+            if (tabSpace<op2.tabSpace) return true;
+            if (breakchar<op2.breakchar) return true;
+            if (alignx<op2.alignx) return true;
+            if (aligny<op2.aligny) return true;
+            if (aspect<op2.aspect) return true;
+            if (!aligny) return false;
+            if (h<op2.h) return true;
+            return false;
+        };
+        bool operator ==(const TextLayoutParameters & op2) const {
+            return (!((*this)<op2))&&(!(op2<(*this)));
+        }
     };
+
+    struct TextLayoutInput {
+        TextLayoutParameters params;
+        std::string text;
+        bool operator <(const TextLayoutInput & op2) const
+        {
+            if (text<op2.text) return true;
+            if (params<op2.params) return true;
+            return false;
+        };
+        bool operator ==(const TextLayoutInput & op2) const {
+            return (!((*this)<op2))&&(!(op2<(*this)));
+        }
+    };
+
     virtual void chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params);
     size_t getCharIndexAtOffset(struct ChunkLayout &part, float offset, float letterSpacing, bool notFirst);
     virtual void layoutText(const char *text, TextLayoutParameters *params, TextLayout &tl);

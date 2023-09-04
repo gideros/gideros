@@ -112,9 +112,17 @@ void TextField::setTextColor(float r,float g,float b,float a)
 
     if (!text_.empty()) {
         int oflags = textlayout_.styleFlags;
-        textlayout_.styleFlags |= TEXTSTYLEFLAG_SKIPLAYOUT; //Don't relayout when color changed
-        createGraphics();
-        textlayout_.styleFlags = oflags;
+        if (oflags&TEXTSTYLEFLAG_COLOR) {
+            if (!(layout_.flags&FontBase::TLF_DISPOSELAYOUT))
+                textlayout_.styleFlags |= TEXTSTYLEFLAG_SKIPLAYOUT; //Don't relayout when color changed
+            createGraphics();
+            textlayout_.styleFlags = oflags;
+        }
+        else {
+            for (auto it=graphicsBase_.begin(); it!=graphicsBase_.end(); it++)
+                it->setColor(r,g,b,a);
+            invalidate(INV_GRAPHICS);
+        }
     }
 }
 
@@ -210,6 +218,8 @@ void TextField::createGraphics()
 	}
     if (layoutSizeChanged)
         layoutSizesChanged();
+    if (layout_.flags&FontBase::TLF_DISPOSELAYOUT)
+        textlayout_.dispose();
 }
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)

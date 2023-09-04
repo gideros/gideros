@@ -16,15 +16,15 @@ Pixel::Pixel(Application *application) : Sprite(application)
     tx_=0, ty_=0, tw_=0, th_=0;
     isStretching_ = false;
     isNinePatch_=false;
-    tmatrix_.identity();
+    tmatrix_=nullptr;
     insetv_t_=0; insetv_b_=0; insetv_l_=0; insetv_r_=0;
     insett_t_=0; insett_b_=0; insett_l_=0; insett_r_=0;
     c1_=c2_=c3_=c4_=0xFFFFFF;
     a1_=a2_=a3_=a4_=1.0;
     isWhite_=true;
     minw_=minh_=0;
-	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
-		texture_[t]=NULL;
+    texture_=nullptr;
+    extraTexture=nullptr;
 	texcoords.resize(4);
 	texcoords[0] = Point2f(0,0);
 	texcoords[1] = Point2f(1,0);
@@ -85,7 +85,8 @@ void Pixel::cloneFrom(Pixel *s) {
     tx_=s->tx_, ty_=s->ty_, tw_=s->tw_, th_=s->th_;
     isStretching_ = s->isStretching_;
     isNinePatch_=s->isNinePatch_;
-    tmatrix_=s->tmatrix_;
+    if (s->tmatrix_)
+        tmatrix_=new Matrix4(*s->tmatrix_);
     insetv_t_=s->insetv_t_; insetv_b_=s->insetv_b_; insetv_l_=s->insetv_l_; insetv_r_=s->insetv_r_;
     insett_t_=s->insett_t_; insett_b_=s->insett_b_; insett_l_=s->insett_l_; insett_r_=s->insett_r_;
     c1_=s->c1_; c2_=s->c2_; c3_=s->c3_; c4_=s->c4_;
@@ -97,9 +98,17 @@ void Pixel::cloneFrom(Pixel *s) {
     styCache_c4=s->styCache_c4;
     isWhite_=s->isWhite_;
     minw_=s->minw_; minh_=s->minh_;
-    for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
-        if ((texture_[t]=s->texture_[t])!=NULL)
-                texture_[t]->ref();
+    if (s->texture_) {
+        texture_=s->texture_;
+        texture_->ref();
+    }
+    if (s->extraTexture)
+    for (int t=0;t<(PIXEL_MAX_TEXTURES-1);t++)
+    {
+        extraTexture=new TextureBase*[PIXEL_MAX_TEXTURES-1];
+        if ((extraTexture[t]=s->extraTexture[t])!=NULL)
+                extraTexture[t]->ref();
+    }
     texcoords.assign(s->texcoords.cbegin(),s->texcoords.cend());
     texcoords.Update();
     vertices.assign(s->vertices.cbegin(),s->vertices.cend());
@@ -110,9 +119,14 @@ void Pixel::cloneFrom(Pixel *s) {
 
 Pixel::~Pixel()
 {
-    for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
-        if (texture_[t])
-            texture_[t]->unref();
+    if (texture_)
+        texture_->unref();
+    if (extraTexture) {
+        for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
+            if (extraTexture[t])
+                extraTexture[t]->unref();
+        delete[] extraTexture;
+    }
 }
 
 void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
@@ -125,19 +139,22 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
 		glMultColor(r_, g_, b_, a_);
 	}
 
-	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
-		if (texture_[t])
-			ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
-    ShaderProgram *shp=getShader((texture_[0])?ShaderEngine::STDP_TEXTURE:(
+    if (texture_)
+        ShaderEngine::Engine->bindTexture(0,texture_->data->id());
+    if (extraTexture)
+    for (int t=0;t<(PIXEL_MAX_TEXTURES-1);t++)
+        if (extraTexture[t])
+            ShaderEngine::Engine->bindTexture(t+1,extraTexture[t]->data->id());
+    ShaderProgram *shp=getShader(texture_?ShaderEngine::STDP_TEXTURE:(
         colors_.empty()?ShaderEngine::STDP_BASIC:ShaderEngine::STDP_COLOR));
 	int sc=shp->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
-	if ((sc>=0)&&texture_[0])
+    if ((sc>=0)&&texture_)
 	{
     	float textureInfo[4]={0,0,0,0};
-   		textureInfo[0]=(float)texture_[0]->data->width / (float)texture_[0]->data->exwidth;
-    	textureInfo[1]=(float)texture_[0]->data->height / (float)texture_[0]->data->exheight;
-    	textureInfo[2]=1.0/texture_[0]->data->exwidth;
-    	textureInfo[3]=1.0/texture_[0]->data->exheight;
+        textureInfo[0]=(float)texture_->data->width / (float)texture_->data->exwidth;
+        textureInfo[1]=(float)texture_->data->height / (float)texture_->data->exheight;
+        textureInfo[2]=1.0/texture_->data->exwidth;
+        textureInfo[3]=1.0/texture_->data->exheight;
 		shp->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
 	}
 
@@ -230,7 +247,7 @@ void Pixel::updateVertices() {
 
 void Pixel::updateTexture()
 {
-    TextureBase* texture = texture_[0];
+    TextureBase* texture = texture_;
 
     float tx = tx_;
     float ty = ty_;
@@ -305,10 +322,11 @@ void Pixel::updateTexture()
             texcoords[3] = Point2f(x,y+h);
         }
 
-        for (size_t tc=0;tc<texcoords.size();tc++)
-			tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
- 		texcoords.Update();
- 		invalidate(INV_GRAPHICS);
+        if (tmatrix_)
+            for (size_t tc=0;tc<texcoords.size();tc++)
+                tmatrix_->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
+        texcoords.Update();
+        invalidate(INV_GRAPHICS);
         RENDER_UNLOCK();
         return;
     }
@@ -365,10 +383,11 @@ void Pixel::updateTexture()
     texcoords[1] = Point2f(tx2,ty1);
     texcoords[2] = Point2f(tx2,ty2);
     texcoords[3] = Point2f(tx1,ty2);
-    for (size_t tc=0;tc<texcoords.size();tc++)
-		tmatrix_.transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
+    if (tmatrix_)
+        for (size_t tc=0;tc<texcoords.size();tc++)
+            tmatrix_->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
     texcoords.Update();
-	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    invalidate(INV_GRAPHICS|INV_BOUNDS);
     RENDER_UNLOCK();
 }
 
@@ -401,7 +420,7 @@ bool Pixel::setDimensions(float width,float height,bool forLayout)
     if (changed) {
         updateVertices();
         invalidate(INV_GRAPHICS|INV_BOUNDS);
-        if ((!(isStretching_|| isNinePatch_))&&texture_[0]) updateTexture();
+        if ((!(isStretching_|| isNinePatch_))&&texture_) updateTexture();
     }
     return changed;
 }
@@ -427,11 +446,27 @@ void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
 {
     if (texture)
         texture->ref();
-    if (texture_[slot])
-        texture_[slot]->unref();
-    texture_[slot] = texture;
-    if (matrix) tmatrix_=*matrix;
-
+    if (!slot) {
+        if (texture_)
+            texture_->unref();
+        texture_ = texture;
+    }
+    else
+    {
+        if (!extraTexture) {
+            extraTexture=new TextureBase*[PIXEL_MAX_TEXTURES-1];
+            for (int k=0;k<PIXEL_MAX_TEXTURES-1;k++) extraTexture[k]=nullptr;
+        }
+        if (extraTexture[slot-1])
+            extraTexture[slot-1]->unref();
+        extraTexture[slot-1] = texture;
+    }
+    if (matrix) {
+        if (!tmatrix_)
+            tmatrix_=new Matrix4(*matrix);
+        else
+            *tmatrix_=*matrix;
+    }
     if (slot==0)
     {
         if (texture) {
@@ -457,13 +492,16 @@ void Pixel::setNinePatch(float vl,float vr,float vt,float vb,float tl,float tr,f
 	insett_l_=tl;
 	isNinePatch_=(vt||vb||vr||vl);
 	updateVertices();
-    if (texture_[0]) updateTexture();
+    if (texture_) updateTexture();
 }
 
 void Pixel::setTextureMatrix(const Matrix4* matrix)
 {
-	tmatrix_=*matrix;
-    if (texture_[0]) updateTexture();
+    if (!tmatrix_)
+        tmatrix_=new Matrix4(*matrix);
+    else
+        *tmatrix_=*matrix;
+    if (texture_) updateTexture();
 }
 
 void Pixel::setTexturePosition(float x, float y)
@@ -471,7 +509,7 @@ void Pixel::setTexturePosition(float x, float y)
     x_ = x;
     y_ = y;
 
-    if (texture_[0]) updateTexture();
+    if (texture_) updateTexture();
 }
 
 void Pixel::setTextureScale(float sx, float sy)
@@ -479,7 +517,7 @@ void Pixel::setTextureScale(float sx, float sy)
     sx_ = sx;
     sy_ = sy;
 
-    if (texture_[0]) updateTexture();
+    if (texture_) updateTexture();
 }
 
 void Pixel::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4)

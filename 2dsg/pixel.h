@@ -110,7 +110,8 @@ private:
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;
     VertexBuffer<unsigned char> colors_;
-    TextureBase *texture_[PIXEL_MAX_TEXTURES];
+    TextureBase *texture_;
+    TextureBase **extraTexture;
 	float r_, g_, b_, a_;
     int c1_, c2_, c3_, c4_;
     float a1_, a2_, a3_, a4_;
@@ -120,7 +121,7 @@ private:
 	bool isWhite_;
     bool isStretching_;
     bool isNinePatch_;
-    Matrix4 tmatrix_;
+    Matrix4 *tmatrix_;
     float insetv_t_,insetv_b_,insetv_r_,insetv_l_;
     float insett_t_,insett_b_,insett_r_,insett_l_;
     float minw_,minh_;

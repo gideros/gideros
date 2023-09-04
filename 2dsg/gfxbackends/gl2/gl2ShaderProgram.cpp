@@ -9,6 +9,7 @@
 #include "glog.h"
 #include <set>
 
+#define FBO_MINSIZE 64
 class gl2ShaderBufferCache : public ShaderBufferCache {
 public:
 	GLuint VBO;
@@ -288,12 +289,15 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 #ifdef GIDEROS_GL1
 	GLCALL glVertexPointer(mult,gltype, stride, ((char *)ptr)+offset);
 #else
-	GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(index+1);
-	GLCALL glBindBuffer(GL_ARRAY_BUFFER,vbo);
-	if (vbo)
+    size_t fbo_sz=elmSize * mult * count;
+    if (fbo_sz<FBO_MINSIZE)
+        cache=NULL;
+    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(index+1);
+    GLCALL glBindBuffer(GL_ARRAY_BUFFER,vbo);
+    if (vbo)
 	{
 		if (modified||(!cache))
-			GLCALL glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
+            GLCALL glBufferData(GL_ARRAY_BUFFER,fbo_sz,ptr,GL_DYNAMIC_DRAW);
 		ptr=NULL;
 	}
 	if ((index<glattributes.size())&&(glattributes[index]>=0))
@@ -610,8 +614,11 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		elmSize=4;
 		break;
 	}
-	GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(0);
-	GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
+    size_t fbo_sz=elmSize * count;
+    if (fbo_sz<FBO_MINSIZE)
+        cache=NULL;
+    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(0);
+    GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
 	if (vbo)
 	{
 		if (modified||(!cache))
