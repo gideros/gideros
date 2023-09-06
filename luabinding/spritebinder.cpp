@@ -666,8 +666,12 @@ int SpriteBinder::getClip(lua_State* L)
 #define FILL_NUM(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1);
 #define FILL_BOOL(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
 #define STOR_NUM_ARRAY(n,f) \
-		lua_newtable(L); \
+        lua_newtable(L); \
         for (size_t k=0;k<p->f.size();k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
+        STORE_VAL(n);
+#define STOR_NUM_ARRAYN(n,f,fl) \
+        lua_newtable(L); \
+        for (size_t k=0;k<p->fl;k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
         STORE_VAL(n);
 #define STOR_INT(n,f) RESOLVED(n) lua_pushinteger(L,p->f); STORE_VAL(n);
 #define STOR_INTT(n,f,t) RESOLVED(n) lua_pushinteger(L,(int)p->f); STORE_VAL(n);
@@ -944,10 +948,10 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
         STOR_NUM(reqWidth,reqWidth); STOR_NUM(reqHeight,reqHeight);
         STOR_NUM(startx,startx); STOR_NUM(starty,starty);
         STOR_NUM(cellSpacingX,cellSpacingX); STOR_NUM(cellSpacingY,cellSpacingY);
-        STOR_NUM_ARRAY(minWidth,minWidth);
-        STOR_NUM_ARRAY(minHeight,minHeight);
-        STOR_NUM_ARRAY(weightX,weightX);
-        STOR_NUM_ARRAY(weightY,weightY);
+        STOR_NUM_ARRAYN(minWidth,minWidth,width);
+        STOR_NUM_ARRAYN(minHeight,minHeight,height);
+        STOR_NUM_ARRAYN(weightX,weightX,width);
+        STOR_NUM_ARRAYN(weightY,weightY,height);
 	}
 	else
 		lua_pushnil(L);

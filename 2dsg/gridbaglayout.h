@@ -16,24 +16,25 @@ struct GridInsets {
 
 struct GridBagConstraints {
     //Placement in grid
-    size_t gridx;
-    size_t gridy;
+    unsigned int gridx;
+    unsigned int gridy;
     //Span in grid
-    size_t gridwidth;
-    size_t gridheight;
+    unsigned int gridwidth;
+    unsigned int gridheight;
     //Relativeplacement
     bool gridRelative;
     //If min size is too high, place the sprite in next(+1) or previous(-1) column or row depedning on gridx/gridy relative placement. 0 to disable
     signed char overflowMode;
     //Hide priority: if non 0 and min size is too high, hide prioritary Sprites
     unsigned char hidePriority;
-    //Relative weight
-    double weightx;
-    double weighty;
+    bool tempHide;
     //Anchor direction
     enum _Anchor {
       CENTER=0, NORTH, NORTHEAST,EAST,SOUTHEAST,SOUTH,SOUTHWEST,WEST,NORTHWEST
     } anchor;
+    //Relative weight
+    float weightx;
+    float weighty;
     //Fill factors
     float fillX,fillY;
     //insets in cell
@@ -41,11 +42,10 @@ struct GridBagConstraints {
     float ipadx;
     float ipady;
     //Temporary placement
-    size_t tempX;
-    size_t tempY;
-    size_t tempWidth;
-    size_t tempHeight;
-    bool tempHide;
+    unsigned int tempX;
+    unsigned int tempY;
+    unsigned int tempWidth;
+    unsigned int tempHeight;
     float minWidth;
     float minHeight;
     //Minimum and prefered sizes
@@ -65,6 +65,8 @@ struct GridBagConstraints {
     bool optimizeSize;
     //Object group
     bool group;
+    //Is in group, set by gideros
+    bool inGroup;
     //Auto clip
     bool autoClip;
 
@@ -101,28 +103,141 @@ struct GridBagConstraints {
 
         optimizeSize=false;
         group=false;
+        inGroup=false;
         autoClip=false;
 
         resolvedMap=0;
     }
 };
 
+#define GRIDBAGLAYOUT_ARRAY_PREALLOCATED    2
 struct GridBagLayoutInfo {
-    size_t width, height;          /* number of  cells: horizontal and vertical */
+    unsigned int width, height;          /* number of  cells: horizontal and vertical */
     float startx, starty;         /* starting point for layout */
     float reqWidth, reqHeight;
-    std::vector<float> minWidth;             /* largest minWidth in each column */
-    std::vector<float> minHeight;            /* largest minHeight in each row */
-    std::vector<double> weightX;           /* largest weight in each column */
-    std::vector<double> weightY;           /* largest weight in each row */
+    float *minWidth; /* largest minWidth in each column */
+    float minWidthPre[GRIDBAGLAYOUT_ARRAY_PREALLOCATED];
+    float *minHeight; /* largest minHeight in each row */
+    float minHeightPre[GRIDBAGLAYOUT_ARRAY_PREALLOCATED];
+    float *weightX; /* largest weight in each column */
+    float weightXPre[GRIDBAGLAYOUT_ARRAY_PREALLOCATED];
+    float *weightY;/* largest weight in each row */
+    float weightYPre[GRIDBAGLAYOUT_ARRAY_PREALLOCATED];
     float cellSpacingX,cellSpacingY;
     bool valid;
-    GridBagLayoutInfo(size_t width, size_t height) : startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),cellSpacingX(0),cellSpacingY(0),valid(false) {
+    GridBagLayoutInfo(unsigned int width, unsigned int height) : startx(0), starty(0),reqWidth(0),reqHeight(0),cellSpacingX(0),cellSpacingY(0),valid(false) {
+        this->width=0;
+        this->height=0;
+        setSize(width,height);
+    }
+    void setSize(unsigned int width, unsigned int height) {
+        if (this->width>GRIDBAGLAYOUT_ARRAY_PREALLOCATED)
+        {
+            delete[] minWidth;
+            delete[] weightX;
+        }
+        if (this->height>GRIDBAGLAYOUT_ARRAY_PREALLOCATED)
+        {
+            delete[] minHeight;
+            delete[] weightY;
+        }
         this->width = width;
         this->height = height;
+        if (width>GRIDBAGLAYOUT_ARRAY_PREALLOCATED) {
+            minWidth=new float[width];
+            weightX=new float[width];
+        }
+        else {
+            minWidth=minWidthPre;
+            weightX=weightXPre;
+        }
+        if (height>GRIDBAGLAYOUT_ARRAY_PREALLOCATED) {
+            minHeight=new float[height];
+            weightY=new float[height];
+        }
+        else {
+            minHeight=minHeightPre;
+            weightY=weightYPre;
+        }
+        for (unsigned int i=0;i<width;i++)
+            minWidth[i]=weightX[i]=0;
+        for (unsigned i=0;i<height;i++)
+            minHeight[i]=weightY[i]=0;
     }
-    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), minWidth(), minHeight(),weightX(),weightY(),cellSpacingX(0),cellSpacingY(0), valid(false)
+    GridBagLayoutInfo() : width(0), height(0), startx(0), starty(0),reqWidth(0),reqHeight(0), cellSpacingX(0),cellSpacingY(0), valid(false)
     {
+        setSize(0,0);
+    }
+    ~GridBagLayoutInfo()
+    {
+        if (this->width>GRIDBAGLAYOUT_ARRAY_PREALLOCATED)
+        {
+            delete[] minWidth;
+            delete[] weightX;
+        }
+        if (this->height>GRIDBAGLAYOUT_ARRAY_PREALLOCATED)
+        {
+            delete[] minHeight;
+            delete[] weightY;
+        }
+    }
+    GridBagLayoutInfo& operator=(const GridBagLayoutInfo& o)
+    {
+        if (this->width>GRIDBAGLAYOUT_ARRAY_PREALLOCATED)
+        {
+            delete[] minWidth;
+            delete[] weightX;
+        }
+        if (this->height>GRIDBAGLAYOUT_ARRAY_PREALLOCATED)
+        {
+            delete[] minHeight;
+            delete[] weightY;
+        }
+        width=o.width;
+        height=o.height;
+        startx=o.startx;
+        starty=o.starty;
+        reqWidth=o.reqWidth;
+        reqHeight=o.reqHeight;
+        cellSpacingX=o.cellSpacingX;
+        cellSpacingY=o.cellSpacingY;
+        valid=o.valid;
+        if (width>GRIDBAGLAYOUT_ARRAY_PREALLOCATED) {
+            minWidth=new float[width];
+            memcpy(minWidth,o.minWidth,sizeof(*minWidth)*width);
+            weightX=new float[width];
+            memcpy(weightX,o.weightX,sizeof(*weightX)*width);
+        }
+        else
+        {
+            minWidth=minWidthPre;
+            weightX=weightXPre;
+            for (int i=0;i<GRIDBAGLAYOUT_ARRAY_PREALLOCATED;i++)
+            {
+                minWidthPre[i]=o.minWidthPre[i];
+                weightXPre[i]=o.weightXPre[i];
+            }
+        }
+        if (height>GRIDBAGLAYOUT_ARRAY_PREALLOCATED) {
+            minHeight=new float[height];
+            memcpy(minHeight,o.minHeight,sizeof(*minHeight)*height);
+            weightY=new float[height];
+            memcpy(weightY,o.weightY,sizeof(*weightY)*height);
+        }
+        else
+        {
+            minHeight=minHeightPre;
+            weightY=weightYPre;
+            for (int i=0;i<GRIDBAGLAYOUT_ARRAY_PREALLOCATED;i++)
+            {
+                minHeightPre[i]=o.minHeightPre[i];
+                weightYPre[i]=o.weightYPre[i];
+            }
+        }
+        return *this;
+    }
+    GridBagLayoutInfo(const GridBagLayoutInfo &o) {
+        *this=o;
     }
 };
 
@@ -140,11 +255,14 @@ protected:
     void preInitMaximumArraySizes(std::vector<Sprite *> &candidates,size_t &a0,size_t &a1);
     void AdjustForGravity(Sprite *comp,GridBagConstraints *constraints, Rectangle &r);
 public:
+    int64_t resolvedMap;
+    std::map<int,std::string> resolved;
+    std::map<int,std::map<int,std::string>> resolvedArray;
     GridBagLayoutInfo layoutInfoCache[2];
     std::vector<float> columnWidths;
     std::vector<float> rowHeights;
-    std::vector<double> columnWeights;
-    std::vector<double> rowWeights;
+    std::vector<float> columnWeights;
+    std::vector<float> rowWeights;
     GridInsets pInsets;
     bool optimizing;
     bool equalizeCells;
@@ -157,9 +275,6 @@ public:
     float offsetX,offsetY;
     float originX,originY;
     float zOffset;
-    int64_t resolvedMap;
-    std::map<int,std::string> resolved;
-    std::map<int,std::map<int,std::string>> resolvedArray;
     GridBagLayout() :
             optimizing(false),equalizeCells(false),dirty(false),placing(false),resizeContainer(false),worldAlign(false),
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),

@@ -24,6 +24,11 @@ void GridBagLayout::preInitMaximumArraySizes(std::vector<Sprite *> &candidates, 
             curX=0;
             curY=0;
         }
+        else if (constraints->gridRelative&&constraints->inGroup) {
+            GridBagConstraints *pconstraints = comp->parent()->layoutConstraints;
+            curX=pconstraints->tempX;
+            curY=pconstraints->tempY;
+        }
         curX += constraints->gridx;
         curY += constraints->gridy;
 		curWidth = constraints->gridwidth;
@@ -73,6 +78,7 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     //Gather childrens
     std::stack<Sprite *> stack;
     stack.push(parent);
+    bool inGroup=false;
     while (!stack.empty()) {
         Sprite *p=stack.top();
         stack.pop();
@@ -82,12 +88,14 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
             constraints = comp->layoutConstraints;
             if ((!constraints)||(!(comp->visible()||constraints->hidePriority)))
                 continue;
+            constraints->inGroup=inGroup;
             candidates.push_back(comp);
             if (constraints->hidePriority)
                 priorized.push_back(constraints);
             if (constraints->group)
                 stack.push(comp);
         } //for (components) loop
+        inGroup=true;
     }
 
 	/*
@@ -117,8 +125,6 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     if (maximumArrayYIndex < columnWeights.size())
         maximumArrayYIndex = columnWeights.size();
 
-    std::vector<size_t> xMaxArray(maximumArrayXIndex);
-    std::vector<size_t> yMaxArray(maximumArrayYIndex);
     std::vector<size_t> xsMaxArray(maximumArrayYIndex);
     std::vector<size_t> ysMaxArray(maximumArrayXIndex);
 
@@ -132,6 +138,11 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
         {
             curX=0;
             curY=0;
+        }
+        else if (constraints->gridRelative&&constraints->inGroup) {
+            GridBagConstraints *pconstraints = comp->parent()->layoutConstraints;
+            curX=pconstraints->tempX;
+            curY=pconstraints->tempY;
         }
         curX += constraints->gridx;
         curY += constraints->gridy;
@@ -217,14 +228,6 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
             layoutHeight = py;
         }
 
-        /* Adjust xMaxArray and yMaxArray */
-        for (i = curX; i < (curX + curWidth); i++) {
-            yMaxArray[i] = py;
-        }
-        for (i = curY; i < (curY + curHeight); i++) {
-            xMaxArray[i] = px;
-        }
-
         if (dw>xsMaxArray[curX]) xsMaxArray[curX]=dw;
         if (dh>ysMaxArray[curY]) ysMaxArray[curY]=dh;
 
@@ -275,14 +278,8 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
         r = &parent->layoutState->layoutInfoCache[sizeflag-1];
     }
     else {
-        nocache->width=layoutWidth;
-        nocache->height=layoutHeight;
+        nocache->setSize(layoutWidth,layoutHeight);
     }
-
-    r->weightX.resize(maximumArrayYIndex);
-    r->weightY.resize(maximumArrayXIndex);
-    r->minWidth.resize(maximumArrayYIndex);
-    r->minHeight.resize(maximumArrayXIndex);
 
 	/*
 	 * Pass #2
@@ -293,20 +290,11 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
 	 *  row or column, respectively.
 	 */
 
-    for (std::vector<size_t>::iterator it = xMaxArray.begin(), end =
-			xMaxArray.end(); it != end; ++it)
-		*it = 0;
-    for (std::vector<size_t>::iterator it = yMaxArray.begin(), end =
-			yMaxArray.end(); it != end; ++it)
-		*it = 0;
-
     for (auto it=candidates.begin();it!=candidates.end();it++) {
         Sprite *comp=*it;
         constraints = comp->layoutConstraints;
         if (constraints->tempHide) continue;
 
-        curX = constraints->tempX;
-        curY = constraints->tempY;
         curWidth = constraints->gridwidth;
         curHeight = constraints->gridheight;
 
@@ -322,17 +310,7 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
                 curHeight = 1;
         }
 
-        px = curX + curWidth;
-        py = curY + curHeight;
-
-        for (i = curX; i < (curX + curWidth); i++) {
-            yMaxArray[i] = py;
-        }
-        for (i = curY; i < (curY + curHeight); i++) {
-            xMaxArray[i] = px;
-        }
-
-        /* Assign the new values to the gridbag slave */
+       /* Assign the new values to the gridbag slave */
         constraints->tempWidth = curWidth;
         constraints->tempHeight = curHeight;
     }
@@ -345,12 +323,12 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
 	for (size_t i = 0; i < rowHeights.size(); i++)
         r->minHeight[i] = rowHeights[i];
 	size_t max =
-            columnWeights.size() < r->weightX.size() ?
-                    columnWeights.size() : r->weightX.size();
+            columnWeights.size() < r->width ?
+                    columnWeights.size() : r->width;
 	for (size_t i = 0; i < max; i++)
         r->weightX[i] = columnWeights[i];
-    max = rowWeights.size() < r->weightY.size() ?
-            rowWeights.size() : r->weightY.size();
+    max = rowWeights.size() < r->height ?
+            rowWeights.size() : r->height;
 	for (size_t i = 0; i < max; i++)
         r->weightY[i] = rowWeights[i];
 
@@ -490,28 +468,28 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     //PASS 4: equalize cells if needed
     if (equalizeCells&&(sizeflag==PREFERREDSIZE)) {
         double mw=0;
-        for (size_t i = 0; i < maximumArrayYIndex; i++) {
+        for (size_t i = 0; i < layoutWidth; i++) {
             if (r->weightX[i]>0) {
                 double mwt=r->minWidth[i]/r->weightX[i];
                 if (mwt>mw) mw=mwt;
             }
         }
         if (mw>0) {
-            for (size_t i = 0; i < maximumArrayYIndex; i++) {
+            for (size_t i = 0; i < layoutWidth; i++) {
                 if (r->weightX[i]>0) {
                     r->minWidth[i]=r->weightX[i]*mw;
                 }
             }
         }
         mw=0;
-        for (size_t i = 0; i < maximumArrayXIndex; i++) {
+        for (size_t i = 0; i < layoutHeight; i++) {
             if (r->weightY[i]>0) {
                 double mwt=r->minHeight[i]/r->weightY[i];
                 if (mwt>mw) mw=mwt;
             }
         }
         if (mw>0) {
-            for (size_t i = 0; i < maximumArrayXIndex; i++) {
+            for (size_t i = 0; i < layoutHeight; i++) {
                 if (r->weightY[i]>0) {
                     r->minHeight[i]=r->weightY[i]*mw;
                 }
