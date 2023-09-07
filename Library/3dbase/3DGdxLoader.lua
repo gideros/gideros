@@ -146,7 +146,8 @@ function loadGdx(file,imtls)
 	-- materials (texture id, tex path, color, ...)
 	for _,mat in ipairs(gdx.materials or {}) do
 		local md=mtls[mat.id] or {}
-		md.kd=mat.diffuse
+		md.kd=mat.diffuse -- json node "materials - diffuse"
+		md.kd[4]=mat.opacity -- json node "materials - opacity", fix missing alpha value for setColorTransform
 		md.modelpath = mtls.modelpath
 --		print("md model path", md.modelpath)
 		for _, tex in ipairs(mat.textures or {}) do -- XXX
