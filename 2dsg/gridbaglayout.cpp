@@ -71,6 +71,9 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     size_t maximumArrayXIndex = 0;
     size_t maximumArrayYIndex = 0;
 	float dw = 0, dh = 0;
+
+    bool fixedGrid=parent->layoutState->fixedGrid;
+
     // Hide priority management
     std::vector<GridBagConstraints *> priorized;
     std::vector<Sprite *> candidates;
@@ -154,7 +157,10 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
             curHeight = 1;
 
         /* Cache the current slave's size. */
-        if (comp->layoutConstraints) {
+        if (fixedGrid) {
+            dw=dh=0;
+        }
+        else if (comp->layoutConstraints) {
             dw = (sizeflag == PREFERREDSIZE) ?
                 comp->layoutConstraints->prefWidth :
                 comp->layoutConstraints->aminWidth;
@@ -228,8 +234,10 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
             layoutHeight = py;
         }
 
-        if (dw>xsMaxArray[curX]) xsMaxArray[curX]=dw;
-        if (dh>ysMaxArray[curY]) ysMaxArray[curY]=dh;
+        if (!fixedGrid) {
+            if (dw>xsMaxArray[curX]) xsMaxArray[curX]=dw;
+            if (dh>ysMaxArray[curY]) ysMaxArray[curY]=dh;
+        }
 
         constraints->tempX = curX;
         constraints->tempY = curY;
@@ -239,7 +247,7 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
     }
 
     //Hide overflowing sprites according to priority
-    if (!priorized.empty()) {
+    if (!(fixedGrid||priorized.empty())) {
         size_t cw=0,ch=0;
         for (i = 0; i < layoutWidth; i++) cw+=xsMaxArray[i];
         for (i = 0; i < layoutHeight; i++) ch+=ysMaxArray[i];

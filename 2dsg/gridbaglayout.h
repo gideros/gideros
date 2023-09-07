@@ -270,13 +270,14 @@ public:
     bool placing;
     bool resizeContainer;
     bool worldAlign;
+    bool fixedGrid;
     float cellSpacingX,cellSpacingY;
     float gridAnchorX,gridAnchorY;
     float offsetX,offsetY;
     float originX,originY;
     float zOffset;
     GridBagLayout() :
-            optimizing(false),equalizeCells(false),dirty(false),placing(false),resizeContainer(false),worldAlign(false),
+            optimizing(false),equalizeCells(false),dirty(false),placing(false),resizeContainer(false),worldAlign(false),fixedGrid(false),
     		cellSpacingX(0),cellSpacingY(0), gridAnchorX(0.5), gridAnchorY(0.5),
             offsetX(0),offsetY(0),originX(0),originY(0),
 			zOffset(0)
@@ -305,6 +306,7 @@ public:
 #define STRKEY_LAYOUT_gridAnchorX       14
 #define STRKEY_LAYOUT_gridAnchorY       15
 #define STRKEY_LAYOUT_zOffset           16
+#define STRKEY_LAYOUT_fixedGrid         17
 
 #define STRKEY_LAYOUT_reqWidth          20
 #define STRKEY_LAYOUT_reqHeight         21
