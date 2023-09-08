@@ -246,8 +246,8 @@ class GridBagLayout {
     GridBagLayoutInfo layoutInfo;
 protected:
     struct Rectangle {
-    	float x,y,width,height;
-    	Rectangle(): x(0),y(0),width(0),height(0) { }
+        float x,y,width,height;
+        Rectangle(): x(0),y(0),width(0),height(0) { }
     };
     /*void getLayoutOrigin (float &x,float &y);
     void getLayoutDimension(float *wdim,float *hdim,int &wsize, int &hsize);
@@ -288,6 +288,7 @@ public:
     void getMinSize(Sprite *parent, GridBagLayoutInfo *info, float &w,float &h, GridInsets &insets);
     void ArrangeGrid(Sprite *parent,float pw,float ph);
     GridBagLayoutInfo *getCurrentLayoutInfo() { return &layoutInfo; }
+    void placeChild(Sprite *parent,Sprite *child,float offx,float offy,unsigned int gw,unsigned int gy);
 };
 
 #define STRKEY_LAYOUT_columnWidths      1

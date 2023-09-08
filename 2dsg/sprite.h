@@ -25,6 +25,9 @@ class Stage;
 #define SPRITE_EVENTMASK_MOUSE	1
 #define SPRITE_EVENTMASK_TOUCH	2
 #define SPRITE_EVENTMASK_KEY	4
+
+class GhostSprite;
+
 class Sprite : public EventDispatcher
 {
 protected:
@@ -34,6 +37,9 @@ public:
 
     virtual Sprite *clone() { Sprite *clone=new Sprite(application_); clone->cloneFrom(this); return clone; }
     void cloneFrom(Sprite *);
+    virtual void applyGhost(Sprite *parent,GhostSprite *);
+    void setGhosts(std::vector<GhostSprite *> *ghosts);
+    std::vector<GhostSprite *> *getGhosts() { return ghosts_; };
 
     void draw(const CurrentTransform&, float sx, float sy, float ex, float ey);
     void computeLayout(Stage *stage);
@@ -379,6 +385,7 @@ public:
 	// Sets whether or not the sprite is visible.
 	void setVisible(bool visible)
 	{
+        if (visible==isVisible_) return;
 		isVisible_ = visible;
 		invalidate(INV_VISIBILITY);
 	}
@@ -497,6 +504,7 @@ protected:
     bool worldAlign_;
     std::vector<Effect> *effectStack_;
     std::vector<char> *skipSet_;
+    std::vector<GhostSprite *> *ghosts_;
 public:
     enum BoundsMode {
         BOUNDS_UNSPEC=0,
@@ -617,6 +625,16 @@ protected:
 
 protected:
 	virtual void eventListenersChanged();
+};
+
+class GhostSprite {
+    Sprite *model;
+public:
+    GhostSprite(Sprite *m);
+    virtual ~GhostSprite();
+    Sprite *getModel() { return model; };
+    unsigned int gridx,gridy; //Grid placement
+    std::vector<GhostSprite *> *children;
 };
 
 typedef void (*SpriteProxyDraw)(void *,const CurrentTransform& , float sx, float sy, float ex, float ey);

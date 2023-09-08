@@ -3,6 +3,7 @@
 
 #include "binder.h"
 
+class GhostSprite;
 class SpriteBinder
 {
 public:
@@ -123,8 +124,12 @@ private:
     static int setStyle(lua_State* L);
     static int resolveStyle(lua_State* L);
 
+    static int setGhosts(lua_State* L);
+    static int __parseGhosts(lua_State* L);
+
     static int layoutStrings[64];    
 public:
+    static void __parseGhost(GhostSprite *g,lua_State* L);
     static size_t tokenChildren;
     static size_t tokenParent;
     static size_t tokenNewclone;

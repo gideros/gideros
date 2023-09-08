@@ -15,6 +15,7 @@ public:
     Pixel(Application *application);
     virtual Sprite *clone() { Pixel *clone=new Pixel(application_); clone->cloneFrom(this); return clone; }
     void cloneFrom(Pixel *);
+    virtual void applyGhost(Sprite *parent,GhostSprite *);
 
 	void setColor(float r, float g, float b, float a)
 	{
@@ -134,6 +135,14 @@ public:
     std::string styCache_c3;
     std::string styCache_c4;
     std::string styCache_color;
+};
+
+class GhostPixel : public GhostSprite {
+public:
+    GhostPixel(Sprite *m);
+    virtual ~GhostPixel();
+    bool hasColor;
+    float color[4];
 };
 
 #endif

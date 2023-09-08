@@ -222,3 +222,19 @@ size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)
 	cy=rcy;
     return rti;
 }
+
+void TextFieldBase::applyGhost(Sprite *parent,GhostSprite *g_)
+{
+    GhostTextFieldBase *g=(GhostTextFieldBase *)g_;
+    setText(g->text.c_str());
+    Sprite::applyGhost(parent,g);
+}
+
+GhostTextFieldBase::GhostTextFieldBase(Sprite *m) : GhostSprite(m)
+{
+}
+
+GhostTextFieldBase::~GhostTextFieldBase()
+{
+
+}

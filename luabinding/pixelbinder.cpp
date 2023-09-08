@@ -28,6 +28,7 @@ PixelBinder::PixelBinder(lua_State* L)
         {"getTextureScale", getTextureScale},
 		{"setNinePatch", setNinePatch},
         {"updateStyle", updateStyle},
+        {"__parseGhosts", __parseGhosts},
         {NULL, NULL},
 	};
 
@@ -468,3 +469,23 @@ int PixelBinder::updateStyle(lua_State* L)
 }
 #undef HASCOL
 #undef COLVEC
+
+int PixelBinder::__parseGhosts(lua_State* L)
+{
+    Binder binder(L);
+    Pixel* model = static_cast<Pixel*>(binder.getInstanceOfType("Pixel", GREFERENCED_TYPEMAP_PIXEL, 2));
+    GhostPixel *ghost=new GhostPixel(model);
+    //Color
+    lua_rawgetfield(L,1,"color");
+    if (lua_isnoneornil(L,-1))
+        ghost->hasColor=false;
+    else {
+        ghost->hasColor=true;
+        std::string ccache;
+        LuaApplication::resolveColor(L,2,-1,ghost->color,ccache);
+    }
+    lua_pop(L,1);
+    SpriteBinder::__parseGhost(ghost,L);
+    lua_pushlightuserdata(L,ghost);
+    return 1;
+}

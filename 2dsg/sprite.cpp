@@ -137,6 +137,7 @@ Sprite::Sprite(Application* application) :
     viewports=nullptr;
     effectStack_=nullptr;
     skipSet_=nullptr;
+    ghosts_=nullptr;
 }
 
 void Sprite::cloneFrom(Sprite *s) {
@@ -192,6 +193,10 @@ void Sprite::cloneFrom(Sprite *s) {
     }
     stencil_=s->stencil_;
     worldAlign_=s->worldAlign_;
+    if (s->ghosts_)
+    {
+        //TODO should we clone ghosts ?
+    }
 }
 
 Sprite::~Sprite() {
@@ -228,6 +233,9 @@ Sprite::~Sprite() {
         delete effectStack_;
     if (skipSet_)
         delete skipSet_;
+    if (ghosts_)
+        for (std::size_t i = 0; i < ghosts_->size(); ++i)
+            delete (*ghosts_)[i];
 }
 
 void Sprite::setupShader(struct _ShaderSpec &spec) {
@@ -620,6 +628,13 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
         bool lastEffect=((!sprite->effectsDrawing_)&&sprite->effectStack_&&(sprite->effectStack_->size()>0));
 
 		if (pop == true) {
+            if (sprite->ghosts_)
+                for (auto it=sprite->ghosts_->begin();it!=sprite->ghosts_->end();it++)
+                {
+                    Sprite *model=(*it)->getModel();
+                    model->applyGhost(sprite,*it);
+                    model->draw(sprite->renderTransform_,sx,sy,ex,ey);
+                }
             sprite->drawCount_=1;
             for (size_t i = 0;i< sprite->children_.size();i++)
                 sprite->drawCount_+=sprite->children_[i]->drawCount_;
@@ -2278,6 +2293,62 @@ float Sprite::getAlphaMultiplier() const {
 		colorTransform_ = new ColorTransform();
 
 	return colorTransform_->alphaMultiplier();
+}
+
+void Sprite::applyGhost(Sprite *parent,GhostSprite *g) {
+    Sprite *lParent=parent;
+    float ox=0,oy=0;
+    while (lParent&&(lParent->layoutConstraints)&&
+            ((lParent->layoutConstraints->inGroup)||(lParent->layoutConstraints->group)))
+    {
+        ox+=lParent->x();
+        oy+=lParent->y();
+        lParent=lParent->parent();
+    }
+    if (g->children)
+    {
+        for (auto it=g->children->begin();it!=g->children->end();it++)
+            (*it)->getModel()->applyGhost(this,(*it));
+    }
+    GridBagLayout *pl=lParent?(lParent->layoutState):NULL;
+    if (pl)
+    {
+        GridBagLayoutInfo *pi=pl->getCurrentLayoutInfo();
+        if (pi&&pi->valid) {
+            GridBagConstraints *lc=this->getLayoutConstraints();
+            lc->gridx=g->gridx;
+            lc->gridy=g->gridy;
+            pl->placeChild(parent_,this,ox,oy,0,0);
+        }
+    }
+}
+
+void Sprite::setGhosts(std::vector<GhostSprite *> *ghosts)
+{
+    if (ghosts_)
+    {
+        for (std::size_t i = 0; i < ghosts_->size(); ++i)
+            delete (*ghosts_)[i];
+        delete ghosts_;
+    }
+    ghosts_=ghosts;
+}
+
+GhostSprite::GhostSprite(Sprite *m)
+{
+    model=m;
+    model->ref();
+    children=nullptr;
+}
+
+GhostSprite::~GhostSprite()
+{
+    model->unref();
+    if (children) {
+        for (auto it=children->begin(); it!=children->end();it++)
+            delete (*it);
+        delete children;
+    }
 }
 
 

@@ -29,6 +29,7 @@ TextFieldBinder::TextFieldBinder(lua_State* L)
 		{"getTextPositionFromPoint", getTextPositionFromPoint},
 		{"getPointFromTextPosition", getPointFromTextPosition},
         {"updateStyle", updateStyle},
+        {"__parseGhosts", __parseGhosts},
         {NULL, NULL},
 	};
 
@@ -458,4 +459,16 @@ int TextFieldBinder::updateStyle(lua_State* L)
 #undef HASCOL
 #undef COLVEC
 
+int TextFieldBinder::__parseGhosts(lua_State* L)
+{
+    Binder binder(L);
+    TextFieldBase* model = static_cast<TextFieldBase*>(binder.getInstance("TextField", 2));
+    GhostTextFieldBase *ghost=new GhostTextFieldBase(model);
+    lua_rawgetfield(L,1,"text");
+    ghost->text=std::string(lua_tostring(L,-1));
+    lua_pop(L,1);
+    SpriteBinder::__parseGhost(ghost,L);
+    lua_pushlightuserdata(L,ghost);
+    return 1;
+}
 

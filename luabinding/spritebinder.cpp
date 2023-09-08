@@ -105,6 +105,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"setStyle", SpriteBinder::setStyle},
         {"resolveStyle", SpriteBinder::resolveStyle},
         {"updateStyle", SpriteBinder::updateStyle},
+        {"setGhosts", SpriteBinder::setGhosts},
+        {"__parseGhosts", SpriteBinder::__parseGhosts},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -2446,7 +2448,7 @@ int SpriteBinder::resolveStyle(lua_State* L)
 #define FILL_NUM(n,f) if (p->resolvedMap&FMKEY(n)) { \
     lua_pushvalue(L,-1); \
     LuaApplication::resolveStyle(L,p->resolved[FKEY(n)].c_str(),0);\
-    lua_Number nn=lua_tonumber(L,-1);\
+    float nn=(float)lua_tonumber(L,-1);\
     if (nn!=p->f) { p->f=nn; dirty=true; }\
     lua_pop(L,1);\
     }
@@ -2565,3 +2567,88 @@ int SpriteBinder::get(lua_State* L)
 
 	return 1;
 }
+
+int SpriteBinder::setGhosts(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setGhosts", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    if (lua_isnoneornil(L,2))
+        sprite->setGhosts(nullptr);
+    else
+    {
+        luaL_checktype(L,2,LUA_TTABLE);
+        int nghosts=lua_objlen(L,2);
+        std::vector<GhostSprite *> ghosts;
+        for (int i=0;i<nghosts;i++) {
+            lua_rawgeti(L,2,i+1); //T
+            luaL_checktype(L,-1,LUA_TTABLE);
+            lua_rawgetfield(L,-1,"model"); //T,M
+            luaL_checktype(L,-1,LUA_TTABLE);
+            lua_getfield(L,-1,"__parseGhosts"); //T,M,F
+            luaL_checktype(L,-1,LUA_TFUNCTION);
+            lua_insert(L,-3); //F,T,M
+            lua_call(L,2,1); //G
+            GhostSprite *ghost=(GhostSprite *)lua_touserdata(L,-1);
+            lua_pop(L,1);
+            ghosts.push_back(ghost);
+        }
+        sprite->setGhosts(new std::vector<GhostSprite *>(ghosts.cbegin(),ghosts.cend()));
+    }
+
+    return 0;
+}
+
+void SpriteBinder::__parseGhost(GhostSprite *g,lua_State* L)
+{
+    lua_rawgetfield(L,1,"gridx");
+    int gridx=lua_tonumber(L,-1);
+    lua_rawgetfield(L,1,"gridy");
+    int gridy=lua_tonumber(L,-1);
+    lua_pop(L,2);
+    g->gridx=gridx;
+    g->gridy=gridy;
+    // Children
+    lua_rawgetfield(L,1,"children");
+    if (lua_istable(L,-1))
+    {
+        int nghosts=lua_objlen(L,-1);
+        lua_rawgettoken(L,2,SpriteBinder::tokenChildren);
+        if (lua_istable(L,-1))
+        {
+            for (int i=0;i<nghosts;i++) {
+                lua_rawgeti(L,-2,i+1); //GC,MC,T
+                luaL_checktype(L,-1,LUA_TTABLE);
+                Sprite* child = g->getModel()->getChildAt(i);
+                if (child) {
+                    lua_pushlightuserdata(L, child); //GC,MC,T,UC
+                    lua_rawget(L, -3); //GC,MC,T,M
+                    lua_getfield(L,-1,"__parseGhosts"); //T,M,F
+                    luaL_checktype(L,-1,LUA_TFUNCTION);
+                    lua_insert(L,-3); //F,T,M
+                    lua_call(L,2,1); //G
+                    GhostSprite *ghost=(GhostSprite *)lua_touserdata(L,-1);
+                    lua_pop(L,1);
+                    if (!g->children) g->children=new std::vector<GhostSprite *>();
+                    g->children->push_back(ghost);
+                }
+                else
+                    lua_pop(L,1);
+            }
+        }
+        lua_pop(L,1);
+    }
+    lua_pop(L,1);
+}
+
+int SpriteBinder::__parseGhosts(lua_State* L)
+{
+    Binder binder(L);
+    Sprite* model = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
+    GhostSprite *ghost=new GhostSprite(model);
+    __parseGhost(ghost,L);
+    lua_pushlightuserdata(L,ghost);
+    return 1;
+}
+

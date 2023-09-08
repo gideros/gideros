@@ -35,6 +35,7 @@ private:
     static int getTextPositionFromPoint(lua_State *L);
 
     static int updateStyle(lua_State* L);
+    static int __parseGhosts(lua_State* L);
 };
 
 #endif

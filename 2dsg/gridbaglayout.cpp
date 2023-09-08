@@ -942,3 +942,111 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
         } //for (components) loop
     }
 }
+
+void GridBagLayout::placeChild(Sprite *parent,Sprite *comp,float offx,float offy, unsigned int gx,unsigned int gy)
+{
+    Rectangle r;
+    GridBagLayoutInfo *info =&layoutInfo;
+    unsigned int i;
+    GridBagConstraints *constraints=comp->layoutConstraints;
+    if (!constraints) return;
+
+    //In case of groups, correct placement
+    float px=offx,py=offy;
+    Sprite *pp=comp->parent();
+    while (pp!=parent) {
+        px+=pp->x();
+        py+=pp->y();
+        pp=pp->parent();
+    }
+
+    constraints->tempX=0;
+    constraints->tempY=0;
+    if (comp!=parent) {
+        if (constraints->gridRelative)
+        {
+            constraints->tempX=gx;
+            constraints->tempY=gy;
+        }
+    }
+    constraints->tempX+=constraints->gridx;
+    constraints->tempY+=constraints->gridy;
+    constraints->tempWidth=(constraints->gridwidth>0)?constraints->gridwidth:1;
+    constraints->tempHeight=(constraints->gridheight>0)?constraints->gridheight:1;
+
+    float csx=info->cellSpacingX;
+    float csy=info->cellSpacingY;
+
+    r.x = info->startx;
+    for (i = 0; i < constraints->tempX; i++)
+        r.x += info->minWidth[i] + csx;
+
+    r.y = info->starty;
+    for (i = 0; i < constraints->tempY; i++)
+        r.y += info->minHeight[i] + csy;
+
+    r.width = 0;
+    for (i = constraints->tempX;
+            i < (constraints->tempX + constraints->tempWidth); i++) {
+        r.width += info->minWidth[i] + csx;
+    }
+    if (constraints->tempWidth>0) r.width-=csx;
+
+    r.height = 0;
+    for (i = constraints->tempY;
+            i < (constraints->tempY + constraints->tempHeight); i++) {
+        r.height += info->minHeight[i] + csy;
+    }
+    if (constraints->tempHeight>0) r.height-=csy;
+
+    AdjustForGravity(comp, constraints, r);
+
+    if (r.x < 0) {
+        r.width += r.x;
+        r.x = 0;
+    }
+
+    if (r.y < 0) {
+        r.height += r.y;
+        r.y = 0;
+    }
+
+    //Last step: displace the component according to its origin/offset
+    r.x+=WALIGN(constraints->offsetX+constraints->originX*r.width);
+    r.y+=WALIGN(constraints->offsetY+constraints->originY*r.height);
+    r.width+=constraints->extraW;
+    r.height+=constraints->extraH;
+
+    //Apply placement
+    comp->setBounds(r.x-px, r.y-py, r.width, r.height,true);
+    if (zOffset!=0)
+        comp->setZ(zOffset);
+    if (comp->layoutState&&comp->layoutState->dirty)
+    {
+        comp->layoutState->placing=true;
+        comp->layoutState->dirty=false;
+        comp->layoutState->ArrangeGrid(comp,r.width,r.height);
+        comp->layoutState->placing=false;
+    }
+    //Auto clip
+    if (constraints->autoClip) {
+        comp->setClip(0,0,r.width,r.height);
+        /*
+        float minx,miny,maxx,maxy;
+        comp->localBounds(&minx, &miny, &maxx, &maxy);
+        if ((minx<(r.x-px))||(miny<(r.y-py))||(maxx>(r.x-px+r.width))||(maxy>(r.y-py+r.height)))
+        {
+            comp->setClip(0,0,r.width,r.height);
+        }
+        */
+    }
+    if (constraints->group)
+    {
+        size_t psize=comp->childCount();
+        size_t compindex;
+        for (compindex = 0; compindex < psize; compindex++) {
+            placeChild(parent,comp->child((int)compindex),offx,offy,gx+constraints->tempX,gy+constraints->tempY);
+        }
+    }
+
+}

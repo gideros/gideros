@@ -15,6 +15,7 @@ public:
     TextFieldBase(Application *application) : Sprite(application), layout_(),
         lscalex_(0),lscaley_(0),lfontCacheVersion_(-1),textlayout_(), prefWidth_(-1), prefHeight_(-1) {}
     void cloneFrom(TextFieldBase *);
+    virtual void applyGhost(Sprite *parent,GhostSprite *);
     virtual ~TextFieldBase() {}
 
     virtual void setFont(FontBase* font) = 0;
@@ -59,4 +60,10 @@ public:
     std::string styCache_text;
 };
 
+class GhostTextFieldBase : public GhostSprite {
+public:
+    GhostTextFieldBase(Sprite *m);
+    virtual ~GhostTextFieldBase();
+    std::string text;
+};
 #endif
