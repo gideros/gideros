@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <cstring>
+
 struct GridInsets {
 	float top;
 	float left;
