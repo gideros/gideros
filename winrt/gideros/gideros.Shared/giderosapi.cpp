@@ -708,6 +708,115 @@ void NetworkManager::calculateMD5(const char* file)
 		md5_[file] = md5;
 }
 
+static std::wstring ws(const char* str)
+{
+	if (!str) return std::wstring();
+	int sl = strlen(str);
+	int sz = MultiByteToWideChar(CP_UTF8, 0, str, sl, 0, 0);
+	std::wstring res(sz, 0);
+	MultiByteToWideChar(CP_UTF8, 0, str, sl, &res[0], sz);
+	return res;
+}
+
+#include <ppltasks.h>
+using Windows::Storage::StorageFile;
+using Windows::Storage::FileAccessMode;
+using Windows::Storage::Streams::IRandomAccessStream;
+using Windows::Storage::Streams::InputStreamOptions;
+using Windows::Storage::Streams::Buffer;
+using Windows::Storage::Streams::IBuffer;
+using Windows::Storage::Streams::DataWriterStoreOperation;
+using namespace Windows::Foundation::Collections;
+using namespace Concurrency;
+
+std::vector<IRandomAccessStream^> fdMap;
+int uwpvfs_open(const char* pathname, int flags)
+{
+	std::wstring w = ws(gpath_transform(pathname));
+	int nid = -1;
+	create_task(StorageFile::GetFileFromPathAsync(ref new String(w.c_str()))).
+	then([=](StorageFile^ file)
+	{
+		FileAccessMode am = ((flags & 3) != 0) ? FileAccessMode::ReadWrite : FileAccessMode::Read;
+		return file->OpenAsync(am);
+	}).then([=,&nid](IRandomAccessStream^ stream)
+	{
+		nid = 0;
+		while ((nid < fdMap.size()) && (fdMap[nid] != nullptr)) nid++;
+		if (nid == fdMap.size())
+			fdMap.push_back(stream);
+		else
+			fdMap[nid] = stream;
+	}).wait();
+	return nid;
+}
+
+int uwpvfs_close(int fd)
+{
+	if ((fd<0)||(fd>=fdMap.size())) return -1;
+	fdMap[fd] = nullptr;
+	return 0;
+}
+
+size_t uwpvfs_read(int fd, void* tbuf, size_t count)
+{
+	if ((fd < 0) || (fd >= fdMap.size())) return -1;
+	size_t done = 0;
+	IBuffer^ buf = ref new Buffer(count);
+	create_task(fdMap[fd]->ReadAsync(buf, count, InputStreamOptions::Partial)).then([=,&done](IBuffer^ ibuf)
+	{
+		size_t blen = ibuf->Length;
+		auto reader = Windows::Storage::Streams::DataReader::FromBuffer(ibuf);
+		reader->ReadBytes(
+		::Platform::ArrayReference<BYTE>(
+			(uint8_t *)tbuf, blen));
+		done = blen;
+	}).wait();
+	return done;
+}
+
+size_t uwpvfs_write(int fd, const void* tbuf, size_t count)
+{
+	bool done=false;
+	if ((fd < 0) || (fd >= fdMap.size())) return -1;
+	auto writer = ref new Windows::Storage::Streams::DataWriter(fdMap[fd]);
+	writer->WriteBytes(::Platform::ArrayReference<BYTE>(
+		(uint8_t*)tbuf, count));
+	create_task(writer->StoreAsync()).then([=,&done](unsigned int t) {
+		done = t;
+		return writer->FlushAsync();
+	}).then([=, &done](bool fdone)
+	{
+	}).wait();
+	return done?count:0;
+}
+
+off_t uwpvfs_lseek(int fd, off_t offset, int whence)
+{
+	if ((fd < 0) || (fd >= fdMap.size())) return -1;
+	switch (whence) {
+	case SEEK_SET:
+		break;
+	case SEEK_CUR:
+		offset += fdMap[fd]->Position;
+		break;
+	case SEEK_END:
+		offset += fdMap[fd]->Size;
+		break;
+	}
+	fdMap[fd]->Seek(offset);
+	return offset;
+}
+
+int uwpvfs_lflags(int fd)
+{
+	return 0;
+}
+
+
+static g_Vfs uwp_Vfs = {
+		uwpvfs_open, uwpvfs_close, uwpvfs_read, uwpvfs_write, uwpvfs_lseek, uwpvfs_lflags
+};
 
 ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
@@ -760,6 +869,7 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 	gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
 
 	gpath_setDefaultDrive(0);
+	gpath_setDriveVfs(GPATH_ABSOLUTE, &uwp_Vfs);
 
 	gvfs_init();
 

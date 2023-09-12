@@ -142,7 +142,7 @@ public:
     GhostPixel(Sprite *m);
     virtual ~GhostPixel();
     bool hasColor;
-    float color[4];
+    unsigned char color[4];
 };
 
 #endif

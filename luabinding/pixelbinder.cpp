@@ -482,7 +482,12 @@ int PixelBinder::__parseGhosts(lua_State* L)
     else {
         ghost->hasColor=true;
         std::string ccache;
-        LuaApplication::resolveColor(L,2,-1,ghost->color,ccache);
+        float cc[4];
+        LuaApplication::resolveColor(L,2,-1,cc,ccache);
+        ghost->color[0]=cc[0]*255;
+        ghost->color[1]=cc[1]*255;
+        ghost->color[2]=cc[2]*255;
+        ghost->color[3]=cc[3]*255;
     }
     lua_pop(L,1);
     SpriteBinder::__parseGhost(ghost,L);

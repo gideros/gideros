@@ -600,7 +600,7 @@ void Pixel::applyGhost(Sprite *parent,GhostSprite *g_)
 {
     GhostPixel *g=(GhostPixel *)g_;
     if (g->hasColor)
-        setColor(g->color[0],g->color[1],g->color[2],g->color[3]);
+        setColor((1./255)*g->color[0],(1./255)*g->color[1],(1./255)*g->color[2],(1./255)*g->color[3]);
     Sprite::applyGhost(parent,g);
 }
 
