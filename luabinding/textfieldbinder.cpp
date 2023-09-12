@@ -465,7 +465,9 @@ int TextFieldBinder::__parseGhosts(lua_State* L)
     TextFieldBase* model = static_cast<TextFieldBase*>(binder.getInstance("TextField", 2));
     GhostTextFieldBase *ghost=new GhostTextFieldBase(model);
     lua_rawgetfield(L,1,"text");
-    ghost->text=std::string(lua_tostring(L,-1));
+    const char *str=lua_tostring(L,-1);
+    if (str!=NULL)
+        ghost->text=std::string(str);
     lua_pop(L,1);
     SpriteBinder::__parseGhost(ghost,L);
     lua_pushlightuserdata(L,ghost);

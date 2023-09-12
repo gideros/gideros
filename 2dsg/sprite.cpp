@@ -644,7 +644,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				glPopColor();
 			if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1)
 				glPopBlendFunc();
-			if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0))
+            if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0) &&(sprite->renderTransform_.type!=Matrix4::FULL))
 				ShaderEngine::Engine->popClip();
 			if (sprite->stencil_.dTest)
 				ShaderEngine::Engine->popDepthStencil();
@@ -714,7 +714,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				glSetBlendFunc(sprite->sfactor_, sprite->dfactor_);
 		}
 
-		if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0))
+        if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0) && (sprite->renderTransform_.type!=Matrix4::FULL))
 			ShaderEngine::Engine->pushClip(sprite->clipx_, sprite->clipy_,
 					sprite->clipw_, sprite->cliph_);
 
