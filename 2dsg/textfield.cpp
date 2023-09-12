@@ -120,7 +120,7 @@ void TextField::setTextColor(float r,float g,float b,float a)
         }
         else {
             for (auto it=graphicsBase_.begin(); it!=graphicsBase_.end(); it++)
-                it->setColor(r,g,b,a);
+                if (!it->isSecondary) it->setColor(r,g,b,a);
             invalidate(INV_GRAPHICS);
         }
     }

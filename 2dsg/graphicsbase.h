@@ -68,9 +68,10 @@ public:
 
     void getBounds(float* pminx, float* pminy, float* pmaxx, float* pmaxy) const;
 
+    bool isSecondary;
 private:
-	float r_, g_, b_, a_;
-	bool isWhite_;
+    bool isWhite_;
+    float r_, g_, b_, a_;
 };
 
 #endif

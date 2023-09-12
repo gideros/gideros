@@ -8,6 +8,7 @@ void GraphicsBase::clear()
 	mode = ShaderProgram::Triangles;
 	r_ = g_ = b_ = a_ = 1;
 	isWhite_ = true;
+    isSecondary=false;
 	data = NULL;
 	indices.clear();
 	vertices.clear();

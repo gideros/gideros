@@ -5,6 +5,7 @@
 #include "gtexture.h"
 #include <utf8.h>
 #include <string.h>
+#include "graphicsbase.h"
 
 #define ESC	27
 
@@ -610,12 +611,21 @@ void CompositeFont::drawText(std::vector<GraphicsBase> *graphicsBase, const char
                 p2++;
             }
         }
-        if ((it->colorR>=0)||(it->colorG>=0)||(it->colorB>=0))
+        bool recolor=false;
+        int gb=graphicsBase->size();
+        if ((it->colorR>=0)||(it->colorG>=0)||(it->colorB>=0)||(it->colorA>=0))
+        {
             l2.styleFlags&=~colorFlag;
+            recolor=true;
+        }
     	else
             l2.styleFlags|=colorFlag;
-        it->font->drawText(graphicsBase, text, (it->colorR<0)?r:it->colorR, (it->colorG<0)?g:it->colorG, (it->colorB<0)?b:it->colorB,(it->colorA<0)?a:it->colorA, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l2);
-	}
+        it->font->drawText(graphicsBase, text, recolor?it->colorR:r, recolor?it->colorG:g, recolor?it->colorB:b,recolor?it->colorA:a, layout, hasSample, minx-it->offsetX, miny-it->offsetY, l2);
+        if (recolor) {
+            for (size_t gn=gb;gn<graphicsBase->size();gn++)
+                (*graphicsBase)[gn].isSecondary=true;
+        }
+	}    
 }
 
 void CompositeFont::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParameters *params)
