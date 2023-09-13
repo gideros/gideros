@@ -1,6 +1,7 @@
 #include "gridbaglayout.h"
 #include "sprite.h"
 #include <climits>
+#include <cmath>
 
 #define EMPIRICMULTIPLIER 	2
 #define MAXGRIDSIZE 		512
@@ -915,7 +916,10 @@ void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
                 pp=pp->parent();
             }
             //Apply placement
-            comp->setBounds(r.x-px, r.y-py, r.width, r.height,true);
+            r.x-=px;
+            r.y-=py;
+            if (std::isfinite(r.x)&&std::isfinite(r.y))
+                comp->setBounds(r.x, r.y, r.width, r.height,true);
             if (zOffset!=0)
                 comp->setZ(zOffset);
             if (comp->layoutState&&comp->layoutState->dirty)
@@ -1018,7 +1022,11 @@ void GridBagLayout::placeChild(Sprite *parent,Sprite *comp,float offx,float offy
     r.height+=constraints->extraH;
 
     //Apply placement
-    comp->setBounds(r.x-px, r.y-py, r.width, r.height,true);
+    r.x-=px;
+    r.y-=py;
+    if (std::isfinite(r.x)&&std::isfinite(r.y))
+        comp->setBounds(r.x, r.y, r.width, r.height,true);
+
     if (zOffset!=0)
         comp->setZ(zOffset);
     if (comp->layoutState&&comp->layoutState->dirty)
