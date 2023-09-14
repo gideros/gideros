@@ -227,6 +227,8 @@ void TextFieldBase::applyGhost(Sprite *parent,GhostSprite *g_)
 {
     GhostTextFieldBase *g=(GhostTextFieldBase *)g_;
     setText(g->text.c_str());
+    if (g->hasColor)
+        setTextColor((1./255)*g->color[0],(1./255)*g->color[1],(1./255)*g->color[2],(1./255)*g->color[3]);
     Sprite::applyGhost(parent,g);
 }
 

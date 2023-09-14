@@ -64,6 +64,8 @@ class GhostTextFieldBase : public GhostSprite {
 public:
     GhostTextFieldBase(Sprite *m);
     virtual ~GhostTextFieldBase();
+    bool hasColor;
     std::string text;
+    unsigned char color[4];
 };
 #endif

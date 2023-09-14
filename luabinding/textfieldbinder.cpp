@@ -464,10 +464,26 @@ int TextFieldBinder::__parseGhosts(lua_State* L)
     Binder binder(L);
     TextFieldBase* model = static_cast<TextFieldBase*>(binder.getInstance("TextField", 2));
     GhostTextFieldBase *ghost=new GhostTextFieldBase(model);
+    //Text
     lua_rawgetfield(L,1,"text");
     const char *str=lua_tostring(L,-1);
     if (str!=NULL)
         ghost->text=std::string(str);
+    lua_pop(L,1);
+    //Color
+    lua_rawgetfield(L,1,"color");
+    if (lua_isnoneornil(L,-1))
+        ghost->hasColor=false;
+    else {
+        ghost->hasColor=true;
+        std::string ccache;
+        float cc[4];
+        LuaApplication::resolveColor(L,2,-1,cc,ccache);
+        ghost->color[0]=cc[0]*255;
+        ghost->color[1]=cc[1]*255;
+        ghost->color[2]=cc[2]*255;
+        ghost->color[3]=cc[3]*255;
+    }
     lua_pop(L,1);
     SpriteBinder::__parseGhost(ghost,L);
     lua_pushlightuserdata(L,ghost);
