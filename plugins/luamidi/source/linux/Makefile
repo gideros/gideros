@@ -1,5 +1,5 @@
 TARGET=luamidi
-SRCS=luamidi RtMidi 
+SRCS=luamidi RtMidi
 CFLGS=-D__LINUX_ALSA__
-LFLGS=-lasound2
+LFLGS=-lasound
 include $(ROOT)/scripts/GidLinuxPlugin.mk
