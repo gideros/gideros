@@ -33,7 +33,7 @@ PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming gift
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts megacool map share storereview
 PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
-PLUGINS_LINUX=lsqlite3 luasocket lfs json lpeg clipper struct bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
+PLUGINS_LINUX=lsqlite3 luasocket lfs json lpeg clipper struct bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2 luamidi
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_WIN+=threads
 PLUGINS_ANDROID+=threads
