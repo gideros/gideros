@@ -536,7 +536,7 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 	version=strtod(ver,NULL);
     glog_i("GL Version %f (%s)",version,isGLES?"ES":"Desktop");
 
-    ogl2ShaderProgram::supportInstances=((version>=3.3)||((!isGLES)&&(version>=3.1)));
+    ogl2ShaderProgram::supportInstances=((version>=3.1)||(isGLES&&(version>=3.0)));
 
 #ifndef GIDEROS_GL1
     ogl2SetupShaders(isGLES);
