@@ -46,7 +46,7 @@ if lfs.attributes(java,"mode")~="directory" then
 			java = rPathData.."/jre"
 		end
 	else
-		java="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/jre"
+		java="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 	end
 	Export.setProperty("export.javaPath",java)
 end
@@ -295,13 +295,12 @@ local ap=require("Tools/export_android")
 				Export.setProperty("local.gradleExtra",ap.gradleExtraTarget or "")
 			]]></lua> 
     	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
-				<exec>
+				<exec cmd="bash">
 					<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
 					<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
-					bash 
 					<arg>gradlew</arg>
 					<arg>[[[local.gradleTarget]]]</arg>
-					<arg>[[[local.gradleExtra]]]</arg>
+					<oarg>[[[local.gradleExtra]]]</oarg>
 				</exec>			
         	</if>
     	    <if condition="[[[eq:[[[sys.exeExtension]]]:.exe]]]">
@@ -311,7 +310,7 @@ local ap=require("Tools/export_android")
 					<arg>/c</arg>
 					<arg>gradlew.bat</arg> 
 					<arg>[[[local.gradleTarget]]]</arg>
-					<arg>[[[local.gradleExtra]]]</arg>
+					<oarg>[[[local.gradleExtra]]]</oarg>
 				</exec>			
         	</if>
 			<cp src="app/build/outputs/[[[local.apkbuilt]]]" dst="../[[[local.apkname]]][[[local.isUnsigned]]].[[[local.apkext]]]"/>
