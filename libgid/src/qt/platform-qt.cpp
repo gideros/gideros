@@ -59,6 +59,9 @@ std::vector<std::string> getDeviceInfo() {
 #ifdef Q_OS_MAC
 	result.push_back("Mac OS");
 #endif
+#ifdef Q_OS_LINUX
+    result.push_back("QtLinux");
+#endif
 
 	return result;
 }
