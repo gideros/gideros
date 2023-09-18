@@ -1641,7 +1641,13 @@ void MainWindow::onModified()
 void MainWindow::startPlayer()
 {
 #if defined(Q_OS_MAC)
-        QProcess::startDetached("open \"../../Gideros Player.app\"");
+    QProcess *process = new QProcess();
+    QStringList args;
+    process->setProgram("open");
+    args << "../../Gideros Player.app";
+    process->setArguments(args);
+    process->startDetached(nullptr);
+    delete process;
 #elif defined(Q_OS_WIN)
 	QProcess::startDetached("GiderosPlayer.exe");
 #else
@@ -1652,7 +1658,13 @@ void MainWindow::startPlayer()
 void MainWindow::startTexturePacker()
 {
 #if defined(Q_OS_MAC)
-        QProcess::startDetached("open \"../../Gideros Texture Packer.app\"");
+    QProcess *process = new QProcess();
+    QStringList args;
+    process->setProgram("open");
+    args << "../../Gideros Texture Packer.app";
+    process->setArguments(args);
+    process->startDetached(nullptr);
+    delete process;
 #elif defined(Q_OS_WIN)
 	QProcess::startDetached("GiderosTexturePacker.exe");
 #else
@@ -1663,7 +1675,13 @@ void MainWindow::startTexturePacker()
 void MainWindow::startFontCreator()
 {
 #if defined(Q_OS_MAC)
-        QProcess::startDetached("open \"../../Gideros Font Creator.app\"");
+    QProcess *process = new QProcess();
+    QStringList args;
+    process->setProgram("open");
+    args << "../../Gideros Font Creator.app";
+    process->setArguments(args);
+    process->startDetached(nullptr);
+    delete process;
 #elif defined(Q_OS_WIN)
 	QProcess::startDetached("GiderosFontCreator.exe");
 #else

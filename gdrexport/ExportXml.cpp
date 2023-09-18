@@ -419,6 +419,11 @@ bool ExportXml::RuleExec(QString cmd, QDomElement rule) {
 					ReplaceAttributes(rl.attribute("value")));
         else if ((!rl.isNull()) && (rl.tagName() == "arg"))
             args << ReplaceAttributes(rl.text().trimmed());
+        else if ((!rl.isNull()) && (rl.tagName() == "oarg")) {
+            QString arg=ReplaceAttributes(rl.text().trimmed());
+            if (arg.length()>0)
+                args << arg;
+        }
     }
     ExportCommon::exportInfo("Exec: %s [%s] into %s\n", cmd.toStdString().c_str(),args.join(' ').toStdString().c_str(),
 			ctx->outputDir.path().toStdString().c_str());
