@@ -21,7 +21,7 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
         {"setParticleTtl", setParticleTtl},
         {"getParticleDecay", getParticleDecay},
         {"getParticleSpeed", getParticleSpeed},
-        {"getParticleSpeed", getParticleAcceleration},
+        {"getParticleAcceleration", getParticleAcceleration},
         {"getParticleColor", getParticleColor},
         {"getParticlePosition", getParticlePosition},
         {"getParticleSize", getParticleSize},
@@ -37,6 +37,7 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
         {"getParticles",getParticles},
         {"getDeadParticles",getDeadParticles},
         {"getNearestParticle",getNearestParticle},
+        {"getNumParticles",getNumParticles},
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
 
@@ -845,6 +846,14 @@ int ParticlesBinder::getParticles(lua_State *L)
     	}
     }
 
+    return 1;
+}
+
+int ParticlesBinder::getNumParticles(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    lua_pushinteger(L,mesh->getParticleCount());
     return 1;
 }
 

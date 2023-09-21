@@ -73,7 +73,7 @@ private:
     std::vector<float> ttl_; //time to live
     std::vector<std::string> tag_; //user tag
     VertexBuffer<float> texcoords_; //x,y,size,angle
-    VertexBuffer<unsigned short> indices_;
+    VertexBuffer<unsigned int> indices_;
     size_t particleCount;
     TextureBase *texture_[PARTICLES_MAX_TEXTURES];
     float sx_, sy_;

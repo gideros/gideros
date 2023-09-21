@@ -672,7 +672,7 @@ void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
 			colors_.size() / 4, colors_.modified, &colors_.bufferCache);
 	colors_.modified = false;
 
-    p->drawElements(ShaderProgram::Triangles, ttl_.size()*6, ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache);
+    p->drawElements(ShaderProgram::Triangles, ttl_.size()*6, ShaderProgram::DINT, &indices_[0],indices_.modified,&indices_.bufferCache);
     indices_.modified=false;
 }
 

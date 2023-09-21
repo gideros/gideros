@@ -38,6 +38,7 @@ private:
     static int setPaused(lua_State *L);
     static int isPaused(lua_State *L);
     static int getParticles(lua_State *L);
+    static int getNumParticles(lua_State *L);
     static int setTexture(lua_State *L);
     static int clearTexture(lua_State *L);
     static int scaleParticles(lua_State *L);
