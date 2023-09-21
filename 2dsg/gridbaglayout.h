@@ -18,8 +18,8 @@ struct GridInsets {
 
 struct GridBagConstraints {
     //Placement in grid
-    unsigned int gridx;
-    unsigned int gridy;
+    int gridx;
+    int gridy;
     //Span in grid
     unsigned int gridwidth;
     unsigned int gridheight;
