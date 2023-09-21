@@ -2602,6 +2602,14 @@ int SpriteBinder::setGhosts(lua_State* L)
 
 void SpriteBinder::__parseGhost(GhostSprite *g,lua_State* L)
 {
+    Binder binder(L);
+    lua_rawgetfield(L,1,"transform");
+    if (lua_istable(L,-1)) {
+        Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", -1));
+        g->matrix=new float[16];
+        memcpy(g->matrix,matrix->matrix().data(),sizeof(float)*16);
+    }
+
     lua_rawgetfield(L,1,"gridx");
     int gridx=lua_tonumber(L,-1);
     lua_rawgetfield(L,1,"gridy");

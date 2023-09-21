@@ -2305,6 +2305,8 @@ void Sprite::applyGhost(Sprite *parent,GhostSprite *g) {
         oy+=lParent->y();
         lParent=lParent->parent();
     }
+    if (g->matrix)
+        localTransform_.setMatrix(g->matrix);
     if (g->children)
     {
         for (auto it=g->children->begin();it!=g->children->end();it++)
@@ -2339,11 +2341,14 @@ GhostSprite::GhostSprite(Sprite *m)
     model=m;
     model->ref();
     children=nullptr;
+    matrix=nullptr;
 }
 
 GhostSprite::~GhostSprite()
 {
     model->unref();
+    if (matrix)
+        delete[] matrix;
     if (children) {
         for (auto it=children->begin(); it!=children->end();it++)
             delete (*it);

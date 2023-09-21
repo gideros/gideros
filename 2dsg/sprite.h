@@ -633,7 +633,8 @@ public:
     GhostSprite(Sprite *m);
     virtual ~GhostSprite();
     Sprite *getModel() { return model; };
-    unsigned int gridx,gridy; //Grid placement
+    int gridx,gridy; //Grid placement
+    float *matrix; //Transform matrix
     std::vector<GhostSprite *> *children;
 };
 
