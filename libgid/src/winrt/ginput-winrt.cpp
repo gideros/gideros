@@ -103,6 +103,23 @@ public:
 		keyMap_[34] = GINPUT_KEY_PAGEDOWN;
 		keyMap_[GINPUT_KEY_ENTER] = GINPUT_KEY_ENTER;
 
+        keyMap_[96] = GINPUT_KEY_NUM0;
+        keyMap_[97] = GINPUT_KEY_NUM1;
+        keyMap_[98] = GINPUT_KEY_NUM2;
+        keyMap_[99] = GINPUT_KEY_NUM3;
+        keyMap_[100] = GINPUT_KEY_NUM4;
+        keyMap_[101] = GINPUT_KEY_NUM5;
+        keyMap_[102] = GINPUT_KEY_NUM6;
+        keyMap_[103] = GINPUT_KEY_NUM7;
+        keyMap_[104] = GINPUT_KEY_NUM8;
+        keyMap_[105] = GINPUT_KEY_NUM9;
+        keyMap_[111] = GINPUT_KEY_NUMDIV;
+        keyMap_[106] = GINPUT_KEY_NUMMUL;
+        keyMap_[109] = GINPUT_KEY_NUMSUB;
+        keyMap_[107] = GINPUT_KEY_NUMADD;
+        keyMap_[110] = GINPUT_KEY_NUMDOT;
+        //keyMap_[Qt::Key_Enter] = GINPUT_KEY_NUMENTER;
+
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
         gevent_AddCallback(posttick_s, this);

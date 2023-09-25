@@ -92,6 +92,22 @@ public:
     keyMap_[VK_NEXT] = GINPUT_KEY_PAGEDOWN;
     keyMap_[VK_RETURN] = GINPUT_KEY_ENTER;
 
+    keyMap_[VK_NUMPAD0] = GINPUT_KEY_NUM0;
+    keyMap_[VK_NUMPAD1] = GINPUT_KEY_NUM1;
+    keyMap_[VK_NUMPAD2] = GINPUT_KEY_NUM2;
+    keyMap_[VK_NUMPAD3] = GINPUT_KEY_NUM3;
+    keyMap_[VK_NUMPAD4] = GINPUT_KEY_NUM4;
+    keyMap_[VK_NUMPAD5] = GINPUT_KEY_NUM5;
+    keyMap_[VK_NUMPAD6] = GINPUT_KEY_NUM6;
+    keyMap_[VK_NUMPAD7] = GINPUT_KEY_NUM7;
+    keyMap_[VK_NUMPAD8] = GINPUT_KEY_NUM8;
+    keyMap_[VK_NUMPAD9] = GINPUT_KEY_NUM9;
+    keyMap_[VK_DIVIDE] = GINPUT_KEY_NUMDIV;
+    keyMap_[VK_MULTIPLY] = GINPUT_KEY_NUMMUL;
+    keyMap_[VK_SUBTRACT] = GINPUT_KEY_NUMSUB;
+    keyMap_[VK_ADD] = GINPUT_KEY_NUMADD;
+    keyMap_[VK_DECIMAL] = GINPUT_KEY_NUMDOT;
+    //keyMap_[VK_RETURN] = GINPUT_KEY_NUMENTER;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 

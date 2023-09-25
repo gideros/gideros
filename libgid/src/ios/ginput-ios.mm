@@ -1083,6 +1083,23 @@ private:
         keyMap_[kVK_RightArrow]=GINPUT_KEY_RIGHT;
         keyMap_[kVK_UpArrow]=GINPUT_KEY_UP;
         keyMap_[kVK_DownArrow]=GINPUT_KEY_DOWN;
+
+	    keyMap_[kVK_ANSI_Keypad0] = GINPUT_KEY_NUM0;
+	    keyMap_[kVK_ANSI_Keypad1] = GINPUT_KEY_NUM1;
+	    keyMap_[kVK_ANSI_Keypad2] = GINPUT_KEY_NUM2;
+	    keyMap_[kVK_ANSI_Keypad3] = GINPUT_KEY_NUM3;
+	    keyMap_[kVK_ANSI_Keypad4] = GINPUT_KEY_NUM4;
+	    keyMap_[kVK_ANSI_Keypad5] = GINPUT_KEY_NUM5;
+	    keyMap_[kVK_ANSI_Keypad6] = GINPUT_KEY_NUM6;
+	    keyMap_[kVK_ANSI_Keypad7] = GINPUT_KEY_NUM7;
+	    keyMap_[kVK_ANSI_Keypad8] = GINPUT_KEY_NUM8;
+	    keyMap_[kVK_ANSI_Keypad9] = GINPUT_KEY_NUM9;
+	    keyMap_[kVK_ANSI_KeypadDivide] = GINPUT_KEY_NUMDIV;
+	    keyMap_[kVK_ANSI_KeypadMultiply] = GINPUT_KEY_NUMMUL;
+	    keyMap_[kVK_ANSI_KeypadMinus] = GINPUT_KEY_NUMSUB;
+	    keyMap_[kVK_ANSI_KeypadPlus] = GINPUT_KEY_NUMADD;
+	    keyMap_[kVK_ANSI_KeypadDecimal] = GINPUT_KEY_NUMDOT;
+	    keyMap_[kVK_ANSI_KeypadEnter] = GINPUT_KEY_NUMENTER;
 #endif
     }
 private:

@@ -95,6 +95,23 @@ public:
 	keyMap_[GLFW_KEY_LEFT_SHIFT] = GINPUT_KEY_SHIFT;
 	keyMap_[GLFW_KEY_LEFT_ALT] = GINPUT_KEY_ALT;
 
+    keyMap_[GLFW_KEY_KP_0] = GINPUT_KEY_NUM0;
+    keyMap_[GLFW_KEY_KP_1] = GINPUT_KEY_NUM1;
+    keyMap_[GLFW_KEY_KP_2] = GINPUT_KEY_NUM2;
+    keyMap_[GLFW_KEY_KP_3] = GINPUT_KEY_NUM3;
+    keyMap_[GLFW_KEY_KP_4] = GINPUT_KEY_NUM4;
+    keyMap_[GLFW_KEY_KP_5] = GINPUT_KEY_NUM5;
+    keyMap_[GLFW_KEY_KP_6] = GINPUT_KEY_NUM6;
+    keyMap_[GLFW_KEY_KP_7] = GINPUT_KEY_NUM7;
+    keyMap_[GLFW_KEY_KP_8] = GINPUT_KEY_NUM8;
+    keyMap_[GLFW_KEY_KP_9] = GINPUT_KEY_NUM9;
+    keyMap_[GLFW_KEY_KP_DIVIDE] = GINPUT_KEY_NUMDIV;
+    keyMap_[GLFW_KEY_KP_MULTIPLY] = GINPUT_KEY_NUMMUL;
+    keyMap_[GLFW_KEY_KP_SUBTRACT] = GINPUT_KEY_NUMSUB;
+    keyMap_[GLFW_KEY_KP_ADD] = GINPUT_KEY_NUMADD;
+    keyMap_[GLFW_KEY_KP_DECIMAL] = GINPUT_KEY_NUMDOT;
+    keyMap_[GLFW_KEY_KP_ENTER] = GINPUT_KEY_NUMENTER;
+
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
         gevent_AddCallback(posttick_s, this);

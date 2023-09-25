@@ -92,7 +92,28 @@ public:
         keyMap_[Qt::Key_PageUp] = GINPUT_KEY_PAGEUP;
         keyMap_[Qt::Key_PageDown] = GINPUT_KEY_PAGEDOWN;
         keyMap_[Qt::Key_Return] = GINPUT_KEY_ENTER;
-        keyMap_[Qt::Key_Enter] = GINPUT_KEY_ENTER;
+
+        keyMap_[Qt::Key_Left|Qt::KeypadModifier] = GINPUT_KEY_LEFT;
+        keyMap_[Qt::Key_Right|Qt::KeypadModifier] = GINPUT_KEY_RIGHT;
+        keyMap_[Qt::Key_Up|Qt::KeypadModifier] = GINPUT_KEY_UP;
+        keyMap_[Qt::Key_Down|Qt::KeypadModifier] = GINPUT_KEY_DOWN;
+
+        keyMap_[Qt::Key_0|Qt::KeypadModifier] = GINPUT_KEY_NUM0;
+        keyMap_[Qt::Key_1|Qt::KeypadModifier] = GINPUT_KEY_NUM1;
+        keyMap_[Qt::Key_2|Qt::KeypadModifier] = GINPUT_KEY_NUM2;
+        keyMap_[Qt::Key_3|Qt::KeypadModifier] = GINPUT_KEY_NUM3;
+        keyMap_[Qt::Key_4|Qt::KeypadModifier] = GINPUT_KEY_NUM4;
+        keyMap_[Qt::Key_5|Qt::KeypadModifier] = GINPUT_KEY_NUM5;
+        keyMap_[Qt::Key_6|Qt::KeypadModifier] = GINPUT_KEY_NUM6;
+        keyMap_[Qt::Key_7|Qt::KeypadModifier] = GINPUT_KEY_NUM7;
+        keyMap_[Qt::Key_8|Qt::KeypadModifier] = GINPUT_KEY_NUM8;
+        keyMap_[Qt::Key_9|Qt::KeypadModifier] = GINPUT_KEY_NUM9;
+        keyMap_[Qt::Key_Slash|Qt::KeypadModifier] = GINPUT_KEY_NUMDIV;
+        keyMap_[Qt::Key_Asterisk|Qt::KeypadModifier] = GINPUT_KEY_NUMMUL;
+        keyMap_[Qt::Key_Minus|Qt::KeypadModifier] = GINPUT_KEY_NUMSUB;
+        keyMap_[Qt::Key_Plus|Qt::KeypadModifier] = GINPUT_KEY_NUMADD;
+        keyMap_[Qt::Key_Period|Qt::KeypadModifier] = GINPUT_KEY_NUMDOT;
+        keyMap_[Qt::Key_Enter] = GINPUT_KEY_NUMENTER;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 

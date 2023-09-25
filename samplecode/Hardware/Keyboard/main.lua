@@ -52,7 +52,7 @@ local keyNames = {
 }
 
 local function onKeyDown(event)
-  text1:setText("key down: "..(keyNames[event.keyCode] or "unknown"))
+  text1:setText("key down: "..(keyNames[event.keyCode] or ("KeyCode: "..event.keyCode)))
 end
 
 local function onKeyChar(event)
@@ -66,7 +66,7 @@ end
 local backCount = 0
 
 local function onKeyUp(event)
-  text1:setText("key up: "..(keyNames[event.keyCode] or "unknown"))
+  text1:setText("key up: "..(keyNames[event.keyCode] or ("KeyCode: "..event.keyCode)))
   
   if event.keyCode == KeyCode.BACK then
     backCount = backCount + 1   

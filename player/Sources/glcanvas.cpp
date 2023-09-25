@@ -1223,8 +1223,9 @@ void GLCanvas::keyPressEvent(QKeyEvent* event) {
     if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
     if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
     if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
-	if (!event->isAutoRepeat())
-		ginputp_keyDown(event->key(),m);
+qDebug("key : %x", event->key());
+    if (!event->isAutoRepeat())
+        ginputp_keyDown(event->key()|(qmod&Qt::KeypadModifier),m);
 	if (!event->text().isEmpty()) //Don't bother propagating empty key strokes
 		ginputp_keyChar(event->text().toUtf8().constData());
 }
@@ -1239,7 +1240,7 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event) {
     if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
     if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
     if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
-	ginputp_keyUp(event->key(),m);
+    ginputp_keyUp(event->key()|(qmod&Qt::KeypadModifier),m);
 }
 
 void GLCanvas::tabletEvent(QTabletEvent* event) {
