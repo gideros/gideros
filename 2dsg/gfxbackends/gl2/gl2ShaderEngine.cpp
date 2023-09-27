@@ -531,6 +531,9 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
     isGLES=QOpenGLContext::currentContext()->isOpenGLES();
 	GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
 #endif
+#ifdef EMSCRIPTEN
+	ogl2ShaderProgram::vboForceGeneric=true;
+#endif
 	const char *ver=(const char *) GLCALL glGetString(GL_VERSION);
 	while ((*ver)&&(((*ver)<'0')||((*ver)>'9'))) ver++;
 	version=strtod(ver,NULL);

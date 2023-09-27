@@ -9,7 +9,7 @@
 #include "glog.h"
 #include <set>
 
-#define FBO_MINSIZE 64
+#define FBO_MINSIZE 192
 class gl2ShaderBufferCache : public ShaderBufferCache {
 public:
 	GLuint VBO;
@@ -57,8 +57,11 @@ std::set<gl2ShaderBufferCache *> *gl2ShaderBufferCache::allVBO=NULL;
 int ogl2ShaderProgram::vboFreeze=0;
 int ogl2ShaderProgram::vboUnfreeze=0;
 bool ogl2ShaderProgram::supportInstances=0;
+bool ogl2ShaderProgram::vboForceGeneric=false;
 
-GLuint ogl2ShaderProgram::getGenericVBO(int index) {
+GLuint ogl2ShaderProgram::getGenericVBO(int index,int size) {
+	if ((!vboForceGeneric)&&(size<FBO_MINSIZE))
+		return 0;
 	if (genVBO[index] == 0){
         GLCALL_INIT;
 		GLCALL glGenBuffers(1,genVBO+index);
@@ -292,7 +295,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
     size_t fbo_sz=elmSize * mult * count;
     if (fbo_sz<FBO_MINSIZE)
         cache=NULL;
-    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(index+1);
+    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(index+1,fbo_sz);
     GLCALL glBindBuffer(GL_ARRAY_BUFFER,vbo);
     if (vbo)
 	{
@@ -617,7 +620,7 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
     size_t fbo_sz=elmSize * count;
     if (fbo_sz<FBO_MINSIZE)
         cache=NULL;
-    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(0);
+    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(0,fbo_sz);
     GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
 	if (vbo)
 	{

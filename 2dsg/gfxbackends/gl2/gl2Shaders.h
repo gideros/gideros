@@ -113,10 +113,11 @@ class ogl2ShaderProgram : public ShaderProgram
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
-    GLuint getGenericVBO(int index);
+    GLuint getGenericVBO(int index,int sz);
 public:
 	static int vboFreeze, vboUnfreeze;
 	static bool supportInstances;
+	static bool vboForceGeneric;
     virtual void activate();
     virtual void deactivate();
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0);
