@@ -37,7 +37,7 @@ public:
 
     virtual Sprite *clone() { Sprite *clone=new Sprite(application_); clone->cloneFrom(this); return clone; }
     void cloneFrom(Sprite *);
-    virtual void applyGhost(Sprite *parent,GhostSprite *);
+    virtual void applyGhost(Sprite *parent,GhostSprite *,bool leave=false);
     void setGhosts(std::vector<GhostSprite *> *ghosts);
     std::vector<GhostSprite *> *getGhosts() { return ghosts_; };
 

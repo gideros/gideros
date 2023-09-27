@@ -15,7 +15,7 @@ public:
     Pixel(Application *application);
     virtual Sprite *clone() { Pixel *clone=new Pixel(application_); clone->cloneFrom(this); return clone; }
     void cloneFrom(Pixel *);
-    virtual void applyGhost(Sprite *parent,GhostSprite *);
+    virtual void applyGhost(Sprite *parent,GhostSprite *,bool leave=false);
 
 	void setColor(float r, float g, float b, float a)
 	{

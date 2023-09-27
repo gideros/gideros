@@ -596,8 +596,9 @@ void Pixel::setGradientWithAngle(int co1, float a1, int co2, float a2, float ang
     setGradient(c1, ao1, c2, ao2, c3, ao3, c4, ao4);
 }
 
-void Pixel::applyGhost(Sprite *parent,GhostSprite *g_)
+void Pixel::applyGhost(Sprite *parent,GhostSprite *g_,bool leave)
 {
+	if (leave) return;
     GhostPixel *g=(GhostPixel *)g_;
     if (g->hasColor)
         setColor((1./255)*g->color[0],(1./255)*g->color[1],(1./255)*g->color[2],(1./255)*g->color[3]);

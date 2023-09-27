@@ -9,6 +9,7 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
 		text_ = text;
 	}
 
+	bulk=false;
     font_ = NULL;
 
     sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
@@ -54,6 +55,13 @@ Font* TextField::font()
     return font_;
 }
 */
+
+void TextField::bulkUpdate(bool en)
+{
+	bulk=en;
+	if ((!bulk)&&dirty)
+		createGraphics();
+}
 
 void TextField::setFont(FontBase *font)
 {
@@ -194,6 +202,8 @@ const char* TextField::sample() const
 void TextField::createGraphics()
 {
     if (font_ == NULL) return;
+    if (bulk) { dirty=true; return; }
+    dirty=false;
 
     scaleChanged(); //Mark current scale as graphics scale
     graphicsBase_.clear();

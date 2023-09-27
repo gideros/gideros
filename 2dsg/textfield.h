@@ -16,6 +16,7 @@ public:
     TextField(Application *application, BMFontBase* font=NULL, const char* text=NULL, const char *sample=NULL, FontBase::TextLayoutParameters *params=NULL);
     virtual Sprite *clone() { TextField *clone=new TextField(application_); clone->cloneFrom(this); return clone; }
     void cloneFrom(TextField *);
+    void bulkUpdate(bool en);
 
 	virtual ~TextField()
 	{
@@ -50,6 +51,8 @@ private:
     BMFontBase* font_;
 
 	float a_, r_, g_, b_;
+	bool bulk;
+	bool dirty;
 
 private:
 	std::vector<GraphicsBase> graphicsBase_;

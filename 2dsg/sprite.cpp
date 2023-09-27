@@ -2295,7 +2295,8 @@ float Sprite::getAlphaMultiplier() const {
 	return colorTransform_->alphaMultiplier();
 }
 
-void Sprite::applyGhost(Sprite *parent,GhostSprite *g) {
+void Sprite::applyGhost(Sprite *parent,GhostSprite *g,bool leave) {
+	if (leave) return;
     Sprite *lParent=parent;
     float ox=0,oy=0;
     while (lParent&&(lParent->layoutConstraints)&&
@@ -2322,6 +2323,11 @@ void Sprite::applyGhost(Sprite *parent,GhostSprite *g) {
             lc->gridy=g->gridy;
             pl->placeChild(parent_,this,ox,oy,0,0);
         }
+    }
+    if (g->children)
+    {
+        for (auto it=g->children->begin();it!=g->children->end();it++)
+            (*it)->getModel()->applyGhost(this,(*it),true);
     }
 }
 
