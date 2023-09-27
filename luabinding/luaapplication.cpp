@@ -2082,10 +2082,12 @@ void LuaApplication::enterFrame(GStatus *status)
     application_->deleteAutounrefPool(pool);
 }
 
-void LuaApplication::clearBuffers()
+void LuaApplication::clearBuffers(int delta)
 {
-	if (!frameStartTime_)
-	    frameStartTime_=iclock();
+	if (delta!=0) {
+		if (!frameStartTime_)
+			frameStartTime_=iclock();
+	}
 	application_->clearBuffers();
 }
 
@@ -2106,19 +2108,21 @@ void LuaApplication::renderScene(int deltaFrameCount,float *vmat,float *pmat,con
 {
 	application_->renderScene(-1,vmat,pmat,preStage);
 
-	//Compute frame timings
-    double frmEnd=iclock();
-    double frmLasted=frmEnd-lastFrameTime_;
-    if ((frmLasted>=0.01)&&(frmLasted<0.1)) //If frame rate is between 10Hz and 100Hz
-    	meanFrameTime_=meanFrameTime_*0.95+frmLasted*0.05; //Average on 20 frames
-    lastFrameTime_=frmEnd;
+	if (deltaFrameCount!=0) {
+		//Compute frame timings
+		double frmEnd=iclock();
+		double frmLasted=frmEnd-lastFrameTime_;
+		if ((frmLasted>=0.01)&&(frmLasted<0.1)) //If frame rate is between 10Hz and 100Hz
+			meanFrameTime_=meanFrameTime_*0.95+frmLasted*0.05; //Average on 20 frames
+		lastFrameTime_=frmEnd;
 
-    double freeTime=meanFrameTime_-(frmEnd-frameStartTime_-taskFrameTime_);
-    if (freeTime>=0)
-    	meanFreeTime_=meanFreeTime_*0.95+freeTime*0.05; //Average on 20 frames
-	//glog_i("FrameTimes:last:%f mean:%f task:%f free:%f\n",frmLasted,meanFrameTime_,taskFrameTime_,meanFreeTime_);
+		double freeTime=meanFrameTime_-(frmEnd-frameStartTime_-taskFrameTime_);
+		if (freeTime>=0)
+			meanFreeTime_=meanFreeTime_*0.95+freeTime*0.05; //Average on 20 frames
+		//glog_i("FrameTimes:last:%f mean:%f task:%f free:%f delta:%d\n",frmLasted,meanFrameTime_,taskFrameTime_,meanFreeTime_,deltaFrameCount);
 
-	frameStartTime_=0;
+		frameStartTime_=0;
+	}
 
 	float canvasColor[3]={1,1,1}; //Dummy, not used anyway
 	if (drawInfo_)

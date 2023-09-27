@@ -196,6 +196,11 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := vrapi-prebuilt
 LOCAL_SRC_FILES := $(LOCAL_PATH)/../oculus/Libs/$(TARGET_ARCH_ABI)/Release/libvrapi.so
 include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := xrloader-prebuilt
+LOCAL_SRC_FILES := $(LOCAL_PATH)/../oculus/Libs/$(TARGET_ARCH_ABI)/Release/libopenxr_loader.so
+include $(PREBUILT_SHARED_LIBRARY)
 endif
 
 include $(CLEAR_VARS)
@@ -560,12 +565,20 @@ LOCAL_STATIC_LIBRARIES := openal mpg123 libxmp
 
 ifneq ($(OCULUS),)
 LOCAL_LDLIBS += -lEGL -landroid 
-LOCAL_SRC_FILES += oculus/oculus.cpp
+LOCAL_SRC_FILES += oculus/oculus.cpp \
+	oculus/basexr/graphicsplugin_factory.cpp \
+	oculus/basexr/graphicsplugin_opengles.cpp \
+	oculus/basexr/logger.cpp \
+	oculus/basexr/openxr_program.cpp \
+	oculus/basexr/platformplugin_factory.cpp \
+	oculus/basexr/platformplugin_android.cpp
+	 
 LOCAL_CFLAGS += -DOCULUS 
 LOCAL_C_INCLUDES += \
-	$(LOCAL_PATH)/../oculus \
-	$(LOCAL_PATH)/../oculus/Include 
-LOCAL_SHARED_LIBRARIES+=vrapi-prebuilt
+	$(LOCAL_PATH)/oculus \
+	$(LOCAL_PATH)/oculus/Include \
+	$(LOCAL_PATH)/oculus/basexr 
+LOCAL_SHARED_LIBRARIES+=xrloader-prebuilt
 endif
 
 include $(BUILD_SHARED_LIBRARY)

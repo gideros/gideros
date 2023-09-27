@@ -61,5 +61,5 @@ typedef struct Input_ {
 //Implemented in gideros.cpp
 void doInputEvent(Input &input);
 void doTick(double elapsed);
-void doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
+void doRender(int delta,float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
 }

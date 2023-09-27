@@ -230,7 +230,7 @@ public:
 
 #ifdef OCULUS
 	void oculusTick(double elapsed);
-	void oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
+	void oculusRender(int delta,float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
 	void oculusInputEvent(oculus::Input &input);
 #endif
 
@@ -947,10 +947,10 @@ const float vrRoom_TV[3]={-45.57,24.777,4.175};
 const float vrRoom_TVScale=0.042;
 const float vrRoom_Scale=.08;
 const float vrRoom_Floor=-15;
-void ApplicationManager::oculusRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor)
+void ApplicationManager::oculusRender(int delta,float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor)
 {
-	application_->clearBuffers();
-	application_->renderScene(1,vmat,pmat,[=](ShaderEngine *gfx,Matrix4 &xform)
+	application_->clearBuffers(delta);
+	application_->renderScene(delta,vmat,pmat,[=](ShaderEngine *gfx,Matrix4 &xform)
 			{
 				gfx->setViewport(0, 0, width,height);
 				if (room) {
@@ -1706,8 +1706,8 @@ void eventFlush()
 void oculus::doTick(double elapsed) {
 	s_applicationManager->oculusTick(elapsed);
 }
-void oculus::doRender(float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor) {
-	s_applicationManager->oculusRender(vmat,pmat,width,height,room,screen,floor);
+void oculus::doRender(int delta,float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor) {
+	s_applicationManager->oculusRender(delta,vmat,pmat,width,height,room,screen,floor);
 }
 
 static void oculus_callback_s(int type, void *event, void *udata)
