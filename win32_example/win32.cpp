@@ -768,22 +768,22 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if ((iMsg==WM_KEYDOWN)||(iMsg==WM_SYSKEYDOWN)) {
-	int m=0;
-	if (GetAsyncKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
-	if (GetAsyncKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
-	if (GetAsyncKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
-	if (!(lParam&0x40000000)) // Don't send repeated keys
-		ginputp_keyDown(wParam,m);
-	if ((iMsg==WM_KEYDOWN)||(wParam==VK_F10))
-		return 0;
+	  int m=0;
+	  if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
+	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
+	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
+	 if (!(lParam&0x40000000)) //Don't send repeated keys
+		 ginputp_keyDown(wParam,m);
+    if ((iMsg==WM_KEYDOWN)||(wParam==VK_F10))
+    	return 0;
   }
   else if ((iMsg==WM_KEYUP)||(iMsg==WM_SYSKEYUP)) {
-	int m=0;
-	if (GetAsyncKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
-	if (GetAsyncKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
-	if (GetAsyncKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
-	ginputp_keyUp(wParam,m);
-	return 0;
+	  int m=0;
+	  if (GetKeyState(VK_CONTROL)) m|=GINPUT_CTRL_MODIFIER;
+	  if (GetKeyState(VK_SHIFT)) m|=GINPUT_SHIFT_MODIFIER;
+	  if (GetKeyState(VK_MENU)) m|=GINPUT_ALT_MODIFIER;
+    ginputp_keyUp(wParam,m);
+    return 0;
   }
   else if (iMsg==WM_CHAR){
 	char sc[4];
