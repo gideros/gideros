@@ -179,7 +179,7 @@ end
 
 function UI.Keyboard.setKeyboardVisibility(ui)
 	if ui then
-        if UI.Keyboard.NATIVE and application:setKeyboardVisibility(true) then 
+		if UI.Keyboard.NATIVE and application:setKeyboardVisibility(true) then 
 			return .5 --assume screen covers 50% of the screen
 		elseif UI.Keyboard.PHYSICAL then
 			-- Nothing, a physical keyboard is expected

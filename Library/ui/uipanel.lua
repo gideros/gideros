@@ -55,7 +55,7 @@ local function sstyle(self,sc,style,p)
 	end
 	sc.__Parent=p
 	if cc then table.clear(cc) sc.__Cache=cc end
-	self:updatedStyle()
+	Sprite.setStyle(self,self._style,true)
 end
 function UI.Panel:setStyle(style)
 	sstyle(self,self._istyle,style or {})
@@ -68,7 +68,7 @@ function UI.Panel:setLocalStyle(style)
 		relink=true
 	end
 	sstyle(self,self._lstyle,style or {},self._istyle)
-	if relink then self:setStyleInheritance(self.styleInheritance) end
+	if relink then self:setStyleInheritance(nil) end
 end
 function UI.Panel:setBaseStyle(style)
 	local relink=false
@@ -78,7 +78,7 @@ function UI.Panel:setBaseStyle(style)
 		relink=true
 	end
 	sstyle(self,self._bstyle,style or {},self._lstyle or self._istyle)
-	if relink then self:setStyleInheritance(self.styleInheritance) end
+	if relink then self:setStyleInheritance(nil) end
 end
 function UI.Panel:setStateStyle(style)
 	sstyle(self,self._style,style or {},self._bstyle or self._lstyle or self._istyle)
@@ -141,7 +141,21 @@ function UI.Panel:setShaderSpec(shaderSpec,target)
 		target._shaderEffect:apply(target) 
 	end
 end
-	
+
+function UI.Panel:inheritableStyle(parentStyleInheritance)
+	local s=self
+	local bstyle=s._istyle
+	local inheritance=parentStyleInheritance or s.styleInheritance
+	if inheritance=="local" then
+		bstyle=s._lstyle or s._istyle
+	elseif inheritance=="base" then
+		bstyle=s._bstyle or s._lstyle or s._istyle
+	elseif inheritance=="state" then
+		bstyle=s._style or s._bstyle or s._lstyle or s._istyle
+	end
+	return bstyle
+end
+
 local function linkStyle(s,c,noupd)
 	if c.updatedStyle then
 		local bstyle=s._istyle
@@ -155,7 +169,7 @@ local function linkStyle(s,c,noupd)
 		end
 		c._istyle.__Parent=bstyle
 		if not noupd and s:isOnStage() then
-			c:updatedStyle()
+			Sprite.setStyle(c,c._style,true)
 		end
 	else
 		--assert(c:getClass()=="TextField","Not a UI.Panel: "..c:getClass())
@@ -192,11 +206,15 @@ function UI.Panel:newClone()
 end
 
 function UI.Panel:setStyleInheritance(mode)
-	self.styleInheritance=mode
-	if self.__children then
+	if mode then
+		if mode==self.styleInheritance then return end
+		self.styleInheritance=mode
+	end
+	local sc=self.__children
+	if sc then
 		local lc,lv=nil,nil
 		while true do
-			lc,lv=next(self.__children,lc)
+			lc,lv=next(sc,lc)
 			if lv then
 				linkStyle(self,lv,true)
 			else
@@ -211,7 +229,10 @@ function UI.Panel:getStyleInheritance()
 end
 
 function UI.Panel:setParentStyleInheritance(mode)
-	self.parentStyleInheritance=mode
+	if mode then
+		if mode==self.parentStyleInheritance then return end
+		self.parentStyleInheritance=mode
+	end
 	local p=self:getParent()
 	if p then
 		linkStyle(p,self)
@@ -337,6 +358,7 @@ UI.Viewport=Core.class(UI.Panel)
 
 function UI.Viewport:init(bc)
   self.scrollbarMode={0,0}
+  self.panMode=0
   self:setLayoutParameters{ columnWeights={1,0},rowWeights={1,0} }
   self.ipanel=UI.Panel.new()
   self.ipanel:setLayoutConstraints({ fill=Sprite.LAYOUT_FILL_BOTH })
@@ -368,6 +390,13 @@ UI.Viewport.SCROLLBAR={
 	DECORATIVE=16, --Scrollbar is just decorative and cannot be dragged
 }
 
+UI.Viewport.PANMODE={
+	AUTO=0, -- Pan on touch, not on click
+	NONE=1, -- Don't pan on user action
+	SCROLLBAR=2, --Only pan with scrollbars (when they are present)
+	ALWAYS=3, --Pan by all means, touch, click or scroll
+}
+
 function UI.Viewport:setFlags(changes)
 	UI.Panel.setFlags(self,changes)
 	if changes.disabled then
@@ -377,6 +406,10 @@ function UI.Viewport:setFlags(changes)
 		UI.Control.onDrag[self]=s
 		UI.Control.onDragEnd[self]=s		
 	end
+end
+
+function UI.Viewport:setPanmode(mode)
+	self.panMode=mode
 end
 
 function UI.Viewport:setScrollbar(mode)
@@ -496,6 +529,7 @@ function UI.Viewport:setScrollAmount(x,y)
 end
 
 function UI.Viewport:onWidgetChange(w,ratio,page)
+	if self.panMode==UI.Viewport.PANMODE.NONE then return end
 	if w and w==self.sbHoriz then
 		local _,y=self.cp:getPosition()
 		self:checkRange(-self.rangew*ratio/(1-page),y,true)
@@ -508,7 +542,11 @@ function UI.Viewport:onWidgetChange(w,ratio,page)
 end
 
 function UI.Viewport:onMouseWheel(x,y,wheel,distance)
-  self:onDragStart(x,y)
+  if self.panMode==UI.Viewport.PANMODE.NONE then return end
+  
+  self._dragStart={mx=x-self.cp:getX(),my=y-self.cp:getY()}
+  local tx,ty=self.cp:getPosition()
+  self:checkRange(tx,ty)
   self:onDrag(x,y+distance)
   self:onDragEnd()
   return true
@@ -516,6 +554,10 @@ end
 
 function UI.Viewport:onDragStart(x,y,ed,ea,change,long)
   if long then return false end
+  if self.panMode==UI.Viewport.PANMODE.NONE or self.panMode==UI.Viewport.PANMODE.SCROLLBAR then return end
+  if self.panMode==UI.Viewport.PANMODE.AUTO then
+	  if UI.Control.isDesktopGesture() then return end
+  end
   self._dragStart={mx=x-self.cp:getX(),my=y-self.cp:getY()}
   local tx,ty=self.cp:getPosition()
   self:checkRange(tx,ty)
@@ -583,6 +625,7 @@ UI.Viewport.Definition= {
     { name="Color", type="color", setter=UI.Viewport.setColor, getter=UI.Viewport.getColor },
     { name="Content", type="sprite", setter=UI.Viewport.setContent },
     { name="Scrollbar", type="scrollbarMode", setter=UI.Viewport.setScrollbar },
+	{ name="Panmode", type="panMode", setter=UI.Viewport.setPanmode },
   },
 }
 
@@ -613,3 +656,12 @@ UI.Image.Definition= {
     { name="Image", type="string", setter=UI.Image.setImage },
   },
 }
+
+UI.HilitPanel=Core.class(UI.Panel,function() return end)
+function UI.HilitPanel:init()
+	UI.Control.onMousePresence[self]=self
+	self:setStyle("hilitpanel.styNormal")
+end
+function UI.HilitPanel:onMousePresence(x,y,p)
+	self:setStyle(if p then "hilitpanel.styHighlight" else "hilitpanel.styNormal")
+end

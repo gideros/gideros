@@ -54,6 +54,12 @@ S.fr={
 	["UI.DatePicker.Format"]="JJ/MM/AAAA",
 	["UI.DatePicker.IFormat"]="%d/%m/%Y",
 }
+
+function UI.setLanguage(lang)
+	LANG=lang:lower()
+	LANGS=LANG:sub(1,2)
+end
+	
 function UI._LO(t,s)
 	return ((s or S)[LANG] and (s or S)[LANG][t]) or ((s or S)[LANGS] and (s or S)[LANGS][t]) or (s or S)['en'][t] or t
 end

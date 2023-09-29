@@ -172,3 +172,29 @@ end
 function UI.Focus:get()
   return self.focused
 end
+
+
+UI.Clipboard={ data={} }
+-- callback is called with result boolean in case of set, and additionnaly data and mime for get
+function UI.Clipboard:get(mime,callback)
+	application:getClipboard(mime,function (res,data,mime)
+		if not res then 
+			data=self.data[mime]
+			if data then res=true end
+		end
+		callback(res,data,mime)
+	end)
+end
+
+function UI.Clipboard:set(data,mime,callback)
+	self.data[mime or "text/plain"]=data
+	application:setClipboard(data,mime,callback)
+end
+
+function UI.Clipboard:clear(mime)
+	if mime then 
+		self.data[mime]=nil
+	else
+		self.data={}
+	end
+end

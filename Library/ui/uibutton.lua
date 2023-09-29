@@ -7,21 +7,15 @@ UI.Button.Template={
 	class="UI.Panel",
 	BaseStyle="button.styBack",
 	layoutModel={ rowWeights={1},columnWeights={1}},
-	model=UI.ImageText.Fallback
+	model=UI.ImageText.Fallback,
+	ImageTextInheritance="state",
 }
 
 function UI.Button:init(params)
 	UI.BuilderSelf(UI.Button.Template,self)
 	UI.Behavior.Button.new(self,params)
 	UI.ImageText.includeSetters(self)
-	self.ict:setStyle(self:resolveStyle("button.styInside"))
-end
-
-function UI.Button:updateStyle(...)
-	UI.Panel.updateStyle(self,...)
-	if self.ict then
-		self.ict:setStyle(self:resolveStyle("button.styInside"))
-	end
+	self.ict:setStyle("button.styInside")
 end
 
 UI.Button.Definition= {
@@ -45,26 +39,22 @@ UI.ToggleButton.Template={
 	BaseStyle="button.styBack",
 	layoutModel={ rowWeights={1},columnWeights={1}},
 	behavior=UI.Behavior.ToggleButton,
-	model=UI.ImageText.Fallback
+	model=UI.ImageText.Fallback,
+	ImageTextInheritance="state",
 }
 
 function UI.ToggleButton:init()
 	UI.BuilderSelf(UI.ToggleButton.Template,self)
 	UI.ImageText.includeSetters(self)
-	self.ict:setStyle(self:resolveStyle("button.styInside"))
-end
-
-function UI.ToggleButton:updateStyle(...)
-	UI.Panel.updateStyle(self,...)
-	if self.ict then
-		self.ict:setStyle(self:resolveStyle("button.styInside"))
-	end
+	self.ict:setStyle("button.styInside")
 end
 
 function UI.ToggleButton:setFlags(c)
 	UI.Panel.setFlags(self,c)
 	local fl=self:getFlags()
-	if fl.error then
+	if fl.disabled then
+		self:setStateStyle("button.styDisabled")
+	elseif fl.error then
 		self:setStateStyle("button.styError")
 	elseif fl.ticked then
 		self:setStateStyle(if fl.focused then "button.stySelectedFocused" else "button.stySelected")
@@ -131,9 +121,11 @@ function UI.PopupButton:setFlags(c)
 			table.insert(sites,{x=px+cw,y=py,dx=1,dy=1,mvty=true,w=mw, h=mh})
 		end
 		if UI.Screen.popupAt(self,self.content,sites) then
+			UI.Control.stopPropagation[self.content]=self.content
 			if self.autoClose then UI.Focus.onFocus[self]=self end
 		end
 	else
+		UI.Control.stopPropagation[self.content]=nil
 		self.content:removeFromParent()
 		UI.Focus.onFocus[self]=nil
 	end

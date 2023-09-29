@@ -17,7 +17,7 @@ function UI.Accordion:init()
 	self:setExpand(false)
 	self.expanded={}
 	self.datacells={}
-	self.autoCollapse=true
+	self:setAutoCollapse(true)
 	UI.Control.onMouseClick[self]=self
 end
 
@@ -30,11 +30,164 @@ end
 
 function UI.Accordion:setExpand(e)
 	self.expand = e and 1 or 0
+	self:checkDragResize()
 end
+
+function UI.Accordion:setAutoCollapse(e)
+	self.autoCollapse = e
+	self:checkDragResize()
+end
+
+function UI.Accordion:checkDragResize()
+	local ed=if self.autoCollapse or (self.expand==0) then nil else self
+	UI.Control.onDragStart[self]=ed
+	UI.Control.onDrag[self]=ed
+	UI.Control.onDragEnd[self]=ed
+    if UI.Control.HAS_CURSOR then 
+		UI.Control.onMouseMove[self]=ed
+	end
+end
+
+function UI.Accordion:getHeaderAt(x,y)
+    local eb=self:getChildrenAtPoint(x,y,true,false,self)
+    for _,v in ipairs(eb) do
+        local cell=self.headers[v]
+        if cell then return cell end
+    end
+end
+
+function UI.Accordion:onMouseMove(x,y)
+	local cell=self:getHeaderAt(x,y)
+	if cell and cell.row>1 then
+		UI.Control.setLocalCursor("splitV")
+	end
+end
+
+function UI.Accordion:onDragStart(x,y,ed,ea,change,long)
+	if long or self.autoCollapse then return end
+	local cell=self:getHeaderAt(x,y)
+	if not cell then return end
+	local rh={}
+	for _,cell in ipairs(self.tabs) do
+		rh[cell.row+1]=not (cell.h and cell.h:isVisible())
+	end
+	local crow=cell.row-1
+	while crow>=2 and rh[crow] do crow-=2 end
+	if crow<2 then return end
+	UI.Focus:request(self)
+	self.dragging={ oy=y, cell=cell, crow=crow, rh=rh, layout=self:getLayoutInfo(), lp=self:getLayoutParameters(true) }
+	self.dragging.nlp=table.clone(self.dragging.lp)
+	self.dragging.nlp.rowWeights=table.clone(self.dragging.lp.rowWeights)
+	--print(_inspect(rh),crow,cell.row)
+	return true
+end
+
+function UI.Accordion:onDragEnd(x,y)
+	if self.dragging and self.dragging.nlp then
+		local nlp=self.dragging.nlp
+		local rw=nlp.rowWeights
+		local ws=0
+		for _,w in ipairs(rw) do ws+=w end
+		if ws>1 then
+			local rwn=#rw
+			for i=1,rwn do rw[i]/=ws end
+			self:setLayoutParameters(nlp)
+		end
+	end
+	self.dragging=nil
+end
+
+function UI.Accordion:onDrag(x,y)
+	if not self.dragging then return end
+	local dy=y-self.dragging.oy
+	local cell=self.dragging.cell
+	local crow=self.dragging.crow
+	local li=self.dragging.layout
+	local rh=self.dragging.rh
+	
+	local _,mh=self:getDimensions()
+	local delta=mh-li.reqHeight
+	local ws,wl=0,0
+	for i=1,#li.weightY do 
+		local w=li.weightY[i]
+		ws+=w
+		if ((i&1)==1) and w>0 then wl=i end
+	end
+	
+	local lp=self.dragging.lp
+	local lpr=lp.rowWeights
+	local nlp=self.dragging.nlp
+	local nw=nlp.rowWeights
+	
+	local wm=dy*ws/delta
+	local sp=cell.row
+	local lwm=wm
+	if dy>0 then
+		while sp<=#nw and wm>0 do
+			local w1=lpr[sp]><wm
+			wm-=w1
+			nw[sp]=lpr[sp]-w1			
+			sp+=1
+		end
+		nw[crow]=lpr[crow]+lwm-wm
+	else
+		while sp>0 and wm<0 do
+			local w1=lpr[sp]><-wm
+			wm+=w1
+			nw[sp]=lpr[sp]-w1			
+			sp-=1
+		end		
+		nw[cell.row+1]=lpr[cell.row+1]-lwm+wm
+	end
+	--print(dy,cell.row,json.encode(lpr),delta,ws,wl,wm,json.encode(nw))
+	
+	for i=2,#nw-1,2 do
+		local other=self.tabs[i/2]
+		if other then
+			local lc = {}
+			lc.gridy=other.row
+			lc.fill=Sprite.LAYOUT_FILL_BOTH
+			if nw[i]==0 and self.expanded[other.d] then
+				if other.w then
+					other.w:setVisible(false)
+					other.w:setLayoutConstraints({height=0})
+				end
+				if other.bg then other.bg:removeFromParent() end
+				self.expanded[other.d]=nil
+				self:updateTab(other, true)
+				other.w:setLayoutConstraints(lc)
+			elseif nw[i]>0 and not self.expanded[other.d] then
+				if not other.w then
+					local nw,nbg=self.builder(other.d, true)
+					other.w=UI.Utils.makeWidget(nw,other.d)
+					other.bg=nbg
+				end
+				other.w:setVisible(true)
+				if other.bg then 
+					lc.gridheight=2
+					lc.gridy-=1
+					self:addChildAt(other.bg,1)
+					other.bg:setLayoutConstraints(lc)
+					lc.gridy+=1
+					lc.gridheight=nil
+				end
+				lc.minHeight=-1
+				lc.prefHeight=-1
+				self:addChild(other.w)
+				other.w:setLayoutConstraints(lc)
+				self.expanded[other.d]=true
+				self:updateTab(other, true)
+			end
+		end
+	end
+	
+	self:setLayoutParameters(nlp)
+	return true
+end
+
 function UI.Accordion:onMouseClick(x,y)
 	UI.Focus:request(self)
-    x,y=self:localToGlobal(x,y)
-    local eb=self:getChildrenAtPoint(x,y,true)
+    local eb=self:getChildrenAtPoint(x,y,true,false,self)
     for _,v in ipairs(eb) do
         local cell=self.headers[v]
         if cell then
@@ -51,6 +204,14 @@ function UI.Accordion:onMouseClick(x,y)
             end
         end
     end
+end
+
+function UI.Accordion:isExpanded(d)
+	local cell=self.datacells[d]
+	if not cell then return end
+	local lp = self:getLayoutParameters() or {  }
+	local lprw = lp.rowWeights or { }
+	return lprw[cell.row+1]
 end
 
 function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
@@ -74,9 +235,9 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 		local disabled = cell.w.getFlags and cell.w:getFlags().disabled
 
 		for i=2,#lprw,2 do
-			lprw[i]=0
 			local other=self.tabs[i/2]
 			if other and other~=cell and self.autoCollapse and self.expanded[other.d] then
+				lprw[i]=0
 				if other.w then
 					other.w:setVisible(false)
 					other.w:setLayoutConstraints({height=0})
@@ -94,7 +255,8 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 			if cell.bg then cell.bg:removeFromParent() end
 			focus=true
 		else
-			lprw[cell.row+1]=self.expand or 0
+			local ew=if type(e)=="number" then e else 1
+			lprw[cell.row+1]=(self.expand or 0)*ew
 			lc.minHeight=-1
 			lc.prefHeight=-1
 			cell.w:setVisible(true)
@@ -296,13 +458,23 @@ function UI.Accordion:setAllowDnd(between,over)
 	self.allowDnD=between or over
 	self.dndBetween=between
 	self.dndOver=over
-	UI.Dnd.Source(self,self.allowDnD,true)
-	UI.Dnd.Target(self,self.allowDnD,true)
+	UI.Dnd.Source(self,self.allowDnD,"auto")
+	UI.Dnd.Target(self,self.allowDnD)
+end
+
+function UI.Accordion:probeDndData(x,y)
+    local eb=self:getChildrenAtPoint(x,y,true,true,self)
+	for _,hdr in ipairs(eb) do
+		local cell=self.headers[hdr]
+		if cell then
+			return true
+			--local marker=self:getDndMarker(cell.d)
+		end
+	end
 end
 
 function UI.Accordion:getDndData(x,y)
-    x,y=self:localToGlobal(x,y)
-    local eb=self:getChildrenAtPoint(x,y,true,true)
+    local eb=self:getChildrenAtPoint(x,y,true,true,self)
 	for _,hdr in ipairs(eb) do
 		local cell=self.headers[hdr]
 		if cell then			
@@ -335,6 +507,22 @@ function UI.Accordion:cleanupDndData(data,target)
 end
 
 function UI.Accordion:offerDndData(data,x,y)
+	local function clearDstMarker(remove)
+		if self.dndDstMarker then
+			self.dndDstMarker:setVisible(false)
+			if remove then
+				self.dndDstMarker:removeFromParent()
+				self.dndDstMarker=nil
+			end
+		end
+		if self.dndDstMarkerOver then
+			self.dndDstMarkerOver:setVisible(false)
+			if remove then
+				self.dndDstMarkerOver:removeFromParent()
+				self.dndDstMarkerOver=nil
+			end
+		end
+	end
 	if self.dndDstMarker then self.dndDstMarker:setVisible(false) end
 	if data and data.type==UI.Accordion then
 		if not self.dndDstMarker then			
@@ -400,18 +588,35 @@ function UI.Accordion:offerDndData(data,x,y)
 			self.dndDstMarker:setY(ys-lcsy)	
 		end
 		if ll then
-			self.dndDstMarker:setVisible(true)	
 			local ret=(not self.checkDndOffer) or self:checkDndOffer(data,x,y,nil,ll) 
-			if ret==nil then self.dndDstMarker:removeFromParent() self.dndDstMarker=nil end
+			if ret==nil then 
+				clearDstMarker(true)
+			else
+				clearDstMarker()
+				self.dndDstMarker:setVisible(true)	
+			end
 			return ret
 		elseif over  and self.tabs[over] then
 			local ret=(not self.checkDndOffer) or self:checkDndOffer(data,x,y,self.tabs[over].d,ll)
-			if ret==nil then self.dndDstMarker:removeFromParent() self.dndDstMarker=nil end
-			return ret
+			if ret==nil then 
+				clearDstMarker(true)
+			else
+				clearDstMarker()
+				if not self.dndDstMarkerOver then
+					local chc=UI.Utils.colorVector("dnd.colDstHighlightOver",self._style)
+					local dstMarker=Pixel.new(chc)
+					self.dndDstMarkerOver=dstMarker
+				end
+				local cell=self.tabs[over]
+				self.dndDstMarkerOver:setDimensions(cell.h:getSize())
+				cell.h:addChild(self.dndDstMarkerOver)
+				self.dndDstMarkerOver:setVisible(true)
+				return ret
+			end
 		end
-	elseif self.dndDstMarker then
-		self.dndDstMarker:removeFromParent()
-		self.dndDstMarker=nil
+	else
+		clearDstMarker(true)
+		self.cachedLayout=nil
 	end
 end
 
@@ -439,5 +644,6 @@ UI.Accordion.Definition= {
 	properties={
 		{ name="Color", type="color", setter=UI.Panel.setColor, getter=UI.Panel.getColor },
 		{ name="Expand", type="boolean", setter=UI.Panel.setExpand },
+		{ name="AutoCollapse", type="boolean", setter=UI.Panel.setAutoCollapse },
 	},
 }

@@ -61,6 +61,15 @@ local function getShader(ref,vf,ff,uni,att,var)
 	return shaderCache[ref] 
 end
 
+local function overrideStandardShader(ref,pid,vid,overrider)
+	if not shaderCache[ref] then 
+		local spec=StandardShaders:getShaderSpecification(pid,vid)
+		overrider(spec)
+		shaderCache[ref]=spec:build(true)
+	end
+	return shaderCache[ref] 
+end
+
 local function vertexShader(vVertex,vColor,vTexCoord) : Shader
 	local vertex = hF4(vVertex,0.0,1.0)
 	fTexCoord=vTexCoord
@@ -71,30 +80,16 @@ end
 --A shader to turn an image grayscale
 UI.Shader.Grayscale=Core.class(UI.Shader)
 function UI.Shader.Grayscale:init(params)
-	self.shader=getShader(UI.Shader.Grayscale,
-		vertexShader,
-		function () : Shader
-			local t=texture2D(fTexture, fTexCoord)
-			local fc=t.r*0.4+t.g*0.5+t.b*0.1
-			local frag=hF4(fc,fc,fc,t.a)
-			frag*=fColor
-			if (frag.a==0.0) then discard() end
-			return lF4(frag)
-		end,
-		{
-			{name="vMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP,vertex=true},
-			{name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=false},
-			{name="fTexture",type=Shader.CTEXTURE,vertex=false},
-		},
-		{
-			{name="vVertex",type=Shader.DFLOAT,mult=2,slot=0,offset=0},
-			{name="vColor",type=Shader.DUBYTE,mult=0,slot=1,offset=0},
-			{name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
-		},
-		{
-			{name="fTexCoord",type=Shader.CFLOAT2},
-		}
-	)
+	self.shader=overrideStandardShader(UI.Shader.Grayscale,Shader.SHADER_PROGRAM_TEXTURE,0,function(spec)
+			function spec.fragmentShader() : Shader
+				local t=texture2D(fTexture, fTexCoord)
+				local fc=t.r*0.4+t.g*0.5+t.b*0.1
+				local frag=hF4(fc,fc,fc,t.a)
+				frag*=fColor
+				if (frag.a==0.0) then discard() end
+				return lF4(frag)
+			end
+		end)
 end
 
 --A shader to recolor each channel of an image

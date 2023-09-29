@@ -111,7 +111,9 @@ function UI.Calendar:updateMonth()
 	local lmdays=os.date("*t",stime-tz-3600).day
 	local cmdays=os.date("*t",sntime-tzn-3600).day
 	local cday=os.date("*t",self.date)
+	local today=os.date("*t")
 	if cday.month==self.month and cday.year==self.year then cday=cday.day else cday=nil end
+	if today.month==self.month and today.year==self.year then today=today.day else today=nil end
 	--Assume first day of week is monday, not sunday
 	fday.wday=if fday.wday==1 then 7 else fday.wday-1
 	if fday.wday>1 then
@@ -123,7 +125,7 @@ function UI.Calendar:updateMonth()
 	end
 	for d=1,cmdays do
 		local di=self.days[d-1+fday.wday]
-		di:setStyle(if cday==d then "calendar.styDaySelected" else "calendar.styDays")
+		di:setStyle(if cday==d then "calendar.styDaySelected" elseif today==d then "calendar.styDayToday" else "calendar.styDays")
 		di:setText(d)
 	end
 	for d=cmdays+fday.wday,42 do

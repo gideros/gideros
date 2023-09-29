@@ -36,6 +36,11 @@ UI.Theme.PointCore_Base={
 			params={ radius=5, ccolor={0,0,0,1}, angle=180, displace=0, expand=1.05 } 
 		},
 	},
+	["button.styInside"]={
+		colWidgetBack=UI.Colors.transparent,
+		brdWidget={ },
+		shader={}
+	},
 	["button.colBackground"]="theme.C2L",
 	--
 	["checkbox.colTickboxBack"]="theme.C2F",
@@ -94,7 +99,18 @@ UI.Theme.PointCore_Base={
 		["button.colBorder"]=colNone,
 		["button.colFocus"]=colNone,
 		["button.styInside"]={
+			colWidgetBack=UI.Colors.transparent,
+			brdWidget={},
+			shader={},
 			["image.colTint"]="colUI",
+		},
+		["button.styDisabled"]={
+			["button.styInside"]={
+				colWidgetBack=UI.Colors.transparent,
+				brdWidget={},
+				shader={},
+				["image.colTint"]="theme.Y30",
+			},
 		},
 		["button.styError"]={
 			["button.colBackground"]="theme.ER",
@@ -109,7 +125,7 @@ UI.Theme.PointCore_Base={
 			["button.colBackground"]="textfield.colBorder",
 		},
 	},
-	["buttontextfieldcombo.styButtonDisabled"]={
+--[[	["buttontextfieldcombo.styButtonDisabled"]={
 		["button.styBack"]={
 			colWidgetBack=UI.Colors.white,
 			brdWidget=UI.Border.NinePatch.new({
@@ -125,14 +141,11 @@ UI.Theme.PointCore_Base={
 		["button.colBackground"]=colNone,
 		["button.colBorder"]=colNone,
 		["button.colFocus"]=colNone,
-		["button.styInside"]={
-			["image.colTint"]="theme.Y30",
-		},
 		["button.styError"]={},
 		["button.stySelected"]={},
 		["button.stySelectedFocused"]={},
 		["button.styFocused"]={},
-	},
+	},]]
 	--
 	["calendar.colBackground"]="theme.C1M",
 	["calendar.colBorder"]="theme.C2M",
@@ -144,6 +157,9 @@ UI.Theme.PointCore_Base={
 	--
 	["dnd.colSrcHighlight"]="theme.Y15",
 	["dnd.colDstHighlight"]="theme.T",
+	["dnd.colDstHighlightOver"]="theme.Y50",
+	--
+	["hilitpanel.colHighlight"]="theme.Y15",
 	--
 	["passwordfield.styButtonDisabled"]={
 		["button.styInside"]={
@@ -203,6 +219,7 @@ UI.Theme.PointCore_Base={
 	},
 	["slider.styKnobDisabled"]={
 		["slider.colKnobCenter"]="theme.Y30",
+		colText="theme.Y30",
 	},
 	--
 	["splitpane.styThin"]={
@@ -235,6 +252,11 @@ UI.Theme.PointCore_Base={
 		},
 	},
 	--
+	["tabbedpane.colBackground"]="theme.C1F",
+	--["tabbedpane.colOutline"]="theme.CH",
+	["tabbedpane.colTabBackground"]="theme.C2F",
+	["tabbedpane.colTabBorder"]="theme.C2M",	
+	--
 	["table.colHeader"]="theme.C2F",
 	["table.colTextHeader"]="theme.CH",
 	["table.styDndMarker"]={
@@ -265,7 +287,21 @@ UI.Theme.PointCore_Base={
 		["textfield.colBackground"]=colNone, 
 		["textfield.colBorder"]="theme.Y30", 
 		["textfield.colBorderWide"]=colNone, 
-		["textfield.colForeground"]="theme.Y50", 
+		["textfield.colForeground"]="theme.Y50",
+	},
+	["textfield.styError"]={
+		["textfield.colForeground"]="theme.ER",
+	},
+	["textfield.styErrorFocused"]={
+		["textfield.colBorder"]=colNone,
+		["textfield.colBorderWide"]="theme.C2L",
+		["textfield.colForeground"]="theme.ER",
+	},
+	["textfield.styErrorFocusedReadonly"]="styErrorReadonly",
+	["textfield.styErrorReadonly"]={
+		["textfield.colBackground"]=colNone, 
+		["textfield.colBorder"]="theme.Y30",
+		["textfield.colForeground"]="theme.ER",
 	},
 	["textfield.styFocused"]={
 		["textfield.colBorder"]=colNone, 

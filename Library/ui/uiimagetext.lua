@@ -72,11 +72,6 @@ function UI.ImageText:update()
 	self.lbLabel:setLayoutConstraints(lt)
 end
 
-function UI.ImageText:updateStyle()
-	if self.ict then self:update() end --Prevent calling update if init isn't over
-	UI.Panel.updateStyle(self)
-end
-
 function UI.ImageText.includeSetters(self,ict)
 	if ict or self._UI_ICT_Fallback then
 		self.ict=ict or self._UI_ICT_Fallback
@@ -90,7 +85,7 @@ end
 function UI.ImageText.Fallback(d)
 	if not d.children then 
 		d=table.clone(d)
-		d.children={{ class="UI.ImageText", name="_UI_ICT_Fallback",layout={fill=Sprite.LAYOUT_FILL_BOTH}}}
+		d.children={{ class="UI.ImageText", name="_UI_ICT_Fallback",ParentStyleInheritance=d.ImageTextInheritance,layout={fill=Sprite.LAYOUT_FILL_BOTH}}}
 		return d
 	end
 end

@@ -38,6 +38,7 @@ function UI.Scrollbar:setDecorative(deco)
 	UI.Control.onDragStart[self]=s
 	UI.Control.onDrag[self]=s
 	UI.Control.onDragEnd[self]=s
+	UI.Control.onMouseClick[self]=s
 end
 
 -- Sets the bar position: offset is the amount of document invisible at the top, page is the amount of document visible
@@ -57,9 +58,37 @@ function UI.Scrollbar:update()
 	end
 end
 
+function UI.Scrollbar:onMouseClick(x,y)
+	if long then return end
+	local pos,po,ps
+	if self.vertical then
+		local s=self:getHeight()
+		pos=y/s
+		po=self.knob:getY()/s
+		ps=self.knob:getHeight()/s
+	else
+		local s=self:getWidth()
+		pos=x/s
+		po=self.knob:getX()/s
+		ps=self.knob:getWidth()/s
+	end
+	if pos<po then
+		self:pageMove(-1)
+	elseif pos>=(po+ps) then
+		self:pageMove(1)
+	end
+	return true
+end
+
+function UI.Scrollbar:pageMove(dir)
+	local pos=((self.offset+(self.page*dir))<>0)><(1-self.page)
+	self:setScrollPosition(pos)
+	UI.dispatchEvent(self,"WidgetChange",self.offset,self.page)
+end
+
 function UI.Scrollbar:onDragStart(x,y,ed,ea,change,long)
 	if long then return end
-	local pos,ps
+	local pos,po,ps
 	if self.vertical then
 		local s=self:getHeight()
 		pos=y/s

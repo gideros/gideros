@@ -6,6 +6,7 @@
 * visual: the visual marker
 
 DND callbacks:
+* probeDndData(source,x,y): Called on a source to check if DnD data is available at specified location
 * getDndData(source,x,y): Called on a source when a drag start action occurs. Returns the dragged dnd package or nil to abort.
 * offerDndData(target,data,x,y): Called on a candidate target during dnd move.
 	Returns a value indicating if data can be accepted by the target.
@@ -30,21 +31,34 @@ UI.Dnd._context=nil
 
 local dndPrepare=nil
 local function dndLongPrepare(ex,ey,ratio)
+	local valid
 	for k,sinfo in pairs(UI.Dnd._sources) do
-		if sinfo.long and k:hitTestPoint(ex,ey,true) then
+		local lx,ly=k:globalToLocal(ex,ey)
+		if sinfo.long and k:hitTestPoint(ex,ey,true) and (not k.probeDndData or k:probeDndData(lx,ly)) then
+			valid=true
 			if not dndPrepare then
 				dndPrepare=UI.Behavior.LongClick.makeIndicator(k,{})
 			end
-			local lx,ly=k:globalToLocal(ex,ey)
 			dndPrepare:indicate(k,lx,ly,ratio)
 		end
 	end
+
+	if not valid and dndPrepare then
+		dndPrepare:removeFromParent()
+		dndPrepare=nil
+	end		
 end
 
 local function dndDragStart(x,y,dist,angle,changed,long)
 	local function checkSource(k)
 		local sinfo=UI.Dnd._sources[k]
-		if sinfo and ((not sinfo.long) or long) and k:hitTestPoint(x,y,true) then
+		local svalid
+		if sinfo then
+			if ((not sinfo.long) or long) or (sinfo.long=="auto" and UI.Control.isDesktopGesture()) then
+				svalid=true
+			end
+		end
+		if svalid and k:hitTestPoint(x,y,true) then
 			local lx,ly=k:globalToLocal(x,y)
 			local data=k:getDndData(lx,ly)
 			if data then
