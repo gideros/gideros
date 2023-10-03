@@ -112,6 +112,7 @@ G_API void gaudio_BackgroundChannelDeleteSyncPoint(g_id backgroundChannel, g_id 
 G_API void gaudio_AdvanceStreamBuffers();
 
 #ifdef __cplusplus
+G_API size_t gaudio_SoundReadFile(const char *fileName, double start, double length, std::vector<unsigned char> &data,int &numChannels, int &bytesPerSample, int &sampleRate, gaudio_Error *error);
 }
 #endif
 
