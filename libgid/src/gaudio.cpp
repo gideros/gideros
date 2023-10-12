@@ -377,8 +377,8 @@ size_t GGSoundManager::SoundReadFile(const char *fileName, double start, double 
                         ifloat2[k]=sb;
                     else
                         sa=(sa+sb)/2;
-                    ifloat[k]=sa;
                 }
+                ifloat[k]=sa;
             }
         }
         else {
@@ -392,8 +392,8 @@ size_t GGSoundManager::SoundReadFile(const char *fileName, double start, double 
                         ifloat2[k]=sb;
                     else
                         sa=(sa+sb)/2;
-                    ifloat[k]=sa;
                 }
+                ifloat[k]=sa;
             }
         }
         filter.process(numSamples,ifloat.data(),oSamples,ofloat.data());

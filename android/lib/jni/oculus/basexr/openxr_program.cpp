@@ -83,6 +83,7 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
 }
 
 struct OpenXrProgram : IOpenXrProgram {
+    XrPassthroughLayerFB passthroughLayer = XR_NULL_HANDLE;
     OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<IPlatformPlugin>& platformPlugin,
                   const std::shared_ptr<IGraphicsPlugin>& graphicsPlugin)
         : m_options(options),
@@ -103,12 +104,8 @@ struct OpenXrProgram : IOpenXrProgram {
             xrDestroySwapchain(swapchain.handle);
         }
 
-        for (XrSpace visualizedSpace : m_visualizedSpaces) {
-            xrDestroySpace(visualizedSpace);
-        }
-
-        if (m_appSpace != XR_NULL_HANDLE) {
-            xrDestroySpace(m_appSpace);
+        for (auto it : m_visualizedSpaces) {
+            xrDestroySpace(it.second);
         }
 
         if (m_session != XR_NULL_HANDLE) {
@@ -120,9 +117,11 @@ struct OpenXrProgram : IOpenXrProgram {
         }
     }
 
-    static void LogLayersAndExtensions() {
+    std::map<std::string,bool> enabledExtensions;
+    std::map<std::string,bool> availableExtensions;
+    void LogLayersAndExtensions() {
         // Write out extension properties for a given layer.
-        const auto logExtensions = [](const char* layerName, int indent = 0) {
+        const auto logExtensions = [this](const char* layerName, int indent = 0) {
             uint32_t instanceExtensionCount;
             CHECK_XRCMD(xrEnumerateInstanceExtensionProperties(layerName, 0, &instanceExtensionCount, nullptr));
             std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
@@ -130,10 +129,12 @@ struct OpenXrProgram : IOpenXrProgram {
                                                                extensions.data()));
 
             const std::string indentStr(indent, ' ');
-            Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount));
+            Log::Write(Log::Level::Info, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount));
             for (const XrExtensionProperties& extension : extensions) {
-                Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName,
+                Log::Write(Log::Level::Info, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName,
                                                     extension.extensionVersion));
+                if (layerName==nullptr)
+                	availableExtensions[extension.extensionName]=true;
             }
         };
 
@@ -157,6 +158,15 @@ struct OpenXrProgram : IOpenXrProgram {
         }
     }
 
+    std::map<std::string,bool> &ProbeExtensions() override {
+    	LogLayersAndExtensions();
+    	return availableExtensions;
+    }
+
+    std::map<std::string,bool> &EnabledExtensions() override {
+    	return enabledExtensions;
+    }
+
     void LogInstanceInfo() {
         CHECK(m_instance != XR_NULL_HANDLE);
 
@@ -167,7 +177,7 @@ struct OpenXrProgram : IOpenXrProgram {
                                          GetXrVersionString(instanceProperties.runtimeVersion).c_str()));
     }
 
-    void CreateInstanceInternal() {
+    void CreateInstanceInternal(std::vector<std::string> &extra) {
         CHECK(m_instance == XR_NULL_HANDLE);
 
         // Create union of extensions required by platform and graphics plugins.
@@ -180,6 +190,11 @@ struct OpenXrProgram : IOpenXrProgram {
         const std::vector<std::string> graphicsExtensions = m_graphicsPlugin->GetInstanceExtensions();
         std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions),
                        [](const std::string& ext) { return ext.c_str(); });
+        std::transform(extra.begin(), extra.end(), std::back_inserter(extensions),
+                       [](const std::string& ext) { return ext.c_str(); });
+
+        for (auto it=extensions.begin();it!=extensions.end();it++)
+        	enabledExtensions[*it]=true;
 
         XrInstanceCreateInfo createInfo{XR_TYPE_INSTANCE_CREATE_INFO};
         createInfo.next = m_platformPlugin->GetInstanceCreateExtension();
@@ -192,10 +207,11 @@ struct OpenXrProgram : IOpenXrProgram {
         CHECK_XRCMD(xrCreateInstance(&createInfo, &m_instance));
     }
 
-    void CreateInstance() override {
-        LogLayersAndExtensions();
+    void CreateInstance(std::vector<std::string> &extra) override {
+    	if (availableExtensions.empty())
+    		LogLayersAndExtensions();
 
-        CreateInstanceInternal();
+        CreateInstanceInternal(extra);
 
         LogInstanceInfo();
     }
@@ -579,7 +595,7 @@ struct OpenXrProgram : IOpenXrProgram {
             XrSpace space;
             XrResult res = xrCreateReferenceSpace(m_session, &referenceSpaceCreateInfo, &space);
             if (XR_SUCCEEDED(res)) {
-                m_visualizedSpaces.push_back(space);
+                m_visualizedSpaces[visualizedSpace]=space;
             } else {
                 Log::Write(Log::Level::Warning,
                            Fmt("Failed to create reference space %s with error %d", visualizedSpace.c_str(), res));
@@ -604,9 +620,41 @@ struct OpenXrProgram : IOpenXrProgram {
         InitializeActions();
         CreateVisualizedSpaces();
 
+        if (enabledExtensions[XR_FB_PASSTHROUGH_EXTENSION_NAME])
         {
-            XrReferenceSpaceCreateInfo referenceSpaceCreateInfo = GetXrReferenceSpaceCreateInfo(m_options->AppSpace);
-            CHECK_XRCMD(xrCreateReferenceSpace(m_session, &referenceSpaceCreateInfo, &m_appSpace));
+			XrResult result;
+
+			PFN_xrCreatePassthroughFB pfnXrCreatePassthroughFBX = nullptr;
+			result = xrGetInstanceProcAddr(m_instance, "xrCreatePassthroughFB", (PFN_xrVoidFunction*)(&pfnXrCreatePassthroughFBX));
+			if (XR_FAILED(result)) {
+				Log::Write(Log::Level::Warning,"Failed to obtain the function pointer for xrCreatePassthroughFB.\n");
+			}
+			PFN_xrCreatePassthroughLayerFB pfnXrCreatePassthroughLayerFBX = nullptr;
+			result = xrGetInstanceProcAddr(m_instance, "xrCreatePassthroughLayerFB", (PFN_xrVoidFunction*)(&pfnXrCreatePassthroughLayerFBX));
+			if (XR_FAILED(result)) {
+				Log::Write(Log::Level::Warning,"Failed to obtain the function pointer for XrCreatePassthroughLayerFBX.\n");
+			}
+
+			// Create the feature
+			XrPassthroughFB passthroughFeature = XR_NULL_HANDLE;
+
+			XrPassthroughCreateInfoFB passthroughCreateInfo = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
+			passthroughCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
+
+			result = pfnXrCreatePassthroughFBX(m_session, &passthroughCreateInfo, &passthroughFeature);
+			if (XR_FAILED(result)) {
+				Log::Write(Log::Level::Warning, "Failed to create the passthrough feature.\n");
+			}
+
+			XrPassthroughLayerCreateInfoFB layerCreateInfo = {XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB};
+			layerCreateInfo.passthrough = passthroughFeature;
+			layerCreateInfo.purpose = XR_PASSTHROUGH_LAYER_PURPOSE_RECONSTRUCTION_FB;
+			layerCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
+
+			result = pfnXrCreatePassthroughLayerFBX(m_session, &layerCreateInfo, &passthroughLayer);
+			if (XR_FAILED(result)) {
+				Log::Write(Log::Level::Warning, "Failed to create and start a passthrough layer");
+			}
         }
     }
 
@@ -946,7 +994,16 @@ struct OpenXrProgram : IOpenXrProgram {
         XrCompositionLayerProjection layer{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
         std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
         if (frameState.shouldRender == XR_TRUE) {
+			XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
+			passthroughCompLayer.layerHandle = passthroughLayer;
+			passthroughCompLayer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+			passthroughCompLayer.space = XR_NULL_HANDLE;
+
             if (RenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer)) {
+            	if (passthroughLayer) {
+            	    layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+    				layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&passthroughCompLayer));
+            	}
                 layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer));
             }
         }
@@ -959,6 +1016,12 @@ struct OpenXrProgram : IOpenXrProgram {
         CHECK_XRCMD(xrEndFrame(m_session, &frameEndInfo));
     }
 
+    std::string ViewSpace="Local";
+    void SetViewSpace(std::string s) override
+    {
+    	ViewSpace=s;
+    }
+
     bool RenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews,
                      XrCompositionLayerProjection& layer) {
         XrResult res;
@@ -966,6 +1029,7 @@ struct OpenXrProgram : IOpenXrProgram {
         XrViewState viewState{XR_TYPE_VIEW_STATE};
         uint32_t viewCapacityInput = (uint32_t)m_views.size();
         uint32_t viewCountOutput;
+        XrSpace m_appSpace=m_visualizedSpaces[ViewSpace];
 
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_options->Parsed.ViewConfigType;
@@ -988,7 +1052,7 @@ struct OpenXrProgram : IOpenXrProgram {
         // Handle input
         XrSpaceVelocity vspd = { XR_TYPE_SPACE_VELOCITY, NULL, 0, {0, 0, 0}, {0, 0, 0} };
         XrSpaceLocation view_in_stage = { XR_TYPE_SPACE_LOCATION, &vspd, 0, {{0, 0, 0, 1}, {0, 0, 0}} };
-     	xrLocateSpace(m_visualizedSpaces[7], m_appSpace, predictedDisplayTime, &view_in_stage);
+     	xrLocateSpace(m_visualizedSpaces["View"], m_appSpace, predictedDisplayTime, &view_in_stage);
         HandleInput(&m_input,m_appSpace,predictedDisplayTime,&view_in_stage,&vspd);
 
 
@@ -1036,7 +1100,6 @@ struct OpenXrProgram : IOpenXrProgram {
     std::shared_ptr<IGraphicsPlugin> m_graphicsPlugin;
     XrInstance m_instance{XR_NULL_HANDLE};
     XrSession m_session{XR_NULL_HANDLE};
-    XrSpace m_appSpace{XR_NULL_HANDLE};
     XrSystemId m_systemId{XR_NULL_SYSTEM_ID};
 
     std::vector<XrViewConfigurationView> m_configViews;
@@ -1045,7 +1108,7 @@ struct OpenXrProgram : IOpenXrProgram {
     std::vector<XrView> m_views;
     int64_t m_colorSwapchainFormat{-1};
 
-    std::vector<XrSpace> m_visualizedSpaces;
+    std::map<std::string,XrSpace> m_visualizedSpaces;
 
     // Application's current lifecycle state according to the runtime
     XrSessionState m_sessionState{XR_SESSION_STATE_UNKNOWN};

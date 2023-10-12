@@ -450,6 +450,9 @@ void HandleInput(IOpenXrProgram::InputState *m_input,XrSpace m_appSpace,XrTime p
     }
 }
 
+std::map<std::string,bool> availableExtensions;
+std::map<std::string,bool> enabledExtensions;
+
 void* AppThreadFunction(void* parm) {
     ovrAppThread* appThread = (ovrAppThread*)parm;
     bool LuaInitialized=false;
@@ -490,7 +493,21 @@ void* AppThreadFunction(void* parm) {
         initializeLoader((const XrLoaderInitInfoBaseHeaderKHR*)&loaderInitInfoAndroid);
     }
 
-    program->CreateInstance();
+    availableExtensions=program->ProbeExtensions();
+
+    std::vector<std::string> extraExtensions;
+
+    if (availableExtensions[XR_FB_PASSTHROUGH_EXTENSION_NAME]) {
+        ALOGV("EXT: Using passthrough");
+    	extraExtensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
+    }
+    if (availableExtensions[XR_FB_TRIANGLE_MESH_EXTENSION_NAME]) {
+        ALOGV("EXT: Using mesh");
+    	extraExtensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
+    }
+
+    program->CreateInstance(extraExtensions);
+    enabledExtensions=program->EnabledExtensions();
     program->InitializeSystem();
 
     options->SetEnvironmentBlendMode(program->GetPreferredBlendMode());
@@ -584,6 +601,7 @@ void* AppThreadFunction(void* parm) {
 
 		if (program->IsSessionRunning()&&appState.NativeWindow) {
 			program->PollActions();
+			program->SetViewSpace(roomFloor?"Stage":"Local");
 			program->RenderFrame();
 		} else {
 			// Throttle loop since xrWaitFrame won't be called.
@@ -776,6 +794,19 @@ static int enableRoom(lua_State *L) {
 	roomScreenEnabled=lua_toboolean(L,2);
 	return 0;
 }
+
+static int getExtensions(lua_State *L) {
+	const std::map<std::string,bool> &e=lua_toboolean(L,1)?availableExtensions:enabledExtensions;
+	lua_newtable(L);
+	for (auto it=e.begin();it!=e.end();it++)
+	{
+		lua_pushstring(L,it->first.c_str());
+		lua_pushboolean(L,it->second);
+		lua_rawset(L,-3);
+	}
+	return 1;
+}
+
 
 static int setTrackingSpace(lua_State *L) {
 	//0: LOCAL
@@ -971,6 +1002,7 @@ void setupApi(lua_State *L)
 		{"getHeadPose", getHeadPose},
 		{"getHandMesh", getHandMesh},
 		{"getHandSkeleton", getHandSkeleton},
+		{"getExtensions", getExtensions},
         {NULL, NULL},
     };
 
