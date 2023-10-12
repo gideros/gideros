@@ -227,6 +227,7 @@ private:
     float       getCofactor(float m0, float m1, float m2,
                             float m3, float m4, float m5,
                             float m6, float m7, float m8);
+    void 	computeType();
 
     float m[16];
 };
@@ -686,6 +687,11 @@ inline void Matrix4::set(const float src[16])
     m[4] = src[4];  m[5] = src[5];  m[6] = src[6];  m[7] = src[7];
     m[8] = src[8];  m[9] = src[9];  m[10]= src[10]; m[11]= src[11];
     m[12]= src[12]; m[13]= src[13]; m[14]= src[14]; m[15]= src[15];
+    computeType();
+}
+
+inline void Matrix4::computeType()
+{
 	//TRN: m0,m5,m10,m15=1 m12,m13,m14=x
 	//M2D: m10,m15=1 m0,m1,m4,m5,m12,m13,m14=x
 	//M3D: m15=1 m0,m1,m2,m4,m5,m6,m8,m9,m10,m12,m13,m14=x
@@ -702,7 +708,6 @@ inline void Matrix4::set(const float src[16])
     	}
     }
 }
-
 
 
 inline void Matrix4::set(float m00, float m01, float m02, float m03,
@@ -722,7 +727,7 @@ inline void Matrix4::set(float m00, float m01, float m02, float m03,
 inline void Matrix4::setRow(int index, const float row[4])
 {
     m[index] = row[0];  m[index + 4] = row[1];  m[index + 8] = row[2];  m[index + 12] = row[3];
-    type=FULL;
+    computeType();
 }
 
 
@@ -730,7 +735,7 @@ inline void Matrix4::setRow(int index, const float row[4])
 inline void Matrix4::setRow(int index, const Vector4& v)
 {
     m[index] = v.x;  m[index + 4] = v.y;  m[index + 8] = v.z;  m[index + 12] = v.w;
-    type=FULL;
+    computeType();
 }
 
 
@@ -738,7 +743,7 @@ inline void Matrix4::setRow(int index, const Vector4& v)
 inline void Matrix4::setRow(int index, const Vector3& v)
 {
     m[index] = v.x;  m[index + 4] = v.y;  m[index + 8] = v.z;
-    type=FULL;
+    computeType();
 }
 
 
@@ -746,7 +751,7 @@ inline void Matrix4::setRow(int index, const Vector3& v)
 inline void Matrix4::setColumn(int index, const float col[4])
 {
     m[index*4] = col[0];  m[index*4 + 1] = col[1];  m[index*4 + 2] = col[2];  m[index*4 + 3] = col[3];
-    type=FULL;
+    computeType();
 }
 
 
@@ -754,7 +759,7 @@ inline void Matrix4::setColumn(int index, const float col[4])
 inline void Matrix4::setColumn(int index, const Vector4& v)
 {
     m[index*4] = v.x;  m[index*4 + 1] = v.y;  m[index*4 + 2] = v.z;  m[index*4 + 3] = v.w;
-    type=FULL;
+    computeType();
 }
 
 
@@ -762,7 +767,7 @@ inline void Matrix4::setColumn(int index, const Vector4& v)
 inline void Matrix4::setColumn(int index, const Vector3& v)
 {
     m[index*4] = v.x;  m[index*4 + 1] = v.y;  m[index*4 + 2] = v.z;
-    type=FULL;
+    computeType();
 }
 
 
