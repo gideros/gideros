@@ -827,6 +827,7 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 
 void ApplicationManager::updateHardwareOrientation()
 {
+#ifndef OCULUS
     Orientation orientation = application_->orientation();
 
     bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
@@ -836,6 +837,9 @@ void ApplicationManager::updateHardwareOrientation()
         hardwareOrientation_ = deviceOrientation_;
     else
         hardwareOrientation_ = orientation;
+#else
+    hardwareOrientation_ =eFixed;
+#endif
 
     application_->setHardwareOrientation(hardwareOrientation_);	
 }

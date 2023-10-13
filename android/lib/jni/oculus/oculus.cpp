@@ -497,6 +497,7 @@ void* AppThreadFunction(void* parm) {
 
     std::vector<std::string> extraExtensions;
 
+    extraExtensions.push_back(XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME);
     if (availableExtensions[XR_FB_PASSTHROUGH_EXTENSION_NAME]) {
         ALOGV("EXT: Using passthrough");
     	extraExtensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);

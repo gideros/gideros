@@ -20,7 +20,7 @@ struct IGraphicsPlugin {
     virtual void InitializeDevice(XrInstance instance, XrSystemId systemId) = 0;
 
     // Select the preferred swapchain format from the list of available formats.
-    virtual int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats) const = 0;
+    virtual int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats,int64_t &depthFormat) const = 0;
 
     // Get the graphics binding header for session creation.
     virtual const XrBaseInStructure* GetGraphicsBinding() const = 0;
@@ -32,6 +32,7 @@ struct IGraphicsPlugin {
 
     // Render to a swapchain image for a projection view.
     virtual void RenderView(int eyeNum,const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage,
+    						const XrSwapchainImageBaseHeader* swapchainDepth,
                             int64_t swapchainFormat) = 0;
 
     // Get recommended number of sub-data element samples in view (recommendedSwapchainSampleCount)
