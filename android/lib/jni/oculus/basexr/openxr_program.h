@@ -8,6 +8,9 @@
 #include <array>
 #include <map>
 #include <string>
+#include <vector>
+
+class VRExtension;
 
 namespace Side {
 const int LEFT = 0;
@@ -77,6 +80,10 @@ struct IOpenXrProgram {
 
     // Get preferred blend mode based on the view configuration specified in the Options
     virtual XrEnvironmentBlendMode GetPreferredBlendMode() const = 0;
+
+    std::vector<VRExtension *> VRExts;
+    void AddExtension(VRExtension *e) { VRExts.push_back(e); };
+
     void (*StartOfFrame)();
     void (*HandleInput)(IOpenXrProgram::InputState *m_input,XrSpace m_appSpace,XrTime predictedDisplayTime,XrSpaceLocation *head,XrSpaceVelocity *headSpd);
 };

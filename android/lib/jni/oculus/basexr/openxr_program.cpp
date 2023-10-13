@@ -14,6 +14,8 @@
 #include <set>
 #include <map>
 
+#include "VRExtension.h"
+
 namespace {
 
 #if !defined(XR_USE_PLATFORM_WIN32)
@@ -83,7 +85,6 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
 }
 
 struct OpenXrProgram : IOpenXrProgram {
-    XrPassthroughLayerFB passthroughLayer = XR_NULL_HANDLE;
     OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<IPlatformPlugin>& platformPlugin,
                   const std::shared_ptr<IGraphicsPlugin>& graphicsPlugin)
         : m_options(options),
@@ -113,6 +114,8 @@ struct OpenXrProgram : IOpenXrProgram {
         }
 
         if (m_session != XR_NULL_HANDLE) {
+            for (auto e:VRExts)
+            	e->SessionEnd();
             xrDestroySession(m_session);
         }
 
@@ -624,43 +627,9 @@ struct OpenXrProgram : IOpenXrProgram {
         InitializeActions();
         CreateVisualizedSpaces();
 
-        if (enabledExtensions[XR_FB_PASSTHROUGH_EXTENSION_NAME])
-        {
-			XrResult result;
+        for (auto e:VRExts)
+        	e->SessionStart(m_instance,m_session,m_systemId);
 
-			PFN_xrCreatePassthroughFB pfnXrCreatePassthroughFBX = nullptr;
-			result = xrGetInstanceProcAddr(m_instance, "xrCreatePassthroughFB", (PFN_xrVoidFunction*)(&pfnXrCreatePassthroughFBX));
-			if (XR_FAILED(result)) {
-				Log::Write(Log::Level::Warning,"Failed to obtain the function pointer for xrCreatePassthroughFB.\n");
-			}
-			PFN_xrCreatePassthroughLayerFB pfnXrCreatePassthroughLayerFBX = nullptr;
-			result = xrGetInstanceProcAddr(m_instance, "xrCreatePassthroughLayerFB", (PFN_xrVoidFunction*)(&pfnXrCreatePassthroughLayerFBX));
-			if (XR_FAILED(result)) {
-				Log::Write(Log::Level::Warning,"Failed to obtain the function pointer for XrCreatePassthroughLayerFBX.\n");
-			}
-
-			// Create the feature
-			XrPassthroughFB passthroughFeature = XR_NULL_HANDLE;
-
-			XrPassthroughCreateInfoFB passthroughCreateInfo = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
-			passthroughCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
-
-			result = pfnXrCreatePassthroughFBX(m_session, &passthroughCreateInfo, &passthroughFeature);
-			if (XR_FAILED(result)) {
-				Log::Write(Log::Level::Warning, "Failed to create the passthrough feature.\n");
-			}
-
-			XrPassthroughLayerCreateInfoFB layerCreateInfo = {XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB};
-			layerCreateInfo.passthrough = passthroughFeature;
-			layerCreateInfo.purpose = XR_PASSTHROUGH_LAYER_PURPOSE_RECONSTRUCTION_FB;
-			layerCreateInfo.flags = XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB;
-			//layerCreateInfo.flags|= XR_PASSTHROUGH_LAYER_DEPTH_BIT_FB;
-
-			result = pfnXrCreatePassthroughLayerFBX(m_session, &layerCreateInfo, &passthroughLayer);
-			if (XR_FAILED(result)) {
-				Log::Write(Log::Level::Warning, "Failed to create and start a passthrough layer");
-			}
-        }
     }
 
     bool depthSwapchain=false;
@@ -1029,17 +998,12 @@ struct OpenXrProgram : IOpenXrProgram {
         std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
         std::vector<XrCompositionLayerDepthInfoKHR> depthLayers;
         if (frameState.shouldRender == XR_TRUE) {
-			XrCompositionLayerPassthroughFB passthroughCompLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
-			passthroughCompLayer.layerHandle = passthroughLayer;
-			passthroughCompLayer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
-			passthroughCompLayer.space = XR_NULL_HANDLE;
-
             if (RenderLayer(frameState.predictedDisplayTime, projectionLayerViews, depthLayers, layer)) {
-            	if (passthroughLayer) {
-            	    layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
-    				layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&passthroughCompLayer));
-            	}
+        	    layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
                 layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer));
+                for (auto e:VRExts)
+                	e->Composition(layers);
+
             }
         }
 

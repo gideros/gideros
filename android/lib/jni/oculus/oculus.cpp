@@ -32,6 +32,9 @@ Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All
 #include "oculus.h"
 #include "debugging.h"
 
+#include "ext/PassthroughFB.h"
+#include "ext/HandTrackingFB.h"
+
 void setupApi(lua_State *L);
 static LuaApplication *_gapp=NULL;
 
@@ -506,9 +509,23 @@ void* AppThreadFunction(void* parm) {
         ALOGV("EXT: Using mesh");
     	extraExtensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
     }
+    if (availableExtensions[XR_EXT_HAND_TRACKING_EXTENSION_NAME]) {
+        ALOGV("EXT: Using hand tracking");
+    	extraExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+    	extraExtensions.push_back(XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME);
+    	extraExtensions.push_back(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME);
+    	extraExtensions.push_back(XR_FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME);
+    }
 
     program->CreateInstance(extraExtensions);
     enabledExtensions=program->EnabledExtensions();
+
+    if (enabledExtensions[XR_FB_PASSTHROUGH_EXTENSION_NAME])
+    	program->AddExtension(new PassthroughFB());
+
+    if (enabledExtensions[XR_EXT_HAND_TRACKING_EXTENSION_NAME])
+    	program->AddExtension(new HandTrackingFB());
+
     program->InitializeSystem();
 
     options->SetEnvironmentBlendMode(program->GetPreferredBlendMode());
