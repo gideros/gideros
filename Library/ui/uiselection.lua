@@ -1,4 +1,4 @@
---!NEEDS:uinit.lua
+--!NEEDS:uiinit.lua
 --[[ Sprite selection methods
 spr,data=:uiSelectData(d) 	-- Returns dataSprite and data to select without onMouseClick
 spr,data=:uiSelect(x,y) 	-- Returns dataSprite and data associated with click coordinates, if any
