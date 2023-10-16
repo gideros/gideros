@@ -200,7 +200,7 @@ public:
     static int Core_randomSeed(lua_State *L);
     static int getStyleTable(lua_State *L,int sprIndex);
     static int resolveStyle(lua_State *L,const char *key,int luaIndex);
-    static int resolveStyleInternal(lua_State *L,const char *key,int luaIndex, int limit=0, bool recursed=false);
+    static int resolveStyleInternal(lua_State *L,const char *key,int luaIndex, int limit=0, bool recursed=false, bool allowPrimary=false);
     static void cacheComputedStyle(lua_State *L, const char *key, bool empty);
     static void resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache);
     void resetStyleCache();
