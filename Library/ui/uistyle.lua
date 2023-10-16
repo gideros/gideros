@@ -9,34 +9,60 @@ if debug then print("UI.Style","debug !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!") end
 
 UI.Default=UI.Default or {}
 
-local targetTiny		=4.5
-local targetTab			=8
-local targetMonitor		=12
+local function computeScales()
+	local targetTiny		=4.5
+	local targetTab			=8
+	local targetMonitor		=12
 
-local dpi=application:getScreenDensity() or 120--326 --96
-local dh=application:getDeviceHeight()
-if Oculus then dh=dh/2 end
-local diag=(dh^2+application:getDeviceWidth()^2)^0.5/dpi
-local ls=application:getLogicalScaleX()
-local tgtdpi=120 --96
-local detectedMode="monitor"
-local platform=application:getDeviceInfo()
-local DesktopPlatforms={
-	WinRT=true,
-	MacOS=true,
-}
-if diag>=targetMonitor or DesktopPlatforms[platform] 	then tgtdpi=120 detectedMode="monitor"
-elseif diag>=targetTab	then tgtdpi=180 detectedMode="tablet" --240
-elseif diag>=targetTiny	then tgtdpi=240 detectedMode="phone" --360
-else tgtdpi=360 detectedMode="tiny" --360
+	local dpi,ldpi=application:getScreenDensity()
+	dpi=ldpi or dpi or 120 --326 --96
+
+	local dh=application:getDeviceHeight()
+	if Oculus then dh=dh/2 end
+	local diag=(dh^2+application:getDeviceWidth()^2)^0.5/dpi
+	local scw,sch=application:get("screenSize")
+	local sdiag=diag
+	if scw and sch then sdiag=((scw^2+sch^2)^.5)/dpi end
+	local ls=application:getLogicalScaleX()
+	local tgtdpi=120 --96
+	local detectedMode="monitor"
+	local platform=application:getDeviceInfo()
+	local DesktopPlatforms={
+		WinRT=true,
+		MacOS=true,
+		Linux=true,
+	}
+	if sdiag>=targetMonitor or DesktopPlatforms[platform] 	then tgtdpi=120 detectedMode="monitor"
+	elseif sdiag>=targetTab	then tgtdpi=180 detectedMode="tablet" --240
+	elseif sdiag>=targetTiny	then tgtdpi=240 detectedMode="phone" --360
+	else tgtdpi=360 detectedMode="tiny" --360
+	end
+
+	tgtdpi=UI.Default.TargetDpi or tgtdpi
+
+	local zoom=(dpi/tgtdpi)/ls
+	local fzoom=20
+	if debug then print("UI.Style","getDeviceHeight()",application:getDeviceHeight(),"getDeviceWidth()",application:getDeviceWidth(),"getScreenDensity()",application:getScreenDensity()) end
+	if debug then print("UI.Style","windiag",diag,"scrdiag",sdiag,"ls",ls,"dpi",dpi,"tgtdpi",tgtdpi,"zoom",zoom,fzoom,"platform",platform,"mode",detectedMode) end
+	return {
+		--Screen and window properties
+		windowDiagonal=diag,
+		screenDpi=dpi,
+		screenDiagonal=sdiag,
+		--Computed scales and zooms
+		logicalScale=ls,
+		zoomFactor=zoom,
+		zoomTarget=fzoom,
+		--Mode detection
+		targetTiny=targetTiny,
+		targetTab=targetTab,
+		targetMonitor=targetMonitor,
+		targetDpi=tgtdpi,	
+		detectedMode=detectedMode,
+	}
 end
 
-tgtdpi=UI.Default.TargetDpi or tgtdpi
-
-local zoom=(dpi/tgtdpi)/ls
-local fzoom=20
-if debug then print("UI.Style","getDeviceHeight()",application:getDeviceHeight(),"getDeviceWidth()",application:getDeviceWidth(),"getScreenDensity()",application:getScreenDensity()) end
-if debug then print("UI.Style","diag",diag,"ls",ls,"dpi",dpi,"tgtdpi",tgtdpi,"zoom",zoom,fzoom,"platform",platform,"mode",detectedMode) end
+local screenProperties=computeScales()
 
 UI.Style={}
 setmetatable(UI.Style,{
@@ -66,7 +92,29 @@ UI.Style._style={}
 UI.Style._style.__index=UI.Style._style
 setmetatable(UI.Style._style,UI.Style)
 
-function UI.Style.getScreenProperties() return diag,targetTiny,targetTab,targetMonitor,dpi,tgtdpi,ls,zoom,detectedMode end
+function UI.Style.getScreenProperties(current) 
+	if current then return computeScales() end
+	return screenProperties 
+end
+
+function UI.Style.updateScreenProperties() 
+	screenProperties=computeScales()
+	UI.Style.zoomFactor=screenProperties.zoomFactor
+	UI.Style.fontSize=(UI.Default.fontSize or screenProperties.zoomTarget*screenProperties.zoomFactor)*(UI.Default.fontScale or 1)
+	stage:setStyle(nil,true)
+	if UI.Control then
+		UI.Control.DRAG_THRESHOLD=stage:resolveStyle("szDragThreshold",UI.Style._style)
+		UI.Control.WHEEL_DISTANCE=stage:resolveStyle("szWheelDistance",UI.Style._style)
+	end
+end
+
+stage:addEventListener(Event.APPLICATION_RESIZE,function ()
+	local dpi,ldpi=application:getScreenDensity()
+	dpi=ldpi or dpi
+	if dpi and screenProperties.screenDpi~=dpi then
+		UI.Style.updateScreenProperties()
+	end	
+end)
 
 function UI.Style:setDefault(style)
 	--Unlink current style from root style
@@ -101,6 +149,7 @@ function UI.Style:setDefault(style)
 	if UI.Default.styleCustomSizes then
 		UI.Default.styleCustomSizes(self._style)
 	end
+	stage:setStyle(nil,true)
 	if UI.Control then
 		UI.Control.DRAG_THRESHOLD=stage:resolveStyle("szDragThreshold",self._style)
 		UI.Control.WHEEL_DISTANCE=stage:resolveStyle("szWheelDistance",self._style)
@@ -180,8 +229,8 @@ else
 	end
 end
 
-UI.Style.zoomFactor=zoom
-UI.Style.fontSize=(UI.Default.fontSize or fzoom*zoom)*(UI.Default.fontScale or 1)
+UI.Style.zoomFactor=screenProperties.zoomFactor
+UI.Style.fontSize=(UI.Default.fontSize or screenProperties.zoomTarget*screenProperties.zoomFactor)*(UI.Default.fontScale or 1)
 
 local function loadFont(ttf,size,outline)
 	local f=TTFont.new(ttf,size,"",true,outline)
@@ -218,6 +267,8 @@ end
 
 UI.Style["unit.s"]=UI.Style.fontSize
 UI.Style["unit.is"]=UI.Style.fontSize*UI.Style.iconScale
+
+--print("UI Units:","s="..UI.Style["unit.s"],"is="..UI.Style["unit.is"])
 
 UI.Style.colUI				=UI.Colors.black
 UI.Style.colText			=UI.Colors.black
@@ -273,6 +324,8 @@ UI.Style.button={
 			params={ colLayer1="button.colBackground", colLayer2="button.colFocus", colLayer3="button.colSelect", colLayer4=colNone } 
 		},
 	},
+	styInside={
+	},
 	styError={
 		["button.colBackground"]="colError",
 	},
@@ -286,6 +339,12 @@ UI.Style.button={
 	styFocused={
 		["button.colFocus"]="colHighlight"
 	},
+	styDisabled={
+		["button.colFocus"]="colDisabled",
+		["button.styInside"]={
+			["image.colTint"]="colDisabled",
+		}
+	},
 	colBackground="colHeader",
 	colFocus="colUI",
 	colSelect=colNone,
@@ -298,6 +357,7 @@ UI.Style.calendar={
 	colSpinnerBorder="calendar.colBorder",
 	colDays="colText",
 	colDaysOther="colDisabled",
+	colDayToday="colDisabled",
 	colDaySelected="colHighlight",
 	colDayHeader="colText",
 	szDay="1.7em",
@@ -315,6 +375,18 @@ UI.Style.calendar={
 	},
 	styDaysOther={
 		["label.color"]="calendar.colDaysOther",
+	},
+	styDayToday={
+		["label.color"]="calendar.colDays",
+		colWidgetBack=colFull,
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
+			corners={},
+		}),
+		shader={ 
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="calendar.colDayToday", colLayer2=colNone, colLayer3=colNone, colLayer4=colNone } 
+		}
 	},
 	styDaySelected={
 		["label.color"]="calendar.colDays",
@@ -466,8 +538,9 @@ UI.Style.dialog={
 	colBackground="colBackground",
 }
 UI.Style.dnd={
-	colSrcHighlight="colHighlight",
+	colSrcHighlight=UI.Color(0,.25,1,.9,.15),
 	colDstHighlight="colHighlight",
+	colDstHighlightOver=UI.Color(0,.25,1,.9,.5),
 	szInsertPoint=".3s",
 	szMarkerMargin=".4s",
 	szMarkerInset=".3s",
@@ -574,6 +647,15 @@ UI.Style.editableclock={
 	}
 }
 
+UI.Style.hilitpanel={
+	colHighlight="colHighlight",
+	styNormal={
+	},
+	styHighlight={
+		colWidgetBack="hilitpanel.colHighlight"
+	}
+}
+
 UI.Style.image={
 	colTint=colFull,
 	szIcon="1is",
@@ -640,35 +722,15 @@ UI.Style.buttontextfield={
 			}
 		},
 	},
-	styButtonDisabled={
-		["button.styBack"]={
-			colWidgetBack=UI.Colors.transparent,
-			brdWidget={},
-			shader={},
-		},
-		["button.colBackground"]=colNone,
-		["button.colBorder"]=colNone,
-		["button.colFocus"]=colNone,
-		["button.colSelect"]=colNone,
-		["button.styInside"]={
-			["image.colTint"]="colDisabled",
-		},
-		["button.styError"]={},
-		["button.stySelected"]={},
-		["button.stySelectedFocused"]={},
-		["button.styFocused"]={},
-	},
 }
 UI.Style.buttontextfieldcombo={
 	icButton=Texture.new("ui/icons/rdown.png",true,{ mipmap=true }),
 	styBase="buttontextfield",
 	styButton="buttontextfield.styButton",
-	styButtonDisabled="buttontextfield.styButtonDisabled",
 }
 UI.Style.passwordfield={
 	icButton=Texture.new("ui/icons/eye.png",true,{ mipmap=true }),
 	styButton="buttontextfield.styButton",
-	styButtonDisabled="buttontextfield.styButtonDisabled",
 }
 UI.Style.progress={
 	szCircular="2is",
@@ -892,6 +954,70 @@ UI.Style.splitpane={
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="splitpane.colKnobHandle", colLayer2="splitpane.colKnobSymbol", colLayer3="splitpane.colKnobShadow" }},
 	},
 }
+UI.Style.tabbedpane={
+	szInset=0,
+	szCorner=".3s",
+	szPaneCorner=".3s",
+	szPaneCornerTop=0,
+	colBackground="colBackground",
+	colOutline="colHighlight",
+	colTabBackground="colTile",
+	colTabBorder="colUI",
+	styPane={
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/tab-b.png",true,{ mipmap=true }),
+			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
+			insets={ left="tabbedpane.szPaneCorner", right="tabbedpane.szPaneCorner", top="tabbedpane.szPaneCornerTop", bottom="tabbedpane.szPaneCorner" },
+		}),
+		colWidgetBack=0xFFFFFF,
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
+	},
+	styHLine={
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/tab-l.png",true,{ mipmap=true }),
+			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
+			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+		}),
+		colWidgetBack=0xFFFFFF,
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
+	},
+	styTabCurrent={
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/tab-t.png",true,{ mipmap=true }),
+			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
+			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+		}),
+		colWidgetBack=0xFFFFFF,
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
+	},
+	styTabCurrentFirst={
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/tab-tf.png",true,{ mipmap=true }),
+			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
+			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+		}),
+		colWidgetBack=0xFFFFFF,
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
+	},
+	styTabCurrentLast={
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/tab-tl.png",true,{ mipmap=true }),
+			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
+			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+		}),
+		colWidgetBack=0xFFFFFF,
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
+	},
+	styTabOther={
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/tab-t.png",true,{ mipmap=true }),
+			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
+			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+		}),
+		colWidgetBack=0xFFFFFF,
+		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colTabBackground", colLayer2="tabbedpane.colTabBorder", colLayer3=colNone, }},
+	},
+}
 UI.Style.table={
 	colHeader="colHeader",
 	colTextHeader="colHighlight",
@@ -1015,10 +1141,11 @@ UI.Style.toolbox={
 		colWidgetBack=colFull,
 		shader={ 
 			class="UI.Shader.MultiLayer", 
-			params={ colLayer1="toolbox.colHeader", colLayer2="toolbox.colBorder", colLayer3="toolbox.colHeaderIcon", colLayer4=colNone } 
+			params={ colLayer1="toolbox.colHeader", colLayer2="toolbox.colBorder", colLayer3=colNone, colLayer4=colNone } 
 		}
 	},
 	styHeaderHorizontal={
+		colWidgetBack=colFull,
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
 			corners={"toolbox.szBorder",0,"toolbox.szBorder","toolbox.szBorder",63,63,63,63},
@@ -1026,6 +1153,7 @@ UI.Style.toolbox={
 		}),
 	},
 	styHeaderVertical={
+		colWidgetBack=colFull,
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
 			corners={"toolbox.szBorder","toolbox.szBorder","toolbox.szBorder",0,63,63,63,63},

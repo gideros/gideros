@@ -1,4 +1,4 @@
---!NEEDS:uinit.lua
+--!NEEDS:uiinit.lua
 --[[ Sprite selection methods
 spr,data=:uiSelectData(d) 	-- Returns dataSprite and data to select without onMouseClick
 spr,data=:uiSelect(x,y) 	-- Returns dataSprite and data associated with click coordinates, if any
@@ -67,18 +67,18 @@ end
 
 local function uiUpdateSelection(s,spr,data,action)
 	local selpoint=spr
-	if s and spr then
+	if s then
 		local sh=s._uisel_holder
 		local uis=UI.Selection
-		if sh.mode==uis.CLICK then
+		if sh.mode==uis.CLICK and spr then
 			sh.handler(s,data,spr)
-		elseif sh.mode==uis.SINGLE then
+		elseif sh.mode==uis.SINGLE and spr then
 			sh.sel={}
 			sh.sel[spr]=data
 			s:uiSelection(sh.sel)
 			sh.handler(s,sh.sel)
 		else
-			if action=="click" then
+			if action=="click" and spr then
 				local mods=UI.Control.Meta.modifiers or 0
 				local ctrl=(mods&KeyCode.MODIFIER_CTRL)>0
 				local shift=(mods&KeyCode.MODIFIER_SHIFT)>0
@@ -103,9 +103,10 @@ local function uiUpdateSelection(s,spr,data,action)
 						sh.sel={ [spr]=data }
 					end
 				end
-			elseif action=="rstart" and s.uiSelectRange then
+				sh.range=nil
+			elseif action=="rstart" and s.uiSelectRange and spr then
 				sh.range={ s=data,e=data, unmark=sh.sel[spr], lsel=table.clone(sh.sel) }
-			elseif action=="rmove" and sh.range then
+			elseif action=="rmove" and sh.range and spr then
 				sh.range.e=data
 			elseif action=="rend" then
 				sh.range=nil
@@ -165,17 +166,46 @@ function UI.Selection.handleKeyEvent(s,kc,rc)
 	local sh=s._uisel_holder
 	if not sh then return end
 	local uis=UI.Selection
-	if sh.mode==uis.MULTIPLE then
+	if sh.mode==uis.MULTIPLE or sh.mode==uis.SINGLE then
 		local modifiers=UI.Control.Meta.modifiers or 0
-		local ctrl=((modifiers or 0)&7)==KeyCode.MODIFIER_CTRL
-		local meta=((modifiers or 0)&7)==KeyCode.MODIFIER_META
+		local ctrl=((modifiers or 0)&15)==KeyCode.MODIFIER_CTRL
+		local meta=((modifiers or 0)&15)==KeyCode.MODIFIER_META
 		ctrl=ctrl or meta -- for MAC
 --		local shift=(modifiers&KeyCode.MODIFIER_SHIFT)>0
-		if kc==KeyCode.A and ctrl and s.uiSelectAll then
-			sh.sel=table.clone(s:uiSelectAll())
-			s:uiSelection(sh.sel)
-			sh.handler(s,sh.sel)
-			return true
+		if sh.mode==uis.MULTIPLE then
+			if kc==KeyCode.A and ctrl and s.uiSelectAll then
+				sh.sel=table.clone(s:uiSelectAll())
+				s:uiSelection(sh.sel)
+				sh.handler(s,sh.sel)
+				return true
+			end
+		end
+		--All selection modes
+		if s.uiSelectDirection then
+			local msel_s,msel_d=next(sh.sel)
+			if msel_s and next(sh.sel,msel_s) and sh.selPoint and sh.sel[sh.selPoint]then
+				msel_s=sh.selPoint
+				msel_d=sh.sel[sh.selPoint]
+			end
+			if msel_d then
+				local dx,dy
+				if kc==KeyCode.UP then dx=0 dy=-1
+				elseif kc==KeyCode.DOWN then dx=0 dy=1
+				elseif kc==KeyCode.LEFT then dx=-1 dy=0
+				elseif kc==KeyCode.RIGHT then dx=1 dy=0
+				end
+				local nsel=s:uiSelectDirection(msel_d,dx,dy)
+				if nsel and next(nsel) then
+					local spr=next(nsel)
+					if ctrl then
+					else
+						sh.sel=nsel
+						s:uiSelection(sh.sel)
+						sh.handler(s,sh.sel)
+						UI.Focus:area(spr,0,0,spr:getWidth(),spr:getHeight(),true,-1,-1)
+					end
+				end
+			end
 		end
 	end
 end
@@ -209,7 +239,7 @@ end
 function UI.Selection._selHandlerDragEnd(s,x,y)
 	if not s._uisel_holder.dragging then return end
 	local spr,data=s:uiSelect(x,y)
-	if spr then uiUpdateSelection(s,spr,data,"rend") end
+	uiUpdateSelection(s,spr,data,"rend")
 	s._uisel_holder.dragging=false
 end
 function UI.Selection._selHandlerPrepare(s,x,y,ratio)

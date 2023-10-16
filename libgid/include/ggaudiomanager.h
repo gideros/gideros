@@ -153,6 +153,7 @@ public:
     g_id SoundCreateFromFile(const char *fileName, bool stream, gaudio_Error *error);
     g_id SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo);
     void SoundDelete(g_id sound);
+    size_t SoundReadFile(const char *fileName, double start, double length, std::vector<unsigned char> &data,int &numChannels, int &bytesPerSample, int &sampleRate, gaudio_Error *error);
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
     g_id SoundPlay(g_id sound, bool paused, bool streaming);
@@ -244,6 +245,7 @@ public:
     g_id SoundCreateFromFile(const char *fileName, bool stream, gaudio_Error *error);
     g_id SoundCreateFromData(const signed short *samples,size_t sampleCount,int rate, bool stereo);
     void SoundDelete(g_id sound);
+    size_t SoundReadFile(const char *fileName, double start, double length, std::vector<unsigned char> &data,int &numChannels, int &bytesPerSample, int &sampleRate, gaudio_Error *error);
     unsigned int SoundGetLength(g_id sound);
     void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
     g_id SoundPlay(g_id sound, bool paused, bool streaming);

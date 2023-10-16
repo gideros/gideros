@@ -321,6 +321,11 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
                 glDeleteTextures(1, &colorToDepth.second);
             }
         }
+        for (auto& colorToStencil : m_colorToStencilMap) {
+            if (colorToStencil.second != 0) {
+                glDeleteTextures(1, &colorToStencil.second);
+            }
+        }
 #if 0
         ksGpuWindow_Destroy(&window);
 #else
@@ -413,9 +418,13 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
     void CheckProgram(GLuint prog) {
     }
 
-    int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats) const override {
+    int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats,int64_t &depthFormat) const override {
         // List of supported color swapchain formats.
+    	for (auto it:runtimeFormats)
+            Log::Write(Log::Level::Info, "GLES SwapchainFormat: " + std::to_string(it));
+
         std::vector<int64_t> supportedColorSwapchainFormats{GL_RGBA8, GL_RGBA8_SNORM};
+        depthFormat=GL_DEPTH_COMPONENT32F;
 
         // In OpenGLES 3.0+, the R, G, and B values after blending are converted into the non-linear
         // sRGB automatically.
@@ -458,6 +467,13 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
             return depthBufferIt->second;
         }
 
+        int depthfmt = 0;
+ #ifdef GL_DEPTH24_STENCIL8_OES
+        depthfmt=GL_DEPTH24_STENCIL8_OES;
+ #else
+        depthfmt = GL_DEPTH24_STENCIL8;
+ #endif
+
         uint32_t depthTexture;
         glGenTextures(1, &depthTexture);
         glBindTexture(GL_TEXTURE_2D, depthTexture);
@@ -465,14 +481,43 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, depthfmt, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 
         m_colorToDepthMap.insert(std::make_pair(colorTexture, depthTexture));
 
         return depthTexture;
     }
 
+    uint32_t GetStencilTexture(uint32_t colorTexture,int width,int height) {
+        auto depthBufferIt = m_colorToStencilMap.find(colorTexture);
+        if (depthBufferIt != m_colorToStencilMap.end()) {
+            return depthBufferIt->second;
+        }
+
+        int depthfmt = 0;
+ #ifdef GL_DEPTH24_STENCIL8_OES
+        depthfmt=GL_DEPTH24_STENCIL8_OES;
+ #else
+        depthfmt = GL_DEPTH24_STENCIL8;
+ #endif
+
+        uint32_t depthTexture;
+        glGenTextures(1, &depthTexture);
+        glBindTexture(GL_TEXTURE_2D, depthTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexImage2D(GL_TEXTURE_2D, 0, depthfmt, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX8, width, height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, nullptr);
+
+        m_colorToStencilMap.insert(std::make_pair(colorTexture, depthTexture));
+
+        return depthTexture;
+    }
+
     void RenderView(int eyeNum,const XrCompositionLayerProjectionView& layerView, const XrSwapchainImageBaseHeader* swapchainImage,
+    		const XrSwapchainImageBaseHeader* swapchainDepth,
                     int64_t swapchainFormat) override {
         CHECK(layerView.subImage.imageArrayIndex == 0);  // Texture arrays not supported.
         //UNUSED_PARM(swapchainFormat);                    // Not used in this function for now.
@@ -480,16 +525,23 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
         glBindFramebuffer(GL_FRAMEBUFFER, m_swapchainFramebuffer);
 
         const uint32_t colorTexture = reinterpret_cast<const XrSwapchainImageOpenGLESKHR*>(swapchainImage)->image;
+        const uint32_t depthTexture = swapchainDepth?
+        		(reinterpret_cast<const XrSwapchainImageOpenGLESKHR*>(swapchainDepth)->image):
+				GetDepthTexture(colorTexture,layerView.subImage.imageRect.extent.width,layerView.subImage.imageRect.extent.height);
+        const uint32_t stencilTexture = swapchainDepth?
+				GetStencilTexture(colorTexture,layerView.subImage.imageRect.extent.width,layerView.subImage.imageRect.extent.height):
+				depthTexture;
 
         glViewport(static_cast<GLint>(layerView.subImage.imageRect.offset.x),
                    static_cast<GLint>(layerView.subImage.imageRect.offset.y),
                    static_cast<GLsizei>(layerView.subImage.imageRect.extent.width),
                    static_cast<GLsizei>(layerView.subImage.imageRect.extent.height));
 
-        const uint32_t depthTexture = GetDepthTexture(colorTexture,layerView.subImage.imageRect.extent.width,layerView.subImage.imageRect.extent.height);
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+        if (!swapchainDepth)
+        	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, stencilTexture, 0);
 
         const auto& pose = layerView.pose;
         XrMatrix4x4f proj;
@@ -499,8 +551,6 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
         XrMatrix4x4f_CreateTranslationRotationScale(&toView, &pose.position, &pose.orientation, &scale);
         XrMatrix4x4f view;
         XrMatrix4x4f_InvertRigidBody(&view, &toView);
-        XrMatrix4x4f vp;
-        XrMatrix4x4f_Multiply(&vp, &proj, &view);
 
         //Render
         RenderEye(eyeNum,view.m,proj.m,layerView.subImage.imageRect.extent.width,layerView.subImage.imageRect.extent.height);
@@ -522,6 +572,7 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
 
     // Map color buffer to associated depth buffer. This map is populated on demand.
     std::map<uint32_t, uint32_t> m_colorToDepthMap;
+    std::map<uint32_t, uint32_t> m_colorToStencilMap;
     std::array<float, 4> m_clearColor;
 };
 }  // namespace

@@ -134,9 +134,9 @@ function UI.EditableClock:updateStyle(fromParent)
 	self.pfront:setParticleColor(1,UI.Utils.colorSplit("editableclock.colDot",self._style))
 	
 	local r=szText/szClock	
-	for i=1,12 do
+	for i=0,11 do
 		local ang=^<(i*30)
-		self.labels[i]:setLayoutConstraints({anchorx=.5+(math.sin(ang)/2)*r,anchory=.5-(math.cos(ang)/2)*r})
+		self.labels[i+1]:setLayoutConstraints({anchorx=.5+(math.sin(ang)/2)*r,anchory=.5-(math.cos(ang)/2)*r})
 	end		
 end
 
@@ -157,7 +157,7 @@ function UI.EditableClock:onDragStart(x,y,ed,ea,change,long)
 			self.dragging={ h=spr:getParent(), div=3600, mod=12, ang=30, pa=ma, pm=true }
 		elseif spr==self.handM.handle then
 			self.dragging={ h=spr:getParent(), div=60, mod=60, ang=6, pa=ma }
-			self:setLabels(5,5,60)
+			self:setLabels(0,5,60)
 		end
 	end
 	if self.dragging then
@@ -176,8 +176,8 @@ function UI.EditableClock:onDrag(x,y)
 		local ov=(self.time//self.dragging.div)%self.dragging.mod
 		local dif=(v-ov)/self.dragging.mod
 		local cross=false
-		if dif>.5 then dif-=1 cross=true end
-		if dif<-.5 then dif+=1 cross=true end
+		if dif>.5 then cross=true end
+		if dif<-.5 then cross=true end
 		if self.dragging.pm and cross then
 			if dif>0 then
 				v+=12
@@ -208,14 +208,14 @@ end
 function UI.EditableClock:setTime(time)
 	self.time=(time//1)%86400
 	local m=time//60
-	local h=m//60
-	local pm=h>12
+	local h=(m//60)%24
+	local pm=h>=12
 	if pm~=self.pm and (not self.dragging or self.dragging.pm) then
 		self.pm=pm
 		if pm then
-			self:setLabels(13,1,25)
+			self:setLabels(12,1,24)
 		else
-			self:setLabels(1,1,25)
+			self:setLabels(0,1,24)
 		end
 	end
 	self.handH:setAngle((h%12)*30)

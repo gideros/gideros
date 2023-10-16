@@ -210,8 +210,13 @@ function UI.Tree:setAllowDnd(between,over)
 	self.allowDnD=between or over
 	self.dndBetween=between
 	self.dndOver=over
-	UI.Dnd.Source(self,self.allowDnD,true)
-	UI.Dnd.Target(self,self.allowDnD,true)
+	UI.Dnd.Source(self,self.allowDnD,"auto")
+	UI.Dnd.Target(self,self.allowDnD)
+end
+
+function UI.Tree:probeDndData(x,y)
+	local _,data=self:uiSelect(x,y)
+	if data then return true end
 end
 
 function UI.Tree:getDndData(x,y)

@@ -86,24 +86,24 @@ function UI.Dialog.input(text,yes,no,default,params)
 	return dialog
 end
 
-local BoxTemplate={
-	class="UI.Dialog",
-	layout={fill=Sprite.LAYOUT_FILL_HORIZONTAL},
-	layoutModel={ rowWeights={1,0},columnWeights={1,1},cellSpacingX=10,cellSpacingY=5,equalizeCells=true},
-	children={
-		{ class="UI.Panel",  name="Box", --!!index=1
-		 layoutModel = { columnWeights={1}, rowWeights={1}, columnWidths={0}, rowHeights={0} },
-		 layout={gridx=0,gridy=0,gridwidth=2,fill=1},
-		 children={},
-		}, 
-		{ class="UI.Button", name="btNo", layout={gridy=1,fill=1},},
-		{ class="UI.Button", name="btYes", layout={gridy=1,gridx=1,fill=1},},
+function UI.Dialog.box(children,yes,no,params,boxTemplate) --children { { class=UI.? },{ class=UI.? },} optional
+	local BoxTemplate={
+		class="UI.Dialog",
+		layout={fill=Sprite.LAYOUT_FILL_HORIZONTAL},
+		layoutModel={ rowWeights={1,0},columnWeights={1,1},cellSpacingX=10,cellSpacingY=5,equalizeCells=true},
+		children={
+			{ class="UI.Panel", name="Box", --!!index=1
+			 layoutModel = { columnWeights={1}, rowWeights={1}, columnWidths={0}, rowHeights={0} },
+			 layout={gridx=0,gridy=0,gridwidth=2,fill=1},
+			 children={},
+			},
+			{ class="UI.Button", name="btNo", layout={gridy=1,fill=1},},
+			{ class="UI.Button", name="btYes", layout={gridy=1,gridx=1,fill=1},},
+		}
 	}
-}
-
-function UI.Dialog.box(children,yes,no,params) --children { { class=UI.? },{ class=UI.? },} optional
-	BoxTemplate.children[1].children=children or {} --!!index=1
-	local dialog=UI.Builder(BoxTemplate,nil,nil,params)
+	if not boxTemplate then boxTemplate=BoxTemplate end
+	boxTemplate.children[1].children=children or {} --!!index=1
+	local dialog=UI.Builder(boxTemplate,nil,nil,params)
 	dialog.btYes:setText(yes)
 	dialog.btNo:setText(no)
 	dialog.onWidgetAction=function(self,w)

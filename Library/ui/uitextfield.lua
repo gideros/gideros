@@ -57,7 +57,7 @@ function TextEdit:init(font,text,layout)
   self.caretHeight=self.font:getLineHeight()
   local la=self.font:getAscender()
   local bb=0
-  if self.font.getDescender then 
+	if self.font.getDescender then 
   bb=(self.caretHeight-la-self.font:getDescender())/2
   end
   self.caretOffset=la+bb
@@ -318,10 +318,10 @@ function TextEdit:cutSelection()
 		self:setSelected(0,0)
 		self:setCaretPos(ss)
 		local t=self:_getText()
-		local cutcount=utf8.len(t,ss,ss+sp)
+		local cutcount=utf8.len(t,ss+1,ss+1+sp)
 		t=t:sub(1,ss)..t:sub(ss+sp+1)
 		if self.password then
-			self:_setText(t)  
+			self:_setText(t)
 			local rc=self.caretPos//#self.password
 			self.text=utf8.sub(self.text,1,rc)..utf8.sub(self.text,rc+cutcount)
 		else
@@ -417,10 +417,10 @@ function TextEdit:onKeyChar(e) --!"SUPPR" (sur MAC pas d'event onKeyChar donc g√
 end
 function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=KeyCode.DELETE=403 - on ne prend pas en compte la combinaison ctrl+D)
 	--print("processKey","keyCode",keyCode,modifiers)
-	local ctrl=((modifiers or 0)&7)==KeyCode.MODIFIER_CTRL
-	local meta=((modifiers or 0)&7)==KeyCode.MODIFIER_META
+	local ctrl=((modifiers or 0)&15)==KeyCode.MODIFIER_CTRL
+	local meta=((modifiers or 0)&15)==KeyCode.MODIFIER_META
 	ctrl=ctrl or meta -- for MAC
-	local shift=((modifiers or 0)&7)==KeyCode.MODIFIER_SHIFT
+	local shift=((modifiers or 0)&15)==KeyCode.MODIFIER_SHIFT
 	
 	if keyCode==KeyCode.LEFT then
 		self:goLeft(true,shift)
@@ -443,7 +443,7 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 	elseif ctrl and keyCode==KeyCode.A then
 		self:setSelected(0,#self:getText())	
 	elseif ((ctrl and keyCode==KeyCode.V) or (shift and keyCode==KeyCode.INSERT)) and not self.hasTextInput then
-		application:getClipboard("text/plain",function (res,data,mime)
+		UI.Clipboard:get("text/plain",function (res,data,mime)
 			if res then
 				self:addChars(data) 
 			end
@@ -451,12 +451,12 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 	elseif ctrl and (keyCode==KeyCode.INSERT or keyCode==KeyCode.C) and not self.hasTextInput then
 		local seltext=self:getSelectedText()
 		if seltext then
-			application:setClipboard(seltext,"text/plain",function (res) end)
+			UI.Clipboard:set(seltext,"text/plain",function (res) end)
 		end
 	elseif ctrl and (keyCode==KeyCode.DELETE or keyCode==KeyCode.X) and not self.hasTextInput then
 		local seltext=self:getSelectedText()
 		if seltext then
-			application:setClipboard(seltext,"text/plain",function (res) end)
+			UI.Clipboard:set(seltext,"text/plain",function (res) end)
 			self:cutSelection()
 			self:textChanged()
 		end
@@ -563,8 +563,8 @@ function UI.TextField:init(text,layout,minwidth,minheight,pass,textType,template
   local scol="textfield.colSelection"
   local smark=self.smark
   smark.p1=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p1) smark.p1:setColor(scol) 
-  smark.p2=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p2) smark.p1:setColor(scol) 
-  smark.p3=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p3) smark.p1:setColor(scol) 
+  smark.p2=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p2) smark.p2:setColor(scol) 
+  smark.p3=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p3) smark.p3:setColor(scol) 
   function smark:setSpan(p1x,p1y,p1w,p1h,p2x,p2y,p2w,p2h,p3x,p3y,p3w,p3h)
 	  self.p1:setPosition(p1x,p1y) self.p1:setDimensions(p1w,p1h)
 	  self.p2:setPosition(p2x,p2y) self.p2:setDimensions(p2w,p2h)
@@ -580,7 +580,9 @@ function UI.TextField:init(text,layout,minwidth,minheight,pass,textType,template
   UI.Control.onDrag[self]=self
   UI.Control.onDragEnd[self]=self
 
-  if UI.Control.HAS_CURSOR then UI.Control.onMouseMove[self]=self end
+  if UI.Control.HAS_CURSOR then 
+	UI.Control.onMouseMove[self]=self
+  end
   self.editorBox:addEventListener(Event.LAYOUT_RESIZED,function (self,e)
 	  self:setSize(e.width,e.height)
   end,self)
@@ -599,12 +601,14 @@ function UI.TextField:setSize(w,h)
 end
 
 function UI.TextField:onMouseMove(x,y)
-	UI.Control.setLocalCursor(self.cursor)
+	if self.editorBox:hitTestPoint(x,y,true,self) then
+		UI.Control.setLocalCursor(self.cursor)
+	end
 end
 
 function UI.TextField:onMouseClick(x,y,c)
   if not self._flags.disabled and not self._flags.readonly then
-	local shift=((UI.Control.Meta.modifiers or 0)&7)==KeyCode.MODIFIER_SHIFT
+	local shift=((UI.Control.Meta.modifiers or 0)&15)==KeyCode.MODIFIER_SHIFT
     if not self:focus({ TAG="UI.TextField",reason="ON_CLICK" } ) then	
 		local ocp=self.editor.caretPos
 		self.editor:setCaretPosition(self.editor:globalToLocal(self:localToGlobal(x,y)))
@@ -663,17 +667,17 @@ function UI.TextField:onLongClick(x,y,c)
 			if w==self.btCut then
 				local seltext=self.uitextfield.editor:getSelectedText()
 				if seltext then
-					application:setClipboard(seltext,"text/plain",function (res) end)
+					UI.Clipboard:set(seltext,"text/plain",function (res) end)
 					self.uitextfield.editor:cutSelection()
 					self.uitextfield.editor:textChanged()
 				end
 			elseif w==self.btCopy then
 				local seltext=self.uitextfield.editor:getSelectedText()
 				if seltext then
-					application:setClipboard(seltext,"text/plain",function (res) end)
+					UI.Clipboard:set(seltext,"text/plain",function (res) end)
 				end
 			elseif w==self.btPaste then
-				application:getClipboard("text/plain",function (res,data,mime)
+				UI.Clipboard:get("text/plain",function (res,data,mime)
 					if res then
 						self.uitextfield.editor:addChars(data) 
 					end
@@ -701,7 +705,7 @@ function UI.TextField:onDragStart(x,y)
 		self:focus({ TAG="UI.TextField",reason="ON_CLICK" } )
 		self.editor:setCaretPosition(self.editor:globalToLocal(self:localToGlobal(x,y)))
 		self.dragSelStart=self.editor.caretPos
-		local shift=((UI.Control.Meta.modifiers or 0)&7)==KeyCode.MODIFIER_SHIFT
+		local shift=((UI.Control.Meta.modifiers or 0)&15)==KeyCode.MODIFIER_SHIFT
 		if not shift then
 			self.editor:setSelected(0,0)
 		end
@@ -736,16 +740,21 @@ end
 function UI.TextField:ensureVisible(x,y)
   local miX=(x+self.caretWidth-self.width+MARGIN*2)<>0
   local maX=(x-MARGIN)<>0
-  local X=self.editorBox:getAnchorPosition()
+  local miY=(y-self.editor.caretOffset+self.editor.caretHeight-self.height+MARGIN*2)<>0
+  local maY=(y-self.editor.caretOffset-MARGIN)<>0
+  local X,Y=self.editorBox:getAnchorPosition()
   local W=self.editor:getWidth()+self.caretWidth-(self.width-MARGIN*2)
+  local H=self.editor:getHeight()+self.editor.caretHeight-(self.height-MARGIN*2)
   local NX=(((X<>miX)><maX))><(W)<>0
-  self.editorBox:setAnchorPosition(NX,0)
-  if self.editor.caret and self.editor.caretX then
+  local NY=(((Y<>miY)><maY))><(H)<>0
+  
+  self.editorBox:setAnchorPosition(NX,NY)
+  if self.editor.caret and self.editor.caretX and self.editor.caretY then
 	self.editor.caret:setPosition(self.editor.caretX,self.editor.caretY) --fix caret position
   end
-  self.editorBox:setClip(NX-MARGIN/2,-MARGIN/2,self.width-MARGIN,self.height-MARGIN)
+  self.editorBox:setClip(NX-MARGIN/2,NY-MARGIN/2,self.width-MARGIN,self.height-MARGIN)
   if self.editor.editing then
-	UI.Focus:area(self,x,y-self.editor.caretOffset,1,self:resolveStyle("1em"))
+	UI.Focus:area(self,x,y-self.editor.caretOffset,self.caretWidth,self.editor.caretHeight)
   end
 end
 
@@ -785,8 +794,8 @@ function UI.TextField:setText(t,fromTip)
 		if self.isTip then
 			self.editor:setPassword(self.pass)
 			self.isTip=nil
-			self:updateTip()
 		end
+		self:updateTip()
 	end
 end
 
@@ -829,6 +838,16 @@ function UI.TextField:setFlags(changes)
 	local s="textfield.styNormal"
 	if self._flags.disabled then
 		s="textfield.styDisabled"
+	elseif self._flags.error then
+		s="textfield.styError"
+		if self._flags.readonly then
+			s=if self._flags.focused then "textfield.styErrorFocusedReadonly" else "textfield.styErrorReadonly"
+		elseif self._flags.focused then
+			s="textfield.styErrorFocused"
+			self.cursor="IBeam"
+		else
+			self.cursor="IBeam"
+		end
 	else	
 		if self._flags.readonly then
 			s=if self._flags.focused then "textfield.styFocusedReadonly" else "textfield.styReadonly"
@@ -861,7 +880,9 @@ function UI.TextField:updateStyle(...)
 	self.editor:setTextColor(fg)
 	self.editor:setCaretColor(fg)
 	self.editor.caretHeight=lh
-	self.editor.caret:setDimensions(self.caretWidth,lh)
+	if self.editor.caret then
+		self.editor.caret:setDimensions(self.caretWidth,lh)
+	end
 	local minwidth=self:resolveStyle(self.ominwidth or 0)
 	local minheight=self:resolveStyle(self.ominheight or lhm)
 	self.editorBox:setLayoutConstraints{width=(MARGIN*2)<>minwidth, height=minheight,insets=self:resolveStyle("textfield.szMargin") }
@@ -891,23 +912,14 @@ UI.ButtonTextFieldCombo.Template={
 	children={ 
 		UI.TextField.EditorBox,
 		{ class="UI.ToggleButton", name="button",layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH },
-			LocalStyle="buttontextfieldcombo.styButton" },
+			Image="buttontextfieldcombo.icButton",
+			LocalStyle="buttontextfieldcombo.styButton"
+			},
 	}}
-
-function UI.ButtonTextFieldCombo:updateStyle(...)
-	UI.TextField.updateStyle(self,...)
-	self.button:setImage(self:resolveStyle("buttontextfieldcombo.icButton"))
-end
 
 function UI.ButtonTextFieldCombo:setFlags(changes)
 	UI.TextField.setFlags(self,changes)
 	UI.ToggleButton.setFlags(self.button,changes)
-	local fl=self:getFlags()
-	local s="buttontextfieldcombo.styButton"
-	if fl.disabled then
-		s="buttontextfieldcombo.styButtonDisabled"
-	end
-	self.button:setStateStyle(s)
 end
 
 UI.ButtonTextField=Core.class(UI.TextField,function (text,layout,minwidth,minheight,pass,textType)
@@ -921,19 +933,17 @@ UI.ButtonTextField.Template={
 	children={ 
 		UI.TextField.EditorBox,
 		{ class="UI.ToggleButton", name="button",layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH },
+			Image="buttontextfield.icButton",
 			LocalStyle="buttontextfield.styButton" },
 	}}
 
-function UI.ButtonTextField:updateStyle(...)
-	UI.TextField.updateStyle(self,...)
-	self.button:setImage(self:resolveStyle("buttontextfield.icButton"))
-	local fl=self:getFlags()
-	local s="buttontextfield.styButton"
-	if fl.disabled then
-		s="buttontextfield.styButtonDisabled"
+function UI.ButtonTextField:setFlags(changes)
+	UI.TextField.setFlags(self,changes)
+	if changes.disabled~=nil then
+		self.button:setFlags({disabled=changes.disabled})
 	end
-	self.button:setStateStyle(s)
 end
+
 
 UI.PasswordField=Core.class(UI.TextField,function (text,layout,minwidth,minheight,pass,textType)
   return text,layout,minwidth,minheight,pass or "‚Ä¢",textType,UI.PasswordField.Template
@@ -946,18 +956,15 @@ UI.PasswordField.Template={
 	children={ 
 		UI.TextField.EditorBox,
 		{ class="UI.ToggleButton", name="button",layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH, insetRight="textfield.szMargin" }, 
+			Image="passwordfield.icButton",
 			LocalStyle="passwordfield.styButton", },
 	}}
 
-function UI.PasswordField:updateStyle(...)
-	UI.TextField.updateStyle(self,...)
-	self.button:setImage(self:resolveStyle("passwordfield.icButton"))
-	local fl=self:getFlags()
-	local s="passwordfield.styButton"
-	if fl.disabled then
-		s="passwordfield.styButtonDisabled"
+function UI.PasswordField:setFlags(changes)
+	UI.TextField.setFlags(self,changes)
+	if changes.disabled~=nil then
+		self.button:setFlags({disabled=changes.disabled})
 	end
-	self.button:setStateStyle(s)
 end
 
 function UI.PasswordField:onWidgetAction(w)

@@ -181,10 +181,19 @@ function UI.ProgressBeads:setProgress(p)
 	self.nextTick=nil
 end
 
+function UI.ProgressBeads:setIndeterminate(ind)
+	if ind then -- Leave anymation running, we will handle reset in onEnterFrame
+		UI.Progress.setIndeterminate(self,ind)
+	else
+		self.indeterminate=nil
+	end
+end
+
+
 local timings={ slide=.3, decay=.3, hold=.2, restart=1}
 function UI.ProgressBeads:onEnterFrame()
-	local nbeads=tonumber(self.indeterminate) or 3
-	if nbeads>0 then
+	local nbeads=tonumber(self.indeterminate) or 0
+	if nbeads>0 or self.pcount>0 then
 		local nstep=self.nextTick or 0
 		local ctick=os:timer()
 		if ctick>nstep then
@@ -203,6 +212,9 @@ function UI.ProgressBeads:onEnterFrame()
 				self.particles:removeParticles()
 				self.pcount=0
 				self.nextTick=ctick+timings.restart
+				if not self.indeterminate then
+					UI.Progress.setIndeterminate(self,nil)
+				end
 			end
 		else		
 			local nt=nstep-ctick

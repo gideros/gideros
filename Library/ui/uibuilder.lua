@@ -222,10 +222,6 @@ function UI.Builder(d,top,ref,params,sub)
 			UI.Selection.Set(s,d.selection,nil)
 		end
 	end
-	if d.data and s.setData then
-		s:setData(d.data,d.dataMapper)
-		if d.expanded and s.setExpanded then s:setExpanded(d.data[d.expanded],true) end
-	end
 	if d.behavior then
 		d.behavior.new(s,d.behaviorParams)
 	end
@@ -251,6 +247,11 @@ function UI.Builder(d,top,ref,params,sub)
 		applyLayout(s,d)
 	end
 	if d.visible~=nil then s:setVisible(d.visible) end
+	--Set data as last step
+	if d.data and s.setData then
+		s:setData(d.data,d.dataMapper)
+		if d.expanded and s.setExpanded then s:setExpanded(d.data[d.expanded],true) end
+	end
 	uibuilder_context=oldContext	
 	return s,hasFactory
 end
@@ -269,7 +270,7 @@ function UI.Factory:init(template,customizer,initializer)
 	self.template=template
 	self.customizer=customizer
 	self.initializer=initializer
-	self.new=function(data) return self:build(data) end
+	function self.new(data) return self:build(data) end
 end
 
 function UI.Factory:build(data)

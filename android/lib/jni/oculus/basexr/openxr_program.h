@@ -6,6 +6,11 @@
 #include "graphicsplugin.h"
 #include "options.h"
 #include <array>
+#include <map>
+#include <string>
+#include <vector>
+
+class VRExtension;
 
 namespace Side {
 const int LEFT = 0;
@@ -38,9 +43,12 @@ struct IOpenXrProgram {
 
 
     virtual ~IOpenXrProgram() = default;
+    virtual std::map<std::string,bool> &ProbeExtensions() = 0;
+    virtual std::map<std::string,bool> &EnabledExtensions() = 0;
+    virtual void SetViewSpace(std::string s) =0;
 
     // Create an Instance and other basic instance-level initialization.
-    virtual void CreateInstance() = 0;
+    virtual void CreateInstance(std::vector<std::string> &extra) = 0;
 
     // Select a System for the view configuration specified in the Options
     virtual void InitializeSystem() = 0;
@@ -72,6 +80,10 @@ struct IOpenXrProgram {
 
     // Get preferred blend mode based on the view configuration specified in the Options
     virtual XrEnvironmentBlendMode GetPreferredBlendMode() const = 0;
+
+    std::vector<VRExtension *> VRExts;
+    void AddExtension(VRExtension *e) { VRExts.push_back(e); };
+
     void (*StartOfFrame)();
     void (*HandleInput)(IOpenXrProgram::InputState *m_input,XrSpace m_appSpace,XrTime predictedDisplayTime,XrSpaceLocation *head,XrSpaceVelocity *headSpd);
 };

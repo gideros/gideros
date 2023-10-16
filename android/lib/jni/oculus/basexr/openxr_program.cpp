@@ -14,6 +14,8 @@
 #include <set>
 #include <map>
 
+#include "VRExtension.h"
+
 namespace {
 
 #if !defined(XR_USE_PLATFORM_WIN32)
@@ -103,15 +105,17 @@ struct OpenXrProgram : IOpenXrProgram {
             xrDestroySwapchain(swapchain.handle);
         }
 
-        for (XrSpace visualizedSpace : m_visualizedSpaces) {
-            xrDestroySpace(visualizedSpace);
+        for (Swapchain swapchain : m_depthSwapchains) {
+            xrDestroySwapchain(swapchain.handle);
         }
 
-        if (m_appSpace != XR_NULL_HANDLE) {
-            xrDestroySpace(m_appSpace);
+        for (auto it : m_visualizedSpaces) {
+            xrDestroySpace(it.second);
         }
 
         if (m_session != XR_NULL_HANDLE) {
+            for (auto e:VRExts)
+            	e->SessionEnd();
             xrDestroySession(m_session);
         }
 
@@ -120,9 +124,11 @@ struct OpenXrProgram : IOpenXrProgram {
         }
     }
 
-    static void LogLayersAndExtensions() {
+    std::map<std::string,bool> enabledExtensions;
+    std::map<std::string,bool> availableExtensions;
+    void LogLayersAndExtensions() {
         // Write out extension properties for a given layer.
-        const auto logExtensions = [](const char* layerName, int indent = 0) {
+        const auto logExtensions = [this](const char* layerName, int indent = 0) {
             uint32_t instanceExtensionCount;
             CHECK_XRCMD(xrEnumerateInstanceExtensionProperties(layerName, 0, &instanceExtensionCount, nullptr));
             std::vector<XrExtensionProperties> extensions(instanceExtensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
@@ -130,10 +136,12 @@ struct OpenXrProgram : IOpenXrProgram {
                                                                extensions.data()));
 
             const std::string indentStr(indent, ' ');
-            Log::Write(Log::Level::Verbose, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount));
+            Log::Write(Log::Level::Info, Fmt("%sAvailable Extensions: (%d)", indentStr.c_str(), instanceExtensionCount));
             for (const XrExtensionProperties& extension : extensions) {
-                Log::Write(Log::Level::Verbose, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName,
+                Log::Write(Log::Level::Info, Fmt("%s  Name=%s SpecVersion=%d", indentStr.c_str(), extension.extensionName,
                                                     extension.extensionVersion));
+                if (layerName==nullptr)
+                	availableExtensions[extension.extensionName]=true;
             }
         };
 
@@ -157,6 +165,15 @@ struct OpenXrProgram : IOpenXrProgram {
         }
     }
 
+    std::map<std::string,bool> &ProbeExtensions() override {
+    	LogLayersAndExtensions();
+    	return availableExtensions;
+    }
+
+    std::map<std::string,bool> &EnabledExtensions() override {
+    	return enabledExtensions;
+    }
+
     void LogInstanceInfo() {
         CHECK(m_instance != XR_NULL_HANDLE);
 
@@ -167,7 +184,7 @@ struct OpenXrProgram : IOpenXrProgram {
                                          GetXrVersionString(instanceProperties.runtimeVersion).c_str()));
     }
 
-    void CreateInstanceInternal() {
+    void CreateInstanceInternal(std::vector<std::string> &extra) {
         CHECK(m_instance == XR_NULL_HANDLE);
 
         // Create union of extensions required by platform and graphics plugins.
@@ -180,6 +197,11 @@ struct OpenXrProgram : IOpenXrProgram {
         const std::vector<std::string> graphicsExtensions = m_graphicsPlugin->GetInstanceExtensions();
         std::transform(graphicsExtensions.begin(), graphicsExtensions.end(), std::back_inserter(extensions),
                        [](const std::string& ext) { return ext.c_str(); });
+        std::transform(extra.begin(), extra.end(), std::back_inserter(extensions),
+                       [](const std::string& ext) { return ext.c_str(); });
+
+        for (auto it=extensions.begin();it!=extensions.end();it++)
+        	enabledExtensions[*it]=true;
 
         XrInstanceCreateInfo createInfo{XR_TYPE_INSTANCE_CREATE_INFO};
         createInfo.next = m_platformPlugin->GetInstanceCreateExtension();
@@ -192,10 +214,11 @@ struct OpenXrProgram : IOpenXrProgram {
         CHECK_XRCMD(xrCreateInstance(&createInfo, &m_instance));
     }
 
-    void CreateInstance() override {
-        LogLayersAndExtensions();
+    void CreateInstance(std::vector<std::string> &extra) override {
+    	if (availableExtensions.empty())
+    		LogLayersAndExtensions();
 
-        CreateInstanceInternal();
+        CreateInstanceInternal(extra);
 
         LogInstanceInfo();
     }
@@ -579,7 +602,7 @@ struct OpenXrProgram : IOpenXrProgram {
             XrSpace space;
             XrResult res = xrCreateReferenceSpace(m_session, &referenceSpaceCreateInfo, &space);
             if (XR_SUCCEEDED(res)) {
-                m_visualizedSpaces.push_back(space);
+                m_visualizedSpaces[visualizedSpace]=space;
             } else {
                 Log::Write(Log::Level::Warning,
                            Fmt("Failed to create reference space %s with error %d", visualizedSpace.c_str(), res));
@@ -604,12 +627,12 @@ struct OpenXrProgram : IOpenXrProgram {
         InitializeActions();
         CreateVisualizedSpaces();
 
-        {
-            XrReferenceSpaceCreateInfo referenceSpaceCreateInfo = GetXrReferenceSpaceCreateInfo(m_options->AppSpace);
-            CHECK_XRCMD(xrCreateReferenceSpace(m_session, &referenceSpaceCreateInfo, &m_appSpace));
-        }
+        for (auto e:VRExts)
+        	e->SessionStart(m_instance,m_session,m_systemId);
+
     }
 
+    bool depthSwapchain=false;
     void CreateSwapchains() override {
         CHECK(m_session != XR_NULL_HANDLE);
         CHECK(m_swapchains.empty());
@@ -656,7 +679,7 @@ struct OpenXrProgram : IOpenXrProgram {
             CHECK_XRCMD(xrEnumerateSwapchainFormats(m_session, (uint32_t)swapchainFormats.size(), &swapchainFormatCount,
                                                     swapchainFormats.data()));
             CHECK(swapchainFormatCount == swapchainFormats.size());
-            m_colorSwapchainFormat = m_graphicsPlugin->SelectColorSwapchainFormat(swapchainFormats);
+            m_colorSwapchainFormat = m_graphicsPlugin->SelectColorSwapchainFormat(swapchainFormats,m_depthSwapchainFormat);
 
             // Print swapchain formats and the selected one.
             {
@@ -707,6 +730,34 @@ struct OpenXrProgram : IOpenXrProgram {
                 CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.handle, imageCount, &imageCount, swapchainImages[0]));
 
                 m_swapchainImages.insert(std::make_pair(swapchain.handle, std::move(swapchainImages)));
+
+                if (depthSwapchain) {
+                    // Create the swapchain.
+                    XrSwapchainCreateInfo swapchainCreateInfo{XR_TYPE_SWAPCHAIN_CREATE_INFO};
+                    swapchainCreateInfo.arraySize = 1;
+                    swapchainCreateInfo.format = m_depthSwapchainFormat;
+                    swapchainCreateInfo.width = vp.recommendedImageRectWidth;
+                    swapchainCreateInfo.height = vp.recommendedImageRectHeight;
+                    swapchainCreateInfo.mipCount = 1;
+                    swapchainCreateInfo.faceCount = 1;
+                    swapchainCreateInfo.sampleCount = 1;
+                    swapchainCreateInfo.usageFlags = XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+                    Swapchain swapchain;
+                    swapchain.width = swapchainCreateInfo.width;
+                    swapchain.height = swapchainCreateInfo.height;
+                    CHECK_XRCMD(xrCreateSwapchain(m_session, &swapchainCreateInfo, &swapchain.handle));
+
+                    m_depthSwapchains.push_back(swapchain);
+
+                    uint32_t imageCount;
+                    CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.handle, 0, &imageCount, nullptr));
+                    // XXX This should really just return XrSwapchainImageBaseHeader*
+                    std::vector<XrSwapchainImageBaseHeader*> swapchainDepths =
+                        m_graphicsPlugin->AllocateSwapchainImageStructs(imageCount, swapchainCreateInfo);
+                    CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.handle, imageCount, &imageCount, swapchainDepths[0]));
+
+                    m_swapchainDepths.insert(std::make_pair(swapchain.handle, std::move(swapchainDepths)));
+                }
             }
         }
     }
@@ -945,9 +996,14 @@ struct OpenXrProgram : IOpenXrProgram {
         std::vector<XrCompositionLayerBaseHeader*> layers;
         XrCompositionLayerProjection layer{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
         std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
+        std::vector<XrCompositionLayerDepthInfoKHR> depthLayers;
         if (frameState.shouldRender == XR_TRUE) {
-            if (RenderLayer(frameState.predictedDisplayTime, projectionLayerViews, layer)) {
+            if (RenderLayer(frameState.predictedDisplayTime, projectionLayerViews, depthLayers, layer)) {
+        	    layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
                 layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer));
+                for (auto e:VRExts)
+                	e->Composition(layers);
+
             }
         }
 
@@ -959,13 +1015,22 @@ struct OpenXrProgram : IOpenXrProgram {
         CHECK_XRCMD(xrEndFrame(m_session, &frameEndInfo));
     }
 
-    bool RenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews,
+    std::string ViewSpace="Local";
+    void SetViewSpace(std::string s) override
+    {
+    	ViewSpace=s;
+    }
+
+    bool RenderLayer(XrTime predictedDisplayTime,
+			std::vector<XrCompositionLayerProjectionView>& projectionLayerViews,
+			std::vector<XrCompositionLayerDepthInfoKHR>& depthLayers,
                      XrCompositionLayerProjection& layer) {
         XrResult res;
 
         XrViewState viewState{XR_TYPE_VIEW_STATE};
         uint32_t viewCapacityInput = (uint32_t)m_views.size();
         uint32_t viewCountOutput;
+        XrSpace m_appSpace=m_visualizedSpaces[ViewSpace];
 
         XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
         viewLocateInfo.viewConfigurationType = m_options->Parsed.ViewConfigType;
@@ -984,11 +1049,12 @@ struct OpenXrProgram : IOpenXrProgram {
         CHECK(viewCountOutput == m_swapchains.size());
 
         projectionLayerViews.resize(viewCountOutput);
+        depthLayers.resize(viewCountOutput);
 
         // Handle input
         XrSpaceVelocity vspd = { XR_TYPE_SPACE_VELOCITY, NULL, 0, {0, 0, 0}, {0, 0, 0} };
         XrSpaceLocation view_in_stage = { XR_TYPE_SPACE_LOCATION, &vspd, 0, {{0, 0, 0, 1}, {0, 0, 0}} };
-     	xrLocateSpace(m_visualizedSpaces[7], m_appSpace, predictedDisplayTime, &view_in_stage);
+     	xrLocateSpace(m_visualizedSpaces["View"], m_appSpace, predictedDisplayTime, &view_in_stage);
         HandleInput(&m_input,m_appSpace,predictedDisplayTime,&view_in_stage,&vspd);
 
 
@@ -996,15 +1062,24 @@ struct OpenXrProgram : IOpenXrProgram {
         for (uint32_t i = 0; i < viewCountOutput; i++) {
             // Each view has a separate swapchain which is acquired, rendered to, and released.
             const Swapchain viewSwapchain = m_swapchains[i];
-
             XrSwapchainImageAcquireInfo acquireInfo{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-
-            uint32_t swapchainImageIndex;
+            uint32_t swapchainImageIndex=0;
+			uint32_t swapchainDepthIndex=0;
             CHECK_XRCMD(xrAcquireSwapchainImage(viewSwapchain.handle, &acquireInfo, &swapchainImageIndex));
 
             XrSwapchainImageWaitInfo waitInfo{XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
             waitInfo.timeout = XR_INFINITE_DURATION;
             CHECK_XRCMD(xrWaitSwapchainImage(viewSwapchain.handle, &waitInfo));
+
+            if (depthSwapchain) {
+				const Swapchain depthSwapchain = m_depthSwapchains[i];
+				XrSwapchainImageAcquireInfo acquireInfo{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
+				CHECK_XRCMD(xrAcquireSwapchainImage(depthSwapchain.handle, &acquireInfo, &swapchainDepthIndex));
+
+	            XrSwapchainImageWaitInfo waitInfo{XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
+	            waitInfo.timeout = XR_INFINITE_DURATION;
+	            CHECK_XRCMD(xrWaitSwapchainImage(depthSwapchain.handle, &waitInfo));
+            }
 
             projectionLayerViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
             projectionLayerViews[i].pose = m_views[i].pose;
@@ -1013,11 +1088,30 @@ struct OpenXrProgram : IOpenXrProgram {
             projectionLayerViews[i].subImage.imageRect.offset = {0, 0};
             projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
 
+            // analog to projection layer allocation, though we can actually fill everything in here
+			if (depthSwapchain) {
+				depthLayers[i]= {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
+				depthLayers[i].minDepth = 0.0f;
+				depthLayers[i].maxDepth = 1.f;
+				depthLayers[i].nearZ = 0.05f;
+				depthLayers[i].farZ = 100;
+
+				depthLayers[i].subImage.swapchain = m_depthSwapchains[i].handle;
+				depthLayers[i].subImage.imageRect.offset = {0, 0};
+				depthLayers[i].subImage.imageRect.extent= {viewSwapchain.width, viewSwapchain.height};
+
+				projectionLayerViews[i].next = &depthLayers[i];
+			}
             const XrSwapchainImageBaseHeader* const swapchainImage = m_swapchainImages[viewSwapchain.handle][swapchainImageIndex];
-            m_graphicsPlugin->RenderView(i,projectionLayerViews[i], swapchainImage, m_colorSwapchainFormat);
+            const XrSwapchainImageBaseHeader* const swapchainDepth = depthSwapchain?m_swapchainDepths[m_depthSwapchains[i].handle][swapchainDepthIndex]:nullptr;
+            m_graphicsPlugin->RenderView(i,projectionLayerViews[i], swapchainImage, swapchainDepth, m_colorSwapchainFormat);
 
             XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
             CHECK_XRCMD(xrReleaseSwapchainImage(viewSwapchain.handle, &releaseInfo));
+            if (depthSwapchain) {
+                XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
+                CHECK_XRCMD(xrReleaseSwapchainImage(m_depthSwapchains[i].handle, &releaseInfo));
+            }
         }
 
         layer.space = m_appSpace;
@@ -1036,16 +1130,18 @@ struct OpenXrProgram : IOpenXrProgram {
     std::shared_ptr<IGraphicsPlugin> m_graphicsPlugin;
     XrInstance m_instance{XR_NULL_HANDLE};
     XrSession m_session{XR_NULL_HANDLE};
-    XrSpace m_appSpace{XR_NULL_HANDLE};
     XrSystemId m_systemId{XR_NULL_SYSTEM_ID};
 
     std::vector<XrViewConfigurationView> m_configViews;
     std::vector<Swapchain> m_swapchains;
     std::map<XrSwapchain, std::vector<XrSwapchainImageBaseHeader*>> m_swapchainImages;
+    std::vector<Swapchain> m_depthSwapchains;
+    std::map<XrSwapchain, std::vector<XrSwapchainImageBaseHeader*>> m_swapchainDepths;
     std::vector<XrView> m_views;
     int64_t m_colorSwapchainFormat{-1};
+    int64_t m_depthSwapchainFormat{-1};
 
-    std::vector<XrSpace> m_visualizedSpaces;
+    std::map<std::string,XrSpace> m_visualizedSpaces;
 
     // Application's current lifecycle state according to the runtime
     XrSessionState m_sessionState{XR_SESSION_STATE_UNKNOWN};

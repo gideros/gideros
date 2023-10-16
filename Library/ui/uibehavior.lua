@@ -254,3 +254,173 @@ function UI.Behavior.Linger:destroy()
 	self.widget.behavior=nil
 	self.widget=nil
 end
+
+--DragMove
+UI.Behavior.DragMove=Core.class(UI.Behavior)
+function UI.Behavior.DragMove:init(widget,params)
+	assert(widget and widget.setFlags and widget.getFlags,"Widget must be a descendant of UI.Panel")
+	local tp=type(params)
+	assert(tp=="string" or tp=="number","Need valid parent locator")
+	widget.behavior=self --need register
+	self.widget=widget
+	
+	self.clickHandler={ handler=self,target=widget }
+	self.params=params
+	UI.Control.onDragStart[self.widget]=self.clickHandler
+	UI.Control.onDrag[self.widget]=self.clickHandler
+	UI.Control.onDragEnd[self.widget]=self.clickHandler
+end
+function UI.Behavior.DragMove:onDragStart(w,x,y)
+	local wflags=w:getFlags()
+	if wflags.disabled then return end
+	local p=w
+	if type(self.params)=="string" then
+		while p and p.name~=self.params do p=p:getParent() end
+	else
+		local pn=tonumber(self.params)
+		for i=1,pn do if p then p=p:getParent() end end
+	end
+	if not p then return end
+	UI.Focus:request(w)
+	local pc=p:getLayoutConstraints(true)
+	local ps=UI.Screen.getScreen(p)
+	x,y=ps:spriteToLocal(w,x,y)
+	self.sctx={
+		x=x, y=y,
+		p=p,
+		ps=ps,
+		ox=pc.offsetx,
+		oy=pc.offsety,
+		}
+	return true 
+end
+function UI.Behavior.DragMove:onDrag(w,x,y)
+	local wflags=w:getFlags()
+	if not self.sctx or wflags.disabled then return end
+	local sctx=self.sctx
+	x,y=sctx.ps:spriteToLocal(w,x,y)
+	local width,height=sctx.ps:getDimensions()
+	local margin=10
+	x=(x><(width-margin))<>margin
+	y=(y><(height-margin))<>margin
+	sctx.p:setLayoutConstraints({ offsetx=sctx.ox+x-sctx.x, offsety=sctx.oy+y-sctx.y})
+	return true 
+end
+function UI.Behavior.DragMove:onDragEnd(w,x,y)
+	self.sctx=nil
+	local wflags=w:getFlags()
+	if wflags.disabled then return end
+	return true 
+end
+function UI.Behavior.DragMove:destroy()
+	UI.Control.onDragStart[self.widget]=nil
+	UI.Control.onDrag[self.widget]=nil
+	UI.Control.onDragEnd[self.widget]=nil
+	self.widget.behavior=nil
+	self.widget=nil
+end
+
+--DragSize
+UI.Behavior.DragSize=Core.class(UI.Behavior)
+function UI.Behavior.DragSize:init(widget,params)
+	assert(widget and widget.setFlags and widget.getFlags,"Widget must be a descendant of UI.Panel")
+	local tp=type(params)
+	assert(tp=="string" or tp=="number","Need valid parent locator")
+	widget.behavior=self --need register
+	self.widget=widget
+	
+	self.clickHandler={ handler=self,target=widget }
+	self.params=params
+	UI.Control.onDragStart[self.widget]=self.clickHandler
+	UI.Control.onDrag[self.widget]=self.clickHandler
+	UI.Control.onDragEnd[self.widget]=self.clickHandler
+	UI.Control.onMouseMove[self.widget]=self.clickHandler
+end
+
+function UI.Behavior.DragSize:getEdges(w,x,y)
+	local bds=w:resolveStyle(self.params)
+	local edge=0
+	local sw,sh=w:getDimensions()
+	if x<bds then edge=edge|1
+	elseif x>=(sw-bds) then edge=edge|4
+	end
+	if y<bds then edge=edge|2
+	elseif y>=(sh-bds) then edge=edge|8
+	end
+	return edge
+end
+
+function UI.Behavior.DragSize:onMouseMove(w,x,y)
+	local edge=self:getEdges(w,x,y)
+	if edge>0 then
+		UI.Control.setLocalCursor(
+			if edge==1 or edge==4 then "sizeHor" 
+			elseif edge==2 or edge==8 then "sizeVer" 
+			elseif edge==3 or edge==12 then "sizeFDiag" 
+			elseif edge==6 or edge==9 then "sizeBDiag" 
+			else nil)
+	end
+end
+
+function UI.Behavior.DragSize:onDragStart(w,x,y)
+	local wflags=w:getFlags()
+	if wflags.disabled then return end
+	local p=w
+	local edge=self:getEdges(w,x,y)
+	
+	UI.Focus:request(w)
+	if edge==0 then return end
+	local pc=p:getLayoutConstraints(true)
+	local ps=UI.Screen.getScreen(p)
+	x,y=ps:spriteToLocal(w,x,y)
+	self.sctx={
+		x=x, y=y,
+		p=p,
+		ps=ps,
+		ox=pc.offsetx,
+		oy=pc.offsety,
+		ow=pc.extraw,
+		oh=pc.extrah,
+		edge=edge
+		}
+	return true 
+end
+function UI.Behavior.DragSize:onDrag(w,x,y)
+	local wflags=w:getFlags()
+	if not self.sctx or wflags.disabled then return end
+	local sctx=self.sctx
+	x,y=sctx.ps:spriteToLocal(w,x,y)
+	x-=sctx.x
+	y-=sctx.y
+	local width,height=sctx.ps:getDimensions()
+	local margin=10
+	
+	local nx,ny,nw,nh=sctx.ox,sctx.oy,sctx.ow,sctx.oh
+	if (sctx.edge&1)==1 then
+		nx+=x nw-=x
+	elseif (sctx.edge&4)==4 then
+		nw+=x
+	end
+	if (sctx.edge&2)==2 then
+		ny+=y nh-=y
+	elseif (sctx.edge&8)==8 then
+		nh+=y
+	end
+		
+	sctx.p:setLayoutConstraints({ offsetx=nx, offsety=ny,extraw=nw, extrah=nh})
+	return true 
+end
+function UI.Behavior.DragSize:onDragEnd(w,x,y)
+	self.sctx=nil
+	local wflags=w:getFlags()
+	if wflags.disabled then return end
+	return true 
+end
+function UI.Behavior.DragSize:destroy()
+	UI.Control.onDragStart[self.widget]=nil
+	UI.Control.onDrag[self.widget]=nil
+	UI.Control.onDragEnd[self.widget]=nil
+	UI.Control.onMouseMove[self.widget]=nil
+	self.widget.behavior=nil
+	self.widget=nil
+end

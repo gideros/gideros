@@ -1171,7 +1171,7 @@ void LuaApplication::cacheComputedStyle(lua_State *L, const char *key, bool empt
 #include "fontbasebinder.h"
 #include <fontbase.h>
 #include <luautil.h>
-int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaIndex, int limit, bool recursed)
+int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaIndex, int limit, bool recursed, bool allowPrimary)
 {
     if (limit>1000) {
         lua_pushfstringL(L,"Recursion while resolving style: %s",key);
@@ -1179,7 +1179,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
         return LUA_TNIL;
     }
 
-    //Expected callStack: refstring, parentstring, table
+    //Expected callStack: style table
 	if (luaIndex>0) luaIndex=0;
     if ((!key)&&luaIndex) key=lua_tolstring(L,luaIndex,NULL);
     if (!key) {
@@ -1194,7 +1194,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
     lua_checkstack(L,8);
 
     int rtype;
-    if (!recursed) { //If we're not looking up a reference
+    if ((!recursed)||allowPrimary) { //If we're not looking up a reference
         int klen=strlen(key);
         if (((*key)=='|')||((klen>3)&&((key[klen-4]=='.')&&(
                                            ((key[klen-3]=='p')&&(key[klen-2]=='n')&&(key[klen-1]=='g'))||
@@ -1210,24 +1210,27 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
             return LUA_TSTRING;
         }
         const char *kk=key;
-        while ((((*kk)>='0')&&((*kk)<='9'))||((*kk)=='-')||((*kk)=='.')) kk++;
-        if (kk>key) {
-            //Number-String: check for a unit
-            if (kk[0]==0) {
-                //Not suffix, just convert to number
-                lua_pop(L,1);
-                lua_pushnumber(L,strtod(key,NULL));
-                return LUA_TNUMBER;
-            }
-            else if (((kk[0]=='*')||(kk[0]=='/')||(kk[0]=='+')||(kk[0]=='-'))&&kk[1]) {
+        if ((*key)=='=') { //Maths
+        	kk++;
+            while ((*kk)&&((*kk)!='+')&&((*kk)!='-')&&((*kk)!='/')&&((*kk)!='*')) kk++;
+            if ((*kk)&&(kk[1])&&(kk!=(key+1))) {
                 //Basic maths
-                if (resolveStyleInternal(L,kk+1,0,limit+1,false)==LUA_TNIL)
+            	std::string op1s(key+1,kk-key-1);
+                lua_pushvalue(L,-1);
+                if (resolveStyleInternal(L,op1s.c_str(),0,limit+1,true)==LUA_TNIL)
+                {
+                    lua_pushfstringL(L,"Style not recognized: %s",op1s.c_str());
+                    lua_error(L);
+                }
+                double op1=lua_tonumber(L,-1);
+                lua_pop(L,1);
+                if (resolveStyleInternal(L,kk+1,0,limit+1,true)==LUA_TNIL)
                 {
                     lua_pushfstringL(L,"Style not recognized: %s",kk+1);
                     lua_error(L);
                 }
                 double op2=lua_tonumber(L,-1);
-                double op1=strtod(key,NULL);
+                lua_pop(L,1);
                 double num;
                 switch (kk[0]) {
                 case '+': num=op1+op2; break;
@@ -1236,8 +1239,18 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                 case '/': num=op1/op2; break;
                 default: num=0;
                 }
-                lua_pop(L,1);
                 lua_pushnumber(L,num);
+                return LUA_TNUMBER;
+            }
+        }
+        kk=key;
+        while ((((*kk)>='0')&&((*kk)<='9'))||((*kk)=='-')||((*kk)=='.')) kk++;
+        if (kk>key) {
+            //Number-String: check for a unit
+            if (kk[0]==0) {
+                //Not suffix, just convert to number
+                lua_pop(L,1);
+                lua_pushnumber(L,strtod(key,NULL));
                 return LUA_TNUMBER;
             }
             else if ((kk[0]=='e')&&(kk[1]=='m')&&(kk[2]==0)) {

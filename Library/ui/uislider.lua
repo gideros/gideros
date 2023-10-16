@@ -16,15 +16,19 @@ function UI.Slider:init(direction,svgpath,resolution,dual,offset)
 	self.handleOffset=offset
 	local function makeKnob()
 		local knob=UI.Panel.new()
-		knob:setLocalStyle("slider.styKnob")
 		knob:setStateStyle("slider.styKnobNormal")
+		knob:setLayoutParameters({ rowWeights={1}, columnWeights={1}})
 		if self.handleOffset then
-			knob:setLayoutParameters({ rowWeights={1}, columnWeights={1}})
 			local p=UI.Panel.new()
 			p:setStyle("slider.styHand")
 			p:setLayoutConstraints({fill=Sprite.LAYOUT_FILL_VERTICAL, width="slider.szHand"})
 			knob:addChild(p) knob.hand=p
 		end
+		local p=UI.Panel.new()
+		p:setStyle("slider.styKnob")
+		p:setLayoutConstraints({width="slider.szKnob", height="slider.szKnob"})
+		knob:addChild(p) knob.handle=p
+		knob:setStyleInheritance("state")
 		return knob
 	end
 	self.knob=makeKnob()
@@ -92,9 +96,11 @@ function UI.Slider:updateStyle(...)
 		knob:setLayoutConstraints{ width=ms, height=ms+self.handleDisp*2, anchorx=0,anchory=0 }
 		if knob.hand then
 			if dir>0 then
-				knob:setLayoutParameters({ insetTop=self.handleDisp+ms, insetBottom=ms*.25})
+				knob.hand:setLayoutConstraints({ insetTop=self.handleDisp+ms, insetBottom=ms*.25})
+				knob.handle:setLayoutConstraints({ insetTop=self.handleDisp, anchory=0})
 			else
-				knob:setLayoutParameters({ insetBottom=self.handleDisp+ms, insetTop=ms*.25})
+				knob.hand:setLayoutConstraints({ insetBottom=self.handleDisp+ms, insetTop=ms*.25})
+				knob.handle:setLayoutConstraints({ insetBottom=self.handleDisp, anchory=1})
 			end
 		end
 	end
@@ -247,6 +253,9 @@ end
 function UI.Slider:getKnobPosition()
 	return self.knobPos[1],self.knobPos[2]
 end
+UI.Slider.setValue=UI.Slider.setKnobPosition
+UI.Slider.getValue=UI.Slider.getKnobPosition
+
 
 function UI.Slider:setFlags(changes)
 	UI.Panel.setFlags(self,changes)
@@ -402,6 +411,7 @@ UI.Slider.Definition= {
 		{ name="Formatter", type="function"},
 		{ name="Dual", type="boolean" },
 		{ name="HandleOffset", type="number" },
+		{ name="Value", type="number"},
 	},
 }
 

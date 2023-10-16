@@ -411,6 +411,7 @@ AudioBinder::AudioBinder(lua_State *L)
 
     const luaL_Reg Sound_functionList[] = {
         {"play", Sound_play},
+        {"decode", Sound_decode},
         {"getLength", Sound_getLength},
         {"setListenerPosition", Sound_setListenerPosition},
         {"hasEffect", Sound_hasEffect},
@@ -569,6 +570,69 @@ int AudioBinder::Sound_create(lua_State *L)
     binder.pushInstance("Sound", sound);
 
     return 1;
+}
+
+int AudioBinder::Sound_decode(lua_State *L)
+{
+    StackChecker checker(L, "AudioBinder::Sound_create", 1);
+
+    Binder binder(L);
+
+    const char *fileName = luaL_checkstring(L, 1);
+
+    gaudio_Error error=GAUDIO_NO_ERROR;
+    std::vector<unsigned char> data;
+    int numChannels,sampleRate,bytesPerSample;
+    numChannels=luaL_optinteger(L,4,0);
+    sampleRate=luaL_optinteger(L,5,0);
+    bytesPerSample=luaL_optinteger(L,6,0);
+    gaudio_SoundReadFile(fileName,luaL_optnumber(L,2,0),luaL_optnumber(L,3,0),data,numChannels,bytesPerSample,sampleRate,&error);
+
+    switch (error)
+    {
+    case GAUDIO_NO_ERROR:
+        break;
+    case GAUDIO_CANNOT_OPEN_FILE:
+        luaL_error(L, "%s: No such file or directory.", fileName);
+        break;
+    case GAUDIO_UNRECOGNIZED_FORMAT:
+        luaL_error(L, "%s: Sound format is not recognized.", fileName);
+        break;
+    case GAUDIO_ERROR_WHILE_READING:
+        luaL_error(L, "%s: Error while reading.", fileName);
+        break;
+    case GAUDIO_UNSUPPORTED_FORMAT:
+        luaL_error(L, "%s: Sound format is not supported.", fileName);
+        break;
+    case GAUDIO_INTERNAL_ERROR:
+        luaL_error(L, "%s: Sound internal error.", fileName);
+        break;
+    }
+
+
+    size_t bsize=data.size()/bytesPerSample;
+    lua_createtable(L,bsize,0);
+    if (bytesPerSample==1) {
+        signed char *sf=(signed char *)data.data();
+        for (size_t k=0;k<bsize;k++)
+        {
+            lua_pushnumber(L,(1.0/128)*(*(sf++)));
+            lua_rawseti(L,-2,k+1);
+        }
+    }
+    else {
+        signed short *sf=(signed short *)data.data();
+        for (size_t k=0;k<bsize;k++) {
+            lua_pushnumber(L,(1.0/32768)*(*(sf++)));
+            lua_rawseti(L,-2,k+1);
+        }
+    }
+    lua_pushinteger(L,numChannels);
+    lua_pushinteger(L,sampleRate);
+    lua_pushinteger(L,bytesPerSample);
+    lua_pushlstring(L,(const char *) data.data(),data.size());
+
+    return 5;
 }
 
 int AudioBinder::Sound_destruct(void *p)

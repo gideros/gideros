@@ -32,6 +32,9 @@ Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All
 #include "oculus.h"
 #include "debugging.h"
 
+#include "ext/PassthroughFB.h"
+#include "ext/HandTrackingFB.h"
+
 void setupApi(lua_State *L);
 static LuaApplication *_gapp=NULL;
 
@@ -450,6 +453,9 @@ void HandleInput(IOpenXrProgram::InputState *m_input,XrSpace m_appSpace,XrTime p
     }
 }
 
+std::map<std::string,bool> availableExtensions;
+std::map<std::string,bool> enabledExtensions;
+
 void* AppThreadFunction(void* parm) {
     ovrAppThread* appThread = (ovrAppThread*)parm;
     bool LuaInitialized=false;
@@ -490,7 +496,36 @@ void* AppThreadFunction(void* parm) {
         initializeLoader((const XrLoaderInitInfoBaseHeaderKHR*)&loaderInitInfoAndroid);
     }
 
-    program->CreateInstance();
+    availableExtensions=program->ProbeExtensions();
+
+    std::vector<std::string> extraExtensions;
+
+    extraExtensions.push_back(XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME);
+    if (availableExtensions[XR_FB_PASSTHROUGH_EXTENSION_NAME]) {
+        ALOGV("EXT: Using passthrough");
+    	extraExtensions.push_back(XR_FB_PASSTHROUGH_EXTENSION_NAME);
+    }
+    if (availableExtensions[XR_FB_TRIANGLE_MESH_EXTENSION_NAME]) {
+        ALOGV("EXT: Using mesh");
+    	extraExtensions.push_back(XR_FB_TRIANGLE_MESH_EXTENSION_NAME);
+    }
+    if (availableExtensions[XR_EXT_HAND_TRACKING_EXTENSION_NAME]) {
+        ALOGV("EXT: Using hand tracking");
+    	extraExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+    	extraExtensions.push_back(XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME);
+    	extraExtensions.push_back(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME);
+    	extraExtensions.push_back(XR_FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME);
+    }
+
+    program->CreateInstance(extraExtensions);
+    enabledExtensions=program->EnabledExtensions();
+
+    if (enabledExtensions[XR_FB_PASSTHROUGH_EXTENSION_NAME])
+    	program->AddExtension(new PassthroughFB());
+
+    if (enabledExtensions[XR_EXT_HAND_TRACKING_EXTENSION_NAME])
+    	program->AddExtension(new HandTrackingFB());
+
     program->InitializeSystem();
 
     options->SetEnvironmentBlendMode(program->GetPreferredBlendMode());
@@ -584,6 +619,7 @@ void* AppThreadFunction(void* parm) {
 
 		if (program->IsSessionRunning()&&appState.NativeWindow) {
 			program->PollActions();
+			program->SetViewSpace(roomFloor?"Stage":"Local");
 			program->RenderFrame();
 		} else {
 			// Throttle loop since xrWaitFrame won't be called.
@@ -776,6 +812,19 @@ static int enableRoom(lua_State *L) {
 	roomScreenEnabled=lua_toboolean(L,2);
 	return 0;
 }
+
+static int getExtensions(lua_State *L) {
+	const std::map<std::string,bool> &e=lua_toboolean(L,1)?availableExtensions:enabledExtensions;
+	lua_newtable(L);
+	for (auto it=e.begin();it!=e.end();it++)
+	{
+		lua_pushstring(L,it->first.c_str());
+		lua_pushboolean(L,it->second);
+		lua_rawset(L,-3);
+	}
+	return 1;
+}
+
 
 static int setTrackingSpace(lua_State *L) {
 	//0: LOCAL
@@ -971,6 +1020,7 @@ void setupApi(lua_State *L)
 		{"getHeadPose", getHeadPose},
 		{"getHandMesh", getHandMesh},
 		{"getHandSkeleton", getHandSkeleton},
+		{"getExtensions", getExtensions},
         {NULL, NULL},
     };
 

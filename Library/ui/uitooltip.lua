@@ -67,6 +67,7 @@ function UI.ToolTip.show(screen,marker,sites)
 end
 
 function UI.ToolTip.dismiss(screen,marker)
+	if not currentMarker then return end
 	if currentMarker~=marker then return end
 	currentMarker:removeFromParent()
 	currentMarker=nil

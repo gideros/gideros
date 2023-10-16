@@ -6,15 +6,23 @@ string (field name) or
 { field="field" or function(), name="header" or Sprite, width=number, weight=number }
 ]]
 
-function UI.Table:init(columns,direction,cellSpacingX,cellSpacingY)--no data
+--[[
+	setData() accepts a field builder and a rowBuilder (both optional)
+	if builder is present:
+	- it is called with data, column description, and ghost capability as arguments
+	- it returns actual data, a Sprite, or a ghost if allowed
+	if rowBuilder is present, it is called with row index and row data as arguments to produce a row container
+]]
+function UI.Table:init(columns,direction,cellSpacingX,cellSpacingY,fixed)--no data
 	self._istyle.__Cache={}
 	self.headers={}
 	self.cells={}
 	self.data={}
 	self.dataRows={}
 	self.direction=direction --Horizontal if not false or nil
+	self.fixedGrid=Sprite.setGhosts and fixed
 	self:setWorldAlign(not Oculus)
-	self:setLayoutParameters{ equalizeCells=true, worldAlign=not Oculus }
+	self:setLayoutParameters{ equalizeCells=true, worldAlign=not Oculus, fixedGrid = self.fixedGrid }
 	self.cheader=UI.Panel.new()
 	self.cheader:setLayoutConstraints{ gridy=0, gridx=0, fill=Sprite.LAYOUT_FILL_BOTH }
 	self.cheader:setStyle("table.styRowHeader")
@@ -25,6 +33,8 @@ function UI.Table:init(columns,direction,cellSpacingX,cellSpacingY)--no data
 	self.minRowSize=0
 	self.selection={}
 	UI.Control.onMouseClick[self]=self
+	UI.Control.onLongClick[self]=self
+	UI.Control.onLongPrepare[self]=self
 	UI.Control.onKeyDown[self]=self
 	self:setCheckClip(true)
 end
@@ -35,14 +45,18 @@ function UI.Table:updateStyle(...)
 			self.__cacheUpdating=true
 			self._istyle.__Cache={}
 			self:updatedStyle() --This will trigger another style update on self, prevent looping
+			if self.datarows then 
+				for _,r in ipairs(self.datarows) do
+					self:updateRow(r)
+				end
+			end
 		end
-	else
+	else		
 		self.__cacheUpdating=nil
 	end
 	UI.Panel.updateStyle(self,...)
 end
 	
-
 function UI.Table:newClone() 
 	local _columns,_data=self.columns,self.data
 	self.columns,self.data=nil,nil
@@ -57,9 +71,96 @@ function UI.Table:newClone()
 	UI.Control.onKeyDown[self]=self
 end
 
-function UI.Table:onMouseClick(x,y)
+function UI.Table:onMouseClick(x,y,c)
+	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
+	local nc=cn and self.columns[cn]
+--[[ NICO: I'd prefer this	
+	if nc and nc.Clickable and hdr then
+		UI.dispatchEvent(self.widget,"ColumnAction",cn,nc)
+	end
+]]
+	local nh=cn and hdr and self.headers[cn]
+	if nh and nh.onClickColumn then
+		nh.column=nc
+		local handler=nh:onClickColumn(nc)
+		if handler then
+			self.data = handler(self,self.data,nc)
+			self:setData(self.data,self.builder)
+		end
+	end
+	
+	local d=rn and not hdr and self.data[rn]
+	if d and type(d)=="table" then
+		if d.onClickCell then
+			local nh=self.cells[vector(rn,cn,0,0)]
+			nh.column=nc --NICO: est-ce necessaire ?
+			nh.indexCell=cn
+			nh.rowData=d
+			if nh then d.onClickCell(self,nc,cn,d) end
+		end
+		if d.onClickDoubleCell and c>1 then
+			local nh=self.cells[vector(rn,cn,0,0)]
+			nh.column=nc --NICO: est-ce necessaire ?
+			nh.indexCell=cn
+			nh.rowData=d
+			if nh then d.onClickDoubleCell(self,nc,cn,d) end
+		end
+	end
+
 	UI.Focus:request(self)
 	return true --stopPropagation !
+end
+
+function UI.Table:onLongClick(x,y)
+	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
+	local nc=cn and self.columns[cn]
+--[[ NICO: I'd prefer this	
+	if nc and nc.LongClickable and hdr then
+		UI.dispatchEvent(self.widget,"ColumnLongAction",cn,nc)
+	end
+]]
+	local nh=cn and hdr and self.headers[cn]
+	if nh and nh.onClickLongColumn then
+		nc.indexCol=cn
+		nh.column=nc
+		local handler=nh:onClickLongColumn(nc)
+		if handler then 
+			handler(self,nc)
+			return true 
+		end		
+	end
+	
+	local d=rn and not hdr and self.data[rn]
+	if d and type(d)=="table" then
+		if d.onClickLongCell then
+			local nh=self.cells[vector(rn,cn,0,0)]
+			nh.column=nc --NICO: est-ce necessaire ?
+			nh.indexCell=cn
+			nh.rowData=d
+			if nh then d.onClickLongCell(self,nc,cn,d) end
+		end
+	end
+
+end
+function UI.Table:onLongPrepare(x,y,r)
+	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
+	local nc=cn and hdr and self.columns[cn]
+--[[ NICO: I'd prefer this	
+	if nc and nc.LongClickable then
+	end
+]]
+	local nh=cn and hdr and self.headers[cn]
+	local d=rn and not hdr and self.data[rn]
+	if (nh and nh.onClickLongColumn) or
+		(d and type(d)=="table" and d.onClickLongCell) then
+		if not self.prepare then 
+			self.prepare=UI.Behavior.LongClick.makeIndicator(self,{}) 
+		end
+		self.prepare:indicate(self,x,y,r)
+		return true
+	elseif self.prepare then
+		self.prepare:indicate(self,x,y,-1)
+	end
 end
 
 UI.Table.onKeyDown=UI.Selection.handleKeyEvent
@@ -73,46 +174,25 @@ function UI.Table:updateRow(rowWidget)
 				local cellCode=vector(rowWidget.row,j,0,0)
 				local cell = self.cells[cellCode]
 				if cell then
-					cell:setStateStyle(rowsel and "table.styCellSelected" or "table.styCell")
-					cell:setStyleInheritance("state")
+					if cell.ghostModel then
+						rowWidget._ghostStyleCache={}
+						if cell.setGhostState then
+							cell:setGhostState(rowWidget,rowsel and "table.styCellSelected" or "table.styCell")
+						end
+					else
+						cell:setStateStyle(rowsel and "table.styCellSelected" or "table.styCell")
+						cell:setStyleInheritance("state")
+					end
 				end
 			end
 			rowWidget.isSelected=rowsel
+			if rowWidget.ghosts then
+				rowWidget:setGhosts(rowWidget.ghosts) 
+			end
 		end
 	end
 end
-local function onClickColumn(self,handler,column) --!handler(uitable,data,column) must return data (data can be updated)
-	if self and self.data and handler and type(handler)=="function" then
-		self.data = handler(self,self.data,column)
-		self:setData(self.data,self.builder)
-	end
-end
-local function onClickLongColumn(self,handler,column)
-	if self and handler and type(handler)=="function" then
-		handler(self,column)
-	end
-end
-local function onClickCell(self,handler,column,indexCell,rowData) --implements Row DATA .ClickCell and .onClickCell to have cell selection
-	if self and handler and type(handler)=="function" then
-		if column and indexCell and rowData then
-			handler(self,column,indexCell,rowData)
-		end
-	end
-end
-local function onClickDoubleCell(self,handler,column,indexCell,rowData) --implements Row DATA .ClickDoubleCell and .onClickDoubleCell to have cell selection
-	if self and handler and type(handler)=="function" then
-		if column and indexCell and rowData then
-			handler(self,column,indexCell,rowData)
-		end
-	end
-end
-local function onClickLongCell(self,handler,column,indexCell,rowData) --implements Row DATA .ClickLongCell and .onClickLongCell to have cell selection
-	if self and handler and type(handler)=="function" then
-		if column and indexCell and rowData then
-			handler(self,column,indexCell,rowData)
-		end
-	end
-end
+
 function UI.Table:setColumns(columns)
 	local lp={}
 	lp.columnWidths={}
@@ -126,12 +206,6 @@ function UI.Table:setColumns(columns)
 		if cnh then
 			if cnh.destroy then cnh:destroy() end
 			cnh:removeFromParent()
-			UI.Control.onMouseClick[cnh]=nil
-			if cnh.behaviorPrepare then
-				cnh.behaviorPrepare:destroy()
-				cnh.behaviorPrepare=nil
-				cnh.onWidgetLongAction=nil
-			end
 		end
 		local nh=nil
 		if c.font then
@@ -146,23 +220,6 @@ function UI.Table:setColumns(columns)
 		if nh then
 			nh=UI.Utils.makeWidget(nh,nil)
 			if c.style then nh:setStyle(c.style) end
-		end
-		if nh and nh.onClickColumn and type(nh.onClickColumn)=="function" then
-			nh.column=c
-			nh.onMouseClick=function(nh)--,x,y)
-				if nh and nh.onClickColumn then onClickColumn(self,nh:onClickColumn(nh.column),nh.column) end
-				return true --stopPropagation !
-			end
-			UI.Control.onMouseClick[nh]=nh
-		end
-		if nh and nh.onClickLongColumn and type(nh.onClickLongColumn)=="function" then
-			c.indexCol=i
-			nh.column=c
-			nh.behaviorPrepare=UI.Behavior.LongClick.new(nh,{})
-			nh.onWidgetLongAction=function(s,nh)
-				if nh and nh.onClickLongColumn then onClickLongColumn(self,nh:onClickLongColumn(nh.column),nh.column) end
-				return true --stopPropagation !
-			end
 		end
 		self.headers[i]=nh
 		if nh then
@@ -180,6 +237,11 @@ function UI.Table:setColumns(columns)
 	if self.direction then gh=#self.columns else gw=#self.columns end
 	self.cheader:setLayoutConstraints{ gridy=0,gridx=0,gridwidth=gw,gridheight=gh,fill=Sprite.LAYOUT_FILL_BOTH, group=true }
 	self:setLayoutParameters(lp)
+	if self.dataRows then
+		for _,rw in pairs(self.dataRows) do
+			rw.cache={}
+		end
+	end
 	self:setData(self.data,self.builder)
 end
 function UI.Table:setCellSpacingX(cellSpacingX)
@@ -190,6 +252,10 @@ function UI.Table:setCellSpacingY(cellSpacingY)
 end
 function UI.Table:setEqualizeCells(equalizeCells)
 	self:setLayoutParameters({ equalizeCells = equalizeCells})
+end
+function UI.Table:setFixedGrid(fixed)
+	self.fixedGrid=Sprite.setGhosts and fixed
+	self:setLayoutParameters({ fixedGrid = self.fixedGrid})
 end
 function UI.Table:setMinimumRowSize(rowSize)
 	self.minRowSize=rowSize
@@ -264,7 +330,7 @@ function UI.Table:setView(view)
 	UI.Selection.select(self,nsel)
 end
 
-function UI.Table:setData(data,builder) --! will keep selection (call resetData)
+function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call resetData)
 	self.viewModel=nil
 	self.modelView=nil
 	self.cachedLayout=nil
@@ -285,7 +351,7 @@ function UI.Table:setData(data,builder) --! will keep selection (call resetData)
 		local d=self.data[cellCode.x]
 		local c=self.columns[cellCode.y]
 		local cacheKey=c and (builder or c.field)
-		if not (cacheKey and cache and cache[d] and cache[d].cache[c] and cache[d].cache[c].cacheKey==cacheKey) then 
+		if (nh.removeFromParent) and not (cacheKey and cache and cache[d] and cache[d].cache[c] and cache[d].cache[c].cacheKey==cacheKey) then 			
 			if nh.destroy then nh:destroy() end 
 			nh:removeFromParent()
 			UI.Control.onMouseClick[nh]=nil
@@ -313,11 +379,12 @@ function UI.Table:setData(data,builder) --! will keep selection (call resetData)
 	
 	local weights={ 0 }
 	local heights={ self.minRowSize }
+	local allowGhost=self.fixedGrid
 	if data then
 		for i,d in ipairs(data) do
 			weights[i+1]=0
-			heights[i+1]=self.minRowSize
-			local rowWidget=(cache and cache[d]) or UI.Panel.new()
+			heights[i+1]=self.minRowSize								
+			local rowWidget=(cache and cache[d]) or (rowBuilder and rowBuilder(i,d)) or UI.Panel.new()
 			self.dataRows[d]=rowWidget
 			local lastIndex=rowWidget.row
 			if not rowWidget.row then
@@ -344,7 +411,7 @@ function UI.Table:setData(data,builder) --! will keep selection (call resetData)
 					rowWidget:setBaseStyle(if (i&1)==1 then "table.styRowOdd" else "table.styRowEven")
 				end
 			end
-			
+			local ghosts
 			for j,c in ipairs(self.columns) do
 				local cellCode=vector(i,j,0,0)
 				local nh,nhd = nil,nil
@@ -353,21 +420,30 @@ function UI.Table:setData(data,builder) --! will keep selection (call resetData)
 					nh=cache[d].cache[c]
 				else
 					if builder or type(c.field)=="function" then
-						if builder then nh,nhd=builder(d,c)
-						else nh,nhd=c.field(d) end
+						if builder then nh,nhd=builder(d,c,allowGhost)
+						else nh,nhd=c.field(d,allowGhost) end
 					else
 						nh=d[c.field]
 					end
 					nhd=nhd or nh
-					nh=UI.Utils.makeWidget(nh,nhd,nil,true)
+					if not nh.ghostModel then
+						nh=UI.Utils.makeWidget(nh,nhd,nil)
+					end
 					rowWidget.isSelected=nil
 				end
-				rowWidget.cache[c]=nh
+				--rowWidget.cache[c]=nh
 				nh.cacheKey=cacheKey
 				local sameLoc=nh.indexRow==i
 				nh.indexRow=i --Row index in data array --need?
 				if nh.indexColumn~=j then
-					rowWidget:addChildAt(nh,j)
+					if nh.ghostModel then
+						ghosts=ghosts or {}
+						ghosts[#ghosts+1]=nh.ghostModel
+					elseif allowGhost then
+						rowWidget:addChild(nh)
+					else
+						rowWidget:addChildAt(nh,j)
+					end
 					nh.indexColumn=j
 					sameLoc=false
 				end
@@ -376,60 +452,19 @@ function UI.Table:setData(data,builder) --! will keep selection (call resetData)
 				if not sameLoc then
 					local gx,gy=0,0
 					if self.direction then gx=i gy=j-1 else gy=i gx=j-1 end
-					nh:setLayoutConstraints({gridx=gx, gridy=gy})
-				end
-				if type(d)=="table" then
-					if d.onClickCell and type(d.onClickCell)=="function" then --implements Row DATA .ClickCell and .onClickCell to have cell selection
-						if d.ClickCell and type(d.ClickCell)=="function" then --implements Row DATA .ClickCell and .onClickCell to have cell selection
-							if d.ClickCell(self,c,j,d) then
-								nh.onClickCell=d.onClickCell
-								nh.column=c
-								nh.indexCell=j
-								nh.rowData=d
-								nh.onMouseClick=function(nh)--,x,y,c)
-									if nh then onClickCell(self,nh.onClickCell,nh.column,nh.indexCell,nh.rowData) end
-									return true --stopPropagation !
-								end
-								UI.Control.onMouseClick[nh]=nh
-							end
-						end
-					end
-					if d.onClickDoubleCell and type(d.onClickDoubleCell)=="function" then --implements Row DATA .ClickDoubleCell and .onClickDoubleCell to have cell selection
-						if d.ClickDoubleCell and type(d.ClickDoubleCell)=="function" then --implements Row DATA .ClickDoubleCell and .onClickDoubleCell to have cell selection
-							if d.ClickDoubleCell(self,c,j,d) then
-								nh.onClickDoubleCell=d.onClickDoubleCell
-								nh.column=c
-								nh.indexCell=j
-								nh.rowData=d
-								nh.onMouseClick=function(nh,x,y,c)
-									if nh and c and c>1 then onClickDoubleCell(self,nh.onClickDoubleCell,nh.column,nh.indexCell,nh.rowData) end
-									return c and c>1 --stopPropagation if double
-								end
-								UI.Control.onMouseClick[nh]=nh
-							end
-						end
-					end
-					if d.onClickLongCell and type(d.onClickLongCell)=="function" then --implements Row DATA .ClickLongCell and .onClickLongCell to have cell selection
-						if d.ClickLongCell and type(d.ClickLongCell)=="function" then --implements Row DATA .ClickLongCell and .onClickLongCell to have cell selection
-							if d.ClickLongCell(self,c,j,d) then
-								nh.onClickLongCell=d.onClickLongCell
-								nh.column=c
-								nh.indexCell=j
-								nh.rowData=d
-								nh.behaviorPrepare=nh.behaviorPrepare or UI.Behavior.LongClick.new(nh,{})
-								nh.onWidgetLongAction=function(s,nh)
-									if nh then onClickLongCell(self,nh.onClickLongCell,nh.column,nh.indexCell,nh.rowData) end
-									return true --stopPropagation !
-								end
-							end
-						end
+					if nh.ghostModel then
+						nh.ghostModel.gridx=gx
+						nh.ghostModel.gridy=gy
+					else
+						nh:setLayoutConstraints({gridx=gx, gridy=gy})
 					end
 				end
 			end
-			self:updateRow(rowWidget)
+			rowWidget.ghosts=ghosts
 			if i~=lastIndex then
 				self:addChildAt(rowWidget,i)
 			end
+			self:updateRow(rowWidget)
 		end
 	end
 	table.insert(weights,1)
@@ -472,6 +507,7 @@ function UI.Table:moveColumn(index,to)
 		Sprite.addChildAt(self.cheader,h,i) --Use Sprite call to avoid restyling
 	end
 	
+	local allowGhost=self.fixedGrid
 	if self.data then
 		local ncells={}
 		for i,d in ipairs(self.data) do
@@ -482,10 +518,20 @@ function UI.Table:moveColumn(index,to)
 					local nhd=self.cells[vector(i,imap[j],0,0)]
 					ncells[vector(i,j,0,0)]=nhd
 					if nhd.indexCell then nhd.indexCell=j end
-					Sprite.addChildAt(rowWidget,nhd,j) --Use Sprite call to avoid restyling
+					if not allowGhost then
+						Sprite.addChildAt(rowWidget,nhd,j) --Use Sprite call to avoid restyling
+					end
 					local gx,gy=0,0
 					if self.direction then gx=ii gy=j-1 else gy=ii gx=j-1 end
-					nhd:setLayoutConstraints({ gridx=gx, gridy=gy})
+					if nhd.ghostModel then
+						nhd.ghostModel.gridx=gx
+						nhd.ghostModel.gridy=gy
+					else
+						nhd:setLayoutConstraints({gridx=gx, gridy=gy})
+					end
+				end
+				if allowGhost then
+					rowWidget:setGhosts(rowWidget.ghosts)
 				end
 			end
 		end
@@ -541,6 +587,22 @@ function UI.Table:uiSelectRange(d1,d2)
 		end
 	end
 	return ret
+end
+
+function UI.Table:uiSelectDirection(d,dx,dy)
+	local r=self.dataRows[d]
+	if dx and dy then 
+		local dd=(if self.direction then dx else dy)//1
+		local i=r.row+dd
+		local ii=if self.viewModel then self.viewModel[i] else i
+		local dd=self.data[ii]
+		if dd then 
+			local dr=self.dataRows[dd]
+			if dr then 
+				return { [dr]=dd }
+			end
+		end
+	end
 end
 
 function UI.Table:uiSelectAll()
@@ -630,6 +692,44 @@ function UI.Table:setAllowColumnResize(en)
 	UI.Control.onMouseMove[self]=UI.Control.HAS_CURSOR and cen
 end
 
+function UI.Table:getRowColumnFromPoint(x,y)
+	local ch=self.cheader:getHeight()
+	local cy=self.cheader:getY()
+	local _,cay=self.cheader:getAnchorPosition() cy-=cay
+	local lp=Sprite.getLayoutParameters(self,true) or {}
+	local li=self:getLayoutInfo()
+	local ls,d,lcs
+	if self.direction then 
+		ls=li.minHeight 
+		d=y-li.starty 
+		lcs=(lp.cellSpacingY+.5)//1 
+	else
+		ls=li.minWidth
+		d=x-li.startx 
+		lcs=(lp.cellSpacingX+.5)//1 
+	end
+	local n=1
+	while d>ls[n] do
+		d-=(ls[n]+lcs)
+		n+=1
+	end
+	if d<0 then n=nil end
+	
+	local gy=1
+	local ls=li.minHeight
+	local d2=y-li.starty
+	local sp=(lp.cellSpacingY+.5)//1
+	if self.direction then ls=li.minWidth d2=x-li.startx sp=(lp.cellSpacingX+.5)//1 end
+	while gy<=#ls and d2>=ls[gy] do d2-=ls[gy]+sp gy+=1 end
+	if gy>=2 then 
+		if self.viewModel then gy=self.viewModel[gy] end
+		gy-=1
+	else
+		gy=nil
+	end
+	return gy,n,d2,d,(y>=cy) and (y<(cy+ch))
+end
+
 function UI.Table:checkResizePoint(x,y,forDrag)
 	local ch=self.cheader:getHeight()
 	local cy=self.cheader:getY()
@@ -641,7 +741,7 @@ function UI.Table:checkResizePoint(x,y,forDrag)
 	local li=self:getLayoutInfo()
 	--local th=li.reqHeight
 	for n,h in ipairs(self.headers) do
-		local hx=h:getX()
+		local hx=h:getX()+li.startx
 		local hw=li.minWidth[n]<>h:getWidth()
 		local edge=hx+hw+lcs
 		if x>(edge-sw) and x<(edge+sw) then
@@ -689,16 +789,25 @@ function UI.Table:setAllowColumnReorder(en)
 	UI.Dnd.Target(self,en)
 end
 
+function UI.Table:probeDndData(x,y)
+	local ch=self.cheader:getHeight()
+	local cy=self.cheader:getY()
+	local _,cay=self.cheader:getAnchorPosition() cy-=cay
+	local li=self:getLayoutInfo()
+	if not #self.headers or y<cy or y>(cy+ch) or x<li.startx then return nil end
+	return true
+end
+
 function UI.Table:getDndData(x,y)
 	local ch=self.cheader:getHeight()
 	local cy=self.cheader:getY()
 	local _,cay=self.cheader:getAnchorPosition() cy-=cay
-	if not #self.headers or y<cy or y>(cy+ch) then return nil end
 	local li=self:getLayoutInfo()
+	if not #self.headers or y<cy or y>(cy+ch) or x<li.startx then return nil end
 	local th=li.reqHeight
 	local sw=self:resolveStyle("table.szResizeHandle")/2
 	for n,h in ipairs(self.headers) do
-		local hx=h:getX()
+		local hx=h:getX()+li.startx
 		local hw=li.minWidth[n]<>h:getWidth()
 		if x>hx+sw and x<(hx+hw-sw) then	
 			local chc=UI.Utils.colorVector("dnd.colSrcHighlight",self._style)
@@ -768,9 +877,12 @@ function UI.Table:offerDndData(data,x,y)
 				end
 			end
 		end	
-	elseif self.dndDstMarker then
-		self.dndDstMarker:removeFromParent()
-		self.dndDstMarker=nil
+	else
+		self.cachedLayout=nil
+		if self.dndDstMarker then
+			self.dndDstMarker:removeFromParent()
+			self.dndDstMarker=nil
+		end
 	end	
 end
 
@@ -785,7 +897,7 @@ UI.Table.Definition= {
 	name="Table",
 	icon="ui/icons/panel.png",
 	class="UI.Table",
-	constructorArgs={ "Columns","Direction","CellSpacingX","CellSpacingY" },
+	constructorArgs={ "Columns","Direction","CellSpacingX","CellSpacingY","FixedGrid" },
 	properties={
 		{ name="Columns", type="tableColumns", setter=UI.Viewport.setColumns },
 		{ name="Data", type="table", setter=UI.Viewport.setData },
@@ -794,6 +906,7 @@ UI.Table.Definition= {
 		{ name="CellSpacingX", type="number", setter=UI.Table.setCellSpacingX },
 		{ name="CellSpacingY", type="number", setter=UI.Table.setCellSpacingY },
 		{ name="EqualizeCells", type="boolean", setter=UI.Table.setEqualizeCells },
+		{ name="FixedGrid", type="boolean", setter=UI.Table.setFixedGrid },
 		{ name="OddEvenStyle", type="boolean", setter=UI.Table.setOddEvenStyle },
 		{ name="AllowColumnReorder", type="boolean", setter=UI.Table.setAllowColumnReorder },
 		{ name="AllowColumnResize", type="boolean", setter=UI.Table.setAllowColumnResize },

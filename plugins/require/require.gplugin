@@ -41,6 +41,11 @@
             		<orig><![CDATA[<application ]]></orig>
             		<by>android:hardwareAccelerated="true" android:isGame="true" </by>
     	        </append>
+            	<append>
+            		<orig><![CDATA[<category android:name="android.intent.category.LAUNCHER" />]]></orig>
+            		<by><![CDATA[
+            		<category android:name="android.intent.category.LEANBACK_LAUNCHER" />]]></by>
+    	        </append>
         	</replacelist>
     	</template>
     </if> 

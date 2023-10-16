@@ -65,7 +65,7 @@ function UI.Splitpane:setVertical(vertical)
 	self.vertical=vertical
 	if self.vertical then
 		self.knobBackground:setLayoutConstraints({
-			gridy=1,gridx=0,gridheight=3,gridwidth=1,fill=Sprite.LAYOUT_FILL_BOTH,
+			gridy=2,gridx=0,gridheight=1,gridwidth=1,fill=Sprite.LAYOUT_FILL_BOTH,
 		})
 		self.knob:setLayoutConstraints({
 			gridy=1,gridx=0,gridheight=3,gridwidth=1,fill=Sprite.LAYOUT_FILL_BOTH,
@@ -76,7 +76,7 @@ function UI.Splitpane:setVertical(vertical)
 		setBorder(self)
 	else
 		self.knobBackground:setLayoutConstraints({
-			gridy=0,gridx=1,gridheight=1,gridwidth=3,fill=Sprite.LAYOUT_FILL_BOTH,
+			gridy=0,gridx=2,gridheight=1,gridwidth=1,fill=Sprite.LAYOUT_FILL_BOTH,
 		})
 		self.knob:setLayoutConstraints({
 			gridy=0,gridx=1,gridheight=1,gridwidth=3,fill=Sprite.LAYOUT_FILL_BOTH,
@@ -133,7 +133,8 @@ end
 function UI.Splitpane:fixupTabs(tabs)
 	if not tabs then return nil end
 	local t={}
-	local m=if self.vertical then self:getHeight() else self:getWidth()
+	local dimw,dimh=self:getDimensions()
+	local m=if self.vertical then dimh else dimw
 	for i,r in ipairs(tabs) do
 		if type(r)=="string" then
 			r=self:resolveStyle(r)/m
@@ -145,8 +146,7 @@ function UI.Splitpane:fixupTabs(tabs)
 	end
 	for i,r in ipairs(t) do
 		if i==#tabs then
-			r=1-r 
-			if t[i-1] and r<=t[i-1] then r=1 end
+			if t[i-1] and r<=t[i-1] then r=t[i-1] end
 		else
 			if t[i+1] and r>t[i+1] then r=t[i-1] or 0 end
 		end
@@ -254,12 +254,17 @@ function UI.Splitpane:setKnobCustom(s)
 		end
 	end
 end
+
 function UI.Splitpane:getKnob()
-	return true or self and self.knob
+	return self.knob
+end
+
+function UI.Splitpane:isOnKnob(x,y)
+	return self.knob.customized or self.knobHandle:hitTestPoint(x,y,false,self.knob) or self.knobBackground:hitTestPoint(x,y,false,self.knob)
 end
 
 function UI.Splitpane:onKnobMove(x,y)
-	if self.knob.customized or self.knobHandle:hitTestPoint(x,y,false,self.knob) then
+	if self:isOnKnob(x,y) then
 		UI.Control.setLocalCursor(if self.vertical then "splitV" else "splitH")
 	end
 end
@@ -267,7 +272,7 @@ end
 function UI.Splitpane:onDragStart(x,y,ed,ea,change,long)
 	if long then return end
 	UI.Focus:request(self)
-	self.dragging=self.knob.customized or self.knobHandle:hitTestPoint(x,y,false,self.knob)
+	self.dragging=self:isOnKnob(x,y)
 	if self.dragging then 
 		self.dragTabs=self:fixupTabs(self.tabs) 
 	end
@@ -281,7 +286,7 @@ end
 
 function UI.Splitpane:onKnobClick(x,y)
 	if not self.tabs or #self.tabs<3 then return end
-	if not (self.knob.customized or self.knobHandle:hitTestPoint(x,y,false,self.knob)) then return end
+	if not self:isOnKnob(x,y) then return end
 	UI.Focus:request(self)
 	local tabs=self:fixupTabs(self.tabs) 
 	if self.ratio<=(tabs[1] or 0) or self.ratio>=(tabs[#tabs] or 1) then
