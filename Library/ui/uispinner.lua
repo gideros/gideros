@@ -66,7 +66,7 @@ function UI.Spinner:setValue(val)
 	if self.range.Step then
 		val=((val+self.range.Step*.5)//self.range.Step)*self.range.Step
 		if val>self.range.Max then val=self.range.Max
-		elseif val<self.range.Min then val=self.range.Min
+		elseif val<=self.range.Min then val=self.range.Min
 		end
 	end
 	if self.range.Check then
