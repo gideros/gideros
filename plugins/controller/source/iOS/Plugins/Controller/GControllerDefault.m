@@ -10,6 +10,11 @@
 #import "GControllerManager.h"
 #import "GController.h"
 #import <GameController/GCController.h>
+#import <GameController/GCExtendedGamepad.h>
+#import <GameController/GCControllerDirectionPad.h>
+#import <GameController/GCControllerAxisInput.h>
+#import <GameController/GCGamepad.h>
+#import <GameController/GCControllerButtonInput.h>
 
 @implementation GControllerDefault
 
