@@ -112,7 +112,7 @@ double Sinc(const double x)
  *   I_0(x) = sum_{k=0}^inf (1 / k!)^2 (x / 2)^(2 k)
  *          = sum_{k=0}^inf ((x / 2)^k / k!)^2
  */
-constexpr double BesselI_0(const double x)
+double BesselI_0(const double x)
 {
     // Start at k=1 since k=0 is trivial.
     const double x2{x/2.0};
@@ -141,7 +141,7 @@ double Kaiser(const double b, const double k)
 }
 
 // Calculates the greatest common divisor of a and b.
-constexpr uint Gcd(uint x, uint y)
+uint Gcd(uint x, uint y)
 {
     while(y > 0)
     {
