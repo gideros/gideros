@@ -213,6 +213,7 @@ end
 function UI.Selection._selHandler(s,x,y,c)
 	local spr,data=s:uiSelect(x,y)
 	if spr then 
+		UI.Focus:request(s)
 		uiUpdateSelection(s,spr,data,if c and c>=2 then "doubleclick" else "click")
 	else
 	end
@@ -231,14 +232,15 @@ function UI.Selection._selHandlerDrag(s,x,y)
 	if not s._uisel_holder.dragging then return end
 	local spr,data=s:uiSelect(x,y)
 	if spr then 
-		uiUpdateSelection(s,spr,data,"rmove")
-		UI.Focus:clear()
 		UI.Focus:area(spr,0,0,spr:getWidth(),spr:getHeight(),true,-1,-1)
+		UI.Focus:request(s)
+		uiUpdateSelection(s,spr,data,"rmove")
 	end
 end
 function UI.Selection._selHandlerDragEnd(s,x,y)
 	if not s._uisel_holder.dragging then return end
 	local spr,data=s:uiSelect(x,y)
+	UI.Focus:request(s)
 	uiUpdateSelection(s,spr,data,"rend")
 	s._uisel_holder.dragging=false
 end
