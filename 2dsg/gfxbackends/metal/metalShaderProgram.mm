@@ -93,7 +93,7 @@ MTLBlendFactor metalShaderProgram::blendFactor2metal(ShaderEngine::BlendFactor b
 }
 
 id<MTLBuffer> getCachedVBO(ShaderBufferCache **cache,bool &modified, int isize) {
-    if (isize<64) return nil; // Don't allocate buffers for small objects, since we can have too much of them
+    if (isize<1024) return nil; // Don't allocate buffers for small objects, since we can have too much of them
 	if (!cache) return nil; //XXX: Could we check for VBO availability ?
 	if (!*cache)
 		*cache = new metalShaderBufferCache();
@@ -562,16 +562,18 @@ void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
             break;
 	}
     int isize=elmSize * count;
+    int bufOffset=0;
     if (dcount==0) dcount=count;
     id<MTLBuffer> vbo=cache?getCachedVBO(cache,modified,isize):nil;
     bool freeVbo=false;
     if (vbo==nil) {
-        vbo=[metalDevice newBufferWithLength:isize options:MTLResourceStorageModeShared];
-        freeVbo=true;
+        vbo=((metalShaderEngine *)ShaderEngine::Engine)->getIndexBuffer(isize,&bufOffset);
+        //vbo=[metalDevice newBufferWithLength:isize options:MTLResourceStorageModeShared];
+        //freeVbo=true;
         modified=true;
     }
     if (modified||(!cache)) {
-        memcpy([vbo contents],indices,isize);
+        memcpy(((char *)[vbo contents])+bufOffset,indices,isize);
         /*
          #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
          #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_1011
@@ -583,10 +585,10 @@ void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
     //XXX bufferoffset should be int32 aligned per Apple's docs, this can break rendering when indices are u16 and first is an odd vindex
     if (instances)
         [encoder() drawIndexedPrimitives:mode
-                              indexCount:dcount indexType:dtype indexBuffer:vbo indexBufferOffset:first*elmSize instanceCount:instances];
+                              indexCount:dcount indexType:dtype indexBuffer:vbo indexBufferOffset:bufOffset+first*elmSize instanceCount:instances];
     else
         [encoder() drawIndexedPrimitives:mode
-                              indexCount:dcount indexType:dtype indexBuffer:vbo indexBufferOffset:first*elmSize];
+                              indexCount:dcount indexType:dtype indexBuffer:vbo indexBufferOffset:bufOffset+first*elmSize];
     
     if (freeVbo)
         [vbo release];
