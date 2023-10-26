@@ -2941,8 +2941,8 @@ void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 	stencil.sFunc = ShaderEngine::STENCIL_NOTEQUAL;
 	stencil.sFail = ShaderEngine::STENCIL_KEEP;
 	stencil.sRef = 0;
-	stencil.sMask = 0xFF;
-	stencil.sWMask = 0xFF;
+	stencil.sMask = 0x3F;
+	stencil.sWMask = 0x3F;
 	ShaderEngine::Engine->setDepthStencil(stencil);
 	ShaderProgram *shp;
 	VertexBuffer<unsigned short> *ib = quadIndices;
@@ -3012,6 +3012,8 @@ void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 					p->fill_bounds[3] - p->fill_bounds[1] + 1);
 					*/
 			stencil.sClear = true;
+			stencil.sMask = 0x3F;
+			stencil.sWMask = 0x3F;
 			impressPath(path, xform, stencil);
 			stencil.sClear = false;
 			fillBounds(p->fill_bounds_vbo, fill, texture, stencil,

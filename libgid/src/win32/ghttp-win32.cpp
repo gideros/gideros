@@ -207,7 +207,9 @@ static void *post_one(void *ptr)        // thread
 
   if(res != CURLE_OK){
 	curl_easy_cleanup(curl);
-    ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+			                                           sizeof(ghttp_ErrorEvent),
+			                                        offsetof(ghttp_ErrorEvent, error), NULL);
     gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_ERROR_EVENT, event, 1, reply2->udata);
     fprintf(stderr, "curl_easy_perform() failed in post_one: %s\n",curl_easy_strerror(res));
   }
@@ -320,8 +322,10 @@ static void *put_one_url(void *ptr)     // thread
 
   if(res != CURLE_OK){
     curl_easy_cleanup(curl);
-    ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
-    gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_ERROR_EVENT, event, 1, reply2->udata);
+	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+			                                           sizeof(ghttp_ErrorEvent),
+			                                        offsetof(ghttp_ErrorEvent, error), NULL);
+   gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_ERROR_EVENT, event, 1, reply2->udata);
     fprintf(stderr, "curl_easy_perform() failed in put_one: %s\n",curl_easy_strerror(res));
   }
   else {
@@ -428,7 +432,9 @@ static void *get_one_url(void *ptr)          // thread
 
   if(res != CURLE_OK){
 	  curl_easy_cleanup(curl);
-    ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+		ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+				                                           sizeof(ghttp_ErrorEvent),
+				                                        offsetof(ghttp_ErrorEvent, error), NULL);
     gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_ERROR_EVENT, event, 1, reply2->udata);
     fprintf(stderr, "curl_easy_perform() failed in get_one: %s\n",curl_easy_strerror(res));
   }

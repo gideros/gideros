@@ -81,7 +81,9 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id, bool streaming, gevent_Ca
 
 void handleException(Exception^ ex, g_id id, gevent_Callback callback, void* udata)
 {
-	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+			                                           sizeof(ghttp_ErrorEvent),
+			                                        offsetof(ghttp_ErrorEvent, error), NULL);
 	//std::wstring werror(ex->Message->Begin());
 	//std::string strerror(werror.begin(), werror.end());
 	//strerror.c_str();
@@ -236,7 +238,9 @@ void handleTask(HttpResponseMessage^ response, g_id id, boolean streaming, geven
 		}
 		catch (const task_canceled&)
 		{
-			ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+			ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+					                                           sizeof(ghttp_ErrorEvent),
+					                                        offsetof(ghttp_ErrorEvent, error), NULL);
 			gevent_EnqueueEvent(id, callback, GHTTP_ERROR_EVENT, event, 1, udata);
 			mapm.lock();
 			map.erase(id);

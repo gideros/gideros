@@ -106,6 +106,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"resolveStyle", SpriteBinder::resolveStyle},
         {"updateStyle", SpriteBinder::updateStyle},
         {"setGhosts", SpriteBinder::setGhosts},
+        {"lookAt", SpriteBinder::lookAt},
         {"__parseGhosts", SpriteBinder::__parseGhosts},
 
 		{"set", SpriteBinder::set},
@@ -2596,6 +2597,48 @@ int SpriteBinder::setGhosts(lua_State* L)
         }
         sprite->setGhosts(new std::vector<GhostSprite *>(ghosts.cbegin(),ghosts.cend()));
     }
+
+    return 0;
+}
+
+int SpriteBinder::lookAt(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::lookAt", 0);
+
+    Binder binder(L);
+    Sprite *ref=NULL;
+    int nargs=lua_gettop(L);
+    int as=2;
+    if (nargs>8)
+        as+=3;
+    if (nargs>=(as+6))
+        ref = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, as+6));
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    Sprite *parent=sprite->parent();
+    if (ref&&(parent==nullptr)) return 0;
+
+    float ex=sprite->x();
+    float ey=sprite->y();
+    float ez=sprite->z();
+    if (as>2)
+    {
+        ex=luaL_checknumber(L,2);
+        ey=luaL_checknumber(L,3);
+        ez=luaL_checknumber(L,4);
+    }
+    float cx=luaL_checknumber(L,as);
+    float cy=luaL_checknumber(L,as+1);
+    float cz=luaL_checknumber(L,as+2);
+    float ux=luaL_checknumber(L,as+3);
+    float uy=luaL_checknumber(L,as+4);
+    float uz=luaL_checknumber(L,as+5);
+    if (ref) {
+        if (as>2)
+            parent->spriteToLocal(ref,ex,ey,ez,&ex,&ey,&ez);
+        parent->spriteToLocal(ref,cx,cy,cz,&cx,&cy,&cz);
+        parent->spriteToLocal(ref,ux,uy,uz,&ux,&uy,&uz);
+    }
+    sprite->lookAt(ex,ey,ez,cx,cy,cz,ux,uy,uz);
 
     return 0;
 }

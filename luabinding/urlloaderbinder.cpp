@@ -230,7 +230,12 @@ private:
         }
         else if (type == GHTTP_ERROR_EVENT)
         {
+            ghttp_ErrorEvent* d = (ghttp_ErrorEvent*)data;
             getOrCreateEvent("error", "__errorEvent");
+            if (d->error) {
+				lua_pushstring(L, d->error);
+				lua_setfield(L, -2, "error");
+            }
         }
         else if (type == GHTTP_PROGRESS_EVENT)
         {

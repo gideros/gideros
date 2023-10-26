@@ -284,14 +284,19 @@ public:
 			env->ReleasePrimitiveArrayCritical(jdata, data, 0);
 	}
 	
-	void ghttp_errorCallback(JNIEnv *env, jlong id)
+	void ghttp_errorCallback(JNIEnv *env, jlong id, jstring error)
 	{
 		if (map_.find(id) == map_.end())
 			return;
 
 		CallbackElement &element = map_[id];
 
-        ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+		jboolean isCopy;
+		const char *cerror = env->GetStringUTFChars(error, &isCopy);
+
+		ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+			                                           sizeof(ghttp_ErrorEvent),
+			                                        offsetof(ghttp_ErrorEvent, error), cerror);
 
         gevent_EnqueueEvent(id, callback_s, GHTTP_ERROR_EVENT, event, 1, (void *)id);
 	}
@@ -344,10 +349,10 @@ void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpResponseCallba
 	that->ghttp_responseCallback(env, id, data, size, statusCode, hdrCount, hdrSize, header);
 }
 
-void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpErrorCallback(JNIEnv *env, jclass cls, jlong id, jlong udata)
+void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpErrorCallback(JNIEnv *env, jclass cls, jlong id, jlong udata, jstring error)
 {
 	HTTPManager *that = (HTTPManager*)udata;
-	that->ghttp_errorCallback(env, id);
+	that->ghttp_errorCallback(env, id, error);
 }
 
 void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpProgressCallback(JNIEnv *env, jclass cls, jlong id, jint bytesLoaded, jint bytesTotal, jbyteArray data, jint size, jlong udata)

@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -97,7 +99,7 @@ public class HTTPManager {
 	public static native void nativeghttpResponseCallback(long id, byte[] data,
 														  int size, int statusCode, int hdrCount, int hdrSize, boolean header, long udata);
 
-	public static native void nativeghttpErrorCallback(long id, long udata);
+	public static native void nativeghttpErrorCallback(long id, long udata, String error);
 
 	public static native void nativeghttpProgressCallback(long id,
 														  int bytesLoaded, int bytesTotal, byte[] data, int size, long udata);
@@ -115,11 +117,11 @@ public class HTTPManager {
 			ids_.remove(id);
 	}
 
-	public void errorCallback(long id, long udata) {
+	public void errorCallback(long id, long udata, String error) {
 		if (!ids_.containsKey(id))
 			return;
 
-		nativeghttpErrorCallback(id, udata);
+		nativeghttpErrorCallback(id, udata, error);
 
 		ids_.remove(id);
 	}
@@ -334,7 +336,11 @@ public class HTTPManager {
 						statusCode, hdrCount, dataSize, false);
 			} catch (Exception e) {
 				Log.e("Gideros", "HTTP exception", e);
-				manager_.errorCallback(id_, udata_);
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+
+				manager_.errorCallback(id_, udata_,sw.toString());
 			}
 		}
 	}

@@ -119,7 +119,9 @@ void ghttp_onerror(int xh,int arg,int sts,const char *text)
 	if (it!=map_.end())
 	{
 		struct GHttpContext ctx=it->second;
-		ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+		ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+			                                           sizeof(ghttp_ErrorEvent),
+			                                        offsetof(ghttp_ErrorEvent, error), text);
         
         gevent_EnqueueEvent(ctx.id, ctx.callback, GHTTP_ERROR_EVENT, event, 1, ctx.udata);
 		map_.erase(it);

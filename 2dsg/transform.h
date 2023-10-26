@@ -241,6 +241,9 @@ public:
 	void setMatrix(float m11,float m12,float m21,float m22,float tx,float ty);
 	void setMatrix(const float *m);
     static void quaternionToEuler(float w,float x,float y,float z,float &rx,float &ry,float &rz);
+    void lookAt(float eyex, float eyey, float eyez, float centerx,
+                float centery, float centerz, float upx, float upy,
+                float upz);
 private:
 	Matrix4 matrix_;
 

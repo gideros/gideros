@@ -177,8 +177,11 @@ struct Connection
     if (map_.find(connection) == map_.end())
         return;
     Connection& connection2 = map_[connection];
-		
-    ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+	
+	NSString cerror=[NSString stringWithFormat:@"%@", err];	
+	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+			                                           sizeof(ghttp_ErrorEvent),
+			                                        offsetof(ghttp_ErrorEvent, error), [cerror UTF8String]);
     
     gevent_EnqueueEvent(connection2.id, connection2.callback, GHTTP_ERROR_EVENT, event, 1, connection2.udata);
 

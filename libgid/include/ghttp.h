@@ -31,7 +31,7 @@ typedef struct ghttp_ResponseEvent
 
 typedef struct ghttp_ErrorEvent
 {
-	int dummy; //Empty structs have different sizes between C and C++
+	const char *error;
 } ghttp_ErrorEvent;
 
 typedef struct ghttp_ProgressEvent

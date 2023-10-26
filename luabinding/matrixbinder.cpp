@@ -44,6 +44,7 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"transformPoint",transformPoint},
 		{"duplicate",duplicate},
 		{"fromSRT",fromSRT},
+        {"lookAt",lookAt},
 
 		{"getX", getX},
 		{"getY", getY},
@@ -891,3 +892,16 @@ int MatrixBinder::fromSRT(lua_State* L)
 	return 1;
 }
 
+int MatrixBinder::lookAt(lua_State* L)
+{
+    StackChecker checker(L, "MatrixBinder::lookAt", 0);
+
+    Binder binder(L);
+    Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+    matrix->lookAt(luaL_optnumber(L,2,0),luaL_optnumber(L,3,0),luaL_optnumber(L,4,0),
+            luaL_optnumber(L,5,0),luaL_optnumber(L,6,0),luaL_optnumber(L,7,0),
+            luaL_optnumber(L,8,0),luaL_optnumber(L,9,0),luaL_optnumber(L,10,0));
+
+    return 0;
+}

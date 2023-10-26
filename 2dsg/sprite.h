@@ -269,6 +269,14 @@ public:
         invalidate(INV_TRANSFORM);
     }
 
+    void lookAt(float eyex, float eyey, float eyez, float centerx,
+                float centery, float centerz, float upx, float upy,
+                float upz)
+    {
+        localTransform_.lookAt(eyex,eyey,eyez,centerx,centery,centerz,upx,upy,upz);
+        invalidate(INV_TRANSFORM);
+    }
+
 	float rotation() const
 	{
         return localTransform_.rotationZ();

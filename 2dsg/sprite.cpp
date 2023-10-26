@@ -723,6 +723,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			ShaderEngine::DepthStencil stencil =
 				ShaderEngine::Engine->pushDepthStencil();
 			stencil.sClear=sprite->stencil_.sClear;
+			stencil.dClear=sprite->stencil_.dClear;
+			stencil.dMask=sprite->stencil_.dMask;
 			stencil.sFail=sprite->stencil_.sFail;
 			stencil.dFail=sprite->stencil_.dFail;
 			stencil.dPass=sprite->stencil_.dPass;

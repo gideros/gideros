@@ -169,7 +169,9 @@ void HTTPManager::finished(QNetworkReply *reply)
     {
         NetworkReply reply2 = map_[reply];
 
-        ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+    	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
+    			                                           sizeof(ghttp_ErrorEvent),
+    			                                        offsetof(ghttp_ErrorEvent, error), NULL);
 
         gevent_EnqueueEvent(reply2.id, reply2.callback, GHTTP_ERROR_EVENT, event, 1, reply2.udata);
     }

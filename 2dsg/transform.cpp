@@ -238,3 +238,26 @@ void Transform::compose()
 #endif
 
 }
+
+void Transform::lookAt(float eyex, float eyey, float eyez, float centerx,
+      float centery, float centerz, float upx, float upy,
+      float upz)
+{
+    Vector3 pos(eyex,eyey,eyez);
+    Vector3 target(centerx,centery,centerz);
+    Vector3 upDir(upx,upy,upz);
+
+    // compute left/up/forward axis vectors
+    Vector3 forward = (target-pos).normalize();
+    Vector3 left = upDir.cross(forward).normalize();
+    Vector3 up = forward.cross(left);
+
+    float m[16];
+    // compute M = Mr * Mt
+    m[0] = left.x; m[4] = up.x; m[8] = forward.x; m[12]= eyex;
+    m[1] = left.y; m[5] = up.y; m[9] = forward.y; m[13]= eyey;
+    m[2] = left.z; m[6] = up.z; m[10]= forward.z; m[14]= eyez;
+    m[3] = 0.0f;      m[7] = 0.0f;      m[11]= 0.0f;      m[15] = 1.0f;
+
+    setMatrix(m);
+}

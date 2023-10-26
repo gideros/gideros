@@ -59,6 +59,7 @@ private:
 	static int setScaleZ(lua_State* L);
     static int setSkewX(lua_State* L);
     static int setSkewY(lua_State* L);
+    static int lookAt(lua_State* L);
 
 	static int setPosition(lua_State* L);
 	static int getPosition(lua_State* L);
