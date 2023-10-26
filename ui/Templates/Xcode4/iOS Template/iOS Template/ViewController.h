@@ -17,7 +17,6 @@
 
 @interface ViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>
 {
-    EAGLContext *context;
     UITableView *tableView;
 	    
     BOOL animating;
@@ -26,6 +25,9 @@
     CADisplayLink *displayLink;
 
 	EAGLView* glView;
+    
+    BOOL statusBarHidden;
+    UIStatusBarStyle statusBarStyle;
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;

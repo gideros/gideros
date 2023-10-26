@@ -27,6 +27,9 @@ NSMutableArray *tableData;
 		self.displayLink = nil;		
 	}
 	
+    statusBarHidden=TRUE;
+    statusBarStyle=UIStatusBarStyleDefault;
+
 	return self;
 }
 
@@ -165,6 +168,23 @@ NSMutableArray *tableData;
      else
      return UIInterfaceOrientationMaskAll;*/
     return (NSUInteger)gdr_supportedInterfaceOrientations();
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    return statusBarHidden;
+}
+
+- (UIStatusBarStyle) preferredStatusBarStyle
+{
+    return statusBarStyle;
+}
+
+- (void) setStatusBar:(BOOL) hidden style:(UIStatusBarStyle) style
+{
+    statusBarHidden=hidden;
+    statusBarStyle=style;
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)initTable{

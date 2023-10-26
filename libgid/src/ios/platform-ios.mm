@@ -324,6 +324,20 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             else if (args[0].s=="dragLink") mapped=[NSCursor dragLinkCursor];
             [mapped set];
         }
+#elif TARGET_OS_IOS
+        if (!strcmp(what, "statusBar")) {
+            bool hidden=(args.size()==0)||(args[0].type==gapplication_Variant::NIL);
+            UIStatusBarStyle style=UIStatusBarStyleDefault;
+            if (!hidden) {
+                if (args[0].s=="light") style=UIStatusBarStyleLightContent;
+                if (@available (iOS 13, *)) {
+                    if (args[0].s=="dark") style=UIStatusBarStyleDarkContent;
+                }
+            }
+            UIViewController *viewController = g_getRootViewController();
+
+            [viewController setStatusBar:hidden style:style];
+        }
 #endif
     }
 	return rets;
