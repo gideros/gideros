@@ -112,6 +112,8 @@ protected:
     id<MTLSamplerState> tsNC,tsFC,tsNR,tsFR,tsDC;
     id<MTLCommandBuffer> mcb;
     id<MTLRenderCommandEncoder> mrce;
+    id<MTLBuffer> idxBuffer;
+    int idxBufferOffset;
     int clearReq;
     void clear(int f);
 public:
@@ -122,6 +124,7 @@ public:
     void closeEncoder();
     void present(id<MTLDrawable> drawable);
     void newFrame();
+    id<MTLBuffer> getIndexBuffer(int size,int *offset);
     metalShaderEngine(int sw,int sh);
 	virtual ~metalShaderEngine();
 	const char *getVersion();

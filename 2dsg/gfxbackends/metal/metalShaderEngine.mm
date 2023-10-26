@@ -168,6 +168,9 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     mcq=[metalDevice newCommandQueue];
     mcb=[mcq commandBuffer];
     [mcb retain];
+    
+    idxBuffer=nil;
+    idxBufferOffset=0;
 
     bool hasDepthCompare= FALSE;
     if (@available(macOS 10.15, iOS 13, tvOS 13, *)) {
@@ -214,7 +217,11 @@ metalShaderEngine::~metalShaderEngine() {
     [mcb waitUntilCompleted];
     [mcb release];
     [mcq release];
-    
+
+    if (idxBuffer) [idxBuffer release];
+    idxBuffer=nil;
+    idxBufferOffset=0;
+
     [tsNC release];
     [tsFC release];
     [tsNR release];
@@ -332,6 +339,26 @@ void metalShaderEngine::closeEncoder() {
     }
 }
 
+#define IDXBUFSIZE  65536
+id<MTLBuffer> metalShaderEngine::getIndexBuffer(int size,int *offset)
+{
+    size=((size+3)&(~3));
+    if (size>(IDXBUFSIZE/2))
+    {
+        *offset=0;
+        return [metalDevice newBufferWithLength:size options:MTLResourceStorageModeShared];
+    }
+    if ((idxBuffer==nil)||((idxBufferOffset+size)>IDXBUFSIZE))
+    {
+        if (idxBuffer) [idxBuffer release];
+        idxBuffer=[metalDevice newBufferWithLength:IDXBUFSIZE options:MTLResourceStorageModeShared];
+        idxBufferOffset=0;
+    }
+    *offset=idxBufferOffset;
+    idxBufferOffset+=size;
+    return idxBuffer;
+}
+
 void metalShaderEngine::present(id<MTLDrawable> drawable)
 {
     closeEncoder();
@@ -344,6 +371,9 @@ void metalShaderEngine::present(id<MTLDrawable> drawable)
     }
     [mcb release];
     mcb=nil;
+    if (idxBuffer) [idxBuffer release];
+    idxBuffer=nil;
+    idxBufferOffset=0;
 }
 
 void metalShaderEngine::newFrame() {
