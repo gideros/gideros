@@ -178,7 +178,7 @@ struct Connection
         return;
     Connection& connection2 = map_[connection];
 	
-	NSString cerror=[NSString stringWithFormat:@"%@", err];	
+	NSString *cerror=[NSString stringWithFormat:@"%@", err];	
 	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)gevent_CreateEventStruct1(
 			                                           sizeof(ghttp_ErrorEvent),
 			                                        offsetof(ghttp_ErrorEvent, error), [cerror UTF8String]);

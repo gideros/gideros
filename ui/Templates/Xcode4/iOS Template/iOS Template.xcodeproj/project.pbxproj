@@ -84,7 +84,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		033BD414256FA4D80059695F /* iOS Template Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "iOS Template Mac.app"; path = "iOS Template App Name.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		033BD414256FA4D80059695F /* iOS Template App Name.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template App Name.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		033BD416256FA4D80059695F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		033BD417256FA4D80059695F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		033BD41E256FA4D90059695F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -316,7 +316,7 @@
 			children = (
 				5FD896E715CED77F00D34824 /* iOS Template iOS.app */,
 				B25B27FA1BAC0F3D0034D6C7 /* iOS Template AppleTV.app */,
-				033BD414256FA4D80059695F /* iOS Template Mac.app */,
+				033BD414256FA4D80059695F /* iOS Template App Name.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -475,7 +475,7 @@
 			);
 			name = "iOS Template Mac";
 			productName = "iOS Template";
-			productReference = 033BD414256FA4D80059695F /* iOS Template Mac.app */;
+			productReference = 033BD414256FA4D80059695F /* iOS Template App Name.app */;
 			productType = "com.apple.product-type.application";
 		};
 		5FD896E615CED77F00D34824 /* iOS Template iOS */ = {
@@ -698,7 +698,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Mac",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-mac";
@@ -765,7 +765,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Mac",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.iOS-Template-mac";
@@ -861,7 +861,7 @@
 					"\"iOS Template/Plugins\"",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/iOS Template/Plugins\"",
@@ -896,7 +896,7 @@
 					"\"iOS Template/Plugins\"",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/iOS Template/Plugins\"",
@@ -953,7 +953,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
 			name = Debug;
 		};
@@ -1001,7 +1001,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
 			name = Release;
 		};
