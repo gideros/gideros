@@ -138,6 +138,7 @@ public:
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
     ShaderBuffer *getFramebuffer() { return currentBuffer; };
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
+    Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRT);
 	void setViewport(int x,int y,int width,int height);
 	void adjustViewportProjection(Matrix4 &vp, float width, float height);
 	void resizeFramebuffer(int width,int height);
