@@ -254,6 +254,11 @@ ShaderBuffer *metalShaderEngine::createRenderTarget(ShaderTexture *texture,bool 
 	return new metalShaderBuffer(texture,forDepth);
 }
 
+Matrix4 metalShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float n, float f,bool forRT)
+{
+    return ShaderEngine::setOrthoFrustum(l,r,b,t,n,f,false);
+}
+
 void metalShaderEngine::clear(int f) {
     int creq=clearReq;
     if (currentBuffer)
