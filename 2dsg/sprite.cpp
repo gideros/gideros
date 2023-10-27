@@ -731,6 +731,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			stencil.sFunc=sprite->stencil_.sFunc;
 			stencil.sMask=sprite->stencil_.sMask;
 			stencil.sWMask=sprite->stencil_.sWMask;
+			stencil.sClearValue=sprite->stencil_.sClearValue;
 			stencil.sRef=sprite->stencil_.sRef;
 			stencil.cullMode=sprite->stencil_.cullMode;
 			if (!lastEffect)

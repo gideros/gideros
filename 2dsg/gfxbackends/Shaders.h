@@ -193,6 +193,7 @@ public:
         bool dMask;
 		StencilFunc sFunc;
 		int sRef;
+        int sClearValue;
 		unsigned int sMask;
 		unsigned int sWMask;
 		StencilOp sFail;
@@ -200,7 +201,7 @@ public:
 		StencilOp dPass;
 		bool sClear;
 		CullMode cullMode;
-        DepthStencil() : dTest(false), dClear(false), dMask(true), sFunc(STENCIL_DISABLE), sRef(0), sMask(0xFF), sWMask(0xFF),
+        DepthStencil() : dTest(false), dClear(false), dMask(true), sFunc(STENCIL_DISABLE), sRef(0), sClearValue(0),sMask(0xFF), sWMask(0xFF),
             sFail(STENCIL_KEEP), dFail(STENCIL_KEEP), dPass(STENCIL_KEEP), sClear(false), cullMode(CULL_NONE)
         {};
         bool operator==(const DepthStencil &o) const {
@@ -211,6 +212,7 @@ public:
             CHECK(sRef,o.sRef)
             CHECK(sMask,o.sMask)
             CHECK(sWMask,o.sWMask)
+            CHECK(sClearValue,o.sClearValue)
             unsigned int d1=(dTest?1:0)|(dClear?2:0)|(sClear?4:0)|(dMask?8:0)
             |(((unsigned int)sFunc)<<4)
             |(((unsigned int)sFail)<<8)

@@ -2938,11 +2938,7 @@ void Path2D::fillBounds(VertexBuffer<float> *vb, float *fill,
 	glPushColor();
 	glMultColor(fill[0], fill[1], fill[2], fill[3]);
 
-	stencil.sFunc = ShaderEngine::STENCIL_NOTEQUAL;
 	stencil.sFail = ShaderEngine::STENCIL_KEEP;
-	stencil.sRef = 0;
-	stencil.sMask = 0x3F;
-	stencil.sWMask = 0x3F;
 	ShaderEngine::Engine->setDepthStencil(stencil);
 	ShaderProgram *shp;
 	VertexBuffer<unsigned short> *ib = quadIndices;
@@ -3011,12 +3007,22 @@ void Path2D::fillPath(int path, Matrix4 xform, float fill[4],
 					p->fill_bounds[2] - p->fill_bounds[0] + 1,
 					p->fill_bounds[3] - p->fill_bounds[1] + 1);
 					*/
+            int exMask=0;
+            if ((stencil.sFunc==ShaderEngine::STENCIL_EQUAL)&&(stencil.sRef==(int)stencil.sMask))
+            {
+                //Already checking for equality with some value in higher bits, including original mask
+                exMask=stencil.sMask;
+            }
 			stencil.sClear = true;
-			stencil.sMask = 0x3F;
+			stencil.sClearValue = 0;
+            stencil.sMask = 0x3F;
 			stencil.sWMask = 0x3F;
 			impressPath(path, xform, stencil);
 			stencil.sClear = false;
-			fillBounds(p->fill_bounds_vbo, fill, texture, stencil,
+            stencil.sMask = 0x3F|exMask;
+            stencil.sRef = exMask;
+            stencil.sFunc = exMask?ShaderEngine::STENCIL_LESS:ShaderEngine::STENCIL_NOTEQUAL;
+            fillBounds(p->fill_bounds_vbo, fill, texture, stencil,
 					textureMatrix,cb);
 			//ShaderEngine::Engine->popClip();
 			ShaderEngine::Engine->popDepthStencil();

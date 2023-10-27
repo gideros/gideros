@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Gravity;
 import android.graphics.Color;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -91,6 +92,13 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			boolean showSplash = true;
 			if (GiderosSettings.notchReady&&(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P))
 				getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+				WindowInsetsController windowInsetsController = getWindow().getDecorView().getWindowInsetsController();
+				windowInsetsController.setSystemBarsBehavior(
+						WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+				);
+			}
 
 			if (showSplash && getResources().getIdentifier("splash", "drawable", getPackageName()) != 0) {
 				layout = (FrameLayout) getWindow().getDecorView();

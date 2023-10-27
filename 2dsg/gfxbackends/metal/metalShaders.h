@@ -91,6 +91,7 @@ protected:
     id<MTLTexture> depth;
     id<MTLTexture> stencil;
     int clearReq;
+    int clearStencilValue;
     bool forDepth_;
 public:
 	metalShaderBuffer(ShaderTexture *texture,bool forDepth=false);
@@ -115,6 +116,7 @@ protected:
     id<MTLBuffer> idxBuffer;
     int idxBufferOffset;
     int clearReq;
+    int clearStencilValue;
     void clear(int f);
 public:
     static BlendFactor curSFactor;

@@ -700,6 +700,7 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 		if (currentBuffer)
 			currentBuffer->needDepthStencil();
         GLCALL glStencilMask(state.sWMask);
+        GLCALL glClearStencil(state.sClearValue);
         GLCALL glClear(GL_STENCIL_BUFFER_BIT);
 		state.sClear=false;
 	}

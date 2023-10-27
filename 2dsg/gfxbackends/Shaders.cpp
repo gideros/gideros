@@ -113,6 +113,7 @@ void ShaderEngine::reset(bool reinit)
     dsCurrent.sRef=0;
     dsCurrent.sMask=0xFF;
     dsCurrent.sWMask=0xFF;
+    dsCurrent.sClearValue=0;
     dsCurrent.sClear=false;
     dsCurrent.sFail=STENCIL_KEEP;
     dsCurrent.dFail=STENCIL_KEEP;

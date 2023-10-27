@@ -620,7 +620,7 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 	{
 		if (currentBuffer)
 			currentBuffer->needDepthStencil();
-		g_devcon->ClearDepthStencilView(currentBuffer ? ((dx11ShaderBuffer *)currentBuffer)->depthStencil : g_depthStencil, D3D11_CLEAR_STENCIL, 0, 0);
+		g_devcon->ClearDepthStencilView(currentBuffer ? ((dx11ShaderBuffer *)currentBuffer)->depthStencil : g_depthStencil, D3D11_CLEAR_STENCIL, 0, state.sClearValue);
 		state.sClear = false;
 	}
 

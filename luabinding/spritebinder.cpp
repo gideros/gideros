@@ -2222,6 +2222,10 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 		if (!lua_isnil(L,-1))
 			ds.sWMask=luaL_checkinteger(L,-1);
 		lua_pop(L,1);
+		lua_getfield(L,2,"stencilClearValue");
+		if (!lua_isnil(L,-1))
+			ds.sClearValue=luaL_checkinteger(L,-1);
+		lua_pop(L,1);
 		lua_getfield(L,2,"stencilRef");
 		if (!lua_isnil(L,-1))
 			ds.sRef=luaL_checkinteger(L,-1);

@@ -334,6 +334,18 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
 		env->DeleteLocalRef(jarg);
 		env->DeleteLocalRef(localRefCls);
 	}
+	else {
+		JNIEnv *env = g_getJNIEnv();
+
+		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+		jmethodID getMethodID = env->GetStaticMethodID(localRefCls, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)V");
+		jstring jwhat = env->NewStringUTF(what?what:"");
+		jstring jarg = env->NewStringUTF((args.size()>0)?args[0].s.c_str():"");
+		env->CallStaticVoidMethod(localRefCls, getMethodID,jwhat,jarg);
+		env->DeleteLocalRef(jwhat);
+		env->DeleteLocalRef(jarg);
+		env->DeleteLocalRef(localRefCls);
+	}
 	return rets;
 }
 

@@ -52,6 +52,7 @@ import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
@@ -67,6 +68,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.view.DisplayCutout;
+import android.view.WindowInsets.Type;
 import android.os.Build;
 
 import com.giderosmobile.android.GiderosSettings;
@@ -544,7 +546,7 @@ public class GiderosApplication
 		}
 		return insets;
 	}
-	
+		
 	static public void onDestroy()
 	{
 		for ( Class < ? > theClass : instance_.sAvailableClasses ) {
@@ -984,6 +986,24 @@ public class GiderosApplication
 		}
 
 		return "";
+	}
+
+	static public void setProperty(String what,String arg) {
+		if (what.equals("statusBar")) {
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+				final Activity activity = WeakActivityHolder.get();
+				WindowInsetsController windowInsetsController = activity.getWindow().getDecorView().getWindowInsetsController();
+				if (arg.length()>0) {
+					windowInsetsController.show(android.view.WindowInsets.Type.statusBars());
+					int ap=0;
+					if ("light".equals(arg))
+						ap=WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+					windowInsetsController.setSystemBarsAppearance(ap, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+				}
+				else
+					windowInsetsController.hide(android.view.WindowInsets.Type.statusBars());
+			}
+		}
 	}
 
 	public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {

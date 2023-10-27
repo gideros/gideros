@@ -270,11 +270,13 @@ id<MTLRenderCommandEncoder> metalShaderEngine::encoder()
 {
     if (mrce==nil) {
         int creq=clearReq;
+        int csval=clearStencilValue;
         MTLRenderPassDescriptor *rp=metalFramebuffer;
         if (currentBuffer)
         {
             rp=((metalShaderBuffer *)currentBuffer)->mrpd;
             creq=((metalShaderBuffer *)currentBuffer)->clearReq;
+            csval=((metalShaderBuffer *)currentBuffer)->clearStencilValue;
             ((metalShaderBuffer *)currentBuffer)->clearReq=0;
         }
         else
@@ -282,6 +284,7 @@ id<MTLRenderCommandEncoder> metalShaderEngine::encoder()
         rp.colorAttachments[0].loadAction=(creq&1)?MTLLoadActionClear:MTLLoadActionLoad;
         rp.depthAttachment.loadAction=(creq&2)?MTLLoadActionClear:MTLLoadActionLoad;
         rp.stencilAttachment.loadAction=(creq&4)?MTLLoadActionClear:MTLLoadActionLoad;
+        rp.stencilAttachment.clearStencil=csval;
         mrce=[mcb renderCommandEncoderWithDescriptor:rp];
         [mrce retain];
         metalShaderProgram::resetAll();
@@ -493,6 +496,13 @@ void metalShaderEngine::setDepthStencil(DepthStencil state)
         }
         [encoder() setCullMode:cull];
     }
+    if (state.sClear) {
+		if (currentBuffer)
+			((metalShaderBuffer *)currentBuffer)->clearStencilValue=state.sClearValue;
+		else
+			clearStencilValue=state.sClearValue;
+    }
+
     clear((state.dClear?2:0)|(state.sClear?4:0));
     state.dClear=false;
     state.sClear=false;
