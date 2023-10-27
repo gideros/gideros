@@ -228,6 +228,19 @@ public:
 		return res;
 	}
 
+	void onAdReady(jstring jAd, int state)
+	{
+		JNIEnv *env = g_getJNIEnv();
+
+		const char *ad = env->GetStringUTFChars(jAd, NULL);
+		gads_ReadyEvent* event = (gads_ReadyEvent*)gevent_CreateEventStruct1(
+			sizeof(gads_ReadyEvent),
+			offsetof(gads_ReadyEvent, ad), ad);
+		event->state = state;
+		env->ReleaseStringUTFChars(jAd, ad);
+		gevent_EnqueueEvent(gid_, callback_s, GADS_ADS_READY_EVENT, event, 1, this);
+	}
+
 	void onAdReceived(jstring jAd, jstring jAdType)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -240,8 +253,8 @@ public:
 			offsetof(gads_SimpleEvent, ad), ad,
 			offsetof(gads_SimpleEvent, type), type);
 
-		env->ReleaseStringUTFChars(jAdType, ad);
-		env->ReleaseStringUTFChars(jAd, type);
+		env->ReleaseStringUTFChars(jAdType, type);
+		env->ReleaseStringUTFChars(jAd, ad);
 
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_RECEIVED_EVENT, event, 1, this);
 	}
@@ -278,8 +291,8 @@ public:
 			offsetof(gads_SimpleEvent, ad), ad,
 			offsetof(gads_SimpleEvent, type), type);
 
-		env->ReleaseStringUTFChars(jAdType, ad);
-		env->ReleaseStringUTFChars(jAd, type);
+		env->ReleaseStringUTFChars(jAd, ad);
+		env->ReleaseStringUTFChars(jAdType, type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_ACTION_BEGIN_EVENT, event, 1, this);
 	}
 	
@@ -294,8 +307,8 @@ public:
 			offsetof(gads_SimpleEvent, ad), ad,
 			offsetof(gads_SimpleEvent, type), type);
 
-		env->ReleaseStringUTFChars(jAdType, ad);
-		env->ReleaseStringUTFChars(jAd, type);
+		env->ReleaseStringUTFChars(jAd, ad);
+		env->ReleaseStringUTFChars(jAdType, type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_ACTION_END_EVENT, event, 1, this);
 	}
 	
@@ -310,8 +323,8 @@ public:
 			offsetof(gads_SimpleEvent, ad), ad,
 			offsetof(gads_SimpleEvent, type), type);
 
-		env->ReleaseStringUTFChars(jAdType, ad);
-		env->ReleaseStringUTFChars(jAd, type);
+		env->ReleaseStringUTFChars(jAd, ad);
+		env->ReleaseStringUTFChars(jAdType, type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_DISMISSED_EVENT, event, 1, this);
 	}
 
@@ -326,8 +339,8 @@ public:
             offsetof(gads_SimpleEvent, ad), ad,
             offsetof(gads_SimpleEvent, type), type);
 
-		env->ReleaseStringUTFChars(jAdType, ad);
-		env->ReleaseStringUTFChars(jAd, type);
+		env->ReleaseStringUTFChars(jAd, ad);
+		env->ReleaseStringUTFChars(jAdType, type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_DISPLAYED_EVENT, event, 1, this);
 	}
 	
@@ -343,8 +356,8 @@ public:
             offsetof(gads_RewardEvent, type), type);
 		event->amount=amount;
 
-		env->ReleaseStringUTFChars(jAdType, ad);
-		env->ReleaseStringUTFChars(jAd, type);
+		env->ReleaseStringUTFChars(jAd, ad);
+		env->ReleaseStringUTFChars(jAdType, type);
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_REWARDED_EVENT, event, 1, this);
 	}
 
@@ -419,6 +432,11 @@ private:
 };
 
 extern "C" {
+
+void Java_com_giderosmobile_android_plugins_ads_Ads_onAdReady(JNIEnv *env, jclass clz, jstring jAd, jint state, jlong data)
+{
+	((GAds*)data)->onAdReady(jAd, state);
+}
 
 void Java_com_giderosmobile_android_plugins_ads_Ads_onAdReceived(JNIEnv *env, jclass clz, jstring jAd, jstring jAdType, jlong data)
 {

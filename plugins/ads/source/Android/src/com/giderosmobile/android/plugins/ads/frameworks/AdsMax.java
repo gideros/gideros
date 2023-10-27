@@ -49,6 +49,7 @@ public class AdsMax implements AdsInterface {
 		AppLovinSdk.initializeSdk( sActivity.get(), new AppLovinSdk.SdkInitializationListener() {
 			@Override
 			public void onSdkInitialized(AppLovinSdkConfiguration config) {
+				Ads.adReady(AdsMax.me, 1);
 			}
 		} );
 		AppLovinPrivacySettings.setIsAgeRestrictedUser(true,sActivity.get());

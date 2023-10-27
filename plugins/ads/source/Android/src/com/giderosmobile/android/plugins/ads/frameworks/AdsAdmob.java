@@ -481,6 +481,6 @@ public class AdsAdmob implements AdsInterface, OnInitializationCompleteListener 
 
 	@Override
 	public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-		//TODO
+		Ads.adReady(AdsAdmob.me, 1);
 	}
 }

@@ -523,6 +523,11 @@ public class Ads {
 		return false;
 	}
 
+	public static void adReady(Object caller, int state){
+		if (sData != 0)
+			onAdReady(getCallerName(caller), state, sData);
+	}
+
 	public static void adReceived(Object caller, String adType){
 		if (sData != 0)
 			onAdReceived(getCallerName(caller), adType, sData);
@@ -568,6 +573,7 @@ public class Ads {
 
 
 
+	private static native void onAdReady(String ad, int state, long data);
 	private static native void onAdReceived(String ad, String adType, long data);
 	private static native void onAdFailed(String ad, String adType, String error, long data);
 	private static native void onAdActionBegin(String ad, String adType, long data);
