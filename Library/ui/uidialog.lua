@@ -228,8 +228,7 @@ function UI.Screen:fitToGlass(s,w,x,y,sx,sy,dx,dy,mvtx,mvty)
 		return a,sa
 	end
 	--Transform origin
-	x,y=s:localToGlobal(x,y)
-	x,y=self.glass:globalToLocal(x,y)
+	x,y=self.glass:spriteToLocal(s,x,y)
 	-- Initial placement
 	x+=sx*(dx-1)/2
 	y+=sy*(dy-1)/2

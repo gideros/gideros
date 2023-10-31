@@ -178,7 +178,7 @@ local function idispatch(ctx,event,cps,x,y,...)
 					table.insert(t,{handler=h, target=v, _parents=1000})
 				else
 					if spriteStack[v] then
-						if debugClick then print("uicontrol","idispatch","name",v.name,"parents",spriteStack[v],"hitTestPoint",v.hitTestPoint and v:hitTestPoint(x,y,true,plane)) end
+						if debugClick then print("uicontrol","idispatch","name",v.name,"parents",spriteStack[v],"hitTestPoint",v.hitTestPoint and v:hitTestPoint(x,y,true,ctx.surface)) end
 						table.insert(t,{handler=h, target=v, _parents=spriteStack[v] or 0})
 					end
 				end
@@ -281,8 +281,12 @@ function UI.Control.queryStack(x,y,plane)
 		if v and type(v)=="table" then
 			local stop=true
 			if v.stopPropagation then
-				if plane then x,y=plane:localToGlobal(x,y) end
-				local lx,ly=v:globalToLocal(x,y)
+				local lx,ly
+				if plane then 
+					lx,ly=v:spriteToLocal(plane,x,y) 
+				else
+					lx,ly=v:globalToLocal(x,y)
+				end
 				stop=v:stopPropagation(lx,ly)
 			end
 			if stop and spriteStack and spriteStack[v] then
@@ -314,7 +318,7 @@ local function dispatchS(ctx,event,x,y,...)
 end
 
 local function fetchAllTouches(ts)
-	local ex,ey,dist,angle,ec,eb,em,et = nil,nil,nil,nil,0,nil,nil,nil
+	local ex,ey,dist,angle,ec,eb,em,et = -1,-1,0,0,0,0,0,nil
 	if ts then
 		local tmini,tmaxi = nil,nil
 		local idmi,idma = 1000,0

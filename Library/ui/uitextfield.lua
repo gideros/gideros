@@ -77,7 +77,7 @@ function TextEdit:setFont(font)
 	bb=(self.caretHeight-la-self.font:getDescender())/2
   end
   self.caretOffset=la+bb
-  self:_setFont(font)
+  self:_setFont(self.font)
 end
 
 function TextEdit:setPassword(p)
@@ -159,17 +159,17 @@ function TextEdit:stopEditing()
   self:removeEventListener(Event.REMOVED_FROM_STAGE,self.onRemove,self)
   self.caret:removeFromParent()
 end
-function TextEdit:setSelectionStartEnd(ss,se)
+function TextEdit:setSelectionStartEnd(ss,se,force)
 	if not ss then
-		self:setSelected(0,0)
+		self:setSelected(0,0,nil,force)
 		return
 	end
 	self.selStartEndStart=self.selStartEndStart or ss
 	local ps=self.selStartEndStart><se
 	local pe=self.selStartEndStart<>se
-	self:setSelected(ps,pe-ps,true)
+	self:setSelected(ps,pe-ps,true,force)
 end
-function TextEdit:setSelected(ss,sp,keepBounds)
+function TextEdit:setSelected(ss,sp,keepBounds,force)
 	if not self.selMark then return end
 	local tx=self:_getText()
 	ss=((ss or 0)<>0)><#tx
@@ -177,7 +177,7 @@ function TextEdit:setSelected(ss,sp,keepBounds)
 	self.selStart=ss
 	self.selSpan=sp
 	if not keepBounds then self.selStartEndStart=nil end
-	if self.editing and sp>0 then
+	if (self.editing or force) and sp>0 then
 		self.selMark:setVisible(true)
 		local sx,sy,sl=self:getPointFromTextPosition(ss)
 		local ex,ey,el=self:getPointFromTextPosition(ss+sp)
@@ -228,16 +228,21 @@ function TextEdit:getCaretPosition()
 	if not self.caret then return end
 	return self.caret:getPosition()
 end
-function TextEdit:setCaretPosition(cx,cy)
-  if self and self.caret then
+function TextEdit:setCaretPosition(cx,cy,forSelection)
+  if self and (forSelection or self.caret) then
     self:hideLast()
-	if not self.multiline then cy=self.font:getLineHeight()/2 end
+	if not self.multiline then 
+		local _,my,_,mh=self:getBounds(self,false)
+		cy=my+mh/2
+	end
     local ti,mx,my=self:getTextPositionFromPoint(cx,cy)
     self.caretPos=ti
     self.caretX=mx
     self.caretY=my
-    self.caret:setPosition(self.caretX,self.caretY)
-    self.caret:setVisible(true)
+	if self.caret then
+		self.caret:setPosition(self.caretX,self.caretY)
+		self.caret:setVisible(true)
+	end
     if self.caretListener then self.caretListener(self.caretPos,self.caretX,self.caretY) end
 	local extPos=self:passwordPos(self.caretPos,true)
     setTextInput(self,self.text,extPos,extPos)
@@ -312,7 +317,7 @@ function TextEdit:textChanged()
 	UI.dispatchEvent(self._textfield,"TextChange",self:getText())
 end
 function TextEdit:cutSelection()
-	if (self.selSpan or 0)>0 then
+	if (self.selSpan or 0)>0 and self.editing then
 		local ss=self.selStart
 		local sp=self.selSpan
 		self:setSelected(0,0)
@@ -607,11 +612,12 @@ function UI.TextField:onMouseMove(x,y)
 end
 
 function UI.TextField:onMouseClick(x,y,c)
-  if not self._flags.disabled and not self._flags.readonly then
+  if not self._flags.disabled and (self._flags.selectable or not self._flags.readonly) then
 	local shift=((UI.Control.Meta.modifiers or 0)&15)==KeyCode.MODIFIER_SHIFT
     if not self:focus({ TAG="UI.TextField",reason="ON_CLICK" } ) then	
 		local ocp=self.editor.caretPos
-		self.editor:setCaretPosition(self.editor:globalToLocal(self:localToGlobal(x,y)))
+		x,y=self.editor:spriteToLocal(self,x,y)
+		self.editor:setCaretPosition(x,y,true)
 		if (c or 0)>1 then
 			self.editor:setSelected(0,#self.editor:getText())
 		elseif shift then
@@ -634,7 +640,7 @@ function UI.TextField:onLongPrepare(ex,ey,ratio)
 end
 
 function UI.TextField:onLongClick(x,y,c)
-  if not self._flags.disabled and self.editor.editing then
+  if not self._flags.disabled and (self._flags.selectable or self.editor.editing) then
 	local hasSel=self.editor:getSelectedText()
 	if hasSel or not self._flags.readonly then
 		local popup=UI.Builder({
@@ -661,6 +667,7 @@ function UI.TextField:onLongClick(x,y,c)
 		end
 		if self._flags.readonly then
 			popup.btPaste:setVisible(false)
+			popup.btCut:setVisible(false)
 		end
 		popup.uitextfield=self
 		function popup:onWidgetAction(w)
@@ -701,13 +708,14 @@ function UI.TextField:dismissCutPaste()
 end
 
 function UI.TextField:onDragStart(x,y)
-	if not self._flags.disabled and not self._flags.readonly then
+	if not self._flags.disabled and (self._flags.selectable or not self._flags.readonly) then
 		self:focus({ TAG="UI.TextField",reason="ON_CLICK" } )
-		self.editor:setCaretPosition(self.editor:globalToLocal(self:localToGlobal(x,y)))
+		x,y=self.editor:spriteToLocal(self,x,y)
+		self.editor:setCaretPosition(x,y,true)
 		self.dragSelStart=self.editor.caretPos
 		local shift=((UI.Control.Meta.modifiers or 0)&15)==KeyCode.MODIFIER_SHIFT
 		if not shift then
-			self.editor:setSelected(0,0)
+			self.editor:setSelected(0,0,nil,true)
 		end
 		return true
 	end
@@ -715,9 +723,10 @@ end
 
 function UI.TextField:onDrag(x,y)
 	if self.dragSelStart then
-		self.editor:setCaretPosition(self.editor:globalToLocal(self:localToGlobal(x,y)))
+		x,y=self.editor:spriteToLocal(self,x,y)
+		self.editor:setCaretPosition(x,y,true)
 		local dcur=self.editor.caretPos
-		self.editor:setSelectionStartEnd(self.dragSelStart,dcur)
+		self.editor:setSelectionStartEnd(self.dragSelStart,dcur,true)
 		return true
 	end
 end
@@ -760,7 +769,7 @@ end
 
 function UI.TextField:focus(event)
 	self:dismissCutPaste()
-	if not self._flags.disabled and not self._flags.readonly then
+	if not self._flags.disabled and (self._flags.selectable or not self._flags.readonly) then
 		local gained=UI.Focus:request(self)
 		if gained then
 			UI.Control.onLongClick[self]=self
@@ -834,6 +843,7 @@ function UI.TextField:setFlags(changes)
 	if changes.disabled or changes.readonly then
 		self:unfocus({ TAG="UI.TextField",reason="DISABLE" } )
 	end 
+	self._flags.focusable=if not self._flags.readonly then UI.Focus.KEYBOARD else 0
 	self.cursor=nil
 	local s="textfield.styNormal"
 	if self._flags.disabled then

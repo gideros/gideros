@@ -147,7 +147,7 @@ end
 
 function UI.TabbedPane:onMouseClick(x,y)
 	UI.Focus:request(self)
-    local eb=self:getChildrenAtPoint(x,y,true,false,self)
+    local eb=self:getChildrenAtPoint(x,y,true,true,self)
     for _,v in ipairs(eb) do
         local cell=self.headers[v]
         if cell then

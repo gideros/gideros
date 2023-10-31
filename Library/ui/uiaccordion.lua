@@ -49,7 +49,7 @@ function UI.Accordion:checkDragResize()
 end
 
 function UI.Accordion:getHeaderAt(x,y)
-    local eb=self:getChildrenAtPoint(x,y,true,false,self)
+    local eb=self:getChildrenAtPoint(x,y,true,true,self)
     for _,v in ipairs(eb) do
         local cell=self.headers[v]
         if cell then return cell end
@@ -187,23 +187,20 @@ end
 
 function UI.Accordion:onMouseClick(x,y)
 	UI.Focus:request(self)
-    local eb=self:getChildrenAtPoint(x,y,true,false,self)
-    for _,v in ipairs(eb) do
-        local cell=self.headers[v]
-        if cell then
-            local disabled = nil
-            if cell.h and cell.h.getFlags then disabled = cell.h:getFlags().disabled end
-            if disabled then --nothing
-                self:setExpanded(cell.d,false,"onMouseClick")
-                UI.dispatchEvent(self,"WidgetExpand",cell.d,false,"onMouseClick")
-            else
-                local nex=not self.expanded[cell.d]
-                self:setExpanded(cell.d,nex,"onMouseClick")
-                UI.dispatchEvent(self,"WidgetExpand",cell.d,nex,"onMouseClick")
-                return true --stopPropagation !
-            end
-        end
-    end
+    local cell=self:getHeaderAt(x,y)
+	if cell then
+		local disabled = nil
+		if cell.h and cell.h.getFlags then disabled = cell.h:getFlags().disabled end
+		if disabled then --nothing
+			self:setExpanded(cell.d,false,"onMouseClick")
+			UI.dispatchEvent(self,"WidgetExpand",cell.d,false,"onMouseClick")
+		else
+			local nex=not self.expanded[cell.d]
+			self:setExpanded(cell.d,nex,"onMouseClick")
+			UI.dispatchEvent(self,"WidgetExpand",cell.d,nex,"onMouseClick")
+			return true --stopPropagation !
+		end
+	end
 end
 
 function UI.Accordion:isExpanded(d)

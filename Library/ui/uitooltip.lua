@@ -2,14 +2,13 @@
 UI.ToolTip={}
 
 function UI.ToolTip.lookupAt(screen,x,y)
-	local sps=screen:getChildrenAtPoint(x,y,true,false)
+	local sps=screen:getChildrenAtPoint(x,y,true,false,screen)
 	local si=#sps
 	local tip,sites
 	while si>0 do
 		tip=sps[si].ToolTip
 		if type(tip)=="function" then
-			x,y=screen:localToGlobal(x,y)
-			x,y=sps[si]:globalToLocal(x,y)
+			x,y=sps[si]:spriteToLocal(screen,x,y)
 			tip,sites=tip(sps[si],x,y)
 		end
 		if tip then break end
@@ -18,8 +17,7 @@ function UI.ToolTip.lookupAt(screen,x,y)
 	if sites then
 		sites=table.clone(sites)
 		for _,s in ipairs(sites) do
-			s.x,s.y=sps[si]:localToGlobal(s.x,s.y)
-			s.x,s.y=screen:globalToLocal(s.x,s.y)			
+			s.x,s.y=screen:spriteToLocal(sps[si],s.x,s.y)			
 		end
 	end
 	return sps[si],tip,sites

@@ -586,8 +586,8 @@ function UI.Viewport:onFocusArea(src,x,y,w,h,ax,ay)
     local cpx,cpy=self.cp:getPosition()
     local xb,yb=x+w,y+h
 	--CP space
-    x,y=self.cp:globalToLocal(src:localToGlobal(x,y))
-    xb,yb=self.cp:globalToLocal(src:localToGlobal(xb,yb))
+    x,y=self.cp:spriteToLocal(src,x,y)
+    xb,yb=self.cp:spriteToLocal(src,xb,yb)
 	--Range space
     local xi,yi=x><xb,y><yb
 	x=(x-vpw)<>0

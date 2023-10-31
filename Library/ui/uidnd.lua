@@ -33,7 +33,7 @@ local dndPrepare=nil
 local function dndLongPrepare(ex,ey,ratio)
 	local valid
 	for k,sinfo in pairs(UI.Dnd._sources) do
-		local lx,ly=k:globalToLocal(ex,ey)
+		local lx,ly	if UI.Control.CurrentContext.surface then lx,ly=k:spriteToLocal(UI.Control.CurrentContext.surface,ex,ey) else lx,ly=k:globalToLocal(ex,ey) end
 		if sinfo.long and k:hitTestPoint(ex,ey,true) and (not k.probeDndData or k:probeDndData(lx,ly)) then
 			valid=true
 			if not dndPrepare then
@@ -59,7 +59,7 @@ local function dndDragStart(x,y,dist,angle,changed,long)
 			end
 		end
 		if svalid and k:hitTestPoint(x,y,true) then
-			local lx,ly=k:globalToLocal(x,y)
+			local lx,ly	if UI.Control.CurrentContext.surface then lx,ly=k:spriteToLocal(UI.Control.CurrentContext.surface,x,y) else lx,ly=k:globalToLocal(x,y) end
 			local data=k:getDndData(lx,ly)
 			if data then
 				UI.Dnd._context={ source=k, data=data }
@@ -92,7 +92,7 @@ local function dndDrag(x,y)
 		UI.Dnd._context.visual:setPosition(x,y)
 		for k,_ in pairs(UI.Dnd._targets) do
 			if k:hitTestPoint(x,y,true) then
-				local lx,ly=k:globalToLocal(x,y)
+				local lx,ly	if UI.Control.CurrentContext.surface then lx,ly=k:spriteToLocal(UI.Control.CurrentContext.surface,x,y) else lx,ly=k:globalToLocal(x,y) end
 				UI.Dnd._context.offerStatus=(not k.offerDndData) or k:offerDndData(UI.Dnd._context.data,lx,ly)
 				if UI.Dnd._context.offerStatus~=nil then
 					UI.Dnd._context.target=k

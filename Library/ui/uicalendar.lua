@@ -78,8 +78,7 @@ end
 
 function UI.Calendar:onMouseClick(x,y)
 	UI.Focus:request(self)
-    x,y=self:localToGlobal(x,y)
-    local eb=self.pnDays:getChildrenAtPoint(x,y,true,true)
+    local eb=self.pnDays:getChildrenAtPoint(x,y,true,true,self)
 	for _,spr in ipairs(eb) do
 		local dayn=self.daysMap[spr]
 		if dayn then			

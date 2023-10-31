@@ -89,7 +89,7 @@ function UI.Table:onMouseClick(x,y,c)
 		end
 	end
 	
-	local d=rn and not hdr and self.data[rn]
+	local d=cn and rn and not hdr and self.data[rn]
 	if d and type(d)=="table" then
 		if d.onClickCell then
 			local nh=self.cells[vector(rn,cn,0,0)]
@@ -709,7 +709,7 @@ function UI.Table:getRowColumnFromPoint(x,y)
 		lcs=(lp.cellSpacingX+.5)//1 
 	end
 	local n=1
-	while d>ls[n] do
+	while ls[n] and d>ls[n] do
 		d-=(ls[n]+lcs)
 		n+=1
 	end

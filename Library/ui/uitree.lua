@@ -305,8 +305,7 @@ function UI.Tree:offerDndData(data,x,y)
 				data.insert=ll
 				data.insertParent=lp
 				local lcs,xs=0,0
-				xs,ys=ocell.lay:localToGlobal(0,ys)
-				xs,ys=self:globalToLocal(xs,ys)
+				xs,ys=self:spriteToLocal(ocell.lay,xs,ys)
 				self.dndDstMarker:setPosition(xs,ys-lcs)	
 				self.dndDstMarker:setDimensions(self:getWidth()-xs,self.dndDstMarker.sh)
 			end

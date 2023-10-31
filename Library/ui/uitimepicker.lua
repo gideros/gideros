@@ -148,8 +148,7 @@ end
 
 function UI.EditableClock:onDragStart(x,y,ed,ea,change,long)
 	if long then return end
-    local mx,my=self:localToGlobal(x,y)
-    local eb=self:getChildrenAtPoint(mx,my,true,false)
+    local eb=self:getChildrenAtPoint(x,y,true,false,self)
 	local cw,ch=self:getDimensions()
 	local ma=^>math.atan2(x-cw/2,-y+ch/2)
 	for _,spr in ipairs(eb) do

@@ -141,6 +141,7 @@ function D3Anim.setBonesPose(m,poses)
 end
 
 function D3Anim.setAnimation(model,anim,track,loop,transitionTime,speed,onEnd)
+	assert(anim and anim.bones,"Invalid animation:"..tostring(anim))
 	assert(D3Anim._animatedModel[model],"Model not animatable")
 	local an=D3Anim._animatedModel[model]
 	local oldAnim,oldStart,oldLen,tm=nil,nil,nil,os:timer()
