@@ -2204,60 +2204,85 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 
     Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
     ShaderEngine::DepthStencil ds;
+    unsigned int sm=0;
 
-	if (lua_isnoneornil(L,2))
-		ds.dTest=false;
-	else if (lua_istable(L,2))
+    if (lua_istable(L,2))
 	{
 		luaL_checktype(L,2,LUA_TTABLE);
-		lua_getfield(L,2,"stencilClear");
-		if (!lua_isnil(L,-1))
+        lua_getfield(L,2,"depthTest");
+        if (!lua_isnil(L,-1)) {
+            ds.dTest=lua_toboolean(L,-1);
+            sm|=Sprite::STENCILMASK_DTEST;
+        }
+        lua_getfield(L,2,"stencilClear");
+        if (!lua_isnil(L,-1)) {
 			ds.sClear=lua_toboolean(L,-1);
+            sm|=Sprite::STENCILMASK_SCLEAR;
+        }
 		lua_pop(L,1);
 		lua_getfield(L,2,"stencilMask");
-		if (!lua_isnil(L,-1))
+        if (!lua_isnil(L,-1)) {
 			ds.sMask=luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"stencilWriteMask");
-		if (!lua_isnil(L,-1))
-			ds.sWMask=luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"stencilClearValue");
-		if (!lua_isnil(L,-1))
-			ds.sClearValue=luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"stencilRef");
-		if (!lua_isnil(L,-1))
-			ds.sRef=luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"stencilFunc");
-		if (!lua_isnil(L,-1))
-			ds.sFunc=(ShaderEngine::StencilFunc) luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"depthPass");
-		if (!lua_isnil(L,-1))
-			ds.dPass=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"stencilFail");
-		if (!lua_isnil(L,-1))
-			ds.sFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"depthFail");
-		if (!lua_isnil(L,-1))
-			ds.dFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
-		lua_pop(L,1);
-		lua_getfield(L,2,"cullMode");
-		if (!lua_isnil(L,-1))
-			ds.cullMode=((ShaderEngine::CullMode)(luaL_checkinteger(L,-1)&3));
-		lua_pop(L,1);
-        lua_getfield(L,2,"depthMask");
-        if (!lua_isnil(L,-1))
-            ds.dMask=lua_toboolean(L,-1);
+            sm|=Sprite::STENCILMASK_SMASK;
+        }
         lua_pop(L,1);
-        ds.dTest=true;
-	}
+		lua_getfield(L,2,"stencilWriteMask");
+        if (!lua_isnil(L,-1)) {
+			ds.sWMask=luaL_checkinteger(L,-1);
+            sm|=Sprite::STENCILMASK_SWMASK;
+        }
+        lua_pop(L,1);
+		lua_getfield(L,2,"stencilClearValue");
+        if (!lua_isnil(L,-1)) {
+			ds.sClearValue=luaL_checkinteger(L,-1);
+            sm|=Sprite::STENCILMASK_SCLEARVALUE;
+        }
+        lua_pop(L,1);
+		lua_getfield(L,2,"stencilRef");
+        if (!lua_isnil(L,-1)) {
+			ds.sRef=luaL_checkinteger(L,-1);
+            sm|=Sprite::STENCILMASK_SREF;
+        }
+        lua_pop(L,1);
+		lua_getfield(L,2,"stencilFunc");
+        if (!lua_isnil(L,-1)) {
+			ds.sFunc=(ShaderEngine::StencilFunc) luaL_checkinteger(L,-1);
+            sm|=Sprite::STENCILMASK_SFUNC;
+        }
+        lua_pop(L,1);
+		lua_getfield(L,2,"depthPass");
+        if (!lua_isnil(L,-1)) {
+			ds.dPass=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+            sm|=Sprite::STENCILMASK_DPASS;
+        }
+        lua_pop(L,1);
+		lua_getfield(L,2,"stencilFail");
+        if (!lua_isnil(L,-1)) {
+			ds.sFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+            sm|=Sprite::STENCILMASK_SFAIL;
+        }
+        lua_pop(L,1);
+		lua_getfield(L,2,"depthFail");
+        if (!lua_isnil(L,-1)) {
+			ds.dFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+            sm|=Sprite::STENCILMASK_DFAIL;
+        }
+        lua_pop(L,1);
+		lua_getfield(L,2,"cullMode");
+        if (!lua_isnil(L,-1)) {
+			ds.cullMode=((ShaderEngine::CullMode)(luaL_checkinteger(L,-1)&3));
+            sm|=Sprite::STENCILMASK_CULLMODE;
+        }
+        lua_pop(L,1);
+        lua_getfield(L,2,"depthMask");
+        if (!lua_isnil(L,-1)) {
+            ds.dMask=lua_toboolean(L,-1);
+            sm|=Sprite::STENCILMASK_DMASK;
+        }
+        lua_pop(L,1);
+    }
 
-	sprite->setStencilOperation(ds);
+    sprite->setStencilOperation(ds,sm);
 
 	return 0;
 }

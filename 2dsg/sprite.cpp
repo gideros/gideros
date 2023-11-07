@@ -127,6 +127,7 @@ Sprite::Sprite(Application* application) :
 	cliph_ = -1;
 
 	stencil_.dTest=false;
+    stencilMask_=0;
 	layoutState=NULL;
 	layoutConstraints=NULL;
 	checkClip_=false;
@@ -192,6 +193,7 @@ void Sprite::cloneFrom(Sprite *s) {
             if (ss->second.shader) ss->second.shader->Retain();
     }
     stencil_=s->stencil_;
+    stencilMask_=s->stencilMask_;
     worldAlign_=s->worldAlign_;
     if (s->ghosts_)
     {
@@ -646,7 +648,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				glPopBlendFunc();
             if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0) &&(sprite->renderTransform_.type!=Matrix4::FULL))
 				ShaderEngine::Engine->popClip();
-			if (sprite->stencil_.dTest)
+            if (sprite->stencilMask_)
 				ShaderEngine::Engine->popDepthStencil();
 			continue;
 		}
@@ -718,22 +720,37 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			ShaderEngine::Engine->pushClip(sprite->clipx_, sprite->clipy_,
 					sprite->clipw_, sprite->cliph_);
 
-		if (sprite->stencil_.dTest)
+        if (sprite->stencilMask_)
 		{
 			ShaderEngine::DepthStencil stencil =
 				ShaderEngine::Engine->pushDepthStencil();
-			stencil.sClear=sprite->stencil_.sClear;
-			stencil.dClear=sprite->stencil_.dClear;
-			stencil.dMask=sprite->stencil_.dMask;
-			stencil.sFail=sprite->stencil_.sFail;
-			stencil.dFail=sprite->stencil_.dFail;
-			stencil.dPass=sprite->stencil_.dPass;
-			stencil.sFunc=sprite->stencil_.sFunc;
-			stencil.sMask=sprite->stencil_.sMask;
-			stencil.sWMask=sprite->stencil_.sWMask;
-			stencil.sClearValue=sprite->stencil_.sClearValue;
-			stencil.sRef=sprite->stencil_.sRef;
-			stencil.cullMode=sprite->stencil_.cullMode;
+            unsigned int sm=sprite->stencilMask_;
+            if (sm&STENCILMASK_DTEST)
+                stencil.dTest=sprite->stencil_.dTest;
+            if (sm&STENCILMASK_SCLEAR)
+                stencil.sClear=sprite->stencil_.sClear;
+            if (sm&STENCILMASK_DCLEAR)
+                stencil.dClear=sprite->stencil_.dClear;
+            if (sm&STENCILMASK_DMASK)
+                stencil.dMask=sprite->stencil_.dMask;
+            if (sm&STENCILMASK_SFAIL)
+                stencil.sFail=sprite->stencil_.sFail;
+            if (sm&STENCILMASK_DFAIL)
+                stencil.dFail=sprite->stencil_.dFail;
+            if (sm&STENCILMASK_DPASS)
+                stencil.dPass=sprite->stencil_.dPass;
+            if (sm&STENCILMASK_SFUNC)
+                stencil.sFunc=sprite->stencil_.sFunc;
+            if (sm&STENCILMASK_SMASK)
+                stencil.sMask=sprite->stencil_.sMask;
+            if (sm&STENCILMASK_SWMASK)
+                stencil.sWMask=sprite->stencil_.sWMask;
+            if (sm&STENCILMASK_SCLEARVALUE)
+                stencil.sClearValue=sprite->stencil_.sClearValue;
+            if (sm&STENCILMASK_SREF)
+                stencil.sRef=sprite->stencil_.sRef;
+            if (sm&STENCILMASK_CULLMODE)
+                stencil.cullMode=sprite->stencil_.cullMode;
 			if (!lastEffect)
 				ShaderEngine::Engine->setDepthStencil(stencil);
 		}

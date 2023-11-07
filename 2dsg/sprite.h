@@ -454,9 +454,26 @@ public:
         invalidate(INV_TRANSFORM);
 	}
 
-    void setStencilOperation(const ShaderEngine::DepthStencil ds)
+    enum StencilFields {
+        STENCILMASK_DTEST=1,
+        STENCILMASK_SCLEAR=2,
+        STENCILMASK_DCLEAR=4,
+        STENCILMASK_DMASK=8,
+        STENCILMASK_SFAIL=16,
+        STENCILMASK_DFAIL=32,
+        STENCILMASK_DPASS=64,
+        STENCILMASK_SFUNC=128,
+        STENCILMASK_SMASK=256,
+        STENCILMASK_SWMASK=512,
+        STENCILMASK_SCLEARVALUE=1024,
+        STENCILMASK_SREF=2048,
+        STENCILMASK_CULLMODE=4096,
+    };
+
+    void setStencilOperation(const ShaderEngine::DepthStencil ds,unsigned int dsmask)
     {
     	stencil_=ds;
+        stencilMask_=dsmask;
     }
 
     void setBounds(float x,float y,float w,float h,bool forLayout=false)
@@ -628,6 +645,7 @@ protected:
 protected:
     std::map<int,struct _ShaderSpec> *shaders_;
 	ShaderEngine::DepthStencil stencil_;
+    unsigned int stencilMask_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;
 

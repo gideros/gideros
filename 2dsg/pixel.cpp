@@ -122,7 +122,7 @@ Pixel::~Pixel()
     if (texture_)
         texture_->unref();
     if (extraTexture) {
-        for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
+        for (int t=0;t<(PIXEL_MAX_TEXTURES-1);t++)
             if (extraTexture[t])
                 extraTexture[t]->unref();
         delete[] extraTexture;
@@ -451,11 +451,11 @@ void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
             texture_->unref();
         texture_ = texture;
     }
-    else
+    else if (slot<PIXEL_MAX_TEXTURES)
     {
         if (!extraTexture) {
             extraTexture=new TextureBase*[PIXEL_MAX_TEXTURES-1];
-            for (int k=0;k<PIXEL_MAX_TEXTURES-1;k++) extraTexture[k]=nullptr;
+            for (int k=0;k<(PIXEL_MAX_TEXTURES-1);k++) extraTexture[k]=nullptr;
         }
         if (extraTexture[slot-1])
             extraTexture[slot-1]->unref();
