@@ -52,6 +52,7 @@ import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.inputmethod.BaseInputConnection;
@@ -988,20 +989,41 @@ public class GiderosApplication
 		return "";
 	}
 
+	public static void setWindowFlag(Activity activity, final int bits, boolean on) {
+		Window win = activity.getWindow();
+		WindowManager.LayoutParams winParams = win.getAttributes();
+		if (on) {
+			winParams.flags |= bits;
+		} else {
+			winParams.flags &= ~bits;
+		}
+		win.setAttributes(winParams);
+	}
+
 	static public void setProperty(String what,String arg) {
 		if (what.equals("statusBar")) {
 			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
 				final Activity activity = WeakActivityHolder.get();
-				WindowInsetsController windowInsetsController = activity.getWindow().getDecorView().getWindowInsetsController();
-				if (arg.length()>0) {
-					windowInsetsController.show(android.view.WindowInsets.Type.statusBars());
-					int ap=0;
-					if ("light".equals(arg))
-						ap=WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
-					windowInsetsController.setSystemBarsAppearance(ap, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
-				}
-				else
-					windowInsetsController.hide(android.view.WindowInsets.Type.statusBars());
+				final String stype=arg;
+			    activity.runOnUiThread(new Runnable() {
+			    	public void run() {
+						WindowInsetsController windowInsetsController = activity.getWindow().getDecorView().getWindowInsetsController();
+						if (stype.length()>0) {
+							windowInsetsController.show(android.view.WindowInsets.Type.statusBars());
+							int ap=0;
+							if ("dark".equals(stype))
+								ap=WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+							windowInsetsController.setSystemBarsAppearance(ap, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+
+							activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+							activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+							//setWindowFlag(activity, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
+							activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+						}
+						else
+							windowInsetsController.hide(android.view.WindowInsets.Type.statusBars());
+			    	}
+			    });
 			}
 		}
 	}
