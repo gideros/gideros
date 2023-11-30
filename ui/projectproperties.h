@@ -6,6 +6,7 @@
 #include <QSet>
 #include <QMap>
 #include <QDomDocument>
+#include <QXmlStreamWriter>
 
 struct ProjectProperties
 {
@@ -28,7 +29,7 @@ struct ProjectProperties
 	}
 
 	void loadXml(QDomElement xml);
-	void toXml(QDomDocument doc,QDomElement xml) const;
+    void toXml(QXmlStreamWriter &out) const;
 	static QMap<QString, QString> availablePlugins();
 
 	void clear()

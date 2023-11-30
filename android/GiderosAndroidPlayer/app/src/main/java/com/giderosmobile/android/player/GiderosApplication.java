@@ -696,6 +696,10 @@ public class GiderosApplication
 					new Class < ? > [] { Integer.TYPE, String[].class, int[].class }, 
 					new Object [] { new Integer ( requestCode ), permissions, grantResults });
 		}
+		synchronized (lock)
+		{
+			nativeRequestPermissionsResult(permissions, grantResults);
+		}
 	}
 	
 	public void onSurfaceCreated(Surface surface)
@@ -1649,6 +1653,7 @@ public class GiderosApplication
 	static private native void nativeStop();
 	static private native void nativeStart();
 	static private native void nativeHandleOpenUrl(String url);
+	static private native void nativeRequestPermissionsResult(String[] permissions, int[] grantResults);
 	static private native void oculusStop();
 	static private native void oculusStart();
 	static private native void oculusPause();

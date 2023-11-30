@@ -62,6 +62,7 @@
 #include <QTimer>
 
 #include <QInputDialog>
+#include <QXmlStreamWriter>
 
 MainWindow *MainWindow::lua_instance=NULL;
 QTemporaryDir *MainWindow::tempDir=NULL;
@@ -1365,7 +1366,7 @@ void MainWindow::newProject()
 
 			libraryWidget_->newProject(fileName);
 
-			QTextStream(&file) << libraryWidget_->toXml().toString();
+            libraryWidget_->toXml(file);
 
 			file.close();
 
@@ -1431,9 +1432,8 @@ void MainWindow::saveProject()
         return;
     }
 
-    QTextStream out(&file);
-    out.setEncoding(QStringConverter::Utf8);
-    out << libraryWidget_->toXml().toString();
+    libraryWidget_->toXml(file);
+
     file.close();
     libraryWidget_->setModified(false);
 }
@@ -1477,7 +1477,7 @@ void MainWindow::cloneProject()
 
             libraryWidget_->cloneProject(fileName);
 
-            QTextStream(&file) << libraryWidget_->toXml().toString();
+            libraryWidget_->toXml(file);
 
             file.close();
 
@@ -2105,33 +2105,9 @@ void MainWindow::compileAll()
 
     QStringList fileNames;
     {
-        QDir dir = QFileInfo(projectFileName_).dir();
-
-        QDomDocument doc = libraryWidget_->toXml();
-
-        std::stack<QDomNode> stack;
-        stack.push(doc.documentElement());
-
-        while (stack.empty() == false)
-        {
-            QDomNode n = stack.top();
-            QDomElement e = n.toElement();
-            stack.pop();
-
-            if (e.tagName() == "file")
-            {
-                QString fileName = e.attribute("source");
-				if (fileName.isEmpty())
-				{
-					fileName = e.attribute("file");
-				}
-                if (QFileInfo(fileName).suffix().toLower() == "lua")
-                    fileNames << fileName;
-            }
-
-            QDomNodeList childNodes = n.childNodes();
-            for (int i = 0; i < childNodes.size(); ++i)
-                stack.push(childNodes.item(i));
+        auto flist=libraryWidget_->fileList(false,false,true);
+        for (auto fp: flist) {
+            fileNames << fp.second;
         }
     }
 
@@ -3390,7 +3366,7 @@ void MainWindow::exportProject()
 
 std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downsizing)
 {
-    return libraryWidget_->fileList(downsizing,clientIsWeb_);
+    return libraryWidget_->fileList(downsizing,clientIsWeb_,false);
 }
 
 void MainWindow::replace_findNext()

@@ -4,6 +4,7 @@
 #include <QTreeWidget>
 #include <QDragEnterEvent>
 #include <QDomDocument>
+#include <QXmlStreamWriter>
 #include <QDir>
 
 #include "codedependenciesdialog.h"
@@ -19,7 +20,8 @@ public:
 	~LibraryTreeWidget();
     QString projectFileName_;
 
-	QDomDocument toXml() const; 
+    void toXml(QXmlStreamWriter &out) const;
+    QString toXml() const;
 	void loadXml(const QString& projectFileName, const QDomDocument& doc);
 	void clear();
 	void newProject(const QString& projectFileName);
@@ -29,7 +31,7 @@ public:
 	void setModified(bool m);
 	bool isModified() const;
 	QMap<QString, QString> usedPlugins();
-    std::vector<std::pair<QString, QString> > fileList(bool downsizing,bool webClient);
+    std::vector<std::pair<QString, QString> > fileList(bool downsizing, bool webClient, bool justLua);
 
     std::vector<std::pair<QString, bool> > topologicalSort(std::map<QString, QString> fileMap) const
 	{

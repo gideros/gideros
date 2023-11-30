@@ -263,7 +263,7 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 			this, SLOT  (onCurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
 	isModifed_ = false;
-	xmlString_ = toXml().toString();
+    xmlString_ = toXml();
 
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkModification()));
@@ -1006,6 +1006,16 @@ void LibraryTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
 		}
 	}
 }
+
+QString LibraryTreeWidget::toXml() const {
+    QString t;
+    QXmlStreamWriter out(&t);
+    out.setAutoFormatting(true);
+    out.writeStartDocument();
+    toXml(out);
+    out.writeEndDocument();
+    return t;
+}
 /*
  * XML file/folder nodes
  * 	- File Link: <file source="absolute target file" ...attributes...>
@@ -1013,89 +1023,88 @@ void LibraryTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
  * 	- Folder Link: <folder name="folder name" path="absolute target folder path">
  * 	- Folder Virtual: <folder name="folder name" path="">
  */
-QDomDocument LibraryTreeWidget::toXml() const
+void LibraryTreeWidget::toXml(QXmlStreamWriter &out) const
 {
-	QDomDocument doc;
-	doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\""));
-	QDomElement root = doc.createElement("project");
+    out.writeStartElement("project");
 
-	QDomElement properties = doc.createElement("properties");
-	properties_.toXml(doc,properties);
+    out.writeStartElement("properties");
+    properties_.toXml(out);
+    out.writeEndElement();
 
-	root.appendChild(properties);
+    QTreeWidgetItem* rootitem = invisibleRootItem();
+    rootitem = rootitem->child(0);
+    QTreeWidgetItem *pluginsFolder=rootitem?rootitem->child(0):NULL;
+    QTreeWidgetItem *filesFolder=rootitem?rootitem->child(1):NULL;
+    if (pluginsFolder&&filesFolder) {
 
-	doc.appendChild(root);
+        std::stack<std::pair<QTreeWidgetItem*, bool> > stack;
+        stack.push(std::make_pair(filesFolder, true));
 
-	QTreeWidgetItem* rootitem = invisibleRootItem();
-	rootitem = rootitem->child(0);
-	if (!rootitem) return doc;
-	QTreeWidgetItem *pluginsFolder=rootitem->child(0);
-	if (!pluginsFolder) return doc;
-	QTreeWidgetItem *filesFolder=rootitem->child(1);
-	if (!filesFolder) return doc;
+        QDir pdir = QFileInfo(projectFileName_).dir();
 
-	std::stack<std::pair<QTreeWidgetItem*, QDomElement> > stack;
-	stack.push(std::make_pair(filesFolder, root));
+        while (stack.empty() == false)
+        {
+            QTreeWidgetItem* item = stack.top().first;
+            bool enter = stack.top().second;
+            stack.pop();
 
-	QDir pdir = QFileInfo(projectFileName_).dir();
+            if (enter)
+            {
+                if (item!=filesFolder)
+                {
+                    stack.push(std::make_pair(item, false));
+                    QMap<QString, QVariant> data = item->data(0, Qt::UserRole).toMap();
+                    out.writeStartElement("folder");
+                    out.writeAttribute("name", item->text(0));
+                    if (!data["fspath"].toString().isEmpty())
+                        out.writeAttribute("path", pdir.relativeFilePath(data["fspath"].toString()));
+                }
+                for (int i = 0; i < item->childCount(); ++i)
+                {
+                    QTreeWidgetItem* childItem = item->child(i);
 
-	while (stack.empty() == false)
-	{
-		QTreeWidgetItem* item = stack.top().first;
-		QDomElement element = stack.top().second;
-		stack.pop();
+                    QMap<QString, QVariant> data = childItem->data(0, Qt::UserRole).toMap();
+                    QString fileName = data["filename"].toString();
 
-		for (int i = 0; i < item->childCount(); ++i)
-		{
-			QTreeWidgetItem* childItem = item->child(i);
-
-			QMap<QString, QVariant> data = childItem->data(0, Qt::UserRole).toMap();
-			QString fileName = data["filename"].toString();
-
-			QDomElement childElement = doc.createElement(fileName.isEmpty() ? "folder" : "file");
-			if (fileName.isEmpty() == false)
-			{
-				bool isLink=data["link"].toBool();
-                childElement.setAttribute(isLink?"source":"name",pdir.relativeFilePath(fileName));
-                if (data.contains("downsizing") && data["downsizing"].toBool())
-                    childElement.setAttribute("downsizing", 1);
-                if (data.contains("excludeFromExecution") && data["excludeFromExecution"].toBool())
-                    childElement.setAttribute("excludeFromExecution", 1);
-                if (data.contains("excludeFromEncryption") && data["excludeFromEncryption"].toBool())
-                    childElement.setAttribute("excludeFromEncryption", 1);
-                if (data.contains("excludeFromPackage") && data["excludeFromPackage"].toBool())
-                    childElement.setAttribute("excludeFromPackage", 1);
+                    if (fileName.isEmpty() == false)
+                    {
+                        out.writeStartElement("file");
+                        bool isLink=data["link"].toBool();
+                        out.writeAttribute(isLink?"source":"name",pdir.relativeFilePath(fileName));
+                        if (data.contains("downsizing") && data["downsizing"].toBool())
+                            out.writeAttribute("downsizing", "1");
+                        if (data.contains("excludeFromExecution") && data["excludeFromExecution"].toBool())
+                            out.writeAttribute("excludeFromExecution", "1");
+                        if (data.contains("excludeFromEncryption") && data["excludeFromEncryption"].toBool())
+                            out.writeAttribute("excludeFromEncryption", "1");
+                        if (data.contains("excludeFromPackage") && data["excludeFromPackage"].toBool())
+                            out.writeAttribute("excludeFromPackage", "1");
+                        out.writeEndElement();
+                    }
+                    else
+                        stack.push(std::make_pair(childItem, true));
+                }
             }
-			else
-			{
-				childElement.setAttribute("name", childItem->text(0));
-				if (!data["fspath"].toString().isEmpty())
-					childElement.setAttribute("path", pdir.relativeFilePath(data["fspath"].toString()));
-			}
+            else
+                out.writeEndElement();
+        }
 
-			element.appendChild(childElement);
+        std::vector<std::pair<QString, QString> > dependencies = dependencyGraph_.dependencies();
+        for (std::size_t i = 0; i < dependencies.size(); ++i)
+        {
+            out.writeStartElement("dependency");
+            out.writeAttribute("from",  pdir.relativeFilePath(dependencies[i].first));
+            out.writeAttribute("to",  pdir.relativeFilePath(dependencies[i].second));
+            out.writeEndElement();
+        }
+    }
 
-			stack.push(std::make_pair(childItem, childElement));
-		}
-	}
-
-	std::vector<std::pair<QString, QString> > dependencies = dependencyGraph_.dependencies();
-	for (std::size_t i = 0; i < dependencies.size(); ++i)
-	{
-		QDomElement childElement = doc.createElement("dependency");
-
-		childElement.setAttribute("from",  pdir.relativeFilePath(dependencies[i].first));
-		childElement.setAttribute("to",  pdir.relativeFilePath(dependencies[i].second));
-
-		root.appendChild(childElement);
-	}
-
-	return doc;
+    out.writeEndElement(); //project
 }
 
 void LibraryTreeWidget::checkModification()
 {
-	QString xmlString = toXml().toString();
+    QString xmlString = toXml();
 	if (xmlString == xmlString_)
 		return;
 
@@ -1114,7 +1123,7 @@ void LibraryTreeWidget::clear()
 	dependencyGraph_.clear();
 	projectFileName_ = "";
 	properties_.clear();
-	xmlString_ = toXml().toString();
+    xmlString_ = toXml();
 
 	bool changed = isModifed_ == true;
 	isModifed_ = false;
@@ -1218,7 +1227,7 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 		dependencyGraph_.addDependency(dependencies[i].first, dependencies[i].second);
 
 
-	xmlString_ = toXml().toString();
+    xmlString_ = toXml();
 
 	bool changed = isModifed_ == true;
 	isModifed_ = false;
@@ -1402,7 +1411,7 @@ void LibraryTreeWidget::newProject(const QString& projectFileName)
 
 	projectFileName_ = projectFileName;
 
-	xmlString_ = toXml().toString();
+    xmlString_ = toXml();
 
 	bool changed = isModifed_ == true;
 	isModifed_ = false;
@@ -1492,7 +1501,7 @@ void LibraryTreeWidget::cloneProject(const QString& projectFileName)
         rootitem->setText(0,QFileInfo(projectFileName).completeBaseName());
 */
     projectFileName_ = projectFileName;
-    xmlString_ = toXml().toString();
+    xmlString_ = toXml();
     bool changed = isModifed_ == true;
     isModifed_ = false;
     if (changed)
@@ -1617,7 +1626,7 @@ void LibraryTreeWidget::dropEvent(QDropEvent *event)
 void LibraryTreeWidget::setModified(bool m)
 {
 	if (m == false)
-		xmlString_ = toXml().toString();
+        xmlString_ = toXml();
 
 	if (m == isModifed_)
 		return;
@@ -1632,28 +1641,30 @@ bool LibraryTreeWidget::isModified() const
 	return isModifed_;
 }
 
-std::vector<std::pair<QString, QString> > LibraryTreeWidget::fileList(bool downsizing,bool webClient) {
+std::vector<std::pair<QString, QString> > LibraryTreeWidget::fileList(bool downsizing,bool webClient, bool justLua) {
     std::vector<std::pair<QString, QString> > result;
     QMap<QString,bool> locked;
 
     //Add lua plugins
-    QMap<QString, QString> plugins=usedPlugins();
-    for (QMap<QString,QString>::const_iterator it=plugins.begin();it!=plugins.end(); it++)
-    {
-        QFileInfo path(it.value());
-        QDir pf=path.dir();
-        if (pf.cd("luaplugin"))
+    if (!justLua) {
+        QMap<QString, QString> plugins=usedPlugins();
+        for (QMap<QString,QString>::const_iterator it=plugins.begin();it!=plugins.end(); it++)
         {
-            QDir luaplugin_dir = pf.path();
-            int root_length = luaplugin_dir.path().length();
+            QFileInfo path(it.value());
+            QDir pf=path.dir();
+            if (pf.cd("luaplugin"))
+            {
+                QDir luaplugin_dir = pf.path();
+                int root_length = luaplugin_dir.path().length();
 
-            // get all files in luaplugin and any subdirectory of luaplugin
-            QDirIterator dir_iter(pf.path(), QStringList() << "*", QDir::Files, QDirIterator::Subdirectories);
-            while (dir_iter.hasNext()) {
-                QDir file = dir_iter.next();
-                QString rel_path = file.path().mid(root_length + 1, file.path().length());
-                result.push_back(std::make_pair("_LuaPlugins_/" + rel_path, file.path()));
-                locked["_LuaPlugins_/" + rel_path]=true;
+                // get all files in luaplugin and any subdirectory of luaplugin
+                QDirIterator dir_iter(pf.path(), QStringList() << "*", QDir::Files, QDirIterator::Subdirectories);
+                while (dir_iter.hasNext()) {
+                    QDir file = dir_iter.next();
+                    QString rel_path = file.path().mid(root_length + 1, file.path().length());
+                    result.push_back(std::make_pair("_LuaPlugins_/" + rel_path, file.path()));
+                    locked["_LuaPlugins_/" + rel_path]=true;
+                }
             }
         }
     }
@@ -1664,80 +1675,77 @@ std::vector<std::pair<QString, QString> > LibraryTreeWidget::fileList(bool downs
         locked["_LuaPlugins_/FBInstant.lua"]=true;
     }
 
-    QDomDocument doc = toXml();
+    QTreeWidgetItem* rootitem = invisibleRootItem();
+    rootitem = rootitem->child(0);
+    QTreeWidgetItem *pluginsFolder=rootitem?rootitem->child(0):NULL;
+    QTreeWidgetItem *filesFolder=rootitem?rootitem->child(1):NULL;
+    if (pluginsFolder&&filesFolder) {
+        std::vector<QString> dir;
 
-    std::stack<QDomNode> stack;
-    stack.push(doc.documentElement());
+        std::stack<std::pair<QTreeWidgetItem*, bool> > stack;
+        stack.push(std::make_pair(filesFolder, true));
 
-    std::vector<QString> dir;
+        QDir pdir = QFileInfo(projectFileName_).dir();
 
-    while (stack.empty() == false)
-    {
-        QDomNode n = stack.top();
-        QDomElement e = n.toElement();
-        stack.pop();
-
-        if (n.isNull() == true)
+        while (stack.empty() == false)
         {
-            dir.pop_back();
-            continue;
-        }
+            QTreeWidgetItem* item = stack.top().first;
+            bool enter = stack.top().second;
+            stack.pop();
 
-        QString type = e.tagName();
-
-        if (type == "file")
-        {
-            QString fileName = e.attribute("source");
-            bool lock=true;
-            if (fileName.isEmpty())
+            if (enter)
             {
-                fileName = e.attribute("file");
-            }
-            if (fileName.isEmpty())
-            {
-                fileName = e.attribute("name");
-                lock=false;
-            }
-            QString name = QFileInfo(fileName).fileName();
+                if (item!=filesFolder)
+                {
+                    QString name = item->text(0);
+                    dir.push_back(name);
+                    stack.push(std::make_pair(item, false));
+                }
+                for (int i = 0; i < item->childCount(); ++i)
+                {
+                    QTreeWidgetItem* childItem = item->child(i);
 
-            QString n;
-            for (std::size_t i = 0; i < dir.size(); ++i)
-                n += dir[i] + "/";
-            n += name;
+                    QMap<QString, QVariant> data = childItem->data(0, Qt::UserRole).toMap();
+                    QString fileName1 = data["filename"].toString();
 
-            if (locked[n])
-                continue;
-            if (downsizing)
-            {
-                if (e.attribute("downsizing", "0").toInt()) {
-                    result.push_back(std::make_pair(n, fileName));
-                    locked[n]=lock;
+                    if (fileName1.isEmpty() == false)
+                    {
+                        QString fileName = pdir.relativeFilePath(fileName1);
+                        bool isLink=data["link"].toBool();
+                        bool lock=!isLink;
+                        QString name = QFileInfo(fileName).fileName();
+
+                        QString n;
+                        for (std::size_t i = 0; i < dir.size(); ++i)
+                            n += dir[i] + "/";
+                        n += name;
+
+                        if (!(locked[n]||(justLua&&(QFileInfo(fileName).suffix().toLower() != "lua"))))
+                        {
+                            if (downsizing)
+                            {
+                                if (data["downsizing"].toBool()) {
+                                    result.push_back(std::make_pair(n, fileName));
+                                    locked[n]=lock;
+                                }
+                            }
+                            else
+                            {
+                                result.push_back(std::make_pair(n, fileName));
+                                locked[n]=lock;
+                            }
+                        }
+                     }
+                    else
+                    {
+                        //Sub folder
+                        stack.push(std::make_pair(childItem, true));
+                    }
                 }
             }
             else
-            {
-                result.push_back(std::make_pair(n, fileName));
-                locked[n]=lock;
-            }
-
-            continue;
+                dir.pop_back();
         }
-
-        if (type == "folder")
-        {
-            QString name = e.attribute("name");
-            dir.push_back(name);
-
-            QString n;
-            for (std::size_t i = 0; i < dir.size(); ++i)
-                n += dir[i] + "/";
-
-            stack.push(QDomNode());
-        }
-
-        QDomNodeList childNodes = n.childNodes();
-        for (int i = 0; i < childNodes.size(); ++i)
-            stack.push(childNodes.item(i));
     }
 
     return result;
@@ -1748,7 +1756,7 @@ void LibraryTreeWidget::codeDependencies()
 	QString selected = selectedItems()[0]->data(0, Qt::UserRole).toMap()["filename"].toString();
 
     std::map<QString,QString> fileMap;
-    std::vector<std::pair<QString,QString>> fileQueue=fileList(false,false);
+    std::vector<std::pair<QString,QString>> fileQueue=fileList(false,false,false);
     for (std::size_t j = 0; j < fileQueue.size(); ++j)
         fileMap[fileQueue[j].second]=fileQueue[j].first;
     CodeDependenciesDialog codeDependencies(QFileInfo(projectFileName_).dir(),&dependencyGraph_,fileMap, selected, this);

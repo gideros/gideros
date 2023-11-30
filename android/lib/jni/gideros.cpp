@@ -9,6 +9,8 @@
 #include <gfile_p.h>
 #include <platformutil.h>
 #include <vector>
+#include <map>
+#include <string>
 #include <bytebuffer.h>
 #include <ghttp.h>
 
@@ -250,6 +252,7 @@ public:
 
 	void lowMemory();
 	void handleOpenUrl(const char *url);
+	void requestPermissionsResult(std::map<std::string,int> &perms);
 
 	void background();
 	void foreground();	
@@ -1655,6 +1658,34 @@ void ApplicationManager::handleOpenUrl(const char *url)
 	    gapplication_enqueueEvent(GAPPLICATION_OPEN_URL_EVENT, event, 1);
 }
 
+void ApplicationManager::requestPermissionsResult(std::map<std::string,int> &perms)
+{
+
+	int pCount=0;
+	int pSize=0;
+
+	for (auto it=perms.begin();it!=perms.end();it++) {
+		pCount++;
+		pSize+=sizeof(char *)+sizeof(int)+it->first.size()+1;
+	}
+	gapplication_PermissionEvent *event = (gapplication_PermissionEvent*)malloc(sizeof(gapplication_PermissionEvent) + pSize);
+	event->count=pCount;
+	event->status=(int *)(((char *)event)+sizeof(gapplication_PermissionEvent));
+	event->perms=(const char **)(((char *)(event->status))+sizeof(int)*pCount);
+	char *data=(((char *)(event->perms))+sizeof(char *)*pCount);
+
+	pCount=0;
+	for (auto it=perms.begin();it!=perms.end();it++) {
+		event->status[pCount]=it->second;
+		event->perms[pCount]=data;
+		strcpy(data,it->first.c_str());
+		data+=it->first.size()+1;
+		pCount++;
+	}
+
+    gapplication_enqueueEvent(GAPPLICATION_PERMISSION_EVENT, event, 1);
+}
+
 void ApplicationManager::background()
 {
     gapplication_enqueueEvent(GAPPLICATION_BACKGROUND_EVENT, NULL, 0);
@@ -1968,6 +1999,23 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeHandleOpenUr
 	const char* sBytes = env->GetStringUTFChars(url, NULL);
 	s_applicationManager->handleOpenUrl(sBytes);
 	env->ReleaseStringUTFChars(url, sBytes);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeRequestPermissionsResult(JNIEnv* env, jclass cls, jobjectArray plist, jintArray slist)
+{
+	jint* status = (jint*)env->GetIntArrayElements(slist, 0);
+	int pCount = env->GetArrayLength(plist);
+
+	std::map<std::string,int> splist;
+	for (int i=0; i<pCount; i++) {
+	    jstring jperm = (jstring) (env->GetObjectArrayElement(plist, i));
+		const char* perm = env->GetStringUTFChars(jperm, NULL);
+		splist[std::string(perm)]=(status[i]==0)?1:0;
+		env->ReleaseStringUTFChars(jperm,perm);
+	}
+
+	env->ReleaseIntArrayElements(slist, status, 0);
+	s_applicationManager->requestPermissionsResult(splist);
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_oculusPause(JNIEnv* env, jclass cls)

@@ -2,6 +2,7 @@
 
 #include "eventdispatcher.h"
 
+#include "permissionevent.h"
 #include "platform.h"
 
 #include "application.h"
@@ -1097,6 +1098,14 @@ void LuaApplication::callback(int type, void *event)
     {
         gapplication_TextInputEvent *event2 = (gapplication_TextInputEvent*)event;
         TextInputEvent eventg(TextInputEvent::TEXT_INPUT,event2->text,event2->context,event2->selStart,event2->selEnd);
+        application_->broadcastEvent(&eventg);
+    }
+    else if (type == GAPPLICATION_PERMISSION_EVENT)
+    {
+        gapplication_PermissionEvent *event2 = (gapplication_PermissionEvent*)event;
+        PermissionEvent eventg(PermissionEvent::PERMISSION);
+        for (int i=0;i<event2->count;i++)
+            eventg.permissions[event2->perms[i]]=event2->status[i];
         application_->broadcastEvent(&eventg);
     }
     else if (type == GAPPLICATION_MEMORY_LOW_EVENT)

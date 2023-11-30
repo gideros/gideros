@@ -69,122 +69,122 @@ QMap<QString, QString> ProjectProperties::availablePlugins() {
 	return xmlPlugins;
 }
 
-void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
+void ProjectProperties::toXml(QXmlStreamWriter &out) const
 {
 	// graphics options
-	properties.setAttribute("scaleMode", this->scaleMode);
-	properties.setAttribute("logicalWidth", this->logicalWidth);
-	properties.setAttribute("logicalHeight", this->logicalHeight);
-    properties.setAttribute("windowWidth", this->windowWidth);
-    properties.setAttribute("windowHeight", this->windowHeight);
-	QDomElement imageScales = doc.createElement("imageScales");
-	for (size_t i = 0; i < this->imageScales.size(); ++i)
-	{
-		QDomElement scale = doc.createElement("scale");
+    out.writeAttribute("scaleMode", QString::number(this->scaleMode));
+    out.writeAttribute("logicalWidth", QString::number(this->logicalWidth));
+    out.writeAttribute("logicalHeight", QString::number(this->logicalHeight));
+    out.writeAttribute("windowWidth", QString::number(this->windowWidth));
+    out.writeAttribute("windowHeight", QString::number(this->windowHeight));
 
-		scale.setAttribute("suffix", this->imageScales[i].first);
-		scale.setAttribute("scale", this->imageScales[i].second);
+    out.writeAttribute("orientation", QString::number(this->orientation));
+    out.writeAttribute("fps", QString::number(this->fps));
+    out.writeAttribute("vsync", QString::number(this->vsync));
+    out.writeAttribute("version", this->version);
+    out.writeAttribute("version_code", QString::number(this->version_code));
+    out.writeAttribute("build_number", QString::number(this->build_number));
+    out.writeAttribute("mainluaOnly", QString::number(this->mainluaOnly));
 
-		imageScales.appendChild(scale);
-	}
-	properties.appendChild(imageScales);
-	properties.setAttribute("orientation", this->orientation);
-	properties.setAttribute("fps", this->fps);
-	properties.setAttribute("vsync", this->vsync);
-    properties.setAttribute("version", this->version);
-    properties.setAttribute("version_code", this->version_code);
-    properties.setAttribute("build_number", this->build_number);
-	properties.setAttribute("mainluaOnly", this->mainluaOnly);
-
-	// iOS options
-    properties.setAttribute("retinaDisplay", this->retinaDisplay);
-	properties.setAttribute("autorotation", this->autorotation);
+    // iOS options
+    out.writeAttribute("retinaDisplay", QString::number(this->retinaDisplay));
+    out.writeAttribute("autorotation", QString::number(this->autorotation));
 
     // input options
-    properties.setAttribute("mouseToTouch", this->mouseToTouch ? 1 : 0);
-    properties.setAttribute("touchToMouse", this->touchToMouse ? 1 : 0);
-    properties.setAttribute("mouseTouchOrder", this->mouseTouchOrder);
+    out.writeAttribute("mouseToTouch", QString::number(this->mouseToTouch ? 1 : 0));
+    out.writeAttribute("touchToMouse", QString::number(this->touchToMouse ? 1 : 0));
+    out.writeAttribute("mouseTouchOrder", QString::number(this->mouseTouchOrder));
 
-	// export options
-	properties.setAttribute("architecture", this->architecture);
-	properties.setAttribute("exportMode", this->exportMode);
-	properties.setAttribute("iosDevice", this->iosDevice);
-    properties.setAttribute("ios_bundle", this->ios_bundle);
-    properties.setAttribute("atv_bundle", this->atv_bundle);
-    properties.setAttribute("macos_bundle", this->macos_bundle);
-    properties.setAttribute("macos_category", this->macos_category);
-    properties.setAttribute("qtexp_platform", this->qtexp_platform);
-    properties.setAttribute("qtexp_org", this->qtexp_org);
-    properties.setAttribute("qtexp_domain", this->qtexp_domain);
-    properties.setAttribute("osx_bundle", this->osx_bundle);
-    properties.setAttribute("osx_signingId", this->osx_signingId);
-    properties.setAttribute("osx_installerId", this->osx_installerId);
-    properties.setAttribute("osx_category", this->osx_category);
-    properties.setAttribute("winrt_org", this->winrt_org);
-    properties.setAttribute("winrt_package", this->winrt_package);
-    properties.setAttribute("html5_host", this->html5_host);
-    properties.setAttribute("html5_crash", this->html5_crash);
-    properties.setAttribute("html5_mem", this->html5_mem);
-    properties.setAttribute("html5_pack", this->html5_pack ? 1 : 0);
-    properties.setAttribute("html5_wasm", this->html5_wasm ? 1 : 0);
-    properties.setAttribute("html5_symbols", this->html5_symbols ? 1 : 0);
-    properties.setAttribute("html5_fbinstant", this->html5_fbinstant ? 1 : 0);
-    properties.setAttribute("html5_pwa", this->html5_pwa ? 1 : 0);
-    properties.setAttribute("html5_fbload", this->html5_fbload);
-    properties.setAttribute("encryptCode", this->encryptCode);
-    properties.setAttribute("encryptAssets", this->encryptAssets);
-    properties.setAttribute("app_icon", this->app_icon);
-    properties.setAttribute("tv_icon", this->tv_icon);
-    properties.setAttribute("disableSplash", this->disableSplash);
-    properties.setAttribute("backgroundColor", this->backgroundColor);
-    properties.setAttribute("splash_h_image", this->splash_h_image);
-    properties.setAttribute("splash_v_image", this->splash_v_image);
-    properties.setAttribute("app_name", this->app_name);
+    // export options
+    out.writeAttribute("architecture", QString::number(this->architecture));
+    out.writeAttribute("exportMode", QString::number(this->exportMode));
+    out.writeAttribute("iosDevice", QString::number(this->iosDevice));
+    out.writeAttribute("ios_bundle", this->ios_bundle);
+    out.writeAttribute("atv_bundle", this->atv_bundle);
+    out.writeAttribute("macos_bundle", this->macos_bundle);
+    out.writeAttribute("macos_category", QString::number(this->macos_category));
+    out.writeAttribute("qtexp_platform", QString::number(this->qtexp_platform));
+    out.writeAttribute("qtexp_org", this->qtexp_org);
+    out.writeAttribute("qtexp_domain", this->qtexp_domain);
+    out.writeAttribute("osx_bundle", this->osx_bundle);
+    out.writeAttribute("osx_signingId", this->osx_signingId);
+    out.writeAttribute("osx_installerId", this->osx_installerId);
+    out.writeAttribute("osx_category", QString::number(this->osx_category));
+    out.writeAttribute("winrt_org", this->winrt_org);
+    out.writeAttribute("winrt_package", this->winrt_package);
+    out.writeAttribute("html5_host", this->html5_host);
+    out.writeAttribute("html5_crash", this->html5_crash);
+    out.writeAttribute("html5_mem", QString::number(this->html5_mem));
+    out.writeAttribute("html5_pack", QString::number(this->html5_pack ? 1 : 0));
+    out.writeAttribute("html5_wasm", QString::number(this->html5_wasm ? 1 : 0));
+    out.writeAttribute("html5_symbols", QString::number(this->html5_symbols ? 1 : 0));
+    out.writeAttribute("html5_fbinstant", QString::number(this->html5_fbinstant ? 1 : 0));
+    out.writeAttribute("html5_pwa", QString::number(this->html5_pwa ? 1 : 0));
+    out.writeAttribute("html5_fbload", QString::number(this->html5_fbload));
+    out.writeAttribute("encryptCode", QString::number(this->encryptCode));
+    out.writeAttribute("encryptAssets", QString::number(this->encryptAssets));
+    out.writeAttribute("app_icon", this->app_icon);
+    out.writeAttribute("tv_icon", this->tv_icon);
+    out.writeAttribute("disableSplash", QString::number(this->disableSplash));
+    out.writeAttribute("backgroundColor", this->backgroundColor);
+    out.writeAttribute("splash_h_image", this->splash_h_image);
+    out.writeAttribute("splash_v_image", this->splash_v_image);
+    out.writeAttribute("app_name", this->app_name);
 
-    properties.setAttribute("splashScaleMode", this->splashScaleMode);
+    out.writeAttribute("splashScaleMode", QString::number(this->splashScaleMode));
+
+    out.writeStartElement("imageScales");
+	for (size_t i = 0; i < this->imageScales.size(); ++i)
+	{
+        out.writeStartElement("scale");
+        out.writeAttribute("suffix", this->imageScales[i].first);
+        out.writeAttribute("scale", QString::number(this->imageScales[i].second));
+        out.writeEndElement();
+	}
+    out.writeEndElement();
 
     //Plugins
-	QDomElement plugins = doc.createElement("plugins");
+    out.writeStartElement("plugins");
     QList<Plugin> pl=this->plugins.values();
     std::sort(pl.begin(),pl.end());
 	for (QList<Plugin>::const_iterator it=pl.begin();it!=pl.end(); it++)
 	{
-		QDomElement plugin = doc.createElement("plugin");
+        out.writeStartElement("plugin");
 		Plugin p=*it;
-		plugin.setAttribute("name", p.name);
-		plugin.setAttribute("enabled", QString(p.enabled?"1":"0"));
+        out.writeAttribute("name", p.name);
+        out.writeAttribute("enabled", QString(p.enabled?"1":"0"));
 		QList<QString> ml=p.properties.keys();
         std::sort(ml.begin(),ml.end());
 		for (QList<QString>::const_iterator i=ml.begin();i!=ml.end();i++) {
-			QDomElement attr = doc.createElement("property");
-			attr.setAttribute("name",*i);
-			attr.setAttribute("value",p.properties[*i]);
-			plugin.appendChild(attr);
-		}
-		plugins.appendChild(plugin);
-	}
-	properties.appendChild(plugins);
+            out.writeStartElement("property");
+            out.writeAttribute("name",*i);
+            out.writeAttribute("value",p.properties[*i]);
+            out.writeEndElement();
+        }
+        out.writeEndElement();
+    }
+    out.writeEndElement();
 
 	//Exports
-	QDomElement exports = doc.createElement("exports");
+    out.writeStartElement("exports");
     QList<Export> el=this->exports.values();
     std::sort(el.begin(),el.end());
 	for (QList<Export>::const_iterator it=el.begin();it!=el.end(); it++)
 	{
-		QDomElement plugin = doc.createElement("export");
+        out.writeStartElement("export");
 		Export p=*it;
-		plugin.setAttribute("name", p.name);
+        out.writeAttribute("name", p.name);
 		QList<QString> ml=p.properties.keys();
         std::sort(ml.begin(),ml.end());
 		for (QList<QString>::const_iterator i=ml.begin();i!=ml.end();i++) {
-			QDomElement attr = doc.createElement("property");
-			attr.setAttribute("name",*i);
-			attr.setAttribute("value",p.properties[*i]);
-			plugin.appendChild(attr);
-		}
-		exports.appendChild(plugin);
-	}
-	properties.appendChild(exports);
+            out.writeStartElement("property");
+            out.writeAttribute("name",*i);
+            out.writeAttribute("value",p.properties[*i]);
+            out.writeEndElement();
+        }
+        out.writeEndElement();
+    }
+    out.writeEndElement();
 }
 
 void ProjectProperties::loadXml(QDomElement properties)

@@ -14,6 +14,7 @@
 #include "keyboardevent.h"
 #include "completeevent.h"
 #include "layoutevent.h"
+#include "permissionevent.h"
 #include "luaapplication.h"
 #include <glog.h>
 #include <algorithm>
@@ -196,6 +197,11 @@ public:
         G_UNUSED(v); type = eLayoutEvent;
     }
 
+    virtual void visit(PermissionEvent* v)
+    {
+        G_UNUSED(v); type = ePermissionEvent;
+    }
+
     virtual void visitOther(Event* v, void* data)
 	{
         G_UNUSED(v); G_UNUSED(data); type = eLuaEvent;
@@ -217,6 +223,7 @@ public:
         eLayoutEvent,
 		eOpenUrlEvent,
 		eTextInputEvent,
+        ePermissionEvent,
 		eLuaEvent,
 	};
 
@@ -674,13 +681,41 @@ public:
         {
             lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
             lua_setfield(L, -2, "type");
-
-            lua_pushnumber(L, v->width);
-            lua_setfield(L, -2, "width");
-
-            lua_pushnumber(L, v->height);
-            lua_setfield(L, -2, "height");
         }
+        lua_pushnumber(L, v->width);
+        lua_setfield(L, -2, "width");
+
+        lua_pushnumber(L, v->height);
+        lua_setfield(L, -2, "height");
+
+        lua_call(L, 1, 0);
+    }
+
+    virtual void visit(PermissionEvent* v)
+    {
+        StackChecker checker(L, "visit(PermissionEvent* v)", 0);
+
+        // get closure
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
+        lua_pushlightuserdata(L, bridge_);
+        lua_rawget(L, -2);
+        lua_remove(L, -2);		// remove env["eventClosures"]
+
+        bool newTable = pushEventTable(v, "Event");
+
+        if (newTable == true)
+        {
+            lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
+            lua_setfield(L, -2, "type");
+         }
+
+        lua_newtable(L);
+        for (auto it=v->permissions.begin(); it!=v->permissions.end();it++)
+        {
+            lua_pushboolean(L,it->second);
+            lua_rawsetfield(L,-2,it->first.c_str());
+        }
+        lua_setfield(L, -2, "permissions");
 
         lua_call(L, 1, 0);
     }
@@ -701,10 +736,10 @@ public:
         {
             lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
             lua_setfield(L, -2, "type");
-
-            lua_pushstring(L, v->url());
-            lua_setfield(L, -2, "url");
         }
+
+        lua_pushstring(L, v->url());
+        lua_setfield(L, -2, "url");
 
         lua_call(L, 1, 0);
     }
@@ -725,19 +760,19 @@ public:
         {
             lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
             lua_setfield(L, -2, "type");
-
-            lua_pushstring(L, v->text());
-            lua_setfield(L, -2, "text");
-
-            lua_pushstring(L, v->context());
-            lua_setfield(L, -2, "context");
-
-            lua_pushinteger(L, v->selStart());
-            lua_setfield(L, -2, "selectionStart");
-
-            lua_pushinteger(L, v->selEnd());
-            lua_setfield(L, -2, "selectionEnd");
         }
+
+        lua_pushstring(L, v->text());
+        lua_setfield(L, -2, "text");
+
+        lua_pushstring(L, v->context());
+        lua_setfield(L, -2, "context");
+
+        lua_pushinteger(L, v->selStart());
+        lua_setfield(L, -2, "selectionStart");
+
+        lua_pushinteger(L, v->selEnd());
+        lua_setfield(L, -2, "selectionEnd");
 
         lua_call(L, 1, 0);
     }
@@ -758,13 +793,13 @@ public:
 		{
 			lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
 			lua_setfield(L, -2, "type");
-
-			lua_pushinteger(L, v->bytesLoaded);
-			lua_setfield(L, -2, "bytesLoaded");
-
-			lua_pushinteger(L, v->bytesTotal);
-			lua_setfield(L, -2, "bytesTotal");
 		}
+
+		lua_pushinteger(L, v->bytesLoaded);
+		lua_setfield(L, -2, "bytesLoaded");
+
+		lua_pushinteger(L, v->bytesTotal);
+		lua_setfield(L, -2, "bytesTotal");
 
 		lua_call(L, 1, 0);
 	}

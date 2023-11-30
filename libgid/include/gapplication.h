@@ -30,6 +30,13 @@ typedef struct gapplication_OrientationChangeEvent
     gapplication_Orientation orientation;
 } gapplication_OrientationChangeEvent;
 
+typedef struct gapplication_PermissionEvent
+{
+	int count;
+    const char **perms;
+    int *status;
+} gapplication_PermissionEvent;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

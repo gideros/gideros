@@ -19,6 +19,7 @@ class CompleteEvent;
 class LayoutEvent;
 class OpenUrlEvent;
 class TextInputEvent;
+class PermissionEvent;
 
 class EventVisitor
 {
@@ -37,6 +38,7 @@ public:
     virtual void visit(LayoutEvent* v) = 0;
     virtual void visit(OpenUrlEvent* v) = 0;
     virtual void visit(TextInputEvent* v) = 0;
+    virtual void visit(PermissionEvent* v) = 0;
 
     virtual void visitOther(Event* v, void* data) { G_UNUSED(v); G_UNUSED(data); }
     virtual ~EventVisitor()  {};

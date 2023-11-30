@@ -11,6 +11,7 @@
 #include "keyboardevent.h"
 #include "completeevent.h"
 #include "layoutevent.h"
+#include "permissionevent.h"
 
 EventBinder::EventBinder(lua_State* L)
 {
@@ -78,6 +79,9 @@ EventBinder::EventBinder(lua_State* L)
 
     lua_pushstring(L, Event::APPLICATION_RESIZE.type());
     lua_setfield(L, -2, "APPLICATION_RESIZE");
+
+    lua_pushstring(L, PermissionEvent::PERMISSION.type());
+    lua_setfield(L, -2, "APPLICATION_PERMISSION");
 
     lua_pushstring(L, Event::MEMORY_WARNING.type());
     lua_setfield(L, -2, "MEMORY_WARNING");

@@ -20,11 +20,19 @@ LibraryWidget::~LibraryWidget()
 
 }
 
-QDomDocument LibraryWidget::toXml() const
+void LibraryWidget::toXml(QXmlStreamWriter &out) const
 {
-	return ui.treeWidget->toXml();
+    ui.treeWidget->toXml(out);
 }
 
+void LibraryWidget::toXml(QIODevice &file) const
+{
+    QXmlStreamWriter out(&file);
+    out.setAutoFormatting(true);
+    out.writeStartDocument();
+    toXml(out);
+    out.writeEndDocument();
+}
 
 void LibraryWidget::clear()
 {
@@ -46,8 +54,8 @@ void LibraryWidget::cloneProject(const QString& projectFileName)
     ui.treeWidget->cloneProject(projectFileName);
 }
 
-std::vector<std::pair<QString, QString> > LibraryWidget::fileList(bool downsizing,bool webClient) {
-    return ui.treeWidget->fileList(downsizing,webClient);
+std::vector<std::pair<QString, QString> > LibraryWidget::fileList(bool downsizing, bool webClient, bool justLua) {
+    return ui.treeWidget->fileList(downsizing,webClient, justLua);
 }
 
 void LibraryWidget::consolidateProject()
