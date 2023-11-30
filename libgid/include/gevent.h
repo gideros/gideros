@@ -108,6 +108,8 @@ G_API void gevent_RemoveCallbackWithGid(g_id gid);
 
 #ifdef __cplusplus
 #include <vector>
+#include <map>
+#include <string>
 class G_API gevent_CallbackList
 {
 public:
@@ -157,6 +159,9 @@ private:
     std::vector<Callback> callbacks_;
     std::vector<CallbackCommand> callbackCommands_;
 };
+
+G_API void gevent_EnqueuePermissionsResult(std::map<std::string,int> &perms);
+
 #endif
 
 #ifdef __cplusplus

@@ -8,8 +8,6 @@
 extern "C" {
 #endif
 
-G_API void gapplication_enqueueEvent(int type, void *event, int free);
-
 #ifdef __cplusplus
 }
 #endif

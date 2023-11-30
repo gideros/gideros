@@ -30,4 +30,8 @@ void gapplication_removeCallbackWithGid(g_id gid)
 
 }
 
+void gapplication_enqueueEvent(int type, void *event, int free)
+{
+}
+
 }

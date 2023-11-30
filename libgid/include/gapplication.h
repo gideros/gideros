@@ -53,6 +53,7 @@ G_API void gapplication_removeCallback(gevent_Callback callback, void *udata);
 G_API void gapplication_removeCallbackWithGid(g_id gid);
 
 G_API void gapplication_clipboardCallback(int luaFuncRef,int result,const char *data, const char *type);
+G_API void gapplication_enqueueEvent(int type, void *event, int free);
 
 #ifdef __cplusplus
 }

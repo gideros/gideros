@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <stddef.h>
+#include "gapplication.h"
 
 namespace gevent {
 
@@ -401,5 +402,32 @@ void *gevent_CreateEventStruct3(size_t structSize,
     return result;
 }
 
+}
 
+void gevent_EnqueuePermissionsResult(std::map<std::string,int> &perms)
+{
+
+	int pCount=0;
+	int pSize=0;
+
+	for (auto it=perms.begin();it!=perms.end();it++) {
+		pCount++;
+		pSize+=sizeof(char *)+sizeof(int)+it->first.size()+1;
+	}
+	gapplication_PermissionEvent *event = (gapplication_PermissionEvent*)malloc(sizeof(gapplication_PermissionEvent) + pSize);
+	event->count=pCount;
+	event->status=(int *)(((char *)event)+sizeof(gapplication_PermissionEvent));
+	event->perms=(const char **)(((char *)(event->status))+sizeof(int)*pCount);
+	char *data=(((char *)(event->perms))+sizeof(char *)*pCount);
+
+	pCount=0;
+	for (auto it=perms.begin();it!=perms.end();it++) {
+		event->status[pCount]=it->second;
+		event->perms[pCount]=data;
+		strcpy(data,it->first.c_str());
+		data+=it->first.size()+1;
+		pCount++;
+	}
+
+    gapplication_enqueueEvent(GAPPLICATION_PERMISSION_EVENT, event, 1);
 }
