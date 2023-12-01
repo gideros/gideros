@@ -706,6 +706,7 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 	    buffer << ctx->properties.version.toStdString();
 	    buffer << ctx->properties.version_code;
 	    buffer << ctx->properties.build_number;
+        buffer << (unsigned int) QDateTime::currentSecsSinceEpoch();
 
 		file.write(buffer.data(), buffer.size());
 	}

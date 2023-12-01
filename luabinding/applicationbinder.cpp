@@ -1141,6 +1141,8 @@ int ApplicationBinder::getProjectProperties(lua_State* L)
     lua_rawsetfield(L,-2,"versionCode");
     lua_pushinteger(L,ProjectProperties::current.build_number);
     lua_rawsetfield(L,-2,"buildNumber");
+    lua_pushunsigned(L,ProjectProperties::current.build_timestamp);
+    lua_rawsetfield(L,-2,"buildTime");
 
     return 1;
 }

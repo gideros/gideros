@@ -102,6 +102,7 @@ struct ProjectProperties {
     int version_code;
     std::string version;
     int build_number;
+    unsigned int build_timestamp;
     static ProjectProperties current;
 };
 

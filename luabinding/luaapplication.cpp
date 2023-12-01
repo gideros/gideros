@@ -303,6 +303,7 @@ void ProjectProperties::load(const std::vector<char> &data, bool skipFirst)
         buffer >> version;
         buffer >> version_code;
         buffer >> build_number;
+        buffer >> build_timestamp;
     }
 
     current=*this;

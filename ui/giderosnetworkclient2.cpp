@@ -458,6 +458,7 @@ unsigned int GiderosNetworkClient2::sendProjectProperties(const ProjectPropertie
     buffer << properties.version.toStdString();
     buffer << properties.version_code;
     buffer << properties.build_number;
+    buffer << (unsigned int) QDateTime::currentSecsSinceEpoch();
 
 	return sendData(buffer.data(), buffer.size(), 0);
 }
