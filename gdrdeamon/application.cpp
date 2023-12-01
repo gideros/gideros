@@ -224,7 +224,7 @@ void Application::timer()
             {
                 QStringList luafiles = s1.split("|");
                 //outputWidget_->append("Uploading finished.\n");
-                client_->sendProjectProperties(properties_);
+                client_->sendProjectProperties(properties_,QFileInfo(projectFileName_).baseName());
                 client_->sendPlay(luafiles);
                 isTransferring_ = false;
             }

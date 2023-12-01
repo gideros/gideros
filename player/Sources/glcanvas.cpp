@@ -1021,79 +1021,38 @@ void GLCanvas::play(QString gapp) {
 }
 
 void GLCanvas::loadProperties(std::vector<char> data) {
-	ByteBuffer buffer(&data[0], data.size());
 	makeCurrent();
-	if (!exportedApp_) {
-		char chr;
-		buffer >> chr;
-	}
-
-	int scaleMode, logicalWidth, logicalHeight, windowWidth, windowHeight;
-	buffer >> scaleMode;
-	buffer >> logicalWidth;
-	buffer >> logicalHeight;
+	ProjectProperties properties;
+	properties.load(data,!exportedApp_);
 
 	application_->deinitialize();
 	application_->initialize();
 	setupApplicationProperties();
 //				application_->orientationChange(orientation_);
-	application_->setLogicalDimensions(logicalWidth, logicalHeight);
-	application_->setLogicalScaleMode((LogicalScaleMode) scaleMode);
+	application_->setLogicalDimensions(properties.logicalWidth, properties.logicalHeight);
+	application_->setLogicalScaleMode((LogicalScaleMode) properties.scaleMode);
 
-	int scaleCount;
-	buffer >> scaleCount;
-	std::vector<std::pair<std::string, float> > imageScales(scaleCount);
-	for (int i = 0; i < scaleCount; ++i) {
-		buffer >> imageScales[i].first;
-		buffer >> imageScales[i].second;
-	}
-
-	application_->setImageScales(imageScales);
-
-	int orientation;
-	buffer >> orientation;
-	application_->setOrientation((Orientation) orientation);
-
-
+	application_->setImageScales(properties.imageScales);
+	application_->setOrientation((Orientation) properties.orientation);
 	application_->getApplication()->setDeviceOrientation(
-			(Orientation) orientation);
+			(Orientation) properties.orientation);
 
-	int fps;
-	buffer >> fps;
-    //setFps(fp); //XXX: This is windows player, let the fps setting be controlled by menu for ease of use
+	ginput_setMouseToTouchEnabled(properties.mouseToTouch);
+	ginput_setTouchToMouseEnabled(properties.touchToMouse);
+	ginput_setMouseTouchOrder(properties.mouseTouchOrder);
 
-	int retinaDisplay;
-	buffer >> retinaDisplay;
-
-	int autorotation;
-	buffer >> autorotation;
-
-	int mouseToTouch;
-	buffer >> mouseToTouch;
-	ginput_setMouseToTouchEnabled(mouseToTouch);
-
-	int touchToMouse;
-	buffer >> touchToMouse;
-	ginput_setTouchToMouseEnabled(touchToMouse);
-
-	int mouseTouchOrder;
-	buffer >> mouseTouchOrder;
-	ginput_setMouseTouchOrder(mouseTouchOrder);
-
-	buffer >> windowWidth;
-	buffer >> windowHeight;
-    if (windowWidth == 0 && windowHeight == 0) {
-        windowWidth = logicalWidth;
-        windowHeight = logicalHeight;
+    if (properties.windowWidth == 0 && properties.windowHeight == 0) {
+    	properties.windowWidth = properties.logicalWidth;
+    	properties.windowHeight = properties.logicalHeight;
         //setFixedSize(false);
     }else{
         //width0_ = windowWidth;
         //height0_ = windowHeight;
     }
     if (!appPackage.isEmpty()) {
-        MainWindow::getInstance()->setOrientation((Orientation) orientation);
-        setHardwareOrientation((Orientation) orientation);
-    	setWindowSize(windowWidth, windowHeight);
+        MainWindow::getInstance()->setOrientation((Orientation) properties.orientation);
+        setHardwareOrientation((Orientation) properties.orientation);
+    	setWindowSize(properties.windowWidth, properties.windowHeight);
     }
 
 }

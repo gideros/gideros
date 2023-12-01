@@ -59,72 +59,6 @@ extern "C" {
 
 // ######################################################################
 
-struct ProjectProperties
-{
-  ProjectProperties()
-  {
-    clear();
-  }
-
-  void clear()
-  {
-    // graphics options
-    scaleMode = 0;
-    logicalWidth = 320;
-    logicalHeight = 480;
-    imageScales.clear();
-    orientation = 0;
-    fps = 60;
-		
-    // iOS options
-    retinaDisplay = 0;
-    autorotation = 0;
-
-    // input options
-    mouseToTouch = true;
-    touchToMouse = true;
-    mouseTouchOrder = 0;
-
-    // export options
-    architecture = 0;
-    assetsOnly = false;
-    iosDevice = 0;
-    packageName = "com.yourdomain.yourapp";
-    encryptCode = false;
-    encryptAssets = false;
-  }
-
-  // graphics options
-  int scaleMode;
-  int logicalWidth;
-  int logicalHeight;
-  std::vector<std::pair<std::string, float> > imageScales;
-  int orientation;
-  int fps;
-  
-  // iOS options
-  int retinaDisplay;
-  int autorotation;
-
-  // input options
-  int mouseToTouch;
-  int touchToMouse;
-  int mouseTouchOrder;
-  
-  // export options
-  int architecture;
-  bool assetsOnly;
-  int iosDevice;
-  std::string packageName;
-  bool encryptCode;
-  bool encryptAssets;
-
-  int windowWidth;
-  int windowHeight;
-};
-
-// ######################################################################
-
 typedef struct
 {
    // Handle to a program object
@@ -221,36 +155,12 @@ void loadProperties()
   g_fread(&buf[0], 1, len, fis);
   g_fclose(fis);
   
-  ByteBuffer buffer(&buf[0], buf.size());
-  
-  buffer >> properties.scaleMode;
-  buffer >> properties.logicalWidth;
-  buffer >> properties.logicalHeight;
-
-  int scaleCount;
-  buffer >> scaleCount;
-  properties.imageScales.resize(scaleCount);
-
-  for (int i = 0; i < scaleCount; ++i) {
-    buffer >> properties.imageScales[i].first;
-    buffer >> properties.imageScales[i].second;
-  }
-
-  buffer >> properties.orientation;
-  buffer >> properties.fps;
-  buffer >> properties.retinaDisplay;
-  buffer >> properties.autorotation;
-  buffer >> properties.mouseToTouch;
-  buffer >> properties.touchToMouse;
-  buffer >> properties.mouseTouchOrder;
+  properties.load(buf, false);
 
   printf("properties components\n");
   printf("logicalWidth, logicalHeight, orientation, scaleMode=%d %d %d %d\n",
 	 properties.logicalWidth, properties.logicalHeight, 
 	 properties.orientation, properties.scaleMode);
-
-  buffer >> properties.windowWidth;
-  buffer >> properties.windowHeight;
 
   printf("windowWidth, windowHeight=%d %d\n",properties.windowWidth, properties.windowHeight);
 

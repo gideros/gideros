@@ -262,6 +262,52 @@ static int get_base(lua_State* L){
 }
 
 void registerModules(lua_State* L);
+ProjectProperties ProjectProperties::current;
+void ProjectProperties::load(const std::vector<char> &data, bool skipFirst)
+{
+	ByteBuffer buffer(&data[0], data.size());
+
+	if (skipFirst) {
+		char chr;
+		buffer >> chr;
+	}
+
+	buffer >> scaleMode;
+	buffer >> logicalWidth;
+	buffer >> logicalHeight;
+
+	int scaleCount;
+	buffer >> scaleCount;
+	imageScales.resize(scaleCount);
+	for (int i = 0; i < scaleCount; ++i)
+	{
+		buffer >> imageScales[i].first;
+		buffer >> imageScales[i].second;
+	}
+
+	buffer >> orientation;
+	buffer >> fps;
+	buffer >> retinaDisplay;
+	buffer >> autorotation;
+	buffer >> mouseToTouch;
+	buffer >> touchToMouse;
+	buffer >> mouseTouchOrder;
+
+    if (!buffer.eob()) {
+        buffer >> windowWidth;
+        buffer >> windowHeight;
+    }
+
+    if (!buffer.eob()) {
+        buffer >> app_name;
+        buffer >> version;
+        buffer >> version_code;
+        buffer >> build_number;
+    }
+
+    current=*this;
+}
+
 
 double LuaApplication::meanFrameTime_; //Average frame duration
 double LuaApplication::meanFreeTime_; //Average time available for async tasks

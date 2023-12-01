@@ -33,7 +33,7 @@ public:
 	unsigned int sendCreateFolder(const QString& folderName);
 	unsigned int sendPlay(const QStringList& luafiles);
 	unsigned int sendProjectName(const QString& projectName);
-	unsigned int sendProjectProperties(const ProjectProperties& properties);
+    unsigned int sendProjectProperties(const ProjectProperties& properties, QString projectName);
 	unsigned int sendStop();
 	unsigned int sendDeleteFiles();
 	unsigned int sendGetFileList();

@@ -61,6 +61,7 @@ private:
     static int enableDrawInfo(lua_State *L);
     static int setEventMerging(lua_State* L);
     static int enableOnDemandDraw(lua_State *L);
+    static int getProjectProperties(lua_State* L);
 };
 
 #endif

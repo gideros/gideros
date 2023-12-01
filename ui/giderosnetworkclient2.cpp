@@ -418,7 +418,7 @@ qint64 GiderosNetworkClient2::bytesToWrite() const
 	return 0;
 }
 
-unsigned int GiderosNetworkClient2::sendProjectProperties(const ProjectProperties& properties)
+unsigned int GiderosNetworkClient2::sendProjectProperties(const ProjectProperties& properties, QString projectName)
 {
 	if (status_ != eConnected)
 		return 0;
@@ -449,6 +449,15 @@ unsigned int GiderosNetworkClient2::sendProjectProperties(const ProjectPropertie
     
     buffer << properties.windowWidth;
     buffer << properties.windowHeight;
+
+    QString appName=properties.app_name;
+    if (appName.isEmpty())
+        appName=projectName;
+
+    buffer << appName.toStdString();
+    buffer << properties.version.toStdString();
+    buffer << properties.version_code;
+    buffer << properties.build_number;
 
 	return sendData(buffer.data(), buffer.size(), 0);
 }

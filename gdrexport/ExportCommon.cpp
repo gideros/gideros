@@ -702,6 +702,11 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 		buffer << ctx->properties.windowWidth;
 		buffer << ctx->properties.windowHeight;
 
+        buffer << ctx->appName.toStdString();
+	    buffer << ctx->properties.version.toStdString();
+	    buffer << ctx->properties.version_code;
+	    buffer << ctx->properties.build_number;
+
 		file.write(buffer.data(), buffer.size());
 	}
 	ctx->allfiles.push_back(filename);

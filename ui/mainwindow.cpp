@@ -1232,7 +1232,7 @@ void MainWindow::timerEvent(QTimerEvent*)
 			{
 				QStringList luafiles = s1.split("|");	
 				outputWidget_->append("Uploading finished.\n");
-				client_->sendProjectProperties(libraryWidget_->getProjectProperties());
+                client_->sendProjectProperties(libraryWidget_->getProjectProperties(), QFileInfo(projectFileName_).baseName());
 				sendPlayMessage(luafiles);
 				isTransferring_ = false;
 			}

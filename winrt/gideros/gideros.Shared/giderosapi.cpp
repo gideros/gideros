@@ -244,38 +244,6 @@ void g_exit();
 
 static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
 //-----------------------------------------01234567890123456------------------
-
-struct ProjectProperties
-{
-	ProjectProperties()
-	{
-		scaleMode = 0;
-		logicalWidth = 320;
-		logicalHeight = 480;
-		orientation = 0;
-		fps = 60;
-		retinaDisplay = 0;
-		autorotation = 0;
-		mouseToTouch = 1;
-		touchToMouse = 1;
-		mouseTouchOrder = 0;
-	}
-
-	int scaleMode;
-	int logicalWidth;
-	int logicalHeight;
-	std::vector<std::pair<std::string, float> > imageScales;
-	int orientation;
-	int fps;
-	int retinaDisplay;
-	int autorotation;
-	int mouseToTouch;
-	int touchToMouse;
-	int mouseTouchOrder;
-	int windowWidth;
-	int windowHeight;
-};
-
 class ApplicationManager;
 
 class NetworkManager
@@ -622,32 +590,7 @@ void NetworkManager::deleteFile(const std::vector<char> &data)
 void NetworkManager::setProperties(const std::vector<char> &data)
 {
 	ProjectProperties properties;
-
-	ByteBuffer buffer(&data[0], data.size());
-
-	char chr;
-	buffer >> chr;
-
-	buffer >> properties.scaleMode;
-	buffer >> properties.logicalWidth;
-	buffer >> properties.logicalHeight;
-
-	int scaleCount;
-	buffer >> scaleCount;
-	properties.imageScales.resize(scaleCount);
-	for (int i = 0; i < scaleCount; ++i)
-	{
-		buffer >> properties.imageScales[i].first;
-		buffer >> properties.imageScales[i].second;
-	}
-
-	buffer >> properties.orientation;
-	buffer >> properties.fps;
-	buffer >> properties.retinaDisplay;
-	buffer >> properties.autorotation;
-	buffer >> properties.mouseToTouch;
-	buffer >> properties.touchToMouse;
-	buffer >> properties.mouseTouchOrder;
+	properties.load(data, true);
 
 	application_->setProjectProperties(properties);
 }
@@ -1208,32 +1151,7 @@ void ApplicationManager::openProject(const char* project){
 		fclose(fis_prop);
 
 		ProjectProperties properties;
-
-		ByteBuffer buffer(&buf_prop[0], buf_prop.size());
-
-		char chr;
-		buffer >> chr;
-
-		buffer >> properties.scaleMode;
-		buffer >> properties.logicalWidth;
-		buffer >> properties.logicalHeight;
-
-		int scaleCount;
-		buffer >> scaleCount;
-		properties.imageScales.resize(scaleCount);
-		for (int i = 0; i < scaleCount; ++i)
-		{
-			buffer >> properties.imageScales[i].first;
-			buffer >> properties.imageScales[i].second;
-		}
-
-		buffer >> properties.orientation;
-		buffer >> properties.fps;
-		buffer >> properties.retinaDisplay;
-		buffer >> properties.autorotation;
-		buffer >> properties.mouseToTouch;
-		buffer >> properties.touchToMouse;
-		buffer >> properties.mouseTouchOrder;
+		properties.load(buf_prop, true);
 
 		setProjectProperties(properties);
 
@@ -1252,7 +1170,7 @@ void ApplicationManager::openProject(const char* project){
 		fclose(fis_lua);
 
 		ByteBuffer buffer2(&buf_lua[0], buf_lua.size());
-
+		char chr;
 		buffer2 >> chr;
 
 		while (buffer2.eob() == false)
@@ -1431,31 +1349,7 @@ void ApplicationManager::loadProperties()
 	g_fread(&buf[0], 1, len, fis);
 	g_fclose(fis);
 
-	ByteBuffer buffer(&buf[0], buf.size());
-
-	buffer >> properties_.scaleMode;
-	buffer >> properties_.logicalWidth;
-	buffer >> properties_.logicalHeight;
-
-	int scaleCount;
-	buffer >> scaleCount;
-	properties_.imageScales.resize(scaleCount);
-	for (int i = 0; i < scaleCount; ++i)
-	{
-		buffer >> properties_.imageScales[i].first;
-		buffer >> properties_.imageScales[i].second;
-	}
-
-	buffer >> properties_.orientation;
-	buffer >> properties_.fps;
-	buffer >> properties_.retinaDisplay;
-	buffer >> properties_.autorotation;
-	buffer >> properties_.mouseToTouch;
-	buffer >> properties_.touchToMouse;
-	buffer >> properties_.mouseTouchOrder;
-
-	buffer >> properties_.windowWidth;
-	buffer >> properties_.windowHeight;
+	properties_.load(buf,false);
 
 	width_=properties_.windowWidth?properties_.windowWidth:properties_.logicalWidth;
 	height_=properties_.windowHeight?properties_.windowHeight:properties_.logicalHeight;

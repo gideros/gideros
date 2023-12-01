@@ -90,6 +90,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"enableDrawInfo", ApplicationBinder::enableDrawInfo},
         {"setEventMerging", ApplicationBinder::setEventMerging},
         {"enableOnDemandDraw", ApplicationBinder::enableOnDemandDraw},
+        {"getProjectProperties", ApplicationBinder::getProjectProperties},
 
         {NULL, NULL},
 	};
@@ -1127,4 +1128,19 @@ int ApplicationBinder::enableOnDemandDraw(lua_State* L)
     application->getApplication()->enableOnDemandDraw(lua_toboolean(L,2));
 
     return 0;
+}
+
+int ApplicationBinder::getProjectProperties(lua_State* L)
+{
+    lua_newtable(L);
+    lua_pushstring(L,ProjectProperties::current.app_name.c_str());
+    lua_rawsetfield(L,-2,"name");
+    lua_pushstring(L,ProjectProperties::current.version.c_str());
+    lua_rawsetfield(L,-2,"version");
+    lua_pushinteger(L,ProjectProperties::current.version_code);
+    lua_rawsetfield(L,-2,"versionCode");
+    lua_pushinteger(L,ProjectProperties::current.build_number);
+    lua_rawsetfield(L,-2,"buildNumber");
+
+    return 1;
 }

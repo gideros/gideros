@@ -68,6 +68,43 @@ private:
 typedef int (*gapplication_LuaArgPusher)(struct lua_State *L,void *returnData);
 void gapplication_luaCallback(int luaFuncRef,void *data,gapplication_LuaArgPusher pusher);
 
+struct ProjectProperties {
+	ProjectProperties() {
+		scaleMode = 0;
+		logicalWidth = 320;
+		logicalHeight = 480;
+		orientation = 0;
+		fps = 60;
+		retinaDisplay = 0;
+		autorotation = 0;
+		mouseToTouch = 1;
+		touchToMouse = 1;
+		mouseTouchOrder = 0;
+		windowWidth=0;
+		windowHeight=0;
+	}
+	void load(const std::vector<char> &data, bool skipFirst);
+
+	int scaleMode;
+	int logicalWidth;
+	int logicalHeight;
+	std::vector<std::pair<std::string, float> > imageScales;
+	int orientation;
+	int fps;
+	int retinaDisplay;
+	int autorotation;
+	int mouseToTouch;
+	int touchToMouse;
+	int mouseTouchOrder;
+	int windowWidth;
+	int windowHeight;
+	std::string app_name;
+    int version_code;
+    std::string version;
+    int build_number;
+    static ProjectProperties current;
+};
+
 class LuaApplication : public LuaApplicationBase
 {
 public:

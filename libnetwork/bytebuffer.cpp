@@ -131,8 +131,8 @@ void ByteBuffer::get(float& f)
 
 void ByteBuffer::get(std::string& str)
 {
-	str = &buffer_[pos_];
-	pos_ += str.size() + 1;
+    str = &buffer_[pos_];
+    pos_ += str.size() + 1;
 }
 
 void ByteBuffer::get(unsigned char* data, int size)
