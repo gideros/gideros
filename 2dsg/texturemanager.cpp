@@ -31,6 +31,7 @@ static void append(std::vector<char>& buffer, const TextureParameters& parameter
     append(buffer, &parameters.transparentcolor, sizeof(parameters.transparentcolor));
     append(buffer, &parameters.grayscale, sizeof(parameters.grayscale));
     append(buffer, &parameters.rawalpha, sizeof(parameters.rawalpha));
+    append(buffer, &parameters.pow2, sizeof(parameters.pow2));
 }
 
 TextureManager::TextureManager(Application* application) :
