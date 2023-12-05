@@ -345,10 +345,12 @@ Module.checkALMuted = function() {
 Module.GiderosJSEvent = function(type, context, value, data) {
 	var etype = 'number';
 	var len = data.length;
+	var dataPtr;
 	if (typeof data == 'string') {
 		etype = 'string';
 		len = -1;
 	} else {
+		if (len==undefined) len=data.byteLength;
 		var dataPtr = Module._malloc(len);
 		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, len);
 		dataHeap.set(data);
