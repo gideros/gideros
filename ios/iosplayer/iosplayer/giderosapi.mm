@@ -502,35 +502,7 @@ void NetworkManager::deleteFile(const std::vector<char> &data)
 void NetworkManager::setProperties(const std::vector<char> &data)
 {
 	ProjectProperties properties;
-	
-	ByteBuffer buffer(&data[0], data.size());
-	
-	char chr;
-	buffer >> chr;
-	
-	buffer >> properties.scaleMode;
-	buffer >> properties.logicalWidth;
-	buffer >> properties.logicalHeight;
-	
-	int scaleCount;
-	buffer >> scaleCount;
-	properties.imageScales.resize(scaleCount);
-	for (int i = 0; i < scaleCount; ++i)
-	{
-		buffer >> properties.imageScales[i].first;
-		buffer >> properties.imageScales[i].second;
-	}
-	
-	buffer >> properties.orientation;
-	buffer >> properties.fps;
-	buffer >> properties.retinaDisplay;
-	buffer >> properties.autorotation;
-	buffer >> properties.mouseToTouch;
-	buffer >> properties.touchToMouse;
-	buffer >> properties.mouseTouchOrder;
-    
-    buffer >> properties.windowWidth;
-    buffer >> properties.windowHeight;
+	properties.load(data, true);
     if (properties.windowWidth == 0 && properties.windowHeight == 0) {
         properties.windowWidth = properties.logicalWidth;
         properties.windowHeight = properties.logicalHeight;
