@@ -2360,6 +2360,7 @@ void Sprite::setGhosts(std::vector<GhostSprite *> *ghosts)
         delete ghosts_;
     }
     ghosts_=ghosts;
+    invalidate(INV_GRAPHICS);
 }
 
 GhostSprite::GhostSprite(Sprite *m)

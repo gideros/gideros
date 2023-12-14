@@ -22,8 +22,7 @@ public:
         refX_ = 0;
         refY_ = 0;
         refZ_ = 0;
-        isDirty_=false;
-	}
+    }
 
 	void setRotationZ(float r)
 	{
@@ -96,36 +95,61 @@ public:
     }
 
 	void setX(float x)
-	{
-		matrix_[12]+=(x-tx_);
-		tx_=x;
-	}
+    {
+        if (matrix_.type==Matrix4::TRANSLATE)
+            matrix_[12]=x;
+        else
+            matrix_[12]+=(x-tx_);
+        tx_=x;
+    }
 
 	void setY(float y)
 	{
-		matrix_[13]+=(y-ty_);
+        if (matrix_.type==Matrix4::TRANSLATE)
+            matrix_[13]=y;
+        else
+            matrix_[13]+=(y-ty_);
 		ty_=y;
 	}
 
 	void setZ(float z)
 	{
-		matrix_[14]+=(z-tz_);
+        if (matrix_.type==Matrix4::TRANSLATE)
+            matrix_[14]=z;
+        else
+            matrix_[14]+=(z-tz_);
 		tz_=z;
 	}
 
 	void setXY(float x, float y)
 	{
-		matrix_[12]+=(x-tx_);
-		matrix_[13]+=(y-ty_);
+        if (matrix_.type==Matrix4::TRANSLATE)
+        {
+            matrix_[12]=x;
+            matrix_[13]=y;
+        }
+        else {
+            matrix_[12]+=(x-tx_);
+            matrix_[13]+=(y-ty_);
+        }
 		tx_=x;
 		ty_=y;
 	}
 
 	void setXYZ(float x, float y, float z)
 	{
-		matrix_[12]+=(x-tx_);
-		matrix_[13]+=(y-ty_);
-		matrix_[14]+=(z-tz_);
+        if (matrix_.type==Matrix4::TRANSLATE)
+        {
+            matrix_[12]=x;
+            matrix_[13]=y;
+            matrix_[14]=z;
+        }
+        else
+        {
+            matrix_[12]+=(x-tx_);
+            matrix_[13]+=(y-ty_);
+            matrix_[14]+=(z-tz_);
+        }
 		tx_=x;
 		ty_=y;
 		tz_=z;
@@ -259,7 +283,6 @@ private:
     float refX_;
     float refY_;
     float refZ_;
-    mutable bool isDirty_;
     void compose();
 };
 

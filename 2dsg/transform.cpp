@@ -226,7 +226,6 @@ void Transform::compose()
 	}
 	//matrix_.translate(tx_,ty_,tz_); //12 Mult
 	m[12]+=tx_;	m[13]+=ty_;	m[14]+=tz_;
-	isDirty_=false;
 
 #else
 	// optimized version of the code above

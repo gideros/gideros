@@ -10,6 +10,9 @@ WINRT_PLAYERDIR=winrt_xaml
 WINRT_PLAYERSUBDIR=giderosgame
 
 export MSBUILDDISABLENODEREUSE=1
+unexport TMP
+unexport TEMP
+
 ifneq ($(DEBUG),)
 WINRT_CONF=Debug
 else
