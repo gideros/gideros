@@ -97,7 +97,7 @@ public:
 	void setX(float x)
     {
         if (matrix_.type==Matrix4::TRANSLATE)
-            matrix_[12]=x;
+            matrix_[12]=x-refX_;
         else
             matrix_[12]+=(x-tx_);
         tx_=x;
@@ -106,7 +106,7 @@ public:
 	void setY(float y)
 	{
         if (matrix_.type==Matrix4::TRANSLATE)
-            matrix_[13]=y;
+            matrix_[13]=y-refY_;
         else
             matrix_[13]+=(y-ty_);
 		ty_=y;
@@ -115,7 +115,7 @@ public:
 	void setZ(float z)
 	{
         if (matrix_.type==Matrix4::TRANSLATE)
-            matrix_[14]=z;
+            matrix_[14]=z-refZ_;
         else
             matrix_[14]+=(z-tz_);
 		tz_=z;
@@ -125,8 +125,8 @@ public:
 	{
         if (matrix_.type==Matrix4::TRANSLATE)
         {
-            matrix_[12]=x;
-            matrix_[13]=y;
+            matrix_[12]=x-refX_;
+            matrix_[13]=y-refY_;
         }
         else {
             matrix_[12]+=(x-tx_);
@@ -140,9 +140,9 @@ public:
 	{
         if (matrix_.type==Matrix4::TRANSLATE)
         {
-            matrix_[12]=x;
-            matrix_[13]=y;
-            matrix_[14]=z;
+            matrix_[12]=x-refX_;
+            matrix_[13]=y-refY_;
+            matrix_[14]=z-refZ_;
         }
         else
         {
