@@ -16,6 +16,11 @@ using namespace Platform;
 std::wstring utf8_ws(const char* str);
 std::string utf8_us(const wchar_t* str);
 
+static gevent_CallbackList callbackList_;
+static void callback_s(int type, void *event, void *udata)
+{
+  callbackList_.dispatchEvent(type, event);
+}
 
 void gshare_Init()
 {
@@ -69,3 +74,32 @@ bool gshare_Share(std::map<std::string,std::string> values)
 	return true;
 
 }
+
+
+bool gfileshare_Import(const char *mime, const char *extension)
+{
+	return false;
+}
+
+bool gfileshare_Export(const char *data,size_t dataSize,const char *mime, const char *filename)
+{
+	return false;
+}
+
+
+g_id gshare_AddCallback(gevent_Callback callback, void *udata)
+{
+    return callbackList_.addCallback(callback, udata);
+}
+
+void gshare_RemoveCallback(gevent_Callback callback, void *udata)
+{
+    callbackList_.removeCallback(callback, udata);
+}
+
+
+int gshare_Capabilities()
+{
+	return CAP_SHARE;
+}
+
