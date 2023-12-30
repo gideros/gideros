@@ -54,3 +54,33 @@ void gflurry_EndTimedEvent(const char *eventName, const char **parameters)
     
     [Flurry endTimedEvent:eventName2 withParameters:parameters2];
 }
+
+void glurry_setSessionContinueSeconds(int seconds) {
+    [Flurry setSessionContinueSeconds:seconds];
+}
+
+void gflurry_setGender(const char *gender) {
+    NSString *gender2 = [NSString stringWithUTF8String:gender];
+    [Flurry setGender:gender2];
+}
+
+void gflurry_setUserID(const char *userID) {
+    NSString *userID2 = [NSString stringWithUTF8String:userID];
+    [Flurry setUserID:userID2];
+}
+
+void gflurry_logError(const char *errorID, const char *message) {
+    NSString *errorID2 = [NSString stringWithUTF8String:errorID];
+    NSString *message2 = [NSString stringWithUTF8String:message];
+    NSDictionary *userInfo =
+             [NSDictionary dictionaryWithObjectsAndKeys:
+              errorID2, NSLocalizedDescriptionKey,
+                message2, NSLocalizedFailureReasonErrorKey,
+                nil] ;
+    
+    NSError* error = [NSError errorWithDomain:@"com.tinymarble.Burds"
+                code:123
+            userInfo:userInfo];
+
+    [Flurry logError:errorID2 message:message2 error:error];
+}

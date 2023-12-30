@@ -95,6 +95,43 @@ static int endTimedEvent(lua_State *L)
     return 0;
 }
 
+static int setSessionContinueSeconds(lua_State* L) {
+    lua_Integer seconds = luaL_checkinteger(L, 1);
+    
+    glurry_setSessionContinueSeconds(seconds);
+    
+    return 0;
+}
+
+static int setGender(lua_State* L) {
+    const char *gender = luaL_checkstring(L, 1);
+    
+    gflurry_setGender(gender);
+    
+    return 0;
+}
+
+static int setUserID(lua_State* L) {
+    const char *userID = luaL_checkstring(L, 1);
+    
+    gflurry_setUserID(userID);
+    
+    return 0;
+}
+
+static int logError(lua_State* L) {
+    const char * errorID = luaL_checkstring(L, 1);
+    const char* message = "";
+    
+    if (!lua_isnoneornil(L, 2)) {
+        message = luaL_checkstring(L, 2);
+    }
+
+    gflurry_logError(errorID, message);
+    
+    return 0;
+}
+
 static int loader(lua_State* L)
 {
 	lua_newtable(L);
@@ -107,7 +144,15 @@ static int loader(lua_State* L)
 	lua_setfield(L, -2, "logEvent");
 	lua_pushcnfunction(L, endTimedEvent, "endTimedEvent");
 	lua_setfield(L, -2, "endTimedEvent");
-    
+    lua_pushcfunction(L, setSessionContinueSeconds, "setSessionContinueSeconds");
+    lua_setfield(L, -2, "setSessionContinueSeconds");
+    lua_pushcfunction(L, setGender, "setGender");
+    lua_setfield(L, -2, "setGender");
+    lua_pushcfunction(L, setUserID, "setUserID");
+    lua_setfield(L, -2, "setUserID");
+    lua_pushcfunction(L, logError, "logError");
+    lua_setfield(L, -2, "logError");
+
 	lua_pushvalue(L, -1);
 	lua_setglobal(L, "flurry");
     
