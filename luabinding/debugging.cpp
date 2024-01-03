@@ -93,6 +93,12 @@ void LuaDebugging::serializeValue(ByteBuffer &buffer,lua_State *L,int n,int nref
 #include "lstate.h"
 #endif
 
+void LuaDebugging::reinitDebugger()
+{
+    if (debuggerMode)
+        setupBreakMode(debuggerMode);
+}
+
 void LuaDebugging::setupBreakMode(int m) {
     //Modes used by the studio:
     //0x00: stop debugger, i.e resume without any breakpoints
@@ -102,6 +108,12 @@ void LuaDebugging::setupBreakMode(int m) {
     //0x84: resume, i.e break at next line matching a breakpoint
 	debuggerMode=m;
 	LuaApplication::debuggerBreak=m;
+#ifndef LUA_IS_LUAU
+    LuaApplication::debuggerHook=LuaDebugging::debuggerHook;
+#else
+    L->global->cb.debugstep=LuaDebugging::debuggerHook;
+#endif
+    
 #ifndef LUA_IS_LUAU
 	if (debuggerMode&DBG_MASKSUB)
 	{
@@ -191,6 +203,7 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
 		LuaApplication::debuggerBreak=0;
 		debuggerMode=0;
 		LuaApplication::debuggerHook=NULL;
+        LuaDebugging::breakedL=NULL;
         lastLine=-1;
         if (L&&profiling&&(data[0]==gptStop)) {
         	LuaApplication::Core_profilerReport(L);
@@ -244,11 +257,6 @@ void LuaDebugging::studioCommandInternal(const std::vector<char> &data,lua_State
     case gptSetBreakpoints: {
         ByteBuffer buffer(&data[2], data.size()-2);
         setupBreakMode(data[1]);
-#ifndef LUA_IS_LUAU
-		LuaApplication::debuggerHook=LuaDebugging::debuggerHook;
-#else
-        L->global->cb.debugstep=LuaDebugging::debuggerHook;
-#endif
 		int numBreakpoints;
 		buffer >> numBreakpoints;
 		LuaApplication::breakpoints.clear();

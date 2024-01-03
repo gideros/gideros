@@ -2430,7 +2430,8 @@ void LuaApplication::initialize()
     lua_sethook(L, yieldHook, (LuaApplication::debuggerBreak&DBG_MASKLUA), 1);
 #endif
     globalLuaState=L;
-
+    
+    LuaDebugging::reinitDebugger();
     Core_profilerReset(L);
     if (LuaDebugging::profiling)
     	Core_profilerStart(L);

@@ -37,6 +37,7 @@ public:
 #else
 	static void debuggerHook(void *context,lua_State *L,lua_Debug *ar);
 #endif
+    static void reinitDebugger();
 };
 
 #endif /* LUABINDING_DEBUGGING_H_ */
