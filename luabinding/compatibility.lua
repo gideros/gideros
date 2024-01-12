@@ -58,7 +58,8 @@ function Timer.delayedCall(delay, func, data)
 end
 
 if not package then
-	package={ preload={}, loaded={ string=string, io=io, table=table, bit=bit32, bit32=bit32 } }
+	package={ preload={}, loaded=debug.getregistry()._LOADED }
+	package.loaded.bit=bit32
 	function require(module)
 		if package.loaded[module] then return package.loaded[module] end
 		local m

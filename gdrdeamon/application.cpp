@@ -69,6 +69,10 @@ Application::Application(QObject *parent) :
 
     isTransferring_ = false;
     time_.start();
+
+    loadStatus="";
+    loadOnly=false;
+    waitConnectUntil=0;
 }
 
 void Application::connected()
@@ -203,13 +207,26 @@ void Application::dataReceived(const QByteArray& d)
 
 void Application::ackReceived(unsigned int id)
 {
-    Q_UNUSED(id);
 }
 
 void Application::timer()
 {
     if (!client_->isConnected() && time_.elapsed() > 30000)
         QCoreApplication::exit(0);
+    if (waitConnectUntil>0) {
+        if (client_->isConnected()) {
+            play(playWhenConnected);
+            waitConnectUntil=0;
+            loadStatus="connected";
+        }
+        else {
+            if (QDateTime::currentMSecsSinceEpoch()>waitConnectUntil) {
+                waitConnectUntil=0;
+                loadStatus="noconnect";
+            }
+        }
+    }
+
 
     QDir path(QFileInfo(projectFileName_).path());
 
@@ -225,7 +242,12 @@ void Application::timer()
                 QStringList luafiles = s1.split("|");
                 //outputWidget_->append("Uploading finished.\n");
                 client_->sendProjectProperties(properties_,QFileInfo(projectFileName_).baseName());
-                client_->sendPlay(luafiles);
+                if (loadOnly)
+                    loadStatus="loaded:"+s1.toUtf8();
+                else {
+                    client_->sendPlay(luafiles);
+                    loadStatus="playing";
+                }
                 isTransferring_ = false;
             }
             else
@@ -281,6 +303,23 @@ void Application::advertisement(const QString& host,unsigned short port,unsigned
 	allPlayersList.push_back(nfull);
 }
 
+void Application::connectAndPlay(QDataStream &instream) {
+    QString fileName;
+    instream >> fileName;
+
+    if (!instream.atEnd()) {
+        QString ip,port;
+        instream >> ip;
+        instream >> port;
+
+        playWhenConnected=fileName;
+        waitConnectUntil=QDateTime::currentMSecsSinceEpoch()+3000; //Allow up to 3 secs
+        client_->connectToHost(ip, port.toInt());
+    }
+    else
+        play(fileName);
+}
+
 void Application::newConnection()
 {
 #if USE_LOCAL_SOCKETS
@@ -315,10 +354,8 @@ void Application::newConnection()
 
     if (command == "play")
     {
-        QString fileName;
-        instream >> fileName;
-
-        play(fileName);
+        loadStatus="connecting";
+        connectAndPlay(instream);
     }
     else if (command == "stop")
     {
@@ -335,6 +372,10 @@ void Application::newConnection()
     else if (command == "isconnected")
     {
         outstream << QString(client_->isConnected() ? "1" : "0");
+    }
+    else if (command == "loadstatus")
+    {
+        outstream << loadStatus;
     }
     else if (command == "getlog")
     {
@@ -361,6 +402,13 @@ void Application::newConnection()
     else if (command == "stopdeamon")
     {
         QCoreApplication::exit(0);
+    }
+    else if (command == "load")
+    {
+        loadOnly=true;
+        loadStatus="loading";
+        connectAndPlay(instream);
+        outstream << QString("started");
     }
 
     socket->write(out);

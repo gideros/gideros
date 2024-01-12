@@ -14,6 +14,7 @@
 #include <QStringList>
 #include <QElapsedTimer>
 #include <vector>
+class QAbstractSocket;
 
 class QTimer;
 class GiderosNetworkClient;
@@ -65,6 +66,7 @@ private:
 	void playStarted();*/
 
 private:
+    void connectAndPlay(QDataStream &instream);
     QTimer *timer_;
     GiderosNetworkClient *client_;
 #if USE_LOCAL_SOCKETS
@@ -76,6 +78,10 @@ private:
 #endif
     std::deque<QPair<QString, QString> > fileQueue_;
     bool isTransferring_;
+    bool loadOnly;
+    QString loadStatus;
+    qint64 waitConnectUntil;
+    QString playWhenConnected;
     ProjectProperties properties_;
     std::vector<std::pair<QString, QString> > fileList_;
     QMap<QString, QPair<qint64, QByteArray> > md5_;

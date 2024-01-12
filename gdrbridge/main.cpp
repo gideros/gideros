@@ -44,6 +44,7 @@ static void usage()
     fprintf(stderr, "usage:\n");
     fprintf(stderr, "gdrbridge setip 127.0.0.1 [port]\n");
     fprintf(stderr, "gdrbridge play mygame.gproj\n");
+    fprintf(stderr, "gdrbridge load mygame.gproj\n");
     fprintf(stderr, "gdrbridge stop\n");
     fprintf(stderr, "gdrbridge isconnected\n");
     fprintf(stderr, "gdrbridge getlog\n");
@@ -127,7 +128,7 @@ int main(int argc, char *argv[])
     QByteArray out, in;
     QDataStream outstream(&out, QIODevice::WriteOnly);
 
-    if (arguments[1] == "play")
+    if ((arguments[1] == "play") || (arguments[1] == "load"))
     {
         if (arguments.size() <= 2)
         {
@@ -135,11 +136,21 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
-        outstream << QString("play") << QDir::current().absoluteFilePath(arguments[2]);
+        outstream << arguments[1] << QDir::current().absoluteFilePath(arguments[2]);
+        if (arguments.size() >= 4) {
+            QString port="15000";
+            if (arguments.size() >= 5)
+                port= arguments[4];
+            outstream << arguments[3] << port;
+        }
     }
     else if (arguments[1] == "stop")
     {
         outstream << QString("stop");
+    }
+    else if (arguments[1] == "loadstatus")
+    {
+        outstream << QString("loadstatus");
     }
     else if (arguments[1] == "setip")
     {
