@@ -231,13 +231,13 @@ bool gshare_Share(std::map<std::string,std::string> values)
     return false;
 }
 
-bool gfileshare_Import(const char *mime, const char *extension)
+bool gshare_Import(const char *mime, const char *extension)
 {
 	return [fsm fileImport:mime?[NSString stringWithCString:mime encoding:NSUTF8StringEncoding]:nil
 			extension:extension?[NSString stringWithCString:extension encoding:NSUTF8StringEncoding]:nil];
 }
 
-bool gfileshare_Export(const char *data,size_t dataSize,const char *mime, const char *filename)
+bool gshare_Export(const char *data,size_t dataSize,const char *mime, const char *filename)
 {
 	return [fsm fileExport:[NSData dataWithBytes:data length:dataSize]
 			mime:[NSString stringWithCString:mime encoding:NSUTF8StringEncoding]
@@ -245,12 +245,12 @@ bool gfileshare_Export(const char *data,size_t dataSize,const char *mime, const 
 }
 
 
-g_id gfileshare_AddCallback(gevent_Callback callback, void *udata)
+g_id gshare_AddCallback(gevent_Callback callback, void *udata)
 {
     return callbackList_.addCallback(callback, udata);
 }
 
-void gfileshare_RemoveCallback(gevent_Callback callback, void *udata)
+void gshare_RemoveCallback(gevent_Callback callback, void *udata)
 {
     callbackList_.removeCallback(callback, udata);
 }

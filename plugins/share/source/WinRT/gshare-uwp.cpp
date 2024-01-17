@@ -76,12 +76,12 @@ bool gshare_Share(std::map<std::string,std::string> values)
 }
 
 
-bool gfileshare_Import(const char *mime, const char *extension)
+bool gshare_Import(const char *mime, const char *extension)
 {
 	return false;
 }
 
-bool gfileshare_Export(const char *data,size_t dataSize,const char *mime, const char *filename)
+bool gshare_Export(const char *data,size_t dataSize,const char *mime, const char *filename)
 {
 	return false;
 }
