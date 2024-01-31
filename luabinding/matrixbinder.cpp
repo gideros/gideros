@@ -42,9 +42,11 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"multiply",multiply},
 		{"invert",invert},
 		{"transformPoint",transformPoint},
+		{"transformVector",transformVector},
 		{"duplicate",duplicate},
 		{"fromSRT",fromSRT},
         {"lookAt",lookAt},
+        {"toQuaternion",toQuaternion},
 
 		{"getX", getX},
 		{"getY", getY},
@@ -66,6 +68,8 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"setScaleZ", setScaleZ},
 		{"setPosition", setPosition},
 		{"getPosition", getPosition},
+		{"setRotation", setRotation},
+		{"getRotation", getRotation},
         {"setAnchorPosition", setAnchorPosition},
         {"getAnchorPosition", getAnchorPosition},
         {"setScale", setScale},
@@ -75,6 +79,53 @@ MatrixBinder::MatrixBinder(lua_State* L)
 	};
 
 	binder.createClass("Matrix", NULL, create, destruct, functionList);
+}
+
+struct TVector {
+	Vector4 v;
+	enum { VT_VEC, VT_ARG } type;
+	bool vec4;
+	int get(lua_State *L,int idx,bool opt=false,bool v4=false);
+	int ret(lua_State *L);
+};
+
+int TVector::get(lua_State *L,int idx,bool opt,bool v4)
+{
+	v.w=1;
+	vec4=v4;
+	int bidx=idx;
+	if (opt&&lua_isnoneornil(L,idx)) return 0;
+	const float *vf=lua_tovector(L,idx);
+	if (vf) {
+		v.x=vf[0];
+		v.y=vf[1];
+		v.z=vf[2];
+		if (vec4&&(!isnan(vf[3])))
+			v.w=vf[3];
+		type=VT_VEC;
+		return 1;
+	}
+	v.x=luaL_checknumber(L,idx++);
+	v.y=luaL_checknumber(L,idx++);
+	v.z=luaL_optnumber(L,idx++,0.0);
+	if (vec4)
+		v.w=luaL_optnumber(L,idx++,1.0);
+	type=VT_ARG;
+	return idx-bidx;
+}
+
+int TVector::ret(lua_State *L)
+{
+	if (type==VT_VEC) {
+		lua_pushvector(L,v.x,v.y,v.z,vec4?v.w:nan(""));
+		return 1;
+	}
+	lua_pushnumber(L,v.x);
+	lua_pushnumber(L,v.y);
+	lua_pushnumber(L,v.z);
+	if (vec4)
+		lua_pushnumber(L,v.w);
+	return vec4?4:3;
 }
 
 int MatrixBinder::create(lua_State* L)
@@ -371,11 +422,10 @@ int MatrixBinder::scale(lua_State* L)
 	Binder binder(L);
 	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
-	lua_Number x=luaL_checknumber(L,2);
-	lua_Number y=luaL_optnumber(L,3,x);
-	lua_Number z=luaL_optnumber(L,4,x);
+	TVector in;
+	in.get(L,2);
 	Matrix4 m=matrix->matrix();
-	m.scale(x,y,z);
+	m.scale(in.v.x,in.v.y,in.v.z);
 	matrix->setMatrix(m.data());
 	return 0;
 }
@@ -385,11 +435,11 @@ int MatrixBinder::translate(lua_State* L)
 	Binder binder(L);
 	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
-	lua_Number x=luaL_checknumber(L,2);
-	lua_Number y=luaL_optnumber(L,3,0);
-	lua_Number z=luaL_optnumber(L,4,0);
+	TVector in;
+	in.get(L,2);
+
 	Matrix4 m=matrix->matrix();
-	m.translate(x,y,z);
+	m.translate(in.v.x,in.v.y,in.v.z);
 	matrix->setMatrix(m.data());
 	return 0;
 }
@@ -400,11 +450,10 @@ int MatrixBinder::rotate(lua_State* L)
 	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
 	lua_Number a=luaL_checknumber(L,2);
-	lua_Number x=luaL_checknumber(L,3);
-	lua_Number y=luaL_checknumber(L,4);
-	lua_Number z=luaL_checknumber(L,5);
+	TVector in;
+	in.get(L,3);
 	Matrix4 m=matrix->matrix();
-	m.rotate(a,x,y,z);
+	m.rotate(a,in.v.x,in.v.y,in.v.z);
 	matrix->setMatrix(m.data());
 	return 0;
 }
@@ -436,13 +485,26 @@ int MatrixBinder::transformPoint(lua_State* L)
 	Binder binder(L);
 	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 	Matrix4 m=matrix->matrix();
-	Vector4 rhs(luaL_optnumber(L,2,0.0),luaL_optnumber(L,3,0.0),luaL_optnumber(L,4,0.0),luaL_optnumber(L,5,1.0));
-	Vector4 res=m*rhs;
-	lua_pushnumber(L,res.x);
-	lua_pushnumber(L,res.y);
-	lua_pushnumber(L,res.z);
-	lua_pushnumber(L,res.w);
-	return 4;
+	TVector in;
+
+	in.get(L,2,false,true);
+	in.v=m*in.v;
+	return in.ret(L);
+}
+
+int MatrixBinder::transformVector(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+	Matrix4 m=matrix->matrix();
+	TVector in;
+
+	in.get(L,2);
+	Vector4 z(0,0,0,1);
+	Vector4 res=m*in.v;
+	Vector4 rz=m*z;
+	in.v=res-rz;
+	return in.ret(L);
 }
 
 int MatrixBinder::getX(lua_State* L)
@@ -677,14 +739,19 @@ int MatrixBinder::setPosition(lua_State* L)
 	Binder binder(L);
 	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
-	lua_Number x = luaL_checknumber(L, 2);
-	lua_Number y = luaL_checknumber(L, 3);
-	if (lua_isnoneornil(L, 4))
-		sprite->setXY(x, y);
-	else
-	{
-		lua_Number z = luaL_checknumber(L, 4);
-		sprite->setXYZ(x, y, z);
+	const float *v=lua_tovector(L,2);
+	if (v)
+		sprite->setXYZ(v[0], v[1], v[2]);
+	else {
+		lua_Number x = luaL_checknumber(L, 2);
+		lua_Number y = luaL_checknumber(L, 3);
+		if (lua_isnoneornil(L, 4))
+			sprite->setXY(x, y);
+		else
+		{
+			lua_Number z = luaL_checknumber(L, 4);
+			sprite->setXYZ(x, y, z);
+		}
 	}
 
 	return 0;
@@ -704,6 +771,39 @@ int MatrixBinder::getPosition(lua_State* L)
 	return 3;
 }
 
+int MatrixBinder::setRotation(lua_State* L)
+{
+	StackChecker checker(L, "MatrixBinder::setRotation", 0);
+
+	Binder binder(L);
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+	const float *v=lua_tovector(L,2);
+	if (v)
+		sprite->setRotation(v[0], v[1], v[2]);
+	else {
+		lua_Number x = luaL_optnumber(L, 2,sprite->rotationX());
+		lua_Number y = luaL_optnumber(L, 3,sprite->rotationY());
+		lua_Number z = luaL_optnumber(L, 4,sprite->rotationZ());
+		sprite->setRotation(x, y, z);
+	}
+
+	return 0;
+}
+
+int MatrixBinder::getRotation(lua_State* L)
+{
+	StackChecker checker(L, "MatrixBinder::getRotation", 3);
+
+	Binder binder(L);
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+	lua_pushnumber(L, sprite->rotationX());
+	lua_pushnumber(L, sprite->rotationY());
+	lua_pushnumber(L, sprite->rotationZ());
+
+	return 3;
+}
+
 int MatrixBinder::setAnchorPosition(lua_State* L)
 {
     StackChecker checker(L, "MatrixBinder::setAnchorPosition", 0);
@@ -711,16 +811,20 @@ int MatrixBinder::setAnchorPosition(lua_State* L)
     Binder binder(L);
     Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
-    lua_Number x = luaL_checknumber(L, 2);
-    lua_Number y = luaL_checknumber(L, 3);
-	if (lua_isnoneornil(L, 4))
-	    sprite->setRefXY(x, y);
-	else
-	{
-		lua_Number z = luaL_checknumber(L, 4);
-		sprite->setRefXYZ(x, y, z);
+	const float *v=lua_tovector(L,2);
+	if (v)
+		sprite->setRefXYZ(v[0], v[1], v[2]);
+	else {
+		lua_Number x = luaL_checknumber(L, 2);
+		lua_Number y = luaL_checknumber(L, 3);
+		if (lua_isnoneornil(L, 4))
+			sprite->setRefXY(x, y);
+		else
+		{
+			lua_Number z = luaL_checknumber(L, 4);
+			sprite->setRefXYZ(x, y, z);
+		}
 	}
-
     return 0;
 }
 
@@ -747,16 +851,20 @@ int MatrixBinder::setScale(lua_State* L)
 	Binder binder(L);
 	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
-	lua_Number x = luaL_checknumber(L, 2);
-	lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
-	if (lua_isnoneornil(L, 4)) //No Z
-		sprite->setScaleXY(x, y); // Only scale X and Y
-	else
-	{
-		lua_Number z = luaL_checknumber(L, 4);
-		sprite->setScaleXYZ(x, y, z);
+	const float *v=lua_tovector(L,2);
+	if (v)
+		sprite->setScaleXYZ(v[0], v[1], v[2]);
+	else {
+		lua_Number x = luaL_checknumber(L, 2);
+		lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
+		if (lua_isnoneornil(L, 4)) //No Z
+			sprite->setScaleXY(x, y); // Only scale X and Y
+		else
+		{
+			lua_Number z = luaL_checknumber(L, 4);
+			sprite->setScaleXYZ(x, y, z);
+		}
 	}
-
 	return 0;
 }
 
@@ -772,6 +880,23 @@ int MatrixBinder::getScale(lua_State* L)
 	lua_pushnumber(L, sprite->scaleZ());
 
 	return 3;
+}
+
+int MatrixBinder::toQuaternion(lua_State* L)
+{
+	StackChecker checker(L, "MatrixBinder::toQuaternion", 4);
+
+	Binder binder(L);
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+	float w,x,y,z;
+	sprite->toQuaternion(w, x, y, z);
+
+	lua_pushnumber(L, w);
+	lua_pushnumber(L, x);
+	lua_pushnumber(L, y);
+	lua_pushnumber(L, z);
+
+	return 4;
 }
 
 int MatrixBinder::duplicate(lua_State* L)
@@ -899,9 +1024,13 @@ int MatrixBinder::lookAt(lua_State* L)
     Binder binder(L);
     Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
-    matrix->lookAt(luaL_optnumber(L,2,0),luaL_optnumber(L,3,0),luaL_optnumber(L,4,0),
-            luaL_optnumber(L,5,0),luaL_optnumber(L,6,0),luaL_optnumber(L,7,0),
-            luaL_optnumber(L,8,0),luaL_optnumber(L,9,0),luaL_optnumber(L,10,0));
+    TVector e,t,s;
+    int idx=2;
+    idx+=e.get(L,idx);
+    idx+=t.get(L,idx);
+    idx+=s.get(L,idx);
+
+    matrix->lookAt(e.v.x,e.v.y,e.v.z,t.v.x,t.v.y,t.v.z,s.v.x,s.v.y,s.v.z);
 
     return 0;
 }

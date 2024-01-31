@@ -198,11 +198,11 @@ static void ovrEgl_CreateContext(ovrEgl* egl, const ovrEgl* shareEgl) {
         EGL_ALPHA_SIZE,
         8, // need alpha for the multi-pass timewarp compositor
         EGL_DEPTH_SIZE,
-        0,
+        24,
         EGL_STENCIL_SIZE,
-        0,
+        8,
         EGL_SAMPLES,
-        0,
+        4,
         EGL_NONE};
     egl->Config = 0;
     for (int i = 0; i < numConfigs; i++) {
@@ -220,13 +220,21 @@ static void ovrEgl_CreateContext(ovrEgl* egl, const ovrEgl* shareEgl) {
             continue;
         }
 
+        EGLint catt[7];
         int j = 0;
         for (; configAttribs[j] != EGL_NONE; j += 2) {
             eglGetConfigAttrib(egl->Display, configs[i], configAttribs[j], &value);
-            if (value != configAttribs[j + 1]) {
-                break;
-            }
+            catt[j/2]=value;
         }
+
+        //ALOGV("eglConfig %d (RGBA:%d:%d:%d:%d DS:%d:%d MS:%d)",i,catt[0],catt[1],catt[2],catt[3],catt[4],catt[5],catt[6]);
+
+        j=0;
+        for (; configAttribs[j] != EGL_NONE; j += 2) {
+        	if (catt[j/2] != configAttribs[j + 1])
+        		break;
+        }
+
         if (configAttribs[j] == EGL_NONE) {
             egl->Config = configs[i];
             break;
@@ -420,8 +428,8 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
 
     int64_t SelectColorSwapchainFormat(const std::vector<int64_t>& runtimeFormats,int64_t &depthFormat) const override {
         // List of supported color swapchain formats.
-    	for (auto it:runtimeFormats)
-            Log::Write(Log::Level::Info, "GLES SwapchainFormat: " + std::to_string(it));
+ /*   	for (auto it:runtimeFormats)
+            Log::Write(Log::Level::Info, "GLES SwapchainFormat: " + std::to_string(it)); */
 
         std::vector<int64_t> supportedColorSwapchainFormats{GL_RGBA8, GL_RGBA8_SNORM};
         depthFormat=GL_DEPTH_COMPONENT32F;
@@ -558,7 +566,7 @@ struct OpenGLESGraphicsPlugin : public IGraphicsPlugin {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    uint32_t GetSupportedSwapchainSampleCount(const XrViewConfigurationView&) override { return 1; }
+    uint32_t GetSupportedSwapchainSampleCount(const XrViewConfigurationView&) override { return 4; }
 
     void UpdateOptions(const std::shared_ptr<Options>& options) override { m_clearColor = options->GetBackgroundClearColor(); }
 

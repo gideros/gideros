@@ -58,19 +58,105 @@ int ogl2ShaderProgram::vboFreeze=0;
 int ogl2ShaderProgram::vboUnfreeze=0;
 bool ogl2ShaderProgram::supportInstances=0;
 bool ogl2ShaderProgram::vboForceGeneric=false;
+#ifndef GL2SHADERS_COMMON_GENVBO
+GLuint ogl2ShaderProgram::genVBO[17]={0,};
+#else
+std::vector<GLuint> ogl2ShaderProgram::genVBOs;
+std::vector<GLuint> ogl2ShaderProgram::freeVBOs;
+std::vector<GLuint> ogl2ShaderProgram::usedVBOs;
+std::vector<GLuint> ogl2ShaderProgram::renderedVBOs;
+GLuint ogl2ShaderProgram::curGenVBO=0;
+size_t ogl2ShaderProgram::genBufferOffset=0;
+#endif
+GLuint ogl2ShaderProgram::curAttribs[16]={0,};
+GLuint ogl2ShaderProgram::curArrayBuffer=0;
+GLuint ogl2ShaderProgram::curElementBuffer=0;
 
-GLuint ogl2ShaderProgram::getGenericVBO(int index,int size) {
-	if ((!vboForceGeneric)&&(size<FBO_MINSIZE))
-		return 0;
-	if (genVBO[index] == 0){
-        GLCALL_INIT;
-		GLCALL glGenBuffers(1,genVBO+index);
-	}
-	return genVBO[index];
+void ogl2ShaderProgram::bindBuffer(GLuint type,GLuint buf)
+{
+    GLCALL_INIT;
+    switch (type) {
+    case GL_ELEMENT_ARRAY_BUFFER:
+        if (curElementBuffer==buf) return;
+        curElementBuffer=buf;
+    break;
+    case GL_ARRAY_BUFFER:
+        if (curArrayBuffer==buf) return;
+        curArrayBuffer=buf;
+    break;
+    }
+    GLCALL glBindBuffer(type,buf);
 }
 
-GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified) {
-	if (!cache) return 0; //XXX: Could we check for VBO availability ?
+GLuint ogl2ShaderProgram::allocateVBO() {
+    if (freeVBOs.empty()) {
+        GLuint vbos[8];
+        GLCALL_INIT;
+        GLCALL glGenBuffers(8,vbos);
+        for (int i=0;i<8;i++)
+            genVBOs.push_back(vbos[i]);
+        for (int i=0;i<7;i++)
+            freeVBOs.push_back(vbos[i]);
+        usedVBOs.push_back(vbos[7]);
+        return vbos[7];
+    }
+    GLuint vbo=freeVBOs.back();
+    freeVBOs.pop_back();
+    usedVBOs.push_back(vbo);
+    return vbo;
+}
+
+#define IDXBUFSIZE  65536
+GLuint ogl2ShaderProgram::getGenericVBO(int index,int size, const void *&ptr) {
+    GLCALL_INIT;
+    GLuint bname=(index==0)?GL_ELEMENT_ARRAY_BUFFER:GL_ARRAY_BUFFER;
+#ifndef GL2SHADERS_COMMON_GENVBO
+    //With this enabled, we can mix VBO/Client memory
+    if ((!vboForceGeneric)&&(size<FBO_MINSIZE)) {
+        bindBuffer(bname,0);
+        return 0;
+    }
+    if (genVBO[index] == 0){
+		GLCALL glGenBuffers(1,genVBO+index);
+	}
+    bindBuffer(bname,genVBO[index]);
+    return genVBO[index];
+#else
+    index=0;
+    size_t psize=((size+3)&(~3));
+    if (psize>(IDXBUFSIZE/2))
+    {
+        GLuint vbo=allocateVBO();
+        bindBuffer(bname,vbo);
+        GLCALL glBufferData(bname,psize,ptr,GL_DYNAMIC_DRAW);
+        genBufferOffset=IDXBUFSIZE;
+        ptr=NULL;
+    }
+    else if ((curGenVBO==0)||((genBufferOffset+psize)>IDXBUFSIZE))
+    {
+        curGenVBO=allocateVBO();
+        bindBuffer(bname,curGenVBO);
+        GLCALL glBufferData(bname,IDXBUFSIZE,NULL,GL_DYNAMIC_DRAW);
+        GLCALL glBufferSubData(bname,0,size,ptr);
+        ptr=NULL;
+        genBufferOffset=0;
+    }
+    else {
+        bindBuffer(bname,curGenVBO);
+        GLCALL glBufferSubData(bname,genBufferOffset,size,ptr);
+        ptr=(void *)genBufferOffset;
+    }
+    genBufferOffset+=psize;
+#endif
+    return 0;
+}
+
+GLuint ogl2ShaderProgram::getCachedVBO(ShaderBufferCache **cache,bool &modified,GLuint type) {
+    GLCALL_INIT;
+    if (!cache) {
+        bindBuffer(type,0);
+        return 0; //XXX: Could we check for VBO availability ?
+    }
 	if (!*cache)
 		*cache = new gl2ShaderBufferCache();
 	gl2ShaderBufferCache *dc = static_cast<gl2ShaderBufferCache*> (*cache);
@@ -106,7 +192,6 @@ GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified) {
 #endif
 	if (useVBO)
 	{
-		GLCALL_INIT;
 		if (!dc->valid())
 		{
 			GLCALL glGenBuffers(1,&dc->VBO);
@@ -115,10 +200,11 @@ GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified) {
 	}
 	else
 		dc->recreate();
-	return dc->VBO;
+    bindBuffer(type,dc->VBO);
+    return dc->VBO;
 }
 
-GLint ogl2ShaderProgram::curProg =0;
+GLuint ogl2ShaderProgram::curProg =0;
 ShaderProgram *ogl2ShaderProgram::current = NULL;
 std::vector<ogl2ShaderProgram *> ogl2ShaderProgram::shaders;
 
@@ -129,12 +215,38 @@ void ogl2ShaderProgram::resetAll()
 	  if (gl2ShaderBufferCache::allVBO)
 		  for (std::set<gl2ShaderBufferCache *>::iterator it = gl2ShaderBufferCache::allVBO->begin() ; it != gl2ShaderBufferCache::allVBO->end(); ++it)
 			  (*it)->recreate();
+      GLCALL_INIT;
+      GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+      GLCALL glBindBuffer(GL_ARRAY_BUFFER,0);
+      curProg=0;
+      curArrayBuffer=curElementBuffer=0;
+      for (int i=0;i<16;i++)
+      {
+        curAttribs[i]=(GLuint)-1;
+        GLCALL glDisableVertexAttribArray(i);
+      }
 }
 
 void ogl2ShaderProgram::resetAllUniforms()
 {
-	  for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
-		  (*it)->resetUniforms();
+#ifndef GL2SHADERS_COMMON_GENVBO
+    GLCALL_INIT;
+    int nvbo=17;
+    for (int k = 0; k < nvbo; k++) {
+        if (genVBO[k]) {
+            GLCALL glDeleteBuffers(1,genVBO+k);
+            genVBO[k]=0;
+        }
+    }
+#else
+    freeVBOs.insert(freeVBOs.end(),renderedVBOs.begin(),renderedVBOs.end());
+    renderedVBOs.clear();
+    renderedVBOs.assign(usedVBOs.begin(),usedVBOs.end());
+    usedVBOs.clear();
+    curGenVBO=0;
+#endif
+    for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
+        (*it)->resetUniforms();
 }
 
 
@@ -218,13 +330,14 @@ const char *ogl2ShaderProgram::compilationLog()
 }
 
 void ogl2ShaderProgram::deactivate() {
+    /*
 	GLCALL_INIT;
 	for (std::vector<GLint>::iterator it = glattributes.begin();
 			it != glattributes.end(); ++it) {
 		GLint att = *it;
 		if (att >= 0)
-			GLCALL glDisableVertexAttribArray(*it);
-	}
+            GLCALL glDisableVertexAttribArray(at);
+    }*/
 	current = NULL;
 }
 
@@ -237,15 +350,30 @@ void ogl2ShaderProgram::activate() {
 	if (current)
 		current->deactivate();
 	current = this;
-	for (int k=0;k<glattributes.size();k++) {
+    GLuint catt[16];
+    for (int i=0;i<16;i++) catt[i]=(GLuint)-1;
+    for (size_t k=0;k<glattributes.size();k++) {
 		GLint att = glattributes[k];
 		if (att >= 0) {
-			GLCALL glEnableVertexAttribArray(att);
-			if (supportInstances)
-				GLECALL glVertexAttribDivisor(att,attributes[k].instances);
+            catt[att]=(supportInstances)?attributes[k].instances:0;
 		}
 	}
-
+    for (int i=0;i<16;i++) {
+        if (catt[i]!=curAttribs[i]) {
+            if (catt[i]==((GLuint)-1)) {
+                GLCALL glDisableVertexAttribArray(i);
+                if (supportInstances&&curAttribs[i])
+                    GLECALL glVertexAttribDivisor(i,0);
+            }
+            else {
+                if (curAttribs[i]==((GLuint)-1))
+                    GLCALL glEnableVertexAttribArray(i);
+                if (supportInstances&&catt[i])
+                    GLECALL glVertexAttribDivisor(i,catt[i]);
+            }
+            curAttribs[i]=catt[i];
+        }
+    }
 }
 
 void ogl2ShaderProgram::useProgram() {
@@ -295,8 +423,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
     size_t fbo_sz=elmSize * mult * count;
     if (fbo_sz<FBO_MINSIZE)
         cache=NULL;
-    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(index+1,fbo_sz);
-    GLCALL glBindBuffer(GL_ARRAY_BUFFER,vbo);
+    GLuint vbo=cache?getCachedVBO(cache,modified,GL_ARRAY_BUFFER):getGenericVBO(index+1,fbo_sz,ptr);
     if (vbo)
 	{
 		if (modified||(!cache))
@@ -376,22 +503,20 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1, const char *vshader2,
 void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		const char *fshader1, const char *fshader2,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
-	for (int k = 0; k < 17; k++)
-		genVBO[k] = 0;
 	cbsData=0;
     vshadercode=vshader1;
     if (vshader2)
-    	vshadercode.append(vshader2);
+        vshadercode.append(vshader2);
     fshadercode=fshader1;
     if (fshader2)
-    	fshadercode.append(fshader2);
-	GLint ntex = 0;
-	while (!uniforms->name.empty()) {
-		int usz = 0, ual = 4;
-		ConstantDesc cd;
-		cd = *(uniforms++);
-		switch (cd.type) {
-		case CTEXTURE:
+        fshadercode.append(fshader2);
+    GLint ntex = 0;
+    while (!uniforms->name.empty()) {
+        int usz = 0, ual = 4;
+        ConstantDesc cd;
+        cd = *(uniforms++);
+        switch (cd.type) {
+        case CTEXTURE:
 			usz = 4;
 			ual = 4;
 			break;
@@ -519,9 +644,6 @@ ogl2ShaderProgram::~ogl2ShaderProgram() {
 		GLCALL glDeleteShader(fragmentShader);
 	glog_i("Deleted program:%d", program);
 	free(cbData);
-	for (int k = 0; k < 17; k++)
-		if (genVBO[k])
-			GLCALL glDeleteBuffers(1,genVBO+k);
 }
 
 void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
@@ -620,8 +742,7 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
     size_t fbo_sz=elmSize * count;
     if (fbo_sz<FBO_MINSIZE)
         cache=NULL;
-    GLuint vbo=cache?getCachedVBO(cache,modified):getGenericVBO(0,fbo_sz);
-    GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
+    GLuint vbo=cache?getCachedVBO(cache,modified,GL_ELEMENT_ARRAY_BUFFER):getGenericVBO(0,fbo_sz,indices);
 	if (vbo)
 	{
 		if (modified||(!cache))

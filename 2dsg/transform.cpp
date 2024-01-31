@@ -51,6 +51,27 @@ void Transform::quaternionToEuler(float w,float x,float y,float z,float &rx,floa
     }
 }
 
+void Transform::toQuaternion(float &w,float &x,float &y,float &z)
+{
+	const float *m=matrix_.data();
+
+	float sx=sqrtf(m[0]*m[0]+m[1]*m[1]+m[2]*m[2]);
+	float sy=sqrtf(m[4]*m[4]+m[5]*m[5]+m[6]*m[6]);
+	float sz=sqrtf(m[8]*m[8]+m[9]*m[9]+m[10]*m[10]);
+	float det=matrix_.getDeterminant();
+
+	if ( det < 0 ) sx = - sx;
+
+	w = sqrtf( fmaxf( 0, 1 + m[0]/sx + m[5]/sy + m[10]/sz ) ) / 2;
+	x = sqrtf( fmaxf( 0, 1 + m[0]/sx - m[5]/sy - m[10]/sz ) ) / 2;
+	y = sqrtf( fmaxf( 0, 1 - m[0]/sx + m[5]/sy - m[10]/sz ) ) / 2;
+	z = sqrtf( fmaxf( 0, 1 - m[0]/sx - m[5]/sy + m[10]/sz ) ) / 2;
+	x *= copysignf(1.0, x * ( m[6]/sy - m[9]/sz ) );
+	y *= copysignf(1.0, y * ( m[8]/sz - m[2]/sx ) );
+	z *= copysignf(1.0, z * ( m[1]/sx - m[4]/sy ) );
+
+}
+
 void Transform::setMatrix(const float *m)
 {
 	matrix_.set(m);

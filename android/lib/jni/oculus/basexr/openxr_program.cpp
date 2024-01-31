@@ -85,13 +85,14 @@ inline XrReferenceSpaceCreateInfo GetXrReferenceSpaceCreateInfo(const std::strin
 }
 
 struct OpenXrProgram : IOpenXrProgram {
+	XrTime curTime;
     OpenXrProgram(const std::shared_ptr<Options>& options, const std::shared_ptr<IPlatformPlugin>& platformPlugin,
                   const std::shared_ptr<IGraphicsPlugin>& graphicsPlugin)
         : m_options(options),
           m_platformPlugin(platformPlugin),
           m_graphicsPlugin(graphicsPlugin),
           m_acceptableBlendModes{XR_ENVIRONMENT_BLEND_MODE_OPAQUE, XR_ENVIRONMENT_BLEND_MODE_ADDITIVE,
-                                 XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND} {}
+                                 XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND} { curTime=0; }
 
     ~OpenXrProgram() override {
         if (m_input.actionSet != XR_NULL_HANDLE) {
@@ -681,6 +682,7 @@ struct OpenXrProgram : IOpenXrProgram {
             CHECK(swapchainFormatCount == swapchainFormats.size());
             m_colorSwapchainFormat = m_graphicsPlugin->SelectColorSwapchainFormat(swapchainFormats,m_depthSwapchainFormat);
 
+            /*
             // Print swapchain formats and the selected one.
             {
                 std::string swapchainFormatsString;
@@ -696,7 +698,7 @@ struct OpenXrProgram : IOpenXrProgram {
                     }
                 }
                 Log::Write(Log::Level::Verbose, Fmt("Swapchain Formats: %s", swapchainFormatsString.c_str()));
-            }
+            }*/
 
             // Create a swapchain for each view.
             for (uint32_t i = 0; i < viewCount; i++) {
@@ -709,8 +711,8 @@ struct OpenXrProgram : IOpenXrProgram {
                 XrSwapchainCreateInfo swapchainCreateInfo{XR_TYPE_SWAPCHAIN_CREATE_INFO};
                 swapchainCreateInfo.arraySize = 1;
                 swapchainCreateInfo.format = m_colorSwapchainFormat;
-                swapchainCreateInfo.width = vp.recommendedImageRectWidth;
-                swapchainCreateInfo.height = vp.recommendedImageRectHeight;
+                swapchainCreateInfo.width = vp.recommendedImageRectWidth*1.7;
+                swapchainCreateInfo.height = vp.recommendedImageRectHeight*1.7;
                 swapchainCreateInfo.mipCount = 1;
                 swapchainCreateInfo.faceCount = 1;
                 swapchainCreateInfo.sampleCount = m_graphicsPlugin->GetSupportedSwapchainSampleCount(vp);
@@ -809,7 +811,11 @@ struct OpenXrProgram : IOpenXrProgram {
                     break;
                 case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
                 default: {
-                    Log::Write(Log::Level::Verbose, Fmt("Ignoring event type %d", event->type));
+                	bool handled=false;
+					for (auto it=VRExts.begin();it!=VRExts.end();it++)
+						handled|=((*it)->HandleEvent(event));
+					if (!handled)
+						Log::Write(Log::Level::Verbose, Fmt("Ignoring event type %d", event->type));
                     break;
                 }
             }
@@ -989,6 +995,7 @@ struct OpenXrProgram : IOpenXrProgram {
         CHECK_XRCMD(xrWaitFrame(m_session, &frameWaitInfo, &frameState));
 
         StartOfFrame();
+    	curTime=frameState.predictedDisplayTime;
 
         XrFrameBeginInfo frameBeginInfo{XR_TYPE_FRAME_BEGIN_INFO};
         CHECK_XRCMD(xrBeginFrame(m_session, &frameBeginInfo));
@@ -1020,6 +1027,12 @@ struct OpenXrProgram : IOpenXrProgram {
     {
     	ViewSpace=s;
     }
+
+    XrSpace GetSceneSpace() override {
+    	return m_visualizedSpaces[ViewSpace];
+    }
+
+    XrTime GetTime() override { return curTime; };
 
     bool RenderLayer(XrTime predictedDisplayTime,
 			std::vector<XrCompositionLayerProjectionView>& projectionLayerViews,
@@ -1056,6 +1069,8 @@ struct OpenXrProgram : IOpenXrProgram {
         XrSpaceLocation view_in_stage = { XR_TYPE_SPACE_LOCATION, &vspd, 0, {{0, 0, 0, 1}, {0, 0, 0}} };
      	xrLocateSpace(m_visualizedSpaces["View"], m_appSpace, predictedDisplayTime, &view_in_stage);
         HandleInput(&m_input,m_appSpace,predictedDisplayTime,&view_in_stage,&vspd);
+        for (auto e:VRExts)
+         	e->StartFrame(predictedDisplayTime,m_appSpace);
 
 
         // Render view to the appropriate part of the swapchain image.

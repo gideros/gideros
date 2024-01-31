@@ -39,10 +39,12 @@ private:
 	static int rotate(lua_State* L);
 	static int multiply(lua_State* L);
 	static int transformPoint(lua_State* L);
+	static int transformVector(lua_State* L);
 	static int invert(lua_State* L);
 	static int duplicate(lua_State* L);
     static int fromSRT(lua_State* L);
     static int lookAt(lua_State* L);
+    static int toQuaternion(lua_State *L);
 
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);
@@ -64,6 +66,8 @@ private:
 	static int setScaleZ(lua_State* L);
 	static int setPosition(lua_State* L);
 	static int getPosition(lua_State* L);
+	static int setRotation(lua_State* L);
+	static int getRotation(lua_State* L);
     static int setAnchorPosition(lua_State* L);
     static int getAnchorPosition(lua_State* L);
 	static int setScale(lua_State* L);

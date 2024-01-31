@@ -574,6 +574,7 @@ LOCAL_SRC_FILES += oculus/oculus.cpp \
 	oculus/basexr/platformplugin_android.cpp \
 	oculus/basexr/VRExtension.cpp \
 	oculus/basexr/ext/PassthroughFB.cpp \
+	oculus/basexr/ext/SceneFB.cpp \
 	oculus/basexr/ext/HandTrackingFB.cpp
 	 
 LOCAL_CFLAGS += -DOCULUS 

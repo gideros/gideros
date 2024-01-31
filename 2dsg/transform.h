@@ -24,6 +24,14 @@ public:
         refZ_ = 0;
     }
 
+	void setRotation(float x, float y, float z)
+	{
+		rotationX_ = x;
+		rotationY_ = y;
+		rotationZ_ = z;
+		compose();
+	}
+
 	void setRotationZ(float r)
 	{
 		rotationZ_ = r;
@@ -268,6 +276,7 @@ public:
     void lookAt(float eyex, float eyey, float eyez, float centerx,
                 float centery, float centerz, float upx, float upy,
                 float upz);
+    void toQuaternion(float &w,float &x,float &y,float &z);
 private:
 	Matrix4 matrix_;
 

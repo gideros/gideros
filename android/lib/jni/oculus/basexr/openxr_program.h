@@ -46,6 +46,8 @@ struct IOpenXrProgram {
     virtual std::map<std::string,bool> &ProbeExtensions() = 0;
     virtual std::map<std::string,bool> &EnabledExtensions() = 0;
     virtual void SetViewSpace(std::string s) =0;
+    virtual XrSpace GetSceneSpace()=0;
+    virtual XrTime GetTime()=0;
 
     // Create an Instance and other basic instance-level initialization.
     virtual void CreateInstance(std::vector<std::string> &extra) = 0;

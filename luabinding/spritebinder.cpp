@@ -1259,16 +1259,20 @@ int SpriteBinder::setPosition(lua_State* L)
 	Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
-	lua_Number x = luaL_checknumber(L, 2);
-	lua_Number y = luaL_checknumber(L, 3);
-	if (lua_isnoneornil(L, 4))
-		sprite->setXY(x, y);
-	else
-	{
-		lua_Number z = luaL_checknumber(L, 4);
-		sprite->setXYZ(x, y, z);
+	const float *v=lua_tovector(L,2);
+	if (v)
+		sprite->setXYZ(v[0], v[1], v[2]);
+	else {
+		lua_Number x = luaL_checknumber(L, 2);
+		lua_Number y = luaL_checknumber(L, 3);
+		if (lua_isnoneornil(L, 4))
+			sprite->setXY(x, y);
+		else
+		{
+			lua_Number z = luaL_checknumber(L, 4);
+			sprite->setXYZ(x, y, z);
+		}
 	}
-
 	return 0;
 }
 
@@ -1293,16 +1297,20 @@ int SpriteBinder::setAnchorPosition(lua_State* L)
     Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
-    lua_Number x = luaL_checknumber(L, 2);
-    lua_Number y = luaL_checknumber(L, 3);
-	if (lua_isnoneornil(L, 4))
-	    sprite->setRefXY(x, y);
-	else
-	{
-		lua_Number z = luaL_checknumber(L, 4);
-		sprite->setRefXYZ(x, y, z);
+	const float *v=lua_tovector(L,2);
+	if (v)
+		sprite->setRefXYZ(v[0], v[1], v[2]);
+	else {
+		lua_Number x = luaL_checknumber(L, 2);
+		lua_Number y = luaL_checknumber(L, 3);
+		if (lua_isnoneornil(L, 4))
+			sprite->setRefXY(x, y);
+		else
+		{
+			lua_Number z = luaL_checknumber(L, 4);
+			sprite->setRefXYZ(x, y, z);
+		}
 	}
-
     return 0;
 }
 
@@ -1366,16 +1374,20 @@ int SpriteBinder::setScale(lua_State* L)
 	Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
-	lua_Number x = luaL_checknumber(L, 2);
-	lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
-	if (lua_isnoneornil(L, 4)) //No Z
-		sprite->setScaleXY(x, y); // Only scale X and Y
-	else
-	{
-		lua_Number z = luaL_checknumber(L, 4);
-		sprite->setScaleXYZ(x, y, z);
+	const float *v=lua_tovector(L,2);
+	if (v)
+		sprite->setScaleXYZ(v[0], v[1], v[2]);
+	else {
+		lua_Number x = luaL_checknumber(L, 2);
+		lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
+		if (lua_isnoneornil(L, 4)) //No Z
+			sprite->setScaleXY(x, y); // Only scale X and Y
+		else
+		{
+			lua_Number z = luaL_checknumber(L, 4);
+			sprite->setScaleXYZ(x, y, z);
+		}
 	}
-
 	return 0;
 }
 
@@ -1553,10 +1565,11 @@ int SpriteBinder::spriteToLocal(lua_State* L)
         lua_pushnil(L);
         lua_pushnil(L);
     }
-
-    lua_pushnumber(L, tx);
-    lua_pushnumber(L, ty);
-    lua_pushnumber(L, tz);
+    else {
+		lua_pushnumber(L, tx);
+		lua_pushnumber(L, ty);
+		lua_pushnumber(L, tz);
+    }
 
     return 3;
 }
@@ -2214,6 +2227,7 @@ int SpriteBinder::setStencilOperation(lua_State* L)
             ds.dTest=lua_toboolean(L,-1);
             sm|=Sprite::STENCILMASK_DTEST;
         }
+		lua_pop(L,1);
         lua_getfield(L,2,"stencilClear");
         if (!lua_isnil(L,-1)) {
 			ds.sClear=lua_toboolean(L,-1);

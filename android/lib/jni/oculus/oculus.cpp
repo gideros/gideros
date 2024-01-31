@@ -34,6 +34,7 @@ Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All
 
 #include "ext/PassthroughFB.h"
 #include "ext/HandTrackingFB.h"
+#include "ext/SceneFB.h"
 
 void setupApi(lua_State *L);
 static LuaApplication *_gapp=NULL;
@@ -456,6 +457,7 @@ void HandleInput(IOpenXrProgram::InputState *m_input,XrSpace m_appSpace,XrTime p
 std::map<std::string,bool> availableExtensions;
 std::map<std::string,bool> enabledExtensions;
 
+std::shared_ptr<IOpenXrProgram> ProgramInstance=NULL;
 void* AppThreadFunction(void* parm) {
     ovrAppThread* appThread = (ovrAppThread*)parm;
     bool LuaInitialized=false;
@@ -516,6 +518,16 @@ void* AppThreadFunction(void* parm) {
     	extraExtensions.push_back(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME);
     	extraExtensions.push_back(XR_FB_HAND_TRACKING_CAPSULES_EXTENSION_NAME);
     }
+    if (availableExtensions[XR_FB_SCENE_EXTENSION_NAME]) {
+        ALOGV("EXT: Using scene");
+        extraExtensions.push_back(XR_FB_SPATIAL_ENTITY_EXTENSION_NAME);
+   		extraExtensions.push_back(XR_FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME);
+		extraExtensions.push_back(XR_FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME);
+		extraExtensions.push_back(XR_FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME);
+		extraExtensions.push_back(XR_FB_SCENE_EXTENSION_NAME);
+		extraExtensions.push_back(XR_FB_SCENE_CAPTURE_EXTENSION_NAME);
+    }
+
 
     program->CreateInstance(extraExtensions);
     enabledExtensions=program->EnabledExtensions();
@@ -525,6 +537,9 @@ void* AppThreadFunction(void* parm) {
 
     if (enabledExtensions[XR_EXT_HAND_TRACKING_EXTENSION_NAME])
     	program->AddExtension(new HandTrackingFB());
+
+    if (enabledExtensions[XR_FB_SCENE_EXTENSION_NAME])
+    	program->AddExtension(new SceneFB());
 
     program->InitializeSystem();
 
@@ -542,6 +557,10 @@ void* AppThreadFunction(void* parm) {
     appState.DisplayTime=0;
 
     bool requestRestart = false;
+    ProgramInstance=program;
+	for (auto it=ProgramInstance->VRExts.begin();it!=ProgramInstance->VRExts.end();it++)
+		(*it)->Setup(program);
+
 
     for (bool destroyed = false; destroyed == false;) {
         for (;;) {
@@ -627,6 +646,8 @@ void* AppThreadFunction(void* parm) {
 		}
 
     }
+
+    ProgramInstance=NULL;
 
     if (LuaInitialized)
     	_gapp->deinitialize();
@@ -1025,7 +1046,10 @@ void setupApi(lua_State *L)
     };
 
     lua_newtable(L);
-    luaL_register(L, NULL, functionList);;
+    luaL_register(L, NULL, functionList);
     lua_setglobal(L, "Oculus");
+    if (ProgramInstance)
+    	for (auto it=ProgramInstance->VRExts.begin();it!=ProgramInstance->VRExts.end();it++)
+    		(*it)->SetupAPI(L);
 	ALOGV("=== API registered");
 }

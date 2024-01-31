@@ -90,6 +90,7 @@
 #endif
 
 
+#define GL2SHADERS_COMMON_GENVBO
 class ogl2ShaderProgram : public ShaderProgram
 {
 	friend class ogl2ShaderEngine;
@@ -105,15 +106,29 @@ class ogl2ShaderProgram : public ShaderProgram
     unsigned long uninit_uniforms;
     void *cbData;
     int cbsData;
-    GLuint genVBO[16+1];
-    static GLint curProg;
+#ifdef GL2SHADERS_COMMON_GENVBO
+    static std::vector<GLuint> genVBOs;
+    static std::vector<GLuint> freeVBOs;
+    static std::vector<GLuint> usedVBOs;
+    static std::vector<GLuint> renderedVBOs;
+    static GLuint curGenVBO;
+    static size_t genBufferOffset;
+    static GLuint allocateVBO();
+#else
+    static GLuint genVBO[16+1];
+#endif
+    static GLuint curAttribs[16];
+    static GLuint curArrayBuffer,curElementBuffer;
+    static GLuint curProg;
     static ShaderProgram *current;
     static std::vector<ogl2ShaderProgram *> shaders;
+    static void bindBuffer(GLuint type, GLuint buf);
 
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
-    GLuint getGenericVBO(int index,int sz);
+    static GLuint getGenericVBO(int index,int sz, const void *&ptr);
+    static GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified,GLuint type);
 public:
 	static int vboFreeze, vboUnfreeze;
 	static bool supportInstances;
