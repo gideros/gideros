@@ -9,6 +9,7 @@ class Sprite;
 class GRenderTarget : public TextureBase
 {
     ShaderBuffer *prepareForDraw();
+    void clearInt(unsigned int color, float a, int x, int y, int w, int h);
 public:
     GRenderTarget(Application *application, int width, int height, TextureParameters &parameters, bool selectScale=false, bool depth=false);
     virtual ~GRenderTarget();

@@ -86,7 +86,7 @@ struct IOpenXrProgram {
     std::vector<VRExtension *> VRExts;
     void AddExtension(VRExtension *e) { VRExts.push_back(e); };
 
-    void (*StartOfFrame)();
+    void (*StartOfFrame)(XrFrameState &state);
     void (*HandleInput)(IOpenXrProgram::InputState *m_input,XrSpace m_appSpace,XrTime predictedDisplayTime,XrSpaceLocation *head,XrSpaceVelocity *headSpd);
 };
 

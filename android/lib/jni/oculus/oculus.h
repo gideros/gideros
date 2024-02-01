@@ -62,4 +62,5 @@ typedef struct Input_ {
 void doInputEvent(Input &input);
 void doTick(double elapsed);
 void doRender(int delta,float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
+void doGLQueue(uint64_t ns);
 }

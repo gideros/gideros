@@ -204,6 +204,8 @@ public:
 
 #ifdef OCULUS
 	void oculusTick(double elapsed);
+	void oculusGLQueue(uint64_t ns);
+	void oculusEnterFrame();
 	void oculusRender(int delta,float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor);
 	void oculusInputEvent(oculus::Input &input);
 #endif
@@ -266,6 +268,7 @@ private:
 	
 	bool skipFirstEnterFrame_;
 };
+static ApplicationManager *s_applicationManager = NULL;
 
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
@@ -686,9 +689,11 @@ void ApplicationManager::luaError(const char *error)
 
 		networkManager_->printToServer(error, -1);
 		networkManager_->printToServer("\n", -1);
-		application_->deinitialize();
-		application_->initialize();	
-		_OCULUS(onLuaReinit);
+		RENDER_DO([&]{
+			application_->deinitialize();
+			application_->initialize();
+			_OCULUS(onLuaReinit);
+		});
 	}
 	else
 	{
@@ -859,9 +864,44 @@ ShaderProgram *getLightingShader(ShaderEngine *gfx) {
 	return cachedLS;
 }
 
+
+#ifdef OGL_THREADED_RENDERER
+static std::thread *thrThread=nullptr;
+static std::mutex thrMutex;
+static std::condition_variable thrCv;
+
+static void thrDoTick()
+{
+	JNIEnv *lEnv;
+	g_getJavaVM()->AttachCurrentThread(&lEnv,NULL);
+	while (true) {
+		 std::unique_lock<std::mutex> lk(thrMutex);
+		 thrCv.wait(lk);
+		 s_applicationManager->oculusEnterFrame();
+	}
+	g_getJavaVM()->DetachCurrentThread();
+}
+#endif
+
+void ApplicationManager::oculusEnterFrame() {
+	GStatus status;
+	application_->enterFrame(&status);
+	if (status.error())
+		luaError(status.errorString());
+}
+
+void ApplicationManager::oculusGLQueue(uint64_t ns) {
+#ifdef OGL_THREADED_RENDERER
+	glTaskWait(ns);
+#endif
+}
+
 void ApplicationManager::oculusTick(double elapsed)
 {
 	tickLock.Lock();
+#ifdef OGL_THREADED_RENDERER
+	glThreadId=gettid();
+#endif
 	if (networkManager_)
 		networkManager_->tick();
 
@@ -886,10 +926,14 @@ void ApplicationManager::oculusTick(double elapsed)
 	}
 	else
 	{
-		GStatus status;
-		application_->enterFrame(&status);
-		if (status.error())
-			luaError(status.errorString());
+#ifdef OGL_THREADED_RENDERER
+			if (thrThread==nullptr) {
+				thrThread=new std::thread(thrDoTick);
+			}
+		    thrCv.notify_one();
+#else
+		    oculusEnterFrame();
+#endif
 	}
 
 	tickLock.Unlock();
@@ -1302,9 +1346,10 @@ void ApplicationManager::openProject(const char* project){
 void ApplicationManager::play(const std::vector<std::string>& luafiles)
 {
 	running_ = true;
-	
+	RENDER_LOCK()
 	application_->deinitialize();
 	application_->initialize();
+	RENDER_UNLOCK()
 	_OCULUS(onLuaReinit);
 	application_->setResolution(width_, height_);
 	application_->setOrientation((Orientation)properties_.orientation);
@@ -1354,8 +1399,10 @@ void ApplicationManager::stop()
 
 	running_ = false;
 
+	RENDER_LOCK()
 	application_->deinitialize();
 	application_->initialize();
+	RENDER_UNLOCK()
 	_OCULUS(onLuaReinit);
 }
 
@@ -1607,7 +1654,6 @@ void ApplicationManager::forceTick()
 }
 
 
-static ApplicationManager *s_applicationManager = NULL;
 void eventFlush()
 {
     if (s_applicationManager)
@@ -1615,8 +1661,11 @@ void eventFlush()
 }
 
 #ifdef OCULUS
+void oculus::doGLQueue(uint64_t ns) {
+ 	s_applicationManager->oculusGLQueue(ns);
+}
 void oculus::doTick(double elapsed) {
-	s_applicationManager->oculusTick(elapsed);
+ 	s_applicationManager->oculusTick(elapsed);
 }
 void oculus::doRender(int delta,float *vmat,float *pmat,int width, int height,bool room,bool screen,bool floor) {
 	s_applicationManager->oculusRender(delta,vmat,pmat,width,height,room,screen,floor);

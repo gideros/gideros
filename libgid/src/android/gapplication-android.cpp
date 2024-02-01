@@ -9,11 +9,15 @@ JNIEnv *g_getJNIEnv();
 
 class GGApplicationManager
 {
-    
+    jclass javaCls_;
 public:
     GGApplicationManager()
     {
         gid_ = g_NextId();
+		JNIEnv *env = g_getJNIEnv();
+		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+		javaCls_ = (jclass)env->NewGlobalRef(localRefCls);
+		env->DeleteLocalRef(localRefCls);
     }
     
     ~GGApplicationManager()
@@ -24,10 +28,8 @@ public:
 	int getScreenDensity()
 	{
 		JNIEnv *env = g_getJNIEnv();
-		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
-		jmethodID getScreenDensityID = env->GetStaticMethodID(localRefCls, "getScreenDensity", "()I");
-		jint result = env->CallStaticIntMethod(localRefCls, getScreenDensityID);
-		env->DeleteLocalRef(localRefCls);
+		jmethodID getScreenDensityID = env->GetStaticMethodID(javaCls_, "getScreenDensity", "()I");
+		jint result = env->CallStaticIntMethod(javaCls_, getScreenDensityID);
 		return result;
 	}
 

@@ -994,7 +994,7 @@ struct OpenXrProgram : IOpenXrProgram {
         XrFrameState frameState{XR_TYPE_FRAME_STATE};
         CHECK_XRCMD(xrWaitFrame(m_session, &frameWaitInfo, &frameState));
 
-        StartOfFrame();
+        StartOfFrame(frameState);
     	curTime=frameState.predictedDisplayTime;
 
         XrFrameBeginInfo frameBeginInfo{XR_TYPE_FRAME_BEGIN_INFO};

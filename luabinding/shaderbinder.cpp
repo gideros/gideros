@@ -4,6 +4,7 @@
 #include "luaapplication.h"
 #include <luautil.h>
 #include <stdlib.h>
+#include "ogl.h"
 
 ShaderBinder::ShaderBinder(lua_State* L)
 {
@@ -172,7 +173,10 @@ int ShaderBinder::create(lua_State* L)
 	ShaderProgram::DataDesc dlast={"",ShaderProgram::DFLOAT,0,0,0};
 	constants.push_back(clast);
 	datas.push_back(dlast);
-    ShaderProgram *shader=ShaderEngine::Engine->createShaderProgram(vs,ps,flags,&(constants[0]),&(datas[0]));
+    ShaderProgram *shader;
+    RENDER_DO([&]{
+    	shader=ShaderEngine::Engine->createShaderProgram(vs,ps,flags,&(constants[0]),&(datas[0]));
+    });
     if (!shader->isValid())
     {
     	lua_pushstring(L,shader->compilationLog());

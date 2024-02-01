@@ -15,7 +15,7 @@ TextureBase::TextureBase(	Application* application,
                             const char* filename, TextureParameters parameters) :
 	application_(application)
 {
-    data = application_->getTextureManager()->createTextureFromFile(filename, parameters).get();
+	data = application_->getTextureManager()->createTextureFromFile(filename, parameters).get();
 	sizescalex = 1;
 	sizescaley = 1;
     uvscalex = (float)data->width / (float)data->baseWidth;

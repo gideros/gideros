@@ -392,11 +392,13 @@ ovrApp appState;
 #include <openxr/openxr_platform.h>
 
 double lastTime=0;
-void StartOfFrame()
+double nextTime=0;
+void StartOfFrame(XrFrameState &state)
 {
     double curTime = GetTimeInSeconds();
     oculus::doTick(curTime-lastTime);
     lastTime=curTime;
+    nextTime=lastTime+(state.predictedDisplayPeriod/1000000000.0);
 }
 
 void RenderEye(int eyeNum,float *vmat, float *pmat,int width,int height)
@@ -640,6 +642,12 @@ void* AppThreadFunction(void* parm) {
 			program->PollActions();
 			program->SetViewSpace(roomFloor?"Stage":"Local");
 			program->RenderFrame();
+		    oculus::doGLQueue(0);
+		    double rTime = (nextTime-GetTimeInSeconds())*1000000000;
+		    if (rTime>0) {
+		    	size_t nst=rTime;
+			    oculus::doGLQueue(nst);
+			}
 		} else {
 			// Throttle loop since xrWaitFrame won't be called.
 			std::this_thread::sleep_for(std::chrono::milliseconds(33));

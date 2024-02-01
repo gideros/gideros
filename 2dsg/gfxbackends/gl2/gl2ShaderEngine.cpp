@@ -535,8 +535,8 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 	ogl2ShaderProgram::vboForceGeneric=true;
 #endif
 	const char *ver=(const char *) GLCALL glGetString(GL_VERSION);
-	while ((*ver)&&(((*ver)<'0')||((*ver)>'9'))) ver++;
-	version=strtod(ver,NULL);
+	while (ver&&(*ver)&&(((*ver)<'0')||((*ver)>'9'))) ver++;
+	version=ver?strtod(ver,NULL):0;
     glog_i("GL Version %f (%s)",version,isGLES?"ES":"Desktop");
 
     ogl2ShaderProgram::supportInstances=((version>=3.1)||(isGLES&&(version>=3.0)));
