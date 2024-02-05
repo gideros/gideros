@@ -30,6 +30,7 @@ BOOL gdr_isRunning();
     void gdr_touchesMoved(NSSet* touches, NSSet* allTouches);
     void gdr_touchesEnded(NSSet* touches, NSSet* allTouches);
     void gdr_touchesCancelled(NSSet* touches, NSSet* allTouches);
+    void gdr_touchesReset();
 #endif
 #if TARGET_OS_OSX
     void gdr_mouseDown(int x, int y, int button,int mod);

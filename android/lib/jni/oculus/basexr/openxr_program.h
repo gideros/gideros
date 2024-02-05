@@ -25,7 +25,7 @@ struct IOpenXrProgram {
         XrAction indexAction{XR_NULL_HANDLE};
         XrAction poseAction{XR_NULL_HANDLE};
         XrAction vibrateAction{XR_NULL_HANDLE};
-        XrAction quitAction{XR_NULL_HANDLE};
+        XrAction menuAction{XR_NULL_HANDLE};
         XrAction btnAAction{XR_NULL_HANDLE};
         XrAction btnBAction{XR_NULL_HANDLE};
         XrAction btnXAction{XR_NULL_HANDLE};
@@ -39,6 +39,7 @@ struct IOpenXrProgram {
         std::array<float, Side::COUNT> handGrip = {{0.0f, 0.0f}};
         std::array<float, Side::COUNT> handIndex = {{0.0f, 0.0f}};
         std::array<XrBool32, Side::COUNT> handActive;
+        XrBool32 menuState;
     };
 
 

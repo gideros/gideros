@@ -23,6 +23,10 @@ void oglCleanup();
 #ifdef OCULUS
 //#define OGL_THREADED_RENDERER
 #endif
+#ifdef QTWIN_THREADED_RENDERED
+#define OGL_THREADED_RENDERER
+#define gettid GetCurrentThreadId
+#endif
 
 #ifdef OGL_THREADED_RENDERER
 #include <future>
@@ -38,7 +42,7 @@ void glRunTask(std::function<void()> f);
 #define RENDER_END() glLock.unlock();
 #define RENDER_LOCK() glLock.lock(); glLockCount++;
 #define RENDER_UNLOCK() glLockCount--; glLock.unlock();
-#define RENDER_DO(f) if (glLockCount) throw std::invalid_argument("Already locked"); glRunTask(f)
+#define RENDER_DO(f) /*if (glLockCount) throw std::invalid_argument("Already locked");*/ glRunTask(f)
 #else
 #define RENDER_START()
 #define RENDER_END()

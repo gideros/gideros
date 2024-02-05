@@ -3061,6 +3061,7 @@ void Path2D::getPathBounds(int path, bool fill, bool stroke, float *iminx,
 		miny = 1e30f;
 		maxx = -1e30f;
 		maxy = -1e30f;
+		RENDER_LOCK();
 		if (stroke) {
 			if (p->is_stroke_dirty) {
 				create_stroke_geometry(p);
@@ -3081,6 +3082,7 @@ void Path2D::getPathBounds(int path, bool fill, bool stroke, float *iminx,
 			maxx = MAX(maxx, p->fill_bounds[2]);
 			maxy = MAX(maxy, p->fill_bounds[3]);
 		}
+		RENDER_UNLOCK();
 	}
 	if (iminx)
 		*iminx = minx;

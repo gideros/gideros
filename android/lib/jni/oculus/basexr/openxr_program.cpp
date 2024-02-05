@@ -429,7 +429,7 @@ struct OpenXrProgram : IOpenXrProgram {
             strcpy_s(actionInfo.localizedActionName, "Quit Session");
             actionInfo.countSubactionPaths = 0;
             actionInfo.subactionPaths = nullptr;
-            CHECK_XRCMD(xrCreateAction(m_input.actionSet, &actionInfo, &m_input.quitAction));
+            CHECK_XRCMD(xrCreateAction(m_input.actionSet, &actionInfo, &m_input.menuAction));
         }
 
         std::array<XrPath, Side::COUNT> selectPath;
@@ -483,8 +483,8 @@ struct OpenXrProgram : IOpenXrProgram {
                                                             {m_input.grabAction, selectPath[Side::RIGHT]},
                                                             {m_input.poseAction, posePath[Side::LEFT]},
                                                             {m_input.poseAction, posePath[Side::RIGHT]},
-                                                            {m_input.quitAction, menuClickPath[Side::LEFT]},
-                                                            {m_input.quitAction, menuClickPath[Side::RIGHT]},
+                                                            {m_input.menuAction, menuClickPath[Side::LEFT]},
+                                                            {m_input.menuAction, menuClickPath[Side::RIGHT]},
                                                             {m_input.vibrateAction, hapticPath[Side::LEFT]},
                                                             {m_input.vibrateAction, hapticPath[Side::RIGHT]}}};
             XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
@@ -504,7 +504,7 @@ struct OpenXrProgram : IOpenXrProgram {
 															{m_input.indexAction, triggerValuePath[Side::RIGHT]},
                                                             {m_input.poseAction, posePath[Side::LEFT]},
                                                             {m_input.poseAction, posePath[Side::RIGHT]},
-                                                            {m_input.quitAction, menuClickPath[Side::LEFT]},
+                                                            {m_input.menuAction, menuClickPath[Side::LEFT]},
                                                             {m_input.btnAAction, aClickPath[Side::RIGHT]},
                                                             {m_input.btnBAction, bClickPath[Side::RIGHT]},
                                                             {m_input.btnXAction, xClickPath[Side::LEFT]},
@@ -528,8 +528,8 @@ struct OpenXrProgram : IOpenXrProgram {
                                                             {m_input.grabAction, triggerValuePath[Side::RIGHT]},
                                                             {m_input.poseAction, posePath[Side::LEFT]},
                                                             {m_input.poseAction, posePath[Side::RIGHT]},
-                                                            {m_input.quitAction, menuClickPath[Side::LEFT]},
-                                                            {m_input.quitAction, menuClickPath[Side::RIGHT]},
+                                                            {m_input.menuAction, menuClickPath[Side::LEFT]},
+                                                            {m_input.menuAction, menuClickPath[Side::RIGHT]},
                                                             {m_input.vibrateAction, hapticPath[Side::LEFT]},
                                                             {m_input.vibrateAction, hapticPath[Side::RIGHT]}}};
             XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
@@ -548,8 +548,8 @@ struct OpenXrProgram : IOpenXrProgram {
                                                             {m_input.grabAction, squeezeForcePath[Side::RIGHT]},
                                                             {m_input.poseAction, posePath[Side::LEFT]},
                                                             {m_input.poseAction, posePath[Side::RIGHT]},
-                                                            {m_input.quitAction, bClickPath[Side::LEFT]},
-                                                            {m_input.quitAction, bClickPath[Side::RIGHT]},
+                                                            {m_input.menuAction, bClickPath[Side::LEFT]},
+                                                            {m_input.menuAction, bClickPath[Side::RIGHT]},
                                                             {m_input.vibrateAction, hapticPath[Side::LEFT]},
                                                             {m_input.vibrateAction, hapticPath[Side::RIGHT]}}};
             XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
@@ -568,8 +568,8 @@ struct OpenXrProgram : IOpenXrProgram {
                                                             {m_input.grabAction, squeezeClickPath[Side::RIGHT]},
                                                             {m_input.poseAction, posePath[Side::LEFT]},
                                                             {m_input.poseAction, posePath[Side::RIGHT]},
-                                                            {m_input.quitAction, menuClickPath[Side::LEFT]},
-                                                            {m_input.quitAction, menuClickPath[Side::RIGHT]},
+                                                            {m_input.menuAction, menuClickPath[Side::LEFT]},
+                                                            {m_input.menuAction, menuClickPath[Side::RIGHT]},
                                                             {m_input.vibrateAction, hapticPath[Side::LEFT]},
                                                             {m_input.vibrateAction, hapticPath[Side::RIGHT]}}};
             XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
@@ -805,7 +805,7 @@ struct OpenXrProgram : IOpenXrProgram {
                 }
                 case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
                     LogActionSourceName(m_input.grabAction, "Grab");
-                    LogActionSourceName(m_input.quitAction, "Quit");
+                    LogActionSourceName(m_input.menuAction, "Quit");
                     LogActionSourceName(m_input.poseAction, "Pose");
                     LogActionSourceName(m_input.vibrateAction, "Vibrate");
                     break;
@@ -978,12 +978,13 @@ struct OpenXrProgram : IOpenXrProgram {
             m_input.handActive[hand] = poseState.isActive;
         }
 
-        // There were no subaction paths specified for the quit action, because we don't care which hand did it.
-        XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO, nullptr, m_input.quitAction, XR_NULL_PATH};
+        // There were no subaction paths specified for the menu action, because we don't care which hand did it.
+        XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO, nullptr, m_input.menuAction, XR_NULL_PATH};
         XrActionStateBoolean quitValue{XR_TYPE_ACTION_STATE_BOOLEAN};
         CHECK_XRCMD(xrGetActionStateBoolean(m_session, &getInfo, &quitValue));
-        if ((quitValue.isActive == XR_TRUE) && (quitValue.changedSinceLastSync == XR_TRUE) && (quitValue.currentState == XR_TRUE)) {
-            CHECK_XRCMD(xrRequestExitSession(m_session));
+        if ((quitValue.isActive == XR_TRUE) && (quitValue.changedSinceLastSync == XR_TRUE)) {
+            //CHECK_XRCMD(xrRequestExitSession(m_session));
+        	m_input.menuState=quitValue.currentState;
         }
     }
 

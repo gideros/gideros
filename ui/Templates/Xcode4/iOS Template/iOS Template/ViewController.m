@@ -51,6 +51,13 @@ NSMutableArray *tableData;
     [self.glView setup];
 }
 
+- (void)dismissViewControllerAnimated:(BOOL)flag 
+                           completion:(void (^)(void))completion
+{
+	[super dismissViewControllerAnimated:flag completion:completion];
+    gdr_touchesReset();
+}
+                           
 - (void)dealloc
 {
 }

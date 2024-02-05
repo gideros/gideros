@@ -32,6 +32,7 @@
 #include <gpath.h>
 #include <gvfs-native.h>
 #include "mainwindow.h"
+#include "ogl.h"
 
 #include <QOpenGLWindow>
 #include <QOpenGLContext>
@@ -455,10 +456,7 @@ void GLCanvas::paintGL() {
 
     bool dnow;
     if (!application_->onDemandDraw(dnow)) {
-        GStatus status;
-        application_->enterFrame(&status);
-
-        checkLuaError(status);
+        enterFrame();
     }
 
 	application_->clearBuffers();
@@ -724,15 +722,48 @@ void GLCanvas::timerEvent(QTimerEvent *){
     ScreenManager::manager->tick();
     bool dnow;
     if (application_->onDemandDraw(dnow)) {
-        GStatus status;
-        application_->enterFrame(&status);
-
-        checkLuaError(status);
+        enterFrame();
     }
     else
         dnow=true;
     if (dnow)
         update();
+#ifdef OGL_THREADED_RENDERER
+    glTaskWait(0);
+#endif
+}
+
+#ifdef OGL_THREADED_RENDERER
+static std::thread *thrThread=nullptr;
+static std::mutex thrMutex;
+static std::condition_variable thrCv;
+
+static void thrDoTick(GLCanvas *canvas)
+{
+    while (true) {
+         std::unique_lock<std::mutex> lk(thrMutex);
+         thrCv.wait(lk);
+         canvas->realEnterFrame();
+    }
+}
+#endif
+
+void GLCanvas::enterFrame() {
+#ifdef OGL_THREADED_RENDERER
+    glThreadId=gettid();
+    if (thrThread==nullptr) {
+        thrThread=new std::thread(thrDoTick,this);
+    }
+    thrCv.notify_one();
+#else
+    realEnterFrame();
+#endif
+}
+void GLCanvas::realEnterFrame() {
+    GStatus status;
+    application_->enterFrame(&status);
+
+    checkLuaError(status);
 }
 
 void GLCanvas::play(QDir directory){

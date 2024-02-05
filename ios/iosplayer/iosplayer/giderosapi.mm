@@ -214,6 +214,7 @@ public:
 	void touchesMoved(NSSet *touches, NSSet *allTouches);
 	void touchesEnded(NSSet *touches, NSSet *allTouches);
 	void touchesCancelled(NSSet *touches, NSSet *allTouches);
+	void touchesReset();
 
     void keyDown(int keyCode, int mods, int repeat);
     void keyUp(int keyCode, int mods, int repeat);
@@ -1396,6 +1397,11 @@ void ApplicationManager::touchesCancelled(NSSet *touches, NSSet *allTouches)
 {
     ginputp_touchesCancelled(touches, allTouches, (UIView*)view_);
 }
+
+void ApplicationManager::touchesReset()
+{
+    ginputp_touchesReset((UIView*)view_);
+}
 #endif
 
 void ApplicationManager::keyDown(int keyCode, int mods, int repeat)
@@ -1782,6 +1788,9 @@ void gdr_didReceiveMemoryWarning()
     void gdr_touchesCancelled(NSSet *touches, NSSet *allTouches)
     {
         s_manager->touchesCancelled(touches, allTouches);
+    }
+    void gdr_touchesReset() {
+        s_manager->touchesReset();
     }
 #endif
 #if TARGET_OS_OSX

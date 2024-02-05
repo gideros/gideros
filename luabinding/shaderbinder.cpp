@@ -190,7 +190,9 @@ int ShaderBinder::destruct(void *p)
 {
 	void *ptr = GIDEROS_DTOR_UDATA(p);
 	ShaderProgram* shd = static_cast<ShaderProgram*>(ptr);
-	shd->Release();
+    RENDER_DO([&]{
+        shd->Release();
+    });
 
 	return 0;
 }
@@ -279,7 +281,9 @@ int ShaderBinder::setConstant(lua_State* L)
 			for (int k=0;k<cm;k++)
 				m[k]=luaL_checkinteger(L,5+k);
 		}
-		shd->setConstant(idx,type,mult,m);
+        RENDER_DO([&]{
+            shd->setConstant(idx,type,mult,m);
+        });
 		free(m);
 		break;
 	}
@@ -304,7 +308,9 @@ int ShaderBinder::setConstant(lua_State* L)
 			for (int k=0;k<cm;k++)
 				m[k]=luaL_checknumber(L,5+k);
 		}
-		shd->setConstant(idx,type,mult,m);
+        RENDER_DO([&]{
+            shd->setConstant(idx,type,mult,m);
+        });
 		free(m);
 		break;
 	}

@@ -53,7 +53,7 @@ void glTaskWait(uint64_t ns) {
 #endif
     const auto lend{std::chrono::high_resolution_clock::now()+std::chrono::nanoseconds(ns)};
 
-    while (std::chrono::high_resolution_clock::now()<lend) {
+    while (true) {
 		if (!glTasks.empty()) {
 #ifdef DEBUG_TASKS
 			glog_i("RTASK");
@@ -66,7 +66,8 @@ void glTaskWait(uint64_t ns) {
 #endif
 			glTasks.pop();
 		}
-		else {
+        if (std::chrono::high_resolution_clock::now()>lend) break;
+        if (glTasks.empty()) {
 			std::unique_lock<std::mutex> lk(glTaskLock);
 			glTaskCv.wait_until(lk,lend);
 		}

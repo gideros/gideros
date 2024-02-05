@@ -430,6 +430,7 @@ void HandleInput(IOpenXrProgram::InputState *m_input,XrSpace m_appSpace,XrTime p
 				input.buttons=m_input->handButtons[hand];
 				input.stickX=m_input->handStick[hand].x;
 				input.stickY=m_input->handStick[hand].y;
+				input.menuAction=m_input->menuState;
 				//ASSIGNV(input.pos,state.PointerPose.Position);
 				//ASSIGNV4(input.rot,state.PointerPose.Orientation);
 

@@ -44,6 +44,7 @@ public:
     static bool EnableVSYNC;
     static bool TabletActive;
     static bool TabletPress;
+    void realEnterFrame();
 
 private slots:
 	void onTimer();
@@ -81,7 +82,8 @@ private:
 	virtual void initializeGL();
 
 	virtual void paintGL();
-	bool checkLuaError(GStatus status);
+    void enterFrame();
+    bool checkLuaError(GStatus status);
     void timerEvent(QTimerEvent *);
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);

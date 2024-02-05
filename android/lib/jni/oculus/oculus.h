@@ -54,6 +54,8 @@ typedef struct Input_ {
     float trackpadX;
     float trackpadY;
     int touches;
+    //General
+    bool menuAction;
     //Hand
     Vector4 handBone[24];
     float handScale;

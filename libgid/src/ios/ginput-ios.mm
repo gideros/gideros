@@ -648,6 +648,11 @@ public:
         for (UITouch *touch in touches)
             removeTouch(touch);
     }
+    
+    void touchesReset(UIView *view)
+    {
+        touches_.clear();
+    }
 
 private:
     int addTouch(UITouch *touch)
@@ -1213,6 +1218,12 @@ void ginputp_touchesCancelled(NSSet *touches, NSSet *allTouches, UIView *view)
 {
     if (s_manager)
         s_manager->touchesCancelled(touches, allTouches, view);
+}
+
+void ginputp_touchesReset(UIView *view)
+{
+    if (s_manager)
+        s_manager->touchesReset(view);
 }
 
 g_bool ginputp_keyDown(int keyCode, int mods, int repeatCount)
