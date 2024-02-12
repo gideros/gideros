@@ -21,6 +21,8 @@ static const char* EXPORT_RESULT = "fileshareExportResult";
 #define abs_index(L, i) ((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : lua_gettop(L) + (i) + 1)
 #endif
 
+static lua_State *mainL=NULL;
+
 static void luaL_newweaktable(lua_State *L, const char *mode)
 {
     lua_newtable(L);			// create table for instance list
@@ -131,7 +133,7 @@ private:
 
 static int create(lua_State *L)
 {
-    GFileShare *share = new GFileShare(L);
+    GFileShare *share = new GFileShare(mainL);
 
     g_pushInstance(L, "Share", share->object());
 
@@ -263,6 +265,7 @@ static int loader(lua_State* L)
 static void g_initializePlugin(lua_State *L)
 {
 	gshare_Init();
+	mainL=L;
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
     
