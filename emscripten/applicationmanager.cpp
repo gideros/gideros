@@ -456,7 +456,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 
 		// texture
 		gtexture_init();
-		gtexture_setCachingEnabled(1);
+		gtexture_setCachingEnabled(0); //No caching
 
 		// audio
 		gaudio_Init();
@@ -999,6 +999,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 
 		application_->deinitialize();
 		application_->initialize();
+		applicationStarted_=false;
 	}
 
 	bool ApplicationManager::isRunning() {

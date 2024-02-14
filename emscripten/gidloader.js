@@ -216,6 +216,7 @@ function getParameterByName(name, url) {
   var infopaneElement = document.getElementById('infopane');
   var errDetailsElement = document.getElementById('errDetails');
   var oopsElement = document.getElementById('oops');
+  var webglLostElement = document.getElementById('webglLost');
   if (hasFBInstant) {
   	spinnerElement.hidden = true;
 	infopaneElement.display="none";
@@ -263,7 +264,7 @@ function getParameterByName(name, url) {
       // As a default initial behavior, pop up an alert when webgl context is lost. To make your
       // application robust, you may want to override this behavior before shipping!
       // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-      canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+      // canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
 
       return canvas;
     })(),
@@ -295,6 +296,18 @@ function getParameterByName(name, url) {
   		errDetailsElement.innerHTML=detail;
   		document.getElementById(type).style.display="block";
   		Module.uploadCrash(type,detail);
+    },
+    showGLContextLost: function(lost) {
+    	spinnerElement.hidden = true;
+  		infopaneElement.style.display="none";
+  		if (lost>0) {
+	  		canvas.hidden = true;  
+	  		webglLostElement.style.display="flex";	
+		}
+		else {
+	  		canvas.hidden = false;  
+	  		webglLostElement.style.display="none";				
+		} 
     },
     onAbort: function (what) {
     	if (what.includes('ALLOW_MEMORY_GROWTH=1'))

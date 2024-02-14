@@ -420,12 +420,14 @@ public:
         {
             TextureElement *element = *iter;
 
-            size_t output_length;
-            snappy_uncompressed_length(element->buffer, element->bufferSize, &output_length);
-            char* output = (char*)malloc(output_length);
-            snappy_uncompress(element->buffer, element->bufferSize, output, &output_length);
-            genAndUploadTexture(element, output);
-            free(output);
+           	if (element->buffer) {
+				size_t output_length;
+				snappy_uncompressed_length(element->buffer, element->bufferSize, &output_length);
+				char* output = (char*)malloc(output_length);
+				snappy_uncompress(element->buffer, element->bufferSize, output, &output_length);
+				genAndUploadTexture(element, output);
+				free(output);
+           	}
         }
     }
 
@@ -439,16 +441,18 @@ public:
         {
             RenderTargetElement *element = iter->second;
 
-            size_t output_length;
-            snappy_uncompressed_length(element->buffer, element->bufferSize, &output_length);
-            char* output = (char*)malloc(output_length);
-            snappy_uncompress(element->buffer, element->bufferSize, output, &output_length);
-            delete[] element->buffer;
-            element->buffer=NULL;
-            genAndUploadTexture(element, output);
-            free(output);
+           	if (element->buffer) {
+				size_t output_length;
+				snappy_uncompressed_length(element->buffer, element->bufferSize, &output_length);
+				char* output = (char*)malloc(output_length);
+				snappy_uncompress(element->buffer, element->bufferSize, output, &output_length);
+				delete[] element->buffer;
+				element->buffer=NULL;
+				genAndUploadTexture(element, output);
+				free(output);
 
-            element->_framebuffer=engine->createRenderTarget(element->_texture,element->depth);
+				element->_framebuffer=engine->createRenderTarget(element->_texture,element->depth);
+           	}
         }
 
     }

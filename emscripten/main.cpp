@@ -27,7 +27,7 @@ EGLDisplay display;
 #elif defined(GLFW)
 static GLFWwindow *glfw_win;
 #else
-static EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglCtx;
+static EMSCRIPTEN_WEBGL_CONTEXT_HANDLE webglCtx=0;
 #endif
 float pixelRatio=1.0;
 int lastGLWidth=0,lastGLHeight=0;
@@ -123,7 +123,11 @@ int initGL(int &width, int &height)
  //ctx.explicitSwapControl=true;
  ctx.majorVersion=2;
 
- webglCtx=emscripten_webgl_create_context("#canvas",&ctx);
+ if (webglCtx&&emscripten_is_webgl_context_lost(webglCtx))
+	 webglCtx=0;
+
+ if (webglCtx<=0)
+	 webglCtx=emscripten_webgl_create_context("#canvas",&ctx);
  if (webglCtx<=0) {
 	 ctx.majorVersion=1;
 	 webglCtx=emscripten_webgl_create_context("#canvas",&ctx);
@@ -132,6 +136,8 @@ int initGL(int &width, int &height)
 	 printf("Failed to create WebGL context:%d\n",(int)webglCtx);
 	 webglCtx=0;
  }
+ else
+	 printf("WebGL context:%d\n",(int)webglCtx);
 
  emscripten_webgl_make_context_current(webglCtx);
 #endif
@@ -141,51 +147,60 @@ int initGL(int &width, int &height)
 extern "C" void GGStreamOpenALTick();
 static double dueTime=0;
 extern "C" int g_getFps();
+static bool contextLost=false;
 
-void looptick(void *a)
-{
-	double t=emscripten_get_now()/1000;
-	if (t<dueTime) return;
+void looptick(void *a) {
+	double t = emscripten_get_now() / 1000;
+	if (t < dueTime)
+		return;
 
 	//Compute next minium frame time. Don't be too strict because of jitter, actual call rate will be a sub-multiple of 60Hz anyhow
-	int fps=g_getFps();
-	if (fps==0) fps=60;
-	dueTime=t+0.7/fps;
+	int fps = g_getFps();
+	if (fps == 0)
+		fps = 60;
+	dueTime = t + 0.7 / fps;
 
 	try {
-
 		// Check for size change in main loop, due to buggy iOS behavior
-		  int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
-		  int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
-		  if (defWidth!=lastGLWidth || defHeight!=lastGLHeight) {
+		int defWidth=EM_ASM_INT_V( {return window.innerWidth;});
+		int defHeight=EM_ASM_INT_V( {return window.innerHeight;});
+		if (defWidth!=lastGLWidth || defHeight!=lastGLHeight) {
 #ifdef GLFW
-			  glfwDestroyWindow(glfw_win);
+			glfwDestroyWindow(glfw_win);
 #else
-		/*	  if (webglCtx) {
-				  emscripten_webgl_make_context_current(0);
-				  emscripten_webgl_destroy_context(webglCtx);
-			  }*/
+			/*	  if (webglCtx) {
+			 emscripten_webgl_make_context_current(0);
+			 emscripten_webgl_destroy_context(webglCtx);
+			 }*/
 #endif
-			  initGL(defWidth,defHeight);
-			  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
-		  }
-		if (s_applicationManager->drawFrame()) {
-			if (!inWebXR) {
+			initGL(defWidth,defHeight);
+			s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
+		}
+		if (!emscripten_is_webgl_context_lost(webglCtx)) {
+			if (contextLost) {
+				printf("Restarting due to WebGL context loss");
+				s_applicationManager->lowMemory();
+				s_applicationManager->stop();
+				contextLost=false;
+			}
+			if (s_applicationManager->drawFrame()) {
+				if (!inWebXR) {
 #ifdef GLFW
-				glfwSwapBuffers(glfw_win);
+					glfwSwapBuffers(glfw_win);
 #elif defined(EGL)
-				eglSwapInterval(display,1);
+					eglSwapInterval(display,1);
 #else
-				  /*if (webglCtx)
-					  emscripten_webgl_commit_frame();
-					  */
+					/*if (webglCtx)
+					 emscripten_webgl_commit_frame();
+					 */
 #endif
+				}
 			}
 		}
 	}
 	catch(const luaException& e)
 	{
-	    errorLua(e.what());
+		errorLua(e.what());
 	}
 	catch(const std::exception& e)
 	{
@@ -373,6 +388,24 @@ EM_BOOL visibility_callback(int eventType, const EmscriptenVisibilityChangeEvent
   return true;
 }
 
+EM_BOOL wgl_callback(int eventType, const void *reserved, void *userData)
+{
+    switch (eventType) {
+        case EMSCRIPTEN_EVENT_WEBGLCONTEXTLOST:
+        {
+        	EM_ASM_( { Module.showGLContextLost(1); });
+        	break;
+        }
+        case EMSCRIPTEN_EVENT_WEBGLCONTEXTRESTORED:
+        {
+        	EM_ASM_( { Module.showGLContextLost(0); });
+        	contextLost=true;
+        	break;
+        }
+    };
+    return true;
+}
+
 extern "C" EMSCRIPTEN_KEEPALIVE int main_registerPlugin(const char *pname,const char *psym);
 extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_JSNative(lua_State* L, int type);
 extern "C" EMSCRIPTEN_KEEPALIVE void* g_pluginMain_WebXR(lua_State* L, int type);
@@ -455,7 +488,10 @@ char *url=(char *) EM_ASM_INT_V({
     ret = emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
     ret = emscripten_set_keypress_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, 0, true, key_callback);
     ret = emscripten_set_visibilitychange_callback(0, true, visibility_callback);
-   //printf("URL:%s\n",url);
+
+    emscripten_set_webglcontextlost_callback("#canvas", 0, false, wgl_callback);
+    emscripten_set_webglcontextrestored_callback("#canvas", 0, false, wgl_callback);
+    //printf("URL:%s\n",url);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop_arg(looptick, NULL,  0, 1);

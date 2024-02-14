@@ -62,25 +62,25 @@ if not package then
 	package.loaded.bit=bit32
 	function require(module)
 		assert(module,"Module name/path not supplied")
-		local mname=module:gsub("%.","/")
-		if package.loaded[mname] then return package.loaded[mname] end
+		if package.loaded[module] then return package.loaded[module] end
 		local m
-		if package.preload[mname] then
-			assert(type(package.preload[mname])=="function","Module loader isn't a function")
-			m=package.preload[mname](mname) or true
+		if package.preload[module] then
+			assert(type(package.preload[module])=="function","Module loader isn't a function")
+			m=package.preload[module](module) or true
 		else
 			local paths={ "%s.lua", "_LuaPlugins_/%s.lua", "%s/init.lua", "_LuaPlugins_/%s/init.lua" } 
 			local tp=1
+			local mname=module:gsub("%.","/")
 			while not m and paths[tp] do
 				local luafile,err=loadfile(paths[tp]:format(mname))		
 				if luafile and type(luafile)=="function" then 
-					m=luafile(mname) or true
+					m=luafile(module) or true
 				end		
 				tp+=1
 			end
 		end
 		assert(m,"Module "..module.." not found")
-		package.loaded[mname]=m or true
+		package.loaded[module]=m or true
 		return m
 	end
 	function module(name,...)

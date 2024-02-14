@@ -107,13 +107,12 @@ class ogl2ShaderProgram : public ShaderProgram
     void *cbData;
     int cbsData;
 #ifdef GL2SHADERS_COMMON_GENVBO
-    static std::vector<GLuint> genVBOs;
-    static std::vector<GLuint> freeVBOs;
-    static std::vector<GLuint> usedVBOs;
-    static std::vector<GLuint> renderedVBOs;
-    static GLuint curGenVBO;
-    static size_t genBufferOffset;
-    static GLuint allocateVBO();
+    static std::vector<GLuint> freeVBOs[2];
+    static std::vector<GLuint> usedVBOs[2];
+    static std::vector<GLuint> renderedVBOs[2];
+    static GLuint curGenVBO[2];
+    static size_t genBufferOffset[2];
+    static GLuint allocateVBO(GLuint type);
 #else
     static GLuint genVBO[16+1];
 #endif

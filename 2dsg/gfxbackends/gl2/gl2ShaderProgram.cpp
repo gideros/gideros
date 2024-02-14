@@ -61,12 +61,11 @@ bool ogl2ShaderProgram::vboForceGeneric=false;
 #ifndef GL2SHADERS_COMMON_GENVBO
 GLuint ogl2ShaderProgram::genVBO[17]={0,};
 #else
-std::vector<GLuint> ogl2ShaderProgram::genVBOs;
-std::vector<GLuint> ogl2ShaderProgram::freeVBOs;
-std::vector<GLuint> ogl2ShaderProgram::usedVBOs;
-std::vector<GLuint> ogl2ShaderProgram::renderedVBOs;
-GLuint ogl2ShaderProgram::curGenVBO=0;
-size_t ogl2ShaderProgram::genBufferOffset=0;
+std::vector<GLuint> ogl2ShaderProgram::freeVBOs[2];
+std::vector<GLuint> ogl2ShaderProgram::usedVBOs[2];
+std::vector<GLuint> ogl2ShaderProgram::renderedVBOs[2];
+GLuint ogl2ShaderProgram::curGenVBO[2]={0,0};
+size_t ogl2ShaderProgram::genBufferOffset[2]={0,0};
 #endif
 GLuint ogl2ShaderProgram::curAttribs[16]={0,};
 GLuint ogl2ShaderProgram::curArrayBuffer=0;
@@ -88,21 +87,25 @@ void ogl2ShaderProgram::bindBuffer(GLuint type,GLuint buf)
     GLCALL glBindBuffer(type,buf);
 }
 
-GLuint ogl2ShaderProgram::allocateVBO() {
-    if (freeVBOs.empty()) {
+GLuint ogl2ShaderProgram::allocateVBO(GLuint type) {
+    int bt=(type==GL_ELEMENT_ARRAY_BUFFER)?0:1;
+    if (freeVBOs[bt].empty()) {
         GLuint vbos[8];
+        int alc=bt?4:8;
         GLCALL_INIT;
-        GLCALL glGenBuffers(8,vbos);
-        for (int i=0;i<8;i++)
-            genVBOs.push_back(vbos[i]);
-        for (int i=0;i<7;i++)
-            freeVBOs.push_back(vbos[i]);
-        usedVBOs.push_back(vbos[7]);
-        return vbos[7];
+        GLCALL glGenBuffers(alc,vbos);
+        /*
+        for (int i=0;i<alc;i++)
+            genVBOs[bt].push_back(vbos[i]);
+            */
+        for (int i=0;i<(alc-1);i++)
+            freeVBOs[bt].push_back(vbos[i]);
+        usedVBOs[bt].push_back(vbos[alc-1]);
+        return vbos[alc-1];
     }
-    GLuint vbo=freeVBOs.back();
-    freeVBOs.pop_back();
-    usedVBOs.push_back(vbo);
+    GLuint vbo=freeVBOs[bt].back();
+    freeVBOs[bt].pop_back();
+    usedVBOs[bt].push_back(vbo);
     return vbo;
 }
 
@@ -110,6 +113,7 @@ GLuint ogl2ShaderProgram::allocateVBO() {
 GLuint ogl2ShaderProgram::getGenericVBO(int index,int size, const void *&ptr) {
     GLCALL_INIT;
     GLuint bname=(index==0)?GL_ELEMENT_ARRAY_BUFFER:GL_ARRAY_BUFFER;
+    int bt=(bname==GL_ELEMENT_ARRAY_BUFFER)?0:1;
 #ifndef GL2SHADERS_COMMON_GENVBO
     //With this enabled, we can mix VBO/Client memory
     if ((!vboForceGeneric)&&(size<FBO_MINSIZE)) {
@@ -126,27 +130,27 @@ GLuint ogl2ShaderProgram::getGenericVBO(int index,int size, const void *&ptr) {
     size_t psize=((size+3)&(~3));
     if (psize>(IDXBUFSIZE/2))
     {
-        GLuint vbo=allocateVBO();
+        GLuint vbo=allocateVBO(bname);
         bindBuffer(bname,vbo);
         GLCALL glBufferData(bname,psize,ptr,GL_DYNAMIC_DRAW);
-        genBufferOffset=IDXBUFSIZE;
+        genBufferOffset[bt]=IDXBUFSIZE;
         ptr=NULL;
     }
-    else if ((curGenVBO==0)||((genBufferOffset+psize)>IDXBUFSIZE))
+    else if ((curGenVBO[bt]==0)||((genBufferOffset[bt]+psize)>IDXBUFSIZE))
     {
-        curGenVBO=allocateVBO();
-        bindBuffer(bname,curGenVBO);
+        curGenVBO[bt]=allocateVBO(bname);
+        bindBuffer(bname,curGenVBO[bt]);
         GLCALL glBufferData(bname,IDXBUFSIZE,NULL,GL_DYNAMIC_DRAW);
         GLCALL glBufferSubData(bname,0,size,ptr);
         ptr=NULL;
-        genBufferOffset=0;
+        genBufferOffset[bt]=0;
     }
     else {
-        bindBuffer(bname,curGenVBO);
-        GLCALL glBufferSubData(bname,genBufferOffset,size,ptr);
-        ptr=(void *)genBufferOffset;
+        bindBuffer(bname,curGenVBO[bt]);
+        GLCALL glBufferSubData(bname,genBufferOffset[bt],size,ptr);
+        ptr=(void *)(genBufferOffset[bt]);
     }
-    genBufferOffset+=psize;
+    genBufferOffset[bt]+=psize;
 #endif
     return 0;
 }
@@ -220,6 +224,15 @@ void ogl2ShaderProgram::resetAll()
       GLCALL glBindBuffer(GL_ARRAY_BUFFER,0);
       curProg=0;
       curArrayBuffer=curElementBuffer=0;
+      for (int k=0;k<2;k++) {
+          GLCALL glDeleteBuffers(freeVBOs[k].size(),freeVBOs[k].data());
+          GLCALL glDeleteBuffers(renderedVBOs[k].size(),renderedVBOs[k].data());
+          GLCALL glDeleteBuffers(usedVBOs[k].size(),usedVBOs[k].data());
+          freeVBOs[k].clear();
+          renderedVBOs[k].clear();
+          usedVBOs[k].clear();
+          curGenVBO[k]=0;
+      }
       for (int i=0;i<16;i++)
       {
         curAttribs[i]=(GLuint)-1;
@@ -239,11 +252,13 @@ void ogl2ShaderProgram::resetAllUniforms()
         }
     }
 #else
-    freeVBOs.insert(freeVBOs.end(),renderedVBOs.begin(),renderedVBOs.end());
-    renderedVBOs.clear();
-    renderedVBOs.assign(usedVBOs.begin(),usedVBOs.end());
-    usedVBOs.clear();
-    curGenVBO=0;
+    for (int k=0;k<2;k++) {
+        freeVBOs[k].insert(freeVBOs[k].end(),renderedVBOs[k].begin(),renderedVBOs[k].end());
+        renderedVBOs[k].clear();
+        renderedVBOs[k].assign(usedVBOs[k].begin(),usedVBOs[k].end());
+        usedVBOs[k].clear();
+        curGenVBO[k]=0;
+    }
 #endif
     for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
         (*it)->resetUniforms();
