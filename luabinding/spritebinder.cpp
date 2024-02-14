@@ -107,6 +107,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"updateStyle", SpriteBinder::updateStyle},
         {"setGhosts", SpriteBinder::setGhosts},
         {"lookAt", SpriteBinder::lookAt},
+        {"setAutoSort", SpriteBinder::setAutoSort},
         {"__parseGhosts", SpriteBinder::__parseGhosts},
 
 		{"set", SpriteBinder::set},
@@ -1623,15 +1624,27 @@ int SpriteBinder::isVisible(lua_State* L)
 
 int SpriteBinder::setVisible(lua_State* L)
 {
-	StackChecker checker(L, "setVisible");
+    StackChecker checker(L, "setVisible");
 
-	Binder binder(L);
+    Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
 
-	int visible = lua_toboolean(L, 2);
-	sprite->setVisible(visible);
+    int visible = lua_toboolean(L, 2);
+    sprite->setVisible(visible);
 
-	return 0;
+    return 0;
+}
+
+int SpriteBinder::setAutoSort(lua_State* L)
+{
+    StackChecker checker(L, "setAutoSort");
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+
+    sprite->setAutoSort(lua_toboolean(L, 2));
+
+    return 0;
 }
 
 int SpriteBinder::isOnStage(lua_State* L)

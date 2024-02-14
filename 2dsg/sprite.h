@@ -398,6 +398,8 @@ public:
 		invalidate(INV_VISIBILITY);
 	}
 
+    void setAutoSort(bool autosort) { autoSort_=autosort; }
+
 	// Evaluates the sprite to see if its bounds overlaps or intersects with the point specified by the x and y parameters.
 	// The x and y parameters specify a point in the global coordinate space.
     bool hitTestPoint(float x, float y, bool visible=false,const Sprite *ref=NULL);
@@ -616,6 +618,7 @@ protected:
 
 private:
 	bool isVisible_;
+    bool autoSort_;
     Transform localTransform_;
     mutable Matrix4 worldTransform_;
     mutable Matrix4 renderTransform_;
@@ -646,6 +649,7 @@ protected:
     std::map<int,struct _ShaderSpec> *shaders_;
 	ShaderEngine::DepthStencil stencil_;
     unsigned int stencilMask_;
+    float distance_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;
 

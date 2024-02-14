@@ -139,6 +139,7 @@ Sprite::Sprite(Application* application) :
     effectStack_=nullptr;
     skipSet_=nullptr;
     ghosts_=nullptr;
+    autoSort_=false;
 }
 
 void Sprite::cloneFrom(Sprite *s) {
@@ -195,6 +196,7 @@ void Sprite::cloneFrom(Sprite *s) {
     stencil_=s->stencil_;
     stencilMask_=s->stencilMask_;
     worldAlign_=s->worldAlign_;
+    autoSort_=s->autoSort_;
     if (s->ghosts_)
     {
         //TODO should we clone ghosts ?
@@ -670,14 +672,6 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 
         if (sprite->worldAlign_&&(sprite->renderTransform_.type!=Matrix4::FULL)) { //Adjust to integer world coordinates
             float dx,dy;
-            /*sprite->getDimensions(dx,dy);
-            sprite->worldTransform_.transformPoint(dx,dy,&dx,&dy);
-            if ((dx>0)&&(dy>0)) {
-                dx=roundf(dx)/dx;
-                dy=roundf(dy)/dy;
-                if ((dx!=1)||(dy!=1))
-                    sprite->worldTransform_.scale(dx,dy,1);
-            }*/
             sprite->renderTransform_.transformPoint(0,0,&dx,&dy);
             dx=roundf(dx)-dx;
             dy=roundf(dy)-dy;
@@ -786,11 +780,37 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
             int sc=sprite->skipSet_?sprite->skipSet_->size():0;
             char *sd=sc?sprite->skipSet_->data():NULL;
             int sz = sprite->children_.size();
-            for (int i = sz - 1; i >= 0; --i)
-            {
-                if ((i>=sc)||(!sd[i]))
-                    stack.push(sprite->children_[i]);
+            if (autoSort_&&(sz>1)) {
+                std::vector<Sprite *> cs;
+                for (int i = sz - 1; i >= 0; --i)
+                {
+                    if ((i>=sc)||(!sd[i]))
+                        cs.push_back(sprite->children_[i]);
+                }
+                //Sort children according to distance (nearest last)
+                Matrix4 vm=ShaderEngine::Engine->getView();
+                Matrix4 tv=vm*sprite->renderTransform_;
+                float cx=0,cy=0,cz=0;
+                tv.inverseTransformPoint(cx,cy,cz,&cx,&cy,&cz);
+                for (auto it:cs) {
+                    float dx=it->x()-cx;
+                    float dy=it->y()-cy;
+                    float dz=it->z()-cz;
+                    it->distance_=sqrtf(dx*dx+dy*dy+dz*dz);
+                }
+                //Sort in reverse order since children are pushd onto a stack
+                std::sort(cs.begin(),cs.end(),[](Sprite *a, Sprite *b)
+                {
+                    return a->distance_ < b->distance_;
+                });
+                stack.push_all(cs.data(),cs.size());
             }
+            else
+                for (int i = sz - 1; i >= 0; --i)
+                {
+                    if ((i>=sc)||(!sd[i]))
+                        stack.push(sprite->children_[i]);
+                }
         }
 	}
 

@@ -85,7 +85,8 @@ private:
     static int spriteToLocalMatrix(lua_State* L);
 
 	static int isVisible(lua_State* L);
-	static int setVisible(lua_State* L);
+    static int setVisible(lua_State* L);
+    static int setAutoSort(lua_State* L);
 
 	static int isOnStage(lua_State* L);
 
