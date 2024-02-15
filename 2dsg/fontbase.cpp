@@ -93,6 +93,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, flo
 	float ox=0;
     float rx=0;
 	bool justified=false;
+    if (cw>tl.cw) tl.cw=cw;
     if ((params->flags&FontBase::TLF_JUSTIFIED)&&wrapped)
 	{
         sw+=(cnt>1)?((w-cw)/(cnt-1)):0;
@@ -102,15 +103,16 @@ void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, flo
         ox=(w-cw)*params->alignx;
 	if (!justified) //Not justified, try to merge space separated chunks together
 	{
-		bool merged=false;
+        bool merged=false;
 		for (size_t i=start;i<(cur-1);i++)
 		{
             if ((tl.parts[i].sepflags&CHUNKCLASS_FLAG_BREAKABLE)&&
                     (tl.parts[i].sep!='\t')&& //Don't merge on tab separator
                     (tl.parts[i].style==tl.parts[i+1].style)) //Don't merge if styles differs
-			{
+            {
                 tl.parts[i].text=tl.parts[i].text+" "+tl.parts[i+1].text;
                 tl.parts[i].sep=tl.parts[i+1].sep;
+                tl.parts[i].sepl=tl.parts[i+1].sepl;
                 tl.parts[i].sepflags=tl.parts[i+1].sepflags;
                 tl.parts[i].extrasize+=tl.parts[i+1].extrasize;
                 tl.parts.erase(tl.parts.begin()+i+1);
@@ -120,9 +122,9 @@ void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, flo
                 continue;
 			}
             if (merged)
-			{
+            {
                 chunkMetricsCache(tl, tl.parts[i],params);
-				merged=false;
+                merged=false;
 			}
 		}
 		if (merged)
@@ -179,6 +181,7 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
         tl.metricsCache[tl.parts[k].text]=tl.parts[k];
     tl.parts.clear();
     tl.mw=0;
+    tl.cw=0;
     float lastNs=0;
     size_t st=0;
     size_t lines=0;
@@ -486,9 +489,7 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
         layoutHorizontal(tl,st, params->w, cw, sw, tabSpace, params);
 		st=tl.parts.size();
 		y+=lh;
-		cw=0;
         if (mcw>tl.mw) tl.mw=mcw;
-        mcw=0;
 		lines++;
 	}
 
@@ -556,12 +557,14 @@ CompositeFont::CompositeFont(Application *application, std::vector<CompositeFont
 	fontInfo_.ascender = 0;
 	fontInfo_.descender = 1000000;
 	fontInfo_.height = 0;
+    fontInfo_.spaceSize = 0;
 	for (std::vector<CompositeFontSpec>::iterator it = fonts_.begin();
 			it != fonts_.end(); it++) {
 		it->font->ref();
 		fontInfo_.ascender = std::max(fontInfo_.ascender,it->font->getAscender());
 		fontInfo_.descender = std::min(fontInfo_.descender,it->font->getDescender());
 		fontInfo_.height = std::max(fontInfo_.height,it->font->getLineHeight()-it->font->getAscender());
+        fontInfo_.spaceSize = std::max(fontInfo_.spaceSize,it->font->getSpaceSize());
 	}
 	fontInfo_.height = fontInfo_.ascender + fontInfo_.height;
 }
@@ -683,6 +686,11 @@ float CompositeFont::getCharIndexAtOffset(const char *text, float offset, float 
 {
     if (fonts_.empty()) return 0;
     return fonts_[selectFont(name)].font->getCharIndexAtOffset(text, offset, letterSpacing, size);
+}
+
+float CompositeFont::getSpaceSize()
+{
+    return fontInfo_.spaceSize;
 }
 
 float CompositeFont::getAscender()

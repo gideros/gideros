@@ -50,29 +50,41 @@ bool TextFieldBase::setDimensions(float w,float h,bool forLayout)
 
 void TextFieldBase::getDimensions(float &w,float &h)
 {
-    w=textlayout_.w;
+    w=textlayout_.cw;
     h=textlayout_.bh;
 }
 
 void TextFieldBase::getMinimumSize(float &w,float &h,bool preferred)
 {
-    /* For wrappable texts we are in trouble here, since height will depend on width
-     * Minimum case is easy: we give th minimum on both axis
-     * But what should be an ideal/preferred size ?
-     * Use aspect ratio hint and try to reach it */
+    //Default to strict minimum
+    w=textlayout_.mw;
+    h=textlayout_.bh;
+    if (preferred) {
+        float cw=textlayout_.cw+textlayout_.x-textlayout_.dx;
+        //float ch=textlayout_.h+textlayout_.y-textlayout_.dy;
+        if (!(layout_.flags&FontBase::TLF_NOWRAP))
+        {
+            /* For wrappable texts we are in trouble here, since height will depend on width
+             * Minimum case is easy: we give th minimum on both axis
+             * But what should be an ideal/preferred size ?
+             * Use aspect ratio hint and try to reach it */
 
-    float tgtar=layout_.aspect;
-    float ar=(((prefWidth_+0.001)/tgtar)/(prefHeight_+0.001));
-    if (ar<1) ar=1/ar;
-    float cw=textlayout_.w+textlayout_.x-textlayout_.dx;
-    float ar2=((cw+0.001)/tgtar)/(textlayout_.bh+0.001);
-    if (ar2<1) ar2=1/ar2;
-    if ((prefHeight_==-1)||(ar2<ar)) {
-        prefHeight_=textlayout_.bh;
-        prefWidth_=cw;
+            float tgtar=layout_.aspect;
+            float ar=(((prefWidth_+0.001)/tgtar)/(prefHeight_+0.001));
+            if (ar<1) ar=1/ar;
+            float ar2=((cw+0.001)/tgtar)/(textlayout_.bh+0.001);
+            if (ar2<1) ar2=1/ar2;
+            if ((prefHeight_==-1)||(ar2<ar)) {
+                prefHeight_=textlayout_.bh;
+                prefWidth_=cw;
+            }
+        }
+        else {
+            //Non wrappable, use either extended sizes
+            w=cw;
+            //h=ch;
+        }
     }
-    w=(preferred&&(prefHeight_>0))?prefWidth_:textlayout_.mw;
-    h=(preferred&&(prefHeight_>0))?prefHeight_:textlayout_.bh;
 }
 
 bool TextFieldBase::optimizeSize(float &w,float &h)
@@ -82,8 +94,8 @@ bool TextFieldBase::optimizeSize(float &w,float &h)
 		layout_.w=w;
 		layout_.h=h;
 		setLayout(&layout_);
-		if (textlayout_.w<w)
-			w=textlayout_.w;
+        if (textlayout_.cw<w)
+            w=textlayout_.cw;
 		if (textlayout_.h<h)
 			h=textlayout_.h;
 		return true;

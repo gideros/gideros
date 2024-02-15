@@ -174,6 +174,8 @@ int FontBaseBinder::layoutText(lua_State *L)
     lua_setfield(L,-2,"h");
     lua_pushinteger(L,tl.lines);
     lua_setfield(L,-2,"lines");
+    lua_pushnumber(L,tl.cw);
+    lua_setfield(L,-2,"cw");
 
     lua_createtable(L,tl.parts.size(),0);
     for (size_t k=0;k<tl.parts.size();k++)
