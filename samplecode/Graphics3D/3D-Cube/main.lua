@@ -1,8 +1,8 @@
 local function face(color,rx,ry)
 	-- Create a colored face
-	c=Sprite.new()
 	s=Shape.new()
-	s:setFillStyle(Shape.SOLID, color,0.8)
+	-- Use translucent color
+	s:setFillStyle(Shape.SOLID, color,0.7)
 	s:beginPath()
 	s:moveTo(-1,-1)
 	s:lineTo(-1,1)
@@ -10,22 +10,25 @@ local function face(color,rx,ry)
 	s:lineTo(1,-1)
 	s:lineTo(-1,-1)
 	s:endPath()
-
-	s:setZ(-1)
-	c:addChild(s)
-	c:setRotationX(rx)
-	c:setRotationY(ry)
-	return c;
+	-- Set its orientation
+	s:setRotationX(rx)
+	s:setRotationY(ry)
+	-- Position it at -1 along its local Z axis
+	s:setPosition(s:getMatrix():transformPoint(0,0,-1))
+	return s
 end
 
 --Create a cube
 cube=Mesh.new(true)
-cube:addChild(face(0xFF0000,0,0))
+cube:addChild(face(0xFF8080,0,0))
 cube:addChild(face(0xFFFF00,90,0))
 cube:addChild(face(0xFF00FF,-90,0))
-cube:addChild(face(0x00FF00,180,0))
+cube:addChild(face(0x80FF80,180,0))
 cube:addChild(face(0x00FFFF,0,90))
-cube:addChild(face(0x0000FF,0,-90))
+cube:addChild(face(0x8080FF,0,-90))
+
+-- Enable depth sorting for translucency
+cube:setAutoSort(true)
 
 --Set up the 3D view and projection
 local sw,sh=application:getContentWidth(),application:getContentHeight()
