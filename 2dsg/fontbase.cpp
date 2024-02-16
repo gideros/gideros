@@ -310,6 +310,39 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
 				}
                 else if (!key.compare("font"))
                     styles.font=val;
+                else if (!key.compare("i")) {
+                    styles.styleFlags|=TEXTSTYLEFLAG_ITALIC;
+                    styles.italic=strtol(val.c_str(),NULL,10);
+                    if (styles.italic==0) styles.italic=8; //Default to 8°
+                }
+                else if (!key.compare("!i"))
+                    styles.styleFlags&=~TEXTSTYLEFLAG_ITALIC;
+                else if (!key.compare("u")) {
+                    styles.styleFlags|=TEXTSTYLEFLAG_UNDERLINE;
+                    styles.underline_size=strtod(val.c_str(),NULL)*255;
+                    styles.underline_pos=-64;
+                }
+                else if (!key.compare("!u"))
+                    styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
+                else if (!key.compare("s")) {
+                    styles.styleFlags|=TEXTSTYLEFLAG_UNDERLINE;
+                    styles.underline_size=strtod(val.c_str(),NULL)*255;
+                    styles.underline_pos=64;
+                }
+                else if (!key.compare("!s"))
+                    styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
+                else if (!key.compare("l")) {
+                    if (val.empty())
+                        styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
+                    else {
+                        styles.styleFlags|=TEXTSTYLEFLAG_UNDERLINE;
+                        char *extra=NULL;
+                        styles.underline_pos=strtod(val.c_str(),&extra)*127;
+                        styles.underline_size=0;
+                        if (extra&&(*extra==':'))
+                            styles.underline_size=strtod(extra+1,NULL)*255;
+                    }
+                }
                 if (sp==se) break;
 				ss=sp+1;
 			}

@@ -912,6 +912,34 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
     std::map<int, int> gfxMap2;
     int gfx = vGraphicsBase->size();
 
+    size_t blockLayer=0;
+    size_t blockCount=0;
+    if (l.styleFlags&TEXTSTYLEFLAG_UNDERLINE) {
+        blockLayer=gfx++;
+        for (size_t pn = 0; pn < l.parts.size(); pn++) {
+            ChunkLayout &c = l.parts[pn];
+            if (c.style.styleFlags&TEXTSTYLEFLAG_UNDERLINE)
+                blockCount++; //A single quad block spanning whole chunk
+        }
+        vGraphicsBase->resize(gfx);
+        GraphicsBase *graphicsBase = &((*vGraphicsBase)[blockLayer]);
+        graphicsBase->vertices.resize(blockCount * 4);
+        graphicsBase->indices.resize(blockCount * 6);
+        if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+        {
+            graphicsBase->colors.resize(blockCount * 16);
+            graphicsBase->colors.Update();
+        }
+        else
+        {
+            graphicsBase->colors.clear();
+            graphicsBase->setColor(r, g, b, a);
+        }
+        graphicsBase->vertices.Update();
+        graphicsBase->indices.Update();
+        blockCount=0;
+    }
+
 	for (size_t pn = 0; pn < l.parts.size(); pn++) {
         ChunkLayout &c = l.parts[pn];
         size_t wsize=c.shaped.size();
@@ -945,7 +973,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			}
 			l--;
 			gfxMap[l] = gfxMap[l] + 1;
-		}
+        }
 
         vGraphicsBase->resize(gfx);
 
@@ -990,6 +1018,12 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
             x = c.dx / sizescalex_ - textureGlyph.left; //FIXME is this needed ?
         }*/
 
+        bool isItalic=(c.style.styleFlags&TEXTSTYLEFLAG_ITALIC)&&c.style.italic;
+        float italicRatio=0;
+        if (isItalic)
+            italicRatio=sinf(c.style.italic*M_PI/180.0);
+
+        float xstart=x;
 		for (size_t i = 0; i < wsize; ++i) {
             GlyphLayout &gl=c.shaped[i];
             int facenum = (int)(uintptr_t)gl._private;
@@ -1008,22 +1042,34 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			int width = textureGlyph.width;
 			int height = textureGlyph.height;
 
-    		float x0 = x + gl.offX - 1;
+            float x00 = x + gl.offX - 1;
+            float x01 = x00;
     		float y0 = y + gl.offY - 1;
 
-    		float x1 = x0 + width + 2;
+            float x10 = x00 + width + 2;
+            float x11 = x10;
             float y1 = y0 + height + 2;
+
+            if (isItalic)
+            {
+                float xd0=(y-y0)*italicRatio;
+                float xd1=(y-y1)*italicRatio;
+                x00+=xd0;
+                x10+=xd0;
+                x01+=xd1;
+                x11+=xd1;
+            }
 
 			int vi = gfxMap2[gfx];
 			gfxMap2[gfx] = vi + 1;
 
-			graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,
+            graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x00,
 					sizescaley_ * y0);
-			graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,
+            graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x10,
 					sizescaley_ * y0);
-			graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,
+            graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x11,
 					sizescaley_ * y1);
-			graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,
+            graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x01,
 					sizescaley_ * y1);
 
 			float u0 = ((float) textureGlyph.x-1.0)
@@ -1064,8 +1110,45 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			graphicsBase->indices[vi * 6 + 5] = vi * 4 + 3;
 
 			x += gl.advX;
-		}
-	}
+        }
+        if (c.style.styleFlags&TEXTSTYLEFLAG_UNDERLINE) {
+            int vi=blockCount++;
+            GraphicsBase *graphicsBase = &((*vGraphicsBase)[blockLayer]);
+
+            float ls=getLineHeight();
+            float yt=c.style.underline_size?(c.style.underline_size/510.0)*ls:0.5;
+            float yp=c.style.underline_pos?(c.style.underline_pos/127.0):0;
+            if (yp<=0)
+                yp=-yp*getDescender();
+            else
+                yp=-getAscender()+ls*yp;
+            float x0=xstart;
+            float x1=x+c.sepl;
+            float y0=y-yt+yp;
+            float y1=y+yt+yp;
+            graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,	sizescaley_ * y0);
+            graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,	sizescaley_ * y0);
+            graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,	sizescaley_ * y1);
+            graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,	sizescaley_ * y1);
+
+            if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+            {
+                for (int v=0;v<16;v+=4) {
+                    graphicsBase->colors[vi * 16 + 0 + v] = rgba[0];
+                    graphicsBase->colors[vi * 16 + 1 + v] = rgba[1];
+                    graphicsBase->colors[vi * 16 + 2 + v] = rgba[2];
+                    graphicsBase->colors[vi * 16 + 3 + v] = rgba[3];
+                }
+            }
+
+            graphicsBase->indices[vi * 6 + 0] = vi * 4 + 0;
+            graphicsBase->indices[vi * 6 + 1] = vi * 4 + 1;
+            graphicsBase->indices[vi * 6 + 2] = vi * 4 + 2;
+            graphicsBase->indices[vi * 6 + 3] = vi * 4 + 0;
+            graphicsBase->indices[vi * 6 + 4] = vi * 4 + 2;
+            graphicsBase->indices[vi * 6 + 5] = vi * 4 + 3;
+        }
+    }
     RENDER_UNLOCK();
 }
 
