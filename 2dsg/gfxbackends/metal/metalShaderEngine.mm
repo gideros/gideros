@@ -405,6 +405,7 @@ extern "C" void metalShaderNewFrame()
 }
 
 void metalShaderEngine::setViewport(int x, int y, int width, int height) {
+    ShaderEngine::setViewport(x,y,width,height);
     vp_.originX=x;
     vp_.originY=y;
     vp_.width=width;

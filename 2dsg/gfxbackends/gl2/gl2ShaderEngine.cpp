@@ -608,7 +608,8 @@ ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
 }
 
 void ogl2ShaderEngine::setViewport(int x, int y, int width, int height) {
-	GLCALL_INIT;
+    ShaderEngine::setViewport(x,y,width,height);
+    GLCALL_INIT;
 	GLCALL glViewport(x, y, width, height);
 }
 

@@ -11,8 +11,9 @@ ViewportBinder::ViewportBinder(lua_State* L)
 	Binder binder(L);
 
 	static const luaL_Reg functionList[] = {
-			{"setContent", setContent},
-			{"setTransform", setTransform},
+            {"setContent", setContent},
+            {"setTarget", setTarget},
+            {"setTransform", setTransform},
 			{"setProjection", setProjection},
 			{"getContent", getContent},
 			{"getTransform", getTransform},
@@ -86,11 +87,11 @@ int ViewportBinder::setProjection(lua_State* L)
 
 int ViewportBinder::setContent(lua_State* L)
 {
-	StackChecker checker(L, "ViewportBinder::setContent", 0);
+    StackChecker checker(L, "ViewportBinder::setContent", 0);
 
-	Binder binder(L);
-	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
-	Sprite* s = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+    Binder binder(L);
+    Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
+    Sprite* s = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
     Sprite* os = shape->getContent();
     shape->setContent(s);
 
@@ -117,7 +118,18 @@ int ViewportBinder::setContent(lua_State* L)
         }
         lua_pop(L, 1);								// pop sprite.__children
     }
-	return 0;
+    return 0;
+}
+
+int ViewportBinder::setTarget(lua_State* L)
+{
+    StackChecker checker(L, "ViewportBinder::setTarget", 0);
+
+    Binder binder(L);
+    Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
+    GRenderTarget* s = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 2));
+    shape->setTarget(s);
+    return 0;
 }
 
 int ViewportBinder::getTransform(lua_State* L)

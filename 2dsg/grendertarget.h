@@ -10,6 +10,7 @@ class GRenderTarget : public TextureBase
 {
     ShaderBuffer *prepareForDraw();
     void clearInt(unsigned int color, float a, int x, int y, int w, int h);
+    void drawInt(const Sprite *sprite, const Matrix4 transform);
 public:
     GRenderTarget(Application *application, int width, int height, TextureParameters &parameters, bool selectScale=false, bool depth=false);
     virtual ~GRenderTarget();

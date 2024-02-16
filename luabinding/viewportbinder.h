@@ -13,8 +13,9 @@ private:
 	static int destruct(void *p);
 
 	static int setContent(lua_State* L);
-	static int setTransform(lua_State* L);
-	static int setProjection(lua_State* L);
+    static int setTarget(lua_State* L);
+    static int setTransform(lua_State* L);
+    static int setProjection(lua_State* L);
 	static int getContent(lua_State* L);
 	static int getTransform(lua_State* L);
 	static int getProjection(lua_State* L);

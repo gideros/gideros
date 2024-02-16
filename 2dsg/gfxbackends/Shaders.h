@@ -274,6 +274,7 @@ protected:
 	std::stack<DepthStencil> dsStack;
 	DepthStencil dsCurrent;
 	static bool ready;
+    int vpx,vpy,vpw,vph;
 public:
 	enum BlendFactor
 	{
@@ -306,7 +307,8 @@ public:
     virtual ShaderBuffer *getFramebuffer()=0;
     virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags,
 	                     const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)=0;
-	virtual void setViewport(int x,int y,int width,int height)=0;
+    virtual void setViewport(int x,int y,int width,int height) { vpx=x; vpy=y; vpw=width; vph=height; };
+    void getViewport(int &x,int &y,int &width,int &height) { x=vpx; y=vpy; width=vpw; height=vph; }
 	virtual void resizeFramebuffer(int width,int height)=0;
     virtual void setScreenScale(float scaleX,float scaleY) { screenScaleX=scaleX; screenScaleY=scaleY; };
 	enum StandardProgram {

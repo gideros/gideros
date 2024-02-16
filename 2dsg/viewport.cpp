@@ -5,6 +5,7 @@
 Viewport::Viewport(Application* application) : Sprite(application)
 {
 	content_ = NULL;
+    target_ = NULL;
 	hasProjection_=false;
 }
 
@@ -15,11 +16,13 @@ void Viewport::cloneFrom(Viewport *s) {
     projection_=s->projection_;
     hasProjection_=s->hasProjection_;
     setContent(s->content_);
+    setTarget(s->target_);
 }
 
 Viewport::~Viewport()
 {
-	setContent(NULL);
+    setContent(NULL);
+    setTarget(NULL);
 }
 
 void Viewport::setContent(Sprite *s)
@@ -35,6 +38,15 @@ void Viewport::setContent(Sprite *s)
         content_->unref();
     }
     content_ = s;
+}
+
+void Viewport::setTarget(GRenderTarget *s)
+{
+    if (s)
+        s->ref();
+    if (target_)
+        target_->unref();
+    target_ = s;
 }
 
 void Viewport::setTransform(const Matrix4* matrix)
@@ -63,7 +75,14 @@ void Viewport::doDraw(const CurrentTransform&t, float sx, float sy, float ex, fl
 {
 	if (content_)
 	{
-		if (hasProjection_)
+        if (target_) {
+            GRenderTarget *rt=target_;
+            target_=NULL; //Avoid reentrancy
+            rt->clear(0,0,0,0,-1,-1);
+            rt->draw(this,Matrix4());
+            target_=rt;
+        }
+        else if (hasProjection_)
 		{
 			ShaderEngine::DepthStencil dp=ShaderEngine::Engine->pushDepthStencil();
 			dp.dClear=true;

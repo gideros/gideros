@@ -55,6 +55,11 @@ void GRenderTarget::clearInt(unsigned int color, float a, int x, int y, int w, i
 	if (!ShaderEngine::isReady())
 		return;
 	ShaderBuffer *oldfbo=NULL;
+    int ovx,ovy,ovw,ovh;
+    ShaderEngine::Engine->getViewport(ovx,ovy,ovw,ovh);
+    Matrix4 oldProj=ShaderEngine::Engine->getProjection();
+    Matrix4 oldView=ShaderEngine::Engine->getView();
+    Matrix4 oldModel=ShaderEngine::Engine->getModel();
 
 	float r = ((color >> 16) & 0xff) / 255.f;
 	float g = ((color >> 8) & 0xff) / 255.f;
@@ -83,26 +88,44 @@ void GRenderTarget::clearInt(unsigned int color, float a, int x, int y, int w, i
 	}
 
 	gtexture_BindRenderTarget(oldfbo);
+    ShaderEngine::Engine->setModel(oldModel);
+    ShaderEngine::Engine->setView(oldView);
+    ShaderEngine::Engine->setProjection(oldProj);
+    ShaderEngine::Engine->setViewport(ovx,ovy,ovw,ovh);
 }
 
 void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int h)
 {
 	RENDER_DO([&]{
-		clearInt(color,a,x,y,w,h);
-	});
+        clearInt(color,a,x,y,w,h);
+    });
+}
+
+void GRenderTarget::drawInt(const Sprite *sprite, const Matrix transform)
+{
+    if (!ShaderEngine::isReady())
+        return;
+    int ovx,ovy,ovw,ovh;
+    ShaderEngine::Engine->getViewport(ovx,ovy,ovw,ovh);
+    Matrix4 oldProj=ShaderEngine::Engine->getProjection();
+    Matrix4 oldView=ShaderEngine::Engine->getView();
+    Matrix4 oldModel=ShaderEngine::Engine->getModel();
+    ShaderBuffer *oldfbo=prepareForDraw();
+
+    ((Sprite*)sprite)->draw(transform, 0, 0, data->width, data->height);
+
+    gtexture_BindRenderTarget(oldfbo);
+    ShaderEngine::Engine->setModel(oldModel);
+    ShaderEngine::Engine->setView(oldView);
+    ShaderEngine::Engine->setProjection(oldProj);
+    ShaderEngine::Engine->setViewport(ovx,ovy,ovw,ovh);
 }
 
 void GRenderTarget::draw(const Sprite *sprite, const Matrix transform)
 {
 	RENDER_DO([&]{
-		if (!ShaderEngine::isReady())
-			return;
-		ShaderBuffer *oldfbo=prepareForDraw();
-
-		((Sprite*)sprite)->draw(transform, 0, 0, data->width, data->height);
-
-		gtexture_BindRenderTarget(oldfbo);
-	});
+        drawInt(sprite,transform);
+    });
 }
 
 void GRenderTarget::getPixels(int x,int y,int w,int h,void *buffer)

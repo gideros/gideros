@@ -462,6 +462,7 @@ ShaderBuffer *dx11ShaderEngine::setFramebuffer(ShaderBuffer *fbo)
 
 void dx11ShaderEngine::setViewport(int x,int y,int width,int height)
 {
+      ShaderEngine::setViewport(x,y,width,height);
 	  D3D11_VIEWPORT viewport;
 	  ZeroMemory(&viewport,sizeof(D3D11_VIEWPORT));
 

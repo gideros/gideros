@@ -2,6 +2,7 @@
 #define VIEWPORT_H
 
 #include "sprite.h"
+#include "grendertarget.h"
 
 class Application;
 
@@ -12,8 +13,9 @@ public:
     virtual Sprite *clone() { Viewport *clone=new Viewport(application_); clone->cloneFrom(this); return clone; }
     void cloneFrom(Viewport *);
     virtual ~Viewport();
-	void setContent(Sprite *s);
-	void setTransform(const Matrix4* matrix = NULL);
+    void setContent(Sprite *s);
+    void setTarget(GRenderTarget *t);
+    void setTransform(const Matrix4* matrix = NULL);
 	void setProjection(const Matrix4* matrix = NULL);
 	Sprite *getContent() { return content_; };
 	Matrix4 getTransform() { return matrix_; };
@@ -27,7 +29,8 @@ private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 
 private:
-    Sprite * content_;
+    Sprite *content_;
+    GRenderTarget *target_;
 	Matrix4 matrix_;
 	Matrix4 projection_;
 	bool hasProjection_;
