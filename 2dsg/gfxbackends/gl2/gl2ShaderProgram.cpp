@@ -117,7 +117,7 @@ GLuint ogl2ShaderProgram::getGenericVBO(int index,int size, const void *&ptr) {
 
     //With this enabled, we can mix VBO/Client memory
     //Do it on Qualcomm devices because of Adreno GPU
-    if (ogl2ShaderEngine::quirk_Qualcomm&&(size<FBO_MINSIZE)) {
+    if (ogl2ShaderEngine::quirk_Qualcomm&&(!vboForceGeneric)&&(size<FBO_MINSIZE)) {
         bindBuffer(bname,0);
         return 0;
     }
