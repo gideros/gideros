@@ -506,6 +506,8 @@ ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,
 	return new ogl2ShaderProgram(vshader, pshader, flags, uniforms, attributes, isGLES);
 }
 
+bool ogl2ShaderEngine::quirk_Qualcomm=false;
+
 ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
     
     /*int fw=sw,fh=sh,crb=0;
@@ -540,6 +542,9 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
     glog_i("GL Version %f (%s)",version,isGLES?"ES":"Desktop");
 
     ogl2ShaderProgram::supportInstances=((version>=3.1)||(isGLES&&(version>=3.0)));
+
+    const char *extensions = (const char *)GLCALL glGetString(GL_EXTENSIONS);
+    quirk_Qualcomm = (extensions && strstr(extensions, "GL_QCOM"));
 
 #ifndef GIDEROS_GL1
     ogl2SetupShaders(isGLES);

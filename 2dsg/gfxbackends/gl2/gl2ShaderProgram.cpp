@@ -114,12 +114,15 @@ GLuint ogl2ShaderProgram::getGenericVBO(int index,int size, const void *&ptr) {
     GLCALL_INIT;
     GLuint bname=(index==0)?GL_ELEMENT_ARRAY_BUFFER:GL_ARRAY_BUFFER;
     int bt=(bname==GL_ELEMENT_ARRAY_BUFFER)?0:1;
-#ifndef GL2SHADERS_COMMON_GENVBO
+
     //With this enabled, we can mix VBO/Client memory
-    if ((!vboForceGeneric)&&(size<FBO_MINSIZE)) {
+    //Do it on Qualcomm devices because of Adreno GPU
+    if (ogl2ShaderEngine::quirk_Qualcomm&&(size<FBO_MINSIZE)) {
         bindBuffer(bname,0);
         return 0;
     }
+
+#ifndef GL2SHADERS_COMMON_GENVBO
     if (genVBO[index] == 0){
 		GLCALL glGenBuffers(1,genVBO+index);
 	}

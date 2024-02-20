@@ -8,8 +8,6 @@
 #include "gl2Shaders.h"
 #include "string.h"
 
-int ogl2ShaderBuffer::qualcommFix_=-1;
-
 GLint ogl2ShaderBuffer::bindBuffer(GLint fbo)
 {
 	GLCALL_INIT;
@@ -34,13 +32,7 @@ ogl2ShaderBuffer::ogl2ShaderBuffer(ShaderTexture *texture,bool forDepth)
 	width=((ogl2ShaderTexture *)texture)->width;
 	height=((ogl2ShaderTexture *)texture)->height;
 
-    if (qualcommFix_ == -1)
-    {
-        const char *extensions = (const char *)GLCALL glGetString(GL_EXTENSIONS);
-        qualcommFix_ = (extensions && strstr(extensions, "GL_QCOM"));
-    }
-
-    if (qualcommFix_)
+    if (ogl2ShaderEngine::quirk_Qualcomm)
         tempTexture_ = gtexture_TempTextureCreate(((ogl2ShaderTexture *)texture)->width, ((ogl2ShaderTexture *)texture)->height);
     else
         tempTexture_ = 0;
@@ -95,7 +87,7 @@ ogl2ShaderBuffer::~ogl2ShaderBuffer()
 void ogl2ShaderBuffer::prepareDraw()
 {
 	GLCALL_INIT;
-    if (qualcommFix_)
+    if (ogl2ShaderEngine::quirk_Qualcomm)
     {
     	GLCALL glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ((ogl2ShaderTexture *)gtexture_TempTextureGetName(tempTexture_))->glid, 0);
     	GLCALL glClear(GL_COLOR_BUFFER_BIT);

@@ -175,7 +175,6 @@ public:
 class ogl2ShaderBuffer : public ShaderBuffer
 {
 	friend class ogl2ShaderEngine;
-	static int qualcommFix_;
 	g_id tempTexture_;
 	GLuint textureId_;
 	bool forDepth_;
@@ -206,6 +205,7 @@ class ogl2ShaderEngine : public ShaderEngine
 public:
     static bool isGLES;
     static float version;
+	static bool quirk_Qualcomm;
     ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();
 	const char *getVersion();
