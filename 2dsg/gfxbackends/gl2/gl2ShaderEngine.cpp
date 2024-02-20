@@ -10,6 +10,7 @@
 #include "glog.h"
 #include "ogl.h"
 #include <sstream>
+#include <cstring>
 
 #ifdef OPENGL_ES0
 /* Vertex shader*/
