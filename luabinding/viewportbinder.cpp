@@ -128,7 +128,7 @@ int ViewportBinder::setTarget(lua_State* L)
     Binder binder(L);
     Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
     GRenderTarget* s = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 2));
-    shape->setTarget(s);
+    shape->setTarget(s,lua_toboolean(L,3));
     return 0;
 }
 

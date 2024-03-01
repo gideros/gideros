@@ -343,6 +343,8 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
                             styles.underline_size=strtod(extra+1,NULL)*255;
                     }
                 }
+                else if (!key.compare("!l"))
+                    styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
                 if (sp==se) break;
 				ss=sp+1;
 			}

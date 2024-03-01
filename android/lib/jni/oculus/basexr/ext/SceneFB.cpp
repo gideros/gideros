@@ -9,6 +9,7 @@
 #include "common.h"
 #include "openxr_program.h"
 #include <openxr-oculus/fb_scene.h>
+#include "luautil.h"
 
 SceneFB *SceneFB::instance=NULL;
 
@@ -209,7 +210,12 @@ bool SceneFB::HandleEvent(const XrEventDataBaseHeader* event)
 				lua_rawseti(L,-2,k++);
 			}
 			luaCb=0;
-			lua_call(L,1,0);
+			//lua_call(L,1,0);
+		    if (lua_pcall_traceback(L, 1, 0, 0))
+			{
+				Log::Write(Log::Level::Error,lua_tostring(L, -1));
+		        lua_pop(L, 1);
+			}
 		}
 		return true;
 	}

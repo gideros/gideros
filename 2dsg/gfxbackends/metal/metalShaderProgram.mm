@@ -193,7 +193,7 @@ void metalShaderProgram::useProgram() {
 
 void metalShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		ShaderBufferCache **cache,int stride,int offset) {
+		ShaderBufferCache **cache,int stride,int offset,int bufferingFlags) {
     if ((index<0)||(index>=attributes.size())) return;
     
     assert(type==attributes[index].type);
@@ -528,7 +528,8 @@ void metalShaderProgram::drawArrays(ShapeType shape, int first,
 		[encoder() drawPrimitives:mode vertexStart:first vertexCount:count];
 }
 void metalShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,
+		unsigned int first,unsigned int dcount,unsigned int instances,int bufferingFlags) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 

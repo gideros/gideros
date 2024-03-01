@@ -87,7 +87,7 @@ ogl2ShaderBuffer::~ogl2ShaderBuffer()
 void ogl2ShaderBuffer::prepareDraw()
 {
 	GLCALL_INIT;
-    if (ogl2ShaderEngine::quirk_Qualcomm)
+    if ((!forDepth_)&&ogl2ShaderEngine::quirk_Qualcomm)
     {
     	GLCALL glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ((ogl2ShaderTexture *)gtexture_TempTextureGetName(tempTexture_))->glid, 0);
     	GLCALL glClear(GL_COLOR_BUFFER_BIT);

@@ -14,7 +14,7 @@ public:
     void cloneFrom(Viewport *);
     virtual ~Viewport();
     void setContent(Sprite *s);
-    void setTarget(GRenderTarget *t);
+    void setTarget(GRenderTarget *t,bool capture);
     void setTransform(const Matrix4* matrix = NULL);
 	void setProjection(const Matrix4* matrix = NULL);
 	Sprite *getContent() { return content_; };
@@ -34,6 +34,7 @@ private:
 	Matrix4 matrix_;
 	Matrix4 projection_;
 	bool hasProjection_;
+	bool captureMode_;
 };
 
 #endif

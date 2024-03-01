@@ -326,6 +326,9 @@ void ogl2ShaderEngine::reset(bool reinit) {
 		s_texture = 0;
 		s_depthEnable = 0;
 		s_depthBufferCleared = false;
+        currentTextureUnit=-1;
+        for (size_t ti=0;ti<16;ti++)
+            currentTextures[ti]=0;
 
 		currentBuffer = NULL;
 		setFramebuffer(currentBuffer);
@@ -590,8 +593,11 @@ ShaderBuffer *ogl2ShaderEngine::createRenderTarget(ShaderTexture *texture,bool f
 ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
 	GLCALL_INIT;
 	ShaderBuffer *previous = currentBuffer;
-	GLint oldFBO = 0;
-	GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+	if (!previous) {
+		GLint oldFBO = 0;
+		GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+		defaultFramebuffer=oldFBO;
+	}
 #ifdef OPENGL_DESKTOP
 	if (GLEW_ARB_framebuffer_object)
 #endif
@@ -605,7 +611,8 @@ ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
 	if (previous)
 		previous->unbound();
 	currentBuffer = fbo;
-/*	if (!fbo)
+
+	/*	if (!fbo)
 		GLCALL glEnable(GL_FRAMEBUFFER_SRGB);
 	else
 		GLCALL glDisable(GL_FRAMEBUFFER_SRGB);*/
@@ -754,13 +761,20 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 void ogl2ShaderEngine::clearColor(float r, float g, float b, float a) {
 	GLCALL_INIT;
 	GLCALL glClearColor(r * a, g * a, b * a, a);
-	GLCALL glClear(GL_COLOR_BUFFER_BIT);
+	GLCALL glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void ogl2ShaderEngine::bindTexture(int num, ShaderTexture *texture) {
 	GLCALL_INIT;
-	GLCALL glActiveTexture(GL_TEXTURE0 + num);
-	GLCALL glBindTexture(GL_TEXTURE_2D, ((ogl2ShaderTexture *) texture)->glid);
+    if (num>16) return;
+    if (currentTextureUnit!=num) {
+        GLCALL glActiveTexture(GL_TEXTURE0 + num);
+        currentTextureUnit=num;
+    }
+    GLuint tid=((ogl2ShaderTexture *) texture)->glid;
+    if (currentTextures[num]==tid) return;
+    GLCALL glBindTexture(GL_TEXTURE_2D, tid);
+    currentTextures[num]=tid;
 }
 
 void ogl2ShaderEngine::setClip(int x, int y, int w, int h) {

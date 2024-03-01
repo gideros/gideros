@@ -110,14 +110,14 @@ GLuint ogl2ShaderProgram::allocateVBO(GLuint type) {
 }
 
 #define IDXBUFSIZE  65536
-GLuint ogl2ShaderProgram::getGenericVBO(int index,int size, const void *&ptr) {
+GLuint ogl2ShaderProgram::getGenericVBO(int index,int size, const void *&ptr,int bufferingFlags) {
     GLCALL_INIT;
     GLuint bname=(index==0)?GL_ELEMENT_ARRAY_BUFFER:GL_ARRAY_BUFFER;
     int bt=(bname==GL_ELEMENT_ARRAY_BUFFER)?0:1;
 
     //With this enabled, we can mix VBO/Client memory
     //Do it on Qualcomm devices because of Adreno GPU
-    if (ogl2ShaderEngine::quirk_Qualcomm&&(!vboForceGeneric)&&(size<FBO_MINSIZE)) {
+    if ((!(bufferingFlags&BufferingFlags::ForceVBO))&&(!vboForceGeneric)&&(size<FBO_MINSIZE)) {
         bindBuffer(bname,0);
         return 0;
     }
@@ -404,7 +404,7 @@ void ogl2ShaderProgram::useProgram() {
 
 void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		ShaderBufferCache **cache,int stride,int offset) {
+		ShaderBufferCache **cache,int stride,int offset,int bufferingFlags) {
 	GLCALL_INIT;
 	useProgram();
 	GLenum gltype = GL_FLOAT;
@@ -441,7 +441,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
     size_t fbo_sz=elmSize * mult * count;
     if (fbo_sz<FBO_MINSIZE)
         cache=NULL;
-    GLuint vbo=cache?getCachedVBO(cache,modified,GL_ARRAY_BUFFER):getGenericVBO(index+1,fbo_sz,ptr);
+    GLuint vbo=cache?getCachedVBO(cache,modified,GL_ARRAY_BUFFER):getGenericVBO(index+1,fbo_sz,ptr,bufferingFlags);
     if (vbo)
 	{
 		if (modified||(!cache))
@@ -706,7 +706,8 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,
+		unsigned int first,unsigned int dcount,unsigned int instances,int bufferingFlags) {
 	GLCALL_INIT;
 	GLECALL_INIT;
 	ShaderEngine::Engine->prepareDraw(this);
@@ -760,7 +761,7 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
     size_t fbo_sz=elmSize * count;
     if (fbo_sz<FBO_MINSIZE)
         cache=NULL;
-    GLuint vbo=cache?getCachedVBO(cache,modified,GL_ELEMENT_ARRAY_BUFFER):getGenericVBO(0,fbo_sz,indices);
+    GLuint vbo=cache?getCachedVBO(cache,modified,GL_ELEMENT_ARRAY_BUFFER):getGenericVBO(0,fbo_sz,indices,bufferingFlags);
 	if (vbo)
 	{
 		if (modified||(!cache))

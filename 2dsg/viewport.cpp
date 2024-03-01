@@ -7,6 +7,7 @@ Viewport::Viewport(Application* application) : Sprite(application)
 	content_ = NULL;
     target_ = NULL;
 	hasProjection_=false;
+	captureMode_=false;
 }
 
 void Viewport::cloneFrom(Viewport *s) {
@@ -16,13 +17,13 @@ void Viewport::cloneFrom(Viewport *s) {
     projection_=s->projection_;
     hasProjection_=s->hasProjection_;
     setContent(s->content_);
-    setTarget(s->target_);
+    setTarget(s->target_,s->captureMode_);
 }
 
 Viewport::~Viewport()
 {
     setContent(NULL);
-    setTarget(NULL);
+    setTarget(NULL,false);
 }
 
 void Viewport::setContent(Sprite *s)
@@ -40,13 +41,14 @@ void Viewport::setContent(Sprite *s)
     content_ = s;
 }
 
-void Viewport::setTarget(GRenderTarget *s)
+void Viewport::setTarget(GRenderTarget *s, bool capture)
 {
     if (s)
         s->ref();
     if (target_)
         target_->unref();
     target_ = s;
+    captureMode_=capture;
 }
 
 void Viewport::setTransform(const Matrix4* matrix)
@@ -77,10 +79,14 @@ void Viewport::doDraw(const CurrentTransform&t, float sx, float sy, float ex, fl
 	{
         if (target_) {
             GRenderTarget *rt=target_;
-            target_=NULL; //Avoid reentrancy
-            rt->clear(0,0,0,0,-1,-1);
-            rt->draw(this,Matrix4());
-            target_=rt;
+            rt->clear(0,0,0,0,-1,-1,true,captureMode_);
+            if (captureMode_)
+				rt->draw(content_,t,true,true);
+            else {
+				target_=NULL; //Avoid reentrancy
+				rt->draw(this,Matrix4(),true);
+				target_=rt;
+            }
         }
         else if (hasProjection_)
 		{

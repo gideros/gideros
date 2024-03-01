@@ -126,7 +126,7 @@ class ogl2ShaderProgram : public ShaderProgram
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
-    static GLuint getGenericVBO(int index,int sz, const void *&ptr);
+    static GLuint getGenericVBO(int index,int sz, const void *&ptr,int bufferingFlags);
     static GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified,GLuint type);
 public:
 	static int vboFreeze, vboUnfreeze;
@@ -134,10 +134,10 @@ public:
 	static bool vboForceGeneric;
     virtual void activate();
     virtual void deactivate();
-    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0);
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0,int bufferingFlags=0);
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count,unsigned int instances=0);
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0,unsigned int instances=0);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0,unsigned int instances=0,int bufferingFlags=0);
     virtual bool isValid();
     virtual const char *compilationLog();
 
@@ -202,6 +202,8 @@ class ogl2ShaderEngine : public ShaderEngine
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
 	int devWidth,devHeight;
 	GLint defaultFramebuffer;
+    int currentTextureUnit;
+    GLuint currentTextures[16];
 public:
     static bool isGLES;
     static float version;

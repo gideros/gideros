@@ -2149,9 +2149,9 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 		m_texcoords.Update();
 		m_colors.Update();
 
-		shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, &m_vertices[0], vtx_size, true, NULL);
-		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT,2, &m_texcoords[0], vtx_size, true, NULL);
-		shp->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE,4, &m_colors[0], vtx_size, true, NULL);
+		shp->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT,2, &m_vertices[0], vtx_size, true, NULL,0,0,ShaderProgram::ForceVBO);
+		shp->setData(ShaderProgram::DataTexture, ShaderProgram::DFLOAT,2, &m_texcoords[0], vtx_size, true, NULL,0,0,ShaderProgram::ForceVBO);
+		shp->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE,4, &m_colors[0], vtx_size, true, NULL,0,0,ShaderProgram::ForceVBO);
 		
 		for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 		{
@@ -2172,13 +2172,13 @@ void GidImGui::doDraw(const CurrentTransform&, float _UNUSED(sx), float _UNUSED(
 							(int)(pcmd->ClipRect.z - pcmd->ClipRect.x),
 							(int)(pcmd->ClipRect.w - pcmd->ClipRect.y)
 							);
-				shp->drawElements(ShaderProgram::Triangles, pcmd->ElemCount, ShaderProgram::DUSHORT, idx_buffer + pcmd->IdxOffset, true, NULL);
+				shp->drawElements(ShaderProgram::Triangles, pcmd->ElemCount, ShaderProgram::DUSHORT, idx_buffer + pcmd->IdxOffset, true, NULL,0,0,0,ShaderProgram::ForceVBO);
 				engine->popClip();
 			}
 		}
 		
 	}
-	
+
 }
 
 void GidImGui::clearCallbacks()

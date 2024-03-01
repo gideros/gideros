@@ -262,7 +262,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 
 void dx11ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		ShaderBufferCache **cache, int stride, int offset) {
+		ShaderBufferCache **cache, int stride, int offset,int bufferingFlags) {
 	activate();
 	setupBuffer(index, type, mult, ptr, count, modified, cache,stride,offset);
 }
@@ -618,7 +618,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 		g_devcon->Draw(count, 0);
 }
 void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount,unsigned int instances,int bufferingFlags) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();

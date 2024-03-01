@@ -94,6 +94,7 @@ public:
 		
 		return *colorTransform_;
 	}
+    Matrix4 *getRenderTransform() { return &renderTransform_; }
 
 	void setColorTransform(const ColorTransform& colorTransform);
 
