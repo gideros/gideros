@@ -1268,7 +1268,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
         const char *kk=key;
         if ((*key)=='=') { //Maths
         	kk++;
-            while ((*kk)&&((*kk)!='+')&&((*kk)!='-')&&((*kk)!='/')&&((*kk)!='*')) kk++;
+            while ((*kk)&&((*kk)!='+')&&((*kk)!='-')&&((*kk)!='/')&&((*kk)!='*')&&((*kk)!=':')) kk++;
             if ((*kk)&&(kk[1])&&(kk!=(key+1))) {
                 //Basic maths
             	std::string op1s(key+1,kk-key-1);
@@ -1278,25 +1278,56 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                     lua_pushfstringL(L,"Style not recognized: %s",op1s.c_str());
                     lua_error(L);
                 }
-                double op1=lua_tonumber(L,-1);
-                lua_pop(L,1);
-                if (resolveStyleInternal(L,kk+1,0,limit+1,true)==LUA_TNIL)
-                {
-                    lua_pushfstringL(L,"Style not recognized: %s",kk+1);
-                    lua_error(L);
+                if ((*kk)==':') {
+                    kk++;
+                    const char *ks=kk;
+                    while ((*kk)&&((*kk)!=':')) kk++;
+                    if ((*kk)==0) {
+                        lua_pushfstringL(L,"Operator end not found in function '%s'",key);
+                        lua_error(L);
+                    }
+                    std::string lOp=std::string(ks,kk-ks-1);
+                    if (lOp=="alpha") {
+                        const float *c=lua_tovector(L,-1);
+                        float col[4]={0,0,0,0};
+                        if (c) { col[0]=c[0]; col[1]=c[1]; col[2]=c[2]; col[3]=c[3]; };
+                        lua_pop(L,1);
+                        if (resolveStyleInternal(L,kk+1,0,limit+1,true)==LUA_TNIL)
+                        {
+                            lua_pushfstringL(L,"Style not recognized: %s",kk+1);
+                            lua_error(L);
+                        }
+                        c=lua_tovector(L,-1);
+                        if (c)
+                            col[3]=c[3];
+                        else
+                            col[3]=lua_tonumber(L,-1);
+                        lua_pop(L,1);
+                        lua_pushvector(L,col[0],col[1],col[2],col[3]);
+                        return LUA_TVECTOR;
+                    }
                 }
-                double op2=lua_tonumber(L,-1);
-                lua_pop(L,1);
-                double num;
-                switch (kk[0]) {
-                case '+': num=op1+op2; break;
-                case '-': num=op1-op2; break;
-                case '*': num=op1*op2; break;
-                case '/': num=op1/op2; break;
-                default: num=0;
+                else {
+                    double op1=lua_tonumber(L,-1);
+                    lua_pop(L,1);
+                    if (resolveStyleInternal(L,kk+1,0,limit+1,true)==LUA_TNIL)
+                    {
+                        lua_pushfstringL(L,"Style not recognized: %s",kk+1);
+                        lua_error(L);
+                    }
+                    double op2=lua_tonumber(L,-1);
+                    lua_pop(L,1);
+                    double num;
+                    switch (kk[0]) {
+                    case '+': num=op1+op2; break;
+                    case '-': num=op1-op2; break;
+                    case '*': num=op1*op2; break;
+                    case '/': num=op1/op2; break;
+                    default: num=0;
+                    }
+                    lua_pushnumber(L,num);
+                    return LUA_TNUMBER;
                 }
-                lua_pushnumber(L,num);
-                return LUA_TNUMBER;
             }
         }
         kk=key;

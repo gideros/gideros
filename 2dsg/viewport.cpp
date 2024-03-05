@@ -8,6 +8,7 @@ Viewport::Viewport(Application* application) : Sprite(application)
     target_ = NULL;
 	hasProjection_=false;
 	captureMode_=false;
+    colClear_[0]=-1; //Indicate no clear at all
 }
 
 void Viewport::cloneFrom(Viewport *s) {
@@ -17,13 +18,13 @@ void Viewport::cloneFrom(Viewport *s) {
     projection_=s->projection_;
     hasProjection_=s->hasProjection_;
     setContent(s->content_);
-    setTarget(s->target_,s->captureMode_);
+    setTarget(s->target_,s->captureMode_,s->colClear_);
 }
 
 Viewport::~Viewport()
 {
     setContent(NULL);
-    setTarget(NULL,false);
+    setTarget(NULL,false,colClear_);
 }
 
 void Viewport::setContent(Sprite *s)
@@ -41,7 +42,7 @@ void Viewport::setContent(Sprite *s)
     content_ = s;
 }
 
-void Viewport::setTarget(GRenderTarget *s, bool capture)
+void Viewport::setTarget(GRenderTarget *s, bool capture, const float *colClear)
 {
     if (s)
         s->ref();
@@ -49,6 +50,10 @@ void Viewport::setTarget(GRenderTarget *s, bool capture)
         target_->unref();
     target_ = s;
     captureMode_=capture;
+    if (colClear)
+        for (int k=0;k<4;k++) colClear_[k]=colClear[k];
+    else
+        colClear_[0]=-1; //Indicate no clear at all
 }
 
 void Viewport::setTransform(const Matrix4* matrix)
@@ -79,7 +84,10 @@ void Viewport::doDraw(const CurrentTransform&t, float sx, float sy, float ex, fl
 	{
         if (target_) {
             GRenderTarget *rt=target_;
-            rt->clear(0,0,0,0,-1,-1,true,captureMode_);
+            if (colClear_[0]>=0) {
+                unsigned int colC=((int)(colClear_[0]*255)<<24)|((int)(colClear_[1]*255)<<16)|((int)(colClear_[2]*255)<<0);
+                rt->clear(colC,colClear_[3],0,0,-1,-1,true,captureMode_);
+            }
             if (captureMode_)
 				rt->draw(content_,t,true,true);
             else {
