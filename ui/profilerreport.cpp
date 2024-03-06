@@ -99,6 +99,14 @@ QString ProfilerReport::generateReport(QVariant pinf) {
         }
         double otime=0;
         QStringList pcallees=callees[funcs[i]];
+        std::sort(pcallees.begin(), pcallees.end(),
+              [&](const QString& a, const QString &b) ->
+              bool {
+                    QMap<QString,QVariant> ia=pinfo[a].value<QMap<QString,QVariant>>()["callers"].value<QMap<QString,QVariant>>()[funcs[i]].value<QMap<QString,QVariant>>();
+                    QMap<QString,QVariant> ib=pinfo[b].value<QMap<QString,QVariant>>()["callers"].value<QMap<QString,QVariant>>()[funcs[i]].value<QMap<QString,QVariant>>();
+                return ia["time"].toString().toDouble()>ib["time"].toString().toDouble();
+               });
+
         foreach (QString f, pcallees) {
             QMap<QString,QVariant> ii=pinfo[f].value<QMap<QString,QVariant>>()["callers"].value<QMap<QString,QVariant>>()[funcs[i]].value<QMap<QString,QVariant>>();
             double itime=ii["time"].toString().toDouble();

@@ -85,6 +85,7 @@ void *LuaApplication::debuggerContext=NULL;
 std::mutex LuaApplication::taskLock;
 std::condition_variable LuaApplication::frameWake;
 bool LuaApplication::taskStopping=false;
+static void profilerYielded(lua_State *L,double time);
 
 static g_id luaCbGid=g_NextId();
 static lua_State *globalLuaState=NULL;
@@ -423,6 +424,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
     t.nargs=nargs-1;
     t.terminated=false;
     t.inError=false;
+    t.profilerYielded=false;
     T->profilerHook=L->profilerHook;
     T->profileTableAllocs=L->profileTableAllocs;
     lua_xmove(L,T,nargs);
@@ -527,6 +529,7 @@ int LuaApplication::Core_asyncThread(lua_State* L)
     t.nargs=nargs-1;
     t.terminated=false;
     t.inError=false;
+    t.profilerYielded=false;
     lua_xmove(L,T,nargs);
     lua_rawgeti(L, LUA_REGISTRYINDEX, t.taskRef);
     lua_enableThreads(L,1);
@@ -2116,7 +2119,11 @@ void LuaApplication::enterFrame(GStatus *status)
 			loops = 0;
 			int res = 0;
             taskLock.unlock();
-			if (t.autoYield)
+            if ((t.L->profilerHook)&&t.profilerYielded) {
+                profilerYielded(t.L,iclock()-t.profilerYieldStart);
+                t.profilerYielded=false;
+            }
+            if (t.autoYield)
 			{                
 #ifdef LUA_IS_LUAU
                 lua_callbacks(t.L)->interrupt=yieldHook;
@@ -2140,8 +2147,12 @@ void LuaApplication::enterFrame(GStatus *status)
             //Reload task data after task has yielded/ended
             t = tasks_.front();
             tasks_.pop_front();
-			if (res == LUA_YIELD)
+            if (res == LUA_YIELD)
             { /* Yielded: push to the back of the queue */
+                if (t.L->profilerHook) {
+                    t.profilerYielded=true;
+                    t.profilerYieldStart=iclock();
+                }
                 t.nargs=0;
                 tasks_.push_back(t);
             }
@@ -2578,17 +2589,21 @@ lua_State *LuaApplication::getLuaState() const
 
 //PROFILER
 struct ProfileInfo {
+    struct ProfilerStack {
+        double entered; //Enter time
+        double profOverHead; //Time spent by profiler when entering/leaving this function
+        std::string callret; //Return to
+    };
+    std::map<lua_State *,std::stack<ProfilerStack>> callstack;
 	std::string fid;
 	std::string name;
 	double time;
 	int count;
-	double entered;
-	int enterCount;
-    double profOverHead;
-    std::string callret;
+    //Time spent/call count per caller
 	std::map<std::string,double> cTime;
 	std::map<std::string,int> cCount;
 };
+#define PROFILER_SPONTANEOUS    "*Spontaneous*"
 static std::map<std::string,ProfileInfo*> proFuncs;
 static std::map<Closure*,ProfileInfo*> proLookup;
 static ProfileInfo *profilerGetInfo(Closure *cl)
@@ -2629,12 +2644,29 @@ static ProfileInfo *profilerGetInfo(Closure *cl)
 			p->fid=fid;
 			p->time=0;
 			p->count=0;
-			p->enterCount=0;
-            p->profOverHead=0;
 		}
 	}
 	return p;
 }
+
+static ProfileInfo *checkProfilerSpontaneous(lua_State *L)
+{
+    ProfileInfo *cp=proFuncs[PROFILER_SPONTANEOUS];
+    if (cp->callstack[L].empty()) {
+        ProfileInfo::ProfilerStack cs;
+        cs.profOverHead=0;
+        cp->callstack[L].push(cs);
+    }
+    return cp;
+}
+
+static void profilerYielded(lua_State *L,double time)
+{
+    Closure *cl=curr_func(L);
+    ProfileInfo *p=profilerGetInfo(cl);
+    p->callstack[L].top().profOverHead+=time;
+}
+
 
 static void profilerHook(lua_State *L,int enter)
 {
@@ -2643,57 +2675,58 @@ static void profilerHook(lua_State *L,int enter)
 	ProfileInfo *p=profilerGetInfo(cl);
 	if (enter)
 	{
-		if (!(p->enterCount++))
-		{
-			if (p->name.empty())
-			{
-				lua_Debug ar;                
-				ar.name=NULL;
+        if (p->name.empty())
+        {
+            lua_Debug ar;
+            ar.name=NULL;
 #ifdef LUA_IS_LUAU
-                lua_getinfo(L,0,"n",&ar); //Check the '1' value
-                if ((cl->isC)&&(cl->c.debugname))
-                    p->name=cl->c.debugname;
-                else {
-                    if (ar.name)
-                        p->name=ar.name;
-                    else
-                        p->name="Unknown";
-                }
+            lua_getinfo(L,0,"n",&ar); //Check the '1' value
+            if ((cl->isC)&&(cl->c.debugname))
+                p->name=cl->c.debugname;
+            else {
+                if (ar.name)
+                    p->name=ar.name;
+                else
+                    p->name="Unknown";
+            }
 #else
-				ar.i_ci = cast_int(L->ci - L->base_ci);
-				lua_getinfo(L,"n",&ar);
-				if ((cl->c.isC)&&(cl->c.name))
-					p->name=cl->c.name;
-				else {
-					if (ar.name)
-						p->name=ar.name;
-					else
-						p->name="Unknown";
-                }
+            ar.i_ci = cast_int(L->ci - L->base_ci);
+            lua_getinfo(L,"n",&ar);
+            if ((cl->c.isC)&&(cl->c.name))
+                p->name=cl->c.name;
+            else {
+                if (ar.name)
+                    p->name=ar.name;
+                else
+                    p->name="Unknown";
+            }
 #endif
-			}
-            ProfileInfo *cp=NULL; //Caller, if any
-			if (L->ci>L->base_ci)
-			{
-				CallInfo *ci=L->ci;
-				ci--;
-			    if(ttisfunction(ci->func))
-			    {
-			    	Closure *ccl=ci_func(ci);
-                    cp=profilerGetInfo(ccl);
-                    p->callret=cp->fid;
-			    }
-			}
-            double ltime=iclock();
-            p->entered=ltime;
-            if (cp)
-                cp->profOverHead+=ltime-enterTime;
         }
+        ProfileInfo *cp=NULL;
+        if (L->ci>L->base_ci)
+        {
+            CallInfo *ci=L->ci;
+            ci--;
+            if(ttisfunction(ci->func))
+            {
+                Closure *ccl=ci_func(ci);
+                cp=profilerGetInfo(ccl);
+            }
+            else
+                cp=checkProfilerSpontaneous(L);
+        }
+        else
+            cp=checkProfilerSpontaneous(L);
+        ProfileInfo::ProfilerStack cret;
+        cret.callret=cp->fid;
+        cret.profOverHead=0;
+        double ltime=iclock();
+        cret.entered=ltime;
+        cp->callstack[L].top().profOverHead+=(ltime-enterTime);
+        p->callstack[L].push(cret);
 	}
 	else
 	{
-        ProfileInfo *cp=NULL; //Caller, if any
-        double ptime=0;
         int rcalls=1;
 #ifndef LUA_IS_LUAU
 		if (f_isLua(L->ci)) {  /* Lua function? */
@@ -2701,32 +2734,26 @@ static void profilerHook(lua_State *L,int enter)
 		}
 #endif
 		while (p&&(rcalls--)) {
-			if (p->enterCount)
+            int scount=p->callstack[L].size();
+            if (scount)
 			{
-				double ctime=0;
-                if (!(--p->enterCount)) {
-                    //We are leaving this function completely
-                    ptime=p->profOverHead;
-                    ctime=enterTime-p->entered-ptime;
-                    p->profOverHead=0;
-                }
-                p->time+=ctime;
+                ProfileInfo::ProfilerStack &cret=p->callstack[L].top();
+                double ptime=cret.profOverHead;
+                double ctime=enterTime-cret.entered-ptime;
+                if ((ctime>0)&&(scount==1))
+                    p->time+=ctime;
+                else
+                    ctime=0;
 				p->count++;
-                ProfileInfo *np=NULL;
-                if (!(p->callret.empty()))
-                {
-                    p->cCount[p->callret]=p->cCount[p->callret]+1;
-                    p->cTime[p->callret]=p->cTime[p->callret]+ctime;
-                    np=proFuncs[p->callret];
-                    if (!cp) cp=np;
-                    if (!(p->enterCount))
-                        p->callret.clear();
-                }
-				p=np;
+                p->cCount[cret.callret]=p->cCount[cret.callret]+1;
+                p->cTime[cret.callret]=p->cTime[cret.callret]+ctime;
+                ProfileInfo *np=proFuncs[cret.callret];
+                np->callstack[L].top().profOverHead+=ptime;
+                p->callstack[L].pop();
+                p=np;
 			}
 		}
-        if (cp)
-            cp->profOverHead+=iclock()-enterTime+ptime;
+        p->callstack[L].top().profOverHead+=(iclock()-enterTime);
     }
 }
 
@@ -2749,28 +2776,30 @@ int LuaApplication::Core_profilerReport(lua_State *L)
 	for (std::map<std::string,ProfileInfo*>::iterator it=proFuncs.begin();it!=proFuncs.end();it++)
 	{
 		ProfileInfo *p=it->second;
-		lua_newtable(L);
-		lua_pushinteger(L,p->count);
-		lua_setfield(L,-2,"count");
-		lua_pushnumber(L,p->time);
-		lua_setfield(L,-2,"time");
-		lua_pushstring(L,p->name.c_str());
-		lua_setfield(L,-2,"name");
+        if (p) {
+            lua_newtable(L);
+            lua_pushinteger(L,p->count);
+            lua_setfield(L,-2,"count");
+            lua_pushnumber(L,p->time);
+            lua_setfield(L,-2,"time");
+            lua_pushstring(L,p->name.c_str());
+            lua_setfield(L,-2,"name");
 
-		lua_newtable(L);
-		for (std::map<std::string,int>::iterator it2=p->cCount.begin();it2!=p->cCount.end();it2++)
-		{
-			lua_newtable(L);
-			lua_pushinteger(L,it2->second);
-			lua_setfield(L,-2,"count");
-			lua_pushnumber(L,p->cTime[it2->first]);
-			lua_setfield(L,-2,"time");
-			lua_setfield(L,-2,it2->first.c_str());
-		}
-		lua_setfield(L,-2,"callers");
+            lua_newtable(L);
+            for (std::map<std::string,int>::iterator it2=p->cCount.begin();it2!=p->cCount.end();it2++)
+            {
+                lua_newtable(L);
+                lua_pushinteger(L,it2->second);
+                lua_setfield(L,-2,"count");
+                lua_pushnumber(L,p->cTime[it2->first]);
+                lua_setfield(L,-2,"time");
+                lua_setfield(L,-2,it2->first.c_str());
+            }
+            lua_setfield(L,-2,"callers");
 
-		lua_setfield(L,-2,it->first.c_str());
-	}
+            lua_setfield(L,-2,it->first.c_str());
+        }
+    }
 	return 1;
 }
 
@@ -2781,6 +2810,13 @@ int LuaApplication::Core_profilerReset(lua_State *L)
 	for (std::map<std::string,ProfileInfo*>::iterator it=proFuncs.begin();it!=proFuncs.end();it++)
 		delete it->second;
 	proFuncs.clear();
+    std::string fid=PROFILER_SPONTANEOUS;
+    ProfileInfo *p=(ProfileInfo *)new ProfileInfo;
+    proFuncs[fid]=p;
+    p->fid=fid;
+    p->name=PROFILER_SPONTANEOUS;
+    p->time=0;
+    p->count=1;
 	return 0;
 }
 

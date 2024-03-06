@@ -214,6 +214,8 @@ public:
         bool terminated;
     	int nargs;
         std::thread *th;
+        bool profilerYielded;
+        double profilerYieldStart;
     };
     static std::deque<AsyncLuaTask> tasks_;
     static std::mutex taskLock;
