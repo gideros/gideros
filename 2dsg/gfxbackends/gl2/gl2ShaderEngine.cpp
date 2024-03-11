@@ -691,18 +691,18 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 		if (!s_depthEnable) {
 			if (currentBuffer)
 				currentBuffer->needDepthStencil();
-			if ((!s_depthBufferCleared)||(state.dClear)) {
-	#ifdef OPENGL_ES
-				GLCALL glClearDepthf(1);
-	#endif
-				GLCALL glClear(GL_DEPTH_BUFFER_BIT);
-				s_depthBufferCleared = true;
-    			state.dClear=false;
-			}
 			s_depthEnable=true;
 			GLCALL glEnable(GL_DEPTH_TEST);
 		}
-	} else {
+        if ((!s_depthBufferCleared)||(state.dClear)) {
+#ifdef OPENGL_ES
+            GLCALL glClearDepthf(1);
+#endif
+            GLCALL glClear(GL_DEPTH_BUFFER_BIT);
+            s_depthBufferCleared = true;
+            state.dClear=false;
+        }
+    } else {
 		if (s_depthEnable)
 		{
 			GLCALL glDisable(GL_DEPTH_TEST);
@@ -761,7 +761,7 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 void ogl2ShaderEngine::clearColor(float r, float g, float b, float a) {
 	GLCALL_INIT;
 	GLCALL glClearColor(r * a, g * a, b * a, a);
-	GLCALL glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    GLCALL glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void ogl2ShaderEngine::bindTexture(int num, ShaderTexture *texture) {

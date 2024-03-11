@@ -126,8 +126,8 @@ class ogl2ShaderProgram : public ShaderProgram
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
-    static GLuint getGenericVBO(int index,int sz, const void *&ptr,int bufferingFlags);
-    static GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified,GLuint type);
+    static GLuint getGenericVBO(int index,unsigned int sz, const void *&ptr,int bufferingFlags);
+    static GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified,GLuint type,unsigned int size, const void *&ptr,int bufferingFlags);
 public:
 	static int vboFreeze, vboUnfreeze;
 	static bool supportInstances;

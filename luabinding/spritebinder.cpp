@@ -2240,7 +2240,13 @@ int SpriteBinder::setStencilOperation(lua_State* L)
             ds.dTest=lua_toboolean(L,-1);
             sm|=Sprite::STENCILMASK_DTEST;
         }
-		lua_pop(L,1);
+        lua_pop(L,1);
+        lua_getfield(L,2,"depthClear");
+        if (!lua_isnil(L,-1)) {
+            ds.dClear=lua_toboolean(L,-1);
+            sm|=Sprite::STENCILMASK_DCLEAR;
+        }
+        lua_pop(L,1);
         lua_getfield(L,2,"stencilClear");
         if (!lua_isnil(L,-1)) {
 			ds.sClear=lua_toboolean(L,-1);

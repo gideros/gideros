@@ -136,8 +136,8 @@ void GRenderTarget::drawInt(const Sprite *sprite, const Matrix transform,bool in
     if (!ShaderEngine::isReady())
         return;
 
-	SavedContext ctx;
-	prepareForDraw(ctx,inflow,capture);
+    SavedContext ctx;
+    prepareForDraw(ctx,inflow,capture);
 
     ((Sprite*)sprite)->draw(transform, 0, 0, data->width, data->height);
 
