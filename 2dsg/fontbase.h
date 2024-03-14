@@ -4,6 +4,7 @@
 #include <refptr.h>
 #include <wchar32.h>
 #include <vector>
+#include <cstdint>
 
 class Application;
 class GraphicsBase;

@@ -70,7 +70,7 @@ public:
 	}
 	const char *get(size_t o,size_t &size) {
 		size_t c=d.size();
-		if (o>c) { size=0; return NULL; }
+		if (o>=c) { size=0; return NULL; }
 		c-=o;
 		if (size>c) size=c;
 		return &d[o];

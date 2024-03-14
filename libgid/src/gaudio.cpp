@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <ctype.h>
 #include <stdio.h>
+#include <cstdint>
 
 #ifdef WINSTORE
 #include "winrt/wave.h"

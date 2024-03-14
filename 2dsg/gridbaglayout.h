@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <cstring>
+#include <cstdint>
 
 struct GridInsets {
 	float top;
