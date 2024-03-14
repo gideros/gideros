@@ -298,7 +298,7 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
     glog_i("FrameBuffer:(%d) %d,%d Real(%d,%d)",crb,width,height,fw,fh);*/
 	devWidth = width;
 	devHeight = height;
-#ifndef QT_CORE_LIB
+#if !defined(QT_CORE_LIB) && !defined(OCULUS)
 #ifdef OPENGL_ES
 #ifndef __EMSCRIPTEN__
     int depthfmt = 0;
@@ -323,19 +323,15 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 void ogl2ShaderEngine::reset(bool reinit) {
 	GLCALL_INIT;
 	if (reinit) {
-		s_texture = 0;
 		s_depthEnable = 0;
 		s_depthBufferCleared = false;
-        currentTextureUnit=-1;
-        for (size_t ti=0;ti<16;ti++)
-            currentTextures[ti]=0;
 
 		currentBuffer = NULL;
 		setFramebuffer(currentBuffer);
 		ogl2ShaderProgram::current = NULL;
 		ogl2ShaderProgram::curProg=0;
 
-#ifndef QT_CORE_LIB
+#if !defined(QT_CORE_LIB) && !defined(OCULUS)
 #ifdef OPENGL_ES
 		if (!GLCALL glIsRenderbuffer(_depthRenderBuffer))
 		{
@@ -365,15 +361,18 @@ void ogl2ShaderEngine::reset(bool reinit) {
 		GLCALL glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #endif
         ogl2ShaderProgram::resetAll();
-	}
+        GLCALL glDisable(GL_CULL_FACE);
+    }
    /* glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);*/
 
 	ShaderEngine::reset(reinit);
 	ogl2ShaderProgram::resetAllUniforms();
-	s_texture = 0;
-	s_depthEnable = 0;
-	s_depthBufferCleared = false;
+
+    // Clear texture bindings cache at every frame start, since compositing code may have screwed it up (it is the case on QT)
+    currentTextureUnit=-1;
+    for (size_t ti=0;ti<16;ti++)
+        currentTextures[ti]=0;
 
 #ifdef GIDEROS_GL1
 	GLCALL glDisableClientState(GL_VERTEX_ARRAY);
@@ -386,17 +385,14 @@ void ogl2ShaderEngine::reset(bool reinit) {
 	GLCALL glDisable(GL_TEXTURE_2D);
 #endif
 
-	GLCALL glBindTexture(GL_TEXTURE_2D, 0);
-	//GLCALL glClearColor(0.5, 0.1, 0.2, 1.f);
-	//GLCALL glClear(GL_COLOR_BUFFER_BIT);
-
 	GLCALL glEnable(GL_BLEND);
 	GLCALL glDisable(GL_SCISSOR_TEST);
-	GLCALL glDisable(GL_CULL_FACE);
-	GLCALL glDepthFunc(GL_LEQUAL);
+    GLCALL glDepthFunc(GL_LEQUAL);
 
 #ifdef GL_MULTISAMPLE
     GLCALL glEnable(GL_MULTISAMPLE);
+#elif defined(GL_MULTISAMPLE_EXT)
+    GLCALL glEnable(GL_MULTISAMPLE_EXT);
 #endif
 
 #ifndef PREMULTIPLIED_ALPHA
@@ -427,10 +423,12 @@ void ogl2SetupShaders(bool isGLES) {
 					ShaderProgram::SysConst_None, false, 0, NULL }, { "",
 					ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,
 					false, 0, NULL } };
-	const ShaderProgram::DataDesc stdAttributes[] = { { "vVertex",
-			ShaderProgram::DFLOAT, 3, 0, 0,0 }, { "vColor", ShaderProgram::DUBYTE,
-			4, 1, 0,0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0 }, { "",
-			ShaderProgram::DFLOAT, 0, 0, 0,0 } };
+    const ShaderProgram::DataDesc stdAttributes[] = {
+        { "vVertex",	ShaderProgram::DFLOAT, 3, 0, 0,0,0 },
+        { "vColor", ShaderProgram::DUBYTE,	4, 1, 0,0,0 },
+        { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0,0,0 },
+        { "",	ShaderProgram::DFLOAT, 0, 0, 0,0,0 }
+    };
     const char *hdrVShaderCode=isGLES?hdrVShaderCode_ES:hdrVShaderCode_DK;
     const char *hdrPSVShaderCode=isGLES?hdrPSVShaderCode_ES:hdrPSVShaderCode_DK;
     const char *hdrFShaderCode=isGLES?hdrFShaderCode_ES:hdrFShaderCode_DK;
@@ -490,10 +488,10 @@ void ogl2SetupShaders(bool isGLES) {
         { "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
     };
     const ShaderProgram::DataDesc stdPSAttributes[] = {
-		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0,0 },
-		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0,0 },
-        { "vTexCoord", ShaderProgram::DFLOAT, 4, 2, 0,0 },
-		{ "",ShaderProgram::DFLOAT,0,0,0,0 }
+        { "vVertex", ShaderProgram::DFLOAT, 4, 0, 0,0,0 },
+        { "vColor", ShaderProgram::DUBYTE, 4, 1, 0,0,0 },
+        { "vTexCoord", ShaderProgram::DFLOAT, 4, 2, 0,0,0 },
+        { "",ShaderProgram::DFLOAT,0,0,0,0,0 }
 	};
 
     ShaderProgram::stdParticles = new ogl2ShaderProgram(
@@ -680,88 +678,109 @@ static GLint stencilopToGl(ShaderEngine::StencilOp sf)
 
 void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 {
-	GLCALL_INIT;
-    GLCALL glDepthMask(state.dMask);
-    if (state.dClear)
-	{
-		state.dClear=false;
-		s_depthBufferCleared=false;
-	}
-	if (state.dTest) {
-		if (!s_depthEnable) {
-			if (currentBuffer)
-				currentBuffer->needDepthStencil();
-			s_depthEnable=true;
-			GLCALL glEnable(GL_DEPTH_TEST);
-		}
-        if ((!s_depthBufferCleared)||(state.dClear)) {
+	dsCurrent=state;
+}
+
+void ogl2ShaderEngine::applyDepthStencil() {
+    GLCALL_INIT;
+    if (appliedDs.dMask!=dsCurrent.dMask)
+        GLCALL glDepthMask(dsCurrent.dMask);
+    if (dsCurrent.dClear)
+    {
+        dsCurrent.dClear=false;
+        s_depthBufferCleared=false;
+    }
+    if (dsCurrent.dTest) {
+        if (!s_depthEnable) {
+            if (currentBuffer)
+                currentBuffer->needDepthStencil();
+            s_depthEnable=true;
+            GLCALL glEnable(GL_DEPTH_TEST);
+        }
+        if ((!s_depthBufferCleared)||(dsCurrent.dClear)) {
 #ifdef OPENGL_ES
             GLCALL glClearDepthf(1);
 #endif
             GLCALL glClear(GL_DEPTH_BUFFER_BIT);
             s_depthBufferCleared = true;
-            state.dClear=false;
+            dsCurrent.dClear=false;
         }
     } else {
-		if (s_depthEnable)
-		{
-			GLCALL glDisable(GL_DEPTH_TEST);
-			s_depthEnable=false;
-		}
-	}
-    if (state.sClear)
-	{
-		if (currentBuffer)
-			currentBuffer->needDepthStencil();
-        GLCALL glStencilMask(state.sWMask);
-        GLCALL glClearStencil(state.sClearValue);
+        if (s_depthEnable)
+        {
+            GLCALL glDisable(GL_DEPTH_TEST);
+            s_depthEnable=false;
+        }
+    }
+    if (dsCurrent.sClear)
+    {
+        if (currentBuffer)
+            currentBuffer->needDepthStencil();
+        GLCALL glStencilMask(dsCurrent.sWMask);
+        GLCALL glClearStencil(dsCurrent.sClearValue);
         GLCALL glClear(GL_STENCIL_BUFFER_BIT);
-		state.sClear=false;
-	}
-	GLCALL glStencilOp(stencilopToGl(state.sFail),stencilopToGl(state.dFail),stencilopToGl(state.dPass));
-	if (state.sFunc==STENCIL_DISABLE)
-		GLCALL glDisable(GL_STENCIL_TEST);
-	else
-	{
-        GLCALL glStencilMask(state.sWMask);
-        GLCALL glEnable(GL_STENCIL_TEST);
-		GLenum sf=GL_ALWAYS;
-		switch (state.sFunc)
-		{
-			case STENCIL_NEVER: sf=GL_NEVER; break;
-			case STENCIL_LESS: sf=GL_LESS; break;
-			case STENCIL_LEQUAL: sf=GL_LEQUAL; break;
-			case STENCIL_GREATER: sf=GL_GREATER; break;
-			case STENCIL_GEQUAL: sf=GL_GEQUAL; break;
-			case STENCIL_EQUAL: sf=GL_EQUAL; break;
-			case STENCIL_NOTEQUAL: sf=GL_NOTEQUAL; break;
-			case STENCIL_ALWAYS:
-			case STENCIL_DISABLE:
-				break;
-		}
-		GLCALL glStencilFunc(sf,state.sRef,state.sMask);
-	}
-	switch (state.cullMode) {
-	case CULL_FRONT:
-		GLCALL glEnable(GL_CULL_FACE);
-		GLCALL glCullFace(GL_FRONT);
-		break;
-	case CULL_BACK:
-		GLCALL glEnable(GL_CULL_FACE);
-		GLCALL glCullFace(GL_BACK);
-		break;
-	default:
-		GLCALL glDisable(GL_CULL_FACE);
-	}
-	dsCurrent=state;
+        dsCurrent.sClear=false;
+    }
+    if ((appliedDs.sFail!=dsCurrent.sFail)||(appliedDs.dFail!=dsCurrent.dFail)||(appliedDs.dPass!=dsCurrent.dPass))
+        GLCALL glStencilOp(stencilopToGl(dsCurrent.sFail),stencilopToGl(dsCurrent.dFail),stencilopToGl(dsCurrent.dPass));
+    if (dsCurrent.sFunc==STENCIL_DISABLE) {
+        if (appliedDs.sFunc!=dsCurrent.sFunc)
+            GLCALL glDisable(GL_STENCIL_TEST);
+    }
+    else
+    {
+        if (appliedDs.sWMask!=dsCurrent.sWMask)
+            GLCALL glStencilMask(dsCurrent.sWMask);
+        if ((appliedDs.sFunc!=dsCurrent.sFunc)||(appliedDs.sRef!=dsCurrent.sRef)||(appliedDs.sMask!=dsCurrent.sMask)) {
+            GLCALL glEnable(GL_STENCIL_TEST);
+            GLenum sf=GL_ALWAYS;
+            switch (dsCurrent.sFunc)
+            {
+                case STENCIL_NEVER: sf=GL_NEVER; break;
+                case STENCIL_LESS: sf=GL_LESS; break;
+                case STENCIL_LEQUAL: sf=GL_LEQUAL; break;
+                case STENCIL_GREATER: sf=GL_GREATER; break;
+                case STENCIL_GEQUAL: sf=GL_GEQUAL; break;
+                case STENCIL_EQUAL: sf=GL_EQUAL; break;
+                case STENCIL_NOTEQUAL: sf=GL_NOTEQUAL; break;
+                case STENCIL_ALWAYS:
+                case STENCIL_DISABLE:
+                    break;
+            }
+            GLCALL glStencilFunc(sf,dsCurrent.sRef,dsCurrent.sMask);
+        }
+    }
+    if (appliedDs.cullMode!=dsCurrent.cullMode) {
+        switch (dsCurrent.cullMode) {
+        case CULL_FRONT:
+            GLCALL glEnable(GL_CULL_FACE);
+            GLCALL glCullFace(GL_FRONT);
+            break;
+        case CULL_BACK:
+            GLCALL glEnable(GL_CULL_FACE);
+            GLCALL glCullFace(GL_BACK);
+            break;
+        default:
+            GLCALL glDisable(GL_CULL_FACE);
+        }
+    }
+    appliedDs=dsCurrent;
 }
 
-
+void ogl2ShaderEngine::prepareDraw(ShaderProgram *program)
+{
+    ShaderEngine::prepareDraw(program);
+    applyDepthStencil();
+}
 
 void ogl2ShaderEngine::clearColor(float r, float g, float b, float a) {
+    applyDepthStencil();
 	GLCALL_INIT;
 	GLCALL glClearColor(r * a, g * a, b * a, a);
-    GLCALL glClear(GL_COLOR_BUFFER_BIT);
+#ifdef OPENGL_ES
+    GLCALL glClearDepthf(1);
+#endif
+    GLCALL glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 }
 
 void ogl2ShaderEngine::bindTexture(int num, ShaderTexture *texture) {

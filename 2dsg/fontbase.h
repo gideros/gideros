@@ -64,8 +64,8 @@ public:
         std::string font;
         int8_t italic; //Shear angle, +/- 90°
         uint8_t underline_size;
-        /* If positive, position from up of text to bottom of text, if negative position from baseline to descender of text
-         * Useful values: 0=very bottom, 64=strikethru, -64=underline
+        /* If positive, position from baseline to ascender of text, if negative position from baseline to descender of text
+         * Useful values: 0=very bottom, 48=strikethru, -64=underline
          */
         int8_t underline_pos;
         bool operator==(const ChunkStyle &b) {

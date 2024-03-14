@@ -99,6 +99,7 @@ bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type, i
 
 void ShaderEngine::reset(bool reinit)
 {
+    G_UNUSED(reinit);
 	setColor(1,1,1,1);
     oglProjection.identity();
     oglVPProjection.identity();
@@ -108,21 +109,22 @@ void ShaderEngine::reset(bool reinit)
     oglCombined.identity();
     screenScaleX=1;
     screenScaleY=1;
-    dsCurrent.dTest=false;
-    dsCurrent.dMask=true;
-    dsCurrent.sRef=0;
-    dsCurrent.sMask=0xFF;
-    dsCurrent.sWMask=0xFF;
-    dsCurrent.sClearValue=0;
-    dsCurrent.sClear=false;
-    dsCurrent.sFail=STENCIL_KEEP;
-    dsCurrent.dFail=STENCIL_KEEP;
-    dsCurrent.dPass=STENCIL_KEEP;
-    dsCurrent.sFunc=STENCIL_DISABLE;
-    dsCurrent.cullMode=CULL_NONE;
+    DepthStencil ds;
+    ds.dTest=false;
+    ds.dMask=true;
+    ds.sRef=0;
+    ds.sMask=0xFF;
+    ds.sWMask=0xFF;
+    ds.sClearValue=0;
+    ds.sClear=false;
+    ds.sFail=STENCIL_KEEP;
+    ds.dFail=STENCIL_KEEP;
+    ds.dPass=STENCIL_KEEP;
+    ds.sFunc=STENCIL_DISABLE;
+    ds.cullMode=CULL_NONE;
     while (!dsStack.empty())
     	dsStack.pop();
-    setDepthStencil(dsCurrent);
+    setDepthStencil(ds);
 }
 
 void ShaderEngine::setViewportProjection(const Matrix4 vp, float width, float height)
@@ -153,11 +155,11 @@ void ShaderEngine::popDepthStencil()
 {
 	if (!dsStack.empty())
 	{
-		dsCurrent=dsStack.top();
+        DepthStencil ds=dsStack.top();
 		dsStack.pop();
-        dsCurrent.dClear=false;
-        dsCurrent.sClear=false;
-	    setDepthStencil(dsCurrent);
+        ds.dClear=false;
+        ds.sClear=false;
+        setDepthStencil(ds);
 	}
 }
 
@@ -371,7 +373,7 @@ void ShaderEngine::setModel(const Matrix4 m)
 void ShaderProgram::shaderInitialized()
 {
 	sysconstmask=0;
-	for (int i=0;i<uniforms.size();i++)
+    for (size_t i=0;i<uniforms.size();i++)
 		if (uniforms[i].sys)
 		{
 			int sn=uniforms[i].sys;
@@ -382,7 +384,7 @@ void ShaderProgram::shaderInitialized()
 
 int ShaderProgram::getConstantByName(const char *name)
 {
-	for (int i=0;i<uniforms.size();i++)
+    for (size_t i=0;i<uniforms.size();i++)
 		if (!(strcmp(uniforms[i].name.c_str(),name)))
 			return i;
 	return -1;

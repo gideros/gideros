@@ -327,7 +327,7 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
                 else if (!key.compare("s")) {
                     styles.styleFlags|=TEXTSTYLEFLAG_UNDERLINE;
                     styles.underline_size=strtod(val.c_str(),NULL)*255;
-                    styles.underline_pos=64;
+                    styles.underline_pos=48;
                 }
                 else if (!key.compare("!s"))
                     styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;

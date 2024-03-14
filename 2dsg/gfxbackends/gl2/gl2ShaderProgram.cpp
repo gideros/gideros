@@ -235,6 +235,7 @@ GLuint ogl2ShaderProgram::getGenericVBO(int index,unsigned int size, const void 
 }
 
 GLuint ogl2ShaderProgram::getCachedVBO(ShaderBufferCache **cache,bool &modified,GLuint type,unsigned int size, const void *&ptr,int bufferingFlags) {
+    G_UNUSED(bufferingFlags);
     GLCALL_INIT;
     if (!cache) {
         bindBuffer(type,0);
@@ -552,7 +553,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		ShaderBufferCache **cache,int stride,int offset,int bufferingFlags) {
 	GLCALL_INIT;
     useProgram();
-    if ((index<0)||(index>=glattributes.size())||(glattributes[index]<0))
+    if ((index<0)||((size_t)index>=glattributes.size())||(glattributes[index]<0))
         return;
     GLenum gltype = GL_FLOAT;
     bool normalize = false;
@@ -681,7 +682,6 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
     fshadercode=fshader1;
     if (fshader2)
         fshadercode.append(fshader2);
-    GLint ntex = 0;
     while (!uniforms->name.empty()) {
         int usz = 0, ual = 4;
         ConstantDesc cd;
@@ -840,6 +840,8 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 	case TriangleStrip:
 		mode = GL_TRIANGLE_STRIP;
 		break;
+    case RSV_EX_TriangleFan:
+        break;
 	}
 	if (instances) {
 		if (supportInstances)
@@ -883,7 +885,9 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 	case TriangleStrip:
 		mode = GL_TRIANGLE_STRIP;
 		break;
-	}
+    case RSV_EX_TriangleFan:
+        break;
+    }
 
 	GLenum dtype = GL_INT;
 	int elmSize=1;

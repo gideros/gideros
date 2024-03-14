@@ -16,7 +16,7 @@ public:
         lscalex_(0),lscaley_(0),lfontCacheVersion_(-1),textlayout_(), prefWidth_(-1), prefHeight_(-1) {}
     void cloneFrom(TextFieldBase *);
     virtual void applyGhost(Sprite *parent,GhostSprite *,bool leave=false);
-    virtual void bulkUpdate(bool enable) { };
+    virtual void bulkUpdate(bool enable) { G_UNUSED(enable); };
     virtual ~TextFieldBase() {}
 
     virtual void setFont(FontBase* font) = 0;

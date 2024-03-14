@@ -196,7 +196,6 @@ class ogl2ShaderEngine : public ShaderEngine
 {
 	ShaderBuffer *currentBuffer;
 	GLuint _depthRenderBuffer;
-	GLuint s_texture;
 	bool s_depthEnable;
 	bool s_depthBufferCleared;
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
@@ -204,6 +203,7 @@ class ogl2ShaderEngine : public ShaderEngine
 	GLint defaultFramebuffer;
     int currentTextureUnit;
     GLuint currentTextures[16];
+    DepthStencil appliedDs;
 public:
     static bool isGLES;
     static float version;
@@ -232,6 +232,8 @@ public:
 	void setDepthStencil(DepthStencil state);
 	void setVBOThreshold(int freeze,int unfreeze) { ogl2ShaderProgram::vboFreeze=freeze; ogl2ShaderProgram::vboUnfreeze=unfreeze; };
 	void getProperties(std::map<std::string,std::string> &props);
+    void prepareDraw(ShaderProgram *program);
+    void applyDepthStencil();
 };
 
 

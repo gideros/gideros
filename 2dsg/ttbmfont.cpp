@@ -1121,7 +1121,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
             if (yp<=0)
                 yp=-yp*getDescender();
             else
-                yp=-getAscender()+ls*yp;
+                yp=-yp*getAscender();
             float x0=xstart;
             float x1=x+c.sepl;
             float y0=y-yt+yp;
