@@ -220,6 +220,7 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 	local lprw = lp.rowWeights or { }
 	local focus
 	if e then
+		local expandedChanged = self.expanded[d]~=e
 		self.expanded[d]=e
 		if not cell.w then
 			local nw,nbg=self.builder(d, true)
@@ -244,13 +245,13 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 				self:updateTab(other)
 			end
 		end
-		if disabled then --keep expanded true
+		if disabled then --expanded but not visible
 			lprw[cell.row+1]=0
 			lc.minHeight=0
 			lc.prefHeight=0
 			cell.w:setVisible(false)
 			if cell.bg then cell.bg:removeFromParent() end
-			focus=true
+			focus=expandedChanged
 		else
 			local ew=if type(e)=="number" then e else 1
 			lprw[cell.row+1]=(self.expand or 0)*ew
@@ -265,7 +266,7 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 				lc.gridy+=1
 				lc.gridheight=nil
 			end
-			focus=true
+			focus=expandedChanged
 		end
 	else
 		self.expanded[d]=nil
@@ -415,7 +416,7 @@ function UI.Accordion:setData(data,builder)
 end
 
 function UI.Accordion:updateVisible(y,viewh)
-	if not self.data then return end
+	if not self.data or #self.data==0 then return end
 	y=y or self.rangey or 100000
 	viewh=viewh or self.rangeh
 	self.rangey=y
@@ -428,15 +429,19 @@ function UI.Accordion:updateVisible(y,viewh)
 	y-=lp.insetTop
 	local lcs=2*(lp.cellSpacingY or 0)
 	while ll<=lmax and ls[ll*2-1] and y>ls[ll*2-1] do y-=ls[ll*2-1]+ls[ll*2]+lcs ll+=1 end
-	local lf=ll<>2
-	while ll<=lmax and ls[ll*2-1] and viewh>0 do viewh-=ls[ll*2-1] ll+=1 end
-	lf-=1
-	ll=(ll<>(lf+1))
-	if lf>0 and ll>lf then
-		local i0=2 --Never hide first element, as it could be group background
-		local i1=lf-1
-		local i2=ll+1
-		local i3=#self.data
+	viewh+=y
+	local lf=ll
+	while ll<=lmax and ls[ll*2-1] and viewh>0 do viewh-=ls[ll*2-1]+ls[ll*2]+lcs ll+=1 end
+	ll-=1
+	--print(lf,ll,y,viewh)
+	ll=(ll<>lf)
+	if lf>0 then
+		--This only deals with headers, background and contents are not hidden
+		local i0=self:getChildIndex(self.tabs[1].h) --Get first header
+		local i1=i0+lf-2
+		local i2=i0+ll
+		local i3=i0+#self.data-1
+		--print("H:",i0,i1,i2,i3)
 		self:setHiddenChildren({
 				{i0,i1},
 				{i2,i3}

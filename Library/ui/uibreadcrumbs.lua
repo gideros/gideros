@@ -69,8 +69,8 @@ function UI.BreadCrumbs:setData(data,builder)
 	self.dataMap={} 
 	if #self.data==0 then return end
 	local sp,lc=self:buildItem(1,self.data[1],true,false)
-	sp:setLayoutConstraints(lc)
 	self:addChild(sp)
+	sp:setLayoutConstraints(lc)
 	
 	if #self.data==1 then return end
 	

@@ -483,15 +483,15 @@ function UI.Viewport:_resized()
 	self.ipanel:setClip(0,0,vpw,vph)
 	local orw,orh=self.rangew,self.rangeh
 	self.rangew,self.rangeh=math.max(0,vw-vpw),math.max(0,vh-vph) 
-	local x,y=self.cp:getPosition()
-	self:checkRange(x,y)
-	self._resizing=false
 	if orw~=self.rangew or orh~=self.rangeh then
 		UI.dispatchEvent(self,"RangeChange",self.rangew,self.rangeh)
 	end
+	local x,y=self.cp:getPosition()
+	self:checkRange(x,y)
+	self._resizing=false
 end
 
-function UI.Viewport:checkRange(x,y,fromScroll)
+function UI.Viewport:checkRange(x,y,fromScroll,event)
 	local function updateScrollBar(sname,mode,pos,range,page)
 		mode=tonumber(mode or 0)&3
 		local bar=self[sname]
@@ -505,23 +505,27 @@ function UI.Viewport:checkRange(x,y,fromScroll)
 		end
 	end
 	local rx,ry=self.cp:getPosition()
-  x=((0><x)<>-self.rangew)
-  y=((0><y)<>-self.rangeh)
-  self.cp:setPosition(x,y)
-  if not fromScroll then
-	local vpw,vph=getPortSize(self)
-	updateScrollBar("sbHoriz",self.scrollbarMode[1],-x,self.rangew,vpw)
-	updateScrollBar("sbVert",self.scrollbarMode[2],-y,self.rangeh,vph)
-  end
-  if self.content and self.content.onViewportScrolled then
-	local vpw,vph=getPortSize(self)
-	self.content:onViewportScrolled(self,-x,-y,self.rangew,self.rangeh,vpw,vph)
-  end
-  return not ((rx==x) and (ry==y))
+	x=((0><x)<>-self.rangew)
+	y=((0><y)<>-self.rangeh)
+	self.cp:setPosition(x,y)
+	if not fromScroll then
+		local vpw,vph=getPortSize(self)
+		updateScrollBar("sbHoriz",self.scrollbarMode[1],-x,self.rangew,vpw)
+		updateScrollBar("sbVert",self.scrollbarMode[2],-y,self.rangeh,vph)
+	end
+	if self.content and self.content.onViewportScrolled then
+		local vpw,vph=getPortSize(self)
+		self.content:onViewportScrolled(self,-x,-y,self.rangew,self.rangeh,vpw,vph)
+	end
+	local changed=not ((rx==x) and (ry==y))
+	if event and changed then
+		UI.dispatchEvent(self,"ViewChange",x,y,changed)
+	end
+	return changed
 end
 
 function UI.Viewport:setScrollPosition(x,y)
-  return self:checkRange(-x,-y)
+	return self:checkRange(-x,-y)
 end
 
 function UI.Viewport:setScrollAmount(x,y)
@@ -543,10 +547,11 @@ end
 
 function UI.Viewport:onMouseWheel(x,y,wheel,distance)
   if self.panMode==UI.Viewport.PANMODE.NONE then return end
+  if (self.rangeh or 0)==0 then return end --Not scrollable
   
   self._dragStart={mx=x-self.cp:getX(),my=y-self.cp:getY()}
   local tx,ty=self.cp:getPosition()
-  self:checkRange(tx,ty)
+  self:checkRange(tx,ty,false,true)
   self:onDrag(x,y+distance)
   self:onDragEnd()
   return true
@@ -558,16 +563,17 @@ function UI.Viewport:onDragStart(x,y,ed,ea,change,long)
   if self.panMode==UI.Viewport.PANMODE.AUTO then
 	  if UI.Control.isDesktopGesture() then return end
   end
+  if (self.rangeh or 0)==0 and (self.rangew or 0)==0 then return end --Not scrollable
   self._dragStart={mx=x-self.cp:getX(),my=y-self.cp:getY()}
   local tx,ty=self.cp:getPosition()
-  self:checkRange(tx,ty)
+  self:checkRange(tx,ty,false,true)
   return true,1 --1 is inertia amount
 end
 
 function UI.Viewport:onDrag(x,y)
-  if self and self._dragStart and self._dragStart.mx and self._dragStart.my then
+  if self._dragStart and self._dragStart.mx and self._dragStart.my then
 	local inertia
-	if self:checkRange(x-self._dragStart.mx,y-self._dragStart.my) then
+	if self:checkRange(x-self._dragStart.mx,y-self._dragStart.my,false,true) then
 		inertia=1
 	end
     return nil,inertia
@@ -577,7 +583,7 @@ end
 function UI.Viewport:onDragEnd(x,y)
   self._dragStart=nil
   local tx,ty=self.cp:getPosition()
-  self:checkRange(tx,ty)
+  self:checkRange(tx,ty,false,true)
 end
 
 function UI.Viewport:onFocusArea(src,x,y,w,h,ax,ay)
@@ -595,6 +601,9 @@ function UI.Viewport:onFocusArea(src,x,y,w,h,ax,ay)
 	y=(y-vph)<>0
 	yb=(yb-vph)<>0
     local xa,ya=x<>xb,y<>yb
+	if self.content.uiAdjustScrollArea then
+		xi,yi,xa,ya=self.content:uiAdjustScrollArea(xi,yi,xa,ya)
+	end
 	--Adjust
 	local function adjust(cp,mi,ma,a)
 		if ma>mi then 

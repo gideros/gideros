@@ -53,6 +53,10 @@ function UI.Spinner:setRange(range)
 	self:setValue(self.value or 0)
 end
 
+function UI.Spinner:getRange()
+	return self.range
+end
+
 function UI.Spinner:setValue(val)
 	local looped
 	if self.range.Looping then
@@ -128,6 +132,6 @@ UI.Spinner.Definition= {
 	constructorArgs={ "Range" },
 	properties={
 		{ name="Value", type="number", setter=UI.Spinner.setValue, getter=UI.Spinner.getValue },
-		{ name="Range", type="SpinnerRange", setter=UI.Spinner.setRange },
+		{ name="Range", type="SpinnerRange", setter=UI.Spinner.setRange, getter=UI.Spinner.getRange },
 	},
 }

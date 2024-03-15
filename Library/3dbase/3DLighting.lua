@@ -46,6 +46,7 @@ local LightingShaderConstants={
 {name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="n"},
 {name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false,code="s"},
 {name="g_ColorMap",type=Shader.CTEXTURE,mult=1,vertex=true,code="v"},
+{name="g_OcclusionMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="o"},
 {name="bones",type=Shader.CMATRIX,mult=64,vertex=true,code="a"},
 {name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
 }
@@ -61,6 +62,7 @@ local LightingShaderVarying={
 {name="texCoord",type=Shader.CFLOAT2,code="t"},
 {name="normalCoord",type=Shader.CFLOAT3},
 {name="lightSpace",type=Shader.CFLOAT4,code="s"},
+{name="occlusionSpace",type=Shader.CFLOAT4,code="o"},
 {name="vcolor",type=Shader.CFLOAT4,code="c"},
 {name="vcolor",type=Shader.CFLOAT4,code="v"},
 }
@@ -87,6 +89,8 @@ function Lighting.getShader(code)
 		{"i","INSTANCED",true},
 		{"a","ANIMATED",true},
 		{"v","VOXEL",true},
+		{"o","OCCLUSION",true},
+		{"d","DEPTHMASK",true},
 	}
 	local lcode,ccode,acode="","",""
 	local lconst={}
@@ -209,6 +213,18 @@ function Lighting.setSpriteMode(sprite,mode)
 	end
 end
 
+function Lighting.setOcclusionMap(sprite,map)
+	local sc=sprite._lighting_Mode
+	local sh=sprite.shader
+	if sc and sh then
+		if sc:find("o") then
+			if sh.textureIndex.g_OcclusionMap then
+				sprite:setTexture(map,sh.textureIndex.g_OcclusionMap)
+			end
+		end
+	end
+end
+
 Lighting.shadowrt=nil
 function Lighting.getShadowMap(swap)
 	if not Lighting.shadowrt then
@@ -233,28 +249,32 @@ function Lighting.getShadowMap(swap)
 	return Lighting.shadowrt
 end
 
-function Lighting.computeShadows(scene)
-	local p=Lighting.lightProj or Matrix.new()
-	Lighting.lightProj=p
-	local lz=Lighting.lightTarget[4]
-	p:perspectiveProjection(Lighting.lightTarget[5],1,lz/16,lz)
-	local srt=Lighting.getShadowMap(true)
-	local view=Lighting.shadowview
-	view:setContent(scene)
-	view:setProjection(p)
-	view:lookAt(
-		Lighting.light[1],Lighting.light[2],Lighting.light[3],
-		Lighting.lightTarget[1],Lighting.lightTarget[2],Lighting.lightTarget[3],
-		0,1,0)
-	p:multiply(view:getTransform())
-	for k,v in pairs(Lighting._shaders) do
-		v:setConstant("g_LMatrix",Shader.CMATRIX,1,p:getMatrix())
-	end
-	srt:clear(0,0)
-	srt:draw(view)
-	for _,v in pairs(Lighting._shadowed) do
-		if v.shader.textureIndex.g_ShadowMap then
-			v:setTexture(srt,v.shader.textureIndex.g_ShadowMap)
+function Lighting.computeShadows(scene,en)
+	en=en or true
+	if not en then
+	else
+		local p=Lighting.lightProj or Matrix.new()
+		Lighting.lightProj=p
+		local lz=Lighting.lightTarget[4]
+		p:perspectiveProjection(Lighting.lightTarget[5],1,lz/16,lz)
+		local srt=Lighting.getShadowMap(true)
+		local view=Lighting.shadowview
+		view:setContent(scene)
+		view:setProjection(p)
+		view:lookAt(
+			Lighting.light[1],Lighting.light[2],Lighting.light[3],
+			Lighting.lightTarget[1],Lighting.lightTarget[2],Lighting.lightTarget[3],
+			0,1,0)
+		p:multiply(view:getTransform())
+		for k,v in pairs(Lighting._shaders) do
+			v:setConstant("g_LMatrix",Shader.CMATRIX,1,p:getMatrix())
+		end
+		srt:clear(0,0)
+		srt:draw(view)
+		for _,v in pairs(Lighting._shadowed) do
+			if v.shader.textureIndex.g_ShadowMap then
+				v:setTexture(srt,v.shader.textureIndex.g_ShadowMap)
+			end
 		end
 	end
 	--stage:addChild(Bitmap.new(srt))

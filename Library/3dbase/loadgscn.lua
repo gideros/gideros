@@ -192,6 +192,5 @@ function LoadGScene(libpath,file,world)
 	loadGroup(project.scene,scene)
 	return scene
 end
-
 D3=D3 or {}
 D3.GScene=GScene

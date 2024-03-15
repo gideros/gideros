@@ -88,6 +88,12 @@ function UI.TabbedPane:setCurrent(index,event)
 	end
 end
 
+function UI.TabbedPane:setTabStyle(d,style)
+	local cell=self.datacells[d]
+	if cell then
+		cell.ch:setBaseStyle(style)
+	end
+end
 
 function UI.TabbedPane:setData(data,builder)
 	--Same builder: check for data to keep
@@ -155,7 +161,7 @@ function UI.TabbedPane:onMouseClick(x,y)
             if cell.h and cell.h.getFlags then disabled = cell.h:getFlags().disabled end
             if not disabled then
 				self:setCurrent(cell.tabIndex,"onMouseClick")
-                UI.dispatchEvent(self,"WidgetChanged",cell.d,cell.tabIndex)
+                UI.dispatchEvent(self,"WidgetChange",cell.d,cell.tabIndex)
                 return true --stopPropagation !
             end
         end

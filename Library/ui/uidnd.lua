@@ -154,8 +154,9 @@ local grayScaleShader
 function UI.Dnd.MakeMarker(widget)
 	local mw,mh=widget:getSize()
 	local mx,my=widget:getPosition()
-	local rt=RenderTarget.new(mw,mh,true,{mipmap=true})
+	local rt=RenderTarget.new(mw,mh,true,if RenderTarget.generateMipmap then {mipmap=true} else nil)
 	rt:draw(widget,-mx,-my)
+	if rt.generateMipmap then rt:generateMipmap() end
 	
 	local marker = UI.Builder({
 		class="UI.Panel",

@@ -99,14 +99,14 @@ function UI.Shader.MultiLayer:init(params)
 		vertexShader,
 		function () : Shader
 			local t=texture2D(fTexture, fTexCoord)
-			local frag=colLayer1*t.r*colLayer1.a
-			local f2=colLayer2*t.g*colLayer2.a
+			local frag=lF4(lF3(colLayer1.rgb),1)*t.r*colLayer1.a
+			local f2=lF4(lF3(colLayer2.rgb),1)*t.g*colLayer2.a
 			frag=frag*(1-f2.a)+f2
-			f2=colLayer3*t.b*colLayer3.a
+			f2=lF4(lF3(colLayer3.rgb),1)*t.b*colLayer3.a
 			frag=frag*(1-f2.a)+f2
-			f2=colLayer4*t.a*colLayer4.a
+			f2=lF4(lF3(colLayer4.rgb),1)*t.a*colLayer4.a
 			frag=frag*(1-f2.a)+f2
-			frag*=fColor
+			frag*=lF4(fColor)
 			if (frag.a==0.0) then discard() end
 			return lF4(frag)
 		end,
@@ -352,16 +352,16 @@ function UI.Shader.MeshLineMultiLayer:init(params)
 				tc.y=((tc.y-vb.s)*((1-tb.t-tb.s)/(1-vb.t-vb.s)))+tb.s
 			end
 			local t=texture2D(fTexture, tc.xy)
-			local frag=colLayer1*t.r
-			frag=frag*frag.a
-			local f2=colLayer2*t.g
-			frag=frag*(1-f2.a)+f2*f2.a
-			f2=(if (fTexCoord.x>=fRatio.y or fTexCoord.x<fRatio.x) then colLayer3a else colLayer3)*t.b
+			local frag=lF4(lF3(colLayer1.rgb),1)*t.r*colLayer1.a
+			local f2=lF4(lF3(colLayer2.rgb),1)*t.g*colLayer2.a
+			frag=frag*(1-f2.a)+f2
+			local c3=lF4(if (fTexCoord.x>=fRatio.y or fTexCoord.x<fRatio.x) then colLayer3a else colLayer3)			
+			f2=lF4(c3.rgb,1)*t.b*c3.a
 			
-			frag=frag*(1-f2.a)+f2*f2.a
-			f2=colLayer4*t.a
-			frag=frag*(1-f2.a)+f2*f2.a
-			frag*=fColor
+			frag=frag*(1-f2.a)+f2
+			f2=lF4(lF3(colLayer4.rgb),1)*t.a*colLayer4.a
+			frag=frag*(1-f2.a)+f2
+			frag*=lF4(fColor)
 			return lF4(frag)
 		end,
 		{
@@ -401,16 +401,16 @@ function UI.Shader.ProgressMultiLayer:init(params)
 		end,
 		function () : Shader
 			local t=texture2D(fTexture, fTexCoord.xy)
-			local frag=colLayer1*t.r
-			frag=frag*frag.a
-			local f2=colLayer2*t.g
+			local frag=lF4(lF3(colLayer1.rgb),1)*t.r*colLayer1.a
+			local f2=lF3(colLayer2.rgb,1)*t.g*colLayer2.a
 			frag=frag*(1-f2.a)+f2
-			f2=(if fXPos<fRatio.x or fXPos>fRatio.y then colLayer3a else colLayer3)*t.b
+			local c3=lF4(if fXPos<fRatio.x or fXPos>fRatio.y then colLayer3a else colLayer3)
+			f2=lF4(c3.rgb,1)*t.b*c3.a
 			
 			frag=frag*(1-f2.a)+f2			
-			f2=colLayer4*t.a
+			f2=lF3(colLayer4.rgb,1)*t.a*colLayer4.a
 			frag=frag*(1-f2.a)+f2
-			frag*=fColor
+			frag*=lF4(fColor)
 			return lF4(frag)
 		end,
 		{

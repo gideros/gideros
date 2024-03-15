@@ -85,3 +85,25 @@ function UI.Border.NinePatch:apply(c)
 	local tx=c:resolveStyle(self.params.texture)
 	c:setTexture(tx)
 end
+
+UI.Border.Tiled=Core.class()
+function UI.Border.Tiled:init(params)
+	self.params=params or {}
+	self.params.insets=self.params.insets or 0
+	assert(self.params.texture,"Tiled border needs texture param")
+	self.insets=self.params.insets
+end
+
+function UI.Border.Tiled:remove(c)
+	c:setNinePatch(0)
+	c:setTexture(nil)
+	c:setTextureScale(1,1)
+end
+
+function UI.Border.Tiled:apply(c)
+	c:setNinePatch()
+	local tx=c:resolveStyle(self.params.texture)
+	c:setTexture(tx)
+	local scale=if self.params.scale then c:resolveStyle(self.params.scale) else 1	
+	c:setTextureScale(scale/tx:getWidth(),scale/tx:getHeight())
+end

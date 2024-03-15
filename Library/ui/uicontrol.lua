@@ -179,7 +179,7 @@ local function idispatch(ctx,event,cps,x,y,...)
 				else
 					if spriteStack[v] then
 						if debugClick then print("uicontrol","idispatch","name",v.name,"parents",spriteStack[v],"hitTestPoint",v.hitTestPoint and v:hitTestPoint(x,y,true,ctx.surface)) end
-						table.insert(t,{handler=h, target=v, _parents=spriteStack[v] or 0})
+						table.insert(t,{handler=h, target=v, _parents=(spriteStack[v] or 0)-(if h then 0.1 else 0)})
 					end
 				end
 			elseif v and v.global then
@@ -318,7 +318,7 @@ local function dispatchS(ctx,event,x,y,...)
 end
 
 local function fetchAllTouches(ts)
-	local ex,ey,dist,angle,ec,eb,em,et = -1,-1,0,0,0,0,0,nil
+	local ex,ey,dist,angle,ec,eb,em,et = -1,-1,0,0,0,nil,nil,nil
 	if ts then
 		local tmini,tmaxi = nil,nil
 		local idmi,idma = 1000,0
@@ -348,8 +348,8 @@ local function fetchAllTouches(ts)
 			angle=^>math.atan2(tmaxi.y-tmini.y,tmaxi.x-tmini.x)
 		end
 	end
-	UI.Control.Meta.mouseButton=eb
-	UI.Control.Meta.modifiers=em
+	UI.Control.Meta.mouseButton=eb or 0
+	UI.Control.Meta.modifiers=em or 0
 	UI.Control.Meta.deviceType=et
 	return ex,ey,dist,angle,ec
 end

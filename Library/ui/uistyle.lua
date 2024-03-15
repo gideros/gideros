@@ -777,6 +777,7 @@ UI.Style.progress={
 		},		
 	},
 	styBarText={
+		colWidgetBack=colNone,
 	},
 	styNormal={
 	},
@@ -926,7 +927,7 @@ UI.Style.splitpane={
 	colKnob="colHeader",
 	colKnobHandle="colHighlight",
 	colKnobSymbol="colUI",
-	colKnobShadow="colDisabled",
+	colKnobShadow="colShadow",
 	styKnobH={
 		brdWidget="splitpane.brdKnobH",
 		colWidgetBack="splitpane.colKnob" 
@@ -956,7 +957,7 @@ UI.Style.splitpane={
 }
 UI.Style.tabbedpane={
 	szInset=0,
-	szCorner=".3s",
+	szCorner=".5s",
 	szPaneCorner=".3s",
 	szPaneCornerTop=0,
 	colBackground="colBackground",
