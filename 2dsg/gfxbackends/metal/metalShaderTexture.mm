@@ -66,7 +66,7 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
 	MTLTextureDescriptor * md=[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:(MTLPixelFormat)glformat 
 	                                                       width:(NSUInteger)width 
 	                                                      height:(NSUInteger)height 
-	                                                   mipmapped:(BOOL)NO];
+	                                                   mipmapped:(BOOL)(filtering==FILT_LINEAR_MIPMAP)];
     if (forRT)
         md.usage=MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead;
     if (format==FMT_DEPTH) {
@@ -79,6 +79,8 @@ metalShaderTexture::metalShaderTexture(ShaderTexture::Format format,ShaderTextur
          mipmapLevel:0 
            withBytes:data 
          bytesPerRow:bpr*width];
+        if (filtering==FILT_LINEAR_MIPMAP)
+        	generateMipmap();
     }
 }
 
@@ -123,7 +125,7 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
 		MTLTextureDescriptor * md=[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:(MTLPixelFormat)glformat 
 		                                                       width:(NSUInteger)width 
 		                                                      height:(NSUInteger)height 
-		                                                   mipmapped:(BOOL)NO];
+		                                                   mipmapped:(BOOL)(filtering==FILT_LINEAR_MIPMAP)];
         md.usage=[mtex usage];
 	    if (format==FMT_DEPTH) {
 	        md.storageMode=MTLStorageModePrivate; //Depth can only be private as per spec
@@ -143,7 +145,17 @@ void metalShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::
          mipmapLevel:0 
            withBytes:data 
          bytesPerRow:bpr*width];
-    }
+    	
+        if (filtering==FILT_LINEAR_MIPMAP)
+        	generateMipmap();
+    }    
+}
+
+void metalShaderTexture::generateMipmap()
+{
+	id <MTLBlitCommandEncoder> encoder = ((metalShaderEngine *)ShaderEngine::Engine)->blitEncoder();
+	[encoder generateMipmapsForTexture: mtex];
+	[encoder endEncoding];
 }
 
 void metalShaderTexture::readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)

@@ -13,6 +13,7 @@ private:
 
     static int clear(lua_State *L);
     static int draw(lua_State *L);
+    static int generateMipmap(lua_State *L);
     static int getPixel(lua_State *L);
     static int getPixels(lua_State *L);
     static int save(lua_State *L);

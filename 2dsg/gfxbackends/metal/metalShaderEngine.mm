@@ -182,6 +182,9 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     }
     Features.hasDepthCompare=hasDepthCompare;
     MTLSamplerDescriptor *sd=[MTLSamplerDescriptor new];
+    
+    sd.mipFilter=MTLSamplerMipFilterNearest;
+
     sd.minFilter=MTLSamplerMinMagFilterNearest;
     sd.magFilter=MTLSamplerMinMagFilterNearest;
     tsNC=[metalDevice newSamplerStateWithDescriptor:sd];
@@ -199,6 +202,7 @@ metalShaderEngine::metalShaderEngine(int sw, int sh) {
     sd.minFilter=MTLSamplerMinMagFilterNearest;
     sd.magFilter=MTLSamplerMinMagFilterNearest;
     tsNR=[metalDevice newSamplerStateWithDescriptor:sd];
+        
     [sd release];
  
     metalSetupShaders();
@@ -345,6 +349,13 @@ void metalShaderEngine::closeEncoder() {
         [mrce release];
         mrce=nil;
     }
+}
+
+id<MTLBlitCommandEncoder> metalShaderEngine::blitEncoder()
+{
+    if (mrce!=nil)
+    	closeEncoder();
+    return [mcb blitCommandEncoder];
 }
 
 #define IDXBUFSIZE  65536

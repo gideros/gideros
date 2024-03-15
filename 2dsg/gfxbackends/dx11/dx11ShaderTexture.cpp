@@ -144,6 +144,11 @@ void dx11ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     	g_devcon->GenerateMips(rsv);
 }
 
+void dx11ShaderTexture::generateMipmap()
+{
+	g_devcon->GenerateMips(rsv);
+}
+
 dx11ShaderTexture::~dx11ShaderTexture()
 {
 	rsv->Release();

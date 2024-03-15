@@ -151,6 +151,13 @@ void GRenderTarget::draw(const Sprite *sprite, const Matrix transform,bool inflo
     });
 }
 
+void GRenderTarget::generateMipmap() {
+	if (data->parameters.filter==eLinearMipmap)
+		RENDER_DO([&]{
+			data->id()->generateMipmap();
+		});
+}
+
 void GRenderTarget::getPixels(int x,int y,int w,int h,void *buffer)
 {
 	if (!ShaderEngine::isReady())

@@ -174,6 +174,18 @@ void ogl2ShaderTexture::updateData(ShaderTexture::Format format,ShaderTexture::P
     GLCALL glBindTexture(GL_TEXTURE_2D, oldTex);
 }
 
+void ogl2ShaderTexture::generateMipmap()
+{
+    GLint oldTex = 0;
+	GLCALL_INIT;
+    GLCALL glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
+
+    GLCALL glBindTexture(GL_TEXTURE_2D, glid);
+    GLCALL glGenerateMipmap(GL_TEXTURE_2D);
+
+    GLCALL glBindTexture(GL_TEXTURE_2D, oldTex);
+}
+
 void ogl2ShaderTexture::setNative(void *externalTexture)
 {
 	GLCALL_INIT;

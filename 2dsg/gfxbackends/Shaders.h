@@ -117,6 +117,7 @@ class ShaderTexture
 public:
 	virtual ~ShaderTexture() { };
 	virtual void setNative(void *externalTexture) { G_UNUSED(externalTexture); };
+	virtual void generateMipmap() { };
 	virtual void *getNative() { return NULL; };
 	enum Format {
 		FMT_ALPHA,

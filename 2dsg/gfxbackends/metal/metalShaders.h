@@ -76,6 +76,7 @@ protected:
 public:
 	metalShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering,bool forRT);
 	void updateData(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
+	void generateMipmap();
     void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data);
 	void setNative(void *externalTexture);
 	void *getNative();
@@ -122,6 +123,7 @@ public:
     static BlendFactor curSFactor;
     static BlendFactor curDFactor;
     id<MTLRenderCommandEncoder> encoder();
+    id<MTLBlitCommandEncoder> blitEncoder();
     MTLRenderPassDescriptor *pass();
     void closeEncoder();
     void present(id<MTLDrawable> drawable);

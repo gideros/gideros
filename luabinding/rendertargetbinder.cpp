@@ -12,6 +12,7 @@ RenderTargetBinder::RenderTargetBinder(lua_State *L)
     static const luaL_Reg functionList[] = {
         {"clear", clear},
         {"draw", draw},
+		{"generateMipmap", generateMipmap},
 		{"getPixel", getPixel},
 		{"getPixels", getPixels},
 		{"save", save},
@@ -127,6 +128,15 @@ int RenderTargetBinder::draw(lua_State *L)
     renderTarget->draw(sprite,xform);
 
     return 0;
+}
+
+int RenderTargetBinder::generateMipmap(lua_State *L)
+{
+    Binder binder(L);
+
+    GRenderTarget *renderTarget = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 1));
+	renderTarget->generateMipmap();
+	return 0;
 }
 
 int RenderTargetBinder::getPixels(lua_State *L)

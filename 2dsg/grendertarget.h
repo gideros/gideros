@@ -26,6 +26,7 @@ public:
 
     void clear(unsigned int color, float a, int x, int y, int w, int h,bool inflow=false,bool capture=false);
     void draw(const Sprite *sprite, const Matrix4 transform,bool inflow=false,bool capture=false);
+    void generateMipmap();
     void getPixels(int x,int y,int w,int h,void *buffer);
     void resize(int width, int height, float scaleX, float scaleY);
     int save(const char *filename,int x,int y,int w,int h);
