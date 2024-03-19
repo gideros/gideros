@@ -41,6 +41,7 @@ function Mesh3D:setInstanceCount(n)
 	if n==0 then self:updateMode(0,Mesh3D.MODE_INSTANCED)
 	else self:updateMode(Mesh3D.MODE_INSTANCED,0)
 	end
+	self:updateInstances()
 	Mesh.setInstanceCount(self,n)
 end
 
