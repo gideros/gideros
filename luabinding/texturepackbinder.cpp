@@ -51,6 +51,8 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         bool maketransparent = false;
         unsigned int transparentcolor = 0x00000000;
         Format format = eRGBA8888;
+        bool mipmap = false;
+        bool rawalpha=false;
         if (!lua_isnoneornil(L, argn+3))
         {
             if (lua_type(L, argn+3) != LUA_TTABLE)
@@ -91,6 +93,14 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 }
             }
             lua_pop(L, 1);
+            lua_getfield(L, argn+3, "rawalpha");
+            if (!lua_isnil(L, -1))
+              rawalpha=lua_toboolean(L,-1);
+            lua_pop(L, 1);
+            lua_getfield(L, argn+3, "mipmap");
+            if (!lua_isnil(L, -1))
+              mipmap=lua_toboolean(L,-1);
+            lua_pop(L, 1);
         }
 
 
@@ -102,11 +112,12 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
 
         Binder binder(L);
         TextureParameters parameters;
-        parameters.filter=smoothing ? eLinear : eNearest;
+        parameters.filter = smoothing ? (mipmap? eLinearMipmap:eLinear) : eNearest;
         parameters.wrap=eClamp;
         parameters.format=format;
         parameters.maketransparent=maketransparent;
         parameters.transparentcolor=transparentcolor;
+        parameters.rawalpha = rawalpha;
         if (async) {
             lua_State *LL=luaapplication->getLuaState();
             lua_pushvalue(L,1);
@@ -163,6 +174,8 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
         bool maketransparent = false;
         unsigned int transparentcolor = 0x00000000;
         Format format = eRGBA8888;
+        bool mipmap = false;
+        bool rawalpha=false;
         if (!lua_isnoneornil(L, argn+3))
         {
             if (lua_type(L, argn+3) != LUA_TTABLE)
@@ -203,15 +216,24 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
                 }
             }
             lua_pop(L, 1);
+            lua_getfield(L, argn+3, "rawalpha");
+            if (!lua_isnil(L, -1))
+              rawalpha=lua_toboolean(L,-1);
+            lua_pop(L, 1);
+            lua_getfield(L, argn+3, "mipmap");
+            if (!lua_isnil(L, -1))
+              mipmap=lua_toboolean(L,-1);
+            lua_pop(L, 1);
         }
 
         Binder binder(L);
         TextureParameters parameters;
-        parameters.filter=smoothing ? eLinear : eNearest;
+        parameters.filter = smoothing ? (mipmap? eLinearMipmap:eLinear) : eNearest;
         parameters.wrap=eClamp;
         parameters.format=format;
         parameters.maketransparent=maketransparent;
         parameters.transparentcolor=transparentcolor;
+        parameters.rawalpha = rawalpha;
 
         if (async) {
             lua_State *LL=luaapplication->getLuaState();
