@@ -154,10 +154,20 @@ void metalShaderProgram::activate() {
         uniformFmodified=true;
     }
     //Update uniforms
-    if (uniformVmodified)
-        [encoder() setVertexBytes:cbData length:cbsData atIndex:0];
-    if (uniformFmodified)
-        [encoder() setFragmentBytes:cbData length:cbsData atIndex:0];
+    if ((cbsData>4096)&&(uniformVmodified||uniformFmodified)) {
+        //uniforms are too large, allocate them on running buffer pool
+        int bufOffset=0;
+        id<MTLBuffer> vbo=((metalShaderEngine *)ShaderEngine::Engine)->getIndexBuffer(cbsData,&bufOffset);
+        memcpy(((char *)[vbo contents])+bufOffset,cbData,cbsData);
+        [encoder() setVertexBuffer:vbo offset:bufOffset atIndex:0];
+        [encoder() setFragmentBuffer:vbo offset:bufOffset atIndex:0];
+    }
+    else {
+        if (uniformVmodified)
+            [encoder() setVertexBytes:cbData length:cbsData atIndex:0];
+        if (uniformFmodified)
+            [encoder() setFragmentBytes:cbData length:cbsData atIndex:0];
+    }
     uniformVmodified=false;
     uniformFmodified=false;
 }
