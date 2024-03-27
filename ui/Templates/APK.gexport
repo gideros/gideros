@@ -148,6 +148,9 @@ local ap=require("Tools/export_android")
 			<set key="local.showSplash" value="false"/>
 			<set key="local.splashTheme" value="@style/Theme"/>
 		</if>
+		<if condition="[[[export.forOculus]]]">
+			<set key="local.orientation" value="landscape"/>
+		</if>		
 		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/AndroidStudio/Android Template">
 			<replacelist wildcards="*.xml;*.java;*.gradle">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
@@ -180,7 +183,7 @@ local ap=require("Tools/export_android")
 		    	local ap=require("Tools/export_android")
 		    	ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE")
 		    </lua>
-		</if>		
+		</if>
 		<if condition="[[[export.forOculus]]]">
 	    	<template name="$MANIFEST$" path="">
 		        <replacelist wildcards="GiderosSettings.java">
@@ -219,6 +222,8 @@ local ap=require("Tools/export_android")
 		    	if Export.isSet("export.oculusPT") or Export.isSet("export.oculusPTR") then
 			    	ap.useFeature("com.oculus.feature.PASSTHROUGH",Export.isSet("export.oculusPTR"))
 			   end
+			    ap.usePermission("com.oculus.permission.USE_ANCHOR_API")
+			    ap.usePermission("com.oculus.permission.USE_SCENE")
 		    </lua>
 	    </if>
 		
