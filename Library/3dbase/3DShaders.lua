@@ -47,6 +47,9 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 	if OPT_SHADOWS then
 		lightSpace = g_LMatrix*hF4(position,1.0);
 	end
+	if OPT_OCCLUSION then
+		occlusionSpace = g_MVPMatrix * pos;
+	end
 	if OPT_COLORED then
 		vcolor=COLOR
 	end
@@ -87,7 +90,7 @@ function D3._FLUA_Shader() : Shader
 		return ret
 	end
 	function ShadowCalculation(fragPosLightSpace,fragCoord)
-		local shadow=0.0
+		local shadow=0.0		
 		if OPT_SHADOWS then
 			--// perform perspective divide
 			local projCoords = fragPosLightSpace / fragPosLightSpace.w;
@@ -145,40 +148,50 @@ function D3._FLUA_Shader() : Shader
 		end
 		return shadow
 	end
-	local color0 = lF4(g_Color)
-	if OPT_COLORED then
-		color0=color0*vcolor
-	end
-	if OPT_VOXEL then
-		color0=color0*vcolor
-	end
-	if OPT_TEXTURED then
-		color0 = color0*texture2D(g_Texture,texCoord)
-	end
-	local color1 = lF3(0.5, 0.5, 0.5)
-	local normal = normalize(normalCoord)
+	if not OPT_DEPTHMASK then
+		if OPT_OCCLUSION then
+			local sp=occlusionSpace/occlusionSpace.w
+			sp=sp*0.5+0.5
+			local odepth=texture2D(g_OcclusionMap,sp.xy).r
+			if odepth<sp.z then discard() end
+		end
+		local color0 = lF4(g_Color)
+		if OPT_COLORED then
+			color0=color0*vcolor
+		end
+		if OPT_VOXEL then
+			color0=color0*vcolor
+		end
+		if OPT_TEXTURED then
+			color0 = color0*texture2D(g_Texture,texCoord)
+		end
+		local color1 = lF3(0.5, 0.5, 0.5)
+		local normal = normalize(normalCoord)
 
-	local lightDir = normalize(lightPos.xyz - position.xyz)
-	local viewDir = normalize(cameraPos.xyz-position.xyz)
-	if OPT_NORMMAP then
-		normal=perturb_normal(normal, viewDir, texCoord)
-	end
+		local lightDir = normalize(lightPos.xyz - position.xyz)
+		local viewDir = normalize(cameraPos.xyz-position.xyz)
+		if OPT_NORMMAP then
+			normal=perturb_normal(normal, viewDir, texCoord)
+		end
 
-	local diff = max(0.0, dot(normal, lightDir))
-	local spec =0.0
-    -- calculate shadow
-	local shadow=1.0
-	if OPT_SHADOWS then
-		shadow = ShadowCalculation(lightSpace,FragCoord)
-	end
-	if (diff>0.0) then
-		local nh = max(0.0, dot(reflect(-lightDir,normal),viewDir))
-		spec = pow(nh, 32.0)*shadow
-	end
+		local diff = max(0.0, dot(normal, lightDir))
+		local spec =0.0
+		-- calculate shadow
+		local shadow=1.0
+		if OPT_SHADOWS then
+			shadow = ShadowCalculation(lightSpace,FragCoord)
+		end
+		if (diff>0.0) then
+			local nh = max(0.0, dot(reflect(-lightDir,normal),viewDir))
+			spec = pow(nh, 32.0)*shadow
+		end
 
-	diff=max(diff*shadow,ambient);
-	local frag = lF4(color0.rgb * diff + color1 * spec, color0.a)
-	return frag
+		diff=max(diff*shadow,ambient);
+		local frag = lF4(color0.rgb * diff + color1 * spec, color0.a)
+		return frag
+	else
+		return lF4(g_Color)
+	end
 end
 	
 D3._FLUA_Shader_FDEF={

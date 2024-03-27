@@ -10,7 +10,8 @@ string (field name) or
 	setData() accepts a field builder and a rowBuilder (both optional)
 	if builder is present:
 	- it is called with data, column description, and ghost capability as arguments
-	- it returns actual data, a Sprite, or a ghost if allowed
+	- it returns actual data, a Sprite, or a ghost if allowed as first result
+	- it may return actual data as a second result, if first result was a sprite or a ghost
 	if rowBuilder is present, it is called with row index and row data as arguments to produce a row container
 ]]
 function UI.Table:init(columns,direction,cellSpacingX,cellSpacingY,fixed)--no data
@@ -41,15 +42,32 @@ end
 
 function UI.Table:updateStyle(...)
 	if not self.__cacheUpdating then
+		local function updateRowsStyle()
+			if self.datarows then 
+				for _,r in ipairs(self.datarows) do
+					if r.ghosts then
+						r._ghostStyleCache={}
+						for j=1,#self.columns,1 do
+							local cellCode=vector(r.row,j,0,0)
+							local cell = self.cells[cellCode]
+							if cell then
+								if cell.ghostModel and cell.updateGhostStyle then
+									cell:updateGhostStyle()
+								end
+							end
+						end
+						r:setGhosts(r.ghosts) 
+					end
+				end
+			end
+		end
 		if next(self._istyle.__Cache) then
 			self.__cacheUpdating=true
 			self._istyle.__Cache={}
 			self:updatedStyle() --This will trigger another style update on self, prevent looping
-			if self.datarows then 
-				for _,r in ipairs(self.datarows) do
-					self:updateRow(r)
-				end
-			end
+			updateRowsStyle()
+		elseif self.hasGhosts then
+			updateRowsStyle()
 		end
 	else		
 		self.__cacheUpdating=nil
@@ -79,36 +97,35 @@ function UI.Table:onMouseClick(x,y,c)
 		UI.dispatchEvent(self.widget,"ColumnAction",cn,nc)
 	end
 ]]
+	UI.Focus:request(self)
+	
 	local nh=cn and hdr and self.headers[cn]
 	if nh and nh.onClickColumn then
-		nh.column=nc
 		local handler=nh:onClickColumn(nc)
 		if handler then
 			self.data = handler(self,self.data,nc)
 			self:setData(self.data,self.builder)
+			return true -- TODO should use handler result
 		end
 	end
 	
 	local d=cn and rn and not hdr and self.data[rn]
 	if d and type(d)=="table" then
-		if d.onClickCell then
-			local nh=self.cells[vector(rn,cn,0,0)]
-			nh.column=nc --NICO: est-ce necessaire ?
-			nh.indexCell=cn
-			nh.rowData=d
-			if nh then d.onClickCell(self,nc,cn,d) end
-		end
 		if d.onClickDoubleCell and c>1 then
 			local nh=self.cells[vector(rn,cn,0,0)]
-			nh.column=nc --NICO: est-ce necessaire ?
 			nh.indexCell=cn
 			nh.rowData=d
-			if nh then d.onClickDoubleCell(self,nc,cn,d) end
+			if nh then d.onClickDoubleCell(self,nc,cn,d) return true end
+		end
+		if d.onClickCell then
+			local nh=self.cells[vector(rn,cn,0,0)]
+			nh.indexCell=cn
+			nh.rowData=d
+			if nh then d.onClickCell(self,nc,cn,d) return true end
 		end
 	end
 
-	UI.Focus:request(self)
-	return true --stopPropagation !
+	return false
 end
 
 function UI.Table:onLongClick(x,y)
@@ -122,7 +139,6 @@ function UI.Table:onLongClick(x,y)
 	local nh=cn and hdr and self.headers[cn]
 	if nh and nh.onClickLongColumn then
 		nc.indexCol=cn
-		nh.column=nc
 		local handler=nh:onClickLongColumn(nc)
 		if handler then 
 			handler(self,nc)
@@ -134,7 +150,6 @@ function UI.Table:onLongClick(x,y)
 	if d and type(d)=="table" then
 		if d.onClickLongCell then
 			local nh=self.cells[vector(rn,cn,0,0)]
-			nh.column=nc --NICO: est-ce necessaire ?
 			nh.indexCell=cn
 			nh.rowData=d
 			if nh then d.onClickLongCell(self,nc,cn,d) end
@@ -170,12 +185,12 @@ function UI.Table:updateRow(rowWidget)
 		local rowsel = if self.selection[rowWidget.d] then true else false
 		
 		if self.columns and rowWidget.row and rowWidget.isSelected~=rowsel then
+			rowWidget._ghostStyleCache={}
 			for j=1,#self.columns,1 do
 				local cellCode=vector(rowWidget.row,j,0,0)
 				local cell = self.cells[cellCode]
 				if cell then
 					if cell.ghostModel then
-						rowWidget._ghostStyleCache={}
 						if cell.setGhostState then
 							cell:setGhostState(rowWidget,rowsel and "table.styCellSelected" or "table.styCell")
 						end
@@ -336,6 +351,7 @@ function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call
 	self.cachedLayout=nil
 	
 	local cache
+	self.hasGhosts=nil
 	if data and self.data and builder==self.builder then
 		cache={}
 		local keep={}
@@ -426,12 +442,12 @@ function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call
 						nh=d[c.field]
 					end
 					nhd=nhd or nh
-					if not nh.ghostModel then
+					if not (nh and nh.ghostModel) then
 						nh=UI.Utils.makeWidget(nh,nhd,nil)
 					end
 					rowWidget.isSelected=nil
 				end
-				--rowWidget.cache[c]=nh
+				if not nh.ghostModel then rowWidget.cache[c]=nh end
 				nh.cacheKey=cacheKey
 				local sameLoc=nh.indexRow==i
 				nh.indexRow=i --Row index in data array --need?
@@ -461,10 +477,9 @@ function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call
 				end
 			end
 			rowWidget.ghosts=ghosts
-			if i~=lastIndex then
-				self:addChildAt(rowWidget,i)
-			end
+			self:addChildAt(rowWidget,i) --NO if i~=lastIndex then self:addChildAt(rowWidget,i) end
 			self:updateRow(rowWidget)
+			self.hasGhosts=true
 		end
 	end
 	table.insert(weights,1)
@@ -496,14 +511,14 @@ function UI.Table:moveColumn(index,to)
 	for j=1,#self.columns do imap[j]=j end
 	swap(imap)
 	swap(self.columns)
-	--self:setColumns(self.columns)
 	--Double check: nil in arrays...
 	swap(self.headers)
 	for i,h in ipairs(self.headers) do
 		local gx,gy=0,0
 		if self.direction then gy=i-1 else gx=i-1 end
 		h:setLayoutConstraints{ gridy=gy,gridx=gx }
-		if h.column then h.column.indexCol=i end
+		local column = self.columns[i]
+		if column then column.indexCol=i end
 		Sprite.addChildAt(self.cheader,h,i) --Use Sprite call to avoid restyling
 	end
 	
@@ -560,18 +575,22 @@ function UI.Table:getDataRow(d)
 	return self.dataRows[d] and self.dataRows[d].row
 end
 
-function UI.Table:uiSelect(x,y) --row selection only --implements Row DATA .ClickCell and .onClickCell to have cell selection
-	local gx,gy=1,1
-	local li=self:getLayoutInfo()
-	local lp=Sprite.getLayoutParameters(self,true)
-	local ls=li.minHeight
-	local d=y-li.starty
-	local sp=(lp.cellSpacingY+.5)//1
-	if self.direction then ls=li.minWidth d=x-li.startx sp=(lp.cellSpacingX+.5)//1 end
-	while gy<=#ls and d>=ls[gy] do d-=ls[gy]+sp gy+=1 end
-	if gy<2 then return end
-	if self.viewModel then gy=self.viewModel[gy] end
-	local data=self.data[gy-1]
+function UI.Table:uiAdjustScrollArea(xi,yi,xa,ya)
+	local ch=self.cheader:getHeight()	
+	if ch>0 then
+		local _,ay=self.cheader:getAnchorPosition()
+		local cm=ch-ay
+		if yi<cm then -- If our proposed scroll goes under header bar, reduce scroll
+			yi-=ch
+		end
+	end
+	return xi,yi,xa,ya
+end
+
+function UI.Table:uiSelect(x,y)
+	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
+	if hdr or not rn then return end
+	local data=self.data[rn]
 	return self.dataRows[data],data
 end
 

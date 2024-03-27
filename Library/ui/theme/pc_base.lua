@@ -2,24 +2,48 @@
 
 local colNone=UI.Colors.transparent
 UI.Theme.PointCore_Base={
+	--Inactive backgrounds
 	["theme.C1F"]=UI.Color(0x1B1B1B),
 	["theme.C1M"]=UI.Color(0x424242),
 	["theme.C1L"]=UI.Color(0x6D6D6D),
 	["theme.C1MM"]=UI.Color(0x2E2E2E),
+	-- Active backgrounds
 	["theme.C2F"]=UI.Color(0x005662),
-	["theme.C2F30"]=UI.Color(0x005662,.3),
+	["theme.C2F30"]=UI.Color(0x005662,.3), --TODO
+	--["theme.C2F30"]="=theme.C2F:alpha:.3", --GIDEROS 2024.3
 	["theme.C2M"]=UI.Color(0x00838F),
 	["theme.C2L"]=UI.Color(0x4FB3BF),
 	["theme.C2FF"]=UI.Color(0x2E474B),
+	-- Highlight
 	["theme.CH"]=UI.Color(0xFFA726),
-	["theme.ER"]=UI.Color(0xFF0000),
+	-- Texts
 	["theme.T"]=UI.Colors.white,
-	["theme.Y15"]=UI.Color(1,1,1,0.15),--OV15
-	["theme.Y30"]=UI.Color(1,1,1,0.3),--OV30
-	["theme.Y50"]=UI.Color(1,1,1,0.5),--OV50
+	["theme.TI"]=UI.Colors.black,
+	-- Base
+	["theme.OV15"]=UI.Color(1,1,1,0.15),
+	["theme.OV30"]=UI.Color(1,1,1,0.3),
+	["theme.OV50"]=UI.Color(1,1,1,0.5),
+	["theme.OV70"]=UI.Color(1,1,1,0.7), -- Unused yet in base widgets
 	["theme.OVI15"]=UI.Color(0,0,0,0.15),
 	["theme.OVI30"]=UI.Color(0,0,0,0.3),
 	["theme.OVI50"]=UI.Color(0,0,0,0.5),
+	["theme.OVI70"]=UI.Color(0,0,0,0.7), -- Unused yet in base widgets
+	-- Statics
+	["theme.SHADOW"]=UI.Color(0,0,0,0.7),
+	["theme.NIGHT"]=UI.Color(0,0,0,0.5), -- Unused yet in base widgets, for completeness
+	["theme.NONE"]=UI.Color(0,0,0,0), -- Unused yet in base widgets, for completeness
+	["theme.WHITE"]=UI.Color(1,1,1,1),
+	["theme.WHITE70"]=UI.Color(1,1,1,.7),
+	["theme.WHITE50"]=UI.Color(1,1,1,.5),
+	["theme.WHITE30"]=UI.Color(1,1,1,.3),
+	["theme.WHITE15"]=UI.Color(1,1,1,.15),
+	["theme.BLACK"]=UI.Color(0,0,0,1),
+	["theme.BLACK70"]=UI.Color(0,0,0,.7),
+	["theme.BLACK50"]=UI.Color(0,0,0,.5),
+	["theme.BLACK30"]=UI.Color(0,0,0,.3),
+	["theme.BLACK15"]=UI.Color(0,0,0,.15),
+	-- States
+	["theme.KO"]=UI.Color(0xFF0000),
 	--
 	colText="theme.T",
 	colUI="theme.T",
@@ -46,19 +70,19 @@ UI.Theme.PointCore_Base={
 	["checkbox.colTickboxBack"]="theme.C2F",
 	["checkbox.styDisabled"]={
 		["checkbox.colTickboxBack"]="theme.OVI30",
-		["checkbox.colTickboxFore"]="theme.Y30",
+		["checkbox.colTickboxFore"]="theme.OV30",
 		["checkbox.colTickboxTick"]=colNone, 
 	},
 	["checkbox.styDisabledTicked"]={
 		["checkbox.colTickboxBack"]="theme.OVI30",
-		["checkbox.colTickboxFore"]="theme.Y30", 
-		["checkbox.colTickboxTick"]="theme.Y30", 
+		["checkbox.colTickboxFore"]="theme.OV30", 
+		["checkbox.colTickboxTick"]="theme.OV30", 
 	},
 	["checkbox.styDisabledThird"]={
 		["checkbox.colTickboxBack"]="theme.OVI30",
-		["checkbox.colTickboxFore"]="theme.Y30", 
+		["checkbox.colTickboxFore"]="theme.OV30", 
 		["checkbox.colTickboxTick"]=colNone, 
-		["checkbox.colTickboxThird"]="theme.Y30", 
+		["checkbox.colTickboxThird"]="theme.OV30", 
 	},
 	--
 	["combobox.colBackground"]="theme.C2F",
@@ -109,11 +133,11 @@ UI.Theme.PointCore_Base={
 				colWidgetBack=UI.Colors.transparent,
 				brdWidget={},
 				shader={},
-				["image.colTint"]="theme.Y30",
+				["image.colTint"]="theme.OV30",
 			},
 		},
 		["button.styError"]={
-			["button.colBackground"]="theme.ER",
+			["button.colBackground"]="theme.KO",
 		},
 		["button.stySelected"]={
 			["button.colBackground"]="theme.C2L",
@@ -149,21 +173,21 @@ UI.Theme.PointCore_Base={
 	--
 	["calendar.colBackground"]="theme.C1M",
 	["calendar.colBorder"]="theme.C2M",
-	["calendar.colDaysOther"]="theme.Y50",
+	["calendar.colDaysOther"]="theme.OV50",
 	["calendar.stySpinners"]={
 		["spinner.colIcon"]="theme.C2L",
 	},
 
 	--
-	["dnd.colSrcHighlight"]="theme.Y15",
+	["dnd.colSrcHighlight"]="theme.OV15",
 	["dnd.colDstHighlight"]="theme.T",
-	["dnd.colDstHighlightOver"]="theme.Y50",
+	["dnd.colDstHighlightOver"]="theme.OV50",
 	--
-	["hilitpanel.colHighlight"]="theme.Y15",
+	["hilitpanel.colHighlight"]="theme.OV15",
 	--
 	["passwordfield.styButtonDisabled"]={
 		["button.styInside"]={
-			["image.colTint"]="theme.Y30",
+			["image.colTint"]="theme.OV30",
 		},
 	},
 	--
@@ -218,8 +242,12 @@ UI.Theme.PointCore_Base={
 		["slider.colRailBackground"]="theme.OVI30",
 	},
 	["slider.styKnobDisabled"]={
-		["slider.colKnobCenter"]="theme.Y30",
-		colText="theme.Y30",
+		["slider.colKnobCenter"]="theme.OV30",
+		colText="theme.OV30",
+	},
+	--
+	["spinner.styButtonDisabled"]={
+		["image.colTint"]="theme.OV30",
 	},
 	--
 	["splitpane.styThin"]={
@@ -279,29 +307,29 @@ UI.Theme.PointCore_Base={
 		colWidgetBack = "colSelect"
 	},
 	--
-	["textfield.colTipText"]="theme.Y50",
+	["textfield.colTipText"]="theme.OV50",
 	["textfield.colBackground"]="theme.C2F", 	--R
 	["textfield.colBorder"]="theme.C2M", 		--V
 	["textfield.colBorderWide"]=colNone,		--B
 	["textfield.styDisabled"]={
 		["textfield.colBackground"]=colNone, 
-		["textfield.colBorder"]="theme.Y30", 
+		["textfield.colBorder"]="theme.OV30", 
 		["textfield.colBorderWide"]=colNone, 
-		["textfield.colForeground"]="theme.Y50",
+		["textfield.colForeground"]="theme.OV50",
 	},
 	["textfield.styError"]={
-		["textfield.colForeground"]="theme.ER",
+		["textfield.colForeground"]="theme.KO",
 	},
 	["textfield.styErrorFocused"]={
 		["textfield.colBorder"]=colNone,
 		["textfield.colBorderWide"]="theme.C2L",
-		["textfield.colForeground"]="theme.ER",
+		["textfield.colForeground"]="theme.KO",
 	},
 	["textfield.styErrorFocusedReadonly"]="styErrorReadonly",
 	["textfield.styErrorReadonly"]={
 		["textfield.colBackground"]=colNone, 
-		["textfield.colBorder"]="theme.Y30",
-		["textfield.colForeground"]="theme.ER",
+		["textfield.colBorder"]="theme.OV30",
+		["textfield.colForeground"]="theme.KO",
 	},
 	["textfield.styFocused"]={
 		["textfield.colBorder"]=colNone, 
@@ -310,12 +338,12 @@ UI.Theme.PointCore_Base={
 	["textfield.styFocusedReadonly"]="textfield.styReadonly",
 	["textfield.styReadonly"]={
 		["textfield.colBackground"]=colNone, 
-		["textfield.colBorder"]="theme.Y30", 
+		["textfield.colBorder"]="theme.OV30", 
 	},
 	["textfield.szMargin"]=".5s",
 	["textfield.colCutPasteButton"]="theme.C2M",
 	--
-	["toolbox.colHeaderIcon"]="theme.C1L",
+	["toolbox.colHeaderIcon"]="theme.OV50",
 	["toolbox.colHeader"]="theme.C1F",
 	["toolbox.colBorder"]="theme.C1F",
 	["toolbox.colBack"]="theme.C2F",
@@ -331,7 +359,7 @@ UI.Theme.PointCore_Base={
 	["tooltip.colUrl"]="theme.C2L",
 	["tooltip.colUrlFore"]="theme.T",
 	["tooltip.colRef"]="theme.C2L",
-	["tooltip.colShadow"]="theme.C1F",
+	["tooltip.colShadow"]="theme.SHADOW",
 	["tooltip.colMarkerBack"]="theme.C1F",
 	["tooltip.styLargeMarker"]={
 		colWidgetBack=UI.Colors.white,
@@ -406,8 +434,8 @@ UI.Theme.PointCore_Pink={
 	["theme.C2L"]=UI.Color(0xFFC1E3),
 	["theme.C2FF"]=UI.Color(0x4B472E),
 	["theme.CH"]=UI.Color(0x43A047),
-	["theme.Y15"]=UI.Color(0,0,0,0.15),
-	["theme.Y30"]=UI.Color(0,0,0,0.3),
-	["theme.Y50"]=UI.Color(0,0,0,0.5),
+	["theme.OV15"]=UI.Color(0,0,0,0.15),
+	["theme.OV30"]=UI.Color(0,0,0,0.3),
+	["theme.OV50"]=UI.Color(0,0,0,0.5),
 }
 setmetatable(UI.Theme.PointCore_Pink,UI.Theme.PointCore_Base)

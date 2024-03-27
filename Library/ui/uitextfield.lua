@@ -532,8 +532,7 @@ UI.TextField=Core.class(UI.Panel,function (text,layout,minwidth,minheight,pass,t
   return nil
 end)
 
-local MARGIN=0
-UI.TextField.EditorBox={ class=UI.Panel, name="editorBox",layout={gridx=0, fill=Sprite.LAYOUT_FILL_BOTH }, 
+UI.TextField.EditorBox={ class=UI.Panel, name="editorBox",layout={gridx=0, fill=Sprite.LAYOUT_FILL_BOTH, }, 
 		  layoutModel={ columnWeights={1}, rowWeights={1} },
 		  ParentStyleInheritance="global",
 		  children={ 
@@ -541,9 +540,18 @@ UI.TextField.EditorBox={ class=UI.Panel, name="editorBox",layout={gridx=0, fill=
 			{ class=TextEdit, name="editor",layout={fill=Sprite.LAYOUT_FILL_BOTH }}, 
 		  },
 	}
+
+UI.TextField.EmbeddedEditorBox={
+	class="UI.Panel", 
+	layout={fill=Sprite.LAYOUT_FILL_BOTH, },
+	layoutModel={ columnWeights={1}, rowWeights={1}, insets="textfield.szMargin" },
+	children={
+		UI.TextField.EditorBox,
+	}}
+	
 UI.TextField.Template={
 	class="UI.TextField", 
-	layoutModel={ columnWeights={1}, rowWeights={1} },
+	layoutModel={ columnWeights={1}, rowWeights={1}, insets="textfield.szMargin" },
 	BaseStyle="textfield.styBase",
 	children={
 		UI.TextField.EditorBox,
@@ -551,58 +559,64 @@ UI.TextField.Template={
 
 function UI.TextField:init(text,layout,minwidth,minheight,pass,textType,template)
 	UI.BuilderSelf(template or self.Template,self)
-  self.caretWidth=2
-  layout=initLayout(layout,pass)
-  self.ominwidth,self.ominheight=minwidth,minheight
-  self.width=0
-  self.height=0
-  self.pass=pass
-  
-  self.editor._textfield=self
-  
-  self.editor:setPassword(layout.password)
-  self.editor:setMultiline(layout.multiline)
-  self.editor:setLayout(layout)
-  self:setTextType(textType)
-  
-  local scol="textfield.colSelection"
-  local smark=self.smark
-  smark.p1=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p1) smark.p1:setColor(scol) 
-  smark.p2=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p2) smark.p2:setColor(scol) 
-  smark.p3=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p3) smark.p3:setColor(scol) 
-  function smark:setSpan(p1x,p1y,p1w,p1h,p2x,p2y,p2w,p2h,p3x,p3y,p3w,p3h)
-	  self.p1:setPosition(p1x,p1y) self.p1:setDimensions(p1w,p1h)
-	  self.p2:setPosition(p2x,p2y) self.p2:setDimensions(p2w,p2h)
-	  self.p3:setPosition(p3x,p3y) self.p3:setDimensions(p3w,p3h)
-	  self.p2:setVisible(p2h>0)
-	  self.p3:setVisible(p3h>0)
-  end
-  self.editor.selMark=smark
-  self.editor.caret=Pixel.new(vector(0,0,0,0),0,0)
-  self.editor.caretListener=function (p,x,y) self:ensureVisible(x,y) end
-  UI.Control.onMouseClick[self]=self
-  UI.Control.onDragStart[self]=self
-  UI.Control.onDrag[self]=self
-  UI.Control.onDragEnd[self]=self
+	self.caretWidth=2
+	layout=initLayout(layout,pass)
+	self.ominwidth,self.ominheight=minwidth,minheight
+	self.width=0
+	self.height=0
+	self.pass=pass
+	self.scrollbarMode={0,0}
 
-  if UI.Control.HAS_CURSOR then 
+	self.editor._textfield=self
+
+	self.editor:setPassword(layout.password)
+	self.editor:setMultiline(layout.multiline)
+	self.editor:setLayout(layout)
+	self:setTextType(textType)
+
+	local scol="textfield.colSelection"
+	local smark=self.smark
+	smark.p1=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p1) smark.p1:setColor(scol) 
+	smark.p2=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p2) smark.p2:setColor(scol) 
+	smark.p3=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p3) smark.p3:setColor(scol) 
+	function smark:setSpan(p1x,p1y,p1w,p1h,p2x,p2y,p2w,p2h,p3x,p3y,p3w,p3h)
+		self.p1:setPosition(p1x,p1y) self.p1:setDimensions(p1w,p1h)
+		self.p2:setPosition(p2x,p2y) self.p2:setDimensions(p2w,p2h)
+		self.p3:setPosition(p3x,p3y) self.p3:setDimensions(p3w,p3h)
+		self.p2:setVisible(p2h>0)
+		self.p3:setVisible(p3h>0)
+	end
+	self.editor.selMark=smark
+	self.editor.caret=Pixel.new(vector(0,0,0,0),0,0)
+	self.editor.caretListener=function (p,x,y) self:ensureVisible(x,y) end
+	UI.Control.onMouseClick[self]=self
+	UI.Control.onDragStart[self]=self
+	UI.Control.onDrag[self]=self
+	UI.Control.onDragEnd[self]=self
+	UI.Control.onMouseWheel[self]=self
+
+	if UI.Control.HAS_CURSOR then 
 	UI.Control.onMouseMove[self]=self
-  end
-  self.editorBox:addEventListener(Event.LAYOUT_RESIZED,function (self,e)
-	  self:setSize(e.width,e.height)
-  end,self)
-  self:setText(text)
-  self:updateStyle()
-  self._flags.focusable=UI.Focus.KEYBOARD
-  return self
+	end
+	self.editorBox:addEventListener(Event.LAYOUT_RESIZED,function (self,e)
+		self:setSize(e.width,e.height)
+	end,self)
+	self:setText(text)
+	self:updateStyle()
+	self._flags.focusable=UI.Focus.KEYBOARD
+  
+	if layout.multiline then
+		self:setScrollbar(2)
+	end
+	return self
 end
 
 function UI.TextField:newClone() assert(false,"Cloning not supported") end
 
 function UI.TextField:setSize(w,h)
-  self.width=w
-  self.height=h
-  self.editor:setCaretPos(self.editor.caretPos)
+	self.width=w
+	self.height=h
+	self.editor:setCaretPos(self.editor.caretPos)
 end
 
 function UI.TextField:onMouseMove(x,y)
@@ -707,8 +721,114 @@ function UI.TextField:dismissCutPaste()
 	end
 end
 
-function UI.TextField:onDragStart(x,y)
-	if not self._flags.disabled and (self._flags.selectable or not self._flags.readonly) then
+function UI.TextField:setScrollbar(mode)
+	local function setupScrollBar(sname,mode,vert)
+		mode=tonumber(mode or 0)
+		if (mode&3)==0 then
+			if self[sname] then 
+				self[sname]:destroy()
+				self[sname]=nil
+			end
+		else
+			if not self[sname] then
+				self[sname]=UI.Scrollbar.new(vert)
+				if vert then
+					self[sname]:setLayoutConstraints({gridx=1,fill=Sprite.LAYOUT_FILL_BOTH, insetLeft="textfield.szMargin"})
+				else
+					self[sname]:setLayoutConstraints({gridy=1,fill=Sprite.LAYOUT_FILL_BOTH, insetTop="textfield.szMargin"})
+				end
+				self[sname]:setDecorative((mode&UI.Viewport.SCROLLBAR.DECORATIVE)>0)
+				self:addChild(self[sname])
+			end			
+		end
+	end
+	if type(mode)~="table" then
+		mode={mode,mode}
+	end
+	self.scrollbarMode=mode
+	setupScrollBar("sbHoriz",mode[1],false)
+	setupScrollBar("sbVert",mode[2],true)
+	local cx=self:checkRange()
+	self:checkRange(cx)
+end
+
+function UI.TextField:updateScrollbars(x,y,pw,ph,w,h)
+	local function updateScrollBar(sname,mode,pos,range,page)
+		mode=tonumber(mode or 0)&3
+		local bar=self[sname]
+		if bar then
+			if mode==1 or ((range>0) and ((mode==2) or self._dragStart)) then
+				bar:setVisible(true)
+				bar:setScrollPosition(pos/(page+range),page/(page+range))
+			else
+				bar:setVisible(false)
+			end
+		end
+	end
+	updateScrollBar("sbHoriz",self.scrollbarMode[1],x,w,pw)
+	updateScrollBar("sbVert",self.scrollbarMode[2],y,h,ph)
+end
+
+function UI.TextField:checkRange(x,y,fromScroll)  
+	local X,Y=self.editorBox:getAnchorPosition()
+	local PW,PH=self.width,self.height
+	local W=self.editor:getWidth()-PW
+	local H=self.editor:getHeight()-PH
+
+	if x or y then
+		x=x or X
+		y=y or Y
+		local maX=x<>0
+		local maY=y<>0
+
+		local NX=maX><(W)<>0
+		local NY=maY><(H)<>0
+
+		self.editorBox:setAnchorPosition(NX,NY)
+		self.editorBox:setClip(NX,NY,self.width,self.height)
+		if not fromScroll then
+			self:updateScrollbars(NX,NY,PW,PH,W,H)
+		end
+		local changed=NX~=X or NY~=Y
+		return changed
+	end
+	return X,Y,W,H
+end
+
+function UI.TextField:setScrollPosition(x,y)
+	return self:checkRange(x,y)
+end
+
+function UI.TextField:setScrollAmount(x,y)
+	local _,_,rw,rh=self:checkRange()
+	return self:checkRange(rw*x,rh*y)
+end
+
+function UI.TextField:onWidgetChange(w,ratio,page)
+	if w and w==self.sbHoriz then
+		local _,_,rw,_=self:checkRange()
+		self:checkRange(rw*ratio/(1-page),nil,true)
+		return true
+	elseif w and w==self.sbVert then
+		local _,_,_,rh=self:checkRange()
+		self:checkRange(nil,rh*ratio/(1-page),true)
+		return true
+	end
+end
+
+function UI.TextField:onMouseWheel(x,y,wheel,distance)
+	local cx,cy=self:checkRange()
+	self:checkRange(cx,cy-distance)
+	return true
+end
+
+function UI.TextField:onDragStart(x,y,ed,ea,change,long)
+	local sel=long or UI.Control.isDesktopGesture()
+	if not sel then
+		local cx,cy=self:checkRange()
+		self._dragStart={mx=-x-cx,my=-y-cy}
+		return true,1
+	elseif not self._flags.disabled and (self._flags.selectable or not self._flags.readonly) then
 		self:focus({ TAG="UI.TextField",reason="ON_CLICK" } )
 		x,y=self.editor:spriteToLocal(self,x,y)
 		self.editor:setCaretPosition(x,y,true)
@@ -722,7 +842,13 @@ function UI.TextField:onDragStart(x,y)
 end
 
 function UI.TextField:onDrag(x,y)
-	if self.dragSelStart then
+	if self._dragStart then
+		local inertia
+		if self:checkRange(-x-self._dragStart.mx,-y-self._dragStart.my) then
+			inertia=1
+		end
+		return nil,inertia
+	elseif self.dragSelStart then
 		x,y=self.editor:spriteToLocal(self,x,y)
 		self.editor:setCaretPosition(x,y,true)
 		local dcur=self.editor.caretPos
@@ -733,6 +859,7 @@ end
 
 function UI.TextField:onDragEnd(x,y)
 	self.dragSelStart=nil
+	self._dragStart=nil
 end
 
 function UI.TextField:onKeyboardKey(key)
@@ -747,13 +874,14 @@ function UI.TextField:onKeyboardKey(key)
 end
 
 function UI.TextField:ensureVisible(x,y)
-  local miX=(x+self.caretWidth-self.width+MARGIN*2)<>0
-  local maX=(x-MARGIN)<>0
-  local miY=(y-self.editor.caretOffset+self.editor.caretHeight-self.height+MARGIN*2)<>0
-  local maY=(y-self.editor.caretOffset-MARGIN)<>0
+  local miX=(x+self.caretWidth-self.width)<>0
+  local maX=(x)<>0
+  local miY=(y-self.editor.caretOffset+self.editor.caretHeight-self.height)<>0
+  local maY=(y-self.editor.caretOffset)<>0
   local X,Y=self.editorBox:getAnchorPosition()
-  local W=self.editor:getWidth()+self.caretWidth-(self.width-MARGIN*2)
-  local H=self.editor:getHeight()+self.editor.caretHeight-(self.height-MARGIN*2)
+  local PW,PH=self.width,self.height
+  local W=self.editor:getWidth()-PW
+  local H=self.editor:getHeight()-PH
   local NX=(((X<>miX)><maX))><(W)<>0
   local NY=(((Y<>miY)><maY))><(H)<>0
   
@@ -761,7 +889,8 @@ function UI.TextField:ensureVisible(x,y)
   if self.editor.caret and self.editor.caretX and self.editor.caretY then
 	self.editor.caret:setPosition(self.editor.caretX,self.editor.caretY) --fix caret position
   end
-  self.editorBox:setClip(NX-MARGIN/2,NY-MARGIN/2,self.width-MARGIN,self.height-MARGIN)
+  self.editorBox:setClip(NX,NY,self.width,self.height)
+  self:updateScrollbars(NX,NY,PW,PH,W,H)
   if self.editor.editing then
 	UI.Focus:area(self,x,y-self.editor.caretOffset,self.caretWidth,self.editor.caretHeight)
   end
@@ -784,7 +913,7 @@ function UI.TextField:unfocus(event)
 	self:dismissCutPaste()
 	UI.Control.onLongClick[self]=nil
 	UI.Control.onLongPrepare[self]=nil
-	local same=UI.Focus:relinquish(self)
+	local same=UI.Focus:relinquish(self) or (event and event.TAG=="UI.Focus")
 	if same then
 		self.editor:setSelected(0,0)
 		UI.dispatchEvent(self,"FocusChange",self:getText(),false,event) --unfocused
@@ -883,7 +1012,7 @@ function UI.TextField:updateStyle(...)
 	UI.Panel.updateStyle(self,...)
 	if not self.editor then return end
 	local lh=self:resolveStyle("1em")
-	local lhm=lh+MARGIN*2
+	local lhm=lh
 	self.editor:setFont(self:resolveStyle("font"))
 	local fgcolor = if self.isTip then "textfield.colTipText" else "textfield.colForeground"
 	local fg=UI.Utils.colorVector(fgcolor,self._style)
@@ -895,7 +1024,7 @@ function UI.TextField:updateStyle(...)
 	end
 	local minwidth=self:resolveStyle(self.ominwidth or 0)
 	local minheight=self:resolveStyle(self.ominheight or lhm)
-	self.editorBox:setLayoutConstraints{width=(MARGIN*2)<>minwidth, height=minheight,insets=self:resolveStyle("textfield.szMargin") }
+	self.editorBox:setLayoutConstraints{width=(0)<>minwidth, height=minheight }
 end
 
 UI.TextField.Definition= {
@@ -920,7 +1049,7 @@ UI.ButtonTextFieldCombo.Template={
 	layoutModel={ columnWeights={1,0}, rowWeights={1} },
 	BaseStyle="textfield.styBase",
 	children={ 
-		UI.TextField.EditorBox,
+		UI.TextField.EmbeddedEditorBox,
 		{ class="UI.ToggleButton", name="button",layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH },
 			Image="buttontextfieldcombo.icButton",
 			LocalStyle="buttontextfieldcombo.styButton"
@@ -941,7 +1070,7 @@ UI.ButtonTextField.Template={
 	layoutModel={ columnWeights={1,0}, rowWeights={1} },
 	BaseStyle="textfield.styBase",
 	children={ 
-		UI.TextField.EditorBox,
+		UI.TextField.EmbeddedEditorBox,
 		{ class="UI.ToggleButton", name="button",layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH },
 			Image="buttontextfield.icButton",
 			LocalStyle="buttontextfield.styButton" },
@@ -964,7 +1093,7 @@ UI.PasswordField.Template={
 	layoutModel={ columnWeights={1,0}, rowWeights={1} },
 	BaseStyle="textfield.styBase",
 	children={ 
-		UI.TextField.EditorBox,
+		UI.TextField.EmbeddedEditorBox,
 		{ class="UI.ToggleButton", name="button",layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH, insetRight="textfield.szMargin" }, 
 			Image="passwordfield.icButton",
 			LocalStyle="passwordfield.styButton", },

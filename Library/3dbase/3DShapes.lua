@@ -7,6 +7,8 @@ Mesh3D.MODE_ANIMATED=16
 Mesh3D.MODE_INSTANCED=32
 Mesh3D.MODE_COLORED=64
 Mesh3D.MODE_VOXEL=128
+Mesh3D.MODE_OCCLUSION=256
+Mesh3D.MODE_DEPTHMASK=512
 
 function Mesh3D:init()
 	self.mode=0
@@ -25,6 +27,8 @@ function Mesh3D:updateMode(set,clear)
 			if (nm&Mesh3D.MODE_INSTANCED)>0 then tc=tc.."i" end
 			if (nm&Mesh3D.MODE_COLORED)>0 then tc=tc.."c" end
 			if (nm&Mesh3D.MODE_VOXEL)>0 then tc=tc.."v" end
+			if (nm&Mesh3D.MODE_OCCLUSION)>0 then tc=tc.."o" end
+			if (nm&Mesh3D.MODE_DEPTHMASK)>0 then tc=tc.."d" end
 			Lighting.setSpriteMode(self,tc)
 		end
 	end
@@ -37,6 +41,7 @@ function Mesh3D:setInstanceCount(n)
 	if n==0 then self:updateMode(0,Mesh3D.MODE_INSTANCED)
 	else self:updateMode(Mesh3D.MODE_INSTANCED,0)
 	end
+	self:updateInstances()
 	Mesh.setInstanceCount(self,n)
 end
 

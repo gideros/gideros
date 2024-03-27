@@ -180,8 +180,11 @@ function UI.Behavior.LongClick:init(widget,params)
 	assert(widget and widget.setFlags and widget.getFlags,"Widget must be a descendant of UI.Panel")
 	--! NO --widget.behavior=self --need register
 	self.widget=widget
+	if not self.widget.behavior then
+		self.widget.behavior=self
+	end
 	self.clickHandler={ handler=self,target=widget }
-	self.params=params
+	self.params=params or {}
 	UI.Control.onLongClick[self.widget]=self.clickHandler
 	UI.Control.onLongPrepare[self.widget]=self.clickHandler
 end
@@ -206,7 +209,9 @@ function UI.Behavior.LongClick:destroy()
 	UI.Control.onLongClick[self.widget]=nil
 	UI.Control.onLongPrepare[self.widget]=nil
 	UI.Focus:relinquish(self.widget)
-	--! NO --self.widget.behavior=nil
+	if self.widget.behavior==self then
+		self.widget.behavior=nil
+	end
 	self.widget=nil
 end
 

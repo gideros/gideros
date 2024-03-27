@@ -93,22 +93,12 @@ function UI.Calendar:onMouseClick(x,y)
 	return true
 end
 
---Utilities/Helpers
-local function get_timezone_offset(ts)
-    local utcdate   = os.date("!*t", ts)
-    local localdate = os.date("*t", ts)
-    localdate.isdst = false -- this is the trick
-    return os.difftime(os.time(localdate), os.time(utcdate))
-end
-
 function UI.Calendar:updateMonth()
 	local stime=os.time({day=1,month=self.month,year=self.year,hour=0})
-	local tz=get_timezone_offset(stime)
 	local sntime=os.time({day=1,month=self.month+1,year=self.year,hour=0})
-	local tzn=get_timezone_offset(sntime)
-	local fday=os.date("*t",stime)
-	local lmdays=os.date("*t",stime-tz-3600).day
-	local cmdays=os.date("*t",sntime-tzn-3600).day
+	local fday=os.date("!*t",stime)
+	local lmdays=os.date("!*t",stime-3600).day
+	local cmdays=os.date("!*t",sntime-3600).day
 	local cday=os.date("*t",self.date)
 	local today=os.date("*t")
 	if cday.month==self.month and cday.year==self.year then cday=cday.day else cday=nil end
@@ -135,7 +125,6 @@ function UI.Calendar:updateMonth()
 end
 	
 function UI.Calendar:setDate(bm)
-	local o=get_timezone_offset(os.time())//3600
 	self.date=bm
 	local dm=os.date("*t",bm)
 	self.month=dm.month
@@ -146,7 +135,6 @@ function UI.Calendar:setDate(bm)
 end
 
 function UI.Calendar:getDate()
-	local o=get_timezone_offset(os.time())//3600
 	return self.date
 end
 

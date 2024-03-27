@@ -70,7 +70,7 @@ extern void metalShaderNewFrame();
         }
         metalFramebuffer=[MTLRenderPassDescriptor renderPassDescriptor];
     }
-    //[self setFramebuffer];
+    [self setFramebuffer];
 }
 
 - (void) tearDown

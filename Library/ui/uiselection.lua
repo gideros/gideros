@@ -215,7 +215,7 @@ function UI.Selection._selHandler(s,x,y,c)
 	if spr then 
 		UI.Focus:request(s)
 		uiUpdateSelection(s,spr,data,if c and c>=2 then "doubleclick" else "click")
-	else
+		return true
 	end
 end
 

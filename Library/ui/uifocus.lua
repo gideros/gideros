@@ -31,16 +31,29 @@ function UI.Focus:request(w,mode)
   local gained=false
   mode=mode or tonumber(w._flags.focusable) or 0
   if self.focused~=w then
-    if self.focused then
-      self.focused:setFlags({focused=false})
-      if self.focused.unfocus then self.focused:unfocus({ TAG="UI.Focus",reason="FOCUS_CHANGE" }) end
+	local lfocused=self.focused
+	self.focused=nil -- Prevent sending out temporary nil focus event
+    if lfocused then
+		lfocused:setFlags({focused=false})
+		if lfocused.unfocus then lfocused:unfocus({ TAG="UI.Focus",reason="FOCUS_CHANGE" }) end
     end
     gained=true
     self.focused=w
+	
+	local lmode=self.mode
     self.mode=mode
     if mode&self.KEYBOARD>0 then
-		self.hasKbd=UI.Keyboard.setKeyboardVisibility(w)
+		if not self.hasKbd then
+			self.hasKbd=UI.Keyboard.setKeyboardVisibility(w)
+		end
+	elseif lmode&self.KEYBOARD>0 then
+		UI.Keyboard.setKeyboardVisibility(nil)
+		if self.hasKbd then
+			self:offsetStage(0,0)
+			self.hasKbd=nil
+		end
     end
+		
     assert(w and w.setFlags,"Widget must be a descendant of UI.Panel")
     w:setFlags({focused=true})
 	ndispatch(w)
@@ -60,8 +73,8 @@ function UI.Focus:relinquish(w)
     w:setFlags({focused=false})
     self.mode=0
     if self.hasKbd then
-      stage:setPosition(0,0) --Reset stage in case it has been offsetted
-      self.hasKbd=nil
+		self:offsetStage(0,0)
+		self.hasKbd=nil
     end
 	ndispatch(nil)
   end
@@ -69,11 +82,18 @@ function UI.Focus:relinquish(w)
   return same
 end
 
+function UI.Focus:offsetStage(cx,cy)
+	--Do this a bit later, in case we are in an event loop where coordiniates shouldn't change
+	Core.asyncCall(function()
+		Core.yield(true)
+		stage:setPosition(cx,cy)
+	end)
+end
+
 function UI.Focus:area(widget,x,y,w,h,force,anchorx,anchory)
   if self.focused==widget or force then
     UI.dispatchEvent(widget,"FocusArea",x,y,w,h,anchorx,anchory)
     if self.hasKbd then
-      stage:setPosition(0,0) --Reset stage in case it has been offsetted
       local gix,giy=widget:localToGlobal(x,y)
       local gax,gay=widget:localToGlobal(x+w,y+h)
       local gsx,gsy,gsw,gsh=application:getLogicalBounds()
@@ -89,7 +109,7 @@ function UI.Focus:area(widget,x,y,w,h,force,anchorx,anchory)
         widget=widget:getParent()
       end
 	  if not widget then
-		stage:setPosition(0,0)
+		self:offsetStage(0,0)
 		return
 	  end
       --print(gix,giy,gax,gay) widget:setColor(0xFF0000,1)
@@ -101,7 +121,7 @@ function UI.Focus:area(widget,x,y,w,h,force,anchorx,anchory)
       cy=((cy<>siy)><say)><0
       local spx = 0 --NO cx
       local spy = cy
-      stage:setPosition(spx,spy)
+      self:offsetStage(spx,spy)
     end
   end
 end
