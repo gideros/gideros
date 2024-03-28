@@ -31,6 +31,8 @@
 		03E7A7972844ED6A00C54D22 /* libopenal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E7A7962844ED6A00C54D22 /* libopenal.a */; };
 		03E7A79A2844ED7F00C54D22 /* libopenal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E7A7982844ED7800C54D22 /* libopenal.a */; };
 		03E7A79D2844ED9000C54D22 /* libopenal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E7A79B2844ED8C00C54D22 /* libopenal.a */; };
+		03FE8C962BB57317003C1BFF /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03FE8C952BB57317003C1BFF /* PrivacyInfo.xcprivacy */; };
+		03FE8C972BB57317003C1BFF /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 03FE8C952BB57317003C1BFF /* PrivacyInfo.xcprivacy */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
 		5F4153FC15CEF227007B5365 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F915CEF227007B5365 /* ViewController.m */; };
@@ -114,6 +116,7 @@
 		03E7A7962844ED6A00C54D22 /* libopenal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenal.a; path = "iOS Template/libopenal.a"; sourceTree = "<group>"; };
 		03E7A7982844ED7800C54D22 /* libopenal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenal.a; path = AppleTV/libopenal.a; sourceTree = "<group>"; };
 		03E7A79B2844ED8C00C54D22 /* libopenal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenal.a; path = Mac/libopenal.a; sourceTree = "<group>"; };
+		03FE8C952BB57317003C1BFF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Template iOS/Images.xcassets"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -302,6 +305,7 @@
 		5FD896DC15CED77F00D34824 = {
 			isa = PBXGroup;
 			children = (
+				03FE8C952BB57317003C1BFF /* PrivacyInfo.xcprivacy */,
 				5E6817991BC6FFB20002D406 /* Images.xcassets */,
 				5FD896F515CED77F00D34824 /* iOS Template */,
 				B25B27FB1BAC0F3D0034D6C7 /* AppleTV */,
@@ -569,6 +573,7 @@
 				EBB07735222E80E000611085 /* default.metallib in Resources */,
 				EBB07735222E80E100611085 /* default-sim.metallib in Resources */,
 				5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */,
+				03FE8C962BB57317003C1BFF /* PrivacyInfo.xcprivacy in Resources */,
 				034B58DC25767F2C005D0134 /* Images.xcassets in Resources */,
 				5F58D85315D9268900137D76 /* assets in Resources */,
 				5F4EA0A617816A9D0043BBCD /* Default-568h@2x.png in Resources */,
@@ -584,6 +589,7 @@
 				034B592125768A7B005D0134 /* default.metallib in Resources */,
 				034B592125768A7C005D0134 /* default-sim.metallib in Resources */,
 				B2E3EFE31BAC1249005599BD /* assets in Resources */,
+				03FE8C972BB57317003C1BFF /* PrivacyInfo.xcprivacy in Resources */,
 				034B58EE25767FE3005D0134 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
