@@ -148,6 +148,8 @@ static bool readProjectFile(const QString& fileName,
                 continue;
             }
 
+            if (e.hasAttribute("excludeFromExport") && e.attribute("excludeFromExport").toInt())
+                continue;
             QString type = e.tagName();
 
             if (type == "file")

@@ -92,6 +92,7 @@ static void tw_dumpItem(lua_State *L,QTreeWidgetItem *childItem) {
         BOOL_ATTRIB("excludeFromExecution");
         BOOL_ATTRIB("excludeFromEncryption");
         BOOL_ATTRIB("excludeFromPackage");
+        BOOL_ATTRIB("excludeFromExport");
 #undef BOOL_ATTRIB
     }
 }
@@ -132,6 +133,7 @@ static int ltw_addFile(lua_State *L) {
         GETFIELD("excludeFromExecution");
         GETFIELD("excludeFromEncryption");
         GETFIELD("excludeFromPackage");
+        GETFIELD("excludeFromExport");
 #undef GETFIELD
     }
 
@@ -233,9 +235,13 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
     excludeFromEncryptionAction_->setCheckable(true);
     connect(excludeFromEncryptionAction_, SIGNAL(triggered(bool)), this, SLOT(excludeFromEncryption(bool)));
 
-    excludeFromPackageAction_ = new QAction(tr("Don't package"), this);
+    excludeFromPackageAction_ = new QAction(tr("Don't package (HTML)"), this);
     excludeFromPackageAction_->setCheckable(true);
     connect(excludeFromPackageAction_, SIGNAL(triggered(bool)), this, SLOT(excludeFromPackage(bool)));
+
+    excludeFromExportAction_ = new QAction(tr("Never export"), this);
+    excludeFromExportAction_->setCheckable(true);
+    connect(excludeFromExportAction_, SIGNAL(triggered(bool)), this, SLOT(excludeFromExport(bool)));
 
 #if defined(Q_OS_WIN)
     showInFindeAction_ = new QAction(tr("Show in Explorer"), this);
@@ -355,9 +361,12 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& /*pos*/)
         excludeFromEncryptionAction_->setChecked(excludeFromEncryption);
         bool excludeFromPackage = data.contains("excludeFromPackage") && data["excludeFromPackage"].toBool();
         excludeFromPackageAction_->setChecked(excludeFromPackage);
+        bool excludeFromExport = data.contains("excludeFromExport") && data["excludeFromExport"].toBool();
+        excludeFromExportAction_->setChecked(excludeFromExport);
         menu.addAction(excludeFromEncryptionAction_);
         menu.addAction(excludeFromPackageAction_);
-	}
+        menu.addAction(excludeFromExportAction_);
+    }
 
 	if (size == 1 && (nodetype&NODETYPE_PROJECT))
 		menu.addAction(projectPropertiesAction_);
@@ -695,7 +704,8 @@ QTreeWidgetItem *LibraryTreeWidget::newFile(QTreeWidgetItem *parent,QString name
     }
 
     QTreeWidgetItem *item = createFileItem(dir.relativeFilePath(filename),data["link"].toBool(),
-           data["downsizing"].toBool(),data["excludeFromExecution"].toBool(),data["excludeFromEncryption"].toBool(),data["excludeFromPackage"].toBool());
+           data["downsizing"].toBool(),data["excludeFromExecution"].toBool(),data["excludeFromEncryption"].toBool(),
+           data["excludeFromPackage"].toBool(),data["excludeFromExport"].toBool());
     parent->addChild(item);
     checkModification();
     return item;
@@ -1079,6 +1089,8 @@ void LibraryTreeWidget::toXml(QXmlStreamWriter &out) const
                             out.writeAttribute("excludeFromEncryption", "1");
                         if (data.contains("excludeFromPackage") && data["excludeFromPackage"].toBool())
                             out.writeAttribute("excludeFromPackage", "1");
+                        if (data.contains("excludeFromExport") && data["excludeFromExport"].toBool())
+                            out.writeAttribute("excludeFromExport", "1");
                         out.writeEndElement();
                     }
                     else
@@ -1197,7 +1209,8 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
                 bool excludeFromExecution = e.hasAttribute("excludeFromExecution") && e.attribute("excludeFromExecution").toInt();
                 bool excludeFromEncryption = e.hasAttribute("excludeFromEncryption") && e.attribute("excludeFromEncryption").toInt();
                 bool excludeFromPackage = e.hasAttribute("excludeFromPackage") && e.attribute("excludeFromPackage").toInt();
-                item = createFileItem(file, !e.hasAttribute("name"),downsizing, excludeFromExecution, excludeFromEncryption,excludeFromPackage);
+                bool excludeFromExport = e.hasAttribute("excludeFromExport") && e.attribute("excludeFromExport").toInt();
+                item = createFileItem(file, !e.hasAttribute("name"),downsizing, excludeFromExecution, excludeFromEncryption,excludeFromPackage,excludeFromExport);
 			}
 			else if (type == "folder")
 			{
@@ -1242,7 +1255,7 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 
 }
 
-QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool link, bool downsizing, bool excludeFromExecution, bool excludeFromEncryption, bool excludeFromPackage)
+QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool link, bool downsizing, bool excludeFromExecution, bool excludeFromEncryption, bool excludeFromPackage, bool excludeFromExport)
 {
 	QString name = QFileInfo(file).fileName();
 	QString ext = QFileInfo(file).suffix().toLower();
@@ -1290,6 +1303,9 @@ QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool lin
 
     if (excludeFromPackage)
         data["excludeFromPackage"] = true;
+
+    if (excludeFromExport)
+        data["excludeFromExport"] = true;
 
     item->setData(0, Qt::UserRole, data);
 
@@ -1706,6 +1722,9 @@ std::vector<std::pair<QString, QString> > LibraryTreeWidget::fileList(bool downs
                     QTreeWidgetItem* childItem = item->child(i);
 
                     QMap<QString, QVariant> data = childItem->data(0, Qt::UserRole).toMap();
+                    bool excludeFromExport = data.contains("excludeFromExport") && data["excludeFromExport"].toBool();
+                    if (excludeFromExport)
+                        continue;
                     QString fileName1 = data["filename"].toString();
 
                     if (fileName1.isEmpty() == false)
@@ -2098,4 +2117,19 @@ void LibraryTreeWidget::excludeFromPackage(bool checked)
 
     //item->setIcon(0, IconLibrary::instance().icon(0, checked ? "lua with stop" : "lua"));
     //XXX would be good to overlay a little icon symbol saying that the file won't be packaged
+}
+
+void LibraryTreeWidget::excludeFromExport(bool checked)
+{
+    if (selectedItems().empty() == true)
+        return;
+
+    QTreeWidgetItem* item = selectedItems()[0];
+
+    QMap<QString, QVariant> data = item->data(0, Qt::UserRole).toMap();
+    data["excludeFromExport"] = checked;
+    item->setData(0, Qt::UserRole, data);
+
+    //item->setIcon(0, IconLibrary::instance().icon(0, checked ? "lua with stop" : "lua"));
+    //XXX would be good to overlay a little icon symbol saying that the file won't be exported
 }

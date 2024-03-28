@@ -88,6 +88,7 @@ private slots:
     void excludeFromExecution(bool checked);
     void excludeFromEncryption(bool checked);
     void excludeFromPackage(bool checked);
+    void excludeFromExport(bool checked);
     void showInFinder();
     void addPlugin();
     void propPlugin();
@@ -95,7 +96,7 @@ private slots:
 	void checkModification();
 
 private:
-    QTreeWidgetItem* createFileItem(const QString& file, bool link, bool downsizing = false, bool excludeFromExecution = false, bool excludeFromEncryption = false, bool excludeFromPackage = false);
+    QTreeWidgetItem* createFileItem(const QString& file, bool link, bool downsizing = false, bool excludeFromExecution = false, bool excludeFromEncryption = false, bool excludeFromPackage = false, bool excludeFromExport = false);
 	QTreeWidgetItem* createFolderItem(const QString& name, const QString& fspath);
 	QTreeWidgetItem* createProjectItem(const QString& name);
 	QTreeWidgetItem* createCatFolderItem(const QString& name, const QString& fspath, const QString& icon, int nodetype, bool drop=false);
@@ -120,6 +121,7 @@ private:
     QAction* excludeFromExecutionAction_;
     QAction* excludeFromEncryptionAction_;
     QAction* excludeFromPackageAction_;
+    QAction* excludeFromExportAction_;
     QAction* showInFindeAction_;
     QAction* addPluginAction_;
     QAction* propPluginAction_;
