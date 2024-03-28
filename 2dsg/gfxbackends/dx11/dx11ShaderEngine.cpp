@@ -42,6 +42,11 @@ ShaderTexture::Packing dx11ShaderEngine::getPreferredPackingForTextureFormat(Sha
 	}
 }
 
+Matrix4 dx11ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, float n, float f, bool forRT)
+{
+	return ShaderEngine::setOrthoFrustum(l, r, b, t, n, f, false);
+}
+
 void dx11ShaderEngine::reset(bool reinit)
 {
 	ShaderEngine::reset(reinit);
