@@ -8,6 +8,7 @@
 
 #import "EAGLView.h"
 #import "ViewController.h"
+#include <Carbon/Carbon.h>
 
 #define UIView NSView
 #include "giderosapi.h"
@@ -320,12 +321,12 @@ int keyMods(NSEventModifierFlags mod) {
 {
     NSEventModifierFlags set=event.modifierFlags&(~modifiers);
     NSEventModifierFlags clr=modifiers&(~event.modifierFlags);
-    if (set&NSEventModifierFlagShift) gdr_keyDown(16, 0, 0);
-    if (clr&NSEventModifierFlagShift) gdr_keyUp(16, 0, 0);
-    if (set&NSEventModifierFlagControl) gdr_keyDown(17, 0, 0);
-    if (clr&NSEventModifierFlagControl) gdr_keyUp(17, 0, 0);
-    if (set&NSEventModifierFlagOption) gdr_keyDown(18, 0, 0);
-    if (clr&NSEventModifierFlagOption) gdr_keyUp(18, 0, 0);
+    if (set&NSEventModifierFlagShift) gdr_keyDown(kVK_Shift, 0, 0);
+    if (clr&NSEventModifierFlagShift) gdr_keyUp(kVK_Shift, 0, 0);
+    if (set&NSEventModifierFlagControl) gdr_keyDown(kVK_Control, 0, 0);
+    if (clr&NSEventModifierFlagControl) gdr_keyUp(kVK_Control, 0, 0);
+    if (set&NSEventModifierFlagOption) gdr_keyDown(kVK_Option, 0, 0);
+    if (clr&NSEventModifierFlagOption) gdr_keyUp(kVK_Option, 0, 0);
     modifiers=event.modifierFlags;
 }
 
