@@ -1542,16 +1542,21 @@ void ApplicationManager::requestDeviceOrientation(gapplication_Orientation iO,ga
 #if TARGET_OS_TV || TARGET_OS_OSX
 #else
 	properties_.autorotation=iAutoRot;
-	UIInterfaceOrientation or=UIInterfaceOrientationPortrait;
+	UIInterfaceOrientation ior=UIInterfaceOrientationPortrait;
 	switch (iO) {
-		case GAPPLICATION_LANDSCAPE_LEFT: or=UIInterfaceOrientationLandscapeLeft; break;
-		case GAPPLICATION_LANDSCAPE_RIGHT: or=UIInterfaceOrientationLandscapeRight; break;
-		case GAPPLICATION_PORTRAIT_UPSIDE_DOWN: or=UIInterfaceOrientationPortraitUpsideDown; break;
+		case GAPPLICATION_LANDSCAPE_LEFT: ior=UIInterfaceOrientationLandscapeLeft; break;
+		case GAPPLICATION_LANDSCAPE_RIGHT: ior=UIInterfaceOrientationLandscapeRight; break;
+		case GAPPLICATION_PORTRAIT_UPSIDE_DOWN: ior=UIInterfaceOrientationPortraitUpsideDown; break;
 	}
-	NSNumber *value = [NSNumber numberWithInt:or];
-	[[UIDevice currentDevice] setValue:value forKey:@"orientation"];    
-	[UIViewController attemptRotationToDeviceOrientation];
-#endif	
+    if (@available (iOS 16, iPadOS 16, tvOS 16, *)) {
+        [UIViewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    }
+    else {
+        NSNumber *value = [NSNumber numberWithInt:ior];
+        [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+        [UIViewController attemptRotationToDeviceOrientation];
+    }
+#endif
 }
  
 void ApplicationManager::handleOpenUrl(NSURL *url)
