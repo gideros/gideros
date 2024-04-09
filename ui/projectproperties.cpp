@@ -78,6 +78,21 @@ void ProjectProperties::toXml(QXmlStreamWriter &out) const
     out.writeAttribute("windowWidth", QString::number(this->windowWidth));
     out.writeAttribute("windowHeight", QString::number(this->windowHeight));
 
+    int ar2=0;
+    switch (this->autorotation) {
+        case 0:
+           ar2=0; //no rotation
+        break;
+        case 1:
+           ar2=4; //2-way
+        break;
+        case 2:
+           ar2=3; //4-way
+        break;
+        default:
+           ar2=this->autorotation+2; //Other modes
+    }
+    out.writeAttribute("autorotation", QString::number(ar2));
     out.writeAttribute("orientation", QString::number(this->orientation));
     out.writeAttribute("fps", QString::number(this->fps));
     out.writeAttribute("vsync", QString::number(this->vsync));
@@ -88,7 +103,6 @@ void ProjectProperties::toXml(QXmlStreamWriter &out) const
 
     // iOS options
     out.writeAttribute("retinaDisplay", QString::number(this->retinaDisplay));
-    out.writeAttribute("autorotation", QString::number(this->autorotation));
 
     // input options
     out.writeAttribute("mouseToTouch", QString::number(this->mouseToTouch ? 1 : 0));
@@ -219,8 +233,27 @@ void ProjectProperties::loadXml(QDomElement properties)
 		// iOS options
 		if (!properties.attribute("retinaDisplay").isEmpty())
             this->retinaDisplay = properties.attribute("retinaDisplay").toInt();
-		if (!properties.attribute("autorotation").isEmpty())
-			this->autorotation = properties.attribute("autorotation").toInt();
+        if (!properties.attribute("autorotation").isEmpty()) {
+            // for backward compatibility, map old 1,2,3 values (iphone or ipad only) to full rotation
+            int ar=properties.attribute("autorotation").toInt();
+            int ar2=0;
+            switch (ar) {
+                case 0:
+                    ar2=0; //no rotation
+                break;
+                case 1:
+                case 2:
+                case 3:
+                   ar2=2; //4-way
+                break;
+                case 4:
+                   ar2=1; //2-way
+                break;
+                default:
+                   ar2=ar-2; //other modes
+            }
+            this->autorotation = ar2;
+        }
         if (!properties.attribute("version").isEmpty())
             this->version = properties.attribute("version");
         if (!properties.attribute("version_code").isEmpty())

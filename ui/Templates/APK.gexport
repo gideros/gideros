@@ -124,24 +124,33 @@ local ap=require("Tools/export_android")
 			<cd>tmp</cd>
 			<set key="local.noRename" value="//"/>
 		</if>
-		<if condition="[[[project.autorotation]]]">
-			<set key="local.orientation" value="sensorPortrait"/>
-			<if condition="[[[band:[[[project.orientation]]]:1]]]">
-				<set key="local.orientation" value="sensorLandscape"/>
-			</if>
-		</if>
-		<if condition="[[[not:[[[project.autorotation]]]]]]">
-			<set key="local.orientation" value="portrait"/>
-			<if condition="[[[eq:[[[project.orientation]]]:1]]]">
-				<set key="local.orientation" value="landscape"/>
-			</if>
-			<if condition="[[[eq:[[[project.orientation]]]:2]]]">
-				<set key="local.orientation" value="reversePortrait"/>
-			</if>
-			<if condition="[[[eq:[[[project.orientation]]]:3]]]">
-				<set key="local.orientation" value="reverseLandscape"/>
-			</if>
-		</if>		
+		<lua>
+		   	local autorotation=tonumber(Export.getProperty("project.autorotation")) or 0
+		   	local rotation=tonumber(Export.getProperty("project.orientation")) or 0
+		   	local so="portrait"
+		   	if autorotation==1 then
+		   		if rotation==0 or rotation==2 then
+		   			so="sensorPortrait"
+		   		else
+		   			so="sensorLandscape"
+		   		end
+		   	elseif autorotation==2 then
+		   		so="fullSensor"
+		   	elseif autorotation==3 then
+		   		so="nosensor"
+		   	else
+		   		if rotation==0 then
+		   			so="portrait"
+		   		elseif rotation==1 then
+		   			so="landscape"
+		   		elseif rotation==2 then
+		   			so="reversePortrait"
+		   		elseif rotation==3 then
+		   			so="reverseLandscape"
+				end
+			end
+			Export.setProperty("local.orientation",so) 
+		</lua>		
 		<set key="local.showSplash" value="true"/>
 		<set key="local.splashTheme" value="@style/Theme.Splash"/>
 		<if condition="[[[eq:[[[project.disableSplash]]]:1]]]">

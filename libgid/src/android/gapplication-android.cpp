@@ -33,6 +33,12 @@ public:
 		return result;
 	}
 
+	void requestDeviceOrientation(gapplication_Orientation iO,gapplication_AutoOrientation iAutoRot) {
+		JNIEnv *env = g_getJNIEnv();
+		jmethodID requestDeviceOrientationID = env->GetStaticMethodID(javaCls_, "requestDeviceOrientation", "(II)V");
+		env->CallStaticVoidMethod(javaCls_, requestDeviceOrientationID,iO,iAutoRot);
+	}
+
     g_id addCallback(gevent_Callback callback, void *udata)
     {
         return callbackList_.addCallback(callback, udata);
@@ -102,6 +108,10 @@ void gapplication_exit()
 int gapplication_getScreenDensity(int *ldpi)
 {
 	return s_manager->getScreenDensity();
+}
+
+void gapplication_requestDeviceOrientation(gapplication_Orientation iO,gapplication_AutoOrientation iAutoRot) {
+	s_manager->requestDeviceOrientation(iO,iAutoRot);
 }
 
 void gapplication_enqueueEvent(int type, void *event, int free)

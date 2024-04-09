@@ -15,9 +15,22 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_6">
    <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -155,125 +168,6 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <widget class="QLabel" name="label_7">
-               <property name="toolTip">
-                <string>Defines how the screen is scaled
-
-This feature sets the type of screen scaling. See 
-Gideros Studio documentation for definition of 
-each mode.</string>
-               </property>
-               <property name="text">
-                <string>Retina Display:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="retinaDisplay">
-               <property name="minimumSize">
-                <size>
-                 <width>140</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <item>
-                <property name="text">
-                 <string>No Retina Display</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>For iPhone</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>For iPad</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>For iPhone and iPad</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <widget class="QLabel" name="label_92">
-               <property name="toolTip">
-                <string>Defines the default screen orientation, which is either 
-portrait or landscape.</string>
-               </property>
-               <property name="text">
-                <string>Autorotation:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="autorotation">
-               <property name="minimumSize">
-                <size>
-                 <width>140</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <item>
-                <property name="text">
-                 <string>No Autorotation</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>For iPhone/Android</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>For iPad/Android</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>For iPhone and iPad/Android</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_8">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_20">
              <item>
               <widget class="QLabel" name="label_14">
@@ -378,6 +272,31 @@ portrait or landscape.</string>
              </property>
              <property name="text">
               <string>Orientation:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_92">
+             <property name="toolTip">
+              <string>Defines the default screen orientation, which is either 
+portrait or landscape.</string>
+             </property>
+             <property name="text">
+              <string>Autorotation:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="toolTip">
+              <string>Defines how the screen is scaled
+
+This feature sets the type of screen scaling. See 
+Gideros Studio documentation for definition of 
+each mode.</string>
+             </property>
+             <property name="text">
+              <string>Retina Display:</string>
              </property>
             </widget>
            </item>
@@ -647,6 +566,100 @@ portrait or landscape.</string>
              </item>
              <item>
               <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <item>
+              <widget class="QComboBox" name="autorotation">
+               <property name="minimumSize">
+                <size>
+                 <width>140</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Normal orientation</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Normal and upside-down</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>All orientations</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>OS Fixed orientation</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_14">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_17">
+             <item>
+              <widget class="QComboBox" name="retinaDisplay">
+               <property name="minimumSize">
+                <size>
+                 <width>140</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <item>
+                <property name="text">
+                 <string>No Retina Display</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>For iPhone</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>For iPad</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>For iPhone and iPad</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_15">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -1079,19 +1092,6 @@ portrait or landscape.</string>
       </widget>
      </widget>
     </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

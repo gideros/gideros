@@ -74,32 +74,43 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("android:versionCode=\"1\"").toUtf8(), ("android:versionCode=\""+QString::number(ctx->properties.version_code)+"\"").toUtf8());
         replaceList1 << qMakePair(QString("android:versionName=\"1.0\"").toUtf8(), ("android:versionName=\""+ctx->properties.version+"\"").toUtf8());
         QString orientation = "android:screenOrientation=\"portrait\"";
-        switch(ctx->properties.orientation){
-            case 0:
-                if(ctx->properties.autorotation > 0)
-                    orientation = "android:screenOrientation=\"sensorPortrait\"";
-                else
-                    orientation = "android:screenOrientation=\"portrait\"";
-                break;
+        switch (ctx->properties.autorotation) {
             case 1:
-                if(ctx->properties.autorotation > 0)
-                    orientation = "android:screenOrientation=\"sensorLandscape\"";
-                else
-                    orientation = "android:screenOrientation=\"landscape\"";
-                break;
-            case 2:
-                if(ctx->properties.autorotation > 0)
+            switch(ctx->properties.orientation){
+                case 0:
+                case 2:
                     orientation = "android:screenOrientation=\"sensorPortrait\"";
-                else
-                    orientation = "android:screenOrientation=\"reversePortrait\"";
                 break;
-            case 3:
-                if(ctx->properties.autorotation > 0)
+                case 1:
+                case 3:
                     orientation = "android:screenOrientation=\"sensorLandscape\"";
-                else
-                    orientation = "android:screenOrientation=\"reverseLandscape\"";
                 break;
+            }
+            break;
+            case 2:
+                orientation = "android:screenOrientation=\"fullSensor\"";
+            break;
+            case 3:
+                orientation = "android:screenOrientation=\"nosensor\"";
+            break;
+            default:
+            switch(ctx->properties.orientation){
+                case 0:
+                    orientation = "android:screenOrientation=\"portrait\"";
+                    break;
+                case 1:
+                    orientation = "android:screenOrientation=\"landscape\"";
+                    break;
+                case 2:
+                    orientation = "android:screenOrientation=\"reversePortrait\"";
+                    break;
+                case 3:
+                    orientation = "android:screenOrientation=\"reverseLandscape\"";
+                    break;
+            }
+            break;
         }
+
 
         replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
         if (ctx->properties.disableSplash)

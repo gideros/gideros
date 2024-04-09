@@ -187,6 +187,7 @@ public:
 	
 	void surfaceCreated();
 	void surfaceChanged(int width, int height, int rotation);
+	void orientationChanged(int rotation);
 	void updateHardwareOrientation();
 	void drawFrame(bool tick);
 	LuaApplication *getApplication() { return application_;};
@@ -726,6 +727,33 @@ void ApplicationManager::surfaceCreated()
 	}
 }
 
+void ApplicationManager::orientationChanged(int rotation)
+{
+	rotation=(rotation+360)%360;
+	glog_i("OrientationChanged: %d",rotation);
+
+	switch (rotation)
+	{
+	case 0:
+		deviceOrientation_ = ePortrait;
+		break;
+	case 90:
+		deviceOrientation_ = eLandscapeLeft;
+		break;
+	case 180:
+		deviceOrientation_ = ePortraitUpsideDown;
+		break;
+	case 270:
+		deviceOrientation_ = eLandscapeRight;
+		break;
+	default:
+		deviceOrientation_ = ePortrait;
+		break;
+	}
+
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+}
+
 void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 {
 	if (player_ == true)
@@ -747,28 +775,28 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 	keepBuffers=true;
 #endif
 	application_->setResolution(width_, height_,keepBuffers);
+	rotation=(rotation+360)%360;
+	glog_i("SurfaceChanged: %d x %d %d",width,height,rotation);
 	
 	switch (rotation)
 	{
 	case 0:
-		deviceOrientation_ = ePortrait;
+		hardwareOrientation_ = ePortrait;
 		break;
 	case 90:
-		deviceOrientation_ = eLandscapeLeft;
+		hardwareOrientation_ = eLandscapeLeft;
 		break;
 	case 180:
-		deviceOrientation_ = ePortraitUpsideDown;
+		hardwareOrientation_ = ePortraitUpsideDown;
 		break;
 	case 270:
-		deviceOrientation_ = eLandscapeRight;
+		hardwareOrientation_ = eLandscapeRight;
 		break;
 	default:
-		deviceOrientation_ = ePortrait;
+		hardwareOrientation_ = ePortrait;
 		break;
 	}
-	
-	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
-	
+
 	updateHardwareOrientation();
 
 	tickLock.Lock();
@@ -783,15 +811,7 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 void ApplicationManager::updateHardwareOrientation()
 {
 #ifndef OCULUS
-    Orientation orientation = application_->orientation();
 
-    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
-    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
-
-    if (b1 != b2)
-        hardwareOrientation_ = deviceOrientation_;
-    else
-        hardwareOrientation_ = orientation;
 #else
     hardwareOrientation_ =eFixed;
 #endif
@@ -1725,6 +1745,11 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceChang
 	_OCULUS(onSurfaceChanged,env,surface);
 #endif
 	s_applicationManager->surfaceChanged(width, height, rotation);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeOrientationChanged(JNIEnv *env, jclass cls, jint rotation)
+{
+	s_applicationManager->orientationChanged(rotation);
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceDestroyed(JNIEnv *env, jclass cls)

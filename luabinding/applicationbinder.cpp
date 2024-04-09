@@ -27,6 +27,9 @@
 #define FIT_WIDTH "fitWidth"
 #define FIT_HEIGHT "fitHeight"
 
+#ifdef __APPLE__
+   #include <TargetConditionals.h>
+#endif
 #ifdef WINSTORE
 #undef max
 #undef min
@@ -139,6 +142,11 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 	CONSTANT(0x20000,"TEXTINPUT_TFLAG_MULTILINE");
 	CONSTANT(0x1000,"TEXTINPUT_NFLAG_SIGNED");
 	CONSTANT(0x2000,"TEXTINPUT_NFLAG_DECIMAL");
+
+    CONSTANT(GAPPLICATION_AUTO_ORIENTATION_NORMAL,"AUTO_ORIENTATION_NORMAL");
+    CONSTANT(GAPPLICATION_AUTO_ORIENTATION_DUAL,"AUTO_ORIENTATION_DUAL");
+    CONSTANT(GAPPLICATION_AUTO_ORIENTATION_ALL,"AUTO_ORIENTATION_ALL");
+    CONSTANT(GAPPLICATION_AUTO_ORIENTATION_FIXED,"AUTO_ORIENTATION_FIXED");
 #undef CONSTANT
 	lua_pop(L, 1);
 
@@ -650,28 +658,61 @@ int ApplicationBinder::setOrientation(lua_State* L)
 	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	const char* orientation = luaL_checkstring(L, 2);
+    gapplication_AutoOrientation iAutoRot=(gapplication_AutoOrientation) luaL_optinteger(L,3,ProjectProperties::current.autorotation);
+    gapplication_Orientation iO=GAPPLICATION_PORTRAIT;
+    Orientation so=application->getApplication()->orientation();
+    Orientation devo=application->getApplication()->getDeviceOrientation();
 
 	if (strcmp(orientation, PORTRAIT) == 0)
 	{
-		application->getApplication()->setOrientation(ePortrait);
+        so=ePortrait;
 	}
 	else if (strcmp(orientation, PORTRAIT_UPSIDE_DOWN) == 0)
 	{
-		application->getApplication()->setOrientation(ePortraitUpsideDown);
+        so=ePortraitUpsideDown;
+        iO=GAPPLICATION_PORTRAIT_UPSIDE_DOWN;
 	}
 	else if (strcmp(orientation, LANDSCAPE_LEFT) == 0)
 	{
-		application->getApplication()->setOrientation(eLandscapeLeft);
+        so=eLandscapeLeft;
+        iO=GAPPLICATION_LANDSCAPE_LEFT;
 	}
 	else if (strcmp(orientation, LANDSCAPE_RIGHT) == 0)
 	{
-		application->getApplication()->setOrientation(eLandscapeRight);
+        so=eLandscapeRight;
+        iO=GAPPLICATION_LANDSCAPE_RIGHT;
 	}
 	else
 	{
 		GStatus status(2008, "orientation");	// Parameter %s must be one of the accepted values.
         luaL_error(L, "%s", status.errorString());
 	}
+
+    bool sl=(so==eLandscapeLeft)||(so==eLandscapeRight);
+    bool dl=(devo==eLandscapeLeft)||(devo==eLandscapeRight);
+    switch (iAutoRot) {
+        case GAPPLICATION_AUTO_ORIENTATION_DUAL:
+            if ((sl&&dl)||(!(sl||dl))) // If orientation already correct, keep device orientation
+                so=devo;
+        break;
+        case GAPPLICATION_AUTO_ORIENTATION_ALL:
+            so=devo; //Always keep device orientation
+        break;
+        default:
+        break;
+    }
+
+    application->getApplication()->setOrientation(so);
+
+    ProjectProperties::current.autorotation=iAutoRot;
+
+#if defined(__ANDROID__)
+    ::gapplication_requestDeviceOrientation(iO,iAutoRot);
+#elif defined(__APPLE__)
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+    ::gapplication_requestDeviceOrientation(iO,iAutoRot);
+#endif
+#endif
 
 	return 0;
 }
@@ -700,7 +741,8 @@ int ApplicationBinder::getOrientation(lua_State* L)
 		break;
 	}
 
-	return 1;
+    lua_pushinteger(L,ProjectProperties::current.autorotation);
+    return 2;
 }
 
 int ApplicationBinder::setScaleMode(lua_State *L)

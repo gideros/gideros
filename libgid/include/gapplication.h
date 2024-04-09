@@ -25,6 +25,14 @@ typedef enum gapplication_Orientation
     GAPPLICATION_LANDSCAPE_RIGHT,
 } gapplication_Orientation;
 
+typedef enum gapplication_AutoOrientation
+{
+    GAPPLICATION_AUTO_ORIENTATION_NORMAL,
+    GAPPLICATION_AUTO_ORIENTATION_DUAL,
+    GAPPLICATION_AUTO_ORIENTATION_ALL,
+    GAPPLICATION_AUTO_ORIENTATION_FIXED,
+} gapplication_AutoOrientation;
+
 typedef struct gapplication_OrientationChangeEvent
 {
     gapplication_Orientation orientation;
@@ -47,7 +55,7 @@ G_API void gapplication_cleanup();
 G_API void gapplication_exit();
 
 G_API int gapplication_getScreenDensity(int *ldpi);
-
+G_API void gapplication_requestDeviceOrientation(gapplication_Orientation iO,gapplication_AutoOrientation iAutoRot);
 G_API g_id gapplication_addCallback(gevent_Callback callback, void *udata);
 G_API void gapplication_removeCallback(gevent_Callback callback, void *udata);
 G_API void gapplication_removeCallbackWithGid(g_id gid);

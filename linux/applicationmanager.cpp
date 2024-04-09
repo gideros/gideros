@@ -539,43 +539,12 @@ ApplicationManager::ApplicationManager() {
 		/*if (ShaderEngine::Engine)
 			ShaderEngine::Engine->reset(true);*/
 
-		/*	switch (rotation) {
-		 case 0:
-		 deviceOrientation_ = ePortrait;
-		 break;
-		 case 90:
-		 deviceOrientation_ = eLandscapeLeft;
-		 break;
-		 case 180:
-		 deviceOrientation_ = ePortraitUpsideDown;
-		 break;
-		 case 270:
-		 deviceOrientation_ = eLandscapeRight;
-		 break;
-		 default:
-		 deviceOrientation_ = ePortrait;
-		 break;
-		 }
-
-		 application_->getApplication()->setDeviceOrientation(deviceOrientation_);
-		 */
 		Event event(Event::APPLICATION_RESIZE);
 		GStatus status;
 		application_->broadcastEvent(&event, &status);
 	}
 
 	void ApplicationManager::updateHardwareOrientation() {
-		/*	Orientation orientation = application_->orientation();
-
-		 bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
-		 bool b2 = deviceOrientation_ == ePortrait
-		 || deviceOrientation_ == ePortraitUpsideDown;
-
-		 if (b1 != b2)
-		 hardwareOrientation_ = deviceOrientation_;
-		 else
-		 hardwareOrientation_ = orientation;
-		 */
 		hardwareOrientation_ = eFixed;
 		application_->setHardwareOrientation(hardwareOrientation_);
 	}

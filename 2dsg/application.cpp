@@ -504,6 +504,7 @@ void Application::touchesCancel(ginput_TouchEvent *event) {
 
 void Application::setOrientation(Orientation orientation) {
 	orientation_ = orientation;
+	projectionDirty_ = true;
 
 	calculateLogicalTransformation();
 }
@@ -523,7 +524,6 @@ Orientation Application::hardwareOrientation() const {
 
 void Application::setDeviceOrientation(Orientation orientation) {
 	deviceOrientation_ = orientation;
-	projectionDirty_ = true;
 }
 
 Orientation Application::getDeviceOrientation() const {

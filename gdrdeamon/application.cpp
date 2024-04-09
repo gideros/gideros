@@ -460,43 +460,6 @@ void Application::play(const QString &fileName)
 
         QDomElement properties = root.firstChildElement("properties");
         properties_.loadXml(properties);
-
-        /*
-        // graphics options
-        if (!properties.attribute("scaleMode").isEmpty())
-            properties_.scaleMode = properties.attribute("scaleMode").toInt();
-        if (!properties.attribute("logicalWidth").isEmpty())
-            properties_.logicalWidth = properties.attribute("logicalWidth").toInt();
-        if (!properties.attribute("logicalHeight").isEmpty())
-            properties_.logicalHeight = properties.attribute("logicalHeight").toInt();
-        QDomElement imageScales = properties.firstChildElement("imageScales");
-        for(QDomNode n = imageScales.firstChild(); !n.isNull(); n = n.nextSibling())
-        {
-            QDomElement scale = n.toElement();
-            if(!scale.isNull())
-                properties_.imageScales.push_back(std::make_pair(scale.attribute("suffix"), scale.attribute("scale").toDouble()));
-        }
-        if (!properties.attribute("orientation").isEmpty())
-            properties_.orientation = properties.attribute("orientation").toInt();
-        if (!properties.attribute("fps").isEmpty())
-            properties_.fps = properties.attribute("fps").toInt();
-
-        // iOS options
-        if (!properties.attribute("retinaDisplay").isEmpty())
-            properties_.retinaDisplay = properties.attribute("retinaDisplay").toInt();
-        if (!properties.attribute("autorotation").isEmpty())
-            properties_.autorotation = properties.attribute("autorotation").toInt();
-
-        // export options
-        if (!properties.attribute("architecture").isEmpty())
-            properties_.architecture = properties.attribute("architecture").toInt();
-        if (!properties.attribute("exportMode").isEmpty())
-            properties_.exportMode = properties.attribute("exportMode").toInt();
-        if (!properties.attribute("iosDevice").isEmpty())
-            properties_.iosDevice = properties.attribute("iosDevice").toInt();
-        if (!properties.attribute("packageName").isEmpty())
-            properties_.packageName = properties.attribute("packageName");
-        */
     }
 
     QMap<QString,bool> locked;

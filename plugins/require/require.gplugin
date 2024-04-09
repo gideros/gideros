@@ -13,8 +13,6 @@
  <property name="reqTVExtCompat" type="boolean" title="Android TV extended compatibility"/>
  <property name="reqNoInternet" type="boolean" title="This app never access internet"/>
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
- <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and landscape"/>
- <property name="reqNoSensor" type="boolean" title="Screen doesn't rotate (tilt game) unknown initial orientation"/>
  <property name="reqMaxAspect" type="boolean" title="Support aspect ratios of 2.1 or higher"/>
  <property name="reqScreenShape" type="boolean" title="Support non rectangular (with notch) screen shapes (iOS, Android)"/>
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to write external storage"/>
@@ -119,48 +117,7 @@
     	    </replacelist>
 	    </template>
  	</if>
- 	<if condition="[[[plugin.reqFullOrientation]]]">
-    	<template name="AndroidManifest" path="">
-	        <replacelist wildcards="AndroidManifest.xml">
-	            <replace>
-            		<orig><![CDATA[android:screenOrientation="sensorLandscape"]]></orig>
-            		<by>android:screenOrientation="fullSensor"</by>
-        	    </replace>
-	            <replace>
-            		<orig><![CDATA[android:screenOrientation="sensorPortrait"]]></orig>
-            		<by>android:screenOrientation="fullSensor"</by>
-        	    </replace>
-    	    </replacelist>
-	    </template>
- 	</if>
-
- 	<if condition="[[[plugin.reqNoSensor]]]">
-    	<template name="AndroidManifest" path="">
-	        <replacelist wildcards="AndroidManifest.xml">
-	            <replace>
-            		<orig><![CDATA[android:screenOrientation="landscape"]]></orig>
-            		<by>android:screenOrientation="nosensor"</by>
-        	    </replace>
-	            <replace>
-            		<orig><![CDATA[android:screenOrientation="sensorLandscape"]]></orig>
-            		<by>android:screenOrientation="nosensor"</by>
-        	    </replace>
-	            <replace>
-            		<orig><![CDATA[android:screenOrientation="portrait"]]></orig>
-            		<by>android:screenOrientation="nosensor"</by>
-        	    </replace>
-	            <replace>
-            		<orig><![CDATA[android:screenOrientation="sensorPortrait"]]></orig>
-            		<by>android:screenOrientation="nosensor"</by>
-        	    </replace>
-	            <replace>
-            		<orig><![CDATA[android:screenOrientation="fullSensor"]]></orig>
-            		<by>android:screenOrientation="nosensor"</by>
-        	    </replace>
-    	    </replacelist>
-	    </template>
- 	</if>
-	
+ 		
     <if condition="[[[plugin.reqMaxAspect]]]">
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml">

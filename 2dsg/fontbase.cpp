@@ -515,6 +515,7 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
         cl.advY=0;
         cl.shapeScaleX=0;
         cl.shapeScaleY=0;
+        cl.extrasize=0;
         tl.parts.push_back(cl);
 	}
 

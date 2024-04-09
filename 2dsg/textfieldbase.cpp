@@ -118,6 +118,12 @@ static size_t utf8_offset(const char *text,int cp) {
 #define ESC	27
 void TextFieldBase::getPointFromTextPos(size_t ri,float &cx,float &cy,int &cline)
 {
+    if (text_.empty()) {
+        cx=0;
+        cy=getFont()->getAscender();
+        cline=0;
+        return;
+    }
 	if (ri>text_.size()) ri=text_.size();
 	size_t lc;
 	size_t parts=textlayout_.parts.size();

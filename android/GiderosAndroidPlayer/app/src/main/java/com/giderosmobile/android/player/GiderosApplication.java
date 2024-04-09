@@ -32,12 +32,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
@@ -48,7 +50,9 @@ import android.text.Editable;
 import android.text.Selection;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.OrientationEventListener; 
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -524,6 +528,8 @@ public class GiderosApplication
 		needRender=true;
 	}
 	
+	static OrientationEventListener orientationEventListener; 
+	static int currentAngle=-1;
 	static public void onCreate(String[] externalClasses, SurfaceView mGLView)
 	{
 		mGLView_=mGLView;
@@ -533,6 +539,35 @@ public class GiderosApplication
 			
 			executeMethod ( theClass, null, "onCreate", new Class < ? > [] { Activity.class }, new Object [] { WeakActivityHolder.get() });
 		}
+		
+		Activity activity = WeakActivityHolder.get();
+		/*
+        orientationEventListener = new OrientationEventListener(activity) {
+            @Override
+            public void onOrientationChanged(int angle) {
+            	angle=((angle+360+45)%360)/90;
+            	if (angle!=currentAngle) {
+            		currentAngle=angle;
+            		int cAngle=(4-angle)*90;
+            		
+        			Activity activity = WeakActivityHolder.get();
+        			Configuration config = activity.getResources().getConfiguration();
+        			Display display = activity.getWindowManager().getDefaultDisplay();
+         			int rotation = display.getRotation();
+        			int oangle = (rotation == Surface.ROTATION_90) ? 90 : (rotation == Surface.ROTATION_180) ? 180 :  
+        				(rotation == Surface.ROTATION_270) ? 270 : 0;
+        			int dAngle=0;
+        			if ((config.orientation==Configuration.ORIENTATION_LANDSCAPE)&&((oangle==0)||(oangle==180)))
+        				dAngle=90;
+        			else if ((config.orientation!=Configuration.ORIENTATION_LANDSCAPE)&&((oangle==90)||(oangle==270)))
+        				dAngle=90;
+        			
+        			//Log.v("ORI","CA:"+cAngle+" OA:"+oangle+" DA:"+dAngle);
+            		nativeOrientationChanged(cAngle+dAngle);
+            	}
+            }
+        };
+        */
 	}
 	static public int[] getSafeArea() {
 		int[] insets=new int[4];
@@ -605,7 +640,9 @@ public class GiderosApplication
 	static boolean onDemandEnabled=false;
 	public void onPause()
 	{
-		if (onDemandEnabled)
+		if (orientationEventListener!=null)
+			orientationEventListener.disable();
+	    if (onDemandEnabled)
 			enableOnDemand(false);
 		oculusPause();
 		isForeground_ = false;
@@ -665,6 +702,8 @@ public class GiderosApplication
 		}
 		if (onDemandEnabled)
 			enableOnDemand(true);
+		if (orientationEventListener!=null)
+			orientationEventListener.enable();
 	}
 
 	public void onLowMemory()
@@ -715,7 +754,22 @@ public class GiderosApplication
 	{
 		synchronized (lock)
 		{
-			GiderosApplication.nativeSurfaceChanged(w, h, getRotation(w,h),surface);
+			Activity activity = WeakActivityHolder.get();
+			Configuration config = activity.getResources().getConfiguration();
+			Display display = activity.getWindowManager().getDefaultDisplay();
+ 			int rotation = display.getRotation();
+			int oangle = (rotation == Surface.ROTATION_90) ? 90 : (rotation == Surface.ROTATION_180) ? 180 :  
+				(rotation == Surface.ROTATION_270) ? 270 : 0;
+			int dAngle=0;
+			if ((config.orientation==Configuration.ORIENTATION_LANDSCAPE)&&((oangle==0)||(oangle==180)))
+				dAngle=90;
+			else if ((config.orientation!=Configuration.ORIENTATION_LANDSCAPE)&&((oangle==90)||(oangle==270)))
+				dAngle=90;
+			
+			//Log.v("SF"," OA:"+oangle+" DA:"+dAngle);
+			if (currentAngle<0)
+				GiderosApplication.nativeOrientationChanged(oangle+dAngle);
+			GiderosApplication.nativeSurfaceChanged(w, h, oangle+dAngle,surface);
 		}	
 	}
 
@@ -1502,6 +1556,50 @@ public class GiderosApplication
 		return dm.densityDpi;		
 	}
 
+	static public void requestDeviceOrientation(int or,int auto)
+	{
+		final Activity activity = WeakActivityHolder.get();
+		int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        switch (auto) {
+            case 1:
+            switch(or){
+                case 0:
+                case 2:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+                break;
+                case 1:
+                case 3:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+                break;
+            }
+            break;
+            case 2:
+                orientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
+            break;
+            case 3:
+                orientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
+            break;
+            default:
+            switch(or){
+                case 0:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+                case 1:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case 2:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+                case 3:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+            }
+            break;
+        }
+
+        activity.setRequestedOrientation(orientation);
+	}
+
 	public static String getLocalIPs()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -1532,29 +1630,7 @@ public class GiderosApplication
 
 		return sb.toString();
 	}	
-	
-	public static int getRotation(int w,int h)
-	{
-		Activity activity = WeakActivityHolder.get();
-
-		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
 		
-		if (w<=h)
-		{
-			if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270)
-				return 0;
-			else
-				return 180;
-		}
-		else
-		{
-			if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)
-				return 90;
-			else
-				return 270;
-		}
-	}
-	
 	static public String getDeviceName() {
 		String manufacturer = android.os.Build.MANUFACTURER;
 		String model = android.os.Build.MODEL;
@@ -1640,6 +1716,7 @@ public class GiderosApplication
 	static private native void nativePause();
 	static private native void nativeResume();
 	static private native void nativeDestroy();
+	static private native void nativeOrientationChanged(int angle);
 	static private native void nativeSurfaceCreated(Surface surface);
 	static private native void nativeSurfaceChanged(int w, int h, int rotation,Surface surface);
 	static private native void nativeSurfaceDestroyed();

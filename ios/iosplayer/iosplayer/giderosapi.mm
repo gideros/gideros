@@ -241,6 +241,7 @@ public:
 #else
         void willRotateToInterfaceOrientationHelperTV(Orientation toInterfaceOrientation);
 #endif
+    void requestDeviceOrientation(gapplication_Orientation iO,gapplication_AutoOrientation iAutoRot);
     
     void handleOpenUrl(NSURL *url);
     
@@ -1439,34 +1440,29 @@ void ApplicationManager::didReceiveMemoryWarning()
 #if !TARGET_OS_TV && !TARGET_OS_OSX
 BOOL ApplicationManager::shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
 {
-	BOOL result;
-	
-	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-    bool dontAutorotate = !(((properties_.autorotation&1) && phone) || ((properties_.autorotation&2) && !phone));
-	
-	if (dontAutorotate)
-		result = (interfaceOrientation == UIInterfaceOrientationPortrait);
-	else
-	{
-/*		if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
-			result = (interfaceOrientation == UIInterfaceOrientationLandscapeLeft || interfaceOrientation == UIInterfaceOrientationLandscapeRight);
-		else
-			result = (interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown); */
-        result = TRUE;
-	}
-
-	return result;
+	return (properties_.autorotation==1)||(properties_.autorotation==2);
 }
 
 NSUInteger ApplicationManager::supportedInterfaceOrientations()
 {
-	NSUInteger result;
+	NSUInteger result=UIInterfaceOrientationMaskPortrait;
 	
-	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-	bool dontAutorotate = !(((properties_.autorotation&1) && phone) || ((properties_.autorotation&2) && !phone));
-
-    if (dontAutorotate){
-        result = UIInterfaceOrientationMaskPortrait;
+	if (properties_.autorotation==1) {
+		switch (application_->orientation()) {
+			case eLandscapeLeft:
+			case eLandscapeRight:
+				result=UIInterfaceOrientationMaskLandscapeLeft|UIInterfaceOrientationMaskLandscapeRight;
+                break;
+			case ePortrait:
+			case ePortraitUpsideDown:
+				result=UIInterfaceOrientationMaskPortrait|UIInterfaceOrientationMaskPortraitUpsideDown;
+                break;
+		}
+	}
+	else if (properties_.autorotation==2) {
+        result= UIInterfaceOrientationMaskAll;
+	}
+	else {
 		switch (application_->orientation()) {
 			case eLandscapeLeft:
 				result=UIInterfaceOrientationMaskLandscapeLeft;
@@ -1482,14 +1478,11 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
                 break;
 		}
     }
-    else
-    {
-        result= UIInterfaceOrientationMaskAll;
-    }
 
     return result;
 }
 #endif
+
 
 #if TARGET_OS_TV || TARGET_OS_OSX
 void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation deviceOrientation_)
@@ -1521,18 +1514,7 @@ void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrien
     }
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 
-
-    
-    Orientation orientation = application_->orientation();
-
-    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
-    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
-
-    if (b1 != b2)
-        hardwareOrientation_ = deviceOrientation_;
-    else
-        hardwareOrientation_ = orientation;
-
+    hardwareOrientation_ = deviceOrientation_;
     application_->setHardwareOrientation(hardwareOrientation_);
 }
 
@@ -1555,6 +1537,23 @@ void ApplicationManager::didRotateFromInterfaceOrientation(UIInterfaceOrientatio
 }
 #endif
 
+void ApplicationManager::requestDeviceOrientation(gapplication_Orientation iO,gapplication_AutoOrientation iAutoRot)
+{
+#if TARGET_OS_TV || TARGET_OS_OSX
+#else
+	properties_.autorotation=iAutoRot;
+	UIInterfaceOrientation or=UIInterfaceOrientationPortrait;
+	switch (iO) {
+		case GAPPLICATION_LANDSCAPE_LEFT: or=UIInterfaceOrientationLandscapeLeft; break;
+		case GAPPLICATION_LANDSCAPE_RIGHT: or=UIInterfaceOrientationLandscapeRight; break;
+		case GAPPLICATION_PORTRAIT_UPSIDE_DOWN: or=UIInterfaceOrientationPortraitUpsideDown; break;
+	}
+	NSNumber *value = [NSNumber numberWithInt:or];
+	[[UIDevice currentDevice] setValue:value forKey:@"orientation"];    
+	[UIViewController attemptRotationToDeviceOrientation];
+#endif	
+}
+ 
 void ApplicationManager::handleOpenUrl(NSURL *url)
 {
     gapplication_OpenUrlEvent *event = (gapplication_OpenUrlEvent*)gevent_CreateEventStruct1(
@@ -1861,6 +1860,12 @@ BOOL gdr_keyboardVisible()
         return s_manager->isKeyboardVisible();
     return FALSE;
 }
+
+void gapplication_requestDeviceOrientation(gapplication_Orientation iO,gapplication_AutoOrientation iAutoRot) {
+    if (s_manager)
+ 		s_manager->requestDeviceOrientation(iO,iAutoRot);
+}
+
 
     
 }
