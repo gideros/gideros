@@ -27,6 +27,8 @@ extern MTLRenderPassDescriptor *metalFramebuffer;
     id<MTLTexture> metalDepth;
 }
 
+@property(nonatomic) UIKeyboardType keyboardType;
+
 @property (nonatomic) UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
 
 - (void)setFramebuffer;

@@ -251,7 +251,7 @@ public:
     
     bool isKeyboardVisible();
     bool setKeyboardVisibility(bool visible);
-
+    bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context);
 
 private:
 	void loadProperties();
@@ -1548,8 +1548,8 @@ void ApplicationManager::requestDeviceOrientation(gapplication_Orientation iO,ga
 		case GAPPLICATION_LANDSCAPE_RIGHT: ior=UIInterfaceOrientationLandscapeRight; break;
 		case GAPPLICATION_PORTRAIT_UPSIDE_DOWN: ior=UIInterfaceOrientationPortraitUpsideDown; break;
 	}
-    if (@available (iOS 16, iPadOS 16, tvOS 16, *)) {
-        [UIViewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    if (@available (iOS 16, tvOS 16, *)) {
+        [g_getRootViewController() setNeedsUpdateOfSupportedInterfaceOrientations];
     }
     else {
         NSNumber *value = [NSNumber numberWithInt:ior];
@@ -1673,8 +1673,14 @@ bool ApplicationManager::setTextInput(int type,const char *buffer,int selstart,i
 			kt=UIKeyboardTypeNumbersAndPunctuation;
 		break;
 	}
-	view_.keyboardType=kt;
-#endif    
+    if (kt!=[[view_ valueForKey:@"keyboardType"] integerValue]) {
+        [view_ setValue:[NSNumber numberWithInt:kt] forKey:@"keyboardType"];
+        if ([view_ isFirstResponder]) {
+            [view_ resignFirstResponder];
+            [view_ becomeFirstResponder];
+        }
+    }
+#endif
 	return false;
 }
 
