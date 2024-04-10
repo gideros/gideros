@@ -1644,9 +1644,45 @@ bool setKeyboardVisibility(bool visible){
     return false;
 }
 
+bool ApplicationManager::setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
+{
+#if TARGET_OS_OSX
+    return false; //No virtual keyboard
+#else
+	UIKeyboardType kt=UIKeyboardTypeDefault;
+	switch (type) {
+		case 0: //None
+		break;
+		case 1: //Text
+			if (type&0x10) //URI
+				kt=UIKeyboardTypeURL;
+			if (type&0x20) //Email
+				kt=UIKeyboardTypeEmailAddress;
+		break;
+		case 2: //Number
+			kt=UIKeyboardTypeNumberPad;
+			if (type&0x2000) //Decimal
+				kt=UIKeyboardTypeDecimalPad;
+			if (type&0x1000) //Signed
+				kt=UIKeyboardTypeNumbersAndPunctuation;
+		break;
+		case 3: //Phone
+			kt=UIKeyboardTypePhonePad;
+		break;
+		case 4: //Date
+			kt=UIKeyboardTypeNumbersAndPunctuation;
+		break;
+	}
+	view_.keyboardType=kt;
+#endif    
+	return false;
+}
+
 bool setTextInput(int type,const char *buffer,int selstart,int selend,const char *label,const char *actionLabel, const char *hintText, const char *context)
 {
-	return false;
+    if (s_manager)
+        return s_manager->setTextInput(type,buffer,selstart,selend,label,actionLabel,hintText,context);
+    return false;
 }
 
 int setClipboard(std::string data,std::string mimeType, int luaFunc) {
