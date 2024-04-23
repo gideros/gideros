@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0379433B2BD7B44600548799 /* OggEncOpus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0379433A2BD7B44600548799 /* OggEncOpus.cpp */; };
 		5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FAAA015DD87E20039718F /* Foundation.framework */; };
 		EB07800B1F90A29D00320DD5 /* framing.c in Sources */ = {isa = PBXBuildFile; fileRef = EB0780091F90A29C00320DD5 /* framing.c */; };
 		EB07800C1F90A29D00320DD5 /* bitwise.c in Sources */ = {isa = PBXBuildFile; fileRef = EB07800A1F90A29D00320DD5 /* bitwise.c */; };
@@ -222,6 +223,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0379433A2BD7B44600548799 /* OggEncOpus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OggEncOpus.cpp; path = Common/OggEncOpus.cpp; sourceTree = "<group>"; };
 		5F9FAA9D15DD87E20039718F /* libogg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libogg.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F9FAAA015DD87E20039718F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EB0780091F90A29C00320DD5 /* framing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = framing.c; path = "libogg-1.3.2/src/framing.c"; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 				EB4C5B50233E366A00DA6CFB /* OggDecTheora.cpp */,
 				EB4C5B4F233E366900DA6CFB /* OggDecVorbis.cpp */,
 				EB4C5B51233E366A00DA6CFB /* OggEnc.cpp */,
+				0379433A2BD7B44600548799 /* OggEncOpus.cpp */,
 				EB4C5B4C233E366900DA6CFB /* OggEncVorbis.cpp */,
 				EB0780CC1F90A52E00320DD5 /* oggbinder.cpp */,
 				EB0780101F90A2C900320DD5 /* theora */,
@@ -963,6 +966,7 @@
 				EB07805A1F90A32000320DD5 /* decapiwrapper.c in Sources */,
 				EB4C5C56233E37C200DA6CFB /* warped_autocorrelation_FLP.c in Sources */,
 				EB4C5C1F233E378D00DA6CFB /* sum_sqr_shift.c in Sources */,
+				0379433B2BD7B44600548799 /* OggEncOpus.cpp in Sources */,
 				EB0780631F90A32000320DD5 /* decode.c in Sources */,
 				EB4C5BF8233E378D00DA6CFB /* quant_LTP_gains.c in Sources */,
 				EB0780BB1F90A3B000320DD5 /* floor1.c in Sources */,
