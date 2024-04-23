@@ -40,7 +40,7 @@ bool OggEncVorbis::PacketOut(ogg_packet *op)
 	return false;
 }
 
-bool OggEncVorbis::InitAudio(unsigned int channels, unsigned int rate, float quality, ogg_stream_state *os)
+bool OggEncVorbis::InitAudio(unsigned int channels, unsigned int rate, float quality)
 {
 	int ret=vorbis_encode_init_vbr(&vi, channels, rate,quality);
 	if (ret) return false;
@@ -52,25 +52,31 @@ bool OggEncVorbis::InitAudio(unsigned int channels, unsigned int rate, float qua
 	/* set up the analysis state and auxiliary encoding storage */
 	vorbis_analysis_init(&vd, &vi);
 	vorbis_block_init(&vd, &vb);
-	encodeInited=true;
 
-	/* Vorbis streams begin with three headers; the initial header (with
-	 most of the codec setup parameters) which is mandated by the Ogg
-	 bitstream spec.  The second header holds any comment fields.  The
-	 third header holds the bitstream codebook.  We merely need to
-	 make the headers, then pass them to libvorbis one at a time;
-	 libvorbis handles the additional Ogg bitstream constraints */
-
-	ogg_packet header;
-	ogg_packet header_comm;
-	ogg_packet header_code;
-
-	vorbis_analysis_headerout(&vd, &vc, &header,
-			&header_comm, &header_code);
-	ogg_stream_packetin(os, &header); /* automatically placed in its own page */
-	ogg_stream_packetin(os, &header_comm);
-	ogg_stream_packetin(os, &header_code);
 	return true;
+}
+
+bool OggEncVorbis::GenHeaderPage(ogg_stream_state *os) {
+    if (encodeInited) return false;
+
+    /* Vorbis streams begin with three headers; the initial header (with
+     most of the codec setup parameters) which is mandated by the Ogg
+     bitstream spec.  The second header holds any comment fields.  The
+     third header holds the bitstream codebook.  We merely need to
+     make the headers, then pass them to libvorbis one at a time;
+     libvorbis handles the additional Ogg bitstream constraints */
+
+    ogg_packet header;
+    ogg_packet header_comm;
+    ogg_packet header_code;
+
+    vorbis_analysis_headerout(&vd, &vc, &header,
+            &header_comm, &header_code);
+    ogg_stream_packetin(os, &header); /* automatically placed in its own page */
+    ogg_stream_packetin(os, &header_comm);
+    ogg_stream_packetin(os, &header_code);
+    encodeInited=true;
+    return true;
 }
 
 void OggEncVorbis::WriteAudio(void *buffer,size_t size) {

@@ -145,6 +145,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\OggDecVorbis.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\OggEnc.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\OggEncVorbis.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\OggEncOpus.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libopus-1.3.1\opus\celt\bands.c">
       <Filter>Opus\celt</Filter>
     </ClCompile>

@@ -27,12 +27,24 @@ public:
 	virtual double GranuleTime(ogg_int64_t gpos)=0;
 	virtual bool GotHeaders()=0;
 	virtual bool PacketIn(ogg_packet *op)=0;
-	virtual void GetAudioInfo(unsigned int &rate, unsigned int &channels) { };
-	virtual void GetVideoInfo(float &rate, unsigned int &width,unsigned int &height,int &format) { };
+	virtual void GetAudioInfo(unsigned int &rate, unsigned int &channels) { G_UNUSED(rate); G_UNUSED(channels); };
+	virtual void GetVideoInfo(float &rate, unsigned int &width,unsigned int &height,int &format)
+	{
+		G_UNUSED(rate);
+		G_UNUSED(width);
+		G_UNUSED(height);
+		G_UNUSED(format);
+	};
 	virtual void Restart() { };
-	virtual int GetAudio(ogg_int16_t *buffer,int max,ogg_int64_t &gpos) { return 0; };
-	virtual bool HasVideoFrame(ogg_int64_t &gpos) { return false; };
-	virtual void GetVideoFrame(VideoFrame &frame) { };
+	virtual int GetAudio(ogg_int16_t *buffer,int max,ogg_int64_t &gpos)
+	{
+		G_UNUSED(buffer);
+		G_UNUSED(max);
+		G_UNUSED(gpos);
+		return 0;
+	};
+	virtual bool HasVideoFrame(ogg_int64_t &gpos) { G_UNUSED(gpos); return false; };
+	virtual void GetVideoFrame(VideoFrame &frame) { G_UNUSED(frame); };
 };
 
 #define CODEC_TYPE_AUDIO	1

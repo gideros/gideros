@@ -61,7 +61,7 @@ INCLUDEPATH += $$XIPH_OPUS/opus/include $$XIPH_OPUS/opus  $$XIPH_OPUS/opus/silk 
 
 SOURCES += Common/oggbinder.cpp \
 Common/OggDec.cpp Common/OggDecVorbis.cpp Common/OggDecTheora.cpp Common/OggDecOpus.cpp \
-Common/OggEnc.cpp Common/OggEncVorbis.cpp \
+Common/OggEnc.cpp Common/OggEncVorbis.cpp Common/OggEncOpus.cpp \
     $$SXIPH
 
 HEADERS += 

@@ -76,7 +76,7 @@ SXIPH+=$(addprefix $(XIPH_VORBIS)/lib/,$(SVORBIS_F))
 SXIPH+=$(addprefix $(XIPH_OPUS)/,$(SOPUS_F))
 SCOMMON=Common/oggbinder.cpp \
 Common/OggDec.cpp Common/OggDecVorbis.cpp Common/OggDecTheora.cpp Common/OggDecOpus.cpp \
-Common/OggEnc.cpp Common/OggEncVorbis.cpp
+Common/OggEnc.cpp Common/OggEncVorbis.cpp Common/OggEncOpus.cpp
 
 INCS += Common
 INCS += $(XIPH_OGG)/include

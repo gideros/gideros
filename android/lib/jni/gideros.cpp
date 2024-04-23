@@ -1029,7 +1029,7 @@ void ApplicationManager::oculusInputEvent(oculus::Input &input) {
     	lua_pushinteger(L,input.recenterCount);
     	lua_rawsetfield(L, -2, "recenterCount");
     	lua_pushboolean(L,input.menuAction);
-    	lua_rawsetfield(L, -2, "rmenuAction");
+    	lua_rawsetfield(L, -2, "menuAction");
 
 		//Pose
 		lua_pushinteger(L,input.poseStatus);

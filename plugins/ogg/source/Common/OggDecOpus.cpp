@@ -6,7 +6,7 @@
  */
 
 #include "OggDecOpus.h"
-//#include "OggEncOpus.h"
+#include "OggEncOpus.h"
 #include <math.h>
 #include <string.h>
 
@@ -118,13 +118,13 @@ extern const OggDecType opus_cinfo= {
 		CODEC_TYPE_AUDIO,
 		probe_opus
 };
-/*
+
 static OggEnc *build_opus() {
 	return new OggEncOpus();
 }
-extern const OggEncType einfo= {
+extern const OggEncType opus_einfo= {
 		build: build_opus
-};*/
+};
 
 #ifdef PART_Opus
 #include <gideros.h>
@@ -134,12 +134,12 @@ extern const OggEncType einfo= {
 
 static void g_initializePlugin(lua_State *L) {
 	register_oggdec("opus",opus_cinfo);
-	//register_oggenc("opus",opus_einfo);
+	register_oggenc("opus",opus_einfo);
 }
 
 static void g_deinitializePlugin(lua_State *L) {
     unregister_oggdec("opus");
-	//unregister_oggenc("opus");
+	unregister_oggenc("opus");
 }
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("OggOpus", "1.0",OggOpus)

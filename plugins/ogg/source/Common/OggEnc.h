@@ -15,8 +15,22 @@ class OggEnc {
 public:
         virtual ~OggEnc() {};
         virtual bool PacketOut(ogg_packet *op)=0;
-	virtual bool InitAudio(unsigned int channels, unsigned int rate, float quality, ogg_stream_state *os) { return false; };
-	virtual void WriteAudio(void *buffer,size_t size) { };
+    virtual bool InitAudio(unsigned int channels, unsigned int rate, float quality)
+	{
+		G_UNUSED(channels);
+		G_UNUSED(rate);
+		G_UNUSED(quality);
+		return false;
+	};
+    virtual bool GenHeaderPage(ogg_stream_state *os) {
+        G_UNUSED(os);
+        return false;
+    };
+	virtual void WriteAudio(void *buffer,size_t size)
+	{
+		G_UNUSED(buffer);
+		G_UNUSED(size);
+	};
 };
 
 struct OggEncType {

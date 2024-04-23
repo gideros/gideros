@@ -107,6 +107,8 @@ public:
 	SpriteProxy *proxy_;
 	void doDraw(const CurrentTransform&, float sx, float sy, float ex,
 			float ey);
+	void update(float d);
+	bool manualUpdate;
 	spAnimationState* state;
 	spSkeleton* skeleton;
 	float timeScale;
@@ -263,6 +265,7 @@ SpineSprite::SpineSprite(LuaApplication* application, const char *fileName,
 	}
 	timeScale = scale;
 	usePremultipliedAlpha = true;
+	manualUpdate = false;
 
 	spBone_setYDown(true);
 	worldVertices = (float *) malloc(
@@ -330,19 +333,28 @@ void SpineSprite::drawMesh() {
 	}
 }
 
-void SpineSprite::doDraw(const CurrentTransform&, float _UNUSED(sx),
-		float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey)) {
-
-	double tm = g_iclock();
-	double d = tm - lastTime_;
-	if (d > 1)
-		d = 0;
-	lastTime_ = tm;
-	unsigned short quadIndices[6] = { 0, 1, 2, 2, 3, 0 };
+void SpineSprite::update(float d) {
 	d *= timeScale;
 
 	spSkeleton_update(skeleton, d);
 	spAnimationState_update(state, d);
+}
+
+void SpineSprite::doDraw(const CurrentTransform&, float _UNUSED(sx),
+		float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey)) {
+
+	double tm = g_iclock();
+	unsigned short quadIndices[6] = { 0, 1, 2, 2, 3, 0 };
+	double d = tm - lastTime_;
+	if (d > 1)
+		d = 0;
+	lastTime_ = tm;
+	if (!manualUpdate) {
+		d *= timeScale;
+
+		spSkeleton_update(skeleton, d);
+		spAnimationState_update(state, d);
+	}
 	spAnimationState_apply(state, skeleton);
 	spSkeleton_updateWorldTransform(skeleton);
 
@@ -670,6 +682,20 @@ int setMix(lua_State *L) {
 	return 0;
 }
 
+int update(lua_State *L) {
+	Binder binder(L);
+	SpriteProxy* psp = static_cast<SpriteProxy*>(binder.getInstance(
+			"SpineSprite", 1));
+	SpineSprite* ps = static_cast<SpineSprite*>(psp->getContext());
+	if (lua_isnoneornil(L, 2))
+		ps->manualUpdate=false;
+	else {
+		ps->manualUpdate=true;
+		ps->update((float) luaL_checknumber(L,2));
+	}
+	return 0;
+}
+
 int loader(lua_State *L) {
 //StackChecker checker(L, "Box2DBinder2::loader", 1);
 
@@ -678,11 +704,15 @@ int loader(lua_State *L) {
 	const luaL_Reg SpineSprite_functionList[] = {
 			{ "setAnimation", setAnimation },
 			{ "stopAnimation", stopAnimation },
-			{ "addAnimation", addAnimation }, { "setMix", setMix }, {
-					"setSpeed", setSpeed }, { "getSpeed", getSpeed }, {
-					"setAttachment", setAttachment }, //(slotName,attachment)
-			{ "setSkin", setSkin }, { "getBoneLocation", getBoneLocation }, {
-					NULL, NULL }, };
+			{ "addAnimation", addAnimation },
+			{ "setMix", setMix },
+			{ "setSpeed", setSpeed },
+			{ "getSpeed", getSpeed },
+			{ "setAttachment", setAttachment }, //(slotName,attachment)
+			{ "setSkin", setSkin },
+			{ "getBoneLocation", getBoneLocation },
+			{ "update", update },
+			{  NULL, NULL }, };
 	binder.createClass("SpineSprite", "Sprite", createSpineSprite,
 			destroySpineSprite, SpineSprite_functionList);
 

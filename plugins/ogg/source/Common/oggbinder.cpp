@@ -583,7 +583,11 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	handle->fos = fos;
 	handle->bytesPerSample = ((bitsPerSample + 7) / 8) * numChannels;
 
-	handle->audio_p=build_oggenc("vorbis");
+	int fn=strlen(fileName);
+	const char *codec="vorbis";
+	if ((fn>=5)&&(!strcmp(fileName+fn-5,".opus")))
+		codec="opus";
+	handle->audio_p=build_oggenc(codec);
     if (!handle->audio_p) {
 		delete handle;
 		return (g_id) 0;
@@ -595,7 +599,7 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	srand(time(NULL));
 	ogg_stream_init(&handle->os, rand());
 
-	if (!(handle->audio_p->InitAudio(numChannels,sampleRate,quality,&handle->os))) {
+    if (!(handle->audio_p->InitAudio(numChannels,sampleRate,quality))) {
 		/* do not continue if setup failed; this can happen if we ask for a
 		 mode that libVorbis does not support (eg, too low a bitrate, etc,
 		 will return 'OV_EIMPL') */
@@ -605,16 +609,15 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 		return (g_id) 0;
 	}
 
-	/* This ensures the actual
-		 * audio data will start on a new page, as per spec
-		 */
-		while (true) {
-			int result = ogg_stream_flush(&handle->os, &handle->og);
-			if (result == 0)
-				break;
-			fwrite(handle->og.header, 1, handle->og.header_len, handle->fos);
-			fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
-		}
+    while (handle->audio_p->GenHeaderPage(&handle->os)) {
+        while (true) {
+            int result = ogg_stream_flush(&handle->os, &handle->og);
+            if (result == 0)
+                break;
+            fwrite(handle->og.header, 1, handle->og.header_len, handle->fos);
+            fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
+        }
+    }
 
 	g_id gid= g_NextId();
 	ctxmap2[gid]=handle;
@@ -831,15 +834,17 @@ static void g_initializePlugin(lua_State *L) {
 	gaudio_registerType("ogg", audioOgg);
 	gaudio_registerType("oga", audioOgg);
 	gaudio_registerType("ogv", audioOgg);
+	gaudio_registerType("opus", audioOgg);
 	gaudio_registerEncoderType("ogg", audioEncOgg);
 	gaudio_registerEncoderType("oga", audioEncOgg);
+	gaudio_registerEncoderType("opus", audioEncOgg);
 
 #ifndef PART_Core
     register_oggdec("vorbis",vorbis_cinfo);
     register_oggdec("opus",opus_cinfo);
     register_oggdec("theora",theora_cinfo);
     register_oggenc("vorbis",vorbis_einfo);
-    //register_oggenc("opus",opus_cinfo);
+    register_oggenc("opus",opus_einfo);
 #endif
 }
 
@@ -852,12 +857,13 @@ static void g_deinitializePlugin(lua_State *L) {
 	gaudio_unregisterType("ogg");
 	gaudio_unregisterType("oga");
 	gaudio_unregisterType("ogv");
+	gaudio_unregisterType("opus");
 #ifndef PART_Core
     unregister_oggdec("vorbis");
     unregister_oggdec("opus");
     unregister_oggdec("theora");
     unregister_oggenc("vorbis");
-    //unregister_oggenc("opus");
+    unregister_oggenc("opus");
 #endif
 }
 #if (!defined(QT_NO_DEBUG)) && (defined(TARGET_OS_MAC) || defined(_MSC_VER)  || defined(TARGET_OS_OSX))

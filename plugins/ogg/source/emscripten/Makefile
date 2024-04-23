@@ -60,7 +60,7 @@ ifeq ($(PART),Opus)
 CFLGS+= -DHAVE_CONFIG_H
 SXIPH+=$(addprefix $(XIPH_OPUS)/,$(SOPUS_F)) Common/OggDecOpus
 ifeq ($(subst NE,,$(FLAVOUR)),$(FLAVOUR))
-SXIPH+=$(addprefix $(XIPH_OPUS)/,$(SOPUS_E))
+SXIPH+=$(addprefix $(XIPH_OPUS)/,$(SOPUS_E)) Common/OggEncOpus
 endif
 endif
 

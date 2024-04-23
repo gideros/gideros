@@ -44,7 +44,7 @@ SXIPH+=$(addprefix $(XIPH_OGG)/src/,$(SOGG_F))
 SXIPH+=$(addprefix $(XIPH_THEORA)/lib/,$(STHEORADEC_F))
 SXIPH+=$(addprefix $(XIPH_VORBIS)/lib/,$(SVORBIS_F))
 SXIPH+=$(addprefix $(XIPH_OPUS)/,$(SOPUS_F))
-SCOMMON=$(addprefix Common/,oggbinder OggDec OggDecVorbis OggDecTheora OggDecOpus OggEnc OggEncVorbis)
+SCOMMON=$(addprefix Common/,oggbinder OggDec OggDecVorbis OggDecTheora OggDecOpus OggEnc OggEncVorbis OggEncOpus)
 
 INCS += Common
 INCS += $(XIPH_OGG)/include

@@ -23,8 +23,9 @@ public:
 	OggEncVorbis();
 	~OggEncVorbis();
 	virtual bool PacketOut(ogg_packet *op);
-	virtual bool InitAudio(unsigned int channels, unsigned int rate, float quality, ogg_stream_state *os);
-	virtual void WriteAudio(void *buffer,size_t size);
+    virtual bool InitAudio(unsigned int channels, unsigned int rate, float quality);
+    virtual bool GenHeaderPage( ogg_stream_state *os);
+    virtual void WriteAudio(void *buffer,size_t size);
 };
 
 extern const OggEncType vorbis_einfo;
