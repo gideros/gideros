@@ -8,6 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		0379433B2BD7B44600548799 /* OggEncOpus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0379433A2BD7B44600548799 /* OggEncOpus.cpp */; };
+		0379433D2BFCFBA600548799 /* analyze.c in Sources */ = {isa = PBXBuildFile; fileRef = 0379433C2BFCFBA600548799 /* analyze.c */; };
+		037943412BFCFC1200548799 /* enquant.c in Sources */ = {isa = PBXBuildFile; fileRef = 0379433E2BFCFC1200548799 /* enquant.c */; };
+		037943422BFCFC1200548799 /* enquant.h in Headers */ = {isa = PBXBuildFile; fileRef = 0379433F2BFCFC1200548799 /* enquant.h */; };
+		037943432BFCFC1200548799 /* fdct.c in Sources */ = {isa = PBXBuildFile; fileRef = 037943402BFCFC1200548799 /* fdct.c */; };
+		0379434F2BFCFC6000548799 /* encode.c in Sources */ = {isa = PBXBuildFile; fileRef = 037943442BFCFC5F00548799 /* encode.c */; };
+		037943502BFCFC6000548799 /* encapiwrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = 037943452BFCFC5F00548799 /* encapiwrapper.c */; };
+		037943512BFCFC6000548799 /* th_mathops.c in Sources */ = {isa = PBXBuildFile; fileRef = 037943462BFCFC5F00548799 /* th_mathops.c */; };
+		037943522BFCFC6000548799 /* encinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 037943472BFCFC5F00548799 /* encinfo.c */; };
+		037943532BFCFC6000548799 /* encint.h in Headers */ = {isa = PBXBuildFile; fileRef = 037943482BFCFC5F00548799 /* encint.h */; };
+		037943542BFCFC6000548799 /* mcenc.c in Sources */ = {isa = PBXBuildFile; fileRef = 037943492BFCFC5F00548799 /* mcenc.c */; };
+		037943552BFCFC6000548799 /* encfrag.c in Sources */ = {isa = PBXBuildFile; fileRef = 0379434A2BFCFC5F00548799 /* encfrag.c */; };
+		037943562BFCFC6000548799 /* th_rate.c in Sources */ = {isa = PBXBuildFile; fileRef = 0379434B2BFCFC5F00548799 /* th_rate.c */; };
+		037943572BFCFC6000548799 /* huffenc.c in Sources */ = {isa = PBXBuildFile; fileRef = 0379434C2BFCFC6000548799 /* huffenc.c */; };
+		037943582BFCFC6000548799 /* huffenc.h in Headers */ = {isa = PBXBuildFile; fileRef = 0379434D2BFCFC6000548799 /* huffenc.h */; };
+		037943592BFCFC6000548799 /* tokenize.c in Sources */ = {isa = PBXBuildFile; fileRef = 0379434E2BFCFC6000548799 /* tokenize.c */; };
+		0379435B2BFCFC7600548799 /* OggEncTheora.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0379435A2BFCFC7600548799 /* OggEncTheora.cpp */; };
 		5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FAAA015DD87E20039718F /* Foundation.framework */; };
 		EB07800B1F90A29D00320DD5 /* framing.c in Sources */ = {isa = PBXBuildFile; fileRef = EB0780091F90A29C00320DD5 /* framing.c */; };
 		EB07800C1F90A29D00320DD5 /* bitwise.c in Sources */ = {isa = PBXBuildFile; fileRef = EB07800A1F90A29D00320DD5 /* bitwise.c */; };
@@ -224,6 +240,22 @@
 
 /* Begin PBXFileReference section */
 		0379433A2BD7B44600548799 /* OggEncOpus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OggEncOpus.cpp; path = Common/OggEncOpus.cpp; sourceTree = "<group>"; };
+		0379433C2BFCFBA600548799 /* analyze.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = analyze.c; path = "libtheora-1.1.1/lib/analyze.c"; sourceTree = "<group>"; };
+		0379433E2BFCFC1200548799 /* enquant.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = enquant.c; path = "libtheora-1.1.1/lib/enquant.c"; sourceTree = "<group>"; };
+		0379433F2BFCFC1200548799 /* enquant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = enquant.h; path = "libtheora-1.1.1/lib/enquant.h"; sourceTree = "<group>"; };
+		037943402BFCFC1200548799 /* fdct.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fdct.c; path = "libtheora-1.1.1/lib/fdct.c"; sourceTree = "<group>"; };
+		037943442BFCFC5F00548799 /* encode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encode.c; path = "libtheora-1.1.1/lib/encode.c"; sourceTree = "<group>"; };
+		037943452BFCFC5F00548799 /* encapiwrapper.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encapiwrapper.c; path = "libtheora-1.1.1/lib/encapiwrapper.c"; sourceTree = "<group>"; };
+		037943462BFCFC5F00548799 /* th_mathops.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = th_mathops.c; path = "libtheora-1.1.1/lib/th_mathops.c"; sourceTree = "<group>"; };
+		037943472BFCFC5F00548799 /* encinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encinfo.c; path = "libtheora-1.1.1/lib/encinfo.c"; sourceTree = "<group>"; };
+		037943482BFCFC5F00548799 /* encint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = encint.h; path = "libtheora-1.1.1/lib/encint.h"; sourceTree = "<group>"; };
+		037943492BFCFC5F00548799 /* mcenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mcenc.c; path = "libtheora-1.1.1/lib/mcenc.c"; sourceTree = "<group>"; };
+		0379434A2BFCFC5F00548799 /* encfrag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encfrag.c; path = "libtheora-1.1.1/lib/encfrag.c"; sourceTree = "<group>"; };
+		0379434B2BFCFC5F00548799 /* th_rate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = th_rate.c; path = "libtheora-1.1.1/lib/th_rate.c"; sourceTree = "<group>"; };
+		0379434C2BFCFC6000548799 /* huffenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = huffenc.c; path = "libtheora-1.1.1/lib/huffenc.c"; sourceTree = "<group>"; };
+		0379434D2BFCFC6000548799 /* huffenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = huffenc.h; path = "libtheora-1.1.1/lib/huffenc.h"; sourceTree = "<group>"; };
+		0379434E2BFCFC6000548799 /* tokenize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tokenize.c; path = "libtheora-1.1.1/lib/tokenize.c"; sourceTree = "<group>"; };
+		0379435A2BFCFC7600548799 /* OggEncTheora.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OggEncTheora.cpp; path = Common/OggEncTheora.cpp; sourceTree = "<group>"; };
 		5F9FAA9D15DD87E20039718F /* libogg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libogg.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F9FAAA015DD87E20039718F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EB0780091F90A29C00320DD5 /* framing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = framing.c; path = "libogg-1.3.2/src/framing.c"; sourceTree = "<group>"; };
@@ -456,6 +488,7 @@
 		5F9FAA9215DD87E10039718F = {
 			isa = PBXGroup;
 			children = (
+				0379435A2BFCFC7600548799 /* OggEncTheora.cpp */,
 				EB4C5B58233E367500DA6CFB /* opus */,
 				EB4C5B4D233E366900DA6CFB /* OggDec.cpp */,
 				EB4C5B4E233E366900DA6CFB /* OggDecOpus.cpp */,
@@ -550,6 +583,21 @@
 		EB0780101F90A2C900320DD5 /* theora */ = {
 			isa = PBXGroup;
 			children = (
+				037943452BFCFC5F00548799 /* encapiwrapper.c */,
+				0379434A2BFCFC5F00548799 /* encfrag.c */,
+				037943472BFCFC5F00548799 /* encinfo.c */,
+				037943482BFCFC5F00548799 /* encint.h */,
+				037943442BFCFC5F00548799 /* encode.c */,
+				0379434C2BFCFC6000548799 /* huffenc.c */,
+				0379434D2BFCFC6000548799 /* huffenc.h */,
+				037943492BFCFC5F00548799 /* mcenc.c */,
+				037943462BFCFC5F00548799 /* th_mathops.c */,
+				0379434B2BFCFC5F00548799 /* th_rate.c */,
+				0379434E2BFCFC6000548799 /* tokenize.c */,
+				0379433E2BFCFC1200548799 /* enquant.c */,
+				0379433F2BFCFC1200548799 /* enquant.h */,
+				037943402BFCFC1200548799 /* fdct.c */,
+				0379433C2BFCFBA600548799 /* analyze.c */,
 				EB0780321F90A31800320DD5 /* apiwrapper.c */,
 				EB07803E1F90A31E00320DD5 /* apiwrapper.h */,
 				EB0780331F90A31800320DD5 /* bitpack.c */,
@@ -777,15 +825,18 @@
 				EB0780C11F90A3B000320DD5 /* lpc.h in Headers */,
 				EB0780411F90A32000320DD5 /* bitpack.h in Headers */,
 				EB0780A21F90A3B000320DD5 /* highlevel.h in Headers */,
+				037943532BFCFC6000548799 /* encint.h in Headers */,
 				EB0780441F90A32000320DD5 /* dequant.h in Headers */,
 				EB0780B91F90A3B000320DD5 /* backends.h in Headers */,
 				EB07804F1F90A32000320DD5 /* huffman.h in Headers */,
 				EB0780A81F90A3B000320DD5 /* lookup.h in Headers */,
 				EB0780AB1F90A3B000320DD5 /* lsp.h in Headers */,
+				037943422BFCFC1200548799 /* enquant.h in Headers */,
 				EB0780B11F90A3B000320DD5 /* scales.h in Headers */,
 				EB0780C41F90A3B000320DD5 /* codec_internal.h in Headers */,
 				EB0780541F90A32000320DD5 /* huffdec.h in Headers */,
 				EB0780561F90A32000320DD5 /* dct.h in Headers */,
+				037943582BFCFC6000548799 /* huffenc.h in Headers */,
 				EB07805C1F90A32000320DD5 /* ocintrin.h in Headers */,
 				EB07806C1F90A32000320DD5 /* apiwrapper.h in Headers */,
 				EB0780B81F90A3B000320DD5 /* mdct.h in Headers */,
@@ -891,6 +942,7 @@
 				EB0780AF1F90A3B000320DD5 /* block.c in Sources */,
 				EB4C5C23233E378D00DA6CFB /* decode_indices.c in Sources */,
 				EB07804A1F90A32000320DD5 /* th_info.c in Sources */,
+				037943522BFCFC6000548799 /* encinfo.c in Sources */,
 				EB4C5C2D233E378D00DA6CFB /* decode_frame.c in Sources */,
 				EB4C5B72233E36F500DA6CFB /* kiss_fft.c in Sources */,
 				EB0780BA1F90A3B000320DD5 /* lpc.c in Sources */,
@@ -907,6 +959,7 @@
 				EB4C5B94233E371E00DA6CFB /* mlp_data.c in Sources */,
 				EB4C5B7F233E36F500DA6CFB /* entenc.c in Sources */,
 				EB4C5C33233E378D00DA6CFB /* sort.c in Sources */,
+				037943552BFCFC6000548799 /* encfrag.c in Sources */,
 				EB4C5BF7233E378D00DA6CFB /* NSQ_del_dec.c in Sources */,
 				EB4C5C24233E378D00DA6CFB /* decode_parameters.c in Sources */,
 				EB4C5C13233E378D00DA6CFB /* NLSF_unpack.c in Sources */,
@@ -926,6 +979,7 @@
 				EB4C5B95233E371E00DA6CFB /* mlp.c in Sources */,
 				EB4C5C60233E37C200DA6CFB /* apply_sine_window_FLP.c in Sources */,
 				EB4C5C65233E37C200DA6CFB /* find_pred_coefs_FLP.c in Sources */,
+				037943562BFCFC6000548799 /* th_rate.c in Sources */,
 				EB4C5C09233E378D00DA6CFB /* dec_API.c in Sources */,
 				EB4C5B7C233E36F500DA6CFB /* modes.c in Sources */,
 				EB4C5BF2233E378D00DA6CFB /* PLC.c in Sources */,
@@ -940,6 +994,7 @@
 				EB4C5B79233E36F500DA6CFB /* opus_mdct.c in Sources */,
 				EB4C5C1D233E378D00DA6CFB /* code_signs.c in Sources */,
 				EB4C5BEF233E378D00DA6CFB /* tables_pulses_per_block.c in Sources */,
+				037943502BFCFC6000548799 /* encapiwrapper.c in Sources */,
 				EB4C5C6C233E37C200DA6CFB /* schur_FLP.c in Sources */,
 				EB4C5BFC233E378D00DA6CFB /* tables_NLSF_CB_WB.c in Sources */,
 				EB4C5B98233E371E00DA6CFB /* opus_projection_encoder.c in Sources */,
@@ -953,6 +1008,7 @@
 				EB4C5C1B233E378D00DA6CFB /* encode_pulses.c in Sources */,
 				EB4C5BED233E378D00DA6CFB /* resampler_private_up2_HQ.c in Sources */,
 				EB0780501F90A32000320DD5 /* idct.c in Sources */,
+				037943542BFCFC6000548799 /* mcenc.c in Sources */,
 				EB4C5C05233E378D00DA6CFB /* bwexpander_32.c in Sources */,
 				EB4C5B92233E371E00DA6CFB /* opus_analysis.c in Sources */,
 				EB4C5BFA233E378D00DA6CFB /* LPC_fit.c in Sources */,
@@ -961,11 +1017,13 @@
 				EB4C5C61233E37C200DA6CFB /* encode_frame_FLP.c in Sources */,
 				EB4C5B77233E36F500DA6CFB /* celt_encoder.c in Sources */,
 				EB4C5C25233E378D00DA6CFB /* decode_core.c in Sources */,
+				0379433D2BFCFBA600548799 /* analyze.c in Sources */,
 				EB4C5C51233E37C200DA6CFB /* scale_vector_FLP.c in Sources */,
 				EB4C5B99233E371E00DA6CFB /* opus_projection_decoder.c in Sources */,
 				EB07805A1F90A32000320DD5 /* decapiwrapper.c in Sources */,
 				EB4C5C56233E37C200DA6CFB /* warped_autocorrelation_FLP.c in Sources */,
 				EB4C5C1F233E378D00DA6CFB /* sum_sqr_shift.c in Sources */,
+				0379435B2BFCFC7600548799 /* OggEncTheora.cpp in Sources */,
 				0379433B2BD7B44600548799 /* OggEncOpus.cpp in Sources */,
 				EB0780631F90A32000320DD5 /* decode.c in Sources */,
 				EB4C5BF8233E378D00DA6CFB /* quant_LTP_gains.c in Sources */,
@@ -975,12 +1033,14 @@
 				EB4C5B96233E371E00DA6CFB /* opus_decoder.c in Sources */,
 				EB0780A41F90A3B000320DD5 /* sharedbook.c in Sources */,
 				EB4C5C5C233E37C200DA6CFB /* bwexpander_FLP.c in Sources */,
+				037943592BFCFC6000548799 /* tokenize.c in Sources */,
 				EB0780BC1F90A3B000320DD5 /* smallft.c in Sources */,
 				EB0780A51F90A3B000320DD5 /* mapping0.c in Sources */,
 				EB4C5C11233E378D00DA6CFB /* control_SNR.c in Sources */,
 				EB4C5C29233E378D00DA6CFB /* decode_pulses.c in Sources */,
 				EB4C5C2A233E378D00DA6CFB /* log2lin.c in Sources */,
 				EB0780611F90A32000320DD5 /* bitpack.c in Sources */,
+				037943572BFCFC6000548799 /* huffenc.c in Sources */,
 				EB0780601F90A32000320DD5 /* apiwrapper.c in Sources */,
 				EB4C5C1C233E378D00DA6CFB /* LPC_analysis_filter.c in Sources */,
 				EB0780681F90A32000320DD5 /* huffdec.c in Sources */,
@@ -999,9 +1059,11 @@
 				EB4C5BF9233E378D00DA6CFB /* stereo_MS_to_LR.c in Sources */,
 				EB4C5C66233E37C200DA6CFB /* k2a_FLP.c in Sources */,
 				EB4C5BF0233E378D00DA6CFB /* resampler_down2.c in Sources */,
+				0379434F2BFCFC6000548799 /* encode.c in Sources */,
 				EB4C5C0F233E378D00DA6CFB /* NSQ.c in Sources */,
 				EB0780AA1F90A3B000320DD5 /* floor0.c in Sources */,
 				EB4C5C32233E378D00DA6CFB /* control_audio_bandwidth.c in Sources */,
+				037943412BFCFC1200548799 /* enquant.c in Sources */,
 				EB4C5C5E233E37C200DA6CFB /* residual_energy_FLP.c in Sources */,
 				EB0780A11F90A3B000320DD5 /* res0.c in Sources */,
 				EB4C5C07233E378D00DA6CFB /* VQ_WMat_EC.c in Sources */,
@@ -1010,10 +1072,12 @@
 				EB4C5C17233E378D00DA6CFB /* LPC_inv_pred_gain.c in Sources */,
 				EB4C5B7A233E36F500DA6CFB /* bands.c in Sources */,
 				EB4C5B76233E36F500DA6CFB /* mathops.c in Sources */,
+				037943432BFCFC1200548799 /* fdct.c in Sources */,
 				EB4C5B70233E36F500DA6CFB /* cwrs.c in Sources */,
 				EB4C5C5F233E37C200DA6CFB /* LPC_inv_pred_gain_FLP.c in Sources */,
 				EB4C5B97233E371E00DA6CFB /* opus_multistream_encoder.c in Sources */,
 				EB4C5C0C233E378D00DA6CFB /* resampler_down2_3.c in Sources */,
+				037943512BFCFC6000548799 /* th_mathops.c in Sources */,
 				EB0780BF1F90A3B000320DD5 /* registry.c in Sources */,
 				EB4C5BEA233E378D00DA6CFB /* NLSF_VQ.c in Sources */,
 				EB4C5BEE233E378D00DA6CFB /* tables_gain.c in Sources */,
