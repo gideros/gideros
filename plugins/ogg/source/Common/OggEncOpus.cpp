@@ -9,9 +9,15 @@
 #include <math.h>
 #include <cstring>
 
-#define PACKED __attribute__((packed))
+#ifdef __GNUC__
+#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#endif
 
-union unal
+#ifdef _MSC_VER
+#define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop))
+#endif
+
+PACK(union unal
 {
  uint8_t b;
  uint16_t s;
@@ -23,7 +29,7 @@ union unal
  int64_t lli;
  float f;
  double d;
-} PACKED;
+});
 
 #define PULONG(p)  ((union unal *)(p))->l
 #define PUSHORT(p) ((union unal *)(p))->s

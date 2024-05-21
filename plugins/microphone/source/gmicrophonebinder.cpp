@@ -162,6 +162,11 @@ public:
         return started_ && !paused_;
     }
 
+    int getStreamId() const
+    {
+        return outputFile_;
+    }
+
     bool isStarted() const
     {
         return started_;
@@ -378,6 +383,13 @@ static int isRecording(lua_State *L)
     return 1;
 }
 
+static int getStreamId(lua_State *L)
+{
+    GMicrophone *microphone = getInstance(L, 1);
+    lua_pushinteger(L, microphone->getStreamId());
+    return 1;
+}
+
 static int loader(lua_State* L)
 {
     const luaL_Reg functionlist[] = {
@@ -387,6 +399,7 @@ static int loader(lua_State* L)
         {"isPaused", isPaused},
         {"isRecording", isRecording},
         {"setOutputFile", setOutputFile},
+        {"getStreamId", getStreamId},
         {NULL, NULL},
     };
 

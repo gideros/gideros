@@ -108,7 +108,8 @@ static OggEnc *build_vorbis() {
 	return new OggEncVorbis();
 }
 extern const OggEncType vorbis_einfo= {
-		build_vorbis
+    CODEC_TYPE_AUDIO,
+    build_vorbis
 };
 #endif
 

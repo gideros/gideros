@@ -13,8 +13,20 @@
 
 class OggEnc {
 public:
-        virtual ~OggEnc() {};
-        virtual bool PacketOut(ogg_packet *op)=0;
+    int Format;
+    struct VideoBuffer {
+    	int width;
+        int height;
+        int stride;
+        void *data;
+    };
+    struct VideoFrame {
+        VideoBuffer y;
+        VideoBuffer u;
+        VideoBuffer v;
+    };
+    virtual ~OggEnc() {};
+    virtual bool PacketOut(ogg_packet *op)=0;
     virtual bool InitAudio(unsigned int channels, unsigned int rate, float quality)
 	{
 		G_UNUSED(channels);
@@ -31,10 +43,26 @@ public:
 		G_UNUSED(buffer);
 		G_UNUSED(size);
 	};
+    virtual bool InitVideo(float rate,unsigned int width, unsigned int height, int format, float quality)
+    {
+        G_UNUSED(rate);
+        G_UNUSED(width);
+        G_UNUSED(height);
+        G_UNUSED(format);
+        G_UNUSED(quality);
+        return false;
+    };
+    virtual void EncodeVideoFrame(ogg_int64_t gpos,VideoFrame *frame,bool last)
+    {
+        G_UNUSED(gpos);
+        G_UNUSED(frame);
+        G_UNUSED(last);
+    }
 };
 
 struct OggEncType {
-	OggEnc *(*build)();
+    int type; //1=Audio, 2=Video
+    OggEnc *(*build)();
 };
 
 

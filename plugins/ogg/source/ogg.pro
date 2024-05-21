@@ -18,6 +18,7 @@ XIPH_OPUS=libopus-1.3.1
 
 SOGG_F=bitwise framing
 STHEORADEC_F=apiwrapper bitpack decapiwrapper decinfo decode dequant fragment huffdec idct th_info internal quant state
+STHEORAENC_F=analyze encapiwrapper encfrag encinfo encode enquant fdct huffenc th_mathops mcenc tokenize th_rate
 SVORBIS_F=mdct block window synthesis info floor1 floor0 res0 mapping0 registry codebook sharedbook envelope psy bitrate lpc lsp smallft vorbisfile
 SVORBIS_F+=analysis vorbisenc
 
@@ -50,6 +51,7 @@ for(f,SOPUS_SF):SOPUS_F+=opus/silk/float/$${f}
 
 for(f,SOGG_F):SXIPH+=$$XIPH_OGG/src/$${f}.c
 for(f,STHEORADEC_F):SXIPH+=$$XIPH_THEORA/lib/$${f}.c
+for(f,STHEORAENC_F):SXIPH+=$$XIPH_THEORA/lib/$${f}.c
 for(f,SVORBIS_F):SXIPH+=$$XIPH_VORBIS/lib/$${f}.c
 for(f,SOPUS_F):SXIPH+=$$XIPH_OPUS/$${f}.c
 
@@ -61,10 +63,18 @@ INCLUDEPATH += $$XIPH_OPUS/opus/include $$XIPH_OPUS/opus  $$XIPH_OPUS/opus/silk 
 
 SOURCES += Common/oggbinder.cpp \
 Common/OggDec.cpp Common/OggDecVorbis.cpp Common/OggDecTheora.cpp Common/OggDecOpus.cpp \
-Common/OggEnc.cpp Common/OggEncVorbis.cpp Common/OggEncOpus.cpp \
+Common/OggEnc.cpp Common/OggEncVorbis.cpp Common/OggEncTheora.cpp Common/OggEncOpus.cpp \
     $$SXIPH
 
-HEADERS += 
+HEADERS +=  \
+    Common/OggDec.h \
+    Common/OggDecOpus.h \
+    Common/OggDecTheora.h \
+    Common/OggDecVorbis.h \
+    Common/OggEnc.h \
+    Common/OggEncOpus.h \
+    Common/OggEncTheora.h \
+    Common/OggEncVorbis.h
 
 LIBS += -L"../../../Sdk/lib/desktop" -llua -lgid -lgideros -lgvfs
 

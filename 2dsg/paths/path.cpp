@@ -2786,7 +2786,11 @@ Path2D::Path2D(Application* application) :
 	path = gen_paths(1);
 	texturebase_ = NULL;
 	convex_ = false;
-	setFillColor(0xFFFFFF, 1);
+    thickness_ = 1;
+    margin_ = 1;
+    feather_ = 0.25;
+    flatness_ = 0;
+    setFillColor(0xFFFFFF, 1);
 	setLineColor(0x0, 1);
 }
 
@@ -2808,6 +2812,8 @@ void Path2D::cloneFrom(Path2D *s)
     fillr_ = s->fillr_, fillg_ = s->fillg_, fillb_ = s->fillb_, filla_ = s->filla_;
     liner_ = s->liner_, lineg_ = s->lineg_, lineb_ = s->lineb_, linea_ = s->linea_;
     convex_=s->convex_,
+    thickness_ = s->thickness_, margin_ = s->margin_, feather_ = s->feather_, flatness_ = s->flatness_;
+
     c1_=s->c1_; c2_=s->c2_; c3_=s->c3_; c4_=s->c4_;
     a1_=s->a1_; a2_=s->a2_; a3_=s->a3_; a4_=s->a4_;
     colors_.assign(s->colors_.cbegin(),s->colors_.cend());
@@ -2891,30 +2897,33 @@ void Path2D::setLineColor(unsigned int color, float alpha) {
 }
 
 void Path2D::setLineThickness(float thickness, float feather, float margin, float flatness) {
+    bool changed=false;
+    if (thickness!=thickness_) {
+        thickness_ = thickness;
+        changed=true;
+    }
+    if ((feather >= 0) && (feather <= 1.0) &&(feather_!=feather)) {
+        feather_ = feather;
+        changed=true;
+    }
+    if ((margin>=0)&&(margin_!=margin)) {
+        margin_=margin;
+        changed=true;
+    }
+    if ((flatness>=0)&&(flatness_!=flatness)) {
+        flatness_=flatness;
+        changed=true;
+    }
+
 	struct path *p = get_path(path);
-	if (p) {
-        bool changed=false;
-        if (thickness!=p->stroke_width) {
-            p->stroke_width = thickness;
-            changed=true;
-        }
-        if ((feather >= 0) && (feather <= 1.0) &&(p->stroke_feather!=feather)) {
-			p->stroke_feather = feather;
-            changed=true;
-        }
-        if ((margin>=0)&&(p->stroke_margin!=margin)) {
-            p->stroke_margin=margin;
-            changed=true;
-        }
-        if ((flatness>=0)&&(p->stroke_flatness!=flatness)) {
-            p->stroke_flatness=flatness;
-            changed=true;
-        }
-        if (changed) {
-            p->is_stroke_dirty = 1;
-            getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_,
-                    &maxy_);
-        }
+    if (p&&changed) {
+        p->stroke_width = thickness_;
+        p->stroke_feather = feather_;
+        p->stroke_margin=margin_;
+        p->stroke_flatness=flatness_;
+        p->is_stroke_dirty = 1;
+        getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_,
+                &maxy_);
 	}
 }
 
@@ -3132,13 +3141,27 @@ void Path2D::setTexture(TextureBase *texturebase, const Matrix4* matrix) {
 void Path2D::setPath(int num_commands, const unsigned char *commands,
 		int num_coords, const float *coords) {
 	path_commands(path, num_commands, commands, num_coords, coords);
-	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
+    struct path *p = get_path(path);
+    if (p) {
+        p->stroke_width = thickness_;
+        p->stroke_feather = feather_;
+        p->stroke_margin=margin_;
+        p->stroke_flatness=flatness_;
+    }
+    getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
 }
 
 void Path2D::setPath(const PrPath *ppath) {
 	path_commands(path, ppath->numCommands, ppath->commands, ppath->numCoords,
 			ppath->coords);
-	getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
+    struct path *p = get_path(path);
+    if (p) {
+        p->stroke_width = thickness_;
+        p->stroke_feather = feather_;
+        p->stroke_margin=margin_;
+        p->stroke_flatness=flatness_;
+    }
+    getPathBounds(path, filla_ > 0, linea_ > 0, &minx_, &miny_, &maxx_, &maxy_);
 }
 
 void Path2D::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4)

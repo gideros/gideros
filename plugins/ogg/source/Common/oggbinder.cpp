@@ -9,6 +9,7 @@
 #include <gstdio.h>
 #include <Shaders.h>
 #include <texturebase.h>
+#include <grendertarget.h>
 
 #include <math.h>
 #include <platformutil.h>
@@ -61,12 +62,15 @@ struct GGOggEncHandle {
 	//OGG GENERIC
 	FILE *fos;
 	int bytesPerSample;
-	ogg_stream_state os; /* take physical pages, weld into a logical
-	 stream of packets */
+    ogg_stream_state ao; /* take physical pages, weld into a logical
+     stream of packets */
+    ogg_stream_state vo;
 	ogg_page og; /* one Ogg bitstream page.  Vorbis packets are inside */
 	ogg_packet op; /* one raw packet of data for decode */
+    bool headerDone;
 
-	OggEnc *audio_p;
+    OggEnc *audio_p;
+    OggEnc *video_p;
 };
 
 static std::map<g_id, GGOggHandle *> ctxmap;
@@ -580,6 +584,7 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	if (fos == NULL)
 		return 0;
 	GGOggEncHandle *handle = new GGOggEncHandle;
+    handle->headerDone=false;
 	handle->fos = fos;
 	handle->bytesPerSample = ((bitsPerSample + 7) / 8) * numChannels;
 
@@ -587,6 +592,7 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	const char *codec="vorbis";
 	if ((fn>=5)&&(!strcmp(fileName+fn-5,".opus")))
 		codec="opus";
+    handle->video_p=NULL; //Initialized later
 	handle->audio_p=build_oggenc(codec);
     if (!handle->audio_p) {
 		delete handle;
@@ -597,27 +603,17 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	/* pick a random serial number; that way we can more likely build
 	 chained streams just by concatenation */
 	srand(time(NULL));
-	ogg_stream_init(&handle->os, rand());
+    ogg_stream_init(&handle->ao, rand());
 
     if (!(handle->audio_p->InitAudio(numChannels,sampleRate,quality))) {
 		/* do not continue if setup failed; this can happen if we ask for a
 		 mode that libVorbis does not support (eg, too low a bitrate, etc,
 		 will return 'OV_EIMPL') */
-		ogg_stream_clear(&handle->os);
+        ogg_stream_clear(&handle->ao);
 		delete handle->audio_p;
 		delete handle;
 		return (g_id) 0;
 	}
-
-    while (handle->audio_p->GenHeaderPage(&handle->os)) {
-        while (true) {
-            int result = ogg_stream_flush(&handle->os, &handle->og);
-            if (result == 0)
-                break;
-            fwrite(handle->og.header, 1, handle->og.header_len, handle->fos);
-            fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
-        }
-    }
 
 	g_id gid= g_NextId();
 	ctxmap2[gid]=handle;
@@ -625,10 +621,57 @@ g_id gsoundencoder_OggCreate(const char *fileName, int numChannels,
 	return gid;
 }
 
+static void outputHeaders(GGOggEncHandle *handle) {
+    //First headers
+    if (handle->video_p&&handle->video_p->GenHeaderPage(&handle->vo)) {
+        while (true) {
+            int result = ogg_stream_flush(&handle->vo, &handle->og);
+            if (result == 0)
+                break;
+            fwrite(handle->og.header, 1, handle->og.header_len, handle->fos);
+            fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
+        }
+    }
+    if (handle->audio_p&&handle->audio_p->GenHeaderPage(&handle->ao)) {
+        while (true) {
+            int result = ogg_stream_flush(&handle->ao, &handle->og);
+            if (result == 0)
+                break;
+            fwrite(handle->og.header, 1, handle->og.header_len, handle->fos);
+            fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
+        }
+    }
+
+    //Remaining headers
+    while (handle->video_p->GenHeaderPage(&handle->vo)) {
+        while (true) {
+            int result = ogg_stream_flush(&handle->vo, &handle->og);
+            if (result == 0)
+                break;
+            fwrite(handle->og.header, 1, handle->og.header_len, handle->fos);
+            fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
+        }
+    }
+
+    while (handle->audio_p->GenHeaderPage(&handle->ao)) {
+        while (true) {
+            int result = ogg_stream_flush(&handle->ao, &handle->og);
+            if (result == 0)
+                break;
+            fwrite(handle->og.header, 1, handle->og.header_len, handle->fos);
+            fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
+        }
+    }
+
+    handle->headerDone=true;
+}
+
 size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
 	GGOggEncHandle *handle = ctxmap2[id];
-	handle->audio_p->WriteAudio(data,size);
-	int eos = 0;
+    if (!handle->headerDone)
+        outputHeaders(handle);
+    handle->audio_p->WriteAudio(data,size);
+    int eos = 0;
 
 	/* vorbis does some data preanalysis, then divvies up blocks for
 	 more involved (potentially parallel) processing.  Get a single
@@ -636,11 +679,11 @@ size_t gsoundencoder_OggWrite(g_id id, size_t size, void *data) {
 	while (handle->audio_p->PacketOut(&handle->op)) {
 
 			/* weld the packet into the bitstream */
-			ogg_stream_packetin(&handle->os, &handle->op);
+            ogg_stream_packetin(&handle->ao, &handle->op);
 
 			/* write out pages (if any) */
 			while (!eos) {
-				int result = ogg_stream_pageout(&handle->os, &handle->og);
+                int result = ogg_stream_pageout(&handle->ao, &handle->og);
 				if (result == 0)
 					break;
 				fwrite(handle->og.header, 1, handle->og.header_len,
@@ -664,9 +707,14 @@ void gsoundencoder_OggClose(g_id id) {
 	gsoundencoder_OggWrite(id, 0, NULL);
 	ctxmap2.erase(id);
 
-	ogg_stream_clear(&handle->os);
-	if (handle->audio_p)
-		delete handle->audio_p;
+    ogg_stream_clear(&handle->ao);
+    if (handle->audio_p)
+        delete handle->audio_p;
+    if (handle->video_p) {
+        delete handle->video_p;
+        ogg_stream_clear(&handle->vo);
+    }
+
 	fclose(handle->fos);
 	delete handle;
 }
@@ -792,10 +840,130 @@ static int setVideoSurface(lua_State* L) {
 	return 0;
 }
 
+static int beginVideo(lua_State* L) {
+    g_id gid = luaL_checkinteger(L, 1);
+    GGOggEncHandle *handle = ctxmap2[gid];
+    if (!handle) {
+        lua_pushstring(L, "Video stream Id invalid");
+        lua_error(L);
+    } if (handle->video_p!=NULL) {
+        lua_pushstring(L, "Video stream already started");
+        lua_error(L);
+    } else {
+        const char *codec=luaL_checkstring(L,2);
+        float rate=luaL_checknumber(L,3);
+        int w=luaL_checkinteger(L,4);
+        int h=luaL_checkinteger(L,5);
+        int fmt=luaL_checkinteger(L,6);
+        float q=luaL_checknumber(L,7);
+        handle->video_p=build_oggenc(codec);
+
+        if (!handle->video_p) {
+            lua_pushstring(L, "Couldn't build encoder");
+            lua_error(L);
+        }
+        if (!handle->video_p->InitVideo(rate,w,h,fmt,q)) {
+            delete handle->video_p;
+            handle->video_p=NULL;
+            lua_pushstring(L, "Failed to initialize encoder");
+            lua_error(L);
+        }
+        handle->video_p->Format=fmt;
+
+        ogg_stream_init(&handle->vo, rand());
+    }
+    return 0;
+}
+
+static int encodeVideoFrame(lua_State* L) {
+    g_id gid = luaL_checkinteger(L, 1);
+    GGOggEncHandle *handle = ctxmap2[gid];
+    if (!handle) {
+        lua_pushstring(L, "Video stream Id invalid");
+        lua_error(L);
+    } if (handle->video_p==NULL) {
+        lua_pushstring(L, "Video stream not started");
+        lua_error(L);
+    } else {
+        double pos=luaL_checknumber(L,2);
+        GRenderTarget* t1 = static_cast<GRenderTarget*>(g_getInstance(L,
+                "RenderTarget", 3));
+        bool last = lua_toboolean(L,4);
+        if (!handle->headerDone)
+            outputHeaders(handle);
+        OggEnc::VideoFrame frame;
+        int w=t1->data->width;
+        int h=t1->data->height;
+        unsigned char *data=new unsigned char[w*h*4];
+        unsigned char *d2=new unsigned char[w*h*3];
+        unsigned char *y=d2;
+        unsigned char *u=y+w*h;
+        unsigned char *v=u+w*h;
+        unsigned char *r=data;
+        t1->getPixels(0,0,w,h,r);
+        frame.y.data=y;
+        frame.u.data=u;
+        frame.v.data=v;
+
+        int im=w*h;
+        for (int i=0;i<im;i++) {
+            unsigned char R=*(r++);
+            unsigned char G=*(r++);
+            unsigned char B=*(r++);
+            r++;
+            unsigned char Y = (( 66 * R + 129 * G +  25 * B + 128) / 256) +  16;
+            unsigned char U = ((-38 * R -  74 * G + 112 * B + 128) / 256) + 128;
+            unsigned char V = ((112 * R -  94 * G -  18 * B + 128) / 256) + 128;
+            *(y++)=Y;
+            *(u++)=U;
+            *(v++)=V;
+        }
+
+        frame.y.width=w;
+        frame.y.height=h;
+        frame.y.stride=w;
+
+        frame.u.width=w;
+        frame.u.height=h;
+        frame.u.stride=w;
+
+        frame.v.width=w;
+        frame.v.height=h;
+        frame.v.stride=w;
+
+        handle->video_p->EncodeVideoFrame(0,&frame,last);
+        delete[] data;
+        delete[] d2;
+
+        int eos = 0;
+
+        while (handle->video_p->PacketOut(&handle->op)) {
+                /* weld the packet into the bitstream */
+                ogg_stream_packetin(&handle->vo, &handle->op);
+                /* write out pages (if any) */
+                while (!eos) {
+                    int result = ogg_stream_pageout(&handle->vo, &handle->og);
+                    if (result == 0)
+                        break;
+                    fwrite(handle->og.header, 1, handle->og.header_len,
+                            handle->fos);
+                    fwrite(handle->og.body, 1, handle->og.body_len, handle->fos);
+                    if (ogg_page_eos(&handle->og))
+                        eos = 1;
+                }
+        }
+    }
+    return 0;
+}
+
 
 static int loader(lua_State* L) {
-	const luaL_Reg functionlist[] = { { "getVideoInfo", getVideoInfo }, {
-			"setVideoSurface", setVideoSurface }, { NULL, NULL }, };
+    const luaL_Reg functionlist[] = {
+        { "getVideoInfo", getVideoInfo },
+        { "setVideoSurface", setVideoSurface },
+        { "beginVideo", beginVideo },
+        { "encodeVideoFrame", encodeVideoFrame },
+        { NULL, NULL }, };
 
 	lua_newtable(L);
 	luaL_register(L, NULL, functionlist);
@@ -808,6 +976,7 @@ GGAudioLoader audioOgg(gaudio_OggOpen, gaudio_OggClose, gaudio_OggRead,
 
 #ifndef PART_Core
 extern const OggDecType theora_cinfo;
+extern const OggEncType theora_einfo;
 extern const OggDecType opus_cinfo;
 extern const OggEncType opus_einfo;
 extern const OggDecType vorbis_cinfo;
@@ -845,6 +1014,7 @@ static void g_initializePlugin(lua_State *L) {
     register_oggdec("theora",theora_cinfo);
     register_oggenc("vorbis",vorbis_einfo);
     register_oggenc("opus",opus_einfo);
+    register_oggenc("theora",theora_einfo);
 #endif
 }
 
@@ -864,6 +1034,7 @@ static void g_deinitializePlugin(lua_State *L) {
     unregister_oggdec("theora");
     unregister_oggenc("vorbis");
     unregister_oggenc("opus");
+    unregister_oggenc("theora");
 #endif
 }
 #if (!defined(QT_NO_DEBUG)) && (defined(TARGET_OS_MAC) || defined(_MSC_VER)  || defined(TARGET_OS_OSX))

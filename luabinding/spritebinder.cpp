@@ -167,6 +167,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	lua_setfield(L, -2, "STENCIL_EQUAL");
 	lua_pushinteger(L, ShaderEngine::STENCIL_GEQUAL);
 	lua_setfield(L, -2, "STENCIL_GEQUAL");
+	lua_pushinteger(L, ShaderEngine::STENCIL_GREATER);
+	lua_setfield(L, -2, "STENCIL_GREATER");
 	lua_pushinteger(L, ShaderEngine::STENCIL_INVERT);
 	lua_setfield(L, -2, "STENCIL_INVERT");
 	lua_pushinteger(L, ShaderEngine::STENCIL_KEEP);

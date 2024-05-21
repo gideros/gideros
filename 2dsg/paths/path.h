@@ -21,6 +21,10 @@ private:
     float minx_, miny_, maxx_, maxy_;
     float filla_,fillr_,fillg_,fillb_;
     float linea_,liner_,lineg_,lineb_;
+    float thickness_;
+    float feather_;
+    float margin_;
+    float flatness_;
     bool convex_;
     int c1_, c2_, c3_, c4_;
     float a1_, a2_, a3_, a4_;

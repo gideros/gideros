@@ -6,6 +6,7 @@
  */
 
 #include "OggDecTheora.h"
+#include "OggEncTheora.h"
 #include "glog.h"
 
 OggDecTheora::OggDecTheora() {
@@ -126,8 +127,16 @@ static OggDec *probe_theora(ogg_packet *op) {
 	return NULL;
 }
 extern const OggDecType theora_cinfo= {
-		CODEC_TYPE_VIDEO,
-		probe_theora
+        CODEC_TYPE_VIDEO,
+        probe_theora
+};
+
+static OggEnc *build_theora() {
+    return new OggEncTheora();
+}
+extern const OggEncType theora_einfo= {
+        CODEC_TYPE_VIDEO,
+        build_theora
 };
 
 #ifdef PART_Theora
@@ -138,10 +147,12 @@ extern const OggDecType theora_cinfo= {
 
 static void g_initializePlugin(lua_State *L) {
     register_oggdec("theora",theora_cinfo);
+    register_oggenc("theora",theora_einfo);
 }
 
 static void g_deinitializePlugin(lua_State *L) {
-	unregister_oggdec("theora");
+    unregister_oggdec("theora");
+    unregister_oggenc("theora");
 }
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("OggTheora", "1.0",OggTheora)

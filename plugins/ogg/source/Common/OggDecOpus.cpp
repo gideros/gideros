@@ -123,7 +123,8 @@ static OggEnc *build_opus() {
 	return new OggEncOpus();
 }
 extern const OggEncType opus_einfo= {
-		build: build_opus
+    CODEC_TYPE_AUDIO,
+    build_opus
 };
 
 #ifdef PART_Opus

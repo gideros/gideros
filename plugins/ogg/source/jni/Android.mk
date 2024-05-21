@@ -45,6 +45,7 @@ XIPH_OPUS:=libopus-1.3.1
 
 SOGG_F:=bitwise framing
 STHEORADEC_F:=apiwrapper bitpack decapiwrapper decinfo decode dequant fragment huffdec idct th_info internal quant state
+STHEORADEC_F+=analyze encapiwrapper encfrag encinfo encode enquant fdct huffenc th_mathops mcenc tokenize th_rate
 SVORBIS_F:=mdct block window synthesis info floor1 floor0 res0 mapping0 registry codebook sharedbook envelope psy bitrate lpc lsp smallft vorbisfile
 SVORBIS_F+=analysis vorbisenc
 SOPUS_C:=bands celt celt_encoder celt_decoder cwrs entcode entdec entenc kiss_fft laplace mathops opus_mdct modes pitch celt_lpc quant_bands rate vq arm/armcpu arm/arm_celt_map
@@ -76,7 +77,7 @@ SXIPH+=$(addprefix $(XIPH_VORBIS)/lib/,$(SVORBIS_F))
 SXIPH+=$(addprefix $(XIPH_OPUS)/,$(SOPUS_F))
 SCOMMON=Common/oggbinder.cpp \
 Common/OggDec.cpp Common/OggDecVorbis.cpp Common/OggDecTheora.cpp Common/OggDecOpus.cpp \
-Common/OggEnc.cpp Common/OggEncVorbis.cpp Common/OggEncOpus.cpp
+Common/OggEnc.cpp Common/OggEncVorbis.cpp Common/OggEncTheora.cpp Common/OggEncOpus.cpp 
 
 INCS += Common
 INCS += $(XIPH_OGG)/include

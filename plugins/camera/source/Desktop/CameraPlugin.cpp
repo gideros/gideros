@@ -53,7 +53,7 @@ static const ShaderProgram::DataDesc camAttributes[] = { { "vVertex",
         ShaderProgram::DFLOAT, 0, 0, 0, 0 } };
 
 
-class VideoFrameSurface : public QVideoSink, public Ticker {
+class VideoFrameSurface : public Ticker {
 	TextureData *gtex;
 	ShaderBuffer *rdrTgt;
 	ShaderTexture *camtex;
@@ -64,19 +64,22 @@ class VideoFrameSurface : public QVideoSink, public Ticker {
 	int cw,ch;
 	std::mutex g_mutex;
 	QVideoFrame g_frame;
-    void setVideoFrame(const QVideoFrame& frame);
+    QVideoSink *sink;
 	void tick();
 public:
-	VideoFrameSurface(TextureData *tex,int w,int h, int o);
+    VideoFrameSurface(TextureData *tex,int w,int h, int o,QVideoSink *sink);
 	~VideoFrameSurface();
-	void render();
+    void setVideoFrame(const QVideoFrame& frame);
+    void render();
 };
 
 static QCamera *camera=NULL;
 static VideoFrameSurface *camerasurface=NULL;
+static QMediaCaptureSession *captureSession=NULL;
 
-VideoFrameSurface::VideoFrameSurface(TextureData *tex,int w,int h, int o) {
+VideoFrameSurface::VideoFrameSurface(TextureData *tex,int w,int h, int o,QVideoSink *sink) {
 	G_UNUSED(o);
+    this->sink=sink;
 	gtex=tex;
 	cw=w;
 	ch=h;
@@ -126,17 +129,17 @@ VideoFrameSurface::VideoFrameSurface(TextureData *tex,int w,int h, int o) {
 	texcoords[3] = Point2f(0, 1);
 	texcoords.Update();
 
-#ifdef Q_OS_MACX
+//#ifdef Q_OS_MACX
 	vertices[0] = Point2f(0, 0);
 	vertices[1] = Point2f(gtex->width, 0);
 	vertices[2] = Point2f(gtex->width, gtex->height);
 	vertices[3] = Point2f(0, gtex->height);
-#else
+/*#else
 	vertices[0] = Point2f(0, gtex->height);
 	vertices[1] = Point2f(gtex->width, gtex->height);
 	vertices[2] = Point2f(gtex->width, 0);
 	vertices[3] = Point2f(0, 0);
-#endif
+#endif*/
 	vertices.Update();
 
 	rdrTgt = gtexture_get_engine()->createRenderTarget(gtexture_getInternalTexture(gtex->gid));
@@ -151,6 +154,7 @@ VideoFrameSurface::~VideoFrameSurface() {
 }
 
 void VideoFrameSurface::render() {
+   g_frame= sink->videoFrame();
     if (!g_frame.isValid()) return;
 	GLCALL_INIT;
 	{
@@ -297,11 +301,13 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,co
     *camwidth=reslist[best].resolution().width();
     *camheight=reslist[best].resolution().height();
 
-    QMediaCaptureSession captureSession;
-    captureSession.setCamera(camera);
+    if (!captureSession)
+        captureSession=new QMediaCaptureSession;
+    captureSession->setCamera(camera);
 
-    camerasurface=new VideoFrameSurface(cameraplugin::cameraTexture->data,cw,ch,o);
-    captureSession.setVideoOutput(camerasurface);
+    QVideoSink *sink=new QVideoSink();
+    camerasurface=new VideoFrameSurface(cameraplugin::cameraTexture->data,cw,ch,o,sink);
+    captureSession->setVideoSink(sink);
     camera->start();
    	cameraplugin::application->addTicker(camerasurface);
 
@@ -318,6 +324,11 @@ void cameraplugin::stop()
 	camerasurface=NULL;
 	delete camera;
 	camera=NULL;
+    if (captureSession) {
+        delete captureSession->videoSink();
+        delete captureSession;
+    }
+    captureSession=NULL;
 }
 
 bool cameraplugin::isAvailable()

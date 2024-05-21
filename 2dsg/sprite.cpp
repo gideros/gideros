@@ -961,8 +961,11 @@ int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
 
 	Stage *stage2 = sprite->getStage();
 
-	if (stage2)
+    if (stage2) {
 		stage2->setSpritesWithListenersDirty();
+        if ((sprite->layoutState)||(layoutState&&sprite->layoutConstraints))
+            stage2->needLayout=true;
+    }
 
 	Sprite *p=this;
 	while (p) {
