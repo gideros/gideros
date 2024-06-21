@@ -322,14 +322,14 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 
 void ogl2ShaderEngine::reset(bool reinit) {
 	GLCALL_INIT;
-	if (reinit) {
+    ogl2ShaderProgram::current = NULL;
+    ogl2ShaderProgram::curProg=0;
+    if (reinit) {
 		s_depthEnable = 0;
 		s_depthBufferCleared = false;
 
 		currentBuffer = NULL;
 		setFramebuffer(currentBuffer);
-		ogl2ShaderProgram::current = NULL;
-		ogl2ShaderProgram::curProg=0;
 
 #if !defined(QT_CORE_LIB) && !defined(OCULUS)
 #ifdef OPENGL_ES

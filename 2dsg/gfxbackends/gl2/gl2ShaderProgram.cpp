@@ -49,10 +49,8 @@ public:
 	{
 		if (VBO)
         {
-            GLCALL_CHECK;
-            GLCALL_INIT;
             if (!size)
-                GLCALL glDeleteBuffers(1,&VBO);
+                deleteVbo(1,&VBO);
             else
                 freeVboPack(VBO,size);
         }
@@ -67,9 +65,8 @@ public:
 	{
 		if (VBO)
         {
-            GLCALL_INIT;
             if (!size)
-                GLCALL glDeleteBuffers(1,&VBO);
+                deleteVbo(1,&VBO);
             else
                 freeVboPack(VBO,size);
         }
@@ -103,10 +100,9 @@ public:
                 freeed.push_back(it.first);
         }
         if (!freeed.empty()) {
-            GLCALL_INIT;
             for (auto it:freeed)
                 vboPacks.erase(it);
-            GLCALL glDeleteBuffers(freeed.size(),freeed.data());
+            deleteVbo(freeed.size(),freeed.data());
         }
     }
     static void freeVboPacks() {
@@ -116,10 +112,12 @@ public:
         for (auto it: vboPacks)
             freeed.push_back(it.first);
         if (!freeed.empty()) {
-            GLCALL_INIT;
             vboPacks.clear();
-            GLCALL glDeleteBuffers(freeed.size(),freeed.data());
+            deleteVbo(freeed.size(),freeed.data());
         }
+    }
+    static void deleteVbo(int count,GLuint *vbos) {
+        ogl2ShaderProgram::deleteVbo(count,vbos);
     }
 };
 std::set<gl2ShaderBufferCache *> *gl2ShaderBufferCache::allVBO=NULL;
@@ -161,6 +159,21 @@ void ogl2ShaderProgram::bindBuffer(GLuint type,GLuint buf)
     break;
     }
     GLCALL glBindBuffer(type,buf);
+}
+
+void ogl2ShaderProgram::deleteVbo(int count,GLuint *vbos) {
+    GLCALL_INIT;
+    for (int k=0;k<count;k++) {
+        if (vbos[k]==curArrayBuffer) {
+            GLCALL glBindBuffer(GL_ARRAY_BUFFER,0);
+            curArrayBuffer=0;
+        }
+        if (vbos[k]==curElementBuffer) {
+            GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+            curElementBuffer=0;
+        }
+    }
+    GLCALL glDeleteBuffers(count,vbos);
 }
 
 GLuint ogl2ShaderProgram::allocateVBO(GLuint type) {
@@ -369,7 +382,6 @@ void ogl2ShaderProgram::resetAll()
       GLCALL_INIT;
       GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
       GLCALL glBindBuffer(GL_ARRAY_BUFFER,0);
-      curProg=0;
       curArrayBuffer=curElementBuffer=0;
       for (int k=0;k<2;k++) {
           GLCALL glDeleteBuffers(freeVBOs[k].size(),freeVBOs[k].data());

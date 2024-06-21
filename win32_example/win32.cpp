@@ -568,7 +568,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
     ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
@@ -576,7 +576,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
     ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 1,m);
     return 0;
   }
@@ -584,7 +584,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
     ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 2,m);
     return 0;
   }
@@ -592,7 +592,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
     ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 2,m);
     return 0;
   }
@@ -600,7 +600,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
     ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 4,m);
     return 0;
   }
@@ -608,7 +608,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
     ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 4,m);
     return 0;
   }
@@ -616,7 +616,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER; // new 20221114 XXX
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
 	  int b=0;
 	  if (wParam&MK_LBUTTON) b|=1;
 	  if (wParam&MK_RBUTTON) b|=2;
@@ -644,7 +644,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER;
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
       ginputp_mouseLeave(0,0,m);
       mouseEntered=false;
     return 0;
@@ -653,7 +653,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  int m=0;
 	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
 	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
-	  if (wParam&VK_MENU) m|=GINPUT_ALT_MODIFIER;
+	  if (GetKeyState(VK_MENU) & 0x8000) m|=GINPUT_ALT_MODIFIER;
 	  int b=0;
 	  if (wParam&MK_LBUTTON) b|=1;
 	  if (wParam&MK_RBUTTON) b|=2;
@@ -662,7 +662,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	  pt.x = GET_X_LPARAM(lParam);
 	  pt.y = GET_Y_LPARAM(lParam);
 	  ScreenToClient(hwnd, &pt);
-	  ginputp_mouseWheel(pt.x, pt.y, b, GET_WHEEL_DELTA_WPARAM(wParam),m); // new 20221114 XXX
+	  ginputp_mouseWheel(pt.x, pt.y, b, GET_WHEEL_DELTA_WPARAM(wParam),m);
     return 0;
   }
   else if ((iMsg==WM_POINTERUPDATE)||(iMsg==WM_POINTERENTER)||(iMsg==WM_POINTERLEAVE)||
