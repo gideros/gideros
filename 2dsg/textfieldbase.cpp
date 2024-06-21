@@ -62,7 +62,7 @@ void TextFieldBase::getMinimumSize(float &w,float &h,bool preferred)
     if (preferred) {
         float cw=textlayout_.cw+textlayout_.x-textlayout_.dx;
         //float ch=textlayout_.h+textlayout_.y-textlayout_.dy;
-        if (!(layout_.flags&FontBase::TLF_NOWRAP))
+        if (!(layout_.flags&(FontBase::TLF_NOWRAP|FontBase::TLF_SINGLELINE)))
         {
             /* For wrappable texts we are in trouble here, since height will depend on width
              * Minimum case is easy: we give th minimum on both axis
