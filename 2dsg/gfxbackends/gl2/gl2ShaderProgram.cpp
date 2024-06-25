@@ -421,6 +421,8 @@ void ogl2ShaderProgram::resetAllUniforms()
     }
 #endif
     gl2ShaderBufferCache::turnVboPacks();
+    //Our context may have been changed external by some window composer (QT), assume buffer bindings are unknown
+    curArrayBuffer=curElementBuffer=0;
     for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
         (*it)->resetUniforms();
 }
