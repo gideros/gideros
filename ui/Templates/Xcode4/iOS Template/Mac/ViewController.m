@@ -27,6 +27,7 @@
 		animating = FALSE;
 		animationFrameInterval = 1;
 		self.displayLink = nil;		
+        frameSkip = 0;
 	}
 	
 	return self;
@@ -44,8 +45,12 @@
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
     CVDisplayLinkSetOutputHandler(displayLink, ^CVReturn(CVDisplayLinkRef  _Nonnull displayLink, const CVTimeStamp * _Nonnull inNow, const CVTimeStamp * _Nonnull inOutputTime, CVOptionFlags flagsIn, CVOptionFlags * _Nonnull flagsOut) {
         dispatch_async(dispatch_get_main_queue(), ^
-{
-            [self drawFrame];
+        {
+            if ((++self->frameSkip)>=self->animationFrameInterval)
+            {
+                [self drawFrame];
+                self->frameSkip=0;
+            }
         });
         return kCVReturnSuccess;
     });

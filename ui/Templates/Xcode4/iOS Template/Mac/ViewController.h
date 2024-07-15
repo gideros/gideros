@@ -16,6 +16,7 @@
     BOOL resized;
     NSInteger animationFrameInterval;
     CVDisplayLinkRef displayLink;
+    int frameSkip;
 
 	EAGLView* glView;
 }
