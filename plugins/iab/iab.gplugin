@@ -55,12 +55,16 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-        implementation 'com.android.billingclient:billing:5.0.0'
+        implementation 'com.android.billingclient:billing:7.0.0'
 		implementation 'androidx.annotation:annotation:1.1.0'
 					</by>
 				</append>
 			</replacelist>			
 		</template>
+	    <lua>
+    	local ap=require("Tools/export_android")
+    	ap.minSdk(21)
+    	</lua>
 	</if> 
  </target>
    <target name="iOS">
