@@ -2,6 +2,7 @@
  name="Iab"
  description="Generic IAB interface">
  <property name="iabAmazon" type="boolean" title="Enable Amazon support (Android)"/>
+ <property name="iabAmazonKey" type="file" title="AppstoreAuthenticationKey.pem" description="AppstoreAuthenticationKey.pem for Amazon IAP"/>
  <property name="iabGoogle" type="boolean" title="Enable Google support (Android)"/>
  <property name="iabiOS" type="boolean" title="Enable Apple support (iOS)"/>
   <target name="AndroidStudio,APK">
@@ -17,15 +18,12 @@
     <set key="local.iabfws" value="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile/android/plugins/iab/frameworks"/>
 	<if condition="[[[plugin.iabAmazon]]]">
 		<template name="Amazon" path="[[[local.iabfws]]]" dest="[[[local.iabfwd]]]" include="IabAmazon.java" />
-    	<set key="local.adsJarVer" value="in-app-purchasing-2.0.76.jar" />
-    	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
-    	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
 		<template name="Activity" path="">
 			<replacelist wildcards="build.gradle">
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-					implementation fileTree(include: ['in-app-purchasing*.jar'], dir: 'libs')
+					implementation 'com.amazon.device:amazon-appstore-sdk:3.+'
 					</by>
 				</append>
 			</replacelist>
@@ -36,17 +34,20 @@
             	<append>
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
-<receiver android:name="com.amazon.device.iap.ResponseReceiver" >
+		<receiver android:name="com.amazon.device.iap.ResponseReceiver" 
+					android:exported="true"
+					android:permission="com.amazon.inapp.purchasing.Permission.NOTIFY" >
             <intent-filter>
                 <action
                     android:name="com.amazon.inapp.purchasing.NOTIFY"
-                    android:permission="com.amazon.inapp.purchasing.Permission.NOTIFY" />
+                 />
             </intent-filter>
         </receiver>]]></by>
     	        </append>
         	</replacelist>
     	</template>
-	</if> 
+		<cp src="[[[sys.projectDir]]]/[[[plugin.iabAmazonKey]]]" dst="app/src/main/assets/AppstoreAuthenticationKey.pem"/>
+ 	</if> 
 	<if condition="[[[plugin.iabGoogle]]]">
 		<template name="Google" path="[[[local.iabfws]]]" dest="[[[local.iabfwd]]]" include="IabGoogle.java" />
 		<template name="Google" path="[[[local.iabfws]]]/google" dest="[[[local.iabfwd]]]/google" />

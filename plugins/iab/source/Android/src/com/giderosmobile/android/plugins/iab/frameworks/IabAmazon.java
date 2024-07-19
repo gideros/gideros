@@ -49,8 +49,15 @@ public class IabAmazon implements IabInterface {
 	@Override
 	public void onCreate(WeakReference<Activity> activity) {
 		sActivity = activity;
-		PurchasingService.registerListener(sActivity.get().getApplicationContext(), new IabAmazonListener(this));
-		PurchasingService.getUserData();
+		final Activity act=sActivity.get();
+		final IabAmazon self=this;
+		act.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				PurchasingService.registerListener(act.getApplicationContext(), new IabAmazonListener(self));
+				PurchasingService.getUserData();
+			}
+		});
 	}
 
 	@Override

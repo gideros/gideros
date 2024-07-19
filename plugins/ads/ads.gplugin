@@ -1,7 +1,7 @@
 <plugin
  name="Ads"
  description="Generic Ads interface">
- <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="21.5.0" />
+ <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="23.2.0" />
  <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
  <property name="adsNeedId" type="boolean" title="Advertising ID is required (Android 13+)"/>
  <!--
