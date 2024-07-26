@@ -253,6 +253,9 @@ local ap=require("Tools/export_android")
 		<appIcon width="192" height="192" dest="app/src/main/res/drawable-xxxhdpi/icon.png"/>
 		<tvIcon width="732" height="412" dest="app/src/main/res/drawable-xhdpi/ouya_icon.png"/>
 		<tvIcon width="320" height="180" alpha="0" dest="app/src/main/res/drawable/banner.png"/>
+		<tvIcon width="160" height="90" alpha="0" dest="app/src/main/res/drawable-mdpi/banner.png"/>
+		<tvIcon width="240" height="135" alpha="0" dest="app/src/main/res/drawable-hdpi/banner.png"/>
+		<tvIcon width="320" height="180" alpha="0" dest="app/src/main/res/drawable-xhdpi/banner.png"/>
 		<if condition="[[[not:[[[band:[[[project.orientation]]]:1]]]]]]">
 			<splashVertical width="200" height="320" dest="app/src/main/res/drawable-ldpi/splash.png"/>
 			<splashVertical width="320" height="480" dest="app/src/main/res/drawable-mdpi/splash.png"/>

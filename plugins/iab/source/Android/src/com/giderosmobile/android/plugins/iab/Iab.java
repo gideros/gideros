@@ -1,6 +1,7 @@
 package com.giderosmobile.android.plugins.iab;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.Map;
@@ -26,6 +27,15 @@ public class Iab {
 		iab = new Hashtable<String, IabInterface>();
 		products = new Hashtable<String, Hashtable<String, String>>();
 		consumables = new Hashtable<String, Boolean>();
+		//Specific inits
+		String className = "com.giderosmobile.android.plugins.iab.frameworks.IabAmazon";
+		Class classz = null;
+		try {
+			classz = Class.forName(className);
+			classz.getMethod("onActivityCreate",Activity.class).invoke(null,activity);
+		} catch (Exception e) {
+			e.printStackTrace();
+        }
 	}
 	
 	public static void onDestroy()

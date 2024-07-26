@@ -22,9 +22,11 @@ equals(LUA_ENGINE,lua):
 
 
 SOURCES += main.cpp GAppFormat.cpp Utilities.cpp WinRTExport.cpp MacOSXExport.cpp \
-	ExportCommon.cpp ExportBuiltin.cpp ExportXml.cpp filedownloader.cpp ExportLua.cpp
+	ExportCommon.cpp ExportBuiltin.cpp ExportXml.cpp filedownloader.cpp ExportLua.cpp \
+	ExportScript.cpp
 HEADERS += GAppFormat.h Utilities.h WinRTExport.h MacOSXExport.h ExportCommon.h \
-	ExportBuiltin.h ExportXml.h filedownloader.h ExportLua.h
+	ExportBuiltin.h ExportXml.h filedownloader.h ExportLua.h \
+	ExportScript.h
 
 INCLUDEPATH += ../ui ../libnetwork ../2dsg 
 

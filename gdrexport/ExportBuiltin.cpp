@@ -7,6 +7,7 @@
 
 #include "ExportBuiltin.h"
 #include "ExportCommon.h"
+#include "ExportLua.h"
 #include "GAppFormat.h"
 #include "WinRTExport.h"
 #include "MacOSXExport.h"
@@ -203,6 +204,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
             }
         }
         ctx->replaceList[0] << qMakePair(bytepad(ctx->templatenamews.toLatin1(),256), bytepad(ctx->basews.toLatin1(),256));
+        ExportLUA_CallFile(ctx,NULL,"Tools/export_ios.lua");
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());

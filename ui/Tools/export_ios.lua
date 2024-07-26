@@ -380,4 +380,36 @@ Export.registerPreFinish(apply)
 iOSProject.InfoPlist.NSLocationUsageDescription="Do you accept to share your position?"
 iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription="Do you accept to share your position in background?"
 
+do 
+	local solist={}
+   	local autorotation=tonumber(Export.getProperty("project.autorotation")) or 0
+   	local rotation=tonumber(Export.getProperty("project.orientation")) or 0
+   	if autorotation==1 then
+   		if rotation==0 or rotation==2 then
+   			table.insert(solist,"UIInterfaceOrientationPortrait")
+   			table.insert(solist,"UIInterfaceOrientationPortraitUpsideDown")
+   		else
+   			table.insert(solist,"UIInterfaceOrientationLandscapeLeft")
+   			table.insert(solist,"UIInterfaceOrientationLandscapeRight")
+   		end
+   	elseif autorotation==2 then
+		table.insert(solist,"UIInterfaceOrientationPortrait")
+		table.insert(solist,"UIInterfaceOrientationPortraitUpsideDown")
+		table.insert(solist,"UIInterfaceOrientationLandscapeLeft")
+		table.insert(solist,"UIInterfaceOrientationLandscapeRight")
+   	else
+   		if rotation==0 then
+			table.insert(solist,"UIInterfaceOrientationPortrait")
+   		elseif rotation==1 then
+			table.insert(solist,"UIInterfaceOrientationLandscapeLeft")
+   		elseif rotation==2 then
+			table.insert(solist,"UIInterfaceOrientationPortraitUpsideDown")
+   		elseif rotation==3 then
+			table.insert(solist,"UIInterfaceOrientationLandscapeRight")
+		end
+	end
+	iOSProject.InfoPlist.UISupportedInterfaceOrientations=solist
+	iOSProject.InfoPlist["UISupportedInterfaceOrientations~ipad"]=solist
+end
+	
 return iOSProject

@@ -717,7 +717,7 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 
 bool ExportCommon::initPlugins(ExportContext *ctx) {
 	exportInfo("Querying plugins\n");
-	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
+    QMap < QString, QString > allplugins = ExportScript::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it =
 			ctx->properties.plugins.begin();
 			it != ctx->properties.plugins.end(); it++) {
@@ -756,7 +756,7 @@ bool ExportCommon::applyPlugins(ExportContext *ctx) {
 		return true;
 	}
 	exportInfo("Applying plugins\n");
-	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
+    QMap < QString, QString > allplugins = ExportScript::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it =
 			ctx->properties.plugins.begin();
 			it != ctx->properties.plugins.end(); it++) {

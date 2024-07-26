@@ -44,6 +44,14 @@
             </intent-filter>
         </receiver>]]></by>
     	        </append>
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<queries>
+    <package android:name="com.amazon.venezia" />
+    <package android:name="com.amazon.sdktestclient" />
+</queries>]]></by>
+    	        </append>
         	</replacelist>
     	</template>
 		<cp src="[[[sys.projectDir]]]/[[[plugin.iabAmazonKey]]]" dst="app/src/main/assets/AppstoreAuthenticationKey.pem"/>

@@ -165,12 +165,11 @@ public class IabGoogle implements IabInterface, PurchasesUpdatedListener {
 									}
 								}
 								Iab.productsComplete(this, arr);
-
 							}
 						});
 			}
 			catch (Exception e2) {
-				
+				Iab.productsError(this, e2.getLocalizedMessage());
 			}
 		}
 	}

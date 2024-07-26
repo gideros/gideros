@@ -1,5 +1,6 @@
 #include "ExportLua.h"
 #include "ExportCommon.h"
+#include "ExportXml.h"
 extern "C" {
 #include "lua.h"
 #include "lualib.h"
@@ -8,35 +9,37 @@ extern "C" {
 
 #include "lfs.h"
 
-static ExportXml *currentXml=NULL;
+static ExportScript *currentScript=NULL;
 static ExportContext *currentContext=NULL;
 static bool inited=false;
 
 static int getProperty(lua_State* L)
 {
-	if (!currentXml)
+    if (!currentScript)
 		return 0;
 	const char *prop=luaL_checkstring(L,1);
-	lua_pushstring(L,currentXml->GetProperty(QString(prop)).toStdString().c_str());
+    lua_pushstring(L,currentScript->GetProperty(QString(prop)).toStdString().c_str());
 	return 1;
 }
 
 static int setProperty(lua_State* L)
 {
-	if (!currentXml)
+    if (!currentScript)
 		return 0;
 	const char *prop=luaL_checkstring(L,1);
 	const char *val=luaL_checkstring(L,2);
-	currentXml->SetProperty(QString(prop),QString(val));
+    currentScript->SetProperty(QString(prop),QString(val));
 	return 0;
 }
 
 static int callXml(lua_State* L)
 {
-	if (!currentXml)
+    if (!currentScript)
 		return 0;
 	const char *xml=luaL_checkstring(L,1);
-	bool res=currentXml->ProcessRuleString(xml);
+    ExportXml *xs=new ExportXml(currentScript);
+    bool res=xs->ProcessRuleString(xml);
+    delete xs;
 	lua_pushboolean(L,res?1:0);
 	return 1;
 }
@@ -84,7 +87,7 @@ void ExportLUA_DonePlugins(ExportContext *ctx)
 {
 	 if (inited)
 	 {
-		 ExportXml *tmp=new ExportXml();
+         ExportScript *tmp=new ExportScript();
 		 tmp->SetupProperties(ctx);
 		 ExportLUA_CallCode(ctx,tmp,"Export._finish()");
 		 delete tmp;
@@ -97,12 +100,17 @@ void ExportLUA_Cleanup(ExportContext *ctx)
  ctx->L = NULL;
 }
 
-bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
+bool ExportLUA_CallFile(ExportContext *ctx,ExportScript *scriptCtx,const char *fn)
 {
+    if (scriptCtx==NULL) {
+        scriptCtx=new ExportScript();
+        scriptCtx->SetupProperties(ctx);
+    }
 	if (!inited)
 	{
 		inited=true;
-		ExportLUA_CallFile(ctx,xml,"Tools/export_init.lua");
+        if (!ExportLUA_CallFile(ctx,scriptCtx,"Tools/export_init.lua"))
+            return false;
 	}
 	if (luaL_loadfile(ctx->L,fn))
 	{
@@ -112,28 +120,29 @@ bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
 		ctx->exportError=true;
         return false;
 	}
-	currentXml=xml;
-	currentContext=ctx;
+    currentScript=scriptCtx;
+    currentContext=ctx;
     if (lua_pcall(ctx->L, 0, 0, 0) != 0)
     {
-    	currentXml=NULL;
-    	const char *err=lua_tostring(ctx->L, -1);
+        currentScript=NULL;
+        const char *err=lua_tostring(ctx->L, -1);
     	ExportCommon::exportError("Lua error:%s\n",err);
         lua_pop(ctx->L, 1);
 		ctx->exportError=true;
         return false;
     }
-	currentXml=NULL;
-	currentContext=NULL;
+    currentScript=NULL;
+    currentContext=NULL;
     return true;
 }
 
-bool ExportLUA_CallCode(ExportContext *ctx,ExportXml *xml,const char *code)
+bool ExportLUA_CallCode(ExportContext *ctx,ExportScript *scriptCtx,const char *code)
 {
 	if (!inited)
 	{
 		inited=true;
-		ExportLUA_CallFile(ctx,xml,"Tools/export_init.lua");
+        if (!ExportLUA_CallFile(ctx,scriptCtx,"Tools/export_init.lua"))
+            return false;
 	}
 	if (luaL_loadstring(ctx->L,code))
 	{
@@ -143,16 +152,16 @@ bool ExportLUA_CallCode(ExportContext *ctx,ExportXml *xml,const char *code)
 		ctx->exportError=true;
         return false;
 	}
-	currentXml=xml;
+    currentScript=scriptCtx;
     if (lua_pcall(ctx->L, 0, 0, 0) != 0)
     {
-    	currentXml=NULL;
+        currentScript=NULL;
     	const char *err=lua_tostring(ctx->L, -1);
     	ExportCommon::exportError("Lua error:%s\n",err);
         lua_pop(ctx->L, 1);
 		ctx->exportError=true;
         return false;
     }
-	currentXml=NULL;
+    currentScript=NULL;
     return true;
 }

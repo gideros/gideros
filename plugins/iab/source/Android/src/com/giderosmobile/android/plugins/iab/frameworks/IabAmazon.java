@@ -28,6 +28,7 @@ public class IabAmazon implements IabInterface {
 	public static WeakReference<Activity> sActivity;
 	public static boolean sdkAvailable = false;
 	public static boolean wasChecked = false;
+	public static IabAmazonListener listener= new IabAmazonListener(null);
 	
 	public static Boolean isInstalled(){
 		if(android.os.Build.MANUFACTURER == "Amazon" || Iab.isPackageInstalled("com.amazon.venezia") || checkLoader())
@@ -46,18 +47,15 @@ public class IabAmazon implements IabInterface {
 		return res;
 	}
 
+	public static void onActivityCreate(Activity activity) {
+		PurchasingService.registerListener(activity.getApplicationContext(), listener);
+	}
+
 	@Override
 	public void onCreate(WeakReference<Activity> activity) {
 		sActivity = activity;
-		final Activity act=sActivity.get();
-		final IabAmazon self=this;
-		act.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				PurchasingService.registerListener(act.getApplicationContext(), new IabAmazonListener(self));
-				PurchasingService.getUserData();
-			}
-		});
+		listener.setCaller(this);
+		PurchasingService.getUserData();
 	}
 
 	@Override
@@ -115,6 +113,9 @@ class IabAmazonListener implements PurchasingListener {
 	
 	public IabAmazonListener(IabAmazon iabAmazon) {
 		caller = iabAmazon;
+	}
+	public void setCaller(IabAmazon c) {
+		caller=c;
 	}
 
 	@Override

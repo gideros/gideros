@@ -6,13 +6,10 @@
  */
 
 #include "ExportXml.h"
-#include "ExportLua.h"
 #include "Utilities.h"
 #include "ExportCommon.h"
 #include <QStandardPaths>
 #include <QFileInfo>
-#include <QDesktopServices>
-#include <QUrl>
 
 static bool IsSecret(QString key)
 {
@@ -32,9 +29,10 @@ static QString SecretVal(QString key,QString val)
 	return val;
 }
 
-ExportXml::ExportXml(QString xmlFile, bool isPlugin) {
+ExportXml::ExportXml(ExportScript *script,QString xmlFile, bool isPlugin) {
 	this->isPlugin = isPlugin;
 	this->xmlFile=xmlFile;
+    this->script=script;
 	QDomDocument doc(isPlugin ? "plugin" : "export");
 	QFile file(xmlFile);
 	if (file.open(QIODevice::ReadOnly)) {
@@ -45,84 +43,39 @@ ExportXml::ExportXml(QString xmlFile, bool isPlugin) {
 	exporter = doc.documentElement();
 }
 
-ExportXml::ExportXml() {
-	this->isPlugin = false;
+ExportXml::ExportXml(ExportScript *script) {
+    this->isPlugin = true;
+    this->xmlFile=NULL;
+    this->script=script;
+    this->ctx=script->ctx;
 }
 
 void ExportXml::SetupProperties(ExportContext *ctx)
 {
+    script->SetupProperties(ctx);
 	this->ctx = ctx;
-    ctx->basews = Utilities::RemoveSpaces(ctx->base, Utilities::NODIGIT);
-	if (ctx->props.empty())
-	{
-	//Fill properties: System
-#ifdef Q_OS_WIN32
-		ctx->props["sys.exeExtension"]=".exe";
-#else
-	ctx->props["sys.exeExtension"] = "";
-#endif
-	ctx->props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-#ifdef Q_OS_MACX
-	ctx->props["sys.giderosDir"] = QDir::currentPath()+"/../..";
-#else
-	ctx->props["sys.giderosDir"] = QDir::currentPath();
-#endif
-	ctx->props["sys.toolsDir"] = QDir::currentPath()+"/Tools";
-	ctx->props["sys.homeDir"] = QDir::homePath();
-	ctx->props["sys.exportDir"] = ctx->exportDir.absolutePath();
-    ctx->props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
-    ctx->props["sys.projectDir"]=QFileInfo(ctx->projectFileName_).path();
-    ctx->props["sys.projectFile"]=ctx->projectFileName_;
-	//Fill properties: Project
-	ctx->props["project.name"] = ctx->base;
-	ctx->props["project.namews"] = ctx->basews;
-	ctx->props["project.version"] = ctx->properties.version;
-	ctx->props["project.platform"] = ctx->platform;
-	ctx->props["project.app_name"] = ctx->appName;
-	ctx->props["project.version_code"] = QString::number(
-			ctx->properties.version_code);
-	ctx->props["project.build_number"] = QString::number(
-			ctx->properties.build_number);
-	ctx->props["project.autorotation"] = QString::number(
-			ctx->properties.autorotation);
-	ctx->props["project.orientation"] = QString::number(ctx->properties.orientation);
-	ctx->props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
-	ctx->props["project.backgroundColor"] = ctx->properties.backgroundColor;
-	ctx->props["project.ios_bundle"] = ctx->properties.ios_bundle;
-	ctx->props["project.atv_bundle"] = ctx->properties.atv_bundle;
-	ctx->props["project.macos_bundle"] = ctx->properties.macos_bundle;
-	ctx->props["project.html5_fbinstant"] = QString::number(ctx->properties.html5_fbinstant?1:0);
-	ctx->props["project.html5_pwa"] = QString::number(ctx->properties.html5_pwa?1:0);
-	ctx->props["project.html5_pack"] = QString::number(ctx->properties.html5_pack?1:0);
-	ctx->props["project.html5_wasm"] = QString::number(ctx->properties.html5_wasm?1:0);
-
-	//Fill in passed arguments
-    QHash<QString, QString>::iterator i;
-        for (i = ctx->args.begin(); i != ctx->args.end(); ++i)
-        	ctx->props["args."+i.key()] = i.value();
-	}
 
 	//Type specific props
 	QString exname = exporter.attribute("name");
 	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {
-		lprops["sys.pluginDir"] = xmlDir.path();
+        script->lprops["sys.pluginDir"] = xmlDir.path();
 		//Fill properties: Plugin
 		for (QSet<ProjectProperties::Plugin>::const_iterator it =
-				ctx->properties.plugins.begin();
-                it != ctx->properties.plugins.end(); it++)
+                ctx->properties.plugins.cbegin();
+                it != ctx->properties.plugins.cend(); it++)
 			if ((*it).name == exname) {
 				for (QMap<QString, QString>::const_iterator mit =
 						(*it).properties.begin(); mit != (*it).properties.end();
                         mit++)
-                    lprops[QString("plugin.").append(mit.key())] = mit.value();
+                    script->lprops[QString("plugin.").append(mit.key())] = mit.value();
             }
 	} else {
 //Fill properties: Export
 		ctx->props["sys.exporterDir"] = xmlDir.path();
         for (QSet<ProjectProperties::Export>::const_iterator it =
-                ctx->properties.exports.begin();
-                it != ctx->properties.exports.end(); it++)
+                ctx->properties.exports.cbegin();
+                it != ctx->properties.exports.cend(); it++)
             if ((*it).name == exname) {
                 for (QMap<QString, QString>::const_iterator mit =
                         (*it).properties.begin(); mit != (*it).properties.end();
@@ -139,7 +92,6 @@ bool ExportXml::Process(ExportContext *ctx) {
 	if (isPlugin) {
 		//Lookup target
 		QDomNodeList targets = exporter.elementsByTagName("target");
-		QStringList targetList;
 		for (int k = 0; k < targets.count(); k++) {
 			QString tname=targets.at(k).toElement().attribute("name");
             QStringList tlist=tname.split(',', Qt::SkipEmptyParts);
@@ -160,7 +112,7 @@ bool ExportXml::RunInit(ExportContext *ctx) {
 		//Lookup target
 		QDomNode rule = exporter.firstChildElement("initscript");
 		if (!rule.isNull())
-			return RuleLua(ReplaceAttributes(rule.toElement().attribute("file")).trimmed(),
+            return script->OpLua(ReplaceAttributes(rule.toElement().attribute("file")).trimmed(),
 	        		rule.toElement().text().trimmed());
 	} else {
     }
@@ -181,47 +133,19 @@ bool ExportXml::ProcessRules(QDomElement rules) {
 }
 
 bool ExportXml::exportXml(QString xmlFile, bool plugin, ExportContext *ctx) {
-	ExportXml *ex = new ExportXml(xmlFile, plugin);
+    ExportXml *ex = new ExportXml(new ExportScript(),xmlFile, plugin);
 	bool ret = ex->Process(ctx);
 	delete ex;
 	return ret;
 }
 
 bool ExportXml::runinitXml(QString xmlFile, bool plugin, ExportContext *ctx) {
-	ExportXml *ex = new ExportXml(xmlFile, plugin);
+    ExportXml *ex = new ExportXml(new ExportScript(),xmlFile, plugin);
 	bool ret = ex->RunInit(ctx);
 	delete ex;
 	return ret;
 }
 
-QMap<QString, QString> ExportXml::availableTargets() {
-	QMap < QString, QString > xmlExports;
-	QDir sourceDir(TEMPLATES_PATH);
-	QStringList filters;
-	filters << "*.gexport";
-	sourceDir.setNameFilters(filters);
-	QStringList files = sourceDir.entryList(QDir::Files | QDir::Hidden);
-	for (int i = 0; i < files.count(); i++) {
-		QDomDocument doc("export");
-		QFile file(sourceDir.absoluteFilePath(files[i]));
-		if (!file.open(QIODevice::ReadOnly))
-			continue;
-		if (!doc.setContent(&file)) {
-			file.close();
-			continue;
-		}
-		file.close();
-
-		QDomElement exporter = doc.documentElement();
-		QString exname = exporter.attribute("name");
-		xmlExports[exname] = sourceDir.absoluteFilePath(files[i]);
-	}
-	return xmlExports;
-}
-
-QMap<QString, QString> ExportXml::availablePlugins() {
-	return ProjectProperties::availablePlugins();
-}
 
 bool ExportXml::ProcessRuleString(const char *xml)
 {
@@ -243,19 +167,19 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 	else if (ruleName == "if")
 		return RuleIf(ReplaceAttributes(rule.attribute("condition")), rule);
 	else if (ruleName == "cp")
-		return RuleCp(ReplaceAttributes(rule.attribute("src")),
+        return script->OpCp(ReplaceAttributes(rule.attribute("src")),
 				ReplaceAttributes(rule.attribute("dst")));
 	else if (ruleName == "mv")
-		return RuleMv(ReplaceAttributes(rule.attribute("src")),
+        return script->OpMv(ReplaceAttributes(rule.attribute("src")),
 				ReplaceAttributes(rule.attribute("dst")));
 	else if (ruleName == "rm")
-		return RuleRm(ReplaceAttributes(rule.text()).trimmed());
+        return script->OpRm(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName == "cd")
-		return RuleCd(ReplaceAttributes(rule.text()).trimmed());
+        return script->OpCd(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName == "mkdir")
-		return RuleMkdir(ReplaceAttributes(rule.text()).trimmed());
+        return script->OpMkdir(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName == "rmdir")
-		return RuleRmdir(ReplaceAttributes(rule.text()).trimmed());
+        return script->OpRmdir(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName == "download")
 		return ExportCommon::download(ctx,
                 ReplaceAttributes(rule.attribute("source")).trimmed(),
@@ -269,68 +193,56 @@ bool ExportXml::ProcessRule(QDomElement rule) {
                 ReplaceAttributes(rule.attribute("path")).trimmed(), ReplaceAttributes(rule.attribute("dest")).trimmed(), rule);
 	else if (ruleName == "exportAssets") {
         QStringList jets=rule.attribute("jet").split(";",Qt::SkipEmptyParts);
-		for (int i=0;i<jets.count();i++)
-			ctx->jetset << jets[i];
         QStringList noencExt=rule.attribute("dontEncryptExts").split(";",Qt::SkipEmptyParts);
-		for (int i=0;i<noencExt.count();i++)
-			ctx->noEncryptionExt.insert(noencExt[i]);
-		ExportCommon::exportAssets(ctx, rule.attribute("compile").toInt() != 0);
+        script->OpExportAssets(jets,noencExt, rule.attribute("compile").toInt() != 0);
 		return true;
 	} else if (ruleName == "exportAllfilesTxt") {
-		ExportCommon::exportAllfilesTxt(ctx);
+        script->OpExportAllFilesTxt();
 		return true;
 	} else if (ruleName == "exportLuafilesTxt") {
-		ExportCommon::exportLuafilesTxt(ctx);
+        script->OpExportLuaFilesTxt();
 		return true;
 	} else if (ruleName == "exportPropertiesBin") {
-		ExportCommon::exportPropertiesBin(ctx);
+        script->OpExportPropertiesBin();
 		return true;
 	} else if (ruleName == "applyPlugins") {
-		ExportCommon::applyPlugins(ctx);
+        script->OpApplyPlugins();
 		return true;
 	} else if (ruleName == "initPlugins") {
-		ExportCommon::initPlugins(ctx);
+        script->OpInitPlugins();
 		return true;
 	} else if (ruleName == "requestPlugin") {
-		ExportCommon::requestPlugin(ctx,rule.attribute("name"));
+        script->OpRequestPlugin(rule.attribute("name"));
 		return true;
     } else if (ruleName == "appIcon"){
-        return RuleImage(rule.attribute("width").toInt(),
+        return script->OpImage(rule.attribute("width").toInt(),
 				rule.attribute("height").toInt(),
                 ReplaceAttributes(rule.attribute("dest")).trimmed(), e_appIcon,rule.attribute("alpha","1").toInt());
     } else if (ruleName == "tvIcon"){
-        return RuleImage(rule.attribute("width").toInt(),
+        return script->OpImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
                 ReplaceAttributes(rule.attribute("dest")).trimmed(), e_tvIcon,rule.attribute("alpha","1").toInt());
     }
     else if (ruleName == "splashVertical"){
-        return RuleImage(rule.attribute("width").toInt(),
+        return script->OpImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
                 ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashVertical,rule.attribute("alpha","1").toInt());
     }
     else if (ruleName == "splashHorizontal"){
-        return RuleImage(rule.attribute("width").toInt(),
+        return script->OpImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
                 ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal,rule.attribute("alpha","1").toInt());
     }
     else if (ruleName == "lua"){
-	    return RuleLua(ReplaceAttributes(rule.attribute("file")).trimmed(),
+        return script->OpLua(ReplaceAttributes(rule.attribute("file")).trimmed(),
 	        		rule.text().trimmed());
     }
     else if (ruleName == "openUrl"){
-	    return RuleOpenUrl(ReplaceAttributes(rule.text().trimmed()));
+        return script->OpOpenUrl(ReplaceAttributes(rule.text().trimmed()));
     }
 	else
 		ExportCommon::exportError("Rule %s unknown\n", ruleName.toStdString().c_str());
 	return false;
-}
-
-bool ExportXml::RuleLua(QString file,QString content)
-{
-	if (file.isEmpty())
-		return ExportLUA_CallCode(ctx,this,content.toStdString().c_str());
-	else
-		return ExportLUA_CallFile(ctx,this,file.toStdString().c_str());
 }
 
 QString ExportXml::ComputeUnary(QString op, QString arg) {
@@ -397,7 +309,7 @@ QString ExportXml::ReplaceAttributes(QString text) {
 		int ac = args.count();
 		QString rep;
 		if (ac == 1)
-			rep = GetProperty(args[0]);
+            rep = script->GetProperty(args[0]);
 		else if (ac == 2)
 			rep = ComputeUnary(args[0], args[1]);
 		else if (ac == 3)
@@ -425,54 +337,9 @@ bool ExportXml::RuleExec(QString cmd, QDomElement rule) {
                 args << arg;
         }
     }
-    ExportCommon::exportInfo("Exec: %s [%s] into %s\n", cmd.toStdString().c_str(),args.join(' ').toStdString().c_str(),
-			ctx->outputDir.path().toStdString().c_str());
-    int err = Utilities::processOutput(cmd, args, ctx->outputDir.path(), env,false);
-	ExportCommon::exportInfo("Exec returned: %d\n", err);
-	return (err == 0);
+    return script->OpExec(cmd,args,env);
 }
 
-bool ExportXml::RuleMkdir(QString cmd) {
-	ExportCommon::exportInfo("MkDir: %s\n", cmd.toStdString().c_str());
-	return ctx->outputDir.mkpath(cmd);
-}
-
-bool ExportXml::RuleRmdir(QString cmd) {
-	ExportCommon::exportInfo("RmDir: %s\n", cmd.toStdString().c_str());
-	QDir remdir = ctx->outputDir;
-	if (!remdir.exists(cmd))
-		return true;
-	if (!remdir.cd(cmd))
-		return false;
-	if (!remdir.removeRecursively())
-		return false;
-	return true;
-}
-
-bool ExportXml::RuleCd(QString cmd) {
-	ExportCommon::exportInfo("Cd: %s\n", cmd.toStdString().c_str());
-	return ctx->outputDir.cd(cmd);
-}
-
-bool ExportXml::RuleRm(QString cmd) {
-	ExportCommon::exportInfo("Rm: %s\n", cmd.toStdString().c_str());
-	ctx->outputDir.remove(cmd);
-	return !ctx->outputDir.exists(cmd);
-}
-
-bool ExportXml::RuleCp(QString src, QString dst) {
-	ExportCommon::exportInfo("Cp: %s -> %s\n", src.toStdString().c_str(),
-			dst.toStdString().c_str());
-	ctx->outputDir.remove(dst);
-	return QFile::copy(ctx->outputDir.absoluteFilePath(src),
-			ctx->outputDir.absoluteFilePath(dst));
-}
-
-bool ExportXml::RuleMv(QString src, QString dst) {
-	ExportCommon::exportInfo("Mv: %s -> %s\n", src.toStdString().c_str(),
-			dst.toStdString().c_str());
-	return ctx->outputDir.rename(src, dst);
-}
 
 bool ExportXml::RuleIf(QString cond, QDomElement rule) {
 	ExportCommon::exportInfo("If: %s\n", cond.toStdString().c_str());
@@ -484,7 +351,7 @@ bool ExportXml::RuleIf(QString cond, QDomElement rule) {
 bool ExportXml::RuleSet(QString key, QString val) {
 	ExportCommon::exportInfo("Set: %s -> %s\n", key.toStdString().c_str(),
 			SecretVal(key,val).toStdString().c_str());
-	SetProperty(key,val);
+    script->SetProperty(key,val);
 	return true;
 }
 
@@ -494,33 +361,7 @@ bool ExportXml::RuleAsk(QDomElement rule) {
 	QString question=ReplaceAttributes(XmlAttributeOrElement(rule,"question"));
 	QString def=ReplaceAttributes(XmlAttributeOrElement(rule,"default"));
 	QString uid=ReplaceAttributes(XmlAttributeOrElement(rule,"uid"));
-	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data(),IsSecret(key),uid.toUtf8().data());
-	QString val=QString::fromUtf8(ret);
-	free(ret);
-	ExportCommon::exportInfo("Ask: %s -> %s\n", key.toStdString().c_str(),
-			SecretVal(key,val).toStdString().c_str());
-	SetProperty(key,val);
-	return true;
-}
-
-bool ExportXml::RuleOpenUrl(QString url)
-{
-	return QDesktopServices::openUrl(QUrl(url));
-}
-
-void ExportXml::SetProperty(QString k,QString v)
-{
-	if (!(ctx->props[k].isEmpty()))
-		ctx->props[k]=v;
-	else
-		lprops[k]=v;
-}
-
-QString ExportXml::GetProperty(QString k)
-{
-	if (!(ctx->props[k].isEmpty()))
-		return ctx->props[k];
-	return lprops[k];
+    return script->OpAsk(key,title,question,def,uid);
 }
 
 
@@ -597,16 +438,3 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
 	return true;
 }
 
-bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type, bool alpha) {
-	ExportCommon::exportInfo("Image(Type %d): %dx%d %s\n", type, width, height,
-			dst.toStdString().c_str());
-    if(type == e_appIcon)
-        return ExportCommon::appIcon(ctx, width, height, dst,alpha);
-    else if(type == e_tvIcon)
-        return ExportCommon::tvIcon(ctx, width, height, dst,alpha);
-    else if(type == e_splashVertical)
-        return ExportCommon::splashVImage(ctx, width, height, dst,alpha);
-    else if(type == e_splashHorizontal)
-        return ExportCommon::splashHImage(ctx, width, height, dst,alpha);
-    return false;
-}

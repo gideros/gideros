@@ -281,7 +281,7 @@ int main(int argc, char *argv[])
     bool player = false;
 
     //Lookup XML exports scripts
-    QMap<QString,QString> xmlExports=ExportXml::availableTargets();
+    QMap<QString,QString> xmlExports=ExportScript::availableTargets();
 
     int i = 1;
     while (i < arguments.size())
@@ -439,6 +439,7 @@ int main(int argc, char *argv[])
 
     QDir cdir = QCoreApplication::applicationDirPath();
     cdir.cdUp();
+    // cdir.cdUp(); cdir.cd("Build.Win"); //FOR DEBUG
     QDir::setCurrent(cdir.absolutePath());
 
     const QString &projectFileName_ = projectFileName;
