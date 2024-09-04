@@ -75,3 +75,30 @@ function UI.ToolTip.forget(screen,marker)
 	if currentMarker~=marker then return end
 	currentMarker=nil
 end
+
+function UI.ToolTip.autoDismissLater(screen,marker,delay,cb)
+	if not currentMarker then return end
+	if currentMarker~=marker then return end
+	local function leave()
+		UI.Control.onMousePresence[currentMarker]=nil
+		UI.Control.onEnterFrame[currentMarker]=nil
+		UI.Control.stopPropagation[currentMarker]=nil
+		UI.ToolTip.dismiss(screen,marker)
+		cb()
+	end
+	local mtime=os:timer()+delay
+	function currentMarker:onMousePresence(x,y,p)
+		if p then
+			UI.Control.onEnterFrame[currentMarker]=nil
+		else
+			leave()
+		end
+	end
+	function currentMarker:onEnterFrame(x,y,p)
+		local tm=os.timer()
+		if tm>mtime then leave() end
+	end
+	UI.Control.onMousePresence[currentMarker]=currentMarker
+	UI.Control.onEnterFrame[currentMarker]=currentMarker
+	UI.Control.stopPropagation[currentMarker]=currentMarker
+end

@@ -28,6 +28,7 @@ function UI.ImageText:setText(txt)
 end
 
 function UI.ImageText:setImageSize(sz)
+	if sz and not (type(sz)=="table") then sz={sz,sz} end
 	self.ict.iconsz=sz
 	self.ict:update()
 end
@@ -43,9 +44,8 @@ function UI.ImageText:update()
 	self.lbLabel:setText(self.text)
 	local imw,imh=0,0
 	if self.icon then
-		local lh=self:resolveStyle("1em")
-		imw=(self.iconsz and (self.iconsz.w or self.iconsz[1])) or lh
-		imh=(self.iconsz and (self.iconsz.h or self.iconsz[2])) or lh
+		imw=(self.iconsz and (self.iconsz.w or self.iconsz[1])) or "1em"
+		imh=(self.iconsz and (self.iconsz.h or self.iconsz[2])) or "1em"
 	end
 	local lm=self:getLayoutParameters()
 	local lt=self.lbLabel:getLayoutConstraints()

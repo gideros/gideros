@@ -429,3 +429,36 @@ function UI.Behavior.DragSize:destroy()
 	self.widget.behavior=nil
 	self.widget=nil
 end
+
+--DragClick
+UI.Behavior.DragClick=Core.class(UI.Behavior)
+function UI.Behavior.DragClick:init(widget,params)
+	assert(widget and widget.setFlags and widget.getFlags,"Widget must be a descendant of UI.Panel")
+	widget.behavior=self --need register
+	self.widget=widget
+	
+	self.clickHandler={ handler=self,target=widget }
+	self.params=params
+	UI.Control.onMouseMove[self.widget]=self.clickHandler
+	UI.Control.onMouseClick[self.widget]=self.clickHandler
+end
+function UI.Behavior.DragClick:onMouseClick(w,x,y)
+	local wflags=w:getFlags()
+	if wflags.disabled then return end
+	UI.dispatchEvent(self.widget,"WidgetDragClick",x,y)
+	return true 
+end
+function UI.Behavior.DragClick:onMouseMove(w,x,y,b)
+	local wflags=w:getFlags()
+	if wflags.disabled then return end
+	if b then
+		UI.dispatchEvent(self.widget,"WidgetDragClick",x,y)
+	end
+	return true 
+end
+function UI.Behavior.DragClick:destroy()
+	UI.Control.onMouseMove[self.widget]=nil
+	UI.Control.onMouseClick[self.widget]=nil
+	self.widget.behavior=nil
+	self.widget=nil
+end

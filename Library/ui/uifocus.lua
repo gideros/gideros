@@ -45,6 +45,8 @@ function UI.Focus:request(w,mode)
     if mode&self.KEYBOARD>0 then
 		if not self.hasKbd then
 			self.hasKbd=UI.Keyboard.setKeyboardVisibility(w)
+		else
+			UI.Keyboard.setKeyboardTarget(w)
 		end
 	elseif lmode&self.KEYBOARD>0 then
 		UI.Keyboard.setKeyboardVisibility(nil)
@@ -170,19 +172,20 @@ function UI.Focus:focusDirection(root,dx,dy,mode,atolerance)
   local t,td=nil,1E20
   while #p>0 do
     local n=table.remove(p,1)
-    for i=1,n:getNumChildren() do
-      if n._flags and n._flags.focusable and not n._flags.disabled and n~=self.focused then 
-        local bx,by,bw,bh=n:getBounds(root)
-        bx=bx+bw/2
-        by=by+bh/2
-        local a,d=^>math.atan2(by-fy,bx-fx),((bx-fx)*(bx-fx)+(by-fy)*(by-fy))^0.5
-        local ad=math.abs(aref-a)
-        if ad<(atolerance or 45) and d<td then
-          t=n td=d
-        end
-      end
-      table.insert(p,n:getChildAt(i))
-    end
+	if n._flags and n._flags.focusable and not n._flags.disabled and n~=self.focused then 
+		local bx,by,bw,bh=n:getBounds(root)
+		bx=bx+bw/2
+		by=by+bh/2
+		local a,d=^>math.atan2(by-fy,bx-fx),((bx-fx)*(bx-fx)+(by-fy)*(by-fy))^0.5
+		local ad=math.abs(aref-a)
+		if ad>180 then ad=360-ad end
+		if ad<(atolerance or 45) and d<td then
+			t=n td=d
+		end
+	end
+	for i=1,n:getNumChildren() do
+		table.insert(p,n:getChildAt(i))
+	end
   end
   if t then
     self:request(t,mode)  

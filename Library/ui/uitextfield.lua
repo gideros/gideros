@@ -53,31 +53,33 @@ TextEdit._setText=TextEdit.setText
 TextEdit._setFont=TextEdit.setFont
 
 function TextEdit:init(font,text,layout)
-  self.font=font or Font.getDefault()
-  self.caretHeight=self.font:getLineHeight()
-  local la=self.font:getAscender()
-  local bb=0
+	self.font=font or Font.getDefault()
+	self.caretHeight=self.font:getLineHeight()
+	local la=self.font:getAscender()
+	local bb=0
 	if self.font.getDescender then 
-  bb=(self.caretHeight-la-self.font:getDescender())/2
-  end
-  self.caretOffset=la+bb
-  self.caretColor=vector(0,0,0,1)
-  self.password=layout and layout.password
-  self.multiline=layout and layout.multiline
-  self:setText(text or "")
-  if self.setWorldAlign then self:setWorldAlign(not Oculus) end
+		bb=(self.caretHeight-la-self.font:getDescender())/2
+	end
+	self.caretOffset=la+bb
+	self.lineAscender=la
+	self.caretColor=vector(0,0,0,1)
+	self.password=layout and layout.password
+	self.multiline=layout and layout.multiline
+	self:setText(text or "")
+	if self.setWorldAlign then self:setWorldAlign(not Oculus) end
 end
 
 function TextEdit:setFont(font)
-  self.font=font or Font.getDefault()
-  self.caretHeight=self.font:getLineHeight()
-  local la=self.font:getAscender()
-  local bb=0
-  if self.font.getDescender then 
-	bb=(self.caretHeight-la-self.font:getDescender())/2
-  end
-  self.caretOffset=la+bb
-  self:_setFont(self.font)
+	self.font=font or Font.getDefault()
+	self.caretHeight=self.font:getLineHeight()
+	local la=self.font:getAscender()
+	local bb=0
+	if self.font.getDescender then 
+		bb=(self.caretHeight-la-self.font:getDescender())/2
+	end
+	self.caretOffset=la+bb
+	self.lineAscender=la
+	self:_setFont(self.font)
 end
 
 function TextEdit:setPassword(p)
@@ -213,6 +215,9 @@ function TextEdit:setCaretPos(index,focusing)
     index=(index<>0)><#tx
     self.caretPos=index
     local cx,cy=self:getPointFromTextPosition(index)
+	if cy==0 then --No text, assume font ascender, will be fixed in gideros 2024.4
+		cy=self.lineAscender
+	end
     self.caretX=cx
     self.caretY=cy
     self.caret:setPosition(self.caretX,self.caretY)
@@ -236,6 +241,10 @@ function TextEdit:setCaretPosition(cx,cy,forSelection)
 		cy=my+mh/2
 	end
     local ti,mx,my=self:getTextPositionFromPoint(cx,cy)
+	if my==0 then --No text, assume font ascender, will be fixed in gideros 2024.4
+		my=self.lineAscender
+		ti=0 --Bug fix
+	end
     self.caretPos=ti
     self.caretX=mx
     self.caretY=my
@@ -817,9 +826,12 @@ function UI.TextField:onWidgetChange(w,ratio,page)
 end
 
 function UI.TextField:onMouseWheel(x,y,wheel,distance)
-	local cx,cy=self:checkRange()
-	self:checkRange(cx,cy-distance)
-	return true
+	local cx,cy,_,h=self:checkRange()
+	if h>0 then
+		self:checkRange(cx,cy-distance)
+		return true
+	end
+	return false
 end
 
 function UI.TextField:onDragStart(x,y,ed,ea,change,long)

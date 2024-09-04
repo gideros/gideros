@@ -31,6 +31,9 @@ end
 function UI.Label:getText()
 	return self._label:getText()
 end
+function UI.Label:setTextLayout(tl)
+	self._label:setLayout(tl)
+end
 
 function UI.Label:setColor(c)
 	self.color=c

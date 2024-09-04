@@ -23,11 +23,13 @@ UI.Dialog.Definition= {
 local ConfirmTemplate={
 	class="UI.Dialog",
 	layout={fill=Sprite.LAYOUT_FILL_HORIZONTAL},
-	layoutModel={ rowWeights={1,0},columnWeights={1,1},cellSpacingX=10,cellSpacingY=5,equalizeCells=true },
+	layoutModel={ rowWeights={1,0},columnWeights={1,1},equalizeCells=true,
+		insets="dialog.szInset",cellSpacingX="dialog.szSpacing",cellSpacingY="dialog.szSpacing",
+	},
 	children={
 		{ class="UI.Label", name="lbText", layout={gridwidth=2,fill=Sprite.LAYOUT_FILL_BOTH},TextLayout={flags=FontBase.TLF_VCENTER|FontBase.TLF_REF_LINETOP|FontBase.TLF_BREAKWORDS}},
-		{ class="UI.Button", name="btNo", layout={gridy=1,fill=Sprite.LAYOUT_FILL_BOTH},},
-		{ class="UI.Button", name="btYes", layout={gridy=1,gridx=1,fill=Sprite.LAYOUT_FILL_BOTH},},
+		{ class="UI.Button", name="btNo", layout={gridy=1,fill=Sprite.LAYOUT_FILL_BOTH,insetTop="dialog.szButtonMargin"},},
+		{ class="UI.Button", name="btYes", layout={gridy=1,gridx=1,fill=Sprite.LAYOUT_FILL_BOTH,insetTop="dialog.szButtonMargin"},},
 	}
 }
 
@@ -45,10 +47,12 @@ end
 local MessageTemplate={
 	class="UI.Dialog",
 	layout={fill=Sprite.LAYOUT_FILL_HORIZONTAL},
-	layoutModel={ rowWeights={1,0},columnWeights={1},cellSpacingX=10,cellSpacingY=5,equalizeCells=true},
+	layoutModel={ rowWeights={1,0},columnWeights={1},equalizeCells=true,
+		insets="dialog.szInset",cellSpacingX="dialog.szSpacing",cellSpacingY="dialog.szSpacing",
+	},
 	children={
 		{ class="UI.Label", name="lbText", layout={fill=1},TextLayout={flags=FontBase.TLF_VCENTER|FontBase.TLF_REF_LINETOP|FontBase.TLF_BREAKWORDS}},
-		{ class="UI.Button", name="btOk", layout={gridy=1,fill=1},},
+		{ class="UI.Button", name="btOk", layout={gridy=1,fill=1,insetTop="dialog.szButtonMargin"},},
 	}
 }
 
@@ -65,12 +69,14 @@ end
 local InputTemplate={
 	class="UI.Dialog",
 	layout={fill=Sprite.LAYOUT_FILL_HORIZONTAL},
-	layoutModel={ rowWeights={1,0,0},columnWeights={1,1},cellSpacingX=10,cellSpacingY=5,equalizeCells=true},
+	layoutModel={ rowWeights={1,0,0},columnWeights={1,1},equalizeCells=true,
+		insets="dialog.szInset",cellSpacingX="dialog.szSpacing",cellSpacingY="dialog.szSpacing",
+	},
 	children={
 		{ class="UI.Label", 	name="lbText", 	layout={gridwidth=2,fill=1},TextLayout={flags=FontBase.TLF_VCENTER|FontBase.TLF_REF_LINETOP|FontBase.TLF_BREAKWORDS}},
 		{ class="UI.TextField", name="lbInput", layout={gridwidth=2,gridy=1,fill=1},TextLayout={flags=FontBase.TLF_VCENTER|FontBase.TLF_REF_LINETOP|FontBase.TLF_NOWRAP}},
-		{ class="UI.Button",	name="btNo", 	layout={gridy=2,fill=1},},
-		{ class="UI.Button", 	name="btYes", 	layout={gridy=2,gridx=1,fill=1},},
+		{ class="UI.Button",	name="btNo", 	layout={gridy=2,fill=1,insetTop="dialog.szButtonMargin"},},
+		{ class="UI.Button", 	name="btYes", 	layout={gridy=2,gridx=1,fill=1,insetTop="dialog.szButtonMargin"},},
 	}
 }
 
@@ -90,15 +96,17 @@ function UI.Dialog.box(children,yes,no,params,boxTemplate) --children { { class=
 	local BoxTemplate={
 		class="UI.Dialog",
 		layout={fill=Sprite.LAYOUT_FILL_HORIZONTAL},
-		layoutModel={ rowWeights={1,0},columnWeights={1,1},cellSpacingX=10,cellSpacingY=5,equalizeCells=true},
+		layoutModel={ rowWeights={1,0},columnWeights={1,1},equalizeCells=true,
+			insets="dialog.szInset",cellSpacingX="dialog.szSpacing",cellSpacingY="dialog.szSpacing",
+		},
 		children={
 			{ class="UI.Panel", name="Box", --!!index=1
 			 layoutModel = { columnWeights={1}, rowWeights={1}, columnWidths={0}, rowHeights={0} },
 			 layout={gridx=0,gridy=0,gridwidth=2,fill=1},
 			 children={},
 			},
-			{ class="UI.Button", name="btNo", layout={gridy=1,fill=1},},
-			{ class="UI.Button", name="btYes", layout={gridy=1,gridx=1,fill=1},},
+			{ class="UI.Button", name="btNo", layout={gridy=1,fill=1,insetTop="dialog.szButtonMargin"},},
+			{ class="UI.Button", name="btYes", layout={gridy=1,gridx=1,fill=1,insetTop="dialog.szButtonMargin"},},
 		}
 	}
 	if not boxTemplate then boxTemplate=BoxTemplate end
@@ -153,6 +161,7 @@ function UI.Screen:onMouseClick()
 end
 
 function UI.Screen:onLingerStart(x,y)
+	if self._ToolTip_Marker then return end
 	local top,tip,sites=UI.ToolTip.lookupAt(self,x,y)
 	--Process tooltip
 	if top then
@@ -164,9 +173,11 @@ end
 
 function UI.Screen:onLingerEnd()
 	if self._ToolTip_Marker then
-		UI.ToolTip.dismiss(self,self._ToolTip_Marker)
-		self._ToolTip_Marker:destroy()
-		self._ToolTip_Marker=nil
+		UI.ToolTip.autoDismissLater(self,self._ToolTip_Marker,0.4,function ()
+			self._ToolTip_Marker:destroy()
+			self._ToolTip_Marker=nil
+		end)
+		--UI.ToolTip.dismiss(self,self._ToolTip_Marker)
 	end
 end
 

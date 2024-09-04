@@ -202,3 +202,10 @@ function UI.Keyboard.setKeyboardVisibility(ui)
 		end
 	end
 end
+
+function UI.Keyboard.setKeyboardTarget(ui)
+	local kinst=UI.Keyboard.INSTANCE
+	if kinst then
+		kinst:setTarget(ui)
+	end
+end

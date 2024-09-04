@@ -43,17 +43,23 @@ end
 function UI.Table:updateStyle(...)
 	if not self.__cacheUpdating then
 		local function updateRowsStyle()
-			if self.datarows then 
-				for _,r in ipairs(self.datarows) do
+			if self.dataRows then 
+				for _,r in pairs(self.dataRows) do
 					if r.ghosts then
+						-- Clear row ghost style cache
 						r._ghostStyleCache={}
 						for j=1,#self.columns,1 do
 							local cellCode=vector(r.row,j,0,0)
 							local cell = self.cells[cellCode]
-							if cell then
-								if cell.ghostModel and cell.updateGhostStyle then
-									cell:updateGhostStyle()
+							if cell and cell.ghostModel and cell.updateGhostStyle then
+								-- Clear local cell style cache (possibly shared)
+								local cs=cell._style
+								if cs then
+									local ps=cs.__style
+									table.clear(cs)
+									cs.__style=ps
 								end
+								cell:updateGhostStyle(r)
 							end
 						end
 						r:setGhosts(r.ghosts) 

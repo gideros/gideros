@@ -6,12 +6,13 @@ UI.Event={
   FocusChange   	={ "data","focused","event" },  --For editable widgets    : uitextfield --event={TAG="...",reason="...}
   FocusArea   		={ "x","y","w","h" },     		--For focusable widgets   : sent when specified source widget area should be made visible, sent by UI.Focus:area() and handled by viewport
   WidgetChange  	={ "data","newState" },     	--For clickable widgets   : uibreadcrumb, uicheckbox, uiradio,uitabbedpane [without state]: uicombobox, uicalendar [with looped instead of state]: uispinner [with ratio instead of data]: uisplitpane, uislider [with page after ratio:] uiscrollbar
-  WidgetChanging	={ "booleean" },				--For slidable/draggable/repeatable changing items: uislider
+  WidgetChanging	={ "boolean" },					--For slidable/draggable/repeatable changing items: uislider
   WidgetExpand  	={ "data","expanded" },     	--For expandable widgets  : uitree, uiaccordion
-  WidgetAction  	={ },               			--From button Behavior
+  WidgetAction  	={ },               			--From button Behavior, also from some widgets: uicolorpicker
   WidgetLongAction	={ },							--From LongClick Behavior
   WidgetLingerStart	={ "x", "y" },					--From Linger Behavior
   WidgetLingerEnd	={ "x", "y" },					--From Linger Behavior
+  WidgetDragClick	={ "x", "y" },					--From DragClick Behavior
   SelectionChange 	={ "selection" }, 				--From Selection engine
   ColumnMove		={ "oldIndex", "newIndex" }, 	--From uitable
   ColumnResize		={ "columnIndex", "newSize" }, 	--From uitable

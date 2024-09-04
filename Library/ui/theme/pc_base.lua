@@ -2,34 +2,10 @@
 
 local colNone=UI.Colors.transparent
 UI.Theme.PointCore_Base={
-	--Inactive backgrounds
-	["theme.C1F"]=UI.Color(0x1B1B1B),
-	["theme.C1M"]=UI.Color(0x424242),
-	["theme.C1L"]=UI.Color(0x6D6D6D),
-	["theme.C1MM"]=UI.Color(0x2E2E2E),
-	-- Active backgrounds
-	["theme.C2F"]=UI.Color(0x005662),
-	["theme.C2F30"]=UI.Color(0x005662,.3), --TODO
-	--["theme.C2F30"]="=theme.C2F:alpha:.3", --GIDEROS 2024.3
-	["theme.C2M"]=UI.Color(0x00838F),
-	["theme.C2L"]=UI.Color(0x4FB3BF),
-	["theme.C2FF"]=UI.Color(0x2E474B),
-	-- Highlight
-	["theme.CH"]=UI.Color(0xFFA726),
-	-- Texts
-	["theme.T"]=UI.Colors.white,
-	["theme.TI"]=UI.Colors.black,
-	-- Base
-	["theme.OV15"]=UI.Color(1,1,1,0.15),
-	["theme.OV30"]=UI.Color(1,1,1,0.3),
-	["theme.OV50"]=UI.Color(1,1,1,0.5),
-	["theme.OV70"]=UI.Color(1,1,1,0.7), -- Unused yet in base widgets
-	["theme.OVI15"]=UI.Color(0,0,0,0.15),
-	["theme.OVI30"]=UI.Color(0,0,0,0.3),
-	["theme.OVI50"]=UI.Color(0,0,0,0.5),
-	["theme.OVI70"]=UI.Color(0,0,0,0.7), -- Unused yet in base widgets
 	-- Statics
-	["theme.SHADOW"]=UI.Color(0,0,0,0.7),
+	--colTesting
+	["theme.SHADOW"]=UI.Color(0,0,0,0.7), --colShadow
+	colShadow="theme.SHADOW",
 	["theme.NIGHT"]=UI.Color(0,0,0,0.5), -- Unused yet in base widgets, for completeness
 	["theme.NONE"]=UI.Color(0,0,0,0), -- Unused yet in base widgets, for completeness
 	["theme.WHITE"]=UI.Color(1,1,1,1),
@@ -42,14 +18,45 @@ UI.Theme.PointCore_Base={
 	["theme.BLACK50"]=UI.Color(0,0,0,.5),
 	["theme.BLACK30"]=UI.Color(0,0,0,.3),
 	["theme.BLACK15"]=UI.Color(0,0,0,.15),
-	-- States
-	["theme.KO"]=UI.Color(0xFF0000),
-	--
+	--Inactive backgrounds
+	["theme.C1F"]=UI.Color(0x1B1B1B), --colDeep
+	["theme.C1M"]=UI.Color(0x424242), --colBackground
+	["theme.C1L"]=UI.Color(0x6D6D6D), --colPane
+	colDeep="theme.C1F",
+	colBackground="theme.C1M",
+	colPane="theme.C1L",
+	-- Active backgrounds
+	["theme.C2F"]=UI.Color(0x005662), --colTile
+	["theme.C2F30"]=UI.Color(0x005662,.3), --TODO --["theme.C2F30"]="=theme.C2F:alpha:.3", --GIDEROS 2024.3
+	["theme.C2M"]=UI.Color(0x00838F), --colHeader
+	["theme.C2L"]=UI.Color(0x4FB3BF), --colSelect
+	colTile="theme.C2F",
+	colHeader="theme.C2M",
+	colSelect="theme.C2L",
+	-- Composites
+	["theme.C1MM"]=UI.Color(0x2E2E2E),
+	["theme.C2FF"]=UI.Color(0x2E474B),
+	-- Highlight
+	["theme.CH"]=UI.Color(0xFFA726), --colHighlight
+	colHighlight="theme.CH",
+	-- Texts
+	["theme.T"]=UI.Colors.white, --colText --colUI --T = T1 ( = T2 ? )
+	["theme.TI"]=UI.Colors.black,
 	colText="theme.T",
 	colUI="theme.T",
-	colBackground="theme.C1M",
-	colDarkBackground="theme.C1MM",
-	colHighlight="theme.CH",
+	-- Base
+	["theme.OV15"]=UI.Color(1,1,1,0.15),
+	["theme.OV30"]=UI.Color(1,1,1,0.3), --colDisabled
+	colDisabled="theme.OV30",
+	["theme.OV50"]=UI.Color(1,1,1,0.5),
+	["theme.OV70"]=UI.Color(1,1,1,0.7), -- Unused yet in base widgets
+	["theme.OVI15"]=UI.Color(0,0,0,0.15),
+	["theme.OVI30"]=UI.Color(0,0,0,0.3),
+	["theme.OVI50"]=UI.Color(0,0,0,0.5),
+	["theme.OVI70"]=UI.Color(0,0,0,0.7), -- Unused yet in base widgets							   
+	-- States
+	["theme.KO"]=UI.Color(0xFF0000), --colError
+	colError=UI.Color(0xFF0000),
 	--
 	["button.styBack"]={
 		colWidgetBack="button.colBackground",
@@ -61,7 +68,7 @@ UI.Theme.PointCore_Base={
 		},
 	},
 	["button.styInside"]={
-		colWidgetBack=UI.Colors.transparent,
+		colWidgetBack=colNone,
 		brdWidget={ },
 		shader={}
 	},
@@ -85,6 +92,8 @@ UI.Theme.PointCore_Base={
 		["checkbox.colTickboxThird"]="theme.OV30", 
 	},
 	--
+	["chart.colItem"]="theme.C2M",
+	["chart.colAxis"]="theme.C1L",
 	["combobox.colBackground"]="theme.C2F",
 	["combobox.colBorder"]="theme.C2M",
 	--
@@ -106,7 +115,7 @@ UI.Theme.PointCore_Base={
 	--
 	["buttontextfield.szInset"]="0.25s",
 	["buttontextfield.szMargin"]="0.5s",
-	["buttontextfieldcombo.styButton"]={
+	["dropdown.styButton"]={
 		["button.styBack"]={
 			colWidgetBack=UI.Colors.white,
 			brdWidget=UI.Border.NinePatch.new({
@@ -123,14 +132,14 @@ UI.Theme.PointCore_Base={
 		["button.colBorder"]=colNone,
 		["button.colFocus"]=colNone,
 		["button.styInside"]={
-			colWidgetBack=UI.Colors.transparent,
+			colWidgetBack=colNone,
 			brdWidget={},
 			shader={},
-			["image.colTint"]="colUI",
+			["image.colTint"]="colText",
 		},
 		["button.styDisabled"]={
 			["button.styInside"]={
-				colWidgetBack=UI.Colors.transparent,
+				colWidgetBack=colNone,
 				brdWidget={},
 				shader={},
 				["image.colTint"]="theme.OV30",
@@ -175,7 +184,7 @@ UI.Theme.PointCore_Base={
 	["calendar.colBorder"]="theme.C2M",
 	["calendar.colDaysOther"]="theme.OV50",
 	["calendar.stySpinners"]={
-		["spinner.colIcon"]="theme.C2L",
+		["spinner.colIcon"]="theme.OV50",
 	},
 
 	--
@@ -223,14 +232,15 @@ UI.Theme.PointCore_Base={
 	},
 	--
 	["progress.colBorder"]="theme.C1M",
-	["progress.colBackground"]="theme.C2F",
+	["progress.colBackground"]="theme.C1M",
+	["progress.colRemain"]="theme.C2F",
 	["progress.styDisabled"]={
 		["progress.colRemain"]="theme.C1F",
 		["progress.colBackground"]=colNone,
 		["progress.colDone"]="theme.C1L",
 	},
 	--
-	["scrollbar.colBar"]="colDisabled",
+	["scrollbar.colBar"]="theme.C1L",
 	--
 	["slider.colKnob"]=colNone,
 	["slider.colKnobCenter"]="theme.C2L",
@@ -404,7 +414,7 @@ UI.Theme.PointCore_Base={
 		}),
 		shader={
 			class="UI.Shader.MultiLayer", 
-			params={ colLayer1="tooltip.colUrl", colLayer2="tooltip.colUrlFore", colLayer3="tooltip.colShadow", colLayer4=colNone }
+			params={ colLayer1="tooltip.colUrl", colLayer2="tooltip.colUrlFore",  colLayer3="tooltip.colShadow", colLayer4=colNone }
 		},
 	},
 	["tooltip.styRef"]={

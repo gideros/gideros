@@ -45,9 +45,34 @@ function UI.Shader:applyParametersTo(sprite)
 			local c=UI.Utils.colorVector(v,sprite._style)
 			sprite:setShaderConstant(n,Shader.CFLOAT4,1,c.r,c.g,c.b,c.a)
 		else
-			if type(v)=="string" then v=sprite:resolveStyle(v) end
-			--A simple value
-			sprite:setShaderConstant(n,Shader.CFLOAT,1,tonumber(v) or 0)
+			local function convert(v)
+				if type(v)=="string" then
+					v=sprite:resolveStyle(v)
+				end
+				return tonumber(v) or 0
+			end
+			local tv=type(v) 
+			if tv=="table" then
+				local tn={}
+				for k,nv in ipairs(v) do
+					tn[k]=convert(nv)
+				end
+				local tl=#tn
+				if tl==1 then
+					sprite:setShaderConstant(n,Shader.CFLOAT,1,tn[1])
+				elseif tl==2 then
+					sprite:setShaderConstant(n,Shader.CFLOAT2,1,unpack(tn))
+				elseif tl==3 then
+					sprite:setShaderConstant(n,Shader.CFLOAT3,1,unpack(tn))
+				elseif tl==4 then
+					sprite:setShaderConstant(n,Shader.CFLOAT4,1,unpack(tn))
+				else
+					sprite:setShaderConstant(n,Shader.CFLOAT,tl,unpack(tn))
+				end
+			else
+				--A simple value
+				sprite:setShaderConstant(n,Shader.CFLOAT,1,convert(v))
+			end
 		end
 	end
 end
@@ -69,6 +94,7 @@ local function overrideStandardShader(ref,pid,vid,overrider)
 	end
 	return shaderCache[ref] 
 end
+UI.Shader.overrideStandardShader=overrideStandardShader
 
 local function vertexShader(vVertex,vColor,vTexCoord) : Shader
 	local vertex = hF4(vVertex,0.0,1.0)
@@ -336,20 +362,20 @@ function UI.Shader.MeshLineMultiLayer:init(params)
 			local tc=fTexCoord.xy
 			local tb1=fCornersT.xy*fTexInfo.xy
 			if tc.x<0 then
-				tc.x=(tc.x+1)*tb1.s
+				tc.x=(tc.x+1)*tb1.x
 			elseif tc.x<1 then
-				tc.x=tb1.s+tc.x*(1-tb1.s-tb1.t)
+				tc.x=tb1.x+tc.x*(1-tb1.x-tb1.y)
 			else
-				tc.x=1-tb1.t+(tc.x-1)*tb1.t
+				tc.x=1-tb1.y+(tc.x-1)*tb1.y
 			end
 			local tb=fCornersT.zw*fTexInfo.xy
 			local vb=fCornersV.zw*fTexInfo.xy
-			if tc.y<vb.s then
-				tc.y=tc.y*(tb.s/vb.s)
-			elseif tc.y>(1-vb.t) then
-				tc.y=((tc.y-1+vb.t)*(tb.t/vb.t))+1-tb.t
+			if tc.y<vb.x then
+				tc.y=tc.y*(tb.x/vb.x)
+			elseif tc.y>(1-vb.y) then
+				tc.y=((tc.y-1+vb.y)*(tb.y/vb.y))+1-tb.y
 			else
-				tc.y=((tc.y-vb.s)*((1-tb.t-tb.s)/(1-vb.t-vb.s)))+tb.s
+				tc.y=((tc.y-vb.x)*((1-tb.y-tb.x)/(1-vb.y-vb.x)))+tb.x
 			end
 			local t=texture2D(fTexture, tc.xy)
 			local frag=lF4(lF3(colLayer1.rgb),1)*t.r*colLayer1.a
@@ -402,13 +428,13 @@ function UI.Shader.ProgressMultiLayer:init(params)
 		function () : Shader
 			local t=texture2D(fTexture, fTexCoord.xy)
 			local frag=lF4(lF3(colLayer1.rgb),1)*t.r*colLayer1.a
-			local f2=lF3(colLayer2.rgb,1)*t.g*colLayer2.a
+			local f2=lF4(lF3(colLayer2.rgb),1)*t.g*colLayer2.a
 			frag=frag*(1-f2.a)+f2
 			local c3=lF4(if fXPos<fRatio.x or fXPos>fRatio.y then colLayer3a else colLayer3)
 			f2=lF4(c3.rgb,1)*t.b*c3.a
 			
 			frag=frag*(1-f2.a)+f2			
-			f2=lF3(colLayer4.rgb,1)*t.a*colLayer4.a
+			f2=lF4(lF3(colLayer4.rgb),1)*t.a*colLayer4.a
 			frag=frag*(1-f2.a)+f2
 			frag*=lF4(fColor)
 			return lF4(frag)

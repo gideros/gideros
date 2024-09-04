@@ -270,18 +270,29 @@ UI.Style["unit.is"]=UI.Style.fontSize*UI.Style.iconScale
 
 --print("UI Units:","s="..UI.Style["unit.s"],"is="..UI.Style["unit.is"])
 
-UI.Style.colUI				=UI.Colors.black
-UI.Style.colText			=UI.Colors.black
-UI.Style.colDisabled		=UI.Color(.5,.5,.5,1) 		--Dark Grey
+-- Statics
+UI.Style.colTesting			=UI.Color(1,0.7,0.92,.5) 	--Light pink
+UI.Style.colShadow			=UI.Color(0,0,0,.5) 		--black 50%
+--Inactive backgrounds
+UI.Style.colDeep			=UI.Color(.3,.3,.3,1)		--Very dark grey
 UI.Style.colBackground		=UI.Colors.white 			--White
-UI.Style.colDarkBackground	=UI.Color(.3,.3,.3,1)		--Very dark grey
-UI.Style.colShadow			=UI.Color(0,0,0,.5) 		--Light Black
+UI.Style.colPane			=UI.Color(.5,.5,.5,1) 		--Dark Grey
+-- Active backgrounds
 UI.Style.colTile			=UI.Color(.5,.5,.5,1) 		--Dark Grey
 UI.Style.colHeader			=UI.Color(.75,.75,.75,1) 	--Grey
 UI.Style.colSelect			=UI.Color(0,.75,1,.9) 		--Light blue
+-- Composites
+--nothing
+-- Highlight
 UI.Style.colHighlight		=UI.Color(0,.25,1,.9) 		--Dark blue
+-- Texts
+UI.Style.colUI				=UI.Colors.black			
+UI.Style.colText			=UI.Colors.black			--T = T1 ( = T2 ? )
+-- Base
+UI.Style.colDisabled		=UI.Color(0,0,0,.3) 		--black 30%
+-- States
 UI.Style.colError			=UI.Color(0xFF0000) 		--red
-UI.Style.colTesting			=UI.Color(1,0.7,0.92,.5) 	--Light pink
+
 UI.Style.colWidgetBack		=UI.Colors.transparent
 UI.Style.brdWidget			=nil
 UI.Style.szDragThreshold	="1s"
@@ -349,6 +360,45 @@ UI.Style.button={
 	colFocus="colUI",
 	colSelect=colNone,
 }
+UI.Style.buttontextfield={
+	icButton=Texture.new("ui/icons/panel.png",true,{ mipmap=true }),
+	styButton={
+		["button.styBack"]={
+			colWidgetBack=colNone,
+			brdWidget={},
+			shader={},
+		},
+		["button.colBackground"]=colNone,
+		["button.colBorder"]=colNone,
+		["button.colFocus"]=colNone,
+		["button.colSelect"]=colNone,
+		["button.styInside"]={
+			["image.colTint"]="colText",
+		},
+		["button.styError"]={
+			["button.colBackground"]="colError",
+		},
+		["button.stySelected"]={
+			["button.styInside"]={
+				["image.colTint"]="colSelect",
+			}
+		},
+		["button.stySelectedFocused"]={
+			["button.styInside"]={
+				["image.colTint"]="colSelect",
+			}
+		},
+		["button.styFocused"]={
+			["button.styInside"]={
+				["image.colTint"]="colText",
+			}
+		},
+	},
+}
+UI.Style.buttontextfieldcombo={
+	icButton="dropdown.icButton",
+	styButton="dropdown.styButton",
+}
 UI.Style.calendar={	
 	fontDayNames="font.bold",
 	colBackground="colBackground",
@@ -356,8 +406,8 @@ UI.Style.calendar={
 	colSpinnerBackground="calendar.colBorder",
 	colSpinnerBorder="calendar.colBorder",
 	colDays="colText",
-	colDaysOther="colDisabled",
-	colDayToday="colDisabled",
+	colDaysOther="colPane",
+	colDayToday="colPane",
 	colDaySelected="colHighlight",
 	colDayHeader="colText",
 	szDay="1.7em",
@@ -428,6 +478,16 @@ UI.Style.calendar={
 		}
 	},
 }
+UI.Style.chart={
+	colBackground=colNone,
+	colItem="colUI",
+	colItemSelected="colHighlight",
+	icBar=Texture.new("ui/icons/textfield-multi.png",true,{ rawalpha=true, mipmap=true }),
+	szBarCorner=".3s",
+	szBarCornerTextureRatio=0.5,
+	colAxis="colUI",
+	szAxisThickness=".1s",
+}
 UI.Style.checkbox={
 	styTickbox={
 		colWidgetBack=colFull,
@@ -468,19 +528,54 @@ UI.Style.checkbox={
 	},
 	szIcon="1is",
 }
+UI.Style.colorpicker={
+	icPicker=Texture.new("ui/icons/ic_palette.png",true,{ mipmap=true }),
+	icValidate=Texture.new("ui/icons/kbd_check.png",true,{ mipmap=true }),
+	icCancel=Texture.new("ui/icons/ic_cross.png",true,{ mipmap=true }),
+	icCrosshair=Texture.new("ui/icons/ic_reticule.png",true,{ mipmap=true }),
+	colBackground="colBackground",
+	colBorder="colHeader",
+	szCorner=".5s",
+	szInset="0.1s",
+	szCellSpacing=".2s",
+	szHistoWidth="2s",
+	szHistoHeight="2s",
+	szColorRange="8.6s", --Choosen to fit 4x Histo cells in height (incl. spacing)
+	szColorSample="2s",
+	szButtonWidth="3.1s", -- Choosen to fit half of 3x Histo cells
+	szCrosshair="2s",
+	szColorBoxInset=".5s",
+	styBase={
+		colWidgetBack=colFull,
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
+			corners={"colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner",63,63,63,63,},
+			insets={ left="colorpicker.szInset", right="colorpicker.szInset", top="colorpicker.szInset", bottom="colorpicker.szInset" },
+		}),
+		shader={ 
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="colorpicker.colBackground", colLayer2="colorpicker.colBorder", colLayer3=colNone, colLayer4=colNone } 
+		}
+	},
+	styColorBox={
+		colWidgetBack=colFull,
+		brdWidget=UI.Border.NinePatch.new({
+			texture=Texture.new("ui/icons/bdr-multi.png",true,{ mipmap=true }),
+			corners={"colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner",63,63,63,63,},
+			insets={ left="colorpicker.szInset", right="colorpicker.szInset", top="colorpicker.szInset", bottom="colorpicker.szInset" },
+		}),
+		shader={ 
+			class="UI.Shader.MultiLayer", 
+			params={ colLayer1="colorpicker.colBackground", colLayer2="colorpicker.colBorder", colLayer3=colNone, colLayer4=colNone } 
+		}
+	},
+}
+
 UI.Style.combobox={
 	styBase={
 		["button.styBack"]={
-			colWidgetBack=colFull,
-			brdWidget=UI.Border.NinePatch.new({
-				texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
-				corners={".5s",".5s",".5s",".5s",63,63,63,63,},
-				insets={ left=".5s",right=".5s",top=".5s",bottom=".5s"},
-			}),
-			shader={ 
-				class="UI.Shader.MultiLayer", 
-				params={ colLayer1="button.colBackground", colLayer2="button.colFocus", colLayer3="button.colSelect", colLayer4=colNone } 
-			},
+			colWidgetBack=colNone,
+			brdWidget={},
 		},
 		["button.styError"]={
 			["button.colBackground"]="colError",
@@ -530,13 +625,12 @@ UI.Style.datepicker={
 	icPicker=Texture.new("ui/icons/ic_cal.png",true,{ mipmap=true }),
 }
 UI.Style.dialog={
-	bborder=UI.Border.NinePatch.new({
-		texture=Texture.new("ui/icons/grey-panel.png",true,{ mipmap=true }),
-		corners={15,15,15,15,15,15,15,15},
-		insets={ left=20, right=10, top=10, bottom=20 },
-	}),
 	colBackground="colBackground",
+	szInset=".5s",
+	szSpacing=".5s",
+	szButtonMargin=".5s"
 }
+
 UI.Style.dnd={
 	colSrcHighlight=UI.Color(0,.25,1,.9,.15),
 	colDstHighlight="colHighlight",
@@ -563,11 +657,15 @@ UI.Style.dnd={
 	colMarkerBorder="colHighlight",
 	colMarkerTint=UI.Color(1,1,1,.85),
 }
+UI.Style.dropdown={
+	icButton=Texture.new("ui/icons/rdown.png",true,{ mipmap=true }),
+	styButton="buttontextfield.styButton",
+}
 UI.Style.editableclock={	
 	colBackground="calendar.colBackground",
 	colBorder="calendar.colBorder",
 	
-	colRing="colDisabled",
+	colRing="colPane",
 	colCenter="editableclock.colBackground",
 	colDot="editableclock.colBorder",
 		
@@ -687,46 +785,6 @@ UI.Style.label={
 	color="colText",
 	szInset=".2s",
 	font="font",
-}
-UI.Style.buttontextfield={
-	icButton=Texture.new("ui/icons/panel.png",true,{ mipmap=true }),
-	styButton={
-		["button.styBack"]={
-			colWidgetBack=UI.Colors.transparent,
-			brdWidget={},
-			shader={},
-		},
-		["button.colBackground"]=colNone,
-		["button.colBorder"]=colNone,
-		["button.colFocus"]=colNone,
-		["button.colSelect"]=colNone,
-		["button.styInside"]={
-			["image.colTint"]="colUI",
-		},
-		["button.styError"]={
-			["button.colBackground"]="colError",
-		},
-		["button.stySelected"]={
-			["button.styInside"]={
-				["image.colTint"]="colSelect",
-			}
-		},
-		["button.stySelectedFocused"]={
-			["button.styInside"]={
-				["image.colTint"]="colSelect",
-			}
-		},
-		["button.styFocused"]={
-			["button.styInside"]={
-				["image.colTint"]="colUI",
-			}
-		},
-	},
-}
-UI.Style.buttontextfieldcombo={
-	icButton=Texture.new("ui/icons/rdown.png",true,{ mipmap=true }),
-	styBase="buttontextfield",
-	styButton="buttontextfield.styButton",
 }
 UI.Style.passwordfield={
 	icButton=Texture.new("ui/icons/eye.png",true,{ mipmap=true }),
@@ -1057,7 +1115,7 @@ UI.Style.textfield={
 		}
 	},
 	colForeground="colText",
-	colTipText="colDisabled",
+	colTipText="colPane",
 	colBackground="colBackground",
 	colBorder="colUI",
 	colBorderWide=colNone,
@@ -1168,7 +1226,7 @@ UI.Style.toolbox={
 	szBorder=".3s",
 }
 UI.Style.tooltip={
-	szOffsetMax="4s",
+	szOffsetMax="6s",
 	styMarker={
 		colWidgetBack=colFull,
 		brdWidget=UI.Border.NinePatch.new({

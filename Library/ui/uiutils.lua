@@ -72,7 +72,9 @@ function UI.Utils.makeWidget(d,p,style)
   if d==nil then return UI.Panel.new() end
   local tt=type(d)
   if tt=="function" then
-    d=d(p)
+	local np
+    d,np=d(p)
+	p=np or p
 	tt=type(d)
   end
   if tt~="table" then

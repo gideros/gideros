@@ -12,6 +12,14 @@
 - focusgroup (Focus:next() will stay within this group)
 ]]
 
+--[[ ABOUT STYLE LAYERS:
+	- Style: External style override, use this when you want to change the default style of a whole object tree from the outside
+	- LocalStyle: External/Internal style override, use this in custom components to override the base style of a subcomponent
+	- BaseStyle: Base style for a component, that is style common to all states or default state
+	- StateStyle: State specific style of a component
+	- InternalStyle: Style definitions for this panel component, should never be propagated to children
+]]
+
 UI.Panel=Core.class(Pixel,function(bc)
   return 0,0
 end)
@@ -19,9 +27,6 @@ end)
 function UI.Panel:init(bc) 
 	self._flags={} 
 	self._istyle={ __Parent=UI.Style._style }
-	--self._lstyle={ __Parent=self._istyle }
-	--self._bstyle={ __Parent=self._lstyle }
-	--self._style={ __Parent=self._bstyle }
 	self._style={ __Parent=self._istyle }
 	Sprite.setStyle(self,self._style)
 	self:setColor(bc or "colWidgetBack")
@@ -64,7 +69,7 @@ function UI.Panel:setLocalStyle(style)
 	local relink=false
 	if not self._lstyle then
 		self._lstyle={}
-		(self._bstyle or self._style).__Parent=self._lstyle
+		(self._bstyle or self._sstyle or self._style).__Parent=self._lstyle
 		relink=true
 	end
 	sstyle(self,self._lstyle,style or {},self._istyle)
@@ -74,14 +79,24 @@ function UI.Panel:setBaseStyle(style)
 	local relink=false
 	if not self._bstyle then
 		self._bstyle={}
-		self._style.__Parent=self._bstyle
+		(self._sstyle or self._style).__Parent=self._bstyle
 		relink=true
 	end
 	sstyle(self,self._bstyle,style or {},self._lstyle or self._istyle)
 	if relink then self:setStyleInheritance(nil) end
 end
 function UI.Panel:setStateStyle(style)
-	sstyle(self,self._style,style or {},self._bstyle or self._lstyle or self._istyle)
+	local relink=false
+	if not self._sstyle then
+		self._sstyle={}
+		self._style.__Parent=self._sstyle
+		relink=true
+	end
+	sstyle(self,self._sstyle,style or {},self._bstyle or self._lstyle or self._istyle)
+	if relink then self:setStyleInheritance(nil) end
+end
+function UI.Panel:setInternalStyle(style)
+	sstyle(self,self._style,style or {},self._sstyle or self._bstyle or self._lstyle or self._istyle)
 end
 
 --TODO move this to utils ?
@@ -151,7 +166,9 @@ function UI.Panel:inheritableStyle(parentStyleInheritance)
 	elseif inheritance=="base" then
 		bstyle=s._bstyle or s._lstyle or s._istyle
 	elseif inheritance=="state" then
-		bstyle=s._style or s._bstyle or s._lstyle or s._istyle
+		bstyle=s._sstyle or s._bstyle or s._lstyle or s._istyle
+	elseif inheritance=="internal" then
+		bstyle=s._style or s._sstyle or s._bstyle or s._lstyle or s._istyle
 	end
 	return bstyle
 end
@@ -165,7 +182,9 @@ local function linkStyle(s,c,noupd)
 		elseif inheritance=="base" then
 			bstyle=s._bstyle or s._lstyle or s._istyle
 		elseif inheritance=="state" then
-			bstyle=s._style or s._bstyle or s._lstyle or s._istyle
+			bstyle=s._sstyle or s._bstyle or s._lstyle or s._istyle
+		elseif inheritance=="internal" then
+			bstyle=s._style or s._sstyle or s._bstyle or s._lstyle or s._istyle
 		end
 		c._istyle.__Parent=bstyle
 		if not noupd and s:isOnStage() then
@@ -183,6 +202,7 @@ function UI.Panel:newClone()
 	t=tc(self._istyle) t.__Parent=UI.Style._style self._istyle=t t2=t
 	if self._lstyle then t=tc(self._lstyle) t.__Parent=t2 self._lstyle=t t2=t end
 	if self._bstyle then t=tc(self._bstyle) t.__Parent=t2 self._bstyle=t t2=t end
+	if self._sstyle then t=tc(self._sstyle) t.__Parent=t2 self._sstyle=t t2=t end
 	t=tc(self._style) t.__Parent=t2 self._style=t
 	
 	Sprite.setStyle(self,t,false)
@@ -301,6 +321,7 @@ function UI.Panel:setBorder(border)
 			layoutParams.insetLeft+=self:resolveStyle(bi.left)
 			layoutParams.insetRight+=self:resolveStyle(bi.right)
 		else
+			bi=self:resolveStyle(bi)
 			layoutParams.insetTop+=bi
 			layoutParams.insetBottom+=bi
 			layoutParams.insetLeft+=bi
@@ -345,6 +366,7 @@ UI.Panel.Definition= {
     { name="ParentStyleInheritance", type="styleInheritance" },
     { name="LocalStyle", type="style" },
     { name="BaseStyle", type="style" },
+    { name="InternalStyle", type="style" },
     { name="Flags", type="flags" },
     { name="Color", type="color" },
     { name="Image", type="image" },

@@ -9,6 +9,8 @@ Interpret controls and trigger the following events:
 * onDragStart(x,y,dist,angle,changed,long,touchCount) (following onMouseDown)
 * onDrag(x,y,dist,angle,touchCount)  (following onMouseMove)
 * onDragEnd()  (following onMouseUp)
+* onMousePresence(x,y,enter)
+* onLingerStart(sprite,x,y), onLingerEnd(x,y)
 ]]
 
 UI.Control={
@@ -669,7 +671,7 @@ local function onEnterFrame(e)
 			end
 		end
 	end
-	ndispatch("onEnterFrame")
+	ndispatch("onEnterFrame",e.deltaTime)
 end
 
 function UI.Control.setLocalCursor(cursor,forced)

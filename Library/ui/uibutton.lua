@@ -5,7 +5,7 @@
 UI.Button=Core.class(UI.Panel,function () return  end)
 UI.Button.Template={
 	class="UI.Panel",
-	BaseStyle="button.styBack",
+	InternalStyle="button.styBack",
 	layoutModel={ rowWeights={1},columnWeights={1}},
 	model=UI.ImageText.Fallback,
 	ImageTextInheritance="state",
@@ -36,7 +36,7 @@ UI.Button.Definition= {
 UI.ToggleButton=Core.class(UI.Panel,function () return  end)
 UI.ToggleButton.Template={
 	class="UI.Panel",
-	BaseStyle="button.styBack",
+	InternalStyle="button.styBack",
 	layoutModel={ rowWeights={1},columnWeights={1}},
 	behavior=UI.Behavior.ToggleButton,
 	model=UI.ImageText.Fallback,
