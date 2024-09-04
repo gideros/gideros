@@ -153,6 +153,7 @@ public:
         TLF_SINGLELINE=(1<<15),
         TLF_FORCESHAPING=(1<<16),
         TLF_DISPOSELAYOUT=(1<<17),
+        TLF_TABLE=(1<<18),
     };
 
     struct TextLayoutParameters {

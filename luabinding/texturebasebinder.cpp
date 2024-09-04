@@ -11,6 +11,7 @@ TextureBaseBinder::TextureBaseBinder(lua_State* L)
 		{"getHeight", TextureBaseBinder::getHeight},
 		{"getSize", TextureBaseBinder::getSize},
 		{"getTexelSize", TextureBaseBinder::getTexelSize},
+		{"update", TextureBaseBinder::update},
 		{NULL, NULL},
 	};
 
@@ -89,3 +90,25 @@ int TextureBaseBinder::getTexelSize(lua_State* L)
 	return 2;
 }
 
+int TextureBaseBinder::update(lua_State* L)
+{
+	StackChecker checker(L, "TextureBaseBinder::update", 0);
+
+	Binder binder(L);
+	TextureBase* textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase"));
+
+	size_t datasz=0;
+	const char* data = luaL_checklstring(L,2,&datasz);
+	unsigned int width, height;
+	width=luaL_checkinteger(L,3);
+	height=luaL_checkinteger(L,4);
+	if (datasz!=(width*height*4))
+	{
+		lua_pushfstring(L, "Image size doesn't match data length");
+		lua_error(L);
+	}
+
+	textureBase->update((const unsigned char *)data,width,height);
+
+	return 0;
+}

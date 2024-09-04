@@ -46,6 +46,7 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
     lua_pushinteger(L,FontBase::TLF_SINGLELINE); lua_setfield(L,-2,"TLF_SINGLELINE");
     lua_pushinteger(L,FontBase::TLF_FORCESHAPING); lua_setfield(L,-2,"TLF_FORCESHAPING");
     lua_pushinteger(L,FontBase::TLF_DISPOSELAYOUT); lua_setfield(L,-2,"TLF_DISPOSELAYOUT");
+    lua_pushinteger(L,FontBase::TLF_TABLE); lua_setfield(L,-2,"TLF_TABLE");
     lua_pop(L,1);
 }
 

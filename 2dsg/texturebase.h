@@ -14,6 +14,8 @@ public:
 
 	TextureData* data;
 
+	void update(const unsigned char* pixels,unsigned int width,unsigned int height);
+
 protected:
 	TextureBase(Application* application);
 	TextureBase(Application* application,

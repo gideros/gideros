@@ -39,6 +39,21 @@ TextureBase::TextureBase(	Application* application,
     uvscaley = (float)data->height / (float)data->baseHeight;
 }
 
+void TextureBase::update(const unsigned char* pixels,unsigned int width,unsigned int height)
+{
+
+    Dib dib(application_, width, height, data->parameters.pow2);
+	if (pixels)
+	for (unsigned int y=0;y<height;y++)
+		memcpy(dib.dataArray()+y*dib.width()*4,pixels+y*width*4,width*4);
+
+	application_->getTextureManager()->updateTextureFromDib(data, dib);
+	sizescalex = 1;
+	sizescaley = 1;
+    uvscalex = (float)data->width / (float)data->baseWidth;
+    uvscaley = (float)data->height / (float)data->baseHeight;
+}
+
 TextureBase::~TextureBase()
 {
 	if (data)

@@ -183,10 +183,6 @@ GLuint ogl2ShaderProgram::allocateVBO(GLuint type) {
         int alc=bt?4:8;
         GLCALL_INIT;
         GLCALL glGenBuffers(alc,vbos);
-        /*
-        for (int i=0;i<alc;i++)
-            genVBOs[bt].push_back(vbos[i]);
-            */
         for (int i=0;i<(alc-1);i++)
             freeVBOs[bt].push_back(vbos[i]);
         usedVBOs[bt].push_back(vbos[alc-1]);
@@ -218,7 +214,6 @@ GLuint ogl2ShaderProgram::getGenericVBO(int index,unsigned int size, const void 
     bindBuffer(bname,genVBO[index]);
     return genVBO[index];
 #else
-    index=0;
     size_t psize=((size+3)&(~3));
     if (psize>(IDXBUFSIZE/2))
     {

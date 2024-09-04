@@ -93,13 +93,14 @@ void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, flo
 	float ox=0;
     float rx=0;
 	bool justified=false;
+	bool table=(params->flags&FontBase::TLF_TABLE);
     if (cw>tl.cw) tl.cw=cw;
     if ((params->flags&FontBase::TLF_JUSTIFIED)&&wrapped)
 	{
         sw+=(cnt>1)?((w-cw)/(cnt-1)):0;
         justified=true;
 	}
-	else
+	else if (!table)
         ox=(w-cw)*params->alignx;
 	if (!justified) //Not justified, try to merge space separated chunks together
 	{
@@ -133,14 +134,39 @@ void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, flo
             chunkMetricsCache(tl, tl.parts[i],params);
 		}
 	}
+	bool tscan=table;
+	float tx=0;
 	for (size_t i=start;i<cur;i++)
 	{
+		if (tscan) {
+			tx=0;
+            for (size_t nt=i;nt<cur;nt++) {
+                tx+=tl.parts[nt].advX;
+                char sep=tl.parts[nt].sep;
+		        if ((sep!='\t')&&(sep!=ESC))
+		        	tx+=sw;
+		        if (sep=='\t') break;
+			}
+			tscan=false;
+			tx=tabSpace-tx;
+			float pre=tx*params->alignx;
+			tx-=pre;
+			rx+=pre;
+		}
         tl.parts[i].x+=ox+rx;
         tl.parts[i].dx=ox+rx;
-        char sep=tl.parts[i].sep;
         rx+=tl.parts[i].advX;
-        float ns=(sep=='\t')?(tabSpace*(1+floor(rx/tabSpace))-rx):sw;
-        if (sep==ESC) ns=0;
+        char sep=tl.parts[i].sep;
+        float ns=(sep==ESC)?0:sw;
+        if (sep=='\t')
+        {
+            if (table) {
+        		ns=tx;
+                tscan=true;
+            }
+        	else
+        		ns=tabSpace*(1+floor(rx/tabSpace))-rx;
+        }
         rx+=ns;
     }
 }

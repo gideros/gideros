@@ -1620,12 +1620,12 @@ static void add_stroke_quad_int(struct path *path, double x0, double y0, double 
 
     double length = arc_length(Ax, Ay, Bx, By, Cx, Cy, 1);
 
-    if (!(length>=0))
+    if (!(std::isfinite(length)&&(length>=0)))
         length=0;
 
-	double cx, cy, ux, uy, vx, vy;
-	get_quadratic_bounds_oriented(x0, y0, x1, y1, x2, y2,
-			path->stroke_width+path->stroke_margin, &cx, &cy, &ux, &uy, &vx, &vy);
+    double cx, cy, ux, uy, vx, vy;
+    get_quadratic_bounds_oriented(x0, y0, x1, y1, x2, y2,
+                                  path->stroke_width+path->stroke_margin, &cx, &cy, &ux, &uy, &vx, &vy);
 
 	double a = -2 * dot(Ax, Ay, Ax, Ay);
 	double b = -3 * dot(Ax, Ay, Bx, By);

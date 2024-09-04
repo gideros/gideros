@@ -35,7 +35,10 @@ int TextureBinder::create(lua_State* L)
 		width=luaL_checkinteger(L,2);
 		height=luaL_checkinteger(L,3);
 		if (filename&&(filenamesz!=(width*height*4)))
-			filename=NULL;
+        {
+            lua_pushfstring(L, "Image size doesn't match data length");
+            lua_error(L);
+        }
 	}
 
 	bool smoothing = lua_toboolean(L, isFromPixels?4:2);
