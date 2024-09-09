@@ -25,9 +25,10 @@ ifneq ($(LUA_ENGINE),luau)
 PLUGINS_ALL+=bitop
 endif
 
-PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera 
-PLUGINS_WINONLY=spout steam luamidi
-PLUGINS_MACONLY=steam luamidi
+PLUGINS_QT=$(PLUGINS_ALL) clipper struct controller camera luamidi
+PLUGINS_QTWINONLY=spout steam
+PLUGINS_QTMACONLY=steam
+PLUGINS_QTLINUXONLY=
 PLUGINS_WIN32=spout lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui cute_c2
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
@@ -35,7 +36,7 @@ PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming gift
 PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
 PLUGINS_LINUX=lsqlite3 luasocket lfs json lpeg clipper struct bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2 luamidi
 ifneq ($(LUA_ENGINE),luau)
-PLUGINS_WIN+=threads
+PLUGINS_QT+=threads
 PLUGINS_ANDROID+=threads
 PLUGINS_WIN32+=bitop threads
 PLUGINS_HTML5+=bitop

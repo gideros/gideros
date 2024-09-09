@@ -171,13 +171,13 @@ qt5.install:
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
 	
 buildqtplugins: 
-	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_QT) $(PLUGINS_QTWINONLY))
 
 qtplugins.clean: 
-	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_WINONLY)) 
+	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_QT) $(PLUGINS_QTWINONLY)) 
 
 qtplugins.install: buildqtplugins 
-	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_WINONLY))
+	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_QT) $(PLUGINS_QTWINONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MINGWMAKE) clean; fi

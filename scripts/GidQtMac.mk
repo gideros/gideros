@@ -157,13 +157,13 @@ qt.player:
 	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
 	
 buildqtplugins: 
-	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
+	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_QT) $(PLUGINS_QTMACONLY))
 
 qtplugins.clean: 
-	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_WIN) $(PLUGINS_MACONLY)) 
+	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_QT) $(PLUGINS_QTMACONLY)) 
 
 qtplugins.install: buildqtplugins 
-	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_WIN) $(PLUGINS_MACONLY))
+	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_QT) $(PLUGINS_QTMACONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; git clean -dfx .

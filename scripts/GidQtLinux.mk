@@ -159,13 +159,13 @@ qt.player:
 	for f in $(QT5DEPSDLLS); do cp -P $(LINUX_SYSLIBS)/lib$$f* $(RELEASE)/Templates/Qt/LinuxDesktopTemplate; done
 	
 buildqtplugins: 
-	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_WIN))
+	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_QT) $(PLUGINS_QTLINUXONLY))
 
 qtplugins.clean: 
-	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_WIN)) 
+	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_QT) $(PLUGINS_QTLINUXONLY)) 
 
 qtplugins.install: buildqtplugins 
-	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
+	$(SUBMAKE)  $(addsuffix .qtplugin.install,$(PLUGINS_QT) $(PLUGINS_QTLINUXONLY))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; if [ -f Makefile ]; then $(MAKE) clean; fi
