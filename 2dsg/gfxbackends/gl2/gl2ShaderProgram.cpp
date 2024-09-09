@@ -387,18 +387,13 @@ void ogl2ShaderProgram::resetAll()
           usedVBOs[k].clear();
           curGenVBO[k]=0;
       }
-      for (int i=0;i<16;i++)
-      {
-        curAttribs[i]=(GLuint)-1;
-        GLCALL glDisableVertexAttribArray(i);
-      }
       gl2ShaderBufferCache::freeVboPacks();
 }
 
 void ogl2ShaderProgram::resetAllUniforms()
 {
-#ifndef GL2SHADERS_COMMON_GENVBO
     GLCALL_INIT;
+#ifndef GL2SHADERS_COMMON_GENVBO
     int nvbo=17;
     for (int k = 0; k < nvbo; k++) {
         if (genVBO[k]) {
@@ -416,6 +411,12 @@ void ogl2ShaderProgram::resetAllUniforms()
     }
 #endif
     gl2ShaderBufferCache::turnVboPacks();
+    //We may have changed context
+    for (int i=0;i<16;i++)
+    {
+      curAttribs[i]=(GLuint)-1;
+      GLCALL glDisableVertexAttribArray(i);
+    }
     //Our context may have been changed external by some window composer (QT), assume buffer bindings are unknown
     curArrayBuffer=curElementBuffer=0;
     for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
