@@ -136,6 +136,10 @@ public:
     static size_t tokenParent;
     static size_t tokenNewclone;
     static size_t tokenUserdata;
+    static size_t tokenInsets;
+    static size_t tokenFill;
+    static size_t tokenWidth;
+    static size_t tokenHeight;
     static int updateStyle(lua_State* L);
 };
 

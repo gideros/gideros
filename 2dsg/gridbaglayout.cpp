@@ -564,23 +564,33 @@ void GridBagLayout::AdjustForGravity(Sprite *comp, GridBagConstraints *constrain
 
     if ((constraints->aspectRatio>0)&&(r.height>0)) {
         //Reduce filled space to fit aspect ratio as much as possible
+        float inw=0;
+        float inh=0;
+        if (constraints->contentAspectRatio&&comp->hasLayoutState()) {
+            inw=comp->layoutState->pInsets.left+comp->layoutState->pInsets.right;
+            inh=comp->layoutState->pInsets.top+comp->layoutState->pInsets.bottom;
+            r.width-=inw;
+            r.height-=inh;
+        }
         float cr=r.width/r.height;
         if (cr>constraints->aspectRatio) //Too large, reduce width
         {
-            float mw=constraints->aspectRatio*r.height-minx;
+            float mw=constraints->aspectRatio*r.height+inw-minx;
             if (mw<0) mw=0;
             if (mw>fillx) mw=fillx;
             diffx+=(fillx-mw);
             fillx=mw;
             r.width = minx + fillx;
+            r.height+=inh;
         }
         else { //Too tall, reduce height
-            float mh=r.width/constraints->aspectRatio-miny;
+            float mh=r.width/constraints->aspectRatio+inh-miny;
             if (mh<0) mh=0;
             if (mh>filly) mh=filly;
             diffy+=(filly-mh);
             filly=mh;
             r.height = miny + filly;
+            r.width+=inw;
         }
     }
 

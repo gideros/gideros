@@ -94,6 +94,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"setEventMerging", ApplicationBinder::setEventMerging},
         {"enableOnDemandDraw", ApplicationBinder::enableOnDemandDraw},
         {"getProjectProperties", ApplicationBinder::getProjectProperties},
+        {"applyStyles", ApplicationBinder::applyStyles},
 
         {NULL, NULL},
 	};
@@ -1187,4 +1188,15 @@ int ApplicationBinder::getProjectProperties(lua_State* L)
     lua_rawsetfield(L,-2,"buildTime");
 
     return 1;
+}
+
+int ApplicationBinder::applyStyles(lua_State* L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    application->applyStyles();
+
+    return 0;
 }

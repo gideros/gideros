@@ -244,6 +244,7 @@ public:
     static void cacheComputedStyle(lua_State *L, const char *key, bool empty);
     static void resolveColor(lua_State *L,int spriteIdx, int colIdx, float *color, std::string &cache);
     void resetStyleCache();
+    void applyStyles();
     //Debugger support
 #define DBG_MASKBREAK	(1<<7) //Check breakpoints: Not a lua debug flag
 #define DBG_MASKSUB		(1<<6) //Ignore subcalls: Not a lua debug flag

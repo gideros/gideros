@@ -12,6 +12,10 @@ size_t SpriteBinder::tokenChildren;
 size_t SpriteBinder::tokenParent;
 size_t SpriteBinder::tokenUserdata;
 size_t SpriteBinder::tokenNewclone;
+size_t SpriteBinder::tokenInsets;
+size_t SpriteBinder::tokenFill;
+size_t SpriteBinder::tokenWidth;
+size_t SpriteBinder::tokenHeight;
 
 SpriteBinder::SpriteBinder(lua_State* L)
 {
@@ -252,6 +256,10 @@ SpriteBinder::SpriteBinder(lua_State* L)
     tokenParent=lua_newtoken(L,"__parent");
     tokenNewclone=lua_newtoken(L,"newClone");
     tokenUserdata=lua_newtoken(L,"__userdata");
+    tokenInsets=lua_newtoken(L,"insets");
+    tokenFill=lua_newtoken(L,"fill");
+    tokenWidth=lua_newtoken(L,"width");
+    tokenHeight=lua_newtoken(L,"height");
 }
 
 int SpriteBinder::create(lua_State* L)
@@ -654,23 +662,26 @@ int SpriteBinder::getClip(lua_State* L)
 #define RESOLVED(n) if ((!raw)&&(p->resolvedMap&FMKEY(n))) lua_pushstring(L,p->resolved[FKEY(n)].c_str()); else
 #define ARESOLVED(n,i) if ((!raw)&&(p->resolvedMap&FMKEY(n))&&p->resolvedArray[FKEY(n)].count(i)) lua_pushstring(L,p->resolvedArray[FKEY(n)][i].c_str()); else
 #define FILL_NUM_ARRAY(n,f) \
-        lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { \
-			luaL_checktype(L,-1, LUA_TTABLE); \
-			p->f.resize(lua_objlen(L,-1)); \
-            p->resolvedMap&=~FMKEY(n); \
-            p->resolvedArray.erase(FKEY(n)); \
-            for (size_t k=1;k<=(size_t)lua_objlen(L,-1);k++) { \
-                lua_rawgeti(L,-1,k); ARESOLVE(n,-2,k-1); \
-                p->f[k-1]=lua_tonumber(L,-1); \
-                lua_pop(L,1); } \
-		} lua_pop(L,1);
+        if (fieldCount) { \
+            lua_getfield(L,2,FSKEY(n)); if (!lua_isnoneornil(L,-1)) { \
+                fieldCount--; \
+                luaL_checktype(L,-1, LUA_TTABLE); \
+                p->f.resize(lua_objlen(L,-1)); \
+                p->resolvedMap&=~FMKEY(n); \
+                p->resolvedArray.erase(FKEY(n)); \
+                size_t olen=(size_t)lua_objlen(L,-1); \
+                for (size_t k=1;k<=olen;k++) { \
+                    lua_rawgeti(L,-1,k); ARESOLVE(n,-2,k-1); \
+                    p->f[k-1]=lua_tonumber(L,-1); \
+                    lua_pop(L,1); } \
+            } lua_pop(L,1); }
 #define FETCH_KEY(n) if (layoutStrings[FKEY(n)]==-1) layoutStrings[FKEY(n)]=lua_newtoken(L,FSKEY(n));
 #define FETCH_VAL(n) FETCH_KEY(n) lua_rawgettoken(L,2,layoutStrings[FKEY(n)]);
 #define STORE_VAL(n) FETCH_KEY(n) lua_rawsettoken(L,-2,layoutStrings[FKEY(n)]);
-#define FILL_INT(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tointeger(L,-1); } lua_pop(L,1);
-#define FILL_INTT(n,f,t) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1);
-#define FILL_NUM(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1);
-#define FILL_BOOL(n,f) FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) p->f=lua_toboolean(L,-1); lua_pop(L,1);
+#define FILL_INT(n,f) if (fieldCount) { FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { fieldCount--; RESOLVE(n); p->f=lua_tointeger(L,-1); } lua_pop(L,1); }
+#define FILL_INTT(n,f,t) if (fieldCount) { FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { fieldCount--; RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1); }
+#define FILL_NUM(n,f) if (fieldCount) { FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { fieldCount--; RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1); }
+#define FILL_BOOL(n,f) if (fieldCount) { FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { fieldCount--; p->f=lua_toboolean(L,-1); } lua_pop(L,1); }
 #define STOR_NUM_ARRAY(n,f) \
         lua_newtable(L); \
         for (size_t k=0;k<p->f.size();k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
@@ -694,37 +705,41 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
 		sprite->clearLayoutState();
 	else {
         luaL_checktype(L, 2, LUA_TTABLE);
+        int fieldCount=lua_gettablesize(L,2);
         LuaApplication::getStyleTable(L,1);
 		GridBagLayout *p=sprite->getLayoutState();
-        FILL_NUM_ARRAY(columnWidths,columnWidths);
-        FILL_NUM_ARRAY(rowHeights,rowHeights);
         FILL_NUM_ARRAY(columnWeights,columnWeights);
         FILL_NUM_ARRAY(rowWeights,rowWeights);
+        FILL_NUM_ARRAY(columnWidths,columnWidths);
+        FILL_NUM_ARRAY(rowHeights,rowHeights);
 
-		lua_getfield(L,2,"insets");
-        if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE(insetTop,-1)
-                p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
-                p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
-                p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
+        if (fieldCount) {
+            lua_rawgettoken(L,2,tokenInsets);
+            if (!lua_isnoneornil(L,-1)) {
+                fieldCount--;
+                FRESOLVE(insetTop,-1)
+                    p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
+                    p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
+                    p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
+                }
+                else {
+                    p->resolved.erase(FKEY(insetTop));
+                    p->resolved.erase(FKEY(insetLeft));
+                    p->resolved.erase(FKEY(insetBottom));
+                    p->resolved.erase(FKEY(insetRight));
+                }
+                p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
             }
-			else {
-                p->resolved.erase(FKEY(insetTop));
-                p->resolved.erase(FKEY(insetLeft));
-                p->resolved.erase(FKEY(insetBottom));
-                p->resolved.erase(FKEY(insetRight));
-			}
-            p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
+            lua_pop(L,1);
         }
-		lua_pop(L,1);
         FILL_NUM(insetTop,pInsets.top); FILL_NUM(insetLeft,pInsets.left);
         FILL_NUM(insetBottom,pInsets.bottom); FILL_NUM(insetRight,pInsets.right);
 
         FILL_BOOL(equalizeCells,equalizeCells);
+        FILL_NUM(cellSpacingX,cellSpacingX); FILL_NUM(cellSpacingY,cellSpacingY);
         FILL_BOOL(resizeContainer,resizeContainer);
         FILL_BOOL(worldAlign,worldAlign);
         FILL_BOOL(fixedGrid,fixedGrid);
-        FILL_NUM(cellSpacingX,cellSpacingX); FILL_NUM(cellSpacingY,cellSpacingY);
         FILL_NUM(gridAnchorX,gridAnchorX); FILL_NUM(gridAnchorY,gridAnchorY);
         FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
         FILL_NUM(originx,originX); FILL_NUM(originy,originY);
@@ -749,80 +764,94 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 		sprite->clearLayoutConstraints();
 	else {
         luaL_checktype(L, 2, LUA_TTABLE);
+        int fieldCount=lua_gettablesize(L,2);
         LuaApplication::getStyleTable(L,1);
         GridBagConstraints *p=sprite->getLayoutConstraints();
 
+        if (fieldCount) {
+            lua_rawgettoken(L,2,tokenFill);
+            if (!lua_isnoneornil(L,-1)) {
+                fieldCount--;
+                int fill=luaL_checkinteger(L,-1);
+                p->fillX=(fill==1)||(fill==2)?1:0;
+                p->fillY=(fill==1)||(fill==3)?1:0;
+            }
+            lua_pop(L,1);
+        }
         FILL_INT(gridx,gridx); FILL_INT(gridy,gridy);
         FILL_INT(gridwidth,gridwidth); FILL_INT(gridheight,gridheight);
+        if (fieldCount) {
+            lua_rawgettoken(L,2,tokenWidth);
+            if (!lua_isnoneornil(L,-1)) {
+                fieldCount--;
+                FRESOLVE(minWidth,-1)
+                    p->resolved[FKEY(prefWidth)]=p->resolved[FKEY(minWidth)];
+                }
+                else {
+                    p->resolved.erase(FKEY(minWidth));
+                    p->resolved.erase(FKEY(prefWidth));
+                }
+                float width=luaL_checknumber(L,-1);
+                p->aminWidth=width; p->prefWidth=width;
+            }
+            lua_pop(L,1);
+        }
+        if (fieldCount) {
+            lua_rawgettoken(L,2,tokenHeight);
+            if (!lua_isnoneornil(L,-1)) {
+                fieldCount--;
+                FRESOLVE(minHeight,-1)
+                    p->resolved[FKEY(prefHeight)]=p->resolved[FKEY(minHeight)];
+                }
+                else {
+                    p->resolved.erase(FKEY(minHeight));
+                    p->resolved.erase(FKEY(prefHeight));
+                }
+                float height=luaL_checknumber(L,-1);
+                p->aminHeight=height; p->prefHeight=height;
+            }
+            lua_pop(L,1);
+        }
+        if (fieldCount) {
+            lua_rawgettoken(L,2,tokenInsets);
+            if (!lua_isnoneornil(L,-1)) {
+                fieldCount--;
+                FRESOLVE(insetTop,-1)
+                    p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
+                    p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
+                    p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
+                }
+                else {
+                    p->resolved.erase(FKEY(insetTop));
+                    p->resolved.erase(FKEY(insetLeft));
+                    p->resolved.erase(FKEY(insetBottom));
+                    p->resolved.erase(FKEY(insetRight));
+                }
+                p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
+            }
+            lua_pop(L,1);
+        }
+        FILL_NUM(insetTop,insets.top); FILL_NUM(insetLeft,insets.left);
+        FILL_NUM(insetBottom,insets.bottom); FILL_NUM(insetRight,insets.right);
+        FILL_NUM(minWidth,aminWidth); FILL_NUM(minHeight,aminHeight);
+        FILL_NUM(weightx,weightx); FILL_NUM(weighty,weighty);
+        FILL_INTT(anchor,anchor,GridBagConstraints::_Anchor);
+        FILL_NUM(fillx,fillX); FILL_NUM(filly,fillY);
+        FILL_NUM(anchorx,anchorX); FILL_NUM(anchory,anchorY);
+        FILL_NUM(prefWidth,prefWidth); FILL_NUM(prefHeight,prefHeight);
         FILL_BOOL(gridRelative,gridRelative);
         FILL_INT(overflowMode,overflowMode);
         FILL_INT(hidePriority,hidePriority);
-        FILL_NUM(weightx,weightx); FILL_NUM(weighty,weighty);
-        FILL_INTT(anchor,anchor,GridBagConstraints::_Anchor);
-        lua_getfield(L,2,"fill");
-        if (!lua_isnoneornil(L,-1)) {
-            int fill=luaL_checkinteger(L,-1);
-            p->fillX=(fill==1)||(fill==2)?1:0;
-            p->fillY=(fill==1)||(fill==3)?1:0;
-        }
-        lua_pop(L,1);
-        FILL_NUM(fillx,fillX); FILL_NUM(filly,fillY);
         FILL_NUM(aspectRatio,aspectRatio);
-        FILL_NUM(anchorx,anchorX); FILL_NUM(anchory,anchorY);
         FILL_NUM(extraw,extraW); FILL_NUM(extrah,extraH);
         FILL_NUM(offsetx,offsetX); FILL_NUM(offsety,offsetY);
         FILL_NUM(originx,originX); FILL_NUM(originy,originY);
         FILL_NUM(ipadx,ipadx); FILL_NUM(ipady,ipady);
-        lua_getfield(L,2,"width");
-        if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE(minWidth,-1)
-                p->resolved[FKEY(prefWidth)]=p->resolved[FKEY(minWidth)];
-            }
-        	else {
-                p->resolved.erase(FKEY(minWidth));
-                p->resolved.erase(FKEY(prefWidth));
-        	}
-            float width=luaL_checknumber(L,-1);
-            p->aminWidth=width; p->prefWidth=width;
-        }
-        lua_pop(L,1);
-        lua_getfield(L,2,"height");
-        if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE(minHeight,-1)
-                p->resolved[FKEY(prefHeight)]=p->resolved[FKEY(minHeight)];
-            }
-			else {
-                p->resolved.erase(FKEY(minHeight));
-                p->resolved.erase(FKEY(prefHeight));
-			}
-            float height=luaL_checknumber(L,-1);
-            p->aminHeight=height; p->prefHeight=height;
-        }
-        lua_pop(L,1);
-        FILL_NUM(minWidth,aminWidth); FILL_NUM(minHeight,aminHeight);
-        FILL_NUM(prefWidth,prefWidth); FILL_NUM(prefHeight,prefHeight);
         FILL_BOOL(shrink,optimizeSize);
         FILL_BOOL(group,group);
         FILL_BOOL(autoclip,autoClip);
+        FILL_BOOL(contentAspectRatio,contentAspectRatio);
 
-		lua_getfield(L,2,"insets");
-        if (!lua_isnoneornil(L,-1)) {
-            FRESOLVE(insetTop,-1)
-                p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
-                p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
-                p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
-            }
-            else {
-                p->resolved.erase(FKEY(insetTop));
-                p->resolved.erase(FKEY(insetLeft));
-                p->resolved.erase(FKEY(insetBottom));
-                p->resolved.erase(FKEY(insetRight));
-            }
-            p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
-        }
-		lua_pop(L,1);
-        FILL_NUM(insetTop,insets.top); FILL_NUM(insetLeft,insets.left);
-        FILL_NUM(insetBottom,insets.bottom); FILL_NUM(insetRight,insets.right);
         lua_pop(L,1);
         sprite->invalidate(Sprite::INV_CONSTRAINTS);
 	}
@@ -893,7 +922,8 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
         STOR_BOOL(shrink,optimizeSize);
         STOR_BOOL(group,group);
         STOR_BOOL(autoclip,autoClip);
-	}
+        STOR_BOOL(contentAspectRatio,contentAspectRatio);
+    }
 	else
 		lua_pushnil(L);
 	return 1;
@@ -2481,13 +2511,13 @@ int SpriteBinder::setStyle(lua_State* L)
 int SpriteBinder::resolveStyle(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::resolveStyle", 2);
-    int hasTable=!lua_isnoneornil(L,3);
     lua_pushvalue(L,2);
-    if (lua_type(L,2)!=LUA_TSTRING) {
-        lua_pushstring(L,lua_typename(L,lua_type(L,2)));
+    int vtype=lua_type(L,2);
+    if (vtype!=LUA_TSTRING) {
+        lua_pushstring(L,lua_typename(L,vtype));
         return 2;
     }
-    if (hasTable)
+    if (!lua_isnoneornil(L,3))
         lua_pushvalue(L,3);
     else
     	LuaApplication::getStyleTable(L,1);

@@ -64,6 +64,8 @@ struct GridBagConstraints {
     float originX,originY;
     //Target aspect ratio
     float aspectRatio;
+    //If aspect ratio applies to contents (i.e. accounts for insets)
+    bool contentAspectRatio;
     //Pack
     bool optimizeSize;
     //Object group
@@ -94,6 +96,7 @@ struct GridBagConstraints {
         fillX = 0;
         fillY = 0;
         aspectRatio = 0;
+        contentAspectRatio = false;
 
         insets = GridInsets(0, 0, 0, 0);
         ipadx = 0;
@@ -351,5 +354,6 @@ public:
 #define STRKEY_LAYOUT_hidePriority      57
 #define STRKEY_LAYOUT_extraw            58
 #define STRKEY_LAYOUT_extrah            59
+#define STRKEY_LAYOUT_contentAspectRatio 60
 
 #endif /* GRIDBAGLAYOUT_H_ */

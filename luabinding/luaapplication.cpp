@@ -1891,6 +1891,11 @@ static int updateStyles(lua_State *L) {
     return 0;
 }
 
+void LuaApplication::applyStyles()
+{
+    updateStyles(globalLuaState);
+}
+
 static int updateLayout(lua_State *L) {
     LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
     Application *application = luaApplication->getApplication();
