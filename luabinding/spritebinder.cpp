@@ -2511,13 +2511,14 @@ int SpriteBinder::setStyle(lua_State* L)
 int SpriteBinder::resolveStyle(lua_State* L)
 {
     StackChecker checker(L, "SpriteBinder::resolveStyle", 2);
+    bool hasTable=!lua_isnoneornil(L,3);
     lua_pushvalue(L,2);
     int vtype=lua_type(L,2);
     if (vtype!=LUA_TSTRING) {
         lua_pushstring(L,lua_typename(L,vtype));
         return 2;
     }
-    if (!lua_isnoneornil(L,3))
+    if (hasTable)
         lua_pushvalue(L,3);
     else
     	LuaApplication::getStyleTable(L,1);

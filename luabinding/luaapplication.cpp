@@ -1247,7 +1247,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
     }
     if (!lua_istable(L,-1))
     {
-        lua_pushfstringL(L,"Style table doesn't exist, while looking for key: %s",key);
+        lua_pushfstringL(L,"Style table is invalid (%s), while looking for key: %s",lua_typename(L,lua_type(L,-1)),key);
         lua_error(L);
     }
     lua_checkstack(L,8);
