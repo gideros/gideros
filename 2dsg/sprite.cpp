@@ -1447,6 +1447,20 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
 	tx = x;
 	ty = y;
 
+    /*If transformation is invertible and contains rotation, compute in local sprite bounds to fix https://github.com/gideros/gideros/issues/170
+    Rationale for this is that the issue only occurs for rotated shapes (that is no longer axis aligned), and would be miss cache optimizations if used for general cases.
+    */
+    const float *tm=transform.data();
+    int tt=transform.type;
+    if (((tt==Matrix::M2D)||(tt==Matrix::M3D))&&
+        (tm[1]||tm[2]||tm[4]||tm[6]||tm[8]||tm[9])&&
+        transform.getDeterminant()) {
+        transform.inverseTransformPoint(tx,ty,&tx,&ty);
+        ref=this;
+        transform.identity();
+        pxform.clear();
+    }
+
 	float minx, miny, maxx, maxy;
     boundsHelper(transform, &minx, &miny, &maxx, &maxy, pxform, nullptr, visible, false, ref?BOUNDS_REF:BOUNDS_GLOBAL, ref);
 
