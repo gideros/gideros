@@ -1152,18 +1152,88 @@ int Box2DBinder2::b2ParticleSystem_expirationTimeToLifetime(lua_State *L)
     return 1;
 }
 
+int Box2DBinder2::b2ParticleSystem_getParticleCount(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushinteger(L,ps->GetSystem()->GetParticleCount());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_getPositionBuffer(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    int n=ps->GetSystem()->GetParticleCount();
+    b2Vec2 *p=ps->GetSystem()->GetPositionBuffer();
+    lua_createtable(L,n,0);
+    for (int k=1;k<=n;k++) {
+    	lua_pushvector(L,p->x,p->y,0,0);
+    	lua_rawseti(L,-2,k);
+    	p++;
+    }
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_getColorBuffer(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    int n=ps->GetSystem()->GetParticleCount();
+    b2ParticleColor *p=ps->GetSystem()->GetColorBuffer();
+    lua_createtable(L,n,0);
+    for (int k=1;k<=n;k++) {
+    	lua_pushvector(L,p->r/255.0,p->g/255.0,p->b/255.0,p->a/255.0);
+    	lua_rawseti(L,-2,k);
+    	p++;
+    }
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_getVelocityBuffer(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    int n=ps->GetSystem()->GetParticleCount();
+    b2Vec2 *p=ps->GetSystem()->GetVelocityBuffer();
+    lua_createtable(L,n,0);
+    for (int k=1;k<=n;k++) {
+    	lua_pushvector(L,p->x,p->y,0,0);
+    	lua_rawseti(L,-2,k);
+    	p++;
+    }
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_getWeightBuffer(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    int n=ps->GetSystem()->GetParticleCount();
+    float32 *p=ps->GetSystem()->GetWeightBuffer();
+    lua_createtable(L,n,0);
+    for (int k=1;k<=n;k++) {
+    	lua_pushnumber(L,*p);
+    	lua_rawseti(L,-2,k);
+    	p++;
+    }
+    return 1;
+}
+
+
 /*
  * No bindings for:
 void 	SetFlagsBuffer (uint32 *buffer, int32 capacity)
 void 	SetPositionBuffer (b2Vec2 *buffer, int32 capacity)
 void 	SetVelocityBuffer (b2Vec2 *buffer, int32 capacity)
 void 	SetColorBuffer (b2ParticleColor *buffer, int32 capacity)
-b2Vec2 * 	GetPositionBuffer ()
-b2Vec2 * 	GetVelocityBuffer ()
-b2ParticleColor * 	GetColorBuffer ()
 b2ParticleGroup *const * 	GetGroupBuffer ()
-float32 * 	GetWeightBuffer ()
-const float32 * 	GetWeightBuffer () const
 const uint32 * 	GetFlagsBuffer () const
 const int32 * 	GetExpirationTimeBuffer ()
 const int32 * 	GetIndexByExpirationTimeBuffer ()

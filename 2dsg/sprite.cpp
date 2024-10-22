@@ -1408,6 +1408,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
     std::stack<const Sprite*> stack;
 
     if (ref) {
+        //If ref is present, collect all possible parents from ref to self or stage
         const Sprite* curr = ref;
         while (curr) {
             base.insert(curr);
@@ -1416,6 +1417,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
         }
     }
 
+    //Locate common root chain between (ref or stage) and self
 	const Sprite *curr = this;    
     const Sprite *last=NULL;
     while (curr&&((!ref)||(base.find(curr)==base.end()))) {
@@ -1429,6 +1431,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
     if (visible&&(!(ref?(last->isVisible_):(last->isStage())))) return false;
 
     if (ref) {
+        //Transform ref point to common root / stage
         curr=ref;
         while (curr!=last) {
             curr->matrix().transformPoint(x, y, &x, &y);
@@ -1436,6 +1439,7 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
         }
     }
 
+    //Compute transform matrix from self to common root/ stage
 	while (!pstack.empty()) {
 		curr=pstack.top();
 		pstack.pop();
@@ -1447,16 +1451,15 @@ bool Sprite::hitTestPoint(float x, float y, bool visible,const Sprite *ref) {
 	tx = x;
 	ty = y;
 
-    /*If transformation is invertible and contains rotation, compute in local sprite bounds to fix https://github.com/gideros/gideros/issues/170
+    /*If transformation is affine and contains rotation, compute in local sprite bounds to fix https://github.com/gideros/gideros/issues/170
     Rationale for this is that the issue only occurs for rotated shapes (that is no longer axis aligned), and would be miss cache optimizations if used for general cases.
     */
     const float *tm=transform.data();
     int tt=transform.type;
-    if (((tt==Matrix::M2D)||(tt==Matrix::M3D))&&
-        (tm[1]||tm[2]||tm[4]||tm[6]||tm[8]||tm[9])&&
-        transform.getDeterminant()) {
+    if (((tt==Matrix::M2D)||(tt==Matrix::M3D))&& //Affine (exclude translation only)
+        (tm[1]||tm[2]||tm[4]||tm[6]||tm[8]||tm[9])) { //has rotation
         transform.inverseTransformPoint(tx,ty,&tx,&ty);
-        ref=this;
+        ref=this; //We still use the REF code path, but maybe we should use BOUNDS_OBJECT below
         transform.identity();
         pxform.clear();
     }

@@ -538,6 +538,11 @@ int Box2DBinder2::loader(lua_State *L)
 	    {"getAllParticleFlags",b2ParticleSystem_getAllParticleFlags},
 	    {"getAllGroupFlags",b2ParticleSystem_getAllGroupFlags},
 	    {"expirationTimeToLifetime",b2ParticleSystem_expirationTimeToLifetime},
+	    {"getParticleCount",b2ParticleSystem_getParticleCount},
+	    {"getPositionBuffer",b2ParticleSystem_getPositionBuffer},
+		{"getColorBuffer",b2ParticleSystem_getColorBuffer},
+		{"getVelocityBuffer",b2ParticleSystem_getVelocityBuffer},
+		{"getWeightBuffer",b2ParticleSystem_getWeightBuffer},
         {NULL, NULL},
     };
     binder.createClass("b2ParticleSystem", "Sprite", NULL, NULL, b2ParticleSystem_functionList);

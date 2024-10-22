@@ -316,6 +316,11 @@ private:
     static int b2ParticleSystem_getAllParticleFlags(lua_State *L);
     static int b2ParticleSystem_getAllGroupFlags(lua_State *L);
     static int b2ParticleSystem_expirationTimeToLifetime(lua_State *L);
+    static int b2ParticleSystem_getParticleCount(lua_State *L);
+    static int b2ParticleSystem_getPositionBuffer(lua_State *L);
+    static int b2ParticleSystem_getColorBuffer(lua_State *L);
+    static int b2ParticleSystem_getVelocityBuffer(lua_State *L);
+    static int b2ParticleSystem_getWeightBuffer(lua_State *L);
 
     static int b2ParticleGroup_destroyParticles(lua_State* L);
     static int b2ParticleGroup_getParticleCount(lua_State* L);
