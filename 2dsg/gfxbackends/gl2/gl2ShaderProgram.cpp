@@ -288,6 +288,12 @@ GLuint ogl2ShaderProgram::getCachedVBO(ShaderBufferCache **cache,bool &modified,
         //Small buffer
         if (dc->valid())
             dc->recreate(); //Clear if already valid
+        if (size==0) { //Empty buffer, don't bind a VBO at all
+            dc->size=0;
+            dc->offset=0;
+            bindBuffer(type,0);
+            return 0;
+        }
         if (gl2ShaderBufferCache::openVboPack[ptype]) {
             if ((gl2ShaderBufferCache::vboPacks[gl2ShaderBufferCache::openVboPack[ptype]].used+size)>FBOSize) {
                 //Open pack is full, close it
