@@ -508,7 +508,7 @@ static int lz_read_line(lua_State *L, lz_stream *s) {
         for (n = 0; n < len; ++n, ++p) {
             if (*p == '\n' || *p == '\r') {
                 int eat_nl = *p == '\r';
-                luaL_addlstring(&b, s->o_buffer, n,-1);
+                luaL_addlstring(&b, s->o_buffer, n);
                 lzstream_remove(s, n+1);
                 l += n;
 
@@ -524,7 +524,7 @@ static int lz_read_line(lua_State *L, lz_stream *s) {
         }
 
         if (len > 0) {
-            luaL_addlstring(&b, s->o_buffer, len,-1);
+            luaL_addlstring(&b, s->o_buffer, len);
             lzstream_remove(s, len);
             l += len;
         }
@@ -786,7 +786,7 @@ static int lzlib_compress(lua_State *L) {
     for(;;)
     {
 #ifdef LUA_IS_LUAU
-        luaL_reservebuffer(&b,LUA_BUFFERSIZE,-1);
+        luaL_prepbuffsize(&b,LUA_BUFFERSIZE);
         zs.next_out = (unsigned char *)b.p;
         zs.avail_out = LUA_BUFFERSIZE;
 #else
@@ -853,7 +853,7 @@ static int lzlib_decompress(lua_State *L)
 
     for (;;) {
 #ifdef LUA_IS_LUAU
-        luaL_reservebuffer(&b,LUA_BUFFERSIZE,-1);
+        luaL_prepbuffsize(&b,LUA_BUFFERSIZE);
         zs.next_out = (unsigned char *)b.p;
         zs.avail_out = LUA_BUFFERSIZE;
 #else

@@ -4,7 +4,7 @@ QT?=$(QTBASEDIR)/$(QTVER)/$(QT_ARCH)
 LUA_ENGINE?=luau
 export LUA_ENGINE
 ifeq ($(LUA_ENGINE),luau)
-LUAC=$(BUILDTOOLS)/luauc --compile=binary $(1) >$(2)
+LUAC=$(BUILDTOOLS)/luauc --binary -O2 -g2 $(1) >$(2)
 LUA_INCLUDE=luau/VM/include
 LUA_INCLUDE_CORE=luau/VM/src luau/Common/include
 else

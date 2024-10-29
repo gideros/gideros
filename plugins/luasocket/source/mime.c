@@ -179,7 +179,7 @@ static size_t b64encode(UC c, UC *input, size_t size,
         code[2] = b64base[value & 0x3f]; value >>= 6;
         code[1] = b64base[value & 0x3f]; value >>= 6;
         code[0] = b64base[value];
-        luaL_addlstring(buffer, (char *) code, 4, -1);
+        luaL_addlstring(buffer, (char *) code, 4);
         size = 0;
     }
     return size;
@@ -200,7 +200,7 @@ static size_t b64pad(const UC *input, size_t size,
             value = input[0] << 4;
             code[1] = b64base[value & 0x3f]; value >>= 6;
             code[0] = b64base[value];
-            luaL_addlstring(buffer, (char *) code, 4, -1);
+            luaL_addlstring(buffer, (char *) code, 4);
             break;
         case 2:
             value = input[0]; value <<= 8; 
@@ -208,7 +208,7 @@ static size_t b64pad(const UC *input, size_t size,
             code[2] = b64base[value & 0x3f]; value >>= 6;
             code[1] = b64base[value & 0x3f]; value >>= 6;
             code[0] = b64base[value];
-            luaL_addlstring(buffer, (char *) code, 4, -1);
+            luaL_addlstring(buffer, (char *) code, 4);
             break;
         default:
             break;
@@ -240,7 +240,7 @@ static size_t b64decode(UC c, UC *input, size_t size,
         decoded[0] = (UC) value;
         /* take care of paddding */
         valid = (input[2] == '=') ? 1 : (input[3] == '=') ? 2 : 3; 
-        luaL_addlstring(buffer, (char *) decoded, valid, -1);
+        luaL_addlstring(buffer, (char *) decoded, valid);
         return 0;
     /* need more data */
     } else return size;
@@ -508,12 +508,12 @@ static size_t qpdecode(UC c, UC *input, size_t size, luaL_Buffer *buffer) {
             /* decode quoted representation */
             c = qpunbase[input[1]]; d = qpunbase[input[2]];
             /* if it is an invalid, do not decode */
-            if (c > 15 || d > 15) luaL_addlstring(buffer, (char *)input, 3, -1);
+            if (c > 15 || d > 15) luaL_addlstring(buffer, (char *)input, 3);
             else luaL_addchar(buffer, (char) ((c << 4) + d));
             return 0;
         case '\r':
             if (size < 2) return size; 
-            if (input[1] == '\n') luaL_addlstring(buffer, (char *)input, 2, -1);
+            if (input[1] == '\n') luaL_addlstring(buffer, (char *)input, 2);
             return 0;
         default:
             if (input[0] == '\t' || (input[0] > 31 && input[0] < 127))

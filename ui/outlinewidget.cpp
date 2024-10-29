@@ -401,15 +401,15 @@ void OutlineWorkerThread::run()
 
       Luau::Frontend *frontend=((OutlineWidget *)this->parent())->frontend;
       frontend->markDirty(filename.toStdString());
-      Luau::LintResult lr = frontend->lint(filename.toStdString().c_str());
       QList<OutlineLinterItem> li;
-      for (const Luau::LintWarning &e: lr.warnings)
-          li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Warning,filename,e.location.begin.line));
-      for (const Luau::LintWarning &e: lr.errors)
-          li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Error,filename,e.location.begin.line));
 
       if (typeCheck) {
           Luau::CheckResult cr = frontend->check(filename.toStdString().c_str());
+          for (const Luau::LintWarning &e: cr.lintResult.warnings)
+              li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Warning,filename,e.location.begin.line));
+          for (const Luau::LintWarning &e: cr.lintResult.errors)
+              li.append(OutlineLinterItem(QString(e.text.c_str()),OutlineLinterItem::LinterType::Error,filename,e.location.begin.line));
+
           for (const Luau::TypeError &e: cr.errors) {
               const Luau::UnknownSymbol *uk=e.data.get_if<Luau::UnknownSymbol>();
               if ((!uk)||(uk->context!=Luau::UnknownSymbol::Binding))
@@ -530,6 +530,8 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     //LINTER
     Luau::FrontendOptions frontendOptions;
     frontendOptions.retainFullTypeGraphs = true; //Annotate
+    frontendOptions.runLintChecks = true;
+
     fileResolver=new OutlineFileResolver(this);
     configResolver.defaultConfig.mode=Luau::Mode::Nonstrict;
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_UnknownGlobal);
@@ -540,7 +542,7 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     configResolver.defaultConfig.enabledLint.disableWarning(Luau::LintWarning::Code_CommentDirective);
 
     frontend=new Luau::Frontend(fileResolver, &configResolver, frontendOptions);
-    Luau::registerBuiltinTypes(*frontend);
+    Luau::registerBuiltinGlobals(*frontend, frontend->globals);
 
     std::stringstream gid_api;
     gid_api << "export type Shader = any\n";
@@ -591,7 +593,8 @@ OutlineWidget::OutlineWidget(QWidget *parent)
         file.close();
     }
 
-    Luau::loadDefinitionFile(frontend->typeChecker, frontend->typeChecker.globalScope, gid_api.str(), "@gideros");
+    //TODO: Check last args
+    frontend->loadDefinitionFile(frontend->globals, frontend->globals.globalScope, gid_api.str(), "@gideros", false, false);
 
     //Luau::freeze(frontend->typeChecker.globalTypes);
 #endif

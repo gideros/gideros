@@ -15,7 +15,7 @@ USE_SCINTILLAEDIT=y
 LUA_ENGINE=$$(LUA_ENGINE)
 LUA_ENGINE=luau
 isEmpty(LUA_ENGINE): LUA_ENGINE=lua
-equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src ../luau/Ast/include ../luau/Common/include ../luau/Compiler/include ../luau/Analysis/include
+equals(LUA_ENGINE,luau): LUA_INCLUDE=../luau/VM/include ../luau/VM/src ../luau/Ast/include ../luau/Common/include ../luau/Compiler/include ../luau/Config/include ../luau/Analysis/include
 equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
 DEFINES+= LUAU_ENABLE_ASSERT
@@ -38,13 +38,17 @@ defineReplace(expand) {
 }
 
 equals(LUA_ENGINE,luau): LUA_SOURCES =\
-         $$expand(lapi laux lbaselib lbitlib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
+         $$expand(lapi laux lbaselib lbitlib lbuffer lbuflib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
          ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils,../luau/VM/src/,.cpp) \
-         $$expand(Builtins BuiltinFolding BytecodeBuilder ConstantFolding Compiler CostModel lcode PseudoCode TableShape ValueTracking,../luau/Compiler/src/,.cpp) \
-         $$expand(Anyification ApplyTypeFunction AstJsonEncoder AstQuery Autocomplete BuiltinDefinitions Clone Config Constraint ConstraintGraphBuilder ConstraintSolver \
-         DataFlowGraph DcrLogger Def \
-         EmbeddedBuiltinDefinitions Error Frontend Instantiation IostreamHelpers JsonEmitter Linter LValue Module Normalize Quantify Refinement RequireTracer \
-         Scope Substitution Symbol ToDot TopoSortStatements Tostring Transpiler TxnLog Type TypeArena TypeAttach TypeChecker2 TypedAllocator TypeInfer TypePack TypeReduction TypeUtils Unifiable Unifier,../luau/Analysis/src/,.cpp) \
+         $$expand(Builtins BuiltinFolding BytecodeBuilder ConstantFolding Compiler CostModel lcode PseudoCode TableShape Types ValueTracking,../luau/Compiler/src/,.cpp) \
+         $$expand(Anyification AnyTypeSummary ApplyTypeFunction AstJsonEncoder AstQuery Autocomplete BuiltinDefinitions Clone Constraint ConstraintGenerator ConstraintSolver \
+         DataFlowGraph DcrLogger Def Differ \
+         EmbeddedBuiltinDefinitions Error FragmentAutoComplete Frontend \
+         Generalization GlobalTypes Instantiation Instantiation2 IostreamHelpers JsonEmitter Linter LValue Module NonStrictTypeChecker Normalize OverloadResolution Quantify Refinement RequireTracer \
+         Scope Simplify Substitution Subtyping Symbol TableLiteralInference ToDot TopoSortStatements Tostring Transpiler TxnLog \
+         Type TypeArena TypeAttach TypeChecker2 TypedAllocator TypeFunction TypeFunctionReductionGuesser TypeFunctionRuntime TypeFunctionRuntimeBuilder \
+         TypeInfer TypeOrPack TypePack TypePath TypeUtils Unifiable Unifier Unifier2,../luau/Analysis/src/,.cpp) \
+         $$expand(Config LinterConfig,../luau/Config/src/,.cpp) \
          $$expand(Ast Confusables Lexer Location Parser StringUtils TimeTrace,../luau/Ast/src/,.cpp)
 equals(LUA_ENGINE,lua): LUA_SOURCES =\
 	../lua/src/lapi.c \
