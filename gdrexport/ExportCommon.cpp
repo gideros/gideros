@@ -468,7 +468,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 #endif
 					QProcess procWrite;
 					procWrite.setStandardOutputFile(dfile);
-					procWrite.start(luac, QStringList() << "--compile=binary" << sfile);
+                    procWrite.start(luac, QStringList() << "--compile=binary" << "--vector-ctor=vector" << "-O2" << sfile);
 					procWrite.waitForFinished();
 #else
 #if defined(Q_OS_WIN)

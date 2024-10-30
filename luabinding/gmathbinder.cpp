@@ -278,7 +278,7 @@ static int getVec(lua_State *L,int idx,VECTYPE vt,VEC &v) {
 		if (vf) {
 			v.x=vf[0];
 			v.y=vf[1];
-			v.z=vf[2];
+            v.z=(vt==VT_VECTOR3)?vf[2]:0;
 		}
 		else {
 			luaL_checktype(L,idx,LUA_TTABLE);
