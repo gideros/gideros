@@ -43,6 +43,8 @@ LUALIB_API void luaL_checkany(lua_State* L, int narg);
 LUALIB_API int luaL_newmetatable(lua_State* L, const char* tname);
 LUALIB_API void* luaL_checkudata(lua_State* L, int ud, const char* tname);
 
+LUALIB_API void* luaL_checkbuffer(lua_State* L, int narg, size_t* len);
+
 LUALIB_API void luaL_where(lua_State* L, int lvl);
 LUALIB_API LUA_PRINTF_ATTR(2, 3) l_noret luaL_errorL(lua_State* L, const char* fmt, ...);
 
@@ -53,6 +55,8 @@ LUALIB_API const char* luaL_tolstring(lua_State* L, int idx, size_t* len);
 LUALIB_API lua_State* luaL_newstate(void);
 
 LUALIB_API const char* luaL_findtable(lua_State* L, int idx, const char* fname, int szhint);
+
+LUALIB_API const char* luaL_typename(lua_State* L, int idx);
 
 /*
 ** ===============================================================
@@ -66,15 +70,13 @@ LUALIB_API const char* luaL_findtable(lua_State* L, int idx, const char* fname, 
 #define luaL_checkstring(L, n) (luaL_checklstring(L, (n), NULL))
 #define luaL_optstring(L, n, d) (luaL_optlstring(L, (n), (d), NULL))
 
-#define luaL_typename(L, i) lua_typename(L, lua_type(L, (i)))
-
 #define luaL_getmetatable(L, n) (lua_getfield(L, LUA_REGISTRYINDEX, (n)))
 
 #define luaL_opt(L, f, n, d) (lua_isnoneornil(L, (n)) ? (d) : f(L, (n)))
 
-/* generic buffer manipulation */
+// generic buffer manipulation
 
-struct luaL_Buffer
+struct luaL_Strbuf
 {
     char* p;   // current position in buffer
     char* end; // end of the current buffer
@@ -82,27 +84,29 @@ struct luaL_Buffer
     struct TString* storage;
     char buffer[LUA_BUFFERSIZE];
 };
-typedef struct luaL_Buffer luaL_Buffer;
+typedef struct luaL_Strbuf luaL_Strbuf;
+
+// compatibility typedef: this type is called luaL_Buffer in Lua headers
+// renamed to luaL_Strbuf to reduce confusion with internal VM buffer type
+typedef struct luaL_Strbuf luaL_Buffer;
 
 // when internal buffer storage is exhausted, a mutable string value 'storage' will be placed on the stack
 // in general, functions expect the mutable string buffer to be placed on top of the stack (top-1)
 // with the exception of luaL_addvalue that expects the value at the top and string buffer further away (top-2)
-// functions that accept a 'boxloc' support string buffer placement at any location in the stack
-// all the buffer users we have in Luau match this pattern, but it's something to keep in mind for new uses of buffers
 
-#define luaL_addchar(B, c) ((void)((B)->p < (B)->end || luaL_extendbuffer(B, 1, -1)), (*(B)->p++ = (char)(c)))
-#define luaL_addstring(B, s) luaL_addlstring(B, s, strlen(s), -1)
+#define luaL_addchar(B, c) ((void)((B)->p < (B)->end || luaL_prepbuffsize(B, 1)), (*(B)->p++ = (char)(c)))
+#define luaL_addstring(B, s) luaL_addlstring(B, s, strlen(s))
 
-LUALIB_API void luaL_buffinit(lua_State* L, luaL_Buffer* B);
-LUALIB_API char* luaL_buffinitsize(lua_State* L, luaL_Buffer* B, size_t size);
-LUALIB_API char* luaL_extendbuffer(luaL_Buffer* B, size_t additionalsize, int boxloc);
-LUALIB_API void luaL_reservebuffer(luaL_Buffer* B, size_t size, int boxloc);
-LUALIB_API void luaL_addlstring(luaL_Buffer* B, const char* s, size_t l, int boxloc);
-LUALIB_API void luaL_addvalue(luaL_Buffer* B);
-LUALIB_API void luaL_pushresult(luaL_Buffer* B);
-LUALIB_API void luaL_pushresultsize(luaL_Buffer* B, size_t size);
+LUALIB_API void luaL_buffinit(lua_State* L, luaL_Strbuf* B);
+LUALIB_API char* luaL_buffinitsize(lua_State* L, luaL_Strbuf* B, size_t size);
+LUALIB_API char* luaL_prepbuffsize(luaL_Buffer* B, size_t size);
+LUALIB_API void luaL_addlstring(luaL_Strbuf* B, const char* s, size_t l);
+LUALIB_API void luaL_addvalue(luaL_Strbuf* B);
+LUALIB_API void luaL_addvalueany(luaL_Strbuf* B, int idx);
+LUALIB_API void luaL_pushresult(luaL_Strbuf* B);
+LUALIB_API void luaL_pushresultsize(luaL_Strbuf* B, size_t size);
 
-/* builtin libraries */
+// builtin libraries
 LUALIB_API int luaopen_base(lua_State* L);
 
 #define LUA_COLIBNAME "coroutine"
@@ -120,6 +124,9 @@ LUALIB_API int luaopen_string(lua_State* L);
 #define LUA_BITLIBNAME "bit32"
 LUALIB_API int luaopen_bit32(lua_State* L);
 
+#define LUA_BUFFERLIBNAME "buffer"
+LUALIB_API int luaopen_buffer(lua_State* L);
+
 #define LUA_UTF8LIBNAME "utf8"
 LUALIB_API int luaopen_utf8(lua_State* L);
 
@@ -135,9 +142,9 @@ LUALIB_API int luaopen_int64(lua_State* L);
 #define LUA_IOLIBNAME	"io"
 LUALIB_API int luaopen_io (lua_State *L);
 
-/* open all builtin libraries */
+// open all builtin libraries
 LUALIB_API void luaL_openlibs(lua_State* L);
 
-/* sandbox libraries and globals */
+// sandbox libraries and globals
 LUALIB_API void luaL_sandbox(lua_State* L);
 LUALIB_API void luaL_sandboxthread(lua_State* L);

@@ -27,7 +27,7 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
 
     tdesc.Width = width;
     tdesc.Height = height;
-    tdesc.MipLevels = (filtering==FILT_LINEAR_MIPMAP)?1:1;
+    tdesc.MipLevels = (filtering==FILT_LINEAR_MIPMAP)?0:1;
     tdesc.ArraySize = 1;
     tdesc.SampleDesc.Count = 1;
     tdesc.SampleDesc.Quality = 0;
@@ -72,7 +72,7 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
   	  exit(1);
     }
 
-    g_dev->CreateTexture2D(&tdesc,&tbsd,&tex);
+    g_dev->CreateTexture2D(&tdesc, (filtering == FILT_LINEAR_MIPMAP)?nullptr:&tbsd,&tex);
 	D3D11_SHADER_RESOURCE_VIEW_DESC sr_desc;
 	sr_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 	sr_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -80,8 +80,10 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
 	sr_desc.Texture2D.MipLevels = -1;
     g_dev->CreateShaderResourceView(tex,(format==FMT_DEPTH)?&sr_desc:NULL,&rsv);
 
-    if (filtering==FILT_LINEAR_MIPMAP)
-    	g_devcon->GenerateMips(rsv);
+	if (filtering == FILT_LINEAR_MIPMAP) {
+		g_devcon->UpdateSubresource(tex, 0, NULL, tbsd.pSysMem, tbsd.SysMemPitch, 0);
+		g_devcon->GenerateMips(rsv);
+	}
 
 //    g_devcon->PSSetShaderResources(0,1,&g_RSV[g_curr_texind]);
 }
