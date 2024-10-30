@@ -310,6 +310,33 @@ void ProjectProperties::load(const std::vector<char> &data, bool skipFirst)
     current=*this;
 }
 
+int LuaApplication::Core_getScriptPath(lua_State* L)
+{
+    lua_Debug ar;
+    if (!lua_getinfo(L, 1, "S", &ar))
+        return 0;
+    if (ar.source==NULL)
+        return 0;
+    const char *s=ar.source;
+    if ((*s)=='@')
+        s++;
+    const char *lsep=nullptr;
+    const char *r=s;
+    while ((*r)!=0) {
+        if (((*r)=='/')||((*r)=='\\'))
+            lsep=r;
+        r++;
+    }
+    if (lsep!=nullptr) {
+        lua_pushlstring(L,s,lsep+1-s);
+        lua_pushstring(L,lsep+1);
+    }
+    else {
+        lua_pushnil(L);
+        lua_pushstring(L,s);
+    }
+    return 2;
+}
 
 double LuaApplication::meanFrameTime_; //Average frame duration
 double LuaApplication::meanFreeTime_; //Average time available for async tasks
@@ -967,6 +994,8 @@ static int bindAll(lua_State* L)
     lua_setfield(L, -2, "enableAllocationTracking");
     lua_pushcnfunction(L, lua_findreferences, "Core.findReferences");
     lua_setfield(L, -2, "findReferences");
+    lua_pushcnfunction(L, LuaApplication::Core_getScriptPath, "Core.getScriptPath");
+    lua_setfield(L, -2, "getScriptPath");
 
 	lua_pushcnfunction(L, LuaApplication::Core_random, "Core.random");
 	lua_setfield(L, -2, "random");

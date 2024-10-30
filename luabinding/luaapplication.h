@@ -230,6 +230,7 @@ public:
     static int Core_yield(lua_State *L);
     static int Core_yieldable(lua_State *L);
     static int Core_signal(lua_State *L);
+    static int Core_getScriptPath(lua_State *L);
     static int Core_frameStatistics(lua_State *L);
     static int Core_enableAllocationTracking(lua_State *L);
     static int Core_profilerStart(lua_State *L);
