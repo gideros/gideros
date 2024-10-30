@@ -286,6 +286,7 @@ static ILexer5 *createLexerByExtension(QString ext,ScintillaEdit *editor)
             editor->styleSetFore(SCE_LUA_LITERALSTRING,0x7F007F);
             editor->styleSetFore(SCE_LUA_PREPROCESSOR,0x007F7F);
             editor->styleSetFore(SCE_LUA_LABEL,0x007F7F);
+            editor->styleSetFore(SCE_LUA_ATTRIBUTE,0xFF7F00);
         }
     }
     else if (ext == "xml")
