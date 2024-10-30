@@ -462,8 +462,13 @@ int LuaApplication::Core_asyncCall(lua_State* L)
 	return 1;
 }
 
+struct ThreadCondition {
+    std::condition_variable cv;
+    bool state;
+};
+
 static int Signal_wait(lua_State *L) {
-    std::condition_variable *sig=(std::condition_variable *) luaL_checkudata(L,1,"Signal");
+    ThreadCondition *sig=(ThreadCondition *) luaL_checkudata(L,1,"Signal");
     double dur=luaL_optnumber(L,2,0);
     bool hasPredicate=(lua_type(L,3)==LUA_TFUNCTION);
     LuaApplication::taskLock.lock();
@@ -486,7 +491,9 @@ static int Signal_wait(lua_State *L) {
         lua_enableThreads(L,-1);
         std::function<bool()> p=[=]{
     		if (LuaApplication::taskStopping) return true;
-    		if (!hasPredicate) return false;
+            bool signaled=sig->state;
+            sig->state=false;
+            if (!hasPredicate) return signaled;
     		lua_pushvalue(L,3);
     		lua_call(L,0,1);
     		bool exit=lua_toboolean(L,-1);
@@ -494,9 +501,9 @@ static int Signal_wait(lua_State *L) {
     		return exit;
         };
         if (dur==0)
-            sig->wait(lk,p);
+            sig->cv.wait(lk,p);
         else
-            ret=sig->wait_for(lk,std::chrono::milliseconds((int)(dur*1000)),p);
+            ret=sig->cv.wait_for(lk,std::chrono::milliseconds((int)(dur*1000)),p);
         lua_enableThreads(L,1);
         if (LuaApplication::taskStopping) {
             lua_pushstring(L,"System stopping");
@@ -508,15 +515,18 @@ static int Signal_wait(lua_State *L) {
 }
 
 static int Signal_notify(lua_State *L) {
-    std::condition_variable *sig=(std::condition_variable *) luaL_checkudata(L,1,"Signal");
-    sig->notify_all();
+    ThreadCondition *sig=(ThreadCondition *) luaL_checkudata(L,1,"Signal");
+    std::unique_lock<std::mutex> lk(LuaApplication::taskLock);
+    sig->state=true;
+    sig->cv.notify_all();
     return 0;
 }
 
 int LuaApplication::Core_signal(lua_State* L)
 {
-    std::condition_variable *sig=(std::condition_variable *)lua_newuserdata(L,sizeof(std::condition_variable));
-    new (sig) std::condition_variable();
+    ThreadCondition *sig=(ThreadCondition *)lua_newuserdata(L,sizeof(ThreadCondition));
+    new (sig) ThreadCondition();
+    sig->state=false;
     lua_getfield(L, LUA_REGISTRYINDEX, "Signal");
     lua_setmetatable(L,-2);
     return 1;
