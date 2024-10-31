@@ -77,6 +77,11 @@
 #include <mutex>
 #include <functional>
 
+
+#ifdef LUAU_ENABLE_CODEGEN
+#include "luacodegen.h"
+#endif
+
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
 int LuaApplication::debuggerBreak=0;
 std::map<int,bool> LuaApplication::breakpoints;
@@ -2470,6 +2475,7 @@ void LuaApplication::initialize()
 
 #ifdef LUA_IS_LUAU
     L = lua_newstate(l_alloc, NULL);
+    luaL_codegeninit(L);
     //L = luaL_newstate();
 #else
     if (ARCH_X64 && lua_isjit())
