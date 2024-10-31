@@ -21,7 +21,6 @@ enum VECTYPE {
 	VT_TABLE,
 	VT_TABLE3,
 	VT_VECTOR,
-	VT_VECTOR3,
 };
 
 namespace GidMath {
@@ -251,7 +250,7 @@ static VECTYPE probeVec(lua_State *L,int idx,int d3) {
     idx=abs_index(L,idx);
 	const float *vf=lua_tovector(L,idx);
 	if (vf)
-		return std::isnan(vf[2])?VT_VECTOR:VT_VECTOR3;
+		return VT_VECTOR;
 	if (lua_type(L,idx)==LUA_TTABLE) {
 	  	  lua_getfield(L,idx,"x");
 	  	  bool arr=lua_isnil(L,-1);
@@ -278,7 +277,7 @@ static int getVec(lua_State *L,int idx,VECTYPE vt,VEC &v) {
 		if (vf) {
 			v.x=vf[0];
 			v.y=vf[1];
-            v.z=(vt==VT_VECTOR3)?vf[2]:0;
+            v.z=vf[2];
 		}
 		else {
 			luaL_checktype(L,idx,LUA_TTABLE);
@@ -310,10 +309,13 @@ static int pushVec(lua_State *L,VECTYPE vt,VEC v) {
 		return 3;
 	}
 	else {
-		if (vt==VT_VECTOR)
-			lua_pushvector(L,v.x,v.y,nan(""),nan(""));
-		else if (vt==VT_VECTOR3)
-			lua_pushvector(L,v.x,v.y,v.z,nan(""));
+		if (vt==VT_VECTOR) {
+#if LUA_VECTOR_SIZE == 4
+			lua_pushvector(L,v.x,v.y,v.z,0);
+#else
+			lua_pushvector(L,v.x,v.y,v.z);
+#endif
+		}
 		else if ((vt==VT_ARRAY)||(vt==VT_ARRAY3)) {
 			lua_createtable(L,3,0);
 			lua_pushnumber(L,v.x);
@@ -453,7 +455,6 @@ static int math_cross (lua_State *L) {
     if (vt==VT_ARGS) vt=VT_ARGS3;
     if (vt==VT_ARRAY) vt=VT_ARRAY3;
     if (vt==VT_TABLE) vt=VT_TABLE3;
-    if (vt==VT_VECTOR) vt=VT_VECTOR3;
     return pushVec(L,vt,c);
 }
 
@@ -683,12 +684,16 @@ static int lua_ifft(lua_State* L)
 //LUAU vector
 static int lua_vector(lua_State* L)
 {
+    if (lua_gettop(L) >=4) {
+        luaL_error(L, "vectors of 4 values are no longer supported");
+    }
+
     double x = luaL_checknumber(L, 1);
     double y = luaL_checknumber(L, 2);
-    double z = luaL_optnumber(L, 3, nan(""));
+    double z = luaL_optnumber(L, 3, 0);
 
 #if LUA_VECTOR_SIZE == 4
-    double w = luaL_optnumber(L, 4, nan(""));
+    double w = luaL_optnumber(L, 4,0);
     lua_pushvector(L, float(x), float(y), float(z), float(w));
 #else
     lua_pushvector(L, float(x), float(y), float(z));

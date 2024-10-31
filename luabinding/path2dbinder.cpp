@@ -83,9 +83,9 @@ int Path2DBinder::setFillColor(lua_State* L)
 {
 	Binder binder(L);
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
-#define COLVEC(var,idx) const float *var=luaL_checkvector(L,idx);
+#define COLVEC(var,idx) float var[4]; luaL_checkcolorf(L,idx,var);
 #define COLARG(var) (((int)(var[0]*0xFF0000))&0xFF0000)|(((int)(var[1]*0xFF00))&0xFF00)|((int)((var[2]*0xFF))&0xFF),var[3]
-    if (lua_tovector(L,2)) { //Vector colors
+    if (lua_iscolor(L,2)) { //Vector colors
         if (lua_gettop(L) == 5) {
             COLVEC(c1,2);
             COLVEC(c2,3);
@@ -143,8 +143,8 @@ int Path2DBinder::setLineColor(lua_State* L)
 	Binder binder(L);
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D"));
 
-    const float *cvec=lua_tovector(L,2);
-    if (cvec) {
+    float cvec[4];
+    if (lua_tocolorf(L,2,cvec)) {
         unsigned int col = ((((int)(cvec[0]*255))&0xFF)<<16)|((((int)(cvec[1]*255))&0xFF)<<8)|((((int)(cvec[2]*255))&0xFF)<<0);
         shape->setLineColor(col, cvec[3]);
     }

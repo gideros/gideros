@@ -100,8 +100,10 @@ int TVector::get(lua_State *L,int idx,bool opt,bool v4)
 		v.x=vf[0];
 		v.y=vf[1];
 		v.z=vf[2];
+#if LUA_VECTOR_SIZE == 4
 		if (vec4&&(!isnan(vf[3])))
 			v.w=vf[3];
+#endif
 		type=VT_VEC;
 		return 1;
 	}
@@ -117,7 +119,11 @@ int TVector::get(lua_State *L,int idx,bool opt,bool v4)
 int TVector::ret(lua_State *L)
 {
 	if (type==VT_VEC) {
-		lua_pushvector(L,v.x,v.y,v.z,vec4?v.w:nan(""));
+#if LUA_VECTOR_SIZE == 4
+		lua_pushvector(L,v.x,v.y,v.z,vec4?v.w:0);
+#else
+		lua_pushvector(L,v.x,v.y,v.z);
+#endif
 		return 1;
 	}
 	lua_pushnumber(L,v.x);
@@ -500,6 +506,7 @@ int MatrixBinder::transformVector(lua_State* L)
 	TVector in;
 
 	in.get(L,2);
+	in.v.z=1;
 	Vector4 z(0,0,0,1);
 	Vector4 res=m*in.v;
 	Vector4 rz=m*z;

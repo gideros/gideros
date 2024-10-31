@@ -88,6 +88,29 @@ static void WebXR_callback(int type, void *event, void *udata)
 	lua_pop(L,1);
 }
 
+
+static void lua_pushvector4(lua_State *L,float x,float y,float z,float w)
+{
+#if LUA_VECTOR_SIZE == 4
+	lua_pushvector(L,x,y,z,w);
+#else
+	lua_createtable(L,4,0);
+	lua_pushnumber(L,x); lua_rawseti(L,-2,1);
+	lua_pushnumber(L,y); lua_rawseti(L,-2,2);
+	lua_pushnumber(L,z); lua_rawseti(L,-2,3);
+	lua_pushnumber(L,w); lua_rawseti(L,-2,4);
+#endif
+}
+
+static void lua_pushvector3(lua_State *L,float x,float y,float z)
+{
+#if LUA_VECTOR_SIZE == 4
+	lua_pushvector(L,x,y,z,0);
+#else
+	lua_pushvector(L,x,y,z);
+#endif
+}
+
 extern void looptick(void *a);
 class WebXR : public GEventDispatcherProxy
 {
@@ -166,9 +189,9 @@ public:
 					lua_setfield(L, -2, "hand");
 
 					//Pose
-					lua_pushvector(L,ctl.position[0],ctl.position[1],ctl.position[2],0);
+					lua_pushvector3(L,ctl.position[0],ctl.position[1],ctl.position[2]);
 					lua_setfield(L, -2, "position");
-					lua_pushvector(L,ctl.orientation[0],ctl.orientation[1],ctl.orientation[2],ctl.orientation[3]);
+					lua_pushvector4(L,ctl.orientation[0],ctl.orientation[1],ctl.orientation[2],ctl.orientation[3]);
 					lua_setfield(L, -2, "rotation");
 					/*
 					pushVector(L,input.velPos);
@@ -236,9 +259,9 @@ static int WebXR_getHeadPose(lua_State *L) {
     WebXR *r = static_cast<WebXR*>(binder.getInstance("WebXR", 1));
 	lua_newtable(L);
 	//Pose
-	lua_pushvector(L,r->headPose.position[0],r->headPose.position[1],r->headPose.position[2],0);
+	lua_pushvector3(L,r->headPose.position[0],r->headPose.position[1],r->headPose.position[2]);
 	lua_setfield(L, -2, "position");
-	lua_pushvector(L,r->headPose.orientation[0],r->headPose.orientation[1],r->headPose.orientation[2],r->headPose.orientation[3]);
+	lua_pushvector4(L,r->headPose.orientation[0],r->headPose.orientation[1],r->headPose.orientation[2],r->headPose.orientation[3]);
 	lua_setfield(L, -2, "rotation");
 	return 1;
 }

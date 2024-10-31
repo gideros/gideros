@@ -71,7 +71,7 @@ static void stackDump(lua_State* L, const char* prefix = "")
 			case LUA_TVECTOR:
 			{
 				const float* vec = lua_tovector(L, i);
-				lua_pushfstring(L, "[V] %d: {%f, %f, %f, %f}", i, vec[0], vec[1], vec[2], vec[3]);
+				lua_pushfstring(L, "[V] %d: {%f, %f, %f}", i, vec[0], vec[1], vec[2]);
 			}
 			break;
 			default: lua_pushfstring(L, "[D] %d: %s", i, lua_typename(L, t));

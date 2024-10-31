@@ -12,18 +12,7 @@
 #ifndef M_PI
 #define M_PI 3.141592654
 #endif
-
-#ifndef __EMSCRIPTEN__
-#ifndef __APPLE__
-#ifndef __ANDROID__
-//emscripten and Xcode have it already
-static bool isnan(float x)
-{
-    return x != x;
-}
-#endif
-#endif
-#endif
+#include <math.h>
 
 class Tesselator
 {

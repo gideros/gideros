@@ -615,8 +615,8 @@ int ApplicationBinder::setBackgroundColor(lua_State* L)
 
 	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-    const float *cvec=lua_tovector(L,2);
-    if (cvec) {
+    float cvec[4];
+    if (lua_tocolorf(L,2,cvec)) {
         application->getApplication()->setBackgroundColor(cvec[0],cvec[1],cvec[2],cvec[3]);
     }
     else {
@@ -1153,8 +1153,8 @@ int ApplicationBinder::enableDrawInfo(lua_State* L)
 
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-    const float *cvec=lua_tovector(L,2);
-    if (cvec)
+    float cvec[4];
+    if (lua_tocolorf(L,2,cvec))
         application->setDrawInfo(true,cvec[0],cvec[1],cvec[2],cvec[3]);
     else
         application->setDrawInfo(false,0,0,0,0);

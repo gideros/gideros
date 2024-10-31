@@ -118,7 +118,7 @@ static void stackDump(lua_State* L, const char* prefix = "")
 		case LUA_TVECTOR:
 			{
 				const float* v = lua_tovector(L, i);
-				LUA_PRINTF("[V] %d: [%f; %f; %f; %f]", i, v[0], v[1], v[2], v[3]);
+				LUA_PRINTF("[V] %d: [%f; %f; %f]", i, v[0], v[1], v[2]);
 			}
 			break;
 #endif
@@ -812,16 +812,6 @@ void setupUVs(lua_State* L, GTextureData& data, int idx)
 					y = getTableValue(L, idx, 2, 0.0f);
 					w = getTableValue(L, idx, 3, data.texture_size.x);
 					h = getTableValue(L, idx, 4, data.texture_size.y);
-					clamp_area = lua_toboolean(L, idx + 1);
-				}
-				break;
-			case LUA_TVECTOR:
-				{
-					const float *cvec=lua_tovector(L, idx);
-					x = cvec[0];
-					y = cvec[1];
-					w = cvec[2];
-					h = cvec[3];
 					clamp_area = lua_toboolean(L, idx + 1);
 				}
 				break;

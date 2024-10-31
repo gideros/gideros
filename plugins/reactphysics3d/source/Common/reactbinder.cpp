@@ -74,7 +74,11 @@ public:
 					lua_newtable(L);
 					lua_pushnumber(L,ccp.getPenetrationDepth());
 					lua_setfield(L, -2, "penetration");
+#if LUA_VECTOR_SIZE == 4
 					lua_pushvector(L,ccp.getWorldNormal().x,ccp.getWorldNormal().y,ccp.getWorldNormal().z,0);
+#else
+					lua_pushvector(L,ccp.getWorldNormal().x,ccp.getWorldNormal().y,ccp.getWorldNormal().z);
+#endif
 					lua_setfield(L, -2, "normal");
 					lua_rawseti(L,-2,i+1);
 				}

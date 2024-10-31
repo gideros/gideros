@@ -298,7 +298,7 @@ int TextFieldBinder::setTextColor(lua_State* L)
 
     textField->styCache_color.clear();
     int ctype=lua_type(L,2);
-    if ((ctype==LUA_TVECTOR)||(ctype==LUA_TSTRING)||(ctype==LUA_TUSERDATA)) { //Vector or resolvables colors
+    if ((ctype==LUA_TVECTOR)||(ctype==LUA_TCOLOR)||(ctype==LUA_TSTRING)||(ctype==LUA_TUSERDATA)) { //Vector or resolvables colors
         COLVEC(color,2);
         textField->setTextColor(color[0],color[1],color[2],color[3]);
     }

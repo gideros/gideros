@@ -1162,6 +1162,15 @@ int Box2DBinder2::b2ParticleSystem_getParticleCount(lua_State *L)
     return 1;
 }
 
+static void lua_pushvector3(lua_State *L,float x,float y,float z)
+{
+#if LUA_VECTOR_SIZE == 4
+	lua_pushvector(L,x,y,z,0);
+#else
+	lua_pushvector(L,x,y,z);
+#endif
+}
+
 int Box2DBinder2::b2ParticleSystem_getPositionBuffer(lua_State *L)
 {
     Binder binder(L);
@@ -1171,7 +1180,7 @@ int Box2DBinder2::b2ParticleSystem_getPositionBuffer(lua_State *L)
     b2Vec2 *p=ps->GetSystem()->GetPositionBuffer();
     lua_createtable(L,n,0);
     for (int k=1;k<=n;k++) {
-    	lua_pushvector(L,p->x,p->y,0,0);
+    	lua_pushvector3(L,p->x,p->y,0);
     	lua_rawseti(L,-2,k);
     	p++;
     }
@@ -1187,7 +1196,7 @@ int Box2DBinder2::b2ParticleSystem_getColorBuffer(lua_State *L)
     b2ParticleColor *p=ps->GetSystem()->GetColorBuffer();
     lua_createtable(L,n,0);
     for (int k=1;k<=n;k++) {
-    	lua_pushvector(L,p->r/255.0,p->g/255.0,p->b/255.0,p->a/255.0);
+    	lua_pushcolorf(L,p->r/255.0,p->g/255.0,p->b/255.0,p->a/255.0);
     	lua_rawseti(L,-2,k);
     	p++;
     }
@@ -1203,7 +1212,7 @@ int Box2DBinder2::b2ParticleSystem_getVelocityBuffer(lua_State *L)
     b2Vec2 *p=ps->GetSystem()->GetVelocityBuffer();
     lua_createtable(L,n,0);
     for (int k=1;k<=n;k++) {
-    	lua_pushvector(L,p->x,p->y,0,0);
+    	lua_pushvector3(L,p->x,p->y,0);
     	lua_rawseti(L,-2,k);
     	p++;
     }

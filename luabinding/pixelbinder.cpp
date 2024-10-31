@@ -106,8 +106,8 @@ int PixelBinder::create(lua_State* L)
     }
 
     int postCol=3;
-    const float *cvec=lua_tovector(L,1);
-    if (cvec) {
+    float cvec[4];
+    if (lua_tocolorf(L,1,cvec)) {
         postCol=2;
         bitmap->setColor(cvec[0],cvec[1],cvec[2],cvec[3]);
     }
@@ -316,7 +316,7 @@ int PixelBinder::setColor(lua_State* L)
     bitmap->styCache_c3.clear();
     bitmap->styCache_c4.clear();
     int ctype=lua_type(L,2);
-    if ((ctype==LUA_TVECTOR)||(ctype==LUA_TSTRING)||(ctype==LUA_TUSERDATA)) { //Vector or resolvables colors
+    if ((ctype==LUA_TVECTOR)||(ctype==LUA_TCOLOR)||(ctype==LUA_TSTRING)||(ctype==LUA_TUSERDATA)) { //Vector or resolvables colors
 		if (lua_gettop(L) == 5) {
 			COLVEC(c1,2);
 			COLVEC(c2,3);

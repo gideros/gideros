@@ -586,6 +586,17 @@ size_t LuaApplication::token_application;
 size_t LuaApplication::token__styleUpdates;
 size_t LuaApplication::token_updateStyle;
 
+//LUAU color
+static int lua_color(lua_State* L)
+{
+    double r = luaL_checknumber(L, 1);
+    double g = luaL_checknumber(L, 2);
+    double b = luaL_checknumber(L, 3);
+    double a = luaL_optnumber(L, 4,1);
+    lua_pushcolorf(L, float(r), float(g), float(b), float(a));
+    return 1;
+}
+
 #include "luabindings.luac.c"
 static int bindAll(lua_State* L)
 {
@@ -975,6 +986,10 @@ static int bindAll(lua_State* L)
     lua_setfield(L, -2, "notify");
     lua_pop(L, 1);
 
+    //Color type creator
+    lua_pushcfunction(L, lua_color, "ColorValue");
+    lua_setglobal(L, "ColorValue");
+
 	lua_getglobal(L, "Core");
     lua_pushcnfunction(L, LuaApplication::Core_asyncCall,"Core.asyncCall");
     lua_setfield(L, -2, "asyncCall");
@@ -1330,23 +1345,22 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                     }
                     std::string lOp=std::string(ks,kk-ks-1);
                     if (lOp=="alpha") {
-                        const float *c=lua_tovector(L,-1);
                         float col[4]={0,0,0,0};
-                        if (c) { col[0]=c[0]; col[1]=c[1]; col[2]=c[2]; col[3]=c[3]; };
+                        lua_tocolorf(L,-1,col);
                         lua_pop(L,1);
                         if (resolveStyleInternal(L,kk+1,0,limit+1,true)==LUA_TNIL)
                         {
                             lua_pushfstringL(L,"Style not recognized: %s",kk+1);
                             lua_error(L);
                         }
-                        c=lua_tovector(L,-1);
-                        if (c)
+                        float c[4]={0,0,0,0};
+                        if (lua_tocolorf(L,-1,c))
                             col[3]=c[3];
                         else
                             col[3]=lua_tonumber(L,-1);
                         lua_pop(L,1);
-                        lua_pushvector(L,col[0],col[1],col[2],col[3]);
-                        return LUA_TVECTOR;
+                        lua_pushcolorf(L,col[0],col[1],col[2],col[3]);
+                        return LUA_TCOLOR;
                     }
                 }
                 else {
@@ -1524,22 +1538,10 @@ void LuaApplication::resolveColor(lua_State *L,int spriteIdx, int colIdx, float 
     }
     switch (lua_type(L,idx)) {
     case LUA_TVECTOR:
-    {
-        const float *c=lua_tovector(L,idx);
-        color[0]=c[0];
-        color[1]=c[1];
-        color[2]=c[2];
-        color[3]=c[3];
-        break;
-    }
     case LUA_TNUMBER:
+    case LUA_TCOLOR:
     {
-        unsigned int c = lua_tounsigned(L,idx);
-
-        color[0]= (1.0/255)*((c >> 16) & 0xff);
-        color[1]= (1.0/255)*((c >> 8) & 0xff);
-        color[2]= (1.0/255)*((c >> 0) & 0xff);
-        color[3]=1;
+        lua_tocolorf(L,idx,color);
         break;
     }
     case LUA_TUSERDATA:

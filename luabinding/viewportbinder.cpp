@@ -128,8 +128,8 @@ int ViewportBinder::setTarget(lua_State* L)
     Binder binder(L);
     Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
     GRenderTarget* s = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 2));
-    const float *ccol=lua_tovector(L,4);
-    shape->setTarget(s,lua_toboolean(L,3),ccol);
+    float ccol[4];
+    shape->setTarget(s,lua_toboolean(L,3),lua_tocolorf(L,4,ccol)?ccol:NULL);
     return 0;
 }
 
