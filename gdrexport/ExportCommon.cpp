@@ -468,7 +468,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 #endif
 					QProcess procWrite;
 					procWrite.setStandardOutputFile(dfile);
-                    procWrite.start(luac, QStringList() << "--compile=binary" << "--vector-ctor=vector" << "-O2" << sfile);
+                    procWrite.start(luac, QStringList() << "--binary" << "--vector-ctor=vector" << "-O2" << "-g1" << sfile);
 					procWrite.waitForFinished();
 #else
 #if defined(Q_OS_WIN)
@@ -523,7 +523,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 #endif
 					QProcess procWrite;
                     procWrite.setStandardOutputFile(dfile+".tmp");
-					procWrite.start(luac, QStringList() << "--compile=binary" << sfilelst);
+					procWrite.start(luac, QStringList() << "--binary" << "--vector-ctor=vector" << "-O2" << "-g1" << sfilelst);
 					procWrite.waitForFinished();
 #else
 #if defined(Q_OS_WIN)

@@ -19,6 +19,12 @@ equals(LUA_ENGINE,lua): LUA_INCLUDE=../lua/src
 
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 
+CONFIG(debug, debug|release){
+    _CONFIG_ = debug
+} else {
+    _CONFIG_ = release
+}
+
 win32{
     RC_FILE = other_files/desktop.rc
 
@@ -27,11 +33,11 @@ win32{
     LIBS += -lopengl32 \
 #        -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx \
 #        -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
-        -L"../libgid/release" -lgid \
-        -L"../libgvfs/release" -lgvfs \
-        -L"../$$LUA_ENGINE/release" -llua \
-        -L"../libgideros/release" -lgideros \
-        -L"../libpystring/release" -lpystring \
+        -L"../libgid/$$_CONFIG_" -lgid \
+        -L"../libgvfs/$$_CONFIG_" -lgvfs \
+        -L"../$$LUA_ENGINE/$$_CONFIG_" -llua \
+        -L"../libgideros/$$_CONFIG_" -lgideros \
+        -L"../libpystring/$$_CONFIG_" -lpystring \
         -lws2_32 \
         -liphlpapi
 }
