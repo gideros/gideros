@@ -1,12 +1,10 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
-
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 19
+        compileSdk 34
     }
 
     buildTypes {
@@ -17,20 +15,21 @@ android {
     }
     dependencies {
     }
+    namespace 'com.giderosmobile.android.player'
 }
 
 android.libraryVariants.all { variant ->
     String variantCap = variant.name.capitalize();
-    String taskName = String.format("remove%sBuildConfig", variantCap)
+    String taskName = String.format("stripRedefined%sClasses", variantCap)
+    String preTaskName = String.format("compile%sJavaWithJavac", variantCap)
     task "${taskName}"  {
         doLast {
-            String gpath="${buildDir}/intermediates/javac/${variant.name}/classes/com/giderosmobile/android";
+            String gpath="${buildDir}/intermediates/javac/${variant.name}/compile${variant.name}JavaWithJavac/classes/com/giderosmobile/android";
             file("${gpath}/GiderosSettings.class").delete()
             file("${gpath}/player/BuildConfig.class").delete()
             file("${gpath}/player/R.class").delete()
         }
     }
-    variant.processJavaResourcesProvider.configure {
-    	it.dependsOn(taskName)
-    } 
+    
+    tasks.named(preTaskName) { finalizedBy(taskName) }    
 }
