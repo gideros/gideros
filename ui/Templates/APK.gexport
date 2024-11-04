@@ -17,7 +17,6 @@
 	<property name="androidPath" type="adir" title="Android SDK Directory (optional)" description="Directory of your Android SDK (optional)" default="" />
 	<property name="javaPath" type="adir" title="JDK Directory (optional)" description="Directory of your JDK installation (optional)" default="" />
 	<property name="androidSdk" type="string" title="Android SDK Version (optional)" description="The android SDK version to be used for compiling (optional)" default="" />
-	<property name="androidTools" type="string" title="Android Tools Version (optional)" description="The android tools version to be used for compiling (optional)" default="" />
 	<rules>
 	<lua>
 local appName=Export.getProperty("project.app_name")
@@ -81,21 +80,6 @@ if lfs.attributes(platforms.."/android-"..sdkVer,"mode")~="directory" then
 end
 print("Android SDK Version:"..sdkVer)
 
-local tools=home.."/build-tools"
-local buildVer=Export.getProperty("export.androidTools")
-if lfs.attributes(tools.."/"..buildVer,"mode")~="directory" or buildVer=="" then
-	buildVer=""
-	for adir in lfs.dir(tools) do
-		if lfs.attributes(tools.."/"..adir,"mode")=="directory" then
-	    	local _,dots=adir:gsub("%.",".")
-	    	if adir~=".." and dots==2 and adir>buildVer then
-	    		buildVer=adir
-	    	end
-		end
-	end
-	Export.setProperty("export.androidTools",buildVer)
-end
-print("Android Build Tools:"..buildVer)
 local ap=require("Tools/export_android")
 	</lua>
 		<set key="project.package" value="[[[export.packageName]]]"/>
@@ -174,9 +158,8 @@ local ap=require("Tools/export_android")
         		<replace orig="android:theme=&quot;@style/Theme&quot;" by="android:theme=&quot;[[[local.splashTheme]]]&quot;"/>
         		<replace orig="android:color=&quot;#123456&quot;" by="android:color=&quot;[[[project.backgroundColor]]]&quot;"/>
         		<replace orig="Color.parseColor(&quot;#ffffff&quot;)" by="Color.parseColor(&quot;[[[project.backgroundColor]]]&quot;)"/>
-        		<replace orig="compileSdkVersion 23" by="compileSdkVersion [[[export.androidSdk]]]" />
-        		<replace orig="buildToolsVersion &quot;23.0.2&quot;" by="buildToolsVersion &quot;[[[export.androidTools]]]&quot;" />
-				<replace orig="targetSdkVersion 19" by="targetSdkVersion [[[export.androidTarget]]]"/>
+        		<replace orig="compileSdk 23" by="compileSdkVersion [[[export.androidSdk]]]" />
+ 				<replace orig="targetSdkVersion 19" by="targetSdkVersion [[[export.androidTarget]]]"/>
 				<replace orig="jksgid_StoreFile" by="[[[local.keyStore]]]"/>
 				<replace orig="jksgid_KeyAlias" by="[[[local.keyAlias]]]"/>
 				<replace orig="jksgid_StorePass" by="[[[secret.keyStorePass]]]"/>

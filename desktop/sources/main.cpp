@@ -49,7 +49,10 @@ static void loadPlugins(){
 	}
 }
 
+std::vector<std::string> PATH_CommandLine;
 int main(int argc, char *argv[]){
+    for (int i=0;i<argc;i++)
+        PATH_CommandLine.push_back(std::string(argv[i]));
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     TabletApplication a(argc, argv);
 

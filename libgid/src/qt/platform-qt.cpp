@@ -211,6 +211,7 @@ void g_exit() {
 #include <QtGui/qpa/qplatformintegration.h>
 #endif
 
+extern std::vector<std::string> PATH_CommandLine;
 std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, std::vector<gapplication_Variant> &args)
 {
     std::vector<gapplication_Variant> rets;
@@ -380,6 +381,14 @@ std::vector<gapplication_Variant> g_getsetProperty(bool set, const char* what, s
             r.type=gapplication_Variant::STRING;
             r.s=getDocumentsDirectory();
             rets.push_back(r);
+            /*------------------------------------------------------------------*/
+        }else if (strcmp(what, "commandLine") == 0)
+        {
+            r.type=gapplication_Variant::STRING;
+            for (auto it=PATH_CommandLine.begin();it!=PATH_CommandLine.end();it++) {
+                r.s=*it;
+                rets.push_back(r);
+            }
             /*------------------------------------------------------------------*/
         }else
         {

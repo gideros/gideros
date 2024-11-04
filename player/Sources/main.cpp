@@ -51,8 +51,11 @@ static void loadPlugins(){
 	}
 }
 
+std::vector<std::string> PATH_CommandLine;
 int main(int argc, char *argv[]){
-//	curl_global_init(CURL_GLOBAL_WIN32);
+    for (int i=0;i<argc;i++)
+        PATH_CommandLine.push_back(std::string(argv[i]));
+    //	curl_global_init(CURL_GLOBAL_WIN32);
 
     QCoreApplication::setOrganizationName(Constants::ORGANIZATION_NAME);
     QCoreApplication::setOrganizationDomain(Constants::ORGANIZATION_DOMAIN);
