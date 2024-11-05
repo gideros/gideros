@@ -1,9 +1,0 @@
-./buildqtlibs.sh
-./buildplugins.sh
-./cleanqt.sh
-./buildqt.sh
-./cleanioslibs.sh
-./buildioslibs.sh
-./copyioslibs.sh
-./buildiosplugins.sh
-./copyiosplugins.sh
