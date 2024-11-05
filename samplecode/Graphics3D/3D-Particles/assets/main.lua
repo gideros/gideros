@@ -59,7 +59,7 @@ function Particles:fountain()
 	local dr=math.random()*.001+.008*math.sin(os:clock()/2)
 	self:addParticles({{x=0,y=0,size=.03,ttl=200,
 		speedY=.02+.03*math.abs(dh),speedX=dr*math.sin(da),speedZ=dr*math.cos(da),_decay=vector(1,1,1),acceleration=vector(0,-.0005,0),
-		color=vector(0.3+math.random()*.1,.7,.7+math.random()*.3,1)}})
+		color=ColorValue(0.3+math.random()*.1,.7,.7+math.random()*.3,1)}})
 end
 
 function Particles:fire()
@@ -70,7 +70,7 @@ function Particles:fire()
 	
 	self:addParticles({{x=dx,y=0,z=dz,size=.2,ttl=200,
 		speedY=.02+.03*math.random(),speedX=.02*(math.random()-.5),speedZ=.02*(math.random()-.5),decay=vector(1,0.99-math.random()*0.01,1),		
-		color=vector(1,1,1,1), angularSpeed=math.random(), angle=math.random()*360,decayAlpha=0.98}})
+		color=ColorValue(1,1,1,1), angularSpeed=math.random(), angle=math.random()*360,decayAlpha=0.98}})
 end
 
 
