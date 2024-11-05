@@ -55,7 +55,7 @@ function UI.ColorRangeView.Spiral:init(params)
 		local py=((math.abs(((h+2/3)%1)*6-3)-1)<>0)><1
 		local pz=((math.abs(((h+1/3)%1)*6-3)-1)<>0)><1
 		local rgb=v*vector((1-s)+px*s,(1-s)+py*s,(1-s)+pz*s)
-		return vector(rgb.x,rgb.y,rgb.z,1)
+		return UI.Color(rgb.x,rgb.y,rgb.z,1)
 	end
 end
 
@@ -71,7 +71,7 @@ function UI.ColorRangeView:setRangeMode(sclass)
 end
 
 function UI.ColorRangeView:selectColorAt(x,y)
-	if not self.colorShader then return vector(0,0,0,1) end
+	if not self.colorShader then return UI.Color(0,0,0,1) end
 	local w,h=self:getDimensions()
 	x=(x<>0)><w
 	y=(y<>0)><h

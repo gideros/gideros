@@ -5,7 +5,7 @@ function MatrixMaths.getScale(m)
 		n=1+(n-1)*4
 		return ((m[n]^2)+(m[n+1]^2)+(m[n+2]^2)+(m[n+3]^2))^.5
 	end
-	return vector(cmag(m,1),cmag(m,2),cmag(m,3),0)
+	return vector(cmag(m,1),cmag(m,2),cmag(m,3))
 end
 
 
@@ -30,7 +30,7 @@ local function qquaternionToEuler(w,x,y,z)
     local cosy_cosp = 1 - 2 * (y * y + z * z)
     local rz = math.atan2(siny_cosp, cosy_cosp)
 	
-	return vector(^>rx,^>ry,^>rz,0)
+	return vector(^>rx,^>ry,^>rz)
 end
 
 local function quaternionToEuler(w,x,y,z)
@@ -43,7 +43,7 @@ local function quaternionToEuler(w,x,y,z)
         local rx=^>math.atan2(2*x*w-2*y*z,1-2*x*x-2*z*z)
         local ry=^>math.atan2(2*y*w-2*x*z,1-2*y*y-2*z*z)
 		local rz=^>math.asin(2*x*y+2*z*w)
-		return vector(-rx,-ry,-rz,0)
+		return vector(-rx,-ry,-rz)
 	end
 end
 		 

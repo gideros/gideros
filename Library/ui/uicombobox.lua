@@ -67,11 +67,16 @@ UI.Combobox.Template={
 	Content={
 		class="UI.Panel", 
 		BaseStyle="combobox.styListContainer",
-		layoutModel=UI.Layout.Vertical,
+		layoutModel={ columnWeights={1}, rowWeights={1}},
 		children={
-			{ class="UI.Table", 
+			{ class="UI.Viewport", 
+				Scrollbar={UI.Viewport.SCROLLBAR.NONE,UI.Viewport.SCROLLBAR.AUTO}, --Horizontal,Vertical
 				layout={ fill=Sprite.LAYOUT_FILL_BOTH },
-				name="popupList", selection=UI.Selection.SINGLE },
+				name="popupView", 
+				Content={ class="UI.Table", 
+					layout={ fill=Sprite.LAYOUT_FILL_BOTH },
+					name="popupList", selection=UI.Selection.SINGLE },
+			},
 		}},
 }
 
@@ -100,7 +105,12 @@ function UI.Combobox:setAutoClose(auto)
 end
 
 function UI.Combobox:getMinimumContentSize()
-	return self:getWidth(),0
+	return self:getWidth(),0,function (s,vw,vh)
+		local _,_,pew,peh=self.popupView:getContentSize()
+		local pfw,pfh=vw+pew+0.1,vh+peh+0.1 --TODO: arbirary margin
+		s.w=s.w<>pfw
+		s.h=s.h<>pfh
+	end
 end
 
 function UI.Combobox:setData(data,mapper)
@@ -194,7 +204,7 @@ UI.Combobox.Definition= {
 }
 
 --- ComboboxButton
-UI.ComboboxButton=Core.class(UI.Combobox,function(dataModel) return dataModel or UI.Combobox.ModelButton end)
+UI.ComboboxButton=Core.class(UI.Combobox,function(dataModel) return dataModel or UI.Combobox.ModelButton.new() end)
 
 function UI.ComboboxButton:setFlags(c)
 	UI.Combobox.setFlags(self,c)
@@ -220,7 +230,7 @@ UI.ComboboxButton.Definition= {
 }
 
 --- Drop down list
-UI.Dropdown=Core.class(UI.ComboboxButton,function(dataModel) return dataModel or UI.Dropdown.Model end)
+UI.Dropdown=Core.class(UI.ComboboxButton,function(dataModel) return dataModel or UI.Dropdown.Model.new() end)
 function UI.Dropdown:setIndex(v)
 	if (#self.data>0) and (v<=0 or v>#self.data) then
 		v=1
@@ -238,7 +248,7 @@ UI.Dropdown.GenericEditor.Template={
 	children={ 
 		{ class="UI.Panel", layoutModel={ columnWeights={1}, rowWeights={1} },
 			layout={ fill=Sprite.LAYOUT_FILL_BOTH, insets="textfield.szMargin" },
-			name="pnValue",
+			name="pnValue"
 		},
 		{ class="UI.ToggleButton", name="button",layout={gridx=1, fill=Sprite.LAYOUT_FILL_BOTH },
 			Image="dropdown.icButton",
@@ -246,6 +256,18 @@ UI.Dropdown.GenericEditor.Template={
 			},
 	}}
 function UI.Dropdown.GenericEditor:setFlags(changes)
+	UI.Panel.setFlags(self,changes)
+	local s="textfield.styNormal"
+	if self._flags.disabled then
+		s="textfield.styDisabled"
+	else	
+		if self._flags.readonly then
+			s=if self._flags.focused then "textfield.styFocusedReadonly" else "textfield.styReadonly"
+		elseif self._flags.focused then
+			s="textfield.styFocused"
+		end
+	end
+	self:setStateStyle(s)
 	UI.ToggleButton.setFlags(self.button,changes)
 end
 
@@ -263,7 +285,7 @@ function UI.Dropdown.Model:setEditing(editor,editing)
 end
 function UI.Dropdown.Model:setEditorValue(editor,value,mapper)
 	if self.currentValue then
-		editor.pnValue:removeChildAt(1)
+		editor.pnValue:removeChildAt(1) 
 	end
 	self.currentValue=value
 	if value then

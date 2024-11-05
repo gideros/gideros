@@ -28,16 +28,20 @@ local layout_fr={
 	}
 }
 
-local platform,system = application:getDeviceInfo()
+local platform,system,model,interface,other = application:getDeviceInfo()
 platform=platform:lower()
 system=(system or ""):lower()
-UI.Keyboard.NATIVE=not Oculus --Try first platform virtual keyboard
-UI.Keyboard.PHYSICAL=
+UI.Keyboard.NATIVE = not Oculus --Try first platform virtual keyboard
+UI.Keyboard.VIRTUAL = true
+UI.Keyboard.PHYSICAL =
 	if platform=="android" then false
 	elseif platform=="ios" then false
-	elseif platform=="web" then if system:find("android") or system:find("iphone") or system:find("ipad") then false else true
+	elseif platform=="web" then
+		if system:find("android") or system:find("iphone") or system:find("ipad") then false --KO WebTab (not find "android", not find "ipad")
+		else true
 	else true
-UI.Keyboard.VIRTUAL=true
+
+--print("Keyboard PHYSICAL?",UI.Keyboard.PHYSICAL,"platform",platform,"system",system,"model",model,"interface",interface,"other",other)
 
 UI.Keyboard.Template={
 	class="UI.Panel",

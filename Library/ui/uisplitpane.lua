@@ -7,7 +7,7 @@ UI.Splitpane.Template={
 	class="UI.Panel", 
 	children={
 		{ 	class="UI.Panel", name="knobBackground", ParentStyleInheritance="local",
-			Color="splitpane.colKnobBackground",
+			LocalStyle="splitpane.styKnobBackgroundH",
 			layout={fill=Sprite.LAYOUT_FILL_BOTH},
 			children={},
 		},
@@ -55,9 +55,11 @@ local function setBorder(self)
 		if self.vertical then
 			self.knob:setLocalStyle("splitpane.styKnobV")
 			self.knobHandle:setLocalStyle("splitpane.styKnobHandleV")
+			self.knobBackground:setLocalStyle("splitpane.styKnobBackgroundV")
 		else
 			self.knob:setLocalStyle("splitpane.styKnobH")
 			self.knobHandle:setLocalStyle("splitpane.styKnobHandleH")
+			self.knobBackground:setLocalStyle("splitpane.styKnobBackgroundH")
 		end
 	end
 end

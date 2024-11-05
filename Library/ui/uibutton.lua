@@ -106,19 +106,19 @@ function UI.PopupButton:setFlags(c)
 	if ticked then
 		local px,py=self.popupOffset[1],self.popupOffset[2]
 		local cw,ch=self:getDimensions()
-		local mw,mh=self:getMinimumContentSize()
+		local mw,mh,mfixup=self:getMinimumContentSize()
 		local sites={}
 		if (self.popupDirection&UI.PopupButton.DOWN)>0 then
-			table.insert(sites,{x=px,y=py+ch,dx=1,dy=1,mvtx=true,w=mw, h=mh})
+			table.insert(sites,{x=px,y=py+ch,dx=1,dy=1,mvtx=true,w=mw, h=mh, fixup=mfixup})
 		end
 		if (self.popupDirection&UI.PopupButton.UP)>0 then
-			table.insert(sites,{x=px,y=py,dx=1,dy=-1,mvtx=true,w=mw, h=mh})
+			table.insert(sites,{x=px,y=py,dx=1,dy=-1,mvtx=true,w=mw, h=mh, fixup=mfixup})
 		end
 		if (self.popupDirection&UI.PopupButton.LEFT)>0 then
-			table.insert(sites,{x=px,y=py,dx=-1,dy=1,mvty=true,w=mw, h=mh})
+			table.insert(sites,{x=px,y=py,dx=-1,dy=1,mvty=true,w=mw, h=mh, fixup=mfixup})
 		end
 		if (self.popupDirection&UI.PopupButton.RIGHT)>0 then
-			table.insert(sites,{x=px+cw,y=py,dx=1,dy=1,mvty=true,w=mw, h=mh})
+			table.insert(sites,{x=px+cw,y=py,dx=1,dy=1,mvty=true,w=mw, h=mh, fixup=mfixup})
 		end
 		if UI.Screen.popupAt(self,self.content,sites) then
 			UI.Control.stopPropagation[self.content]=self.content

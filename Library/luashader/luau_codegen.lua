@@ -54,6 +54,7 @@ function OPS:VGLB(sym)
 	if self.skipping then return end
 	assert(self._g[sym],"Unknown global "..sym)
 	--print("VGLB:",self._g[sym].type,self._g[sym].value,self._g[sym].vtype)
+	self.usedGlobals[sym]=true
 	return self._g[sym]
 end
 
@@ -378,6 +379,7 @@ function codegen_u(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 		ctable=ctx.ctable
 	end
 	assert(#ctable>0,"No code found")
+	ctx.usedGlobals={}
 	ctx._g=globalmap or {}
 	ctx._l={}
 	ctx._t=typemap
@@ -390,5 +392,5 @@ function codegen_u(f,argsmap,globalmap,typemap,optypemap,ophandlers)
 	assert(ctable[1].op=="EFCT","Not a function definition")
 	local rcode=ctx:genOp()
 	--print(rcode)
-	return rcode
+	return rcode,ctx.usedGlobals
 end

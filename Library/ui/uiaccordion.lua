@@ -18,7 +18,9 @@ function UI.Accordion:init()
 	self.expanded={}
 	self.datacells={}
 	self:setAutoCollapse(true)
+	self.selection={}
 	UI.Control.onMouseClick[self]=self
+	--UI.Selection.enable(self,UI.Selection.MULTIPLE)
 end
 
 function UI.Accordion:newClone() 
@@ -185,8 +187,17 @@ function UI.Accordion:onDrag(x,y)
 	return true
 end
 
-function UI.Accordion:onMouseClick(x,y)
+function UI.Accordion:onMouseClick(x,y,c)
 	UI.Focus:request(self)
+	if UI.Selection.hasSelection(self) then
+		local mods=UI.Control.Meta.modifiers or 0
+		if (mods&(KeyCode.MODIFIER_CTRL|KeyCode.MODIFIER_SHIFT|KeyCode.MODIFIER_META))>0 then
+			UI.Selection.handleClickEvent(self,x,y,c)
+			return true
+		else
+			UI.Selection.select(self,{})
+		end
+	end
     local cell=self:getHeaderAt(x,y)
 	if cell then
 		local disabled = nil
@@ -379,6 +390,16 @@ function UI.Accordion:setData(data,builder)
 	lp.columnWeights={1}
 	lp.rowWeights={ }
 	self.expanded=self.expanded or {}
+	
+	local nsel={ }
+	if data then
+		local nd=0
+		for i,d in ipairs(data) do
+			if self.selection[d] then nd+=1 nsel[nd]=d end
+		end
+	end
+	UI.Selection.select(self,{})
+
 	for _,c in pairs(self.tabs) do
 		if not cache or not cache[c.d] then
 			if c.h.destroy then c.h:destroy() end 
@@ -413,6 +434,8 @@ function UI.Accordion:setData(data,builder)
 	end
 	table.insert(lp.rowWeights,1) -- Last row contains nothing, but is used as a filler
 	self:setLayoutParameters(lp)
+	
+	UI.Selection.select(self,nsel)
 end
 
 function UI.Accordion:updateVisible(y,viewh)
@@ -479,7 +502,19 @@ function UI.Accordion:getDndData(x,y)
     local eb=self:getChildrenAtPoint(x,y,true,true,self)
 	for _,hdr in ipairs(eb) do
 		local cell=self.headers[hdr]
-		if cell then			
+		if cell then
+			if next(self.selection) and not self.selection[cell.d] then
+				--Currently dragged item isn't in selection, clear selection
+				UI.Selection.select(self,{})
+			end
+			local vdata,vlist
+			
+			if self.selection[cell.d] and next(self.selection,next(self.selection)) then
+				vlist={}
+				for k,_ in pairs(self.selection) do vlist[#vlist+1]=k end
+			else
+				vdata=cell.d
+			end
 			local marker=self:getDndMarker(cell.d)
 			if marker then
 				local chc=UI.Utils.colorVector("dnd.colSrcHighlight",self._style)
@@ -488,7 +523,7 @@ function UI.Accordion:getDndData(x,y)
 				
 				self.dndSrcMarker=srcMarker
 				
-				return { type=UI.Accordion, value=cell.d, visual=marker }
+				return { type=UI.Accordion, value=vdata, list=vlist, visual=marker }
 			end
 		end
 	end
@@ -626,8 +661,18 @@ function UI.Accordion:setDndData(data,source)
 	if data and data.type==UI.Accordion then
 		if data.insert then
 			if source==self then
-				if not UI.dispatchEvent(self,"ItemMove",data.value,data.insert) then
-					self:moveItem(data.value,data.insert)
+				local function moveOne(v)
+					if not UI.dispatchEvent(self,"ItemMove",v,data.insert) then
+						self:moveItem(v,data.insert)
+					end
+				end
+				if data.list then
+					local ln=#data.list
+					for i=ln,1,-1 do
+						moveOne(data.list[i])
+					end
+				elseif data.value then
+					moveOne(data.value)
 				end
 			else
 				UI.dispatchEvent(self,"DndDrop",source,data,nil,data.insert) --no over
@@ -635,6 +680,74 @@ function UI.Accordion:setDndData(data,source)
 		elseif data.over then
 			UI.dispatchEvent(self,"DndDrop",source,data,self.tabs[data.over].d,nil) --no insert
 		end
+	end
+end
+
+-- Selection
+function UI.Accordion:uiSelect(x,y)
+    local cell=self:getHeaderAt(x,y)
+	if not cell or not cell.h then return end
+	return cell.h,cell.d
+end
+
+function UI.Accordion:uiSelectRange(d1,d2)
+	local r1,r2=self.datacells[d1],self.datacells[d2]
+	local ret={}
+	if r1 and r2 then 
+		local s1,s2=(r1.row+1)//2,(r2.row+1)//2
+		local i1,i2=s1><s2,s1<>s2
+		for i=i1,i2 do
+			local c=self.tabs[i]
+			ret[c.h]=c.d
+		end
+	end
+	return ret
+end
+
+function UI.Accordion:uiSelectDirection(d,dx,dy)
+	local r=self.datacells[d]
+	if dx and dy then 
+		local dd=dy//1
+		local i=(r.row+1)//2+dd
+		local dc=self.tabs[i]
+		if dc then 
+			return { [dc.h]=dc.d }
+		end
+	end
+end
+
+function UI.Accordion:uiSelectAll()
+	local ret={}
+	for _,cell in ipairs(self.tabs) do
+		ret[cell.h]=cell.d
+	end
+	return ret
+end
+
+function UI.Accordion:uiSelection(sel) --row selection only --implements Row DATA .ClickCell and .onClickCell to have cell selection
+	if self.selection then
+		for data,rowWidget in pairs(self.selection) do
+			if not sel or not sel[rowWidget] or rowWidget:getFlags().notselectable then
+				self.selection[data]=nil
+				rowWidget:setStateStyle({})
+				rowWidget:setFlags({selected=false})
+			end
+		end
+	end
+	if sel then
+		for rowWidget,data in pairs(sel) do
+			if not self.selection[data] and not rowWidget:getFlags().notselectable then
+				self.selection[data]=rowWidget
+				rowWidget:setStateStyle("accordion.styHeaderSelected")
+				rowWidget:setFlags({selected=true})
+			end
+		end
+	end
+end
+
+function UI.Accordion:uiSelectData(d) --spr,data
+	if d and self.datacells[d] then
+		return self.datacells[d].h,d --spr,data
 	end
 end
 

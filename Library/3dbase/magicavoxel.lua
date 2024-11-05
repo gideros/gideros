@@ -54,20 +54,20 @@ end
 
 function MagicaVoxel:optimize(root)
 	local dirs={
-		vector(0,0,-1,0), vector(0,0,1,0),
-		vector(0,-1,0,0), vector(0,1,0,0),
-		vector(-1,0,0,0), vector(1,0,0,0),
+		vector(0,0,-1), vector(0,0,1),
+		vector(0,-1,0), vector(0,1,0),
+		vector(-1,0,0), vector(1,0,0),
 	}
 	for _,m in ipairs(root.parts) do
 		local vmap={}
 		local vx=m.voxels
 		for v=1,#vx,4 do
-			local vpos=vector(vx[v],vx[v+1],vx[v+2],0)
+			local vpos=vector(vx[v],vx[v+1],vx[v+2])
 			vmap[vpos]=true
 		end
 		local opts=0
 		for v=1,#vx,4 do
-			local vpos=vector(vx[v],vx[v+1],vx[v+2],0)
+			local vpos=vector(vx[v],vx[v+1],vx[v+2])
 			local disc=0
 			for d=1,6 do
 				if vmap[vpos+dirs[d]] then disc=disc|(1<<(d-1)) opts+=1 end

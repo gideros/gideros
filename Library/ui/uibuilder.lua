@@ -87,7 +87,9 @@ function UI.BuilderContext() return uibuilder_context end
 function UI.Builder(d,top,ref,params,sub)
 	local hasFactory
 	local oldContext=uibuilder_context or {}
-	uibuilder_context={top=top or oldContext.top,params=params or oldContext.params}
+	params=params or oldContext.params
+	if d.localParams then params=d.localParams(params) end
+	uibuilder_context={top=top or oldContext.top,params=params}
 	while type(d.model)=="function" do
 		local df=d.model
 		d=df(d,top,ref,params) or d 
@@ -174,7 +176,7 @@ function UI.Builder(d,top,ref,params,sub)
 			end
 		end
 	end
-	local layoutParams=s:getLayoutParameters()
+	local layoutParams
 	local layout=nil
 	if d.layoutModel then 
 		if type(d.layoutModel)=="function" then
@@ -185,7 +187,7 @@ function UI.Builder(d,top,ref,params,sub)
 			if type(layoutParams.handler)=="function" then
 				layout=layoutParams.handler(s,layoutParams)
 			end
-		end
+		end	
 	end
 	if d.children then
 		for _,cd in ipairs(d.children) do
@@ -214,20 +216,20 @@ function UI.Builder(d,top,ref,params,sub)
 	if d.name then top[d.name]=s s.name=d.name end
 	if d.selection then
 		if type(d.selection)=="function" then
-			UI.Selection.Set(s,UI.Selection.CLICK,d.selection)
+			UI.Selection.enable(s,UI.Selection.CLICK,d.selection)
 		elseif type(d.selection)=="table" then
-			UI.Selection.Set(s,d.selection.mode,d.selection.handler)
+			UI.Selection.enable(s,d.selection.mode,d.selection.handler)
 		else
 			assert(type(d.selection)=="number","selection info must be a table, a function or a selection mode")
-			UI.Selection.Set(s,d.selection,nil)
+			UI.Selection.enable(s,d.selection,nil)
 		end
 	end
 	if d.behavior then
 		d.behavior.new(s,d.behaviorParams)
 	end
 	local border=s.getBorder and s:getBorder()
-	if border then
-		layoutParams=layoutParams or {}
+	if border and border.insets then
+		layoutParams=layoutParams or s:getLayoutParameters() or {}
 		local bi=border.insets
 		if type(bi)=="table" then
 			layoutParams.insetTop=(s:resolveStyle(layoutParams.insetTop) or 0)<>s:resolveStyle(bi.top)
@@ -242,7 +244,9 @@ function UI.Builder(d,top,ref,params,sub)
 			layoutParams.insetRight=(s:resolveStyle(layoutParams.insetRight) or 0)<>bi
 		end
 	end
-	s:setLayoutParameters(layoutParams)
+	if layoutParams then 
+		s:setLayoutParameters(layoutParams)
+	end
 	if not sub then
 		applyLayout(s,d)
 	end

@@ -2,7 +2,8 @@
 
 --[[ dnd package contains:
 * type: the type of data being moved
-* data: the data payload
+* value: the data payload or
+* list: the list of data if multiple payloads
 * visual: the visual marker
 
 DND callbacks:

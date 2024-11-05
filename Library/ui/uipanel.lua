@@ -10,6 +10,7 @@
 - readonly (Textfield, 'not editable')
 - third (Third state, checkbox)
 - focusgroup (Focus:next() will stay within this group)
+- notselectable (Item shouldn't be selected)
 ]]
 
 --[[ ABOUT STYLE LAYERS:
@@ -294,7 +295,7 @@ function UI.Panel:setBorder(border)
     border=border.class.new(border.params or border)
   end
   local layoutParams=Sprite.getLayoutParameters(self,true) or { insetTop=0, insetRight=0, insetBottom=0, insetLeft=0}
-  if self.border then 
+  if self.border and self.border.insets then 
 	local bi=self.border.insets
 	if type(bi)=="table" then
 		layoutParams.insetTop-=self:resolveStyle(bi.top)
@@ -313,7 +314,7 @@ function UI.Panel:setBorder(border)
   self.border=border
   if self.border then self.border:apply(self) end
 
-	if border then
+	if border and border.insets then
 		local bi=border.insets
 		if type(bi)=="table" then
 			layoutParams.insetTop+=self:resolveStyle(bi.top)
@@ -392,6 +393,7 @@ function UI.Viewport:init(bc)
   self.cp:setLayoutParameters{ resizeContainer=true }
   self.cp:addEventListener(Event.LAYOUT_RESIZED,self._resized,self)
   self.ipanel:addChild(self.cp)
+  self.scale=1
   UI.Control.onMouseWheel[self]=self
   UI.Control.onDragStart[self]=self
   UI.Control.onDrag[self]=self
@@ -432,6 +434,21 @@ end
 
 function UI.Viewport:setPanmode(mode)
 	self.panMode=mode
+end
+
+function UI.Viewport:setZoomable(en)
+	self.zoomable=en
+	if not en and self.scale~=1 then
+		self.scale=1
+		self.content:setScale(self.scale)
+		self:_resized()
+	end
+end
+
+function UI.Viewport:getContentSize()
+	self:_resized()
+	local cpw,cph = self.cp:getDimensions()
+	return cpw,cph,self.rangew,self.rangeh
 end
 
 function UI.Viewport:setScrollbar(mode)
@@ -501,7 +518,7 @@ function UI.Viewport:_resized()
 	local cpw,cph = self.cp:getDimensions()
 	if cpw and cph and (cpw<vpw or cph<vph) then self.cp:setDimensions(vpw,vph) end
 	local t = self.cp:getLayoutInfo(vpw,vph)
-	local vw,vh=t.reqWidth,t.reqHeight --NO self.cp:getDimensions()
+	local vw,vh=t.reqWidth*self.scale,t.reqHeight*self.scale --NO self.cp:getDimensions()
 	self.ipanel:setClip(0,0,vpw,vph)
 	local orw,orh=self.rangew,self.rangeh
 	self.rangew,self.rangeh=math.max(0,vw-vpw),math.max(0,vh-vph) 
@@ -568,15 +585,29 @@ function UI.Viewport:onWidgetChange(w,ratio,page)
 end
 
 function UI.Viewport:onMouseWheel(x,y,wheel,distance)
-  if self.panMode==UI.Viewport.PANMODE.NONE then return end
-  if (self.rangeh or 0)==0 then return end --Not scrollable
-  
-  self._dragStart={mx=x-self.cp:getX(),my=y-self.cp:getY()}
-  local tx,ty=self.cp:getPosition()
-  self:checkRange(tx,ty,false,true)
-  self:onDrag(x,y+distance)
-  self:onDragEnd()
-  return true
+	if self.zoomable then
+		local delta=0
+		if (wheel>0) then delta=1 end
+		if (wheel<0) then delta=-1 end
+		self.zoom=(((self.zoom or 0)+delta)<>0)><5
+		local rx,ry=self.cp:getPosition()
+		local zx,zy=(-rx+x)/self.scale,(-ry+y)/self.scale
+		self.scale=2^self.zoom
+		self.content:setScale(self.scale)
+		self:_resized()
+		local nx,ny=zx*self.scale-x,zy*self.scale-y
+		self:checkRange(-nx,-ny)
+	else
+		if self.panMode==UI.Viewport.PANMODE.NONE then return end
+		if (self.rangeh or 0)==0 then return end --Not scrollable
+	  
+		self._dragStart={mx=x-self.cp:getX(),my=y-self.cp:getY()}
+		local tx,ty=self.cp:getPosition()
+		self:checkRange(tx,ty,false,true)
+		self:onDrag(x,y+distance)
+		self:onDragEnd()
+	end
+	return true
 end
 
 function UI.Viewport:onDragStart(x,y,ed,ea,change,long)
@@ -657,6 +688,7 @@ UI.Viewport.Definition= {
     { name="Content", type="sprite", setter=UI.Viewport.setContent },
     { name="Scrollbar", type="scrollbarMode", setter=UI.Viewport.setScrollbar },
 	{ name="Panmode", type="panMode", setter=UI.Viewport.setPanmode },
+	{ name="Zoomable", type="boolean", setter=UI.Viewport.setZoomable },
   },
 }
 
@@ -691,8 +723,8 @@ UI.Image.Definition= {
 UI.HilitPanel=Core.class(UI.Panel,function() return end)
 function UI.HilitPanel:init()
 	UI.Control.onMousePresence[self]=self
-	self:setStyle("hilitpanel.styNormal")
+	self:setLocalStyle("hilitpanel.styNormal")
 end
 function UI.HilitPanel:onMousePresence(x,y,p)
-	self:setStyle(if p then "hilitpanel.styHighlight" else "hilitpanel.styNormal")
+	self:setLocalStyle(if p then "hilitpanel.styHighlight" else "hilitpanel.styNormal")
 end

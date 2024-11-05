@@ -121,7 +121,7 @@ function Shader.lua(vf,ff,opt,uniforms,attrs,varying,funcs,const,debug)
 	assert(mtd,"Language not supported: "..lang)
 	
 	local _vshader,_fshader=mtd(vf,ff,opt,uniforms,attrs,varying,funcs or {},const)
-  if funcs then
+	if funcs then
 		for _,fg in ipairs(funcs) do fg.code=nil end
 	end
 	
@@ -249,7 +249,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 
   local isGLSL300=isES3 or isWebGL2
 
-	local _code=_eheaders.._headers
+	local _code=""
 	for k,v in ipairs(attrs) do 
 		local atype=shAType(v)
 		if atype then
@@ -279,7 +279,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 		end
 	end
 	_code=_code.."\n void main()\n"
-	_code=_code..codegen(vf,amap,gmap,tmap,omap,	{
+	local gencode,usedGlobals=codegen(vf,amap,gmap,tmap,omap,	{
 		RETURN=function(rval)
 			if rval then return "gl_Position = "..rval..";\n"
 			else return ""
@@ -288,14 +288,17 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 		GENOP=_GLSL_GENOP,
 		GENOPEQ=_GLSL_GENOPEQ,
 	})
-	_code=_code
+	_code=_code..gencode
+	if usedGlobals["InstanceID"] then
+		_code="#extension GL_EXT_draw_instanced : enable\n".._code
+	end
 	
-	local _vshader=_code
+	local _vshader=_eheaders.._headers.._code
 	
 	local outVariable="gl_FragColor"
 	if isGLSL300 then outVariable="_gl_FragColor" end
 	
-	_code=_eheaders.._headers
+	_code=""
 	for k,v in ipairs(uniforms) do 
 		if not v.vertex then
 			local atype=shType(v)
@@ -327,7 +330,7 @@ function Shader.lua_glsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	..genFunctions(gmap,tmap,omap,{GENOP=_GLSL_GENOP, GENOPEQ=_GLSL_GENOPEQ,},funcs)
 	.."void main() \n"..mainCode
 	
-	local _fshader=_code
+	local _fshader=_eheaders.._headers.._code
 	
 	return _vshader,_fshader	
 end

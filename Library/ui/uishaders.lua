@@ -9,6 +9,11 @@ function UI.Shader:init(params)
 	self.params=params or {}
 end
 
+function UI.Shader:setParameters(params)
+	table.clone(params,self.params)
+	self:applyParameters()
+end
+
 function UI.Shader:apply(sprite,mode)
 	if self.applyStackTo then self:applyStackTo(sprite) end
 	if self.stack then

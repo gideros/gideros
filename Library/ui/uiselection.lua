@@ -17,8 +17,22 @@ local function accept(s,sel)
 	UI.dispatchEvent(s,"SelectionChange",sel)
 end
 
+local function uiUnselectAll(s)
+	local sh=s._uisel_holder
+	local uis=UI.Selection
+	if sh then
+		if sh.mode==uis.CLICK then
+		else
+			sh.sel={}
+			s:uiSelection(sh.sel)
+			sh.handler(s,sh.sel)
+		end
+	end
+end
+
+-- enable selection with a specific mode, or NONE to disable
 -- onChange handler is called with (widget,selection). it is allowed to change selection!
-UI.Selection.Set=function(s,mode,onChange)
+function UI.Selection.enable(s,mode,onChange)
 	local uis=UI.Selection
 	local ename="UISEL__"..tostring(s)
 	if s._uisel_holder and s._uisel_holder.mode==uis.MULTIPLE then
@@ -32,6 +46,7 @@ UI.Selection.Set=function(s,mode,onChange)
 		UI.Control.onLongPrepare[ename]=nil
 	end
 	if mode==uis.NONE then
+		uiUnselectAll(s)
 		s._uisel_holder=nil
 		s._uisel_handler=nil
 		UI.Control.onMouseClick[ename]=nil
@@ -54,15 +69,17 @@ UI.Selection.Set=function(s,mode,onChange)
 	end
 end
 
-local function uiUnselectAll(s)
-	local sh=s._uisel_holder
-	local uis=UI.Selection
-	if sh.mode==uis.CLICK then
-	else
-		sh.sel={}
-		s:uiSelection(sh.sel)
-		sh.handler(s,sh.sel)
-	end
+-- TODO remove, for backward compatibility
+UI.Selection.Set=UI.Selection.enable
+
+--Check if sprite has selection enabled (may not have actually selected items)
+function UI.Selection.hasSelection(s)
+	return s and s._uisel_holder
+end
+
+--Get selected items for a sprite, or nil if selection is not enabled
+function UI.Selection.get(s)
+	return s and s._uisel_holder and s._uisel_holder.sel
 end
 
 local function uiUpdateSelection(s,spr,data,action)
@@ -82,6 +99,8 @@ local function uiUpdateSelection(s,spr,data,action)
 				local mods=UI.Control.Meta.modifiers or 0
 				local ctrl=(mods&KeyCode.MODIFIER_CTRL)>0
 				local shift=(mods&KeyCode.MODIFIER_SHIFT)>0
+				local meta=(mods&KeyCode.MODIFIER_META)>0
+				ctrl=ctrl or meta -- for MAC
 				if shift and sh.selPoint and sh.sel[sh.selPoint] then
 					selpoint=sh.selPoint --Keep
 					local sdata=sh.sel[sh.selPoint]
@@ -218,6 +237,7 @@ function UI.Selection._selHandler(s,x,y,c)
 		return true
 	end
 end
+UI.Selection.handleClickEvent=UI.Selection._selHandler
 
 function UI.Selection._selHandlerDragStart(s,x,y,d,a,change,long)
 	if not long then return end

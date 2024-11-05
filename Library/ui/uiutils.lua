@@ -33,7 +33,7 @@ function UI.Utils.colorTransform(p,c,style)
 	c=rc
   end
   if not p or not c then return end
-	if type(c)=="vector" then
+	if type(c)=="vector" or type(c)=="color" then
 		p:setColorTransform(c.r,c.g,c.b,c.a)
 	else
 	  local a=255
@@ -52,8 +52,8 @@ function UI.Utils.colorVector(c,style)
 	assert(style,"Style needed for color refs:"..c)
 	c,ct=stage:resolveStyle(c,style)
   end
-  if not c then return vector(0,0,0,0) end
-  if ct=="vector" then
+  if not c then return UI.Color(0,0,0,0) end
+  if ct=="color" then
 	  return c
   else
 	--assert(false,"Un-normalized color:"..tostring(ic))
@@ -100,7 +100,11 @@ function UI.Utils.makeWidget(d,p,style)
   return d
 end
 
-function UI.Utils.getScriptPath()
-   local str = debug.getinfo(2, "S").source
-   return str:match("@?(.*[/\\])") or ""
+if not Core.getScriptPath then
+	function UI.Utils.getScriptPath(...)
+	   local str = debug.getinfo(2, "S").source
+	   return str:match("@?(.*[/\\])") or ""
+	end
+else
+	UI.Utils.getScriptPath=Core.getScriptPath
 end

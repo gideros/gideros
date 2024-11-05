@@ -23,6 +23,7 @@ local function computeScales()
 	local scw,sch=application:get("screenSize")
 	local sdiag=diag
 	if scw and sch then sdiag=((scw^2+sch^2)^.5)/dpi end
+	
 	local ls=application:getLogicalScaleX()
 	local tgtdpi=120 --96
 	local detectedMode="monitor"
@@ -37,7 +38,9 @@ local function computeScales()
 	elseif sdiag>=targetTiny	then tgtdpi=240 detectedMode="phone" --360
 	else tgtdpi=360 detectedMode="tiny" --360
 	end
-
+	
+	if platform=="iPad" then tgtdpi=180 detectedMode="tablet" end --240 --fix 04/10/2024 iPadMini4
+	
 	tgtdpi=UI.Default.TargetDpi or tgtdpi
 
 	local zoom=(dpi/tgtdpi)/ls
@@ -304,6 +307,10 @@ local colFull=UI.Colors.white
 if UI.Default.styleCustom then
 	UI.Default.styleCustom(UI.Style)
 end
+UI.Style.accordion={
+	colSelected="dnd.colSrcHighlight",
+	styHeaderSelected={ colWidgetBack="accordion.colSelected" },
+}
 UI.Style.bar={
 	colForeground="colSelect",
 	colBackground="colBackground",
@@ -328,7 +335,7 @@ UI.Style.button={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={".5s",".5s",".5s",".5s",63,63,63,63,},
-			insets={ left=".5s",right=".5s",top=".5s",bottom=".5s"},
+			insets=".5s",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -456,7 +463,7 @@ UI.Style.calendar={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"calendar.szCorner","calendar.szCorner","calendar.szCorner","calendar.szCorner",63,63,63,63,},
-			insets={ left="calendar.szInset", right="calendar.szInset", top="calendar.szInset", bottom="calendar.szInset" },
+			insets="calendar.szInset",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -470,7 +477,7 @@ UI.Style.calendar={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"calendar.szCorner","calendar.szCorner","calendar.szCorner","calendar.szCorner",63,63,63,63,},
-			insets={ left="calendar.szSpinnerInset", right="calendar.szSpinnerInset", top="calendar.szSpinnerInset", bottom="calendar.szSpinnerInset" },
+			insets="calendar.szSpinnerInset",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -550,7 +557,7 @@ UI.Style.colorpicker={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner",63,63,63,63,},
-			insets={ left="colorpicker.szInset", right="colorpicker.szInset", top="colorpicker.szInset", bottom="colorpicker.szInset" },
+			insets="colorpicker.szInset",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -562,7 +569,7 @@ UI.Style.colorpicker={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/bdr-multi.png",true,{ mipmap=true }),
 			corners={"colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner",63,63,63,63,},
-			insets={ left="colorpicker.szInset", right="colorpicker.szInset", top="colorpicker.szInset", bottom="colorpicker.szInset" },
+			insets="colorpicker.szInset",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -601,7 +608,7 @@ UI.Style.combobox={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={".5s",".5s",".5s",".5s",63,63,63,63,},
-			insets={ left=".5s",right=".5s",top=".5s",bottom=".5s"},
+			insets=".5s",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -643,7 +650,7 @@ UI.Style.dnd={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/textfield-multi.png",true,{ mipmap=true }),
 			corners={"dnd.szMarkerMargin","dnd.szMarkerMargin","dnd.szMarkerMargin","dnd.szMarkerMargin",39,39,39,39},
-			insets={ left="dnd.szMarkerInset",right="dnd.szMarkerInset",top="dnd.szMarkerInset",bottom="dnd.szMarkerInset"},
+			insets="dnd.szMarkerInset",
 		}),
 		shader={
 			class="UI.Shader.MultiLayer", 
@@ -691,7 +698,7 @@ UI.Style.editableclock={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"editableclock.szCorner","editableclock.szCorner","editableclock.szCorner","editableclock.szCorner",63,63,63,63,},
-			insets={ left="editableclock.szInset", right="editableclock.szInset", top="editableclock.szInset", bottom="editableclock.szInset" },
+			insets="editableclock.szInset",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -795,7 +802,7 @@ UI.Style.progress={
 	brdCircular=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/spot.png",true,{ mipmap=true }),
 			corners={0,0,0,0,0,0,0,0},
-			insets={ left="progress.szCircular", right="progress.szCircular", top="progress.szCircular", bottom="progress.szCircular" },
+			insets="progress.szCircular",
 	}),
 	styBeads={
 		["progress.szBead"]=".5s",
@@ -880,7 +887,7 @@ UI.Style.scrollbar={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob",63,63,63,63,},
-			insets={ left=0, right=0, top=0, bottom=0 },
+			insets=0,
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -893,7 +900,7 @@ UI.Style.scrollbar={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true),
 			corners={"scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob",63,63,63,63,},
-			insets={ left="scrollbar.szKnob",right="scrollbar.szKnob",top="scrollbar.szKnob",bottom="scrollbar.szKnob"},
+			insets="scrollbar.szKnob",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -986,6 +993,12 @@ UI.Style.splitpane={
 	colKnobHandle="colHighlight",
 	colKnobSymbol="colUI",
 	colKnobShadow="colShadow",
+	styKnobBackgroundH={
+		colWidgetBack="splitpane.colKnobBackground",
+	},
+	styKnobBackgroundV={
+		colWidgetBack="splitpane.colKnobBackground",
+	},
 	styKnobH={
 		brdWidget="splitpane.brdKnobH",
 		colWidgetBack="splitpane.colKnob" 
@@ -998,7 +1011,7 @@ UI.Style.splitpane={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/splitpane-h.png",true,{ mipmap=true, rawalpha=true }),
 			corners={0,0,0,0,0,0,0,0},
-			insets={ left="splitpane.szKnob", right="splitpane.szKnob", top="splitpane.szKnob", bottom="splitpane.szKnob" },
+			insets="splitpane.szKnob",
 		}),
 		colWidgetBack=0xFFFFFF,
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="splitpane.colKnobHandle", colLayer2="splitpane.colKnobSymbol", colLayer3="splitpane.colKnobShadow" }},
@@ -1007,7 +1020,7 @@ UI.Style.splitpane={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/splitpane-v.png",true,{ mipmap=true, rawalpha=true }),
 			corners={0,0,0,0,0,0,0,0},
-			insets={ left="splitpane.szKnob", right="splitpane.szKnob", top="splitpane.szKnob", bottom="splitpane.szKnob" },
+			insets="splitpane.szKnob",
 		}),
 		colWidgetBack=0xFFFFFF,
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="splitpane.colKnobHandle", colLayer2="splitpane.colKnobSymbol", colLayer3="splitpane.colKnobShadow" }},
@@ -1035,7 +1048,7 @@ UI.Style.tabbedpane={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/tab-l.png",true,{ mipmap=true }),
 			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
-			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+			insets="tabbedpane.szCorner",
 		}),
 		colWidgetBack=0xFFFFFF,
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
@@ -1044,7 +1057,7 @@ UI.Style.tabbedpane={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/tab-t.png",true,{ mipmap=true }),
 			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
-			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+			insets="tabbedpane.szCorner",
 		}),
 		colWidgetBack=0xFFFFFF,
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
@@ -1053,7 +1066,7 @@ UI.Style.tabbedpane={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/tab-tf.png",true,{ mipmap=true }),
 			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
-			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+			insets="tabbedpane.szCorner",
 		}),
 		colWidgetBack=0xFFFFFF,
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
@@ -1062,7 +1075,7 @@ UI.Style.tabbedpane={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/tab-tl.png",true,{ mipmap=true }),
 			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
-			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+			insets="tabbedpane.szCorner",
 		}),
 		colWidgetBack=0xFFFFFF,
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colBackground", colLayer2="tabbedpane.colOutline", colLayer3=colNone, }},
@@ -1071,7 +1084,7 @@ UI.Style.tabbedpane={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/tab-t.png",true,{ mipmap=true }),
 			corners={"tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner","tabbedpane.szCorner",40,40,40,40},
-			insets={ left="tabbedpane.szCorner", right="tabbedpane.szCorner", top="tabbedpane.szCorner", bottom="tabbedpane.szCorner" },
+			insets="tabbedpane.szCorner",
 		}),
 		colWidgetBack=0xFFFFFF,
 		shader={ class="UI.Shader.MultiLayer", params={ colLayer1="tabbedpane.colTabBackground", colLayer2="tabbedpane.colTabBorder", colLayer3=colNone, }},
@@ -1084,7 +1097,7 @@ UI.Style.table={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={".5s",".5s",".5s",".5s",63,63,63,63,},
-			insets={ left=".5s",right=".5s",top=".5s",bottom=".5s"},
+			insets=".5s",
 		}),
 		shader={
 			class="UI.Shader.MultiLayer", 
@@ -1154,7 +1167,7 @@ UI.Style.textfield={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"textfield.szBoxBorder","textfield.szBoxBorder","textfield.szBoxBorder","textfield.szBoxBorder",63,63,63,63,},
-			insets={ left="textfield.szBoxBorder",right="textfield.szBoxBorder",top="textfield.szBoxBorder",bottom="textfield.szBoxBorder"},
+			insets="textfield.szBoxBorder",
 		}),
 		shader={
 			class="UI.Shader.MultiLayer", 
@@ -1185,7 +1198,7 @@ UI.Style.toolbox={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
 			corners={"toolbox.szBorder","toolbox.szBorder","toolbox.szBorder","toolbox.szBorder",63,63,63,63},
-			insets={ left=0, right=0, top=0, bottom=0 },
+			insets=0,
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -1208,7 +1221,7 @@ UI.Style.toolbox={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
 			corners={"toolbox.szBorder",0,"toolbox.szBorder","toolbox.szBorder",63,63,63,63},
-			insets={ left=0, right=0, top=0, bottom=0 },
+			insets=0,
 		}),
 	},
 	styHeaderVertical={
@@ -1216,7 +1229,7 @@ UI.Style.toolbox={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/cirbdr-multi.png",true,{ mipmap=true }),
 			corners={"toolbox.szBorder","toolbox.szBorder","toolbox.szBorder",0,63,63,63,63},
-			insets={ left=0, right=0, top=0, bottom=0 },
+			insets=0,
 		}),
 	},
 	colBack="colBackground",
@@ -1225,6 +1238,21 @@ UI.Style.toolbox={
 	colBorder="colHighlight",
 	szBorder=".3s",
 }
+UI.Style.toolpie={
+	colRing1="textfield.colBackground", 
+	colRing2="textfield.colBorder", 
+	colRing3="textfield.colBorderWide",
+	colRing4=colNone,
+	txRing=Texture.new("ui/icons/textfield-multi.png",true,{ rawalpha=true, mipmap=true }),
+
+	colBackground=colNone,
+	colItem="colUI",
+	colItemSelected="colHighlight",
+	szBarCorner=".3s",
+	szBarCornerTextureRatio=0.5,
+	colAxis="colUI",
+	szAxisThickness=".1s",
+}
 UI.Style.tooltip={
 	szOffsetMax="6s",
 	styMarker={
@@ -1232,7 +1260,7 @@ UI.Style.tooltip={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={".5s",".5s",".5s",".5s",63,63,63,63,},
-			insets={ left=".1s",right=".1s",top=".1s",bottom=".1s"},
+			insets=".1s",
 		}),
 		shader={
 			class="UI.Shader.MultiLayer", 
@@ -1307,7 +1335,7 @@ UI.Style.weekschedule={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob",63,63,63,63,},
-			insets={ left=0, right=0, top=0, bottom=0 },
+			insets=0,
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
@@ -1319,7 +1347,7 @@ UI.Style.weekschedule={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob","scrollbar.szKnob",63,63,63,63,},
-			insets={ left=0, right=0, top=0, bottom=0 },
+			insets=0,
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 

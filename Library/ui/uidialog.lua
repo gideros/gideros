@@ -265,14 +265,16 @@ end
 - w,h: optional minimal width or height
 - dx,dy: the direction in which it opens/spans
 - mvtx,mvty: booleans  that indicates wether the popup can move along each axis to fit the available size
+- fixup: a fixup function that will be called after the item is on screen
 ]]
 function UI.Screen.popupAt(origin,w,sites)
   local s=UI.Screen.getScreen(origin)
   assert(s,"No UI.Screen found for widget")
   
-  --APPLY STYLE: TODO GIDEROS should have a call to do this
   s:addChild(w)
-  if application.__styleUpdates then
+  if application.applyStyles then
+	  application:applyStyles()
+  elseif application.__styleUpdates then
 	for sp,_ in pairs(application.__styleUpdates) do
 		sp:updateStyle()
 	end
@@ -292,6 +294,7 @@ function UI.Screen.popupAt(origin,w,sites)
 	g:addChild(w)
   end
   for k,v in ipairs(sites) do
+	if v.fixup then v:fixup(vw,vh) end
 	local iw=vw<>(v.w or 0)
 	local ih=vh<>(v.h or 0)
 	local cg,cx,cy,cw,ch=s:fitToGlass(origin,w,v.x,v.y,iw,ih,v.dx,v.dy,v.mvtx,v.mvty)

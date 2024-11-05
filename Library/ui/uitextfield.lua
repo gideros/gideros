@@ -62,7 +62,7 @@ function TextEdit:init(font,text,layout)
 	end
 	self.caretOffset=la+bb
 	self.lineAscender=la
-	self.caretColor=vector(0,0,0,1)
+	self.caretColor=UI.Color(0,0,0,1)
 	self.password=layout and layout.password
 	self.multiline=layout and layout.multiline
 	self:setText(text or "")
@@ -585,9 +585,10 @@ function UI.TextField:init(text,layout,minwidth,minheight,pass,textType,template
 
 	local scol="textfield.colSelection"
 	local smark=self.smark
-	smark.p1=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p1) smark.p1:setColor(scol) 
-	smark.p2=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p2) smark.p2:setColor(scol) 
-	smark.p3=Pixel.new(vector(0,0,0,0),0,0) smark:addChild(smark.p3) smark.p3:setColor(scol) 
+	local colNone=UI.Colors.transparent
+	smark.p1=Pixel.new(colNone,0,0) smark:addChild(smark.p1) smark.p1:setColor(scol) 
+	smark.p2=Pixel.new(colNone,0,0) smark:addChild(smark.p2) smark.p2:setColor(scol) 
+	smark.p3=Pixel.new(colNone,0,0) smark:addChild(smark.p3) smark.p3:setColor(scol) 
 	function smark:setSpan(p1x,p1y,p1w,p1h,p2x,p2y,p2w,p2h,p3x,p3y,p3w,p3h)
 		self.p1:setPosition(p1x,p1y) self.p1:setDimensions(p1w,p1h)
 		self.p2:setPosition(p2x,p2y) self.p2:setDimensions(p2w,p2h)
@@ -596,7 +597,7 @@ function UI.TextField:init(text,layout,minwidth,minheight,pass,textType,template
 		self.p3:setVisible(p3h>0)
 	end
 	self.editor.selMark=smark
-	self.editor.caret=Pixel.new(vector(0,0,0,0),0,0)
+	self.editor.caret=Pixel.new(colNone,0,0)
 	self.editor.caretListener=function (p,x,y) self:ensureVisible(x,y) end
 	UI.Control.onMouseClick[self]=self
 	UI.Control.onDragStart[self]=self

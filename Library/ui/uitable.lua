@@ -49,7 +49,7 @@ function UI.Table:updateStyle(...)
 						-- Clear row ghost style cache
 						r._ghostStyleCache={}
 						for j=1,#self.columns,1 do
-							local cellCode=vector(r.row,j,0,0)
+							local cellCode=vector(r.row,j,0)
 							local cell = self.cells[cellCode]
 							if cell and cell.ghostModel and cell.updateGhostStyle then
 								-- Clear local cell style cache (possibly shared)
@@ -118,13 +118,13 @@ function UI.Table:onMouseClick(x,y,c)
 	local d=cn and rn and not hdr and self.data[rn]
 	if d and type(d)=="table" then
 		if d.onClickDoubleCell and c>1 then
-			local nh=self.cells[vector(rn,cn,0,0)]
+			local nh=self.cells[vector(rn,cn,0)]
 			nh.indexCell=cn
 			nh.rowData=d
 			if nh then d.onClickDoubleCell(self,nc,cn,d) return true end
 		end
 		if d.onClickCell then
-			local nh=self.cells[vector(rn,cn,0,0)]
+			local nh=self.cells[vector(rn,cn,0)]
 			nh.indexCell=cn
 			nh.rowData=d
 			if nh then d.onClickCell(self,nc,cn,d) return true end
@@ -155,7 +155,7 @@ function UI.Table:onLongClick(x,y)
 	local d=rn and not hdr and self.data[rn]
 	if d and type(d)=="table" then
 		if d.onClickLongCell then
-			local nh=self.cells[vector(rn,cn,0,0)]
+			local nh=self.cells[vector(rn,cn,0)]
 			nh.indexCell=cn
 			nh.rowData=d
 			if nh then d.onClickLongCell(self,nc,cn,d) end
@@ -193,7 +193,7 @@ function UI.Table:updateRow(rowWidget)
 		if self.columns and rowWidget.row and rowWidget.isSelected~=rowsel then
 			rowWidget._ghostStyleCache={}
 			for j=1,#self.columns,1 do
-				local cellCode=vector(rowWidget.row,j,0,0)
+				local cellCode=vector(rowWidget.row,j,0)
 				local cell = self.cells[cellCode]
 				if cell then
 					if cell.ghostModel then
@@ -331,7 +331,7 @@ function UI.Table:setView(view)
 		end
 		self:addChild(rowWidget)
 		for j,c in ipairs(self.columns) do
-			local nhd=self.cells[vector(n,j,0,0)]
+			local nhd=self.cells[vector(n,j,0)]
 			local gx,gy=0,0
 			if self.direction then gx=i gy=j-1 else gy=i gx=j-1 end
 			nhd:setLayoutConstraints({ gridx=gx, gridy=gy})
@@ -435,7 +435,7 @@ function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call
 			end
 			local ghosts
 			for j,c in ipairs(self.columns) do
-				local cellCode=vector(i,j,0,0)
+				local cellCode=vector(i,j,0)
 				local nh,nhd = nil,nil
 				local cacheKey=builder or c.field
 				if cacheKey and cache and cache[d] and cache[d].cache[c] and cache[d].cache[c].cacheKey==cacheKey then
@@ -536,8 +536,8 @@ function UI.Table:moveColumn(index,to)
 			if ii then
 				local rowWidget=self.dataRows[d]
 				for j,c in ipairs(self.columns) do
-					local nhd=self.cells[vector(i,imap[j],0,0)]
-					ncells[vector(i,j,0,0)]=nhd
+					local nhd=self.cells[vector(i,imap[j],0)]
+					ncells[vector(i,j,0)]=nhd
 					if nhd.indexCell then nhd.indexCell=j end
 					if not allowGhost then
 						Sprite.addChildAt(rowWidget,nhd,j) --Use Sprite call to avoid restyling

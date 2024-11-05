@@ -58,6 +58,8 @@ UI.Theme.PointCore_Base={
 	["theme.KO"]=UI.Color(0xFF0000), --colError
 	colError=UI.Color(0xFF0000),
 	--
+	["accordion.colSelected"]=colNone,
+	--
 	["button.styBack"]={
 		colWidgetBack="button.colBackground",
 		brdWidget={ },
@@ -121,7 +123,7 @@ UI.Theme.PointCore_Base={
 			brdWidget=UI.Border.NinePatch.new({
 				texture=Texture.new("ui/icons/textfield-multi.png",true),
 				corners={0,"buttontextfield.szMargin","buttontextfield.szMargin","buttontextfield.szMargin",63,63,63,63,},
-				insets={ left="buttontextfield.szMargin",right="buttontextfield.szInset",top="buttontextfield.szMargin",bottom="buttontextfield.szMargin"},
+				insets="buttontextfield.szMargin",
 			}),
 			shader={ 
 				class="UI.Shader.MultiLayer", 
@@ -164,7 +166,7 @@ UI.Theme.PointCore_Base={
 			brdWidget=UI.Border.NinePatch.new({
 				texture=Texture.new("ui/icons/textfield-multi.png",true),
 				corners={0,"textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
-				insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+				insets="textfield.szMargin",
 			}),
 			shader={
 				class="UI.Shader.MultiLayer", 
@@ -187,7 +189,7 @@ UI.Theme.PointCore_Base={
 		["spinner.colIcon"]="theme.OV50",
 	},
 
-	--
+	--	
 	["dnd.colSrcHighlight"]="theme.OV15",
 	["dnd.colDstHighlight"]="theme.T",
 	["dnd.colDstHighlightOver"]="theme.OV50",
@@ -207,7 +209,7 @@ UI.Theme.PointCore_Base={
 			brdWidget=UI.Border.NinePatch.new({
 				texture=Texture.new("ui/icons/textfield-multi.png",true),
 				corners={"textfield.szMargin","textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
-				insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+				insets="textfield.szMargin",
 			}),
 			shader={ 
 				class="UI.Shader.MultiLayer", 
@@ -222,7 +224,7 @@ UI.Theme.PointCore_Base={
 			brdWidget=UI.Border.NinePatch.new({
 				texture=Texture.new("ui/icons/textfield-multi.png",true),
 				corners={"textfield.szMargin","textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
-				insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+				insets="textfield.szMargin",
 			}),
 			shader={ 
 				class="UI.Shader.MultiLayer", 
@@ -261,22 +263,40 @@ UI.Theme.PointCore_Base={
 	},
 	--
 	["splitpane.styThin"]={
-		["splitpane.szKnobThin"]=".2is",
-		["splitpane.tblKnobSizes"]={0,".4is",0},
-		["splitpane.colKnob"]="theme.C1F",
-		["splitpane.brdKnobH"]=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/knob-band-v.png",true,{ mipmap=true }),
-			corners={0,0,"1s","1s",0,0,63,63},
-		}),
-		["splitpane.brdKnobV"]=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/knob-band-h.png",true,{ mipmap=true }),
-			corners={"1s","1s",0,0,63,63,0,0},
-		}),
+		-- Image is 51 wide but centered in a canvas of 128, 
+		-- so around 40% which should be fitted in tless than the center bar.
+		-- Reduce knob size to 80% for better look
+		["splitpane.szKnob"]=".8is", 
+		["splitpane.tblKnobSizes"]={".8is",".4is",".8is"},
+		["splitpane.colKnob"]=UI.Colors.transparent,
+		["splitpane.colKnobBackground"]="theme.C1F",
+		["splitpane.styKnobBackgroundH"]={
+			colWidgetBack="splitpane.colKnobBackground",
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/knob-band-v.png",true,{ mipmap=true }),
+				corners={0,0,"1s","1s",0,0,63,63},
+			})
+		},
+		["splitpane.styKnobBackgroundV"]={
+			colWidgetBack="splitpane.colKnobBackground",
+			brdWidget=UI.Border.NinePatch.new({
+				texture=Texture.new("ui/icons/knob-band-h.png",true,{ mipmap=true }),
+				corners={"1s","1s",0,0,63,63,0,0},
+			})
+		},
+		["splitpane.styKnobH"]={
+			colWidgetBack="splitpane.colKnob" ,
+			brdWidget={},
+		},
+		["splitpane.styKnobV"]={
+			colWidgetBack="splitpane.colKnob" ,
+			brdWidget={},
+		},
 		["splitpane.styKnobHandleH"]={
 			brdWidget=UI.Border.NinePatch.new({
 				texture=Texture.new("ui/icons/knob-dots-v.png",true,{ mipmap=true }),
 				corners={0,0,0,0,0,0,0,0},
-				insets={ left="splitpane.szKnobThin", right="splitpane.szKnobThin", top="splitpane.szKnob", bottom="splitpane.szKnob" },
+				insets="splitpane.szKnob",
 			}),
 			colWidgetBack="splitpane.colKnobHandle",
 		},
@@ -284,7 +304,7 @@ UI.Theme.PointCore_Base={
 			brdWidget=UI.Border.NinePatch.new({
 				texture=Texture.new("ui/icons/knob-dots-h.png",true,{ mipmap=true }),
 				corners={0,0,0,0,0,0,0,0},
-				insets={ left="splitpane.szKnob", right="splitpane.szKnob", top="splitpane.szKnobThin", bottom="splitpane.szKnobThin" },
+				insets="splitpane.szKnob",
 			}),
 			colWidgetBack="splitpane.colKnobHandle",
 		},
@@ -301,7 +321,7 @@ UI.Theme.PointCore_Base={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/textfield-multi.png",true),
 			corners={"textfield.szMargin","textfield.szMargin","textfield.szMargin","textfield.szMargin",63,63,63,63,},
-			insets={ left="textfield.szMargin",right="textfield.szMargin",top="textfield.szMargin",bottom="textfield.szMargin"},
+			insets="textfield.szMargin",
 		}),
 		shader={
 			class="UI.Shader.MultiLayer", 
@@ -376,7 +396,7 @@ UI.Theme.PointCore_Base={
 		brdWidget=UI.Border.NinePatch.new({
 			texture=Texture.new("ui/icons/radio-multi.png",true,{ mipmap=true }),
 			corners={"1is","1is","1is","1is",63,63,63,63,},
-			insets={ left=0,right=0,top=0,bottom=0},
+			insets=0,
 		}),
 		shader={
 			class="UI.Shader.MultiLayer", 

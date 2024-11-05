@@ -84,7 +84,7 @@ local function MakeBody(self,spec,world)
 	local sx,sy,sz=ft:getScale()
 	local stx,sty,stz=m:getScale()
 	local dimx,dimy,dimz=(m.max[1]-m.min[1])/2,(m.max[2]-m.min[2])/2,(m.max[3]-m.min[3])/2 --Those are half dimensions
-	local shapedim=vector(dimx,dimy,dimz,0)
+	local shapedim=vector(dimx,dimy,dimz)
 	local shape
 	local shapetype=spec and spec.shape
 	dimx=dimx*sx*stx
