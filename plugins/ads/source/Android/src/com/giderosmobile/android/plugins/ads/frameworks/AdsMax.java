@@ -52,7 +52,6 @@ public class AdsMax implements AdsInterface {
 				Ads.adReady(AdsMax.me, 1);
 			}
 		} );
-		AppLovinPrivacySettings.setIsAgeRestrictedUser(true,sActivity.get());
 		AppLovinPrivacySettings.setHasUserConsent(false,sActivity.get());
 		AppLovinSdk.initializeSdk(sActivity.get());
 		currentType = MaxAdFormat.BANNER;
@@ -257,8 +256,6 @@ class AdsMaxListener implements MaxAdListener, MaxRewardedAdListener, MaxAdViewA
 			Ads.adFailed(AdsMax.me, state.getType(), "'Don't keep activities' Enabled");
 		else if(errorCode == MaxErrorCode.FULLSCREEN_AD_ALREADY_SHOWING)
 			Ads.adFailed(AdsMax.me, state.getType(), "Fullscreen Ad already shwing");
-		else if(errorCode == MaxErrorCode.NO_ACTIVITY)
-			Ads.adFailed(AdsMax.me, state.getType(), "No activity");
 		else if(errorCode == MaxErrorCode.NO_NETWORK)
 			Ads.adFailed(AdsMax.me, state.getType(), "No network");
 		else if(errorCode == MaxErrorCode.NETWORK_ERROR)
@@ -309,18 +306,6 @@ class AdsMaxListener implements MaxAdListener, MaxRewardedAdListener, MaxAdViewA
 	@Override
 	public void onAdDisplayFailed(MaxAd ad, MaxError errorCode) {
 		failed(errorCode.getCode());
-	}
-
-	@Override
-	public void onRewardedVideoStarted(MaxAd ad) {
-		Ads.adActionBegin(AdsMax.me, state.getType());
-	}
-
-	@Override
-	public void onRewardedVideoCompleted(MaxAd ad) {
-		if(!state.getType().equals("v4vc")){
-			Ads.adActionEnd(AdsMax.me, state.getType());
-		}
 	}
 
 	@Override
