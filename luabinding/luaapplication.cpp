@@ -1351,7 +1351,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                     std::string lOp=std::string(ks,kk-ks-1);
                     if (lOp=="alpha") {
                         float col[4]={0,0,0,0};
-                        lua_tocolorf(L,-1,col);
+                        lua_tocolorf(L,-1,col,1);
                         lua_pop(L,1);
                         if (resolveStyleInternal(L,kk+1,0,limit+1,true)==LUA_TNIL)
                         {
@@ -1359,7 +1359,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                             lua_error(L);
                         }
                         float c[4]={0,0,0,0};
-                        if (lua_tocolorf(L,-1,c))
+                        if (lua_tocolorf(L,-1,c,0))
                             col[3]=c[3];
                         else
                             col[3]=lua_tonumber(L,-1);
@@ -1546,7 +1546,7 @@ void LuaApplication::resolveColor(lua_State *L,int spriteIdx, int colIdx, float 
     case LUA_TNUMBER:
     case LUA_TCOLOR:
     {
-        lua_tocolorf(L,idx,color);
+        lua_tocolorf(L,idx,color,1);
         break;
     }
     case LUA_TUSERDATA:

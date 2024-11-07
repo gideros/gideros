@@ -102,7 +102,7 @@ int Path2DBinder::setFillColor(lua_State* L)
             COLVEC(c1,2);
             COLVEC(c2,3);
             shape->setGradientWithAngle(COLARG(c1),COLARG(c2),
-                    luaL_checknumber(L, 4));
+            luaL_checknumber(L, 4));
         }
         else {
             COLVEC(color,2);
@@ -144,7 +144,7 @@ int Path2DBinder::setLineColor(lua_State* L)
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D"));
 
     float cvec[4];
-    if (lua_tocolorf(L,2,cvec)) {
+    if (lua_tocolorf(L,2,cvec,0)) {
         unsigned int col = ((((int)(cvec[0]*255))&0xFF)<<16)|((((int)(cvec[1]*255))&0xFF)<<8)|((((int)(cvec[2]*255))&0xFF)<<0);
         shape->setLineColor(col, cvec[3]);
     }

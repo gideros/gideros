@@ -129,7 +129,7 @@ int ViewportBinder::setTarget(lua_State* L)
     Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
     GRenderTarget* s = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 2));
     float ccol[4];
-    shape->setTarget(s,lua_toboolean(L,3),lua_tocolorf(L,4,ccol)?ccol:NULL);
+    shape->setTarget(s,lua_toboolean(L,3),lua_tocolorf(L,4,ccol,1)?ccol:NULL);
     return 0;
 }
 

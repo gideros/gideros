@@ -107,7 +107,7 @@ int PixelBinder::create(lua_State* L)
 
     int postCol=3;
     float cvec[4];
-    if (lua_tocolorf(L,1,cvec)) {
+    if (lua_tocolorf(L,1,cvec,0)) {
         postCol=2;
         bitmap->setColor(cvec[0],cvec[1],cvec[2],cvec[3]);
     }

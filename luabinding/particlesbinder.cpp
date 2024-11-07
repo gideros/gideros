@@ -303,7 +303,7 @@ int ParticlesBinder::setParticleColor(lua_State *L)
         luaL_error(L, "The supplied index is out of bounds.");
 
     float cvec[4];
-    if (lua_tocolorf(L,3,cvec)) {
+    if (lua_tocolorf(L,3,cvec,0)) {
         unsigned int col = ((((int)(cvec[0]*255))&0xFF)<<16)|((((int)(cvec[1]*255))&0xFF)<<8)|((((int)(cvec[2]*255))&0xFF)<<0);
         mesh->setColor(i, col, cvec[3]);
     }
@@ -428,7 +428,7 @@ int ParticlesBinder::addParticles(lua_State *L)
             unsigned int color;
             float alpha;
             float cvec[4];
-            if (lua_tocolorf(L,-1,cvec)) {
+            if (lua_tocolorf(L,-1,cvec,0)) {
                 color = ((((int)(cvec[0]*255))&0xFF)<<16)|((((int)(cvec[1]*255))&0xFF)<<8)|((((int)(cvec[2]*255))&0xFF)<<0);
                 alpha=cvec[3];
             }
