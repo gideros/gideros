@@ -54,22 +54,10 @@ stage:addChild(shape)
 
 ## Where to start? 
 
-* [**Introduction:**](http://docs.giderosmobile.com/) Everything from creating your first project and running it on device, to the basic concepts of OOP, File system and Events. A must read for all new Developers. 
-* [**Reference Guide:**](http://docs.giderosmobile.com/reference) API information about every class, method, event, property and plugin available in Gideros with examples of how to use them. Bookmark it, you'll be using it a lot.
-* [**Gideros Wiki:**](http://wiki.giderosmobile.com/index.php/Welcome!) The Gideros Wiki, containing a wealth of information with links to tutorials, community contributed classes and code snippets and tips and tricks on how to develop with Gideros.
-* [**Everything else...**](http://giderosmobile.com/guide) Even more developer related documentation... 
+* [**Introduction:**](https://wiki.gideros.rocks/index.php/Introduction) Everything from creating your first project and running it on device, to the basic concepts of OOP, File system and Events. A must read for all new Developers. 
+* [**Reference Guide:**](https://wiki.gideros.rocks/index.php/Welcome!) API information about every class, method, event, property and plugin available in Gideros with examples of how to use them. Bookmark it, you'll be using it a lot.
+* [**Gideros Wiki:**](https://wiki.gideros.rocks/index.php/Welcome!) The Gideros Wiki, containing a wealth of information with links to tutorials, community contributed classes and code snippets and tips and tricks on how to develop with Gideros.
 
 ## Join the Gideros community
 
-Gideros has an active, friendly community. We have a lively, helpful team of Gideros experts, users and newcomers discussing the future of Gideros and games development. [Join us here](http://giderosmobile.com/forum)
-
-
-
-
-
-
-
-
-
-
-
+Gideros has an active, friendly community. We have a lively, helpful team of Gideros experts, users and newcomers discussing the future of Gideros and games development. [Join us here](https://forum.gideros.rocks/)
