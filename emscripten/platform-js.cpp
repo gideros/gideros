@@ -33,10 +33,11 @@ std::vector<std::string> getDeviceInfo()
   std::vector<std::string> result;
         
   result.push_back("Web");
-	char *userAgentC=(char *) EM_ASM_INT_V({
-	 return allocate(intArrayFromString(navigator.userAgent), ALLOC_STACK);
+	char *userAgentC=(char *) EM_ASM_PTR({
+	 return stringToNewUTF8(navigator.userAgent);
 	});
   std::string userAgent=userAgentC;
+  free(userAgentC);
   result.push_back(userAgent);
                                 
  return result;
@@ -86,9 +87,11 @@ int getClipboard(std::string &data,std::string &mimeType, int luaFunc) {
 		EM_ASM_({
 			if (window.navigator.clipboard && window.navigator.clipboard.readText) {
 				window.navigator.clipboard.readText().then(function (clipText) {
-						Module._gapplication_clipboardCallback($0,1,
-								allocate(intArrayFromString(clipText), ALLOC_STACK),
-								allocate(intArrayFromString("text/plain"), ALLOC_STACK))
+						var cClip=stringToNewUTF8(clipText);
+						var cMime=stringToNewUTF8("text/plain");
+						Module._gapplication_clipboardCallback($0,1, cClip, cMime);
+						_free(cClip);
+						_free(cMime);
 					}
 				).catch(
 					err => Module._gapplication_clipboardCallback($0,-1,0,0)
@@ -133,11 +136,12 @@ std::string getLocale()
 
 std::string getLanguage()
 {
-	char *lang=(char *) EM_ASM_INT_V({
-	 return allocate(intArrayFromString(Module.gplatformLanguage()), ALLOC_STACK);
+	char *lang=(char *) EM_ASM_PTR({
+	 return stringToNewUTF8(Module.gplatformLanguage());
 	});
-
-	return lang;
+	std::string sLang=lang;
+	free(lang);
+	return sLang;
 }
 
 void openUrl(const char* url)

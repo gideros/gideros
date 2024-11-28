@@ -1,0 +1,12 @@
+<library>
+ <properties alphaThreshold="0" extrude="0" forceSquare="0" padding="1" removeAlphaBorder="0" showUnusedAreas="0"/>
+ <file file="brick.png"/>
+ <file file="boardTileRounded.png"/>
+ <file file="selector.png"/>
+ <file file="line.png"/>
+ <file file="6.png"/>
+ <file file="5.png"/>
+ <file file="4.png"/>
+ <file file="3.png"/>
+ <file file="2.png"/>
+</library>

@@ -29,6 +29,17 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 		if msk~=msk2 then pos=hF4(0,0,0,1) end
 		vcolor=texture2D(g_ColorMap,hF2(((VOXELDATA.w)%256)/255,0));
 	end
+	if OPT_BRICKS then
+		pos.x=.5+pos.x/2+VOXELDATA.x
+		pos.y=.5+pos.y/2+VOXELDATA.y
+		pos.z=.5+pos.z/2+VOXELDATA.z
+		local msk=floor(VOXELDATA.w/VOXELFACE)
+		local msk2=2*floor(msk/2)
+		if msk~=msk2 then pos=hF4(0,0,0,1) end
+		local bnum=(VOXELDATA.w)%256
+		texCoord=hF2(TEXCOORD.x,TEXCOORD.y+bnum/8)
+		--vcolor=texture2D(g_ColorMap,hF2(()/255,0));
+	end
 	if OPT_ANIMATED then
 		local nulv=hF4(0,0,0,0)
 		local skinning=hF44(nulv,nulv,nulv,nulv)

@@ -31,6 +31,8 @@ local LightingShaderAttrs={
 {name="INSTMATD",type=Shader.DFLOAT,amult=4,slot=9,offset=0,instances=1,code="i"},
 {name="VOXELDATA",type=Shader.DFLOAT,amult=4,slot=10,offset=0,instances=1,code="v"},
 {name="VOXELFACE",type=Shader.DFLOAT,amult=1,slot=11,offset=0,code="v"},
+{name="VOXELDATA",type=Shader.DFLOAT,amult=4,slot=10,offset=0,instances=1,code="b"},
+{name="VOXELFACE",type=Shader.DFLOAT,amult=1,slot=11,offset=0,code="b"},
 }
 
 local LightingShaderConstants={
@@ -91,6 +93,7 @@ function Lighting.getShader(code)
 		{"v","VOXEL",true},
 		{"o","OCCLUSION",true},
 		{"d","DEPTHMASK",true},
+		{"b","BRICKS",true},
 	}
 	local lcode,ccode,acode="","",""
 	local lconst={}

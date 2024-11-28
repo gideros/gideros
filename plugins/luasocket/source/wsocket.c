@@ -314,7 +314,7 @@ void socket_setnonblocking(p_socket ps) {
 * DNS helpers 
 \*-------------------------------------------------------------------------*/
 int socket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp) {
-    *hp = gethostbyaddr(addr, len, AF_INET);
+    *hp = gethostbyaddr(addr, len, (len==16)?AF_INET6:AF_INET);
     if (*hp) return IO_DONE;
     else return WSAGetLastError();
 }

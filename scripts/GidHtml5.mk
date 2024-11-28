@@ -35,6 +35,8 @@ html5.libs:
 
 %.html5plugin.clean:
 	cd emscripten; $(MAKE) $*.plugin.clean
+
+PLUGIN_PREREQUISITE+= %.html5plugin
 	
 html5.template: html5.libs
 	cp -r emscripten/Build/Html5 $(RELEASE)/Templates

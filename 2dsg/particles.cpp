@@ -24,6 +24,7 @@ Particles::Particles(Application *application, bool is3d, bool autosort) :
 	application->addTicker(this);
     this->is3d=is3d;
     autoSort=autosort;
+    _minSize=0.1;
 }
 
 void Particles::cloneFrom(Particles *s)
@@ -61,6 +62,7 @@ void Particles::cloneFrom(Particles *s)
     indices_.Update();
     is3d=s->is3d;
     autoSort=s->autoSort;
+    _minSize=s->_minSize;
 }
 
 Particles::~Particles() {
@@ -501,7 +503,7 @@ void Particles::tick() {
             float nz = points_[i * 16 + 2] + speeds_[i * 5 + 2]*nframes;
             float ns = texcoords_[i * 16 + 2] + speeds_[i * 5 + 3]*nframes;
             float na = texcoords_[i * 16 + 3] + speeds_[i * 5 + 4]*nframes;
-            if ((ttl_[i]<=0)&&(fabs(ns)<0.1))
+            if ((ttl_[i]<=0)&&(fabs(ns)<_minSize))
 				remove=true;
             else {
                 if (cpos||cspd) {

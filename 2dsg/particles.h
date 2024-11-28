@@ -43,6 +43,7 @@ public:
     void setExtra(int i, float type);
     float getExtra(int i) const;
     void scaleParticles(float size,bool absolute);
+    void setMinimumSize(float minSize) { _minSize=minSize; };
 
     void setTexture(TextureBase *texture,int slot);
     void clearTexture(int slot);
@@ -80,6 +81,7 @@ private:
 
     float r_, g_, b_, a_;
     double lastTickTime_;
+    float _minSize;
 
     mutable float minx_, miny_, maxx_, maxy_;
     bool boundsDirty_;

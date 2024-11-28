@@ -9,6 +9,7 @@ Mesh3D.MODE_COLORED=64
 Mesh3D.MODE_VOXEL=128
 Mesh3D.MODE_OCCLUSION=256
 Mesh3D.MODE_DEPTHMASK=512
+Mesh3D.MODE_BRICKS=1024
 
 function Mesh3D:init()
 	self.mode=0
@@ -29,6 +30,7 @@ function Mesh3D:updateMode(set,clear)
 			if (nm&Mesh3D.MODE_VOXEL)>0 then tc=tc.."v" end
 			if (nm&Mesh3D.MODE_OCCLUSION)>0 then tc=tc.."o" end
 			if (nm&Mesh3D.MODE_DEPTHMASK)>0 then tc=tc.."d" end
+			if (nm&Mesh3D.MODE_BRICKS)>0 then tc=tc.."b" end
 			Lighting.setSpriteMode(self,tc)
 		end
 	end

@@ -2,17 +2,20 @@ EMCC=$(EMSDK_PREFIX) emcc
 BUILD=Build
 
 LOPTS?=
-OPTS=$(POPTS) -Os -s SIDE_MODULE=2
+OPTS=$(POPTS) -s SIDE_MODULE=2
 ifneq ($(DEBUG),)
-OPTS+=-g4 -s ASSERTIONS=1 --source-map-base http://hieroglyphe.net/gideros/BugTest/
+OPTS+=-gsource-map -s ASSERTIONS=1
+else
+OPTS+=-Os
 endif
 
+SRCS+=../../../emscripten/PluginCommon
 WOBJS=$(addprefix $(BUILD)$(FLAVOUR)/,$(addsuffix .emw.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS+=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	$(OPTS) -DFLAVOUR_$(FLAVOUR) $(addprefix -DFLAVOUR=,$(FLAVOUR))
-CFLGS+=-fno-exceptions -fno-rtti #WASM side modules doesn't seem to support C++ exceptions, and RTTI doesn't work well with DCE
+CFLGS+=-fno-rtti #WASM side modules doesn't seem to support C++ exceptions, and RTTI doesn't work well with DCE
 CFLGS+=-DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -DNO_EXCEPTIONS
 	
 ifneq ($(FLAVOURS),)
@@ -40,24 +43,24 @@ clean:
 
 $(BUILD)$(FLAVOUR)/%.emw.o: ../%.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< -o $@
 
 $(BUILD)$(FLAVOUR)/%.emw.o: ../%.cc
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< -o $@
 
 $(BUILD)$(FLAVOUR)/%.emw.o: ../%.c
 	@echo "EMWCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -c $< -o $@
 
 $(BUILD)$(FLAVOUR)/%.emw.o: %.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< -o $@
 
 $(BUILD)$(FLAVOUR)/%.emw.o: %.cc
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< -o $@
 
 $(BUILD)$(FLAVOUR)/%.emw.o: %.c
 	@echo "EMWCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -c $< -o $@

@@ -40,6 +40,7 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
         {"getNumParticles",getNumParticles},
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
+        {"setMinimumSize", setMinimumSize},
 
         {NULL, NULL},
     };
@@ -885,6 +886,16 @@ int ParticlesBinder::clearTexture(lua_State *L)
     int slot=luaL_optinteger(L,2,0);
 
     mesh->clearTexture(slot);
+
+    return 0;
+}
+
+int ParticlesBinder::setMinimumSize(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    mesh->setMinimumSize(luaL_optnumber(L,2,0.1));
 
     return 0;
 }

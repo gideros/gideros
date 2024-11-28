@@ -153,6 +153,7 @@ ios.install: ios.libs.install atv.libs.install mac.libs.install ios.plugins.inst
 ios.clean: ios.plugins.clean ios.libs.clean
 		
 ios.plugins: $(addsuffix .ios.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.iosplugin,$(PLUGINS_ATV)) $(addsuffix .mac.iosplugin,$(PLUGINS_MAC))
+PLUGIN_PREREQUISITE+= %.ios.iosplugin %.atv.iosplugin %.mac.iosplugin
 
 ios.plugins.clean: $(addsuffix .ios.clean.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.clean.iosplugin,$(PLUGINS_ATV)) $(addsuffix .mac.clean.iosplugin,$(PLUGINS_MAC))
 

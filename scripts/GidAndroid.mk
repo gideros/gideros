@@ -88,4 +88,6 @@ androidlibs.install: androidlibs
 %.androidplugin.clean:
 	@cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi; for l in $(ANDROID_ARCHS); do rm -rf libs/$$l/*.so; done; rm -rf obj
 	@rm -rf $(RELEASE)/All\ Plugins/$(notdir $*)/bin/Android
+
+PLUGIN_PREREQUISITE+= %.androidplugin %.androidplugin.install
 		

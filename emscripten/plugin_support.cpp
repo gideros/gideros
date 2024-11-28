@@ -28,6 +28,8 @@ EMSCRIPTEN_KEEPALIVE sighandler_t signal(int signum, sighandler_t handler);
 EMSCRIPTEN_KEEPALIVE int gettimeofday(struct timeval *tv, void *tz);
 EMSCRIPTEN_KEEPALIVE int getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res);
 EMSCRIPTEN_KEEPALIVE void freeaddrinfo(struct addrinfo *res);
+EMSCRIPTEN_KEEPALIVE void setTempRet0(unsigned long r);
+EMSCRIPTEN_KEEPALIVE unsigned long getTempRet0();
 }
 
 //The lines below are used to force linking of some system functions used by plugins
@@ -58,6 +60,7 @@ void linkCode() __attribute__((optnone)) {
 	  gai_strerror(0);
 	  utime(NULL,NULL);
 	  utimes(NULL,NULL);
+	  setTempRet0(getTempRet0());
 
 	  std::string __t="Dummy";
 	  std::string __t2(__t);

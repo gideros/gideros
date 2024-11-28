@@ -387,8 +387,6 @@ static int r3dWorld_Step(lua_State* L) {
 #ifndef _NO_THROW
     } catch (std::exception &e) {
         throw;
-    } catch (std::runtime_error &e) {
-		luaL_error(L,"Failed to step world, something is not set up correctly");
 	} catch (...) {
 		luaL_error(L,"Failed to step world, something is not set up correctly");
 	}
@@ -484,8 +482,6 @@ static void push_RayCastInfo(lua_State *L, const RaycastInfo& info) {
 	lua_setfield(L, -2, "worldNormal");
 	lua_pushnumber(L, info.hitFraction);
 	lua_setfield(L, -2, "hitFraction");
-	lua_pushinteger(L, info.meshSubpart);
-	lua_setfield(L, -2, "meshSubpart");
 	lua_pushinteger(L, info.triangleIndex);
 	lua_setfield(L, -2, "triangleIndex");
 	getb2(L, info.body);
@@ -1045,13 +1041,10 @@ public:
 };
 
 class gidPolyMesh : public gidMesh {
-protected:
-	rp3d::PolygonVertexArray::PolygonFace *faces;
-	rp3d::PolygonVertexArray *polygonVertexArray;
 public:
-	rp3d::PolyhedronMesh *polymesh;
+	rp3d::ConvexMesh *polymesh;
 	gidPolyMesh(lua_State *L, int n) : gidMesh(L,n,true) {
-		faces = new rp3d::PolygonVertexArray::PolygonFace[fc];
+		rp3d::PolygonVertexArray::PolygonFace* faces = new rp3d::PolygonVertexArray::PolygonFace[fc];
 		rp3d::PolygonVertexArray::PolygonFace* face = faces;
 		int ib=0;
 		for (size_t f = 0; f < fc; f++) {
@@ -1062,7 +1055,7 @@ public:
 		}
 
 		// Create the polygon vertex array
-		polygonVertexArray = new rp3d::PolygonVertexArray(vc, vertices,
+		PolygonVertexArray polygonVertexArray(vc, vertices,
 				3 * sizeof(float), indices, sizeof(int), fc, faces,
 				rp3d::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 				rp3d::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
@@ -1071,43 +1064,38 @@ public:
 #ifndef _NO_THROW
 		try {
 #endif
-			polymesh = physicsCommon->createPolyhedronMesh(polygonVertexArray);
+			std::vector<Message> msg;
+			polymesh = physicsCommon->createConvexMesh(polygonVertexArray,msg);
 #ifndef _NO_THROW
 		} catch (std::runtime_error &e) {
-			delete polygonVertexArray;
-			delete faces;
+			delete[] faces;
 			delete indices;
 			delete vertices;
 			luaL_error(L,"Invalid mesh, probably not convex or ill-formed");
 			polymesh=NULL;
 		}
 #endif
+		delete[] faces;
 	}
  ~gidPolyMesh() {
 	 if (polymesh)
-		 physicsCommon->destroyPolyhedronMesh(polymesh);
-	 delete polygonVertexArray;
-	 delete faces;
+		 physicsCommon->destroyConvexMesh(polymesh);
  }
 };
 
 class gidTriMesh: public gidMesh {
-protected:
-	rp3d::TriangleVertexArray* triangleArray;
 public:
 	rp3d::TriangleMesh *trimesh;
 	gidTriMesh(lua_State *L, int n) : gidMesh(L,n,false) {
-		triangleArray =
-		new rp3d::TriangleVertexArray(vc, vertices, 3 * sizeof(float), ic/3,
+		rp3d::TriangleVertexArray triangleArray(vc, vertices, 3 * sizeof(float), ic/3,
 				indices, 3 * sizeof(int),
 				rp3d::TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 				rp3d::TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
-		trimesh=physicsCommon->createTriangleMesh();
-		trimesh->addSubpart(triangleArray);
+		std::vector<Message> msg;
+		trimesh=physicsCommon->createTriangleMesh(triangleArray,msg);
 	}
  ~gidTriMesh() {
 	 physicsCommon->destroyTriangleMesh(trimesh);
-	 delete triangleArray;
  }
 };
 
@@ -1186,7 +1174,9 @@ static int r3dHeightFieldShape_create(lua_State* L) {
 	}
 
 	gidHeightField *gd=new gidHeightField(d);
-	rp3d::HeightFieldShape *shape = physicsCommon->createHeightFieldShape(w,h,ih,ah, d, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
+	std::vector<Message> msg;
+	rp3d::HeightField *hf = physicsCommon->createHeightField(w,h,d, rp3d::HeightField::HeightDataType::HEIGHT_FLOAT_TYPE,msg);
+	rp3d::HeightFieldShape *shape = physicsCommon->createHeightFieldShape(hf);
 	shapeData[shape]=gd;
 	shapeType[shape]=SHP_HEIGHTFIELD;
 
@@ -1840,9 +1830,9 @@ static void g_deinitializePlugin(lua_State *_UNUSED(L)) {
 }
 
 #ifdef QT_NO_DEBUG
-REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.9.0", reactphysics3d)
+REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.10.2", reactphysics3d)
 #elif defined(TARGET_OS_MAC) || defined(_MSC_VER)
-REGISTER_PLUGIN_STATICNAMED_CPP("ReactPhysics3D", "0.9.0", reactphysics3d)
+REGISTER_PLUGIN_STATICNAMED_CPP("ReactPhysics3D", "0.10.2", reactphysics3d)
 #else
-REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.9.0", reactphysics3d)
+REGISTER_PLUGIN_NAMED("ReactPhysics3D", "0.10.2", reactphysics3d)
 #endif

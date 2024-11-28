@@ -158,6 +158,7 @@ qt.player:
 	
 buildqtplugins: 
 	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_QT) $(PLUGINS_QTMACONLY))
+PLUGIN_PREREQUISITE+= %.qtplugin.install
 
 qtplugins.clean: 
 	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_QT) $(PLUGINS_QTMACONLY)) 

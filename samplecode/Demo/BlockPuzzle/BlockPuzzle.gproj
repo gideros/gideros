@@ -1,0 +1,34 @@
+<project>
+ <properties build_number="1" orientation="0" osx_org="GiderosMobile" splash_h_image="" iosDevice="0" vsync="0" ios_bundle="com.yourdomain." architecture="0" logicalWidth="720" windowWidth="0" splash_v_image="" osx_domain="giderosmobile.com" html5_crash="" fps="60" autorotation="0" win_domain="giderosmobile.com" html5_pack="0" mainluaOnly="0" osx_bundle="com.yourdomain." osx_installerId="" splashScaleMode="0" win_org="GiderosMobile" scaleMode="3" html5_host="" version_code="1" winrt_org="GiderosMobile" tv_icon="" html5_mem="256" html5_fbload="100" mouseToTouch="1" html5_fbinstant="0" mouseTouchOrder="0" app_icon="" winrt_package="com.yourdomain.yourapp" html5_wasm="0" html5_symbols="0" disableSplash="0" backgroundColor="#ffffff" touchToMouse="1" exportMode="0" packageName="com.yourdomain.yourapp" osx_signingId="" osx_category="5" encryptCode="0" app_name="" version="1.0" windowHeight="0" logicalHeight="1280" encryptAssets="0" android_template="0" retinaDisplay="0">
+  <imageScales/>
+  <plugins>
+   <plugin name="Easing" enabled="1"/>
+   <plugin name="SceneManager" enabled="1"/>
+  </plugins>
+  <exports/>
+ </properties>
+ <folder name="data">
+  <file name="assets/data/Amazonas.ttf"/>
+  <file name="assets/data/frames.lua" excludeFromExecution="1"/>
+ </folder>
+ <folder name="gfx">
+  <file name="assets/gfx/9patch_4.png"/>
+ </folder>
+ <folder name="libs">
+  <file name="assets/libs/GTween.lua"/>
+  <file name="assets/libs/Layers.lua"/>
+  <file name="assets/libs/UI.lua"/>
+  <file name="assets/libs/utils.lua" excludeFromExecution="1"/>
+ </folder>
+ <folder name="objects">
+  <file name="assets/objects/Grid.lua"/>
+  <file name="assets/objects/Label.lua"/>
+  <file name="assets/objects/Shape.lua"/>
+  <file name="assets/objects/Tile.lua"/>
+ </folder>
+ <folder name="scenes">
+  <file name="assets/scenes/GameScene.lua"/>
+ </folder>
+ <file name="assets/init.lua"/>
+ <file name="assets/main.lua"/>
+</project>

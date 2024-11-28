@@ -112,6 +112,8 @@ linux.libs.install: linux.libs
 		else echo ""; fi \
 	fi
 
+PLUGIN_PREREQUISITE+= %.linux.plugin.install
+
 linux.install: linux.libs.install linux.app linux.plugins.install
 	cp $(LINUX_BUILDDIR)/player $(LINUX_RELEASE)/LinuxTemplate
 	cp linux/cacert.pem $(LINUX_RELEASE)

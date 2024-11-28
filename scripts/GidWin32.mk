@@ -131,6 +131,8 @@ win32.libs.install: win32.libs
 			cp $(ROOT)/plugins/$*/source/win32/Build/*.dll $(WIN32_RELEASE)/plugins; \
 	else echo ""; fi
 
+PLUGIN_PREREQUISITE+= %.win32.plugin %.win32.plugin.install
+
 win32.install: win32.libs.install win32.app win32.plugins.install
 	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/WindowsDesktopTemplate.exe
 	cp $(WIN32_BUILDDIR)/player-console.exe $(WIN32_RELEASE)/WindowsDesktopTemplate-Console.exe

@@ -118,6 +118,7 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
+#DEBUG=1
 POPTS=#-pthread 
 #POPTS+= -s PRECISE_F32=1
 ifneq ($(PROFILING),)
@@ -140,8 +141,9 @@ $(BUILD)/libpystring/%.emw.o: NO_EXCEPTIONS=1
 $(BUILD)/libgid/external/%.emw.o: NO_EXCEPTIONS=1
 
 #LINE BELOW FOR WASM
-EOPTS_WASM+= TOTAL_MEMORY=256MB STACK_SIZE=8MB ALLOW_MEMORY_GROWTH=1 #BINARYEN_TRAP_MODE="clamp" #BINARYEN_METHOD="native-wasm" 
+EOPTS_WASM+= INITIAL_MEMORY=256MB STACK_SIZE=8MB ALLOW_MEMORY_GROWTH=1 #BINARYEN_TRAP_MODE="clamp" #BINARYEN_METHOD="native-wasm" 
 EOPTS+=EXPORTED_RUNTIME_METHODS="['addRunDependency','removeRunDependency','ccall','cwrap','getValue','UTF8ToString','loadDynamicLibrary']"
+#EOPTS+=LEGACY_RUNTIME
 #EOPTS+=EMCC_FORCE_STDLIBS
 #EOPTS+=EXPORT_ALL=1
 EOPTS+=MAIN_MODULE=2  
@@ -158,7 +160,7 @@ EOPTS+=MAX_WEBGL_VERSION=2
 EOPTS+=FORCE_FILESYSTEM=1
 EOPTS+=DEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$$ALLOC_STACK,$$allocate'
 ifneq ($(DEBUG),)
-OPTS+=-g4
+OPTS+=-gsource-map
 EOPTS+=ASSERTIONS=2
 else
 LOPTS+=--emit-symbol-map
@@ -175,7 +177,7 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DAL_STATIC_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL -DHAVE_WEBAUDIO -DRESTRICT=__restrict \
 	$(OPTS)
 CFLGS+=	-fno-rtti -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0
-PCFLGS+= -s SIDE_MODULE=2 -fno-exceptions
+PCFLGS+= -s SIDE_MODULE=2 -fwasm-exceptions
 MCFLGS+= -s MAIN_MODULE=2 -fwasm-exceptions
 #MCFLGS+= -s MAIN_MODULE=2 -s DISABLE_EXCEPTION_CATCHING=$(NO_EXCEPTIONS)
 
@@ -209,7 +211,7 @@ plugins.clean: $(addsuffix .plugin.clean,$(PLUGINS))
 	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE) clean; cd -
 
 SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LFRT LOAL
-SUBLIBS_ARW=$(addprefix $(BUILD)/lib,$(addsuffix .w.bc,$(SUBLIBS)))
+SUBLIBS_ARW=$(addprefix $(BUILD)/lib,$(addsuffix .w.a,$(SUBLIBS)))
 
 define SUB_template
 $$(BUILD)/lib$(1).w.a: $$(addprefix $(BUILD)/,$$(addsuffix .emw.o,$$($(1)_SRCS)))
@@ -251,7 +253,7 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
 EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//;s/fp\$$/')))
-EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vhE "invoke_XX|getTempRet0|setTempRet0" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
+EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context","setTempRet0","getTempRet0",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vhE "invoke_XX|getTempRet0|setTempRet0" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
 
 $(BUILD)/lib%.w.a:
 	@echo "EMAR" $@
@@ -270,10 +272,10 @@ keep:
 $(BUILD)/gideros-wasm.html: $(SUBLIBS_ARW) $(addprefix $(BUILD)/,$(addsuffix .wasm,$(EP_LIBS))) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html plugins
 	@echo -s EXPORTED_FUNCTIONS=$(EXP_FUNCS) >$(BUILD)/exports.list
 	@echo "EMLINK gideros WASM"
-	@$(EMCC) $(OBJS) $(LIBS) --minify 0  $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_ARW) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	$(EMCC) $(OBJS) $(LIBS) --minify 0  $(addprefix -s ,$(EOPTS) $(EOPTS_WASM)) @$(BUILD)/exports.list $(OPTS) $(LOPTS_WASM) $(SUBLIBS_ARW) -o $(BUILD)/gideros-wasm.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 	@echo "SYMGEN gideros"
 	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/gideros-wasm.wasm >$(BUILD)/gideros.wdis
-	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/gideros-wasm.wasm | grep '(export ' | grep '(func'| cut -d' ' -f4 >$(BUILD)/gideros.esyms
+	@$(EMSDK_PREFIX) wasm-dis.exe $(BUILD)/gideros-wasm.wasm | sed 's/^[ \t]*//' | cut -d' ' -f2 >$(BUILD)/gideros.esyms
 	
 
 main: path $(BUILD)/gideros-wasm.html 
@@ -306,16 +308,16 @@ init:
 
 $(BUILD)/%.emw.o: ../%.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -std=c++17 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -std=c++17 -c $< -o $@
 
 $(BUILD)/%.emw.o: ../%.c
 	@echo "EMWCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(MCFLGS) -c $< -o $@
 
 $(BUILD)/%.emwp.o: ../%.cpp
 	@echo "EMWC+ $<"
-	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -std=c++17 -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -std=c++17 -c $< -o $@
 
 $(BUILD)/%.emwp.o: ../%.c
 	@echo "EMWCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -c $< --default-obj-ext .emw.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) $(PCFLGS) -c $< -o $@
