@@ -28,7 +28,8 @@ SOURCES += ../Common/reactbinder.cpp \
   		$$files(../../reactphysics3d/src/mathematics/*.cpp) \
   		$$files(../../reactphysics3d/src/memory/*.cpp) \
   		$$files(../../reactphysics3d/src/systems/*.cpp) \
-  		$$files(../../reactphysics3d/src/utils/*.cpp) 
+                $$files(../../reactphysics3d/src/utils/*.cpp) \
+                $$files(../../reactphysics3d/src/utils/quickhull\*.cpp)
 
 HEADERS += 
 

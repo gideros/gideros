@@ -71,9 +71,11 @@ int inet_open(lua_State *L)
 * or ip address
 \*-------------------------------------------------------------------------*/
 static int inet_gethost(const char *address, struct hostent **hp) {
-    struct in_addr addr;
-    if (inet_aton(address, &addr))
-        return socket_gethostbyaddr((char *) &addr, sizeof(addr), hp);
+    char addr[16];
+    if (inet_pton(AF_INET, address, addr))
+        return socket_gethostbyaddr(addr, 4, hp);
+    else if (inet_pton(AF_INET6, address, addr))
+        return socket_gethostbyaddr(addr, 16, hp);
     else
         return socket_gethostbyname(address, hp);
 }

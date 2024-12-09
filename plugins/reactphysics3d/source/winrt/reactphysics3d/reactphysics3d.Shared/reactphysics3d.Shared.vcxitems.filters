@@ -33,12 +33,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\include\reactphysics3d\components\ColliderComponents.h">
       <Filter>ReactPhysics3d</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\include\reactphysics3d\body\CollisionBody.h">
-      <Filter>ReactPhysics3d</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\include\reactphysics3d\components\CollisionBodyComponents.h">
-      <Filter>ReactPhysics3d</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\include\reactphysics3d\collision\CollisionCallback.h">
       <Filter>ReactPhysics3d</Filter>
     </ClInclude>
@@ -225,9 +219,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\include\reactphysics3d\collision\PolygonVertexArray.h">
       <Filter>ReactPhysics3d</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\include\reactphysics3d\collision\PolyhedronMesh.h">
-      <Filter>ReactPhysics3d</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\include\reactphysics3d\memory\PoolAllocator.h">
       <Filter>ReactPhysics3d</Filter>
     </ClInclude>
@@ -353,12 +344,6 @@
       <Filter>ReactPhysics3d</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\components\ColliderComponents.cpp">
-      <Filter>ReactPhysics3d</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\CollisionBody.cpp">
-      <Filter>ReactPhysics3d</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\components\CollisionBodyComponents.cpp">
       <Filter>ReactPhysics3d</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\CollisionCallback.cpp">
@@ -490,12 +475,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\PolygonVertexArray.cpp">
       <Filter>ReactPhysics3d</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\PolyhedronMesh.cpp">
-      <Filter>ReactPhysics3d</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\PoolAllocator.cpp">
-      <Filter>ReactPhysics3d</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\Profiler.cpp">
       <Filter>ReactPhysics3d</Filter>
     </ClCompile>
@@ -569,6 +548,30 @@
       <Filter>ReactPhysics3d</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\narrowphase\GJK\VoronoiSimplex.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\body\Body.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\ConvexMesh.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\HeightField.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\collision\VertexArray.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\components\BodyComponents.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\MemoryAllocator.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\quickhull\QHHalfEdgeStructure.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\quickhull\QuickHull.cpp">
       <Filter>ReactPhysics3d</Filter>
     </ClCompile>
   </ItemGroup>

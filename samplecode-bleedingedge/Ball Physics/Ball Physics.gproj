@@ -1,10 +1,16 @@
-<library>
- <file file="main.lua"/>
- <file file="ball.lua"/>
- <file file="gfx/ball20x20.png"/>
- <file file="gfx/ball30x30.png"/>
- <file file="gfx/ball40x40.png"/>
- <file file="gfx/ball_ice_02_20.png"/>
- <file file="gfx/ball_ice_02_30.png"/>
- <file file="gfx/ball_ice_02_40.png"/>
-</library>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <properties scaleMode="0" logicalWidth="320" logicalHeight="480" windowWidth="0" windowHeight="0" autorotation="0" orientation="0" fps="60" vsync="0" version="1.0" version_code="1" build_number="1" mainluaOnly="0" retinaDisplay="0" mouseToTouch="1" touchToMouse="1" mouseTouchOrder="0" architecture="0" exportMode="0" iosDevice="0" ios_bundle="com.yourdomain.yourapp-ios" atv_bundle="com.yourdomain.yourapp-atv" macos_bundle="com.yourdomain.yourapp-macos" macos_category="5" qtexp_platform="0" qtexp_org="GiderosMobile" qtexp_domain="giderosmobile.com" osx_bundle="com.yourdomain." osx_signingId="" osx_installerId="" osx_category="5" winrt_org="GiderosMobile" winrt_package="com.yourdomain.yourapp" html5_host="" html5_crash="" html5_mem="256" html5_pack="0" html5_wasm="0" html5_symbols="0" html5_fbinstant="0" html5_pwa="0" html5_fbload="100" encryptCode="0" encryptAssets="0" app_icon="" tv_icon="" disableSplash="0" backgroundColor="#ffffff" splash_h_image="" splash_v_image="" app_name="" splashScaleMode="0">
+        <imageScales/>
+        <plugins/>
+        <exports/>
+    </properties>
+    <file source="ball.lua"/>
+    <file source="gfx/ball20x20.png"/>
+    <file source="gfx/ball30x30.png"/>
+    <file source="gfx/ball40x40.png"/>
+    <file source="gfx/ball_ice_02_20.png"/>
+    <file source="gfx/ball_ice_02_30.png"/>
+    <file source="gfx/ball_ice_02_40.png"/>
+    <file source="main.lua"/>
+</project>

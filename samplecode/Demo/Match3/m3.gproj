@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <properties scaleMode="3" logicalWidth="720" logicalHeight="1280" windowWidth="0" windowHeight="0" autorotation="0" orientation="0" fps="60" vsync="0" version="1.0" version_code="1" build_number="1" mainluaOnly="0" retinaDisplay="0" mouseToTouch="1" touchToMouse="1" mouseTouchOrder="0" architecture="0" exportMode="0" iosDevice="0" ios_bundle="com.yourdomain." atv_bundle="com.yourdomain.yourapp-atv" macos_bundle="com.yourdomain.yourapp-macos" macos_category="5" qtexp_platform="0" qtexp_org="GiderosMobile" qtexp_domain="giderosmobile.com" osx_bundle="com.yourdomain." osx_signingId="" osx_installerId="" osx_category="5" winrt_org="GiderosMobile" winrt_package="com.yourdomain.yourapp" html5_host="" html5_crash="" html5_mem="256" html5_pack="0" html5_wasm="0" html5_symbols="0" html5_fbinstant="0" html5_pwa="0" html5_fbload="100" encryptCode="0" encryptAssets="0" app_icon="" tv_icon="" disableSplash="0" backgroundColor="#ffffff" splash_h_image="" splash_v_image="" app_name="" splashScaleMode="0">
+        <imageScales/>
+        <plugins>
+            <plugin name="Easing" enabled="1"/>
+            <plugin name="SceneManager" enabled="1"/>
+        </plugins>
+        <exports/>
+    </properties>
+    <file name="assets/Utils.lua"/>
+    <file name="assets/init.lua"/>
+    <file name="assets/main.lua"/>
+    <folder name="gfx">
+        <file name="assets/gfx/Blocks.png"/>
+        <file name="assets/gfx/Blocks.txt"/>
+        <file name="assets/gfx/FX.png"/>
+        <file name="assets/gfx/FX.txt"/>
+        <file name="assets/gfx/oBlocks.png"/>
+        <file name="assets/gfx/oBlocks.txt"/>
+    </folder>
+    <folder name="data">
+        <file name="assets/data/Level_1.lua"/>
+    </folder>
+    <folder name="Scenes">
+        <file name="assets/Scenes/GameScene.lua"/>
+    </folder>
+    <folder name="Objects">
+        <file name="assets/Objects/Board.lua"/>
+        <file name="assets/Objects/Grid.lua"/>
+        <file name="assets/Objects/Tile.lua"/>
+    </folder>
+    <folder name="Libs">
+        <file name="assets/Libs/GTween.lua"/>
+        <file name="assets/Libs/Layers.lua"/>
+    </folder>
+    <dependency from="assets/Objects/Board.lua" to="assets/Objects/Grid.lua"/>
+    <dependency from="assets/Objects/Board.lua" to="assets/Objects/Tile.lua"/>
+</project>

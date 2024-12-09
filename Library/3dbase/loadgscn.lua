@@ -71,6 +71,9 @@ local function MakeBody(self,spec,world)
 		body:setType(r3d.Body.KINETIC_BODY)
 	elseif spec.bodytype=="dynamic" then
 		body:setType(r3d.Body.DYNAMIC_BODY)
+		local dynb=world.dynamicBodies or {}
+		world.dynamicBodies=dynb
+		dynb[body]=self
 	else
 		body:setType(r3d.Body.STATIC_BODY)
 	end

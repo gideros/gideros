@@ -154,6 +154,7 @@ prep.repo:
 	fi
 	git submodule update --recursive	
 
+PLUGIN_PREREQUISITE=
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
 ifeq ($(OS),Windows_NT)
 MINGWMAKE=$(MAKE)
@@ -174,5 +175,5 @@ endif
 endif
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidHtml5.mk
 
-
+%.plugin: $(PLUGIN_PREREQUISITE)
 		

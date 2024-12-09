@@ -421,8 +421,8 @@ int main() {
   EM_ASM(Module.setStatus("Initializing"));
   try {
           
-char *url=(char *) EM_ASM_INT_V({
- return allocate(intArrayFromString(location.href), ALLOC_STACK);
+char *url=(char *) EM_ASM_PTR({
+ return stringToNewUTF8(location.href);
 });
  char *surl=(char *)malloc(strlen(url)+2);
  *surl='s';
@@ -584,12 +584,14 @@ extern "C" EMSCRIPTEN_KEEPALIVE cJSON *JSCall(const char *mtd, cJSON *args)
 {
 	char *sArgs=args?cJSON_PrintUnformatted(args):strdup("null");
 	if (args) cJSON_Delete(args);
-	char *ret=(char *) EM_ASM_INT({
-	 return allocate(intArrayFromString(Module.JSCallJS(UTF8ToString($0),UTF8ToString($1))||'null'), ALLOC_STACK);
+	char *ret=(char *) EM_ASM_PTR({
+	 return stringToNewUTF8(Module.JSCallJS(UTF8ToString($0),UTF8ToString($1))||'null');
 	},mtd,sArgs);
 	free(sArgs);
 
-	return cJSON_Parse(ret);
+	cJSON *cj=cJSON_Parse(ret);
+	free(ret);
+	return cj;
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void JSCallV(const char *mtd, cJSON *args)

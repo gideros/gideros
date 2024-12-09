@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <properties scaleMode="6" logicalWidth="320" logicalHeight="480" windowWidth="0" windowHeight="0" autorotation="0" orientation="0" fps="60" vsync="1" version="1.0" version_code="1" build_number="1" mainluaOnly="0" retinaDisplay="0" mouseToTouch="1" touchToMouse="1" mouseTouchOrder="0" architecture="0" exportMode="0" iosDevice="0" ios_bundle="com.yourdomain." atv_bundle="com.yourdomain.yourapp-atv" macos_bundle="com.yourdomain.yourapp-macos" macos_category="5" qtexp_platform="0" qtexp_org="GiderosMobile" qtexp_domain="giderosmobile.com" osx_bundle="com.yourdomain." osx_signingId="" osx_installerId="" osx_category="5" winrt_org="GiderosMobile" winrt_package="com.yourdomain.yourapp" html5_host="" html5_crash="" html5_mem="256" html5_pack="0" html5_wasm="0" html5_symbols="0" html5_fbinstant="0" html5_pwa="0" html5_fbload="100" encryptCode="0" encryptAssets="0" app_icon="" tv_icon="" disableSplash="0" backgroundColor="#ffffff" splash_h_image="" splash_v_image="" app_name="" splashScaleMode="0">
+        <imageScales/>
+        <plugins/>
+        <exports/>
+    </properties>
+    <file name="assets/main.lua"/>
+    <folder name="sound">
+        <file name="assets/sound/hit.wav"/>
+        <file name="assets/sound/soundmanager.lua"/>
+    </folder>
+    <folder name="scenes">
+        <file name="assets/scenes/game.lua"/>
+    </folder>
+    <folder name="gfx">
+        <folder name="player">
+            <file name="assets/gfx/player/player.lua"/>
+            <file name="assets/gfx/player/tyrian_ts.png"/>
+        </folder>
+        <folder name="explosions">
+            <file name="assets/gfx/explosions/explosionlayer.lua"/>
+            <file name="assets/gfx/explosions/explosions_ts.png"/>
+        </folder>
+        <folder name="bullets">
+            <file name="assets/gfx/bullets/bulletlayer.lua"/>
+            <file name="assets/gfx/bullets/bullets_ts.png"/>
+        </folder>
+        <folder name="boss">
+            <file name="assets/gfx/boss/enemy_boss.lua"/>
+            <file name="assets/gfx/boss/enemy_boss_ts.png"/>
+        </folder>
+    </folder>
+</project>

@@ -1,2 +1,0 @@
-require "box2d"
-

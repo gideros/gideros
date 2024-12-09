@@ -122,6 +122,8 @@ winrt.plugins:
 	
 winrt.plugins.clean: 
 	$(SUBMAKE) $(addsuffix .plugin.winrt.clean,$(PLUGINS_WINRT))
+
+PLUGIN_PREREQUISITE+= %.plugin.winrt
 	
 winrt.core: winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)

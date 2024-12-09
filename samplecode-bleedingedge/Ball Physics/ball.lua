@@ -75,7 +75,7 @@ function Ball:onEnterFrame(event)
 	self.world:clearForces()
 	
 	if (self.body ~= nil) then 
-		local x,y =  self.body:GetPosition()
+		local x,y =  self.body:getPosition()
 	
 		self.sprite:setX(x * physScale)
 		self.sprite:setY(y * physScale)

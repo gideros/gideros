@@ -12,13 +12,15 @@ INCS += ../reactphysics3d/include
 
 FSRCS += Common/reactbinder.cpp \
  	 	../../../luabinding/binder.cpp \
- 	 	../reactphysics3d/src/body/CollisionBody.cpp \
+ 	 	../reactphysics3d/src/body/Body.cpp \
 		../reactphysics3d/src/body/RigidBody.cpp \
 		../reactphysics3d/src/collision/broadphase/DynamicAABBTree.cpp \
 		../reactphysics3d/src/collision/Collider.cpp \
 		../reactphysics3d/src/collision/CollisionCallback.cpp \
 		../reactphysics3d/src/collision/ContactManifold.cpp \
+		../reactphysics3d/src/collision/ConvexMesh.cpp \
 		../reactphysics3d/src/collision/HalfEdgeStructure.cpp \
+		../reactphysics3d/src/collision/HeightField.cpp \
 		../reactphysics3d/src/collision/narrowphase/CapsuleVsCapsuleAlgorithm.cpp \
 		../reactphysics3d/src/collision/narrowphase/CapsuleVsConvexPolyhedronAlgorithm.cpp \
 		../reactphysics3d/src/collision/narrowphase/CollisionDispatch.cpp \
@@ -33,7 +35,6 @@ FSRCS += Common/reactbinder.cpp \
 		../reactphysics3d/src/collision/narrowphase/SphereVsSphereAlgorithm.cpp \
 		../reactphysics3d/src/collision/OverlapCallback.cpp \
 		../reactphysics3d/src/collision/PolygonVertexArray.cpp \
-		../reactphysics3d/src/collision/PolyhedronMesh.cpp \
 		../reactphysics3d/src/collision/RaycastInfo.cpp \
 		../reactphysics3d/src/collision/shapes/AABB.cpp \
 		../reactphysics3d/src/collision/shapes/BoxShape.cpp \
@@ -49,9 +50,10 @@ FSRCS += Common/reactbinder.cpp \
 		../reactphysics3d/src/collision/shapes/TriangleShape.cpp \
 		../reactphysics3d/src/collision/TriangleMesh.cpp \
 		../reactphysics3d/src/collision/TriangleVertexArray.cpp \
+		../reactphysics3d/src/collision/VertexArray.cpp \
 		../reactphysics3d/src/components/BallAndSocketJointComponents.cpp \
+		../reactphysics3d/src/components/BodyComponents.cpp \
 		../reactphysics3d/src/components/ColliderComponents.cpp \
-		../reactphysics3d/src/components/CollisionBodyComponents.cpp \
 		../reactphysics3d/src/components/Components.cpp \
 		../reactphysics3d/src/components/FixedJointComponents.cpp \
 		../reactphysics3d/src/components/HingeJointComponents.cpp \
@@ -79,6 +81,7 @@ FSRCS += Common/reactbinder.cpp \
 		../reactphysics3d/src/mathematics/Vector2.cpp \
 		../reactphysics3d/src/mathematics/Vector3.cpp \
 		../reactphysics3d/src/memory/HeapAllocator.cpp \
+		../reactphysics3d/src/memory/MemoryAllocator.cpp \
 		../reactphysics3d/src/memory/MemoryManager.cpp \
 		../reactphysics3d/src/memory/PoolAllocator.cpp \
 		../reactphysics3d/src/memory/SingleFrameAllocator.cpp \
@@ -91,6 +94,8 @@ FSRCS += Common/reactbinder.cpp \
 		../reactphysics3d/src/systems/SolveFixedJointSystem.cpp \
 		../reactphysics3d/src/systems/SolveHingeJointSystem.cpp \
 		../reactphysics3d/src/systems/SolveSliderJointSystem.cpp \
+		../reactphysics3d/src/utils/quickhull/QHHalfEdgeStructure.cpp \
+		../reactphysics3d/src/utils/quickhull/QuickHull.cpp \
 		../reactphysics3d/src/utils/DebugRenderer.cpp \
 		../reactphysics3d/src/utils/DefaultLogger.cpp \
   		../reactphysics3d/src/utils/Profiler.cpp 
