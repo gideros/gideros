@@ -341,6 +341,9 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
     mrpd.vertexDescriptor=[MTLVertexDescriptor vertexDescriptor];
     
 	cbsData=0;
+    int vtex=0;
+    int ftex=0;
+    int tslot;
 	while (!uniforms->name.empty()) {
 		int usz = 0, ual = 4;
 		ConstantDesc cd;
@@ -349,7 +352,13 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
 		case CTEXTURE:
 			usz = 0;
 			ual = 1;
-			break;
+            tslot=ftex;
+            if (cd.vertexShader)
+                tslot=(vtex++)|0x100;
+            else
+                ftex++;
+            textureMap.push_back(tslot);
+ 			break;
 		case CINT:
 			usz = 4;
 			ual = 4;
@@ -481,6 +490,12 @@ void metalShaderProgram::setupStructures(const ConstantDesc *uniforms, const Dat
 
     //Load program and setup pipeline state
 	shaderInitialized();
+}
+
+void metalShaderProgram::bindTexture(int num,ShaderTexture *texture)
+{
+    int ntex=textureMap[num];
+    ((metalShaderEngine *)(ShaderEngine::Engine))->bindTexture(num, texture, (ntex&0x100)|num);
 }
 
 void metalShaderProgram::recreate() {

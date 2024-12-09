@@ -25,6 +25,7 @@ class metalShaderProgram : public ShaderProgram
     void *cbData;
     int cbsData;
     bool uniformVmodified,uniformFmodified;
+	std::vector<int> textureMap;
     static ShaderProgram *current;
     static std::vector<metalShaderProgram *> shaders;
 
@@ -47,6 +48,7 @@ public:
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0,unsigned int instances=0,int bufferingFlags=0);
     virtual bool isValid();
     virtual const char *compilationLog();
+	virtual void bindTexture(int num,ShaderTexture *texture);
 
     virtual void recreate();
     virtual void resetUniforms();
@@ -154,6 +156,7 @@ public:
 	void setVBOThreshold(int freeze,int unfreeze) { metalShaderProgram::vboFreeze=freeze; metalShaderProgram::vboUnfreeze=unfreeze; };
 	void getProperties(std::map<std::string,std::string> &props);
     ShaderProgram *getDefault(StandardProgram id,int variant=0);
+	void bindTexture(int num, ShaderTexture *texture,int ntex);
 };
 
 #endif /* GL2SHADERS_H_ */

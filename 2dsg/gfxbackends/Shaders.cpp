@@ -386,7 +386,7 @@ int ShaderProgram::getConstantByName(const char *name)
 {
     for (size_t i=0;i<uniforms.size();i++)
 		if (!(strcmp(uniforms[i].name.c_str(),name)))
-			return i;
+			return (int) i;
 	return -1;
 }
 
@@ -396,5 +396,10 @@ int ShaderProgram::getSystemConstant(SystemConstant t)
 	if (sysconstmask&(1<<n))
 		return sysconstidx[n];
 	return -1;
+}
+
+void ShaderProgram::bindTexture(int num,ShaderTexture *texture)
+{
+	ShaderEngine::Engine->bindTexture(num, texture);
 }
 

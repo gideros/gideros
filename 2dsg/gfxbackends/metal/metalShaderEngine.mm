@@ -533,6 +533,10 @@ void metalShaderEngine::clearColor(float r, float g, float b, float a) {
 }
 
 void metalShaderEngine::bindTexture(int num, ShaderTexture *texture) {
+    bindTexture(num,texture,0);
+}
+
+void metalShaderEngine::bindTexture(int num, ShaderTexture *texture,int ntex) {
     id<MTLSamplerState> smp=tsNC;
     metalShaderTexture *mt=((metalShaderTexture *)texture);
     if ((mt->format==ShaderTexture::FMT_DEPTH)&&(mt->filter==ShaderTexture::FILT_LINEAR))
@@ -542,8 +546,14 @@ void metalShaderEngine::bindTexture(int num, ShaderTexture *texture) {
     }
     else if (mt->wrap==ShaderTexture::WRAP_REPEAT)
         smp=tsNR;
-    [encoder() setFragmentTexture:mt->mtex atIndex:num];
-    [encoder() setFragmentSamplerState:smp atIndex:num];
+    if (ntex&0x100) {
+        [encoder() setVertexTexture:mt->mtex atIndex:ntex&0xFF];
+        [encoder() setVertexSamplerState:smp atIndex:ntex&0xFF];
+    }
+    else {
+        [encoder() setFragmentTexture:mt->mtex atIndex:ntex&0xFF];
+        [encoder() setFragmentSamplerState:smp atIndex:ntex&0xFF];
+    }
 }
 
 void metalShaderEngine::setClip(int x, int y, int w, int h) {
