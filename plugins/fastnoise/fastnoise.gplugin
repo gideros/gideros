@@ -22,7 +22,7 @@
 local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("fastnoise",
 	"[[[sys.pluginDir]]]/source",
-	{ "FastNoise.cpp", "FastNoiseBinding..cpp"  },
+	{ "FastNoise.cpp", "FastNoiseBinding.cpp"  },
 	false,
 	true,true,true)
 	]]></lua>

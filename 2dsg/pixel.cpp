@@ -139,14 +139,16 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
 		glMultColor(r_, g_, b_, a_);
 	}
 
+    ShaderProgram *shp=getShader(texture_?ShaderEngine::STDP_TEXTURE:(
+        colors_.empty()?ShaderEngine::STDP_BASIC:ShaderEngine::STDP_COLOR));
+
     if (texture_)
-        ShaderEngine::Engine->bindTexture(0,texture_->data->id());
+    	shp->bindTexture(0,texture_->data->id());
     if (extraTexture)
     for (int t=0;t<(PIXEL_MAX_TEXTURES-1);t++)
         if (extraTexture[t])
-            ShaderEngine::Engine->bindTexture(t+1,extraTexture[t]->data->id());
-    ShaderProgram *shp=getShader(texture_?ShaderEngine::STDP_TEXTURE:(
-        colors_.empty()?ShaderEngine::STDP_BASIC:ShaderEngine::STDP_COLOR));
+        	shp->bindTexture(t+1,extraTexture[t]->data->id());
+
 	int sc=shp->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
     if ((sc>=0)&&texture_)
 	{

@@ -146,7 +146,7 @@ QT5DLLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
 QT5DLLTOOLS=libgcc_s_seh-1 libstdc++-6 libwinpthread-1 \
 		Qt6Core Qt6Network Qt6Xml Qt6WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
-QT5PLUGINS=$(addprefix tls/,qopensslbackend) $(addprefix platforms/,$(QT5PLATFORM)) imageformats/qjpeg
+QT5PLUGINS=$(addprefix tls/,qopensslbackend) $(addprefix platforms/,$(QT5PLATFORM)) imageformats/qjpeg multimedia/windowsmediaplugin
 endif
 
 qt.player:

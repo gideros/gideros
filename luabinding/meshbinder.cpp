@@ -463,68 +463,81 @@ int MeshBinder::setGenericArray(lua_State *L)
     ShaderProgram::DataType type=(ShaderProgram::DataType) luaL_checkinteger(L,3);
     int mult=luaL_checkinteger(L,4);
     int count=luaL_checkinteger(L,5);
-    luaL_checktype(L, 6, LUA_TTABLE);
-
-    int n = lua_objlen(L, 6);  /* get size of table */
-    if (n!=(mult*count))
+    size_t blen;
+    void *bptr=lua_tobuffer(L,6,&blen);
+    if (bptr!=NULL)
     {
-    	lua_pushstring(L,"Actual array length doesn't match size multiple and count values");
-    	lua_error(L);
+        if (blen!=(mult*count))
+        {
+        	lua_pushstring(L,"Actual buffer length doesn't match size multiple and count values");
+        	lua_error(L);
+        }
+		mesh->setGenericArray(index,bptr,type,mult,count);
     }
+    else {
+		luaL_checktype(L, 6, LUA_TTABLE);
 
-    void *ptr = 0;
-	switch (type)
-	{
-	case ShaderProgram::DBYTE:
-	case ShaderProgram::DUBYTE:
-	{
-	    char *p=(char *) malloc(mult*count);
-	    ptr=p;
-	    for (int i=1; i<=n; i++) {
-	        lua_rawgeti(L, 6, i);  /* push t[i] */
-	        *(p++)=luaL_checkinteger(L,-1);
-	        lua_pop(L,1);
-	      }
-		break;
-	}
-	case ShaderProgram::DSHORT:
-	case ShaderProgram::DUSHORT:
-	{
-	    short *p=(short *) malloc(mult*count*2);
-	    ptr=p;
-	    for (int i=1; i<=n; i++) {
-	        lua_rawgeti(L, 6, i);  /* push t[i] */
-	        *(p++)=luaL_checkinteger(L,-1);
-	        lua_pop(L,1);
-	      }
-		break;
-	}
-	case ShaderProgram::DINT:
-	{
-		int *p=(int *) malloc(mult*count*4);
-	    ptr=p;
-	    for (int i=1; i<=n; i++) {
-	        lua_rawgeti(L, 6, i);  /* push t[i] */
-	        *(p++)=luaL_checkinteger(L,-1);
-	        lua_pop(L,1);
-	      }
-		break;
-	}
-	case ShaderProgram::DFLOAT:
-	{
-	    float *p=(float *) malloc(mult*count*4);
-	    ptr=p;
-	    for (int i=1; i<=n; i++) {
-	        lua_rawgeti(L, 6, i);  /* push t[i] */
-	        *(p++)=luaL_checknumber(L,-1);
-	        lua_pop(L,1);
-	      }
-		break;
-	}
-	}
+		int n = lua_objlen(L, 6);  /* get size of table */
+		if (n!=(mult*count))
+		{
+			lua_pushstring(L,"Actual array length doesn't match size multiple and count values");
+			lua_error(L);
+		}
 
-    mesh->setGenericArray(index,ptr,type,mult,count);
-	free(ptr);
+		void *ptr = 0;
+		switch (type)
+		{
+		case ShaderProgram::DBYTE:
+		case ShaderProgram::DUBYTE:
+		{
+			char *p=(char *) malloc(mult*count);
+			ptr=p;
+			for (int i=1; i<=n; i++) {
+				lua_rawgeti(L, 6, i);  /* push t[i] */
+				*(p++)=luaL_checkinteger(L,-1);
+				lua_pop(L,1);
+			  }
+			break;
+		}
+		case ShaderProgram::DSHORT:
+		case ShaderProgram::DUSHORT:
+		{
+			short *p=(short *) malloc(mult*count*2);
+			ptr=p;
+			for (int i=1; i<=n; i++) {
+				lua_rawgeti(L, 6, i);  /* push t[i] */
+				*(p++)=luaL_checkinteger(L,-1);
+				lua_pop(L,1);
+			  }
+			break;
+		}
+		case ShaderProgram::DINT:
+		{
+			int *p=(int *) malloc(mult*count*4);
+			ptr=p;
+			for (int i=1; i<=n; i++) {
+				lua_rawgeti(L, 6, i);  /* push t[i] */
+				*(p++)=luaL_checkinteger(L,-1);
+				lua_pop(L,1);
+			  }
+			break;
+		}
+		case ShaderProgram::DFLOAT:
+		{
+			float *p=(float *) malloc(mult*count*4);
+			ptr=p;
+			for (int i=1; i<=n; i++) {
+				lua_rawgeti(L, 6, i);  /* push t[i] */
+				*(p++)=luaL_checknumber(L,-1);
+				lua_pop(L,1);
+			  }
+			break;
+		}
+		}
+
+		mesh->setGenericArray(index,ptr,type,mult,count);
+		free(ptr);
+    }
 	return 0;
 }
 
