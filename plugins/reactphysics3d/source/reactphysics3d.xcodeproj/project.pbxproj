@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0317E75325397457003FEDE5 /* CollisionBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75225397457003FEDE5 /* CollisionBody.cpp */; };
 		0317E75625397474003FEDE5 /* RigidBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75525397474003FEDE5 /* RigidBody.cpp */; };
 		0317E76225397490003FEDE5 /* CollisionCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75825397490003FEDE5 /* CollisionCallback.cpp */; };
 		0317E76325397490003FEDE5 /* ContactManifold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75925397490003FEDE5 /* ContactManifold.cpp */; };
@@ -15,7 +14,6 @@
 		0317E76525397490003FEDE5 /* HalfEdgeStructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75B25397490003FEDE5 /* HalfEdgeStructure.cpp */; };
 		0317E76625397490003FEDE5 /* OverlapCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75C25397490003FEDE5 /* OverlapCallback.cpp */; };
 		0317E76725397490003FEDE5 /* PolygonVertexArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75D25397490003FEDE5 /* PolygonVertexArray.cpp */; };
-		0317E76825397490003FEDE5 /* PolyhedronMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75E25397490003FEDE5 /* PolyhedronMesh.cpp */; };
 		0317E76925397490003FEDE5 /* RaycastInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E75F25397490003FEDE5 /* RaycastInfo.cpp */; };
 		0317E76A25397490003FEDE5 /* TriangleVertexArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E76025397490003FEDE5 /* TriangleVertexArray.cpp */; };
 		0317E76B25397490003FEDE5 /* TriangleMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E76125397490003FEDE5 /* TriangleMesh.cpp */; };
@@ -65,7 +63,6 @@
 		0317E7EA25397527003FEDE5 /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7BB25397526003FEDE5 /* Material.cpp */; };
 		0317E7EB25397527003FEDE5 /* FixedJointComponents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7BC25397527003FEDE5 /* FixedJointComponents.cpp */; };
 		0317E7EC25397527003FEDE5 /* Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7BD25397527003FEDE5 /* Quaternion.cpp */; };
-		0317E7ED25397527003FEDE5 /* CollisionBodyComponents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7BE25397527003FEDE5 /* CollisionBodyComponents.cpp */; };
 		0317E7EE25397527003FEDE5 /* Transform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7BF25397527003FEDE5 /* Transform.cpp */; };
 		0317E7EF25397527003FEDE5 /* PhysicsWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7C025397527003FEDE5 /* PhysicsWorld.cpp */; };
 		0317E7F025397527003FEDE5 /* Vector2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7C125397527003FEDE5 /* Vector2.cpp */; };
@@ -89,13 +86,20 @@
 		0317E80425397527003FEDE5 /* RigidBodyComponents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D525397527003FEDE5 /* RigidBodyComponents.cpp */; };
 		0317E80525397527003FEDE5 /* SolveFixedJointSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D625397527003FEDE5 /* SolveFixedJointSystem.cpp */; };
 		0317E80625397527003FEDE5 /* EntityManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0317E7D725397527003FEDE5 /* EntityManager.cpp */; };
+		03D446442D22AB26008FB35F /* Body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D446432D22AB26008FB35F /* Body.cpp */; };
+		03D446472D22AB70008FB35F /* HeightField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D446462D22AB70008FB35F /* HeightField.cpp */; };
+		03D446482D22AB70008FB35F /* ConvexMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D446452D22AB70008FB35F /* ConvexMesh.cpp */; };
+		03D4464A2D22AB9A008FB35F /* VertexArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D446492D22AB9A008FB35F /* VertexArray.cpp */; };
+		03D4464C2D22ABBF008FB35F /* BodyComponents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D4464B2D22ABBF008FB35F /* BodyComponents.cpp */; };
+		03D4464E2D22ABE7008FB35F /* MemoryAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D4464D2D22ABE7008FB35F /* MemoryAllocator.cpp */; };
+		03D446512D22AC0D008FB35F /* QuickHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D446502D22AC0D008FB35F /* QuickHull.cpp */; };
+		03D446522D22AC0D008FB35F /* QHHalfEdgeStructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03D4464F2D22AC0D008FB35F /* QHHalfEdgeStructure.cpp */; };
 		5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FAAA015DD87E20039718F /* Foundation.framework */; };
 		EB0781C11FA233ED00320DD5 /* binder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB0781C01FA233EC00320DD5 /* binder.cpp */; };
 		EB821BD82343527700BCE4E4 /* reactbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB821BD72343527700BCE4E4 /* reactbinder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0317E75225397457003FEDE5 /* CollisionBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionBody.cpp; path = ../reactphysics3d/src/body/CollisionBody.cpp; sourceTree = "<group>"; };
 		0317E75525397474003FEDE5 /* RigidBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RigidBody.cpp; path = ../reactphysics3d/src/body/RigidBody.cpp; sourceTree = "<group>"; };
 		0317E75825397490003FEDE5 /* CollisionCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionCallback.cpp; path = ../reactphysics3d/src/collision/CollisionCallback.cpp; sourceTree = "<group>"; };
 		0317E75925397490003FEDE5 /* ContactManifold.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ContactManifold.cpp; path = ../reactphysics3d/src/collision/ContactManifold.cpp; sourceTree = "<group>"; };
@@ -103,7 +107,6 @@
 		0317E75B25397490003FEDE5 /* HalfEdgeStructure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HalfEdgeStructure.cpp; path = ../reactphysics3d/src/collision/HalfEdgeStructure.cpp; sourceTree = "<group>"; };
 		0317E75C25397490003FEDE5 /* OverlapCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OverlapCallback.cpp; path = ../reactphysics3d/src/collision/OverlapCallback.cpp; sourceTree = "<group>"; };
 		0317E75D25397490003FEDE5 /* PolygonVertexArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PolygonVertexArray.cpp; path = ../reactphysics3d/src/collision/PolygonVertexArray.cpp; sourceTree = "<group>"; };
-		0317E75E25397490003FEDE5 /* PolyhedronMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PolyhedronMesh.cpp; path = ../reactphysics3d/src/collision/PolyhedronMesh.cpp; sourceTree = "<group>"; };
 		0317E75F25397490003FEDE5 /* RaycastInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RaycastInfo.cpp; path = ../reactphysics3d/src/collision/RaycastInfo.cpp; sourceTree = "<group>"; };
 		0317E76025397490003FEDE5 /* TriangleVertexArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleVertexArray.cpp; path = ../reactphysics3d/src/collision/TriangleVertexArray.cpp; sourceTree = "<group>"; };
 		0317E76125397490003FEDE5 /* TriangleMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleMesh.cpp; path = ../reactphysics3d/src/collision/TriangleMesh.cpp; sourceTree = "<group>"; };
@@ -153,7 +156,6 @@
 		0317E7BB25397526003FEDE5 /* Material.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Material.cpp; path = ../reactphysics3d/src/engine/Material.cpp; sourceTree = "<group>"; };
 		0317E7BC25397527003FEDE5 /* FixedJointComponents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FixedJointComponents.cpp; path = ../reactphysics3d/src/components/FixedJointComponents.cpp; sourceTree = "<group>"; };
 		0317E7BD25397527003FEDE5 /* Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Quaternion.cpp; path = ../reactphysics3d/src/mathematics/Quaternion.cpp; sourceTree = "<group>"; };
-		0317E7BE25397527003FEDE5 /* CollisionBodyComponents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionBodyComponents.cpp; path = ../reactphysics3d/src/components/CollisionBodyComponents.cpp; sourceTree = "<group>"; };
 		0317E7BF25397527003FEDE5 /* Transform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transform.cpp; path = ../reactphysics3d/src/mathematics/Transform.cpp; sourceTree = "<group>"; };
 		0317E7C025397527003FEDE5 /* PhysicsWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicsWorld.cpp; path = ../reactphysics3d/src/engine/PhysicsWorld.cpp; sourceTree = "<group>"; };
 		0317E7C125397527003FEDE5 /* Vector2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vector2.cpp; path = ../reactphysics3d/src/mathematics/Vector2.cpp; sourceTree = "<group>"; };
@@ -177,6 +179,14 @@
 		0317E7D525397527003FEDE5 /* RigidBodyComponents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RigidBodyComponents.cpp; path = ../reactphysics3d/src/components/RigidBodyComponents.cpp; sourceTree = "<group>"; };
 		0317E7D625397527003FEDE5 /* SolveFixedJointSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SolveFixedJointSystem.cpp; path = ../reactphysics3d/src/systems/SolveFixedJointSystem.cpp; sourceTree = "<group>"; };
 		0317E7D725397527003FEDE5 /* EntityManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EntityManager.cpp; path = ../reactphysics3d/src/engine/EntityManager.cpp; sourceTree = "<group>"; };
+		03D446432D22AB26008FB35F /* Body.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Body.cpp; path = ../reactphysics3d/src/body/Body.cpp; sourceTree = SOURCE_ROOT; };
+		03D446452D22AB70008FB35F /* ConvexMesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ConvexMesh.cpp; path = ../reactphysics3d/src/collision/ConvexMesh.cpp; sourceTree = SOURCE_ROOT; };
+		03D446462D22AB70008FB35F /* HeightField.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = HeightField.cpp; path = ../reactphysics3d/src/collision/HeightField.cpp; sourceTree = SOURCE_ROOT; };
+		03D446492D22AB9A008FB35F /* VertexArray.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = VertexArray.cpp; path = ../reactphysics3d/src/collision/VertexArray.cpp; sourceTree = SOURCE_ROOT; };
+		03D4464B2D22ABBF008FB35F /* BodyComponents.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BodyComponents.cpp; path = ../reactphysics3d/src/components/BodyComponents.cpp; sourceTree = SOURCE_ROOT; };
+		03D4464D2D22ABE7008FB35F /* MemoryAllocator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryAllocator.cpp; path = ../reactphysics3d/src/memory/MemoryAllocator.cpp; sourceTree = SOURCE_ROOT; };
+		03D4464F2D22AC0D008FB35F /* QHHalfEdgeStructure.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = QHHalfEdgeStructure.cpp; path = ../reactphysics3d/src/utils/quickhull/QHHalfEdgeStructure.cpp; sourceTree = SOURCE_ROOT; };
+		03D446502D22AC0D008FB35F /* QuickHull.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = QuickHull.cpp; path = ../reactphysics3d/src/utils/quickhull/QuickHull.cpp; sourceTree = SOURCE_ROOT; };
 		5F9FAA9D15DD87E20039718F /* libreactphysics3d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libreactphysics3d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F9FAAA015DD87E20039718F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EB0781C01FA233EC00320DD5 /* binder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = binder.cpp; path = ../../../luabinding/binder.cpp; sourceTree = "<group>"; };
@@ -198,18 +208,20 @@
 		0317E7502539742A003FEDE5 /* ReactPhysics3D */ = {
 			isa = PBXGroup;
 			children = (
-				0317E75225397457003FEDE5 /* CollisionBody.cpp */,
+				03D446432D22AB26008FB35F /* Body.cpp */,
 				0317E75525397474003FEDE5 /* RigidBody.cpp */,
 				0317E75A25397490003FEDE5 /* Collider.cpp */,
 				0317E75825397490003FEDE5 /* CollisionCallback.cpp */,
 				0317E75925397490003FEDE5 /* ContactManifold.cpp */,
+				03D446452D22AB70008FB35F /* ConvexMesh.cpp */,
+				03D446462D22AB70008FB35F /* HeightField.cpp */,
 				0317E75B25397490003FEDE5 /* HalfEdgeStructure.cpp */,
 				0317E75C25397490003FEDE5 /* OverlapCallback.cpp */,
 				0317E75D25397490003FEDE5 /* PolygonVertexArray.cpp */,
-				0317E75E25397490003FEDE5 /* PolyhedronMesh.cpp */,
 				0317E75F25397490003FEDE5 /* RaycastInfo.cpp */,
 				0317E76125397490003FEDE5 /* TriangleMesh.cpp */,
 				0317E76025397490003FEDE5 /* TriangleVertexArray.cpp */,
+				03D446492D22AB9A008FB35F /* VertexArray.cpp */,
 				0317E76D253974BC003FEDE5 /* DynamicAABBTree.cpp */,
 				0317E775253974CE003FEDE5 /* CapsuleVsCapsuleAlgorithm.cpp */,
 				0317E772253974CE003FEDE5 /* CapsuleVsConvexPolyhedronAlgorithm.cpp */,
@@ -223,6 +235,7 @@
 				0317E789253974E1003FEDE5 /* GJKAlgorithm.cpp */,
 				0317E78A253974E1003FEDE5 /* VoronoiSimplex.cpp */,
 				0317E78B253974E1003FEDE5 /* SATAlgorithm.cpp */,
+				03D4464B2D22ABBF008FB35F /* BodyComponents.cpp */,
 				0317E790253974F7003FEDE5 /* AABB.cpp */,
 				0317E794253974F7003FEDE5 /* BoxShape.cpp */,
 				0317E79A253974F7003FEDE5 /* CapsuleShape.cpp */,
@@ -237,7 +250,6 @@
 				0317E793253974F7003FEDE5 /* TriangleShape.cpp */,
 				0317E7B725397526003FEDE5 /* BallAndSocketJointComponents.cpp */,
 				0317E7AE25397526003FEDE5 /* ColliderComponents.cpp */,
-				0317E7BE25397527003FEDE5 /* CollisionBodyComponents.cpp */,
 				0317E7B925397526003FEDE5 /* Components.cpp */,
 				0317E7BC25397527003FEDE5 /* FixedJointComponents.cpp */,
 				0317E7CA25397527003FEDE5 /* HingeJointComponents.cpp */,
@@ -265,6 +277,7 @@
 				0317E7C125397527003FEDE5 /* Vector2.cpp */,
 				0317E7D325397527003FEDE5 /* Vector3.cpp */,
 				0317E7CC25397527003FEDE5 /* HeapAllocator.cpp */,
+				03D4464D2D22ABE7008FB35F /* MemoryAllocator.cpp */,
 				0317E7CD25397527003FEDE5 /* MemoryManager.cpp */,
 				0317E7CE25397527003FEDE5 /* PoolAllocator.cpp */,
 				0317E7B225397526003FEDE5 /* SingleFrameAllocator.cpp */,
@@ -280,6 +293,8 @@
 				0317E7D425397527003FEDE5 /* DebugRenderer.cpp */,
 				0317E7B025397526003FEDE5 /* DefaultLogger.cpp */,
 				0317E7B125397526003FEDE5 /* Profiler.cpp */,
+				03D4464F2D22AC0D008FB35F /* QHHalfEdgeStructure.cpp */,
+				03D446502D22AC0D008FB35F /* QuickHull.cpp */,
 			);
 			name = ReactPhysics3D;
 			sourceTree = "<group>";
@@ -375,7 +390,10 @@
 			files = (
 				0317E7F025397527003FEDE5 /* Vector2.cpp in Sources */,
 				0317E78C253974E1003FEDE5 /* GJKAlgorithm.cpp in Sources */,
+				03D446512D22AC0D008FB35F /* QuickHull.cpp in Sources */,
+				03D446522D22AC0D008FB35F /* QHHalfEdgeStructure.cpp in Sources */,
 				0317E7A4253974F7003FEDE5 /* ConcaveMeshShape.cpp in Sources */,
+				03D446442D22AB26008FB35F /* Body.cpp in Sources */,
 				0317E7A2253974F7003FEDE5 /* ConcaveShape.cpp in Sources */,
 				0317E7E125397527003FEDE5 /* SingleFrameAllocator.cpp in Sources */,
 				0317E80225397527003FEDE5 /* Vector3.cpp in Sources */,
@@ -383,7 +401,6 @@
 				0317E7F525397527003FEDE5 /* SolveHingeJointSystem.cpp in Sources */,
 				0317E7DF25397527003FEDE5 /* DefaultLogger.cpp in Sources */,
 				0317E78E253974E1003FEDE5 /* SATAlgorithm.cpp in Sources */,
-				0317E76825397490003FEDE5 /* PolyhedronMesh.cpp in Sources */,
 				0317E77E253974CE003FEDE5 /* CapsuleVsConvexPolyhedronAlgorithm.cpp in Sources */,
 				0317E80425397527003FEDE5 /* RigidBodyComponents.cpp in Sources */,
 				0317E7E725397527003FEDE5 /* TransformComponents.cpp in Sources */,
@@ -393,10 +410,14 @@
 				0317E7A3253974F7003FEDE5 /* CollisionShape.cpp in Sources */,
 				0317E7DD25397527003FEDE5 /* ColliderComponents.cpp in Sources */,
 				0317E7EF25397527003FEDE5 /* PhysicsWorld.cpp in Sources */,
+				03D4464E2D22ABE7008FB35F /* MemoryAllocator.cpp in Sources */,
 				0317E782253974CE003FEDE5 /* ConvexPolyhedronVsConvexPolyhedronAlgorithm.cpp in Sources */,
 				0317E7E225397527003FEDE5 /* Matrix2x2.cpp in Sources */,
 				0317E76425397490003FEDE5 /* Collider.cpp in Sources */,
+				03D4464C2D22ABBF008FB35F /* BodyComponents.cpp in Sources */,
 				0317E7A7253974F7003FEDE5 /* ConvexShape.cpp in Sources */,
+				03D446472D22AB70008FB35F /* HeightField.cpp in Sources */,
+				03D446482D22AB70008FB35F /* ConvexMesh.cpp in Sources */,
 				0317E76625397490003FEDE5 /* OverlapCallback.cpp in Sources */,
 				0317E76B25397490003FEDE5 /* TriangleMesh.cpp in Sources */,
 				EB821BD82343527700BCE4E4 /* reactbinder.cpp in Sources */,
@@ -406,6 +427,7 @@
 				0317E7DC25397527003FEDE5 /* BroadPhaseSystem.cpp in Sources */,
 				0317E7DA25397527003FEDE5 /* FixedJoint.cpp in Sources */,
 				0317E7A6253974F7003FEDE5 /* CapsuleShape.cpp in Sources */,
+				03D4464A2D22AB9A008FB35F /* VertexArray.cpp in Sources */,
 				0317E7FE25397527003FEDE5 /* CollisionDetectionSystem.cpp in Sources */,
 				0317E7E625397527003FEDE5 /* BallAndSocketJointComponents.cpp in Sources */,
 				0317E7F725397527003FEDE5 /* ContactSolverSystem.cpp in Sources */,
@@ -423,12 +445,10 @@
 				0317E7E025397527003FEDE5 /* Profiler.cpp in Sources */,
 				0317E76225397490003FEDE5 /* CollisionCallback.cpp in Sources */,
 				0317E80325397527003FEDE5 /* DebugRenderer.cpp in Sources */,
-				0317E75325397457003FEDE5 /* CollisionBody.cpp in Sources */,
 				0317E80625397527003FEDE5 /* EntityManager.cpp in Sources */,
 				0317E7F325397527003FEDE5 /* Joint.cpp in Sources */,
 				0317E7F625397527003FEDE5 /* ConstraintSolverSystem.cpp in Sources */,
 				0317E787253974CE003FEDE5 /* SphereVsSphereAlgorithm.cpp in Sources */,
-				0317E7ED25397527003FEDE5 /* CollisionBodyComponents.cpp in Sources */,
 				0317E7EE25397527003FEDE5 /* Transform.cpp in Sources */,
 				0317E76A25397490003FEDE5 /* TriangleVertexArray.cpp in Sources */,
 				0317E7DE25397527003FEDE5 /* SolveBallAndSocketJointSystem.cpp in Sources */,
