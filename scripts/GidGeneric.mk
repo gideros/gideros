@@ -13,11 +13,17 @@ DEFINES_pystring=PYSTRING_LIBRARY
 
 DEFINES_lua=LUA_CORE
 ifeq ($(LUA_ENGINE),luau)
-INCLUDEPATHS_lua=luau/VM/src luau/VM/include luau/Compiler/include luau/Common/include luau/Ast/include libgvfs
+INCLUDEPATHS_lua=luau/VM/src luau/VM/include luau/Compiler/include luau/Codegen/include luau/Common/include luau/Ast/include libgvfs
 OBJFILES_lua=$(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuffer lbuflib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
          ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils) \
         $(addprefix luau/Compiler/src/,Builtins BuiltinFolding BytecodeBuilder ConstantFolding Compiler CostModel lcode PseudoCode TableShape Types ValueTracking) \
         $(addprefix luau/Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)
+DEFINES_lua+=LUAU_ENABLE_CODEGEN
+OBJFILES_lua +=  $(addprefix luau/Codegen/src/,BytecodeAnalysis BytecodeSummary CodeAllocator CodeBlockUnwind CodeGen CodeGenAssembly CodeGenContext CodeGenUtils \
+         IrAnalysis IrBuilder IrCallWrapperX64 IrDump IrTranslateBuiltins IrTranslation IrUtils IrValueLocationTracking \
+         lcodegen NativeProtoExecData NativeState OptimizeConstProp OptimizeDeadStore SharedCodeAllocator \
+         AssemblyBuilderX64 OptimizeFinalX64 EmitBuiltinsX64 EmitCommonX64 EmitInstructionX64 CodeGenX64 IrLoweringX64 IrRegAllocX64 UnwindBuilderWin \
+         AssemblyBuilderA64 CodeGenA64 IrLoweringA64 IrRegAllocA64 UnwindBuilderDwarf2)
 else
 INCLUDEPATHS_lua=lua/src libgvfs
 OBJFILES_lua=lua/etc/all_lua

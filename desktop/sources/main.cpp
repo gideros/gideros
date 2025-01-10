@@ -27,10 +27,10 @@
 #include "tabletapplication.h"
 
 static void loadPlugins(){
-	QDir dir = QDir::currentPath();
+	QDir dir = QDir(QCoreApplication::applicationDirPath());
 
     #if defined(Q_OS_MAC)
-        dir.cd("../../Plugins");
+        dir.cd("../Plugins"); //One dir up from xxx.app/Contents/MacOS
         QStringList files = dir.entryList(QStringList() << "*.dylib");
     #elif defined(Q_OS_LINUX)
         dir.cd("Plugins");

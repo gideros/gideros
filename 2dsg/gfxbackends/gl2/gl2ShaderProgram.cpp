@@ -399,6 +399,7 @@ void ogl2ShaderProgram::resetAll()
 void ogl2ShaderProgram::resetAllUniforms()
 {
     GLCALL_INIT;
+    GLECALL_INIT;
 #ifndef GL2SHADERS_COMMON_GENVBO
     int nvbo=17;
     for (int k = 0; k < nvbo; k++) {
@@ -422,6 +423,8 @@ void ogl2ShaderProgram::resetAllUniforms()
     {
       curAttribs[i]=(GLuint)-1;
       GLCALL glDisableVertexAttribArray(i);
+      if (supportInstances)
+           GLECALL glVertexAttribDivisor(i,0);
     }
     //Our context may have been changed external by some window composer (QT), assume buffer bindings are unknown
     GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
