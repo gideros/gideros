@@ -552,9 +552,15 @@ void ogl2ShaderProgram::activate() {
             }
             else {
                 if (curAttribs[i]==((GLuint)-1))
+                {
                     GLCALL glEnableVertexAttribArray(i);
-                if (supportInstances&&catt[i])
-                    GLECALL glVertexAttribDivisor(i,catt[i]);
+                	if (supportInstances&&catt[i])
+                		GLECALL glVertexAttribDivisor(i,catt[i]);
+                }
+                else {
+                	if (supportInstances)
+                		GLECALL glVertexAttribDivisor(i,catt[i]);
+                }
             }
             curAttribs[i]=catt[i];
         }
