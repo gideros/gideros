@@ -610,10 +610,10 @@ void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
     if (ttl_.size() == 0)
 		return;
 
+	ShaderProgram *p = getShader(ShaderEngine::STDP_PARTICLES,(texture_[0]?ShaderEngine::STDPV_TEXTURED:0)|(is3d?ShaderEngine::STDPV_3D:0));
     for (int t=0;t<PARTICLES_MAX_TEXTURES;t++)
         if (texture_[t])
-            ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
-    ShaderProgram *p = getShader(ShaderEngine::STDP_PARTICLES,(texture_[0]?ShaderEngine::STDPV_TEXTURED:0)|(is3d?ShaderEngine::STDPV_3D:0));
+            p->bindTexture(t,texture_[t]->data->id());
     if (is3d&&autoSort) {
         //Sort particles according to distance (nearest last)
         Matrix4 vm=ShaderEngine::Engine->getView();
