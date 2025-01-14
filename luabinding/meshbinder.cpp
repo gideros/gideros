@@ -465,14 +465,32 @@ int MeshBinder::setGenericArray(lua_State *L)
     int count=luaL_checkinteger(L,5);
     size_t blen;
     void *bptr=lua_tobuffer(L,6,&blen);
+    int offset=luaL_optinteger(L,7,0);
+    int stride=luaL_optinteger(L,8,0);
+    int master=luaL_optinteger(L,9,-1);
     if (bptr!=NULL)
     {
-        if (blen!=(mult*count))
+        int elesz=1;
+        switch (type)
+        {
+        case ShaderProgram::DBYTE:
+        case ShaderProgram::DUBYTE:
+            break;
+        case ShaderProgram::DSHORT:
+        case ShaderProgram::DUSHORT:
+            elesz=2;
+            break;
+        case ShaderProgram::DINT:
+        case ShaderProgram::DFLOAT:
+            elesz=4;
+            break;
+        }
+        if (blen!=(mult*count*elesz))
         {
         	lua_pushstring(L,"Actual buffer length doesn't match size multiple and count values");
         	lua_error(L);
         }
-		mesh->setGenericArray(index,bptr,type,mult,count);
+        mesh->setGenericArray(index,bptr,type,mult,count,offset,stride,master);
     }
     else {
 		luaL_checktype(L, 6, LUA_TTABLE);
@@ -535,7 +553,7 @@ int MeshBinder::setGenericArray(lua_State *L)
 		}
 		}
 
-		mesh->setGenericArray(index,ptr,type,mult,count);
+        mesh->setGenericArray(index,ptr,type,mult,count,offset,stride,master);
 		free(ptr);
     }
 	return 0;

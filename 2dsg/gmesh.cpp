@@ -14,8 +14,11 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
 	{
 	  	genericArray[k-3].ptr=NULL;
 	  	genericArray[k-3].cache=NULL;
-	  	genericArray[k-3].modified=true;
-	}
+        genericArray[k-3].modified=true;
+        genericArray[k-3].offset=0;
+        genericArray[k-3].stride=0;
+        genericArray[k-3].master=-1;
+    }
     r_ = 1;
     g_ = 1;
     b_ = 1;
@@ -52,26 +55,17 @@ void GMesh::cloneFrom(GMesh *s) {
         genericArray[k-3].type=s->genericArray[k-3].type;
         genericArray[k-3].mult=s->genericArray[k-3].mult;
         genericArray[k-3].count=s->genericArray[k-3].count;
-        int ps=4;
-        switch (genericArray[k-3].type)
+        genericArray[k-3].offset=s->genericArray[k-3].offset;
+        genericArray[k-3].stride=s->genericArray[k-3].stride;
+        genericArray[k-3].master=s->genericArray[k-3].master;
+        genericArray[k-3].bufsize=s->genericArray[k-3].bufsize;
+        if (genericArray[k-3].bufsize&&(s->genericArray[k-3].ptr))
         {
-        case ShaderProgram::DBYTE:
-        case ShaderProgram::DUBYTE:
-            ps=1;
-            break;
-        case ShaderProgram::DSHORT:
-        case ShaderProgram::DUSHORT:
-            ps=2;
-            break;
-        case ShaderProgram::DINT:
-        case ShaderProgram::DFLOAT:
-            ps=4;
-            break;
+            genericArray[k-3].ptr=malloc(genericArray[k-3].bufsize);
+            memcpy(genericArray[k-3].ptr,s->genericArray[k-3].ptr,genericArray[k-3].bufsize);
+            genericArray[k-3].cache=NULL;
+            genericArray[k-3].modified=true;
         }
-        genericArray[k-3].ptr=malloc(ps*genericArray[k-3].mult*genericArray[k-3].count);
-        memcpy(genericArray[k-3].ptr,s->genericArray[k-3].ptr,ps*genericArray[k-3].mult*genericArray[k-3].count);
-        genericArray[k-3].cache=NULL;
-        genericArray[k-3].modified=true;
     }
 
     originalTextureCoordinates_.assign(s->originalTextureCoordinates_.cbegin(),s->originalTextureCoordinates_.cend());
@@ -177,37 +171,55 @@ void GMesh::setTextureCoordinate(int i, float u, float v)
 	invalidate(INV_GRAPHICS);
 }
 
-void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count)
+void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count,int offset,int stride,int masterIndex)
 {
 	if ((index<3)||(index>=MESH_MAX_ARRAYS)) return;
-	index-=3;
-	if (genericArray[index].ptr)
-		free(genericArray[index].ptr);
-	genericArray[index].ptr=NULL;
-	if (!pointer) return;
-	int ps=4;
-	switch (type)
-	{
-	case ShaderProgram::DBYTE:
-	case ShaderProgram::DUBYTE:
-		ps=1;
-		break;
-	case ShaderProgram::DSHORT:
-	case ShaderProgram::DUSHORT:
-		ps=2;
-		break;
-	case ShaderProgram::DINT:
-	case ShaderProgram::DFLOAT:
-		ps=4;
-		break;
-	}
-	genericArray[index].ptr=malloc(ps*mult*count);
-	memcpy(genericArray[index].ptr,pointer,ps*mult*count);
-	genericArray[index].mult=mult;
-	genericArray[index].type=type;
-	genericArray[index].count=count;
-	genericArray[index].modified=true;
-	invalidate(INV_GRAPHICS);
+    if (masterIndex>=MESH_MAX_ARRAYS) return;
+    if ((masterIndex>=0)&&(masterIndex<3)) return;
+    index-=3;
+    if (masterIndex<0)
+    {
+        if (!pointer) return;
+        int ps=4;
+        switch (type)
+        {
+        case ShaderProgram::DBYTE:
+        case ShaderProgram::DUBYTE:
+            ps=1;
+            break;
+        case ShaderProgram::DSHORT:
+        case ShaderProgram::DUSHORT:
+            ps=2;
+            break;
+        case ShaderProgram::DINT:
+        case ShaderProgram::DFLOAT:
+            ps=4;
+            break;
+        }
+        size_t esz=ps*mult*count;
+        if ((!genericArray[index].ptr)||(esz!=genericArray[index].bufsize))
+        {
+            if (genericArray[index].ptr)
+                free(genericArray[index].ptr);
+            genericArray[index].ptr=malloc(esz);
+        }
+        genericArray[index].bufsize=esz;
+        memcpy(genericArray[index].ptr,pointer,esz);
+        genericArray[index].modified=true;
+    }
+    else {
+        if (genericArray[index].ptr)
+            free(genericArray[index].ptr);
+        genericArray[index].ptr=NULL;
+        genericArray[index].bufsize=0;
+    }
+    genericArray[index].mult=mult;
+    genericArray[index].type=type;
+    genericArray[index].count=count;
+    genericArray[index].offset=offset;
+    genericArray[index].stride=stride;
+    genericArray[index].master=masterIndex;
+    invalidate(INV_GRAPHICS);
 }
 
 void GMesh::setVertexArray(const float *vertices, size_t size)
@@ -500,12 +512,15 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
         textureCoordinates_.modified=false;
     }
 
-    for (int k=3;k<MESH_MAX_ARRAYS;k++)
-    	if (genericArray[k-3].ptr)
+    for (int k=3;k<MESH_MAX_ARRAYS;k++) {
+        int mi=genericArray[k-3].master;
+        if (mi<0) mi=k;
+        if (genericArray[mi-3].ptr)
     	{
-            p->setData(k,genericArray[k-3].type,genericArray[k-3].mult, genericArray[k-3].ptr,genericArray[k-3].count,genericArray[k-3].modified,&genericArray[k-3].cache);
-            genericArray[k-3].modified=false;
+            p->setData(k,genericArray[k-3].type,genericArray[k-3].mult, genericArray[mi-3].ptr,genericArray[k-3].count,genericArray[mi-3].modified,&genericArray[mi-3].cache,genericArray[k-3].stride,genericArray[k-3].offset);
+            genericArray[mi-3].modified=false;
     	}
+    }
 
     p->drawElements(meshtype_, indices_.size(), ShaderProgram::DINT, &indices_[0],indices_.modified,&indices_.bufferCache,0,0,instanceCount_);
     indices_.modified=false;

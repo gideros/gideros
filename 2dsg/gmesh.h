@@ -29,7 +29,7 @@ public:
     void setIndexArray(const unsigned int *indices, size_t size);
     void setColorArray(const unsigned int *colors, const float *alphas, size_t size);
     void setTextureCoordinateArray(const float *textureCoordinates, size_t size);
-    void setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count);
+    void setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count,int offset,int stride,int masterIndex);
 
     void resizeVertexArray(size_t size);
     void resizeIndexArray(size_t size);
@@ -80,7 +80,11 @@ private:
     	ShaderProgram::DataType type;
     	int mult;
     	int count;
-    	ShaderBufferCache *cache;
+        int offset;
+        int stride;
+        int master;
+        size_t bufsize;
+        ShaderBufferCache *cache;
     	bool modified;
     } genericArray[MESH_MAX_ARRAYS-3];
 
