@@ -10,14 +10,15 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
 		sx_[t] = 1;
 		sy_[t] = 1;
 	}
-	for (int k=3;k<MESH_MAX_ARRAYS;k++)
+    for (int k=0;k<MESH_MAX_ARRAYS;k++)
 	{
-	  	genericArray[k-3].ptr=NULL;
-	  	genericArray[k-3].cache=NULL;
-        genericArray[k-3].modified=true;
-        genericArray[k-3].offset=0;
-        genericArray[k-3].stride=0;
-        genericArray[k-3].master=-1;
+        genericArray[k].ptr=NULL;
+        genericArray[k].cache=NULL;
+        genericArray[k].modified=true;
+        genericArray[k].count=0;
+        genericArray[k].offset=0;
+        genericArray[k].stride=0;
+        genericArray[k].master=-1;
     }
     r_ = 1;
     g_ = 1;
@@ -50,21 +51,21 @@ void GMesh::cloneFrom(GMesh *s) {
         sy_[t]=s->sy_[t];
     }
 
-    for (int k=3;k<MESH_MAX_ARRAYS;k++)
+    for (int k=0;k<MESH_MAX_ARRAYS;k++)
     {
-        genericArray[k-3].type=s->genericArray[k-3].type;
-        genericArray[k-3].mult=s->genericArray[k-3].mult;
-        genericArray[k-3].count=s->genericArray[k-3].count;
-        genericArray[k-3].offset=s->genericArray[k-3].offset;
-        genericArray[k-3].stride=s->genericArray[k-3].stride;
-        genericArray[k-3].master=s->genericArray[k-3].master;
-        genericArray[k-3].bufsize=s->genericArray[k-3].bufsize;
-        if (genericArray[k-3].bufsize&&(s->genericArray[k-3].ptr))
+        genericArray[k].type=s->genericArray[k].type;
+        genericArray[k].mult=s->genericArray[k].mult;
+        genericArray[k].count=s->genericArray[k].count;
+        genericArray[k].offset=s->genericArray[k].offset;
+        genericArray[k].stride=s->genericArray[k].stride;
+        genericArray[k].master=s->genericArray[k].master;
+        genericArray[k].bufsize=s->genericArray[k].bufsize;
+        genericArray[k].cache=NULL;
+        if (genericArray[k].bufsize&&(s->genericArray[k].ptr))
         {
-            genericArray[k-3].ptr=malloc(genericArray[k-3].bufsize);
-            memcpy(genericArray[k-3].ptr,s->genericArray[k-3].ptr,genericArray[k-3].bufsize);
-            genericArray[k-3].cache=NULL;
-            genericArray[k-3].modified=true;
+            genericArray[k].ptr=malloc(genericArray[k].bufsize);
+            memcpy(genericArray[k].ptr,s->genericArray[k].ptr,genericArray[k].bufsize);
+            genericArray[k].modified=true;
         }
     }
 
@@ -86,12 +87,12 @@ GMesh::~GMesh()
 		if (texture_[t])
 			texture_[t]->unref();
 
-   for (int k=3;k<MESH_MAX_ARRAYS;k++)
-    	if (genericArray[k-3].ptr)
+   for (int k=0;k<MESH_MAX_ARRAYS;k++)
+        if (genericArray[k].ptr)
     	{
-    		if (genericArray[k-3].cache)
-    			delete genericArray[k-3].cache;
-            free(genericArray[k-3].ptr);
+            if (genericArray[k].cache)
+                delete genericArray[k].cache;
+            free(genericArray[k].ptr);
     	}
 }
 
@@ -173,13 +174,10 @@ void GMesh::setTextureCoordinate(int i, float u, float v)
 
 void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count,int offset,int stride,int masterIndex)
 {
-	if ((index<3)||(index>=MESH_MAX_ARRAYS)) return;
+    if ((index<0)||(index>=MESH_MAX_ARRAYS)) return;
     if (masterIndex>=MESH_MAX_ARRAYS) return;
-    if ((masterIndex>=0)&&(masterIndex<3)) return;
-    index-=3;
     if (masterIndex<0)
     {
-        if (!pointer) return;
         int ps=4;
         switch (type)
         {
@@ -197,14 +195,19 @@ void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataTy
             break;
         }
         size_t esz=ps*mult*count;
+        if ((!pointer)&&esz) return;
         if ((!genericArray[index].ptr)||(esz!=genericArray[index].bufsize))
         {
             if (genericArray[index].ptr)
                 free(genericArray[index].ptr);
-            genericArray[index].ptr=malloc(esz);
+            if (esz)
+                genericArray[index].ptr=malloc(esz);
+            else
+                genericArray[index].ptr=NULL;
         }
         genericArray[index].bufsize=esz;
-        memcpy(genericArray[index].ptr,pointer,esz);
+        if (esz)
+            memcpy(genericArray[index].ptr,pointer,esz);
         genericArray[index].modified=true;
     }
     else {
@@ -458,10 +461,13 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 		if (texture_[t])
 			p->bindTexture(t,texture_[t]->data->id());
     
-    p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),vertices_.modified,&vertices_.bufferCache);
-    vertices_.modified=false;
+    if (!genericArray[ShaderProgram::DataVertex].count)
+    {
+        p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),vertices_.modified,&vertices_.bufferCache);
+        vertices_.modified=false;
+    }
 
-    if (!colors_.empty())
+    if ((!colors_.empty())&&(!genericArray[ShaderProgram::DataColor].count))
     {
         float r, g, b, a;
         glGetColor(&r, &g, &b, &a);
@@ -508,17 +514,20 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
         	textureInfo[3]=1.0/texture_[0]->data->exheight;
     		p->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
     	}
-        p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,textureCoordinates_.modified,&textureCoordinates_.bufferCache);
-        textureCoordinates_.modified=false;
+        if (!genericArray[ShaderProgram::DataTexture].count)
+        {
+            p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,textureCoordinates_.modified,&textureCoordinates_.bufferCache);
+            textureCoordinates_.modified=false;
+        }
     }
 
-    for (int k=3;k<MESH_MAX_ARRAYS;k++) {
-        int mi=genericArray[k-3].master;
+    for (int k=0;k<MESH_MAX_ARRAYS;k++) {
+        int mi=genericArray[k].master;
         if (mi<0) mi=k;
-        if (genericArray[mi-3].ptr)
+        if (genericArray[mi].ptr)
     	{
-            p->setData(k,genericArray[k-3].type,genericArray[k-3].mult, genericArray[mi-3].ptr,genericArray[k-3].count,genericArray[mi-3].modified,&genericArray[mi-3].cache,genericArray[k-3].stride,genericArray[k-3].offset);
-            genericArray[mi-3].modified=false;
+            p->setData(k,genericArray[k].type,genericArray[k].mult, genericArray[mi].ptr,genericArray[k].count,genericArray[mi].modified,&genericArray[mi].cache,genericArray[k].stride,genericArray[k].offset);
+            genericArray[mi].modified=false;
     	}
     }
 

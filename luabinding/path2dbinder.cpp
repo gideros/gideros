@@ -19,8 +19,9 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
         {"setConvex", setConvex },
-		{"getPathPoints", getPathPoints },
-		{NULL, NULL},
+        {"getPathPoints", getPathPoints },
+        {"getPathOffset", getPathOffset },
+        {NULL, NULL},
 	};
 
 	binder.createClass("Path2D", "Sprite", create, destruct, functionList);
@@ -211,6 +212,20 @@ int Path2DBinder::getPathPoints(lua_State* L)
 
 	return 1;
 }
+
+int Path2DBinder::getPathOffset(lua_State* L)
+{
+    Binder binder(L);
+    Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+
+    float next=0;
+    float offset=shape->getPathOffset(luaL_checknumber(L, 2),luaL_checknumber(L,3),luaL_optnumber(L, 4, 0.001),next);
+    lua_pushnumber(L,offset);
+    lua_pushnumber(L,next);
+
+    return 2;
+}
+
 
 int Path2DBinder::setPath(lua_State* L)
 {

@@ -485,9 +485,10 @@ int MeshBinder::setGenericArray(lua_State *L)
             elesz=4;
             break;
         }
-        if (blen!=(mult*count*elesz))
+        size_t reqsz=mult*count*elesz;
+        if (blen<reqsz)
         {
-        	lua_pushstring(L,"Actual buffer length doesn't match size multiple and count values");
+            lua_pushfstring(L,"Buffer size (%zu) is shorter than expected (%zu)",blen,reqsz);
         	lua_error(L);
         }
         mesh->setGenericArray(index,bptr,type,mult,count,offset,stride,master);
@@ -605,7 +606,27 @@ int MeshBinder::setIndexArray(lua_State *L)
 
     std::vector<unsigned int> indices;
 
-    if (lua_type(L, 2) == LUA_TSTRING)
+    size_t blen;
+    void *bptr=lua_tobuffer(L,2,&blen);
+    if (bptr!=NULL)
+    {
+        if (blen%3)
+        {
+            lua_pushfstring(L,"Invalid index buffer size: %zu",blen);
+            lua_error(L);
+        }
+        size_t icount=luaL_optunsigned(L,3,blen/4);
+        if ((icount*4)>blen) {
+            lua_pushfstring(L,"Buffer size (%zu) is shorter than expected (%zu)",blen,icount*4);
+            lua_error(L);
+        }
+        if (icount > 0)
+            mesh->setIndexArray((const unsigned int *)bptr,icount);
+        else
+            mesh->clearIndexArray();
+        return 0;
+    }
+    else if (lua_type(L, 2) == LUA_TSTRING)
     	toIntComponents(L,2,1,indices);
     else if (lua_type(L, 2) == LUA_TTABLE)
     {

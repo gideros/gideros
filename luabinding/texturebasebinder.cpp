@@ -98,10 +98,12 @@ int TextureBaseBinder::update(lua_State* L)
 	TextureBase* textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase"));
 
 	size_t datasz=0;
-	const char* data = luaL_checklstring(L,2,&datasz);
-	unsigned int width, height;
-	width=luaL_checkinteger(L,3);
-	height=luaL_checkinteger(L,4);
+    const char* data=(const char *) lua_tobuffer(L,2,&datasz);
+    if (!data)
+        data = luaL_checklstring(L,2,&datasz);
+    unsigned int width, height;
+    width=luaL_checkinteger(L,3);
+    height=luaL_checkinteger(L,4);
 	if (datasz!=(width*height*4))
 	{
 		lua_pushfstring(L, "Image size doesn't match data length");

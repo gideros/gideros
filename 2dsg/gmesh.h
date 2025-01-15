@@ -86,7 +86,7 @@ private:
         size_t bufsize;
         ShaderBufferCache *cache;
     	bool modified;
-    } genericArray[MESH_MAX_ARRAYS-3];
+    } genericArray[MESH_MAX_ARRAYS];
 
     TextureBase *texture_[MESH_MAX_TEXTURES];
     float sx_[MESH_MAX_TEXTURES], sy_[MESH_MAX_TEXTURES];

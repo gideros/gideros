@@ -2687,14 +2687,15 @@ static void get_path_points_curve(float sx, float sy, float tx, float ty,
 }
 
 
-static void get_path_points(struct path *path, float &offset, float interval,
-		int &maxpts, float flatSq,int maxsub,std::vector<Path2D::PathPoint> &pts) {
 #define c0 coords[icoord]
 #define c1 coords[icoord + 1]
 #define c2 coords[icoord + 2]
 #define c3 coords[icoord + 3]
 
-#define set(x1, y1, x2, y2) ncpx = x1; ncpy = y1; npepx = x2; npepy = y2;
+#define set(x1, y1) ncpx = x1; ncpy = y1;
+
+static void get_path_points(struct path *path, float &offset, float interval,
+		int &maxpts, float flatSq,int maxsub,std::vector<Path2D::PathPoint> &pts) {
 
 	reduced_path_vec *reduced_paths = &path->reduced_paths;
 
@@ -2713,39 +2714,101 @@ static void get_path_points(struct path *path, float &offset, float interval,
 		float spx = 0, spy = 0;
 		float cpx = 0, cpy = 0;
 		float ncpx = 0, ncpy = 0;
-		float npepx = 0, npepy = 0;
 
 		for (j = 0; j < num_commands; ++j) {
 			bool last=(j==(num_commands-1));
 			switch (commands[j]) {
 			case PATHCMD_MOVE_TO:
-				set(c0, c1, c0, c1)
-				;
+                set(c0, c1);
 				spx = ncpx;
 				spy = ncpy;
 				icoord += 2;
 				break;
 			case PATHCMD_LINE_TO:
 				get_path_points_line(cpx, cpy, c0,c1,offset,interval,maxpts,pts,toffset,last);
-				set(c0, c1, c0, c1);
+                set(c0, c1);
 				icoord += 2;
 				break;
 				case PATHCMD_QUADRATIC_CURVE_TO:
 				get_path_points_curve(cpx,cpy, c0,c1,c2,c3,offset,interval,maxpts,pts,flatSq,maxsub,toffset,last);
-				set(c2, c3, c0, c1);
+                set(c2, c3);
 				icoord += 4;
 				break;
 				case PATHCMD_CLOSE_PATH:
 				get_path_points_line(cpx,cpy, spx,spy,offset,interval,maxpts,pts,toffset,last);
-				set(spx, spy, spx, spy);
+                set(spx, spy);
 				break;
 			}
 
 			cpx = ncpx;
 			cpy = ncpy;
 		}
-
 	}
+}
+
+static float get_path_offset(struct path *path, float px, float py, float accuracy, float &nextSegment) {
+
+    reduced_path_vec *reduced_paths = &path->reduced_paths;
+
+    size_t i, j;
+    float toffset=0;
+
+    for (i = 0; i < kv_size(*reduced_paths); ++i) {
+        struct reduced_path *p = &kv_a(*reduced_paths, i);
+
+        size_t num_commands = kv_size(p->commands);
+        unsigned char *commands = kv_data(p->commands);
+        float *coords = kv_data(p->coords);
+
+        int icoord = 0;
+
+        float spx = 0, spy = 0;
+        float cpx = 0, cpy = 0;
+        float ncpx = 0, ncpy = 0;
+
+        float dist=0;
+        for (j = 0; j < num_commands; ++j) {
+            switch (commands[j]) {
+            case PATHCMD_MOVE_TO:
+                set(c0, c1);
+                spx = ncpx;
+                spy = ncpy;
+                icoord += 2;
+                break;
+            case PATHCMD_LINE_TO:
+                dist = sqrtf((c0 - cpx)*(c0 - cpx) + (c1 - cpy)*(c1 - cpy));
+                set(c0, c1);
+                icoord += 2;
+                break;
+            case PATHCMD_QUADRATIC_CURVE_TO:
+                dist=lengthSq(cpx,cpy,c2,c3,c0,c1);
+                set(c2, c3);
+                icoord += 4;
+                break;
+            case PATHCMD_CLOSE_PATH:
+                dist = sqrtf((spx - cpx)*(spx - cpx) + (spy - cpy)*(spy - cpy));
+                set(spx, spy);
+                break;
+            }
+
+            if (commands[j]!=PATHCMD_MOVE_TO) {
+                float pcheck = sqrtf((px - cpx)*(px - cpx) + (py - cpy)*(py - cpy));
+                if (pcheck<=accuracy)
+                {
+                    nextSegment=dist;
+                    return toffset;
+                }
+            }
+
+            toffset+=dist;
+            cpx = ncpx;
+            cpy = ncpy;
+        }
+    }
+    nextSegment=0;
+    return toffset;
+}
+
 
 #undef c0
 #undef c1
@@ -2753,8 +2816,6 @@ static void get_path_points(struct path *path, float &offset, float interval,
 #undef c3
 
 #undef set
-
-}
 
 int Path2D::buildPath(PrPath *ppath) {
 	int path = gen_paths(1);
@@ -2869,6 +2930,17 @@ void Path2D::getPathPoints(float offset, float advance,int max, float flatness, 
 		get_path_points(p,ro,advance,rm,flatness*flatness,maxsub,points);
 	}
 }
+
+float Path2D::getPathOffset(float px, float py, float accuracy, float &nextSegment)
+{
+    struct path *p = get_path(path);
+    if (p) {
+        return get_path_offset(p,px,py,accuracy,nextSegment);
+    }
+    nextSegment=0;
+    return 0;
+}
+
 
 void Path2D::setFillColor(unsigned int color, float alpha) {
 	int r = (color >> 16) & 0xff;
