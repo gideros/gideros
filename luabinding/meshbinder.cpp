@@ -228,12 +228,23 @@ int MeshBinder::destruct(void *p)
     return 0;
 }
 
+static int getIndexValue(lua_State *L, int idx)
+{
+    int i = luaL_checkinteger(L, idx);
+    if (i<1)
+    {
+        lua_pushfstring(L,"Invalid index %d",i);
+        lua_error(L);
+    }
+    return i-1;
+}
+
 int MeshBinder::setVertex(lua_State *L)
 {
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
 
-    int i = luaL_checkinteger(L, 2) - 1;
+    int i = getIndexValue(L, 2);
     float x = luaL_checknumber(L, 3);
     float y = luaL_checknumber(L, 4);
     float z = luaL_optnumber(L, 5, 0.0);
@@ -248,8 +259,8 @@ int MeshBinder::setIndex(lua_State *L)
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
 
-    int i = luaL_checkinteger(L, 2) - 1;
-    int index = luaL_checkinteger(L, 3) - 1;
+    int i = getIndexValue(L, 2);
+    int index = getIndexValue(L, 3);
 
     mesh->setIndex(i, index);
 
@@ -261,7 +272,7 @@ int MeshBinder::setColor(lua_State *L)
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
 
-    int i = luaL_checkinteger(L, 2) - 1;
+    int i = getIndexValue(L, 2);
     unsigned int color = luaL_checkinteger(L, 3);
     float alpha = luaL_optnumber(L, 4, 1.0);
 
@@ -275,7 +286,7 @@ int MeshBinder::setTextureCoordinate(lua_State *L)
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
 
-    int i = luaL_checkinteger(L, 2) - 1;
+    int i = getIndexValue(L, 2);
     float u = luaL_checknumber(L, 3);
     float v = luaL_checknumber(L, 4);
 
@@ -298,7 +309,7 @@ int MeshBinder::setVertices(lua_State *L)
         for (int k = 0; k < n/order; ++k)
         {
             lua_rawgeti(L, 2, k * order + 1);
-            int i = luaL_checkinteger(L, -1) - 1;
+            int i = getIndexValue(L, -1);
             lua_pop(L, 1);
 
             lua_rawgeti(L, 2, k * order + 2);
@@ -324,7 +335,7 @@ int MeshBinder::setVertices(lua_State *L)
         int n = lua_gettop(L) - 1;
         for (int k = 0; k < n/order; ++k)
         {
-            int i = luaL_checkinteger(L, k * order + 2) - 1;
+            int i = getIndexValue(L, k * order + 2);
             float x = luaL_checknumber(L, k * order + 3);
             float y = luaL_checknumber(L, k * order + 4);
             float z=0;
@@ -348,11 +359,11 @@ int MeshBinder::setIndices(lua_State *L)
         for (int k = 0; k < n/2; ++k)
         {
             lua_rawgeti(L, 2, k * 2 + 1);
-            int i = luaL_checkinteger(L, -1) - 1;
+            int i = getIndexValue(L, -1);
             lua_pop(L, 1);
 
             lua_rawgeti(L, 2, k * 2 + 2);
-            int index = luaL_checknumber(L, -1) - 1;
+            int index = getIndexValue(L, -1);
             lua_pop(L, 1);
 
             mesh->setIndex(i, index);
@@ -363,8 +374,8 @@ int MeshBinder::setIndices(lua_State *L)
         int n = lua_gettop(L) - 1;
         for (int k = 0; k < n/2; ++k)
         {
-            int i = luaL_checkinteger(L, k * 2 + 2) - 1;
-            int index = luaL_checknumber(L, k * 2 + 3) - 1;
+            int i = getIndexValue(L, k * 2 + 2);
+            int index = getIndexValue(L, k * 2 + 3);
 
             mesh->setIndex(i, index);
         }
@@ -384,7 +395,7 @@ int MeshBinder::setColors(lua_State *L)
         for (int k = 0; k < n/3; ++k)
         {
             lua_rawgeti(L, 2, k * 3 + 1);
-            int i = luaL_checkinteger(L, -1) - 1;
+            int i = getIndexValue(L, -1);
             lua_pop(L, 1);
 
             lua_rawgeti(L, 2, k * 3 + 2);
@@ -403,7 +414,7 @@ int MeshBinder::setColors(lua_State *L)
         int n = lua_gettop(L) - 1;
         for (int k = 0; k < n/3; ++k)
         {
-            int i = luaL_checkinteger(L, k * 3 + 2) - 1;
+            int i = getIndexValue(L, k * 3 + 2);
             unsigned int color = luaL_checkinteger(L, k * 3 + 3);
             float alpha = luaL_checknumber(L, k * 3 + 4);
 
@@ -425,7 +436,7 @@ int MeshBinder::setTextureCoordinates(lua_State *L)
         for (int k = 0; k < n/3; ++k)
         {
             lua_rawgeti(L, 2, k * 3 + 1);
-            int i = luaL_checkinteger(L, -1) - 1;
+            int i = getIndexValue(L, -1);
             lua_pop(L, 1);
 
             lua_rawgeti(L, 2, k * 3 + 2);
@@ -444,7 +455,7 @@ int MeshBinder::setTextureCoordinates(lua_State *L)
         int n = lua_gettop(L) - 1;
         for (int k = 0; k < n/3; ++k)
         {
-            int i = luaL_checkinteger(L, k * 3 + 2) - 1;
+            int i = getIndexValue(L, k * 3 + 2);
             float u = luaL_checknumber(L, k * 3 + 3);
             float v = luaL_checknumber(L, k * 3 + 4);
 
@@ -867,7 +878,7 @@ int MeshBinder::getVertex(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     int i = luaL_checkinteger(L, 2) - 1;
 
-    if (i < 0 || i >= mesh->getVertexArraySize())
+    if (i < 0 || (unsigned int)i >= mesh->getVertexArraySize())
         luaL_error(L, "The supplied index is out of bounds.");
 
     int order=mesh->is3d()?3:2;
@@ -887,7 +898,7 @@ int MeshBinder::getIndex(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     int i = luaL_checkinteger(L, 2) - 1;
 
-    if (i < 0 || i >= mesh->getIndexArraySize())
+    if (i < 0 || (unsigned int)i >= mesh->getIndexArraySize())
         luaL_error(L, "The supplied index is out of bounds.");
 
     unsigned int index;
@@ -903,7 +914,7 @@ int MeshBinder::getColor(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     int i = luaL_checkinteger(L, 2) - 1;
 
-    if (i < 0 || i >= mesh->getColorArraySize())
+    if (i < 0 || (unsigned int)i >= mesh->getColorArraySize())
         luaL_error(L, "The supplied index is out of bounds.");
 
     unsigned int color;
@@ -921,7 +932,7 @@ int MeshBinder::getTextureCoordinate(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     int i = luaL_checkinteger(L, 2) - 1;
 
-    if (i < 0 || i >= mesh->getTextureCoordinateArraySize())
+    if (i < 0 || (unsigned int)i >= mesh->getTextureCoordinateArraySize())
         luaL_error(L, "The supplied index is out of bounds.");
 
     float u, v;
