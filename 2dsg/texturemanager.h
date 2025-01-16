@@ -79,8 +79,10 @@ public:
 
     virtual std::future<TextureData*> createTextureFromFile(const char* filename, const TextureParameters& parameters, std::function<void(TextureData *,std::exception_ptr)> async={});
     virtual TextureData* createTextureFromDib(const Dib& dib, const TextureParameters& parameters, const void *sig=NULL,size_t sigsize=0);
+    virtual TextureData* createTextureFromRawData(const void *raw, size_t width, size_t height, const TextureParameters& parameters, const void *sig=NULL,size_t sigsize=0);
     virtual TextureData* createRenderTarget(int width, int height, const TextureParameters& parameters, bool selectScale=false,bool depth=false);
     virtual void updateTextureFromDib(TextureData* data, const Dib& dib);
+    virtual void updateTextureFromRawData(TextureData* data, const void *raw, size_t width, size_t height);
     virtual void destroyTexture(TextureData* texture);
 
 private:

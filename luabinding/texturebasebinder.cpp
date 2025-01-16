@@ -104,13 +104,17 @@ int TextureBaseBinder::update(lua_State* L)
     unsigned int width, height;
     width=luaL_checkinteger(L,3);
     height=luaL_checkinteger(L,4);
-	if (datasz!=(width*height*4))
+    bool raw=lua_toboolean(L,5);
+
+    unsigned char bpp=raw?textureBase->data->parameters.bpp:4;
+
+    if (datasz!=(width*height*bpp))
 	{
 		lua_pushfstring(L, "Image size doesn't match data length");
 		lua_error(L);
 	}
 
-	textureBase->update((const unsigned char *)data,width,height);
+    textureBase->update((const unsigned char *)data,width,height,raw);
 
 	return 0;
 }

@@ -453,6 +453,143 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     return data;
 }
 
+TextureData* TextureManager::createTextureFromRawData(const void *raw, size_t width, size_t height, const TextureParameters& parameters, const void *sig,size_t sigsize)
+{
+    int wrap = 0;
+    switch (parameters.wrap)
+    {
+    case eClamp:
+        wrap = GTEXTURE_CLAMP;
+        break;
+    case eRepeat:
+        wrap = GTEXTURE_REPEAT;
+        break;
+    }
+
+    int filter = 0;
+    switch (parameters.filter)
+    {
+    case eNearest:
+        filter = GTEXTURE_NEAREST;
+        break;
+    case eLinear:
+        filter = GTEXTURE_LINEAR;
+        break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
+    }
+
+    int format = 0;
+    int type = 0;
+    unsigned char bpp=1;
+    bool conv=(!parameters.rawalpha)&&raw;
+    size_t npixs=width*height;
+    switch (parameters.format)
+    {
+    case eRGBA8888:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        bpp=4;
+        if (conv) {
+            uint8_t *rd=(uint8_t *)raw;
+            while (npixs--) {
+                unsigned int a=rd[3]+1;
+                rd[0]=(rd[0]*a)>>8;
+                rd[1]=(rd[1]*a)>>8;
+                rd[2]=(rd[2]*a)>>8;
+                rd+=4;
+            }
+        }
+        break;
+    case eRGB888:
+        format = GTEXTURE_RGB;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        bpp=3;
+        break;
+    case eRGB565:
+        format = GTEXTURE_RGB;
+        type = GTEXTURE_UNSIGNED_SHORT_5_6_5;
+        bpp=2;
+        break;
+    case eRGBA4444:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_SHORT_4_4_4_4;
+        bpp=2;
+        if (conv) {
+            uint16_t *rd=(uint16_t *)raw;
+            while (npixs--) {
+                uint16_t rv=rd[0];
+                unsigned int r=rv&0xF000;
+                unsigned int g=rv&0x0F00;
+                unsigned int b=rv&0x00F0;
+                unsigned int a=(rv&0x000F)+1;
+                rv=((((r*a)&0xF0000)|((g*a)&0x0F000)|((b*a)&0x00F00))>>4)|(rv&0x0F);
+                rd[0]=rv;
+                rd++;
+            }
+        }
+        break;
+    case eRGBA5551:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_SHORT_5_5_5_1;
+        bpp=2;
+        if (conv) {
+            uint16_t *rd=(uint16_t *)raw;
+            while (npixs--) {
+                if (!(rd[0]&1)) rd[0]=0;
+                rd++;
+            }
+        }
+        break;
+    case eY8:
+        format = GTEXTURE_LUMINANCE;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eA8:
+        format = GTEXTURE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eYA8:
+        format = GTEXTURE_LUMINANCE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        bpp=2;
+        if (conv) {
+            uint8_t *rd=(uint8_t *)raw;
+            while (npixs--) {
+                unsigned int a=rd[1]+1;
+                rd[0]=(rd[0]*a)>>8;
+                rd+=2;
+            }
+        }
+        break;
+    }
+
+
+
+    g_id gid = 0;
+    RENDER_DO([&]{
+        gid = gtexture_create(width, height, format, type, wrap, filter, raw, sig, sigsize);
+    });
+
+    TextureData* data = new TextureData;
+
+    data->gid = gid;
+    data->parameters = parameters;
+    data->parameters.bpp=bpp;
+    data->parameters.pow2=false;
+    data->parameters.rawalpha=true;
+    data->width = width;
+    data->height = height;
+    data->exwidth = width;
+    data->exheight = height;
+    data->baseWidth = width;
+    data->baseHeight = height;
+    data->scale = 1;
+
+    return data;
+}
+
 void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
 {
 
@@ -595,6 +732,85 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
     data->baseWidth = dib.baseOriginalWidth();
     data->baseHeight = dib.baseOriginalHeight();
     data->scale = dib.scale();
+}
+
+void TextureManager::updateTextureFromRawData(TextureData* data, const void *raw, size_t width, size_t height)
+{
+
+    int wrap = 0;
+    switch (data->parameters.wrap)
+    {
+    case eClamp:
+        wrap = GTEXTURE_CLAMP;
+        break;
+    case eRepeat:
+        wrap = GTEXTURE_REPEAT;
+        break;
+    }
+
+    int filter = 0;
+    switch (data->parameters.filter)
+    {
+    case eNearest:
+        filter = GTEXTURE_NEAREST;
+        break;
+    case eLinear:
+        filter = GTEXTURE_LINEAR;
+        break;
+    case eLinearMipmap:
+        filter = GTEXTURE_LINEAR_MIPMAP;
+        break;
+    }
+
+    int format = 0;
+    int type = 0;
+    switch (data->parameters.format)
+    {
+    case eRGBA8888:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eRGB888:
+        format = GTEXTURE_RGB;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eRGB565:
+        format = GTEXTURE_RGB;
+        type = GTEXTURE_UNSIGNED_SHORT_5_6_5;
+        break;
+    case eRGBA4444:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_SHORT_4_4_4_4;
+        break;
+    case eRGBA5551:
+        format = GTEXTURE_RGBA;
+        type = GTEXTURE_UNSIGNED_SHORT_5_5_5_1;
+        break;
+    case eY8:
+        format = GTEXTURE_LUMINANCE;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eA8:
+        format = GTEXTURE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eYA8:
+        format = GTEXTURE_LUMINANCE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    }
+
+    RENDER_DO([&]{
+        gtexture_update(data->gid,width, height, format, type, wrap, filter, raw);
+    });
+
+    data->width = width;
+    data->height = height;
+    data->exwidth = width;
+    data->exheight = height;
+    data->baseWidth = width;
+    data->baseHeight = height;
+    data->scale = 1;
 }
 
 static unsigned int nextpow2(unsigned int v)

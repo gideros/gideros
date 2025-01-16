@@ -13,8 +13,8 @@ Texture::Texture(Application* application,
 }
 
 Texture::Texture(Application* application,
-                 const unsigned char* pixels, unsigned int width, unsigned int height, TextureParameters parameters, float scale) :
-    TextureBase(application, pixels, width, height, parameters, scale)
+                 const unsigned char* pixels, unsigned int width, unsigned int height, TextureParameters parameters, float scale, bool raw) :
+    TextureBase(application, pixels, width, height, parameters, scale, raw)
 {
 }
 

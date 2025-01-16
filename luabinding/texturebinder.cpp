@@ -41,11 +41,6 @@ int TextureBinder::create(lua_State* L)
     {
 		width=luaL_checkinteger(L,2);
 		height=luaL_checkinteger(L,3);
-		if (filename&&(filenamesz!=(width*height*4)))
-        {
-            lua_pushfstring(L, "Image size doesn't match data length");
-            lua_error(L);
-        }
 	}
 
 	bool smoothing = lua_toboolean(L, isFromPixels?4:2);
@@ -58,6 +53,7 @@ int TextureBinder::create(lua_State* L)
     int paramsIndex=isFromPixels?5:3;
     bool pow2=true;
     bool rawalpha=false;
+    bool isRaw=false;
     float scale=1.0;
 	if (!lua_isnoneornil(L, paramsIndex))
 	{
@@ -124,7 +120,11 @@ int TextureBinder::create(lua_State* L)
         lua_pop(L, 1);
         lua_getfield(L, paramsIndex, "rawalpha");
         if (!lua_isnil(L, -1))
-          rawalpha=lua_toboolean(L,-1);
+            rawalpha=lua_toboolean(L,-1);
+        lua_pop(L, 1);
+        lua_getfield(L, paramsIndex, "raw");
+        if (!lua_isnil(L, -1))
+            isRaw=lua_toboolean(L,-1);
         lua_pop(L, 1);
         lua_getfield(L, paramsIndex, "mipmap");
         if (!lua_isnil(L, -1))
@@ -147,8 +147,50 @@ int TextureBinder::create(lua_State* L)
 	Texture* texture = 0;
 	try
 	{
-		if (isFromPixels)
-            texture = new Texture(application, (unsigned char *) filename, width, height, parameters, scale);
+        if (isFromPixels) {
+            if (isRaw) {
+                unsigned char bpp=1;
+                switch (parameters.format)
+                {
+                case eRGBA8888:
+                    bpp=4;
+                    break;
+                case eRGB888:
+                    bpp=3;
+                    break;
+                case eRGB565:
+                    bpp=2;
+                    break;
+                case eRGBA4444:
+                    bpp=2;
+                    break;
+                case eRGBA5551:
+                    bpp=2;
+                    break;
+                case eY8:
+                    break;
+                case eA8:
+                    break;
+                case eYA8:
+                    bpp=2;
+                    break;
+                }
+                if (filename&&(filenamesz!=(width*height*bpp)))
+                {
+                    lua_pushfstring(L, "Image size doesn't match data length");
+                    lua_error(L);
+                }
+                texture = new Texture(application, (unsigned char *) filename, width, height, parameters, scale, true);
+            }
+            else {
+                if (filename&&(filenamesz!=(width*height*4)))
+                {
+                    lua_pushfstring(L, "Image size doesn't match data length");
+                    lua_error(L);
+                }
+                texture = new Texture(application, (unsigned char *) filename, width, height, parameters, scale);
+            }
+        }
 		else
             texture = new Texture(application, filename, parameters);
 	}
