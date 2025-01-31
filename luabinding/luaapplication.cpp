@@ -378,21 +378,21 @@ int LuaApplication::Core_yield(lua_State* L)
     		if (lua_toboolean(L,1))
     		{
     			std::unique_lock<std::mutex> lk(taskLock);
-                lua_enableThreads(L,-1);
+                //lua_enableThreads(L,-1);
                 frameWake.wait(lk);
-                lua_enableThreads(L,1);
+                //lua_enableThreads(L,1);
             }
             else {
-                lua_enableThreads(L,-1);
+                //lua_enableThreads(L,-1);
                 std::this_thread::yield();
-                lua_enableThreads(L,1);
+                //lua_enableThreads(L,1);
             }
         }
     	else {
             long long sleep=1000*luaL_checknumber(L,1);
-            lua_enableThreads(L,-1);
+            //lua_enableThreads(L,-1);
             std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
-            lua_enableThreads(L,1);
+            //lua_enableThreads(L,1);
         }
 
         return 0;
@@ -424,6 +424,12 @@ int LuaApplication::Core_yield(lua_State* L)
 		it->sleepTime=iclock()+sleep;
 	}
 	return lua_yield(L,0);
+}
+
+int LuaApplication::Core_stopping(lua_State* L)
+{
+    lua_pushboolean(L,taskStopping);
+    return 1;
 }
 
 int LuaApplication::Core_yieldable(lua_State* L)
@@ -1010,6 +1016,8 @@ static int bindAll(lua_State* L)
     lua_setfield(L, -2, "yield");
     lua_pushcnfunction(L, LuaApplication::Core_yieldable,"Core.yieldable");
     lua_setfield(L, -2, "yieldable");
+    lua_pushcnfunction(L, LuaApplication::Core_stopping,"Core.stopping");
+    lua_setfield(L, -2, "stopping");
     lua_pushcnfunction(L, LuaApplication::Core_frameStatistics,"Core.frameStatistics");
 	lua_setfield(L, -2, "frameStatistics");
 	lua_pushcnfunction(L, LuaApplication::Core_profilerStart, "Core.profilerStart");
@@ -1149,7 +1157,7 @@ void LuaApplication::callback(int type, void *event)
     {
         PluginManager& pluginManager = PluginManager::instance();
         for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
-            if (pluginManager.plugins[i].foreground)
+            if (pluginManager.plugins[i].suspend)
                 pluginManager.plugins[i].suspend(L);
 
         TimerContainer *timerContainer = application_->getTimerContainer();
@@ -1166,7 +1174,7 @@ void LuaApplication::callback(int type, void *event)
 
         PluginManager& pluginManager = PluginManager::instance();
         for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
-            if (pluginManager.plugins[i].foreground)
+            if (pluginManager.plugins[i].resume)
                 pluginManager.plugins[i].resume(L);
 
         Event event(Event::APPLICATION_RESUME);
@@ -1176,7 +1184,7 @@ void LuaApplication::callback(int type, void *event)
     {
         PluginManager& pluginManager = PluginManager::instance();
         for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
-            if (pluginManager.plugins[i].foreground)
+            if (pluginManager.plugins[i].background)
                 pluginManager.plugins[i].background(L);
 
         Event event(Event::APPLICATION_BACKGROUND);
@@ -1682,7 +1690,8 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
     return p;
 }
 
-#ifndef EMSCRIPTEN0 //memalloc has issues with emscripten, disable til I know more...
+//#define NO_MEMCACHE
+#ifndef NO_MEMCACHE //for testing purposes
 class MemCacheLua : public MemCache
 {
 public:
@@ -1734,7 +1743,7 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
     (void)ud;
     (void)osize;
     void *ret=NULL;
-#if EMSCRIPTEN0 //TLSF has issues with emscripten, disable til I know more...
+#ifdef NO_MEMCACHE
     if (nsize == 0)
     {
     	if (ptr)
@@ -1861,9 +1870,15 @@ void LuaApplication::deinitialize()
 
 	application_->releaseView();
 
+    //Interrupt plugins
+    taskStopping=true;
+    PluginManager& pluginManager = PluginManager::instance();
+    for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
+        if (pluginManager.plugins[i].interrupt)
+            pluginManager.plugins[i].interrupt(L);
+
 	//Release all async tasks
     taskLock.lock();
-    taskStopping=true;
     frameWake.notify_all();
     while (!tasks_.empty()) {
         AsyncLuaTask t=tasks_.front();
@@ -1878,10 +1893,8 @@ void LuaApplication::deinitialize()
     taskStopping=false;
     taskLock.unlock();
 
-    //Schedule Tasks, at least one task should be run no matter if there is enough time or not
-	PluginManager& pluginManager = PluginManager::instance();
-	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
-        pluginManager.plugins[i].main(L, 1);
+    for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
+        pluginManager.plugins[i].main(L, 1); //unregister plugins
 
 	lua_close(L);
 	L = NULL;
@@ -1924,11 +1937,11 @@ static int updateStyles(lua_State *L) {
         {
             lua_pushnil(L);
             lua_rawsettoken(L,-3,LuaApplication::token__styleUpdates);
-            lua_pushnil(L);
-            while (lua_next(L,-2)) {
+            int iter=0;
+            while ((iter=lua_rawiter(L,-1,iter))>=0) {
                 lua_pop(L,1); //No need for sprite itself
                 lua_gettoken(L,-1,LuaApplication::token_updateStyle);
-                lua_pushvalue(L,-2);
+                lua_insert(L,-2);
                 lua_call(L,1,0);
             }
         }

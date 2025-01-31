@@ -25,7 +25,6 @@ INCLUDEPATH += \
 #    "../libgid/external/zlib-1.2.8"
 #    "../libgid/external/glew-1.10.0/include"
 
-
 win32{
     RC_FILE = other_files/player.rc
 

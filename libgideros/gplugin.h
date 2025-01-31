@@ -252,6 +252,7 @@ GIDEROS_API void g_registerSuspendCallback(void(*suspend)(lua_State*));
 GIDEROS_API void g_registerResumeCallback(void(*resume)(lua_State*));
 GIDEROS_API void g_registerForegroundCallback(void(*foreground)(lua_State*));
 GIDEROS_API void g_registerBackgroundCallback(void(*background)(lua_State*));
+GIDEROS_API void g_registerInterruptCallback(void(*interrupt)(lua_State*));
 
 #ifdef __cplusplus
 }

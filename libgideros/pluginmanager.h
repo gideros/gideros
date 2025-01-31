@@ -17,6 +17,7 @@ struct GIDEROS_API GGPlugin
         resume = NULL;
         background = NULL;
         foreground = NULL;
+        interrupt = NULL;
     }
 
     void *main(lua_State *L, int type);
@@ -28,6 +29,7 @@ struct GIDEROS_API GGPlugin
     void(*resume)(lua_State*);
     void(*background)(lua_State*);
     void(*foreground)(lua_State*);
+    void(*interrupt)(lua_State*);
 };
 
 class GIDEROS_API PluginManager

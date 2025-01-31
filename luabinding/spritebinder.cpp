@@ -2449,11 +2449,11 @@ static void gatherStyledChildren(lua_State *L,int idx,int tidx)
     */
     if (lua_rawgettoken(L,idx,SpriteBinder::tokenChildren)!=LUA_TNIL) {
         lua_checkstack(L,8);
-        lua_pushnil(L);
-        while (lua_next(L,-2)) {
+        int iter=0;
+        while ((iter=lua_rawiter(L,-1,iter))>=0) {
 		   gatherStyledChildren(L,-1,tidx-3);
-           lua_pushvalue(L,-2);
-           lua_rawset(L,tidx-4);
+           lua_insert(L,-2);
+           lua_rawset(L,tidx-3);
         }
     }
     lua_pop(L,1);

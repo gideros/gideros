@@ -22,6 +22,7 @@ void *GGPlugin::main(lua_State *L, int type)
         resume = NULL;
         background = NULL;
         foreground = NULL;
+        interrupt = NULL;
     }
     else
     {
@@ -83,6 +84,11 @@ void g_registerForegroundCallback(void(*foreground)(lua_State*))
 void g_registerBackgroundCallback(void(*background)(lua_State*))
 {
     s_active->background = background;
+}
+
+void g_registerInterruptCallback(void(*interrupt)(lua_State*))
+{
+    s_active->interrupt = interrupt;
 }
 
 }
