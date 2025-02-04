@@ -59,7 +59,8 @@ class QtScreen : public Screen,protected QOpenGLWindow {
 	virtual void tick();
 protected:
 	virtual void setVisible(bool);
-	bool closed_;
+    bool closed_;
+    virtual void paintGL();
 public:
 	virtual void setSize(int w,int h);
 	virtual void getSize(int &w,int &h);
@@ -92,15 +93,28 @@ bool QtScreen::event(QEvent* ev)
 
 void QtScreen::tick()
 {
-	if (isExposed())
+    requestUpdate();
+    if (isExposed())
 	{
-		Matrix4 m;
+        /*Matrix4 m;
 		QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
 		c->makeCurrent(this);
 		c->functions()->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
 		draw(m);
-		c->swapBuffers(this);
-	}
+        c->swapBuffers(this);*/
+    }
+}
+
+void QtScreen::paintGL() {
+    //if (isExposed())
+    {
+        Matrix4 m;
+        //QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
+        //c->makeCurrent(this);
+        //c->functions()->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+        draw(m);
+        //c->swapBuffers(this);
+    }
 }
 
 void QtScreen::setSize(int w,int h)
@@ -166,11 +180,11 @@ int QtScreen::getId()
 void QtScreen::setVisible(bool visible)
 {
 	if (visible) show(); else hide();
-    QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
-    c->makeCurrent(this);
+    //QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
+    //c->makeCurrent(this);
 }
 
-QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow()
+QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow(UpdateBehavior::PartialUpdateBlit)
 {
 	closed_=true;
 }

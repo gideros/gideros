@@ -2,6 +2,7 @@
 #include "ogl.h"
 #include "color.h"
 
+size_t Pixel::pixelsCount=0;
 VertexBuffer<unsigned short> Pixel::quad;
 VertexBuffer<unsigned short> Pixel::ninepatch;
 
@@ -73,6 +74,7 @@ Pixel::Pixel(Application *application) : Sprite(application)
 		ninepatch.Update();
 	}
     vertices.resize(4);
+    pixelsCount++;
 }
 
 void Pixel::cloneFrom(Pixel *s) {
@@ -126,6 +128,10 @@ Pixel::~Pixel()
             if (extraTexture[t])
                 extraTexture[t]->unref();
         delete[] extraTexture;
+    }
+    if (!(--pixelsCount)) {
+        quad.Clear();
+        ninepatch.Clear();
     }
 }
 

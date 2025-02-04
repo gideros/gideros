@@ -18,6 +18,13 @@ public:
         bufferCache=NULL;
         modified=true;
     }
+    void Clear() {
+        std::vector<T>::clear();
+        if (bufferCache)
+            delete bufferCache;
+        bufferCache=NULL;
+        modified=true;
+    }
 	VertexBuffer()
 	{
 		bufferCache=NULL;

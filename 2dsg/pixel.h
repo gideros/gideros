@@ -9,8 +9,9 @@
 #define PIXEL_MAX_TEXTURES 8
 class Pixel : public Sprite
 {
-	static VertexBuffer<unsigned short> quad;
-	static VertexBuffer<unsigned short> ninepatch;
+    static size_t pixelsCount;
+    static VertexBuffer<unsigned short> quad;
+    static VertexBuffer<unsigned short> ninepatch;
 public:
     Pixel(Application *application);
     virtual Sprite *clone() { Pixel *clone=new Pixel(application_); clone->cloneFrom(this); return clone; }

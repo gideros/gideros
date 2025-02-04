@@ -61,6 +61,8 @@ int main(int argc, char *argv[]){
     QCoreApplication::setOrganizationDomain(Constants::ORGANIZATION_DOMAIN);
     QCoreApplication::setApplicationName(Constants::PLAYER_APPLICATION_NAME);
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+
 
     QSettings settings;
     int fps=settings.value("fps",60).toInt();
