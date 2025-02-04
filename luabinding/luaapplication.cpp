@@ -359,6 +359,18 @@ int LuaApplication::Core_frameStatistics(lua_State* L)
 	return 1;
 }
 
+int LuaApplication::Core_setAutoYield(lua_State* L)
+{
+    bool autoYield=lua_toboolean(L,1);
+    taskLock.lock();
+    std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+    while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
+    if (it!=LuaApplication::tasks_.end())
+        it->autoYield=autoYield;
+    taskLock.unlock();
+    return 0;
+}
+
 int LuaApplication::Core_yield(lua_State* L)
 {
     taskLock.lock();
@@ -450,6 +462,11 @@ int LuaApplication::Core_yieldable(lua_State* L)
 int LuaApplication::Core_asyncCall(lua_State* L)
 {
 	LuaApplication::AsyncLuaTask t;
+    bool autoYield=true;
+    if (lua_isboolean(L,1)) {
+        autoYield=lua_toboolean(L,1);
+        lua_remove(L,1);
+    }
     luaL_checktype(L,1,LUA_TFUNCTION);
     int nargs=lua_gettop(L);
     lua_State *T=lua_newthread(L);
@@ -458,7 +475,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
 	t.L=T;
 	t.sleepTime=0;
 	t.skipFrame=false;
-	t.autoYield=true;
+    t.autoYield=autoYield;
     t.nargs=nargs-1;
     t.terminated=false;
     t.inError=false;
@@ -1012,6 +1029,8 @@ static int bindAll(lua_State* L)
     lua_setfield(L, -2, "asyncThread");
     lua_pushcnfunction(L, LuaApplication::Core_signal,"Core.signal");
     lua_setfield(L, -2, "signal");
+    lua_pushcnfunction(L, LuaApplication::Core_setAutoYield,"Core.setAutoYield");
+    lua_setfield(L, -2, "setAutoYield");
     lua_pushcnfunction(L, LuaApplication::Core_yield,"Core.yield");
     lua_setfield(L, -2, "yield");
     lua_pushcnfunction(L, LuaApplication::Core_yieldable,"Core.yieldable");

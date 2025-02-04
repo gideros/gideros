@@ -227,6 +227,7 @@ public:
     static void runThread(lua_State *L);
     static int Core_asyncCall(lua_State *L);
     static int Core_asyncThread(lua_State *L);
+    static int Core_setAutoYield(lua_State *L);
     static int Core_yield(lua_State *L);
     static int Core_yieldable(lua_State *L);
     static int Core_stopping(lua_State *L);
