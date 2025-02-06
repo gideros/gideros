@@ -93,27 +93,14 @@ bool QtScreen::event(QEvent* ev)
 
 void QtScreen::tick()
 {
-    requestUpdate();
-    if (isExposed())
-	{
-        /*Matrix4 m;
-		QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
-		c->makeCurrent(this);
-		c->functions()->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
-		draw(m);
-        c->swapBuffers(this);*/
-    }
+    update();
 }
 
 void QtScreen::paintGL() {
-    //if (isExposed())
+    if (isExposed())
     {
         Matrix4 m;
-        //QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
-        //c->makeCurrent(this);
-        //c->functions()->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
         draw(m);
-        //c->swapBuffers(this);
     }
 }
 
@@ -180,11 +167,9 @@ int QtScreen::getId()
 void QtScreen::setVisible(bool visible)
 {
 	if (visible) show(); else hide();
-    //QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
-    //c->makeCurrent(this);
 }
 
-QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow(UpdateBehavior::PartialUpdateBlit)
+QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow()
 {
 	closed_=true;
 }

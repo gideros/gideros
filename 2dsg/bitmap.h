@@ -7,10 +7,12 @@
 
 class Bitmap : public Sprite
 {
+    static size_t bitmapsCount;
 	static VertexBuffer<unsigned short> quad;
 public:
     Bitmap(Application *application) : Sprite(application)
     {
+        bitmapsCount++;
         bitmapdata_ = NULL;
         texturebase_ = NULL;
 
@@ -23,7 +25,8 @@ public:
 
     Bitmap(Application *application, BitmapData* bitmapdata) : Sprite(application)
 	{
-		bitmapdata_ = bitmapdata;
+        bitmapsCount++;
+        bitmapdata_ = bitmapdata;
         if (bitmapdata_ != NULL)
             bitmapdata_->ref();
 
@@ -40,7 +43,8 @@ public:
 
     Bitmap(Application *application, TextureBase* texturebase) : Sprite(application)
 	{
-		texturebase_ = texturebase;
+        bitmapsCount++;
+        texturebase_ = texturebase;
 		texturebase_->ref();
 
 		bitmapdata_ = NULL;
@@ -63,6 +67,10 @@ public:
 
 		if (texturebase_ != NULL)
 			texturebase_->unref();
+
+        if (!(--bitmapsCount)) {
+            quad.Clear();
+        }
 	}
 
 	void setAnchorPoint(float x, float y);

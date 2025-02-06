@@ -1,6 +1,7 @@
 #include "bitmap.h"
 #include "ogl.h"
 
+size_t Bitmap::bitmapsCount=0;
 VertexBuffer<unsigned short> Bitmap::quad;
 void Bitmap::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
