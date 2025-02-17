@@ -340,9 +340,9 @@ static const int new_path_table[3][3] =
 // after 'M', only contains 'L' and 'Q'
 // optionally finishes with 'Z'
 struct reduced_path {
-	kvec_t(unsigned char)
-	commands;kvec_t(float)
-	coords;
+	kvec_t(unsigned char) commands;
+	kvec_t(float) coords;
+	kvec_t(unsigned int) indices;
 };
 
 typedef kvec_t(struct reduced_path)
@@ -412,6 +412,7 @@ static void delete_path(struct path *p) {
 	for (i = 0; i < kv_size(p->reduced_paths); ++i) {
 		kv_free(kv_a(p->reduced_paths, i).commands);
 		kv_free(kv_a(p->reduced_paths, i).coords);
+		kv_free(kv_a(p->reduced_paths, i).indices);
 	}
 	kv_free(p->reduced_paths);
 
@@ -457,9 +458,10 @@ static void new_path(reduced_path_vec *paths) {
 	kv_push_back(*paths, rp);
 }
 
-static void move_to(struct reduced_path *path, float x, float y) {
+static void move_to(struct reduced_path *path, int c, float x, float y) {
 	if (kv_empty(path->commands)) {
 		kv_push_back(path->commands, PATHCMD_MOVE_TO);
+		kv_push_back(path->indices, c);
 		kv_push_back(path->coords, x);
 		kv_push_back(path->coords, y);
 	} else {
@@ -468,35 +470,41 @@ static void move_to(struct reduced_path *path, float x, float y) {
 	}
 }
 
-static void line_to(struct reduced_path *path, float x1, float y1, float x2,
+static void line_to(struct reduced_path *path, int c, float x1, float y1, float x2,
 		float y2) {
 	if (kv_empty(path->commands)) {
 		kv_push_back(path->commands, PATHCMD_MOVE_TO);
+		kv_push_back(path->indices, c);
 		kv_push_back(path->coords, x1);
 		kv_push_back(path->coords, y1);
+		c=0;
 	}
 
 	kv_push_back(path->commands, PATHCMD_LINE_TO);
+	kv_push_back(path->indices, c);
 	kv_push_back(path->coords, x2);
 	kv_push_back(path->coords, y2);
 }
 
-static void quad_to(struct reduced_path *path, float x1, float y1, float x2,
+static void quad_to(struct reduced_path *path, int c, float x1, float y1, float x2,
 		float y2, float x3, float y3) {
 	if (kv_empty(path->commands)) {
 		kv_push_back(path->commands, PATHCMD_MOVE_TO);
+        kv_push_back(path->indices, c);
 		kv_push_back(path->coords, x1);
 		kv_push_back(path->coords, y1);
-	}
+        c=0;
+    }
 
 	kv_push_back(path->commands, PATHCMD_QUADRATIC_CURVE_TO);
+	kv_push_back(path->indices, c);
 	kv_push_back(path->coords, x2);
 	kv_push_back(path->coords, y2);
 	kv_push_back(path->coords, x3);
 	kv_push_back(path->coords, y3);
 }
 
-static void cubic_to(struct reduced_path *path, float x1, float y1, float x2,
+static void cubic_to(struct reduced_path *path, int c, float x1, float y1, float x2,
 		float y2, float x3, float y3, float x4, float y4) {
 	int i;
 
@@ -506,19 +514,23 @@ static void cubic_to(struct reduced_path *path, float x1, float y1, float x2,
 
 	if (kv_empty(path->commands)) {
 		kv_push_back(path->commands, PATHCMD_MOVE_TO);
+		kv_push_back(path->indices, c);
 		kv_push_back(path->coords, x1);
 		kv_push_back(path->coords, y1);
-	}
+        c=0;
+    }
 
 	for (i = 0; i < 8; ++i) {
 		double q[6];
 		cubic_to_quadratic(cout + i * 8, q);
 		kv_push_back(path->commands, PATHCMD_QUADRATIC_CURVE_TO);
+        kv_push_back(path->indices, c);
 		kv_push_back(path->coords, q[2]);
 		kv_push_back(path->coords, q[3]);
 		kv_push_back(path->coords, q[4]);
 		kv_push_back(path->coords, q[5]);
-	}
+        c=0;
+    }
 }
 
 static double angle(double ux, double uy, double vx, double vy) {
@@ -576,7 +588,7 @@ static void endpoint_to_center(double x1, double y1, double x2, double y2,
 		*dtheta += 2 * M_PI;
 }
 
-static void arc_tod(struct reduced_path *path, double x1, double y1, double rh,
+static void arc_tod(struct reduced_path *path, int c, double x1, double y1, double rh,
 		double rv, double phi, int fA, int fS, double x2, double y2) {
 	double cx, cy, theta1, dtheta;
 
@@ -607,27 +619,33 @@ static void arc_tod(struct reduced_path *path, double x1, double y1, double rh,
 		double yc = (ym * 4 - (y1 + y2)) / 2;
 
 		kv_push_back(path->commands, PATHCMD_QUADRATIC_CURVE_TO);
+        kv_push_back(path->indices, c);
 		kv_push_back(path->coords, xc);
 		kv_push_back(path->coords, yc);
 		kv_push_back(path->coords, x2);
 		kv_push_back(path->coords, y2);
-	}
+        c=0;
+    }
 }
 
-static void arc_to(struct reduced_path *path, float x1, float y1, float rh,
+static void arc_to(struct reduced_path *path, int c, float x1, float y1, float rh,
 		float rv, float phi, int fA, int fS, float x2, float y2) {
 	if (kv_empty(path->commands)) {
 		kv_push_back(path->commands, PATHCMD_MOVE_TO);
+		kv_push_back(path->indices, c);
 		kv_push_back(path->coords, x1);
 		kv_push_back(path->coords, y1);
+		c=0;
 	}
 
-	arc_tod(path, x1, y1, rh, rv, phi, fA, fS, x2, y2);
+	arc_tod(path, c, x1, y1, rh, rv, phi, fA, fS, x2, y2);
 }
 
-static void close_path(struct reduced_path *path) {
-	if (kv_back(path->commands) != PATHCMD_CLOSE_PATH)
+static void close_path(struct reduced_path *path, int c) {
+	if (kv_back(path->commands) != PATHCMD_CLOSE_PATH) {
 		kv_push_back(path->commands, PATHCMD_CLOSE_PATH);
+		kv_push_back(path->indices, c);
+	}
 }
 
 static void reduce_path(int num_commands, const unsigned char *commands,
@@ -662,13 +680,14 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 	int i;
 
 	for (i = 0; i < num_commands; ++i) {
+		int cIdx=i+1;
 		switch (commands[i]) {
 		case PATHCMD_MOVE_TO:
 		case 'M':
 			if (new_path_table[prev_command][0])
 				new_path(reduced_paths);
 			prev_command = 0;
-			move_to(last_path, c0, c1);
+			move_to(last_path, cIdx, c0, c1);
 			set(c0, c1, c0, c1);
 			spx = ncpx;
 			spy = ncpy;
@@ -681,7 +700,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 0;
 			relative(c0,c1);
-			move_to(last_path, rx, ry);
+			move_to(last_path, cIdx, rx, ry);
 			set(rx,ry,rx,ry);
 			spx = ncpx;
 			spy = ncpy;
@@ -694,7 +713,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][2])
 			new_path(reduced_paths);
 			prev_command = 2;
-			close_path(last_path);
+			close_path(last_path, cIdx);
 			set(spx, spy, spx, spy);
 			break;
 
@@ -702,7 +721,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][0])
 			new_path(reduced_paths);
 			prev_command = 0;
-			move_to(last_path, 0, 0);
+			move_to(last_path, cIdx, 0, 0);
 			set(0, 0, 0, 0);
 			spx = ncpx;
 			spy = ncpy;
@@ -713,7 +732,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			line_to(last_path, cpx, cpy, c0, c1);
+			line_to(last_path, cIdx, cpx, cpy, c0, c1);
 			set(c0, c1, c0, c1);
 			icoord += 2;
 			break;
@@ -724,7 +743,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c0,c1);
-			line_to(last_path, cpx, cpy, rx, ry);
+			line_to(last_path, cIdx, cpx, cpy, rx, ry);
 			set(rx,ry,rx,ry);
 			icoord += 2;
 			break;
@@ -734,7 +753,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			line_to(last_path, cpx, cpy, c0, cpy);
+			line_to(last_path, cIdx, cpx, cpy, c0, cpy);
 			set(c0, cpy, c0, cpy);
 			icoord += 1;
 			break;
@@ -745,7 +764,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c0,0);
-			line_to(last_path, cpx, cpy, rx,ry);
+			line_to(last_path, cIdx, cpx, cpy, rx,ry);
 			set(rx,ry,rx,ry);
 			icoord += 1;
 			break;
@@ -755,7 +774,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			line_to(last_path, cpx, cpy, cpx, c0);
+			line_to(last_path, cIdx, cpx, cpy, cpx, c0);
 			set(cpx, c0, cpx, c0);
 			icoord += 1;
 			break;
@@ -766,7 +785,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(0,c0);
-			line_to(last_path, cpx, cpy, rx,ry);
+			line_to(last_path, cIdx, cpx, cpy, rx,ry);
 			set(rx,ry,rx,ry);
 			icoord += 1;
 			break;
@@ -776,7 +795,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			quad_to(last_path, cpx, cpy, c0, c1, c2, c3);
+			quad_to(last_path, cIdx, cpx, cpy, c0, c1, c2, c3);
 			set(c2, c3, c0, c1);
 			icoord += 4;
 			break;
@@ -788,7 +807,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			prev_command = 1;
 			relative(c2,c3); rx1=rx; ry1=ry;
 			relative(c0,c1);
-			quad_to(last_path, cpx, cpy, rx,ry,rx1,ry1);
+			quad_to(last_path, cIdx, cpx, cpy, rx,ry,rx1,ry1);
 			set(rx1,ry1,rx,ry);
 			icoord += 4;
 			break;
@@ -798,7 +817,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			cubic_to(last_path, cpx, cpy, c0, c1, c2, c3, c4, c5);
+			cubic_to(last_path, cIdx, cpx, cpy, c0, c1, c2, c3, c4, c5);
 			set(c4, c5, c2, c3);
 			icoord += 6;
 			break;
@@ -811,7 +830,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			relative(c2,c3); rx1=rx; ry1=ry;
 			relative(c4,c5); rx2=rx; ry2=ry;
 			relative(c0,c1);
-			cubic_to(last_path, cpx, cpy, rx,ry,rx1,ry1,rx2,ry2);
+			cubic_to(last_path, cIdx, cpx, cpy, rx,ry,rx1,ry1,rx2,ry2);
 			set(rx2,ry2,rx1,ry1);
 			icoord += 6;
 			break;
@@ -821,7 +840,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			quad_to(last_path, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy, c0, c1);
+			quad_to(last_path, cIdx, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy, c0, c1);
 			set(c0, c1, 2 * cpx - pepx, 2 * cpy - pepy);
 			icoord += 2;
 			break;
@@ -832,7 +851,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c0,c1);
-			quad_to(last_path, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy, rx,ry);
+			quad_to(last_path, cIdx, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy, rx,ry);
 			set(rx,ry, 2 * cpx - pepx, 2 * cpy - pepy);
 			icoord += 2;
 			break;
@@ -842,7 +861,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			cubic_to(last_path, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy, c0, c1, c2, c3);
+			cubic_to(last_path, cIdx, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy, c0, c1, c2, c3);
 			set(c2, c3, c0, c1);
 			icoord += 4;
 			break;
@@ -854,7 +873,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			prev_command = 1;
 			relative(c2,c3); rx1=rx; ry1=ry;
 			relative(c0,c1);
-			cubic_to(last_path, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy,rx,ry,rx1,ry1);
+			cubic_to(last_path, cIdx, cpx, cpy, 2 * cpx - pepx, 2 * cpy - pepy,rx,ry,rx1,ry1);
 			set(rx1,ry1,rx,ry);
 			icoord += 4;
 			break;
@@ -863,7 +882,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 0, 1, c3, c4);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 0, 1, c3, c4);
 			set(c3, c4, c3, c4);
 			icoord += 5;
 			break;
@@ -873,7 +892,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c3,c4);
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 0, 1, rx,ry);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 0, 1, rx,ry);
 			set(rx,ry,rx,ry);
 			icoord += 5;
 			break;
@@ -882,7 +901,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 0, 0, c3, c4);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 0, 0, c3, c4);
 			set(c3, c4, c3, c4);
 			icoord += 5;
 			break;
@@ -892,7 +911,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c3,c4);
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 0, 0, rx,ry);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 0, 0, rx,ry);
 			set(rx,ry,rx,ry);
 			icoord += 5;
 			break;
@@ -901,7 +920,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 1, 1, c3, c4);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 1, 1, c3, c4);
 			set(c3, c4, c3, c4);
 			icoord += 5;
 			break;
@@ -911,7 +930,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c3,c4);
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 1, 1, rx,ry);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 1, 1, rx,ry);
 			set(rx,ry,rx,ry);
 			icoord += 5;
 			break;
@@ -920,7 +939,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 1, 0, c3, c4);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 1, 0, c3, c4);
 			set(c3, c4, c3, c4);
 			icoord += 5;
 			break;
@@ -930,7 +949,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c3,c4);
-			arc_to(last_path, cpx, cpy, c0, c1, c2, 1, 0, cpx + c3, cpy + c4);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, 1, 0, cpx + c3, cpy + c4);
 			set(rx,ry,rx,ry);
 			icoord += 5;
 			break;
@@ -940,7 +959,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			arc_to(last_path, cpx, cpy, c0, c1, c2, c3, c4, c5, c6);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, c3, c4, c5, c6);
 			set(c5, c6, c5, c6);
 			icoord += 7;
 			break;
@@ -951,7 +970,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			new_path(reduced_paths);
 			prev_command = 1;
 			relative(c5,c6);
-			arc_to(last_path, cpx, cpy, c0, c1, c2, c3, c4, rx,ry);
+			arc_to(last_path, cIdx, cpx, cpy, c0, c1, c2, c3, c4, rx,ry);
 			set(rx,ry,rx,ry);
 			icoord += 7;
 			break;
@@ -960,11 +979,11 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][0])
 			new_path(reduced_paths);
 			prev_command = 2;
-			move_to(last_path, c0, c1);
-			line_to(last_path, c0, c1, c0 + c2, c1);
-			line_to(last_path, c0 + c2, c1, c0 + c2, c1 + c3);
-			line_to(last_path, c0 + c2, c1 + c3, c0, c1 + c3);
-			close_path(last_path);
+			move_to(last_path, cIdx, c0, c1);
+			line_to(last_path, 0, c0, c1, c0 + c2, c1);
+			line_to(last_path, 0, c0 + c2, c1, c0 + c2, c1 + c3);
+			line_to(last_path, 0, c0 + c2, c1 + c3, c0, c1 + c3);
+			close_path(last_path,0);
 			set(c0, c1, c0, c1 + c3);
 			icoord += 4;
 			break;
@@ -973,7 +992,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			cubic_to(last_path, cpx, cpy, cpx, cpy, c0, c1, c2, c3);
+			cubic_to(last_path, cIdx, cpx, cpy, cpx, cpy, c0, c1, c2, c3);
 			set(c2, c3, c0, c1);
 			icoord += 4;
 			break;
@@ -982,7 +1001,7 @@ static void reduce_path(int num_commands, const unsigned char *commands,
 			if (new_path_table[prev_command][1])
 			new_path(reduced_paths);
 			prev_command = 1;
-			cubic_to(last_path, cpx, cpy, c0, c1, c2, c3, c2, c3);
+			cubic_to(last_path, cIdx, cpx, cpy, c0, c1, c2, c3, c2, c3);
 			set(c2, c3, c2, c3);
 			icoord += 4;
 			break;
@@ -1605,6 +1624,22 @@ static void subdivide_quad(float c[],float r[]) {
         r[1] = ctrly;
         r[2] = x2;
         r[3] = y2;
+}
+
+static double quad_length(double x0, double y0, double x1, double y1, double x2, double y2)
+{
+    double Ax = x0 - 2 * x1 + x2;
+    double Ay = y0 - 2 * y1 + y2;
+    double Bx = 2 * (x1 - x0);
+    double By = 2 * (y1 - y0);
+    double Cx = x0;
+    double Cy = y0;
+
+    double length = arc_length(Ax, Ay, Bx, By, Cx, Cy, 1);
+
+    if (!(std::isfinite(length)&&(length>=0)))
+        length=0;
+    return length;
 }
 
 static void add_stroke_quad_int(struct path *path, double x0, double y0, double x1,
@@ -2781,7 +2816,7 @@ static float get_path_offset(struct path *path, float px, float py, float accura
                 icoord += 2;
                 break;
             case PATHCMD_QUADRATIC_CURVE_TO:
-                dist=lengthSq(cpx,cpy,c2,c3,c0,c1);
+                dist=quad_length(cpx,cpy,c0,c1,c2,c3);
                 set(c2, c3);
                 icoord += 4;
                 break;
@@ -2807,6 +2842,80 @@ static float get_path_offset(struct path *path, float px, float py, float accura
     }
     nextSegment=0;
     return toffset;
+}
+
+
+static float get_path_segment(struct path *path, unsigned int start,unsigned int end, float &length, float &nextSegment) {
+
+    reduced_path_vec *reduced_paths = &path->reduced_paths;
+
+    size_t i, j;
+    float soffset=0;
+    float eoffset=0;
+    float toffset=0;
+    bool hasEnd=false;
+
+    for (i = 0; i < kv_size(*reduced_paths); ++i) {
+        struct reduced_path *p = &kv_a(*reduced_paths, i);
+
+        size_t num_commands = kv_size(p->commands);
+        unsigned char *commands = kv_data(p->commands);
+        float *coords = kv_data(p->coords);
+        unsigned int *idx = kv_data(p->indices);
+
+        int icoord = 0;
+
+        float spx = 0, spy = 0;
+        float cpx = 0, cpy = 0;
+        float ncpx = 0, ncpy = 0;
+
+        float dist=0;
+        for (j = 0; j < num_commands; ++j) {
+            switch (commands[j]) {
+            case PATHCMD_MOVE_TO:
+                set(c0, c1);
+                spx = ncpx;
+                spy = ncpy;
+                icoord += 2;
+                break;
+            case PATHCMD_LINE_TO:
+                dist = sqrtf((c0 - cpx)*(c0 - cpx) + (c1 - cpy)*(c1 - cpy));
+                set(c0, c1);
+                icoord += 2;
+                break;
+            case PATHCMD_QUADRATIC_CURVE_TO:
+                dist=quad_length(cpx,cpy,c0,c1,c2,c3);
+                set(c2, c3);
+                icoord += 4;
+                break;
+            case PATHCMD_CLOSE_PATH:
+                dist = sqrtf((spx - cpx)*(spx - cpx) + (spy - cpy)*(spy - cpy));
+                set(spx, spy);
+                break;
+            }
+
+            if (idx[j]&&(idx[j]==start))
+                soffset=toffset;
+
+            if (idx[j]&&(idx[j]==end)) {
+                eoffset=toffset;
+                hasEnd=true;
+            }
+
+            if (idx[j]&&hasEnd&&(idx[j]>end)) {
+                length=eoffset-soffset;
+                nextSegment=toffset-eoffset;
+                return soffset;
+            }
+            toffset+=dist;
+
+            cpx = ncpx;
+            cpy = ncpy;
+        }
+    }
+    nextSegment=hasEnd?(toffset-eoffset):0;
+    length=(hasEnd?eoffset:toffset)-soffset;
+    return soffset;
 }
 
 
@@ -2937,6 +3046,17 @@ float Path2D::getPathOffset(float px, float py, float accuracy, float &nextSegme
     if (p) {
         return get_path_offset(p,px,py,accuracy,nextSegment);
     }
+    nextSegment=0;
+    return 0;
+}
+
+float Path2D::getSegmentSize(unsigned int start,unsigned int end, float &length, float &nextSegment)
+{
+    struct path *p = get_path(path);
+    if (p) {
+        return get_path_segment(p,start, end, length, nextSegment);
+    }
+    length=0;
     nextSegment=0;
     return 0;
 }

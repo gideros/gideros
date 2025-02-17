@@ -49,6 +49,7 @@ public:
 	void setLineThickness(float thickness, float feather, float margin = -1, float flatness = -1);
 	void getPathPoints(float offset, float advance,int max, float flatness, int maxsub,std::vector<PathPoint> &points);
     float getPathOffset(float px, float py, float accuracy, float &nextSegment);
+    float getSegmentSize(unsigned int start,unsigned int end, float &length, float &nextSegment);
 	static int buildPath(PrPath *);
 	static void removePath(int);
 	void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,const Matrix4 *textureMatrix=NULL,VertexBuffer<unsigned char> *cb=NULL);

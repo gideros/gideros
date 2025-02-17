@@ -221,10 +221,12 @@ public:
     static std::mutex taskLock;
     static std::condition_variable frameWake;
     static bool taskStopping;
+    static bool taskSuspend;
     static double meanFrameTime_; //Average frame duration
     static double meanFreeTime_; //Average time available for async tasks
     static unsigned long frameCounter_; //Global frame counter
     static void runThread(lua_State *L);
+    static void waitForTaskResume();
     static int Core_asyncCall(lua_State *L);
     static int Core_asyncThread(lua_State *L);
     static int Core_setAutoYield(lua_State *L);

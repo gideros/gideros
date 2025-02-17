@@ -21,6 +21,7 @@ Path2DBinder::Path2DBinder(lua_State* L)
         {"setConvex", setConvex },
         {"getPathPoints", getPathPoints },
         {"getPathOffset", getPathOffset },
+        {"getSegmentSize", getSegmentSize },
         {NULL, NULL},
 	};
 
@@ -224,6 +225,21 @@ int Path2DBinder::getPathOffset(lua_State* L)
     lua_pushnumber(L,next);
 
     return 2;
+}
+
+int Path2DBinder::getSegmentSize(lua_State* L)
+{
+    Binder binder(L);
+    Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+
+    float next=0;
+    float length=0;
+    float offset=shape->getSegmentSize(luaL_optunsigned(L, 2,0),luaL_optunsigned(L,3,0),length,next);
+    lua_pushnumber(L,offset);
+    lua_pushnumber(L,length);
+    lua_pushnumber(L,next);
+
+    return 3;
 }
 
 

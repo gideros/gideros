@@ -90,6 +90,7 @@ void *LuaApplication::debuggerContext=NULL;
 std::mutex LuaApplication::taskLock;
 std::condition_variable LuaApplication::frameWake;
 bool LuaApplication::taskStopping=false;
+bool LuaApplication::taskSuspend=false;
 static void profilerYielded(lua_State *L,double time);
 
 static g_id luaCbGid=g_NextId();
@@ -371,6 +372,14 @@ int LuaApplication::Core_setAutoYield(lua_State* L)
     return 0;
 }
 
+void LuaApplication::waitForTaskResume() {
+    if (taskStopping) return;
+    while (taskSuspend) {
+        std::unique_lock<std::mutex> lk(taskLock);
+        frameWake.wait(lk);
+    }
+}
+
 int LuaApplication::Core_yield(lua_State* L)
 {
     taskLock.lock();
@@ -390,21 +399,24 @@ int LuaApplication::Core_yield(lua_State* L)
     		if (lua_toboolean(L,1))
     		{
     			std::unique_lock<std::mutex> lk(taskLock);
-                //lua_enableThreads(L,-1);
+                lua_enableThreads(L,0,-1);
                 frameWake.wait(lk);
-                //lua_enableThreads(L,1);
+                waitForTaskResume();
+                lua_enableThreads(L,0,1);
             }
             else {
-                //lua_enableThreads(L,-1);
+                lua_enableThreads(L,0,-1);
                 std::this_thread::yield();
-                //lua_enableThreads(L,1);
+                waitForTaskResume();
+                lua_enableThreads(L,0,1);
             }
         }
     	else {
             long long sleep=1000*luaL_checknumber(L,1);
-            //lua_enableThreads(L,-1);
+            lua_enableThreads(L,0,-1);
             std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
-            //lua_enableThreads(L,1);
+            waitForTaskResume();
+            lua_enableThreads(L,0,1);
         }
 
         return 0;
@@ -516,7 +528,7 @@ static int Signal_wait(lua_State *L) {
     bool ret=true;
     if (sig) {
         std::unique_lock<std::mutex> lk(LuaApplication::taskLock);
-        lua_enableThreads(L,-1);
+        lua_enableThreads(L,0,-1);
         std::function<bool()> p=[=]{
     		if (LuaApplication::taskStopping) return true;
             bool signaled=sig->state;
@@ -532,7 +544,8 @@ static int Signal_wait(lua_State *L) {
             sig->cv.wait(lk,p);
         else
             ret=sig->cv.wait_for(lk,std::chrono::milliseconds((int)(dur*1000)),p);
-        lua_enableThreads(L,1);
+        LuaApplication::waitForTaskResume();
+        lua_enableThreads(L,0,1);
         if (LuaApplication::taskStopping) {
             lua_pushstring(L,"System stopping");
             lua_error(L);
@@ -577,7 +590,7 @@ void LuaApplication::runThread(lua_State *L)
         }
     }
     taskLock.unlock();
-    lua_enableThreads(L,-1);
+    lua_enableThreads(L,-1,0);
 }
 
 int LuaApplication::Core_asyncThread(lua_State* L)
@@ -597,7 +610,7 @@ int LuaApplication::Core_asyncThread(lua_State* L)
     t.profilerYielded=false;
     lua_xmove(L,T,nargs);
     lua_rawgeti(L, LUA_REGISTRYINDEX, t.taskRef);
-    lua_enableThreads(L,1);
+    lua_enableThreads(L,1,0);
     taskLock.lock();
     t.th=new std::thread(runThread,T);
     LuaApplication::tasks_.push_back(t);
@@ -2270,8 +2283,12 @@ void LuaApplication::enterFrame(GStatus *status)
 	else
 		taskFrameTime_ = 0;
     taskLock.unlock();
+
     //If we have some true threads, ensure GC is performed if possible
-    if (hasThreads) lua_gc(L,LUA_GCSTEP,0);
+    if (hasThreads) {
+        lua_gc(L,LUA_GCSTEP,0);
+        taskSuspend=lua_gc(L,LUA_GCNEEDED,0);
+    }
     frameWake.notify_all();
     application_->deleteAutounrefPool(pool);
 }

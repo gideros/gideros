@@ -22,6 +22,7 @@ private:
     static int setConvex(lua_State* L);
 	static int getPathPoints(lua_State* L);
     static int getPathOffset(lua_State* L);
+    static int getSegmentSize(lua_State* L);
 };
 
 #endif
