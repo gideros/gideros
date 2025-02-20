@@ -131,7 +131,8 @@ Sprite::Sprite(Application* application) :
 	layoutState=NULL;
 	layoutConstraints=NULL;
 	checkClip_=false;
-    changes_=(ChangeSet)0x0FF; //All invalid, except constraints which is never actually revalidated
+    int meta=INV_TRANSFORM|INV_LAYOUT|INV_CONSTRAINTS|INV_VISIBILITY|INV_CLIP;
+    changes_=(ChangeSet)(0x0FF&~meta); //All invalid, except constraints which is never actually revalidated
 	hasCustomShader_=false;
     worldAlign_=false;
     shaders_=nullptr;
@@ -140,6 +141,9 @@ Sprite::Sprite(Application* application) :
     skipSet_=nullptr;
     ghosts_=nullptr;
     autoSort_=false;
+    for (size_t i=0;i<BOUNDSCACHE_MAX;i++)
+        boundsCacheValid[i]=false;
+    boundsCacheRef=nullptr;
 }
 
 void Sprite::cloneFrom(Sprite *s) {
@@ -150,10 +154,6 @@ void Sprite::cloneFrom(Sprite *s) {
     if (s->skipSet_)
         skipSet_=new std::vector<char>(*(s->skipSet_));
     checkClip_=s->checkClip_;
-    memcpy(boundsCache,s->boundsCache,sizeof(boundsCache));
-    memcpy(boundsCacheValid,s->boundsCacheValid,sizeof(boundsCacheValid));
-    boundsCacheRef=s->boundsCacheRef;
-    changes_=s->changes_;
     if (s->layoutConstraints)
     {
         layoutConstraints=getLayoutConstraints();
@@ -1536,9 +1536,9 @@ void Sprite::invalidate(int changes) {
     if (changes&(INV_BOUNDS))
         changes|=INV_GRAPHICS;
 
-    if ((changes_&changes)==changes) return; //Already invalid
+    int meta=INV_TRANSFORM|INV_LAYOUT|INV_CONSTRAINTS|INV_VISIBILITY|INV_CLIP;
 
-    int downchanges=changes&(INV_TRANSFORM|INV_BOUNDS|INV_SHADER); //Bound, transfrom and shader changes impact children
+    int downchanges=changes&(INV_TRANSFORM|INV_BOUNDS|INV_SHADER)&~meta; //Bound, transform and shader changes impact children
     if (downchanges&&children_.size()) {
 		faststack<Sprite> stack;
 		stack.push_all(children_.data(),children_.size());
@@ -1552,14 +1552,16 @@ void Sprite::invalidate(int changes) {
 		}
 	}
 
-    if (changes&(INV_GRAPHICS)) {
+    int newChanges=changes&(~changes_);
+
+    if (newChanges&(INV_GRAPHICS)) {
 		changes|=INV_EFFECTS;
         if (viewports)
         for (auto it=viewports->begin();it!=viewports->end();it++)
             (*it)->invalidate(INV_GRAPHICS);
     }
 
-    changes_=(ChangeSet)(changes_|(changes&(~INV_CONSTRAINTS)));
+    changes_=(ChangeSet)(changes_|(changes&(~meta)));
 
 	changes=(ChangeSet)(changes&~(INV_VISIBILITY|INV_CLIP|INV_TRANSFORM|INV_GRAPHICS|INV_SHADER));
     if (changes&(INV_CONSTRAINTS))
@@ -1589,7 +1591,7 @@ void Sprite::invalidate(int changes) {
 		else if (!(h->layoutConstraints&&h->layoutConstraints->group))
             changes=(ChangeSet)(changes&(~(INV_LAYOUT|INV_CONSTRAINTS)));
 
-        h->changes_=(ChangeSet)(h->changes_|(changes&(~INV_CONSTRAINTS)));
+        h->changes_=(ChangeSet)(h->changes_|(changes&~meta));
 		h=h->parent_;
 	}
 
@@ -1636,12 +1638,9 @@ void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny,
     Sprite *hrun=this;
     if (changes_&INV_BOUNDS)
     while (hrun) {
-        if (hrun->changes_&INV_BOUNDS)
-        {
-            for (size_t i=0;i<BOUNDSCACHE_MAX;i++)
-                hrun->boundsCacheValid[i]=false;
-            hrun->revalidate(INV_BOUNDS);
-        }
+        for (size_t i=0;i<BOUNDSCACHE_MAX;i++)
+            hrun->boundsCacheValid[i]=false;
+        hrun->revalidate(INV_BOUNDS);
         hrun=hrun->parent_;
     }
 
