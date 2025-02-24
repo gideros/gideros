@@ -342,10 +342,11 @@ Module.checkALMuted = function() {
 	}
 }
 
-Module.GiderosJSEvent = function(type, context, value, data) {
+Module.GiderosJSEvent = function(type, context, value, data, meta) {
 	var etype = 'number';
 	var len = data.length;
 	var dataPtr;
+	if (typeof meta != 'string') meta='';
 	if (typeof data == 'string') {
 		etype = 'string';
 		len = -1;
@@ -357,7 +358,7 @@ Module.GiderosJSEvent = function(type, context, value, data) {
 		data = dataPtr;
 	}
 	Module.ccall('JSNative_enqueueEvent', 'number', [ 'string', 'number',
-			'number', etype, 'number' ], [ type, context, value, data, len ]);
+			'number', etype, 'number','string' ], [ type, context, value, data, len, meta ]);
 	if (etype == 'number')
 		Module._free(dataPtr);
 }
