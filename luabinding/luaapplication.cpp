@@ -82,6 +82,13 @@
 #include "luacodegen.h"
 #endif
 
+
+#ifdef LUA_IS_LUAU
+static void yieldHook(lua_State* L, int gc);
+#else
+static void yieldHook(lua_State *L,lua_Debug *ar);
+#endif
+
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
 int LuaApplication::debuggerBreak=0;
 std::map<int,bool> LuaApplication::breakpoints;
@@ -367,7 +374,10 @@ int LuaApplication::Core_setAutoYield(lua_State* L)
     std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
     while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
     if (it!=LuaApplication::tasks_.end())
+    {
+        lua_callbacks(L)->interrupt=autoYield?yieldHook:nullptr;
         it->autoYield=autoYield;
+    }
     taskLock.unlock();
     return 0;
 }
@@ -378,6 +388,38 @@ void LuaApplication::waitForTaskResume() {
         std::unique_lock<std::mutex> lk(taskLock);
         frameWake.wait(lk);
     }
+}
+
+int LuaApplication::Core_yieldlock(lua_State* L)
+{
+    int err=0;
+    bool lock=lua_toboolean(L,1);
+    taskLock.lock();
+    std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+    while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
+    if (it!=LuaApplication::tasks_.end())
+    {
+        if (it->th) err=1;
+        else {
+            if (lock)
+                it->yieldLock++;
+            else {
+                if (it->yieldLock)
+                    it->yieldLock--;
+                else
+                    err=2;
+            }
+        }
+    }
+    taskLock.unlock();
+    if (err) {
+        if (err==1)
+            lua_pushstring(L, "Can't prevent yielding from an asynchronous thread");
+        if (err==1)
+            lua_pushstring(L, "Can't unlock a not locked task");
+        lua_error(L);
+    }
+    return 0;
 }
 
 int LuaApplication::Core_yield(lua_State* L)
@@ -430,7 +472,8 @@ int LuaApplication::Core_yield(lua_State* L)
 		return 0; //Yield only applies to asyncThreads
 	}
 	it->sleepTime=0;
-	it->autoYield=false;
+    lua_callbacks(L)->interrupt=nullptr;
+    it->autoYield=false;
 	it->skipFrame=false;
 	if (lua_isboolean(L,1))
 	{
@@ -438,6 +481,7 @@ int LuaApplication::Core_yield(lua_State* L)
 			it->skipFrame=true;
         else {
 			it->autoYield=true;
+            lua_callbacks(L)->interrupt=yieldHook;
             if (lua_toboolean(L,2))
                 return 0;
         }
@@ -447,7 +491,12 @@ int LuaApplication::Core_yield(lua_State* L)
 		double sleep=luaL_optnumber(L,1,0);
 		it->sleepTime=iclock()+sleep;
 	}
-	return lua_yield(L,0);
+    if (it->yieldLock)
+    {
+        lua_pushstring(L,"Task is forbidden to yield at this point");
+        lua_error(L);
+    }
+    return lua_yield(L,0);
 }
 
 int LuaApplication::Core_stopping(lua_State* L)
@@ -466,8 +515,9 @@ int LuaApplication::Core_yieldable(lua_State* L)
     lua_pushboolean(L,isThread);
     lua_pushboolean(L,isThread&&(it->autoYield||it->th));
     lua_pushboolean(L,isThread&&(it->th));
+    lua_pushinteger(L,isThread?it->yieldLock:0);
     taskLock.unlock();
-    return 4;
+    return 5;
 }
 
 #include "lstate.h"
@@ -483,6 +533,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
     int nargs=lua_gettop(L);
     lua_State *T=lua_newthread(L);
 	t.taskRef=luaL_ref(L,LUA_REGISTRYINDEX);
+    t.yieldLock=0;
     t.th=nullptr;
 	t.L=T;
 	t.sleepTime=0;
@@ -600,6 +651,7 @@ int LuaApplication::Core_asyncThread(lua_State* L)
     int nargs=lua_gettop(L);
     lua_State *T=lua_newthread(L);
     t.taskRef=luaL_ref(L,LUA_REGISTRYINDEX);
+    t.yieldLock=0;
     t.L=T;
     t.sleepTime=0;
     t.skipFrame=false;
@@ -1048,6 +1100,8 @@ static int bindAll(lua_State* L)
     lua_setfield(L, -2, "yield");
     lua_pushcnfunction(L, LuaApplication::Core_yieldable,"Core.yieldable");
     lua_setfield(L, -2, "yieldable");
+    lua_pushcnfunction(L, LuaApplication::Core_yieldlock,"Core.yieldlock");
+    lua_setfield(L, -2, "yieldlock");
     lua_pushcnfunction(L, LuaApplication::Core_stopping,"Core.stopping");
     lua_setfield(L, -2, "stopping");
     lua_pushcnfunction(L, LuaApplication::Core_frameStatistics,"Core.frameStatistics");
@@ -1928,9 +1982,9 @@ void LuaApplication::deinitialize()
     for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
         pluginManager.plugins[i].main(L, 1); //unregister plugins
 
-	lua_close(L);
-	L = NULL;
-	globalLuaState=NULL;
+    lua_close(L);
+    L = NULL;
+    globalLuaState=NULL;
 
 	delete application_;
     application_ = NULL;
@@ -1950,6 +2004,7 @@ void LuaApplication::deinitialize()
 
 static int tick(lua_State *L)
 {
+    G_UNUSED(L);
     gevent_Tick();
     return 0;
 }
@@ -2224,7 +2279,7 @@ void LuaApplication::enterFrame(GStatus *status)
 #ifdef LUA_IS_LUAU
                 lua_callbacks(t.L)->interrupt=yieldHook;
                 res = lua_resume(t.L,L,t.nargs);
-                lua_callbacks(t.L)->interrupt=NULL;
+                lua_callbacks(t.L)->interrupt=nullptr;
 #else
                 LuaDebugging::yieldHookMask=LUA_MASKRET| LUA_MASKCOUNT;
                 lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::debuggerBreak&DBG_MASKLUA), 1000);

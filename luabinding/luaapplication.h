@@ -212,6 +212,7 @@ public:
         bool autoYield;
         bool inError;
         bool terminated;
+        int yieldLock;
     	int nargs;
         std::thread *th;
         bool profilerYielded;
@@ -232,6 +233,7 @@ public:
     static int Core_setAutoYield(lua_State *L);
     static int Core_yield(lua_State *L);
     static int Core_yieldable(lua_State *L);
+    static int Core_yieldlock(lua_State *L);
     static int Core_stopping(lua_State *L);
     static int Core_signal(lua_State *L);
     static int Core_getScriptPath(lua_State *L);
