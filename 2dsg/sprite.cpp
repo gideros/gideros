@@ -643,7 +643,6 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
             for (size_t i = 0;i< sprite->children_.size();i++)
                 sprite->drawCount_+=sprite->children_[i]->drawCount_;
             sprite->childrenDrawn();
-            sprite->revalidate(INV_GRAPHICS);
             if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 				glPopColor();
 			if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1)
@@ -656,6 +655,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		}
 
         sprite->drawCount_=0;
+        sprite->revalidate(INV_GRAPHICS); //Revalidate even if not drawn
 
 		if (sprite->isVisible_ == false) {
 			continue;

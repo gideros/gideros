@@ -353,8 +353,7 @@ Module.GiderosJSEvent = function(type, context, value, data, meta) {
 	} else {
 		if (len==undefined) len=data.byteLength;
 		var dataPtr = Module._malloc(len);
-		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, len);
-		dataHeap.set(data);
+		Module.HEAPU8.set(new Uint8Array(data),dataPtr);
 		data = dataPtr;
 	}
 	Module.ccall('JSNative_enqueueEvent', 'number', [ 'string', 'number',

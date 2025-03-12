@@ -2820,7 +2820,8 @@ static void profilerYielded(lua_State *L,double time)
 {
     Closure *cl=curr_func(L);
     ProfileInfo *p=profilerGetInfo(cl);
-    p->callstack[L].top().profOverHead+=time;
+    if (!p->callstack[L].empty())
+        p->callstack[L].top().profOverHead+=time;
 }
 
 
@@ -2878,7 +2879,8 @@ static void profilerHook(lua_State *L,int enter)
         cret.profOverHead=0;
         double ltime=iclock();
         cret.entered=ltime;
-        cp->callstack[L].top().profOverHead+=(ltime-enterTime);
+        if (!cp->callstack[L].empty())
+            cp->callstack[L].top().profOverHead+=(ltime-enterTime);
         p->callstack[L].push(cret);
 	}
 	else
@@ -2904,12 +2906,14 @@ static void profilerHook(lua_State *L,int enter)
                 p->cCount[cret.callret]=p->cCount[cret.callret]+1;
                 p->cTime[cret.callret]=p->cTime[cret.callret]+ctime;
                 ProfileInfo *np=proFuncs[cret.callret];
-                np->callstack[L].top().profOverHead+=ptime;
+                if (!np->callstack[L].empty())
+                    np->callstack[L].top().profOverHead+=ptime;
                 p->callstack[L].pop();
                 p=np;
 			}
 		}
-        p->callstack[L].top().profOverHead+=(iclock()-enterTime);
+        if (!p->callstack[L].empty())
+            p->callstack[L].top().profOverHead+=(iclock()-enterTime);
     }
 }
 
