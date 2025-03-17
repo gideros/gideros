@@ -54,6 +54,7 @@ int main(int argc, char *argv[]){
     for (int i=0;i<argc;i++)
         PATH_CommandLine.push_back(std::string(argv[i]));
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     TabletApplication a(argc, argv);
 
     QDir dir = QCoreApplication::applicationDirPath();
