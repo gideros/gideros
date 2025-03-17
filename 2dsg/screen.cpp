@@ -39,11 +39,15 @@ void Screen::clear(unsigned int color, float a)
 
 void Screen::draw(const Matrix transform)
 {
-	int sw,sh;
-	getSize(sw,sh);
+    int isw,ish;
+    float sw,sh,scale;
+    getSize(isw,ish);
+    scale=getDisplayScale();
+    sw=scale*isw;
+    sh=scale*ish;
     ShaderEngine::Engine->reset();
 	ShaderEngine::Engine->setViewport(0, 0, sw,sh);
-    Matrix4 projection = ShaderEngine::Engine->setOrthoFrustum(0, sw,sh, 0, -1, 1,false);
+    Matrix4 projection = ShaderEngine::Engine->setOrthoFrustum(0, isw,ish, 0, -1, 1,false);
 	ShaderEngine::Engine->setProjection(projection);
 	if (clearA_!=0)
 		ShaderEngine::Engine->clearColor(clearR_ * clearA_, clearG_ * clearA_, clearB_ * clearA_, clearA_);

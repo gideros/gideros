@@ -62,7 +62,8 @@ protected:
     bool closed_;
     virtual void paintGL();
 public:
-	virtual void setSize(int w,int h);
+    virtual float getDisplayScale();
+    virtual void setSize(int w,int h);
 	virtual void getSize(int &w,int &h);
 	virtual void setPosition(int w,int h);
 	virtual void getPosition(int &w,int &h);
@@ -102,6 +103,10 @@ void QtScreen::paintGL() {
         Matrix4 m;
         draw(m);
     }
+}
+
+float QtScreen::getDisplayScale() {
+    return qApp->devicePixelRatio();
 }
 
 void QtScreen::setSize(int w,int h)
