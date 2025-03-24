@@ -61,8 +61,14 @@ void dx11ShaderProgram::activate() {
 	g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
 	g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
 	g_devcon->IASetInputLayout(g_pLayout);
-
 }
+
+void dx11ShaderProgram::bindTexture(int num, ShaderTexture* texture)
+{
+	int ntex = textureMap[num];
+	((dx11ShaderEngine*)(ShaderEngine::Engine))->bindTexture(num, texture, (ntex & 0x100) | num);
+}
+
 
 ID3D11Buffer *dx11ShaderProgram::getCachedVBO(ShaderBufferCache **cache, bool index,int elmSize, int mult,
 	int count, bool &modified) {
@@ -370,11 +376,22 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 	g_devcon->VSSetShader(g_pVS, 0, 0);
 	g_devcon->PSSetShader(g_pPS, 0, 0);
 
+	int vtex = 0;
+	int ftex = 0;
+	int tslot;
 	while (!uniforms->name.empty()) {
 		int usz = 0, ual = 4;
 		ConstantDesc cd;
 		cd = *(uniforms++);
 		switch (cd.type) {
+		case CTEXTURE:
+			tslot = ftex;
+			if (cd.vertexShader)
+				tslot = (vtex++) | 0x100;
+			else
+				ftex++;
+			textureMap.push_back(tslot);
+			break;
 		case CINT:
 			usz = 4;
 			ual = 4;

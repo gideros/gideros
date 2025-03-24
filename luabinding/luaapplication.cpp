@@ -59,6 +59,7 @@
 
 #include <gfile.h>
 #include <gfile_p.h>
+#include <gstdio.h>
 
 #include <pluginmanager.h>
 
@@ -670,6 +671,327 @@ int LuaApplication::Core_asyncThread(lua_State* L)
     return 1;
 }
 
+//Files
+struct _FileProcess {
+    //In
+    std::string filename;
+    std::string mode;
+    bool comp=false;
+    bool save=false;
+    bool asBuffer=false;
+    //In-Out
+    void *data;
+    size_t dataSize=0;
+    //Out
+    std::string error;
+    int errn=0;
+    bool done=false;
+};
+
+#include "zlib.h"
+static bool fileCompress(_FileProcess *p)
+{
+    int level = Z_DEFAULT_COMPRESSION;
+    int method = Z_DEFLATED;
+    int windowBits = 15;
+    int memLevel = 8;
+    int strategy = Z_DEFAULT_STRATEGY;
+
+    int ret;
+    void *zbuf;
+    size_t zptr=0;
+    z_stream zs;
+
+    zs.zalloc = Z_NULL;
+    zs.zfree = Z_NULL;
+
+    zs.next_out = Z_NULL;
+    zs.avail_out = 0;
+    zs.next_in = Z_NULL;
+    zs.avail_in = 0;
+
+    ret = deflateInit2(&zs, level, method, windowBits, memLevel, strategy);
+
+    if (ret != Z_OK)
+    {
+        p->error="Compression error";
+        p->errn=ret;
+        return false;
+    }
+
+    zs.next_in = (unsigned char*)p->data;
+    zs.avail_in = p->dataSize;
+
+    zbuf=malloc(65536);
+    for(;;)
+    {
+        zs.next_out = ((unsigned char*)zbuf)+zptr;
+        zs.avail_out = 65536;
+        /* munch some more */
+        ret = deflate(&zs, Z_FINISH);
+
+        /* advance pointer */
+        zptr+=(65536-zs.avail_out);
+
+        /* done processing? */
+        if (ret == Z_STREAM_END)
+            break;
+
+        /* error condition? */
+        if (ret != Z_OK)
+            break;
+
+        /* ensure there is always 64k headroom) */
+        zbuf=realloc(zbuf,zptr+65536);
+    }
+
+    /* cleanup */
+    deflateEnd(&zs);
+
+    free(p->data);
+    p->data=zbuf;
+    p->dataSize=zptr;
+
+    return true;
+}
+
+static bool fileDecompress(_FileProcess *p)
+{
+    int windowBits = 15;
+
+    int ret;
+    void *zbuf;
+    size_t zptr=0;
+    z_stream zs;
+
+    zs.zalloc = Z_NULL;
+    zs.zfree = Z_NULL;
+
+    zs.next_out = Z_NULL;
+    zs.avail_out = 0;
+    zs.next_in = Z_NULL;
+    zs.avail_in = 0;
+
+    ret = inflateInit2(&zs, windowBits);
+
+    if (ret != Z_OK)
+    {
+        p->error="Decompression error";
+        p->errn=ret;
+        return false;
+    }
+
+    zs.next_in = (unsigned char*)p->data;
+    zs.avail_in = p->dataSize;
+
+    zbuf=malloc(65536);
+    for(;;)
+    {
+        zs.next_out = ((unsigned char*)zbuf)+zptr;
+        zs.avail_out = 65536;
+        /* munch some more */
+        ret = inflate(&zs, Z_FINISH);
+
+        /* advance pointer */
+        zptr+=(65536-zs.avail_out);
+
+        /* done processing? */
+        if (ret == Z_STREAM_END)
+            break;
+
+        if (ret != Z_OK && ret != Z_BUF_ERROR) {
+            /* cleanup */
+            inflateEnd(&zs);
+            p->error="Failed to process Zlib stream";
+            p->errn=ret;
+            free(zbuf);
+            return false;
+        }
+
+        /* ensure there is always 64k headroom) */
+        zbuf=realloc(zbuf,zptr+65536);
+    }
+
+    /* cleanup */
+    inflateEnd(&zs);
+
+    free(p->data);
+    p->data=zbuf;
+    p->dataSize=zptr;
+
+    return true;
+}
+
+static void fileProcess(_FileProcess *p)
+{
+    char result[LUA_BUFFERSIZE];
+    G_FILE *pf = g_fopen(p->filename.c_str(), p->mode.c_str());
+    if (pf==NULL) {
+        p->errn=errno;
+        snprintf(result, sizeof(result), "%s: %s", p->filename.c_str(), strerror(p->errn));
+        p->error=result;
+    }
+    else {
+        if (p->save) {
+            if (p->comp) {
+                if (!fileCompress(p)) {
+                    free(p->data);
+                    p->data=nullptr;
+                }
+                p->comp=false; //Already done
+            }
+            if (p->data)
+                g_fwrite(p->data,p->dataSize,1,pf);
+        }
+        else {
+            g_fseek(pf, 0, SEEK_END);
+            size_t fsize = g_ftell(pf);
+            g_fseek(pf, 0, SEEK_SET);  /* same as rewind(f); */
+
+            p->data = malloc(fsize);
+            p->dataSize=g_fread(p->data, 1, fsize, pf);
+        }
+        if (g_ferror(pf))
+        {
+            free(p->data);
+            p->data=nullptr;
+            p->dataSize=0;
+            p->errn=errno;
+            snprintf(result, sizeof(result), "%s: %s", p->filename.c_str(), strerror(p->errn));
+            p->error=result;
+        }
+        else if (p->comp)
+        {
+            if (!fileDecompress(p)) {
+                free(p->data);
+                p->data=nullptr;
+            }
+        }
+        g_fclose(pf);
+    }
+    if ((p->save)&&(p->data))
+        free(p->data);
+    p->done=true;
+}
+
+static int fileProcessCont(lua_State *L,int status,void *pp)
+{
+    G_UNUSED(status);
+    _FileProcess *p=(_FileProcess *)pp;
+    if (!p->done)
+    {
+        LuaApplication::taskLock.lock();
+        std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+        while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
+        it->skipFrame=true;
+        LuaApplication::taskLock.unlock();
+        return lua_yieldk(L,fileProcessCont,p);
+    }
+    if (!p->error.empty())
+    {
+        lua_pushnil(L);
+        lua_pushstring(L,p->error.c_str());
+        lua_pushinteger(L,p->errn);
+        return 3;
+    }
+    if (p->save)
+    {
+        lua_pushboolean(L,true);
+        return 1;
+    }
+    if (p->asBuffer) {
+        void *nb=lua_newbuffer(L,p->dataSize);
+        memcpy(nb,p->data,p->dataSize);
+    }
+    else
+        lua_pushlstring(L,(const char *)(p->data),p->dataSize);
+    free(p->data);
+    return 1;
+}
+
+int LuaApplication::Core_fileLoad(lua_State *L) {
+    _FileProcess *p=new _FileProcess();
+    p->filename = luaL_checkstring(L, 1);
+    p->mode = "rb";
+    p->comp=false;
+    bool async=false;
+    if (lua_istable(L,2))
+    {
+        lua_rawgetfield(L,2,"async");
+        async=lua_toboolean(L,-1);
+        lua_pop(L,1);
+        lua_rawgetfield(L,2,"compression");
+        p->comp=lua_toboolean(L,-1);
+        lua_pop(L,1);
+        lua_rawgetfield(L,2,"buffer");
+        p->asBuffer=lua_toboolean(L,-1);
+        lua_pop(L,1);
+        lua_rawgetfield(L,2,"mode");
+        p->mode = luaL_optstring(L, -1, "rb");
+        lua_pop(L,1);
+    }
+    taskLock.lock();
+    std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+    while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
+    bool isThread=(it!=LuaApplication::tasks_.end());
+    if ((!isThread)||(it->th)||(it->yieldLock)) async=false; //Don't yield if not allowed or already in a real thread
+    taskLock.unlock();
+
+    if (async&&lua_isyieldable(L))
+    {
+        async_.enqueue([=]{
+            fileProcess(p);
+        });
+    }
+    else
+        fileProcess(p);
+    return fileProcessCont(L,0,p);
+}
+
+int LuaApplication::Core_fileSave(lua_State *L) {
+    _FileProcess *p=new _FileProcess();
+    p->filename = luaL_checkstring(L, 1);
+    p->save=true;
+    p->comp=false;
+    bool async=false;
+    size_t bsz;
+    const void * buf=lua_tobuffer(L,2,&bsz);
+    if (!buf)
+        buf=luaL_checklstring(L,2,&bsz);
+    p->data=malloc(bsz);
+    p->dataSize=bsz;
+    p->mode="wb";
+    memcpy(p->data,buf,bsz);
+    if (lua_istable(L,3))
+    {
+        lua_rawgetfield(L,3,"async");
+        async=lua_toboolean(L,-1);
+        lua_pop(L,1);
+        lua_rawgetfield(L,3,"compression");
+        p->comp=lua_toboolean(L,-1);
+        lua_pop(L,1);
+        lua_rawgetfield(L,3,"mode");
+        p->mode = luaL_optstring(L, -1, "wb");
+        lua_pop(L,1);
+    }
+    taskLock.lock();
+    std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
+    while ((it!=LuaApplication::tasks_.end())&&(it->L!=L)) it++;
+    bool isThread=(it!=LuaApplication::tasks_.end());
+    if ((!isThread)||(it->th)||(it->yieldLock)) async=false; //Don't yield if not allowed or already in a real thread
+    taskLock.unlock();
+
+    if (async&&lua_isyieldable(L))
+    {
+        async_.enqueue([=]{
+            fileProcess(p);
+        });
+    }
+    else
+        fileProcess(p);
+    return fileProcessCont(L,0,p);
+}
+
 size_t LuaApplication::token__parent;
 size_t LuaApplication::token__style;
 size_t LuaApplication::token__Reference;
@@ -1121,6 +1443,11 @@ static int bindAll(lua_State* L)
     lua_pushcnfunction(L, LuaApplication::Core_getScriptPath, "Core.getScriptPath");
     lua_setfield(L, -2, "getScriptPath");
 
+    lua_pushcnfunction(L, LuaApplication::Core_fileLoad, "Core.fileLoad");
+    lua_setfield(L, -2, "fileLoad");
+    lua_pushcnfunction(L, LuaApplication::Core_fileSave, "Core.fileSave");
+    lua_setfield(L, -2, "fileSave");
+
 	lua_pushcnfunction(L, LuaApplication::Core_random, "Core.random");
 	lua_setfield(L, -2, "random");
 	lua_pushcnfunction(L, LuaApplication::Core_randomSeed, "Core.randomSeed");
@@ -1136,6 +1463,7 @@ static int bindAll(lua_State* L)
 	return 0;
 }
 
+ThreadPool LuaApplication::async_(1);
 LuaApplication::LuaApplication(void)
 {
     L = luaL_newstate();

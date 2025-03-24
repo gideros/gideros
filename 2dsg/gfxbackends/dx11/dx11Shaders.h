@@ -61,14 +61,16 @@ protected:
     ID3D11Buffer *genVBO[16+1];
     int genVBOcapacity[16+1];
 	int flags;
-    void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache, int stride, int offset);
+	std::vector<int> textureMap;
+	void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache, int stride, int offset);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
 	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count, bool &modified);
 	void updateConstants();
     void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz, int flags,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
-    virtual void activate();
+	virtual void bindTexture(int num, ShaderTexture* texture);
+	virtual void activate();
     virtual void deactivate();
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0,int bufferingFlags=0);
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
@@ -166,7 +168,8 @@ public:
 	void setViewport(int x,int y,int width,int height);
 	void resizeFramebuffer(int width,int height);
 	void clearColor(float r,float g,float b,float a);
-	void bindTexture(int num,ShaderTexture *texture);
+	void bindTexture(int num, ShaderTexture* texture);
+	void bindTexture(int num, ShaderTexture* texture,int ntex);
 	void setClip(int x,int y,int w,int h);
 	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);

@@ -34,6 +34,7 @@ class Event;
 #include <functional>
 #include "Shaders.h"
 #include "Matrices.h"
+#include <threadpool.h>
 
 /*
 class LuaException : public std::exception
@@ -243,6 +244,8 @@ public:
     static int Core_profilerStop(lua_State *L);
     static int Core_profilerReset(lua_State *L);
     static int Core_profilerReport(lua_State *L);
+    static int Core_fileLoad(lua_State *L);
+    static int Core_fileSave(lua_State *L);
     static int Core_random(lua_State *L);
     static int Core_randomSeed(lua_State *L);
     static int getStyleTable(lua_State *L,int sprIndex);
@@ -285,6 +288,7 @@ private:
     float scale_;
 
     std::string error_;
+    static ThreadPool async_;
 
     static void callback_s(int type, void *event, void *udata);
     void callback(int type, void *event);

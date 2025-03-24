@@ -242,8 +242,8 @@ bundle.installer: bundle
 	cd $(RELEASE).Final; $(NSIS) gideros_mui2.nsi
 	mv $(RELEASE).Final/Gideros.exe $(ROOT)/
 	#if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //t $(WIN_KEYTSS) $(ROOT)/Gideros.exe; fi
-	if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //fd sha256 //tr $(WIN_KEYTSS) //td sha256 //as $(ROOT)/Gideros.exe; fi
+	if [ -f "$(WIN_SIGN)" ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //fd sha256 //tr $(WIN_KEYTSS) //td sha256 //as $(ROOT)/Gideros.exe; fi
 
 bundle.sign:
 	#if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //t $(WIN_KEYTSS) $(ROOT)/Gideros.exe; fi
-	if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //fd sha256 //tr $(WIN_KEYTSS) //td sha256 //as $(ROOT)/Gideros.exe; fi
+	if [ -f "$(WIN_SIGN)" ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //fd sha256 //tr $(WIN_KEYTSS) //td sha256 //as $(ROOT)/Gideros.exe; fi

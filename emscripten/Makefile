@@ -253,7 +253,7 @@ EMPTY :=
 SPACE := $(EMPTY) $(EMPTY)
 COMMA :=,
 EXP_FUNCS_LIST=$(sort $(shell grep -vh "invoke_XX" $(BUILD)/*.syms | sed -e 's/g\$$//;s/fp\$$/')))
-EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context","setTempRet0","getTempRet0",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vhE "invoke_XX|getTempRet0|setTempRet0" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
+EXP_FUNCS=["_main","_gapplication_clipboardCallback","__Unwind_CallPersonality","___wasm_lpad_context","setTempRet0","getTempRet0","_lua_tounsignedx",$(subst $(SPACE),$(COMMA),$(addprefix _,$(sort $(shell grep -vhE "invoke_XX|getTempRet0|setTempRet0" $(BUILD)/*.syms | sed 's/g\$$//;s/fp\$$//' |sed 's/\$$[^"]*//g'))))]
 
 $(BUILD)/lib%.w.a:
 	@echo "EMAR" $@
