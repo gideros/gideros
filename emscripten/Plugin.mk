@@ -9,7 +9,9 @@ else
 OPTS+=-Os
 endif
 
-SRCS+=../../../emscripten/PluginCommon
+GIDSDK?=../../..
+
+SRCS+=$(GIDSDK)/emscripten/PluginCommon
 WOBJS=$(addprefix $(BUILD)$(FLAVOUR)/,$(addsuffix .emw.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS+=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \

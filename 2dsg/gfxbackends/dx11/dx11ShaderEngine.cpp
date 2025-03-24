@@ -488,16 +488,34 @@ void dx11ShaderEngine::clearColor(float r,float g,float b,float a)
 		g_devcon->ClearRenderTargetView(fbo, col);
 }
 
-void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
+void dx11ShaderEngine::bindTexture(int num, ShaderTexture* texture) {
+	bindTexture(num, texture, 0);
+}
+
+
+void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture,int ntex)
 {
 	dx11ShaderTexture *tex=(dx11ShaderTexture *)texture;
-	g_devcon->PSSetShaderResources(num,1,&tex->rsv);
-	if ((tex->format==ShaderTexture::FMT_DEPTH)&&(tex->filter == ShaderTexture::FILT_LINEAR))
-		g_devcon->PSSetSamplers(num, 1, &dx11ShaderTexture::samplerDepthCompare);
-	else if (tex->wrap==ShaderTexture::WRAP_CLAMP)
-		g_devcon->PSSetSamplers(num, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerClamp:&dx11ShaderTexture::samplerClampFilter);
-	else
-		g_devcon->PSSetSamplers(num, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerRepeat:&dx11ShaderTexture::samplerRepeatFilter);
+	int tnum = ntex & 0xFF;
+	if (ntex & 0x100)
+	{
+		g_devcon->VSSetShaderResources(tnum, 1, &tex->rsv);
+		if ((tex->format == ShaderTexture::FMT_DEPTH) && (tex->filter == ShaderTexture::FILT_LINEAR))
+			g_devcon->VSSetSamplers(tnum, 1, &dx11ShaderTexture::samplerDepthCompare);
+		else if (tex->wrap == ShaderTexture::WRAP_CLAMP)
+			g_devcon->VSSetSamplers(tnum, 1, (tex->filter == ShaderTexture::FILT_NEAREST) ? &dx11ShaderTexture::samplerClamp : &dx11ShaderTexture::samplerClampFilter);
+		else
+			g_devcon->VSSetSamplers(tnum, 1, (tex->filter == ShaderTexture::FILT_NEAREST) ? &dx11ShaderTexture::samplerRepeat : &dx11ShaderTexture::samplerRepeatFilter);
+	}
+	else {
+		g_devcon->PSSetShaderResources(tnum, 1, &tex->rsv);
+		if ((tex->format == ShaderTexture::FMT_DEPTH) && (tex->filter == ShaderTexture::FILT_LINEAR))
+			g_devcon->PSSetSamplers(tnum, 1, &dx11ShaderTexture::samplerDepthCompare);
+		else if (tex->wrap == ShaderTexture::WRAP_CLAMP)
+			g_devcon->PSSetSamplers(tnum, 1, (tex->filter == ShaderTexture::FILT_NEAREST) ? &dx11ShaderTexture::samplerClamp : &dx11ShaderTexture::samplerClampFilter);
+		else
+			g_devcon->PSSetSamplers(tnum, 1, (tex->filter == ShaderTexture::FILT_NEAREST) ? &dx11ShaderTexture::samplerRepeat : &dx11ShaderTexture::samplerRepeatFilter);
+	}
 }
 
 void dx11ShaderEngine::updateRasterizer()

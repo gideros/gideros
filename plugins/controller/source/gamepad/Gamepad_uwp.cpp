@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include <cvt/wstring>
+#include <locale>
 #include <codecvt>
 #include <glog.h>
 
@@ -82,7 +82,7 @@ struct Gamepad_device * Gamepad_deviceAtIndex(unsigned int deviceIndex) {
 }
 
 static char * getDeviceDescription(RawGameController ^rgc) {
-    stdext::cvt::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
     std::string name = convert.to_bytes(rgc->DisplayName->Data());
     char* description = _strdup(name.c_str());
     return description;

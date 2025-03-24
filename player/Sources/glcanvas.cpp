@@ -106,7 +106,11 @@ void QtScreen::paintGL() {
 }
 
 float QtScreen::getDisplayScale() {
+#if defined(Q_OS_MAC)
     return qApp->devicePixelRatio();
+#else
+    return 1;
+#endif
 }
 
 void QtScreen::setSize(int w,int h)
@@ -724,6 +728,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
     }
 
     ScreenManager::manager->tick();
+    makeCurrent(); //Screen drawing may have changed OpenGL context
     bool dnow;
     if (application_->onDemandDraw(dnow)) {
         enterFrame();
