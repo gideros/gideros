@@ -401,7 +401,9 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
             cl.shapeScaleX=0;
             cl.shapeScaleY=0;
         }
-        if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&((cw+cl.advX+ns)>params->w))
+        float nextCw=cw+(cw?lastNs:0)+cl.advX;
+        float nextMcw=mcw+(mcw?lastNs:0)+cl.advX;
+        if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&(nextCw>params->w))
 		{
             if (breakwords&&(cl.advX>params->w)&&(cw<(params->w/2)))
             {
@@ -423,14 +425,14 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
                 mcw=0;
                 lines++;
                 cl.line=lines+1;
+                nextCw=cl.advX;
+                nextMcw=cl.advX;
             }
 		}
 		tl.parts.push_back(cl);
         lsepflags=sepflags;
-        if (cw) cw+=lastNs;
-        cw+=cl.advX;
-        if (mcw) mcw+=lastNs;
-        mcw+=cl.advX;
+        cw=nextCw;
+        mcw=nextMcw;
         lastNs=ns;
         bool forceBreak=false;
         while ((wrap||singleline)&&breakwords&&(cw>params->w))

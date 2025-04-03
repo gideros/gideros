@@ -114,59 +114,7 @@ function G3DFormat.sprToSprMatrix(from,to,top)
 	return mi
 end
 
-function G3DFormat.srtToMatrix(v,rev)
-	local mt=Matrix.new()
-	if rev and v.t then
-		if v.t then mt:translate(v.t[1],v.t[2],v.t[3]) end
-	else
-		if v.s then mt:scale(v.s[1],v.s[2],v.s[3]) end
-	end
-	if v.r then
-		local X,Y,Z,W=v.r[1],v.r[2],v.r[3],v.r[4]
-		local L=(X*X+Y*Y+Z*Z+W*W)^0.5
---		print(X,Y,Z,W,L)
-		X/=L Y/=L Z/=L W/=L
-		local xx,xy,xz,xw,yy,yz,yw,zz,zw
-		local m00,m01,m02,m10,m11,m12,m20,m21,m22
-		xx   = X * X
-		xy   = X * Y
-		xz   = X * Z
-		xw   = X * W
-
-		yy   = Y * Y
-		yz   = Y * Z
-		yw   = Y * W
-
-		zz   = Z * Z
-		zw   = Z * W
-
-		m00  = 1 - 2 * ( yy + zz )
-		m01  =     2 * ( xy - zw )
-		m02  =     2 * ( xz + yw )
-		m10  =     2 * ( xy + zw )
-		m11  = 1 - 2 * ( xx + zz )
-		m12  =     2 * ( yz - xw )
-		m20  =     2 * ( xz - yw )
-		m21  =     2 * ( yz + xw )
-		m22  = 1 - 2 * ( xx + yy )
-		local tx,ty,tz=0,0,0
-		if v.tr then
-			tx=v.t[1]
-			ty=v.t[2]
-			tz=v.t[3]
-		end
-		local rm=Matrix.new()
-		rm:setMatrix(m00,m10,m20,0,m01,m11,m21,0,m02,m12,m22,0,tx,ty,tz,1)
-		--rm:setMatrix(m00,m01,m02,0,m10,m11,m12,0,m20,m21,m22,0,0,0,0,1)
-		rm:multiply(mt) mt=rm
-	end
-	if rev and v.s then
-		mt:scale(v.s[1],v.s[2],v.s[3])
-	else
-		if v.t then mt:translate(v.t[1],v.t[2],v.t[3]) end
-	end
-	return mt
-end
+G3DFormat.srtToMatrix=Matrix.fromSRT
 
 function G3DFormat.quaternionToEuler(w,x,y,z)
 	-- roll (x-axis rotation)

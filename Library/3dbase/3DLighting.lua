@@ -42,7 +42,7 @@ local LightingShaderConstants={
 {name="g_LMatrix",type=Shader.CMATRIX, vertex=true},
 {name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
 {name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
-{name="cameraPos",type=Shader.CFLOAT4,mult=1,vertex=false},
+{name="cameraPos",type=Shader.CFLOAT4,mult=1,vertex=true},
 {name="ambient",type=Shader.CFLOAT,mult=1,vertex=false},
 {name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false},
 {name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="n"},
@@ -51,6 +51,8 @@ local LightingShaderConstants={
 {name="g_OcclusionMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="o"},
 {name="bones",type=Shader.CMATRIX,mult=64,vertex=true,code="a"},
 {name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
+{name="fogDistance",type=Shader.CFLOAT2,mult=1,vertex=false,code="f"},
+{name="fogColor",type=Shader.CFLOAT4,mult=1,vertex=false,code="f"},
 }
 --[[
 LightingShaderConstants[#LightingShaderConstants+1]=
@@ -63,10 +65,12 @@ local LightingShaderVarying={
 {name="position",type=Shader.CFLOAT3},
 {name="texCoord",type=Shader.CFLOAT2,code="t"},
 {name="normalCoord",type=Shader.CFLOAT3},
+{name="eyePos",type=Shader.CFLOAT4},
 {name="lightSpace",type=Shader.CFLOAT4,code="s"},
 {name="occlusionSpace",type=Shader.CFLOAT4,code="o"},
 {name="vcolor",type=Shader.CFLOAT4,code="c"},
 {name="vcolor",type=Shader.CFLOAT4,code="v"},
+{name="eyeDist",type=Shader.CFLOAT,code="f"},
 }
 
 -- Shaders defs
@@ -94,6 +98,7 @@ function Lighting.getShader(code)
 		{"o","OCCLUSION",true},
 		{"d","DEPTHMASK",true},
 		{"b","BRICKS",true},
+		{"f","FOG",true},
 	}
 	local lcode,ccode,acode="","",""
 	local lconst={}
@@ -112,8 +117,10 @@ function Lighting.getShader(code)
 	--if lcode=="" then return nil,nil end
 	if D3._V_Shader then
 		if not Lighting._shaders[lcode] then
+			local attrs={}
 			for _,a in ipairs(LightingShaderAttrs) do
 				if not a.code or code:find(a.code) then a.mult=a.amult else a.mult=0 end
+				attrs[a.slot+1]=if a.mult>0 then a else (attrs[a.slot+1] or a)
 			end
 			--[[
 			v=Shader.new(
@@ -128,7 +135,7 @@ function Lighting.getShader(code)
 				D3._FLUA_Shader,
 				0,
 				csts,
-				LightingShaderAttrs,
+				attrs,
 				ShaderFilter(LightingShaderVarying,acode),
 				D3._FLUA_Shader_FDEF,
 				lconst
@@ -183,6 +190,20 @@ function Lighting.setCamera(x,y,z)
 		v:setConstant("cameraPos",Shader.CFLOAT4,1,x,y,z,1)
 	end
 end
+
+function Lighting.setFog(dmin,drange,r,g,b,a)
+	r=r or 0.5
+	g=g or 0.5
+	b=b or 0.5
+	a=a or 1
+	for k,v in pairs(Lighting._shaders) do
+		if k:find("f") then
+			v:setConstant("fogDistance",Shader.CFLOAT2,1,dmin,drange)
+			v:setConstant("fogColor",Shader.CFLOAT4,1,r*a,g*a,b*a,a)
+		end
+	end
+end
+
 
 Lighting._sprites={}
 Lighting._shadowed={}

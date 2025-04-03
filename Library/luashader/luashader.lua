@@ -570,7 +570,7 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 
 	gmap["discard"]={type="func", value="discard", evaluate=function (ff,fn,args) return "discard" end}
 	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (ff,fn,tex,sp)
-		return ("_tex_%s.Sample(_smp_%s, %s)"):format(tex.value,tex.value,sp.value)
+		return ("_tex_%s.SampleLevel(_smp_%s, %s,0)"):format(tex.value,tex.value,sp.value)
 	end, rtype="lF4"}
 	gmap["shadow2D"]={type="func", value="shadow2D", evaluate=function (ff,fn,tex,sp)
 		return ("_tex_%s.SampleCmp(_smp_%s, (%s).xy,((%s).z-0.5)*2.0)"):format(tex.value,tex.value,sp.value,sp.value)
@@ -655,6 +655,11 @@ PVertex VShader(%s)
 	_code=_code.."}"
 	
 	local _vshader=_code
+	
+	gmap["texture2D"]={type="func", value="texture2D", evaluate=function (ff,fn,tex,sp)
+		return ("_tex_%s.Sample(_smp_%s, %s)"):format(tex.value,tex.value,sp.value)
+	end, rtype="lF4"}
+
 	
 	_ucode="cbuffer cbp : register(b1) {\n"
 	for k,v in ipairs(uniforms) do 
