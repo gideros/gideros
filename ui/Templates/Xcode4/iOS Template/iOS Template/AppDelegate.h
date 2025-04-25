@@ -8,13 +8,13 @@
 
 @class ViewController;
 
-@interface AppDelegate : NSObject <UIApplicationDelegate>
+@interface AppDelegate : NSObject <UIApplicationDelegate, UIWindowSceneDelegate>
 {
     UIWindow *window;
     ViewController *viewController;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (nonatomic, retain, nullable) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet ViewController *viewController;
 
 @end

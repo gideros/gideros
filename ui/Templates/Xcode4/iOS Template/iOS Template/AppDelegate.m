@@ -22,6 +22,43 @@
 @synthesize window;
 @synthesize viewController;
 
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions  API_AVAILABLE(ios(13.0)){
+    if (@available(iOS 13,*)) {
+        //[self.window setWindowScene:(UIWindowScene *) scene];
+        AppDelegate *mainDelegate=(AppDelegate *) [UIApplication sharedApplication].delegate;
+        viewController=mainDelegate.viewController;
+        
+        UIWindowScene *ws=((UIWindowScene *)scene);
+        self.window = [[UIWindow alloc] initWithWindowScene:ws];
+        [self.window setRootViewController:self.viewController];
+        [self.window makeKeyAndVisible];
+    }
+}
+
+- (void) sceneDidDisconnect:(UIScene *) scene
+API_AVAILABLE(ios(13.0)){
+}
+
+- (void) sceneDidBecomeActive:(UIScene *) scene
+API_AVAILABLE(ios(13.0)){
+    [self applicationDidBecomeActive:[UIApplication sharedApplication]];
+}
+
+- (void) sceneWillResignActive:(UIScene *) scene
+API_AVAILABLE(ios(13.0)){
+    [self applicationWillResignActive:[UIApplication sharedApplication]];
+}
+
+- (void) sceneWillEnterForeground:(UIScene *) scene
+API_AVAILABLE(ios(13.0)){
+    [self applicationWillEnterForeground:[UIApplication sharedApplication]];
+}
+
+- (void) sceneDidEnterBackground:(UIScene *) scene
+API_AVAILABLE(ios(13.0)){
+    [self applicationDidEnterBackground:[UIApplication sharedApplication]];
+}
+
 - (BOOL)isNotRotatedBySystem{
     BOOL OSIsBelowIOS8 = [[[UIDevice currentDevice] systemVersion] floatValue] < 8.0;
     BOOL SDKIsBelowIOS8 = floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1;
@@ -31,8 +68,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	CGRect bounds = [[UIScreen mainScreen] bounds];
-	
-    self.window = [[UIWindow alloc] initWithFrame:bounds];
 	
     self.viewController = [[ViewController alloc] init];
 
@@ -71,16 +106,21 @@
     
     gdr_initialize(self.viewController.glView, width, height, isPlayer);
 
-    if ([[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending)
-    {
-        [self.window setRootViewController:self.viewController];
+    if (@available(iOS 13,*)) {
+        self.window = [[UIWindow alloc] initWithFrame:bounds];
     }
-    else
-    {
-        [self.window addSubview:self.viewController.view];
-    }
+    else {
+	    if ([[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending)
+    	{
+        	[self.window setRootViewController:self.viewController];
+	    }
+	    else
+    	{
+        	[self.window addSubview:self.viewController.view];
+	    }
 
-    [self.window makeKeyAndVisible];
+    	[self.window makeKeyAndVisible];
+    }
 
     gdr_drawFirstFrame();
 

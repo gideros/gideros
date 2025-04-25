@@ -30,14 +30,14 @@
  
 */
 
-@interface TTSSpeechUtterance : AVSpeechUtterance
+@interface GTTSSpeechUtterance : AVSpeechUtterance
 @property (nonatomic, retain ) NSString * utteranceId;
 @end
 
-@implementation TTSSpeechUtterance
+@implementation GTTSSpeechUtterance
 @end
 
-@interface TTSSpeechSynthesizer : AVSpeechSynthesizer
+@interface GTTSSpeechSynthesizer : AVSpeechSynthesizer
 @property (nonatomic, retain ) NSString * language;
 @property (nonatomic, retain ) NSString * voiceIdentifier;
 @property (nonatomic, retain ) AVSpeechSynthesisVoice * voice;
@@ -47,11 +47,11 @@
 @property (nonatomic) bool   stopped;
 @end
 
-@implementation TTSSpeechSynthesizer
+@implementation GTTSSpeechSynthesizer
 @end
 
 class TTS;
-@interface TTSDelegate : NSObject<AVSpeechSynthesizerDelegate>
+@interface GTTSDelegate : NSObject<AVSpeechSynthesizerDelegate>
 {
 }
 
@@ -80,8 +80,8 @@ public:
     void utteranceStarted(NSString * utteranceId);
     void dispatchEvent(int type, NSString *utteranceId, NSString *state);
 private:
-    TTSDelegate *delegate_;
-    TTSSpeechSynthesizer *synthesizer_;
+    GTTSDelegate *delegate_;
+    GTTSSpeechSynthesizer *synthesizer_;
 };
 
 
@@ -103,7 +103,7 @@ void gtts_Cleanup()
 
 	TTS::TTS(lua_State *L,const char *lang,float speed,float pitch) : GTts(L)
 	{
-        synthesizer_ = [[TTSSpeechSynthesizer alloc] init];
+        synthesizer_ = [[GTTSSpeechSynthesizer alloc] init];
         synthesizer_.voiceIdentifier=@"com.apple.ttsbundle.siri_female_en-US_compact" ;
         synthesizer_.stopped=false;
         synthesizer_.language= [NSString stringWithUTF8String:((*lang)?lang:"en-US")];
@@ -111,7 +111,7 @@ void gtts_Cleanup()
         synthesizer_.pitch=pitch;
         synthesizer_.volume=1;
         synthesizer_.voice = [AVSpeechSynthesisVoice voiceWithLanguage:synthesizer_.language];
-		delegate_ = [[TTSDelegate alloc] initWithTTS:this];
+		delegate_ = [[GTTSDelegate alloc] initWithTTS:this];
 		synthesizer_.delegate = delegate_;
 		gevent_EnqueueEvent(gid, callback_, GTts::GTTS_INIT_COMPLETE_EVENT, NULL, 1, this);		
 	}
@@ -137,7 +137,7 @@ void gtts_Cleanup()
 	{
         synthesizer_.stopped=false;
         
-        TTSSpeechUtterance *utterance = [[TTSSpeechUtterance alloc] initWithString:[NSString stringWithUTF8String:text?text:""]];
+        GTTSSpeechUtterance *utterance = [[GTTSSpeechUtterance alloc] initWithString:[NSString stringWithUTF8String:text?text:""]];
         utterance.utteranceId= [NSString stringWithUTF8String:utteranceId?utteranceId:""];
         [utterance setRate:synthesizer_.rate];
         [utterance setPitchMultiplier:synthesizer_.pitch];
@@ -229,7 +229,7 @@ void TTS::dispatchEvent(int type, NSString *utteranceId, NSString *state)
 		gevent_EnqueueEvent(gid, callback_, type, event, 1, this);
 	}
 	
-@implementation TTSDelegate
+@implementation GTTSDelegate
 
 @synthesize tts = tts_;
 
@@ -244,18 +244,13 @@ void TTS::dispatchEvent(int type, NSString *utteranceId, NSString *state)
 	return self;
 }
 
-- (void)dealloc
-{
-   // tts_->shutdown();
-    [super dealloc];
-}
 
--(void)speechSynthesizer:(TTSSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(TTSSpeechUtterance *)utterance {
+-(void)speechSynthesizer:(GTTSSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(GTTSSpeechUtterance *)utterance {
     NSLog(@"Playback finished");
     tts_->utteranceComplete(utterance.utteranceId);
 }
 
--(void)speechSynthesizer:(TTSSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(TTSSpeechUtterance *)utterance {
+-(void)speechSynthesizer:(GTTSSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(GTTSSpeechUtterance *)utterance {
     NSLog(@"Playback started");
     tts_->utteranceStarted(utterance.utteranceId);
 }
