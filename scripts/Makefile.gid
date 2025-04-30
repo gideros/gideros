@@ -19,7 +19,7 @@ export LUA_INCLUDE_CORE
 CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 #DEFS
-PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit liquidfun reactphysics3d fastnoise cute_c2
+PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit liquidfun reactphysics3d fastnoise cute_c2
 PLUGINS_ALL=lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_ALL+=bitop
@@ -30,7 +30,7 @@ PLUGINS_QTWINONLY=spout steam
 PLUGINS_QTMACONLY=steam
 PLUGINS_QTLINUXONLY=
 PLUGINS_WIN32=spout lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui cute_c2
-PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly flurry gaming giftiz googlebilling \
+PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts megacool map share storereview
 PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
