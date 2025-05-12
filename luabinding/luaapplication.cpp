@@ -1788,7 +1788,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                         lua_pushfstringL(L,"Operator end not found in function '%s'",key);
                         lua_error(L);
                     }
-                    std::string lOp=std::string(ks,kk-ks-1);
+                    std::string lOp=std::string(ks,kk-ks);
                     if (lOp=="alpha") {
                         float col[4]={0,0,0,0};
                         lua_tocolorf(L,-1,col,1);
@@ -1806,6 +1806,11 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                         lua_pop(L,1);
                         lua_pushcolorf(L,col[0],col[1],col[2],col[3]);
                         return LUA_TCOLOR;
+                    }
+                    else
+                    {
+                        lua_pushfstringL(L,"Unknown Operator '%s' in style function '%s'",lOp.c_str(),key);
+                        lua_error(L);
                     }
                 }
                 else {
