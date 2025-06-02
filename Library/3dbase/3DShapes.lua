@@ -10,6 +10,7 @@ Mesh3D.MODE_VOXEL=128
 Mesh3D.MODE_OCCLUSION=256
 Mesh3D.MODE_DEPTHMASK=512
 Mesh3D.MODE_BRICKS=1024
+Mesh3D.MODE_FOG=2048
 
 function Mesh3D:init()
 	self.mode=0
@@ -31,6 +32,7 @@ function Mesh3D:updateMode(set,clear)
 			if (nm&Mesh3D.MODE_OCCLUSION)>0 then tc=tc.."o" end
 			if (nm&Mesh3D.MODE_DEPTHMASK)>0 then tc=tc.."d" end
 			if (nm&Mesh3D.MODE_BRICKS)>0 then tc=tc.."b" end
+			if (nm&Mesh3D.MODE_FOG)>0 then tc=tc.."f" end
 			Lighting.setSpriteMode(self,tc)
 		end
 	end
@@ -40,20 +42,24 @@ function Mesh3D:setInstanceCount(n)
 	self._im1,self._im2,self._im3,self._im4=
 		self._im1 or {}, self._im2 or {},self._im3 or {},self._im4 or {}
 	self._icount=n
-	if n==0 then self:updateMode(0,Mesh3D.MODE_INSTANCED)
-	else self:updateMode(Mesh3D.MODE_INSTANCED,0)
-	end
-	self:updateInstances()
-	Mesh.setInstanceCount(self,n)
 end
 
 function Mesh3D:setInstanceMatrix(i,m)
-	local mm={m:getMatrix()}
 	local is=i*4-3
-	self._im1[is],self._im1[is+1],self._im1[is+2],self._im1[is+3]=mm[1],mm[2],mm[3],mm[4]
-	self._im2[is],self._im2[is+1],self._im2[is+2],self._im2[is+3]=mm[5],mm[6],mm[7],mm[8]
-	self._im3[is],self._im3[is+1],self._im3[is+2],self._im3[is+3]=mm[9],mm[10],mm[11],mm[12]
-	self._im4[is],self._im4[is+1],self._im4[is+2],self._im4[is+3]=mm[13],mm[14],mm[15],mm[16]
+	if m then
+		local mm={m:getMatrix()}
+		self._im1[is],self._im1[is+1],self._im1[is+2],self._im1[is+3]=mm[1],mm[2],mm[3],mm[4]
+		self._im2[is],self._im2[is+1],self._im2[is+2],self._im2[is+3]=mm[5],mm[6],mm[7],mm[8]
+		self._im3[is],self._im3[is+1],self._im3[is+2],self._im3[is+3]=mm[9],mm[10],mm[11],mm[12]
+		self._im4[is],self._im4[is+1],self._im4[is+2],self._im4[is+3]=mm[13],mm[14],mm[15],mm[16]
+	else
+		for i=3,0,-1 do
+			self._im1[is+i]=nil
+			self._im2[is+i]=nil
+			self._im3[is+i]=nil
+			self._im4[is+i]=nil
+		end
+	end
 end
 
 function Mesh3D:updateInstances()
@@ -64,10 +70,16 @@ function Mesh3D:updateInstances()
 		self._im3[i]=self._im3[i] or 0
 		self._im4[i]=self._im4[i] or 0
 	end
-	self:setGenericArray(6,Shader.DFLOAT,4,self._icount,self._im1)
-	self:setGenericArray(7,Shader.DFLOAT,4,self._icount,self._im2)
-	self:setGenericArray(8,Shader.DFLOAT,4,self._icount,self._im3)
-	self:setGenericArray(9,Shader.DFLOAT,4,self._icount,self._im4)
+	if self._icount==0 then 
+		self:updateMode(0,Mesh3D.MODE_INSTANCED)
+	else 
+		self:updateMode(Mesh3D.MODE_INSTANCED,0)
+		self:setGenericArray(6,Shader.DFLOAT,4,self._icount,self._im1)
+		self:setGenericArray(7,Shader.DFLOAT,4,self._icount,self._im2)
+		self:setGenericArray(8,Shader.DFLOAT,4,self._icount,self._im3)
+		self:setGenericArray(9,Shader.DFLOAT,4,self._icount,self._im4)
+	end
+	Mesh.setInstanceCount(self,self._icount)
 end
 
 function Mesh3D:setLocalMatrix(m)
@@ -81,12 +93,12 @@ function Box:init(w,h,d)
 	w=w or 1 h=h or 1 d=d or 1
 	if not Box.ia then
 		Box.ia={
-			1,3,2,1,4,3,
+			1,2,3,1,3,4,
 			5,6,7,5,7,8,
 			9,10,11,9,11,12,
-			13,15,14,13,16,15,
-			17,19,18,17,20,19,
-			21,22,23,21,23,24
+			13,14,15,13,15,16,
+			17,18,19,17,19,20,
+			21,22,23,21,23,24,
 		}
 		Box.na={
 			0,0,-1,0,0,-1,0,0,-1,0,0,-1,
@@ -98,12 +110,12 @@ function Box:init(w,h,d)
 		}
 	end
 	self._va={
-		-w,-h,-d, w,-h,-d, w,h,-d, -w,h,-d,
-		-w,-h,d, w,-h,d, w,h,d, -w,h,d,
+		-w,h,-d, w,h,-d, w,-h,-d, -w,-h,-d,
+		w,h,d, -w,h,d, -w,-h,d, w,-h,d,
 		-w,-h,-d, w,-h,-d, w,-h,d, -w,-h,d,
-		-w,h,-d, w,h,-d, w,h,d, -w,h,d,
-		-w,-h,-d, -w,h,-d, -w,h,d, -w,-h,d,
-		w,-h,-d, w,h,-d, w,h,d, w,-h,d,
+		-w,h,d, w,h,d, w,h,-d, -w,h,-d,
+		-w,h,d, -w,h,-d, -w,-h,-d, -w,-h,d,
+		w,h,-d, w,h,d, w,-h,d, w,-h,-d,
 	}
 	self:setGenericArray(3,Shader.DFLOAT,3,24,Box.na)
 	self:setVertexArray(self._va)
@@ -310,7 +322,7 @@ function Cylinder:getCollisionShape()
 end
 
 -- ***************************************
-local Group3D=Core.class(Sprite)
+local Group3D=Core.class(Mesh,function() return true end)
 function Group3D:updateMode(set,clear)
       for _,v in pairs(self.objs) do
               v:updateMode(set,clear)

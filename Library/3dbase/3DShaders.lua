@@ -16,8 +16,8 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 	end
 	]]
 	if OPT_INSTANCED then
-		local imat=hF44(INSTMATA,INSTMATB,INSTMATC,INSTMATD);
-		pos=imat*InstanceMatrix*pos;
+		local imat=hF44(INSTMATA,INSTMATB,INSTMATC,INSTMATD)
+		pos=imat*InstanceMatrix*pos
 		norm = imat*InstanceMatrix*hF4(norm.xyz, 0.0)
 	end
 	if OPT_VOXEL then
@@ -53,8 +53,9 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 		norm=nnorm;
 	end
 	
-	position = (g_MVMatrix*pos).xyz;
-	normalCoord = normalize((g_NMatrix*hF4(norm.xyz,0)).xyz);
+	position = (g_MVMatrix*pos).xyz
+	normalCoord = normalize((g_NMatrix*hF4(norm.xyz,0)).xyz)
+	eyePos=cameraPos
 	if OPT_SHADOWS then
 		lightSpace = g_LMatrix*hF4(position,1.0);
 	end
@@ -63,6 +64,9 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 	end
 	if OPT_COLORED then
 		vcolor=COLOR
+	end
+	if OPT_FOG then
+		eyeDist=length(position.xyz-cameraPos.xyz)
 	end
 	return g_MVPMatrix * pos;
 end
@@ -197,8 +201,16 @@ function D3._FLUA_Shader() : Shader
 			spec = pow(nh, 32.0)*shadow
 		end
 
-		diff=max(diff*shadow,ambient);
+		diff=max(diff*shadow,ambient)
 		local frag = lF4(color0.rgb * diff + color1 * spec, color0.a)
+		
+		if OPT_FOG then
+			local fogRatio=(eyeDist-fogDistance.x)/fogDistance.y
+			fogRatio=clamp(fogRatio,0,1)
+			frag=lF4(hF4(frag)*(1-fogRatio)+fogColor*fogRatio)
+		end
+
+		if (frag.a==0) then discard() end
 		return frag
 	else
 		return lF4(g_Color)

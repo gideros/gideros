@@ -681,6 +681,8 @@ struct _FileProcess {
     bool comp=false;
     bool save=false;
     bool asBuffer=false;
+    size_t offset=0;
+    size_t size=0;
     //In-Out
     void *data;
     size_t dataSize=0;
@@ -834,6 +836,7 @@ static void fileProcess(_FileProcess *p)
     }
     else {
         if (p->save) {
+            g_fseek(pf, p->offset, SEEK_SET);
             if (p->comp) {
                 if (!fileCompress(p)) {
                     free(p->data);
@@ -847,7 +850,13 @@ static void fileProcess(_FileProcess *p)
         else {
             g_fseek(pf, 0, SEEK_END);
             size_t fsize = g_ftell(pf);
-            g_fseek(pf, 0, SEEK_SET);  /* same as rewind(f); */
+            g_fseek(pf, p->offset, SEEK_SET);
+            if (fsize>p->offset)
+            	fsize-=p->offset;
+            else
+            	fsize=0;
+            if (p->size&&(p->size<fsize))
+            	fsize=p->size;
 
             p->data = malloc(fsize);
             p->dataSize=g_fread(p->data, 1, fsize, pf);
@@ -930,6 +939,12 @@ int LuaApplication::Core_fileLoad(lua_State *L) {
         lua_rawgetfield(L,2,"mode");
         p->mode = luaL_optstring(L, -1, "rb");
         lua_pop(L,1);
+        lua_rawgetfield(L,2,"offset");
+        p->offset = luaL_optunsigned(L, -1, 0);
+        lua_pop(L,1);
+        lua_rawgetfield(L,2,"size");
+        p->size = luaL_optunsigned(L, -1, 0);
+        lua_pop(L,1);
     }
     taskLock.lock();
     std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();
@@ -973,6 +988,9 @@ int LuaApplication::Core_fileSave(lua_State *L) {
         lua_pop(L,1);
         lua_rawgetfield(L,3,"mode");
         p->mode = luaL_optstring(L, -1, "wb");
+        lua_pop(L,1);
+        lua_rawgetfield(L,3,"offset");
+        p->offset = luaL_optunsigned(L, -1, 0);
         lua_pop(L,1);
     }
     taskLock.lock();
@@ -1771,7 +1789,7 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                         lua_pushfstringL(L,"Operator end not found in function '%s'",key);
                         lua_error(L);
                     }
-                    std::string lOp=std::string(ks,kk-ks-1);
+                    std::string lOp=std::string(ks,kk-ks);
                     if (lOp=="alpha") {
                         float col[4]={0,0,0,0};
                         lua_tocolorf(L,-1,col,1);
@@ -1789,6 +1807,11 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                         lua_pop(L,1);
                         lua_pushcolorf(L,col[0],col[1],col[2],col[3]);
                         return LUA_TCOLOR;
+                    }
+                    else
+                    {
+                        lua_pushfstringL(L,"Unknown Operator '%s' in style function '%s'",lOp.c_str(),key);
+                        lua_error(L);
                     }
                 }
                 else {

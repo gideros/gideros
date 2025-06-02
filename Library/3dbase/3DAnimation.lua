@@ -11,8 +11,9 @@ D3Anim._animatedModel={}
 function D3Anim.updateBones()
 	-- Go through all meshes with dirty models
 	local cleaned={}
+	local bonesMat={}
 	for k,a in pairs(D3Anim._animated) do	
-		if D3Anim._animatedModel[k.bonesTop].dirty then 
+		if k:isVisible() and D3Anim._animatedModel[k.bonesTop].dirty then 
 			local bt={}
 			local bn=1
 			for n,bd in ipairs(k.animBones) do
@@ -20,8 +21,12 @@ function D3Anim.updateBones()
 				local m
 				if b then
 					-- Bone to Mesh
-					m=G3DFormat.sprToSprMatrix(b,k.bonesTop,k.bonesTop)
-					m:multiply(b.poseIMat)				
+					m=bonesMat[b]
+					if not m then
+						m=k.bonesTop:spriteToLocalMatrix(b)
+						m:multiply(b.poseIMat)				
+						bonesMat[b]=m
+					end
 				else
 					m=Matrix.new()
 				end
@@ -67,52 +72,55 @@ end
 function D3Anim.tick()
 	-- Animate all models
 	for k,a in pairs(D3Anim._animatedModel) do	
-		local ares={}
-		local aend={}
-		-- Collect contributions from all running animations on this model
-		for slot,anim in pairs(a.animations) do
-			local function animateIns(mvs,ratio)
-				for bone,srt in pairs(mvs) do
-					ares[bone]=ares[bone] or {}
-					table.insert(ares[bone],{ratio=ratio,mat={G3DFormat.srtToMatrix(srt):getMatrix()}})
+		if k:isVisible() then
+			local ares={}
+			local aend={}
+			-- Collect contributions from all running animations on this model
+			for slot,anim in pairs(a.animations) do
+				local function animateIns(mvs,ratio)
+					for bone,srt in pairs(mvs) do
+						ares[bone]=ares[bone] or {}
+						table.insert(ares[bone],{ratio=ratio,mat={G3DFormat.srtToMatrix(srt):getMatrix()}})
+					end
+				end
+				local ao,al,ac,aor=nil,nil,nil,1
+				if anim.oldAnim then
+					local aratio=(os:timer()-anim.oldStart)/anim.oldLen
+					if aratio>=1 then aratio=1 end
+					if aratio<0 then aratio=0 end
+					ao,al=D3Anim.animate(k,anim.oldAnim)
+					aor=1-aratio
+					if al or aratio>=1 then anim.oldAnim=nil end
+				end
+				ac,al=D3Anim.animate(k,anim)
+				if ao and ac then animateIns(ao,aor) animateIns(ac,1-aor)
+				elseif ao then animateIns(ao,1)
+				elseif ac then animateIns(ac,1)
+				else aend[slot]=true
+				end
+				if al and anim.onEnd then anim.onEnd(slot) end
+			end
+			for slot,_ in pairs(aend) do 
+				a.animations[slot]=nil 
+			end
+			-- Compute bones matrices
+			local rm=Matrix.new() 
+			for bone,srtl in pairs(ares) do
+				if #srtl>0 then
+					local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+					local tsr=0
+					for _,srt in ipairs(srtl) do tsr+=srt.ratio end
+					for _,srt in ipairs(srtl) do
+						local rsc=1/#srtl
+						if tsr>0 then rsc=srt.ratio/tsr end
+						for k=1,16 do cm[k]+=srt.mat[k]*rsc end
+					end
+					rm:setMatrix(unpack(cm))
+					k.bones[bone]:setMatrix(rm)
 				end
 			end
-			local ao,al,ac,aor=nil,nil,nil,1
-			if anim.oldAnim then
-				local aratio=(os:timer()-anim.oldStart)/anim.oldLen
-				if aratio>=1 then aratio=1 end
-				if aratio<0 then aratio=0 end
-				ao,al=D3Anim.animate(k,anim.oldAnim)
-				aor=1-aratio
-				if al or aratio>=1 then anim.oldAnim=nil end
-			end
-			ac,al=D3Anim.animate(k,anim)
-			if ao and ac then animateIns(ao,aor) animateIns(ac,1-aor)
-			elseif ao then animateIns(ao,1)
-			elseif ac then animateIns(ac,1)
-			else aend[slot]=true
-			end
-			if al and anim.onEnd then anim.onEnd(slot) end
+			a.dirty=true
 		end
-		for slot,_ in pairs(aend) do 
-			a.animations[slot]=nil 
-		end
-		-- Compute bones matrices
-		for bone,srtl in pairs(ares) do
-			if #srtl>0 then
-				local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-				local tsr=0
-				for _,srt in ipairs(srtl) do tsr+=srt.ratio end
-				for _,srt in ipairs(srtl) do
-					local rsc=1/#srtl
-					if tsr>0 then rsc=srt.ratio/tsr end
-					for k=1,16 do cm[k]+=srt.mat[k]*rsc end
-				end
-				local rm=Matrix.new() rm:setMatrix(unpack(cm))
-				k.bones[bone]:setMatrix(rm)
-			end
-		end
-		a.dirty=true
 	end
 	-- Update bones rendering
 	D3Anim.updateBones()
