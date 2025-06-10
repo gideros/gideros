@@ -1,3 +1,5 @@
+#include "zlib.h"
+
 #include "luaapplication.h"
 
 #include "eventdispatcher.h"
@@ -690,7 +692,6 @@ struct _FileProcess {
     bool done=false;
 };
 
-#include "zlib.h"
 static bool fileCompress(_FileProcess *p)
 {
     int level = Z_DEFAULT_COMPRESSION;
