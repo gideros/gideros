@@ -167,8 +167,10 @@ public class TTSManager {
 			if (mTts.isLanguageAvailable(rl) >= 0)
 				mTts.setLanguage(rl);
 			else {
-				if (android.os.Build.VERSION.SDK_INT >= 21)
-					mTtsLanguage = mTts.getVoice().getLocale().getLanguage();
+				if (android.os.Build.VERSION.SDK_INT >= 21) {
+					if (mTts.getVoice()!=null)
+						mTtsLanguage = mTts.getVoice().getLocale().getLanguage();
+				}
 				else
 					mTtsLanguage = mTts.getLanguage().getLanguage();
 				eventTtsError(ttsIndex, "Language '" + language + "' is not supported, using '" + mTtsLanguage + "'");

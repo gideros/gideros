@@ -90,7 +90,7 @@ void onExportResult(int status)
                     mime=tmime?[tmime UTF8String]:NULL;
                 }
                 
-                onImportResult(STS_OK,mime,[[url lastPathComponent] UTF8String],(const char *)[data bytes],[data length]);
+                onImportResult(STS_OK,[[url lastPathComponent] UTF8String],mime,(const char *)[data bytes],[data length]);
             }
             else
                 onImportResult(STS_GENERIC_ERR,NULL,NULL,NULL,0);
