@@ -20,27 +20,29 @@ CURRENT_GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 #DEFS
 PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit liquidfun reactphysics3d fastnoise cute_c2
-PLUGINS_ALL=lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
+PLUGINS_ALL=lsqlite3 luasocket lfs json bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2 clipper struct
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_ALL+=bitop
 endif
+PLUGINS_MOST=$(PLUGINS_ALL) microphone lpeg
 
-PLUGINS_QT=$(PLUGINS_ALL) clipper struct controller camera luamidi
+PLUGINS_QT=$(PLUGINS_MOST) gmedia controller camera luamidi
 PLUGINS_QTWINONLY=spout steam
 PLUGINS_QTMACONLY=steam
 PLUGINS_QTLINUXONLY=
-PLUGINS_WIN32=spout lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun gsfxr spine luamidi harfbuzz reactphysics3d fastnoise imgui cute_c2
-PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly gaming giftiz googlebilling \
+PLUGINS_WIN32=$(PLUGINS_MOST) controller spout luamidi
+PLUGINS_ANDROID=$(PLUGINS_MOST) gmedia ads controller countly gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct camera tts megacool map share storereview
-PLUGINS_HTML5=controller luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2
-PLUGINS_LINUX=lsqlite3 luasocket lfs json lpeg clipper struct bump ogg liquidfun gsfxr spine harfbuzz reactphysics3d fastnoise imgui cute_c2 luamidi
+				camera tts megacool map share storereview
+PLUGINS_HTML5=$(PLUGINS_ALL) controller ads Facebook
+PLUGINS_LINUX=$(PLUGINS_MOST) luamidi
+
 ifneq ($(LUA_ENGINE),luau)
 PLUGINS_QT+=threads
 PLUGINS_ANDROID+=threads
-PLUGINS_WIN32+=bitop threads
-PLUGINS_HTML5+=bitop
-PLUGINS_LINUX+=bitop
+PLUGINS_WIN32+=threads
+PLUGINS_HTML5+=
+PLUGINS_LINUX+=
 endif
 
 #Precompiled plugins only below

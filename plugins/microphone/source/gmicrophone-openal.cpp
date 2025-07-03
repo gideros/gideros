@@ -90,6 +90,21 @@ public:
             Delete(microphones_.begin()->first);
     }
 
+    void GetDeviceList(std::vector<std::string> &list)
+    {
+        if (alcIsExtensionPresent(NULL, "ALC_enumeration_EXT") == AL_TRUE)
+        {
+            char *s = (char *)alcGetString(NULL, ALC_CAPTURE_DEVICE_SPECIFIER);
+            if (s) {
+                while (*s) {
+                    int sl=strlen(s);
+                    list.push_back(std::string(s));
+                    s+=sl+1;
+                }
+            }
+        }
+    }
+
     g_id Create(const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, gmicrophone_Error *error)
     {
         if (numChannels != 1 && numChannels != 2)
@@ -129,7 +144,7 @@ public:
                 format = AL_FORMAT_STEREO16;
         }
 
-        ALCdevice *device = alcCaptureOpenDevice(NULL, sampleRate, format, sampleRate / 5);
+        ALCdevice *device = alcCaptureOpenDevice(deviceName, sampleRate, format, sampleRate / 5);
         if (device == NULL)
         {
             if (error)
@@ -408,4 +423,9 @@ void gmicrophone_RemoveCallbackWithId(g_id microphone, g_id callback)
     s_manager->RemoveCallbackWithId(microphone, callback);
 }
 
+}
+
+void gmicrophone_GetDeviceList(std::vector<std::string> &list)
+{
+    s_manager->GetDeviceList(list);
 }

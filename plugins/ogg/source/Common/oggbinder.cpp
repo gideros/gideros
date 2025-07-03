@@ -643,7 +643,7 @@ static void outputHeaders(GGOggEncHandle *handle) {
     }
 
     //Remaining headers
-    while (handle->video_p->GenHeaderPage(&handle->vo)) {
+    while (handle->video_p&&handle->video_p->GenHeaderPage(&handle->vo)) {
         while (true) {
             int result = ogg_stream_flush(&handle->vo, &handle->og);
             if (result == 0)
@@ -653,7 +653,7 @@ static void outputHeaders(GGOggEncHandle *handle) {
         }
     }
 
-    while (handle->audio_p->GenHeaderPage(&handle->ao)) {
+    while (handle->audio_p&&handle->audio_p->GenHeaderPage(&handle->ao)) {
         while (true) {
             int result = ogg_stream_flush(&handle->ao, &handle->og);
             if (result == 0)

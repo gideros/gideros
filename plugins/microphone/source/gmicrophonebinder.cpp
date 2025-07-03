@@ -57,19 +57,24 @@ static char keyWeak = ' ';
 class GMicrophone : public GEventDispatcherProxy
 {
 public:
-    GMicrophone(lua_State *L, const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, float quality, gmicrophone_Error *error)
+    GMicrophone(lua_State *L, bool noMic, const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, float quality, gmicrophone_Error *error)
     {
         if (++instanceCount_ == 1)
             gmicrophone_Init();
 
         outputFile_ = 0;
 
-        microphone_ = gmicrophone_Create(deviceName, numChannels, sampleRate, bitsPerSample, error);
+        if (!noMic) {
+            microphone_ = gmicrophone_Create(deviceName, numChannels, sampleRate, bitsPerSample, error);
 
-        if (microphone_ == 0)
-            return;
+            if (microphone_ == 0)
+                return;
 
-        gmicrophone_AddCallback(microphone_, callback_s, this);
+            gmicrophone_AddCallback(microphone_, callback_s, this);
+        }
+        else
+            microphone_ = 0;
+
 
         numChannels_ = numChannels;
         sampleRate_ = sampleRate;
@@ -188,6 +193,13 @@ public:
         fileName_.clear();
     }
 
+    size_t writeAudio(void *buf,size_t blen)
+    {
+        if (outputFile_&&encoder)
+            return encoder->write(outputFile_,blen,buf);
+        return 0;
+    }
+
 private:
     static void callback_s(int type, void *event, void *udata)
     {
@@ -244,15 +256,40 @@ private:
 
 int GMicrophone::instanceCount_ = 0;
 
+
+static int getDeviceList(lua_State *L)
+{
+    std::vector<std::string> list;
+    gmicrophone_GetDeviceList(list);
+    int ls=list.size();
+    lua_createtable(L,ls,0);
+    for (int k=0;k<ls;k++)
+    {
+        lua_pushstring(L,list[k].c_str());
+        lua_rawseti(L,-2,k+1);
+    }
+    return 1;
+}
+
 static int create(lua_State *L)
 {
-    int sampleRate = (int)luaL_checkinteger(L, 2);
-    int numChannels = (int)luaL_checkinteger(L, 3);
-    int bitsPerSample = (int)luaL_optinteger(L, 4,16);
-    float quality = (float) luaL_optnumber(L, 5,0.5); //Balanced
+    const char *devName=NULL;
+    bool noMic=false;
+    int argIdx=2;
+    if (lua_isnumber(L,1)) //No device name at all, not even nil: assume no mic
+    {
+        noMic=true;
+        argIdx=1;
+    }
+    else
+        devName=luaL_optstring(L,1,NULL);
+    int sampleRate = (int)luaL_checkinteger(L, argIdx);
+    int numChannels = (int)luaL_checkinteger(L, argIdx+1);
+    int bitsPerSample = (int)luaL_optinteger(L, argIdx+2,16);
+    float quality = (float) luaL_optnumber(L, argIdx+3,0.5); //Balanced
 
-    gmicrophone_Error error;
-    GMicrophone *microphone = new GMicrophone(L, NULL, numChannels, sampleRate, bitsPerSample, quality, &error);
+    gmicrophone_Error error=GMICROPHONE_NO_ERROR;
+    GMicrophone *microphone = new GMicrophone(L, noMic, devName, numChannels, sampleRate, bitsPerSample, quality, &error);
 
     switch (error)
     {
@@ -272,21 +309,22 @@ static int create(lua_State *L)
 
     g_pushInstance(L, "Microphone", microphone->object());
 
+    if (!noMic) {
+        lua_getglobal(L, "Event");
+        lua_getfield(L, -1, "new");
+        lua_remove(L, -2);
 
-    lua_getglobal(L, "Event");
-    lua_getfield(L, -1, "new");
-    lua_remove(L, -2);
+        lua_pushstring(L, DATA_AVAILABLE);
+        lua_call(L, 1, 1);
 
-    lua_pushstring(L, DATA_AVAILABLE);
-    lua_call(L, 1, 1);
-
-    lua_setfield(L, -2, "__dataAvailableEvent");
+        lua_setfield(L, -2, "__dataAvailableEvent");
 
 
-    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
-    lua_pushvalue(L, -2);
-    luaL_rawsetptr(L, -2, microphone);
-    lua_pop(L, 1);
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
+        lua_pushvalue(L, -2);
+        luaL_rawsetptr(L, -2, microphone);
+        lua_pop(L, 1);
+    }
 
     return 1;
 }
@@ -390,6 +428,23 @@ static int getStreamId(lua_State *L)
     return 1;
 }
 
+static int writeAudio(lua_State *L)
+{
+    GMicrophone *microphone = getInstance(L, 1);
+    void *buf;
+    size_t blen;
+    if ((buf=lua_tobuffer(L,2,&blen))==NULL)
+        buf=(void *)luaL_checklstring(L,2,&blen);
+
+    if (!microphone->isStarted())
+        luaL_error(L, "Recording not started.");
+
+    lua_pushunsigned(L,microphone->writeAudio(buf,blen));
+
+    return 1;
+}
+
+
 static int loader(lua_State* L)
 {
     const luaL_Reg functionlist[] = {
@@ -400,6 +455,8 @@ static int loader(lua_State* L)
         {"isRecording", isRecording},
         {"setOutputFile", setOutputFile},
         {"getStreamId", getStreamId},
+        {"writeAudio", writeAudio},
+        {"getDeviceList", getDeviceList},
         {NULL, NULL},
     };
 

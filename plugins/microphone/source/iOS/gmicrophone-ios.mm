@@ -76,6 +76,11 @@ public:
         while (!microphones_.empty())
             Delete(microphones_.begin()->first);
     }
+    
+    void GetDeviceList(std::vector<std::string> &list)
+    {
+     	list.push_back("Default");
+    }
 
     g_id Create(const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, gmicrophone_Error *error)
     {
@@ -471,4 +476,9 @@ void gmicrophone_RemoveCallbackWithId(g_id microphone, g_id callback)
     s_manager->RemoveCallbackWithId(microphone, callback);
 }
 
+}
+
+void gmicrophone_GetDeviceList(std::vector<std::string> &list)
+{
+    s_manager->GetDeviceList(list);
 }

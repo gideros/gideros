@@ -2,6 +2,8 @@
 
 #include <gglobal.h>
 #include <gevent.h>
+#include <vector>
+#include <string>
 
 enum
 {
@@ -39,6 +41,7 @@ void gmicrophone_Stop(g_id microphone);
 g_id gmicrophone_AddCallback(g_id microphone, gevent_Callback callback, void *udata);
 void gmicrophone_RemoveCallback(g_id microphone, gevent_Callback callback, void *udata);
 void gmicrophone_RemoveCallbackWithId(g_id microphone, g_id callback);
+void gmicrophone_GetDeviceList(std::vector<std::string> &list);
 
 #ifdef __cplusplus
 }
