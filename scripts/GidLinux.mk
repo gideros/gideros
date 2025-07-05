@@ -63,7 +63,7 @@ linux.libs.build: $(addprefix $(LINUX_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 linux.app.build: CXXFLAGS = -g -O2 $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 linux.app.build: $(addprefix $(LINUX_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#EXE $(APPNAME) $(LIBS)
-	@$(LINUX_CXX) -g -o $(LINUX_BUILDDIR)/$(APPNAME) $^ -Wl,-rpath,'$$ORIGIN' -Wl,-rpath,'$$ORIGIN/syslib' -Wl,-rpath-link,$(LINUX_BUILDDIR) -L$(LINUX_BUILDDIR) $(LIBS)
+	@$(LINUX_CXX) -g -o $(LINUX_BUILDDIR)/$(APPNAME) $^ -Wl,-rpath,'$$ORIGIN' -Wl,-rpath,'$$ORIGIN/syslib' -Wl,-E,-rpath-link,$(LINUX_BUILDDIR) -L$(LINUX_BUILDDIR) $(LIBS)
 
 
 $(LINUX_BUILDDIR)/%.o : %.cpp

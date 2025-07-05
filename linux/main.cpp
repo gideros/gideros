@@ -78,6 +78,8 @@ static void loadPlugins() {
 					 else
 					  fprintf(stderr,"Entry point not found\n");
 				}
+				else
+					fprintf(stderr,"Error loading plugin:%s (%s)\n",pfile.c_str(),dlerror());
 			}
 		}
 		closedir(pdir);
