@@ -168,8 +168,8 @@ unsigned int png::compress(const char *in, unsigned int inSize, char *out,
 
     // Construct IHDR (image header) data
     char ihdr[13] = {
-        bmpWidth>>24,bmpWidth>>16,bmpWidth>>8,bmpWidth,     // Width
-        bmpHeight>>24,bmpHeight>>16,bmpHeight>>8,bmpHeight, // Height
+        (char)(bmpWidth>>24),(char)(bmpWidth>>16),(char)(bmpWidth>>8),(char)bmpWidth,     // Width
+        (char)(bmpHeight>>24),(char)(bmpHeight>>16),(char)(bmpHeight>>8),(char)bmpHeight, // Height
         8,                                      // Bit depth
         2,                                      // Color type (RGBA)
         0,                                      // Compression method (DEFLATE)
