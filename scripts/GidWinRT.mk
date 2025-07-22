@@ -203,7 +203,7 @@ winrt.player: winrt.template
 	rm -f $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Assets/LargeTile.scale-400.png
 	cp $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
 	sed -e 's/ Version="[^"]*"/ Version="$(WINRT_APPX_GIDVERSION)"/'	$(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak >$(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest
-	$(MSBUILD) $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=$(WINRT_CONF) //p:AppxBundlePlatforms="x86|ARM|x64" //p:AppxBundle=Always //v:m
+	$(MSBUILD) $(RELEASE)/Players/GiderosPlayer/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=$(WINRT_CONF) //p:AppxBundlePlatforms="x86|x64" //p:AppxBundle=Always //v:m
 	mkdir -p $(RELEASE)/Players
 	rm -rf $(RELEASE)/Players/WinRT
 	mkdir -p $(RELEASE)/Players/WinRT
