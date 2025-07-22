@@ -1,4 +1,6 @@
+#ifndef __ANDROID__
 #include "zlib.h"
+#endif
 
 #include "luaapplication.h"
 
@@ -672,6 +674,10 @@ int LuaApplication::Core_asyncThread(lua_State* L)
     taskLock.unlock();
     return 1;
 }
+
+#ifdef __ANDROID__
+#include "zlib.h"
+#endif
 
 //Files
 struct _FileProcess {
