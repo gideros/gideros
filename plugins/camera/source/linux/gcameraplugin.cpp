@@ -12,45 +12,6 @@
 #include <linux/videodev2.h>
 #include <jpeglib.h>
 #include <jerror.h>
-#include <setjmp.h>
-
-#define GL_TEXTURE_EXTERNAL_OES 0x8D65
-
-static const char *VShaderCode = "attribute highp vec3 vVertex;\n"
-		"attribute mediump vec2 vTexCoord;\n"
-		"uniform highp mat4 vMatrix;\n"
-		"uniform highp mat4 tMatrix;\n"
-		"varying highp vec2 fTexCoord;\n"
-		"\n"
-		"void main() {\n"
-		"  highp vec4 texc = tMatrix*vec4(vTexCoord,0.0,1.0);\n"
-		"  highp vec4 vertex = vec4(vVertex,1.0);\n"
-		"  gl_Position = vMatrix*vertex;\n"
-		"  fTexCoord=texc.xy;\n"
-		"}\n";
-static const char *FShaderCode =
-		"#extension GL_OES_EGL_image_external : require\n"
-				"uniform samplerExternalOES fTexture;\n"
-				"varying highp vec2 fTexCoord;\n"
-				"void main() {\n"
-				" gl_FragColor=texture2D(fTexture, fTexCoord);\n"
-				"}\n";
-
-static const ShaderProgram::ConstantDesc camUniforms[] =
-		{ { "tMatrix", ShaderProgram::CMATRIX, 1, ShaderProgram::SysConst_None,
-		true, 0, NULL },
-		 { "rMatrix", ShaderProgram::CMATRIX, 1, ShaderProgram::SysConst_None,
-				true, 0, NULL },
-		 { "vMatrix", ShaderProgram::CMATRIX, 1,
-						ShaderProgram::SysConst_WorldViewProjectionMatrix, true,
-						0, NULL }, { "fTexture", ShaderProgram::CTEXTURE, 1,
-						ShaderProgram::SysConst_None, false, 0, NULL }, { "",
-						ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,
-						false, 0, NULL } };
-static const ShaderProgram::DataDesc camAttributes[] = { { "vVertex",
-		ShaderProgram::DFLOAT, 3, 0, 0 }, { "vColor", ShaderProgram::DUBYTE, 4,
-		1, 0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 }, { "",
-		ShaderProgram::DFLOAT, 0, 0, 0 } };
 
 static g_id gid = g_NextId();
 
@@ -64,15 +25,10 @@ void jpegErrorExit ( j_common_ptr cinfo )
     throw std::runtime_error( jpegLastErrorMsg ); // or your preffered exception ...
 }
 
-static void render_s(int type, void *event, void *udata)
-{
-	int *b=(int *) event;
-	((TextureData *)udata)->id()->updateData(ShaderTexture::FMT_RGB,ShaderTexture::PK_UBYTE,b[0],b[1],(void *)(b+2),ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);
-}
+static void render_s(int type, void *event, void *udata);
 
 class GCAMERA {
 	ShaderBuffer *rdrTgt;
-	ShaderProgram *shader;
 	TextureData *tex;
 	VertexBuffer<unsigned short> indices;
 	VertexBuffer<Point2f> vertices;
@@ -87,9 +43,6 @@ public:
 		running=false;
 		fd=-1;
 
-		shader = ShaderEngine::Engine->createShaderProgram(VShaderCode,
-				FShaderCode, ShaderProgram::Flag_FromCode, camUniforms,
-				camAttributes);
 		indices.resize(4);
 		vertices.resize(4);
 		texcoords.resize(4);
@@ -110,12 +63,10 @@ public:
 
 	~GCAMERA() {
 		stop();
-
-		delete shader;
 	}
 
 	bool isCameraAvailable() {
-		return true;
+		return availableDevices().size()>0;
 	}
 
 	std::vector<cameraplugin::CameraDesc> availableDevices()
@@ -165,6 +116,7 @@ public:
 			close(fd);
 			fd=-1;
 		}
+		gevent_RemoveEventsWithGid(gid);
 	}
 
 	bool setFlash(int mode) {
@@ -181,6 +133,23 @@ public:
 	cameraplugin::CameraInfo queryCamera(const char *device, int orientation)
 	{
 		cameraplugin::CameraInfo c;
+		int	fd = open(device?device:"/dev/video0", O_RDWR);
+		if (fd>=0)
+		{
+			struct v4l2_frmsizeenum fmt;
+			fmt.index=0;
+			fmt.pixel_format=V4L2_PIX_FMT_MJPEG;
+			while (ioctl(fd, VIDIOC_ENUM_FRAMESIZES, &fmt) == 0) {
+				if (fmt.type!=V4L2_FRMSIZE_TYPE_DISCRETE) break;
+				c.previewSizes.push_back(fmt.discrete.width);
+				c.previewSizes.push_back(fmt.discrete.height);
+				c.pictureSizes.push_back(fmt.discrete.width);
+				c.pictureSizes.push_back(fmt.discrete.height);
+				fmt.index++;
+			}
+			close(fd);
+		}
+
 		return c;
 	}
 
@@ -231,39 +200,6 @@ public:
 			delete rdrTgt;
 			return;
 		}
-		/*
-	    int x0=0;
-	    int x1=1;
-	    if (rvals[3]) { x0=1; x1=0; }
-	    switch (rvals[2])
-		{
-		        case 0:
-		            texcoords[0] = Point2f(x0, 0);
-		            texcoords[1] = Point2f(x1, 0);
-		            texcoords[2] = Point2f(x1, 1);
-		            texcoords[3] = Point2f(x0, 1);
-		            break;
-		        case 90:
-		            texcoords[0] = Point2f(x1, 0);
-		            texcoords[1] = Point2f(x1, 1);
-		            texcoords[2] = Point2f(x0, 1);
-		            texcoords[3] = Point2f(x0, 0);
-		            break;
-		        case 180:
-		            texcoords[0] = Point2f(x1, 1);
-		            texcoords[1] = Point2f(x0, 1);
-		            texcoords[2] = Point2f(x0, 0);
-		            texcoords[3] = Point2f(x1, 0);
-		            break;
-		        case 270:
-		            texcoords[0] = Point2f(x0, 1);
-		            texcoords[1] = Point2f(x0, 0);
-		            texcoords[2] = Point2f(x1, 0);
-		            texcoords[3] = Point2f(x1, 1);
-		            break;
-		}
-		*/
-		texcoords.Update();
 
 		running=true;
 		thr=std::thread(&GCAMERA::loop,this);
@@ -409,7 +345,7 @@ public:
 	}
 	
 	void processImage(void *img,size_t size) {
-		printf("Got %zu bytes\n",size);
+		//printf("Got %zu bytes\n",size);
 	    struct jpeg_decompress_struct cinfo;
 		struct jpeg_error_mgr jerr;
 		cinfo.err = jpeg_std_error( &jerr );
@@ -453,9 +389,8 @@ public:
 						
 			jpeg_destroy_decompress(&cinfo);
 
-			printf("Proc: Image is %d by %d with %d components", 
-				width, height, pixel_size);
-			gevent_EnqueueEvent(gid, render_s, 0, buf, 1, tex);
+			//printf("Proc: Image is %d by %d with %d components", width, height, pixel_size);
+			gevent_EnqueueEvent(gid, render_s, 0, buf, 1, this);
 			
 		}
 		catch ( std::runtime_error & e ) {
@@ -463,9 +398,15 @@ public:
 		}
 	}
 
+	void renderEvt(int type, void *event)
+	{
+		int *b=(int *) event;
+		tex->id()->updateData(ShaderTexture::FMT_RGB,ShaderTexture::PK_UBYTE,b[0],b[1],(void *)(b+2),ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);
+	}
+	
 	void nativeRender(int camtex, float *mat) {
 		if (!running) return;
-		ShaderEngine::Engine->reset();
+/*		ShaderEngine::Engine->reset();
 		ShaderBuffer *oldfbo = ShaderEngine::Engine->setFramebuffer(rdrTgt);
 		ShaderEngine::Engine->setViewport(0, 0, tex->width, tex->height);
 		Matrix4 projection = ShaderEngine::Engine->setOrthoFrustum(0,
@@ -492,10 +433,15 @@ public:
 		texcoords.modified = false;
 		indices.modified = false;
 
-		ShaderEngine::Engine->setFramebuffer(oldfbo);
+		ShaderEngine::Engine->setFramebuffer(oldfbo);*/
 	}
 
 };
+
+static void render_s(int type, void *event, void *udata)
+{
+	((GCAMERA *)udata)->renderEvt(type,event);
+}
 
 static GCAMERA *s_gcamera = NULL;
 
