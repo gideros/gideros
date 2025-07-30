@@ -390,7 +390,9 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
             cl.style.styleFlags=(cl.style.styleFlags&(~TEXTSTYLEFLAG_LTR))|TEXTSTYLEFLAG_RTL;
 		if (textflags&CHUNKCLASS_FLAG_LTR)
             cl.style.styleFlags=(cl.style.styleFlags&(~TEXTSTYLEFLAG_RTL))|TEXTSTYLEFLAG_LTR;
-        float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):(((cl.sep==ESC)||(cl.sep==0))?0:sw);
+        /*Tabs handling is problematic since its size changes with its location. For line wrapping, first assume tabs are full size.
+         If a chunk fits, adjust the tab size after wrap test */
+        float ns=(cl.sep=='\t')?tabSpace:(((cl.sep==ESC)||(cl.sep==0))?0:sw);
 		cl.sepl=ns;
         cl.extrasize=0;
         if (cl.text.size())
@@ -401,9 +403,10 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
             cl.shapeScaleX=0;
             cl.shapeScaleY=0;
         }
-        float nextCw=cw+(cw?lastNs:0)+cl.advX;
-        float nextMcw=mcw+(mcw?lastNs:0)+cl.advX;
-        if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&(nextCw>params->w))
+        float nextCw=cw+lastNs+cl.advX;
+        float nextMcw=mcw+lastNs+cl.advX;
+        float curSpan=cw+lastNs+cl.advX+cl.x+cl.w;
+        if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&(curSpan>=params->w))
 		{
             if (breakwords&&(cl.advX>params->w)&&(cw<(params->w/2)))
             {
@@ -421,6 +424,7 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
                 cl.y+=lh;
                 cl.dy=y;
                 cw=0;
+                lastNs=0;
                 if (mcw>tl.mw) tl.mw=mcw;
                 mcw=0;
                 lines++;
@@ -429,13 +433,19 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
                 nextMcw=cl.advX;
             }
 		}
-		tl.parts.push_back(cl);
         lsepflags=sepflags;
         cw=nextCw;
         mcw=nextMcw;
+        if (cl.sep=='\t') {
+            //Compute real tab space now: if we must wrap below, we'll recompute new tab space
+            ns=(tabSpace*(1+floor(cw/tabSpace))-cw);
+            cl.sepl=ns;
+        }
+        tl.parts.push_back(cl);
         lastNs=ns;
         bool forceBreak=false;
-        while ((wrap||singleline)&&breakwords&&(cw>params->w))
+        bool wrapped=false;
+        while ((wrap||singleline)&&breakwords&&(curSpan>=params->w))
 		{
 			//Last line is too long but can't be cut at a space boundary: cut in as appropriate and add breakchar
 			size_t pmax=tl.parts.size();
@@ -502,11 +512,17 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
 						tl.parts[n].y=cl.y;
 						tl.parts[n].dy=cl.dy;
 					}
+                    wrapped=true;
                     continue;
 				}
 			}
             break;
 		}
+        if (wrapped&&(cl.sep=='\t')) {
+            //Recompute real tab space after wrap, if needed
+            ns=(tabSpace*(1+floor(cw/tabSpace))-cw);
+            cl.sepl=ns;
+        }
 		if (wrap&&(sepflags&CHUNKCLASS_FLAG_BREAKABLE)) {
             if (mcw>tl.mw) tl.mw=mcw;
             mcw=0;
@@ -522,7 +538,8 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
 			st=tl.parts.size();
 			y+=lh;
 			cw=0;
-			lines++;
+            lastNs=0;
+            lines++;
 		}
 	}
 

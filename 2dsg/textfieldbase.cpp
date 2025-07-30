@@ -177,19 +177,22 @@ size_t TextFieldBase::getTextPosFromPoint(float &cx,float &cy)
     size_t ti=0;
     size_t rti=0;
 	size_t parts=textlayout_.parts.size();
-    float rcx=0,rcy=0;
+    float rcx=0,rcy=0,lh=0;
+    float ascender=getFont()->getAscender();
     if (parts>0) {
+        cy+=ascender; //We will compare with pen-y, that is baseline, adjust queried coordinates to match
+        lh=getFont()->getLineHeight()+layout_.lineSpacing;
         rcx=textlayout_.parts[0].dx;
         rcy=textlayout_.parts[0].dy;
     }
     else
-        rcy=getFont()->getAscender();
+        rcy=ascender;
     for (size_t i=0;i<parts;i++) {
 		FontBase::ChunkLayout &c=textlayout_.parts[i];
-        if (c.y>cy) break;
-		if ((c.y+c.h)>cy) {
+        if (c.dy>cy) break;
+        if ((c.dy+lh)>cy) {
             rti=ti;
-            if (c.dx>cx) { rcx=c.dx; rcy=c.dy; break; }
+            if ((c.dx>cx)||((c.dx==cx)&&(c.advX==0))) { rcx=c.dx; rcy=c.dy; break; } //chunk is beyond pos or chunk is right there but has no width
 			if ((c.dx+c.advX)>cx) {
 				size_t n=0;
 				size_t gln=c.shaped.size();

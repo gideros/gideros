@@ -81,10 +81,10 @@ public:
     struct ChunkLayout {
 		std::string text;
 		std::vector<struct GlyphLayout> shaped;
-		float advX,advY;
-		float x,y;
-		float w,h;
-		float dx,dy;
+        float advX,advY; //advance from this chunk to next one, pen-wise
+        float x,y; //bounds of this chunk
+        float w,h;
+        float dx,dy; //pen start position for this chunk
 		float shapeScaleX,shapeScaleY;
 		int line;
 		wchar32_t sep;
