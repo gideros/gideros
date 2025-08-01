@@ -405,7 +405,8 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
         }
         float nextCw=cw+lastNs+cl.advX;
         float nextMcw=mcw+lastNs+cl.advX;
-        float curSpan=cw+lastNs+cl.advX+cl.x+cl.w;
+        float curSpan=cw+lastNs+cl.x+cl.w+sw+1; //What will be actually displayed, account for glyph placement, additional space after and rounding issues
+        if (curSpan<nextCw) curSpan=nextCw;
         if (wrap&&cw&&(lsepflags&CHUNKCLASS_FLAG_BREAKABLE)&&(curSpan>=params->w))
 		{
             if (breakwords&&(cl.advX>params->w)&&(cw<(params->w/2)))
