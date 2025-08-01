@@ -923,8 +923,10 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
         }
         vGraphicsBase->resize(gfx);
         GraphicsBase *graphicsBase = &((*vGraphicsBase)[blockLayer]);
+        if (blockCount>=16384)
+            graphicsBase->enable32bitIndices();
         graphicsBase->vertices.resize(blockCount * 4);
-        graphicsBase->indices.resize(blockCount * 6);
+        graphicsBase->indicesResize(blockCount * 6);
         if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
         {
             graphicsBase->colors.resize(blockCount * 16);
@@ -936,7 +938,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
             graphicsBase->setColor(r, g, b, a);
         }
         graphicsBase->vertices.Update();
-        graphicsBase->indices.Update();
+        graphicsBase->indicesUpdate();
         blockCount=0;
     }
 
@@ -980,23 +982,27 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		for (std::map<int, int>::iterator it = gfxMap.begin();
 				it != gfxMap.end(); it++) {
 			GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
-			int size = it->second;
-			if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
-			{
-				graphicsBase->colors.resize(size * 16);
-				graphicsBase->colors.Update();
-			}
-			else
-			{
-				graphicsBase->colors.clear();
-				graphicsBase->setColor(r, g, b, a);
-			}
-			graphicsBase->vertices.resize(size * 4);
-			graphicsBase->texcoords.resize(size * 4);
-			graphicsBase->indices.resize(size * 6);
-			graphicsBase->vertices.Update();
-			graphicsBase->texcoords.Update();
-			graphicsBase->indices.Update();
+            size_t size = it->second;
+            if ((size*4)>graphicsBase->vertices.size()) {
+                if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+                {
+                    graphicsBase->colors.resize(size * 16);
+                    graphicsBase->colors.Update();
+                }
+                else
+                {
+                    graphicsBase->colors.clear();
+                    graphicsBase->setColor(r, g, b, a);
+                }
+                if (size>=16384)
+                    graphicsBase->enable32bitIndices();
+                graphicsBase->vertices.resize(size * 4);
+                graphicsBase->texcoords.resize(size * 4);
+                graphicsBase->indicesResize(size * 6);
+                graphicsBase->vertices.Update();
+                graphicsBase->texcoords.Update();
+                graphicsBase->indicesUpdate();
+            }
 		}
 
         float x = (c.dx-minx), y = (c.dy-miny);
@@ -1102,12 +1108,12 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			}
 
 
-			graphicsBase->indices[vi * 6 + 0] = vi * 4 + 0;
-			graphicsBase->indices[vi * 6 + 1] = vi * 4 + 1;
-			graphicsBase->indices[vi * 6 + 2] = vi * 4 + 2;
-			graphicsBase->indices[vi * 6 + 3] = vi * 4 + 0;
-			graphicsBase->indices[vi * 6 + 4] = vi * 4 + 2;
-			graphicsBase->indices[vi * 6 + 5] = vi * 4 + 3;
+            graphicsBase->indicesSet(vi * 6 + 0, vi * 4 + 0);
+            graphicsBase->indicesSet(vi * 6 + 1, vi * 4 + 1);
+            graphicsBase->indicesSet(vi * 6 + 2, vi * 4 + 2);
+            graphicsBase->indicesSet(vi * 6 + 3, vi * 4 + 0);
+            graphicsBase->indicesSet(vi * 6 + 4, vi * 4 + 2);
+            graphicsBase->indicesSet(vi * 6 + 5, vi * 4 + 3);
 
 			x += gl.advX;
         }
@@ -1141,12 +1147,12 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
                 }
             }
 
-            graphicsBase->indices[vi * 6 + 0] = vi * 4 + 0;
-            graphicsBase->indices[vi * 6 + 1] = vi * 4 + 1;
-            graphicsBase->indices[vi * 6 + 2] = vi * 4 + 2;
-            graphicsBase->indices[vi * 6 + 3] = vi * 4 + 0;
-            graphicsBase->indices[vi * 6 + 4] = vi * 4 + 2;
-            graphicsBase->indices[vi * 6 + 5] = vi * 4 + 3;
+            graphicsBase->indicesSet(vi * 6 + 0, vi * 4 + 0);
+            graphicsBase->indicesSet(vi * 6 + 1, vi * 4 + 1);
+            graphicsBase->indicesSet(vi * 6 + 2, vi * 4 + 2);
+            graphicsBase->indicesSet(vi * 6 + 3, vi * 4 + 0);
+            graphicsBase->indicesSet(vi * 6 + 4, vi * 4 + 2);
+            graphicsBase->indicesSet(vi * 6 + 5, vi * 4 + 3);
         }
     }
     RENDER_UNLOCK();

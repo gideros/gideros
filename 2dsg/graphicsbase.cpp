@@ -14,6 +14,8 @@ void GraphicsBase::clear()
 	vertices.clear();
 	texcoords.clear();
 	colors.clear();
+    if (indices32)
+        indices32->clear();
 }
 
 ShaderEngine::StandardProgram GraphicsBase::getShaderType() {
@@ -29,9 +31,17 @@ ShaderEngine::StandardProgram GraphicsBase::getShaderType() {
 
 void GraphicsBase::draw(ShaderProgram *shp, VertexBuffer<unsigned short> *commonIndices)
 {
-	if (!commonIndices)
+    bool draw32=false;
+    if (!commonIndices)
+    {
 		commonIndices = &indices;
-	if (commonIndices->empty())
+        if (indices32) {
+            if (indices32->empty())
+                return;
+            draw32=true;
+        }
+    }
+    if ((!draw32)&&(commonIndices->empty()))
 		return;
 
 	if (isWhite_ == false)
@@ -104,9 +114,17 @@ void GraphicsBase::draw(ShaderProgram *shp, VertexBuffer<unsigned short> *common
     }
 
     shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
-	shp->drawElements(mode, commonIndices->size(), ShaderProgram::DUSHORT, &((*commonIndices)[0]), commonIndices->modified, &commonIndices->bufferCache);
+    if (draw32)
+    {
+        shp->drawElements(mode, indices32->size(), ShaderProgram::DINT, &((*indices32)[0]), indices32->modified, &indices32->bufferCache);
+        indices32->modified = false;
+    }
+    else
+    {
+        shp->drawElements(mode, commonIndices->size(), ShaderProgram::DUSHORT, &((*commonIndices)[0]), commonIndices->modified, &commonIndices->bufferCache);
+        commonIndices->modified = false;
+    }
 	vertices.modified = false;
-	commonIndices->modified = false;
 
 	if (isWhite_ == false)
 	{

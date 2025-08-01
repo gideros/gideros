@@ -81,7 +81,7 @@ void TextField::setFont(FontBase *font)
 
 void TextField::setText(const char* text)
 {
-	if (strcmp(text, text_.c_str()) == 0)
+    if (text_==text)
 		return;
 
 	text_ = text;

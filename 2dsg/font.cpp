@@ -155,10 +155,12 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
     int gfx = vGraphicsBase->size();
     vGraphicsBase->resize(gfx+1);
     GraphicsBase *graphicsBase = &((*vGraphicsBase)[gfx]);
+    if (size>=16384)
+        graphicsBase->enable32bitIndices();
 
-	graphicsBase->data = data_;
-	if (fontInfo_.isSetTextColorAvailable)
-	{
+    graphicsBase->data = data_;
+    if (fontInfo_.isSetTextColorAvailable)
+    {
 		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
 		{
 			graphicsBase->colors.resize(size * 16);
@@ -174,10 +176,10 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 	}
 	graphicsBase->vertices.resize(size * 4);
 	graphicsBase->texcoords.resize(size * 4);
-	graphicsBase->indices.resize(size * 6);
+    graphicsBase->indicesResize(size * 6);
 	graphicsBase->vertices.Update();
 	graphicsBase->texcoords.Update();
-	graphicsBase->indices.Update();
+    graphicsBase->indicesUpdate();
 
     size_t gi=0;
     for (size_t pn = 0; pn < l.parts.size(); pn++) {
@@ -266,12 +268,12 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 				}
 			}
 
-            graphicsBase->indices[gi * 6 + 0] = gi * 4 + 0;
-            graphicsBase->indices[gi * 6 + 1] = gi * 4 + 1;
-            graphicsBase->indices[gi * 6 + 2] = gi * 4 + 2;
-            graphicsBase->indices[gi * 6 + 3] = gi * 4 + 0;
-            graphicsBase->indices[gi * 6 + 4] = gi * 4 + 2;
-            graphicsBase->indices[gi * 6 + 5] = gi * 4 + 3;
+            graphicsBase->indicesSet(gi * 6 + 0, gi * 4 + 0);
+            graphicsBase->indicesSet(gi * 6 + 1, gi * 4 + 1);
+            graphicsBase->indicesSet(gi * 6 + 2, gi * 4 + 2);
+            graphicsBase->indicesSet(gi * 6 + 3, gi * 4 + 0);
+            graphicsBase->indicesSet(gi * 6 + 4, gi * 4 + 2);
+            graphicsBase->indicesSet(gi * 6 + 5, gi * 4 + 3);
 
 			x += textureGlyph.advancex >> 6;
 
@@ -281,7 +283,7 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 	}
 	graphicsBase->vertices.resize(gi * 4);
 	graphicsBase->texcoords.resize(gi * 4);
-	graphicsBase->indices.resize(gi * 6);
+    graphicsBase->indicesResize(gi * 6);
     RENDER_UNLOCK();
 }
 
