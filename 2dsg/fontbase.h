@@ -59,23 +59,25 @@ public:
 #define TEXTSTYLEFLAG_FORCESHAPING	32
 #define TEXTSTYLEFLAG_ITALIC        64
 #define TEXTSTYLEFLAG_UNDERLINE     128
+#define TEXTSTYLEFLAG_STRIKETHROUGH 256
+#define TEXTSTYLEFLAG_LINE          512
     struct ChunkStyle {
         int styleFlags;
         unsigned int color;
         std::string font;
         int8_t italic; //Shear angle, +/- 90°
-        uint8_t underline_size;
+        uint8_t line_size;
         /* If positive, position from baseline to ascender of text, if negative position from baseline to descender of text
          * Useful values: 0=very bottom, 48=strikethru, -64=underline
          */
-        int8_t underline_pos;
+        int8_t line_pos;
         bool operator==(const ChunkStyle &b) {
             return (styleFlags==b.styleFlags)&&
                     (font==b.font)&&
                     (color==b.color)&&
                     (italic==b.italic)&&
-                    (underline_size==b.underline_size)&&
-                    (underline_pos==b.underline_pos);
+                    (line_size==b.line_size)&&
+                    (line_pos==b.line_pos);
         }
     };
     struct ChunkLayout {

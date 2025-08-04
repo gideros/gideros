@@ -3,7 +3,7 @@
 
 #include <fontbase.h>
 #include <wchar32.h>
-#include <map>
+#include <unordered_map>
 #include <texturepacker.h>
 #include <dib.h>
 #include <string>
@@ -68,9 +68,9 @@ private:
         int height;
         int ascender;
         int descender;
-        std::map<wchar32_t, FT_UInt> charGlyphs;
-        std::map<wchar32_t, int> charFace;
-        std::map<std::pair<wchar32_t, wchar32_t>, int> kernings;
+        std::unordered_map<wchar32_t, FT_UInt> charGlyphs;
+        std::unordered_map<wchar32_t, int> charFace;
+        std::unordered_map<uint64_t, int> kernings;
         float spaceSize;
     };
 
@@ -79,7 +79,7 @@ private:
         FT_Face face;
         FT_StreamRec stream;
         float sizeMult;
-        std::map<FT_UInt, TextureGlyph> textureGlyphs;
+        std::unordered_map<FT_UInt, TextureGlyph> textureGlyphs;
         FontShaper *shaper;
     };
 

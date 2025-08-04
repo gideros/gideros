@@ -171,6 +171,35 @@ void FontBase::layoutHorizontal(FontBase::TextLayout &tl,int start, float w, flo
     }
 }
 
+static unsigned int parseStyleColor(std::string &val,bool &ok) {
+    ok=true;
+    unsigned long param=strtoul(val.c_str()+1,NULL,16);
+    switch (val.size())
+    {
+    case 4:
+        return ((param&0x0F)<<4)|((param&0x0F)<<0)|
+                       ((param&0xF0)<<8)|((param&0xF0)<<4)|
+                       ((param&0xF00)<<12)|((param&0xF00)<<8)|
+                       0xFF000000;
+        break;
+    case 5:
+        return ((param&0x0F)<<28)|((param&0x0F)<<24)|
+                       ((param&0xF0)<<0)|((param&0xF0)>>4)|
+                       ((param&0xF00)<<4)|((param&0xF00)>>0)|
+                       ((param&0xF000)<<8)|((param&0xF000)<<4);
+        break;
+    case 7:
+        return param|0xFF000000;
+        break;
+    case 9:
+        return (param>>8)|(param&0xFF)<<24;
+        break;
+    default:
+        ok=false;
+    }
+    return 0;
+}
+
 void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *params,FontBase::TextLayout &tl)
 {
 	float lh=getLineHeight()+params->lineSpacing;
@@ -301,39 +330,18 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
 				}
 				else
 					key=std::string(ss,sp-ss);
-				if (!key.compare("color"))
-				{
-					if ((val.size()==0)||(val.at(0)!='#'))
-						styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
-					else
-					{
-						styles.styleFlags|=TEXTSTYLEFLAG_COLOR;
-                        unsigned long param=strtoul(val.c_str()+1,NULL,16);
-						switch (val.size())
-						{
-							case 4:
-								styles.color=((param&0x0F)<<4)|((param&0x0F)<<0)|
-											 ((param&0xF0)<<8)|((param&0xF0)<<4)|
-											 ((param&0xF00)<<12)|((param&0xF00)<<8)|
-											 0xFF000000;
-								break;
-							case 5:
-								styles.color=((param&0x0F)<<28)|((param&0x0F)<<24)|
-											 ((param&0xF0)<<0)|((param&0xF0)>>4)|
-											 ((param&0xF00)<<4)|((param&0xF00)>>0)|
-											 ((param&0xF000)<<8)|((param&0xF000)<<4);
-								break;
-							case 7:
-								styles.color=param|0xFF000000;
-								break;
-							case 9:
-								styles.color=(param>>8)|(param&0xFF)<<24;
-								break;
-							default:
-								styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
-						}
-					}
-				}
+                if (!key.compare("color"))
+                {
+                    if ((val.size()==0)||(val.at(0)!='#'))
+                        styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
+                    else
+                    {
+                        bool ok=false;
+                        styles.color=parseStyleColor(val, ok);
+                        if (ok)
+                            styles.styleFlags|=TEXTSTYLEFLAG_COLOR;
+                    }
+                }
                 else if (!key.compare("font"))
                     styles.font=val;
                 else if (!key.compare("i")) {
@@ -345,32 +353,30 @@ void FontBase::layoutText(const char *text, FontBase::TextLayoutParameters *para
                     styles.styleFlags&=~TEXTSTYLEFLAG_ITALIC;
                 else if (!key.compare("u")) {
                     styles.styleFlags|=TEXTSTYLEFLAG_UNDERLINE;
-                    styles.underline_size=strtod(val.c_str(),NULL)*255;
-                    styles.underline_pos=-64;
+                    styles.line_size=strtod(val.c_str(),NULL)*255;
                 }
                 else if (!key.compare("!u"))
                     styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
                 else if (!key.compare("s")) {
-                    styles.styleFlags|=TEXTSTYLEFLAG_UNDERLINE;
-                    styles.underline_size=strtod(val.c_str(),NULL)*255;
-                    styles.underline_pos=48;
+                    styles.styleFlags|=TEXTSTYLEFLAG_STRIKETHROUGH;
+                    styles.line_size=strtod(val.c_str(),NULL)*255;
                 }
                 else if (!key.compare("!s"))
-                    styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
+                    styles.styleFlags&=~TEXTSTYLEFLAG_STRIKETHROUGH;
                 else if (!key.compare("l")) {
                     if (val.empty())
-                        styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
+                        styles.styleFlags&=~TEXTSTYLEFLAG_LINE;
                     else {
-                        styles.styleFlags|=TEXTSTYLEFLAG_UNDERLINE;
+                        styles.styleFlags|=TEXTSTYLEFLAG_LINE;
                         char *extra=NULL;
-                        styles.underline_pos=strtod(val.c_str(),&extra)*127;
-                        styles.underline_size=0;
+                        styles.line_pos=strtod(val.c_str(),&extra)*127;
+                        styles.line_size=0;
                         if (extra&&(*extra==':'))
-                            styles.underline_size=strtod(extra+1,NULL)*255;
+                            styles.line_size=strtod(extra+1,NULL)*255;
                     }
                 }
                 else if (!key.compare("!l"))
-                    styles.styleFlags&=~TEXTSTYLEFLAG_UNDERLINE;
+                    styles.styleFlags&=~TEXTSTYLEFLAG_LINE;
                 if (sp==se) break;
 				ss=sp+1;
 			}

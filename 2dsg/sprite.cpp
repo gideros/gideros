@@ -362,8 +362,8 @@ void setupEffectShader(Bitmap *source,Sprite::Effect &e)
         if (e.textures[t]) {
             if (t==0)
                 source->setTexture(e.textures[t]);
-            else
-                ShaderEngine::Engine->bindTexture(t,e.textures[t]->data->id());
+            else				
+				source->getShader(ShaderEngine::STDP_TEXTURE)->bindTexture(t,e.textures[t]->data->id());
         }
 }
 

@@ -47,6 +47,21 @@ public:
     }
     GraphicsBase(const GraphicsBase &o)
     {
+        *this=o;
+    }
+    GraphicsBase(GraphicsBase &&o) noexcept : mode(o.mode), data(o.data),
+        indices(std::move(o.indices)), vertices(std::move(o.vertices)), texcoords(std::move(o.texcoords)),
+        colors(std::move(o.colors)),  indices32(o.indices32), isSecondary(o.isSecondary),
+        isWhite_(o.isWhite_), r_(o.r_), g_(o.g_), b_(o.b_), a_(o.a_)
+    {
+        o.indices32=nullptr;
+    }
+    ~GraphicsBase() {
+        if (indices32)
+            delete indices32;
+        indices32=nullptr;
+    }
+    GraphicsBase& operator=(const GraphicsBase &o) {
         indices=o.indices;
         vertices=o.vertices;
         texcoords=o.texcoords;
@@ -66,11 +81,7 @@ public:
         g_=o.g_;
         b_=o.b_;
         a_=o.a_;
-    }
-    ~GraphicsBase() {
-        if (indices32)
-            delete indices32;
-        indices32=nullptr;
+        return *this;
     }
 
 	ShaderEngine::StandardProgram getShaderType();

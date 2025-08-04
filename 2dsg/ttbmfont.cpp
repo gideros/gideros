@@ -17,6 +17,7 @@
 #include "glog.h"
 #include <cmath>
 
+#define kerning_pair(c1,c2) ((((uint64_t)c1)<<32)|((uint64_t)c2))
 // Textures shouldn't exceed 1024x1024 on most platforms, so limit possible font size to allow at least a few chars to be rendered
 #define FONT_SIZE_LIMIT 300.0
 static unsigned long read(FT_Stream stream, unsigned long offset,
@@ -135,7 +136,7 @@ bool TTBMFont::staticCharsetInit() {
 		addGlyph(chr);
 	}
 
-	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
+    std::unordered_map<uint64_t, int> &kernings =
 			fontInfo_.kernings;
 
 	kernings.clear();
@@ -143,9 +144,9 @@ bool TTBMFont::staticCharsetInit() {
 	int glyphCount=0;
     for (size_t facenum=0;facenum<fontFaces_.size();facenum++)
 	{
-		std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
+		std::unordered_map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
 		FT_Face face=fontFaces_[facenum].face;
-		std::map<FT_UInt, TextureGlyph>::iterator iter1, iter2, e =
+		std::unordered_map<FT_UInt, TextureGlyph>::iterator iter1, iter2, e =
 				textureGlyphs.end();
 
 		for (iter1 = textureGlyphs.begin(); iter1 != e; ++iter1)
@@ -159,7 +160,7 @@ bool TTBMFont::staticCharsetInit() {
                     FT_Get_Kerning(face, iter1->first, iter2->first,
 							FT_KERNING_DEFAULT, &delta);
 					if (delta.x != 0)
-						kernings[std::make_pair(g1.chr, g2.chr)] = delta.x;
+                        kernings[kerning_pair(g1.chr, g2.chr)] = delta.x;
 				}
 			}
 			glyphCount++;
@@ -171,8 +172,8 @@ bool TTBMFont::staticCharsetInit() {
 	tp->setTextureCount(glyphCount);
     for (size_t facenum=0;facenum<fontFaces_.size();facenum++)
 	{
-		std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
-        std::map<FT_UInt, TextureGlyph>::iterator iter, e = textureGlyphs.end();
+		std::unordered_map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
+        std::unordered_map<FT_UInt, TextureGlyph>::iterator iter, e = textureGlyphs.end();
 		for (iter = textureGlyphs.begin(); iter != e; ++iter)
 			tp->addTexture(iter->second.width, iter->second.height);
 	}
@@ -189,8 +190,8 @@ bool TTBMFont::staticCharsetInit() {
 	int i = 0;
     for (size_t facenum=0;facenum<fontFaces_.size();facenum++)
 	{
-		std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
-        std::map<FT_UInt, TextureGlyph>::iterator iter, e = textureGlyphs.end();
+		std::unordered_map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
+        std::unordered_map<FT_UInt, TextureGlyph>::iterator iter, e = textureGlyphs.end();
 		FT_Face face=fontFaces_[facenum].face;
 		for (iter = textureGlyphs.begin(); iter != e; ++iter, ++i) {
 			int xo, yo;
@@ -381,14 +382,14 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 	checkLogicalScale();
 	if (!currentPacker_)
 		return;
-	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
+    std::unordered_map<uint64_t, int> &kernings =
 			fontInfo_.kernings;
     bool updateTexture = dibDirty_;
 	wchar32_t lchar = 0;
 	for (const wchar32_t *t = text; size; size--, t++) {
 		wchar32_t chr = *t;
 		bool newGlyph = false;
-		std::map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
+		std::unordered_map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
 		if (charGlyphs.find(chr)==charGlyphs.end()){
 			if (!addGlyph(chr))
 				continue;
@@ -398,16 +399,14 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 		FT_Face face=fontFaces_[facenum].face;
 		FT_UInt glyph=charGlyphs[chr];
 		const TextureGlyph &g = fontFaces_[facenum].textureGlyphs[glyph];
-		std::map<wchar32_t, int>::iterator lit=fontInfo_.charFace.find(lchar);
-		if (FT_HAS_KERNING(face)&&lchar&&(lit!=fontInfo_.charFace.end())&&(lit->second==facenum)) {
+		std::unordered_map<wchar32_t, int>::iterator lit=fontInfo_.charFace.find(lchar);
+        if (FT_HAS_KERNING(face)&&lchar&&(lit!=fontInfo_.charFace.end())&&(lit->second==facenum)&&(kernings.find(kerning_pair(lchar, chr))==kernings.end())) {
 			FT_UInt lglyph=charGlyphs[lchar];
 			FT_Vector delta;
 			FT_Get_Kerning(face, lglyph,
 					glyph, FT_KERNING_DEFAULT,
 					&delta);
-
-			if (delta.x != 0)
-				kernings[std::make_pair(lchar, chr)] = delta.x;
+            kernings[kerning_pair(lchar, chr)] = delta.x;
 		}
 		lchar=chr;
 		if (newGlyph) {
@@ -492,7 +491,7 @@ void TTBMFont::ensureGlyphs(int facenum,const wchar32_t *text, int size) {
 		return;
 	bool updateTexture = dibDirty_;
 	FT_Face face=fontFaces_[facenum].face;
-	std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
+	std::unordered_map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
 	for (const wchar32_t *t = text; size; size--, t++) {
 		FT_UInt glyph = (FT_UInt)*t;
 		bool newGlyph = false;
@@ -714,7 +713,7 @@ bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext
     size_t fCount=fontFaces_.size();
     if (fCount!=1)
     {
-        std::map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
+        std::unordered_map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
         size_t tCount=wtext.size();
         ensureChars(&wtext[0], tCount);
         std::vector<int> cnts(fCount);
@@ -758,7 +757,7 @@ bool TTBMFont::shapeChunk(struct ChunkLayout &part,std::vector<wchar32_t> &wtext
 }
 
 TTBMFont::TextureGlyph *TTBMFont::getCharGlyph(wchar32_t chr,int &facenum,FT_UInt &glyph) {
-    std::map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
+    std::unordered_map<wchar32_t, FT_UInt> &charGlyphs = fontInfo_.charGlyphs;
 	if (charGlyphs.find(chr)==charGlyphs.end()) return NULL;
 	facenum=fontInfo_.charFace[chr];
 	glyph=charGlyphs[chr];
@@ -800,7 +799,7 @@ void TTBMFont::chunkMetrics(struct ChunkLayout &part, FontBase::TextLayoutParame
             GlyphLayout &gl=part.shaped[i];
             FT_UInt glyphIndex=(FT_UInt) gl.glyph;
             int facenum=(int) (uintptr_t) gl._private;
-            std::map<FT_UInt, TextureGlyph>::const_iterator iter =
+            std::unordered_map<FT_UInt, TextureGlyph>::const_iterator iter =
                     fontFaces_[facenum].textureGlyphs.find(glyphIndex);
 
     		if (iter == fontFaces_[facenum].textureGlyphs.end())
@@ -914,11 +913,15 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
     size_t blockLayer=0;
     size_t blockCount=0;
-    if (l.styleFlags&TEXTSTYLEFLAG_UNDERLINE) {
+    if (l.styleFlags&(TEXTSTYLEFLAG_UNDERLINE|TEXTSTYLEFLAG_STRIKETHROUGH|TEXTSTYLEFLAG_LINE)) {
         blockLayer=gfx++;
         for (size_t pn = 0; pn < l.parts.size(); pn++) {
             ChunkLayout &c = l.parts[pn];
             if (c.style.styleFlags&TEXTSTYLEFLAG_UNDERLINE)
+                blockCount++; //A single quad block spanning whole chunk
+            if (c.style.styleFlags&TEXTSTYLEFLAG_LINE)
+                blockCount++; //A single quad block spanning whole chunk
+            if (c.style.styleFlags&TEXTSTYLEFLAG_STRIKETHROUGH)
                 blockCount++; //A single quad block spanning whole chunk
         }
         vGraphicsBase->resize(gfx);
@@ -942,6 +945,60 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
         blockCount=0;
     }
 
+    //Sizing pass
+    for (size_t pn = 0; pn < l.parts.size(); pn++) {
+        ChunkLayout &c = l.parts[pn];
+        size_t wsize=c.shaped.size();
+        for (size_t i = 0; i < wsize; ++i) {
+            GlyphLayout &gl=c.shaped[i];
+            int facenum = (int)(uintptr_t)gl._private;
+            std::unordered_map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
+
+            std::unordered_map<FT_UInt, TextureGlyph>::const_iterator iter =
+                textureGlyphs.find(gl.glyph);
+
+            if (iter == textureGlyphs.end())
+                continue;
+            const TextureGlyph &textureGlyph = iter->second;
+            int l = layerMap[textureGlyph.texture];
+            if (!l) {
+                gfx++;
+                layerMap[textureGlyph.texture] = gfx;
+                l = gfx;
+            }
+            l--;
+            gfxMap[l] = gfxMap[l] + 1;
+        }
+    }
+
+    vGraphicsBase->resize(gfx);
+    for (std::map<int, int>::iterator it = gfxMap.begin();
+         it != gfxMap.end(); it++) {
+        GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
+        size_t size = it->second;
+        if ((size*4)>graphicsBase->vertices.size()) {
+            if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+            {
+                graphicsBase->colors.resize(size * 16);
+                graphicsBase->colors.Update();
+            }
+            else
+            {
+                graphicsBase->colors.clear();
+                graphicsBase->setColor(r, g, b, a);
+            }
+            if (size>=16384)
+                graphicsBase->enable32bitIndices();
+            graphicsBase->vertices.resize(size * 4);
+            graphicsBase->texcoords.resize(size * 4);
+            graphicsBase->indicesResize(size * 6);
+            graphicsBase->vertices.Update();
+            graphicsBase->texcoords.Update();
+            graphicsBase->indicesUpdate();
+        }
+    }
+
+
 	for (size_t pn = 0; pn < l.parts.size(); pn++) {
         ChunkLayout &c = l.parts[pn];
         size_t wsize=c.shaped.size();
@@ -954,55 +1011,6 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
             rgba[1]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>8)&0xFF:g*255));
             rgba[2]=(unsigned char)(ca*((c.style.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.style.color>>0)&0xFF:b*255));
 			rgba[3]=(unsigned char)(ca*255);
-		}
-
-		for (size_t i = 0; i < wsize; ++i) {
-            GlyphLayout &gl=c.shaped[i];
-            int facenum = (int)(uintptr_t)gl._private;
-        	std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
-
-			std::map<FT_UInt, TextureGlyph>::const_iterator iter =
-					textureGlyphs.find(gl.glyph);
-
-			if (iter == textureGlyphs.end())
-				continue;
-			const TextureGlyph &textureGlyph = iter->second;
-			int l = layerMap[textureGlyph.texture];
-			if (!l) {
-				gfx++;
-				layerMap[textureGlyph.texture] = gfx;
-				l = gfx;
-			}
-			l--;
-			gfxMap[l] = gfxMap[l] + 1;
-        }
-
-        vGraphicsBase->resize(gfx);
-
-		for (std::map<int, int>::iterator it = gfxMap.begin();
-				it != gfxMap.end(); it++) {
-			GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
-            size_t size = it->second;
-            if ((size*4)>graphicsBase->vertices.size()) {
-                if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
-                {
-                    graphicsBase->colors.resize(size * 16);
-                    graphicsBase->colors.Update();
-                }
-                else
-                {
-                    graphicsBase->colors.clear();
-                    graphicsBase->setColor(r, g, b, a);
-                }
-                if (size>=16384)
-                    graphicsBase->enable32bitIndices();
-                graphicsBase->vertices.resize(size * 4);
-                graphicsBase->texcoords.resize(size * 4);
-                graphicsBase->indicesResize(size * 6);
-                graphicsBase->vertices.Update();
-                graphicsBase->texcoords.Update();
-                graphicsBase->indicesUpdate();
-            }
 		}
 
         float x = (c.dx-minx), y = (c.dy-miny);
@@ -1033,9 +1041,9 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		for (size_t i = 0; i < wsize; ++i) {
             GlyphLayout &gl=c.shaped[i];
             int facenum = (int)(uintptr_t)gl._private;
-        	std::map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
+        	std::unordered_map<FT_UInt, TextureGlyph> &textureGlyphs = fontFaces_[facenum].textureGlyphs;
 
-			std::map<FT_UInt, TextureGlyph>::const_iterator iter =
+			std::unordered_map<FT_UInt, TextureGlyph>::const_iterator iter =
 					textureGlyphs.find(gl.glyph);
 
 			if (iter == textureGlyphs.end())
@@ -1117,42 +1125,107 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
 			x += gl.advX;
         }
-        if (c.style.styleFlags&TEXTSTYLEFLAG_UNDERLINE) {
-            int vi=blockCount++;
+        if (c.style.styleFlags&(TEXTSTYLEFLAG_UNDERLINE|TEXTSTYLEFLAG_STRIKETHROUGH|TEXTSTYLEFLAG_LINE)) {
             GraphicsBase *graphicsBase = &((*vGraphicsBase)[blockLayer]);
 
             float ls=getLineHeight();
-            float yt=c.style.underline_size?(c.style.underline_size/510.0)*ls:0.5;
-            float yp=c.style.underline_pos?(c.style.underline_pos/127.0):0;
-            if (yp<=0)
-                yp=-yp*getDescender();
-            else
-                yp=-yp*getAscender();
+            float yt=c.style.line_size?(c.style.line_size/510.0)*ls:0.5;
             float x0=xstart;
             float x1=x+c.sepl;
-            float y0=y-yt+yp;
-            float y1=y+yt+yp;
-            graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,	sizescaley_ * y0);
-            graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,	sizescaley_ * y0);
-            graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,	sizescaley_ * y1);
-            graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,	sizescaley_ * y1);
 
-            if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
-            {
-                for (int v=0;v<16;v+=4) {
-                    graphicsBase->colors[vi * 16 + 0 + v] = rgba[0];
-                    graphicsBase->colors[vi * 16 + 1 + v] = rgba[1];
-                    graphicsBase->colors[vi * 16 + 2 + v] = rgba[2];
-                    graphicsBase->colors[vi * 16 + 3 + v] = rgba[3];
+            if (c.style.styleFlags&TEXTSTYLEFLAG_LINE) {
+                int vi=blockCount++;
+                float yp=c.style.line_pos?(c.style.line_pos/127.0):0;
+                if (yp<=0)
+                    yp=-yp*getDescender();
+                else
+                    yp=-yp*getAscender();
+                float y0=y-yt+yp;
+                float y1=y+yt+yp;
+                graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,	sizescaley_ * y0);
+                graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,	sizescaley_ * y0);
+                graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,	sizescaley_ * y1);
+                graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,	sizescaley_ * y1);
+
+                if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+                {
+                    for (int v=0;v<16;v+=4) {
+                        graphicsBase->colors[vi * 16 + 0 + v] = rgba[0];
+                        graphicsBase->colors[vi * 16 + 1 + v] = rgba[1];
+                        graphicsBase->colors[vi * 16 + 2 + v] = rgba[2];
+                        graphicsBase->colors[vi * 16 + 3 + v] = rgba[3];
+                    }
                 }
-            }
 
-            graphicsBase->indicesSet(vi * 6 + 0, vi * 4 + 0);
-            graphicsBase->indicesSet(vi * 6 + 1, vi * 4 + 1);
-            graphicsBase->indicesSet(vi * 6 + 2, vi * 4 + 2);
-            graphicsBase->indicesSet(vi * 6 + 3, vi * 4 + 0);
-            graphicsBase->indicesSet(vi * 6 + 4, vi * 4 + 2);
-            graphicsBase->indicesSet(vi * 6 + 5, vi * 4 + 3);
+                graphicsBase->indicesSet(vi * 6 + 0, vi * 4 + 0);
+                graphicsBase->indicesSet(vi * 6 + 1, vi * 4 + 1);
+                graphicsBase->indicesSet(vi * 6 + 2, vi * 4 + 2);
+                graphicsBase->indicesSet(vi * 6 + 3, vi * 4 + 0);
+                graphicsBase->indicesSet(vi * 6 + 4, vi * 4 + 2);
+                graphicsBase->indicesSet(vi * 6 + 5, vi * 4 + 3);
+            }
+            if (c.style.styleFlags&TEXTSTYLEFLAG_UNDERLINE) {
+                int vi=blockCount++;
+                float yp=-0.5;
+                if (yp<=0)
+                    yp=-yp*getDescender();
+                else
+                    yp=-yp*getAscender();
+                float y0=y-yt+yp;
+                float y1=y+yt+yp;
+                graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,	sizescaley_ * y0);
+                graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,	sizescaley_ * y0);
+                graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,	sizescaley_ * y1);
+                graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,	sizescaley_ * y1);
+
+                if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+                {
+                    for (int v=0;v<16;v+=4) {
+                        graphicsBase->colors[vi * 16 + 0 + v] = rgba[0];
+                        graphicsBase->colors[vi * 16 + 1 + v] = rgba[1];
+                        graphicsBase->colors[vi * 16 + 2 + v] = rgba[2];
+                        graphicsBase->colors[vi * 16 + 3 + v] = rgba[3];
+                    }
+                }
+
+                graphicsBase->indicesSet(vi * 6 + 0, vi * 4 + 0);
+                graphicsBase->indicesSet(vi * 6 + 1, vi * 4 + 1);
+                graphicsBase->indicesSet(vi * 6 + 2, vi * 4 + 2);
+                graphicsBase->indicesSet(vi * 6 + 3, vi * 4 + 0);
+                graphicsBase->indicesSet(vi * 6 + 4, vi * 4 + 2);
+                graphicsBase->indicesSet(vi * 6 + 5, vi * 4 + 3);
+            }
+            if (c.style.styleFlags&TEXTSTYLEFLAG_STRIKETHROUGH) {
+                int vi=blockCount++;
+                float yp=0.34;
+                if (yp<=0)
+                    yp=-yp*getDescender();
+                else
+                    yp=-yp*getAscender();
+                float y0=y-yt+yp;
+                float y1=y+yt+yp;
+                graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,	sizescaley_ * y0);
+                graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,	sizescaley_ * y0);
+                graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,	sizescaley_ * y1);
+                graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,	sizescaley_ * y1);
+
+                if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+                {
+                    for (int v=0;v<16;v+=4) {
+                        graphicsBase->colors[vi * 16 + 0 + v] = rgba[0];
+                        graphicsBase->colors[vi * 16 + 1 + v] = rgba[1];
+                        graphicsBase->colors[vi * 16 + 2 + v] = rgba[2];
+                        graphicsBase->colors[vi * 16 + 3 + v] = rgba[3];
+                    }
+                }
+
+                graphicsBase->indicesSet(vi * 6 + 0, vi * 4 + 0);
+                graphicsBase->indicesSet(vi * 6 + 1, vi * 4 + 1);
+                graphicsBase->indicesSet(vi * 6 + 2, vi * 4 + 2);
+                graphicsBase->indicesSet(vi * 6 + 3, vi * 4 + 0);
+                graphicsBase->indicesSet(vi * 6 + 4, vi * 4 + 2);
+                graphicsBase->indicesSet(vi * 6 + 5, vi * 4 + 3);
+            }
         }
     }
     RENDER_UNLOCK();
@@ -1315,8 +1388,8 @@ float TTBMFont::getCharIndexAtOffset(const char *text, float offset, float lette
 }
 
 int TTBMFont::kerning(wchar32_t left, wchar32_t right) const {
-	std::map<std::pair<wchar32_t, wchar32_t>, int>::const_iterator iter;
-	iter = fontInfo_.kernings.find(std::make_pair(left, right));
+    std::unordered_map<uint64_t, int>::const_iterator iter;
+    iter = fontInfo_.kernings.find(kerning_pair(left, right));
 	return (iter != fontInfo_.kernings.end()) ? iter->second : 0;
 }
 
