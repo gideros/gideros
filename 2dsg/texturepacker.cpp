@@ -130,13 +130,14 @@ public:
 		return true;
 	}
 
-	virtual void getTextureLocation(int index, int* x, int* y, int* width, int* height)
+    virtual int getTextureLocation(int index, int* x, int* y, int* width, int* height)
 	{
         if (index<0) index=result_.size()-1;
 		*x = result_[index].x;
 		*y = result_[index].y;
 		*width = result_[index].width;
 		*height = result_[index].height;
+        return index;
 	}
 
 private:

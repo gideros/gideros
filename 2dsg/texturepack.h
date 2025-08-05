@@ -3,11 +3,13 @@
 
 #include "texturebase.h"
 #include "fontbase.h"
+#include "texturepacker.h"
 #include <map>
 #include <string>
 #include <vector>
 #include <wchar32.h>
 #include <gstatus.h>
+#include <grendertarget.h>
 
 class GraphicsBase;
 struct TextureData;
@@ -21,13 +23,15 @@ public:
     // can throw GiderosException
     TexturePack(Application* application, const char** filenames, int padding, TextureParameters parameters);
     TexturePack(Application* application, const char* texturelistfile, const char* imagefile, TextureParameters parameters);
-	virtual ~TexturePack();
+    TexturePack(Application* application, GRenderTarget *target); //Open pack
+    virtual ~TexturePack();
     static void loadAsync(Application* application, const char** filenames, int padding, TextureParameters parameters,std::function<void(TexturePack *,std::exception_ptr)> callback);
     static void loadAsync(Application* application, const char* texturelistfile, const char* imagefile, TextureParameters parameters,std::function<void(TexturePack *,std::exception_ptr)> callback);
 
     std::vector<std::string> getRegionsNames();
 	bool location(int index, int* x, int* y, int* width, int* height, int* dx1, int* dy1, int* dx2, int* dy2) const;
 	bool location(const char* filename, int* x, int* y, int* width, int* height, int* dx1, int* dy1, int* dx2, int* dy2) const;
+    bool allocate(std::string name,unsigned int width, unsigned int height,int &xo,int &yo);
 
 private:
 	struct Rect
@@ -57,6 +61,8 @@ private:
 protected:
 	std::vector<Rect> textures_;
 	std::map<std::string, int> filenameMap_;
+    GRenderTarget *openTarget;
+    TexturePacker *openPacker;
 	static void readTextureList(const char* texturelistfile,
 								std::vector<Rect>& textures_,
 								std::map<std::string, int>& filenameMap_,
@@ -83,6 +89,7 @@ public:
     virtual float getDescender();
     virtual float getLineHeight();
 
+    void mapCharacter(wchar32_t c,const char *map);
 private:
     struct FontInfo
     {

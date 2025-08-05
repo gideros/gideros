@@ -8,7 +8,7 @@ public:
 	virtual void setTextureCount(int tcount) = 0;
 	virtual bool addTexture(int width, int height) = 0;
 	virtual void packTextures(int* width, int* height, int border, bool forceSquare = false) = 0;
-	virtual void getTextureLocation(int index, int* x, int* y, int* width, int* height) = 0;
+    virtual int getTextureLocation(int index, int* x, int* y, int* width, int* height) = 0;
 };
 
 TexturePacker* createTexturePacker(void);

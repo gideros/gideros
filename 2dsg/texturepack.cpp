@@ -2,6 +2,7 @@
 #include "dib.h"
 #include "texturepacker.h"
 #include "bitmapdata.h"
+#include "grendertarget.h"
 #include "ogl.h"
 #include <gfile.h>
 #include <gstdio.h>
@@ -103,8 +104,33 @@ TexturePack::TexturePack(Application* application,
 	}
 }
 
+TexturePack::TexturePack(Application* application, GRenderTarget *target) :
+    TextureBase(application)
+{
+    openTarget=target;
+    target->ref();
+    data=target->data;
+    openPacker = createProgressiveTexturePacker(target->data->baseWidth,target->data->baseHeight);
+}
+
 TexturePack::~TexturePack()
 {
+    if (openTarget) {
+        releaseTexturePacker(openPacker);
+        data=NULL;
+        openTarget->unref();
+    }
+}
+
+bool TexturePack::allocate(std::string name,unsigned int width, unsigned int height,int &xo,int &yo) {
+    if (!openPacker) return false;
+    if (!openPacker->addTexture(width, height))
+        return false;
+    int wo, ho;
+    int index=openPacker->getTextureLocation(-1, &xo, &yo, &wo,&ho);
+    filenameMap_[name] = index;
+    textures_.push_back(Rect(xo, yo, wo, ho));
+    return true;
 }
 
 void TexturePack::loadAsync(Application* application, const char** filenames, int padding, TextureParameters parameters,
@@ -452,6 +478,43 @@ void TexturePackFont::drawText(std::vector<GraphicsBase> * vGraphicsBase, const 
 TexturePackFont::~TexturePackFont() {
     pack_->unref();
 }
+
+void TexturePackFont::mapCharacter(wchar32_t c,const char *map)
+{
+    if (map) {
+        mappings_[c]=map;
+        int left,top,width,height;
+        int dx1,dy1,dx2,dy2;
+        pack_->location(map,&left,&top,&width,&height,&dx1,&dy1,&dx2,&dy2);
+        int asc=(int)(height*anchory_);
+        int desc=height-asc;
+        fontInfo_.ascender = std::max(fontInfo_.ascender, asc);
+        fontInfo_.descender = std::max(fontInfo_.descender, desc);
+        fontInfo_.height = (fontInfo_.ascender + fontInfo_.descender);
+    }
+    else {
+        mappings_.erase(c);
+        int ascender = 0;
+        int descender = 0;
+        std::map<wchar32_t, std::string>::iterator iter, e =
+                                                         mappings_.end();
+        for (iter = mappings_.begin(); iter != e; ++iter) {
+            const std::string &name = iter->second;
+
+            int left,top,width,height;
+            int dx1,dy1,dx2,dy2;
+            pack_->location(name.c_str(),&left,&top,&width,&height,&dx1,&dy1,&dx2,&dy2);
+            int asc=(int)(height*anchory_);
+            int desc=height-asc;
+            ascender = std::max(ascender, asc);
+            descender = std::max(descender, desc);
+        }
+
+        fontInfo_.height = (ascender + descender);
+        fontInfo_.ascender = ascender;
+        fontInfo_.descender = descender;
+    }
+};
 
 void TexturePackFont::getBounds(const char *text, float letterSpacing, float *pminx,
         float *pminy, float *pmaxx, float *pmaxy, std::string name) {

@@ -14,7 +14,8 @@ TexturePackBinder::TexturePackBinder(lua_State* L)
 	static const luaL_Reg functionList[] = {
         {"getLocation", TexturePackBinder::getLocation},
         {"loadAsync", TexturePackBinder::loadAsync},
-		{"getRegionsNames", TexturePackBinder::getRegionsNames},
+        {"getRegionsNames", TexturePackBinder::getRegionsNames},
+        {"allocateRegion", TexturePackBinder::allocateRegion},
         {NULL, NULL},
 	};
 
@@ -293,6 +294,15 @@ int TexturePackBinder::createCommon(lua_State* L,bool async)
 int TexturePackBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "TexturePackBinder::create", 1);
+    Binder binder(L);
+    if (binder.isInstanceOf("RenderTarget",1))
+    {
+        LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
+        Application* application = luaapplication->getApplication();
+        TexturePack *texturePack = new TexturePack(application, (GRenderTarget *)binder.getInstance("RenderTarget",1));
+        binder.pushInstance("TexturePack", texturePack);
+        return 1;
+    }
     return createCommon(L,false);
 }
 
@@ -329,6 +339,20 @@ int TexturePackBinder::getRegionsNames(lua_State* L)
 	return 1;
 }
 
+int TexturePackBinder::allocateRegion(lua_State* L)
+{
+    Binder binder(L);
+    TexturePack* texturePack = static_cast<TexturePack*>(binder.getInstance("TexturePack", 1));
+    const char *name=luaL_checkstring(L,2);
+    int w=luaL_checkinteger(L,3);
+    int h=luaL_checkinteger(L,4);
+    int x,y;
+    if (!texturePack->allocate(name,w,h,x,y))
+        return 0;
+    lua_pushnumber(L,x);
+    lua_pushnumber(L,y);
+    return 2;
+}
 
 int TexturePackBinder::getLocation(lua_State* L)
 {
@@ -389,6 +413,7 @@ TexturePackFontBinder::TexturePackFontBinder(lua_State* L)
     Binder binder(L);
 
     static const luaL_Reg functionList[] = {
+        {"mapCharacter", mapCharacter},
         {NULL, NULL},
     };
 
@@ -439,5 +464,18 @@ int TexturePackFontBinder::destruct(void *p)
     TexturePackFont* texturePack = static_cast<TexturePackFont*>(ptr);
     texturePack->unref();
 
+    return 0;
+}
+
+int TexturePackFontBinder::mapCharacter(lua_State* L)
+{
+    Binder binder(L);
+    TexturePackFont* tpf = static_cast<TexturePackFont*>(binder.getInstance("TexturePackFont", 1));
+    size_t kl;
+    const char *key=luaL_checklstring(L,2,&kl);
+    const char *val=luaL_optstring(L,3,NULL);
+    wchar32_t w=0;
+    utf8_to_wchar(key,kl,&w,1,0);
+    tpf->mapCharacter(w,val);
     return 0;
 }
