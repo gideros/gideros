@@ -288,8 +288,6 @@ G_API g_id gui_createAlertDialog(const char *title,
 
   map_[gid]=dialog;
 
-  printf("gui_createAlertDialog %d\n",gid);
-  
   return gid;
 }
 
@@ -321,14 +319,11 @@ G_API g_id gui_createTextInputDialog(const char *title,
 
   map_[gid]=dialog;
 
-  printf("gui_createTextInputDialog %d\n",gid);
-
   return gid;
 }
 
 G_API void gui_show(g_id gid)
 {
-  //  printf("gui_show, %d %d %p %p\n",gid,map_[gid].type,hInstcopy,hwndcopy);
   mygid = gid;
 
   int ret;
