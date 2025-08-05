@@ -23,6 +23,9 @@ TexturePack::TexturePack(Application* application,
     TextureBase(application, imagefile, parameters)
 {
     float scale;
+    openTarget=NULL;
+    openPacker=NULL;
+
     const char *suffix = application->getImageSuffix(imagefile, &scale);
 
     const char *ext = strrchr(texturelistfile, '.');
@@ -55,6 +58,8 @@ TexturePack::TexturePack(Application* application,
 	TextureBase(application)
 {
 	std::vector<Dib> dibs;
+    openTarget=NULL;
+    openPacker=NULL;
 
 	int count = 0;
 	while (*filenames)
