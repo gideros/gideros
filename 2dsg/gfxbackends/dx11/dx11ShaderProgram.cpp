@@ -27,16 +27,172 @@ public:
 	ID3D11Buffer *VBO;
 	int VBOcapacity;
 	int cachedMult;
-	dx11ShaderBufferCache() { VBO = NULL; VBOcapacity = 0; cachedMult = 0; }
+	unsigned int offset; //offset of chunk, if small enough to be packed
+	unsigned int size; //size of chunk, if small enough to be packed
+	dx11ShaderBufferCache() { VBO = NULL; VBOcapacity = 0; cachedMult = 0; size = 0; offset = 0; }
 	virtual ~dx11ShaderBufferCache()
 	{
 		if (VBO)
+		{
+#ifdef DX11SHADERS_COMMON_GENVBO
+			if (!size)
+				deleteVbo(1, &VBO);
+			else
+				freeVboPack(VBO, size);
+#else
 			VBO->Release();
+#endif
+		}
 	}
+#ifdef DX11SHADERS_COMMON_GENVBO
+	struct VboPack {
+		bool index;
+		unsigned int used;
+		unsigned int freeed;
+	};
+	void recreate()
+	{
+		if (VBO)
+		{
+			if (!size)
+				deleteVbo(1, &VBO);
+			else
+				freeVboPack(VBO, size);
+		}
+		VBO = 0;
+	}
+	bool valid()
+	{
+		return (VBO != nullptr);
+	}
+	static std::map<ID3D11Buffer*, VboPack> vboPacks;
+	static ID3D11Buffer* openVboPack[2];
+	static void freeVboPack(ID3D11Buffer* vbo, unsigned int size) {
+		vboPacks[vbo].freeed += ((size + 3) & (~3)); //Align
+	}
+	//At the beginning of each frame
+	static void turnVboPacks() {
+		for (size_t k = 0; k < 2; k++)
+			if (openVboPack[k]) {
+				if (vboPacks[openVboPack[k]].used)
+					openVboPack[k] = 0; //Close open Vbo pack if any
+			}
+		std::vector<std::pair<bool,ID3D11Buffer*>> freeed;
+		for (auto it : vboPacks) {
+			auto& pack = it.second;
+			if (pack.freeed == pack.used)
+				freeed.push_back(std::make_pair(pack.index,it.first));
+		}
+		if (!freeed.empty()) {
+			for (auto it : freeed) {
+				vboPacks.erase(it.second);
+				if (dx11ShaderProgram::nstdVboSet.count(it.second))
+					deleteVbo(1, &it.second);
+				else
+					dx11ShaderProgram::freeVBOs[it.first?1:0].push_back(it.second);
+			}
+		}
+	}
+	static void freeVboPacks() {
+		for (size_t k = 0; k < 2; k++)
+			openVboPack[k] = 0;
+		std::vector<ID3D11Buffer*> freeed;
+		for (auto it : vboPacks)
+			freeed.push_back(it.first);
+		if (!freeed.empty()) {
+			vboPacks.clear();
+			deleteVbo(freeed.size(), freeed.data());
+		}
+	}
+	static void deleteVbo(int count, ID3D11Buffer** vbos) {
+		dx11ShaderProgram::deleteVBO(count, vbos);
+	}
+#endif
 };
 
+#define IDXBUFSIZE  65536
+
 ShaderProgram *dx11ShaderProgram::current = NULL;
-ID3D11Buffer *dx11ShaderProgram::curIndicesVBO=NULL;
+ID3D11Buffer* dx11ShaderProgram::curIndicesVBO = NULL;
+#ifdef DX11SHADERS_COMMON_GENVBO
+std::map<ID3D11Buffer*, dx11ShaderBufferCache::VboPack> dx11ShaderBufferCache::vboPacks;
+ID3D11Buffer* dx11ShaderBufferCache::openVboPack[2] = { nullptr, nullptr };
+std::unordered_set<ID3D11Buffer*> dx11ShaderProgram::nstdVboSet;
+std::vector<ID3D11Buffer*> dx11ShaderProgram::freeVBOs[2];
+std::vector<ID3D11Buffer*> dx11ShaderProgram::usedVBOs[2];
+std::vector<ID3D11Buffer*> dx11ShaderProgram::renderedVBOs[2];
+ID3D11Buffer* dx11ShaderProgram::curGenVBO[2] = { nullptr, nullptr };
+size_t dx11ShaderProgram::genBufferOffset[2] = { 0,0 };
+
+void dx11ShaderProgram::deleteVBO(int count, ID3D11Buffer** vbos) {
+	for (int k = 0; k < count; k++) {
+		if (vbos[k] == curIndicesVBO)
+			curIndicesVBO = nullptr;
+		nstdVboSet.erase(vbos[k]);
+		vbos[k]->Release();
+	}
+}
+
+ID3D11Buffer* dx11ShaderProgram::allocateVBO(bool index,size_t size, bool gen, bool standard) {
+	D3D11_BUFFER_DESC bd;
+	ID3D11Buffer* vbo;
+
+	int bt = index ? 1 : 0;
+	if ((!standard)||freeVBOs[bt].empty()) {
+		ZeroMemory(&bd, sizeof(bd));
+		bd.Usage = D3D11_USAGE_DYNAMIC;    // write access access by CPU and GPU
+		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow CPU to write in buffer
+		bd.ByteWidth = size;
+		bd.BindFlags =
+			(!index) ?
+			D3D11_BIND_VERTEX_BUFFER : D3D11_BIND_INDEX_BUFFER; // use as a vertex buffer
+		g_dev->CreateBuffer(&bd, NULL, &vbo);
+		if (gen)
+			usedVBOs[bt].push_back(vbo);
+		if (!standard)
+			nstdVboSet.insert(vbo);
+		return vbo;
+	}
+	vbo = freeVBOs[bt].back();
+	freeVBOs[bt].pop_back();
+	if (gen)
+		usedVBOs[bt].push_back(vbo);
+	return vbo;
+}
+#else
+#endif
+
+void dx11ShaderProgram::reset(bool reinit)
+{
+#ifdef DX11SHADERS_COMMON_GENVBO
+	for (int k = 0; k < 2; k++) {
+		for (auto vbo : renderedVBOs[k])
+		{
+			if (nstdVboSet.count(vbo))
+				deleteVBO(1, &vbo);
+			else
+				freeVBOs->push_back(vbo);
+		}
+		renderedVBOs[k].clear();
+		renderedVBOs[k].assign(usedVBOs[k].begin(), usedVBOs[k].end());
+		usedVBOs[k].clear();
+		curGenVBO[k] = 0;
+	}
+#endif
+	dx11ShaderBufferCache::turnVboPacks();
+	if (reinit) {
+		dx11ShaderBufferCache::freeVboPacks();
+		for (int k = 0; k < 2; k++) {
+			deleteVBO(freeVBOs[k].size(), freeVBOs[k].data());
+			deleteVBO(renderedVBOs[k].size(), renderedVBOs[k].data());
+			deleteVBO(usedVBOs[k].size(), usedVBOs[k].data());
+			freeVBOs[k].clear();
+			renderedVBOs[k].clear();
+			usedVBOs[k].clear();
+			curGenVBO[k] = 0;
+		}
+	}
+}
 
 bool dx11ShaderProgram::isValid() {
 	return g_pLayout != NULL;
@@ -71,10 +227,64 @@ void dx11ShaderProgram::bindTexture(int num, ShaderTexture* texture)
 
 
 ID3D11Buffer *dx11ShaderProgram::getCachedVBO(ShaderBufferCache **cache, bool index,int elmSize, int mult,
-	int count, bool &modified) {
+	int count, bool &modified, size_t& offset) {
 	if (!*cache)
 		*cache = new dx11ShaderBufferCache();
 	dx11ShaderBufferCache *dc = static_cast<dx11ShaderBufferCache*> (*cache);
+	offset = 0;
+#ifdef DX11SHADERS_COMMON_GENVBO
+	int ptype = index ? 1 : 0;
+	if (dc->valid() && (!modified))
+	{
+		// Cache is valid and unmodified, return as-is
+		offset=dc->offset;
+		return dc->VBO; 
+	}
+	unsigned int FBOSize = IDXBUFSIZE;
+	size_t size = elmSize * mult * count;
+	if (size >= (FBOSize >> 2)) {
+		//Big enough, just create/update
+		if (dc->valid()) //We're updating, always recreate in case it is used
+			dc->recreate();
+		dc->VBO = allocateVBO(index, size, false, false);
+		dc->size = 0;
+		dc->offset = 0;
+		return dc->VBO;
+	}
+	else {
+		//Small buffer
+		if (dc->valid())
+			dc->recreate(); //Clear if already valid
+		if (size == 0) { //Empty buffer, don't bind a VBO at all
+			dc->size = 0;
+			dc->offset = 0;
+			return dc->VBO;
+		}
+		if (dx11ShaderBufferCache::openVboPack[ptype]) {
+			if ((dx11ShaderBufferCache::vboPacks[dx11ShaderBufferCache::openVboPack[ptype]].used + size) > FBOSize) {
+				//Open pack is full, close it
+				dx11ShaderBufferCache::openVboPack[ptype] = 0;
+			}
+		}
+		if (!dx11ShaderBufferCache::openVboPack[ptype]) {
+			//No open pack, create one
+			dx11ShaderBufferCache::openVboPack[ptype] = allocateVBO(index, FBOSize, false, true);
+			dx11ShaderBufferCache::VboPack pack;
+			pack.index = index;
+			pack.used = 0;
+			pack.freeed = 0;
+			dx11ShaderBufferCache::vboPacks[dx11ShaderBufferCache::openVboPack[ptype]] = pack;
+		}
+		//Here we have an open pack ready to use
+		auto& pack = dx11ShaderBufferCache::vboPacks[dx11ShaderBufferCache::openVboPack[ptype]];
+		dc->size = size;
+		dc->offset = pack.used;
+		dc->VBO = dx11ShaderBufferCache::openVboPack[ptype];
+		offset = pack.used;
+		pack.used += ((size + 3) & (~3)); //Align
+		return dc->VBO;
+	}
+#else
 	if ((dc->VBO == NULL) || (dc->VBOcapacity < count) || (dc->cachedMult != mult)) {
 		if (dc->VBO != NULL)
 			dc->VBO->Release();
@@ -91,11 +301,37 @@ ID3D11Buffer *dx11ShaderProgram::getCachedVBO(ShaderBufferCache **cache, bool in
 		dc->cachedMult = mult;
 		modified = true;
 	}
+#endif
 	return dc->VBO;
 }
 
 ID3D11Buffer *dx11ShaderProgram::getGenericVBO(int index, int elmSize, int mult,
-		int count) {
+		int count, size_t &offset) {
+#ifdef DX11SHADERS_COMMON_GENVBO
+	int bt = index?0:1;
+	size_t size = elmSize* mult* count;
+	size_t psize = ((size + 3) & (~3));
+	ID3D11Buffer* vbo = nullptr;
+	if (psize > (IDXBUFSIZE / 2))
+	{
+		vbo = allocateVBO(!index, (psize<IDXBUFSIZE)?IDXBUFSIZE:psize, true, false);
+		offset = 0;
+		genBufferOffset[bt] = IDXBUFSIZE;
+	}
+	else if ((curGenVBO[bt] == nullptr) || ((genBufferOffset[bt] + psize) > IDXBUFSIZE))
+	{
+		vbo = curGenVBO[bt] = allocateVBO(!index,IDXBUFSIZE,true,true);
+		offset = 0;
+		genBufferOffset[bt] = 0;
+	}
+	else {
+		offset = genBufferOffset[bt];
+		vbo = curGenVBO[bt];
+	}
+	genBufferOffset[bt] += psize;
+	return vbo;
+#else
+	offset = 0;
 	if ((genVBO[index] == NULL) || (genVBOcapacity[index] < count)) {
 		if (genVBO[index] != NULL)
 			genVBO[index]->Release();
@@ -113,6 +349,7 @@ ID3D11Buffer *dx11ShaderProgram::getGenericVBO(int index, int elmSize, int mult,
 		genVBOcapacity[index] = count;
 	}
 	return genVBO[index];
+#endif
 }
 
 static void copyEnlarge(const void *src, void *dst, int smult, int dmult, int esize, int count, int dup)
@@ -195,24 +432,32 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 	const DataDesc &dd = attributes[index];
 	if (!dd.mult) return;
 	unsigned int bcount = (flags&ShaderProgram::Flag_PointShader) ? count * 4 : count;
-	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,bcount,modified):getGenericVBO(index + 1, elmSize, dd.mult, bcount);
+	size_t boffset=0;
+	ID3D11Buffer* vbo = cache ? getCachedVBO(cache, false, elmSize, dd.mult, bcount, modified, boffset) : nullptr;
+	if (vbo == nullptr) vbo = getGenericVBO(index + 1, elmSize, dd.mult, bcount, boffset);
 	if (!vbo) return;
 	if (modified || (!cache))
 	{
 		D3D11_MAPPED_SUBRESOURCE ms;
-		HRESULT hr = g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
+		HRESULT hr = g_devcon->Map(vbo, NULL, boffset?D3D11_MAP_WRITE_NO_OVERWRITE:D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
 		if (flags&ShaderProgram::Flag_PointShader)
 		{
-			copyEnlarge(ptr, ms.pData, mult, dd.mult, elmSize, count, 4);		
+			copyEnlarge(ptr, ((char *)ms.pData)+boffset, mult, dd.mult, elmSize, count, 4);		
 			if (index == ShaderProgram::DataVertex)
 			{
 				int gindex = ShaderProgram::DataTexture + 1;
 				//Ensure TexCoord array is present and big enough
-				if ((genVBO[gindex] == NULL) || (genVBOcapacity[gindex] < (count * 4))) {
+#ifdef DX11SHADERS_COMMON_GENVBO
+				bool changed = true;
+#else
+				bool changed = (genVBO[gindex] == NULL) || (genVBOcapacity[gindex] < (count * 4));
+#endif
+				if (changed) {
 					D3D11_MAPPED_SUBRESOURCE tms;
-					ID3D11Buffer *tvbo = getGenericVBO(gindex, 4, 2, count*4);
-					g_devcon->Map(tvbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &tms); // map the buffer
-					float *t = (float *)tms.pData;
+					size_t toffset = 0;
+					ID3D11Buffer *tvbo = getGenericVBO(gindex, 4, 2, count*4,toffset);
+					g_devcon->Map(tvbo, NULL, toffset ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, NULL, &tms); // map the buffer
+					float *t = (float *)(((char *)tms.pData)+toffset);
 					for (int k = 0; k < count; k++) {
 						*(t++) = 0.0;
 						*(t++) = 0.0;
@@ -224,6 +469,11 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 						*(t++) = 1.0;
 					}
 					g_devcon->Unmap(tvbo, NULL);                          // unmap the buffer
+#ifdef DX11SHADERS_COMMON_GENVBO
+					UINT tstride = 8;
+					UINT voff = toffset;
+					g_devcon->IASetVertexBuffers(gindex-1, 1, &tvbo, &tstride, &voff);
+#endif
 				}
 			}
 		}
@@ -232,7 +482,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 			if ((mult == 2) && (dd.mult == 3) && (type == DFLOAT)) //TODO should be more generic
 			{
 				float *vdi = (float *)ptr;
-				float *vdo = (float *)ms.pData;
+				float* vdo = (float*)(((char*)ms.pData) + boffset);
 				for (int k = 0; k < count; k++) {
 					*(vdo++) = *(vdi++);
 					*(vdo++) = *(vdi++);
@@ -241,7 +491,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 				mult = dd.mult;
 			}
 			else
-				memcpy(ms.pData, ptr, mult * elmSize * count);          // copy the data
+				memcpy((((char*)ms.pData) + boffset), ptr, mult * elmSize * count);          // copy the data
 		}
 		//floatdump(vName, ms.pData, 8);
 		g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
@@ -250,9 +500,10 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 	if (stride)
 		tstride=stride;
 
-	UINT voff = offset;
+	UINT voff = boffset+offset;
 	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &voff);
 
+#ifndef DX11SHADERS_COMMON_GENVBO
 	if (flags&ShaderProgram::Flag_PointShader)
 	{
 		if (index == ShaderProgram::DataVertex)
@@ -260,10 +511,12 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 			UINT tstride = 8;
 			UINT voff = 0;
 			int gindex = ShaderProgram::DataTexture;
-			ID3D11Buffer *tvbo = getGenericVBO(gindex+1, 4, 2, count * 4);
+			size_t boffset = 0;
+			ID3D11Buffer *tvbo = getGenericVBO(gindex+1, 4, 2, count * 4, boffset);
 			g_devcon->IASetVertexBuffers(gindex, 1, &tvbo, &tstride, &voff);
 		}
 	}
+#endif
 }
 
 void dx11ShaderProgram::setData(int index, DataType type, int mult,
@@ -361,10 +614,14 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 	g_CBP = NULL;
 	cbpData = NULL;
 	cbvData = NULL;
+
+#ifdef DX11SHADERS_COMMON_GENVBO
+#else
 	for (int k = 0; k < 17; k++) {
 		genVBO[k] = NULL;
 		genVBOcapacity[k] = 0;
 	}
+#endif
 	cbvsData = 0;
 	cbpsData = 0;
 	this->flags = flags;
@@ -533,9 +790,12 @@ dx11ShaderProgram::~dx11ShaderProgram() {
 		g_pVS->Release();
 	if (g_pPS)
 		g_pPS->Release();
+#ifdef DX11SHADERS_COMMON_GENVBO
+#else
 	for (int k = 0; k < 17; k++)
 		if (genVBO[k])
 			genVBO[k]->Release();
+#endif
 	if (cbpData)
 		free(cbpData);
 	if (cbvData)
@@ -575,13 +835,17 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 		{
 			D3D11_MAPPED_SUBRESOURCE ms;
 			int ntris = count;
+#ifdef DX11SHADERS_COMMON_GENVBO
+			bool changed = true; //TODO
+#else
 			bool changed = ((genVBO[0] == NULL) || (genVBOcapacity[0] < (6 * ntris))); //We should really check if first is still the same here, but current gideros code uses 0 for Point Shaders
-
-			ID3D11Buffer *vbo = getGenericVBO(0, 2, 1, 6 * ntris);
+#endif
+			size_t boffset = 0;
+			ID3D11Buffer *vbo = getGenericVBO(0, 2, 1, 6 * ntris, boffset);
 			if (changed)
 			{
-				g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
-				unsigned short *i = (unsigned short *)ms.pData;
+				g_devcon->Map(vbo, NULL, boffset ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
+				unsigned short *i = (unsigned short *)(((char *)ms.pData)+boffset);
 
 				for (int t = 0; t < ntris; t++) {
 					unsigned short b = (first + t) * 4;
@@ -594,7 +858,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 				}
 				g_devcon->Unmap(vbo, NULL);                          // unmap the buffer
 			}
-			g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, 0);
+			g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, boffset);
 			curIndicesVBO = vbo;
 			g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			g_devcon->DrawIndexed(ntris * 6, 0, 0);
@@ -611,14 +875,15 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	else if (shape == LineLoop) {
 		D3D11_MAPPED_SUBRESOURCE ms;
-		ID3D11Buffer *vbo = getGenericVBO(0, 2, 1, count + 1);
-		g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
-		unsigned short *i = (unsigned short *) ms.pData;
+		size_t boffset = 0;
+		ID3D11Buffer *vbo = getGenericVBO(0, 2, 1, count + 1, boffset);
+		g_devcon->Map(vbo, NULL, boffset ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
+		unsigned short *i = (unsigned short *) (((char *)ms.pData)+boffset);
 		for (int t = 0; t < count; t++)
 			*(i++) = first + t;
 		*(i++) = first;
 		g_devcon->Unmap(vbo, NULL);                          // unmap the buffer
-		g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, 0);
+		g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, boffset);
 		curIndicesVBO = vbo;
 		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 		g_devcon->DrawIndexed(count + 1, 0, 0);
@@ -649,11 +914,13 @@ void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 	}
 
 	D3D11_MAPPED_SUBRESOURCE ms;
-	ID3D11Buffer *vbo = cache ? getCachedVBO(cache, true, indiceSize, 1, count, modified) : getGenericVBO(0,indiceSize,1,count);
+	size_t boffset = 0;
+	ID3D11Buffer* vbo = cache ? getCachedVBO(cache, true, indiceSize, 1, count, modified, boffset) : nullptr;
+	if (vbo==nullptr) vbo=getGenericVBO(0, indiceSize, 1, count, boffset);
 	if (modified || (!cache))
 	{
-		g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
-		memcpy(ms.pData, indices, indiceSize * count);              // copy the data
+		g_devcon->Map(vbo, NULL, boffset ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
+		memcpy(((char *)ms.pData)+boffset, indices, indiceSize * count);              // copy the data
 		g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
 	}
 
@@ -662,8 +929,10 @@ void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 
 	if ((curIndicesVBO != vbo) || (!cache))
 	{
-		g_devcon->IASetIndexBuffer(vbo, iFmt, 0);
+		g_devcon->IASetIndexBuffer(vbo, iFmt, boffset);
+#ifndef DX11SHADERS_COMMON_GENVBO
 		curIndicesVBO = vbo;
+#endif
 	}
 
 	if (shape == Point)

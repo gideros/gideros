@@ -50,6 +50,7 @@ Matrix4 dx11ShaderEngine::setOrthoFrustum(float l, float r, float b, float t, fl
 void dx11ShaderEngine::reset(bool reinit)
 {
 	ShaderEngine::reset(reinit);
+	dx11ShaderProgram::reset(reinit);
 	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
 	g_devcon->RSSetState(g_pRSNormalCN);
 	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
