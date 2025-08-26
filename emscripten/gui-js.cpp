@@ -160,8 +160,9 @@ G_API void gui_show(g_id gid)
 			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
-			 var btj=allocate(intArrayFromString(bt), ALLOC_STACK);
-      			 dynCall('viii', cb, [gid,bi,btj]);
+				var btj=stringToNewUTF(bt);
+      			dynCall('viii', cb, [gid,bi,btj]);
+      			_free(btj);
 			});
 		},gid,d->Title.c_str(),d->Message.c_str(),
 		d->ButtonC.c_str(),
@@ -171,15 +172,6 @@ G_API void gui_show(g_id gid)
 	}
 	else
 	{
-	/*
-		const char *res=(const char *) EM_ASM_INT({
-			var t=prompt(UTF8ToString($0),UTF8ToString($1));
-			if (t==null) return 0;
-			return allocate(intArrayFromString(t), ALLOC_STACK);
-			},d->Message.c_str(),d->Text.c_str());
-		if (res)
-			d->Text=res;
-		gui_eventInput(gid,res?1:0,res?"OK":"Cancel",d->Text.c_str());		*/
 		EM_ASM_({
 			var cb=$7;
 			Module.gui_displayDialog($0,
@@ -191,9 +183,11 @@ G_API void gui_show(g_id gid)
 			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
-			 var btj=allocate(intArrayFromString(bt), ALLOC_STACK);
-			 var tj=allocate(intArrayFromString(t), ALLOC_STACK);
-      			 dynCall('viiii', cb, [gid,bi,btj,tj]);
+				var btj=stringToNewUTF(bt);
+				var tj=stringToNewUTF(t);
+     			 dynCall('viiii', cb, [gid,bi,btj,tj]);
+      			_free(btj);
+      			_free(tj);
 			});
 		},gid,d->Title.c_str(),d->Message.c_str(),
 		d->ButtonC.c_str(),

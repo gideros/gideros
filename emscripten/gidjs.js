@@ -186,7 +186,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	http.onload = function http_onload(e) {
 		// if (http.status == 200 || _url.substr(0,4).toLowerCase() != "http") {
 		// console.log("rhdr:"+http.getAllResponseHeaders());
-		var hdrs = allocate(intArrayFromString(http.getAllResponseHeaders()),ALLOC_STACK);
+		var hdrs = stringToNewUTF(http.getAllResponseHeaders());
 		var byteArray = new Uint8Array(http.response);
 		var buffer = _malloc(byteArray.length);
 		HEAPU8.set(byteArray, buffer);
@@ -195,6 +195,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 					byteArray.length, http.status, hdrs,0 ]);
 		if (free)
 			_free(buffer);
+		_free(hdrs)
 		/*
 		 * } else { console.log(url+" ERROR"); if (onerror)
 		 * dynCall('viiii', onerror, [handle, arg, http.status,
@@ -283,10 +284,13 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 			  	res.headers.forEach(function(value,key) {
 			  	  ahdr=ahdr+key+": "+value+"\r\n";
 			  	});
-				var hdrs = allocate(intArrayFromString(ahdr), ALLOC_STACK);
 				if (onload)
+				{
+					var hdrs = stringToNewUTF(ahdr);
 					dynCall('viiiiiii', onload, [ handle, arg, 0,
 							0, res.status, hdrs,1 ]);
+					_free(hdrs);
+				}
 			  var reader = res.body.getReader();
 			  let charsReceived = 0;
 			  
@@ -296,8 +300,12 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 				    // value - some data. Always undefined when done is true.
 				    if (done) {
 						if (onload)
+						{
+							var hdrs = stringToNewUTF(ahdr);
 							dynCall('viiiiiii', onload, [ handle, arg, 0,
 									0, res.status, hdrs,0 ]);
+							_free(hdrs);							
+						}
 				      return;
 				    }
 

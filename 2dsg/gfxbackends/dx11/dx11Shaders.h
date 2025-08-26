@@ -19,6 +19,7 @@
 #include <d3dcompiler.h>
 #include <math.h>
 #include <vector>
+#include <unordered_set>
 #include "Shaders.h"
 #include "Matrices.h"
 #include "gtexture.h"
@@ -39,7 +40,7 @@ extern ID3D11DeviceContext *g_devcon;           // the pointer to our Direct3D d
 #endif
 
 
-
+#define DX11SHADERS_COMMON_GENVBO
 class dx11ShaderProgram : public ShaderProgram
 {
 	friend class dx11ShaderEngine;
@@ -51,24 +52,40 @@ protected:
     std::vector<DataDesc> attributes;
     std::string errorLog;
     static ShaderProgram *current;
-	static ID3D11Buffer *curIndicesVBO;
     void *cbpData;
     void *cbvData;
     bool cbpMod;
     bool cbvMod;
     int cbpsData;
     int cbvsData;
-    ID3D11Buffer *genVBO[16+1];
+#ifdef DX11SHADERS_COMMON_GENVBO
+public:
+	static std::unordered_set<ID3D11Buffer*> nstdVboSet;
+	static std::vector<ID3D11Buffer*> freeVBOs[2];
+protected:
+	static std::vector<ID3D11Buffer*> usedVBOs[2];
+	static std::vector<ID3D11Buffer*> renderedVBOs[2];
+	static ID3D11Buffer* curGenVBO[2];
+	static size_t genBufferOffset[2];
+	static ID3D11Buffer* allocateVBO(bool index,size_t size, bool gen, bool standard);
+#else
+	ID3D11Buffer *genVBO[16+1];
     int genVBOcapacity[16+1];
+#endif
+	static ID3D11Buffer* curIndicesVBO;
 	int flags;
 	std::vector<int> textureMap;
 	void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache, int stride, int offset);
-    ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
-	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count, bool &modified);
+    ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count, size_t &offset);
+	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count, bool &modified, size_t& offset);
 	void updateConstants();
     void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz, int flags,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
+	static void reset(bool reinit);
+#ifdef DX11SHADERS_COMMON_GENVBO
+	static void deleteVBO(int count, ID3D11Buffer** vbos);
+#endif
 	virtual void bindTexture(int num, ShaderTexture* texture);
 	virtual void activate();
     virtual void deactivate();
