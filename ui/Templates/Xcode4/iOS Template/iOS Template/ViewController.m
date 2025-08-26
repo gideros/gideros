@@ -25,6 +25,7 @@ NSMutableArray *tableData;
 		animating = FALSE;
 		animationFrameInterval = 1;
 		self.displayLink = nil;		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:@"UIDeviceOrientationDidChangeNotification" object:nil];
 	}
 	
     statusBarHidden=TRUE;
@@ -69,6 +70,13 @@ NSMutableArray *tableData;
     [super viewWillAppear:animated];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    gdr_drawFirstFrame();
+
+    [super viewDidAppear:animated];
+}
+
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self stopAnimation];
@@ -82,6 +90,19 @@ NSMutableArray *tableData;
 
     [self.glView tearDown];
 }
+
+- (void)deviceOrientationDidChange:(NSNotification *)notification
+{
+    gdr_drawFirstFrame();
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+   if([keyPath isEqualToString:@"effectiveGeometry"]){
+       gdr_drawFirstFrame();
+   }
+}
+
 
 - (NSInteger)animationFrameInterval
 {
@@ -157,6 +178,20 @@ NSMutableArray *tableData;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	gdr_didRotateFromInterfaceOrientation(fromInterfaceOrientation);
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context)
+    {
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        // do whatever
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext> context)
+    {
+        gdr_drawFirstFrame();
+    }];
+
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 - (NSUInteger)supportedInterfaceOrientations

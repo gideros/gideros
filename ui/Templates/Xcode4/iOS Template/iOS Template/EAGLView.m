@@ -188,6 +188,7 @@ static NSUInteger lfbw=0,lfbh=0;
     drawableSize.height *= self.contentScaleFactor;
     metalLayer.drawableSize = drawableSize;
     framebufferDirty=TRUE;
+    [super layoutSubviews];
 }
 
 - (void) getSafeArea:(CGRect *) sa

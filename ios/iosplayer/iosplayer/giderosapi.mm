@@ -674,7 +674,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     #endif
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX
-    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+    willRotateToInterfaceOrientationHelper(UIInterfaceOrientationUnknown);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
 #endif
@@ -793,16 +793,21 @@ ApplicationManager::~ApplicationManager()
 void ApplicationManager::drawFirstFrame()
 {
 #if !TARGET_OS_TV && !TARGET_OS_OSX
-    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+    willRotateToInterfaceOrientationHelper(UIInterfaceOrientationUnknown);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
 #endif
 
+#if THREADED_RENDER_LOOP
+    renderTick_ = true;
+    [renderCond_ signal];
+#else
 	[view_ setFramebuffer];
 	application_->clearBuffers();
 	application_->renderScene(1);
 	drawIPs();
 	[view_ presentFramebuffer];
+#endif
 }
 
 void ApplicationManager::setOpenProject(const char* project){
@@ -1060,7 +1065,7 @@ void ApplicationManager::loadProperties()
     }
 #endif
 #if !TARGET_OS_TV && !TARGET_OS_OSX
-    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+    willRotateToInterfaceOrientationHelper(UIInterfaceOrientationUnknown);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
 #endif
@@ -1160,7 +1165,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 #endif
     
 #if !TARGET_OS_TV && !TARGET_OS_OSX
-    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+    willRotateToInterfaceOrientationHelper(UIInterfaceOrientationUnknown);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
 #endif
@@ -1492,9 +1497,24 @@ void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation de
 
 }
 #else
-void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation)
+void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrientation itfOrientation)
 {
-    switch (toInterfaceOrientation)
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+    if (itfOrientation==UIInterfaceOrientationUnknown)
+    {
+        if (@available(iOS 13.0, *)) {
+            UIWindowScene *scene=[UIApplication sharedApplication].windows.firstObject.windowScene;
+            if (@available(iOS 16.0, *))
+                itfOrientation=scene.effectiveGeometry.interfaceOrientation;
+            else
+                itfOrientation=scene.interfaceOrientation;
+        } else {
+            itfOrientation=[UIApplication sharedApplication].statusBarOrientation;
+        }
+    }
+#endif
+
+    switch ([[UIDevice currentDevice] orientation])
     {
         case UIInterfaceOrientationPortrait:
             deviceOrientation_ = ePortrait;
@@ -1508,13 +1528,24 @@ void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrien
         case UIInterfaceOrientationLandscapeLeft:
             deviceOrientation_ = eLandscapeLeft;
             break;
-        default:
-            deviceOrientation_ = ePortrait;
+    }
+
+    switch (itfOrientation)
+    {
+        case UIInterfaceOrientationPortrait:
+            hardwareOrientation_ = ePortrait;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            hardwareOrientation_ = ePortraitUpsideDown;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            hardwareOrientation_ = eLandscapeRight;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            hardwareOrientation_ = eLandscapeLeft;
             break;
     }
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
-
-    hardwareOrientation_ = deviceOrientation_;
     application_->setHardwareOrientation(hardwareOrientation_);
 }
 
@@ -1602,11 +1633,15 @@ void ApplicationManager::background()
 
 void ApplicationManager::surfaceChanged(int width,int height)
 {
-#if TARGET_OS_OSX
-    width_ = width;
-    height_ = height;
+    if ((hardwareOrientation_==eLandscapeRight)||(hardwareOrientation_==eLandscapeLeft)) {
+        width_=height;
+        height_=width;
+    }
+    else {
+        width_ = width;
+        height_ = height;
+    }
     application_->setResolution(width_, height_);
-#endif
 	int sl,st,sr,sb;
 	getSafeDisplayArea(sl,st,sr,sb,this);
 	drawInfoMargins(sl,st);

@@ -29,6 +29,9 @@
         viewController=mainDelegate.viewController;
         
         UIWindowScene *ws=((UIWindowScene *)scene);
+        if (@available(iOS 16,*)) {
+            [ws addObserver:viewController forKeyPath:@"effectiveGeometry" options:NSKeyValueObservingOptionNew context:nil];//observing the key in this class
+        }
         self.window = [[UIWindow alloc] initWithWindowScene:ws];
         [self.window setRootViewController:self.viewController];
         [self.window makeKeyAndVisible];
@@ -122,7 +125,7 @@ API_AVAILABLE(ios(13.0)){
     	[self.window makeKeyAndVisible];
     }
 
-    gdr_drawFirstFrame();
+    //gdr_drawFirstFrame();
 
     //GIDEROS-TAG-IOS:APP-LAUNCHED//
 
