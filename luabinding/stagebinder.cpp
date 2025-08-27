@@ -15,8 +15,9 @@ StageBinder::StageBinder(lua_State* L, Application* application)
 		{"getClearColorBuffer", StageBinder::getClearColorBuffer},
 		{"setClearColorBuffer", StageBinder::setClearColorBuffer},
 		{"setBackgroundColor",  StageBinder::setBackgroundColor},
-		{"getBackgroundColor",  StageBinder::getBackgroundColor},
-		{NULL, NULL},
+        {"getBackgroundColor",  StageBinder::getBackgroundColor},
+        {"validateLayout",  StageBinder::validateLayout},
+        {NULL, NULL},
 	};
 
 	binder.createClass("Stage", "Sprite", 0, destruct, functionList);
@@ -173,17 +174,28 @@ int StageBinder::setBackgroundColor(lua_State* L)
 
 int StageBinder::getBackgroundColor(lua_State* L)
 {
-	StackChecker checker(L, "StageBinder::getBackgroundColor", 3);
+    StackChecker checker(L, "StageBinder::getBackgroundColor", 3);
 
-	Binder binder(L);
-	Stage* stage = static_cast<Stage*>(binder.getInstance("Stage", 1));
+    Binder binder(L);
+    Stage* stage = static_cast<Stage*>(binder.getInstance("Stage", 1));
 
-	float r, g, b;
-	stage->application()->getBackgroundColor(&r, &g, &b);
+    float r, g, b;
+    stage->application()->getBackgroundColor(&r, &g, &b);
 
-	lua_pushnumber(L, r);
-	lua_pushnumber(L, g);
-	lua_pushnumber(L, b);
+    lua_pushnumber(L, r);
+    lua_pushnumber(L, g);
+    lua_pushnumber(L, b);
 
-	return 3;
+    return 3;
+}
+
+int StageBinder::validateLayout(lua_State* L)
+{
+    StackChecker checker(L, "StageBinder::validateLayout", 0);
+
+    Binder binder(L);
+    Stage* stage = static_cast<Stage*>(binder.getInstance("Stage", 1));
+    stage->validateLayout();
+
+    return 0;
 }

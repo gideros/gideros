@@ -21,6 +21,7 @@ private:
 
 	static int setBackgroundColor(lua_State* L);
 	static int getBackgroundColor(lua_State* L);
+    static int validateLayout(lua_State* L);
 };
 
 #endif

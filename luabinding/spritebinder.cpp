@@ -948,19 +948,21 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 	{
 		GridBagLayout *sp=sprite->getLayoutState();
         GridBagLayoutInfo *p=nullptr;
-		if (type==0) { //Current
-			int loops=100; //Detect endless loops while forcing immediate layout
-			while(sp->dirty&&(loops--))
-			{
-				sp->dirty=false;
-				float pwidth,pheight;
-				sprite->getDimensions(pwidth, pheight);
-				if (epw>=0) pwidth=epw;
-				if (eph>=0) pheight=eph;
-				sp->ArrangeGrid(sprite,pwidth,pheight);
-			}
-			if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
-				sp->dirty=false;
+        if ((type==0)||(type==4)) { //Current or recompute forced current
+            if (type==0) { //Force recompute
+                int loops=100; //Detect endless loops while forcing immediate layout
+                while(sp->dirty&&(loops--))
+                {
+                    sp->dirty=false;
+                    float pwidth,pheight;
+                    sprite->getDimensions(pwidth, pheight);
+                    if (epw>=0) pwidth=epw;
+                    if (eph>=0) pheight=eph;
+                    sp->ArrangeGrid(sprite,pwidth,pheight);
+                }
+                if (loops==0) //Gave up, mark as clean to prevent going through endless loop again
+                    sp->dirty=false;
+            }
 			p=sp->getCurrentLayoutInfo();
         }
         if (!p)

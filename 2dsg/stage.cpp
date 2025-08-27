@@ -144,8 +144,11 @@ void Stage::enterFrame(int deltaFrameCount, double lastFrameRenderTime)
 }
 
 void Stage::validateLayout() {
-    if (needLayout)
+    if (needLayout&&(!doingLayout)) {
+        doingLayout=true;
         computeLayout(this);
+        doingLayout=false;
+    }
 }
 
 void Stage::validateEffects() {
