@@ -348,6 +348,13 @@ static bool getArg(const std::string &str, const char *key, int *value) {
 	return false;
 }
 
+static bool getArg(const std::string &str, const char *key, wchar32_t *value) {
+	int v;
+	bool res=getArg(str,key,&v);
+	*value=(wchar32_t)v;
+	return res;
+}
+
 int Font::getTextureGlyphsFormat(const char *file) {
 	G_FILE *fis = g_fopen(file, "rt");
 

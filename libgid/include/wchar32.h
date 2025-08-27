@@ -1,6 +1,7 @@
 #ifndef _WCHAR32_T_H_
 #define _WCHAR32_T_H_
 
-typedef int wchar32_t;
+#include <uchar.h>
+typedef char32_t wchar32_t;
 
 #endif

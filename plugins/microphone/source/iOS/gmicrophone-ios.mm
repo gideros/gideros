@@ -104,6 +104,38 @@ public:
                 *error = GMICROPHONE_UNSUPPORTED_FORMAT;
             return 0;
         }
+        
+        // Request permission to access the camera and microphone.
+#ifdef TARGET_OS_OSX        
+		switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio])
+		{
+		    case AVAuthorizationStatusAuthorized:
+		    {
+		        break;
+		    }
+		    case AVAuthorizationStatusNotDetermined:
+		    {
+		        // The app hasn't yet asked the user for camera access.
+		        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+		        }];
+	            if (error)
+	                *error = GMICROPHONE_PROMPTING_PERMISSION;
+	            return 0;
+		    }
+		    case AVAuthorizationStatusDenied:
+		    {
+	           if (error)
+	                *error = GMICROPHONE_CANNOT_OPEN_DEVICE;
+	 		   return 0;
+		    }
+		    case AVAuthorizationStatusRestricted:
+		    {
+	           if (error)
+	                *error = GMICROPHONE_CANNOT_OPEN_DEVICE;
+ 		        return 0;
+		    }
+		}
+        #endif
 
         Microphone *microphone = new Microphone;
 
