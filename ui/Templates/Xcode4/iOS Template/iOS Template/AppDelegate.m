@@ -125,7 +125,7 @@ API_AVAILABLE(ios(13.0)){
     	[self.window makeKeyAndVisible];
     }
 
-    //gdr_drawFirstFrame();
+    gdr_drawFirstFrame();
 
     //GIDEROS-TAG-IOS:APP-LAUNCHED//
 

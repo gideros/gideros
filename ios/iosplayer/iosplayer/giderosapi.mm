@@ -792,22 +792,16 @@ ApplicationManager::~ApplicationManager()
 
 void ApplicationManager::drawFirstFrame()
 {
-#if !TARGET_OS_TV && !TARGET_OS_OSX
-    willRotateToInterfaceOrientationHelper(UIInterfaceOrientationUnknown);
-#else
-    willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
-#endif
-
-#if THREADED_RENDER_LOOP
+/*#if THREADED_RENDER_LOOP
     renderTick_ = true;
     [renderCond_ signal];
-#else
+#else*/
 	[view_ setFramebuffer];
 	application_->clearBuffers();
 	application_->renderScene(1);
 	drawIPs();
 	[view_ presentFramebuffer];
-#endif
+//#endif
 }
 
 void ApplicationManager::setOpenProject(const char* project){

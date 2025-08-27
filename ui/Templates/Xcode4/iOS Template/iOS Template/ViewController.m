@@ -72,8 +72,7 @@ NSMutableArray *tableData;
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    gdr_drawFirstFrame();
-
+    [self orientationChanged];
     [super viewDidAppear:animated];
 }
 
@@ -93,16 +92,22 @@ NSMutableArray *tableData;
 
 - (void)deviceOrientationDidChange:(NSNotification *)notification
 {
-    gdr_drawFirstFrame();
+       [self orientationChanged];
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
    if([keyPath isEqualToString:@"effectiveGeometry"]){
-       gdr_drawFirstFrame();
+       [self orientationChanged];
    }
 }
 
+- (void) orientationChanged
+{
+	gdr_willRotateToInterfaceOrientation(UIInterfaceOrientationUnknown);
+	gdr_didRotateFromInterfaceOrientation(UIInterfaceOrientationUnknown);
+	resized=TRUE; //Need redraw ASAP
+}
 
 - (NSInteger)animationFrameInterval
 {
@@ -188,7 +193,7 @@ NSMutableArray *tableData;
         // do whatever
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context)
     {
-        gdr_drawFirstFrame();
+       [self orientationChanged];
     }];
 
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
