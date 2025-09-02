@@ -106,6 +106,7 @@ NSMutableArray *tableData;
 {
 	gdr_willRotateToInterfaceOrientation(UIInterfaceOrientationUnknown);
 	gdr_didRotateFromInterfaceOrientation(UIInterfaceOrientationUnknown);
+    	[self.glView layoutSubviews];
 	resized=TRUE; //Need redraw ASAP
 }
 
