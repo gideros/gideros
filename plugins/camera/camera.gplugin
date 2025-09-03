@@ -58,6 +58,7 @@
  <target name="iOS">
  	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
+iOSProject.Entitlements.mac["com.apple.security.device.camera"]=true
 iOSProject.exportBinaryPlugin("camera","Camera",true,false,false)
 	]]></lua>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/iOS" dest="[[[project.name]]]/Plugins" />

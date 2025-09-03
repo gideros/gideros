@@ -39,6 +39,7 @@
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.InfoPlist.NSMicrophoneUsageDescription=Export.getProperty("plugin.microUsageDesc")
+iOSProject.Entitlements.mac["com.apple.security.device.audio-input"]=true
 iOSProject.exportBinaryPlugin("microphone","Microphone",true,true,true)
 	]]></lua>
  </target>
