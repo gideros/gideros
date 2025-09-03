@@ -270,10 +270,10 @@ local ap=require("Tools/export_android")
 			 os.rename(bdir.."armeabi-v7a/libgiderosvr.so",bdir.."armeabi-v7a/libgideros.so")
 			else
 			 os.remove(bdir.."arm64-v8a/libgiderosvr.so")
-			 os.remove(bdir.."arm64-v8a/libopenxr-loader.so")
+			 os.remove(bdir.."arm64-v8a/libopenxr_loader.so")
 			 os.remove(bdir.."arm64-v8a/libvrapi.so")
 			 os.remove(bdir.."armeabi-v7a/libgiderosvr.so")
-			 os.remove(bdir.."armeabi-v7a/libopenxr-loader.so")
+			 os.remove(bdir.."armeabi-v7a/libopenxr_loader.so")
 			 os.remove(bdir.."armeabi-v7a/libvrapi.so")
 			end
 		]]></lua>

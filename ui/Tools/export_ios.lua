@@ -100,7 +100,7 @@ end
 
 local refid=iOSProject.newId()
   local refline=
-  ("%s /* %s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = %s; path = %s; sourceTree = \"%s\"; };\n")
+  ("%s /* %s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = %s; path = \"%s\"; sourceTree = \"%s\"; };\n")
   :format(refid,filename,filetype,filepath or filename, filetree or "<group>")
   iOSProject.insertData("Refs",refline)
   return refid
