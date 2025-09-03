@@ -32,6 +32,10 @@
 #endif
 #include <math.h>
 
+#ifdef __APPLE__
+#include <QPermissions>
+#endif
+
 namespace {
 
 static void calculateAmplitudeData(int numChannels, int bitsPerSample, gmicrophone_DataAvailableEvent *event)
@@ -130,34 +134,25 @@ public:
 
 #ifdef __APPLE__
         // Request permission to access the camera and microphone.
-		switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio])
-		{
-		    case AVAuthorizationStatusAuthorized:
-		    {
-		        break;
-		    }
-		    case AVAuthorizationStatusNotDetermined:
-		    {
-		        // The app hasn't yet asked the user for camera access.
-		        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
-		        }];
-	            if (error)
-	                *error = GMICROPHONE_PROMPTING_PERMISSION;
-	            return 0;
-		    }
-		    case AVAuthorizationStatusDenied:
-		    {
-	           if (error)
-	                *error = GMICROPHONE_CANNOT_OPEN_DEVICE;
-	 		   return 0;
-		    }
-		    case AVAuthorizationStatusRestricted:
-		    {
-	           if (error)
-	                *error = GMICROPHONE_CANNOT_OPEN_DEVICE;
- 		        return 0;
-		    }
-		}
+        QMicrophonePermission microphonePermission;
+        switch (qApp->checkPermission(microphonePermission))
+        {
+            case Qt::PermissionStatus::Undetermined:
+            {
+                qApp->requestPermission(microphonePermission, this, [=]() { });
+                if (error)
+   	                *error = GMICROPHONE_PROMPTING_PERMISSION;
+   	            return 0;
+            }
+            case Qt::PermissionStatus::Denied:
+            {
+ 	           if (error)
+ 	                *error = GMICROPHONE_CANNOT_OPEN_DEVICE;
+ 	 		   return 0;
+            }
+            case Qt::PermissionStatus::Granted:
+                break;
+        } });
  #endif
 
         ALenum format = 0;
