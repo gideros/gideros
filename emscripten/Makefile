@@ -205,10 +205,10 @@ plugins: $(addsuffix .plugin,$(PLUGINS))
 plugins.clean: $(addsuffix .plugin.clean,$(PLUGINS))
 
 %.plugin:
-	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE); cd -
+	R=$(PWD); if [ -d ../plugins/$*/source/emscripten ]; then cd ../plugins/$*/source/emscripten; $(MAKE); cd -; fi
 
 %.plugin.clean:
-	R=$(PWD); cd ../plugins/$*/source/emscripten; $(MAKE) clean; cd -
+	R=$(PWD); if [ -d ../plugins/$*/source/emscripten ]; then cd ../plugins/$*/source/emscripten; $(MAKE) clean; cd -; fi
 
 SUBLIBS=CORE LBND LGID LGVFS LZIP LPNG LJPG LSUP LFRT LOAL
 SUBLIBS_ARW=$(addprefix $(BUILD)/lib,$(addsuffix .w.a,$(SUBLIBS)))

@@ -105,8 +105,8 @@ public:
             return 0;
         }
         
-        // Request permission to access the camera and microphone.
 #ifdef TARGET_OS_OSX        
+        // Request permission to access the camera and microphone.
 		switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio])
 		{
 		    case AVAuthorizationStatusAuthorized:
@@ -135,7 +135,7 @@ public:
  		        return 0;
 		    }
 		}
-        #endif
+ #endif
 
         Microphone *microphone = new Microphone;
 
