@@ -172,7 +172,7 @@ qt5.install:
 	
 buildqtplugins: 
 	$(SUBMAKE) $(addsuffix .qtplugin,$(PLUGINS_QT) $(PLUGINS_QTWINONLY))
-PLUGIN_PREREQUISITE+= %.qtplugin.install
+PLUGIN_PREREQUISITE+= %.qtplugin %.qtplugin.install
 
 qtplugins.clean: 
 	$(SUBMAKE)  $(addsuffix .qtplugin.clean,$(PLUGINS_QT) $(PLUGINS_QTWINONLY)) 
