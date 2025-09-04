@@ -33,7 +33,13 @@
 #include <math.h>
 
 #ifdef __APPLE__
+#include <QApplication>
 #include <QPermissions>
+
+static void permissionResult()
+{
+	
+}
 #endif
 
 namespace {
@@ -139,7 +145,7 @@ public:
         {
             case Qt::PermissionStatus::Undetermined:
             {
-                qApp->requestPermission(microphonePermission, this, [=]() { });
+                qApp->requestPermission(microphonePermission, &permissionResult);
                 if (error)
    	                *error = GMICROPHONE_PROMPTING_PERMISSION;
    	            return 0;
@@ -152,7 +158,7 @@ public:
             }
             case Qt::PermissionStatus::Granted:
                 break;
-        } });
+        }
  #endif
 
         ALenum format = 0;
