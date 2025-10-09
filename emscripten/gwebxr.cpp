@@ -70,17 +70,17 @@ static void WebXR_callback(int type, void *event, void *udata)
 	switch (type) {
 	case WEBXR_STARTED:
 	case WEBXR_STOPPED:
-		lua_pushnumber(L,(int)(event));
+		lua_pushnumber(L,(intptr_t)(event));
 		lua_setfield(L, -2, "mode");
 		break;
 	case WEBXR_ERROR:
-		lua_pushnumber(L,(int)(event));
+		lua_pushnumber(L,(intptr_t)(event));
 		lua_setfield(L, -2, "error");
 		break;
 	case WEBXR_SELECT:
 	case WEBXR_SELECT_START:
 	case WEBXR_SELECT_END:
-		lua_pushnumber(L,(int)(event));
+		lua_pushnumber(L,(intptr_t)(event));
 		lua_setfield(L, -2, "hand");
 		break;
 	}

@@ -522,6 +522,7 @@ int xmp_load_module_from_memory(xmp_context opaque, void *mem, long size)
 	return ret;
 }
 
+#if 0
 int xmp_load_module_from_file(xmp_context opaque, void *file, long size)
 {
 	struct context_data *ctx = (struct context_data *)opaque;
@@ -547,6 +548,7 @@ int xmp_load_module_from_file(xmp_context opaque, void *file, long size)
 
 	return ret;
 }
+#endif
 
 void xmp_release_module(xmp_context opaque)
 {

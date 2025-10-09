@@ -23,8 +23,9 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	
 	static const luaL_Reg functionList[] = {
 		{"addChild", SpriteBinder::addChild},
-		{"addChildAt", SpriteBinder::addChildAt},
-		{"removeChild", SpriteBinder::removeChild},
+        {"addChildAt", SpriteBinder::addChildAt},
+        {"addChildrenAt", SpriteBinder::addChildrenAt},
+        {"removeChild", SpriteBinder::removeChild},
 		{"removeChildAt", SpriteBinder::removeChildAt},
 		{"getNumChildren", SpriteBinder::numChildren},
         {"swapChildren", SpriteBinder::swapChildren},
@@ -498,6 +499,62 @@ int SpriteBinder::addChildAt(lua_State* L)
     return 1;
 }
 
+int SpriteBinder::addChildrenAt(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::addChildrenAt", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
+    luaL_checktype(L,2,LUA_TTABLE);
+
+    bool skipCache=false;
+    bool childrenCreated=false;
+    lua_pushnil(L);
+    while (lua_next(L,2)!=0) {
+        Sprite* child = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, -1));
+        int index = luaL_checkinteger(L, -2);
+
+        GStatus status;
+        if (sprite->canChildBeAddedAt(child, index - 1, &status) == false)
+            luaL_error(L, "%s", status.errorString());
+
+        if (child->parent() != sprite) {
+            if (child->parent())
+            {
+                // remove from parent's __children table
+                lua_rawgettoken(L, -1, tokenParent);			// push child.__parent
+                lua_rawgettoken(L, -1, tokenChildren);		// push child.__parent.__children
+
+                lua_pushlightuserdata(L, child);
+                lua_pushnil(L);
+                lua_rawset(L, -3);						// child.__parent.__children[child] = nil
+
+                lua_pop(L, 2);							// pop child.__parent and child.__parent.__children
+            }
+
+            // set new parent
+            lua_pushvalue(L, 1);
+            lua_rawsettoken(L, -2, tokenParent);				// child.__parent = sprite
+
+            if (!childrenCreated) {
+                createChildrenTable(L);
+                childrenCreated=true;
+            }
+
+            // add to __children table
+            lua_rawgettoken(L, 1, tokenChildren);			// push sprite.__children
+            lua_pushlightuserdata(L, child);
+            lua_pushvalue(L, -3);
+            lua_rawset(L, -3);							// sprite.__children[child] = child
+            lua_pop(L, 1);								// pop sprite.__children
+        }
+        sprite->addChildAt(child, index - 1,NULL,skipCache);
+        skipCache=true;
+        lua_pop(L,1);
+    }
+
+    return 0;
+}
 
 int SpriteBinder::removeChildAt(lua_State* L)
 {

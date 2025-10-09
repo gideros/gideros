@@ -51,7 +51,7 @@ public:
 	bool contains(Sprite* sprite) const;
 	void replaceChild(Sprite* oldChild, Sprite* newChild);
 	bool canChildBeAdded(Sprite* sprite, GStatus* status = 0);
-    int addChildAt(Sprite* sprite, int index, GStatus* status = 0);
+    int addChildAt(Sprite* sprite, int index, GStatus* status = 0, bool skipCache=false);
 	bool canChildBeAddedAt(Sprite* sprite, int index, GStatus* status = 0);
 	int getChildIndex(Sprite* sprite, GStatus* status = 0);
 	void setChildIndex(Sprite* child, int index, GStatus* status = 0);

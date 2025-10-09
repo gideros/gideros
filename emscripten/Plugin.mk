@@ -41,7 +41,8 @@ path:
 	@mkdir -p  $(BUILD) $(BUILD)/Html $(sort $(dir $(WOBJS)))
 
 clean:
-	rm -rf $(BUILD)* 
+	rm -f $(WOBJS)
+	rm -rf $(BUILD)*
 
 $(BUILD)$(FLAVOUR)/%.emw.o: ../%.cpp
 	@echo "EMWC+ $<"

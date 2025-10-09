@@ -1,6 +1,48 @@
 Module.preRun
 		.push(function() {
-			__ATPRERUN__.push(function() {
+//			__ATPRERUN__.push(function() {
+			//});
+
+			Module.setStatus("Loading application...");
+			// Load GAPP if supplied
+			Module.hasGApp = ((typeof (GAPP_URL) != 'undefined') && (GAPP_URL != null));
+			if (Module.hasGApp) {
+				if (GAPP_URL.endsWith(".gidz")) {
+					Module['addRunDependency']("gidLoadGApp");
+					var loader=JZPLoadPromise(GAPP_URL,"array")
+					.then(function (c) { 
+						console.log("Copying application");
+						FS.createPreloadedFile("/", "main.gapp", c, true, false);
+						console.log("Application ready");
+						Module['removeRunDependency']("gidLoadGApp");
+					});
+				}
+				else 
+					FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true, false);
+			}
+			// Initial syncfs to get existing saved files.
+			Module['addRunDependency']('syncfs');
+
+			FS.gidSyncing=false;
+			FS.mkdir('/documents');
+			FS.mount(IDBFS, {}, '/documents');
+			FS.documentsOk = true;
+			FS
+					.syncfs(
+							true,
+							function(err) {
+								if (err) {
+									FS.unmount('/documents');
+									FS.rmdir('/documents');
+									console
+											.warn("IndexedDB not available, persistant storage disabled");
+									FS.documentsOk = false;
+								}
+								Module['removeRunDependency']('syncfs');
+							});
+
+			GiderosNetplayerWS = null;
+			
 				Module.JSPlugins.forEach(function(p) {
 					var xhr = new Module.XMLHttpRequest;
 					var tag = document.createElement("script");
@@ -69,48 +111,8 @@ Module.preRun
 							});
 					}
 				});
-				loader=loader.then(function () { console.log("Plugins loaded"); Module['removeRunDependency']("gidPlugins");});							
-			});
-
-			Module.setStatus("Loading application...");
-			// Load GAPP if supplied
-			Module.hasGApp = ((typeof (GAPP_URL) != 'undefined') && (GAPP_URL != null));
-			if (Module.hasGApp) {
-				if (GAPP_URL.endsWith(".gidz")) {
-					Module['addRunDependency']("gidLoadGApp");
-					var loader=JZPLoadPromise(GAPP_URL,"array")
-					.then(function (c) { 
-						console.log("Copying application");
-						FS.createPreloadedFile("/", "main.gapp", c, true, false);
-						console.log("Application ready");
-						Module['removeRunDependency']("gidLoadGApp");
-					});
-				}
-				else 
-					FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true, false);
-			}
-			// Initial syncfs to get existing saved files.
-			Module['addRunDependency']('syncfs');
-
-			FS.gidSyncing=false;
-			FS.mkdir('/documents');
-			FS.mount(IDBFS, {}, '/documents');
-			FS.documentsOk = true;
-			FS
-					.syncfs(
-							true,
-							function(err) {
-								if (err) {
-									FS.unmount('/documents');
-									FS.rmdir('/documents');
-									console
-											.warn("IndexedDB not available, persistant storage disabled");
-									FS.documentsOk = false;
-								}
-								Module['removeRunDependency']('syncfs');
-							});
-
-			GiderosNetplayerWS = null;
+				loader=loader.then(function () { console.log("Plugins loaded"); Module['removeRunDependency']("gidPlugins");});
+	
 		})
 Module.registerPlugins = function() {
 	Module.GiderosPlugins
@@ -172,12 +174,13 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	http.open(_request, _url, true);
 	http.responseType = 'arraybuffer';
 	
+	var ptrSz=(typeof arg === "bigint")?8:4;
     while (rhdr) {    	
     	var rk=Module.getValue(rhdr,'*');
     	if (!rk) break;
-    	rhdr+=4; //Assuming 32bit
+    	rhdr+=ptrSz; 
     	var rv=Module.getValue(rhdr,'*');
-    	rhdr+=4; //Assuming 32bit
+    	rhdr+=ptrSz; 
 		http.setRequestHeader(Module.UTF8ToString(rk), Module.UTF8ToString(rv));
     }
 	var handle = gid_wget.getNextWgetRequestHandle();
@@ -186,19 +189,19 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	http.onload = function http_onload(e) {
 		// if (http.status == 200 || _url.substr(0,4).toLowerCase() != "http") {
 		// console.log("rhdr:"+http.getAllResponseHeaders());
-		var hdrs = stringToNewUTF(http.getAllResponseHeaders());
+		var hdrs = stringToNewUTF8(http.getAllResponseHeaders());
 		var byteArray = new Uint8Array(http.response);
 		var buffer = _malloc(byteArray.length);
 		HEAPU8.set(byteArray, buffer);
 		if (onload)
-			dynCall('viiiiiii', onload, [ handle, arg, buffer,
+			dynCall('viipiipi', onload, [ handle, arg, buffer,
 					byteArray.length, http.status, hdrs,0 ]);
 		if (free)
 			_free(buffer);
 		_free(hdrs)
 		/*
 		 * } else { console.log(url+" ERROR"); if (onerror)
-		 * dynCall('viiii', onerror, [handle, arg, http.status,
+		 * dynCall('viiip', onerror, [handle, arg, http.status,
 		 * http.statusText]); }
 		 */
 		delete gid_wget.wgetRequests[handle];
@@ -207,7 +210,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	// ERROR
 	http.onerror = function http_onerror(e) {
 		if (onerror) {
-			dynCall('viiii', onerror, [ handle, arg, http.status,
+			dynCall('viiip', onerror, [ handle, arg, http.status,
 					http.statusText ]);
 		}
 		delete gid_wget.wgetRequests[handle];
@@ -217,7 +220,7 @@ Module.ghttpjs_urlload = function(url, request, rhdr, param, arg, free, onload,
 	http.onprogress = function http_onprogress(e) {
 		if (onprogress)
 					dynCall(
-							'viiiiii',
+							'viiiipi',
 							onprogress,
 							[
 									handle,
@@ -286,8 +289,8 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 			  	});
 				if (onload)
 				{
-					var hdrs = stringToNewUTF(ahdr);
-					dynCall('viiiiiii', onload, [ handle, arg, 0,
+					var hdrs = stringToNewUTF8(ahdr);
+					dynCall('viipiipi', onload, [ handle, arg, 0,
 							0, res.status, hdrs,1 ]);
 					_free(hdrs);
 				}
@@ -301,8 +304,8 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 				    if (done) {
 						if (onload)
 						{
-							var hdrs = stringToNewUTF(ahdr);
-							dynCall('viiiiiii', onload, [ handle, arg, 0,
+							var hdrs = stringToNewUTF8(ahdr);
+							dynCall('viipiipi', onload, [ handle, arg, 0,
 									0, res.status, hdrs,0 ]);
 							_free(hdrs);							
 						}
@@ -316,7 +319,7 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 					HEAPU8.set(value, buffer);
 					if (onprogress)
 						dynCall(
-								'viiiiii',
+								'viiiipi',
 								onprogress,
 								[
 										handle,
@@ -331,7 +334,7 @@ Module.ghttpjs_urlstream = function(url, request, rhdr, param, arg, free, onload
 		  }
 		  else {
 				if (onerror) {
-					dynCall('viiii', onerror, [ handle, arg, res.status,
+					dynCall('viiip', onerror, [ handle, arg, res.status,
 							res.statusText ]);
 				}			  
 		  }
@@ -361,7 +364,7 @@ Module.GiderosJSEvent = function(type, context, value, data, meta) {
 	} else {
 		if (len==undefined) len=data.byteLength;
 		var dataPtr = Module._malloc(len);
-		Module.HEAPU8.set(new Uint8Array(data),dataPtr);
+		HEAPU8.set(new Uint8Array(data),dataPtr);
 		data = dataPtr;
 	}
 	Module.ccall('JSNative_enqueueEvent', 'number', [ 'string', 'number',
@@ -385,7 +388,7 @@ Module.GiderosPlayer_WriteFile = function(project, path, data) {
 		etype = 'string';
 	else {
 		var dataPtr = Module._malloc(len);
-		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, len);
+		var dataHeap = new Uint8Array(HEAPU8.buffer, dataPtr, len);
 		dataHeap.set(data);
 		data = dataPtr;
 	}

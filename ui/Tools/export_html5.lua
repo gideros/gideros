@@ -15,6 +15,7 @@ function Html5Project.export(m,flavour)
    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5" include="%s%s.%s"/>
   ]=]):format(m,flavour,ext))
   if #flavour>0 then
+    Export.remove(m.."."..ext)
     Export.move(m..flavour.."."..ext,m.."."..ext)
   end
   Export.callXml(([=[
@@ -33,9 +34,7 @@ function Html5Project.export(m,flavour)
            <arg>%s.gidz</arg>
         </exec>
   ]=]):format(m,ext,m))
-  Export.callXml(([=[
-        <rm>%s.%s</rm>
-  ]=]):format(m,ext))
+  Export.remove(m.."."..ext)
   end
 end
 

@@ -8,7 +8,7 @@ static bool srvOn=false;
 static void wsSend(const char *data,int size)
 {
 	EM_ASM_({
-		Module['gnetplayerSend'](Module.HEAPU8.subarray($0,$0+$1));
+		Module['gnetplayerSend'](HEAPU8.subarray($0,$0+$1));
 	},data,size);
 }
 

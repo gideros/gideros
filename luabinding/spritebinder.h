@@ -15,8 +15,9 @@ private:
     static int clone(lua_State *L);
 
 	static int addChild(lua_State* L);
-	static int addChildAt(lua_State* L);
-	static int removeChild(lua_State* L);
+    static int addChildAt(lua_State* L);
+    static int addChildrenAt(lua_State* L);
+    static int removeChild(lua_State* L);
 	static int removeChildAt(lua_State* L);
 	static int numChildren(lua_State* L);
     static int swapChildren(lua_State* L);

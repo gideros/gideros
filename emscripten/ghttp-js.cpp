@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include "emscripten.h"
+#include <sys/types.h>
 
 struct GHttpContext
 {
@@ -23,7 +24,7 @@ static std::map<g_id, GHttpContext> map_;
 
 extern "C" {
 
-void ghttp_onload(int xh,int arg,const char *buf,int size, int status, char *hdrs,int header)
+void ghttp_onload(uint32_t xh,g_id arg,const char *buf,int size, int status, char *hdrs,int header)
 {
 	//printf("OnLoad:%d,%d,%p,%d,%s\n",xh,arg,buf,size,hdrs);
 	std::map<g_id, GHttpContext>::iterator it=map_.find(arg);
@@ -90,7 +91,7 @@ void ghttp_onload(int xh,int arg,const char *buf,int size, int status, char *hdr
 	}
 }
 
-void ghttp_onprogress(int xh,int arg,int pg,int tot,const char *buf,int size)
+void ghttp_onprogress(uint32_t xh,g_id arg,int pg,int tot,const char *buf,int size)
 {
 	//printf("OnProgress:%d,%d,%d,%d\n",xh,arg,pg,tot);
 	std::map<g_id, GHttpContext>::iterator it=map_.find(arg);
@@ -112,7 +113,7 @@ void ghttp_onprogress(int xh,int arg,int pg,int tot,const char *buf,int size)
 	}	
 }
 
-void ghttp_onerror(int xh,int arg,int sts,const char *text)
+void ghttp_onerror(uint32_t xh,g_id arg,int sts,const char *text)
 {
 	//printf("OnError:%d,%d,%d,%s\n",xh,arg,sts,text);
 	std::map<g_id, GHttpContext>::iterator it=map_.find(arg);
@@ -148,7 +149,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, int streaming, geven
     
    ctx.xhrId=EM_ASM_INT({
         	return ($6?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'GET',$1,null,$2,true,$3,$4,$5);
-        },url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,streaming);
+        },url,header,ctx.id,(intptr_t)ghttp_onload, (intptr_t)ghttp_onerror, (intptr_t)ghttp_onprogress,streaming);
     //printf("GET:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
     return ctx.id;
@@ -164,8 +165,8 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
     map_[ctx.id] = ctx;
 
 	ctx.xhrId=EM_ASM_INT({
-			return ($8?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'POST',$1,Module.HEAPU8.subarray($6,$6+$7),$2,true,$3,$4,$5);
-		},url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,data,size,streaming);
+			return ($8?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'POST',$1,HEAPU8.subarray($6,$6+Number($7)),$2,true,$3,$4,$5);
+		},url,header,ctx.id,(intptr_t)ghttp_onload, (intptr_t)ghttp_onerror, (intptr_t)ghttp_onprogress,data,size,streaming);
     //printf("POST:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
     return ctx.id;
@@ -182,7 +183,7 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, int streaming, ge
 
    ctx.xhrId=EM_ASM_INT({
         	return ($6?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'DELETE',$1,null,$2,true,$3,$4,$5);
-        },url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,streaming);
+        },url,header,ctx.id,(intptr_t)ghttp_onload, (intptr_t)ghttp_onerror, (intptr_t)ghttp_onprogress,streaming);
     //printf("GET:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
     return ctx.id;
@@ -198,8 +199,8 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
     map_[ctx.id] = ctx;
 
 	ctx.xhrId=EM_ASM_INT({
-			return ($8?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'PUT',$1,Module.HEAPU8.subarray($6,$6+$7),$2,true,$3,$4,$5);
-		},url,header,ctx.id,(int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress,data,size,streaming);
+			return ($8?Module.ghttpjs_urlstream:Module.ghttpjs_urlload)(Module.UTF8ToString($0),'PUT',$1,HEAPU8.subarray($6,$6+Number($7)),$2,true,$3,$4,$5);
+		},url,header,ctx.id,(intptr_t)ghttp_onload, (intptr_t)ghttp_onerror, (intptr_t)ghttp_onprogress,data,size,streaming);
 
     return ctx.id;
 }

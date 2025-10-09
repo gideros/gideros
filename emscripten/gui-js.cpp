@@ -160,8 +160,8 @@ G_API void gui_show(g_id gid)
 			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
-				var btj=stringToNewUTF(bt);
-      			dynCall('viii', cb, [gid,bi,btj]);
+				var btj=stringToNewUTF8(bt);
+      			dynCall('viip', cb, [gid,bi,btj]);
       			_free(btj);
 			});
 		},gid,d->Title.c_str(),d->Message.c_str(),
@@ -183,9 +183,9 @@ G_API void gui_show(g_id gid)
 			$5?UTF8ToString($5):null,
 			$6,function(gid,bi,bt,t)
 			{
-				var btj=stringToNewUTF(bt);
-				var tj=stringToNewUTF(t);
-     			 dynCall('viiii', cb, [gid,bi,btj,tj]);
+				var btj=stringToNewUTF8(bt);
+				var tj=stringToNewUTF8(t);
+     			 dynCall('viipp', cb, [gid,bi,btj,tj]);
       			_free(btj);
       			_free(tj);
 			});

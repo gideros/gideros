@@ -19,7 +19,7 @@ public:
     void cloneFrom(Particles *);
     virtual ~Particles();
 
-    int addParticle(float x, float y, float z, float size, float angle, int ttl, float extra);
+    int addParticle(float x, float y, float z, float size, float angle, int ttl, float extra, bool skipCache=false);
     void removeParticle(int i);
     void clearParticles();
     void setPosition(int i, float x, float y, float z);
@@ -30,7 +30,7 @@ public:
     float getAngle(int i);
     void setTtl(int i, int ttl);
     int getTtl(int i);
-    void setColor(int i, unsigned int color, float alpha);
+    void setColor(int i, unsigned int color, float alpha, bool skipCache=false);
     void getColor(int i, unsigned int *color, float *alpha) const;
     void setSpeed(int i, float vx, float vy, float vz, float va, float decay);
     void getSpeed(int i, float *vx, float *vy, float *vz, float *va, float *decay) const;
@@ -76,6 +76,7 @@ private:
     VertexBuffer<float> texcoords_; //x,y,size,angle
     VertexBuffer<unsigned int> indices_;
     size_t particleCount;
+    size_t particleFirstFree;
     TextureBase *texture_[PARTICLES_MAX_TEXTURES];
     float sx_, sy_;
 

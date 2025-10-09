@@ -20,8 +20,9 @@ Particles::Particles(Application *application, bool is3d, bool autosort) :
 	minx_ = miny_ = 1e30;
 	maxx_ = maxy_ = -1e30;
 	lastTickTime_=0;
-	particleCount=0;
-	application->addTicker(this);
+    particleCount=0;
+    particleFirstFree=0;
+    application->addTicker(this);
     this->is3d=is3d;
     autoSort=autosort;
     _minSize=0.1;
@@ -41,6 +42,7 @@ void Particles::cloneFrom(Particles *s)
     maxy_ = s->maxy_;
     lastTickTime_=s->lastTickTime_;
     particleCount=s->particleCount;
+    particleFirstFree=s->particleFirstFree;
     for (int t=0;t<PARTICLES_MAX_TEXTURES;t++)
         if ((texture_[t]=s->texture_[t])!=NULL)
                 texture_[t]->ref();
@@ -73,8 +75,9 @@ Particles::~Particles() {
 }
 
 void Particles::clearParticles() {
-	particleCount=0;
-	int tsize=0;
+    particleCount=0;
+    particleFirstFree=0;
+    int tsize=0;
 	ttl_.resize(tsize);
 	points_.resize(tsize * 16);
 	colors_.resize(tsize * 16);
@@ -89,10 +92,10 @@ void Particles::clearParticles() {
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
 }
 
-int Particles::addParticle(float x, float y, float z, float size, float angle, int ttl, float extra) {
+int Particles::addParticle(float x, float y, float z, float size, float angle, int ttl, float extra, bool skipCache) {
     RENDER_LOCK();
     int s = -1;
-	int k = 2;
+    int k = 2+particleFirstFree*16;
 	int kmax=particleCount*16;
 	while (k < kmax) {
         if (texcoords_[k] == 0) {
@@ -116,21 +119,23 @@ int Particles::addParticle(float x, float y, float z, float size, float angle, i
             originalColors_.resize(tsize);
 			indices_.resize(tsize * 6);
 			tag_.resize(tsize);
-		}
-		s=particleCount++;
-	}
-	for (int sb = 0; sb < 16; sb += 4) {
-		points_[s * 16 + sb + 0] = x;
-		points_[s * 16 + sb + 1] = y;
+        }
+        s = particleCount++;
+    }
+    if (particleFirstFree <= (size_t)s)
+        particleFirstFree = s + 1;
+    for (int sb = 0; sb < 16; sb += 4) {
+        points_[s * 16 + sb + 0] = x;
+        points_[s * 16 + sb + 1] = y;
         points_[s * 16 + sb + 2] = z;
         points_[s * 16 + sb + 3] = extra;
         texcoords_[s * 16 + sb + 2] = size;
         texcoords_[s * 16 + sb + 3] = angle;
         colors_[s * 16 + sb + 0] = 255;
-		colors_[s * 16 + sb + 1] = 255;
-		colors_[s * 16 + sb + 2] = 255;
-		colors_[s * 16 + sb + 3] = 255;
-	}
+        colors_[s * 16 + sb + 1] = 255;
+        colors_[s * 16 + sb + 2] = 255;
+        colors_[s * 16 + sb + 3] = 255;
+    }
     texcoords_[s * 16 + 0] = 0.0;
     texcoords_[s * 16 + 1] = 0.0;
     texcoords_[s * 16 + 4] = 1.0;
@@ -166,12 +171,14 @@ int Particles::addParticle(float x, float y, float z, float size, float angle, i
     originalColors_[s].color = 0xFFFFFF;
 	originalColors_[s].alpha = 1;
 	tag_[s]="";
-	points_.Update();
-	colors_.Update();
-	texcoords_.Update();
-	indices_.Update();
-	boundsDirty_ = true;
-	invalidate(INV_GRAPHICS|INV_BOUNDS);
+    if (!skipCache) {
+        points_.Update();
+        colors_.Update();
+        texcoords_.Update();
+        indices_.Update();
+        boundsDirty_ = true;
+        invalidate(INV_GRAPHICS|INV_BOUNDS);
+    }
     RENDER_UNLOCK();
     return s;
 }
@@ -226,6 +233,8 @@ void Particles::setSize(int i, float size) {
     texcoords_.Update();
 	invalidate(INV_GRAPHICS|INV_BOUNDS);
     RENDER_UNLOCK();
+    if ((size==0)&&(particleFirstFree > (size_t)i))
+        particleFirstFree = i;
 }
 
 void Particles::scaleParticles(float size,bool absolute) {
@@ -280,7 +289,7 @@ int Particles::getTtl(int i) {
 	return ttl_[i];
 }
 
-void Particles::setColor(int i, unsigned int color, float alpha) {
+void Particles::setColor(int i, unsigned int color, float alpha,bool skipCache) {
     if (i >= (int)particleCount)
 		return;
 	originalColors_[i].color = color;
@@ -299,8 +308,11 @@ void Particles::setColor(int i, unsigned int color, float alpha) {
 		colors_[i * 16 + k + 2] = b;
 		colors_[i * 16 + k + 3] = a;
 	}
-	colors_.Update();
-	invalidate(INV_GRAPHICS);
+    if (!skipCache)
+    {
+        colors_.Update();
+        invalidate(INV_GRAPHICS);
+    }
     RENDER_UNLOCK();
 }
 

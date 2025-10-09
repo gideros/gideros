@@ -28,8 +28,8 @@ EMSCRIPTEN_KEEPALIVE sighandler_t signal(int signum, sighandler_t handler);
 EMSCRIPTEN_KEEPALIVE int gettimeofday(struct timeval *tv, void *tz);
 EMSCRIPTEN_KEEPALIVE int getaddrinfo(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res);
 EMSCRIPTEN_KEEPALIVE void freeaddrinfo(struct addrinfo *res);
-EMSCRIPTEN_KEEPALIVE void setTempRet0(unsigned long r);
-EMSCRIPTEN_KEEPALIVE unsigned long getTempRet0();
+EMSCRIPTEN_KEEPALIVE void setTempRet0(uint32_t r);
+EMSCRIPTEN_KEEPALIVE uint32_t getTempRet0();
 }
 
 //The lines below are used to force linking of some system functions used by plugins
@@ -46,7 +46,7 @@ void linkCode() __attribute__((optnone)) {
 	  printf("%d",llvm_ctpop_i32(d1));
 	  settimeofday(NULL,NULL);
 	  */
-	  int d1=(int)__mmap(NULL,4096,0,MAP_ANONYMOUS,-1,0);
+	  intptr_t d1=(intptr_t)__mmap(NULL,4096,0,MAP_ANONYMOUS,-1,0);
 	  __munmap((void*)d1,4096);
 	  L1 *l1=new L1();
 	  delete l1;

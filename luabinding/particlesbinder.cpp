@@ -332,54 +332,39 @@ int ParticlesBinder::addParticles(lua_State *L)
         	lua_rawgeti(L, 2, k + 1);
         	if (lua_type(L,-1) != LUA_TTABLE)
                 luaL_error(L,"Particle definition must be a table.");
-        	lua_getfield(L,-1,"x");
+            lua_rawgetfield(L,-1,"x");
             float x = luaL_checknumber(L, -1) ;
-            lua_pop(L, 1);
-
-        	lua_getfield(L,-1,"y");
+            lua_rawgetfield(L,-2,"y");
             float y = luaL_checknumber(L, -1) ;
-            lua_pop(L, 1);
-
-            lua_getfield(L,-1,"z");
+            lua_rawgetfield(L,-3,"z");
             float z = luaL_optnumber(L, -1, 0) ;
-            lua_pop(L, 1);
+            lua_pop(L, 3);
 
-        	lua_getfield(L,-1,"size");
+            lua_rawgetfield(L,-1,"size");
             float size = luaL_checknumber(L, -1) ;
-            lua_pop(L, 1);
-
-        	lua_getfield(L,-1,"angle");
+            lua_rawgetfield(L,-2,"angle");
             float angle = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-
-        	lua_getfield(L,-1,"ttl");
+            lua_rawgetfield(L,-3,"ttl");
             int ttl = luaL_optinteger(L, -1,0) ;
-            lua_pop(L, 1);
-
-            lua_getfield(L,-1,"extra");
+            lua_rawgetfield(L,-4,"extra");
             float extra = luaL_optnumber(L, -1, 0) ;
-            lua_pop(L, 1);
+            lua_pop(L, 4);
 
-            int pnum= mesh->addParticle(x,y,z,size,angle,ttl,extra);
+            int pnum= mesh->addParticle(x,y,z,size,angle,ttl,extra,k < (n-1));
             lua_pushinteger(L,pnum+1);
             lua_rawseti(L,-3,k+1);
 
-        	lua_getfield(L,-1,"speedX");
+            lua_rawgetfield(L,-1,"speedX");
             float vx = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-            lua_getfield(L,-1,"speedY");
+            lua_rawgetfield(L,-2,"speedY");
             float vy = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-            lua_getfield(L,-1,"speedZ");
+            lua_rawgetfield(L,-3,"speedZ");
             float vz = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-            lua_getfield(L,-1,"speedAngular");
+            lua_rawgetfield(L,-4,"speedAngular");
             float va = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-        	lua_getfield(L,-1,"speedGrowth");
+            lua_rawgetfield(L,-5,"speedGrowth");
             float vs = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-        	lua_getfield(L,-1,"decay");
+            lua_rawgetfield(L,-6,"decay");
             const float *vvec=lua_tovector(L,-1);
             float decayX=1;
             float decayY=1;
@@ -394,15 +379,13 @@ int ParticlesBinder::addParticles(lua_State *L)
                 decayY=decayX;
                 decayZ=decayX;
             }
-            lua_pop(L, 1);
-        	lua_getfield(L,-1,"decayAngular");
+            lua_rawgetfield(L,-7,"decayAngular");
             float decayA = luaL_optnumber(L, -1,decayX) ;
-            lua_pop(L, 1);
-        	lua_getfield(L,-1,"decayGrowth");
+            lua_rawgetfield(L,-8,"decayGrowth");
             float decayS = luaL_optnumber(L, -1,1.0) ;
-            lua_pop(L, 1);
+            lua_pop(L, 8);
 
-            lua_getfield(L,-1,"acceleration");
+            lua_rawgetfield(L,-1,"acceleration");
             vvec=lua_tovector(L,-1);
             float accX=0;
             float accY=0;
@@ -412,20 +395,17 @@ int ParticlesBinder::addParticles(lua_State *L)
                 accY=vvec[1];
                 accZ=vvec[2];
             }
-            lua_pop(L, 1);
-            lua_getfield(L,-1,"accelerationAngular");
+            lua_rawgetfield(L,-2,"accelerationAngular");
             float accA = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-            lua_getfield(L,-1,"accelerationGrowth");
+            lua_rawgetfield(L,-3,"accelerationGrowth");
             float accS = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
-            lua_getfield(L,-1,"accelerationAlpha");
+            lua_rawgetfield(L,-4,"accelerationAlpha");
             float accC = luaL_optnumber(L, -1,0) ;
-            lua_pop(L, 1);
+            lua_pop(L, 4);
 
             mesh->setSpeed(pnum,vx,vy,vz,vs,va);
 
-        	lua_getfield(L,-1,"color");
+            lua_rawgetfield(L,-1,"color");
             unsigned int color;
             float alpha;
             float cvec[4];
@@ -436,19 +416,18 @@ int ParticlesBinder::addParticles(lua_State *L)
             else {
                 color = luaL_optinteger(L, -1,0xFFFFFF);
                 lua_pop(L, 1);
-            	lua_getfield(L,-1,"alpha");
+                lua_rawgetfield(L,-1,"alpha");
                 alpha = luaL_optnumber(L, -1, 1.0);
             }
-            lua_pop(L, 1);
-        	lua_getfield(L,-1,"decayAlpha");
+            lua_rawgetfield(L,-2,"decayAlpha");
             float decayC = luaL_optnumber(L, -1,1.0) ;
-            lua_pop(L, 1);
+            lua_pop(L, 2);
 
-            mesh->setColor(pnum, color, alpha);
+            mesh->setColor(pnum, color, alpha, k < (n-1));
             mesh->setDecay(pnum, decayX,decayY,decayZ,decayC,decayS,decayA);
             mesh->setAcceleration(pnum, accX,accY,accZ,accC,accS,accA);
 
-        	lua_getfield(L,-1,"tag");
+            lua_rawgetfield(L,-1,"tag");
             const char *tag=luaL_optstring(L,-1,NULL);
             lua_pop(L, 1);
            	mesh->setTag(pnum,tag);

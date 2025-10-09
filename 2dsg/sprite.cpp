@@ -897,14 +897,15 @@ int Sprite::addChild(Sprite* sprite, GStatus* status) {
     return addChildAt(sprite, childCount(), status);
 }
 
-int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status) {
+int Sprite::addChildAt(Sprite* sprite, int index, GStatus* status, bool skipCache) {
     G_UNUSED(status);
 	/* This is not necessary, we are only called by spritebinder and the check is already done there.
 	if (canChildBeAddedAt(sprite, index, status) == false)
 		return -1;
 	*/
-    invalidate(INV_GRAPHICS|INV_BOUNDS|INV_LAYOUT);
-	Stage* stage1 = sprite->getStage();
+    if (!skipCache)
+        invalidate(INV_GRAPHICS|INV_BOUNDS|INV_LAYOUT);
+    Stage* stage1 = sprite->getStage();
 
 	if (stage1)
 		stage1->setSpritesWithListenersDirty();
