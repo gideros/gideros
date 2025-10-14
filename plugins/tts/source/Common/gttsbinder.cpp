@@ -82,8 +82,9 @@ static void luaL_rawsetptr(lua_State *L, int idx, void *ptr)
 static char keyStrong = ' ';
 static char keyWeak = ' ';
 
+static lua_State *L = NULL;
 
-GTts::GTts(lua_State *L) : L(L)
+GTts::GTts(lua_State *L)
 {
 }
 
@@ -409,6 +410,7 @@ static int loader(lua_State* L)
 
 static void g_initializePlugin(lua_State *L)
 {
+	::L = L;
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
@@ -422,6 +424,7 @@ static void g_initializePlugin(lua_State *L)
 static void g_deinitializePlugin(lua_State *L)
 {
 	gtts_Cleanup();
+	::L = NULL;
 }
 
 REGISTER_PLUGIN("TTS", "1.1")

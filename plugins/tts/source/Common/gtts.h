@@ -40,9 +40,6 @@ private:
     int tid;
 
     void callback(int type, void *event);
-
-private:
-    lua_State *L;
 };
 
 

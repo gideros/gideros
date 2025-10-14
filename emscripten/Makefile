@@ -118,6 +118,8 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
+#WASM_64=1
+
 #DEBUG=1
 POPTS=#-pthread 
 ifneq ($(WASM_64),)

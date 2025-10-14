@@ -17,6 +17,10 @@ size_t SpriteBinder::tokenFill;
 size_t SpriteBinder::tokenWidth;
 size_t SpriteBinder::tokenHeight;
 
+#define FKEY(n) (STRKEY_LAYOUT_##n)
+#define FSKEY(n) (#n)
+#define FMKEY(n) (1LL<<FKEY(n))
+
 SpriteBinder::SpriteBinder(lua_State* L)
 {
 	Binder binder(L);
@@ -250,9 +254,75 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	lua_pushinteger(L, Sprite::TRIGGERED);
 	lua_setfield(L, -2, "EFFECT_MODE_TRIGGERED");
 
+    lua_newtable(L);
+#define PUSH_STRKEY(n) \
+    lua_pushint64(L,FMKEY(n)); \
+    lua_rawsetfield(L,-2,#n);
+
+    PUSH_STRKEY(columnWidths);
+    PUSH_STRKEY(rowHeights);
+    PUSH_STRKEY(columnWeights);
+    PUSH_STRKEY(rowWeights);
+    PUSH_STRKEY(insetTop);
+    PUSH_STRKEY(insetLeft);
+    PUSH_STRKEY(insetBottom);
+    PUSH_STRKEY(insetRight);
+    PUSH_STRKEY(equalizeCells);
+    PUSH_STRKEY(resizeContainer);
+    PUSH_STRKEY(worldAlign);
+    PUSH_STRKEY(cellSpacingX);
+    PUSH_STRKEY(cellSpacingY);
+    PUSH_STRKEY(gridAnchorX);
+    PUSH_STRKEY(gridAnchorY);
+    PUSH_STRKEY(zOffset);
+    PUSH_STRKEY(fixedGrid);
+
+    PUSH_STRKEY(reqWidth);
+    PUSH_STRKEY(reqHeight);
+    PUSH_STRKEY(startx);
+    PUSH_STRKEY(starty);
+    PUSH_STRKEY(weightX);
+    PUSH_STRKEY(weightY);
+    PUSH_STRKEY(width);
+    PUSH_STRKEY(height);
+
+    PUSH_STRKEY(gridx);
+    PUSH_STRKEY(gridy);
+    PUSH_STRKEY(gridwidth);
+    PUSH_STRKEY(gridheight);
+    PUSH_STRKEY(weightx);
+    PUSH_STRKEY(weighty);
+    PUSH_STRKEY(anchor);
+    PUSH_STRKEY(fillx);
+    PUSH_STRKEY(filly);
+    PUSH_STRKEY(aspectRatio);
+    PUSH_STRKEY(anchorx);
+    PUSH_STRKEY(anchory);
+    PUSH_STRKEY(offsetx);
+    PUSH_STRKEY(offsety);
+    PUSH_STRKEY(originx);
+    PUSH_STRKEY(originy);
+    PUSH_STRKEY(ipadx);
+    PUSH_STRKEY(ipady);
+    PUSH_STRKEY(minWidth);
+    PUSH_STRKEY(minHeight);
+    PUSH_STRKEY(prefWidth);
+    PUSH_STRKEY(prefHeight);
+    PUSH_STRKEY(shrink);
+    PUSH_STRKEY(group);
+    PUSH_STRKEY(autoclip);
+    PUSH_STRKEY(gridRelative);
+    PUSH_STRKEY(overflowMode);
+    PUSH_STRKEY(hidePriority);
+    PUSH_STRKEY(extraw);
+    PUSH_STRKEY(extrah);
+    PUSH_STRKEY(contentAspectRatio);
+
+    lua_rawsetfield(L, -2, "LayoutKeys");
+
     lua_setglobal(L, "Sprite");
     for (int k=0;k<64;k++)
-    	layoutStrings[k]=-1;
+        layoutStrings[k]=-1;
     tokenChildren=lua_newtoken(L,"__children");
     tokenParent=lua_newtoken(L,"__parent");
     tokenNewclone=lua_newtoken(L,"newClone");
@@ -710,9 +780,6 @@ int SpriteBinder::getClip(lua_State* L)
     return 4;
 }
 
-#define FKEY(n) (STRKEY_LAYOUT_##n)
-#define FSKEY(n) (#n)
-#define FMKEY(n) (1LL<<FKEY(n))
 #define FRESOLVE(n,t) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolvedMap|=FMKEY(n); p->resolved[FKEY(n)]=key; lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2);
 #define ARESOLVE(n,t,i) if (lua_type(L,-1)==LUA_TSTRING) { const char *key=luaL_checkstring(L,-1); p->resolvedMap|=FMKEY(n); lua_pushvalue(L,t-1); LuaApplication::resolveStyle(L,key,-2); lua_remove(L,-2); p->resolvedArray[FKEY(n)][i]=key; }
 #define RESOLVE(n) FRESOLVE(n,-1) } else { p->resolvedMap&=~FMKEY(n); p->resolved.erase(FKEY(n)); }
@@ -739,18 +806,21 @@ int SpriteBinder::getClip(lua_State* L)
 #define FILL_INTT(n,f,t) if (fieldCount) { FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { fieldCount--; RESOLVE(n); p->f=(t) lua_tointeger(L,-1); } lua_pop(L,1); }
 #define FILL_NUM(n,f) if (fieldCount) { FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { fieldCount--; RESOLVE(n); p->f=lua_tonumber(L,-1); } lua_pop(L,1); }
 #define FILL_BOOL(n,f) if (fieldCount) { FETCH_VAL(n); if (!lua_isnoneornil(L,-1)) { fieldCount--; p->f=lua_toboolean(L,-1); } lua_pop(L,1); }
+#define STOR_SELFIELD(n) if (selField&FMKEY(n))
 #define STOR_NUM_ARRAY(n,f) \
-        lua_newtable(L); \
+        STOR_SELFIELD(n) { \
+        lua_createtable(L,p->f.size(),0); \
         for (size_t k=0;k<p->f.size();k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
-        STORE_VAL(n);
+        STORE_VAL(n); }
 #define STOR_NUM_ARRAYN(n,f,fl) \
-        lua_newtable(L); \
+        STOR_SELFIELD(n) { \
+        lua_createtable(L,p->fl,0); \
         for (size_t k=0;k<p->fl;k++) { ARESOLVED(n,k) lua_pushnumber(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
-        STORE_VAL(n);
-#define STOR_INT(n,f) RESOLVED(n) lua_pushinteger(L,p->f); STORE_VAL(n);
-#define STOR_INTT(n,f,t) RESOLVED(n) lua_pushinteger(L,(int)p->f); STORE_VAL(n);
-#define STOR_NUM(n,f) RESOLVED(n) lua_pushnumber(L,p->f); STORE_VAL(n);
-#define STOR_BOOL(n,f) lua_pushboolean(L,p->f); STORE_VAL(n);
+        STORE_VAL(n); }
+#define STOR_INT(n,f) STOR_SELFIELD(n) { RESOLVED(n) lua_pushinteger(L,p->f); STORE_VAL(n); }
+#define STOR_INTT(n,f,t) STOR_SELFIELD(n) { RESOLVED(n) lua_pushinteger(L,(int)p->f); STORE_VAL(n); }
+#define STOR_NUM(n,f) STOR_SELFIELD(n) { lua_pushnumber(L,p->f); STORE_VAL(n); }
+#define STOR_BOOL(n,f) STOR_SELFIELD(n) { lua_pushboolean(L,p->f); STORE_VAL(n); }
 
 int SpriteBinder::setLayoutParameters(lua_State *L)
 {
@@ -925,6 +995,10 @@ int SpriteBinder::getLayoutParameters(lua_State *L)
 	{
 		GridBagLayout *p=sprite->getLayoutState();
         bool raw=lua_toboolean(L,2);
+        int64_t selField=-1;
+        if (lua_isuserdata(L,3))
+            selField=luaL_checkint64(L,3);
+
 		lua_newtable(L);
         STOR_NUM_ARRAY(columnWidths,columnWidths);
         STOR_NUM_ARRAY(rowHeights,rowHeights);
@@ -957,6 +1031,9 @@ int SpriteBinder::getLayoutConstraints(lua_State *L)
 	{
 		GridBagConstraints *p=sprite->getLayoutConstraints();
         bool raw=lua_toboolean(L,2);
+        int64_t selField=-1;
+        if (lua_isuserdata(L,3))
+            selField=luaL_checkint64(L,3);
         lua_newtable(L);
         STOR_INT(gridx,gridx); STOR_INT(gridy,gridy);
         STOR_INT(gridwidth,gridwidth); STOR_INT(gridheight,gridheight);
@@ -1003,7 +1080,11 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
 
 	if (sprite->hasLayoutState())
 	{
-		GridBagLayout *sp=sprite->getLayoutState();
+        int64_t selField=-1;
+        if (lua_isuserdata(L,5))
+            selField=luaL_checkint64(L,5);
+
+        GridBagLayout *sp=sprite->getLayoutState();
         GridBagLayoutInfo *p=nullptr;
         if ((type==0)||(type==4)) { //Current or recompute forced current
             if (type==0) { //Force recompute
@@ -1039,7 +1120,7 @@ int SpriteBinder::getLayoutInfo(lua_State *L)
             p->reqWidth=dw;
             p->reqHeight=dh;
 		}
-		lua_newtable(L);
+        lua_newtable(L);
 
         STOR_INT(width,width); STOR_INT(height,height);
         STOR_NUM(reqWidth,reqWidth); STOR_NUM(reqHeight,reqHeight);
