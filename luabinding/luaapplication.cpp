@@ -1796,27 +1796,64 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                         lua_error(L);
                     }
                     std::string lOp=std::string(ks,kk-ks);
-                    if (lOp=="alpha") {
-                        float col[4]={0,0,0,0};
-                        lua_tocolorf(L,-1,col,1);
-                        lua_pop(L,1);
-                        if (resolveStyleInternal(L,kk+1,0,limit+1,true)==LUA_TNIL)
+                    int nargs=1;
+                    while (*kk) { //Push extra args
+                        kk++;
+                        const char *ks=kk;
+                        while ((*kk)&&((*kk)!=':')) kk++;
+                        std::string larg=std::string(ks,kk-ks);
+                        lua_pushvalue(L,-1-nargs);
+                        if (resolveStyleInternal(L,larg.c_str(),0,limit+1,true)==LUA_TNIL)
                         {
                             lua_pushfstringL(L,"Style not recognized: %s",kk+1);
                             lua_error(L);
                         }
+                        nargs++;
+                    }
+                    if ((lOp=="alpha")&&(nargs==2)) {
+                        float col[4]={0,0,0,0};
+                        lua_tocolorf(L,-2,col,1);
                         float c[4]={0,0,0,0};
                         if (lua_tocolorf(L,-1,c,0))
                             col[3]=c[3];
                         else
                             col[3]=lua_tonumber(L,-1);
-                        lua_pop(L,1);
+                        lua_pop(L,3);
+                        lua_pushcolorf(L,col[0],col[1],col[2],col[3]);
+                        return LUA_TCOLOR;
+                    }
+                    else if ((lOp=="mix")&&(nargs==3)) {
+                        float c1[4]={0,0,0,0};
+                        lua_tocolorf(L,-3,c1,1);
+                        float c2[4]={0,0,0,0};
+                        lua_tocolorf(L,-2,c2,1);
+                        float a=lua_tonumber(L,-1);
+                        float b=1-a;
+                        lua_pop(L,4);
+                        lua_pushcolorf(L,c1[0]*a+c2[0]*b,c1[1]*a+c2[1]*b,c1[2]*a+c2[2]*b,c1[3]*a+c2[3]*b);
+                        return LUA_TCOLOR;
+                    }
+                    else if ((lOp=="brightness")&&(nargs==2)) {
+                        float col[4]={0,0,0,0};
+                        lua_tocolorf(L,-2,col,1);
+                        float b=lua_tonumber(L,-1);
+                        float o=(b<0)?1:0;
+                        lua_pop(L,3);
+                        col[0]=col[0]*b+o;
+                        col[1]=col[1]*b+o;
+                        col[2]=col[2]*b+o;
+                        if (col[0]<0) col[0]=0;
+                        if (col[0]>1) col[0]=1;
+                        if (col[1]<0) col[1]=0;
+                        if (col[1]>1) col[1]=1;
+                        if (col[2]<0) col[2]=0;
+                        if (col[2]>1) col[2]=1;
                         lua_pushcolorf(L,col[0],col[1],col[2],col[3]);
                         return LUA_TCOLOR;
                     }
                     else
                     {
-                        lua_pushfstringL(L,"Unknown Operator '%s' in style function '%s'",lOp.c_str(),key);
+                        lua_pushfstringL(L,"Unknown Operator '%s' or wrong args (%d) in style function '%s'",lOp.c_str(),nargs,key);
                         lua_error(L);
                     }
                 }

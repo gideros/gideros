@@ -184,7 +184,7 @@ function D3._FLUA_Shader() : Shader
 		local normal = normalize(normalCoord)
 
 		local lightDir = normalize(lightPos.xyz - position.xyz)
-		local viewDir = normalize(cameraPos.xyz-position.xyz)
+		local viewDir = normalize(eyePos.xyz-position.xyz)
 		if OPT_NORMMAP then
 			normal=perturb_normal(normal, viewDir, texCoord)
 		end
