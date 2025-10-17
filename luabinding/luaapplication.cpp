@@ -1803,9 +1803,9 @@ int LuaApplication::resolveStyleInternal(lua_State *L,const char *key,int luaInd
                         while ((*kk)&&((*kk)!=':')) kk++;
                         std::string larg=std::string(ks,kk-ks);
                         lua_pushvalue(L,-1-nargs);
-                        if (resolveStyleInternal(L,larg.c_str(),0,limit+1,true)==LUA_TNIL)
+                        if (resolveStyleInternal(L,larg.c_str(),0,limit+1,true,true)==LUA_TNIL)
                         {
-                            lua_pushfstringL(L,"Style not recognized: %s",kk+1);
+                            lua_pushfstringL(L,"Style not recognized: %s",larg.c_str());
                             lua_error(L);
                         }
                         nargs++;
