@@ -74,6 +74,18 @@ static std::string us(const wchar_t *str)
     WideCharToMultiByte(CP_UTF8, 0, str, sl, &res[0], sz,NULL,NULL);
     return res;
 }
+
+#ifdef WINSTORE
+#include "giderosapi.h"
+#include <concrt.h>
+#include <ppltasks.h>
+using namespace Concurrency;
+using namespace Windows::System;
+using namespace Platform;
+using namespace Windows::Storage;
+using namespace Windows::Storage::FileProperties;
+#endif
+
 #else
 #include <unistd.h>
 #include <dirent.h>
@@ -914,7 +926,23 @@ static int _file_info_ (lua_State *L, int (*st)(const CHARTYPE*, STAT_STRUCT*)) 
         int i;
 #ifdef _WIN32
         std::wstring wfile=ws(gpath_transform(file));
+#ifdef WINSTORE
+        bool done = false;
+        memset(&info, 0, sizeof(info));
+        create_task(StorageFile::GetFileFromPathAsync(ref new String(wfile.c_str()))).
+            then([=](StorageFile^ file)
+        {
+            return file->GetBasicPropertiesAsync();
+        }).then([=, &info,&done](BasicProperties^ props)
+        {
+            info.st_size = props->Size;
+            done = true;
+            //TODO times
+        }).wait();
+        if (!done)
+#else
     	if (st(wfile.c_str(), &info))
+#endif
 #else
 	if (st(gpath_transform(file), &info))
 #endif

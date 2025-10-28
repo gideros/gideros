@@ -45,17 +45,20 @@ public class AgeSignal {
 	    .checkAgeSignals(AgeSignalsRequest.builder().build())
 	    .addOnSuccessListener(
 	        ageSignalsResult -> {
-	          Date approval=null;
-			  //approval=ageSignalsResult.mostRecentApprovalDate(); XXX doesn't compile, API is broken
-	          onAgeSignals(ageSignalsResult.installId(),
-                      ageSignalsResult.userStatus().toString(), //XXX Does this return the int value or the string value ?
-	        		  (approval==null)?0:approval.getTime(),
-	        		  ageSignalsResult.ageLower(),
-	        		  ageSignalsResult.ageUpper(),
+				Date approval=ageSignalsResult.mostRecentApprovalDate();
+				Integer ageLower=ageSignalsResult.ageLower();
+				Integer ageUpper=ageSignalsResult.ageUpper();
+				Integer userStatus=ageSignalsResult.userStatus();
+	          	onAgeSignals(ageSignalsResult.installId(),
+						(userStatus==null)?"":userStatus.toString(),
+	        		  	(approval==null)?0:approval.getTime(),
+						(ageLower==null)?-1:ageLower,
+						(ageUpper==null)?-1:ageUpper,
 	        		  sData);
 	        })
 		.addOnFailureListener( reason -> {
 			Log.e("AgeSignals", "checkAgeSignals: failed", reason);
+			onAgeSignals("",reason.toString(),0,-1,-1,sData);
 		});
 	}
 	

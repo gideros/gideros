@@ -38,7 +38,6 @@ iOSProject.exportPluginFiles("lfs",
             <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
             <by><![CDATA[
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lfs.cpp">
-      <CompileAsWinRT>false</CompileAsWinRT>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NO_GETCWD;NO_CHDIR</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>

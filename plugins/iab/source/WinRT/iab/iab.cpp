@@ -7,8 +7,6 @@
 #include <windows.foundation.collections.h>
 //#include <Windows.ApplicationModel.store.h>
 #include <windows.services.store.h>
-#include <cvt/wstring>
-#include <codecvt>
 #include <glog.h>
 #include <ppltasks.h>
 #include "giderosapi.h"
@@ -20,15 +18,15 @@ using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::Services::Store;
 
+std::wstring utf8_ws(const char* str);
+std::string utf8_us(const wchar_t* str);
+
 std::string us(String^ ref) {
-	stdext::cvt::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
-	std::string name = convert.to_bytes(ref->Data());
-	return name;
+	return utf8_us(ref->Data());
 }
 
 String^ ws(std::string u) {
-	stdext::cvt::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
-	return ref new String(convert.from_bytes(u.c_str()).c_str());
+	return ref new String(utf8_ws(u.c_str()).c_str());
 }
 
 class GIab

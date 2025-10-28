@@ -13,7 +13,7 @@
 			<append>
 				<orig>//TAG-DEPENDENCIES//</orig>								
 				<by>
-			    implementation 'com.google.android.play:age-signals:0.0.1-beta01'
+			    implementation 'com.google.android.play:age-signals:0.0.1-beta02'
 				</by>
 			</append>
        	</replacelist>	
