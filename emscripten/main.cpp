@@ -424,10 +424,7 @@ int main() {
 char *url=(char *) EM_ASM_PTR({
  return stringToNewUTF8(location.href);
 });
- char *surl=(char *)malloc(strlen(url)+2);
- *surl='s';
- strcpy(surl+1,url);
- currentUrl=surl;
+ currentUrl=strdup(url);
 
  const char *hostname=codeKey_+32;
  bool allowed=(strlen(hostname)==0);

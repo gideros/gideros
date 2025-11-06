@@ -72,7 +72,7 @@ if lfs.attributes(platforms.."/android-"..sdkVer,"mode")~="directory" then
 	for adir in lfs.dir(platforms) do
 		if lfs.attributes(platforms.."/"..adir,"mode")=="directory" then
 		    if adir:lower():sub(1,8)=="android-" then
-	    		sdkVer=math.max(tonumber(adir:sub(9)) or 0,sdkVer)
+	    		sdkVer=math.max(tonumber((adir:sub(9)) or 0)//1,sdkVer)
 	    	end
 		end
 	end

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TimeZone;
 
 import dalvik.system.DexClassLoader;
 import android.app.Activity;
@@ -1413,6 +1414,12 @@ public class GiderosApplication
 	{
 		Locale locale = Locale.getDefault();
 		return locale.getLanguage();
+	}
+	
+	static public String getTimezone()
+	{
+		Locale locale = Locale.getDefault();
+		return TimeZone.getDefault().getID();
 	}
 	
 	static public String getAppId()

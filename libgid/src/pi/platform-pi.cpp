@@ -36,6 +36,11 @@ std::string getLanguage()
   return "placeholder";
 }
 
+std::string getTimezone()
+{
+  return "";
+}
+
 std::string getAppId(){
 	return "";
 }

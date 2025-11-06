@@ -68,6 +68,12 @@ std::string getLanguage()
   return l;
 }
 
+std::string getTimezone()
+{
+  std::string l=getenv("TZ");
+  return "";
+}
+
 std::string getAppId(){
 	return "";
 }

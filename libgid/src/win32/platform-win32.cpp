@@ -96,6 +96,11 @@ std::string getLanguage()
   return us(szBuff);
 }
 
+std::string getTimezone()
+{
+  return "";
+}
+
 std::string getAppId()
 {
   return "";

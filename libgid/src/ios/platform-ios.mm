@@ -134,6 +134,14 @@ std::string getLanguage()
 	return [language UTF8String];
 }
 
+std::string getTimezone()
+{
+	NSTimeZone *timeZone = [NSTimeZone localTimeZone];
+	NSString *tzName = [timeZone name];
+	
+	return [tzName UTF8String];
+}
+
 void setKeepAwake(bool awake)
 {
 #if TARGET_OS_OSX

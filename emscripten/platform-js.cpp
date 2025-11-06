@@ -134,6 +134,16 @@ std::string getLocale()
 	return ""; //TODO
 }
 
+std::string getTimezone()
+{
+	char *tz=(char *) EM_ASM_PTR({
+	 return stringToNewUTF8(Intl.DateTimeFormat().resolvedOptions().timeZone);
+	});
+	std::string sTZ=tz;
+	free(tz);
+	return sTZ;
+}
+
 std::string getLanguage()
 {
 	char *lang=(char *) EM_ASM_PTR({

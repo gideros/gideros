@@ -172,6 +172,11 @@ std::string getLanguage() {
 	return "en";
 }
 
+std::string getTimezone()
+{
+  return QString(QTimeZone::systemTimeZoneId()).toStdString();
+}
+
 std::string getAppId() {
 	return "";
 }

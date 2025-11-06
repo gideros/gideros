@@ -202,6 +202,20 @@ std::string getLanguage()
 	return sresult;
 }
 
+std::string getTimezone()
+{
+	JNIEnv *env = g_getJNIEnv();
+
+	jmethodID getTimezoneID = env->GetStaticMethodID(JCLS(), "getTimezone", "()Ljava/lang/String;");
+	jstring jresult = (jstring)env->CallStaticObjectMethod(JCLS(), getTimezoneID);
+	const char *result = env->GetStringUTFChars(jresult, NULL);
+	std::string sresult = result;
+	env->ReleaseStringUTFChars(jresult, result);
+	env->DeleteLocalRef(jresult);
+
+	return sresult;
+}
+
 void vibrate(int ms)
 {
 	JNIEnv *env = g_getJNIEnv();

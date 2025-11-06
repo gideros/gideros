@@ -16,8 +16,6 @@
         <file name="assets/gfx/Blocks.txt"/>
         <file name="assets/gfx/FX.png"/>
         <file name="assets/gfx/FX.txt"/>
-        <file name="assets/gfx/oBlocks.png"/>
-        <file name="assets/gfx/oBlocks.txt"/>
     </folder>
     <folder name="data">
         <file name="assets/data/Level_1.lua"/>

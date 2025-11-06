@@ -104,6 +104,13 @@ std::string getLanguage()
 	return s.substr(0,2);
 }
 
+std::string getTimezone()
+{
+	Calendar^ c=ref new Calendar();
+	std::wstring data = c->GetTimeZone()->Data();
+	return utf8_us(data.c_str());
+}
+
 std::string getAppId(){
 	std::wstring data = Windows::ApplicationModel::Package::Current->Id->FamilyName->Data();
 	return utf8_us(data.c_str());

@@ -12,6 +12,7 @@
 #include <gevent.h>
 #include <algorithm>
 #include <sstream>
+#include <chrono>
 
 #define PORTRAIT "portrait"
 #define PORTRAIT_UPSIDE_DOWN "portraitUpsideDown"
@@ -95,6 +96,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"enableOnDemandDraw", ApplicationBinder::enableOnDemandDraw},
         {"getProjectProperties", ApplicationBinder::getProjectProperties},
         {"applyStyles", ApplicationBinder::applyStyles},
+		{"getTimeZone", ApplicationBinder::getTimeZone},
 
         {NULL, NULL},
 	};
@@ -1199,4 +1201,15 @@ int ApplicationBinder::applyStyles(lua_State* L)
     application->applyStyles();
 
     return 0;
+}
+
+int ApplicationBinder::getTimeZone(lua_State* L)
+{
+	lua_pushstring(L, ::getTimezone().c_str());
+
+	return 1;
+	/*
+	lua_pushstring(L,std::chrono::current_zone()->name().c_str());
+    return 1;
+    */
 }

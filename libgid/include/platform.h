@@ -182,6 +182,7 @@ std::string getDeviceName();
 void vibrate(int ms);
 std::string getLocale();
 std::string getLanguage();
+std::string getTimezone();
 void setKeepAwake(bool awake);
 bool setKeyboardVisibility(bool visible);
 int getKeyboardModifiers();

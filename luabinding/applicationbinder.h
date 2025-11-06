@@ -63,6 +63,7 @@ private:
     static int enableOnDemandDraw(lua_State *L);
     static int getProjectProperties(lua_State* L);
     static int applyStyles(lua_State* L);
+    static int getTimeZone(lua_State* L);
 };
 
 #endif
