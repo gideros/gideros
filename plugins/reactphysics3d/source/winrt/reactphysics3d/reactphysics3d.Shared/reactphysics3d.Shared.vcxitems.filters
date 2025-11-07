@@ -574,6 +574,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\utils\quickhull\QuickHull.cpp">
       <Filter>ReactPhysics3d</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\PoolAllocator.cpp">
+      <Filter>ReactPhysics3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ReactPhysics3d">

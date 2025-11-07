@@ -192,6 +192,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\HeapAllocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\MemoryAllocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\MemoryManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\PoolAllocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\memory\SingleFrameAllocator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\systems\BroadPhaseSystem.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\reactphysics3d\src\systems\CollisionDetectionSystem.cpp" />
