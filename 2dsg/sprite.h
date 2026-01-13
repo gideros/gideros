@@ -400,6 +400,7 @@ public:
 	}
 
     void setAutoSort(bool autosort) { autoSort_=autosort; }
+    bool isAutoSort() { return autoSort_; }
 
 	// Evaluates the sprite to see if its bounds overlaps or intersects with the point specified by the x and y parameters.
 	// The x and y parameters specify a point in the global coordinate space.

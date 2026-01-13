@@ -11,13 +11,6 @@
 
 @implementation AdsMax
 -(id)init{
-    [ALSdk shared].mediationProvider = @"max";
-        
-    [[ALSdk shared] initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
-        // Start loading ads
-        //[[ALSdk shared] showMediationDebugger];
-        [AdsClass adsReady:[self class] state:TRUE];
-    }];
     
     self.appKey = @"";
     self.curType = @"";
@@ -35,12 +28,25 @@
 
 -(void)setKey:(NSMutableArray*)parameters{
     self.appKey = [parameters objectAtIndex:0];
+    // Create the initialization configuration
+    ALSdkInitializationConfiguration *initConfig = [ALSdkInitializationConfiguration configurationWithSdkKey: self.appKey builderBlock:^(ALSdkInitializationConfigurationBuilder *builder) {
+      builder.mediationProvider = ALMediationProviderMAX;
+      builder.segmentCollection = [MASegmentCollection segmentCollectionWithBuilderBlock:^(MASegmentCollectionBuilder *builder) {
+          [builder addSegment: [[MASegment alloc] initWithKey: @(849) values: @[@(1), @(3)]]];
+      }];
+    }];
+
+    // Initialize the SDK with the configuration
+    [[ALSdk shared] initializeWithConfiguration: initConfig completionHandler:^(ALSdkConfiguration *sdkConfig) {
+      // Start loading ads
+        [AdsClass adsReady:[self class] state:TRUE];
+    }];
 }
 
 -(void)loadAd:(NSMutableArray*)parameters{
     NSString *type = [parameters objectAtIndex:0];
     NSString *aid = [parameters objectAtIndex:1];
-    ALSdk* sdk = [ALSdk sharedWithKey: self.appKey];
+    ALSdk* sdk = [ALSdk shared];
     if ([type isEqualToString:@"interstitial"]) {
         MAInterstitialAd *interstitial=[self.units objectForKey:aid];
         if (interstitial==nil) {

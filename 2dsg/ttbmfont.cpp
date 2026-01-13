@@ -35,10 +35,10 @@ static void close(FT_Stream stream) {
 }
 
 TTBMFont::TTBMFont(Application *application, std::vector<FontSpec> filenames,
-		float size, const char *chars, float filtering, float outline, GStatus *status) :
+        float size, const char *chars, float filtering, float outline, GStatus *status) :
 		BMFontBase(application) {
 	try {
-		constructor(filenames, size, chars, filtering, outline);
+        constructor(filenames, size, chars, filtering, outline);
 	} catch (GiderosException &e) {
 		if (status)
 			*status = e.status();
@@ -254,7 +254,7 @@ bool TTBMFont::staticCharsetInit() {
 }
 
 void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
-		const char *chars, float filtering, float outline) {
+        const char *chars, float filtering, float outline) {
 
     currentDib_ = NULL;
     currentPacker_ = NULL;
@@ -347,12 +347,12 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 
 	charset_ = chars;
 
-	std::vector<wchar32_t> wchars;
-	size_t len = utf8_to_wchar(charset_.c_str(), charset_.size(), NULL, 0, 0);
-	if (len != 0) {
-		wchars.resize(len);
-		utf8_to_wchar(charset_.c_str(), charset_.size(), &wchars[0], len, 0);
-	}
+    std::vector<wchar32_t> wchars;
+    size_t len = utf8_to_wchar(charset_.c_str(), charset_.size(), NULL, 0, 0);
+    if (len != 0) {
+        wchars.resize(len);
+        utf8_to_wchar(charset_.c_str(), charset_.size(), &wchars[0], len, 0);
+    }
 
 	if (!staticCharsetInit()) {
 		currentDib_ = new Dib(application_, 1024, 1024, true); //use 102x1024 textures for packing

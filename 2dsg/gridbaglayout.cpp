@@ -349,7 +349,7 @@ GridBagLayoutInfo *GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag, fl
 
 	nextSize = INT_MAX;
 
-	for (i = 1; i != INT_MAX; i = nextSize, nextSize = INT_MAX) {
+    for (i = 1; i != INT_MAX; i = nextSize, nextSize = INT_MAX) {
         for (auto it=candidates.begin();it!=candidates.end();it++) {
             Sprite *comp=*it;
             constraints = comp->layoutConstraints;

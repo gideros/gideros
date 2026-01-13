@@ -11,9 +11,6 @@
 
 @implementation AdsApplovin
 -(id)init{
-    [ALSdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration * _Nonnull configuration) {        
-	   [AdsClass adsReady:[self class] state:TRUE];
-    }];
     self.appKey = @"";
     self.curType = @"";
     self.view_ = nil;
@@ -28,11 +25,24 @@
 
 -(void)setKey:(NSMutableArray*)parameters{
     self.appKey = [parameters objectAtIndex:0];
+    
+    // Create the initialization configuration
+    ALSdkInitializationConfiguration *initConfig = [ALSdkInitializationConfiguration configurationWithSdkKey: self.appKey builderBlock:^(ALSdkInitializationConfigurationBuilder *builder) {
+      builder.mediationProvider = ALMediationProviderMAX;
+      builder.segmentCollection = [MASegmentCollection segmentCollectionWithBuilderBlock:^(MASegmentCollectionBuilder *builder) {
+          [builder addSegment: [[MASegment alloc] initWithKey: @(849) values: @[@(1), @(3)]]];
+      }];
+    }];
+
+    // Initialize the SDK with the configuration
+    [[ALSdk shared] initializeWithConfiguration: initConfig completionHandler:^(ALSdkConfiguration *sdkConfig) {
+        [AdsClass adsReady:[self class] state:TRUE];
+   }];
 }
 
 -(void)loadAd:(NSMutableArray*)parameters{
     NSString *type = [parameters objectAtIndex:0];
-    ALSdk* sdk = [ALSdk sharedWithKey: self.appKey];
+    ALSdk* sdk = [ALSdk shared];
     if ([type isEqualToString:@"interstitial"]) {
         AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
         AdsApplovinListener *list = [[AdsApplovinListener alloc] init:nil with:self];

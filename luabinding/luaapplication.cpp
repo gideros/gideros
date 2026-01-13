@@ -2708,7 +2708,7 @@ void LuaApplication::enterFrame(GStatus *status)
 				{
 					lua_traceback(t.L,L);
 					if (status)
-						*status = GStatus(1, lua_tostring(t.L, -1));
+                        *status = GStatus(1, lua_tostring(L, -1));
 				}
                 lua_pop(t.L, 1);
 				luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
