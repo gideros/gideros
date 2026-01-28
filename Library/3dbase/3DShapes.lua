@@ -87,6 +87,63 @@ function Mesh3D:setLocalMatrix(m)
 end
 
 -- ***************************************
+--Plane
+local Plane=Core.class(Mesh3D)
+function Plane:init(w,h,d)
+	w=w or 1 h=h or 1 d=d or 1
+	if not Plane.ia then
+		Plane.ia = { -- index array
+			1,2,3, 1,3,4,
+		}
+		Plane.na = { -- normal array
+			0,1,0, 0,1,0, 0,1,0, 0,1,0,
+		}
+	end
+	self._va={ -- vertex array
+		-w,h,-d,
+		w,h,-d,
+		w,h,d,
+		-w,h,d,
+	}
+	self:setGenericArray(3,Shader.DFLOAT,3,4,Plane.na)
+	self:setVertexArray(self._va)
+	self:setIndexArray(Plane.ia)
+	self._va=Plane.va self._ia=Plane.ia
+	self.dims={w=w,h=h,d=d}
+end
+function Plane:mapTexture(texture,sw,sh)
+	self:setTexture(texture)
+	if texture then
+		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
+		self:setTextureCoordinateArray {
+			0, 0,
+			tw, 0,
+			tw, th,
+			0, th,
+		}
+		self:updateMode(Mesh3D.MODE_TEXTURE,0)
+	else
+		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+	end
+end
+function Plane:mapColor(color,alpha)
+	if color then
+		for i = 1, #self._ia do -- the mesh index array
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		end
+		self:updateMode(Mesh3D.MODE_COLORED,0)
+	else
+		self:updateMode(0,Mesh3D.MODE_COLORED)
+	end
+end
+function Plane:getCollisionShape()
+	if not self._r3dshape then
+		self._r3dshape=r3d.BoxShape.new(self.dims.w,self.dims.h,self.dims.d)
+	end
+	return self._r3dshape
+end
+
+-- ***************************************
 --Unit Cube
 local Box=Core.class(Mesh3D)
 function Box:init(w,h,d)
@@ -138,6 +195,16 @@ function Box:mapTexture(texture,sw,sh)
 		self:updateMode(Mesh3D.MODE_TEXTURE,0)
 	else
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+	end
+end
+function Box:mapColor(color,alpha)
+	if color then
+		for i = 1, #self._ia do -- the mesh index array
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		end
+		self:updateMode(Mesh3D.MODE_COLORED,0)
+	else
+		self:updateMode(0,Mesh3D.MODE_COLORED)
 	end
 end
 function Box:getCollisionShape()
@@ -212,6 +279,16 @@ function Sphere:mapTexture(texture)
 		self:updateMode(Mesh3D.MODE_TEXTURE,0)
 	else
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+	end
+end
+function Sphere:mapColor(color,alpha)
+	if color then
+		for i = 1, #self._ia do -- the mesh index array
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		end
+		self:updateMode(Mesh3D.MODE_COLORED,0)
+	else
+		self:updateMode(0,Mesh3D.MODE_COLORED)
 	end
 end
 function Sphere:getCollisionShape()
@@ -300,6 +377,16 @@ function Cylinder:mapTexture(texture)
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
 	end
 end
+function Cylinder:mapColor(color,alpha)
+	if color then
+		for i = 1, #self._ia do -- the mesh index array
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		end
+		self:updateMode(Mesh3D.MODE_COLORED,0)
+	else
+		self:updateMode(0,Mesh3D.MODE_COLORED)
+	end
+end
 function Cylinder:getCollisionShape()
 	if not self._r3dshape then
 		--For collision, ensure closed/CCW shape
@@ -333,6 +420,7 @@ end
 D3=D3 or {}
 D3.Group=Group3D
 D3.Mesh=Mesh3D
+D3.Plane=Plane
 D3.Cube=Box
 D3.Sphere=Sphere
 D3.Cylinder=Cylinder
