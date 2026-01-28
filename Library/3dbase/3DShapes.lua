@@ -126,10 +126,10 @@ function Plane:mapTexture(texture,sw,sh)
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
 	end
 end
-function Plane:mapColor(color)
+function Plane:mapColor(color,alpha)
 	if color then
 		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, 1) -- (i,color,alpha)
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
@@ -197,10 +197,10 @@ function Box:mapTexture(texture,sw,sh)
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
 	end
 end
-function Box:mapColor(color)
+function Box:mapColor(color,alpha)
 	if color then
 		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, 1) -- (i,color,alpha)
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
@@ -281,10 +281,10 @@ function Sphere:mapTexture(texture)
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
 	end
 end
-function Sphere:mapColor(color)
+function Sphere:mapColor(color,alpha)
 	if color then
 		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, 1) -- (i,color,alpha)
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
@@ -377,10 +377,10 @@ function Cylinder:mapTexture(texture)
 		self:updateMode(0,Mesh3D.MODE_TEXTURE)
 	end
 end
-function Cylinder:mapColor(color)
+function Cylinder:mapColor(color,alpha)
 	if color then
 		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, 1) -- (i,color,alpha)
+			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
