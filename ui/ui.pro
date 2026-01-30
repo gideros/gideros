@@ -39,17 +39,20 @@ defineReplace(expand) {
 
 equals(LUA_ENGINE,luau): LUA_SOURCES =\
          $$expand(lapi laux lbaselib lbitlib lbuffer lbuflib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
-         ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils,../luau/VM/src/,.cpp) \
+         ltable ltablib ltm ludata lutf8lib lveclib lvmexecute lvmload lvmutils,../luau/VM/src/,.cpp) \
          $$expand(Builtins BuiltinFolding BytecodeBuilder ConstantFolding Compiler CostModel lcode PseudoCode TableShape Types ValueTracking,../luau/Compiler/src/,.cpp) \
-         $$expand(Anyification AnyTypeSummary ApplyTypeFunction AstJsonEncoder AstQuery Autocomplete BuiltinDefinitions Clone Constraint ConstraintGenerator ConstraintSolver \
-         DataFlowGraph DcrLogger Def Differ \
-         EmbeddedBuiltinDefinitions Error FragmentAutoComplete Frontend \
-         Generalization GlobalTypes Instantiation Instantiation2 IostreamHelpers JsonEmitter Linter LValue Module NonStrictTypeChecker Normalize OverloadResolution Quantify Refinement RequireTracer \
-         Scope Simplify Substitution Subtyping Symbol TableLiteralInference ToDot TopoSortStatements Tostring Transpiler TxnLog \
-         Type TypeArena TypeAttach TypeChecker2 TypedAllocator TypeFunction TypeFunctionReductionGuesser TypeFunctionRuntime TypeFunctionRuntimeBuilder \
-         TypeInfer TypeOrPack TypePack TypePath TypeUtils Unifiable Unifier Unifier2,../luau/Analysis/src/,.cpp) \
+         $$expand(Anyification ApplyTypeFunction AstJsonEncoder AstQuery AstUtils Autocomplete AutocompleteCore BuiltinDefinitions BuiltinTypeFunctions Clone Constraint ConstraintGenerator ConstraintSolver \
+         DataFlowGraph DcrLogger Def \
+         EmbeddedBuiltinDefinitions Error ExpectedTypeVisitor FileResolver FragmentAutoComplete Frontend \
+         Generalization GlobalTypes InferPolarity Instantiation Instantiation2 IostreamHelpers \
+         IterativeTypeFunctionTypeVisitor IterativeTypeVisitor \
+         JsonEmitter Linter LValue Module NativeStackGuard NonStrictTypeChecker Normalize OverloadResolution Quantify RecursionCounter Refinement RequireTracer \
+         Scope Simplify StructuralTypeEquality Substitution Subtyping Symbol TableLiteralInference ToDot ToString TopoSortStatements TxnLog \
+         Type TypeArena TypeAttach TypeChecker2 TypeFunction TypeFunctionReductionGuesser TypeFunctionRuntime TypeFunctionRuntimeBuilder \
+         TypeIds TypeInfer TypeOrPack TypePack TypePath TypeUtils TypedAllocator Unifiable Unifier Unifier2 UserDefinedTypeFunction,../luau/Analysis/src/,.cpp) \
          $$expand(Config LinterConfig,../luau/Config/src/,.cpp) \
-         $$expand(Ast Confusables Lexer Location Parser StringUtils TimeTrace,../luau/Ast/src/,.cpp)
+         $$expand(StringUtils TimeTrace,../luau/Common/src/,.cpp) \
+         $$expand(Allocator Ast Confusables Cst Lexer Location Parser PrettyPrinter,../luau/Ast/src/,.cpp)
 equals(LUA_ENGINE,lua): LUA_SOURCES =\
 	../lua/src/lapi.c \
 	../lua/src/lauxlib.c \

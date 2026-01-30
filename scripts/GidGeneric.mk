@@ -15,9 +15,10 @@ DEFINES_lua=LUA_CORE
 ifeq ($(LUA_ENGINE),luau)
 INCLUDEPATHS_lua=luau/VM/src luau/VM/include luau/Compiler/include luau/CodeGen/include luau/Common/include luau/Ast/include libgvfs
 OBJFILES_lua=$(addprefix luau/VM/src/,lapi laux lbaselib lbitlib lbuffer lbuflib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc lgcdebug linit lint64lib liolib lmathlib lmem lnumprint lobject loslib lperf lstate lstring lstrlib \
-         ltable ltablib ltm ludata lutf8lib lvmexecute lvmload lvmutils) \
+         ltable ltablib ltm ludata lutf8lib lveclib lvmexecute lvmload lvmutils) \
         $(addprefix luau/Compiler/src/,Builtins BuiltinFolding BytecodeBuilder ConstantFolding Compiler CostModel lcode PseudoCode TableShape Types ValueTracking) \
-        $(addprefix luau/Ast/src/,Ast Confusables Lexer Location Parser StringUtils TimeTrace)
+        $(addprefix luau/Common/src/,StringUtils TimeTrace) \
+        $(addprefix luau/Ast/src/,Allocator Ast Confusables Cst Lexer Location Parser PrettyPrinter)
 DEFINES_lua+=LUAU_ENABLE_CODEGEN
 OBJFILES_lua +=  $(addprefix luau/CodeGen/src/,BytecodeAnalysis BytecodeSummary CodeAllocator CodeBlockUnwind CodeGen CodeGenAssembly CodeGenContext CodeGenUtils \
          IrAnalysis IrBuilder IrCallWrapperX64 IrDump IrTranslateBuiltins IrTranslation IrUtils IrValueLocationTracking \

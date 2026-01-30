@@ -92,7 +92,7 @@ public:
         return Luau::SourceCode{*source, Luau::SourceCode::Module};
     }
 
-    std::optional<Luau::ModuleInfo> resolveModule(const Luau::ModuleInfo* context, Luau::AstExpr* node) override
+    std::optional<Luau::ModuleInfo> resolveModule(const Luau::ModuleInfo* context, Luau::AstExpr* node, const Luau::TypeCheckLimits& limits) override
     {
         Q_UNUSED(context);
         if (Luau::AstExprConstantString* expr = node->as<Luau::AstExprConstantString>())
@@ -173,11 +173,6 @@ class OutlineVisitor : public Luau::AstVisitor
         Q_UNUSED(node);
         return false;
     }
-    virtual bool visit(class Luau::AstStatDeclareClass* node)
-    {
-        Q_UNUSED(node);
-        return false;
-    }
 
 public:
     QList<OutLineItem> *ol;
@@ -243,11 +238,6 @@ class AutocompleteVisitor : public Luau::AstVisitor
         return true;
     }
     virtual bool visit(class Luau::AstStatDeclareGlobal* node)
-    {
-        Q_UNUSED(node);
-        return true;
-    }
-    virtual bool visit(class Luau::AstStatDeclareClass* node)
     {
         Q_UNUSED(node);
         return true;

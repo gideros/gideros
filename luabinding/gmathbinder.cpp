@@ -741,6 +741,25 @@ static int lua_vector_namecall(lua_State* L)
     luaL_error(L, "%s is not a valid method of vector", luaL_checkstring(L, 1));
 }
 
+static int lua_vector_call(lua_State* L)
+{
+    if (lua_gettop(L) >=5) {
+        luaL_error(L, "vectors of 4 values are no longer supported");
+    }
+
+    double x = luaL_checknumber(L, 2);
+    double y = luaL_checknumber(L, 3);
+    double z = luaL_optnumber(L, 4, 0);
+
+#if LUA_VECTOR_SIZE == 4
+    double w = luaL_optnumber(L, 4,0);
+    lua_pushvector(L, float(x), float(y), float(z), float(w));
+#else
+    lua_pushvector(L, float(x), float(y), float(z));
+#endif
+    return 1;
+}
+
 
 void register_gideros_math(lua_State *L) {
 	// Register math helpers
@@ -763,7 +782,17 @@ void register_gideros_math(lua_State *L) {
 	luaL_register(L, LUA_MATHLIBNAME, mathlib);
 	lua_pop(L,1);
 
-    lua_pushcfunction(L, lua_vector, "vector");
+    lua_createtable(L, 0, 1); // create metatable for vector library
+    lua_getglobal(L,"vector");
+    lua_pushvalue(L, -2);
+    lua_setmetatable(L, -2); // set vector metatable
+    lua_pop(L, 1);           // pop vector table
+
+    lua_pushcfunction(L, lua_vector_call, "vector__call");
+    lua_setfield(L, -2, "__call");
+    lua_pop(L, 1);           // pop vector metatable
+
+    /*lua_pushcfunction(L, lua_vector, "vector");
     lua_setglobal(L, "vector");
 
 #if LUA_VECTOR_SIZE == 4
@@ -782,5 +811,5 @@ void register_gideros_math(lua_State *L) {
     lua_settable(L, -3);
 
     lua_setmetatable(L, -2);
-    lua_pop(L, 1);
+    lua_pop(L, 1);*/
 }
