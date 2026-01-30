@@ -83,7 +83,6 @@
         <folder name="icons">
             <file name="../../Library/ui/icons/bdr-multi.png"/>
             <file name="../../Library/ui/icons/bdr_roundcorners-multi.png"/>
-            <file name="../../Library/ui/icons/bdr_square-multi.png"/>
             <file name="../../Library/ui/icons/checkbox-multi.png"/>
             <file name="../../Library/ui/icons/checkbox.png"/>
             <file name="../../Library/ui/icons/cirbdr-multi.png"/>
