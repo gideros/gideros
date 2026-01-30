@@ -2112,7 +2112,7 @@ static void g_free(void *ptr)
     if (memory_pool <= ptr && ptr < memory_pool_end)
         tlsf_free(memory_pool, ptr);
     else
-        ::free(((size_t *)ptr)-1);
+        ::free(((char *)ptr)-16);
 }
 
 static size_t g_getsize(void *ptr)
@@ -2138,9 +2138,9 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
 
         if (p == NULL)
         {
-            size_t *ps = (size_t *)::malloc(size+sizeof(size_t));
+            p = ((char *)::malloc(size+16))+16; //Ensure 16B alignment
+            size_t *ps = ((size_t *)p)-1;
             *ps=size;
-            p=ps+1;
         }
     }
     else
@@ -2152,19 +2152,18 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
 
             if (p == NULL)
             {
-                size_t *ps = (size_t *)::malloc(size+sizeof(size_t));
+                p=((char *)::malloc(size+16))+16;
+                size_t *ps = ((size_t *)p)-1;
                 *ps=size;
-                p=ps+1;
                 memcpy(p, ptr, osize);
                 tlsf_free(memory_pool, ptr);
             }
         }
         else
         {
-            size_t *ps=(size_t *)ptr;
-            ps = (size_t *)::realloc(ps-1, size+sizeof(size_t));
+            p = ((uchar *)::realloc(((uchar*)ptr)-16, size+16))+16;
+            size_t *ps = ((size_t *)p)-1;
             *ps=size;
-            p=ps+1;
         }
     }
 

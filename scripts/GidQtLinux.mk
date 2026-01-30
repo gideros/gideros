@@ -189,7 +189,7 @@ tools:
         ludata lutf8lib lveclib lvmexecute lvmload lvmutils) \
 		$(addprefix Compiler/src/,Builtins BuiltinFolding BytecodeBuilder ConstantFolding Compiler CostModel lcode PseudoCode TableShape Types ValueTracking) \
 		$(addprefix Common/src/,StringUtils TimeTrace) \
-		$(addprefix Ast/src/,Allocator Ast Confusables Cst Lexer Location Parser PrettyPrinter)) extern/isocline/src/isocline.c
+		$(addprefix Ast/src/,Allocator Ast Confusables Cst Lexer Location Parser PrettyPrinter)) extern/isocline/src/isocline.c -lpthread
 
 	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc\
