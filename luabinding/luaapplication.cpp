@@ -2161,7 +2161,7 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
         }
         else
         {
-            p = ((uchar *)::realloc(((uchar*)ptr)-16, size+16))+16;
+            p = ((char *)::realloc(((char*)ptr)-16, size+16))+16;
             size_t *ps = ((size_t *)p)-1;
             *ps=size;
         }
