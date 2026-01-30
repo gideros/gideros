@@ -254,7 +254,7 @@ function UI.Builder(d,top,ref,params,sub)
 	--Set data as last step
 	if d.data and s.setData then
 		s:setData(d.data,d.dataMapper)
-		if d.expanded and s.setExpanded then s:setExpanded(d.data[d.expanded],true) end
+		if d.expanded and s.setExpanded then print("UI.Accordion: d.expanded is deprecated") s:setExpanded(d.data[d.expanded],true) end
 	end
 	uibuilder_context=oldContext	
 	return s,hasFactory

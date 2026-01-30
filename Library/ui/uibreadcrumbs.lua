@@ -20,6 +20,9 @@ function UI.BreadCrumbs:init()
 	UI.BuilderSelf(UI.BreadCrumbs.Template,self)
 	self.vpTrail:setFlags({disabled=true})
 	self.dataMap={}
+	UI.Control.onMouseClick[self]=self
+	UI.Control.onLongClick[self]=self
+	UI.Control.onLongPrepare[self]=self
 end
 
 function UI.BreadCrumbs:updateStyle(...)
@@ -53,7 +56,6 @@ function UI.BreadCrumbs:buildItem(n,d,isRoot,isLast)
 	sp=UI.Utils.makeWidget(sp,d,nil)
 	sp:setLocalStyle(bstyle)
 	sp:setStateStyle(style)
-	UI.Behavior.Button.new(sp,nil)
 	local lc=sp:getLayoutConstraints() or { fill=Sprite.LAYOUT_FILL_BOTH }
 	lc.insetRight="breadcrumbs.szSpacing"
 	self.dataMap[sp]=n
@@ -120,15 +122,51 @@ function UI.BreadCrumbs:onRangeChange(w,rw,rh)
 	end
 end
 
-function UI.BreadCrumbs:onWidgetAction(w)
+function UI.BreadCrumbs:getClickedItem()
+	--Must be called within an onXXX handler from UI.Control
 	if self:getFlags().disabled then return end
-	local n=self.dataMap[w]
+	local stack=UI.Control.getDispatchStack()
+	if not stack then return end
+	local ns=#stack
+	for nn=ns,1,-1 do
+		local w=stack[nn]
+		if w==self then return end
+		local n=self.dataMap[w]
+		if n and n>0 then
+			return n,w
+		end
+	end
+end
+
+function UI.BreadCrumbs:onMouseClick(x,y,c)
+	local n,_=self:getClickedItem()
 	if n and n>0 then
 		while #self.data>n do table.remove(self.data) end
 		self:setData(self.data,self.builder)
 		UI.dispatchEvent(self,"WidgetChange",self.data[n])
+		return true
 	end
-	return true
+end
+
+function UI.BreadCrumbs:onLongClick(x,y)
+	local n,_=self:getClickedItem()
+	if n and n>0 then
+		UI.dispatchEvent(self,"WidgetLongAction",self.data[n])
+		return true
+	end
+end
+
+function UI.BreadCrumbs:onLongPrepare(x,y,r)
+	local n,_=self:getClickedItem()
+	if n and n>0 then
+		if not self.prepare then 
+			self.prepare=UI.Behavior.LongClick.makeIndicator(self,{}) 
+		end
+		self.prepare:indicate(self,x,y,r)
+		return true
+	elseif self.prepare then
+		self.prepare:indicate(self,x,y,-1)
+	end
 end
 
 UI.BreadCrumbs.Definition= {

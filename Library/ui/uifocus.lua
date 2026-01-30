@@ -28,6 +28,7 @@ local function ndispatch(...)
 end
 
 function UI.Focus:request(w,mode)
+  if w._flags.focusable==false then return end
   local gained=false
   mode=mode or tonumber(w._flags.focusable) or 0
   if self.focused~=w then
@@ -93,39 +94,40 @@ function UI.Focus:offsetStage(cx,cy)
 end
 
 function UI.Focus:area(widget,x,y,w,h,force,anchorx,anchory)
-  if self.focused==widget or force then
-    UI.dispatchEvent(widget,"FocusArea",x,y,w,h,anchorx,anchory)
-    if self.hasKbd then
-      local gix,giy=widget:localToGlobal(x,y)
-      local gax,gay=widget:localToGlobal(x+w,y+h)
-      local gsx,gsy,gsw,gsh=application:getLogicalBounds()
-	  gsw-=gsx gsh-=gsy gsh*=(1-self.hasKbd)
-      --print(gix,giy,gax,gay,gsw,gsh,self.hasKbd)
-      while widget do -- Try to show as complete container chain
-		widget:getLayoutInfo()
-        local ix,iy,iw,ih=widget:getBounds(stage,true)
-        --print(ix,iy,iw,ih)
-        --if iw>gsw or ih>gsh then break end
-        if ih>gsh then break end
-        gix,giy,gax,gay=ix,iy,ix+iw,iy+ih
-        widget=widget:getParent()
-      end
-	  if not widget then
-		self:offsetStage(0,0)
-		return
-	  end
-      --print(gix,giy,gax,gay) widget:setColor(0xFF0000,1)
-      local six,siy=-gix<>-gax,-giy<>-gay
-      local sax,say=(gsw-gix)><(gsw-gax),(gsh-giy)><(gsh-gay)
-      local cx,cy=stage:getPosition()
-      --print(six,siy,sax,say,cx,cy)
-      cx=((cx<>six)><sax)><0
-      cy=((cy<>siy)><say)><0
-      local spx = 0 --NO cx
-      local spy = cy
-      self:offsetStage(spx,spy)
-    end
-  end
+	if self.focused==widget or force then
+		UI.dispatchEvent(widget,"FocusArea",x,y,w,h,anchorx,anchory)
+		if self.hasKbd then
+		  local gix,giy=widget:localToGlobal(x,y)
+		  local gax,gay=widget:localToGlobal(x+w,y+h)
+		  local gsx,gsy,gsw,gsh=application:getLogicalBounds()
+		  gsw-=gsx gsh-=gsy gsh*=(1-self.hasKbd)
+		  --print(gix,giy,gax,gay,gsw,gsh,self.hasKbd)
+		  if stage.validateLayout then stage:validateLayout() end
+		  while widget do -- Try to show as complete container chain			  
+			if not stage.validateLayout then widget:getLayoutInfo() end
+			local ix,iy,iw,ih=widget:getBounds(stage,true)
+			--print(ix,iy,iw,ih)
+			--if iw>gsw or ih>gsh then break end
+			if ih>gsh then break end
+			gix,giy,gax,gay=ix,iy,ix+iw,iy+ih
+			widget=widget:getParent()
+		  end
+		  if not widget then
+			self:offsetStage(0,0)
+			return
+		  end
+		  --print(gix,giy,gax,gay) widget:setColor(0xFF0000,1)
+		  local six,siy=-gix<>-gax,-giy<>-gay
+		  local sax,say=(gsw-gix)><(gsw-gax),(gsh-giy)><(gsh-gay)
+		  local cx,cy=stage:getPosition()
+		  --print(six,siy,sax,say,cx,cy)
+		  cx=((cx<>six)><sax)><0
+		  cy=((cy<>siy)><say)><0
+		  local spx = 0 --NO cx
+		  local spy = cy
+		  self:offsetStage(spx,spy)
+		end
+	end
 end
 
 function UI.Focus:clear()

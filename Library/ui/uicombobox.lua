@@ -275,7 +275,6 @@ function UI.Dropdown.GenericEditor:init()
 	UI.BuilderSelf(UI.Dropdown.GenericEditor.Template,self)
 end
 
-
 -- Dropdown List model
 UI.Dropdown.Model=Core.class(UI.Combobox.ModelButton)
 function UI.Dropdown.Model:getEditorTemplate()
@@ -285,7 +284,7 @@ function UI.Dropdown.Model:setEditing(editor,editing)
 end
 function UI.Dropdown.Model:setEditorValue(editor,value,mapper)
 	if self.currentValue then
-		editor.pnValue:removeChildAt(1) 
+		editor.pnValue:removeChildAt(1)
 	end
 	self.currentValue=value
 	if value then

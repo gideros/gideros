@@ -7,21 +7,23 @@ spr,data=:uiSelect(x,y) 	-- Returns dataSprite and data associated with click co
 ]]
 
 UI.Selection={
-	NONE=0,
-	CLICK=1,
-	SINGLE=2,
-	MULTIPLE=3
+	NONE=0, 	-- No slection
+	CLICK=1, 	-- Selection not kept, but handler called on click
+	SINGLE=2, 	-- Single selection mode
+	MULTIPLE=3,	-- Multi selection mode
+	SELMASK=3,	-- Mask for selection mode
+	CURRENT=16	-- Handle setting 'current' flag as part of selection gestures
 }
 
-local function accept(s,sel) 
-	UI.dispatchEvent(s,"SelectionChange",sel)
+local function accept(s,sel,soft) 
+	UI.dispatchEvent(s,"SelectionChange",sel,soft)
 end
 
 local function uiUnselectAll(s)
 	local sh=s._uisel_holder
 	local uis=UI.Selection
 	if sh then
-		if sh.mode==uis.CLICK then
+		if (sh.mode&uis.SELMASK)==uis.CLICK then
 		else
 			sh.sel={}
 			s:uiSelection(sh.sel)
@@ -30,12 +32,22 @@ local function uiUnselectAll(s)
 	end
 end
 
+local function uiGetSetCurrent(s,set,spr,noEvent,soft)
+	if s and s.uiGetSetCurrent then
+		local ospr,od,nd=s:uiGetSetCurrent(set,spr)
+		if set and ospr~=spr and not noEvent then
+			UI.dispatchEvent(s,"CurrentChange",nd,soft)
+		end
+		return ospr,od,nd
+	end
+end
+
 -- enable selection with a specific mode, or NONE to disable
 -- onChange handler is called with (widget,selection). it is allowed to change selection!
 function UI.Selection.enable(s,mode,onChange)
 	local uis=UI.Selection
 	local ename="UISEL__"..tostring(s)
-	if s._uisel_holder and s._uisel_holder.mode==uis.MULTIPLE then
+	if s._uisel_holder and (s._uisel_holder.mode&uis.SELMASK)==uis.MULTIPLE then
 		s._uisel_handlerDragStart=nil
 		s._uisel_handlerDrag=nil
 		s._uisel_handlerDragEnd=nil
@@ -45,14 +57,17 @@ function UI.Selection.enable(s,mode,onChange)
 		UI.Control.onDragEnd[ename]=nil
 		UI.Control.onLongPrepare[ename]=nil
 	end
+	local cmode=(mode&uis.CURRENT)>0
+	if not cmode then uiGetSetCurrent(s,true,nil) end
 	if mode==uis.NONE then
 		uiUnselectAll(s)
 		s._uisel_holder=nil
 		s._uisel_handler=nil
 		UI.Control.onMouseClick[ename]=nil
 	else
+		mode=mode&uis.SELMASK
 		assert(s.uiSelect,"Sprite is not selectable")
-		s._uisel_holder={ mode=mode, sel={}, handler=onChange or accept }
+		s._uisel_holder={ mode=mode, cmode=cmode, sel={}, handler=onChange or accept }
 		s._uisel_handler={ target=s, handler=UI.Selection._selHandler }
 		UI.Control.onMouseClick[ename]=s._uisel_handler
 		if mode==uis.MULTIPLE then
@@ -87,23 +102,29 @@ local function uiUpdateSelection(s,spr,data,action)
 	if s then
 		local sh=s._uisel_holder
 		local uis=UI.Selection
-		if sh.mode==uis.CLICK and spr then
+		local cmode=sh.cmode
+		if sh.mode==uis.NONE and spr then
+			if cmode then uiGetSetCurrent(s,true,spr) end
+		elseif sh.mode==uis.CLICK and spr then
 			sh.handler(s,data,spr)
+			if cmode then uiGetSetCurrent(s,true,spr) end
 		elseif sh.mode==uis.SINGLE and spr then
 			sh.sel={}
 			sh.sel[spr]=data
 			s:uiSelection(sh.sel)
 			sh.handler(s,sh.sel)
+			if cmode then uiGetSetCurrent(s,true,spr) end -- Should be differentiated, but is this useful in any case
 		else
 			if action=="click" and spr then
+				local cur,curd=uiGetSetCurrent(s)
 				local mods=UI.Control.Meta.modifiers or 0
 				local ctrl=(mods&KeyCode.MODIFIER_CTRL)>0
 				local shift=(mods&KeyCode.MODIFIER_SHIFT)>0
 				local meta=(mods&KeyCode.MODIFIER_META)>0
 				ctrl=ctrl or meta -- for MAC
-				if shift and sh.selPoint and sh.sel[sh.selPoint] then
+				if shift and sh.selPoint and (sh.sel[sh.selPoint] or sh.selPoint==cur) then
 					selpoint=sh.selPoint --Keep
-					local sdata=sh.sel[sh.selPoint]
+					local sdata=sh.sel[sh.selPoint] or ((sh.selPoint==cur) and curd)
 					if not ctrl then sh.sel={} end
 					local range=s:uiSelectRange(sdata,data)
 					for ks,kd in pairs(range) do
@@ -116,10 +137,19 @@ local function uiUpdateSelection(s,spr,data,action)
 						sh.sel[spr]=data
 					end
 				else
-					if sh.sel[spr] then
-						sh.sel={}
+					if cmode then --Simple short click, only mark current
+						if cur==spr then --Already marked, unmark and clear selection
+							sh.sel={}
+							uiGetSetCurrent(s,true,nil)
+						else
+							uiGetSetCurrent(s,true,spr)
+						end
 					else
-						sh.sel={ [spr]=data }
+						if sh.sel[spr] then
+							sh.sel={}
+						else
+							sh.sel={ [spr]=data }
+						end
 					end
 				end
 				sh.range=nil
@@ -148,8 +178,8 @@ local function uiUpdateSelection(s,spr,data,action)
 	if s then s._uisel_holder.selPoint=selpoint end
 end
 
-UI.Selection._selSelectData=function(s,data) --without onMouseClick --force row selection
-	local spr,data=s:uiSelectData(data) --spr,data
+UI.Selection._selSelectData=function(s,d) --without onMouseClick --force row selection
+	local spr,data=s:uiSelectData(d) --spr,data
 	if spr then 
 		uiUpdateSelection(s,spr,data)
 	else
@@ -157,7 +187,7 @@ UI.Selection._selSelectData=function(s,data) --without onMouseClick --force row 
 	end
 end
 
-function UI.Selection.select(s,dataList) --Software selection
+function UI.Selection.select(s,dataList,sendEvent) --Software selection
 	if dataList==nil then return end
 	local sh=s._uisel_holder
 	local uis=UI.Selection
@@ -165,20 +195,31 @@ function UI.Selection.select(s,dataList) --Software selection
 	sh.sel={}
 	sh.selPoint=nil
 	if sh.mode==uis.SINGLE then
-		local data=dataList[1]
-		if data~=nil then
-			local spr,data=s:uiSelectData(data) --spr,data
+		local d=dataList[1]
+		if d~=nil then
+			local spr,data=s:uiSelectData(d) --spr,data
 			if spr then	sh.sel[spr]=data end
 		end
 	else
-		for _,data in ipairs(dataList) do
-			if data~=nil then
-				local spr,data=s:uiSelectData(data) --spr,data
+		for _,d in ipairs(dataList) do
+			if d~=nil then
+				local spr,data=s:uiSelectData(d) --spr,data
 				if spr then	sh.sel[spr]=data end
 			end
 		end
 	end
 	s:uiSelection(sh.sel)
+	if sendEvent then
+		sh.handler(s,sh.sel,true)
+	end
+end
+
+function UI.Selection.setCurrent(s,current,sendEvent) --Software set current
+	uiGetSetCurrent(s,true,current,not sendEvent,true)
+end
+
+function UI.Selection.getCurrent(s) --Software get current
+	return uiGetSetCurrent(s)
 end
 
 function UI.Selection.handleKeyEvent(s,kc,rc)

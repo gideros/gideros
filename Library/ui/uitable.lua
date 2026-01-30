@@ -32,6 +32,7 @@ function UI.Table:init(columns,direction,cellSpacingX,cellSpacingY,fixed)--no da
 	self:setCellSpacingX(cellSpacingX)
 	self:setCellSpacingY(cellSpacingY)
 	self.minRowSize=0
+	self.resizeColumnMinWidth="2em"
 	self.selection={}
 	UI.Control.onMouseClick[self]=self
 	UI.Control.onLongClick[self]=self
@@ -98,53 +99,48 @@ end
 function UI.Table:onMouseClick(x,y,c)
 	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
 	local nc=cn and self.columns[cn]
---[[ NICO: I'd prefer this	
-	if nc and nc.Clickable and hdr then
-		UI.dispatchEvent(self.widget,"ColumnAction",cn,nc)
-	end
-]]
+	
 	UI.Focus:request(self)
 	
 	local nh=cn and hdr and self.headers[cn]
-	if nh and nh.onClickColumn then
+	if nc and nc.Clickable and hdr then UI.dispatchEvent(self,"ColumnAction",cn,nc,c) return true
+	elseif nh and nh.onClickColumn then print("DEPRECATED: onClickColumn is deprecated, use Clickable instead")
 		local handler=nh:onClickColumn(nc)
 		if handler then
 			self.data = handler(self,self.data,nc)
 			self:setData(self.data,self.builder)
-			return true -- TODO should use handler result
+			return true
 		end
 	end
 	
 	local d=cn and rn and not hdr and self.data[rn]
-	if d and type(d)=="table" then
-		if d.onClickDoubleCell and c>1 then
-			local nh=self.cells[vector(rn,cn,0)]
-			nh.indexCell=cn
-			nh.rowData=d
-			if nh then d.onClickDoubleCell(self,nc,cn,d) return true end
-		end
-		if d.onClickCell then
-			local nh=self.cells[vector(rn,cn,0)]
-			nh.indexCell=cn
-			nh.rowData=d
-			if nh then d.onClickCell(self,nc,cn,d) return true end
+	if type(d)=="table" then
+		if d.Clickable then UI.dispatchEvent(self,"CellAction",d,rn,cn,nc,c) return false
+		elseif d.onClickDoubleCell and c>1 then print("DEPRECATED: onClickDoubleCell is deprecated, use Clickable instead")
+			local cell=self.cells[vector(rn,cn,0)]
+			cell.indexCell=cn --DEPRECATED --onClickDoubleCell
+			cell.rowData=d --DEPRECATED --onClickDoubleCell
+			d.onClickDoubleCell(self,nc,cn,d) --DEPRECATED
+			return true
+		elseif d.onClickCell then print("DEPRECATED: onClickCell is deprecated, use Clickable instead")
+			local cell=self.cells[vector(rn,cn,0)]
+			cell.indexCell=cn --DEPRECATED --onClickCell
+			cell.rowData=d --DEPRECATED --onClickCell
+			d.onClickCell(self,nc,cn,d) --DEPRECATED
+			return true
 		end
 	end
-
 	return false
 end
 
 function UI.Table:onLongClick(x,y)
 	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
 	local nc=cn and self.columns[cn]
---[[ NICO: I'd prefer this	
-	if nc and nc.LongClickable and hdr then
-		UI.dispatchEvent(self.widget,"ColumnLongAction",cn,nc)
-	end
-]]
+	
 	local nh=cn and hdr and self.headers[cn]
-	if nh and nh.onClickLongColumn then
-		nc.indexCol=cn
+	if nc and nc.LongClickable and hdr then UI.dispatchEvent(self,"ColumnLongAction",cn,nc) return true
+	elseif nh and nh.onClickLongColumn then print("DEPRECATED: onClickLongColumn is deprecated, use LongClickable instead")
+		nc.indexCol=cn --DEPRECATED --onClickLongColumn
 		local handler=nh:onClickLongColumn(nc)
 		if handler then 
 			handler(self,nc)
@@ -153,12 +149,14 @@ function UI.Table:onLongClick(x,y)
 	end
 	
 	local d=rn and not hdr and self.data[rn]
-	if d and type(d)=="table" then
-		if d.onClickLongCell then
-			local nh=self.cells[vector(rn,cn,0)]
-			nh.indexCell=cn
-			nh.rowData=d
-			if nh then d.onClickLongCell(self,nc,cn,d) end
+	if type(d)=="table" then
+		if d.LongClickable then UI.dispatchEvent(self,"CellLongAction",d,rn,cn,nc) return false
+		elseif d.onClickLongCell then print("DEPRECATED: onClickLongCell is deprecated, use LongClickable instead") 
+			local cell=self.cells[vector(rn,cn,0)]
+			cell.indexCell=cn --DEPRECATED --onClickLongCell
+			cell.rowData=d --DEPRECATED --onClickLongCell
+			d.onClickLongCell(self,nc,cn,d)
+			return true
 		end
 	end
 
@@ -166,14 +164,16 @@ end
 function UI.Table:onLongPrepare(x,y,r)
 	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
 	local nc=cn and hdr and self.columns[cn]
---[[ NICO: I'd prefer this	
-	if nc and nc.LongClickable then
-	end
-]]
+
 	local nh=cn and hdr and self.headers[cn]
 	local d=rn and not hdr and self.data[rn]
-	if (nh and nh.onClickLongColumn) or
-		(d and type(d)=="table" and d.onClickLongCell) then
+	if (nc and nc.LongClickable and hdr) or (type(d)=="table" and d.LongClickable) then
+		if not self.prepare then 
+			self.prepare=UI.Behavior.LongClick.makeIndicator(self,{}) 
+		end
+		self.prepare:indicate(self,x,y,r)
+		return true
+	elseif (nh and nh.onClickLongColumn) or (type(d)=="table" and d.onClickLongCell) then print("DEPRECATED: onClickLongColumn and onClickLongCell are deprecated, use LongClickable instead")
 		if not self.prepare then 
 			self.prepare=UI.Behavior.LongClick.makeIndicator(self,{}) 
 		end
@@ -186,22 +186,25 @@ end
 
 UI.Table.onKeyDown=UI.Selection.handleKeyEvent
 
-function UI.Table:updateRow(rowWidget)
-	if self and rowWidget and rowWidget.d then
+function UI.Table:updateRow(rowWidget,force)
+	if rowWidget and rowWidget.d then
 		local rowsel = if self.selection[rowWidget.d] then true else false
+		local rowcur = rowWidget==self.selCurrent
 		
-		if self.columns and rowWidget.row and rowWidget.isSelected~=rowsel then
+		if self.columns and rowWidget.row and (rowWidget.isSelected~=rowsel or force) then
 			rowWidget._ghostStyleCache={}
 			for j=1,#self.columns,1 do
 				local cellCode=vector(rowWidget.row,j,0)
 				local cell = self.cells[cellCode]
 				if cell then
+					local sty=if rowsel then rowcur and "table.styCellCurrentSelected" or "table.styCellSelected" 
+						else rowcur and "table.styCellCurrent" or "table.styCell"
 					if cell.ghostModel then
 						if cell.setGhostState then
-							cell:setGhostState(rowWidget,rowsel and "table.styCellSelected" or "table.styCell")
+							cell:setGhostState(rowWidget,sty)
 						end
 					else
-						cell:setStateStyle(rowsel and "table.styCellSelected" or "table.styCell")
+						cell:setStateStyle(sty)
 						cell:setStyleInheritance("state")
 					end
 				end
@@ -229,10 +232,7 @@ function UI.Table:setColumns(columns)
 			cnh:removeFromParent()
 		end
 		local nh=nil
-		if c.font then
-			print("DEPRECATED: Column Header font is deprecated, use Column header style instead")
-			c.style={ font=c.font }
-		end
+		if c.font then c.style={ font=c.font } print("DEPRECATED: Column Header font is deprecated, use Column header style instead") end
 		if type(c.name)=="function" then
 			nh=c.name(c)
 		else
@@ -403,6 +403,7 @@ function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call
 	local heights={ self.minRowSize }
 	local allowGhost=self.fixedGrid
 	if data then
+		local bulkAdd={}
 		for i,d in ipairs(data) do
 			weights[i+1]=0
 			heights[i+1]=self.minRowSize								
@@ -483,9 +484,12 @@ function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call
 				end
 			end
 			rowWidget.ghosts=ghosts
-			self:addChildAt(rowWidget,i) --NO if i~=lastIndex then self:addChildAt(rowWidget,i) end
-			self:updateRow(rowWidget)
+			bulkAdd[i]=rowWidget
 			self.hasGhosts=true
+		end
+		self:addChildrenAt(bulkAdd)
+		for i,r in pairs(bulkAdd) do
+			self:updateRow(r)
 		end
 	end
 	table.insert(weights,1)
@@ -506,6 +510,7 @@ function UI.Table:setData(data,builder,rowBuilder) --! will keep selection (call
 end
 function UI.Table:resetData() --reset selection
 	self.selection={}
+	self.selCurrent=nil
 	self:setData()	
 end
 
@@ -524,7 +529,7 @@ function UI.Table:moveColumn(index,to)
 		if self.direction then gy=i-1 else gx=i-1 end
 		h:setLayoutConstraints{ gridy=gy,gridx=gx }
 		local column = self.columns[i]
-		if column then column.indexCol=i end
+		if column then column.indexCol=i end --DEPRECATED --onClickLongColumn
 		Sprite.addChildAt(self.cheader,h,i) --Use Sprite call to avoid restyling
 	end
 	
@@ -538,7 +543,7 @@ function UI.Table:moveColumn(index,to)
 				for j,c in ipairs(self.columns) do
 					local nhd=self.cells[vector(i,imap[j],0)]
 					ncells[vector(i,j,0)]=nhd
-					if nhd.indexCell then nhd.indexCell=j end
+					if nhd.indexCell then nhd.indexCell=j end --DEPRECATED --onClickDoubleCell --onClickCell --onClickLongCell
 					if not allowGhost then
 						Sprite.addChildAt(rowWidget,nhd,j) --Use Sprite call to avoid restyling
 					end
@@ -572,7 +577,7 @@ function UI.Table:moveColumn(index,to)
 end
 
 function UI.Table:uiSelectData(d) --spr,data --without onMouseClick --force row selection
-	if self and d and self.dataRows[d] then
+	if d and self.dataRows[d] then
 		return self.dataRows[d],d --spr,data
 	end
 end
@@ -593,8 +598,26 @@ function UI.Table:uiAdjustScrollArea(xi,yi,xa,ya)
 	return xi,yi,xa,ya
 end
 
+function UI.Table:uiGetSetCurrent(set,spr)
+	local oldSpr=self.selCurrent
+	if not set then return oldSpr,oldSpr and oldSpr.d end
+	if oldSpr then
+		self.selCurrent=nil
+		--oldSpr:setFlags({ current=false })
+		oldSpr:setStateStyle(if oldSpr.isSelected then "table.styRowSelected" else {})
+		self:updateRow(oldSpr,true)
+	end
+	if spr then 
+		self.selCurrent=spr
+		--spr:setFlags({ current=true }) 
+		self:updateRow(spr,true)
+		spr:setStateStyle(if spr.isSelected then "table.styRowCurrentSelected" else "table.styRowCurrent")
+	end	
+	return oldSpr,oldSpr and oldSpr.d,spr and spr.d
+end
+
 function UI.Table:uiSelect(x,y)
-	local rn,cn,_,_,hdr=self:getRowColumnFromPoint(x,y)
+	local rn,_,_,_,hdr=self:getRowColumnFromPoint(x,y)
 	if hdr or not rn then return end
 	local data=self.data[rn]
 	return self.dataRows[data],data
@@ -641,12 +664,13 @@ function UI.Table:uiSelectAll()
 	return ret
 end
 
-function UI.Table:uiSelection(sel) --row selection only --implements Row DATA .ClickCell and .onClickCell to have cell selection
+function UI.Table:uiSelection(sel)
+	local selcur=self.selCurrent
 	if self.selection then
 		for data,rowWidget in pairs(self.selection) do
 			if not sel or not sel[rowWidget] then
 				self.selection[data]=nil
-				rowWidget:setStateStyle({})
+				rowWidget:setStateStyle(if rowWidget==selcur then "table.styRowCurrent" else {})
 				self:updateRow(rowWidget)
 			end
 		end
@@ -655,7 +679,7 @@ function UI.Table:uiSelection(sel) --row selection only --implements Row DATA .C
 		for rowWidget,data in pairs(sel) do
 			if not self.selection[data] then
 				self.selection[data]=rowWidget
-				rowWidget:setStateStyle("table.styRowSelected")
+				rowWidget:setStateStyle(if rowWidget==selcur then "table.styRowCurrentSelected" else "table.styRowSelected")
 				self:updateRow(rowWidget)
 			end
 		end
@@ -667,8 +691,8 @@ function UI.Table:updateVisible(y,viewh)
 	viewh=viewh or self.rangeh
 	self.rangey=y
 	self.rangeh=viewh
-	local li=self:getLayoutInfo()
-	local lp=Sprite.getLayoutParameters(self,true)
+	local li=self:getLayoutInfo(nil,nil,nil,Sprite.LayoutKeys and (Sprite.LayoutKeys.minHeight|Sprite.LayoutKeys.starty))
+	local lp=Sprite.getLayoutParameters(self,true,Sprite.LayoutKeys and Sprite.LayoutKeys.cellSpacingY)
 	local ls=li.minHeight
 	local lmax=if self.viewModel then #self.viewModel else #self.data
 	local ll=1
@@ -676,6 +700,7 @@ function UI.Table:updateVisible(y,viewh)
 	local csy=(lp.cellSpacingY+.5)//1
 	while ll<=lmax and ls[ll] and y>ls[ll] do y-=ls[ll]+csy ll+=1 end
 	local lf=ll<>2
+	viewh+=(y<>0) -- If we couldn't skip a whole line, adjust view height to account for large remaining y
 	while ll<=lmax and ls[ll] and viewh>0 do viewh-=ls[ll] ll+=1 end
 	lf-=1
 	ll=(ll<>(lf+1))
@@ -690,6 +715,9 @@ function UI.Table:updateVisible(y,viewh)
 			})
 	else
 		self:setHiddenChildren(nil)
+	end
+	if ls then
+		collectgarbage("step",(#ls)/10)
 	end
 end
 
@@ -715,6 +743,10 @@ function UI.Table:setAllowColumnResize(en)
 	UI.Control.onDrag[self]=cen
 	UI.Control.onDragEnd[self]=cen
 	UI.Control.onMouseMove[self]=UI.Control.HAS_CURSOR and cen
+end
+
+function UI.Table:setColumnResizeMinWidth(wd)
+	self.resizeColumnMinWidth=wd
 end
 
 function UI.Table:getRowColumnFromPoint(x,y)
@@ -774,7 +806,8 @@ function UI.Table:checkResizePoint(x,y,forDrag)
 			for _,w in ipairs(li.weightX) do tw+=w end
 			if tw==0 then tw=1 end
 			if forDrag then
-				self._colRsz={columnIndex=n, point=x, bw=lp.columnWidths[n],bgap=(hw-lp.columnWidths[n])*tw/li.weightX[n],wg=li.weightX[n]/tw}
+				local minw=self:resolveStyle(self.resizeColumnMinWidth)
+				self._colRsz={columnIndex=n, point=x, bw=lp.columnWidths[n],bgap=(hw-lp.columnWidths[n])*tw/li.weightX[n],wg=li.weightX[n]/tw, minWidth=minw}
 			end
 			return true
 		end
@@ -792,7 +825,7 @@ end
 function UI.Table:onDrag(x,y)
 	if self._colRsz then
 		local nw=(x-self._colRsz.point)/(1-self._colRsz.wg)+self._colRsz.bw
-		nw=nw<>0
+		nw=nw<>self._colRsz.minWidth
 		self._colRsz.newsize=nw
 		self:setColumnWidth(self._colRsz.columnIndex,nw)
 	end
@@ -935,5 +968,6 @@ UI.Table.Definition= {
 		{ name="OddEvenStyle", type="boolean", setter=UI.Table.setOddEvenStyle },
 		{ name="AllowColumnReorder", type="boolean", setter=UI.Table.setAllowColumnReorder },
 		{ name="AllowColumnResize", type="boolean", setter=UI.Table.setAllowColumnResize },
+		{ name="ColumnResizeMinWidth", type="number", setter=UI.Table.setColumnResizeMinWidth },
 	},
 }

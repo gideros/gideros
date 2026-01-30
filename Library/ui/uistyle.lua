@@ -39,8 +39,6 @@ local function computeScales()
 	else tgtdpi=360 detectedMode="tiny" --360
 	end
 	
-	if platform=="iPad" then tgtdpi=180 detectedMode="tablet" end --240 --fix 04/10/2024 iPadMini4
-	
 	tgtdpi=UI.Default.TargetDpi or tgtdpi
 
 	local zoom=(dpi/tgtdpi)/ls
@@ -242,7 +240,7 @@ local function loadFont(ttf,size,outline)
 end
 if UI.Default.Fonts then
 	for k,fs in pairs(UI.Default.Fonts) do
-		UI.Style[k]=loadFont(fs.ttf,UI.Style.fontSize*(fs.size or 1))
+		UI.Style[k]=if fs.loader then fs.loader(fs,UI.Style.fontSize) else loadFont(fs.ttf,UI.Style.fontSize*(fs.size or 1))
 	end
 elseif UI.Default.TTF then
 	UI.Style.font=loadFont(UI.Default.TTF,UI.Style.fontSize)
@@ -544,6 +542,7 @@ UI.Style.colorpicker={
 	colBorder="colHeader",
 	szCorner=".5s",
 	szInset="0.1s",
+	szWidth="3is",
 	szCellSpacing=".2s",
 	szHistoWidth="2s",
 	szHistoHeight="2s",
@@ -551,7 +550,7 @@ UI.Style.colorpicker={
 	szColorSample="2s",
 	szButtonWidth="3.1s", -- Choosen to fit half of 3x Histo cells
 	szCrosshair="2s",
-	szColorBoxInset=".5s",
+	szColorBoxInset=".2s",
 	styBase={
 		colWidgetBack=colFull,
 		brdWidget=UI.Border.NinePatch.new({
@@ -567,13 +566,13 @@ UI.Style.colorpicker={
 	styColorBox={
 		colWidgetBack=colFull,
 		brdWidget=UI.Border.NinePatch.new({
-			texture=Texture.new("ui/icons/bdr-multi.png",true,{ mipmap=true }),
+			texture=Texture.new("ui/icons/checkbox-multi.png",true,{ mipmap=true, rawalpha=true }),
 			corners={"colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner","colorpicker.szCorner",63,63,63,63,},
 			insets="colorpicker.szInset",
 		}),
 		shader={ 
 			class="UI.Shader.MultiLayer", 
-			params={ colLayer1="colorpicker.colBackground", colLayer2="colorpicker.colBorder", colLayer3=colNone, colLayer4=colNone } 
+			params={ colLayer1="colText", colLayer2="colText", colLayer3=colNone, colLayer4=colNone } 
 		}
 	},
 }
@@ -764,6 +763,15 @@ UI.Style.hilitpanel={
 UI.Style.image={
 	colTint=colFull,
 	szIcon="1is",
+	styNormal={
+		shader={}
+	},
+	styDisabled={
+		["image.colTint"]="colDisabled", 
+		shader={ 
+			class="UI.Shader.Grayscale", 
+		}
+	},
 }
 UI.Style.keyboard={
 	colSpecKeys="colHighlight",
@@ -792,6 +800,11 @@ UI.Style.label={
 	color="colText",
 	szInset=".2s",
 	font="font",
+	styNormal={
+	},
+	styDisabled={
+		["label.color"]="colDisabled", 
+	},
 }
 UI.Style.passwordfield={
 	icButton=Texture.new("ui/icons/eye.png",true,{ mipmap=true }),
@@ -1110,10 +1123,14 @@ UI.Style.table={
 	styRowHeader={ colText="table.colTextHeader" },
 	styRowHeaderLocal={ colWidgetBack="table.colHeader" },
 	styRowSelected={ colWidgetBack="colSelect" },
+	styRowCurrent={ },
+	styRowCurrentSelected={ colWidgetBack="colSelect" },
 	styRowOdd={ },
 	styRowEven={ },
 	styCell={ },
 	styCellSelected={ },
+	styCellCurrent={ },
+	styCellCurrentSelected={ },
 }
 UI.Style.textfield={
 	styBase={
@@ -1244,15 +1261,10 @@ UI.Style.toolpie={
 	colRing3="textfield.colBorderWide",
 	colRing4=colNone,
 	txRing=Texture.new("ui/icons/textfield-multi.png",true,{ rawalpha=true, mipmap=true }),
-
-	colBackground=colNone,
-	colItem="colUI",
-	colItemSelected="colHighlight",
-	szBarCorner=".3s",
-	szBarCornerTextureRatio=0.5,
-	colAxis="colUI",
-	szAxisThickness=".1s",
+	szRingCorner=".5s",
+	szRingCornerTextureRatio=0.49,
 }
+
 UI.Style.tooltip={
 	szOffsetMax="6s",
 	styMarker={

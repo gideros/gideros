@@ -56,3 +56,12 @@ UI.Label.Definition= {
 		{ name="Lightweight", type="boolean" },
 	},
 }
+
+UI.StatefulLabel=Core.class(UI.Label,function (text,layout,font,lightweight) return text,layout,font,lightweight end)
+
+function UI.StatefulLabel:setFlags(changes)
+	UI.Label.setFlags(self,changes)
+	if type(changes.disabled)=="boolean" then
+		self:setStateStyle(if self._flags.disabled then "label.styDisabled" else "label.styNormal")
+	end
+end

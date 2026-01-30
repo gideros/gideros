@@ -70,6 +70,7 @@ function TextEdit:init(font,text,layout)
 end
 
 function TextEdit:setFont(font)
+	if self.font==font then return end
 	self.font=font or Font.getDefault()
 	self.caretHeight=self.font:getLineHeight()
 	local la=self.font:getAscender()
@@ -79,6 +80,7 @@ function TextEdit:setFont(font)
 	end
 	self.caretOffset=la+bb
 	self.lineAscender=la
+	self:setCaretPos(self.caretPos)
 	self:_setFont(self.font)
 end
 
@@ -128,38 +130,47 @@ local function setTextInput(self,text,index1,index2) --,"label","action","hint")
     if debugTextInput then print("UI.TextField setTextInput","self.hasTextInput?",self.hasTextInput,"type=",textType,"text=",text,"index1=",index1,"index2=",index2) end
   end
 end
-function TextEdit:startEditing() --TEMP_TOSEE attention certains claviers sur samsung peuvent doubler la string si correction à la main du texte (mettre clavier par defaut et réinitilisation du clavier pour corriger le bug)
-  if not self.caret then return end
-  self.editing=true
-  self.keyDown=nil
-  self:setCaretPos(#self:_getText(),true)--focusing
-  self.caret:removeFromParent()
-  self:addChild(self.caret)
-  self.caret:setAnchorPosition(0,self.caretOffset)
-  self:addEventListener(Event.KEY_CHAR,self.onKeyChar,self)
-  self:addEventListener(Event.KEY_DOWN,self.onKeyDown,self)
-  self:addEventListener(Event.KEY_UP,self.onKeyUp,self)
-  if Event.TEXT_INPUT then
-	if debugTextInput then print("UI.TextField addEventListener Event.TEXT_INPUT") end
-    self:addEventListener(Event.TEXT_INPUT,self.onTextInput,self)
-  end
-  self:addEventListener(Event.ENTER_FRAME,self.onFrame,self)
-  self:addEventListener(Event.REMOVED_FROM_STAGE,self.onRemove,self)
+function TextEdit:startEditing(noKeyEvents) --TEMP_TOSEE attention certains claviers sur samsung peuvent doubler la string si correction à la main du texte (mettre clavier par defaut et réinitilisation du clavier pour corriger le bug)
+	if not self.caret then return end
+	self.editing=true
+	self.keyDown=nil
+	self.caret:removeFromParent()
+	self:addChild(self.caret)
+	self.caret:setAnchorPosition(0,self.caretOffset)
+	self.noKeyEvents=noKeyEvents
+	if not noKeyEvents then
+		self:addEventListener(Event.KEY_CHAR,self.onKeyChar,self)
+		self:addEventListener(Event.KEY_DOWN,self.onKeyDown,self)
+		self:addEventListener(Event.KEY_UP,self.onKeyUp,self)
+	end
+	if Event.TEXT_INPUT then
+		if debugTextInput then print("UI.TextField addEventListener Event.TEXT_INPUT") end
+		self:addEventListener(Event.TEXT_INPUT,self.onTextInput,self)
+	end
+	self:addEventListener(Event.ENTER_FRAME,self.onFrame,self)
+	self:addEventListener(Event.REMOVED_FROM_STAGE,self.onRemove,self)
+	self:setSelected(self.selStart,self.selSpan)
+	setTextInput(self,self.text,self.caretPos,self.caretPos)
 end
 function TextEdit:stopEditing()
-  if not self.caret then return end
-  self.editing=nil
-  self:hideLast()
-  self:removeEventListener(Event.KEY_CHAR,self.onKeyChar,self)
-  self:removeEventListener(Event.KEY_DOWN,self.onKeyDown,self)
-  self:removeEventListener(Event.KEY_UP,self.onKeyUp,self)
-  if Event.TEXT_INPUT then
-	if debugTextInput then print("UI.TextField removeEventListener Event.TEXT_INPUT") end
-    self:removeEventListener(Event.TEXT_INPUT,self.onTextInput,self)
-  end
-  self:removeEventListener(Event.ENTER_FRAME,self.onFrame,self)
-  self:removeEventListener(Event.REMOVED_FROM_STAGE,self.onRemove,self)
-  self.caret:removeFromParent()
+	if not self.caret then return end
+	self.editing=nil
+	self:hideLast()
+	if not self.noKeyEvents then
+		self:removeEventListener(Event.KEY_CHAR,self.onKeyChar,self)
+		self:removeEventListener(Event.KEY_DOWN,self.onKeyDown,self)
+		self:removeEventListener(Event.KEY_UP,self.onKeyUp,self)
+	end
+	if Event.TEXT_INPUT then
+		if debugTextInput then print("UI.TextField removeEventListener Event.TEXT_INPUT") end
+		self:removeEventListener(Event.TEXT_INPUT,self.onTextInput,self)
+	end
+	self:removeEventListener(Event.ENTER_FRAME,self.onFrame,self)
+	self:removeEventListener(Event.REMOVED_FROM_STAGE,self.onRemove,self)
+	self.caret:removeFromParent()
+	if self.selMark then
+		self.selMark:setVisible(false)
+	end
 end
 function TextEdit:setSelectionStartEnd(ss,se,force)
 	if not ss then
@@ -171,11 +182,17 @@ function TextEdit:setSelectionStartEnd(ss,se,force)
 	local pe=self.selStartEndStart<>se
 	self:setSelected(ps,pe-ps,true,force)
 end
+function TextEdit:getSelectionStartEnd()
+	if self.selStart and self.selSpan and self.selSpan>0 then
+		return self.selStart,self.selStart+self.selSpan
+	end
+end
 function TextEdit:setSelected(ss,sp,keepBounds,force)
 	if not self.selMark then return end
 	local tx=self:_getText()
 	ss=((ss or 0)<>0)><#tx
 	sp=((sp or 0)<>0)><(#tx-ss)
+	local changed=(ss~=self.selStart) or (sp~=self.selSpan)
 	self.selStart=ss
 	self.selSpan=sp
 	if not keepBounds then self.selStartEndStart=nil end
@@ -193,12 +210,19 @@ function TextEdit:setSelected(ss,sp,keepBounds,force)
 	else
 		self.selMark:setVisible(false)
 	end
+	if changed then
+		UI.dispatchEvent(self._textfield,"TextSelection",if sp>0 then ss else nil,if sp>0 then ss+sp else nil)
+	end
 end
-function TextEdit:getSelectedText()
+function TextEdit:getSelectedText(mode)
 	if (self.selSpan or 0)>0 then
 		--We don't care about password case, since passwords should never be copyable anyway
 		local t=self:_getText()
-		return t:sub(self.selStart+1,self.selStart+self.selSpan)
+		local full=t:sub(self.selStart+1,self.selStart+self.selSpan)
+		if not mode then
+			full=full:gsub("\e%[([^%]]*)]","")
+		end
+		return full
 	end
 end
 function TextEdit:setCaretColor(c)
@@ -213,6 +237,7 @@ function TextEdit:setCaretPos(index,focusing)
 	if not index then index=#tx --fix userdata
 	elseif index and type(index)~="number" then index=#tx end --fix userdata
     index=(index<>0)><#tx
+	local changed=self.caretPos~=index
     self.caretPos=index
     local cx,cy=self:getPointFromTextPosition(index)
 	if cy==0 then --No text, assume font ascender, will be fixed in gideros 2024.4
@@ -223,6 +248,9 @@ function TextEdit:setCaretPos(index,focusing)
     self.caret:setPosition(self.caretX,self.caretY)
     self.caret:setVisible(true)
     if self.caretListener then self.caretListener(self.caretPos,self.caretX,self.caretY) end
+	if changed then
+		UI.dispatchEvent(self._textfield,"CaretPosition",self.caretPos,self.caretX,self.caretY)
+	end
     if focusing then 
 		index=self:passwordPos(index,true)
 		setTextInput(self,self.text,index,index) 
@@ -245,6 +273,7 @@ function TextEdit:setCaretPosition(cx,cy,forSelection)
 		my=self.lineAscender
 		ti=0 --Bug fix
 	end
+	local changed=(ti~=self.caretPos) or (mx~=self.caretX) or (my~=self.caretY)
     self.caretPos=ti
     self.caretX=mx
     self.caretY=my
@@ -253,6 +282,9 @@ function TextEdit:setCaretPosition(cx,cy,forSelection)
 		self.caret:setVisible(true)
 	end
     if self.caretListener then self.caretListener(self.caretPos,self.caretX,self.caretY) end
+	if changed then
+		UI.dispatchEvent(self._textfield,"CaretPosition",self.caretPos,self.caretX,self.caretY)
+	end
 	local extPos=self:passwordPos(self.caretPos,true)
     setTextInput(self,self.text,extPos,extPos)
   end
@@ -261,11 +293,27 @@ function TextEdit:goLeft(update,select)
 	self:hideLast()
 	local t=self:_getText()
 	local ocp=self.caretPos
+	if self.caretPos>0 and t:sub(self.caretPos,self.caretPos)=="]" then --Skip all escape sequences
+		local rt=t:reverse() --reverse the string to find the next ESC
+		local sl=#t
+		while t:sub(self.caretPos,self.caretPos)=="]" do --Skip all escape sequences
+			local _,s=rt:find("[\e",sl-self.caretPos+1,true)
+			if not s then break end
+			s=sl-s+1
+			local _,e=t:find("]",s+3,true)
+			if e==self.caretPos then
+				self.caretPos=s-1
+			else
+				break
+			end
+		end
+	end
 	while self.caretPos>0 do
 		self.caretPos=self.caretPos-1
 		local b=t:byte(self.caretPos+1)
 		if b==nil or b<128 or b>=192 then break end
 	end
+	
 	if update then 
 		self:setCaretPos(self.caretPos)
 		self:setSelectionStartEnd(select and ocp,self.caretPos)
@@ -275,6 +323,10 @@ function TextEdit:goRight(update,select)
 	self:hideLast()
 	local t=self:_getText()
 	local ocp=self.caretPos
+	while t:sub(self.caretPos+1,self.caretPos+2)=="\e[" do --Skip all escape sequences
+		local _,e=t:find("]",self.caretPos+3,true)
+		if e then self.caretPos=e else break end
+	end
 	while self.caretPos<#t do
 		self.caretPos=self.caretPos+1
 		local b=t:byte(self.caretPos+1)
@@ -326,7 +378,7 @@ function TextEdit:textChanged()
 	UI.dispatchEvent(self._textfield,"TextChange",self:getText())
 end
 function TextEdit:cutSelection()
-	if (self.selSpan or 0)>0 and self.editing then
+	if (self.selSpan or 0)>0 then
 		local ss=self.selStart
 		local sp=self.selSpan
 		self:setSelected(0,0)
@@ -374,6 +426,7 @@ end
 function TextEdit:addChars(c)
 	local np = nil
 	self:cutSelection()
+	local cp1=self.caretPos
 	if self.password then
 		self:hideLast()
 		local t=self:_getText()
@@ -389,8 +442,10 @@ function TextEdit:addChars(c)
 		self.caretPos=np-1
 		self:setText(t)
 	end
-	self:setCaretPos(self.caretPos)
+	local cp2=self.caretPos
+	self:setCaretPos(self.caretPos)	
 	self:textChanged()
+	return cp1,cp2
 end
 function TextEdit:backspace()
 	if self:cutSelection() then self:textChanged() return end
@@ -475,14 +530,16 @@ function TextEdit:processKey(keyCode,modifiers) --!"SUPPR" (sur MAC fn+DELETE=Ke
 			self:textChanged()
 		end
 	else
-	--print("processKey",keyCode)
+		--print("processKey",keyCode)
+		return false
 	end
+	return true
 end
 function TextEdit:onKeyDown(e)
   self.keyDown=e.keyCode
   self.keyTimer=os:timer()+REPEAT_TIMER
   --print("onKeyDown",self.keyDown)
-  self:processKey(self.keyDown,e.modifiers)
+  return self:processKey(self.keyDown,e.modifiers)
 end
 function TextEdit:onKeyUp(e)
   --print("onKeyUp",self.keyDown)
@@ -504,7 +561,7 @@ function TextEdit:onFrame()
   local t=os.timer()
   local cf=(t*2)&1
   self.caret:setVisible(cf==1)
-  if self.keyDown then
+  if not self.noKeyEvents and self.keyDown then
     if t>self.keyTimer then
       self.keyTimer=t+REPEAT_PERIOD
       self:processKey(self.keyDown)
@@ -545,7 +602,7 @@ UI.TextField.EditorBox={ class=UI.Panel, name="editorBox",layout={gridx=0, fill=
 		  layoutModel={ columnWeights={1}, rowWeights={1} },
 		  ParentStyleInheritance="global",
 		  children={ 
-			{ class=Sprite, name="smark",layout={fill=Sprite.LAYOUT_FILL_BOTH }}, 
+			{ class=Sprite, name="smark" }, 
 			{ class=TextEdit, name="editor",layout={fill=Sprite.LAYOUT_FILL_BOTH }}, 
 		  },
 	}
@@ -598,7 +655,9 @@ function UI.TextField:init(text,layout,minwidth,minheight,pass,textType,template
 	end
 	self.editor.selMark=smark
 	self.editor.caret=Pixel.new(colNone,0,0)
-	self.editor.caretListener=function (p,x,y) self:ensureVisible(x,y) end
+	self.editor.caretListener=function (p,x,y) 		
+		self:ensureVisible(x,y)
+	end
 	UI.Control.onMouseClick[self]=self
 	UI.Control.onDragStart[self]=self
 	UI.Control.onDrag[self]=self
@@ -626,6 +685,7 @@ function UI.TextField:newClone() assert(false,"Cloning not supported") end
 function UI.TextField:setSize(w,h)
 	self.width=w
 	self.height=h
+	self.editor:setSelected(self.editor.selStart,self.editor.selSpan)
 	self.editor:setCaretPos(self.editor.caretPos)
 end
 
@@ -642,8 +702,59 @@ function UI.TextField:onMouseClick(x,y,c)
 		local ocp=self.editor.caretPos
 		x,y=self.editor:spriteToLocal(self,x,y)
 		self.editor:setCaretPosition(x,y,true)
-		if (c or 0)>1 then
+		local function extendSelection(t,cp,ncp,test)
+			local limit=260 --Max 260 characters
+			-- Look for word start
+			while limit>0 do
+				limit-=1
+				local pcp=utf8.next(t,cp,-1)
+				if pcp and test(pcp,cp-1) then
+					cp=pcp
+				else
+					break
+				end
+			end
+			-- Look for word end
+			while limit>0 do
+				limit-=1
+				local pcp=utf8.next(t,ncp,1) or (#t+1)
+				if pcp and test(ncp,pcp-1) then
+					ncp=pcp
+					if ncp>#t then break end
+				else
+					break
+				end
+			end
+			return cp,ncp
+		end
+		local cc=c or 0
+		if cc>3 or (cc>1 and self.password) then --Full selection
 			self.editor:setSelected(0,#self.editor:getText())
+		elseif cc==3 then -- Line selection
+			local t=self.editor:getText()
+			local bcp=self.editor.caretPos --Number of bytes prior to clicked character
+			local cp=bcp+1 --next character position (1-based)
+			local ncp=utf8.next(t,cp,1) or (#t+1) --position of the character after
+			cp,ncp=extendSelection(t,cp,ncp,function (i1,i2)
+				local code=utf8.byte(t:sub(i1,i2))
+				return not (code==13 or code==10 or code==0)
+			end)
+			bcp=cp-1
+			self.editor:setSelected(bcp,ncp-cp)
+		elseif cc==2 then --Word selection
+			local t=self.editor:getText()
+			local bcp=self.editor.caretPos --Number of bytes prior to clicked character
+			local cp=bcp+1 --next character position (1-based)
+			local ncp=utf8.next(t,cp,1) or (#t+1) --position of the character after
+			local curChar=t:sub(cp,ncp-1)
+			local alnum=utf8.find(curChar,"%w")
+			if alnum then
+				cp,ncp=extendSelection(t,cp,ncp,function (i1,i2)
+					return utf8.find(t:sub(i1,i2),"%w")
+				end)
+				bcp=cp-1
+			end
+			self.editor:setSelected(bcp,ncp-cp)
 		elseif shift then
 			self.editor:setSelectionStartEnd(ocp,self.editor.caretPos)
 		else
@@ -886,6 +997,37 @@ function UI.TextField:onKeyboardKey(key)
   end
 end
 
+function UI.TextField:onKeyChar(key)
+  if not self._flags.disabled and not self._flags.readonly then
+	self.editor:onKeyChar({ text=key })
+  end
+end
+
+function UI.TextField:onKeyUp(kc, rc)
+  if not self._flags.disabled and not self._flags.readonly then
+	self.editor:onKeyUp({ keyCode=kc, realCode=rc, modifiers=UI.Control.Meta.modifiers })
+  end
+end
+
+function UI.TextField:onKeyDown(kc, rc)
+  if not self._flags.disabled and not self._flags.readonly then
+	local modifiers=UI.Control.Meta.modifiers
+	if not self.editor:onKeyDown({ keyCode=kc, realCode=rc, modifiers=modifiers }) then
+		--[[ If we need to catch more shortcut sequences
+		local ctrl=((modifiers or 0)&15)==KeyCode.MODIFIER_CTRL
+		local meta=((modifiers or 0)&15)==KeyCode.MODIFIER_META
+		ctrl=ctrl or meta -- for MAC
+		local shift=((modifiers or 0)&15)==KeyCode.MODIFIER_SHIFT
+		if ctrl and kc==KeyCode.H then
+		else
+			return false
+		end]]
+	else
+		return true
+	end
+  end
+end
+
 function UI.TextField:ensureVisible(x,y)
   local miX=(x+self.caretWidth-self.width)<>0
   local maX=(x)<>0
@@ -910,12 +1052,9 @@ function UI.TextField:ensureVisible(x,y)
 end
 
 function UI.TextField:focus(event)
-	self:dismissCutPaste()
 	if not self._flags.disabled and (self._flags.selectable or not self._flags.readonly) then
 		local gained=UI.Focus:request(self)
 		if gained then
-			UI.Control.onLongClick[self]=self
-			UI.Control.onLongPrepare[self]=self
 			UI.dispatchEvent(self,"FocusChange",self:getText(),true,event) --focused
 		end
 		return gained
@@ -923,12 +1062,8 @@ function UI.TextField:focus(event)
 end
 
 function UI.TextField:unfocus(event)
-	self:dismissCutPaste()
-	UI.Control.onLongClick[self]=nil
-	UI.Control.onLongPrepare[self]=nil
 	local same=UI.Focus:relinquish(self) or (event and event.TAG=="UI.Focus")
 	if same then
-		self.editor:setSelected(0,0)
 		UI.dispatchEvent(self,"FocusChange",self:getText(),false,event) --unfocused
 	end
 	return same
@@ -942,6 +1077,7 @@ function UI.TextField:setText(t,fromTip)
 	self.editor:hideLast()
 	self:ensureVisible(0,0)
 	if not fromTip then
+		self:setCaretPos(#self:getText())
 		if self.isTip then
 			self.editor:setPassword(self.pass)
 			self.isTip=nil
@@ -980,6 +1116,28 @@ function UI.TextField:getText()
   return (not self.isTip and self.editor:getText()) or ""
 end
 
+function UI.TextField:setSelectionStartEnd(ss,se,force)
+	return self.editor:setSelectionStartEnd(ss,se,force)
+end
+function UI.TextField:getSelectionStartEnd()
+	return self.editor:getSelectionStartEnd()
+end
+function UI.TextField:getSelectedText(mode)
+	return self.editor:getSelectedText(mode)
+end
+function UI.TextField:setCaretPos(index,focusing)
+	return self.editor:setCaretPos(index,focusing)
+end
+function UI.TextField:getCaretPos()
+	return self.editor.caretPos
+end
+function UI.TextField:cutSelection()
+	return self.editor:cutSelection()
+end
+function UI.TextField:insertText(text)
+	return self.editor:addChars(text)
+end
+
 function UI.TextField:setFlags(changes)
 	UI.Panel.setFlags(self,changes)
 	if changes.disabled or changes.readonly then
@@ -1013,10 +1171,22 @@ function UI.TextField:setFlags(changes)
 	self:setStateStyle(s)
 	if changes.focused~=nil then 
 		self:updateTip()
+		self:dismissCutPaste()
 		if changes.focused and not self._flags.disabled and not self._flags.readonly then 
-			self.editor:startEditing()
+			UI.Control.onLongClick[self]=self
+			UI.Control.onLongPrepare[self]=self
+			UI.Control.onKeyChar[self]=self
+			UI.Control.onKeyDown[self]=self
+			UI.Control.onKeyUp[self]=self
+			self.editor:startEditing(true)
+			self:ensureVisible(self.editor:getCaretPosition())
 		else
-			self.editor:stopEditing()
+			UI.Control.onLongClick[self]=nil
+			UI.Control.onLongPrepare[self]=nil
+			UI.Control.onKeyChar[self]=nil
+			UI.Control.onKeyDown[self]=nil
+			UI.Control.onKeyUp[self]=nil
+			self.editor:stopEditing(true)
 		end
 	end
 end
@@ -1038,6 +1208,82 @@ function UI.TextField:updateStyle(...)
 	local minwidth=self:resolveStyle(self.ominwidth or 0)
 	local minheight=self:resolveStyle(self.ominheight or lhm)
 	self.editorBox:setLayoutConstraints{width=(0)<>minwidth, height=minheight }
+end
+
+function UI.TextField:getTextStyles(p,ss,se)
+	if ss then p=ss end
+	local styles={}
+	for n,k,v in self:getText():sub(1,p+1):gmatch("\e%[(!?)([^=%]]+)=?([^%]]*)%]") do 
+		if k then
+			styles[k]=if n=="!" then nil else v
+		end
+	end
+	local astyles,bstyles
+	if se then
+		astyles=table.clone(styles)
+		bstyles=table.clone(styles)
+		for n,k,v in self:getText():sub(p+1,se+1):gmatch("\e%[(!?)([^=%]]+)=?([^%]]*)%]") do 
+			if k and n~="!" and ((v and #v>0) or (#k==1)) then -- Reset styles
+				styles[k]=v
+			end
+			bstyles[k]=if n=="!" then nil else v
+		end
+	end
+	return styles,astyles,bstyles
+end
+
+function UI.TextField:applyTextStyle(startTag,endTag,value)
+	local stag,etag,d=startTag,endTag,value
+	local tag=stag
+	if tag then
+		local function same(t,v)
+			if not t or t=="" then t=nil end
+			if not v or v=="" then v=nil end
+			return v==t
+		end
+		local sc,sa,sb=self:getTextStyles(self:getCaretPos() or 0,self:getSelectionStartEnd())
+		if d then
+			if type(d)=="string" and #d>0 then
+				stag=stag.."="..d
+			end
+			local seltext=self:getSelectedText(true)
+			if seltext then
+				seltext=seltext:gsub("\e%[!?"..tag.."[^%]]*%]","")
+				if not same(sa[stag],d) then
+					seltext="\e["..stag.."]"..seltext
+				end
+				if not same(sb[stag],d) then
+					if type(d)=="string" and sb[tag] and #sb[tag]>0 then
+						etag=etag.."="..sb[tag]
+					end
+					seltext=seltext.."\e["..etag.."]"
+				end
+				local ss,se=self:insertText(seltext) 
+				self:setSelectionStartEnd(ss,se)
+				self:setCaretPos(se-#etag-3)
+			elseif not sc[stag] then
+				local cp=self:insertText("\e["..stag.."]\e["..etag.."]") 
+				self:setCaretPos(cp+#stag+3)
+			end
+		else
+			local seltext=self:getSelectedText(true)
+			if seltext then
+				seltext=seltext:gsub("\e%[!?"..tag.."[^%]]*%]","")
+				if sa[stag] then
+					seltext="\e["..etag.."]"..seltext
+				end
+				if sb[stag] then
+					seltext=seltext.."\e["..stag.."]"
+				end
+				local ss,se=self:insertText(seltext) 
+				self:setSelectionStartEnd(ss,se)
+				self:setCaretPos(se-#etag-3)
+			elseif sc[stag] then
+				local cp=self:insertText("\e["..etag.."]\e["..stag.."]") 
+				self:setCaretPos(cp+#etag+3)
+			end
+		end
+	end
 end
 
 UI.TextField.Definition= {

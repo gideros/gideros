@@ -112,8 +112,9 @@ function UI.Behavior.ToggleButton:onMouseClick(w,x,y)
 	if wflags.disabled then return end
 	if debugClick then print("UI.Behavior.ToggleButton","onMouseClick",self) end
 	UI.Focus:request(w)
-	w:setFlags({ticked=not (wflags.ticked)},true)
-	UI.dispatchEvent(self.widget,"WidgetAction")
+	local tick=not (wflags.ticked)
+	w:setFlags({ticked=tick},true)
+	if self.widget then UI.dispatchEvent(self.widget,"WidgetAction",tick) end --may has been destroyed during setFlags
 	return true --stopPropagation !
 end
 function UI.Behavior.ToggleButton:destroy()
@@ -206,6 +207,7 @@ function UI.Behavior.LongClick:onLongPrepare(w,x,y,r)
 	return true
 end
 function UI.Behavior.LongClick:destroy()
+	if self.prepare then self.prepare:removeFromParent() end
 	UI.Control.onLongClick[self.widget]=nil
 	UI.Control.onLongPrepare[self.widget]=nil
 	UI.Focus:relinquish(self.widget)
@@ -274,6 +276,11 @@ function UI.Behavior.DragMove:init(widget,params)
 	UI.Control.onDragStart[self.widget]=self.clickHandler
 	UI.Control.onDrag[self.widget]=self.clickHandler
 	UI.Control.onDragEnd[self.widget]=self.clickHandler
+	UI.Control.onMouseMove[self.widget]=self.clickHandler
+end
+function UI.Behavior.DragMove:onMouseMove(w,x,y)
+	UI.Control.setLocalCursor("sizeAll")
+	return true
 end
 function UI.Behavior.DragMove:onDragStart(w,x,y)
 	local wflags=w:getFlags()
@@ -345,7 +352,8 @@ end
 function UI.Behavior.DragSize:getEdges(w,x,y)
 	local bds=w:resolveStyle(self.params)
 	local edge=0
-	local sw,sh=w:getDimensions()
+	local sw,sh=w:getDimensions() 
+		
 	if x<bds then edge=edge|1
 	elseif x>=(sw-bds) then edge=edge|4
 	end
@@ -364,6 +372,7 @@ function UI.Behavior.DragSize:onMouseMove(w,x,y)
 			elseif edge==3 or edge==12 then "sizeFDiag" 
 			elseif edge==6 or edge==9 then "sizeBDiag" 
 			else nil)
+		return true
 	end
 end
 
@@ -377,6 +386,12 @@ function UI.Behavior.DragSize:onDragStart(w,x,y)
 	if edge==0 then return end
 	local pc=p:getLayoutConstraints(true)
 	local ps=UI.Screen.getScreen(p)
+	
+	local li=p:getLayoutInfo(-1,-1,1)
+	local cw,ch=p:getDimensions()
+	local mew=li.reqWidth-cw+pc.extraw
+	local meh=li.reqHeight-ch+pc.extrah
+	
 	x,y=ps:spriteToLocal(w,x,y)
 	self.sctx={
 		x=x, y=y,
@@ -386,6 +401,8 @@ function UI.Behavior.DragSize:onDragStart(w,x,y)
 		oy=pc.offsety,
 		ow=pc.extraw,
 		oh=pc.extrah,
+		mew=mew,
+		meh=meh,
 		edge=edge
 		}
 	return true 
@@ -397,8 +414,6 @@ function UI.Behavior.DragSize:onDrag(w,x,y)
 	x,y=sctx.ps:spriteToLocal(w,x,y)
 	x-=sctx.x
 	y-=sctx.y
-	local width,height=sctx.ps:getDimensions()
-	local margin=10
 	
 	local nx,ny,nw,nh=sctx.ox,sctx.oy,sctx.ow,sctx.oh
 	if (sctx.edge&1)==1 then
@@ -411,6 +426,8 @@ function UI.Behavior.DragSize:onDrag(w,x,y)
 	elseif (sctx.edge&8)==8 then
 		nh+=y
 	end
+	if sctx.mew then nw=nw<>sctx.mew end
+	if sctx.meh then nh=nh<>sctx.meh end
 		
 	sctx.p:setLayoutConstraints({ offsetx=nx, offsety=ny,extraw=nw, extrah=nh})
 	return true 

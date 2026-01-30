@@ -355,7 +355,13 @@ function Gltf:getMaterial(i)
 			local embedded=self:getImage(td.index+1) -- embedded = Gideros Buffer holding the image texture data
 			mat.embeddedtexture = Texture.new(embedded,true,{ wrap=TextureBase.REPEAT, extend=false})
 		end
-		-- TO DO NORMAL MAP TEXTURE?
+	end
+	if bd.normalTexture then
+		local td=bd.normalTexture
+		if td and td.index then
+			local embedded=self:getImage(td.index+1) -- embedded = Gideros Buffer holding the image texture data
+			mat.embeddedNormalTexture = Texture.new(embedded,true,{ wrap=TextureBase.REPEAT, extend=false})
+		end
 	end
 	bd._mat=mat
 	return mat

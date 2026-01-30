@@ -20,7 +20,6 @@ function UI.Accordion:init()
 	self:setAutoCollapse(true)
 	self.selection={}
 	UI.Control.onMouseClick[self]=self
-	--UI.Selection.enable(self,UI.Selection.MULTIPLE)
 end
 
 function UI.Accordion:newClone() 
@@ -50,6 +49,11 @@ function UI.Accordion:checkDragResize()
 	end
 end
 
+function UI.Accordion:getCellSprites(d)
+	local cell = self.datacells[d]
+	if cell then return cell.h,cell.w,cell.bg end
+end
+
 function UI.Accordion:getHeaderAt(x,y)
     local eb=self:getChildrenAtPoint(x,y,true,true,self)
     for _,v in ipairs(eb) do
@@ -70,8 +74,8 @@ function UI.Accordion:onDragStart(x,y,ed,ea,change,long)
 	local cell=self:getHeaderAt(x,y)
 	if not cell then return end
 	local rh={}
-	for _,cell in ipairs(self.tabs) do
-		rh[cell.row+1]=not (cell.h and cell.h:isVisible())
+	for _,c in ipairs(self.tabs) do
+		rh[c.row+1] = not (c.h and c.h:isVisible())
 	end
 	local crow=cell.row-1
 	while crow>=2 and rh[crow] do crow-=2 end
@@ -105,15 +109,15 @@ function UI.Accordion:onDrag(x,y)
 	local cell=self.dragging.cell
 	local crow=self.dragging.crow
 	local li=self.dragging.layout
-	local rh=self.dragging.rh
+	--local rh=self.dragging.rh
 	
 	local _,mh=self:getDimensions()
 	local delta=mh-li.reqHeight
-	local ws,wl=0,0
+	local ws,_wl=0,0
 	for i=1,#li.weightY do 
 		local w=li.weightY[i]
 		ws+=w
-		if ((i&1)==1) and w>0 then wl=i end
+		if ((i&1)==1) and w>0 then _wl=i end
 	end
 	
 	local lp=self.dragging.lp
@@ -141,7 +145,7 @@ function UI.Accordion:onDrag(x,y)
 		end		
 		nw[cell.row+1]=lpr[cell.row+1]-lwm+wm
 	end
-	--print(dy,cell.row,json.encode(lpr),delta,ws,wl,wm,json.encode(nw))
+	--print(dy,cell.row,json.encode(lpr),delta,ws,_wl,wm,json.encode(nw))
 	
 	for i=2,#nw-1,2 do
 		local other=self.tabs[i/2]
@@ -160,8 +164,8 @@ function UI.Accordion:onDrag(x,y)
 				other.w:setLayoutConstraints(lc)
 			elseif nw[i]>0 and not self.expanded[other.d] then
 				if not other.w then
-					local nw,nbg=self.builder(other.d, true)
-					other.w=UI.Utils.makeWidget(nw,other.d)
+					local onw,nbg=self.builder(other.d, true)
+					other.w=UI.Utils.makeWidget(onw,other.d)
 					other.bg=nbg
 				end
 				other.w:setVisible(true)
@@ -202,7 +206,7 @@ function UI.Accordion:onMouseClick(x,y,c)
 	if cell then
 		local disabled = nil
 		if cell.h and cell.h.getFlags then disabled = cell.h:getFlags().disabled end
-		if disabled then --nothing
+		if disabled then
 			self:setExpanded(cell.d,false,"onMouseClick")
 			UI.dispatchEvent(self,"WidgetExpand",cell.d,false,"onMouseClick")
 		else
@@ -222,16 +226,18 @@ function UI.Accordion:isExpanded(d)
 	return lprw[cell.row+1]
 end
 
-function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
+function UI.Accordion:setExpanded(d,e,event)
 	local cell=self.datacells[d]
 	if not cell then return end
-	local lp = self:getLayoutParameters() or { rowHeights={ }, rowWeights={ }, columnWeights={1} }
+	local lp = self:getLayoutParameters() or { rowWeights={ }, columnWeights={1} }
 	local lc = {}
-	local lprh = lp.rowHeights or { }
 	local lprw = lp.rowWeights or { }
-	local focus
+	local lprh = { }
+	local wasExpanded = self.expanded[d]
+	local expandedChanged = nil
+	local focus = nil
+	local disabled = nil
 	if e then
-		local expandedChanged = self.expanded[d]~=e
 		self.expanded[d]=e
 		if not cell.w then
 			local nw,nbg=self.builder(d, true)
@@ -241,8 +247,7 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 		self:addChild(cell.w)
 		lc.gridy=cell.row
 		lc.fill=Sprite.LAYOUT_FILL_BOTH
-		local disabled = cell.w.getFlags and cell.w:getFlags().disabled
-
+		disabled = cell.w:getFlags().disabled
 		for i=2,#lprw,2 do
 			local other=self.tabs[i/2]
 			if other and other~=cell and self.autoCollapse and self.expanded[other.d] then
@@ -262,7 +267,6 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 			lc.prefHeight=0
 			cell.w:setVisible(false)
 			if cell.bg then cell.bg:removeFromParent() end
-			focus=expandedChanged
 		else
 			local ew=if type(e)=="number" then e else 1
 			lprw[cell.row+1]=(self.expand or 0)*ew
@@ -277,8 +281,9 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 				lc.gridy+=1
 				lc.gridheight=nil
 			end
-			focus=expandedChanged
 		end
+		expandedChanged = self.expanded[d]~=wasExpanded
+		focus = expandedChanged
 	else
 		self.expanded[d]=nil
 		lprw[cell.row+1]=0
@@ -286,27 +291,27 @@ function UI.Accordion:setExpanded(d,e,event)--event(from onMouseClick)
 		lc.prefHeight=0
 		if cell.w then cell.w:setVisible(false) end
 		if cell.bg then cell.bg:removeFromParent() end
+		expandedChanged = self.expanded[d]~=wasExpanded
+		focus = false
 	end
+	if cell.w then cell.w:setLayoutConstraints(lc) end
 	if next(self.expanded) then
 		lprw[#lprw]=0
 	else
 		lprw[#lprw]=self.expand or 0
 	end
 	for i=1,#lprw,1 do lprh[i]=0 end
-	if cell.w then
-		cell.w:setLayoutConstraints(lc)
-	end
+	lp.rowHeights=lprh
 	self:setLayoutParameters(lp)
-	self:updateTab(cell,event)--event(from onMouseClick)
+	self:updateTab(cell,event)
 	if focus then
 		self:getLayoutInfo()
 		UI.Focus:clear()
-		if cell.w and cell.w:isVisible() then
-			UI.Focus:area(self,0,cell.h:getY(),self:getWidth(),cell.w:getY()+cell.w:getHeight()-cell.h:getY(),true,0,0)
-		else
-			UI.Focus:area(self,0,cell.h:getY(),self:getWidth(),cell.h:getHeight(),true,0,0)
-		end
+		local h = cell.h:getHeight()
+		if cell.w and cell.w:isVisible() then h = cell.w:getY()+cell.w:getHeight()-cell.h:getY() end
+		UI.Focus:area(self,0,cell.h:getY(),self:getWidth(),h,true,0,0)
 	end
+	self:updateVisible()
 end
 
 function UI.Accordion:buildTab(d)
@@ -319,12 +324,9 @@ function UI.Accordion:buildTab(d)
 end
 
 function UI.Accordion:updateTab(cell,event)
-	if cell.h then
-		cell.h:setFlags({ expanded=(self.expanded[cell.d] or false) },event)
-		if cell.h.uiUpdate then
-			-- TODO remove!
-			cell.h:uiUpdate(cell.d,{ expanded=self.expanded[cell.d] },event) --d,mode --event(from onMouseClick)
-		end
+	cell.h:setFlags({ expanded=(self.expanded[cell.d] or false) },event)
+	if cell.h.uiUpdate then print("UI.Accordion: uiUpdate is deprecated")
+		cell.h:uiUpdate(cell.d,{ expanded=self.expanded[cell.d] },event) --d,mode
 	end
 end
 
@@ -378,9 +380,7 @@ function UI.Accordion:setData(data,builder)
 		local keep={}
 		for _,d in ipairs(data) do keep[d]=true end
 		for i,d in ipairs(self.data) do
-			if keep[d] then
-				cache[d]=self.tabs[i]
-			end
+			if keep[d] then cache[d]=self.tabs[i] end
 		end
 	end
 	self.data=data
@@ -398,21 +398,18 @@ function UI.Accordion:setData(data,builder)
 			if self.selection[d] then nd+=1 nsel[nd]=d end
 		end
 	end
-	UI.Selection.select(self,{})
 
+	local hdrStart=1
+	local bgStart=1
 	for _,c in pairs(self.tabs) do
 		if not cache or not cache[c.d] then
+			self.expanded[c.d]=nil
+			c.h:removeFromParent()
+			if c.w then c.w:removeFromParent() end
+			if c.bg then c.bg:removeFromParent() end
 			if c.h.destroy then c.h:destroy() end 
 			if c.w and c.w.destroy then c.w:destroy() end 
-			if c.bg and c.bg.destroy then c.bg:destroy() end 
-			self.expanded[c.d]=nil
-		end
-		c.h:removeFromParent()
-		if c.w then
-			c.w:removeFromParent()
-		end
-		if c.bg then
-			c.bg:removeFromParent()
+			if c.bg and c.bg.destroy then c.bg:destroy() end
 		end
 	end
 	self.tabs={}
@@ -421,19 +418,38 @@ function UI.Accordion:setData(data,builder)
 	if data then
 		for i,d in ipairs(data) do
 			table.insert(lp.rowWeights,0)
-			table.insert(lp.rowWeights,0)
 			local cell = cache and cache[d] or self:buildTab(d)
 			cell.d=d
 			cell.row=i*2-1
 			self.tabs[i]=cell
-			self:addChild(cell.h)
+			self:addChildAt(cell.h,hdrStart)
+			hdrStart+=1
 			cell.h:setLayoutConstraints{ gridy=cell.row-1, fill=Sprite.LAYOUT_FILL_HORIZONTAL, anchor=Sprite.LAYOUT_ANCHOR_NORTH }
+			local e=self.expanded[d]
+			if cell.bg and e then 
+				self:addChildAt(cell.bg,bgStart) 
+				cell.bg:setLayoutConstraints{ gridy=cell.row-1}
+				bgStart+=1
+				hdrStart+=1
+			end
+			local rwg=0
+			if cell.w and e then
+				cell.w:setLayoutConstraints{ gridy=cell.row }
+				local ew=if type(e)=="number" then e else 1
+				rwg=(self.expand or 0)*ew
+			end
+			table.insert(lp.rowWeights,rwg)
 			self.headers[cell.h]=cell
 			self.datacells[d]=cell
 		end
 	end
-	table.insert(lp.rowWeights,1) -- Last row contains nothing, but is used as a filler
+	local lExpand=0
+	if not next(self.expanded) then
+		lExpand=self.expand or 0
+	end
+	table.insert(lp.rowWeights,lExpand) -- Last row contains nothing, but is used as a filler
 	self:setLayoutParameters(lp)
+	self:updateVisible()
 	
 	UI.Selection.select(self,nsel)
 end
@@ -442,6 +458,7 @@ function UI.Accordion:updateVisible(y,viewh)
 	if not self.data or #self.data==0 then return end
 	y=y or self.rangey or 100000
 	viewh=viewh or self.rangeh
+	if not viewh then return end
 	self.rangey=y
 	self.rangeh=viewh
 	local li=self:getLayoutInfo()
@@ -456,15 +473,17 @@ function UI.Accordion:updateVisible(y,viewh)
 	local lf=ll
 	while ll<=lmax and ls[ll*2-1] and viewh>0 do viewh-=ls[ll*2-1]+ls[ll*2]+lcs ll+=1 end
 	ll-=1
-	--print(lf,ll,y,viewh)
+	--print(self.name,lf,ll,y,viewh)
 	ll=(ll<>lf)
 	if lf>0 then
-		--This only deals with headers, background and contents are not hidden
-		local i0=self:getChildIndex(self.tabs[1].h) --Get first header
+		local cell = self.tabs[1] --Get first header
+		--cell.w --This only deals with headers, background and contents are not hidden --TODO : hidden w
+		--cell.bg --This only deals with headers, background and contents are not hidden --TODO : hidden bg
+		local i0=self:getChildIndex(cell.h) --Get first header
 		local i1=i0+lf-2
 		local i2=i0+ll
 		local i3=i0+#self.data-1
-		--print("H:",i0,i1,i2,i3)
+		--print(self.name,"Hidden:",i0,i1,i2,i3)
 		self:setHiddenChildren({
 				{i0,i1},
 				{i2,i3}
@@ -633,7 +652,7 @@ function UI.Accordion:offerDndData(data,x,y)
 				self.dndDstMarker:setVisible(true)	
 			end
 			return ret
-		elseif over  and self.tabs[over] then
+		elseif over and self.tabs[over] then
 			local ret=(not self.checkDndOffer) or self:checkDndOffer(data,x,y,self.tabs[over].d,ll)
 			if ret==nil then 
 				clearDstMarker(true)
@@ -644,9 +663,9 @@ function UI.Accordion:offerDndData(data,x,y)
 					local dstMarker=Pixel.new(chc)
 					self.dndDstMarkerOver=dstMarker
 				end
-				local cell=self.tabs[over]
-				self.dndDstMarkerOver:setDimensions(cell.h:getSize())
-				cell.h:addChild(self.dndDstMarkerOver)
+				local ocell=self.tabs[over]
+				self.dndDstMarkerOver:setDimensions(ocell.h:getSize())
+				ocell.h:addChild(self.dndDstMarkerOver)
 				self.dndDstMarkerOver:setVisible(true)
 				return ret
 			end
@@ -661,18 +680,13 @@ function UI.Accordion:setDndData(data,source)
 	if data and data.type==UI.Accordion then
 		if data.insert then
 			if source==self then
-				local function moveOne(v)
-					if not UI.dispatchEvent(self,"ItemMove",v,data.insert) then
-						self:moveItem(v,data.insert)
-					end
-				end
-				if data.list then
-					local ln=#data.list
+				local val=if data.list then data.list else { data.value }
+				local shouldMove = UI.dispatchEvent(self,"ItemsMove",val,data.insert) or val
+				if shouldMove then
+					local ln=#shouldMove
 					for i=ln,1,-1 do
-						moveOne(data.list[i])
+						self:moveItem(shouldMove[i],data.insert)
 					end
-				elseif data.value then
-					moveOne(data.value)
 				end
 			else
 				UI.dispatchEvent(self,"DndDrop",source,data,nil,data.insert) --no over
@@ -687,6 +701,7 @@ end
 function UI.Accordion:uiSelect(x,y)
     local cell=self:getHeaderAt(x,y)
 	if not cell or not cell.h then return end
+	if cell.h:getFlags().notselectable then return end
 	return cell.h,cell.d
 end
 
@@ -697,8 +712,10 @@ function UI.Accordion:uiSelectRange(d1,d2)
 		local s1,s2=(r1.row+1)//2,(r2.row+1)//2
 		local i1,i2=s1><s2,s1<>s2
 		for i=i1,i2 do
-			local c=self.tabs[i]
-			ret[c.h]=c.d
+			local cell=self.tabs[i]
+			if cell and not cell.h:getFlags().notselectable then
+				ret[cell.h]=cell.d
+			end
 		end
 	end
 	return ret
@@ -709,9 +726,9 @@ function UI.Accordion:uiSelectDirection(d,dx,dy)
 	if dx and dy then 
 		local dd=dy//1
 		local i=(r.row+1)//2+dd
-		local dc=self.tabs[i]
-		if dc then 
-			return { [dc.h]=dc.d }
+		local cell=self.tabs[i]
+		if cell and not cell.h:getFlags().notselectable then 
+			return { [cell.h]=cell.d }
 		end
 	end
 end
@@ -719,12 +736,14 @@ end
 function UI.Accordion:uiSelectAll()
 	local ret={}
 	for _,cell in ipairs(self.tabs) do
-		ret[cell.h]=cell.d
+		if not cell.h:getFlags().notselectable then
+			ret[cell.h]=cell.d
+		end
 	end
 	return ret
 end
 
-function UI.Accordion:uiSelection(sel) --row selection only --implements Row DATA .ClickCell and .onClickCell to have cell selection
+function UI.Accordion:uiSelection(sel)
 	if self.selection then
 		for data,rowWidget in pairs(self.selection) do
 			if not sel or not sel[rowWidget] or rowWidget:getFlags().notselectable then
@@ -747,7 +766,9 @@ end
 
 function UI.Accordion:uiSelectData(d) --spr,data
 	if d and self.datacells[d] then
-		return self.datacells[d].h,d --spr,data
+		local cell_h = self.datacells[d].h
+		if cell_h:getFlags().notselectable then return end
+		return cell_h,d --spr,data
 	end
 end
 

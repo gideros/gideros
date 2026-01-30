@@ -282,6 +282,26 @@ function UI.Panel:addChildAt(c,n)
 	return id
 end
 
+function UI.Panel:addChildrenAt(t)
+	local pmap={}
+	for _,c in pairs(t) do		
+		local op=c:getParent()
+		if op~=self then
+			pmap[c]=true
+		end
+	end
+	if Sprite.addChildrenAt then
+		Sprite.addChildrenAt(self,t)
+	else
+		for i,c in pairs(t) do
+			Sprite.addChildAt(self,c,i)
+		end
+	end
+	for c,_ in pairs(pmap) do
+		linkStyle(self,c)
+	end
+end
+
 function UI.Panel:setBorder(border)
   if type(border)=="string" then 
 	self._borderSpec=border
@@ -376,6 +396,11 @@ UI.Panel.Definition= {
   },
 }
 
+UI.StatefulPanel=Core.class(UI.Panel,function (bc) return bc end)
+
+function UI.StatefulPanel:setFlags(changes)
+	UI.Label.setFlagsAll(self,changes)
+end
 
 UI.Viewport=Core.class(UI.Panel)
 
@@ -719,6 +744,15 @@ UI.Image.Definition= {
     { name="Image", type="string", setter=UI.Image.setImage },
   },
 }
+
+UI.StatefulImage=Core.class(UI.Image,function (bc) return bc end)
+
+function UI.StatefulImage:setFlags(changes)
+	UI.Label.setFlags(self,changes)
+	if changes.disabled then
+		self:setStateStyle(if self._flags.disabled then "image.styDisabled" else "image.styNormal")
+	end
+end
 
 UI.HilitPanel=Core.class(UI.Panel,function() return end)
 function UI.HilitPanel:init()

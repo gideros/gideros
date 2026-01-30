@@ -7,7 +7,7 @@ UI.Chart=Core.class(UI.Panel,function() return nil end)
 
 function UI.Chart:init()
 	self.series,self.scales={},{}
-	self.selected=vector(0,0)
+	self.selected=vector(-1,-1)
 end
 
 function UI.Chart:setSerie(s,n)
@@ -87,9 +87,9 @@ function UI.Chart.Axis.Shader:init(params)
 		table.insert(spec.uniforms,{name="vOrientation",type=Shader.CFLOAT,vertex=true})
 		table.insert(spec.uniforms,{name="vBounds",type=Shader.CFLOAT4,sys=Shader.SYS_BOUNDS,vertex=true})
 		function spec.vertexShader(vVertex,vColor,vTexCoord) : Shader
-			local vertex = hF4(vVertex,0.0,1.0)
+			local vertex = hF4(vVertex.xy,0.0,1.0)
 			if vOrientation==1 then
-				fPos=vertex.yx
+				fPos=hF2(vBounds.w-vertex.y,vertex.x)
 			elseif vOrientation==2 then
 				fPos=vertex.xy
 			elseif vOrientation==3 then
@@ -108,7 +108,7 @@ function UI.Chart.Axis.Shader:init(params)
 			if fPos.y<fThickness then
 				frag=colLine
 			else
-				local bx=(fPos.x-fAxisScaleWidth.x+fThickness/2)/fAxisScaleWidth.y
+				local bx=(fPos.x-fAxisScaleWidth.x)/fAxisScaleWidth.y
 				local dn=floor(bx)
 				if dn<=fAxisScaleWidth.z or fAxisScaleWidth.z<0 then
 					if (bx-dn)<(fThickness/fAxisScaleWidth.y) then
@@ -142,41 +142,48 @@ function UI.Chart.Axis:updateStyle(fromParent)
 	UI.Chart.updateStyle(self)
 	self.shader:apply(self)
 	self:setAxis(self.axisOffset,self.axisInterval,self.axisCount)
-	self:setLabels(self.labelGenerator,self.labelSkip)
+	self:setLabels(self.labelGenerator,self.labelSkip,self.labelAlign)
 end
 
 function UI.Chart.Axis:onResize()
 	self:setAxis(self.axisOffset,self.axisInterval,self.axisCount)
-	self:setLabels(self.labelGenerator,self.labelSkip)
+	self:setLabels(self.labelGenerator,self.labelSkip,self.labelAlign)
 end
 
 function UI.Chart.Axis:setAxis(offset,interval,count)
-	self.axisOffset=offset
-	self.axisInterval=interval
-	self.axisCount=count
-	local iv=interval
+	self.axisOffset = offset or 0
+	self.axisInterval = interval or 0
+	self.axisCount = (count and count~=0 and count) or -1
+	local iv=self.axisInterval
 	if iv==0 then
-		iv=self:getWidth()/count
+		local dw,dh=self:getDimensions()
+		if (self.orientation or 0)&1==1 then dw=dh end --Vertical
+		iv=dw/self.axisCount
 	else
 		if type(iv)=="string" then
 			iv=self:resolveStyle(iv)
 		end
 		iv=tonumber(iv) or 0
 	end
-	self.axisInter=iv
-	self:setShaderConstant("fAxisScaleWidth",Shader.CFLOAT4,1,offset,iv,count,0)
+	self.axisInter = iv
+	self:setShaderConstant("fAxisScaleWidth",Shader.CFLOAT4,1,self.axisOffset,self.axisInter,self.axisCount,0)
 end
 
-function UI.Chart.Axis:setLabels(generator,skip)
+function UI.Chart.Axis:setLabels(generator,skip,align)
 	self.labelGenerator=generator
 	self.labelSkip=skip or 0
+	self.labelAlign=align or 0
 	if self.axisInter and generator then
 		local lbs=""
 		local iv=1
 		while iv<=self.axisCount do
-			local lb=generator(iv)
+			local lb=generator(iv,self.axisInter)
 			iv+=(self.labelSkip+1)
-			lbs=lbs..lb.."\t"
+			if self.labelAlign==0.5 then
+				lbs=lbs..lb.."\t"
+			else
+				lbs=lbs.."\b"..lb.."\t"
+			end
 		end
 		if #lbs>0 then
 			if not self.label then
@@ -185,10 +192,11 @@ function UI.Chart.Axis:setLabels(generator,skip)
 				self.label:setFont("label.font")
 				self.label:setTextColor("label.color")
 			end
-			
-			FontBase.TLF_TABLE = FontBase.TLF_TABLE or 0 --TEMPORAIRE : Gideros 24.9
-			
-			self.label:setLayout({ tabSpace=-self.axisInter, flags=FontBase.TLF_REF_LINETOP|FontBase.TLF_TABLE|FontBase.TLF_CENTER})
+			if self.labelAlign==0.5 then
+				self.label:setLayout({ tabSpace=-self.axisInter, flags=FontBase.TLF_REF_LINETOP|FontBase.TLF_TABLE|FontBase.TLF_CENTER})
+			else
+				self.label:setLayout({ tabSpace=-self.axisInter, flags=FontBase.TLF_REF_LINETOP|FontBase.TLF_TABLE})
+			end
 			self.label:setText(lbs)
 		elseif self.label then
 			self.label:removeFromParent()
@@ -215,7 +223,7 @@ function UI.BarChart.Shader:init(params)
 	self.params=params
 	self.shader=self.overrideStandardShader(UI.BarChart.Shader,Shader.SHADER_PROGRAM_TEXTURE,0,function(spec)
 		function spec.vertexShader(vVertex,vColor,vTexCoord) : Shader
-			local vertex = hF4(vVertex,0.0,1.0)
+			local vertex = hF4(vVertex.xy,0.0,1.0)
 			fTexCoord=vTexCoord
 			fPos=vertex.xy
 			return vMatrix*vertex

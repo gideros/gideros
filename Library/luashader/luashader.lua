@@ -60,6 +60,7 @@ local GFUNC_MAP={
 	["mod"]={type="func", value="mod", rtype="1", acount=2},
 	["InstanceID"]={type="cvar", value="gl_InstanceID", vtype="hI1"},
 	["FragCoord"]={type="cvar", value="gl_FragCoord", vtype="hF4"},
+	["hlslYSwap"]={type="cvar", value="1.0", vtype="hF1"},
 }
 
 local platform=application:getDeviceInfo()
@@ -398,7 +399,7 @@ function Shader.lua_msl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 	gmap["inversesqrt"]={type="func", value="rsqrt", rtype="1", acount=1}
 	gmap["FragCoord"]={type="cvar", value="vert.gl_Position", vtype="hF4"}
 
-	_code=[=[
+	local _code=[=[
 #include <metal_stdlib>
 using namespace metal;
 ]=]
@@ -576,9 +577,10 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 		return ("_tex_%s.SampleCmp(_smp_%s, (%s).xy,((%s).z-0.5)*2.0)"):format(tex.value,tex.value,sp.value,sp.value)
 	end, rtype="hF4"}
 	gmap["mix"]={type="func", value="lerp", rtype="1", acount=3}
+	gmap["hlslYSwap"]={type="cvar", value="-1.0", vtype="hF1"}
 	--[[gmap["atan2"]={type="func", value="atan2", 
 		evaluate=function (ff,fn,y,x)
-			return ("atan2(%s,%s)"):format(x.value,y.value)
+			return ("atan2(%s,%s)"):format(y.value,x.value)
 		end,rtype="1", acount=2}]]
 	gmap["fract"]={type="func", value="frac", rtype="1", acount=1}
 	gmap["dFdx"]={type="func", value="ddx", rtype="1", acount=1}
@@ -602,6 +604,7 @@ function Shader.lua_hlsl(vf,ff,opt,uniforms,attrs,varying,funcs,const)
 			amap[k]={}
 		end
 	end
+	_vargs=_vargs..",uint gl_InstanceID : SV_InstanceID"
 	if #_vargs>0 then _vargs=_vargs:sub(2) end
 	
 	local _ucode="cbuffer cbv : register(b0) {\n"

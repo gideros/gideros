@@ -166,7 +166,7 @@ function OPS:ECAL(acount)
 	local rtype=var.rtype or "hF1"
 	if tonumber(rtype) then rtype=args[tonumber(rtype)].vtype end
 	if var.evaluate then
-		return { vtype=var.rtype, value=var.evaluate(self,var.value,unpack(args)) }
+		return { vtype=rtype, value=var.evaluate(self,var.value,unpack(args)) }
 	end
 	
 	if #sargs>0 then sargs=sargs:sub(1,#sargs-1) end

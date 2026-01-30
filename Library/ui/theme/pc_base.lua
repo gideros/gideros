@@ -55,7 +55,8 @@ UI.Theme.PointCore_Base={
 	["theme.OVI50"]=UI.Color(0,0,0,0.5),
 	["theme.OVI70"]=UI.Color(0,0,0,0.7), -- Unused yet in base widgets							   
 	-- States
-	["theme.KO"]=UI.Color(0xFF0000), --colError
+	["theme.OK"]=UI.Color(0xB2C200), --vert clair
+	["theme.KO"]=UI.Color(0xFF0000), --rouge --colError
 	colError=UI.Color(0xFF0000),
 	--
 	["accordion.colSelected"]=colNone,
@@ -75,7 +76,12 @@ UI.Theme.PointCore_Base={
 		shader={}
 	},
 	["button.colBackground"]="theme.C2L",
-	--
+	["button.stySelected"]={
+		["button.colBackground"]="theme.CH"
+	},
+	["button.stySelectedFocused"]={
+		["button.colBackground"]="theme.CH",
+	},	--
 	["checkbox.colTickboxBack"]="theme.C2F",
 	["checkbox.styDisabled"]={
 		["checkbox.colTickboxBack"]="theme.OVI30",
@@ -106,7 +112,7 @@ UI.Theme.PointCore_Base={
 		colText="theme.C2L",
 	},
 	["breadcrumbs.styLast"]={
-		colText="colHighlight",
+		colText="theme.CH",
 	},
 	["breadcrumbs.styElipsis"]={
 		colText="colUI",
@@ -123,7 +129,7 @@ UI.Theme.PointCore_Base={
 			brdWidget=UI.Border.NinePatch.new({
 				texture=Texture.new("ui/icons/textfield-multi.png",true),
 				corners={0,"buttontextfield.szMargin","buttontextfield.szMargin","buttontextfield.szMargin",63,63,63,63,},
-				insets="buttontextfield.szMargin",
+				insets={ left="=buttontextfield.szMargin*0.8", top=0, bottom=0, right=0 },
 			}),
 			shader={ 
 				class="UI.Shader.MultiLayer", 
@@ -137,7 +143,7 @@ UI.Theme.PointCore_Base={
 			colWidgetBack=colNone,
 			brdWidget={},
 			shader={},
-			["image.colTint"]="colText",
+			["image.colTint"]="theme.T",
 		},
 		["button.styDisabled"]={
 			["button.styInside"]={
@@ -146,6 +152,7 @@ UI.Theme.PointCore_Base={
 				shader={},
 				["image.colTint"]="theme.OV30",
 			},
+			["button.colBackground"]=colNone,
 		},
 		["button.styError"]={
 			["button.colBackground"]="theme.KO",
@@ -332,9 +339,20 @@ UI.Theme.PointCore_Base={
 	},
 	["table.styRowOdd"]={},
 	["table.styRowSelected"]={},
+	["table.styRowCurrent"]={},
+	["table.styRowCurrentSelected"]={},
 	["table.styRowEven"]="table.styRowOdd",
 	["table.styCellSelected"]={
-		colWidgetBack = "colSelect"
+		colWidgetBack = "theme.C2L"
+		----colText="theme.T"
+	},
+	["table.styCellCurrent"]={
+		colWidgetBack = "theme.CH",
+		colText="theme.TI"
+	},
+	["table.styCellCurrentSelected"]={
+		colWidgetBack = "=theme.CH:mix:theme.C2L:0.5",
+		colText="theme.TI"
 	},
 	--
 	["textfield.colTipText"]="theme.OV50",
@@ -384,7 +402,7 @@ UI.Theme.PointCore_Base={
 	["tooltip.szMinWidth"]="10em",
 	["tooltip.icIcon"]=Texture.new("ui/icons/ic_help.png",true,{ mipmap=true, rawalpha=true }),
 	["tooltip.icUrl"]=Texture.new("ui/icons/ic_ref.png",true,{ mipmap=true, rawalpha=true }),
-	["tooltip.colIcon"]="colHighlight",
+	["tooltip.colIcon"]="theme.CH",
 	["tooltip.colIconFore"]="theme.C1F",
 	["tooltip.colUrl"]="theme.C2L",
 	["tooltip.colUrlFore"]="theme.T",

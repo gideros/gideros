@@ -33,6 +33,7 @@ UI.Control={
  onKeyUp={},
  onKeyChar={},
  stopPropagation={},
+ isRawTouch={},
  Meta={}, --mouseButton, modifiers, deviceType
  HasPresence=false, --set to true if presence capable device is found (mouse)
  DOUBLECLICK_THRESHOLD=0.1, --s
@@ -67,10 +68,11 @@ setmetatable(UI.Control.onKeyDown,_weak)
 setmetatable(UI.Control.onKeyUp,_weak)
 setmetatable(UI.Control.onKeyChar,_weak)
 setmetatable(UI.Control.stopPropagation,_weak)
+setmetatable(UI.Control.isRawTouch,_weak)
 
 local Contexts={}
 local function declareContext(plane)
-	Contexts[plane or stage]={ cp_inertia={}, ccount=0, surface=plane }
+	Contexts[plane or stage]={ cp_inertia={}, ccount=0, surface=plane, ctouch={} }
 end
 declareContext()
 
@@ -162,6 +164,7 @@ local function idispatch(ctx,event,cps,x,y,...)
 	if debugClick then print("uicontrol","idispatch","event",event,"CPS:",cps,"X/Y:"..x.."/"..y) end
 	local t={}
 	local spriteStack
+	local sps
 	UI.Control.CurrentContext=ctx
 	for k,v in pairs(UI.Control[event]) do
 		if v and type(v)=="table" then
@@ -171,7 +174,7 @@ local function idispatch(ctx,event,cps,x,y,...)
 				v=v.target
 			end
 			if not spriteStack then --populate spriteStack
-				local sps=(ctx.surface or stage):getChildrenAtPoint(x,y,true,false,ctx.surface)
+				sps=(ctx.surface or stage):getChildrenAtPoint(x,y,true,false,ctx.surface)
 				spriteStack={}
 				for kk,vv in ipairs(sps) do spriteStack[vv]=kk end
 			end
@@ -196,12 +199,12 @@ local function idispatch(ctx,event,cps,x,y,...)
 	if #t==0 then return end
 	for k,v in pairs(UI.Control.stopPropagation) do
 		if v and type(v)=="table" then
-			local stop=true
-			if v.stopPropagation then 
+			local stop=spriteStack and spriteStack[v]
+			if stop and v.stopPropagation then 
 				local lx,ly	if ctx.surface then lx,ly=v:spriteToLocal(ctx.surface,x,y) else lx,ly=v:globalToLocal(x,y) end
 				stop=v:stopPropagation(lx,ly)
 			end
-			if stop and spriteStack and spriteStack[v] then
+			if stop then
 				if debugClick then print("uicontrol","idispatch","STOP","name",v.name,"parents",spriteStack[v]) end
 				table.insert(t,{stop=v, _parents=spriteStack[v]-0.5})
 			end
@@ -210,8 +213,12 @@ local function idispatch(ctx,event,cps,x,y,...)
 	table.sort(t,function(a,b) return a._parents>b._parents end)
 	local sg,pg,ag,a = nil,nil,nil,nil
 	local called={}
-	for _,v in ipairs(t) do --v.handler or s[event] must return true to stop propagation
-		if pg and v._parents<pg then return sg,ag end --stopPropagation !
+	ctx._currentDispatchStack=sps
+	for nv,v in ipairs(t) do --v.handler or s[event] must return true to stop propagation
+		if pg and v._parents<pg then 
+			ctx._currentDispatchStack=nil
+			return sg,ag
+		end --stopPropagation !
 		local r,s=nil,v.target
 		if debugClick then print("uicontrol","idispatch","event",event,v,"v._parents",v._parents,"pg",pg,"sg",sg,"v.handler?",v.handler,"r?",r,"s?",s,s and s:getClass(),"s[event]?",s and s[event],"STOP:",v.stop) end
 		if v.handler then
@@ -251,6 +258,7 @@ local function idispatch(ctx,event,cps,x,y,...)
 					if r then sg=sp ag=a end
 				end
 			end
+			ctx._currentDispatchStack=nil
 			return sg,ag 
 		end 
 		if r then
@@ -259,7 +267,13 @@ local function idispatch(ctx,event,cps,x,y,...)
 			ag=a
 		end
 	end
+	ctx._currentDispatchStack=nil
 	return sg,ag or a
+end
+
+function UI.Control.getDispatchStack(surface)
+	local ctx=if surface then Contexts[surface] else UI.Control.CurrentContext or Contexts[stage]
+	return ctx._currentDispatchStack
 end
 
 function UI.Control.isPresent(s,surface)
@@ -310,7 +324,8 @@ end
 local cpx,cpy,cpd,cpa --Touch center/origin pos, Distance and angle
 local cpt,cpr,cph,cps --Touch start time, released time, linger context, target sprite
 local cp_inertia={} --Inertia info
-local ccount=0,clong,cdrag,ctouch --Touch click count, long detected, drag in progress, raw touch mode
+local ccount=0,clong,cdrag --Touch click count, long detected, drag in progress
+local ctouch --Raw touch mode: map touch ids to sprites
 ]]
 local function dispatch(ctx,event,x,y,...)
 	return idispatch(ctx,event,nil,x,y,...)
@@ -318,14 +333,21 @@ end
 local function dispatchS(ctx,event,x,y,...)
 	return idispatch(ctx,event,ctx.cps,x,y,...)
 end
+local function dispatchSS(ctx,event,cps,x,y,...)
+	return idispatch(ctx,event,cps,x,y,...)
+end
 
-local function fetchAllTouches(ts)
-	local ex,ey,dist,angle,ec,eb,em,et = -1,-1,0,0,0,nil,nil,nil
+local function fetchAllTouches(e,ctouch)
+	local ex,ey,dist,angle,ec,eb,em,et,eid,etmap = -1,-1,0,0,0,nil,nil,nil,nil,nil
+	local ts=e.allTouches
 	if ts then
+		eid=e.touch.id
+		etmap={}
 		local tmini,tmaxi = nil,nil
 		local idmi,idma = 1000,0
 		for _,t in ipairs(ts) do 
-			if t.id then
+			etmap[t.id]=t
+			if t.id and not ctouch[t.id] then
 				if t.id>idma then 
 					tmaxi=t
 					idma=t.id
@@ -343,6 +365,10 @@ local function fetchAllTouches(ts)
 				end
 			end
 		end
+		if ctouch[eid] and not tmini then
+			tmini=etmap[eid]
+			tmaxi=mini
+		end
 		if tmini and tmaxi then
 			ex=(tmini.x+tmaxi.x)/2
 			ey=(tmini.y+tmaxi.y)/2
@@ -353,19 +379,21 @@ local function fetchAllTouches(ts)
 	UI.Control.Meta.mouseButton=eb or 0
 	UI.Control.Meta.modifiers=em or 0
 	UI.Control.Meta.deviceType=et
-	return ex,ey,dist,angle,ec
+	return ex,ey,dist,angle,ec,eid,etmap
 end
 
 local function touchChanged(ctx,e)
-	local ex,ey,ed,ea,ec=fetchAllTouches(e.allTouches)
+	local ex,ey,ed,ea,ec=fetchAllTouches(e,ctx.ctouch)
 	ctx.cpx=ex
 	ctx.cpy=ey
 	ctx.cpd=ed
 	ctx.cpa=ea
-	local cs,i=dispatch(ctx,"onDragStart",ex,ey,ed,ea,true,nil,ec)
-	if cs then
-		ctx.cp_inertia.amount=i
-		ctx.cp_inertia.tm=nil 
+	if ctx.cdrag then
+		local cs,i=dispatch(ctx,"onDragStart",ex,ey,ed,ea,true,nil,ec)
+		if cs then
+			ctx.cp_inertia.amount=i
+			ctx.cp_inertia.tm=nil 
+		end
 	end
 end
 
@@ -380,12 +408,15 @@ local function onTouchMove(e)
 	local ctx=Contexts[e.surface or stage]
 	unlinger(ctx)
 	UI.Control.LocalCursor=nil
-	local ex,ey,ed,ea,ec=fetchAllTouches(e.allTouches)
+	local ex,ey,ed,ea,ec,_,etmap=fetchAllTouches(e,ctx.ctouch)
 	if not UI.Control.HasPresence then
 		dispatch(ctx,"onMousePresence",ex,ey)
 	end
+	for tid,tspr in pairs(ctx.ctouch) do
+		dispatchSS(ctx,"onMouseMove",tspr,etmap[tid].x,etmap[tid].y,true)
+	end
+	if ec==0 then return end
 	local ncps=dispatch(ctx,"onMouseMove",ex,ey,true)
-	if ctx.ctouch then return end
 	if not ctx.cdrag and ctx.cpx and ctx.cpy and ((math.distance(ctx.cpx,ctx.cpy,ex,ey)>UI.Control.DRAG_THRESHOLD) or (ed>0)) then
 		if ctx.cpt then
 			local pressTime=os.timer()-ctx.cpt
@@ -437,8 +468,9 @@ local function onTouchMove(e)
 end
 
 local function touchClear(ctx,ex,ey,ed,ea,cancel)
-	if ctx.ctouch then 
-		dispatchS(ctx,"onMouseUp",ex,ey)
+	local _,cps=next(ctx.ctouch)
+	if cps then
+		dispatchSS(ctx,"onMouseUp",cps,ex,ey)
 		UI.Control.Meta.mouseButton=0
 		return 
 	end
@@ -448,12 +480,17 @@ local function touchClear(ctx,ex,ey,ed,ea,cancel)
 		if not ctx.cp_inertia.vx then
 			ctx.cp_inertia.tm=nil
 			dispatchS(ctx,"onDragEnd",ex,ey,ed,ea)
+			ctx.cdrag=nil
 		end
+		ctx.cpt=nil
+		ctx.cpr=nil
 	elseif ctx.clong then
 		if not cancel and not dispatchS(ctx,"onLongClick",ex,ey,1) then
 			--Fallback
-			dispatchS(ctx,"onMouseClick",ex,ey,1)
+			dispatchS(ctx,"onMouseClick",ex,ey,1,if ctx.cpt then os.timer()-ctx.cpt else nil)
 		end
+		ctx.cpt=nil
+		ctx.cpr=nil
 	else
 		ctx.cpr=os.timer()
 		ctx.ccount=ctx.ccount+1
@@ -462,17 +499,27 @@ local function touchClear(ctx,ex,ey,ed,ea,cancel)
 	if ctx.clong or ctx.cpt then
 		dispatchS(ctx,"onLongPrepare",ex,ey,-1)
 	end
-	ctx.cpt=nil
+	ctx.clong=nil
 	UI.Control.Meta.mouseButton=0
 end
 
 local function onTouchDown(e)
 	local ctx=Contexts[e.surface or stage]
 	unlinger(ctx)
+	local ex,ey,ed,ea,ec,eid,etmap=fetchAllTouches(e,ctx.ctouch)
+	if eid and etmap and next(UI.Control.isRawTouch) then
+		local cps=dispatch(ctx,"isRawTouch",etmap[eid].x,etmap[eid].y)
+		if cps then
+			cps=dispatch(ctx,"onMouseDown",etmap[eid].x,etmap[eid].y)
+			ctx.ctouch[eid]=cps
+			return
+		end
+	end
 	if ctx.cpt then
 		ctx.cp_inertia.vx=nil
 		ctx.cp_inertia.vy=nil
 		ctx.cp_inertia.tm=nil
+		ctx.cpr=nil
 		touchChanged(ctx,e)
 		onTouchMove(e)
 	else
@@ -482,7 +529,6 @@ local function onTouchDown(e)
 		ctx.cp_inertia.vx=nil
 		ctx.cp_inertia.vy=nil
 		ctx.cp_inertia.tm=nil
-		local ex,ey,ed,ea,ec=fetchAllTouches(e.allTouches)
 		ctx.clong=((UI.Control.Meta.mouseButton or 0)&2)>0
 		if ctx.clong then 
 			--[[
@@ -513,8 +559,8 @@ local function onTouchDown(e)
 		ctx.cpy=ey
 		ctx.cpd=ed
 		ctx.cpa=ea
-		ctx.ctouch=cps
-		ctx.cpt=if ctx.ctouch then nil else os.timer()
+		ctx.ctouch[eid]=ctx.cps
+		ctx.cpt=if ctx.cps then nil else os.timer()
 		if not ctx.cpr then ctx.ccount=0 end
 		ctx.cpr=nil
 		ctx.cdrag=nil
@@ -523,14 +569,21 @@ end
 
 local function onTouchUp(e)
 	local ctx=Contexts[e.surface or stage]
-	local ex,ey,ed,ea,ec=fetchAllTouches(e.allTouches)
+	local ex,ey,ed,ea,_,eid,etmap=fetchAllTouches(e,ctx.ctouch)
 	if #e.allTouches<=1 then
 		touchClear(ctx,ex,ey,ed,ea)
+		ctx.ctouch[eid]=nil
 	else
-		-- Some touches left, generate a touch move for the first remaining touch
-		local id=e.touch.id
-		local ne={ surface=e.surface, allTouches={} }
-		for k,t in ipairs(e.allTouches) do if t.id~=id then table.insert(ne.allTouches,t) end end
+		-- Some touches left
+		-- Directly 'touch up' for raw touches
+		local cps=ctx.ctouch[eid]
+		if cps then
+			dispatchSS(ctx,"onMouseUp",cps,etmap[eid].x,etmap[eid].y)
+		end
+		ctx.ctouch[eid]=nil
+		-- Generate a touch move for the first remaining touch
+		local ne={ surface=e.surface, touch={ id=eid }, allTouches={} }
+		for k,t in ipairs(e.allTouches) do if t.id~=eid then table.insert(ne.allTouches,t) end end
 		if #ne.allTouches then
 			touchChanged(ctx,ne)
 			onTouchMove(ne)
@@ -541,8 +594,13 @@ end
 local function onTouchCancel(e)
 	local ctx=Contexts[e.surface or stage]
 	unlinger(ctx)
-	local ex,ey,ed,ea=fetchAllTouches(e)
+	local ex,ey,ed,ea,_,eid=fetchAllTouches(e,ctx.ctouch)
 	touchClear(ctx,ex or 0,ey or 0,ed,ea,true)
+	if eid then
+		ctx.ctouch[eid]=nil
+	else
+		table.clear(ctx.ctouch)
+	end
 end
 
 local function onMouseWheel(e)
@@ -610,7 +668,7 @@ end
 local function onEnterFrame(e)
 	for _,ctx in pairs(Contexts) do
 		local ktm=os.timer()
-		if ctx.cpt then
+		if ctx.cpt and not ctx.cpr then
 			if not ctx.cdrag then
 				local pressTime=ktm-ctx.cpt
 				if debugClick then print("uicontrol","onEnterFrame",pressTime,UI.Control.LONGCLICK_THRESHOLD,UI.Control.LONGCLICK_START,pressTime>UI.Control.LONGCLICK_THRESHOLD,pressTime>UI.Control.LONGCLICK_START,"clong?",ctx.clong) end
@@ -628,9 +686,11 @@ local function onEnterFrame(e)
 				end
 			end
 		elseif ctx.cpr then
-			if (ktm-ctx.cpr)>UI.Control.DOUBLECLICK_THRESHOLD then
+			local clickTime=ktm-ctx.cpr
+			if clickTime>UI.Control.DOUBLECLICK_THRESHOLD then
+				dispatchS(ctx,"onMouseClick",ctx.cpx,ctx.cpy,ctx.ccount,if ctx.cpt then os.timer()-ctx.cpt else nil)
 				ctx.cpr=nil
-				dispatchS(ctx,"onMouseClick",ctx.cpx,ctx.cpy,ctx.ccount)
+				ctx.cpt=nil
 				ctx.ccount=0
 			end
 		elseif ctx.cph and not ctx.cph.trig then
@@ -672,6 +732,7 @@ local function onEnterFrame(e)
 		end
 	end
 	ndispatch("onEnterFrame",e.deltaTime)
+	collectgarbage("step",100)
 end
 
 function UI.Control.setLocalCursor(cursor,forced)

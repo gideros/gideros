@@ -57,6 +57,7 @@ UI.ToolPie.Definition= {
     { name="Thickness", type="number" },
     { name="MidAngle", type="number" },
     { name="AngularSpan", type="number" },
+    { name="EdgeSize", type="number" },
     { name="Direction", type="boolean" },
     { name="SlotCount", type="number" },
   },
@@ -68,7 +69,8 @@ Arc.Shader=Core.class(UI.Shader)
 function Arc.Shader:init(params)
 	self.params=params
 	self.shader=self.overrideStandardShader(Arc.Shader,Shader.SHADER_PROGRAM_TEXTURE,0,function(spec)
-		function spec.vertexShader(vVertex,vColor,vTexCoord) : Shader
+@shader
+		function spec.vertexShader(vVertex,vColor,vTexCoord)
 			local Thalf=(^<vAngleRad.x)/2 
 			local Phy=Thalf*vVertex.x
 			local Ru=vAngleRad.y+vAngleRad.z
@@ -77,9 +79,9 @@ function Arc.Shader:init(params)
 			local Rp=Rmed+(Ru-Rmed)*vVertex.y
 			local Vint=hF2(tan(Phy)*Rp,Rp)
 			
-		    local angle=^<(vAngleRad.x*InstanceID+vAngleRad.w)+Thalf
+		    local angle=^<(vAngleRad.x*hF1(InstanceID)+vAngleRad.w)+Thalf
 			local ca=-cos(angle)
-			local sa=sin(angle)
+			local sa=hlslYSwap*sin(angle)
 			local rot=hF22(ca,sa,-sa,ca)
 			Vint=Vint*rot
 			
@@ -99,7 +101,7 @@ function Arc.Shader:init(params)
 		table.insert(spec.uniforms,{name="colLayer4",type=Shader.CFLOAT4,vertex=false})
 		function spec.fragmentShader() : Shader
 
-			local Phy=atan(fTexCoord.x/fTexCoord.y)
+			local Phy=atan2(fTexCoord.x,fTexCoord.y)
 			local R=fTexCoord.y/cos(Phy)
 			local D=(fTinf.x-fTinf.w-Phy)/^<fAngleSpan
 			local frag=lF4(0,0,0,0)
@@ -137,7 +139,7 @@ function Arc.Shader:init(params)
 
 			end
 
-			frag=fColor*frag
+			frag=lF4(fColor)*frag
 			if (frag.a==0.0) then discard() end
 			return lF4(frag)
 		end
@@ -151,13 +153,7 @@ function Arc:init(innerRadius,outerRadius,startAngle,endAngle)
 	self.endAngle=endAngle or 135
 	self.corners={20,20,20,20}
 	self.tcorners={0.4,0.4,0.4,0.4}
-	self.shader=Arc.Shader.new({
-		--colBack="chart.colBackground",
-		--colBar="chart.colItem",
-		--colSel="chart.colItemSelected",
-		--barWidth="0s",
-		--barMargin=".1s",
-	})
+	self.shader=Arc.Shader.new({})
 	self.shader:apply(self)	
 	self:setVertexArray(-1,-1,-1,1,1,1,1,-1)
 	self:setTextureCoordinateArray(-1,-1,-1,1,1,1,1,-1)
@@ -176,7 +172,7 @@ end
 function Arc:update()
 	local theta=30
 	local span=self.endAngle-self.startAngle
-	local instn=span//theta
+	local instn=(span//theta)<>1
 	theta=span/instn
 	self:setInstanceCount(instn)
 	self:setShaderConstant("vAngleRad",Shader.CFLOAT4,1,
@@ -189,8 +185,11 @@ function Arc:update()
 	self:setShaderConstant("fNineT",Shader.CFLOAT4,1,unpack(self.tcorners))
 end
 
-function Arc:setColors(c1,c2,c3,c4)
-	
+function Arc:setTextureCorners(tcv,tct)
+	self.corners={tcv,tcv,tcv,tcv}
+	self.tcorners={tct,tct,tct,tct}
+	self:setShaderConstant("fNineV",Shader.CFLOAT4,1,unpack(self.corners))
+	self:setShaderConstant("fNineT",Shader.CFLOAT4,1,unpack(self.tcorners))
 end
 
 function UI.ToolPie:init(radius,thickness,angle,direction,span,nslot)
@@ -208,6 +207,7 @@ function UI.ToolPie:init(radius,thickness,angle,direction,span,nslot)
 	self.midAngle=angle or 0
 	self.direction=direction or false
 	self.angleSpan=span
+	self.edgeSize=0
 	self.slotCount=nslot
 	self.data={}
 	self.slots={}
@@ -220,6 +220,9 @@ function UI.ToolPie:updateStyle(fromParent)
 	UI.Panel.updateStyle(self)
 	local bTex=self:resolveStyle("toolpie.txRing")
 	self.arc:setTexture(bTex)
+	local rcV=self:resolveStyle("toolpie.szRingCorner")
+	local rcT=self:resolveStyle("toolpie.szRingCornerTextureRatio")
+	self.arc:setTextureCorners(rcV,rcT)
 	self.arc.shader:apply(self.arc)
 	self:update()
 end
@@ -231,6 +234,11 @@ end
 
 function UI.ToolPie:setAngularSpan(angle)
 	self.angleSpan=angle
+	self:update()
+end
+
+function UI.ToolPie:setEdgeSize(sz)
+	self.edgeSize=sz
 	self:update()
 end
 
@@ -273,8 +281,10 @@ function UI.ToolPie:update()
 	self.placerSlotSize=slot
 	self:place()
 	local span=if self.angleSpan then self.angleSpan else ^>(self.maxSlots*slot/rm)
-	if direction then span=-span end	
-	self.arc:setParameters(rm-tm/2,rm+tm/2,self.midAngle-span/2,self.midAngle+span/2)
+	local edge=self:resolveStyle(self.edgeSize)
+	edge=^>(edge/rm)
+	if self.direction then span=-span end	
+	self.arc:setParameters(rm-tm/2,rm+tm/2,self.midAngle-span/2-edge,self.midAngle+span/2+edge)
 end
 
 function UI.ToolPie:setData(data,builder) 
@@ -294,10 +304,10 @@ function UI.ToolPie:setData(data,builder)
 	self.builder=builder
 		
 	for _,c in pairs(self.slots) do
+		c.spr:removeFromParent()
 		if not cache or not cache[c.d] then
 			if c.spr.destroy then c.spr:destroy() end 
 		end
-		c.spr:removeFromParent()
 	end
 	self.slots={}
 	self.datacells={}
@@ -309,6 +319,7 @@ function UI.ToolPie:setData(data,builder)
 			self:addChild(cell.spr)
 			self.datacells[d]=cell
 		end
+		self:update()
 	end	
 end
 
@@ -322,7 +333,7 @@ function UI.ToolPie:buildSlot(d)
 	end
 	spr=UI.Utils.makeWidget(spr,d)
 	if type(placer)=="number" then
-		placer={slot=placer }
+		placer={slot=placer}
 	else
 		placer=placer or { }
 	end
@@ -342,11 +353,11 @@ function UI.ToolPie:place()
 	self.maxSlots=self.slotCount or place
 	
 	local span=if self.angleSpan then self.angleSpan else ^>(self.maxSlots*sdim/rd)
-	if direction then span=-span end	
+	if self.direction then span=-span end	
 
 	local function getLoc(sn)
 		sn-=0.5
-		if direction then sn=-sn end	
+		if self.direction then sn=-sn end	
 		local ag=sn*sdim/rd+^<(self.midAngle-span/2)
 		local v=vector(math.sin(ag)*rd,-math.cos(ag)*rd)
 		return v

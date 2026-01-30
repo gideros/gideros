@@ -204,6 +204,19 @@ function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 	end
 	-- NORMAL
 	-- TO DO: .glb embedded normal map texture (buffer)
+	if mtl.embeddedNormalTexture and not mtl.normalMap then -- .glb embedded texture (buffer)
+		if mtl.embeddedNormalTexture.b64 then --Assume Base64
+			local iext=mtl.embeddedNormalTexture.type
+			local data=Cryptography.unb64(mtl.embeddedNormalTexture.b64)
+			g3dNum+=1
+			local bname="_g3d_"..g3dNum.."."..iext
+			local bb=Buffer.new(bname) -- embedded texture buffer
+			bb:set(data)
+			mtl.normalMap=Texture.new("|B|"..bname,true,{ wrap=TextureBase.REPEAT, extend=false})
+		else
+			mtl.normalMap=mtl.embeddedNormalTexture
+		end
+	end
 	if mtl.normalMapFile and not mtl.normalMap then -- .fbx normal map texture (file path)
 		local path = mtl.modelpath or ""
 		mtl.normalMapFile = string.gsub(mtl.normalMapFile, "\\", "/") -- fix for android (and linux?)
@@ -219,6 +232,18 @@ function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 		m:setTexture(mtl.normalMap,1)
 		m.hasNormalMap=true
 		smode=smode|D3.Mesh.MODE_BUMP
+		if not m.hasTexture then
+			local tw=mtl.normalMap:getWidth()
+			local th=mtl.normalMap:getHeight()
+			local tc={}
+			for i=1,#obj.texcoords,2 do
+				tc[i]=obj.texcoords[i]*tw
+				tc[i+1]=obj.texcoords[i+1]*th
+			end
+			m:setTextureCoordinateArray(tc)
+		end
+		m.hasTexture=true
+		smode=smode|D3.Mesh.MODE_TEXTURE
 	end
 	if mtl.kd then
 		m:setColorTransform(mtl.kd[1],mtl.kd[2],mtl.kd[3],mtl.kd[4])

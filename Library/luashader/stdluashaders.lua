@@ -19,7 +19,7 @@ StandardShaders.stdAttributes={
 	{cat=0b0000011100001111, used=0b0001111100001111, name="vVertex",type=Shader.DFLOAT,mult=2,slot=0,offset=0},
 	{cat=0b0000011111110000, used=0b0001111111110000, name="vVertex",type=Shader.DFLOAT,mult=3,slot=0,offset=0},
 	{cat=0b0001111111111111, used=0b0001111010101010, name="vColor",type=Shader.DUBYTE,mult=4,slot=1,offset=0},
-	{cat=0b0000011111111111, used=0b0001111111001100, name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
+	{cat=0b0000011111111111, used=0b0001111111001101, name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
 	-- Particle shader variants
 	{cat=0b0001100000000000, used=0b0001111111110000, name="vVertex",type=Shader.DFLOAT,mult=4,slot=0,offset=0},
 	{cat=0b0001100000000000, used=0b0001111111110000, name="vTexCoord",type=Shader.DFLOAT,mult=4,slot=2,offset=0},

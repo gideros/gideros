@@ -7,7 +7,7 @@ UI.ColorRangeView.ShaderCache={}
 
 UI.ColorRangeView.Spiral=Core.class(UI.Shader)
 function UI.ColorRangeView.Spiral:init(params)
-	self.shader=self.overrideStandardShader(UI.Shader.Grayscale,Shader.SHADER_PROGRAM_TEXTURE,0,function(spec)
+	self.shader=self.overrideStandardShader(UI.ColorRangeView.Spiral,Shader.SHADER_PROGRAM_TEXTURE,0,function(spec)
 			function spec.fragmentShader() : Shader
 				--[[
 				local p=4
@@ -117,9 +117,11 @@ UI.ColorPicker.Template={
 			children={
 				{ class="UI.Button", name="btValidate", layout={gridx=0,width="colorpicker.szButtonWidth", fill=Sprite.LAYOUT_FILL_BOTH },
 					Image="colorpicker.icValidate",
+					Style= { ["image.colTint"]="colText" },
 				},
 				{ class="UI.Button", name="btCancel", layout={gridx=1,width="colorpicker.szButtonWidth", fill=Sprite.LAYOUT_FILL_BOTH },
 					Image="colorpicker.icCancel",
+					Style= { ["image.colTint"]="colText" },
 				},
 			}
 		},
@@ -191,7 +193,7 @@ function UI.ColorPicker:onWidgetAction(w)
 		self:setColor(self.originalColor)
 		UI.dispatchEvent(self,"WidgetAction",self.color,false)
 		return true
-	elseif w.histoNum then		
+	elseif w.histoNum then
 		self.colorHisto=w.histoNum
 		local c=self.history[w.histoNum] or self.colorDefault
 		self.color=c
@@ -276,7 +278,7 @@ UI.ColorPickerBox.Template={
 	BaseStyle="combobox.styBase",
 	children={
 		{ class="UI.ButtonColorCombo", 
-		layout={fill=Sprite.LAYOUT_FILL_BOTH, width="datepicker.szWidth",}, 
+		layout={fill=Sprite.LAYOUT_FILL_BOTH, width="colorpicker.szWidth",}, 
 		name="editor",
 		}
 	},
@@ -297,14 +299,16 @@ UI.ColorPickerBox.Template={
 --- Combobox object
 function UI.ColorPickerBox:init()
 	UI.BuilderSelf(UI.ColorPickerBox.Template,self)	
-	function self.popup.onWidgetChange(s,w,c)
+	function self.popup.onWidgetChange(s,w,c,v)
 		if w==self.clPicker then
+			UI.dispatchEvent(self,"WidgetChange",c,v)
 			--self.editor.pnColor:setColor(c)
 			return true
 		end
 	end
 	function self.popup.onWidgetAction(s,w,c,v)
 		if w==self.clPicker then
+			UI.dispatchEvent(self,"WidgetChange",c,v)
 			if v then
 				self:setColor(c)
 			else
