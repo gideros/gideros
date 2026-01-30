@@ -121,7 +121,7 @@ linux.install: linux.libs.install linux.app linux.plugins.install
 	cp linux/app.desktop $(LINUX_RELEASE)/LinuxTemplate.desktop
 	mkdir -p $(LINUX_RELEASE)/syslib
 	for i in `ldd $(LINUX_RELEASE)/LinuxTemplate | grep '=> /lib' | cut -d' ' -f 3 `; do cp $$i $(LINUX_RELEASE)/syslib/; done
-	cd $(LINUX_RELEASE)/syslib; rm $(addprefix lib,$(addsuffix .*,c dl m pthread rt rtmp GL GLX GLdispatch X11 Xau xcb Xdmcp stdc++))
+	cd $(LINUX_RELEASE)/syslib; rm $(addprefix lib,$(addsuffix .*,c dl m pthread rtmp GL GLX GLdispatch X11 Xau xcb Xdmcp stdc++))
 	cd $(LINUX_RELEASE)/syslib; for i in *; do patchelf --set-rpath '$$ORIGIN' $$i; done
 	strip $(addprefix $(LINUX_RELEASE)/,LinuxTemplate libgid.so libgvfs.so liblua.so libpystring.so libgideros.so libopenal.so libmp3.so)
 	mkdir -p $(LINUX_RELEASE)/plugins

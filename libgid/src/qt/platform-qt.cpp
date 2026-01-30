@@ -174,7 +174,11 @@ std::string getLanguage() {
 
 std::string getTimezone()
 {
+#ifndef Q_OS_LINUX
   return QString(QTimeZone::systemTimeZoneId()).toStdString();
+#else
+	return "";
+#endif
 }
 
 std::string getAppId() {
