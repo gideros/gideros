@@ -89,8 +89,8 @@ end
 -- ***************************************
 --Plane
 local Plane=Core.class(Mesh3D)
-function Plane:init(w,h,d)
-	w=w or 1 h=h or 1 d=d or 1
+function Plane:init(w,d)
+	w=w or 1 d=d or 1
 	if not Plane.ia then
 		Plane.ia = { -- index array
 			1,2,3, 1,3,4,
@@ -100,16 +100,16 @@ function Plane:init(w,h,d)
 		}
 	end
 	self._va={ -- vertex array
-		-w,h,-d,
-		w,h,-d,
-		w,h,d,
-		-w,h,d,
+		-w,0,-d,
+		w,0,-d,
+		w,0,d,
+		-w,0,d,
 	}
 	self:setGenericArray(3,Shader.DFLOAT,3,4,Plane.na)
 	self:setVertexArray(self._va)
 	self:setIndexArray(Plane.ia)
 	self._va=Plane.va self._ia=Plane.ia
-	self.dims={w=w,h=h,d=d}
+	self.dims={w=w,d=d}
 end
 function Plane:mapTexture(texture,sw,sh)
 	self:setTexture(texture)
@@ -138,7 +138,7 @@ function Plane:mapColor(color,alpha)
 end
 function Plane:getCollisionShape()
 	if not self._r3dshape then
-		self._r3dshape=r3d.BoxShape.new(self.dims.w,self.dims.h,self.dims.d)
+		self._r3dshape=r3d.BoxShape.new(self.dims.w,0.01,self.dims.d) -- a value of 0.001 is also fine
 	end
 	return self._r3dshape
 end
