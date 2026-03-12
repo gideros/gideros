@@ -418,7 +418,6 @@ ApplicationManager::ApplicationManager() {
 
 		gpath_setDefaultDrive(0);
 
-	    gpath_setDrivePath(0,(PATH_Executable+"\\assets\\").c_str());
 	    std::string docsPath=us(_wgetenv(L"APPDATA"));
 	    docsPath=docsPath+"\\"+PATH_AppName+"\\";
 	    CreateDirectory(ws(docsPath.c_str()).c_str(),NULL);        // create dir if it does not exist
@@ -457,10 +456,20 @@ ApplicationManager::ApplicationManager() {
 		// audio
 		gaudio_Init();
 
-		G_FILE* fis = g_fopen("properties.bin", "rb");
-		player_=(fis==NULL);
-		if (fis)
-			g_fclose(fis);
+		std::string gapp=PATH_Executable+"\\assets.GApp";
+		WORD dwAttrib = GetFileAttributes(ws(gapp.c_str()).c_str());
+		if ((dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		         !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))) {
+			appName=gapp;
+			player_=false;
+		}
+		else {
+		    gpath_setDrivePath(0,(PATH_Executable+"\\assets\\").c_str());
+			G_FILE* fis = g_fopen("properties.bin", "rb");
+			player_=(fis==NULL);
+			if (fis)
+				g_fclose(fis);
+		}
 
 		// network
 		if (player_)
@@ -726,6 +735,10 @@ ApplicationManager::ApplicationManager() {
 
 	void ApplicationManager::loadProperties() {
 		G_FILE* fis = g_fopen("properties.bin", "rb");
+		if (fis==NULL) {
+			glog_w("Failed to open properties.bin");
+			return;
+		}
 
 		g_fseek(fis, 0, SEEK_END);
 		int len = g_ftell(fis);
@@ -834,12 +847,13 @@ ApplicationManager::ApplicationManager() {
 	}
 
 #include "netendian.h"
+
 	void ApplicationManager::play(const char *gapp) {
-		FILE *fd = fopen(gapp, "rb");
-		if (!fd)
+		std::wstring w=ws(gapp);
+		int fd = ::_wopen(w.c_str(), 0);
+		if (fd<0)
 			return; //No file/not openable
-		fseek(fd, 0, SEEK_END);
-		long pksz = ftell(fd);
+		long pksz = _lseek(fd, 0, SEEK_END);;
 		if (pksz < 16)
 			return; //Invalid file size
 		struct {
@@ -847,16 +861,16 @@ ApplicationManager::ApplicationManager() {
 			uint32_t version;
 			char signature[8];
 		}PACKED tlr;
-		fseek(fd, pksz - 16, SEEK_SET);
-		fread(&tlr, 1, 16, fd);
+		_lseek(fd, pksz - 16, SEEK_SET);
+		_read(fd,&tlr, 16);
 		tlr.version = BIGENDIAN4(tlr.version);
 		tlr.flistOffset = BIGENDIAN4(tlr.flistOffset);
 		if ((!strncmp(tlr.signature, "GiDeRoS", 7)) && (tlr.version == 0)) {
-			glog_v("GAPP-ARCH: %s", gapp);
 			gvfs_setZipFile(gapp);
+			glog_d("GAPP-ARCH: %s", gapp);
 			char *buffer = (char *) malloc(pksz - tlr.flistOffset);
-			fseek(fd, tlr.flistOffset, SEEK_SET);
-			fread(buffer, 1, pksz - tlr.flistOffset, fd);
+			lseek(fd, tlr.flistOffset, SEEK_SET);
+			_read(fd,buffer, pksz - tlr.flistOffset);
 			int offset = 0;
 			while (offset < (pksz - tlr.flistOffset)) {
 				int plen = strlen(buffer + offset);
@@ -864,7 +878,7 @@ ApplicationManager::ApplicationManager() {
 					break; //End of list
 				uint32_t foffset = PBULONG(buffer + offset + plen + 1);
 				uint32_t fsize = PBULONG(buffer + offset + plen + 1+sizeof(uint32_t));
-				const char *norm = gpath_normalizeArchivePath(buffer + offset);
+				const char *norm = buffer+offset;
 				gvfs_addFile(norm, 0, foffset, fsize);
 				//glog_d("GAPP-FILE: %s,%d,%d", norm, foffset, fsize);
 				offset += (plen + 1 + 2 * sizeof(uint32_t));
@@ -872,7 +886,7 @@ ApplicationManager::ApplicationManager() {
 			free(buffer);
 		} else
 			glog_w("GAPP: Invalid signature/version");
-		fclose(fd);
+		_close(fd);
 
 		if (running_ == true) {
 			Event event(Event::APPLICATION_EXIT);
@@ -881,6 +895,7 @@ ApplicationManager::ApplicationManager() {
 			running_ = false;
 		}
 
+		/*
 		std::string gappfile = gapp;
 		std::string projectName = gappfile.substr(0,
 				gappfile.find_last_of('.') - 1);
@@ -904,6 +919,7 @@ ApplicationManager::ApplicationManager() {
 		setDocumentsDirectory(documents.c_str());
 		setTemporaryDirectory(temporary.c_str());
 		setResourceDirectory("");
+		*/
 
 		loadProperties();
 		loadLuaFiles();

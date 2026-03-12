@@ -76,6 +76,8 @@ struct ProjectProperties
         osx_category = 5;
         winrt_org = "GiderosMobile";
         winrt_package = "com.yourdomain.yourapp";
+        win32_console=false;
+        win32_gapp = false;
         html5_host = "";
         html5_crash = "";
         html5_mem = 256;
@@ -140,6 +142,8 @@ struct ProjectProperties
     int osx_category;
     QString winrt_org;
     QString winrt_package;
+    bool win32_console;
+    bool win32_gapp;
     QString html5_host;
     int html5_mem;
     bool html5_pack;

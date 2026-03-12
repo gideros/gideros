@@ -86,6 +86,8 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, QDir pro
     ui->osx_category->setCurrentIndex(properties_->osx_category);
     ui->winrt_org->setText(properties->winrt_org);
     ui->winrt_package->setText(properties->winrt_package);
+    ui->win32_console->setChecked(properties_->win32_console);
+    ui->win32_gapp->setChecked(properties_->win32_gapp);
     ui->html5_host->setText(properties->html5_host);
     ui->html5_crash->setText(properties->html5_crash);
     //ui->html5_mem->setText(QString::number(properties->html5_mem));
@@ -274,6 +276,8 @@ void ExportProjectDialog::onAccepted()
     properties_->osx_category = ui->osx_category->currentIndex();
     properties_->winrt_org = ui->winrt_org->text();
     properties_->winrt_package = ui->winrt_package->text();
+    properties_->win32_console = ui->win32_console->isChecked();
+    properties_->win32_gapp = ui->win32_gapp->isChecked();
     properties_->encryptCode = ui->encryptCode->isChecked();
     properties_->encryptAssets = ui->encryptAssets->isChecked();
     properties_->html5_host = ui->html5_host->text();

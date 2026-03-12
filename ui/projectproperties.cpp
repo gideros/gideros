@@ -126,6 +126,8 @@ void ProjectProperties::toXml(QXmlStreamWriter &out) const
     out.writeAttribute("osx_category", QString::number(this->osx_category));
     out.writeAttribute("winrt_org", this->winrt_org);
     out.writeAttribute("winrt_package", this->winrt_package);
+    out.writeAttribute("win32_console", QString::number(this->win32_console ? 1 : 0));
+    out.writeAttribute("win32_gapp", QString::number(this->win32_gapp ? 1 : 0));
     out.writeAttribute("html5_host", this->html5_host);
     out.writeAttribute("html5_crash", this->html5_crash);
     out.writeAttribute("html5_mem", QString::number(this->html5_mem));
@@ -304,6 +306,10 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->winrt_org = properties.attribute("winrt_org");
         if (!properties.attribute("winrt_package").isEmpty())
             this->winrt_package = properties.attribute("winrt_package");
+        if (!properties.attribute("win32_console").isEmpty())
+            this->win32_console = properties.attribute("win32_console").toInt() != 0;
+        if (!properties.attribute("win32_gapp").isEmpty())
+            this->win32_gapp = properties.attribute("win32_gapp").toInt() != 0;
         if (!properties.attribute("html5_host").isEmpty())
             this->html5_host = properties.attribute("html5_host");
         if (!properties.attribute("html5_crash").isEmpty())

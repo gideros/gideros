@@ -420,7 +420,7 @@ A universal solution is created containing a Windows Phone and Windows Store pro
        <item>
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>(ALPHA) Generate a single .GApp file playable by QT-Based desktop players.</string>
+          <string>Generate a single .GApp file playable by QT-Based desktop players.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -450,19 +450,24 @@ A universal solution is created containing a Windows Phone and Windows Store pro
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>
-Beta version. Should be feature complete but use with caution!
-
-This is the same as Windows Desktop export except it produces a lightweight export without Qt libraries. The package is smaller and may run smoother. 
-
-The exported program will attempt to use VSYNC to time the drawing of frames (30 or 60 fps, whichever you have selected). If VSYNC (which is graphics card dependent) is not detected on the PC, it will fall back to Windows timer events. To overide this behaviour, and ALWAYS uses timer events, launch with &quot;win32 timer&quot;
-
-win32.exe and win32console.exe in export are identical except the latter runs without a console window popping up.
-
-* No extra settings for Win32.</string>
+          <string>The exported program will attempt to use VSYNC to time the drawing of frames (30 or 60 fps, whichever you have selected). If VSYNC (which is graphics card dependent) is not detected on the PC, it will fall back to Windows timer events. To overide this behaviour, and ALWAYS uses timer events, launch with &quot;win32 timer&quot;</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="win32_console">
+         <property name="text">
+          <string>Open console</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="win32_gapp">
+         <property name="text">
+          <string>Package assets</string>
          </property>
         </widget>
        </item>

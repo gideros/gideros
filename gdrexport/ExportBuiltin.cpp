@@ -325,6 +325,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
     QString templatedir;
     Utilities::RemoveSpaceMode underscore=Utilities::NODIGIT;
     bool needGApp=false;
+    QString gappName=ctx->base;
 
     switch (ctx->deviceFamily)
     {
@@ -357,6 +358,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       ctx->templatenamews = "WindowsDesktopTemplate";
       ctx->platform = "Win32";
       underscore = Utilities::UNDERSCORES;
+      needGApp = ctx->properties.win32_gapp;
+      gappName="assets";
       break;
 
     case e_Linux:
@@ -444,7 +447,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    {
        if (ctx->deviceFamily == e_GApp)
            ctx->outputDir.cdUp();
-       GAppFormat::buildGApp(QDir::cleanPath(ctx->outputDir.absoluteFilePath(ctx->base+".GApp")),ctx);
+       GAppFormat::buildGApp(QDir::cleanPath(ctx->outputDir.absoluteFilePath(gappName+".GApp")),ctx);
        if (ctx->deviceFamily == e_GApp)
        	ctx->outputDir.cd(ctx->base);
        else
@@ -545,6 +548,14 @@ void ExportBuiltin::doExport(ExportContext *ctx)
     	   ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
 	   	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
        }
+   }
+   else if(ctx->deviceFamily == e_Win32){
+       if (ctx->properties.win32_console) {
+           ctx->outputDir.remove(ctx->basews+".exe");
+           ctx->outputDir.rename(ctx->basews+"-Console.exe",ctx->basews+".exe");
+        }
+        else
+           ctx->outputDir.remove(ctx->basews+"-Console.exe");
    }
    else if(ctx->deviceFamily == e_Android){
 	   ExportCommon::appIcon(ctx,36,36,QString("app/src/main/res/drawable-ldpi/icon.png"));
