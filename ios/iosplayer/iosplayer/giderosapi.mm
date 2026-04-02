@@ -1042,7 +1042,10 @@ void ApplicationManager::loadProperties()
 #endif
 	scaleFactor_=contentScaleFactor;
     gdr_ScaleFactor=contentScaleFactor;
-    application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+    CGSize drawableSize = view_.bounds.size;
+    drawableSize.width *= contentScaleFactor;
+    drawableSize.height *= contentScaleFactor;
+    application_->setResolution(drawableSize.width, drawableSize.height);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
@@ -1132,6 +1135,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	bool notRetina = (properties_.retinaDisplay == 0) || (properties_.retinaDisplay == 1 && !phone) || (properties_.retinaDisplay == 2 && phone);
 	
 	float contentScaleFactor = 1;
+
 #if !TARGET_OS_OSX
     [view_ enableRetinaDisplay:(notRetina ? NO : YES)];
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
@@ -1141,7 +1145,10 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 #endif
 	scaleFactor_=contentScaleFactor;
     gdr_ScaleFactor=contentScaleFactor;
-	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+    CGSize drawableSize = view_.bounds.size;
+    drawableSize.width *= contentScaleFactor;
+    drawableSize.height *= contentScaleFactor;
+	application_->setResolution(drawableSize.width, drawableSize.height);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
