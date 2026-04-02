@@ -848,12 +848,14 @@ int SpriteBinder::setLayoutParameters(lua_State *L)
                     p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
                     p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
                     p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
+                    p->resolvedMap|=FMKEY(insetLeft)|FMKEY(insetBottom)|FMKEY(insetRight);
                 }
                 else {
                     p->resolved.erase(FKEY(insetTop));
                     p->resolved.erase(FKEY(insetLeft));
                     p->resolved.erase(FKEY(insetBottom));
                     p->resolved.erase(FKEY(insetRight));
+                    p->resolvedMap&=~(FKEY(insetTop)|FMKEY(insetLeft)|FMKEY(insetBottom)|FMKEY(insetRight));
                 }
                 p->pInsets.left=p->pInsets.right=p->pInsets.top=p->pInsets.bottom=luaL_checknumber(L,-1);
             }
@@ -913,10 +915,12 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
                 fieldCount--;
                 FRESOLVE(minWidth,-1)
                     p->resolved[FKEY(prefWidth)]=p->resolved[FKEY(minWidth)];
+                    p->resolvedMap|=FMKEY(prefWidth);
                 }
                 else {
                     p->resolved.erase(FKEY(minWidth));
                     p->resolved.erase(FKEY(prefWidth));
+                    p->resolvedMap&=~(FMKEY(minWidth)|FMKEY(prefWidth));
                 }
                 float width=luaL_checknumber(L,-1);
                 p->aminWidth=width; p->prefWidth=width;
@@ -929,10 +933,12 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
                 fieldCount--;
                 FRESOLVE(minHeight,-1)
                     p->resolved[FKEY(prefHeight)]=p->resolved[FKEY(minHeight)];
+                    p->resolvedMap|=FMKEY(prefHeight);
                 }
                 else {
                     p->resolved.erase(FKEY(minHeight));
                     p->resolved.erase(FKEY(prefHeight));
+                    p->resolvedMap&=~(FMKEY(minHeight)|FMKEY(prefHeight));
                 }
                 float height=luaL_checknumber(L,-1);
                 p->aminHeight=height; p->prefHeight=height;
@@ -947,12 +953,14 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
                     p->resolved[FKEY(insetLeft)]=p->resolved[FKEY(insetTop)];
                     p->resolved[FKEY(insetBottom)]=p->resolved[FKEY(insetTop)];
                     p->resolved[FKEY(insetRight)]=p->resolved[FKEY(insetTop)];
+                    p->resolvedMap|=FMKEY(insetLeft)|FMKEY(insetBottom)|FMKEY(insetRight);
                 }
                 else {
                     p->resolved.erase(FKEY(insetTop));
                     p->resolved.erase(FKEY(insetLeft));
                     p->resolved.erase(FKEY(insetBottom));
                     p->resolved.erase(FKEY(insetRight));
+                    p->resolvedMap&=~(FKEY(insetTop)|FMKEY(insetLeft)|FMKEY(insetBottom)|FMKEY(insetRight));
                 }
                 p->insets.left=p->insets.right=p->insets.top=p->insets.bottom=luaL_checknumber(L,-1);
             }
