@@ -40,7 +40,7 @@ end
 
 function Mesh3D:setInstanceCount(n)
 	self._im1,self._im2,self._im3,self._im4=
-		self._im1 or {}, self._im2 or {},self._im3 or {},self._im4 or {}
+		self._im1 or {},self._im2 or {},self._im3 or {},self._im4 or {}
 	self._icount=n
 end
 
@@ -89,47 +89,55 @@ end
 -- ***************************************
 --Plane
 local Plane=Core.class(Mesh3D)
-function Plane:init(w,d)
+function Plane:init(w,d) -- (width,depth)
 	w=w or 1 d=d or 1
 	if not Plane.ia then
-		Plane.ia = { -- index array
+		Plane.ia={ -- index array
 			1,2,3, 1,3,4,
 		}
-		Plane.na = { -- normal array
+		Plane.na={ -- normal array
 			0,1,0, 0,1,0, 0,1,0, 0,1,0,
 		}
 	end
 	self._va={ -- vertex array
-		-w,0,-d,
-		w,0,-d,
-		w,0,d,
-		-w,0,d,
+		-w/2,0,-d/2,
+		w/2,0,-d/2,
+		w/2,0,d/2,
+		-w/2,0,d/2,
 	}
 	self:setGenericArray(3,Shader.DFLOAT,3,4,Plane.na)
 	self:setVertexArray(self._va)
 	self:setIndexArray(Plane.ia)
 	self._va=Plane.va self._ia=Plane.ia
-	self.dims={w=w,d=d}
+	self.dims={w=w,h=0.001,d=d}
 end
-function Plane:mapTexture(texture,sw,sh)
-	self:setTexture(texture)
-	if texture then
+function Plane:mapTexture(texture,sw,sh,normal)
+	if not texture then
+		print(">Error mapping texture. Please check texture<")
+		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		return
+	else
+		self:setTexture(texture)
 		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
 		self:setTextureCoordinateArray {
-			0, 0,
-			tw, 0,
-			tw, th,
-			0, th,
+			0,0,
+			tw,0,
+			tw,th,
+			0,th,
 		}
 		self:updateMode(Mesh3D.MODE_TEXTURE,0)
-	else
-		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		if normal then
+			self:setTexture(normal,1)
+			self:updateMode(Mesh3D.MODE_BUMP,0)
+		else
+			self:updateMode(0,Mesh3D.MODE_BUMP)
+		end
 	end
 end
 function Plane:mapColor(color,alpha)
 	if color then
-		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		for i=1,#self._ia do -- the mesh index array
+			self:setColor(i,color,alpha or 1)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
@@ -138,15 +146,15 @@ function Plane:mapColor(color,alpha)
 end
 function Plane:getCollisionShape()
 	if not self._r3dshape then
-		self._r3dshape=r3d.BoxShape.new(self.dims.w,0.01,self.dims.d) -- a value of 0.001 is also fine
+		self._r3dshape=r3d.BoxShape.new(self.dims.w,self.dims.h,self.dims.d)
 	end
 	return self._r3dshape
 end
 
 -- ***************************************
---Unit Cube
+--Cube
 local Box=Core.class(Mesh3D)
-function Box:init(w,h,d)
+function Box:init(w,h,d) -- (width,height,depth)
 	w=w or 1 h=h or 1 d=d or 1
 	if not Box.ia then
 		Box.ia={
@@ -167,12 +175,12 @@ function Box:init(w,h,d)
 		}
 	end
 	self._va={
-		-w,h,-d, w,h,-d, w,-h,-d, -w,-h,-d,
-		w,h,d, -w,h,d, -w,-h,d, w,-h,d,
-		-w,-h,-d, w,-h,-d, w,-h,d, -w,-h,d,
-		-w,h,d, w,h,d, w,h,-d, -w,h,-d,
-		-w,h,d, -w,h,-d, -w,-h,-d, -w,-h,d,
-		w,h,-d, w,h,d, w,-h,d, w,-h,-d,
+		-w/2,h/2,-d/2, w/2,h/2,-d/2, w/2,-h/2,-d/2, -w/2,-h/2,-d/2,
+		w/2,h/2,d/2, -w/2,h/2,d/2, -w/2,-h/2,d/2, w/2,-h/2,d/2,
+		-w/2,-h/2,-d/2, w/2,-h/2,-d/2, w/2,-h/2,d/2, -w/2,-h/2,d/2,
+		-w/2,h/2,d/2, w/2,h/2,d/2, w/2,h/2,-d/2, -w/2,h/2,-d/2,
+		-w/2,h/2,d/2, -w/2,h/2,-d/2, -w/2,-h/2,-d/2, -w/2,-h/2,d/2,
+		w/2,h/2,-d/2, w/2,h/2,d/2, w/2,-h/2,d/2, w/2,-h/2,-d/2,
 	}
 	self:setGenericArray(3,Shader.DFLOAT,3,24,Box.na)
 	self:setVertexArray(self._va)
@@ -180,9 +188,13 @@ function Box:init(w,h,d)
 	self._va=Box.va self._ia=Box.ia
 	self.dims={w=w,h=h,d=d}
 end
-function Box:mapTexture(texture,sw,sh)
-	self:setTexture(texture)
-	if texture then
+function Box:mapTexture(texture,sw,sh,normal)
+	if not texture then
+		print(">Error mapping texture. Please check texture<")
+		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		return
+	else
+		self:setTexture(texture)
 		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
 		self:setTextureCoordinateArray{
 			0,0,tw,0,tw,th,0,th,
@@ -193,14 +205,18 @@ function Box:mapTexture(texture,sw,sh)
 			0,0,tw,0,tw,th,0,th,
 		}
 		self:updateMode(Mesh3D.MODE_TEXTURE,0)
-	else
-		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		if normal then
+			self:setTexture(normal,1)
+			self:updateMode(Mesh3D.MODE_BUMP,0)
+		else
+			self:updateMode(0,Mesh3D.MODE_BUMP)
+		end
 	end
 end
 function Box:mapColor(color,alpha)
 	if color then
-		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		for i=1,#self._ia do -- the mesh index array
+			self:setColor(i,color,alpha or 1)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
@@ -215,18 +231,18 @@ function Box:getCollisionShape()
 end
 
 -- ***************************************
---Unit Sphere
+--Sphere
 local Sphere=Core.class(Mesh3D)
-function Sphere:init(steps,radius)
+function Sphere:init(steps,diam) -- (steps,diameter)
+	steps=steps or 8 diam=diam or 1
 	local va,ia={},{}
---	local rs=(2*3.141592654)/steps
-	local rs=(2*math.pi)/steps
+	local rs=(2*math.pi)/steps -- 3.141592654
 	local idx,ni=4,1
 	--Vertices
-	va[1]=0 va[2]=radius va[3]=0
+	va[1]=0 va[2]=diam/2 va[3]=0
 	for iy=1,(steps//2)-1 do
-		local y=math.cos(iy*rs)*radius
-		local r=math.sin(iy*rs)*radius
+		local y=math.cos(iy*rs)*(diam/2)
+		local r=math.sin(iy*rs)*(diam/2)
 		for ix=0,steps do
 			local x=r*math.cos(ix*rs)
 			local z=r*math.sin(ix*rs)
@@ -235,8 +251,8 @@ function Sphere:init(steps,radius)
 			va[idx]=z idx+=1
 		end
 	end
-	va[idx]=0 va[idx+1]=-radius va[idx+2]=0
-	local lvi=idx//3+1
+	va[idx]=0 va[idx+1]=-diam/2 va[idx+2]=0
+	local lvi=(idx//3)+1
 	--Indices
 	--a) top and bottom fans
 	for i=1,steps do
@@ -255,13 +271,17 @@ function Sphere:init(steps,radius)
 	self:setVertexArray(va)
 	self:setIndexArray(ia)
 	self._steps=steps
-	self.radius=radius
 	self._va=va self._ia=ia
+	self.dims={r=diam/2}
 end
-function Sphere:mapTexture(texture)
-	self:setTexture(texture)
-	if texture then
-		local tw,th=texture:getWidth(),texture:getHeight()
+function Sphere:mapTexture(texture,sw,sh,normal)
+	if not texture then
+		print(">Error mapping texture. Please check texture<")
+		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		return
+	else
+		self:setTexture(texture)
+		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
 		local va={}
 		local i=3
 		--TexCoords
@@ -274,17 +294,21 @@ function Sphere:mapTexture(texture)
 				va[i]=y i+=1
 			end
 		end
-		va[i]=tw/2	va[i+1]=th
+		va[i]=tw/2 va[i+1]=th
 		self:setTextureCoordinateArray(va)
 		self:updateMode(Mesh3D.MODE_TEXTURE,0)
-	else
-		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		if normal then
+			self:setTexture(normal,1)
+			self:updateMode(Mesh3D.MODE_BUMP,0)
+		else
+			self:updateMode(0,Mesh3D.MODE_BUMP)
+		end
 	end
 end
 function Sphere:mapColor(color,alpha)
 	if color then
-		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		for i=1,#self._ia do -- the mesh index array
+			self:setColor(i,color,alpha or 1)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
@@ -293,46 +317,42 @@ function Sphere:mapColor(color,alpha)
 end
 function Sphere:getCollisionShape()
 	if not self._r3dshape then
-		self._r3dshape=r3d.SphereShape.new(self.radius)
+		self._r3dshape=r3d.SphereShape.new(self.dims.r) -- radius
 	end
 	return self._r3dshape
 end
 
 -- ***************************************
---Unit Cylinder along Y axis
+--Cylinder
 local Cylinder=Core.class(Mesh3D)
-function Cylinder:init(steps,r,h)
+function Cylinder:init(steps,diam,h) -- (steps,diameter,height)
+	steps=steps or 8 diam=diam or 1 h=h or 1
 	local va,ia,na={},{},{}
---	local rs=(2*3.141592654)/steps
-	local rs=(2*math.pi)/steps
+	local rs=(2*math.pi)/steps -- 3.141592654
 	local idx,ni=7,1
-	r=r or 1
-	h=h or 1
-	self.radius=r
-	self.height=h
 	--Vertices/Normals
-	va[1]=0 va[2]=h va[3]=0 --TOP
-	va[4]=0	va[5]=-h va[6]=0 --BOTTOM
+	va[1]=0 va[2]=h/2 va[3]=0 --TOP
+	va[4]=0	va[5]=-h/2 va[6]=0 --BOTTOM
 	na[1]=0 na[2]=1 na[3]=0 --TOP
 	na[4]=0	na[5]=-1 na[6]=0 --BOTTOM
 	for ix=0,steps do
-		local x=math.cos(ix*rs)*r
-		local z=-math.sin(ix*rs)*r
+		local x=math.cos(ix*rs)*(diam/2)
+		local z=-math.sin(ix*rs)*(diam/2)
 		--EDGE-TOP
 		va[idx]=x na[idx]=0 idx+=1
-		va[idx]=h na[idx]=1 idx+=1
+		va[idx]=h/2 na[idx]=1 idx+=1
 		va[idx]=z na[idx]=0 idx+=1
 		--EDGE-TOPEXT
 		va[idx]=x na[idx]=x idx+=1
-		va[idx]=h na[idx]=0 idx+=1
+		va[idx]=h/2 na[idx]=0 idx+=1
 		va[idx]=z na[idx]=z idx+=1
 		--EDGE-BOTTOMEXT
 		va[idx]=x na[idx]=x idx+=1
-		va[idx]=-h na[idx]=0 idx+=1
+		va[idx]=-h/2 na[idx]=0 idx+=1
 		va[idx]=z na[idx]=z idx+=1
 		--EDGE-BOTTOM
 		va[idx]=x na[idx]=0 idx+=1
-		va[idx]=-h na[idx]=-1 idx+=1
+		va[idx]=-h/2 na[idx]=-1 idx+=1
 		va[idx]=z na[idx]=0 idx+=1
 	end
 	--Indices
@@ -348,18 +368,22 @@ function Cylinder:init(steps,r,h)
 	self:setIndexArray(ia)
 	self._steps=steps
 	self._va=va self._ia=ia
-	self.dims={r=r,h=h}
+	self.dims={r=diam/2,h=h}
 end
-function Cylinder:mapTexture(texture)
-	self:setTexture(texture)
-	if texture then
-		local tw,th=texture:getWidth(),texture:getHeight()
+function Cylinder:mapTexture(texture,sw,sh,normal)
+	if not texture then
+		print(">Error mapping texture. Please check texture<")
+		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		return
+	else
+		self:setTexture(texture)
+		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
 		local va={}
 		local i=5
 		--TexCoords
 		local twh,thh=tw/2,th/2
-		va[1]=twh va[2]=0
-		va[3]=twh va[4]=th
+		va[1]=twh va[2]=thh -- TOP
+		va[3]=twh va[4]=thh -- BOTTOM
 		for xi=0,self._steps do
 			local x=tw*(xi/self._steps)
 			va[i]=x i+=1
@@ -373,14 +397,18 @@ function Cylinder:mapTexture(texture)
 		end
 		self:setTextureCoordinateArray(va)
 		self:updateMode(Mesh3D.MODE_TEXTURE,0)
-	else
-		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		if normal then
+			self:setTexture(normal,1)
+			self:updateMode(Mesh3D.MODE_BUMP,0)
+		else
+			self:updateMode(0,Mesh3D.MODE_BUMP)
+		end
 	end
 end
 function Cylinder:mapColor(color,alpha)
 	if color then
-		for i = 1, #self._ia do -- the mesh index array
-			self:setColor(i, color, alpha or 1) -- (i,color,alpha)
+		for i=1,#self._ia do -- the mesh index array
+			self:setColor(i,color,alpha or 1)
 		end
 		self:updateMode(Mesh3D.MODE_COLORED,0)
 	else
@@ -409,11 +437,111 @@ function Cylinder:getCollisionShape()
 end
 
 -- ***************************************
+--Pyramid
+local Pyramid=Core.class(Mesh3D)
+function Pyramid:init(diam,h) -- (diameter,height)
+	diam=diam or 1 h=h or 1
+	local va,ia={},{}
+	local idx,ni=1,1
+	-- Vertices (duplicated per face)
+	-- Side 1 (Apex, V1, V2)
+	va[idx]=0 idx+=1 va[idx]=h/2 idx+=1 va[idx]=0 idx+=1
+	va[idx]=-diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]=-diam/2 idx+=1
+	va[idx]= diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]=-diam/2 idx+=1
+	-- Side 2 (Apex, V2, V3)
+	va[idx]=0 idx+=1 va[idx]=h/2 idx+=1 va[idx]=0 idx+=1
+	va[idx]= diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]=-diam/2 idx+=1
+	va[idx]= diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]= diam/2 idx+=1
+	-- Side 3 (Apex, V3, V4)
+	va[idx]=0 idx+=1 va[idx]=h/2 idx+=1 va[idx]=0 idx+=1
+	va[idx]= diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]= diam/2 idx+=1
+	va[idx]=-diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]= diam/2 idx+=1
+	-- Side 4 (Apex, V4, V1)
+	va[idx]=0 idx+=1 va[idx]=h/2 idx+=1 va[idx]=0 idx+=1
+	va[idx]=-diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]= diam/2 idx+=1
+	va[idx]=-diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]=-diam/2 idx+=1
+	-- Base (two triangles: V1,V2,V3 and V1,V3,V4)
+	-- V1,V2,V3
+	va[idx]=-diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]=-diam/2 idx+=1
+	va[idx]= diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]=-diam/2 idx+=1
+	va[idx]= diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]= diam/2 idx+=1
+	-- V1,V3,V4
+	va[idx]=-diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]=-diam/2 idx+=1
+	va[idx]= diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]= diam/2 idx+=1
+	va[idx]=-diam/2 idx+=1 va[idx]=-h/2 idx+=1 va[idx]= diam/2 idx+=1
+	local lvi=idx//3
+	-- Indices (each triangle is independent)
+	for v=1,lvi do
+		ia[ni]=v ni+=1
+	end
+	-- Feed arrays
+	self:setGenericArray(3,Shader.DFLOAT,3,lvi,va)
+	self:setVertexArray(va)
+	self:setIndexArray(ia)
+	self._va=va self._ia=ia
+	self.dims={r=diam/2,h=h}
+end
+function Pyramid:mapTexture(texture,sw,sh,normal)
+	if not texture then
+		print(">Error mapping texture. Please check texture<")
+		self:updateMode(0,Mesh3D.MODE_TEXTURE)
+		return
+	else
+		self:setTexture(texture)
+		local tw,th=texture:getWidth()*(sw or 1),texture:getHeight()*(sh or 1)
+		local ta={}
+		local ti=1
+		-- Side faces (4 sides, each with apex + 2 base corners)
+		-- Apex at (0.5,0), base corners at (0,1) and (1,1)
+		for f=1,4 do
+			ta[ti]=tw/2 ti+=1 ta[ti]=0 ti+=1 -- Apex
+			ta[ti]=0 ti+=1 ta[ti]=th ti+=1 -- Left base
+			ta[ti]=tw ti+=1 ta[ti]=th ti+=1 -- Right base
+		end
+		-- Base (two triangles filling the square)
+		-- First triangle: bottom-left, bottom-right, top-right
+		ta[ti]=0 ti+=1 ta[ti]=th ti+=1
+		ta[ti]=tw ti+=1 ta[ti]=th ti+=1
+		ta[ti]=tw ti+=1 ta[ti]=0 ti+=1
+		-- Second triangle: bottom-left, top-right, top-left
+		ta[ti]=0 ti+=1 ta[ti]=th ti+=1
+		ta[ti]=tw ti+=1 ta[ti]=0 ti+=1
+		ta[ti]=0 ti+=1 ta[ti]=0 ti+=1
+		-- Assign UVs
+		self:setTextureCoordinateArray(ta)
+		self:updateMode(Mesh3D.MODE_TEXTURE,0)
+		-- optional normal map
+		if normal then
+			self:setTexture(normal,1)
+			self:updateMode(Mesh3D.MODE_BUMP,0)
+		else
+			self:updateMode(0,Mesh3D.MODE_BUMP)
+		end
+	end
+end
+function Pyramid:mapColor(color,alpha)
+	if color then
+		for i=1,#self._ia do -- the mesh index array
+			self:setColor(i,color,alpha or 1)
+		end
+		self:updateMode(Mesh3D.MODE_COLORED,0)
+	else
+		self:updateMode(0,Mesh3D.MODE_COLORED)
+	end
+end
+function Pyramid:getCollisionShape()
+	if not self._r3dshape then
+		self._r3dshape=r3d.BoxShape.new(self.dims.r*2,self.dims.h,self.dims.r*2) -- w,h,d
+	end
+	return self._r3dshape
+end
+
+-- ***************************************
 local Group3D=Core.class(Mesh,function() return true end)
 function Group3D:updateMode(set,clear)
-      for _,v in pairs(self.objs) do
-              v:updateMode(set,clear)
-      end
+	for _,v in pairs(self.objs) do
+		v:updateMode(set,clear)
+	end
 end
 
 -- ***************************************
@@ -424,6 +552,7 @@ D3.Plane=Plane
 D3.Cube=Box
 D3.Sphere=Sphere
 D3.Cylinder=Cylinder
+D3.Pyramid=Pyramid
 
 -- ***************************************
 D3.checkCCW=function(v,i,f)
