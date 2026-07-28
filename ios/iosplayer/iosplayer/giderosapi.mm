@@ -724,6 +724,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 #endif
 		loadProperties();
 
+        s_manager=this;
 		// Gideros has became open source and free, because this, there's no more splash art
 		loadLuaFiles();
 
@@ -1548,6 +1549,24 @@ void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrien
     }
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
     application_->setHardwareOrientation(hardwareOrientation_);
+    
+    Orientation so=application_->getApplication()->orientation();
+    Orientation devo=hardwareOrientation_;
+    
+    bool sl=(so==eLandscapeLeft)||(so==eLandscapeRight);
+    bool dl=(devo==eLandscapeLeft)||(devo==eLandscapeRight);
+    int iAutoRot=ProjectProperties::current.autorotation;
+    switch (iAutoRot) {
+        case GAPPLICATION_AUTO_ORIENTATION_DUAL:
+            if ((sl&&dl)||(!(sl||dl))) // If orientation already correct, keep device orientation
+                application_->setOrientation(devo);
+        break;
+        case GAPPLICATION_AUTO_ORIENTATION_ALL:
+            application_->setOrientation(devo);
+        break;
+        default:
+        break;
+    }
 }
 
 void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
