@@ -160,13 +160,7 @@ void Matrix4::transformPoint(float x, float y, float* newx, float* newy) const
         *newy = y + m[13];
         break;
     case M2D:
-        *newx = m[0]*x + m[4]*y + m[12];
-        *newy = m[1]*x + m[5]*y + m[13];
-        break;
     case M3D:
-        *newx = m[0]*x + m[4]*y + m[12];
-        *newy = m[1]*x + m[5]*y + m[13];
-        break;
     case FULL:
         *newx = m[0]*x + m[4]*y + m[12];
         *newy = m[1]*x + m[5]*y + m[13];
@@ -176,25 +170,37 @@ void Matrix4::transformPoint(float x, float y, float* newx, float* newy) const
 
 void Matrix4::inverseTransformPoint(float x, float y, float* newx, float* newy) const
 {
-    Matrix4 inv=inverse();
-    const float *m=inv.data();
     switch(type) {
     case TRANSLATE:
-        *newx = x + m[12];
-        *newy = y + m[13];
+        *newx = x - m[12];
+        *newy = y - m[13];
         break;
-    case M2D:
-        *newx = m[0]*x + m[4]*y + m[12];
-        *newy = m[1]*x + m[5]*y + m[13];
+    case M2D: {
+        // Fast inverse for 2D affine: | a c tx |^-1
+        //                             | b d ty |
+        //                             | 0 0 1  |
+        float det = m[0]*m[5] - m[1]*m[4];
+        if (fabs(det) > 1e-6f) {
+            float invDet = 1.0f / det;
+            float dx = x - m[12];
+            float dy = y - m[13];
+            *newx = invDet * (m[5]*dx - m[4]*dy);
+            *newy = invDet * (m[0]*dy - m[1]*dx);
+        } else {
+            *newx = x;
+            *newy = y;
+        }
         break;
+    }
     case M3D:
-        *newx = m[0]*x + m[4]*y + m[12];
-        *newy = m[1]*x + m[5]*y + m[13];
-        break;
     case FULL:
+    {
+        Matrix4 inv=inverse();
+        const float *m=inv.data();
         *newx = m[0]*x + m[4]*y + m[12];
         *newy = m[1]*x + m[5]*y + m[13];
         break;
+    }
     }
 }
 
@@ -212,10 +218,6 @@ void Matrix4::transformPoint(float x, float y, float z, float* newx, float* newy
         *newz = z + m[14];
         break;
     case M3D:
-        *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
-        *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
-        *newz = m[2]*x + m[6]*y + m[10]*z + m[14];
-        break;
     case FULL:
         *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
         *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
@@ -240,10 +242,6 @@ void Matrix4::inverseTransformPoint(float x, float y, float z,float* newx, float
         *newz = z + m[14];
         break;
     case M3D:
-        *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
-        *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
-        *newz = m[2]*x + m[6]*y + m[10]*z + m[14];
-        break;
     case FULL:
         *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
         *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
