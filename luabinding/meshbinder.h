@@ -27,6 +27,7 @@ private:
     static int setColorArray(lua_State *L);
     static int setTextureCoordinateArray(lua_State *L);
     static int setGenericArray(lua_State *L);
+    static int setMatrixArray(lua_State *L);
 
     static int resizeVertexArray(lua_State *L);
     static int resizeIndexArray(lua_State *L);

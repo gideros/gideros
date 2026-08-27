@@ -2291,7 +2291,30 @@ void parseShaderParam(lua_State* L,int idx,Sprite::ShaderParam &sp,int &shtype,i
 		float *m=&(sp.data[0]);
 		if (lua_istable(L,idx+3))
 		{
-			for (int k=0;k<cm;k++)
+            if ((sp.type==ShaderProgram::CMATRIX)&&cm) {
+                lua_rawgeti(L, idx+3, 1);
+                if (lua_istable(L,-1)) {
+                    lua_pop(L,1);
+                    Binder binder(L);
+                    //Assume Matrix objects
+                    cm/=16;
+                    int kn=0;
+                    for (int k=0;k<cm;k++)
+                    {
+                        lua_rawgeti(L, idx+3, k+1);
+                        Matrix *mm=static_cast<Matrix*>(binder.getInstance("Matrix", -1));
+                        const float *d=mm->data();
+                        for (int kk=0;kk<16;kk++)
+                            m[kn++]=d[kk];
+                        lua_pop(L,1);
+                    }
+                    cm=0;
+                }
+                else
+                    lua_pop(L,1);
+            }
+
+            for (int k=0;k<cm;k++)
 			{
 				lua_rawgeti(L, idx+3, k+1);
 				m[k]=luaL_checknumber(L,-1);

@@ -23,6 +23,7 @@ MeshBinder::MeshBinder(lua_State *L)
         {"setColorArray", setColorArray},
         {"setTextureCoordinateArray", setTextureCoordinateArray},
         {"setGenericArray", setGenericArray},
+        {"setMatrixArray", setMatrixArray},
 
         {"resizeVertexArray", resizeVertexArray},
         {"resizeIndexArray", resizeIndexArray},
@@ -569,6 +570,54 @@ int MeshBinder::setGenericArray(lua_State *L)
 		free(ptr);
     }
 	return 0;
+}
+
+const float mIdentity[16]={1,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
+int MeshBinder::setMatrixArray(lua_State *L)
+{
+    Binder binder(L);
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    int index=luaL_checkinteger(L,2);
+    int count=luaL_checkinteger(L,3);
+    luaL_checktype(L, 4, LUA_TTABLE);
+
+    int n = lua_objlen(L, 4);  /* get size of table */
+    if (n!=count)
+    {
+        lua_pushstring(L,"Actual array length doesn't match count value");
+        lua_error(L);
+    }
+
+    float *p=(float *)malloc(count*sizeof(float)*16);
+    int i0=0;
+    int i1=count*4;
+    int i2=count*8;
+    int i3=count*12;
+
+    for (int i=1; i<=n; i++) {
+        const float *d=mIdentity;
+        if (lua_rawgeti(L, 4, i)!=0)  /* push t[i] */
+        {
+            Matrix *mm=static_cast<Matrix*>(binder.getInstance("Matrix", -1));
+            d=mm->data();
+        }
+        int ii=(i-1)*4;
+        for (int k=0;k<4;k++)
+        {
+            p[i0+ii+k]=d[k];
+            p[i1+ii+k]=d[k+4];
+            p[i2+ii+k]=d[k+8];
+            p[i3+ii+k]=d[k+12];
+        }
+        lua_pop(L,1);
+    }
+
+    mesh->setGenericArray(index+0,p+i0,ShaderProgram::DFLOAT,4,count,0,0,-1);
+    mesh->setGenericArray(index+1,p+i1,ShaderProgram::DFLOAT,4,count,0,0,-1);
+    mesh->setGenericArray(index+2,p+i2,ShaderProgram::DFLOAT,4,count,0,0,-1);
+    mesh->setGenericArray(index+3,p+i3,ShaderProgram::DFLOAT,4,count,0,0,-1);
+    free(p);
+    return 0;
 }
 
 int MeshBinder::setVertexArray(lua_State *L)

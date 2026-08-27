@@ -45,6 +45,7 @@ private:
     static int fromSRT(lua_State* L);
     static int lookAt(lua_State* L);
     static int toQuaternion(lua_State *L);
+    static int mixSRT(lua_State* L);
 
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);
@@ -72,6 +73,18 @@ private:
     static int getAnchorPosition(lua_State* L);
 	static int setScale(lua_State* L);
 	static int getScale(lua_State* L);
+
+    static size_t tokenS;
+    static size_t tokenR;
+    static size_t tokenT;
+    struct _SRT {
+        float s[3];
+        float r[4];
+        float t[3];
+        bool hasS,hasR,hasT;
+    };
+    static void parseSRT(lua_State* L,int idx,struct _SRT &srt);
+    static void pushSRTMatrix(lua_State *L,struct _SRT &srt, bool rev);
 };
 
 

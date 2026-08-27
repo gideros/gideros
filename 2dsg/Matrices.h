@@ -696,16 +696,21 @@ inline void Matrix4::computeType()
 	//M2D: m10,m15=1 m0,m1,m4,m5,m12,m13,m14=x
 	//M3D: m15=1 m0,m1,m2,m4,m5,m6,m8,m9,m10,m12,m13,m14=x
 	//FULL: no opt
+    const float EPS = 1e-6f;
     type=FULL;
-    if ((m[15]==1)&&(m[3]==0)&&(m[7]==0)&&(m[11]==0))
+
+    if ((fabs(m[15]-1)<EPS)&&(fabs(m[3])<EPS)&&
+        (fabs(m[7])<EPS)&&(fabs(m[11])<EPS))
     {
-    	type=M3D;
-    	if ((m[10]==1)&&(m[2]==0)&&(m[6]==0)&&(m[8]==0)&&(m[9]==0))
-    	{
-    		type=M2D;
-        	if ((m[0]==1)&&(m[5]==1)&&(m[1]==0)&&(m[4]==0))
-        		type=TRANSLATE;
-    	}
+        type=M3D;
+        if ((fabs(m[10]-1)<EPS)&&(fabs(m[2])<EPS)&&
+            (fabs(m[6])<EPS)&&(fabs(m[8])<EPS)&&(fabs(m[9])<EPS))
+        {
+            type=M2D;
+            if ((fabs(m[0]-1)<EPS)&&(fabs(m[5]-1)<EPS)&&
+                (fabs(m[1])<EPS)&&(fabs(m[4])<EPS))
+                type=TRANSLATE;
+        }
     }
 }
 
@@ -915,7 +920,27 @@ inline Matrix4 Matrix4::operator*(const Matrix4& n) const
 	                   m[1]*n[12] + m[5]*n[13] + m[13],
 	                   n[14] + m[14],
 	                   1,M2D);
-	case 8: //M3DxTRN
+    case 6: //M2DxM3D
+        return Matrix4(m[0]*n[0]  + m[4]*n[1],
+                       m[1]*n[0]  + m[5]*n[1],
+                       n[2],
+                       0,
+
+                       m[0]*n[4]  + m[4]*n[5],
+                       m[1]*n[4]  + m[5]*n[5],
+                       n[6],
+                       0,
+
+                       m[0]*n[8]  + m[4]*n[9],
+                       m[1]*n[8]  + m[5]*n[9],
+                       n[10],
+                       0,
+
+                       m[0]*n[12] + m[4]*n[13] + m[12],
+                       m[1]*n[12] + m[5]*n[13] + m[13],
+                       n[14] + m[14],
+                       1,M3D);
+    case 8: //M3DxTRN
 	    return Matrix4(m[0],m[1],m[2],0,
 	    			   m[4],m[5],m[6],0,
 	    			   m[8],m[9],m[10],0,
@@ -923,7 +948,44 @@ inline Matrix4 Matrix4::operator*(const Matrix4& n) const
 	                   m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13],
 	                   m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14],
 	                   1,M3D);
-	case 12: //FULLxTRN
+    case 9: //M3DxM2D
+        return Matrix4(m[0]*n[0]  + m[4]*n[1],
+                       m[1]*n[0]  + m[5]*n[1],
+                       m[2]*n[0]  + m[6]*n[1],
+                       0,
+
+                       m[0]*n[4]  + m[4]*n[5],
+                       m[1]*n[4]  + m[5]*n[5],
+                       m[2]*n[4]  + m[6]*n[5],
+                       0,
+
+                       m[8],m[9],m[10], 0,
+
+                       m[0]*n[12] + m[4]*n[13] + m[8]*n[14] + m[12],
+                       m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13],
+                       m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14],
+                       1,M3D);
+    case 10: //M3DxM3D
+        return Matrix4(m[0]*n[0]  + m[4]*n[1]  + m[8]*n[2],
+                       m[1]*n[0]  + m[5]*n[1]  + m[9]*n[2],
+                       m[2]*n[0]  + m[6]*n[1]  + m[10]*n[2],
+                       0,
+
+                       m[0]*n[4]  + m[4]*n[5]  + m[8]*n[6],
+                       m[1]*n[4]  + m[5]*n[5]  + m[9]*n[6],
+                       m[2]*n[4]  + m[6]*n[5]  + m[10]*n[6],
+                       0,
+
+                       m[0]*n[8]  + m[4]*n[9]  + m[8]*n[10],
+                       m[1]*n[8]  + m[5]*n[9]  + m[9]*n[10],
+                       m[2]*n[8]  + m[6]*n[9]  + m[10]*n[10],
+                       0,
+
+                       m[0]*n[12] + m[4]*n[13] + m[8]*n[14] + m[12],
+                       m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13],
+                       m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14],
+                       1,M3D);
+    case 12: //FULLxTRN
 	    return Matrix4(m[0],m[1],m[2],m[3],
 	    			   m[4],m[5],m[6],m[7],
 	    			   m[8],m[9],m[10],m[11],
@@ -931,10 +993,7 @@ inline Matrix4 Matrix4::operator*(const Matrix4& n) const
 	                   m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13],
 	                   m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14],
 	                   m[3]*n[12] + m[7]*n[13] + m[11]*n[14] + m[15],FULL);
-	case 6: //M2DxM3D TODO
-	case 7: //M2DxFULL TODO
-	case 9: //M3DxM2D TODO
-	case 10: //M3DxM3D TODO
+    case 7: //M2DxFULL TODO
 	case 11: //M3DxFULL TODO
 	case 13: //FULLxM2D TODO
 	case 14: //FULLxM3D TODO

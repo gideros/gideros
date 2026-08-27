@@ -154,61 +154,102 @@ Matrix4& Matrix4::transpose()
 
 void Matrix4::transformPoint(float x, float y, float* newx, float* newy) const
 {
-	Vector4 src=Vector4(x,y,0,1);
-	Vector4 dst=*this*src;
-	*newx=dst.x;
-	*newy=dst.y;
-/*
-	glog_i("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
-			m[0],m[4],m[8],m[12],
-			m[1],m[5],m[9],m[13],
-			m[2],m[6],m[10],m[14],
-			m[3],m[7],m[11],m[15]
-			);
-	glog_i("XFORMP: (%f,%f)->(%f,%f)",x,y,*newx,*newy);
-	*/
+    switch(type) {
+    case TRANSLATE:
+        *newx = x + m[12];
+        *newy = y + m[13];
+        break;
+    case M2D:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        break;
+    case M3D:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        break;
+    case FULL:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        break;
+    }
 }
 
 void Matrix4::inverseTransformPoint(float x, float y, float* newx, float* newy) const
 {
-	Vector4 src=Vector4(x,y,0,1);
-	Matrix4 inv=inverse();
-	Vector4 dst=inv*src;
-	*newx=dst.x;
-	*newy=dst.y;
-/*	glog_i("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
-			m[0],m[4],m[8],m[12],
-			m[1],m[5],m[9],m[13],
-			m[2],m[6],m[10],m[14],
-			m[3],m[7],m[11],m[15]
-			);
-	glog_i("IMatrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
-			inv[0],inv[4],inv[8],inv[12],
-			inv[1],inv[5],inv[9],inv[13],
-			inv[2],inv[6],inv[10],inv[14],
-			inv[3],inv[7],inv[11],inv[15]
-			);
-	glog_i("IXFORMP: (%f,%f)->(%f,%f)",x,y,*newx,*newy);
-*/
+    Matrix4 inv=inverse();
+    const float *m=inv.data();
+    switch(type) {
+    case TRANSLATE:
+        *newx = x + m[12];
+        *newy = y + m[13];
+        break;
+    case M2D:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        break;
+    case M3D:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        break;
+    case FULL:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        break;
+    }
 }
 
 void Matrix4::transformPoint(float x, float y, float z, float* newx, float* newy, float* newz) const
 {
-	Vector4 src=Vector4(x,y,z,1);
-	Vector4 dst=*this*src;
-	*newx=dst.x;
-	*newy=dst.y;
-	*newz=dst.z;
+    switch(type) {
+    case TRANSLATE:
+        *newx = x + m[12];
+        *newy = y + m[13];
+        *newz = z + m[14];
+        break;
+    case M2D:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        *newz = z + m[14];
+        break;
+    case M3D:
+        *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
+        *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
+        *newz = m[2]*x + m[6]*y + m[10]*z + m[14];
+        break;
+    case FULL:
+        *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
+        *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
+        *newz = m[2]*x + m[6]*y + m[10]*z + m[14];
+        break;
+    }
 }
 
 void Matrix4::inverseTransformPoint(float x, float y, float z,float* newx, float* newy, float* newz) const
 {
-	Vector4 src=Vector4(x,y,z,1);
 	Matrix4 inv=inverse();
-	Vector4 dst=inv*src;
-	*newx=dst.x;
-	*newy=dst.y;
-	*newz=dst.z;
+    const float *m=inv.data();
+    switch(type) {
+    case TRANSLATE:
+        *newx = x + m[12];
+        *newy = y + m[13];
+        *newz = z + m[14];
+        break;
+    case M2D:
+        *newx = m[0]*x + m[4]*y + m[12];
+        *newy = m[1]*x + m[5]*y + m[13];
+        *newz = z + m[14];
+        break;
+    case M3D:
+        *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
+        *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
+        *newz = m[2]*x + m[6]*y + m[10]*z + m[14];
+        break;
+    case FULL:
+        *newx = m[0]*x + m[4]*y + m[8]*z + m[12];
+        *newy = m[1]*x + m[5]*y + m[9]*z + m[13];
+        *newz = m[2]*x + m[6]*y + m[10]*z + m[14];
+        break;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

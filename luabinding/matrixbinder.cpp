@@ -9,6 +9,10 @@
 #define M_PI       3.14159265358979323846
 #endif
 
+size_t MatrixBinder::tokenS;
+size_t MatrixBinder::tokenR;
+size_t MatrixBinder::tokenT;
+
 MatrixBinder::MatrixBinder(lua_State* L)
 {
 	Binder binder(L);
@@ -47,6 +51,7 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"fromSRT",fromSRT},
         {"lookAt",lookAt},
         {"toQuaternion",toQuaternion},
+        {"mixSRT",mixSRT},
 
 		{"getX", getX},
 		{"getY", getY},
@@ -79,6 +84,10 @@ MatrixBinder::MatrixBinder(lua_State* L)
 	};
 
 	binder.createClass("Matrix", NULL, create, destruct, functionList);
+
+    tokenT=lua_newtoken(L,"t");
+    tokenR=lua_newtoken(L,"r");
+    tokenS=lua_newtoken(L,"s");
 }
 
 struct TVector {
@@ -918,110 +927,167 @@ int MatrixBinder::duplicate(lua_State* L)
 	return 1;
 }
 
+void MatrixBinder::parseSRT(lua_State* L,int idx,struct _SRT &srt)
+{
+    luaL_checktype(L,idx,LUA_TTABLE);
+    //Fields
+    lua_rawgettoken(L,idx,tokenT);
+    if (lua_isnoneornil(L,-1)) {
+        lua_pop(L,1);
+        lua_rawgetfield(L,idx,"translate");
+        if (lua_isnoneornil(L,-1)) {
+            lua_pop(L,1);
+            lua_rawgetfield(L,idx,"position");
+        }
+    }
+    lua_rawgettoken(L,idx,tokenR);
+    if (lua_isnoneornil(L,-1)) {
+        lua_pop(L,1);
+        lua_rawgetfield(L,idx,"rotation");
+    }
+    lua_rawgettoken(L,idx,tokenS);
+    if (lua_isnoneornil(L,-1)) {
+        lua_pop(L,1);
+        lua_rawgetfield(L,idx,"scale");
+    }
+
+    memset(&srt,0,sizeof(srt));
+    if (!lua_isnoneornil(L,-3)) {
+        lua_rawgeti(L,-3,1);
+        lua_rawgeti(L,-4,2);
+        lua_rawgeti(L,-5,3);
+        srt.t[0]=luaL_optnumber(L,-3,0);
+        srt.t[1]=luaL_optnumber(L,-2,0);
+        srt.t[2]=luaL_optnumber(L,-1,0);
+        lua_pop(L,3);
+        srt.hasT=true;
+    }
+    if (!lua_isnoneornil(L,-1)) {
+        lua_rawgeti(L,-1,1);
+        lua_rawgeti(L,-2,2);
+        lua_rawgeti(L,-3,3);
+        srt.s[0]=luaL_optnumber(L,-3,0);
+        srt.s[1]=luaL_optnumber(L,-2,0);
+        srt.s[2]=luaL_optnumber(L,-1,0);
+        lua_pop(L,3);
+        srt.hasS=true;
+    }
+    if (!lua_isnoneornil(L,-2)) {
+        lua_rawgeti(L,-2,1);
+        lua_rawgeti(L,-3,2);
+        lua_rawgeti(L,-4,3);
+        lua_rawgeti(L,-5,4);
+        srt.r[0]=luaL_optnumber(L,-4,0);
+        srt.r[1]=luaL_optnumber(L,-3,0);
+        srt.r[2]=luaL_optnumber(L,-2,0);
+        srt.r[3]=luaL_optnumber(L,-1,0);
+        lua_pop(L,4);
+        srt.hasR=true;
+    }
+    else
+        srt.r[0]=1;
+}
+
+void MatrixBinder::pushSRTMatrix(lua_State *L,struct _SRT &srt, bool rev)
+{
+    Binder binder(L);
+    Transform *t=new Transform();
+    Matrix4 mt;
+    if (rev&&srt.hasT) {
+        mt.translate(srt.t[0],srt.t[1],srt.t[2]);
+    } else {
+        if (srt.hasS) {
+            mt.scale(srt.s[0],srt.s[1],srt.s[2]);
+        }
+    }
+    if (srt.hasR) {
+        float X=srt.r[0];
+        float Y=srt.r[1];
+        float Z=srt.r[2];
+        float W=srt.r[3];
+
+        float L=sqrt(X*X+Y*Y+Z*Z+W*W);
+        X/=L; Y/=L; Z/=L; W/=L;
+        float xx,xy,xz,xw,yy,yz,yw,zz,zw;
+        float m00,m01,m02,m10,m11,m12,m20,m21,m22;
+        xx      = X * X;
+        xy      = X * Y;
+        xz      = X * Z;
+        xw      = X * W;
+
+        yy      = Y * Y;
+        yz      = Y * Z;
+        yw      = Y * W;
+
+        zz      = Z * Z;
+        zw      = Z * W;
+
+        m00  = 1 - 2 * ( yy + zz );
+        m01  =     2 * ( xy - zw );
+        m02 =     2 * ( xz + yw );
+        m10  =     2 * ( xy + zw );
+        m11  = 1 - 2 * ( xx + zz );
+        m12  =     2 * ( yz - xw );
+        m20  =     2 * ( xz - yw );
+        m21  =     2 * ( yz + xw );
+        m22 = 1 - 2 * ( xx + yy );
+
+        Matrix4 rm(m00,m10,m20,0,m01,m11,m21,0,m02,m12,m22,0,0,0,0,1,Matrix4::M3D);
+        mt=rm*mt;
+    }
+
+    if (rev&&srt.hasS) {
+        mt.scale(srt.s[0],srt.s[1],srt.s[2]);
+    } else {
+        if (srt.hasT) {
+            mt.translate(srt.t[0],srt.t[1],srt.t[2]);
+        }
+    }
+
+    t->setMatrix(mt.data());
+    binder.pushInstance("Matrix", t);
+}
+
 int MatrixBinder::fromSRT(lua_State* L)
 {
-	Binder binder(L);
 	bool rev=lua_toboolean(L,2);
-	luaL_checktype(L,1,LUA_TTABLE);
-	//Fields
-	lua_getfield(L,1,"t");
-	if (lua_isnoneornil(L,-1)) {
-		lua_pop(L,1);
-		lua_getfield(L,1,"translate");
-		if (lua_isnoneornil(L,-1)) {
-			lua_pop(L,1);
-			lua_getfield(L,1,"position");
-		}
-	}
-	lua_getfield(L,1,"r");
-	if (lua_isnoneornil(L,-1)) {
-		lua_pop(L,1);
-		lua_getfield(L,1,"rotation");
-	}
-	lua_getfield(L,1,"s");
-	if (lua_isnoneornil(L,-1)) {
-		lua_pop(L,1);
-		lua_getfield(L,1,"scale");
-	}
-
-	Transform *t=new Transform();
-	Matrix4 mt;
-	if (rev&&(!lua_isnoneornil(L,-3))) {
-		lua_rawgeti(L,-3,1);
-		lua_rawgeti(L,-4,2);
-		lua_rawgeti(L,-5,3);
-		mt.translate(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
-		lua_pop(L,3);
-	} else {
-		if (!lua_isnoneornil(L,-1)) {
-			lua_rawgeti(L,-1,1);
-			lua_rawgeti(L,-2,2);
-			lua_rawgeti(L,-3,3);
-			mt.scale(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
-			lua_pop(L,3);
-		}
-	}
-	if (!lua_isnoneornil(L,-2)) {
-		lua_rawgeti(L,-2,1);
-		lua_rawgeti(L,-3,2);
-		lua_rawgeti(L,-4,3);
-		lua_rawgeti(L,-5,4);
-		float X=luaL_optnumber(L,-4,0);
-		float Y=luaL_optnumber(L,-3,0);
-		float Z=luaL_optnumber(L,-2,0);
-		float W=luaL_optnumber(L,-1,0);
-		lua_pop(L,4);
-
-		float L=sqrt(X*X+Y*Y+Z*Z+W*W);
-		X/=L; Y/=L; Z/=L; W/=L;
-		float xx,xy,xz,xw,yy,yz,yw,zz,zw;
-		float m00,m01,m02,m10,m11,m12,m20,m21,m22;
-		xx      = X * X;
-		xy      = X * Y;
-		xz      = X * Z;
-		xw      = X * W;
-
-		yy      = Y * Y;
-		yz      = Y * Z;
-		yw      = Y * W;
-
-		zz      = Z * Z;
-		zw      = Z * W;
-
-		m00  = 1 - 2 * ( yy + zz );
-		m01  =     2 * ( xy - zw );
-		m02 =     2 * ( xz + yw );
-		m10  =     2 * ( xy + zw );
-		m11  = 1 - 2 * ( xx + zz );
-		m12  =     2 * ( yz - xw );
-		m20  =     2 * ( xz - yw );
-		m21  =     2 * ( yz + xw );
-		m22 = 1 - 2 * ( xx + yy );
-
-		Matrix4 rm(m00,m10,m20,0,m01,m11,m21,0,m02,m12,m22,0,0,0,0,1);
-		mt=rm*mt;
-	}
-
-	if (rev&&(!lua_isnoneornil(L,-1))) {
-		lua_rawgeti(L,-1,1);
-		lua_rawgeti(L,-2,2);
-		lua_rawgeti(L,-3,3);
-		mt.scale(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
-		lua_pop(L,3);
-	} else {
-		if (!lua_isnoneornil(L,-3)) {
-			lua_rawgeti(L,-3,1);
-			lua_rawgeti(L,-4,2);
-			lua_rawgeti(L,-5,3);
-			mt.translate(luaL_optnumber(L,-3,0), luaL_optnumber(L,-2,0), luaL_optnumber(L,-1,0));
-			lua_pop(L,3);
-		}
-	}
-
-	t->setMatrix(mt.data());
-    binder.pushInstance("Matrix", t);
+    struct _SRT srt;
+    parseSRT(L,1,srt);
+    pushSRTMatrix(L,srt,rev);
 
 	return 1;
+}
+
+int MatrixBinder::mixSRT(lua_State* L)
+{
+    struct _SRT srt1,srt2;
+    float mix=luaL_checknumber(L,3);
+    parseSRT(L,1,srt1);
+    parseSRT(L,2,srt2);
+    for(int k=0;k<3;k++) {
+        srt1.t[k]=srt1.t[k]*(1-mix)+srt2.t[k]*mix;
+        srt1.s[k]=srt1.s[k]*(1-mix)+srt2.s[k]*mix;
+    }
+    //NLERP quaternion
+    float dot = srt1.r[0]*srt2.r[0]+srt1.r[1]*srt2.r[1]+srt1.r[2]*srt2.r[2]+srt1.r[3]*srt2.r[3];
+    if (dot < 0.0f) {
+        srt2.r[0]=-srt2.r[0];
+        srt2.r[1]=-srt2.r[1];
+        srt2.r[2]=-srt2.r[2];
+        srt2.r[3]=-srt2.r[3];
+    }
+
+    for(int k=0;k<4;k++)
+        srt1.r[k]=srt1.r[k]*(1-mix)+srt2.r[k]*mix;
+
+    float len = std::sqrt(srt1.r[0]*srt1.r[0]+srt1.r[1]*srt1.r[1]+srt1.r[2]*srt1.r[2]+srt1.r[3]*srt1.r[3]);
+    srt1.r[0] /= len;
+    srt1.r[1] /= len;
+    srt1.r[2] /= len;
+    srt1.r[3] /= len;
+
+    pushSRTMatrix(L,srt1,false);
+    return 1;
 }
 
 int MatrixBinder::lookAt(lua_State* L)
