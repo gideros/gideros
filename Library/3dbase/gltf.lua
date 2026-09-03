@@ -31,91 +31,70 @@ function Gltf:getScene(i)
 			for _,c in ipairs(ad.channels) do
 				local bone=btab[c.target.node]
 				local samp=ad.samplers[c.sampler+1]
-				local path=c.target.path
 				if not bone then
-					bone={ boneId="n"..c.target.node, keyframes={}, keytimes={} }
+					bone={ boneId="n"..c.target.node, kf={}, keyframes={} }
 					btab[c.target.node]=bone
 					abones[#abones+1]=bone
 				end
+				local path=c.target.path
 				local pl=PATHLEN[path]
-				local ksmpout=self:getBuffer(samp.output+1,false,pl) -- vector
-				local ksmpin=self:getBuffer(samp.input+1,false,1) --Time points
-				--Populate keyframes, possibly with partial data
-				for ki,kv in ipairs(ksmpin) do
+				--assert(pl,"Unknown animation path:"..path)
+				if pl then
+					local kifrms=self:getBuffer(samp.input+1,false,1)
+					local kofrms=self:getBuffer(samp.output+1,false,pl)
+					local lkt
+					local bkf=bone.kf[path] or {}
+					bone.kf[path]=bkf
+					for ki,kv in ipairs(kifrms) do
+						local kt=(kv-kifrms[1])*1000
+						if lkt then bkf[lkt].next=kt end
 					local b=(ki-1)*pl
 					local v={}
-					for n=1,pl do v[n]=ksmpout[n+b] end
-					local ktm=(kv*1000)//1
-					local kf=bone.keyframes[ktm] 
-					if not kf then
-						kf={ keytime=ktm }
-						bone.keyframes[ktm]=kf
-						bone.keytimes[#bone.keytimes+1]=ktm
+						for n=1,pl do v[n]=kofrms[n+b] end
+						bkf[kt]={ [path]=v }
+						lkt=kt
 					end
-					kf[path]=v
 				end
 			end
-			
-			--Reassemble keyframes			
-			for _,bone in ipairs(abones) do
-				-- Sort timeline
-				table.sort(bone.keytimes)
-				local kfirst=bone.keytimes[1]
-				-- Reassembled and sorted key frames vector
-				local nkf={}
-				-- Missing vectors recording
-				local otm={}
-				local ohisto={}
-				-- Go through all partial keyframes in order
-				for i,ktm in ipairs(bone.keytimes) do
-					-- Assign to ordered vector and fix keyframe time
-					local kf=bone.keyframes[ktm]
-					kf.keytime-=kfirst
-					nkf[i]=kf
-					-- Check each vector
-					for path,pl in pairs(PATHLEN) do
-						local vp=kf[path]
-						if vp then
-							-- Vector is present: check for holes
-							local op=ohisto[path]
-							ohisto[path]=nil
-							if op and otm[path] then
-								-- We need to interpolate and fill holes
-								local ltm=otm[path]
-								local vst=bone.keyframes[ltm][path]
-								local vsr=(ktm-ltm)
-								for _,ktm in ipairs(op) do
-									local v={}
-									for n=1,pl do 
-										v[n]=vst[n]+(vp[n]-vst[n])*(ktm-ltm)/vsr
-									end
-									bone.keyframes[ktm][path]=v
-								end
-							elseif op then --We have holes at very start: what should we do ???
-								print("No starting point")
+			for _,b in ipairs(abones) do
+				--Gather all time points
+				local kt,ktd={},{}
+				local pinf={}
+				for pp,kff in pairs(b.kf) do
+					for kti,_ in pairs(kff) do
+						ktd[kti]=true
+					end
+					pinf[pp]={ t=kff,l=PATHLEN[pp] }
+				end
+				for kti,_ in pairs(ktd) do
+					kt[#kt+1]=kti
+				end
+
+				table.sort(kt)
+				for ki,ktm in ipairs(kt) do
+					local kf={keytime=ktm}
+					b.keyframes[ki]=kf
+					for pp,pi in pairs(pinf) do
+						local pc=pi.t[ktm]
+						if pc then
+							kf[pp]=pc[pp]
+							pi.s=pc
+							pi.n=pi.t[pc.next]
+							pi.st=ktm
+							pi.nt=pc.next
+						elseif pi.s then
+							if pi.n then
+								local v={}
+								local r=(ktm-pi.st)/(pi.nt-pi.st)
+								for n=1,pi.l do v[n]=pi.s[pp][n]+(pi.n[pp][n]-pi.s[pp][n])*r end
+								kf[pp]=v
+							else
+								kf[pp]=pc.s[pp]
 							end
-							-- Record last time point with a value for this vector
-							otm[path]=ktm							
-						else
-							--We don't have a value, record it as a hole
-							local op=ohisto[path] or {}
-							ohisto[path]=op
-							op[#op+1]=ktm
 						end
 					end
 				end
-				for path,pl in pairs(PATHLEN) do
-					local op=ohisto[path]
-					ohisto[path]=nil
-					if op and otm[path] then
-						print("No ending point for "..path)
-					elseif op then 
-						--Not strictly an derror, default value will be used
-						--print("No values for "..path)
-					end
-				end
-				bone.keyframes=nkf
-				bone.keytimes=nil
+			b.kf=nil
 			end
 			root.animations[an]={ bones=abones, name=ad.name }
 		end
@@ -333,6 +312,12 @@ function Gltf:getImage(n)
 	end
 end
 
+function Gltf:getTexture(n)
+	local bd=self.desc.textures[n]
+	if not bd then return nil end
+	return self:getImage(bd.source+1)
+end
+
 function Gltf:loadBuffer(i,buf)
 	local f=io.open(self.path.."/"..buf.uri)
 	local data=f:read("*a")
@@ -352,9 +337,10 @@ function Gltf:getMaterial(i)
 		end
 		local td=bd.pbrMetallicRoughness.baseColorTexture -- the embedded image texture data
 		if td and td.index then
-			local embedded=self:getImage(td.index+1) -- embedded = Gideros Buffer holding the image texture data
+			local embedded=self:getTexture(td.index+1) -- embedded = Gideros Buffer holding the image texture data
 			mat.embeddedtexture = Texture.new(embedded,true,{ wrap=TextureBase.REPEAT, extend=false})
 		end
+		-- TO DO NORMAL MAP TEXTURE?
 	end
 	if bd.normalTexture then
 		local td=bd.normalTexture

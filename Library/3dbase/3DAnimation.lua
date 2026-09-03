@@ -7,23 +7,32 @@ D3Anim._animated={}
 -- State of animated models (which can contain several meshes)
 -- A mesh's model is given by its 'bonesTop'
 D3Anim._animatedModel={} 
+local _weak={ __mode = "k"}
+setmetatable(D3Anim._animated,_weak)
+setmetatable(D3Anim._animatedModel,_weak)
 
 function D3Anim.updateBones()
 	-- Go through all meshes with dirty models
 	local cleaned={}
 	local bonesMat={}
+	local tc=table.create
 	for k,a in pairs(D3Anim._animated) do	
-		if k:isVisible() and D3Anim._animatedModel[k.bonesTop].dirty then 
-			local bt={}
+		local ktop=k.bonesTop
+		if k:isVisible(true) and D3Anim._animatedModel[ktop].dirty then 
+			local bt
+			if Mesh.updateBones then
+				k:updateBones(k.bonesTop,k.animBones,"bones")
+			else
 			local bn=1
+				bt=tc(16*#k.animBones)
 			for n,bd in ipairs(k.animBones) do
 				local b=bd.bone
-				local m
+					local m
 				if b then
-					-- Bone to Mesh
-					m=bonesMat[b]
+						m=bonesMat[b]
 					if not m then
-						m=k.bonesTop:spriteToLocalMatrix(b)
+					-- Bone to Mesh
+						m=ktop:spriteToLocalMatrix(b)
 						m:multiply(b.poseIMat)				
 						bonesMat[b]=m
 					end
@@ -38,13 +47,15 @@ function D3Anim.updateBones()
 				bn=bn+16
 			end
 			k:setShaderConstant("bones",Shader.CMATRIX,#k.animBones,bt)
-			cleaned[k.bonesTop]=true
+		end
+			cleaned[ktop]=true
 		end
 		a.dirty=false
 	end
 	for k,_ in pairs(cleaned) do
 		D3Anim._animatedModel[k].dirty=false
 	end
+	if Mesh.updateBones then Mesh.updateBones() end
 end
 
 function D3Anim.animate(m,a)
@@ -52,15 +63,13 @@ function D3Anim.animate(m,a)
 	local dtm=(os:timer()-a.tm)*1000*(a.speed or 1)
 	local hasNext=false
 	for _,b in ipairs(a.anim.bones) do
+		local ktimes=b.keytimes
+		local nbkf=#ktimes
+		local mc=b._meshCache[m]
 		local cf=1
-		while cf<#b.keyframes and b.keyframes[cf].keytime<dtm do cf+=1 end
-		if cf<#b.keyframes then hasNext=true end
-		local f=b.keyframes[cf]
-		if type(m.bones[b.boneId])=="table" then
-			local nf=m.bones[b.boneId]
-			local cm={ s=f.scale or nf.srt.s, r=f.rotation or nf.srt.r, t=f.translation or nf.srt.t}
-			ta[b.boneId]=cm
-		end
+		while cf<nbkf and ktimes[cf]<dtm do cf+=1 end
+		if cf<nbkf then hasNext=true end
+		ta[b.boneId]=mc[cf]
 	end
 	if not hasNext then
 		if not a.loop then return ta,true end
@@ -72,15 +81,16 @@ end
 function D3Anim.tick()
 	-- Animate all models
 	for k,a in pairs(D3Anim._animatedModel) do	
-		if k:isVisible() then
+		if k:isVisible(true) then
 			local ares={}
 			local aend={}
 			-- Collect contributions from all running animations on this model
 			for slot,anim in pairs(a.animations) do
 				local function animateIns(mvs,ratio)
 					for bone,srt in pairs(mvs) do
-						ares[bone]=ares[bone] or {}
-						table.insert(ares[bone],{ratio=ratio,mat={G3DFormat.srtToMatrix(srt):getMatrix()}})
+						local ab=ares[bone] or {}
+						ares[bone]=ab
+						ab[#ab+1]={ratio=ratio,mat=srt}
 					end
 				end
 				local ao,al,ac,aor=nil,nil,nil,1
@@ -104,18 +114,24 @@ function D3Anim.tick()
 				a.animations[slot]=nil 
 			end
 			-- Compute bones matrices
-			local rm=Matrix.new() 
 			for bone,srtl in pairs(ares) do
-				if #srtl>0 then
+				local srtnum=#srtl
+				if srtnum==1 then
+					k.bones[bone]:setMatrix(Matrix.fromSRT(srtl[1].mat))
+				elseif srtnum==2 and Matrix.mixSRT then
+					k.bones[bone]:setMatrix(Matrix.mixSRT(srtl[1].mat,srtl[2].mat,
+					srtl[2].ratio/(srtl[1].ratio+srtl[2].ratio)))
+				elseif srtnum>0 then
 					local cm={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 					local tsr=0
 					for _,srt in ipairs(srtl) do tsr+=srt.ratio end
 					for _,srt in ipairs(srtl) do
 						local rsc=1/#srtl
 						if tsr>0 then rsc=srt.ratio/tsr end
-						for k=1,16 do cm[k]+=srt.mat[k]*rsc end
+						local sm={Matrix.fromSRT(srt.mat):getMatrix()}
+						for k=1,16 do cm[k]+=sm[k]*rsc end
 					end
-					rm:setMatrix(unpack(cm))
+					local rm=Matrix.new() rm:setMatrix(unpack(cm))
 					k.bones[bone]:setMatrix(rm)
 				end
 			end
@@ -163,9 +179,36 @@ function D3Anim.setAnimation(model,anim,track,loop,transitionTime,speed,onEnd)
 		oldAnim=oldAnim,oldStart=oldStart,oldLen=oldLen,
 		speed=speed, onEnd=onEnd,
 	}
+	for _,b in ipairs(anim.bones) do
+		local ktimes=b.keytimes
+		local bkf=b.keyframes
+		local nbkf=#bkf
+		if not ktimes then
+			ktimes={}
+			for i=1,nbkf do ktimes[i]=bkf[i].keytime end
+			b.keytimes=ktimes
+			b._meshCache={}
+			setmetatable(b._meshCache,{ _mode="k" })
+end
+		local mc=b._meshCache[model]
+		if not mc then
+			mc={}
+			b._meshCache[model]=mc
+			local nf=model.bones[b.boneId]
+			for i=1,nbkf do 
+				local f=bkf[i]
+				if nf then
+					local nfs=nf.srt
+					local cm={ s=f.scale or nfs.s, r=f.rotation or nfs.r, t=f.translation or nfs.t}
+					mc[i]=cm
+				end
+			end
+		end
+	end
 end
 
 function D3Anim._addMesh(m)
+	assert((#m.animBones)<=75,"Too many bones:"..(#m.animBones))
 	D3Anim._animated[m]={ dirty=true, animations={} }
 	D3Anim._animatedModel[m.bonesTop]={dirty=true,animations={}}
 end

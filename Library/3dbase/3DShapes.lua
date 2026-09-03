@@ -39,40 +39,46 @@ function Mesh3D:updateMode(set,clear)
 end
 
 function Mesh3D:setInstanceCount(n)
-	self._im1,self._im2,self._im3,self._im4=
+	if Mesh.setMatrixArray then
+		self._im=self._im or {}
+	else
+		self._im1,self._im2,self._im3,self._im4=
 		self._im1 or {}, self._im2 or {},self._im3 or {},self._im4 or {}
+	end
 	self._icount=n
 end
 
 function Mesh3D:setInstanceMatrix(i,m)
-	local is=i*4-3
-	if m then
-		local mm={m:getMatrix()}
-		self._im1[is],self._im1[is+1],self._im1[is+2],self._im1[is+3]=mm[1],mm[2],mm[3],mm[4]
-		self._im2[is],self._im2[is+1],self._im2[is+2],self._im2[is+3]=mm[5],mm[6],mm[7],mm[8]
-		self._im3[is],self._im3[is+1],self._im3[is+2],self._im3[is+3]=mm[9],mm[10],mm[11],mm[12]
-		self._im4[is],self._im4[is+1],self._im4[is+2],self._im4[is+3]=mm[13],mm[14],mm[15],mm[16]
+	if Mesh.setMatrixArray then
+		self._im[i]=m
 	else
-		for i=3,0,-1 do
-			self._im1[is+i]=nil
-			self._im2[is+i]=nil
-			self._im3[is+i]=nil
-			self._im4[is+i]=nil
-		end
+		local mm1,mm2,mm3,mm4,mm5,mm6,mm7,mm8,mm9,mm10,mm11,mm12,mm13,mm14,mm15,mm16=m:getMatrix()
+		local is0=i*4-3
+		local is1=is0+1
+		local is2=is0+2
+		local is3=is0+3
+		local im1,im2,im3,im4=self._im1,self._im2,self._im3,self._im4
+		im1[is0],im1[is1],im1[is2],im1[is3]=mm1,mm2,mm3,mm4
+		im2[is0],im2[is1],im2[is2],im2[is3]=mm5,mm6,mm7,mm8
+		im3[is0],im3[is1],im3[is2],im3[is3]=mm9,mm10,mm11,mm12
+		im4[is0],im4[is1],im4[is2],im4[is3]=mm13,mm14,mm15,mm16
 	end
 end
 
 function Mesh3D:updateInstances()
-	local icc=self._icount*4
-	for i=1,icc do
-		self._im1[i]=self._im1[i] or 0
-		self._im2[i]=self._im2[i] or 0
-		self._im3[i]=self._im3[i] or 0
-		self._im4[i]=self._im4[i] or 0
-	end
 	if self._icount==0 then 
 		self:updateMode(0,Mesh3D.MODE_INSTANCED)
-	else 
+	elseif Mesh.setMatrixArray then
+		self:updateMode(Mesh3D.MODE_INSTANCED,0)
+		self:setMatrixArray(6,self._icount,self._im)
+	else
+		local icc=self._icount*4
+		for i=1,icc do
+			self._im1[i]=self._im1[i] or 0
+			self._im2[i]=self._im2[i] or 0
+			self._im3[i]=self._im3[i] or 0
+			self._im4[i]=self._im4[i] or 0
+		end
 		self:updateMode(Mesh3D.MODE_INSTANCED,0)
 		self:setGenericArray(6,Shader.DFLOAT,4,self._icount,self._im1)
 		self:setGenericArray(7,Shader.DFLOAT,4,self._icount,self._im2)
@@ -81,6 +87,38 @@ function Mesh3D:updateInstances()
 	end
 	Mesh.setInstanceCount(self,self._icount)
 end
+
+function Mesh3D:setAllInstances(mm)
+	local n=#mm
+	self._icount=n
+	if n==0 then self:updateMode(0,Mesh3D.MODE_INSTANCED)
+	else self:updateMode(Mesh3D.MODE_INSTANCED,0)
+	end
+	Mesh.setInstanceCount(self,n)
+	if Mesh.setMatrixArray then
+		self._im=mm
+		self:setMatrixArray(6,n,mm)
+	else
+		local im1,im2,im3,im4={},{},{},{}
+		self._im1,self._im2,self._im3,self._im4=im1,im2,im3,im4
+		for i,m in ipairs(mm) do
+			local mm1,mm2,mm3,mm4,mm5,mm6,mm7,mm8,mm9,mm10,mm11,mm12,mm13,mm14,mm15,mm16=m:getMatrix()
+			local is0=i*4-3
+			local is1=is0+1
+			local is2=is0+2
+			local is3=is0+3
+			im1[is0],im1[is1],im1[is2],im1[is3]=mm1,mm2,mm3,mm4
+			im2[is0],im2[is1],im2[is2],im2[is3]=mm5,mm6,mm7,mm8
+			im3[is0],im3[is1],im3[is2],im3[is3]=mm9,mm10,mm11,mm12
+			im4[is0],im4[is1],im4[is2],im4[is3]=mm13,mm14,mm15,mm16
+		end
+		self:setGenericArray(6,Shader.DFLOAT,4,n,im1)
+		self:setGenericArray(7,Shader.DFLOAT,4,n,im2)
+		self:setGenericArray(8,Shader.DFLOAT,4,n,im3)
+		self:setGenericArray(9,Shader.DFLOAT,4,n,im4)
+	end
+end
+
 
 function Mesh3D:setLocalMatrix(m)
 	self:setShaderConstant("InstanceMatrix",Shader.CMATRIX,1,m:getMatrix())

@@ -15,11 +15,6 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 		pos.z-=itex.b*512.0;
 	end
 	]]
-	if OPT_INSTANCED then
-		local imat=hF44(INSTMATA,INSTMATB,INSTMATC,INSTMATD)
-		pos=imat*InstanceMatrix*pos
-		norm = imat*InstanceMatrix*hF4(norm.xyz, 0.0)
-	end
 	if OPT_VOXEL then
 		pos.x=.5+pos.x/2+VOXELDATA.x
 		pos.y=.5+pos.y/2+VOXELDATA.y
@@ -48,19 +43,27 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 		skinning+=bones[hI1(ANIMIDX.z)]*ANIMWEIGHT.z;
 		skinning+=bones[hI1(ANIMIDX.w)]*ANIMWEIGHT.w;
 		local npos = skinning * pos;
-		local nnorm = skinning * hF4(norm.xyz, 0.0);
-		pos=hF4(npos.xyz,1.0);
+		local nnorm = skinning * hF4(norm.xyz, 0.0)
+		pos=hF4(npos.xyz,1.0)
 		norm=nnorm;
 	end
 	
 	position = (g_MVMatrix*pos).xyz
+	local res=g_MVPMatrix*pos
+	if OPT_INSTANCED then
+		local imat=hF44(INSTMATA,INSTMATB,INSTMATC,INSTMATD);
+		position=(imat*InstanceMatrix*g_MVMatrix*pos).xyz;
+		norm = imat*InstanceMatrix*hF4(norm.xyz, 0.0)
+		res= g_PMatrix*g_VMatrix*hF4(position,1.0)
+	end
+	
 	normalCoord = normalize((g_NMatrix*hF4(norm.xyz,0)).xyz)
 	eyePos=cameraPos
 	if OPT_SHADOWS then
 		lightSpace = g_LMatrix*hF4(position,1.0);
 	end
 	if OPT_OCCLUSION then
-		occlusionSpace = g_MVPMatrix * pos;
+		occlusionSpace = g_MVPMatrix * pos
 	end
 	if OPT_COLORED then
 		vcolor=COLOR
@@ -68,7 +71,7 @@ function D3._VLUA_Shader (POSITION,COLOR,TEXCOORD,NORMAL,ANIMIDX,ANIMWEIGHT,INST
 	if OPT_FOG then
 		eyeDist=length(position.xyz-cameraPos.xyz)
 	end
-	return g_MVPMatrix * pos;
+	return res
 end
 
 function D3._FLUA_Shader() : Shader

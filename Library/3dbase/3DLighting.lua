@@ -38,6 +38,8 @@ local LightingShaderAttrs={
 local LightingShaderConstants={
 {name="g_MVPMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP, vertex=true},
 {name="g_MVMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WORLD, vertex=true},
+{name="g_VMatrix",type=Shader.CMATRIX,sys=Shader.SYS_VIEW, vertex=true},
+{name="g_PMatrix",type=Shader.CMATRIX,sys=Shader.SYS_PROJECTION, vertex=true},
 {name="g_NMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WIT3, vertex=true},
 {name="g_LMatrix",type=Shader.CMATRIX, vertex=true},
 {name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
@@ -49,7 +51,7 @@ local LightingShaderConstants={
 {name="g_ShadowMap",type=Shader.CTEXTURE,subtype="shadow",mult=1,vertex=false,code="s"},
 {name="g_ColorMap",type=Shader.CTEXTURE,mult=1,vertex=true,code="v"},
 {name="g_OcclusionMap",type=Shader.CTEXTURE,mult=1,vertex=false,code="o"},
-{name="bones",type=Shader.CMATRIX,mult=64,vertex=true,code="a"},
+{name="bones",type=Shader.CMATRIX,mult=75,vertex=true,code="a"},
 {name="InstanceMatrix",type=Shader.CMATRIX,mult=1,vertex=true,code="i"},
 {name="fogDistance",type=Shader.CFLOAT2,mult=1,vertex=false,code="f"},
 {name="fogColor",type=Shader.CFLOAT4,mult=1,vertex=false,code="f"},
@@ -130,6 +132,9 @@ function Lighting.getShader(code)
 				LightingShaderConstants,LightingShaderAttrs)
 			]]
 			local csts=ShaderFilter(LightingShaderConstants,acode)
+			if D3._Shader_CustomConstants then
+				D3._Shader_CustomConstants(csts,acode)
+			end
 			local v=Shader.lua(
 				D3._VLUA_Shader,
 				D3._FLUA_Shader,

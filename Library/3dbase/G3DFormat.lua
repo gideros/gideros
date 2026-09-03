@@ -2,16 +2,27 @@ G3DFormat={}
 
 local g3dNum=0
 
+G3DFormat.globalMeshMode=D3.Mesh.MODE_SHADOW
 function G3DFormat.computeG3DSizes(g3d)
+	G3DFormat.deserialize(g3d)
 	if g3d.type=="group" then
 		for _,v in pairs(g3d.parts) do
 			G3DFormat.computeG3DSizes(v)
 			if g3d.min then
-				g3d.min={math.min(g3d.min[1],v.min[1]),math.min(g3d.min[2],v.min[2]),math.min(g3d.min[3],v.min[3])}
-				g3d.max={math.max(g3d.max[1],v.max[1]),math.max(g3d.max[2],v.max[2]),math.max(g3d.max[3],v.max[3])}
+				g3d.min={g3d.min[1]><v.min[1],g3d.min[2]><v.min[2],g3d.min[3]><v.min[3]}
+				g3d.max={g3d.max[1]<>v.max[1],g3d.max[2]<>v.max[2],g3d.max[3]<>v.max[3]}
 			else
 				g3d.min={v.min[1],v.min[2],v.min[3]}
 				g3d.max={v.max[1],v.max[2],v.max[3]}
+			end
+			if v.meshmin then
+				if g3d.meshmin then
+					g3d.meshmin={g3d.meshmin[1]><v.meshmin[1],g3d.meshmin[2]><v.meshmin[2],g3d.meshmin[3]><v.meshmin[3]}
+					g3d.meshmax={g3d.meshmax[1]<>v.meshmax[1],g3d.meshmax[2]<>v.meshmax[2],g3d.meshmax[3]<>v.meshmax[3]}
+				else
+					g3d.meshmin={v.meshmin[1],v.meshmin[2],v.meshmin[3]}
+					g3d.meshmax={v.meshmax[1],v.meshmax[2],v.meshmax[3]}
+		end
 			end
 		end
 		if not g3d.min then
@@ -21,18 +32,21 @@ function G3DFormat.computeG3DSizes(g3d)
 	elseif g3d.type=="mesh" then
 		local minx,miny,minz=100000,100000,100000
 		local maxx,maxy,maxz=-100000,-100000,-100000
-		for id=1,#g3d.indices do
-			local i=g3d.indices[id]*3-2
-			local x,y,z=g3d.vertices[i],g3d.vertices[i+1],g3d.vertices[i+2]
-			minx=math.min(minx,x)
-			miny=math.min(miny,y)
-			minz=math.min(minz,z)
-			maxx=math.max(maxx,x)
-			maxy=math.max(maxy,y)
-			maxz=math.max(maxz,z)
+		local indSz=buffer.len(g3d.indicesBuffer)//4
+		for id=0,indSz-1 do
+			local i=g3d.indicesBuffer[id]*3
+			local x,y,z=g3d.verticesBuffer[i],g3d.verticesBuffer[i+1],g3d.verticesBuffer[i+2]
+			minx=minx><x
+			miny=miny><y
+			minz=minz><z
+			maxx=maxx<>x
+			maxy=maxy<>y
+			maxz=maxz<>z
 		end
 		g3d.min={minx,miny,minz}
 		g3d.max={maxx,maxy,maxz}
+		g3d.meshmin={minx,miny,minz}
+		g3d.meshmax={maxx,maxy,maxz}
 	elseif g3d.type=="voxel" then
 		g3d.min={0,0,0}
 	else
@@ -51,12 +65,26 @@ function G3DFormat.computeG3DSizes(g3d)
 		local x2,y2,z2=m:transformPoint(g3d.max[1],g3d.max[2],g3d.max[3])
 		g3d.min[1],g3d.min[2],g3d.min[3]=x1><x2,y1><y2,z1><z2
 		g3d.max[1],g3d.max[2],g3d.max[3]=x1<>x2,y1<>y2,z1<>z2
+		if g3d.meshmin then
+			local x1,y1,z1=m:transformPoint(g3d.meshmin[1],g3d.meshmin[2],g3d.meshmin[3])
+			local x2,y2,z2=m:transformPoint(g3d.meshmax[1],g3d.meshmax[2],g3d.meshmax[3])
+			g3d.meshmin[1],g3d.meshmin[2],g3d.meshmin[3]=x1><x2,y1><y2,z1><z2
+			g3d.meshmax[1],g3d.meshmax[2],g3d.meshmax[3]=x1<>x2,y1<>y2,z1<>z2
+		end
 	end
 
 	g3d.center={(g3d.max[1]+g3d.min[1])/2,(g3d.max[2]+g3d.min[2])/2,(g3d.max[3]+g3d.min[3])/2}
+	if g3d.meshmin then
+		g3d.meshcenter={(g3d.meshmax[1]+g3d.meshmin[1])/2,(g3d.meshmax[2]+g3d.meshmin[2])/2,(g3d.meshmax[3]+g3d.meshmin[3])/2}
+	end
 end
 
 function G3DFormat.makeSerializable(g3d,mtls)
+	local function fromBuffer(b)
+		if buffer.convertEndian then buffer.convertendian(b,false) end
+		return if b then Cryptography.b64(buffer.tostring(b)) else nil
+	end
+	G3DFormat.deserialize(g3d)
 	if g3d.type=="group" then
 		for _,v in pairs(g3d.parts) do
 			G3DFormat.makeSerializable(v,mtls)
@@ -80,6 +108,113 @@ function G3DFormat.makeSerializable(g3d,mtls)
 			local bb=Buffer.new(bname) -- embedded texture buffer
 			rt:save("|B|"..bname)
 			mat.embeddedtexture={ type="png", b64=Cryptography.b64(bb:get()) }
+		end
+		g3d.indices=fromBuffer(g3d.indicesBuffer) g3d.indicesBuffer=nil
+		g3d.vertices=fromBuffer(g3d.verticesBuffer) g3d.verticesBuffer=nil
+		g3d.texcoords=fromBuffer(g3d.texcoordsBuffer) g3d.texcoordsBuffer=nil
+		g3d.normals=fromBuffer(g3d.normalsBuffer) g3d.normalsBuffer=nil
+		if g3d.animdata then
+			g3d.animdata.bw=fromBuffer(g3d.animdata.bwBuffer) g3d.animdata.bwBuffer=nil
+			g3d.animdata.bi=fromBuffer(g3d.animdata.biBuffer,false) g3d.animdata.biBuffer=nil
+		end
+	elseif g3d.type=="voxel" then
+		
+	else
+		assert(g3d.type,"No type G3D structure")
+		assert(false,"Unrecognized object type: "..g3d.type)
+	end
+	g3d.deserialized=nil
+end
+
+function G3DFormat.deserialize(g3d)
+	local function toFloatBuffer(v)
+		local b
+		if type(v)=="string" then
+			b=buffer.fromstring(Cryptography.unb64(v))
+			buffer.setarrayaccess(b,"f32")
+			if buffer.convertEndian then buffer.convertendian(b,false) end
+		else
+			b=buffer.create(4*#v)
+			buffer.setarrayaccess(b,"f32")
+			for i,v in ipairs(v) do
+				b[i-1]=v
+			end
+		end
+		return b
+	end
+	local function toIndexBuffer(v)
+		local b
+		if type(v)=="string" then
+			b=buffer.fromstring(Cryptography.unb64(v))
+			buffer.setarrayaccess(b,"u32")
+			if buffer.convertEndian then buffer.convertendian(b,false) end
+		else
+			b=buffer.create(4*#v)
+			buffer.setarrayaccess(b,"u32")
+			for i,v in ipairs(v) do
+				b[i-1]=v-1
+			end
+		end
+		return b
+	end
+	if not g3d.deserialized then 
+		g3d.deserialized=true
+		if g3d.type=="group" then
+			for _,v in pairs(g3d.parts) do
+				G3DFormat.deserialize(v)
+			end
+		elseif g3d.type=="mesh" then
+			-- Convert vertex/index/texccoords arrays into buffers
+			if g3d.indices then
+				g3d.indicesBuffer=toIndexBuffer(g3d.indices)
+				g3d.indices=nil
+			end
+			if g3d.vertices then
+				g3d.verticesBuffer=toFloatBuffer(g3d.vertices)
+				g3d.vertices=nil
+			end
+			if g3d.texcoords then
+				g3d.texcoordsBuffer=toFloatBuffer(g3d.texcoords)
+				g3d.texcoords=nil
+			end
+			if g3d.normals then
+				g3d.normalsBuffer=toFloatBuffer(g3d.normals)
+				g3d.normals=nil
+			end
+			if g3d.animdata then
+				if g3d.animdata.bw then
+					g3d.animdata.bwBuffer=toFloatBuffer(g3d.animdata.bw)
+					g3d.animdata.bw=nil
+				end
+				if g3d.animdata.bi then
+					g3d.animdata.biBuffer=toFloatBuffer(g3d.animdata.bi)
+					g3d.animdata.bi=nil
+				end
+			end
+		elseif g3d.type=="voxel" then
+			
+		else
+			assert(g3d.type,"No type G3D structure")
+			assert(false,"Unrecognized object type: "..g3d.type)
+		end
+	end
+end
+
+function G3DFormat.upgradable(g3d)
+	local function upgradable(t) return t and type(t)=="table" end
+	if g3d.type=="group" then
+		for _,v in pairs(g3d.parts) do
+			if G3DFormat.upgradable(v) then return true end
+		end
+	elseif g3d.type=="mesh" then
+		-- Convert vertex/index/texccoords arrays into buffers
+		if upgradable(g3d.indices) then return true end
+		if upgradable(g3d.vertices) then return true end
+		if upgradable(g3d.texcoords) then return true end
+		if upgradable(g3d.normals) then return true end
+		if g3d.animdata then
+			if upgradable(g3d.animdata.bw) then return true end
+			if upgradable(g3d.animdata.bi) then return true end
 		end
 	elseif g3d.type=="voxel" then
 		
@@ -106,12 +241,61 @@ function G3DFormat.stackMatrix(source,root)
 end
 
 function G3DFormat.sprToSprMatrix(from,to,top)
-	if Sprite.spriteToLocalMatrix then return to:spriteToLocalMatrix(from) end
-	-- Mat MUL: if 1,2:A,3:B, then B=3->2, A=2->1, A*B=3->1
-	local mi=G3DFormat.stackMatrix(to,top) --to->top
-	mi:invert() --top->to
-	mi:multiply(G3DFormat.stackMatrix(from,top)) --(top->to*from->top)->from->to
-	return mi
+	return to:spriteToLocalMatrix(from)
+end
+
+function G3DFormat.srtToMatrix(v,rev)
+	local mt=Matrix.new()
+	if rev and v.t then
+		if v.t then mt:translate(v.t[1],v.t[2],v.t[3]) end
+	else
+		if v.s then mt:scale(v.s[1],v.s[2],v.s[3]) end
+	end
+	if v.r then
+		local X,Y,Z,W=v.r[1],v.r[2],v.r[3],v.r[4]
+		local L=(X*X+Y*Y+Z*Z+W*W)^0.5
+--		print(X,Y,Z,W,L)
+		X/=L Y/=L Z/=L W/=L
+		local xx,xy,xz,xw,yy,yz,yw,zz,zw
+		local m00,m01,m02,m10,m11,m12,m20,m21,m22
+		xx   = X * X
+		xy   = X * Y
+		xz   = X * Z
+		xw   = X * W
+
+		yy   = Y * Y
+		yz   = Y * Z
+		yw   = Y * W
+
+		zz   = Z * Z
+		zw   = Z * W
+
+		m00  = 1 - 2 * ( yy + zz )
+		m01  =     2 * ( xy - zw )
+		m02  =     2 * ( xz + yw )
+		m10  =     2 * ( xy + zw )
+		m11  = 1 - 2 * ( xx + zz )
+		m12  =     2 * ( yz - xw )
+		m20  =     2 * ( xz - yw )
+		m21  =     2 * ( yz + xw )
+		m22  = 1 - 2 * ( xx + yy )
+		local tx,ty,tz=0,0,0
+		if v.tr then
+			tx=v.t[1]
+			ty=v.t[2]
+			tz=v.t[3]
+		end
+		local rm=Matrix.new()
+		rm:setMatrix(m00,m10,m20,0,m01,m11,m21,0,m02,m12,m22,0,tx,ty,tz,1)
+		--rm:setMatrix(m00,m01,m02,0,m10,m11,m12,0,m20,m21,m22,0,0,0,0,1)
+		rm:multiply(mt) mt=rm
+	end
+	if rev and v.s then
+		mt:scale(v.s[1],v.s[2],v.s[3])
+	else
+		if v.t then mt:translate(v.t[1],v.t[2],v.t[3]) end
+	end
+	return mt
 end
 
 G3DFormat.srtToMatrix=Matrix.fromSRT
@@ -139,11 +323,13 @@ function G3DFormat.quaternionToEuler(w,x,y,z)
 	return ^>rx,^>ry,^>rz
 end
 
+local texCache_={}
+setmetatable(texCache_, { __mode="kv" })
 function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 	local m=D3.Mesh.new()
 	m.name=obj.name
-	m:setVertexArray(obj.vertices)
-	m:setIndexArray(obj.indices)
+	m:setVertexArray(buffer.tostring(obj.verticesBuffer),"F")
+	m:setIndexArray(obj.indicesBuffer)
 
 	-- the 'naked' object
 	mtls=mtls or {}
@@ -166,12 +352,16 @@ function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 	if mtl.embeddedtexture and not mtl.texture then -- .glb embedded texture (buffer)
 		if mtl.embeddedtexture.b64 then --Assume Base64
 			local iext=mtl.embeddedtexture.type
+			local hash=Cryptography.b64(Cryptography.md5(mtl.embeddedtexture.b64))
+			mtl.texture=texCache_[hash]
+			if not mtl.texture then
 			local data=Cryptography.unb64(mtl.embeddedtexture.b64)
-			g3dNum+=1
-			local bname="_g3d_"..g3dNum.."."..iext
+				local bname="_g3d_"..hash.."."..iext
 			local bb=Buffer.new(bname) -- embedded texture buffer
 			bb:set(data)
 			mtl.texture=Texture.new("|B|"..bname,true,{ wrap=TextureBase.REPEAT, extend=false})
+				texCache_[hash]=mtl.texture
+			end
 		else
 			mtl.texture=mtl.embeddedtexture
 		end
@@ -193,12 +383,18 @@ function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 	end
 	if (mtl.texture~=nil) then
 		m:setTexture(mtl.texture)
-		local tc={}
-		for i=1,#obj.texcoords,2 do
-			tc[i]=obj.texcoords[i]*mtl.texturew
-			tc[i+1]=obj.texcoords[i+1]*mtl.textureh
+		
+		local tci=obj.texcoordsBuffer
+		local tcl=buffer.len(tci)
+		local tc=buffer.create(tcl)
+		buffer.setarrayaccess(tc,"f32")
+		tcl=tcl//4
+		local mw,mh=mtl.texturew,mtl.textureh
+		for i=0,tcl-1,2 do
+			tc[i]=tci[i]*mw
+			tc[i+1]=tci[i+1]*mh
 		end
-		m:setTextureCoordinateArray(tc)
+		m:setTextureCoordinateArray(buffer.tostring(tc),"F")
 		m.hasTexture=true
 		smode=smode|D3.Mesh.MODE_TEXTURE
 	end
@@ -248,9 +444,9 @@ function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 	if mtl.kd then
 		m:setColorTransform(mtl.kd[1],mtl.kd[2],mtl.kd[3],mtl.kd[4])
 	end
-	if obj.normals then
+	if obj.normalsBuffer then
 		m.hasNormals=true
-		m:setGenericArray(3,Shader.DFLOAT,3,#obj.normals/3,obj.normals)
+		m:setGenericArray(3,Shader.DFLOAT,3,buffer.len(obj.normalsBuffer)/12,obj.normalsBuffer)
 		smode=smode|D3.Mesh.MODE_LIGHTING
 	end
 	if obj.colors then
@@ -267,8 +463,8 @@ function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 		smode=smode|D3.Mesh.MODE_COLORED
 	end
 	if obj.animdata then
-		m:setGenericArray(4,Shader.DFLOAT,4,#obj.animdata.bi/4,obj.animdata.bi)
-		m:setGenericArray(5,Shader.DFLOAT,4,#obj.animdata.bw/4,obj.animdata.bw)
+		m:setGenericArray(4,Shader.DFLOAT,4,buffer.len(obj.animdata.biBuffer)/16,obj.animdata.biBuffer)
+		m:setGenericArray(5,Shader.DFLOAT,4,buffer.len(obj.animdata.bwBuffer)/16,obj.animdata.bwBuffer)
 		if top and top.bones and obj.bones then
 			m.animBones={}
 			for k,v in ipairs(obj.bones) do
@@ -281,7 +477,7 @@ function G3DFormat.buildG3DObject(obj,mtls,top,assetResolver)
 			smode=smode|D3.Mesh.MODE_ANIMATED
 		end
 	end
-	m:updateMode(smode|D3.Mesh.MODE_SHADOW,0)
+	m:updateMode(smode|G3DFormat.globalMeshMode,0)
 	return m
 end
 
@@ -299,11 +495,12 @@ function G3DFormat.buildG3DVoxel(obj,mtls,top)
 	Mesh.setInstanceCount(m,obj.voxelCount)
 	m.colorMap=Texture.new(obj.colorMap,256,1,{extend=false, rawalpha=true})
 	--m:setCullMode(Sprite.CULL_BACK)
-	m:updateMode(D3.Mesh.MODE_LIGHTING|D3.Mesh.MODE_SHADOW|D3.Mesh.MODE_VOXEL,0)
+	m:updateMode(D3.Mesh.MODE_LIGHTING|D3.Mesh.MODE_VOXEL|G3DFormat.globalMeshMode,0)
 	return m
 end
 
 function G3DFormat.buildG3D(g3d,mtl,top,assetResolver)
+	G3DFormat.deserialize(g3d)
 	local spr=nil
 	if g3d.type=="group" then
 		spr=D3.Group.new()
@@ -316,6 +513,7 @@ function G3DFormat.buildG3D(g3d,mtl,top,assetResolver)
 		end
 		spr.animations=g3d.animations
 		for k,v in pairs(g3d.parts) do
+			if not v.name then v.name=k end 
 			local m=G3DFormat.buildG3D(v,mtl,ltop,assetResolver)
 			spr:addChild(m)
 			spr.objs[k]=m
@@ -335,6 +533,9 @@ function G3DFormat.buildG3D(g3d,mtl,top,assetResolver)
 		spr.min=g3d.min
 		spr.max=g3d.max
 		spr.center=g3d.center
+		spr.meshmin=g3d.meshmin
+		spr.meshmax=g3d.meshmax
+		spr.meshcenter=g3d.meshcenter
 		if g3d.transform then
 			local m=Matrix.new()
 			m:setMatrix(unpack(g3d.transform))
