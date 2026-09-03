@@ -2,6 +2,8 @@
 #define MESHBINDER_H
 
 #include "binder.h"
+#include <unordered_map>
+#include "Matrices.h"
 
 class MeshBinder
 {
@@ -55,6 +57,12 @@ private:
     static int setPrimitiveType(lua_State *L);
     static int setInstanceCount(lua_State *L);
     static int setCullMode(lua_State *L);
+    static int updateBones(lua_State *L);
+
+private:
+    static std::unordered_map<uintptr_t,Matrix4> boneCache;
+    static size_t token_bone;
+    static size_t token_poseIMat;
 };
 
 

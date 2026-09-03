@@ -3,6 +3,10 @@
 #include "luaapplication.h"
 #include <luautil.h>
 
+std::unordered_map<uintptr_t,Matrix4> MeshBinder::boneCache;
+size_t MeshBinder::token_bone;
+size_t MeshBinder::token_poseIMat;
+
 MeshBinder::MeshBinder(lua_State *L)
 {
     Binder binder(L);
@@ -51,6 +55,9 @@ MeshBinder::MeshBinder(lua_State *L)
 	    {"setInstanceCount",setInstanceCount},
 	    {"setCullMode",setCullMode},
 
+        //Animation support
+        {"updateBones",updateBones},
+
         {NULL, NULL},
     };
 
@@ -70,6 +77,9 @@ MeshBinder::MeshBinder(lua_State *L)
     lua_setfield(L, -2, "PRIMITIVE_TRIANGLESTRIP");
 
     lua_pop(L, 1);
+
+    token_bone=lua_newtoken(L,"bone");
+    token_poseIMat=lua_newtoken(L,"poseIMat");
 }
 
 static int decodeType(lua_State *L,int idx) {
@@ -1042,6 +1052,57 @@ int MeshBinder::clearTexture(lua_State *L)
     int slot=luaL_optinteger(L,2,0);
 
     mesh->clearTexture(slot);
+
+    return 0;
+}
+
+int MeshBinder::updateBones(lua_State *L)
+{
+    Binder binder(L);
+    if (lua_gettop(L)==0) {
+        //clear caches
+        boneCache.clear();
+        return 0;
+    }
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    Sprite* top = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
+    luaL_checktype(L,3,LUA_TTABLE); //bone table
+    const char *boneCst=luaL_checklstring(L,4,NULL);
+
+    int nbones=lua_objlen(L,3);
+    Sprite::ShaderParam sp;
+    sp.name=boneCst;
+    sp.mult=nbones;
+    sp.type=ShaderProgram::CMATRIX;
+    sp.data.resize(nbones*16);
+    float *mptr=sp.data.data();
+    for (int n=0;n<nbones;n++) {
+        uintptr_t kkey=reinterpret_cast<uintptr_t>(mesh)+n;
+        auto cached=boneCache.find(kkey);
+        if (cached==boneCache.end())
+        {
+            lua_rawgeti(L,3,n+1);
+            lua_rawgettoken(L,-1,token_bone);
+            Sprite* b = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, -1));
+            Matrix m;
+            int npop=2;
+            if (top->spriteToLocalMatrix(b,m)) {
+                if (lua_rawgettoken(L,-1,token_poseIMat)==LUA_TTABLE) {
+                    Transform* postMatrix = static_cast<Transform*>(binder.getInstance("Matrix", -1));
+                    m=m*postMatrix->matrix();
+                }
+                npop++;
+            }
+            lua_pop(L,npop);
+            memcpy(mptr,m.data(),sizeof(float)*16);
+            boneCache[kkey]=m;
+        }
+        else
+            memcpy(mptr,cached->second.data(),sizeof(float)*16);
+        mptr+=16;
+    }
+
+    mesh->setShaderConstant(sp);
 
     return 0;
 }

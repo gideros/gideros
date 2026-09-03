@@ -6,7 +6,13 @@
 class Transform
 {
 public:
-	Transform()
+    struct _SRT {
+        float s[3];
+        float r[4];
+        float t[3];
+        bool hasS,hasR,hasT;
+    };
+    Transform()
 	{
 		scaleX_=1;
 		scaleY_=1;
@@ -271,7 +277,9 @@ public:
 		return matrix_;
 	}
 	void setMatrix(float m11,float m12,float m21,float m22,float tx,float ty);
-	void setMatrix(const float *m);
+    void setMatrix(const float *m);
+    void setMatrix(const Matrix4 &mat);
+    void setSRT(struct _SRT &srt, bool rev);
     static void quaternionToEuler(float w,float x,float y,float z,float &rx,float &ry,float &rz);
     void lookAt(float eyex, float eyey, float eyez, float centerx,
                 float centery, float centerz, float upx, float upy,

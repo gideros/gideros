@@ -104,7 +104,6 @@ void Viewport::doDraw(const CurrentTransform&t, float sx, float sy, float ex, fl
 			Matrix4 oldProj=ShaderEngine::Engine->getProjection();
 			Matrix4 oldView=ShaderEngine::Engine->getView();
             Matrix4 np=oldProj;
-            np.scale(1,1,-1); //Defeat ortho projection
             np=(np*t)*projection_;
 			ShaderEngine::Engine->setProjection(np);
 			ShaderEngine::Engine->setView(matrix_);

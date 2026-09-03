@@ -927,7 +927,7 @@ int MatrixBinder::duplicate(lua_State* L)
 	return 1;
 }
 
-void MatrixBinder::parseSRT(lua_State* L,int idx,struct _SRT &srt)
+void MatrixBinder::parseSRT(lua_State* L,int idx,Transform::_SRT &srt)
 {
     luaL_checktype(L,idx,LUA_TTABLE);
     //Fields
@@ -966,11 +966,16 @@ void MatrixBinder::parseSRT(lua_State* L,int idx,struct _SRT &srt)
         lua_rawgeti(L,-1,1);
         lua_rawgeti(L,-2,2);
         lua_rawgeti(L,-3,3);
-        srt.s[0]=luaL_optnumber(L,-3,0);
-        srt.s[1]=luaL_optnumber(L,-2,0);
-        srt.s[2]=luaL_optnumber(L,-1,0);
+        srt.s[0]=luaL_optnumber(L,-3,1);
+        srt.s[1]=luaL_optnumber(L,-2,1);
+        srt.s[2]=luaL_optnumber(L,-1,1);
         lua_pop(L,3);
         srt.hasS=true;
+    }
+    else {
+        srt.s[0]=1;
+        srt.s[1]=1;
+        srt.s[2]=1;
     }
     if (!lua_isnoneornil(L,-2)) {
         lua_rawgeti(L,-2,1);
@@ -985,73 +990,21 @@ void MatrixBinder::parseSRT(lua_State* L,int idx,struct _SRT &srt)
         srt.hasR=true;
     }
     else
-        srt.r[0]=1;
+        srt.r[3]=1;
 }
 
-void MatrixBinder::pushSRTMatrix(lua_State *L,struct _SRT &srt, bool rev)
+void MatrixBinder::pushSRTMatrix(lua_State *L,Transform::_SRT &srt, bool rev)
 {
     Binder binder(L);
     Transform *t=new Transform();
-    Matrix4 mt;
-    if (rev&&srt.hasT) {
-        mt.translate(srt.t[0],srt.t[1],srt.t[2]);
-    } else {
-        if (srt.hasS) {
-            mt.scale(srt.s[0],srt.s[1],srt.s[2]);
-        }
-    }
-    if (srt.hasR) {
-        float X=srt.r[0];
-        float Y=srt.r[1];
-        float Z=srt.r[2];
-        float W=srt.r[3];
-
-        float L=sqrt(X*X+Y*Y+Z*Z+W*W);
-        X/=L; Y/=L; Z/=L; W/=L;
-        float xx,xy,xz,xw,yy,yz,yw,zz,zw;
-        float m00,m01,m02,m10,m11,m12,m20,m21,m22;
-        xx      = X * X;
-        xy      = X * Y;
-        xz      = X * Z;
-        xw      = X * W;
-
-        yy      = Y * Y;
-        yz      = Y * Z;
-        yw      = Y * W;
-
-        zz      = Z * Z;
-        zw      = Z * W;
-
-        m00  = 1 - 2 * ( yy + zz );
-        m01  =     2 * ( xy - zw );
-        m02 =     2 * ( xz + yw );
-        m10  =     2 * ( xy + zw );
-        m11  = 1 - 2 * ( xx + zz );
-        m12  =     2 * ( yz - xw );
-        m20  =     2 * ( xz - yw );
-        m21  =     2 * ( yz + xw );
-        m22 = 1 - 2 * ( xx + yy );
-
-        Matrix4 rm(m00,m10,m20,0,m01,m11,m21,0,m02,m12,m22,0,0,0,0,1,Matrix4::M3D);
-        mt=rm*mt;
-    }
-
-    if (rev&&srt.hasS) {
-        mt.scale(srt.s[0],srt.s[1],srt.s[2]);
-    } else {
-        if (srt.hasT) {
-            mt.translate(srt.t[0],srt.t[1],srt.t[2]);
-        }
-    }
-
-    t->setMatrix(mt.data());
+    t->setSRT(srt,rev);
     binder.pushInstance("Matrix", t);
 }
 
 int MatrixBinder::fromSRT(lua_State* L)
 {
 	bool rev=lua_toboolean(L,2);
-    struct _SRT srt;
+    Transform::_SRT srt;
     parseSRT(L,1,srt);
     pushSRTMatrix(L,srt,rev);
 
@@ -1060,31 +1013,39 @@ int MatrixBinder::fromSRT(lua_State* L)
 
 int MatrixBinder::mixSRT(lua_State* L)
 {
-    struct _SRT srt1,srt2;
+    Transform::_SRT srt1,srt2;
     float mix=luaL_checknumber(L,3);
     parseSRT(L,1,srt1);
     parseSRT(L,2,srt2);
+    srt1.hasS|=srt2.hasS;
+    srt1.hasR|=srt2.hasR;
+    srt1.hasT|=srt2.hasT;
     for(int k=0;k<3;k++) {
-        srt1.t[k]=srt1.t[k]*(1-mix)+srt2.t[k]*mix;
-        srt1.s[k]=srt1.s[k]*(1-mix)+srt2.s[k]*mix;
+        if (srt1.hasT)
+            srt1.t[k]=srt1.t[k]*(1-mix)+srt2.t[k]*mix;
+        if (srt1.hasS)
+            srt1.s[k]=srt1.s[k]*(1-mix)+srt2.s[k]*mix;
     }
-    //NLERP quaternion
-    float dot = srt1.r[0]*srt2.r[0]+srt1.r[1]*srt2.r[1]+srt1.r[2]*srt2.r[2]+srt1.r[3]*srt2.r[3];
-    if (dot < 0.0f) {
-        srt2.r[0]=-srt2.r[0];
-        srt2.r[1]=-srt2.r[1];
-        srt2.r[2]=-srt2.r[2];
-        srt2.r[3]=-srt2.r[3];
+    if (srt1.hasR)
+    {
+        //NLERP quaternion
+        float dot = srt1.r[0]*srt2.r[0]+srt1.r[1]*srt2.r[1]+srt1.r[2]*srt2.r[2]+srt1.r[3]*srt2.r[3];
+        if (dot < 0.0f) {
+            srt2.r[0]=-srt2.r[0];
+            srt2.r[1]=-srt2.r[1];
+            srt2.r[2]=-srt2.r[2];
+            srt2.r[3]=-srt2.r[3];
+        }
+
+        for(int k=0;k<4;k++)
+            srt1.r[k]=srt1.r[k]*(1-mix)+srt2.r[k]*mix;
+
+        float len = std::sqrt(srt1.r[0]*srt1.r[0]+srt1.r[1]*srt1.r[1]+srt1.r[2]*srt1.r[2]+srt1.r[3]*srt1.r[3]);
+        srt1.r[0] /= len;
+        srt1.r[1] /= len;
+        srt1.r[2] /= len;
+        srt1.r[3] /= len;
     }
-
-    for(int k=0;k<4;k++)
-        srt1.r[k]=srt1.r[k]*(1-mix)+srt2.r[k]*mix;
-
-    float len = std::sqrt(srt1.r[0]*srt1.r[0]+srt1.r[1]*srt1.r[1]+srt1.r[2]*srt1.r[2]+srt1.r[3]*srt1.r[3]);
-    srt1.r[0] /= len;
-    srt1.r[1] /= len;
-    srt1.r[2] /= len;
-    srt1.r[3] /= len;
 
     pushSRTMatrix(L,srt1,false);
     return 1;

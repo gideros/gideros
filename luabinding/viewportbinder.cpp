@@ -186,11 +186,11 @@ int ViewportBinder::lookAt(lua_State* L)
 	StackChecker checker(L, "ViewportBinder::setTransform", 0);
 
 	Binder binder(L);
-	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
+    Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
 
 	shape->lookAt(luaL_optnumber(L,2,0),luaL_optnumber(L,3,0),luaL_optnumber(L,4,0),
 			luaL_optnumber(L,5,0),luaL_optnumber(L,6,0),luaL_optnumber(L,7,0),
-			luaL_optnumber(L,8,0),luaL_optnumber(L,9,0),luaL_optnumber(L,10,0));
+            luaL_optnumber(L,8,0),luaL_optnumber(L,9,0),luaL_optnumber(L,10,0));
 
 	return 0;
 }

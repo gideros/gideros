@@ -2,6 +2,7 @@
 #define MATRIXBINDER_H
 
 #include "binder.h"
+#include "transform.h"
 
 class MatrixBinder
 {
@@ -77,14 +78,8 @@ private:
     static size_t tokenS;
     static size_t tokenR;
     static size_t tokenT;
-    struct _SRT {
-        float s[3];
-        float r[4];
-        float t[3];
-        bool hasS,hasR,hasT;
-    };
-    static void parseSRT(lua_State* L,int idx,struct _SRT &srt);
-    static void pushSRTMatrix(lua_State *L,struct _SRT &srt, bool rev);
+    static void parseSRT(lua_State* L,int idx,Transform::_SRT &srt);
+    static void pushSRTMatrix(lua_State *L,Transform::_SRT &srt, bool rev);
 };
 
 

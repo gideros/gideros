@@ -1790,14 +1790,18 @@ int SpriteBinder::spriteToLocalMatrix(lua_State* L)
     StackChecker checker(L, "spriteToLocalMatrix", 1);
 
     Binder binder(L);
+    bool hasPostMatrix=lua_istable(L,3);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 1));
     Sprite* ref = static_cast<Sprite*>(binder.getInstanceOfType("Sprite", GREFERENCED_TYPEMAP_SPRITE, 2));
+    Transform* postMatrix = hasPostMatrix?static_cast<Transform*>(binder.getInstance("Matrix", 3)):nullptr;
 
     Matrix m;
     if (!sprite->spriteToLocalMatrix(ref,m))
         lua_pushnil(L);
     else {
         Transform *t=new Transform();
+        if (postMatrix)
+            m=m*postMatrix->matrix();
         t->setMatrix(m.data());
         binder.pushInstance("Matrix", t);
     }
@@ -2255,9 +2259,11 @@ void parseShaderParam(lua_State* L,int idx,Sprite::ShaderParam &sp,int &shtype,i
 	default: cm=1;
 	}
 
-	cm*=sp.mult;
-	int li=lua_istable(L,idx+3)?idx+4:(idx+3+cm);
-	shtype=luaL_optinteger(L,li,0);
+    cm*=sp.mult;
+    if (cm>32)
+        luaL_checktype(L,idx+3,LUA_TTABLE);
+    int li=lua_istable(L,idx+3)?idx+4:(idx+3+cm);
+    shtype=luaL_optinteger(L,li,0);
 	shvar=luaL_optinteger(L,li+1,0);
 	switch (sp.type)
 	{

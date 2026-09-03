@@ -1312,41 +1312,40 @@ bool Sprite::spriteToLocal(const Sprite *ref,float x, float y, float z, float* t
 }
 
 bool Sprite::spriteToLocalMatrix(const Sprite *ref,Matrix &mat) const {
-    std::set<const Sprite *> base;
-    std::stack<const Sprite*> stack;
+    // 1. Construire les chaînes d'ancêtres
+    std::vector<const Sprite*> pathA;
+    std::vector<const Sprite*> pathB;
+    pathA.reserve(32);
+    pathB.reserve(32);
 
-    const Sprite* curr = this;
-    while (curr) {
-        base.insert(curr);
-        if (curr==ref) break;
-        curr = curr->parent_;
-    }
-    curr=ref;
-    while (curr&&(base.find(curr)==base.end())) {
-        stack.push(curr);
-        curr = curr->parent_;
-    }
-    if (!curr) return false;
+    const Sprite* a = this;
+    const Sprite* b = ref;
 
-    const Sprite *self = this;
-    int st=0;
-    while (self!=curr) {
-        stack.push(self);
-        st++;
-        self = self->parent_;
+    while (a) { pathA.push_back(a); a = a->parent_; }
+    while (b) { pathB.push_back(b); b = b->parent_; }
+
+    // 2. Trouver le plus proche ancêtre commun (LCA)
+    size_t i = pathA.size();
+    size_t j = pathB.size();
+
+    while (i > 0 && j > 0 && pathA[i-1] == pathB[j-1]) {
+        i--; j--;
     }
 
-    if (st) {
-        while (st--) {
-            mat=mat*stack.top()->matrix();
-            stack.pop();
-        }
-        mat.invert();
+    // Si aucun ancêtre commun
+    if (i == pathA.size()) return false;
+
+    // 3. Multiplier les matrices pour remonter depuis "this" jusqu'au LCA
+    for (size_t k = 0; k < i; k++) {
+        mat = mat * pathA[k]->matrix();
     }
 
-    while (stack.empty() == false) {
-        mat=mat*stack.top()->matrix();
-        stack.pop();
+    // 4. Inverser pour redescendre depuis LCA vers "ref"
+    mat.invert();
+
+    // 5. Multiplier pour descendre vers "ref"
+    for (size_t k = j; k-- > 0;) {
+        mat = mat * pathB[k]->matrix();
     }
 
     return true;
