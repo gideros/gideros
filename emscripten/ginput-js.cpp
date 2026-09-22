@@ -31,16 +31,12 @@ public:
 
         keyMap_["ArrowLeft"] = GINPUT_KEY_LEFT;
         keyMap_["Left"] = GINPUT_KEY_LEFT;
-        keyMap_["\x25"] = GINPUT_KEY_LEFT;
         keyMap_["ArrowRight"] = GINPUT_KEY_RIGHT;
         keyMap_["Right"] = GINPUT_KEY_RIGHT;
-        keyMap_["\x27"] = GINPUT_KEY_RIGHT;
         keyMap_["ArrowUp"] = GINPUT_KEY_UP;
         keyMap_["Up"] = GINPUT_KEY_UP;
-        keyMap_["\x26"] = GINPUT_KEY_UP;
         keyMap_["ArrowDown"] = GINPUT_KEY_DOWN;
         keyMap_["Down"] = GINPUT_KEY_DOWN;
-        keyMap_["\x28"] = GINPUT_KEY_DOWN;
 
 		//keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
