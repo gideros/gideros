@@ -28,11 +28,6 @@ public:
         isTouchToMouseEnabled_ = 0;
         mouseTouchOrder_= 0;
 
-        keyMap_[GINPUT_KEY_LEFT] = GINPUT_KEY_LEFT;
-        keyMap_[GINPUT_KEY_RIGHT] = GINPUT_KEY_RIGHT;
-        keyMap_[GINPUT_KEY_UP] = GINPUT_KEY_UP;
-        keyMap_[GINPUT_KEY_DOWN] = GINPUT_KEY_DOWN;
-
         keyMap_[GINPUT_KEY_0] = GINPUT_KEY_0;
         keyMap_[GINPUT_KEY_1] = GINPUT_KEY_1;
         keyMap_[GINPUT_KEY_2] = GINPUT_KEY_2;
@@ -94,6 +89,11 @@ public:
 		keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
 		keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
 		keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
+
+        keyMap_[37] = GINPUT_KEY_LEFT;
+        keyMap_[39] = GINPUT_KEY_RIGHT;
+        keyMap_[38] = GINPUT_KEY_UP;
+        keyMap_[40] = GINPUT_KEY_DOWN;
 
 		keyMap_[36] = GINPUT_KEY_HOME;
 		keyMap_[35] = GINPUT_KEY_END;
