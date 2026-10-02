@@ -113,7 +113,7 @@ static void loadPlugins() {
 			// , delete '!' read other 2 default folder . and ..
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 				std::wstring dll = pluginDir + fd.cFileName;
-				wprintf(L"found DLL: %ls\n", dll.c_str());
+//				wprintf(L"found DLL: %ls\n", dll.c_str());
 
 				HMODULE hModule = LoadLibrary(dll.c_str());
 				void *plugin = (void*) GetProcAddress(hModule, "g_pluginMain");
@@ -1036,7 +1036,7 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	WNDCLASSEX wndclass;
 	int ret;
 
-	wprintf(L"szCmdLine=%ls\n",szCmdLine);
+//	wprintf(L"szCmdLine=%ls\n",szCmdLine);
 
 	wndclass.cbSize = sizeof (wndclass);
 	wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
