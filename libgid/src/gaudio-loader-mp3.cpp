@@ -39,6 +39,8 @@ g_id gaudio_Mp3Open(const char *fileName, int *numChannels, int *sampleRate, int
 {
     int err = MPG123_OK;
     mpg123_handle *mh = mpg123_new(NULL, &err);
+    mpg123_param(mh,MPG123_ADD_FLAGS,MPG123_QUIET,0);
+
 
     if (mh == NULL || err != MPG123_OK)
     {

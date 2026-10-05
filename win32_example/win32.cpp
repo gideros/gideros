@@ -113,7 +113,7 @@ static void loadPlugins() {
 			// , delete '!' read other 2 default folder . and ..
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 				std::wstring dll = pluginDir + fd.cFileName;
-				wprintf(L"found DLL: %ls\n", dll.c_str());
+				glog_d("found DLL: %s\n", us(dll.c_str()).c_str());
 
 				HMODULE hModule = LoadLibrary(dll.c_str());
 				void *plugin = (void*) GetProcAddress(hModule, "g_pluginMain");
@@ -419,7 +419,7 @@ static bool LoadOpenGLExtensions(void) {
 			.lpszClassName = "Dummy_WGL_djuasiodwa", };
 
 	if (!RegisterClassA(&window_class)) {
-		printf("Failed to register dummy OpenGL window.");
+		glog_e("Failed to register dummy OpenGL window.");
 		return false;
 	}
 
@@ -428,7 +428,7 @@ static bool LoadOpenGLExtensions(void) {
 			CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, window_class.hInstance, 0);
 
 	if (!dummy_window) {
-		printf("Failed to create dummy OpenGL window.");
+		glog_e("Failed to create dummy OpenGL window.");
 		return false;
 	}
 
@@ -448,22 +448,22 @@ static bool LoadOpenGLExtensions(void) {
 
 	int pixel_format = ChoosePixelFormat(dummy_dc, &pfd);
 	if (!pixel_format) {
-		printf("Failed to find a suitable pixel format.");
+		glog_e("Failed to find a suitable pixel format.");
 		return false;
 	}
 	if (!SetPixelFormat(dummy_dc, pixel_format, &pfd)) {
-		printf("Failed to set the pixel format.");
+		glog_e("Failed to set the pixel format.");
 		return false;
 	}
 
 	HGLRC dummy_context = wglCreateContext(dummy_dc);
 	if (!dummy_context) {
-		printf("Failed to create a dummy OpenGL rendering context.");
+		glog_e("Failed to create a dummy OpenGL rendering context.");
 		return false;
 	}
 
 	if (!wglMakeCurrent(dummy_dc, dummy_context)) {
-		printf("Failed to activate dummy OpenGL rendering context.");
+		glog_e("Failed to activate dummy OpenGL rendering context.");
 		return false;
 	}
 
@@ -506,12 +506,12 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC) {
 	wglChoosePixelFormatARB(*hDC, pixel_format_attribs, 0, 1, &pixel_format,
 			&num_formats);
 	if (!num_formats) {
-		printf("Failed to set the OpenGL 3.3 pixel format.");
+		glog_e("Failed to set the OpenGL 3.3 pixel format.");
 	}
 
 	DescribePixelFormat(*hDC, pixel_format, sizeof(pfd), &pfd);
 	if (!SetPixelFormat(*hDC, pixel_format, &pfd)) {
-		printf("Failed to set the OpenGL 3.3 pixel format.");
+		glog_e("Failed to set the OpenGL 3.3 pixel format.");
 	}
 
 	// Specify that we want to create an OpenGL 3.3 core profile context
@@ -531,17 +531,17 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC) {
 	_wglGetExtensionsStringEXT =
 			(PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress(
 					"wglGetExtensionsStringEXT");
-	printf("wgl extensions=%s\n", _wglGetExtensionsStringEXT());
+	glog_v("wgl extensions=%s\n", _wglGetExtensionsStringEXT());
 
 	if (strstr(_wglGetExtensionsStringEXT(), "WGL_EXT_swap_control") == NULL) {
-		printf("Extension not found WGL_EXT_swap_control\n");
+		glog_w("Extension not found WGL_EXT_swap_control\n");
 	}
 
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress(
 			"wglSwapIntervalEXT");
 
 	if (wglSwapIntervalEXT == NULL) {
-		printf("No wglSwapIntervalEXT, reverting to timer events\n");
+		glog_w("No wglSwapIntervalEXT, reverting to timer events\n");
 		return;
 	}
 
@@ -551,7 +551,7 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC) {
 	else
 		vsyncVal = -1;
 	vsyncVal = 0;
-	printf("VSYNC VAL:%d\n", vsyncVal);
+	glog_d("VSYNC VAL:%d\n", vsyncVal);
 	wglSwapIntervalEXT(vsyncVal);
 
 }
@@ -604,7 +604,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 		EnableOpenGL(hwnd, &hDC, &hRC);
 
 		if (glewInit()) {
-			printf("glewInit failed to initialise!\n");
+			glog_e("glewInit failed to initialise!\n");
 			exit(1);
 		}
 
@@ -626,11 +626,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 		glWidth = LOWORD(lParam);
 		glHeight = HIWORD(lParam);
 		glChanged = true;
-		//printf("WM_SIZE: %d x %d\n",glWidth,glHeight);
+		//glog_d("WM_SIZE: %d x %d\n",glWidth,glHeight);
 		return 0;
 	} else if (iMsg == WM_DPICHANGED) {
 		WORD g_dpi = HIWORD(wParam);
-		//printf("DPI Changed:%d\n",g_dpi);
+		//glog_d("DPI Changed:%d\n",g_dpi);
 		RECT *const prcNewWindow = (RECT*) lParam;
 		SetWindowPos(hwnd, NULL, prcNewWindow->left, prcNewWindow->top,
 				prcNewWindow->right - prcNewWindow->left,
@@ -939,7 +939,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 	} else if (iMsg == (WM_USER + 0x10)) {
 		return (LRESULT) new W32Screen(application_->getApplication(), hInst);
 	} else if (iMsg == WM_CLOSE) {
-		printf("WM_CLOSE Called\n");
+		glog_d("WM_CLOSE Called\n");
 		drawok = false;
 		Sleep(30);
 
@@ -948,7 +948,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 				(PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress(
 						"wglSwapIntervalEXT");
 		if (wglSwapIntervalEXT == NULL) {
-			printf("Error, no wglSwapIntervalEXT\n");
+			glog_e("Error, no wglSwapIntervalEXT\n");
 			exit(1);
 		}
 		wglSwapIntervalEXT(0);
@@ -962,7 +962,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 		DestroyWindow(hwnd);
 		return 0;
 	} else if (iMsg == WM_DESTROY) {
-		printf("WM_DESTROY Called\n");
+		glog_d("WM_DESTROY Called\n");
 		PostQuitMessage(0);
 
 		return 0;
@@ -1006,6 +1006,9 @@ static const char szAppTitle[256] = "Win32 Template App Name";
 int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		LPWSTR szCmdLine, int iCmdShow)
 {
+	//Disable Gideros logs in case console/command line is used
+	glog_setLevel(0);
+
 	commandLine=us(szCmdLine);
 	PATH_AppName=szAppName;
 	std::wstring wAppName=ws(szAppName);
@@ -1036,7 +1039,7 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	WNDCLASSEX wndclass;
 	int ret;
 
-	wprintf(L"szCmdLine=%ls\n",szCmdLine);
+	glog_v("CmdLine=%s\n",commandLine.c_str());
 
 	wndclass.cbSize = sizeof (wndclass);
 	wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -1083,6 +1086,6 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	runRender=false;
 	WaitForSingleObject(rThread, INFINITE);
 
-	printf("program ends\n");
+	glog_d("program ends\n");
 	return msg.wParam;
 }
