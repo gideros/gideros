@@ -276,19 +276,19 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	/* and now we have it all.  initialize decoders */
 	if (handle->video_p) {
 		handle->video_p->GetVideoInfo(handle->frame_rate, handle->frame_width, handle->frame_height, handle->frame_format);
-//        glog_i("Ogg logical stream %lx is Video %dx%d %.02f fps",
-//				handle->vo.serialno, handle->frame_width,
-//				handle->frame_height,
-//				handle->frame_rate);
+        glog_i("Ogg logical stream %lx is Video %dx%d %.02f fps",
+				handle->vo.serialno, handle->frame_width,
+				handle->frame_height,
+				handle->frame_rate);
 		switch (handle->frame_format) {
 		case 0:
-            glog_i(" 4:2:0 video\n");
+//            glog_i(" 4:2:0 video\n");
 			break;
 		case 2:
-            glog_i(" 4:2:2 video\n");
+//            glog_i(" 4:2:2 video\n");
 			break;
 		case 3:
-            glog_i(" 4:4:4 video\n");
+//            glog_i(" 4:4:4 video\n");
 			break;
 		default:
             glog_i(" video\n  (UNKNOWN Chroma sampling!)\n");
@@ -300,8 +300,8 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate,
 	unsigned int rate=22050,channels=2;
 	if (handle->audio_p) {
 		handle->audio_p->GetAudioInfo(rate, channels);
-//        glog_i(	"Ogg logical stream %lx is Audio %d channel %ld Hz audio.\n",
-//				handle->ao.serialno, channels, rate);
+        glog_i(	"Ogg logical stream %lx is Audio %d channel %ld Hz audio.\n",
+				handle->ao.serialno, channels, rate);
 	}
 
 	/*	  if (!handle->audio_p)

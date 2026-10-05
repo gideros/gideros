@@ -37,6 +37,7 @@ static void frame_default_pars(mpg123_pars *mp)
 {
 	mp->outscale = 1.0;
 	mp->flags = 0;
+	mp->flags |= MPG123_QUIET; // <-- turn off warnings YYY
 #ifdef GAPLESS
 	mp->flags |= MPG123_GAPLESS;
 #endif

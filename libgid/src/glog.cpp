@@ -15,10 +15,16 @@
 std::wstring utf8_ws(const char *str);
 #endif
 
+#ifdef _WIN32 // YYY
+#include <string>
+#include <Windows.h>
+#endif
+
 #include <stdarg.h>
 #include <stdio.h>
 
-static int s_level = GLOG_DEBUG;
+//static int s_level = GLOG_DEBUG;
+static int s_level = GLOG_ERROR; // YYY
 
 static void log(const char *buffer)
 {
@@ -35,8 +41,9 @@ static void log(const char *buffer)
     }
     __android_log_print(ANDROID_LOG_DEBUG, "Gideros", "%s", buffer);
 #elif defined(WINSTORE)
-	std::wstring wsTmp=utf8_ws(buffer);;
+	std::wstring wsTmp=utf8_ws(buffer);
 	OutputDebugString(wsTmp.c_str());
+#elif defined(_WIN32) // YYY
 #else
     printf("%s\n", buffer);
 #endif

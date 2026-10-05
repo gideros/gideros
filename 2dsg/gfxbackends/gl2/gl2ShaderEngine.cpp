@@ -411,8 +411,8 @@ extern void pathShadersRelease();
 
 void ogl2SetupShaders(bool isGLES) {
 	GLCALL_INIT;
-//	glog_i("GL_VERSION:%s\n", GLCALL glGetString(GL_VERSION));
-//	glog_i("GLSL_VERSION:%s\n", GLCALL glGetString(GL_SHADING_LANGUAGE_VERSION));
+	glog_i("GL_VERSION:%s\n", GLCALL glGetString(GL_VERSION));
+	glog_i("GLSL_VERSION:%s\n", GLCALL glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	const ShaderProgram::ConstantDesc stdUniforms[] = { { "vMatrix",
 			ShaderProgram::CMATRIX, 1,
@@ -541,7 +541,7 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 	const char *ver=(const char *) GLCALL glGetString(GL_VERSION);
 	while (ver&&(*ver)&&(((*ver)<'0')||((*ver)>'9'))) ver++;
 	version=ver?strtod(ver,NULL):0;
-//    glog_i("GL Version %f (%s)",version,isGLES?"ES":"Desktop");
+    glog_i("GL Version %f (%s)",version,isGLES?"ES":"Desktop");
 
     ogl2ShaderProgram::supportInstances=((version>=3.1)||(isGLES&&(version>=3.0)));
 

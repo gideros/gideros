@@ -31,7 +31,8 @@ static void StartCounter() {
 #if _WIN32
 	LARGE_INTEGER li;
 	if(!QueryPerformanceFrequency(&li))
-	printf("QueryPerformanceFrequency failed!\n");
+//	printf("QueryPerformanceFrequency failed!\n");
+	glog_e("QueryPerformanceFrequency failed!\n"); // YYY
 
 	PCFreq = double(li.QuadPart)/1000.0;
 

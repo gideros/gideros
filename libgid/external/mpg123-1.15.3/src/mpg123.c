@@ -57,7 +57,7 @@ struct parameter param = {
   FALSE , /* remote */
   FALSE , /* remote to stderr */
   DECODE_AUDIO , /* write samples to audio device */
-  FALSE , /* silent operation */
+  TRUE  , //FALSE /* silent operation (quiet) */ // YYY
   FALSE , /* xterm title on/off */
   0 ,     /* second level buffer size */
   0 ,     /* verbose level */
@@ -1190,7 +1190,7 @@ int main(int sys_argc, char ** sys_argv)
 		long frank;
 		fprintf(stderr, "\n");
 		if(mpg123_getstate(mh, MPG123_FRANKENSTEIN, &frank, NULL) == MPG123_OK && frank)
-		/* fprintf(stderr, "This was a Frankenstein track.\n"); */
+		fprintf(stderr, "This was a Frankenstein track.\n");
 
 		mpg123_position(mh, 0, 0, NULL, NULL, &secs, NULL);
 		fprintf(stderr,"[%d:%02d] Decoding of %s finished.\n", (int)(secs / 60), ((int)secs) % 60, filename);
