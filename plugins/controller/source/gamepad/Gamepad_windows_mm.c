@@ -24,6 +24,14 @@
 #include <gamepad/Gamepad_private.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef UNICODE
+#undef UNICODE
+#endif
+#ifdef _UNICODE
+#undef _UNICODE
+#endif
+
 #include <windows.h>
 #include <regstr.h>
 
