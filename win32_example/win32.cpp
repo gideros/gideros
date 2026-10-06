@@ -1007,7 +1007,7 @@ int WINAPI wWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		LPWSTR szCmdLine, int iCmdShow)
 {
 	//Disable Gideros logs in case console/command line is used
-	glog_setLevel(0);
+	glog_setLevel(GLOG_SUPPRESS);
 
 	commandLine=us(szCmdLine);
 	PATH_AppName=szAppName;
