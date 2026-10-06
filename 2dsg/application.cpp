@@ -625,7 +625,7 @@ void Application::calculateLogicalTransformation() {
 		}
 	}
 
-	if (scaleMode_ == eNoScale) {
+	if ((scaleMode_ == eNoScale)||(width==0)||(height==0)) {
 		logicalScaleX_ = 1;
 		logicalScaleY_ = 1;
 
