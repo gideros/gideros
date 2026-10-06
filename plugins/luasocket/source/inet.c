@@ -14,7 +14,7 @@
 #ifdef WINSTORE
 #define sscanf sscanf_s
 #endif
-#ifdef _UNICODE
+#if defined(_UNICODE) || defined(UNICODE) || defined(UNICODE_)
 static char gaibuf[256];
 char *str_tous(WCHAR *str)
 {

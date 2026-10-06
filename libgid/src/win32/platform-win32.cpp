@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <stdlib.h>
+#include <algorithm>
 
 #include "luaapplication.h"
 #include <application.h>
