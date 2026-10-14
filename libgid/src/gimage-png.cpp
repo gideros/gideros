@@ -21,6 +21,12 @@ static void flush_png_data(png_structp pngPtr)
     g_fflush(file);
 }
 
+static void PNGAPI user_warning_fn(png_structp png_ptr, png_const_charp warning_message)
+{
+    (void)png_ptr;
+    (void)warning_message;
+}
+
 extern "C" {
 
 int gimage_parsePng(const char *pathname, int *width, int *height, int *comp)
@@ -44,7 +50,7 @@ int gimage_parsePng(const char *pathname, int *width, int *height, int *comp)
         return GIMAGE_UNRECOGNIZED_FORMAT;
     }
 
-    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, user_warning_fn);
 
     png_infop info_ptr = png_create_info_struct(png_ptr);
 
@@ -109,7 +115,7 @@ int gimage_loadPng(const char *pathname, void *buf)
         return GIMAGE_UNRECOGNIZED_FORMAT;
     }
 
-    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, user_warning_fn);
 
     png_infop info_ptr = png_create_info_struct(png_ptr);
 
@@ -162,7 +168,7 @@ int gimage_loadPng(const char *pathname, void *buf)
 
 int gimage_savePng(const char *filename, int width, int height, unsigned char *data)
 {
-    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, user_warning_fn);
     if (!png)
         return GIMAGE_ERROR_WHILE_WRITING;
 
