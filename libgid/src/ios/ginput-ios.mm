@@ -17,43 +17,58 @@ extern float gdr_ScaleFactor;
 class GGInputManager;
 
 #if (!TARGET_OS_TV && !TARGET_OS_OSX)
-@interface GGAccelerometer : NSObject<UIAccelerometerDelegate>
+@interface GGAccelerometer : NSObject
 {
-    UIAccelerometer *accelerometer_;
+    CMMotionManager *motionManager_;
 	BOOL isRunning_;
 }
 
-@property (nonatomic, readonly) UIAccelerationValue x;
-@property (nonatomic, readonly) UIAccelerationValue y;
-@property (nonatomic, readonly) UIAccelerationValue z;
+@property (nonatomic, readonly) double x;
+@property (nonatomic, readonly) double y;
+@property (nonatomic, readonly) double z;
+
+- (id)initWithMotionManager:(CMMotionManager *)motionManager;
 
 @end
 
 @implementation GGAccelerometer
 
-@synthesize x = x_;
-@synthesize y = y_;
-@synthesize z = z_;
-
-- (id)init
+- (id)initWithMotionManager:(CMMotionManager *)motionManager
 {
     if (self = [super init])
     {
-        x_ = y_ = z_ = 0;
-        accelerometer_ = [UIAccelerometer sharedAccelerometer];
+        motionManager_ = [motionManager retain];
 		isRunning_ = NO;
     }
-    
+
     return self;
+}
+
+- (double)x
+{
+	CMAccelerometerData *data = motionManager_.accelerometerData;
+	return data ? data.acceleration.x : 0;
+}
+
+- (double)y
+{
+	CMAccelerometerData *data = motionManager_.accelerometerData;
+	return data ? data.acceleration.y : 0;
+}
+
+- (double)z
+{
+	CMAccelerometerData *data = motionManager_.accelerometerData;
+	return data ? data.acceleration.z : 0;
 }
 
 - (void)start
 {
-	if (isRunning_)
+	if (isRunning_ || !motionManager_)
 		return;
-	
-	accelerometer_.delegate = self;
-	accelerometer_.updateInterval = 1.0 / 60.0;
+
+	motionManager_.accelerometerUpdateInterval = 1.0 / 60.0;
+	[motionManager_ startAccelerometerUpdates];
 	isRunning_ = YES;
 }
 
@@ -62,21 +77,14 @@ class GGInputManager;
 	if (!isRunning_)
 		return;
 
-	accelerometer_.updateInterval = 0.1;
-	accelerometer_.delegate = nil;
+	[motionManager_ stopAccelerometerUpdates];
 	isRunning_ = NO;
-}
-
-- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
-{
-    x_ = acceleration.x;
-    y_ = acceleration.y;
-    z_ = acceleration.z;
 }
 
 - (void)dealloc
 {
 	[self stop];
+	[motionManager_ release];
     [super dealloc];
 }
 
@@ -88,10 +96,11 @@ public:
     GGInputManager()
     {
 #if (!TARGET_OS_TV && !TARGET_OS_OSX)
-        accelerometer_ = [[GGAccelerometer alloc] init];
-
+		motionManager_ = nil;
 		if (NSClassFromString(@"CMMotionManager") != nil)
 			motionManager_ = [[CMMotionManager alloc] init];
+
+        accelerometer_ = [[GGAccelerometer alloc] initWithMotionManager:motionManager_];
 #endif
 		accelerometerStartCount_ = 0;
 		gyroscopeStartCount_ = 0;
