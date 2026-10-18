@@ -46,6 +46,14 @@ slice() {
   done
 }
 
+# need LABEL FILE... : fail (instead of silently testing nothing) when a library is missing or has no architectures
+need() {
+  local label=$1 f; shift
+  for f in "$@"; do
+    if [ ! -f "$f" ] || [ -z "$(lipo -archs "$f" 2>/dev/null)" ]; then echo "FAIL  $label: missing or unreadable library '$f'"; fail=1; return 1; fi
+  done
+}
+
 # platform DIR DEVSDK DEVMIN SIMSDK SIMMIN FW LABEL
 platform() {
   local dir=$1 dsdk=$2 dmin=$3 ssdk=$4 smin=$5 fw=$6 label=$7 kind sdk min a libs
@@ -53,6 +61,7 @@ platform() {
     if [ $kind = sim ]; then sdk=$ssdk; min=$smin; else sdk=$dsdk; min=$dmin; fi
     # array: the template path contains a space
     libs=("$(slice "$dir" gideros $kind)" "$(slice "$dir" lua $kind)" "$(slice "$dir" gvfs $kind)" "$(slice "$dir" openal $kind)")
+    need "$label-$kind" "${libs[@]}" || continue
     for a in $(lipo -archs "${libs[0]}"); do
       run "$label-$kind-$a" "$sdk" "$a" "$min" "$fw" "${libs[@]}"
     done
@@ -61,9 +70,12 @@ platform() {
 
 platform "iOS Template" iphoneos "-miphoneos-version-min=$IOS_MIN" iphonesimulator "-mios-simulator-version-min=$IOS_MIN" "$FW_IOS" ios
 platform AppleTV appletvos "-mtvos-version-min=$TVOS_MIN" appletvsimulator "-mtvos-simulator-version-min=$TVOS_MIN" "$FW_TV" tvos
+MACLIBS=("$ROOT/Mac/libgideros.a" "$ROOT/Mac/liblua.a" "$ROOT/Mac/libgvfs.a" "$ROOT/Mac/libopenal.a")
+if need mac "${MACLIBS[@]}"; then
 for a in $(lipo -archs "$ROOT/Mac/libgideros.a"); do
-  run "mac-$a" macosx "$a" "-mmacosx-version-min=$MAC_MIN" "$FW_MAC" "$ROOT/Mac/libgideros.a" "$ROOT/Mac/liblua.a" "$ROOT/Mac/libgvfs.a" "$ROOT/Mac/libopenal.a"
+  run "mac-$a" macosx "$a" "-mmacosx-version-min=$MAC_MIN" "$FW_MAC" "${MACLIBS[@]}"
 done
+fi
 
 [ $fail = 0 ] && echo "ALL LINKS OK" || echo "LINK TEST FAILED"
 exit $fail

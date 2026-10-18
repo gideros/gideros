@@ -10,6 +10,13 @@ T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 fail=0
 . "$(dirname "$0")/apple-libs-check.sh"
 
+# Every expected library must be there: the loops below only look at what they happen to find
+for n in gideros lua gvfs openal; do
+  [ -d "$ROOT/iOS Template/lib$n.xcframework" ] || { echo "FAIL missing iOS Template/lib$n.xcframework"; fail=1; }
+  [ -d "$ROOT/AppleTV/lib$n.xcframework" ] || { echo "FAIL missing AppleTV/lib$n.xcframework"; fail=1; }
+  [ -f "$ROOT/Mac/lib$n.a" ] || { echo "FAIL missing Mac/lib$n.a"; fail=1; }
+done
+
 for entry in "iOS Template:IOS:IOSSIMULATOR:$IOS_MIN" "AppleTV:TVOS:TVOSSIMULATOR:$TVOS_MIN"; do
   IFS=: read -r dir dp sp mn <<<"$entry"
   found=0
@@ -17,14 +24,19 @@ for entry in "iOS Template:IOS:IOSSIMULATOR:$IOS_MIN" "AppleTV:TVOS:TVOSSIMULATO
     [ -e "$x" ] || continue
     found=1
     n=$(basename "$x" .xcframework)
+    slices=0
     for s in "$x"/*/; do
-      s=${s%/}; sn=$(basename "$s")
+      s=${s%/}; sn=$(basename "$s"); slices=$((slices+1))
       [ -f "$s/$n.a" ] || { echo "FAIL $dir/$n/$sn: expected $n.a, found: $(ls "$s")"; fail=1; continue; }
       case $sn in
         *-simulator) check "$dir/$n/$sn" "$s/$n.a" "$sp" "arm64 x86_64" "$mn" ;;
         *)           check "$dir/$n/$sn" "$s/$n.a" "$dp" "arm64" "$mn" ;;
       esac
     done
+    [ $slices = 2 ] || { echo "FAIL $dir/$n.xcframework: $slices slices, expected 2 (device + simulator)"; fail=1; }
+  done
+  for f in "$ROOT/$dir"/lib*.a; do
+    [ -e "$f" ] && echo "WARN $dir/$(basename "$f"): stale flat library from an older install (the template links the XCFrameworks)"
   done
   [ $found = 1 ] || { echo "FAIL no .xcframework in $dir"; fail=1; }
 done

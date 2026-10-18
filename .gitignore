@@ -35,6 +35,7 @@ Build.Tools
 # Apple lib build outputs (XCFrameworks next to the .xcodeproj, like the old lib*.ios.a files)
 /libgvfs/lib*.xcframework
 /ios/iosplayer/lib*.xcframework
+/lua*/lib*.xcframework
 /plugins/*/source/lib*.xcframework
 /build-*
 /Build
