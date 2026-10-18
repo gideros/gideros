@@ -5,12 +5,11 @@ PRETTY?=$(if $(shell command -v xcpretty 2>/dev/null),| xcpretty -c,)
 
 XCODE_CONFIG?=Release
 
-# Deployment floor of exported projects (Xcode 13 / iOS 15 SDK, macOS 12) and the archs shipped in each slice.
-# Device slices are arm64 only. Simulator and macOS slices are fat. ONLY_ACTIVE_ARCH=NO because the .pbxproj
-# settings vary. The .pbxproj files still carry older deployment targets, hence the command line overrides.
-IOS_MIN?=15.0
-TVOS_MIN?=15.0
-MAC_MIN?=12.0
+# Deployment floor (IOS_MIN, TVOS_MIN, MAC_MIN) is defined once in apple-targets.mk, together with the other places that carry it.
+# The archs shipped in each slice: device slices are arm64 only, simulator and macOS slices are fat. ONLY_ACTIVE_ARCH=NO
+# because the .pbxproj settings vary. The lib and plugin .pbxproj files still carry older deployment targets, hence the
+# command line overrides.
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))apple-targets.mk
 DEV_ARCHS?=arm64
 SIM_ARCHS?=arm64 x86_64
 MAC_ARCHS?=arm64 x86_64

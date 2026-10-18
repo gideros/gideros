@@ -54,5 +54,24 @@ for d in "iOS Template" AppleTV Mac; do
   done
 done
 
+# The exported template declares the deployment target of an app: the libs must not be built for a newer OS than that
+PBX="$ROOT/iOS Template.xcodeproj/project.pbxproj"
+if [ ! -f "$PBX" ]; then
+  echo "FAIL missing $PBX (cannot compare the libs' minimum OS with the template)"; fail=1
+else
+  for entry in "IPHONEOS:$IOS_MIN" "TVOS:$TVOS_MIN" "MACOSX:$MAC_MIN"; do
+    key=${entry%%:*}_DEPLOYMENT_TARGET; min=${entry#*:}
+    vals=$(grep -o "$key = [0-9.]*;" "$PBX" | sed -E 's/.* = ([0-9.]*);/\1/' | sort -u)
+    [ -n "$vals" ] || { echo "FAIL no $key in the template project"; fail=1; continue; }
+    bad=0
+    for v in $vals; do
+      if awk -v a="$v" -v b="$min" 'BEGIN{split(a,x,".");split(b,y,".");exit !((x[1]+0<y[1]+0)||(x[1]+0==y[1]+0&&x[2]+0<y[2]+0))}'; then
+        echo "FAIL template $key = $v is lower than the libs' minimum $min (scripts/apple-targets.mk): raise the template or lower the libs"; fail=1; bad=1
+      fi
+    done
+    [ $bad = 1 ] || echo "ok   template $key ($(echo $vals)) >= $min"
+  done
+fi
+
 [ $fail = 0 ] && echo "ALL SLICES OK" || echo "SLICE CHECK FAILED"
 exit $fail

@@ -6,7 +6,7 @@
 #   scripts/apple-libs-linktest.sh TEMPLATE_ROOT
 set -u
 ROOT=${1:?usage: $0 TEMPLATE_ROOT}
-IOS_MIN=${IOS_MIN:-15.0}; TVOS_MIN=${TVOS_MIN:-15.0}; MAC_MIN=${MAC_MIN:-12.0}
+. "$(dirname "$0")/apple-libs-check.sh"   # IOS_MIN, TVOS_MIN, MAC_MIN (from apple-targets.mk)
 W=$(mktemp -d); trap 'rm -rf "$W"' EXIT
 fail=0
 

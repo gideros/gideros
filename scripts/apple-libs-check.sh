@@ -1,7 +1,12 @@
 #!/bin/bash
 # Shared by apple-libs-verify.sh and apple-plugins-verify.sh (source it, do not run it).
 # Needs $T (a scratch dir) and $fail (set to 1 on any failure) from the caller.
-IOS_MIN=${IOS_MIN:-15.0}; TVOS_MIN=${TVOS_MIN:-15.0}; MAC_MIN=${MAC_MIN:-12.0}
+# Minimum OS versions: defined once in apple-targets.mk; a value already in the environment wins
+_targets="$(dirname "${BASH_SOURCE[0]}")/apple-targets.mk"
+for _v in IOS_MIN TVOS_MIN MAC_MIN; do
+  [ -n "${!_v:-}" ] || read -r "$_v" <<< "$(sed -n "s/^$_v?=//p" "$_targets")"
+  [ -n "${!_v:-}" ] || { echo "cannot read $_v from $_targets" >&2; exit 1; }
+done
 
 # check LABEL FILE PLATFORM "ARCHS" MINOS
 check() {
