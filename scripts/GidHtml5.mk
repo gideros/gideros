@@ -59,8 +59,9 @@ CRUNCHME_SRCS+=$(addprefix src/,crunchme png)
 
 LZMA_SRCS=LzFind LzmaEnc Lzma2Enc lzma
 
+# CRUNCHME_LDFLAGS: extra link flags, set per platform (the Mac makefile adds header padding, see GidQtMac.mk)
 html5.crunchme: $(addprefix emscripten/crunchme-0.4/,$(addsuffix .co,$(CRUNCHME_SRCS)))
-	$(CXX) -o $(ROOT)/ui/Tools/crunchme $^
+	$(CXX) $(CRUNCHME_LDFLAGS) -o $(ROOT)/ui/Tools/crunchme $^
 
 html5.lzma: $(addprefix emscripten/lzma/,$(addsuffix .co,$(LZMA_SRCS)))
 	$(CXX) -o $(ROOT)/ui/Tools/lzma $^
