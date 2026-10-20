@@ -1,8 +1,19 @@
 XCODEBUILD=xcodebuild
 LIPO=lipo
-PRETTY=| xcpretty -c
+# Only pipe through xcpretty when it is installed; the pipe's status is checked with pipefail in the rules below.
+PRETTY?=$(if $(shell command -v xcpretty 2>/dev/null),| xcpretty -c,)
 
 XCODE_CONFIG?=Release
+
+# Deployment floor (IOS_MIN, TVOS_MIN, MAC_MIN) is defined once in GidAppleTargets.mk, together with the other places that carry it.
+# The archs shipped in each slice: device slices are arm64 only, simulator and macOS slices are fat. ONLY_ACTIVE_ARCH=NO
+# because the .pbxproj settings vary. The lib and plugin .pbxproj files still carry older deployment targets, hence the
+# command line overrides.
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))GidAppleTargets.mk
+DEV_ARCHS?=arm64
+SIM_ARCHS?=arm64 x86_64
+MAC_ARCHS?=arm64 x86_64
+APPLE_DEPLOY=IPHONEOS_DEPLOYMENT_TARGET=$(IOS_MIN) TVOS_DEPLOYMENT_TARGET=$(TVOS_MIN) MACOSX_DEPLOYMENT_TARGET=$(MAC_MIN) ONLY_ACTIVE_ARCH=NO
 
 IOS_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template
 ATV_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/AppleTV
@@ -16,7 +27,7 @@ openal.ios.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 lua.ios.libs.clean: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.ios.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.ios.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
-open.ios.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
+openal.ios.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
 lua.atv.libs: IOSLIBPATH=$(ROOT)/$(LUA_ENGINE)
 gvfs.atv.libs: IOSLIBPATH=$(ROOT)/libgvfs
@@ -37,26 +48,38 @@ gvfs.mac.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 openal.mac.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 
+# The .a inside each XCFramework slice must carry the install name: gdrexport patches keys into files named libgideros.a
+iosplayer.%.libs: IOSLIBNAME=gideros
+# iosplayer needs the generated luabinding/luabindings.luac.c (versioning) and Sdk/include/AL (sdk.headers)
+iosplayer.ios.libs iosplayer.atv.libs iosplayer.mac.libs: versioning sdk.headers
+
 ##RULES
+# Do not run these with make -j: iosplayer and openal build in the same ios/iosplayer/build directory.
 %.ios.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" $(PRETTY)
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(IOSLIBPATH); $(LIPO) build/$(XCODE_CONFIG)-iphoneos/lib$*.a build/$(XCODE_CONFIG)-iphonesimulator/lib$*.a -create -output lib$*.ios.a
+	@cd $(IOSLIBPATH); set -o pipefail; $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(SIM_ARCHS)" $(APPLE_DEPLOY) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" $(PRETTY)
+	@cd $(IOSLIBPATH); set -o pipefail; $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(DEV_ARCHS)" $(APPLE_DEPLOY) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" $(PRETTY)
+	@cd $(IOSLIBPATH); rm -rf build/xcf-ios lib$*.ios.xcframework && mkdir -p build/xcf-ios/dev build/xcf-ios/sim && cp build/$(XCODE_CONFIG)-iphoneos/lib$*.a build/xcf-ios/dev/lib$(or $(IOSLIBNAME),$*).a && cp build/$(XCODE_CONFIG)-iphonesimulator/lib$*.a build/xcf-ios/sim/lib$(or $(IOSLIBNAME),$*).a && $(XCODEBUILD) -create-xcframework -library build/xcf-ios/dev/lib$(or $(IOSLIBNAME),$*).a -library build/xcf-ios/sim/lib$(or $(IOSLIBNAME),$*).a -output lib$*.ios.xcframework
 
 %.ios.libs.clean:
-	cd $(IOSLIBPATH); rm -rf build
+	cd $(IOSLIBPATH) && rm -rf build lib*.ios.xcframework
 
 %.atv.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(IOSLIBPATH); $(LIPO) build/$(XCODE_CONFIG)-appletvos/lib$*.a build/$(XCODE_CONFIG)-appletvsimulator/lib$*.a -create -output lib$*.atv.a
+	@cd $(IOSLIBPATH); set -o pipefail; $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(SIM_ARCHS)" $(APPLE_DEPLOY) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
+	@cd $(IOSLIBPATH); set -o pipefail; $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(DEV_ARCHS)" $(APPLE_DEPLOY) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
+	@cd $(IOSLIBPATH); rm -rf build/xcf-atv lib$*.atv.xcframework && mkdir -p build/xcf-atv/dev build/xcf-atv/sim && cp build/$(XCODE_CONFIG)-appletvos/lib$*.a build/xcf-atv/dev/lib$(or $(IOSLIBNAME),$*).a && cp build/$(XCODE_CONFIG)-appletvsimulator/lib$*.a build/xcf-atv/sim/lib$(or $(IOSLIBNAME),$*).a && $(XCODEBUILD) -create-xcframework -library build/xcf-atv/dev/lib$(or $(IOSLIBNAME),$*).a -library build/xcf-atv/sim/lib$(or $(IOSLIBNAME),$*).a -output lib$*.atv.xcframework
+
+%.atv.libs.clean:
+	cd $(IOSLIBPATH) && rm -rf build lib*.atv.xcframework
 
 %.mac.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(IOSLIBPATH); set -o pipefail; $(XCODEBUILD) -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) ARCHS="$(MAC_ARCHS)" $(APPLE_DEPLOY) -project $*.xcodeproj LUA_INCLUDES="$(IOSLUA_INCLUDES)" $(PRETTY)
 	@cd $(IOSLIBPATH); cp build/$(XCODE_CONFIG)/lib$*.a lib$*.mac.a
+
+%.mac.libs.clean:
+	cd $(IOSLIBPATH) && rm -rf build lib*.mac.a
 
 
 ios.libs: gvfs.ios.libs lua.ios.libs iosplayer.ios.libs openal.ios.libs
@@ -72,23 +95,33 @@ ios.app: player.ios.app
 ios.libs.install: ios.libs
 	mkdir -p $(IOS_TEMPLATE)
 	cp -R $(ROOT)/ui/Templates/Xcode4/iOS\ Template/* $(IOS_TEMPLATE)/..
-	cp $(ROOT)/$(LUA_ENGINE)/liblua.ios.a $(IOS_TEMPLATE)/liblua.a
-	cp $(ROOT)/libgvfs/libgvfs.ios.a $(IOS_TEMPLATE)/libgvfs.a
-	cp $(ROOT)/ios/iosplayer/libiosplayer.ios.a $(IOS_TEMPLATE)/libgideros.a
-	cp $(ROOT)/ios/iosplayer/libopenal.ios.a $(IOS_TEMPLATE)/libopenal.a
+	rm -rf $(IOS_TEMPLATE)/liblua.xcframework
+	cp -R $(ROOT)/$(LUA_ENGINE)/liblua.ios.xcframework $(IOS_TEMPLATE)/liblua.xcframework
+	rm -rf $(IOS_TEMPLATE)/libgvfs.xcframework
+	cp -R $(ROOT)/libgvfs/libgvfs.ios.xcframework $(IOS_TEMPLATE)/libgvfs.xcframework
+	rm -rf $(IOS_TEMPLATE)/libgideros.xcframework
+	cp -R $(ROOT)/ios/iosplayer/libiosplayer.ios.xcframework $(IOS_TEMPLATE)/libgideros.xcframework
+	rm -rf $(IOS_TEMPLATE)/libopenal.xcframework
+	cp -R $(ROOT)/ios/iosplayer/libopenal.ios.xcframework $(IOS_TEMPLATE)/libopenal.xcframework
 	cp $(ROOT)/ios/iosplayer/build/Release-iphoneos/default.metallib $(IOS_TEMPLATE)
 	cp $(ROOT)/ios/iosplayer/build/Release-iphonesimulator/default.metallib $(IOS_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(IOS_TEMPLATE)
 
+
 atv.libs.install: atv.libs
 	mkdir -p $(ATV_TEMPLATE)
-	cp $(ROOT)/$(LUA_ENGINE)/liblua.atv.a $(ATV_TEMPLATE)/liblua.a
-	cp $(ROOT)/libgvfs/libgvfs.atv.a $(ATV_TEMPLATE)/libgvfs.a
-	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
-	cp $(ROOT)/ios/iosplayer/libopenal.atv.a $(ATV_TEMPLATE)/libopenal.a
+	rm -rf $(ATV_TEMPLATE)/liblua.xcframework
+	cp -R $(ROOT)/$(LUA_ENGINE)/liblua.atv.xcframework $(ATV_TEMPLATE)/liblua.xcframework
+	rm -rf $(ATV_TEMPLATE)/libgvfs.xcframework
+	cp -R $(ROOT)/libgvfs/libgvfs.atv.xcframework $(ATV_TEMPLATE)/libgvfs.xcframework
+	rm -rf $(ATV_TEMPLATE)/libgideros.xcframework
+	cp -R $(ROOT)/ios/iosplayer/libiosplayer.atv.xcframework $(ATV_TEMPLATE)/libgideros.xcframework
+	rm -rf $(ATV_TEMPLATE)/libopenal.xcframework
+	cp -R $(ROOT)/ios/iosplayer/libopenal.atv.xcframework $(ATV_TEMPLATE)/libopenal.xcframework
 	cp $(ROOT)/ios/iosplayer/build/Release-appletvos/default.metallib $(ATV_TEMPLATE)
 	cp $(ROOT)/ios/iosplayer/build/Release-appletvsimulator/default.metallib $(ATV_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
+
 
 mac.libs.install: mac.libs
 	mkdir -p $(MAC_TEMPLATE)
@@ -100,45 +133,60 @@ mac.libs.install: mac.libs
 	cp $(ROOT)/ios/iosplayer/build/Release/default.metallib $(MAC_TEMPLATE)/default-sim.metallib
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(MAC_TEMPLATE)
 
+# Build + install all Apple libs, then check slices (arch/platform/minos/names) and that they link together
+apple.libs.check: ios.libs.install atv.libs.install mac.libs.install
+	$(ROOT)/scripts/apple-libs-verify.sh "$(RELEASE)/Templates/Xcode4/iOS Template"
+	$(ROOT)/scripts/apple-libs-linktest.sh "$(RELEASE)/Templates/Xcode4/iOS Template"
+
+# Build + install all Apple plugins, then check their slices (arch/platform/minos/names)
+apple.plugins.check: ios.plugins.install
+	$(ROOT)/scripts/apple-plugins-verify.sh "$(RELEASE)/All Plugins"
+
 luasocket.%: PLUGINDIR=LuaSocket
 
+# The plugins compile against Sdk/include (lua.h for the selected LUA_ENGINE), which sdk.headers writes, hence the prerequisite
 %.iosplugin: PLUGINDIR?=$*
 %.iosplugin: PLUGINPATH=$(ROOT)/plugins/$(PLUGINDIR)/source
 
-%.ios.iosplugin:
-	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 LUA_INCLUDES="$(LUA_INCLUDE)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) LUA_INCLUDES="$(LUA_INCLUDE)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(LIPO) build/$(XCODE_CONFIG)-iphoneos/lib$(notdir $*).a build/$(XCODE_CONFIG)-iphonesimulator/lib$(notdir $*).a -create -output lib$(notdir $*).ios.a
+# Same slices as the core libs: iOS/tvOS = device arm64 + fat simulator in an XCFramework, macOS = fat .a.
+# No LUA_INCLUDES here: the plugins read lua.h from Sdk/include (written by sdk.headers from the selected LUA_ENGINE).
 
+%.ios.iosplugin: sdk.headers
+	@echo $(PLUGINDIR) $(PLUGINPATH)
+	@cd $(PLUGINPATH); set -o pipefail; $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(SIM_ARCHS)" $(APPLE_DEPLOY) $(PRETTY)
+	@cd $(PLUGINPATH); set -o pipefail; $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(DEV_ARCHS)" $(APPLE_DEPLOY) $(PRETTY)
+	@cd $(PLUGINPATH); rm -rf lib$(notdir $*).ios.xcframework && $(XCODEBUILD) -create-xcframework -library build/$(XCODE_CONFIG)-iphoneos/lib$(notdir $*).a -library build/$(XCODE_CONFIG)-iphonesimulator/lib$(notdir $*).a -output lib$(notdir $*).ios.xcframework
 
 %.ios.clean.iosplugin:
 	rm -rf $(PLUGINPATH)/build
+	rm -rf $(PLUGINPATH)/lib*.ios.xcframework
 	rm -f $(PLUGINPATH)/lib*.ios.a
 
 %.ios.install.iosplugin:
 	mkdir -p $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS
-	cp $(PLUGINPATH)/lib$(notdir $*).ios.a $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/
+	rm -rf $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/lib$(notdir $*).ios.xcframework
+	cp -R $(PLUGINPATH)/lib$(notdir $*).ios.xcframework $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/
 
-%.atv.iosplugin:
+%.atv.iosplugin: sdk.headers
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) -arch x86_64 -project $(notdir $*).xcodeproj LUA_INCLUDES="$(LUA_INCLUDE)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) -project $(notdir $*).xcodeproj LUA_INCLUDES="$(LUA_INCLUDE)" GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
-	@cd $(PLUGINPATH); $(LIPO) build/$(XCODE_CONFIG)-appletvos/lib$(notdir $*).a build/$(XCODE_CONFIG)-appletvsimulator/lib$(notdir $*).a -create -output lib$(notdir $*).atv.a
+	@cd $(PLUGINPATH); set -o pipefail; $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(SIM_ARCHS)" $(APPLE_DEPLOY) GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
+	@cd $(PLUGINPATH); set -o pipefail; $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk appletvos$$TVOS_SDK -configuration $(XCODE_CONFIG) ARCHS="$(DEV_ARCHS)" $(APPLE_DEPLOY) GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' $(PRETTY)
+	@cd $(PLUGINPATH); rm -rf lib$(notdir $*).atv.xcframework && $(XCODEBUILD) -create-xcframework -library build/$(XCODE_CONFIG)-appletvos/lib$(notdir $*).a -library build/$(XCODE_CONFIG)-appletvsimulator/lib$(notdir $*).a -output lib$(notdir $*).atv.xcframework
 
 %.atv.clean.iosplugin:
 	rm -rf $(PLUGINPATH)/build
+	rm -rf $(PLUGINPATH)/lib*.atv.xcframework
 	rm -f $(PLUGINPATH)/lib*.atv.a
 
 %.atv.install.iosplugin:
 	mkdir -p $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS
-	cp $(PLUGINPATH)/lib$(notdir $*).atv.a $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/
+	rm -rf $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/lib$(notdir $*).atv.xcframework
+	cp -R $(PLUGINPATH)/lib$(notdir $*).atv.xcframework $(RELEASE)/All\ Plugins/$(notdir $(PLUGINDIR))/bin/iOS/
 
-%.mac.iosplugin:
+%.mac.iosplugin: sdk.headers
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) LUA_INCLUDES="$(LUA_INCLUDE)" OTHER_CFLAGS="-fembed-bitcode" $(PRETTY)
+	@cd $(PLUGINPATH); set -o pipefail; $(XCODEBUILD) -project $(notdir $*).xcodeproj -alltargets -sdk macosx$$MACOSX_SDK -configuration $(XCODE_CONFIG) ARCHS="$(MAC_ARCHS)" $(APPLE_DEPLOY) $(PRETTY)
 	@cd $(PLUGINPATH); cp build/$(XCODE_CONFIG)/lib$(notdir $*).a lib$(notdir $*).mac.a
-
 
 %.mac.clean.iosplugin:
 	rm -rf $(PLUGINPATH)/build

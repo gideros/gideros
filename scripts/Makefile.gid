@@ -30,6 +30,12 @@ PLUGINS_QT=$(PLUGINS_MOST) gmedia controller camera luamidi
 PLUGINS_QTWINONLY=spout steam
 PLUGINS_QTMACONLY=steam
 PLUGINS_QTLINUXONLY=
+# steam needs the Steamworks SDK (STEAMSDK in Makefile.def); leave it out when the SDK is not there
+ifeq ($(wildcard $(STEAMSDK)/sdk/public/steam/steam_api.h),)
+$(warning Steamworks SDK not found at '$(STEAMSDK)', skipping the steam plugin)
+PLUGINS_QTWINONLY:=$(filter-out steam,$(PLUGINS_QTWINONLY))
+PLUGINS_QTMACONLY:=$(filter-out steam,$(PLUGINS_QTMACONLY))
+endif
 PLUGINS_WIN32=$(PLUGINS_MOST) controller spout luamidi
 PLUGINS_ANDROID=$(PLUGINS_MOST) gmedia ads controller countly gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
@@ -150,7 +156,7 @@ prep.repo:
 		git reset HEAD lexilla; \
 	fi
 	if [ ! -d $(ROOT)/libgid/external/openal-soft ]; then \
-		cd libgid/external; git submodule add https://github.com/gideros/openal-soft.git  openal-soft; \
+		git submodule add https://github.com/gideros/openal-soft.git  libgid/external/openal-soft; \
 		git reset HEAD .gitmodules; \
 		git reset HEAD libgid/external/openal-soft; \
 	fi
