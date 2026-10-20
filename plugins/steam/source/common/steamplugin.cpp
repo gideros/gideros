@@ -385,13 +385,8 @@ public:
 };
 
 static int requestCurrentStats(lua_State *L) {
-	LuaCallbackBase *t=new UserStatsReceivedLuaCB(L,1);
-	if (SteamUserStats()->RequestCurrentStats())
-		lua_pushboolean(L,true);
-	else {
-		lua_pushboolean(L,false);
-		delete t;
-	}
+	//Obsolete since SDK  1.61
+	lua_pushboolean(L,true);
 	return 1;
 }
 
