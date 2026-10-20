@@ -127,6 +127,7 @@ qt.install: buildqt qt.player tools html5.tools
 	install_name_tool -change libgid.1.dylib @rpath/libgid.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
 	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
 	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
+	codesign --force --deep --sign - $(RELEASE)/Gideros\ Player.app
 	#TEXTUREPACKER
 	rm -rf $(RELEASE)/Gideros\ Texture\ Packer.app
 	cp -R $(ROOT)/texturepacker/Gideros\ Texture\ Packer.app $(RELEASE)
