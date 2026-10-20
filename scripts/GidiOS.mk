@@ -1,7 +1,7 @@
 XCODEBUILD=xcodebuild
 LIPO=lipo
-# Only pipe through xcpretty when it is installed; the pipe's status is checked with pipefail in the rules below.
-PRETTY?=$(if $(shell command -v xcpretty 2>/dev/null),| xcpretty -c,)
+# Only pipe through xcbeautify when it is installed; the pipe's status is checked with pipefail in the rules below.
+PRETTY?=$(if $(shell command -v xcbeautify 2>/dev/null),| xcbeautify --quiet | tail -n +5,)
 
 XCODE_CONFIG?=Release
 

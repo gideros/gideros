@@ -145,7 +145,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
             replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-atv").toUtf8(), ctx->args["bundle_atv"].toUtf8());
         if(ctx->args.contains("bundle_macos"))
             replaceList1 << qMakePair(QString("com.yourcompany.iOS-Template-mac").toUtf8(), ctx->args["bundle_macos"].toUtf8());
-        replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+ctx->properties.version+"</string>").toUtf8());
+        replaceList1 << qMakePair(QString("<string>VERSION_NUMBER</string>").toUtf8(), ("<string>"+ctx->properties.version+"</string>").toUtf8());
         replaceList1 << qMakePair(QString("<string>BUILD_NUMBER</string>").toUtf8(), ("<string>"+QString::number(ctx->properties.build_number)+"</string>").toUtf8());
         QString category = "public.app-category.games";
         if(ctx->args.contains("category"))
