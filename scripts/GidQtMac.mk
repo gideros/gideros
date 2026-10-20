@@ -149,6 +149,9 @@ qt.install: buildqt qt.player tools html5.tools
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
 	cp -R $(ROOT)/Library $(RELEASE)/
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
+	#sign again, as for the Player: install_name_tool breaks macdeployqt's ad hoc signature
+	for a in "Gideros Studio.app" "Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app"; do \
+		codesign --force --deep -s - "$(RELEASE)/$$a" || exit 1; done
 	
 
 QTDLLEXT?=
