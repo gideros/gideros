@@ -156,7 +156,7 @@ prep.repo:
 		git reset HEAD lexilla; \
 	fi
 	if [ ! -d $(ROOT)/libgid/external/openal-soft ]; then \
-		cd libgid/external; git submodule add https://github.com/gideros/openal-soft.git  openal-soft; \
+		git submodule add https://github.com/gideros/openal-soft.git  libgid/external/openal-soft; \
 		git reset HEAD .gitmodules; \
 		git reset HEAD libgid/external/openal-soft; \
 	fi
