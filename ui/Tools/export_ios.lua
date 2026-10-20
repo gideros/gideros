@@ -79,6 +79,8 @@ if filetype==nil then
     filetype="sourcecode.c.c"
   elseif filename:ends(".framework") then
     filetype="wrapper.framework"
+  elseif filename:ends(".xcframework") then
+    filetype="wrapper.xcframework"
   elseif filename:ends(".cpp") then
     filetype="sourcecode.cpp.cpp"
   elseif filename:ends(".mm") then
@@ -168,7 +170,7 @@ iOSProject.addSources=function(srcs,dest,flavor)
       local sref,bref=iOSProject.addSource(s)
       iOSProject.addToGroup(dest,sref,flavor)
       iOSProject.addToGroup("ResourceBuild",bref,flavor)
-    elseif s:ends(".framework") or s:ends(".a") then
+    elseif s:ends(".framework") or s:ends(".xcframework") or s:ends(".a") then
       local sref=iOSProject.addFramework(s,flavor)
       iOSProject.addToGroup(dest,sref,flavor)
     else
@@ -220,30 +222,70 @@ iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,existing,foriOS,forA
   iOSProject.commit()
 end
 
+-- Plugin binaries live in <plugin>/bin/iOS. For each platform (ios, atv, mac) the first match wins, so a platform
+-- never gets two copies of a plugin:
+--   1. lib<name>.<plat>.xcframework   (static library XCFramework for that platform)
+--   2. lib<name>.xcframework          (one XCFramework with slices for every platform)
+--   3. lib<name>.<plat>.a             (flat static library)
+-- Returns the file or folder name found, and whether it is an XCFramework.
+function iOSProject.pickBinary(name,plat)
+  local lfs=require("lfs")
+  local dir=Export.getProperty("sys.pluginDir").."/bin/iOS/"
+  for _,f in ipairs({ "lib"..name.."."..plat..".xcframework", "lib"..name..".xcframework" }) do
+    if lfs.attributes(dir..f,"mode")=="directory" then return f,true end
+  end
+  local f="lib"..name.."."..plat..".a"
+  if lfs.attributes(dir..f,"mode")=="file" then return f,false end
+end
+
+-- Copies the plugin binary for one platform into the exported project and links it. Returns false (and warns)
+-- when the plugin ships nothing for that platform; nothing is referenced then.
+function iOSProject.exportBinary(name,plat)
+  local srcdir="[[[sys.pluginDir]]]/bin/iOS"
+  local tgtDir,refDir
+  if plat=="ios" then
+    tgtDir=Export.getProperty("project.name").."/Plugins"
+    refDir="Plugins/"
+  elseif plat=="atv" then
+    tgtDir="AppleTV/Plugins"
+    refDir=""
+  else
+    tgtDir="Mac/Plugins"
+    refDir=""
+  end
+  local f,isXcf=iOSProject.pickBinary(name,plat)
+  if not f then
+    print("WARNING: plugin "..name.." has no "..plat.." binary in bin/iOS (lib"..name.."."..plat..".xcframework, lib"..name..".xcframework or lib"..name.."."..plat..".a), the "..plat.." target will fail to link")
+    return false
+  end
+  Export.mkdir(tgtDir)
+  if isXcf then
+    Export.mkdir(tgtDir.."/"..f)
+    Export.recursiveCopy(name,srcdir.."/"..f,tgtDir.."/"..f,"*")
+  else
+    -- Every lib*.<plat>.a is copied, as before. File by file: a wildcard recursiveCopy would also create empty
+    -- skeletons of any XCFramework folders sitting in bin/iOS.
+    local lfs=require("lfs")
+    local dir=Export.getProperty("sys.pluginDir").."/bin/iOS"
+    for fn in lfs.dir(dir) do
+      if fn:ends("."..plat..".a") and lfs.attributes(dir.."/"..fn,"mode")=="file" then
+        Export.copy(srcdir.."/"..fn,tgtDir.."/"..fn)
+      end
+    end
+  end
+  iOSProject.addSources({ refDir..f }, "GroupPlugins", plat)
+  return true
+end
+
 function iOSProject.exportBinaryPlugin(name,sym,for_ios,for_atv,for_mac)
-local srcdir="[[[sys.pluginDir]]]/bin/iOS"
-  if for_ios then
-    local tgtDir=Export.getProperty("project.name").."/Plugins"
-    if not existing then Export.mkdir(tgtDir) end
-    Export.recursiveCopy(name,srcdir,tgtDir,"*.ios.a")
-    iOSProject.addSources({ "Plugins/lib"..name..".ios.a"  }, "GroupPlugins", "ios")
-    if sym then table.insert(iOSProject._plugins.ios,sym) end
-  end
-  
-  if for_atv then
-    local tgtDir="AppleTV/Plugins"
-    if not existing then Export.mkdir(tgtDir) end
-    Export.recursiveCopy(name,srcdir,tgtDir,"*.atv.a")
-    iOSProject.addSources({ "lib"..name..".atv.a"  }, "GroupPlugins", "atv")
-    if sym then table.insert(iOSProject._plugins.atv,sym) end
-  end
-  
-  if for_mac then
-    local tgtDir="Mac/Plugins"
-    if not existing then Export.mkdir(tgtDir) end
-    Export.recursiveCopy(name,srcdir,tgtDir,"*.mac.a")
-    iOSProject.addSources({ "lib"..name..".mac.a"  }, "GroupPlugins", "mac")
-    if sym then table.insert(iOSProject._plugins.mac,sym) end
+  for _,p in ipairs({ { "ios", for_ios }, { "atv", for_atv }, { "mac", for_mac } }) do
+    local plat,wanted=p[1],p[2]
+    if wanted then
+      -- The symbol is registered even when the binary is missing, so that target fails to link (as it always did)
+      -- instead of building an app that lacks the plugin
+      iOSProject.exportBinary(name,plat)
+      if sym then table.insert(iOSProject._plugins[plat],sym) end
+    end
   end
   iOSProject.commit()
 end
