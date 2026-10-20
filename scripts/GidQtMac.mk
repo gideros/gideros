@@ -76,6 +76,8 @@ buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.
 qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop) html5.tools.clean
 
 QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
+# qt.install adds an rpath to ui/Tools/crunchme with install_name_tool, which needs room in the Mach-O header (Xcode 27's tool refuses otherwise)
+CRUNCHME_LDFLAGS=-Wl,-headerpad_max_install_names
 qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
 	rm -rf $(RELEASE)/Gideros\ Studio.app
