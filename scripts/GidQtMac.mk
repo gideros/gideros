@@ -34,6 +34,9 @@ qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid/xmp libgid $(L
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
 	
+SCINTILLA_LIB=$(ROOT)/scintilla/qt/ScintillaEdit/libScintillaEdit.5.dylib
+LEXILLA_LIB=$(ROOT)/lexilla/src/libLexilla.5.dylib
+
 qscintilla:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE_ARCHS) ScintillaEdit.pro
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS)
