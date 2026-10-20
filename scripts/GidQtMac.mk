@@ -2,6 +2,8 @@ DEPLOYQT=$(QT)/bin/macdeployqt
 SUBMAKE=$(MAKE) -f scripts/Makefile.gid $(MAKEJOBS)
 
 QT_VER?=6
+ARCHS?=x86_64 arm64
+QMAKE_ARCHS=$(QMAKE) QMAKE_APPLE_DEVICE_ARCHS="$(ARCHS)"
 
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
@@ -33,29 +35,37 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
 	
 qscintilla:
-	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE_ARCHS) ScintillaEdit.pro
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS)
 	mkdir -p $(QT)/include/ScintillaEdit
 	cp scintilla/include/*.h scintilla/src/*.h scintilla/qt/ScintillaEdit/*.h scintilla/qt/ScintillaEditBase/*.h $(QT)/include/ScintillaEdit
 
 qlexilla:
-	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(QMAKE_ARCHS) Lexilla.pro
 	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS)
 	mkdir -p $(QT)/include/Lexilla
 	cp lexilla/include/*.h $(QT)/include/Lexilla
 
 qscintilla.debug:
-	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE_ARCHS) ScintillaEdit.pro
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS) debug
 
 qlexilla.debug:
-	cd $(ROOT)/lexilla/src; $(QMAKE) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(QMAKE_ARCHS) Lexilla.pro
 	cd $(ROOT)/lexilla/src; $(MAKE) $(MAKEJOBS) debug
+
+qscintilla.clean:
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE_ARCHS) ScintillaEdit.pro
+	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) clean
+
+qlexilla.clean:
+	cd $(ROOT)/lexilla/src; $(QMAKE_ARCHS) Lexilla.pro
+	cd $(ROOT)/lexilla/src; $(MAKE) clean
 
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; $(MAKE) $(MAKEJOBS); \
-		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE) $(MAKEJOBS); fi 
+		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE_ARCHS) *.pro; $(MAKE) $(MAKEJOBS); fi 
 
 %.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; elif [ -d "Desktop" ]; then cd Desktop; fi; git clean -dfx .
@@ -174,11 +184,11 @@ qtplugins.install: buildqtplugins
 	cd $(ROOT)/$*; git clean -dfx .
 
 %.qmake.rel:
-	cd $(ROOT)/$*; $(QMAKE) $(notdir $*).pro
+	cd $(ROOT)/$*; $(QMAKE_ARCHS) $(notdir $*).pro
 	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS)
 
 %.qmake5.rel:
-	cd $(ROOT)/$*; $(QMAKE) $(notdir $*)_qt5.pro
+	cd $(ROOT)/$*; $(QMAKE_ARCHS) $(notdir $*)_qt5.pro
 	cd $(ROOT)/$*; $(MAKE) $(MAKEJOBS) 
 
 tools:
