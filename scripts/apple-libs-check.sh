@@ -3,7 +3,7 @@
 # Needs $T (a scratch dir) and $fail (set to 1 on any failure) from the caller.
 
 # Minimum OS versions
-_targets="$(dirname "${BASH_SOURCE[0]}")/apple-targets.mk"
+_targets="$(dirname "${BASH_SOURCE[0]}")/GidAppleTargets.mk"
 
 for _v in IOS_MIN TVOS_MIN MAC_MIN; do
   [ -n "${!_v:-}" ] || read -r "$_v" <<< "$(sed -n "s/^$_v?=//p" "$_targets")"

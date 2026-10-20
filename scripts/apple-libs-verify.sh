@@ -88,7 +88,7 @@ else
     bad=0
     for v in $vals; do
       if awk -v a="$v" -v b="$min" 'BEGIN{split(a,x,".");split(b,y,".");exit !((x[1]+0<y[1]+0)||(x[1]+0==y[1]+0&&x[2]+0<y[2]+0))}'; then
-        echo "FAIL template $key = $v is lower than the libs' minimum $min (scripts/apple-targets.mk): raise the template or lower the libs"; fail=1; bad=1
+        echo "FAIL template $key = $v is lower than the libs' minimum $min (scripts/GidAppleTargets.mk): raise the template or lower the libs"; fail=1; bad=1
       fi
     done
     [ $bad = 1 ] || echo "ok   template $key ($(echo $vals)) >= $min"

@@ -8,7 +8,7 @@ set -u
 
 # Template to test; W is a scratch dir removed on exit
 ROOT=${1:?usage: $0 TEMPLATE_ROOT}
-. "$(dirname "$0")/apple-libs-check.sh"   # IOS_MIN, TVOS_MIN, MAC_MIN (from apple-targets.mk)
+. "$(dirname "$0")/apple-libs-check.sh"   # IOS_MIN, TVOS_MIN, MAC_MIN (from GidAppleTargets.mk)
 W=$(mktemp -d); trap 'rm -rf "$W"' EXIT
 fail=0
 
