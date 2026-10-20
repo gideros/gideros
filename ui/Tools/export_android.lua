@@ -5,7 +5,7 @@ Tools to simplify android exports
 AndroidProject={
   permissions={},
   features={},
-  _minSdk=19
+  _minSdk=24
 }
 
 local MAX_SDK=1000

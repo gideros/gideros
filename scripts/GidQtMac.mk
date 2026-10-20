@@ -239,6 +239,6 @@ bundle.installer: bundle
 	mv $(RELEASE).Final $(ROOT)/ROOTMAC/Applications/Gideros\ Studio
 	rm -f $(ROOT)/Gideros.pkg
 	pkgbuild --compression latest --min-os-version 10.12 --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --version $(GIDEROS_VERSION) --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros-App.pkg
-	security -v unlock-keychain -p $(OSX_SIGNING_PASSWORD) "$$HOME/Library/Keychains/login.keychain" && productbuild --distribution Release/GiderosDist.plist --package-path $(ROOT)/Gideros-App.pkg --sign $(OSX_SIGNING_IDENTITY) $(ROOT)/Gideros.pkg
+	security -v unlock-keychain -p $(OSX_SIGNING_PASSWORD) "$$HOME/Library/Keychains/login.keychain-db" && security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $(OSX_SIGNING_PASSWORD) "$$HOME/Library/Keychains/login.keychain-db" && productbuild --distribution Release/GiderosDist.plist --package-path $(ROOT)/Gideros-App.pkg --sign $(OSX_SIGNING_IDENTITY) $(ROOT)/Gideros.pkg
 	rm -rf $(ROOT)/ROOTMAC
 	cd plugins; git archive $(CURRENT_GIT_BRANCH) | tar -x -C ../$(RELEASE)/All\ Plugins
