@@ -78,6 +78,8 @@ qt.clean: qtlibs.clean $(addsuffix .qmake.clean,texturepacker fontcreator ui pla
 QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
 # qt.install adds an rpath to ui/Tools/crunchme with install_name_tool, which needs room in the Mach-O header (Xcode 27's tool refuses otherwise)
 CRUNCHME_LDFLAGS=-Wl,-headerpad_max_install_names
+# TOOL_ARCH_FLAGS: build the shipped host tools (luauc, luac, lua, crunchme, lzma) for every arch in ARCHS, so a universal build (ARCHS="arm64 x86_64") gets universal tools
+TOOL_ARCH_FLAGS=$(foreach a,$(ARCHS),-arch $(a))
 qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
 	rm -rf $(RELEASE)/Gideros\ Studio.app
@@ -181,7 +183,7 @@ qtplugins.install: buildqtplugins
 
 tools:
 	mkdir -p $(BUILDTOOLS)
-	cd $(ROOT)/luau; g++ -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -ICommon/include -IConfig/include -ICodeGen/include -ICLI/include -DNO_CODEGEN -Iextern -Iextern/isocline/include -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
+	cd $(ROOT)/luau; g++ $(TOOL_ARCH_FLAGS) -std=c++17 -Wno-attributes -IVM/include -ICompiler/include -IAst/include -ICommon/include -IConfig/include -ICodeGen/include -ICLI/include -DNO_CODEGEN -Iextern -Iextern/isocline/include -DDESKTOP_TOOLS -o../$(BUILDTOOLS)/luauc $(addsuffix .cpp,\
 		$(addprefix CLI/src/,Coverage FileUtils Flags Profiler Compile) \
 		$(addprefix Config/src/,Config LinterConfig) \
 		$(addprefix VM/src/,lapi laux lbaselib lbitlib lbuffer lbuflib lbuiltins lcorolib ldblib ldebug ldo lfunc lgc\
@@ -191,10 +193,10 @@ tools:
 		$(addprefix Common/src/,StringUtils TimeTrace) \
 		$(addprefix Ast/src/,Allocator Ast Confusables Cst Lexer Location Parser PrettyPrinter)) extern/isocline/src/isocline.c
 
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc $(TOOL_ARCH_FLAGS) -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
-	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc $(TOOL_ARCH_FLAGS) -I. -DDESKTOP_TOOLS -o ../../$(BUILDTOOLS)/lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
 	gcc -I. -DDESKTOP_TOOLS -o$(BUILDTOOLS)/bin2c scripts/bin2c.c
