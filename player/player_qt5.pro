@@ -66,6 +66,7 @@ win32{
 
 macx {
     ICON = other_files/player.icns
+    QMAKE_INFO_PLIST = Info-mac.plist
 
     TARGET = "Gideros Player"
 

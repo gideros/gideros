@@ -97,6 +97,7 @@ RC_FILE = ui.rc
 
 macx {
 ICON = "gideros.icns"
+QMAKE_INFO_PLIST = Info-mac.plist
 #QT += macextras
 }
 
