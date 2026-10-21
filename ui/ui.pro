@@ -97,7 +97,13 @@ RC_FILE = ui.rc
 
 macx {
 ICON = "gideros.icns"
-QMAKE_INFO_PLIST = Info-mac.plist
+# Qt's default Info.plist template plus our keys, regenerated on every qmake run so Qt updates carry over
+INFO_PLIST = $$OUT_PWD/Info.plist.in
+LOCAL_NETWORK_USAGE = "Gideros Studio uses the local network to discover and connect to your Gideros game and Player. This connection is required to deploy code, debug and see logs."
+system(plutil -convert xml1 -o $$shell_quote($$INFO_PLIST) $$shell_quote($$QMAKESPEC/Info.plist.app) && \
+       plutil -insert NSLocalNetworkUsageDescription -string $$shell_quote($$LOCAL_NETWORK_USAGE) $$shell_quote($$INFO_PLIST)): \
+    QMAKE_INFO_PLIST = $$INFO_PLIST
+else: error("Could not generate $$INFO_PLIST")
 #QT += macextras
 }
 

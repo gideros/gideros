@@ -66,7 +66,13 @@ win32{
 
 macx {
     ICON = other_files/player.icns
-    QMAKE_INFO_PLIST = Info-mac.plist
+    # Qt's default Info.plist template plus our keys, regenerated on every qmake run so Qt updates carry over
+    INFO_PLIST = $$OUT_PWD/Info.plist.in
+    LOCAL_NETWORK_USAGE = "Gideros Player uses the local network to download and debug your games from Gideros Studio."
+    system(plutil -convert xml1 -o $$shell_quote($$INFO_PLIST) $$shell_quote($$QMAKESPEC/Info.plist.app) && \
+           plutil -insert NSLocalNetworkUsageDescription -string $$shell_quote($$LOCAL_NETWORK_USAGE) $$shell_quote($$INFO_PLIST)): \
+        QMAKE_INFO_PLIST = $$INFO_PLIST
+    else: error("Could not generate $$INFO_PLIST")
 
     TARGET = "Gideros Player"
 
