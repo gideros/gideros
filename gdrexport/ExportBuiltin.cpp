@@ -627,44 +627,49 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::appIcon(ctx,512,512,QString("icon.png"));
    }
    else if(ctx->deviceFamily == e_iOS){
-        ExportCommon::appIcon(ctx,29,29,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon29x29.png"));
-        ExportCommon::appIcon(ctx,40,40,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon40x40.png"));
-        ExportCommon::appIcon(ctx,50,50,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon50x50.png"));
-        ExportCommon::appIcon(ctx,57,57,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon57x57.png"));
-        ExportCommon::appIcon(ctx,58,58,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon58x58.png"));
-        ExportCommon::appIcon(ctx,72,72,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon72x72.png"));
-        ExportCommon::appIcon(ctx,76,76,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon76x76.png"));
-        ExportCommon::appIcon(ctx,80,80,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon80x80.png"));
-        ExportCommon::appIcon(ctx,87,87,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon87x87.png"));
-        ExportCommon::appIcon(ctx,100,100,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon100x100.png"));
-        ExportCommon::appIcon(ctx,114,114,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon114x114.png"));
-        ExportCommon::appIcon(ctx,120,120,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon120x120.png"));
-        ExportCommon::appIcon(ctx,144,144,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon144x144.png"));
-        ExportCommon::appIcon(ctx,152,152,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon152x152.png"));
-        ExportCommon::appIcon(ctx,167,167,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon167x167.png"));
-        ExportCommon::appIcon(ctx,180,180,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon180x180.png"));
-        ExportCommon::appIcon(ctx,1024,1024,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon1024x1024.png"));
+        ExportCommon::appIcon(ctx,29,29,QString("Assets.xcassets/AppIcon.appiconset/AppIcon29x29.png"));
+        ExportCommon::appIcon(ctx,40,40,QString("Assets.xcassets/AppIcon.appiconset/AppIcon40x40.png"));
+        ExportCommon::appIcon(ctx,50,50,QString("Assets.xcassets/AppIcon.appiconset/AppIcon50x50.png"));
+        ExportCommon::appIcon(ctx,57,57,QString("Assets.xcassets/AppIcon.appiconset/AppIcon57x57.png"));
+        ExportCommon::appIcon(ctx,58,58,QString("Assets.xcassets/AppIcon.appiconset/AppIcon58x58.png"));
+        ExportCommon::appIcon(ctx,72,72,QString("Assets.xcassets/AppIcon.appiconset/AppIcon72x72.png"));
+        ExportCommon::appIcon(ctx,76,76,QString("Assets.xcassets/AppIcon.appiconset/AppIcon76x76.png"));
+        ExportCommon::appIcon(ctx,80,80,QString("Assets.xcassets/AppIcon.appiconset/AppIcon80x80.png"));
+        ExportCommon::appIcon(ctx,87,87,QString("Assets.xcassets/AppIcon.appiconset/AppIcon87x87.png"));
+        ExportCommon::appIcon(ctx,100,100,QString("Assets.xcassets/AppIcon.appiconset/AppIcon100x100.png"));
+        ExportCommon::appIcon(ctx,114,114,QString("Assets.xcassets/AppIcon.appiconset/AppIcon114x114.png"));
+        ExportCommon::appIcon(ctx,120,120,QString("Assets.xcassets/AppIcon.appiconset/AppIcon120x120.png"));
+        ExportCommon::appIcon(ctx,144,144,QString("Assets.xcassets/AppIcon.appiconset/AppIcon144x144.png"));
+        ExportCommon::appIcon(ctx,152,152,QString("Assets.xcassets/AppIcon.appiconset/AppIcon152x152.png"));
+        ExportCommon::appIcon(ctx,167,167,QString("Assets.xcassets/AppIcon.appiconset/AppIcon167x167.png"));
+        ExportCommon::appIcon(ctx,180,180,QString("Assets.xcassets/AppIcon.appiconset/AppIcon180x180.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString("Assets.xcassets/AppIcon.appiconset/AppIcon1024x1024.png"));
 
 
-        ExportCommon::splashHImage(ctx,1024,768,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x768.png"));
-        ExportCommon::splashHImage(ctx,1024,748,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x748.png"));
-        ExportCommon::splashHImage(ctx,2048,1536,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2048x1536.png"));
-        ExportCommon::splashHImage(ctx,2048,1496,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2048x1496.png"));
-        ExportCommon::splashHImage(ctx,2208,1242,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2208x1242.png"));
-        ExportCommon::splashHImage(ctx,2436,1125,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2436x1125.png"));
+	    ExportCommon::splashHImage(ctx,800,600,QString("Assets.xcassets/SplashH.imageset/SplashH.png"));
+	    ExportCommon::splashHImage(ctx,1600,1200,QString("Assets.xcassets/SplashH.imageset/SplashH@2.png"));
+	    ExportCommon::splashHImage(ctx,2400,1800,QString("Assets.xcassets/SplashH.imageset/SplashH@3.png"));
 
-        ExportCommon::splashVImage(ctx,768,1024,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash768x1024.png"));
-        ExportCommon::splashVImage(ctx,768,1004,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash768x1004.png"));
-        ExportCommon::splashVImage(ctx,1536,2048,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1536x2048.png"));
-        ExportCommon::splashVImage(ctx,1536,2008,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1536x2008.png"));
-        ExportCommon::splashVImage(ctx,640,960,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash640x960.png"));
-        ExportCommon::splashVImage(ctx,640,1136,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash640x1136.png"));
-        ExportCommon::splashVImage(ctx,750,1334,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash750x1334.png"));
-        ExportCommon::splashVImage(ctx,1242,2208,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1242x2208.png"));
-        ExportCommon::splashVImage(ctx,1125,2436,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1125x2436.png"));
+	    ExportCommon::splashVImage(ctx,600,800,QString("Assets.xcassets/SplashV.imageset/SplashV.png"));
+	    ExportCommon::splashVImage(ctx,1200,1600,QString("Assets.xcassets/SplashV.imageset/SplashV@2.png"));
+	    ExportCommon::splashVImage(ctx,1800,2400,QString("Assets.xcassets/SplashV.imageset/SplashV@3.png"));
+	   
+	   QByteArray fileData;
+	   QColor bgColor=QColor(ctx->properties.backgroundColor);
+	   QFile file(ctx->outputDir.filePath("Assets.xcassets/SplashColor.colorset/Contents.json"));
+	   file.open(QIODevice::ReadWrite); // open for read and write
+	   fileData = file.readAll(); // read all the data into the byte array
+	   QString text(fileData); // add to text string for easy string replace
+	   text.replace(QString("RED_VALUE"), QString("%1").arg(bgColor.redF()));
+	   text.replace(QString("GREEN_VALUE"), QString("%1").arg(bgColor.greenF()));
+	   text.replace(QString("BLUE_VALUE"), QString("%1").arg(bgColor.blueF()));
+	   file.seek(0); // go to the beginning of the file
+	   file.write(text.toUtf8()); // write the new text back to the file
+	   file.resize(file.pos());
+	   file.close(); // close the file handle.
+
 
         //tv stuff
-        ExportCommon::splashHImage(ctx,1920,1080,QString("AppleTV/Images.xcassets/TVLaunchImage.launchimage/Splash1920x1080.png"));
         ExportCommon::tvIcon(ctx,1920,720,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
         ExportCommon::tvIcon(ctx,1280,768,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
         ExportCommon::tvIcon(ctx,400,240,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));

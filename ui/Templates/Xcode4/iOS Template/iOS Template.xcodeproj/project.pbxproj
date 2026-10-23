@@ -14,7 +14,6 @@
 		033BD45D256FA72E0059695F /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 033BD45C256FA72E0059695F /* plugins.cpp */; };
 		033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 033BD4642570FF8A0059695F /* Cocoa.framework */; };
 		034B58BA25767BB9005D0134 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
-		034B58DC25767F2C005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E6817991BC6FFB20002D406 /* Images.xcassets */; };
 		034B58EE25767FE3005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58ED25767FE3005D0134 /* Images.xcassets */; };
 		034B58F325768020005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58F225768020005D0134 /* Images.xcassets */; };
 		034B592125768A7B005D0134 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 034B592025768A7B005D0134 /* default.metallib */; };
@@ -28,6 +27,12 @@
 		0369704D257133A7002A4EB3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0369704C257133A7002A4EB3 /* AudioToolbox.framework */; };
 		036970792574EE7A002A4EB3 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 036970782574EE7A002A4EB3 /* default.metallib */; };
 		036970792574EE7B002A4EB3 /* default-sim.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 036970782574EE7B002A4EB3 /* default-sim.metallib */; };
+		03E020B8308BA46300F5C0B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03E020B7308BA46300F5C0B7 /* Assets.xcassets */; };
+		03E020B9308BA46300F5C0B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03E020B7308BA46300F5C0B7 /* Assets.xcassets */; };
+		03E020BA308BA46300F5C0B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03E020B7308BA46300F5C0B7 /* Assets.xcassets */; };
+		03E020BC308BA48000F5C0B7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03E020BB308BA48000F5C0B7 /* LaunchScreen.storyboard */; };
+		03E020BD308BA48000F5C0B7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03E020BB308BA48000F5C0B7 /* LaunchScreen.storyboard */; };
+		03E020BE308BA48000F5C0B7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03E020BB308BA48000F5C0B7 /* LaunchScreen.storyboard */; };
 		03E7A7972844ED6A00C54D22 /* libopenal.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E7A7962844ED6A00C54D22 /* libopenal.xcframework */; };
 		03E7A79A2844ED7F00C54D22 /* libopenal.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E7A7982844ED7800C54D22 /* libopenal.xcframework */; };
 		03E7A79D2844ED9000C54D22 /* libopenal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 03E7A79B2844ED8C00C54D22 /* libopenal.a */; };
@@ -113,11 +118,12 @@
 		0369704C257133A7002A4EB3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		036970782574EE7A002A4EB3 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 		036970782574EE7B002A4EB3 /* default-sim.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = "default-sim.metallib"; sourceTree = "<group>"; };
+		03E020B7308BA46300F5C0B7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		03E020BB308BA48000F5C0B7 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		03E7A7962844ED6A00C54D22 /* libopenal.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libopenal.xcframework; path = "iOS Template/libopenal.xcframework"; sourceTree = "<group>"; };
 		03E7A7982844ED7800C54D22 /* libopenal.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libopenal.xcframework; path = AppleTV/libopenal.xcframework; sourceTree = "<group>"; };
 		03E7A79B2844ED8C00C54D22 /* libopenal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopenal.a; path = Mac/libopenal.a; sourceTree = "<group>"; };
 		03FE8C952BB57317003C1BFF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Template iOS/Images.xcassets"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5F4153F615CEF227007B5365 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
@@ -305,8 +311,9 @@
 		5FD896DC15CED77F00D34824 = {
 			isa = PBXGroup;
 			children = (
+				03E020BB308BA48000F5C0B7 /* LaunchScreen.storyboard */,
+				03E020B7308BA46300F5C0B7 /* Assets.xcassets */,
 				03FE8C952BB57317003C1BFF /* PrivacyInfo.xcprivacy */,
-				5E6817991BC6FFB20002D406 /* Images.xcassets */,
 				5FD896F515CED77F00D34824 /* iOS Template */,
 				B25B27FB1BAC0F3D0034D6C7 /* AppleTV */,
 				033BD415256FA4D80059695F /* Mac */,
@@ -562,7 +569,9 @@
 				036970792574EE7A002A4EB3 /* default.metallib in Resources */,
 				036970792574EE7B002A4EB3 /* default-sim.metallib in Resources */,
 				034B58F325768020005D0134 /* Images.xcassets in Resources */,
+				03E020BE308BA48000F5C0B7 /* LaunchScreen.storyboard in Resources */,
 				034B58BA25767BB9005D0134 /* assets in Resources */,
+				03E020BA308BA46300F5C0B7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,11 +582,12 @@
 				EBB07735222E80E000611085 /* default.metallib in Resources */,
 				EBB07735222E80E100611085 /* default-sim.metallib in Resources */,
 				5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */,
+				03E020BD308BA48000F5C0B7 /* LaunchScreen.storyboard in Resources */,
 				03FE8C962BB57317003C1BFF /* PrivacyInfo.xcprivacy in Resources */,
-				034B58DC25767F2C005D0134 /* Images.xcassets in Resources */,
 				5F58D85315D9268900137D76 /* assets in Resources */,
 				5F4EA0A617816A9D0043BBCD /* Default-568h@2x.png in Resources */,
 				5F4EA0A717816A9D0043BBCD /* Default.png in Resources */,
+				03E020B8308BA46300F5C0B7 /* Assets.xcassets in Resources */,
 				5F4EA0A817816A9D0043BBCD /* Default@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -590,6 +600,8 @@
 				034B592125768A7C005D0134 /* default-sim.metallib in Resources */,
 				B2E3EFE31BAC1249005599BD /* assets in Resources */,
 				03FE8C972BB57317003C1BFF /* PrivacyInfo.xcprivacy in Resources */,
+				03E020BC308BA48000F5C0B7 /* LaunchScreen.storyboard in Resources */,
+				03E020B9308BA46300F5C0B7 /* Assets.xcassets in Resources */,
 				034B58EE25767FE3005D0134 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -697,7 +709,10 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Mac/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/Mac/Plugins\"",
 					"\"$(SRCROOT)/Mac\"",
@@ -764,7 +779,10 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Mac/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/Mac/Plugins\"",
 					"\"$(SRCROOT)/Mac\"",
