@@ -671,8 +671,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
         //tv stuff
         ExportCommon::tvIcon(ctx,1920,720,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"), false);
-        ExportCommon::tvIcon(ctx,1280,768,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"), false);
-        ExportCommon::tvIcon(ctx,400,240,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"), false);
+        ExportCommon::tvIcon(ctx,1280,768,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/App Icon - Large.imagestack/Back.imagestacklayer/Content.imageset/TVIcon1280x768.png"), false);
+        ExportCommon::tvIcon(ctx,400,240,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/App Icon - Small.imagestack/Back.imagestacklayer/Content.imageset/TVIcon400x240.png"), false);
 
         //macos
         ExportCommon::appIcon(ctx,16,16,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_16x16.png"));
