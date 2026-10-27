@@ -14,7 +14,6 @@
 		033BD45D256FA72E0059695F /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 033BD45C256FA72E0059695F /* plugins.cpp */; };
 		033BD4652570FF8A0059695F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 033BD4642570FF8A0059695F /* Cocoa.framework */; };
 		034B58BA25767BB9005D0134 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
-		034B58EE25767FE3005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58ED25767FE3005D0134 /* Images.xcassets */; };
 		034B58F325768020005D0134 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 034B58F225768020005D0134 /* Images.xcassets */; };
 		034B592125768A7B005D0134 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 034B592025768A7B005D0134 /* default.metallib */; };
 		034B592125768A7C005D0134 /* default-sim.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 034B592025768A7C005D0134 /* default-sim.metallib */; };
@@ -104,7 +103,6 @@
 		033BD42E256FA5B70059695F /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		033BD45C256FA72E0059695F /* plugins.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = plugins.cpp; sourceTree = "<group>"; };
 		033BD4642570FF8A0059695F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		034B58ED25767FE3005D0134 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		034B58F225768020005D0134 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		034B592025768A7B005D0134 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 		034B592025768A7C005D0134 /* default-sim.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = "default-sim.metallib"; sourceTree = "<group>"; };
@@ -433,7 +431,6 @@
 				B2E3EF921BAC10CC005599BD /* Plugins */,
 				B25B280A1BAC0F3D0034D6C7 /* Info.plist */,
 				B25B27FC1BAC0F3D0034D6C7 /* Supporting Files */,
-				034B58ED25767FE3005D0134 /* Images.xcassets */,
 			);
 			path = AppleTV;
 			sourceTree = "<group>";
@@ -602,7 +599,6 @@
 				03FE8C972BB57317003C1BFF /* PrivacyInfo.xcprivacy in Resources */,
 				03E020BC308BA48000F5C0B7 /* LaunchScreen.storyboard in Resources */,
 				03E020B9308BA46300F5C0B7 /* Assets.xcassets in Resources */,
-				034B58EE25767FE3005D0134 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -869,7 +865,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -904,7 +899,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -939,7 +933,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TVLaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -985,7 +978,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TVLaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;

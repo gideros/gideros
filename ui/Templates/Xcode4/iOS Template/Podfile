@@ -1,4 +1,4 @@
-source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
 target 'iOS Template iOS' do
 #TAG-GIDEROS-POD-IOS
 end

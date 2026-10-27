@@ -336,6 +336,11 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 	}
 	if (ctx->splash_h_image->isNull())
 		return false;
+	
+	if (width==-1) { //Use height keeping aspect ratio
+		float ar=((float)ctx->splash_h_image->width())/ctx->splash_h_image->height();
+		width=ar*height;
+	}
 
 	int mode = ctx->properties.splashScaleMode;
 	exportInfo("Generating splash horizontal (%dx%d) scale mode (%d)\n", width,
@@ -374,6 +379,12 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 	}
 	if (ctx->splash_v_image->isNull())
 		return false;
+
+	if (height==-1) { //Use width keeping aspect ratio
+		float ar=((float)ctx->splash_h_image->height())/ctx->splash_h_image->width();
+		height=ar*width;
+	}
+
 	int mode = ctx->properties.splashScaleMode;
 	exportInfo("Generating splash vertical (%dx%d) scale mode (%d)\n", width,
 			height, mode);

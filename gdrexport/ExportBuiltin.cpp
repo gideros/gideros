@@ -646,13 +646,13 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::appIcon(ctx,1024,1024,QString("Assets.xcassets/AppIcon.appiconset/AppIcon1024x1024.png"));
 
 
-	    ExportCommon::splashHImage(ctx,800,600,QString("Assets.xcassets/SplashH.imageset/SplashH.png"));
-	    ExportCommon::splashHImage(ctx,1600,1200,QString("Assets.xcassets/SplashH.imageset/SplashH@2.png"));
-	    ExportCommon::splashHImage(ctx,2400,1800,QString("Assets.xcassets/SplashH.imageset/SplashH@3.png"));
+	    ExportCommon::splashHImage(ctx,-1,600,QString("Assets.xcassets/SplashH.imageset/SplashH.png"));
+	    ExportCommon::splashHImage(ctx,-1,1200,QString("Assets.xcassets/SplashH.imageset/SplashH@2.png"));
+	    ExportCommon::splashHImage(ctx,-1,1800,QString("Assets.xcassets/SplashH.imageset/SplashH@3.png"));
 
-	    ExportCommon::splashVImage(ctx,600,800,QString("Assets.xcassets/SplashV.imageset/SplashV.png"));
-	    ExportCommon::splashVImage(ctx,1200,1600,QString("Assets.xcassets/SplashV.imageset/SplashV@2.png"));
-	    ExportCommon::splashVImage(ctx,1800,2400,QString("Assets.xcassets/SplashV.imageset/SplashV@3.png"));
+	    ExportCommon::splashVImage(ctx,600,-1,QString("Assets.xcassets/SplashV.imageset/SplashV.png"));
+	    ExportCommon::splashVImage(ctx,1200,-1,QString("Assets.xcassets/SplashV.imageset/SplashV@2.png"));
+	    ExportCommon::splashVImage(ctx,1800,-1,QString("Assets.xcassets/SplashV.imageset/SplashV@3.png"));
 	   
 	   QByteArray fileData;
 	   QColor bgColor=QColor(ctx->properties.backgroundColor);
@@ -660,9 +660,9 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 	   file.open(QIODevice::ReadWrite); // open for read and write
 	   fileData = file.readAll(); // read all the data into the byte array
 	   QString text(fileData); // add to text string for easy string replace
-	   text.replace(QString("RED_VALUE"), QString("%1").arg(bgColor.redF()));
-	   text.replace(QString("GREEN_VALUE"), QString("%1").arg(bgColor.greenF()));
-	   text.replace(QString("BLUE_VALUE"), QString("%1").arg(bgColor.blueF()));
+	   text.replace(QString("RED_VALUE"), QString("%1").arg(bgColor.redF(),0,'f',3));
+	   text.replace(QString("GREEN_VALUE"), QString("%1").arg(bgColor.greenF(),0,'f',3));
+	   text.replace(QString("BLUE_VALUE"), QString("%1").arg(bgColor.blueF(),0,'f',3));
 	   file.seek(0); // go to the beginning of the file
 	   file.write(text.toUtf8()); // write the new text back to the file
 	   file.resize(file.pos());
@@ -670,9 +670,9 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
 
         //tv stuff
-        ExportCommon::tvIcon(ctx,1920,720,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
-        ExportCommon::tvIcon(ctx,1280,768,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
-        ExportCommon::tvIcon(ctx,400,240,QString("AppleTV/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
+        ExportCommon::tvIcon(ctx,1920,720,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"), false);
+        ExportCommon::tvIcon(ctx,1280,768,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"), false);
+        ExportCommon::tvIcon(ctx,400,240,QString("Assets.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"), false);
 
         //macos
         ExportCommon::appIcon(ctx,16,16,QString("Mac/Images.xcassets/AppIcon.appiconset/icon_16x16.png"));
