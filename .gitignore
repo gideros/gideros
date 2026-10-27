@@ -294,6 +294,7 @@ moc_*.cpp
 *.dll
 *.dylib
 *.app
+Info.plist.in
 
 # MAC DS store
 .DS_Store

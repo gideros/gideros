@@ -42,6 +42,9 @@ qtlibs.install: buildqtlibs
 	cp $(ROOT)/libgideros/libgideros.so* $(RELEASE)
 	cp $(ROOT)/libpystring/libpystring.so* $(RELEASE)
 
+SCINTILLA_LIB=$(ROOT)/scintilla/qt/ScintillaEdit/libScintillaEdit.so
+LEXILLA_LIB=$(ROOT)/lexilla/src/libLexilla.so
+
 qscintilla:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MAKE) $(MAKEJOBS)

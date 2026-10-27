@@ -75,6 +75,9 @@ qtlibs.install: buildqtlibs
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid $(LUA_ENGINE) libgideros)
 
+SCINTILLA_LIB=$(ROOT)/scintilla/qt/ScintillaEdit/release/ScintillaEdit5.dll
+LEXILLA_LIB=$(ROOT)/lexilla/src/release/Lexilla5.dll
+
 qscintilla:
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(QMAKE) ScintillaEdit.pro
 	cd $(ROOT)/scintilla/qt/ScintillaEdit; $(MINGWMAKE) $(MAKEJOBS) release

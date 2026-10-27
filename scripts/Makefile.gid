@@ -183,5 +183,14 @@ endif
 endif
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidHtml5.mk
 
+#Studio links against the in-tree ScintillaEdit/Lexilla, build them if missing
+$(SCINTILLA_LIB):
+	$(SUBMAKE) qscintilla
+
+$(LEXILLA_LIB):
+	$(SUBMAKE) qlexilla
+
+ui.qmake.rel: $(SCINTILLA_LIB) $(LEXILLA_LIB)
+
 %.plugin: $(PLUGIN_PREREQUISITE)
 		
