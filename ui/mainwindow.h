@@ -425,6 +425,8 @@ private slots:
     void on_actionFold_Unfold_All_triggered();
     void on_actionFold_Unfold_Top_triggered();
     void on_actionBlock_un_comment_triggered();
+    void on_actionBlock_comment_start_triggered();
+    void on_actionBlock_comment_end_triggered();
 
 public:
     static MainWindow *lua_instance;

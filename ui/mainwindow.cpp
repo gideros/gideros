@@ -627,6 +627,8 @@ MainWindow::MainWindow(QWidget *parent)
                ACTION(actionConsolidate_Project),
                ACTION(actionType_checking),
                ACTION(actionBlock_un_comment),
+               ACTION(actionBlock_comment_start),
+               ACTION(actionBlock_comment_end),
                { QString(),nullptr },
         };
 #undef ACTION
@@ -4035,6 +4037,22 @@ void MainWindow::on_actionBlock_un_comment_triggered()
 
     if (textEdit)
         textEdit->BlockComment();
+}
+
+void MainWindow::on_actionBlock_comment_start_triggered()
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+    if (textEdit)
+        textEdit->BlockCommentStart();
+}
+
+void MainWindow::on_actionBlock_comment_end_triggered()
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+    if (textEdit)
+        textEdit->BlockCommentEnd();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
