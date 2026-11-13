@@ -635,6 +635,26 @@ void TextEdit::BlockComment() {
     }
 }
 
+void TextEdit::BlockCommentStart() {
+    const char *eol = "\n";
+    if (sciScintilla_->eOLMode() == SC_EOL_CRLF)
+        eol = "\r\n";
+    else if (sciScintilla_->eOLMode() == SC_EOL_CR)
+        eol = "\r";
+    QByteArray text = QByteArray("--[[") + eol;
+    sciScintilla_->replaceSel(text.constData());
+}
+
+void TextEdit::BlockCommentEnd() {
+    const char *eol = "\n";
+    if (sciScintilla_->eOLMode() == SC_EOL_CRLF)
+        eol = "\r\n";
+    else if (sciScintilla_->eOLMode() == SC_EOL_CR)
+        eol = "\r";
+    QByteArray text = QByteArray("]]") + eol;
+    sciScintilla_->replaceSel(text.constData());
+}
+
 const QString& TextEdit::fileName() const
 {
     return fileName_;

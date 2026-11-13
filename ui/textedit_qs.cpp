@@ -782,3 +782,17 @@ void TextEdit::dwellEnd(int pos,int x,int y)
     Q_UNUSED(pos);
     QToolTip::showText(QPoint(x,y),QString(),this);
 }
+
+void TextEdit::BlockComment()
+{
+}
+
+void TextEdit::BlockCommentStart()
+{
+    sciScintilla_->replace("--[[\n");
+}
+
+void TextEdit::BlockCommentEnd()
+{
+    sciScintilla_->replace("]]\n");
+}

@@ -57,6 +57,8 @@ public:
 					bool wrap);
 
     void BlockComment();
+    void BlockCommentStart();
+    void BlockCommentEnd();
 
     void setFocusToEdit();
     void highlightDebugLine(int line);

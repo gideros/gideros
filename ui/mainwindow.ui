@@ -102,6 +102,8 @@ QMainWindow::separator {
     <addaction name="actionFold_Unfold_Top"/>
     <addaction name="actionAuto_indent"/>
     <addaction name="actionBlock_un_comment"/>
+    <addaction name="actionBlock_comment_start"/>
+    <addaction name="actionBlock_comment_end"/>
    </widget>
    <widget class="QMenu" name="menuCompile">
     <property name="title">
@@ -765,6 +767,22 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+C</string>
+   </property>
+  </action>
+  <action name="actionBlock_comment_start">
+   <property name="text">
+    <string>--[[</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
+  </action>
+  <action name="actionBlock_comment_end">
+   <property name="text">
+    <string>]]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+K</string>
    </property>
   </action>
   <action name="actionWrap">
