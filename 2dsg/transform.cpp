@@ -31,23 +31,29 @@ static void rotation(float angle, float result[2][2])
 
 void Transform::quaternionToEuler(float w,float x,float y,float z,float &rx,float &ry,float &rz)
 {
-    float test = x * y + z * w;
-    if (test>0.499) {
-        rx=0;
-        ry=-2*atan2f(x,w)*180/M_PI;
-        rz=-90;
-    }
-    else if (test<-0.499)
+    constexpr float RAD2DEG = 180.0f / static_cast<float>(M_PI);
+
+    // L'angle central dans compose() (Rx * Ry * Rz) est Y :
+    // sin(ry) = 2 * (w*y + x*z)
+    float sinY = 2.0f * (w * y + x * z);
+
+    if (sinY > 0.99999f) // Gimbal lock +90° sur Y
     {
-        rx=0;
-        ry=2*atan2f(x,w)*180/M_PI;
-        rz=90;
+        ry = 90.0f;
+        rx = atan2f(2.0f * (w * x + y * z), 1.0f - 2.0f * (x * x + z * z)) * RAD2DEG;
+        rz = 0.0f;
+    }
+    else if (sinY < -0.99999f) // Gimbal lock -90° sur Y
+    {
+        ry = -90.0f;
+        rx = atan2f(2.0f * (w * x + y * z), 1.0f - 2.0f * (x * x + z * z)) * RAD2DEG;
+        rz = 0.0f;
     }
     else
     {
-        rx=-atan2f(2*x*w-2*y*z,1-2*x*x-2*z*z)*180/M_PI;
-        ry=-atan2f(2*y*w-2*x*z,1-2*y*y-2*z*z)*180/M_PI;
-        rz=-asinf(2*x*y+2*z*w)*180/M_PI;
+        rx = atan2f(2.0f * (w * x - y * z), 1.0f - 2.0f * (x * x + y * y)) * RAD2DEG;
+        ry = asinf(sinY) * RAD2DEG;
+        rz = atan2f(2.0f * (w * z - x * y), 1.0f - 2.0f * (y * y + z * z)) * RAD2DEG;
     }
 }
 
@@ -243,7 +249,7 @@ void Transform::setSRT(struct _SRT &srt, bool rev) {
                 mm[9]  = 0;
                 mm[10] = 1;
 
-                rotationZ_=-asinf(s2)*180/M_PI;
+                rotationZ_=atan2f(s2,c2)*180/M_PI;
                 rotationX_=0;
                 rotationY_=0;
 

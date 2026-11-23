@@ -878,10 +878,10 @@ inline Vector3 Matrix4::operator*(const Vector3& rhs) const
 
 inline Matrix4 Matrix4::operator*(const Matrix4& n) const
 {
-	//TRN: m0,m5,m10,m15=1 m12,m13,m14=x
-	//M2D: m10,m15=1 m0,m1,m4,m5,m12,m13,m14=x
-	//M3D: m15=1 m0,m1,m2,m4,m5,m6,m8,m9,m10,m12,m13,m14=x
-	//FULL: no opt
+	//TRN: m0,m5,m10,m15=1 m12,m13,m14=variable all others are 0
+	//M2D: m10,m15=1 m0,m1,m4,m5,m12,m13,m14=variable all others are 0
+	//M3D: m15=1 m0,m1,m2,m4,m5,m6,m8,m9,m10,m12,m13,m14=variable all others are 0
+	//FULL: all variable
 	int mode=((type)<<2)|(n.type);
 	switch (mode)
 	{
@@ -901,10 +901,10 @@ inline Matrix4 Matrix4::operator*(const Matrix4& n) const
 	                   n[8],n[9],n[10],0,
 	                   n[12] + m[12],n[13] + m[13],n[14] + m[14],1,M3D);
 	case 3: //TRNxFULL
-	    return Matrix4(n[0],n[1],n[2],n[3],
-	                   n[4],n[5],n[6],n[7],
-                       n[8],n[9],n[10],n[11],
-	                   n[12] + m[12],n[13] + m[13],n[14] + m[14],n[15],FULL);
+	    return Matrix4(n[0] + m[12]*n[3],n[1] + m[13]*n[3],n[2] + m[14]*n[3],n[3],
+	                   n[4] + m[12]*n[7],n[5] + m[13]*n[7],n[6] + m[14]*n[7],n[7],
+                       n[8] + m[12]*n[11],n[9] + m[13]*n[11],n[10] + m[14]*n[11],n[11],
+	                   n[12] + m[12]*n[15],n[13] + m[13]*n[15],n[14] + m[14]*n[15],n[15],FULL);
 	case 4: //M2DxTRN
 	    return Matrix4(m[0],m[1],0,0,
 	                   m[4],m[5],0,0,
@@ -1024,10 +1024,10 @@ inline Matrix4 Matrix4::operator*(const Matrix4& n) const
         return Matrix4(m[0]*n[0]+m[4]*n[1],m[1]*n[0]+m[5]*n[1],m[2]*n[0]+m[6]*n[1],m[3]*n[0]+m[7]*n[1],
                        m[0]*n[4]+m[4]*n[5],m[1]*n[4]+m[5]*n[5],m[2]*n[4]+m[6]*n[5],m[3]*n[4]+m[7]*n[5],
                        m[8],m[9],m[10],m[11],
-                       m[0]*n[12] + m[4]*n[13] + m[12],
-                       m[1]*n[12] + m[5]*n[13] + m[13],
-                       m[2]*n[12] + m[6]*n[13] + m[14],
-                       m[3]*n[12] + m[7]*n[13] + m[15],FULL);
+                       m[0]*n[12] + m[4]*n[13] + m[8]*n[14] + m[12],
+                       m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13],
+                       m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14],
+                       m[3]*n[12] + m[7]*n[13] + m[11]*n[14] + m[15],FULL);
     case 14: //FULLxM3D
         return Matrix4(
                     m[0]*n[0] + m[4]*n[1] + m[8]*n[2],
@@ -1074,6 +1074,9 @@ inline Matrix4 Matrix4::operator*(const Matrix4& n) const
 
 inline Matrix4& Matrix4::operator*=(const Matrix4& rhs)
 {
+	//TRN: m0,m5,m10,m15=1 m12,m13,m14=variable all others are 0
+	//M2D: m10,m15=1 m0,m1,m4,m5,m12,m13,m14=variable all others are 0
+	//M3D: m15=1 m0,m1,m2,m4,m5,m6,m8,m9,m10,m12,m13,m14=variable all others are 0
     int mode=((type)<<2)|(rhs.type);
     const float *n=rhs.data();
     switch (mode)
@@ -1092,15 +1095,40 @@ inline Matrix4& Matrix4::operator*=(const Matrix4& rhs)
         type=M3D;
         break;
     case 3: //TRNxFULL
-        memcpy(m,n,sizeof(float)*12);
-        m[12]+=n[12];  m[13]+=n[13]; m[14]+=n[14]; m[15]=n[15];
+    {
+        float tx=m[12], ty=m[13], tz=m[14];
+
+        m[0]=n[0] + tx*n[3];
+        m[1]=n[1] + ty*n[3];
+        m[2]=n[2] + tz*n[3];
+        m[3]=n[3];
+
+        m[4]=n[4] + tx*n[7];
+        m[5]=n[5] + ty*n[7];
+        m[6]=n[6] + tz*n[7];
+        m[7]=n[7];
+
+        m[8]=n[8] + tx*n[11];
+        m[9]=n[9] + ty*n[11];
+        m[10]=n[10] + tz*n[11];
+        m[11]=n[11];
+
+        m[12]=n[12] + tx*n[15];
+        m[13]=n[13] + ty*n[15];
+        m[14]=n[14] + tz*n[15];
+        m[15]=n[15];
+
         type=FULL;
         break;
+    }
     case 4: //M2DxTRN
-        m[12]+=(m[0]*n[12]+m[4]*n[13]);
-        m[13]+=(m[1]*n[12]+m[5]*n[13]);
+    {
+        float t0=n[12], t1=n[13];
+        m[12]+=(m[0]*t0+m[4]*t1);
+        m[13]+=(m[1]*t0+m[5]*t1);
         m[14]+=n[14];
         break;
+    }
     case 5: //M2DxM2D
     {
         float r0=m[0], r1=m[1], r4=m[4], r5=m[5];
@@ -1128,9 +1156,13 @@ inline Matrix4& Matrix4::operator*=(const Matrix4& rhs)
         m[4]=r0*n[4] + r4*n[5];
         m[5]=r1*n[4] + r5*n[5];
 
+        m[8]=r0*n[8] + r4*n[9];
+        m[9]=r1*n[8] + r5*n[9];
+
         m[2]=n[2];
         m[6]=n[6];
         m[10]=n[10];
+
 
         m[12]=r0*n[12] + r4*n[13] + t0;
         m[13]=r1*n[12] + r5*n[13] + t1;
@@ -1168,10 +1200,13 @@ inline Matrix4& Matrix4::operator*=(const Matrix4& rhs)
         break;
     }
     case 8: //M3DxTRN
-        m[12]+=m[0]*n[12] + m[4]*n[13] + m[8]*n[14];
-        m[13]+=m[1]*n[12] + m[5]*n[13] + m[9]*n[14];
-        m[14]+=m[2]*n[12] + m[6]*n[13] + m[10]*n[14];
+    {
+        float t0=n[12], t1=n[13], t2=n[14];
+        m[12]+=m[0]*t0 + m[4]*t1 + m[8]*t2;
+        m[13]+=m[1]*t0 + m[5]*t1 + m[9]*t2;
+        m[14]+=m[2]*t0 + m[6]*t1 + m[10]*t2;
         break;
+    }
     case 9: //M3DxM2D
     {
         float r0=m[0], r1=m[1], r2=m[2];
@@ -1230,35 +1265,38 @@ inline Matrix4& Matrix4::operator*=(const Matrix4& rhs)
         float r8=m[8], r9=m[9], r10=m[10];
         float t0=m[12], t1=m[13], t2=m[14];
 
-        m[0]=r0*n[0] + r4*n[1] + r8*n[2];
-        m[1]=r1*n[0] + r5*n[1] + r9*n[2];
-        m[2]=r2*n[0] + r6*n[1] + r10*n[2];
+        m[0]=r0*n[0] + r4*n[1] + r8*n[2] + t0*n[3];
+        m[1]=r1*n[0] + r5*n[1] + r9*n[2] + t1*n[3];
+        m[2]=r2*n[0] + r6*n[1] + r10*n[2] + t2*n[3];
         m[3]=n[3];
 
-        m[4]=r0*n[4] + r4*n[5] + r8*n[6];
-        m[5]=r1*n[4] + r5*n[5] + r9*n[6];
-        m[6]=r2*n[4] + r6*n[5] + r10*n[6];
+        m[4]=r0*n[4] + r4*n[5] + r8*n[6] + t0*n[7];
+        m[5]=r1*n[4] + r5*n[5] + r9*n[6] + t1*n[7];
+        m[6]=r2*n[4] + r6*n[5] + r10*n[6] + t2*n[7];
         m[7]=n[7];
 
-        m[8]=r0*n[8] + r4*n[9] + r8*n[10];
-        m[9]=r1*n[8] + r5*n[9] + r9*n[10];
-        m[10]=r2*n[8] + r6*n[9] + r10*n[10];
+        m[8]=r0*n[8] + r4*n[9] + r8*n[10] + t0*n[11];
+        m[9]=r1*n[8] + r5*n[9] + r9*n[10] + t1*n[11];
+        m[10]=r2*n[8] + r6*n[9] + r10*n[10] + t2*n[11];
         m[11]=n[11];
 
-        m[12]=r0*n[12] + r4*n[13] + r8*n[14] + t0;
-        m[13]=r1*n[12] + r5*n[13] + r9*n[14] + t1;
-        m[14]=r2*n[12] + r6*n[13] + r10*n[14] + t2;
+        m[12]=r0*n[12] + r4*n[13] + r8*n[14] + t0*n[15];
+        m[13]=r1*n[12] + r5*n[13] + r9*n[14] + t1*n[15];
+        m[14]=r2*n[12] + r6*n[13] + r10*n[14] + t2*n[15];
         m[15]=n[15];
 
         type=FULL;
         break;
     }
     case 12: //FULLxTRN
-        m[12]+=m[0]*n[12] + m[4]*n[13] + m[8]*n[14];
-        m[13]+=m[1]*n[12] + m[5]*n[13] + m[9]*n[14];
-        m[14]+=m[2]*n[12] + m[6]*n[13] + m[10]*n[14];
-        m[15]+=m[3]*n[12] + m[7]*n[13] + m[11]*n[14];
+    {
+        float t0=n[12], t1=n[13], t2=n[14];
+        m[12]+=m[0]*t0 + m[4]*t1 + m[8]*t2;
+        m[13]+=m[1]*t0 + m[5]*t1 + m[9]*t2;
+        m[14]+=m[2]*t0 + m[6]*t1 + m[10]*t2;
+        m[15]+=m[3]*t0 + m[7]*t1 + m[11]*t2;
         break;
+    }
     case 13: //FULLxM2D
     {
         float r0=m[0], r1=m[1], r2=m[2], r3=m[3];
@@ -1275,10 +1313,10 @@ inline Matrix4& Matrix4::operator*=(const Matrix4& rhs)
         m[6]=r2*n[4] + r6*n[5];
         m[7]=r3*n[4] + r7*n[5];
 
-        m[12]=r0*n[12] + r4*n[13] + t0;
-        m[13]=r1*n[12] + r5*n[13] + t1;
-        m[14]=r2*n[12] + r6*n[13] + t2;
-        m[15]=r3*n[12] + r7*n[13] + t3;
+        m[12]=r0*n[12] + r4*n[13] + m[8]*n[14] + t0;
+        m[13]=r1*n[12] + r5*n[13] + m[9]*n[14] + t1;
+        m[14]=r2*n[12] + r6*n[13] + m[10]*n[14] + t2;
+        m[15]=r3*n[12] + r7*n[13] + m[11]*n[14] + t3;
         break;
     }
     case 14: //FULLxM3D
