@@ -60,7 +60,7 @@
 #ifndef G_UNUSED
 #define G_UNUSED(x) (void)(x)
 #endif
-#define G_DLLIMPORT extern "C" __declspec(dllimport)
+#define G_DLLIMPORT extern "C"
 
 
 struct SenderDetail {
@@ -121,7 +121,7 @@ static int bindRec(lua_State *L) {
 	lua_pushstring(L,name);
 	lua_pushnumber(L,tw);
 	lua_pushnumber(L,th);
-	gtexture_get_screenmanager()->screenDestroyed();
+	if (gtexture_get_screenmanager()) gtexture_get_screenmanager()->screenDestroyed();
 	return 4;
 }
 
